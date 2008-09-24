@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+	For an explanation of the structure of the root element 
+	and the taxa element refer to the file taxa.xml.
+-->
+<nex:nexml 
+	version="1.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xml="http://www.w3.org/XML/1998/namespace"
+	xsi:schemaLocation="http://www.nexml.org/1.0 ../xsd/nexml.xsd"
+	xmlns:nex="http://www.nexml.org/1.0">
+    <otus id="taxa1" label="Primary taxa block">
+        <otu id="t1" label="Homo sapiens"/>
+        <otu id="t2" label="Pan paniscus"/>
+        <otu id="t3" label="Pan troglodytes"/>
+        <otu id="t4" label="Gorilla gorilla"/>
+        <otu id="t5" label="Pongo pygmaeus"/>
+    </otus>	
+	<otus id="taxa2" label="RootTaxaBlock">
+		<dict>
+			<key>description</key>
+			<string>Taxa Block 1</string>
+			<key>favorite_foods</key>
+			<string>deep-fried pizza</string>
+			<key>nested_dict</key>
+			<dict>
+				<key>nested_1-1_key</key>
+				<string>nested_1-1_value</string>
+				<key>nested_1-2_key</key>
+				<string>nested_1-2_value</string>
+			</dict>				
+		</dict>	
+		<otu id="t1" label="Taxon 1">
+			<dict>
+				<key>description</key>
+				<string>Taxon 1 from Taxa Block 1</string>
+				<key>color</key>
+				<string>red</string>
+			</dict>
+		</otu>
+		<otu id="t2" label="Taxon 2">
+			<dict>
+				<key>description</key>
+				<string>Taxon 2 from Taxa Block 1</string>
+				<key>color</key>
+				<string>blue</string>
+			</dict>
+		</otu>
+		<otu id="t3" label="Taxon 3">
+			<dict>
+				<key>description</key>
+				<string>Taxon 3 from Taxa Block 1</string>
+				<key>color</key>
+				<string>green</string>
+			</dict>
+		</otu>
+		<otu id="t4" label="Taxon 4">
+			<dict>
+				<key>description</key>
+				<string>Taxon 4 from Taxa Block 1</string>
+				<key>color</key>
+				<string>yellow</string>
+			</dict>
+		</otu>
+		<otu id="t5" label="Taxon 5">
+			<dict>
+				<key>description</key>
+				<string>Taxon 5 from Taxa Block 1</string>
+				<key>color</key>
+				<string>black</string>
+			</dict>
+		</otu>
+	</otus>
+	<otus id="taxa3" label="RootTaxaBlock">
+		<dict>
+			<key>description</key>
+			<string>Taxa Block 2</string>
+			<key>taxa3_dict_key</key>
+			<string>taxa3_dict_value</string>
+			<key>nested_dict2</key>
+			<dict>
+				<key>nested_2-1_key</key>
+				<string>nested_2-1_value</string>
+				<key>nested_2-2_key</key>
+				<string>nested_2-2_value</string>
+			</dict>				
+		</dict>		
+		<otu id="t1" label="Taxon A">
+			<dict>
+				<key>description</key>
+				<string>Taxon A from Taxa Block 2</string>
+				<key>color</key>
+				<string>red</string>
+			</dict>
+		</otu>
+		<otu id="t2" label="Taxon B">
+			<dict>
+				<key>description</key>
+				<string>Taxon B from Taxa Block 2</string>
+				<key>color</key>
+				<string>red</string>
+			</dict>
+		</otu>			
+		<otu id="t3" label="Taxon C">
+			<dict>
+				<key>description</key>
+				<string>Taxon C from Taxa Block 2</string>
+				<key>color</key>
+				<string>red</string>
+			</dict>
+		</otu>			
+		<otu id="t4" label="Taxon D">
+			<dict>
+				<key>description</key>
+				<string>Taxon D from Taxa Block 2</string>
+				<key>color</key>
+				<string>red</string>
+			</dict>
+		</otu>			
+		<otu id="t5" label="Taxon E">
+			<dict>
+				<key>description</key>
+				<string>Taxon E from Taxa Block 2</string>
+				<key>color</key>
+				<string>red</string>
+			</dict>
+		</otu>			
+	</otus>	
+	<trees otus="taxa2" id="Trees" label="TreesBlockFromXML">
+		<!--
+			A tree with float edges. 
+		-->
+		<tree id="tree1" xsi:type="nex:FloatTree" label="tree1">
+			<node id="n1" label="n1" root="true"/>
+			<node id="n2" label="n2" otu="t1"/>
+			<node id="n3" label="n3"/>
+			<node id="n4" label="n4">
+				<dict>
+					<key>has_tag</key>
+					<boolean>true</boolean>
+				</dict>
+			</node>
+			<node id="n5" label="n5" otu="t3"/>
+			<node id="n6" label="n6" otu="t2"/>
+			<node id="n7" label="n7"/>
+			<node id="n8" label="n8" otu="t5"/>
+			<node id="n9" label="n9" otu="t4"/>
+			<rootedge id="re" target="n1" length="1.2">
+				<dict>
+					<key>pop_size</key>
+					<integer>40000</integer>
+				</dict>
+			</rootedge>
+			<edge source="n1" target="n3" id="e1" length="0.34534">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>
+			<edge source="n1" target="n2" id="e2" length="0.4353">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>				
+			<edge source="n3" target="n4" id="e3" length="0.324">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>				
+			<edge source="n3" target="n7" id="e4" length="0.3247">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>				
+			<edge source="n4" target="n5" id="e5" length="0.234">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>				
+			<edge source="n4" target="n6" id="e6" length="0.3243">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>				
+			<edge source="n7" target="n8" id="e7" length="0.32443">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>				
+			<edge source="n7" target="n9" id="e8" length="0.2342">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>				
+		</tree>
+		<!--  
+			A tree with int edges.
+		-->
+		<tree id="tree2" xsi:type="nex:IntTree" label="tree2">
+			<node id="n1" label="n1"/>
+			<node id="n2" label="n2" otu="t1"/>
+			<node id="n3" label="n3"/>
+			<node id="n4" label="n4">
+				<dict>
+					<key>has_tag</key>
+					<boolean>true</boolean>
+				</dict>
+			</node>
+			<node id="n5" label="n5" otu="t3"/>
+			<node id="n6" label="n6" otu="t2"/>
+			<node id="n7" label="n7"/>
+			<node id="n8" label="n8" otu="t5"/>
+			<node id="n9" label="n9" otu="t4"/>
+			<edge source="n1" target="n3" id="e1" length="1"/>			
+			<edge source="n1" target="n2" id="e2" length="2"/>
+			<edge source="n3" target="n4" id="e3" length="3"/>
+			<edge source="n3" target="n7" id="e4" length="1"/>
+			<edge source="n4" target="n5" id="e5" length="2"/>
+			<edge source="n4" target="n6" id="e6" length="1"/>
+			<edge source="n7" target="n8" id="e7" length="1"/>
+			<edge source="n7" target="n9" id="e8" length="1"/>
+		</tree>	
+		<!--  
+			A network with int edges.
+		-->
+		<network id="tree3" xsi:type="nex:IntNetwork" label="tree2">
+			<node id="n1" label="n1"/>
+			<node id="n2" label="n2" otu="t1"/>
+			<node id="n3" label="n3"/>
+			<node id="n4" label="n4"/>
+			<node id="n5" label="n5" otu="t3"/>
+			<node id="n6" label="n6" otu="t2"/>
+			<node id="n7" label="n7"/>
+			<node id="n8" label="n8" otu="t5"/>
+			<node id="n9" label="n9" otu="t4"/>
+			<edge source="n1" target="n3" id="e1" length="1"/>			
+			<edge source="n1" target="n2" id="e2" length="2"/>
+			<edge source="n3" target="n4" id="e3" length="3"/>
+			<edge source="n3" target="n7" id="e4" length="1"/>
+			<edge source="n4" target="n5" id="e5" length="2"/>
+			<edge source="n4" target="n6" id="e6" length="1"/>
+			<edge source="n7" target="n6" id="e7" length="1"/> <!-- extra edge -->
+			<edge source="n7" target="n8" id="e7" length="1"/>
+			<edge source="n7" target="n9" id="e8" length="1"/>
+		</network>				
+	</trees>
+	<trees otus="taxa3" id="Trees2" label="TreesBlockFromXML">
+		<!--
+			A tree with float edges. 
+		-->
+		<tree id="tree1" xsi:type="nex:FloatTree" label="tree1">
+			<node id="n1" label="n1" root="true"/>
+			<node id="n2" label="n2" otu="t1"/>
+			<node id="n3" label="n3"/>
+			<node id="n4" label="n4">
+				<dict>
+					<key>has_tag</key>
+					<boolean>true</boolean>
+				</dict>
+			</node>
+			<node id="n5" label="n5" otu="t3"/>
+			<node id="n6" label="n6" otu="t2"/>
+			<node id="n7" label="n7"/>
+			<node id="n8" label="n8" otu="t5"/>
+			<node id="n9" label="n9" otu="t4"/>
+			<rootedge id="re" target="n1" length="1.2">
+				<dict>
+					<key>pop_size</key>
+					<integer>40000</integer>
+				</dict>
+			</rootedge>
+			<edge source="n1" target="n3" id="e1" length="0.34534">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>
+			<edge source="n1" target="n2" id="e2" length="0.4353">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>				
+			<edge source="n3" target="n4" id="e3" length="0.324">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>				
+			<edge source="n3" target="n7" id="e4" length="0.3247">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>				
+			<edge source="n4" target="n5" id="e5" length="0.234">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>				
+			<edge source="n4" target="n6" id="e6" length="0.3243">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>				
+			<edge source="n7" target="n8" id="e7" length="0.32443">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>				
+			<edge source="n7" target="n9" id="e8" length="0.2342">
+				<dict>
+					<key>pop_size</key>
+					<integer>20000</integer>
+				</dict>
+			</edge>				
+		</tree>
+		<!--  
+			A tree with int edges.
+		-->
+		<tree id="tree2" xsi:type="nex:IntTree" label="tree2">
+			<node id="n1" label="n1"/>
+			<node id="n2" label="n2" otu="t1"/>
+			<node id="n3" label="n3"/>
+			<node id="n4" label="n4">
+				<dict>
+					<key>has_tag</key>
+					<boolean>true</boolean>
+				</dict>
+			</node>
+			<node id="n5" label="n5" otu="t3"/>
+			<node id="n6" label="n6" otu="t2"/>
+			<node id="n7" label="n7"/>
+			<node id="n8" label="n8" otu="t5"/>
+			<node id="n9" label="n9" otu="t4"/>
+			<edge source="n1" target="n3" id="e1" length="1"/>			
+			<edge source="n1" target="n2" id="e2" length="2"/>
+			<edge source="n3" target="n4" id="e3" length="3"/>
+			<edge source="n3" target="n7" id="e4" length="1"/>
+			<edge source="n4" target="n5" id="e5" length="2"/>
+			<edge source="n4" target="n6" id="e6" length="1"/>
+			<edge source="n7" target="n8" id="e7" length="1"/>
+			<edge source="n7" target="n9" id="e8" length="1"/>
+		</tree>	
+		<!--  
+			A network with int edges.
+		-->
+		<network id="tree3" xsi:type="nex:IntNetwork" label="tree2">
+			<node id="n1" label="n1"/>
+			<node id="n2" label="n2" otu="t1"/>
+			<node id="n3" label="n3"/>
+			<node id="n4" label="n4"/>
+			<node id="n5" label="n5" otu="t3"/>
+			<node id="n6" label="n6" otu="t2"/>
+			<node id="n7" label="n7"/>
+			<node id="n8" label="n8" otu="t5"/>
+			<node id="n9" label="n9" otu="t4"/>
+			<edge source="n1" target="n3" id="e1" length="1"/>			
+			<edge source="n1" target="n2" id="e2" length="2"/>
+			<edge source="n3" target="n4" id="e3" length="3"/>
+			<edge source="n3" target="n7" id="e4" length="1"/>
+			<edge source="n4" target="n5" id="e5" length="2"/>
+			<edge source="n4" target="n6" id="e6" length="1"/>
+			<edge source="n7" target="n6" id="e7" length="1"/> <!-- extra edge -->
+			<edge source="n7" target="n8" id="e7" length="1"/>
+			<edge source="n7" target="n9" id="e8" length="1"/>
+		</network>				
+	</trees>	
+    <!--
+        This subclass encodes DNA as sequences (not cells). Like the restriction
+        site data block shown above, the states are known (being IUPAC single
+        character nucleotide symbols), hence there is no 'format' element. In 
+        addition to the IUPAC symbols, '-' is used for gaps, '?' is used for
+        missing. Spaces are allowed (so that long lines can be broken up, some
+        parsers might otherwise complain) but have no meaning.
+    -->
+    <characters otus="taxa1" id="c3" xsi:type="nex:DnaSeqs" label="DNA sequences">
+            <dict>
+                <key>description</key>
+                <string>hello, and how do you do?</string>
+            </dict>    
+        <matrix>
+            <dict>
+                <key>description</key>
+                <string>this is a matrix</string>
+            </dict>            
+            <row otu="t1" id="r1">
+				<dict>
+					<key>description</key>
+					<string>this is a row in a matrix</string>
+				</dict>             
+                <seq>A C G C T C G C A T C G C A T C G C G A</seq>
+            </row>
+            <row otu="t2" id="r2">
+                <seq>A C G C T C G C A T C G C A T C G C G A</seq>
+            </row>
+            <row otu="t3" id="r3">
+                <seq>A C G C T C G C A T C G C A T C G C G A</seq>
+            </row>
+        </matrix>
+    </characters>
+    <!--
+        RNA only differs from the previous example by using U instead of T 
+    -->
+    <characters otus="taxa1" id="rnaseqs4" xsi:type="nex:RnaSeqs" label="RNA sequences">
+        <matrix>
+            <row otu="t1" id="r1">
+                <seq>ACGCUCGCAUCGCAUCGCGA</seq>
+            </row>
+            <row otu="t2" id="r2">
+                <seq>ACGCUCGCAUCGCAUCGCGA</seq>
+            </row>
+            <row otu="t3" id="r3">
+                <seq>ACGCUCGCAUCGCAUCGCGA</seq>
+            </row>
+        </matrix>
+    </characters>	
+    <characters otus="taxa1" id="m3" xsi:type="nex:ContinuousCells" label="Continuous characters">
+        <format>
+            <!--
+                Because in this subclass, characters are marked up granularly -
+                as cells - we must define the columns these cells belong to.
+                Because this is continuous data, we don't (can't) define the
+                states cells in these columns may occupy, hence there are no
+                'states' elements in this subclass.  
+            -->
+            <char id="c1" label="this is character 1" class="something"/>
+            <char id="c2"/>
+            <char id="c3"/>
+            <char id="c4"/>
+            <char id="c5"/>
+        </format>
+        <matrix>
+            <row id="r1" otu="t1">
+                <!--  
+                    In this subclass, the 'state' attribute holds the raw
+                    value of the cell (i.e. a floating point number), not
+                    a reference to a state defined previously.
+                -->
+                <cell char="c1" state="-1.545414144070023"/>
+                <cell char="c2" state="-2.3905621575431044"/>
+                <cell char="c3" state="-2.9610221833467265"/>
+                <cell char="c4" state="0.7868662069161243"/>
+                <cell char="c5" state="0.22968509237534918"/>
+            </row>
+            <row id="r2" otu="t2">
+                <cell char="c1" state="-1.6259836379710066"/>
+                <cell char="c2" state="3.649352410850134"/>
+                <cell char="c3" state="1.778885099660406"/>
+                <cell char="c4" state="-1.2580877968480846"/>
+                <cell char="c5" state="0.22335354995610862"/>
+            </row>
+            <row id="r3" otu="t3">
+                <cell char="c1" state="-1.5798979984134964"/>
+                <cell char="c2" state="2.9548251411133157"/>
+                <cell char="c3" state="1.522005675256233"/>
+                <cell char="c4" state="-0.8642016921755289"/>
+                <cell char="c5" state="-0.938129801832388"/>
+            </row>
+            <row id="r4" otu="t4">
+                <cell char="c1" state="2.7436692306788086"/>
+                <cell char="c2" state="-0.7151148143399818"/>
+                <cell char="c3" state="4.592207937774776"/>
+                <cell char="c4" state="-0.6898841440534845"/>
+                <cell char="c5" state="0.5769509574453064"/>
+            </row>
+            <row id="r5" otu="t5">
+                <cell char="c1" state="3.1060827493657683"/>
+                <cell char="c2" state="-1.0453787389160105"/>
+                <cell char="c3" state="2.67416332763427"/>
+                <cell char="c4" state="-1.4045634106692808"/>
+                <cell char="c5" state="0.019890469925520196"/>
+            </row>
+        </matrix>
+    </characters>    
+    <characters otus="taxa1" id="c5" xsi:type="nex:ContinuousSeqs" label="Continuous sequences">
+        <matrix>
+            <row id="r1" otu="t1">
+                <seq>-1.545414144070023 -2.3905621575431044 -2.9610221833467265 0.7868662069161243 0.22968509237534918</seq>
+            </row>
+            <row id="r2" otu="t2">
+                <seq>-1.6259836379710066 3.649352410850134 1.778885099660406 -1.2580877968480846 0.22335354995610862</seq>
+            </row>
+            <row id="r3" otu="t3">
+                <seq>-1.5798979984134964 2.9548251411133157 1.522005675256233 -0.8642016921755289 -0.938129801832388</seq>
+            </row>
+            <row id="r4" otu="t4">
+                <seq>2.7436692306788086 -0.7151148143399818 4.592207937774776 -0.6898841440534845 0.5769509574453064</seq>
+            </row>
+            <row id="r5" otu="t5">
+                <seq>3.1060827493657683 -1.0453787389160105 2.67416332763427 -1.4045634106692808 0.019890469925520196</seq>
+            </row>
+        </matrix>
+    </characters>
+    <characters otus="taxa1" id="m2" xsi:type="nex:StandardCells" label="Categorical characters">
+        <!--
+            Because categorical characters in instances of this subclass
+            don't have a priori known numbers of states, they must be
+            defined using the 'format' element. 
+        -->
+        <format>
+            <!--
+                The first elements inside a format element are stateset
+                definitions. In this example, there is a set of four
+                states, each tagged with an id. The symbol attribute is
+                a shorthand token. 
+            -->
+            <states id="states1">
+              <state id="s1" symbol="1" />
+              <state id="s2" symbol="2" />
+              <state id="s3" symbol="3" />
+              <state id="s4" symbol="4" />
+              <state id="s5" symbol="5" />
+              <state id="s6" symbol="6" />
+              <state id="s7" symbol="7" />
+              <uncertain_state id="s8" symbol="8">
+                <member state="s4" />
+                <member state="s5" />
+              </uncertain_state>
+              <polymorphic_state id="s9" symbol="9">
+                <member state="s1" />
+                <member state="s2" />
+                <member state="s8" />
+              </polymorphic_state>
+            </states>
+            <!--
+                The matrix in this example contains two columns, both
+                referring to the same stateset - and so cells in both
+                columns can occupy one of four states. 
+             -->
+            <char states="states1" id="c1"/>
+            <char states="states1" id="c2"/>
+        </format>
+        <!--
+            In this subclass, the matrix contains rows consisting of
+            individual cells. 
+        -->
+        <matrix>
+            <row id="r1" otu="t1">
+                <!--
+                    Each cell must contain a reference to the column 
+                    it belongs to, and to a state allowed within that
+                    column. 
+                 -->
+                <cell char="c1" state="s1"/>
+                <cell char="c2" state="s2"/>
+            </row>
+            <row id="r2" otu="t2">
+                <cell char="c1" state="s2"/>
+                <cell char="c2" state="s2"/>
+            </row>
+            <row id="r3" otu="t3">
+                <cell char="c1" state="s3"/>
+                <cell char="c2" state="s4"/>
+            </row>
+            <row id="r4" otu="t4">
+                <cell char="c1" state="s2"/>
+                <cell char="c2" state="s3"/>
+            </row>
+            <row id="r5" otu="t5">
+                <cell char="c1" state="s4"/>
+                <cell char="c2" state="s1"/>
+            </row>
+        </matrix>
+    </characters>    
+</nex:nexml>

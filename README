@@ -1,0 +1,15 @@
+DendroPy Phylogenetic Tree Manipulation Library
+
+(C) 2008 Jeet Sukumaran and Mark T. Holder.
+
+The code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/.
+
+To install the pynexml library, end-users can run:
+$ python setup.py install
+
+Developers, who are using the "cutting-edge" code via svn may prefer to use the develop command. This installs an egg-link to the path of the nexml/python directory in the appropriate site-packages directory in your python installation. Thus, you will not have to reinstall after every change to the code:
+$ python setup.py develop 

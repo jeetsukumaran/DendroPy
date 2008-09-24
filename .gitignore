@@ -1,0 +1,7 @@
+*.pyc
+setup.cfg
+DendroPy.egg-info*
+.svn*
+.DS_Store*
+tests/ouput/*
+build/*
