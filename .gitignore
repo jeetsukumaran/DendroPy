@@ -5,3 +5,4 @@ DendroPy.egg-info*
 .DS_Store*
 dendropy/tests/output/
 build/*
+dist/*
