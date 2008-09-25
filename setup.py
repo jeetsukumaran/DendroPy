@@ -34,18 +34,21 @@ version = '2.0.0'
 setup(name='DendroPy',
       version=version,
       author='Jeet Sukumaran and Mark T. Holder',
-      author_email='jeetsukumaran@gmail.com and mtholder@ku.edu',
+      author_email='jeet@ku.edu and mtholder@ku.edu',
       maintainer = "Jeet Sukumaran and Mark Holder", 
-      maintainer_email = "jeetsukumaran@frogweb.org mtholder@ku.edu",      
-      description="Phylogenetic library",
+      maintainer_email = "jeet@ku.edu mtholder@ku.edu",      
+      description="""\
+A library for Python-based phylogenetic computation.""",
       url='',
       license='GPL 3+',
-      packages=find_packages(), #find_packages(exclude=['ez_setup', 'examples', 'tests']),
+      packages=['dendropy'],
+      package_dir={'dendropy': 'dendropy'},
       package_data={
         "dendropy" : ["tests/sources/*"]
       },
-      include_package_data=True,      
+      scripts=['scripts/sumtrees.py'],   
       test_suite = "dendropy.tests",
+      include_package_data=True,         
       zip_safe=True,
       install_requires=[
           # -*- Extra requirements: -*-
@@ -54,11 +57,10 @@ setup(name='DendroPy',
       # -*- Entry points: -*-
       """,      
       long_description="""\
-A pure-Python library for the serialization/deserialization, parsing,
-analysis, manipulations and other operations on phylogenetic trees and
-data.""",
+A pure-Python library for serialization/deserialization, parsing,
+analysis, manipulations, calculation and other operations on
+phylogenetic trees and data.""",
       classifiers = [
-            "Development Status :: 2 - Pre-Alpha",
             "Environment :: Console",
             "Intended Audience :: Developers",
             "Intended Audience :: Science/Research",
@@ -68,5 +70,5 @@ data.""",
             "Programming Language :: Python",
             "Topic :: Scientific/Engineering :: Bio-Informatics",
             ],
-      keywords='phylogenetics bioinformatics tree',      
+      keywords='phylogenetics evolution biology',      
       )
