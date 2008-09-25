@@ -36,8 +36,6 @@ _LOG = get_logger("test_tree_gens")
 from dendropy import treegens
 ### MODULE THAT WE ARE TESTING ###
 
-
-
 class TreeGenTest(unittest.TestCase):
 
     def get_species_tree(self, ntax=10):
@@ -96,7 +94,7 @@ def additional_tests():
 
 def additional_tests():
     "returns all tests in this file as suite"
-    return unittest.TestLoader().loadTestsFromTestCase(TreeIterTest)
+    return unittest.TestLoader().loadTestsFromTestCase(TreeGenTest)
 
 def getTestSuite():
     """Alias to the additional_tests().  This is unittest-style.
