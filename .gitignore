@@ -3,5 +3,5 @@ setup.cfg
 DendroPy.egg-info*
 .svn*
 .DS_Store*
-tests/ouput/*
+dendropy/tests/ouput*
 build/*
