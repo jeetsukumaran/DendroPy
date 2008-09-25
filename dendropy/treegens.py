@@ -89,20 +89,20 @@ def uniform_pure_birth(taxa_block,
     for idx, leaf in enumerate(leaves):
         leaf.taxon = taxa_block[idx]
     if ultrametricize:
-        max_height = max([node.height() for node in leaves])
+        max_distance_from_root = max([node.distance_from_root() for node in leaves])
         for node in leaves:
-            node.edge.length = node.edge.length + (max_height - node.height())
+            node.edge.length = node.edge.length + (max_distance_from_root - node.distance_from_root())
     return tree
 
-def population_genes(taxa_block=None,
-                         tree=None,                         
-                         ages=None,
-                         num_genes=None,
-                         pop_sizes=None,
-                         tree_factory=None,
-                         num_genes_attr = 'num_genes',
-                         pop_size_attr = 'pop_size',
-                         rng=None):
+def pop_gen_tree(tree=None,     
+                 taxa_block=None,
+                 ages=None,
+                 num_genes=None,
+                 pop_sizes=None,
+                 tree_factory=None,
+                 num_genes_attr = 'num_genes',
+                 pop_size_attr = 'pop_size',
+                 rng=None):
     """
     This will simulate and return a tree with edges decorated with
     population sizes and leaf nodes decorated by the number of genes
@@ -187,12 +187,12 @@ def population_genes(taxa_block=None,
         # get the internal nodes on the tree in reverse branching
         # order, so that newest nodes are returned first
         nodes = tree.nodes(cmp_fn = lambda x, y : \
-                           int((y.height()-x.height())*10e+6),
+                           int((y.distance_from_root()-x.distance_from_root())*10e+6),
                            filter_fn = lambda x : not x.is_leaf())
         # assign the ages
         for index, node in enumerate(nodes):
             for child in node.children():
-                child.edge.length = ages[index] - child.depth()
+                child.edge.length = ages[index] - child.distance_from_tip()
 
     # set the gene samples
     if samples is not None:

@@ -27,11 +27,13 @@ Tests tree traversal.
 """
 
 import unittest
-from dendropy import trees
-from dendropy.newick import to_string
 from dendropy import get_logger
+import dendropy.tests
+_LOG = get_logger("test_tree_iter")
 
-_LOG = get_logger("tests.test_tree_iter")
+### MODULE THAT WE ARE TESTING ###
+from dendropy import trees
+### MODULE THAT WE ARE TESTING ###
 
 class TreeIterTest(unittest.TestCase):
 
@@ -199,8 +201,6 @@ def additional_tests():
     "returns all tests in this file as suite"
     return unittest.TestLoader().loadTestsFromTestCase(TreeIterTest)
 
-
-# pylint: disable-msg=C0103
 def getTestSuite():
     """Alias to the additional_tests().  This is unittest-style.
     `additional_tests` is used by setuptools.
