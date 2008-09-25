@@ -67,6 +67,7 @@ class TreeSummarizer(object):
         self.verbose=False
         self.write_message = None# sys.stderr.write
         self.progress_message_prefix = None
+        self.progress_message_suffix = None
         self.total_trees_read = 0    
         self.total_trees_counted = 0         
         self.total_trees_ignored = 0         
@@ -80,7 +81,11 @@ class TreeSummarizer(object):
                 prefix = self.progress_message_prefix
             else:
                 prefix = ""
-            self.write_message("%s%s\n" % (prefix, msg))                    
+            if self.progress_message_suffix:
+                suffix = self.progress_message_suffix
+            else:
+                suffix = ""                
+            self.write_message("%s%s%s" % (prefix, msg, suffix))                    
             
     def compose_support_label(self, split_support_freq):
         """
