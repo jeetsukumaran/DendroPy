@@ -1,0 +1,32 @@
+"SyntaxError: invalid syntax" with setuptools Installed scripts
+===============================================================
+
+Problem
+-------
+After installation using "python setup.py install" or "python setup.py develop",
+some scripts fail with an "SyntaxError: invalid syntax" error.
+
+E.g.,
+
+Traceback (most recent call last):
+  File "/opt/python-2.5.2-universal/bin/sumtrees.py", line 5, in <module>
+    pkg_resources.run_script('DendroPy==2.0.0', 'sumtrees.py')
+  File "/opt/python-2.5.2-universal/lib/python2.5/site-packages/setuptools-0.6c8-py2.5.egg/pkg_resources.py", line 448, in run_script
+  File "/opt/python-2.5.2-universal/lib/python2.5/site-packages/setuptools-0.6c8-py2.5.egg/pkg_resources.py", line 1172, in run_script
+  File "/opt/python-2.5.2-universal/lib/python2.5/site-packages/DendroPy-2.0.0-py2.5.egg/EGG-INFO/scripts/sumtrees.py", line 483
+    
+SyntaxError: invalid syntax
+
+The scripts work fine when run directly.
+
+Cause
+-----
+Trailing (or leading) spaces on blank lines at the end of the file. For some 
+reason, this confuses setuptools.
+
+
+Solution
+--------
+Make sure that apparently blank lines are truly empty: i.e., strip all trailing 
+spaces from lines.
+
