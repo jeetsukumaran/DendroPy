@@ -1,4 +1,4 @@
-DendroPy Phylogenetic Tree Manipulation Library
+DendroPy Phylogenetic Computation Library
 
 (C) 2008 Jeet Sukumaran and Mark T. Holder.
 
@@ -8,8 +8,8 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/.
 
-To install the pynexml library, end-users can run:
+To install the DendroPy library, end-users can run:
 $ python setup.py install
 
-Developers, who are using the "cutting-edge" code via svn may prefer to use the develop command. This installs an egg-link to the path of the nexml/python directory in the appropriate site-packages directory in your python installation. Thus, you will not have to reinstall after every change to the code:
+Developers, who are using the "cutting-edge" code via git may prefer to use the develop command. This installs an egg-link to the path of the dendropy directory in the appropriate site-packages directory in your python installation. Thus, you will not have to reinstall after every change to the code:
 $ python setup.py develop 
