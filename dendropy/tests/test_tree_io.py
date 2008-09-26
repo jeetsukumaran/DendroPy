@@ -29,6 +29,7 @@ Tests input/output of trees from files.
 import unittest
 import datetime
 import logging
+import os
 
 from dendropy import get_logger
 from dendropy import get_logging_level
@@ -53,25 +54,33 @@ def iterate_on_trees(tree_files, tf_iterator=dataio.iterate_over_trees):
         minimal_logging = False
     for tree_file_idx, tree_file in enumerate(tree_files):
         if not minimal_logging:
-            _LOG.info("*** File %d/%d: %s" % (tree_file_idx+1, total_tree_files, tree_file))
+            _LOG.info("\n  Iterator: %s" % tf_iterator.__name__)
+            _LOG.info("      File: %s" % os.path.basename(tree_file))
         for tree_idx, tree in enumerate(tf_iterator(filepath=tree_file)):
             if not minimal_logging:
                 _LOG.debug("\n%s" % str(tree))
-        total_trees += tree_idx                    
-    end_time = datetime.datetime.now()
-    if not minimal_logging:
-        _LOG.debug("\n---")    
+        total_trees += tree_idx
+    if not minimal_logging:        
+        _LOG.debug("\n")
+    end_time = datetime.datetime.now() 
     _LOG.info("Trees Read: %s" % total_trees)        
     _LOG.info("Start time: %s" % start_time)        
     _LOG.info("  End time: %s" % end_time)
     run_time = end_time-start_time
-    hours, mins, secs = str(run_time).split(":")
-    _LOG.info("  Run time: %s hour(s), %s minute(s), %s second(s)." % (hours, mins, secs))
+    _LOG.info("  Run time: %s" % utils.pretty_print_deltatime(run_time))
     return run_time
+        
+def compare_parse_methods(tree_files, methods):
+    results = {}
+    for method in methods:
+        results[method] = iterate_on_trees(tree_files=tree_files, tf_iterator=method)
+    _LOG.info("\n--- TREE ITERATION PERFORMANCE COMPARISON ---")        
+    for m1 in methods:
+        for m2 in methods[methods.index(m1)+1:]:
+            _LOG.info("<%s> vs. <%s> = %s " % (m1.__name__, m2.__name__, results[m1]-results[m2])) 
 
+    
 class TreeIOTest(unittest.TestCase):
-
-
 
     def test_newick(self):
         sources = utils.find_files(top=dendropy.tests.test_source_path(),
@@ -83,7 +92,7 @@ class TreeIOTest(unittest.TestCase):
                                     respect_case=False,
                                     expand_vars=True,
                                     include_hidden=False)
-        iterate_on_trees(tree_files=sources)                            
+        compare_parse_methods(sources, [dataio.tree_iter, dataio.iterate_over_trees])
         
 
 
@@ -97,5 +106,8 @@ def getTestSuite():
     """
     return additional_tests()
 
+
 if __name__ == "__main__":
     unittest.main()
+    
+    
