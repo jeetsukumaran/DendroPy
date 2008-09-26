@@ -89,7 +89,7 @@ class Tree(base.IdTagged):
 
     mrca = staticmethod(mrca)
 
-    ## CLASS METHODS #########################################################
+    ## INSTANCE METHODS #######################################################
     
     def __init__(self, elem_id=None, label=None, seed_node=None):
         """
@@ -103,6 +103,12 @@ class Tree(base.IdTagged):
             self.seed_node = seed_node
         else:
             self.seed_node = Node(elem_id='n0', edge=Edge())
+            
+    def __str__(self):
+        """
+        Dump Newick string.
+        """
+        return self.compose_newick()
 
     def new_node(self, elem_id=None, label=None):
         """
@@ -253,8 +259,8 @@ class Tree(base.IdTagged):
                 node.taxon = taxa_block.find_taxon(label=node.taxon.label, update=update_taxa_block)                    
                 
     ## for debugging ##
-    def compose_newick(self):
-        return self.seed_node.compose_newick()
+    def compose_newick(self, include_internal_labels=True):
+        return self.seed_node.compose_newick(include_internal_labels=include_internal_labels)
                 
     ## basic tree manipulation ##
     def deroot(self):
@@ -392,7 +398,7 @@ class Node(taxa.TaxonLinked):
     
     nodeset_hash = staticmethod(nodeset_hash)
     
-    ## CLASS METHODS #########################################################
+    ## INSTANCE METHODS########################################################
 
     def __init__(self, elem_id=None, label=None, taxon=None, edge=None):
         """
@@ -680,7 +686,7 @@ class Node(taxa.TaxonLinked):
         return edge
      
     ### FOR DEBUGGING ### 
-    def compose_newick(self):
+    def compose_newick(self, include_internal_labels=True):
         """
         This returns the Node as a NEWICK
         statement according to the given formatting rules.
@@ -693,9 +699,9 @@ class Node(taxa.TaxonLinked):
             
         if hasattr(self, 'taxon') and self.taxon:
             tag = self.taxon.label
-        elif hasattr(self, 'label') and self.label:
+        elif hasattr(self, 'label') and self.label and (len(children)==0 or include_internal_labels):
             tag = self.label
-        elif len(self.children()) == 0:
+        elif len(children) == 0:
             tag = self.elem_id
         else:
             tag = ""
