@@ -3,7 +3,7 @@
 ############################################################################
 ##  setup.py
 ##
-##  Part of the DendroPy phylogenetic library.
+##  Part of the DendroPy phylogenetic computation library.
 ##
 ##  Copyright 2008 Jeet Sukumaran and Mark T. Holder.
 ##

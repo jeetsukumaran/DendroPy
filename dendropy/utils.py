@@ -3,7 +3,7 @@
 ############################################################################
 ##  util.py
 ##
-##  Part of the DendroPy phylogenetic library.
+##  Part of the DendroPy phylogenetic computation library.
 ##
 ##  Copyright 2008 Jeet Sukumaran and Mark T. Holder.
 ##
@@ -23,8 +23,11 @@
 ############################################################################
 
 """
-This module contains various utility functions and methods
+This module contains various utility functions and methods.
 """
+
+import os
+import fnmatch
 
 class RecastingIterator(object):
     """
@@ -279,3 +282,68 @@ class OrderedCaselessDict(dict):
                 self[key] = value
         return ocd
     
+def glob_match(pathname, pattern, respect_case=False, complement=False):
+    if respect_case:
+        if fnmatch.fnmatchcase(pathname, pattern):
+            if complement:
+                return False
+            else:
+                return True
+        else:
+            if complement:
+                return True
+            else:
+                return False
+    else:
+        pathname = pathname.lower()
+        pattern = pattern.lower()
+        if fnmatch.fnmatch(pathname, pattern):
+            if complement:
+                return False
+            else:
+                return True
+        else:
+            if complement:
+                return True
+            else:
+                return False
+
+def find_files(top, recursive=True,
+               filename_filter=None,
+               dirname_filter=None,
+               excludes=None,
+               complement=False,
+               respect_case=False,
+               expand_vars=True,
+               include_hidden=True):
+    if expand_vars:
+        top = os.path.abspath(os.path.expandvars(os.path.expanduser(top)))
+    if excludes == None:
+        excludes = []
+    filepaths = []
+    if os.path.exists(top):
+        for fpath in os.listdir(top):
+            abspath = os.path.abspath(os.path.join(top, fpath))
+            if os.path.isfile(abspath):
+                if (include_hidden or not fpath.startswith('.')) \
+                    and (not filename_filter or glob_match(fpath, filename_filter, respect_case, complement)):
+                    to_exclude = False
+                    for e in excludes:
+                        if _glob_match(fpath, e, respect_case):
+                            to_exclude = True
+                    if not to_exclude:
+                        filepaths.append(abspath)
+            elif os.path.isdir(abspath):
+                if recursive:
+                    if (include_hidden or not fpath.startswith('.')) \
+                        and (not dirname_filter or (glob_match(fpath, dirname_filter, respect_case, complement))): 
+                        filepaths.extend(find_files(abspath,
+                                                     recursive=recursive,
+                                                     filename_filter=filename_filter,
+                                                     dirname_filter=dirname_filter,
+                                                     excludes=excludes,
+                                                     complement=complement,
+                                                     respect_case=respect_case,
+                                                     expand_vars=False))
+    filepaths.sort()
+    return filepaths    

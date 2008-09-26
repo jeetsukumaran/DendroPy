@@ -3,7 +3,7 @@
 ############################################################################
 ##  dataio.py
 ##
-##  Part of the DendroPy phylogenetic library.
+##  Part of the DendroPy phylogenetic computation library.
 ##
 ##  Copyright 2008 Jeet Sukumaran and Mark T. Holder.
 ##
@@ -29,6 +29,7 @@ import sys
 
 import dendropy
 from dendropy import datasets
+from dendropy import trees
 from dendropy import nexml
 from dendropy import nexus
 from dendropy import newick
@@ -76,7 +77,39 @@ def get_dataset(filepath=None, fileobj=None, text=None):
                     sys.stderr.write("NEWICK parse failed: %s\n" % e)
                 file_handle.seek(0)
                 raise Exception("Unrecognized file format")
-                
+
+def iterate_over_trees(filepath=None, fileobj=None, text=None):
+    """
+    Generator to iterate over trees in data file.
+    Primary goal is to be memory efficient, storing no more than one tree 
+    at a time. Speed might have to be sacrificed for this!
+    """
+    
+    trees_block = trees.TreesBlock()        
+    token = "NEWICK"
+    if token == "#NEXUS":
+        file_format = "NEXUS"
+        filehandle.seek(0)
+    else:
+        ### if not NEXUS, assume NEWICK ###          
+        file_format = "NEWICK"
+        filehandle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
+        while True:
+            statement = []
+            ch = filehandle.read(1)
+            while ch != '' and ch != ';':
+                if ch not in ['\n', '\r']:
+                    statement.append(ch)
+                ch = filehandle.read(1)            
+            if statement:                
+                statement = ''.join(statement).replace('\n','').replace('\r','').strip()            
+                newick_parser = newick.NewickTreeParser()
+                tree = newick_parser.parse_tree_statement(statement, trees_block)
+                trees_block.pop()
+                yield tree
+            if ch == '':
+                break
+            
 def tree_iter(filepath=None, fileobj=None, text=None):
     return nexus_tree_iter(filepath=filepath, fileobj=fileobj, text=text)
                 

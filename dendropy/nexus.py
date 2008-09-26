@@ -3,7 +3,7 @@
 ############################################################################
 ##  nexus.py
 ##
-##  Part of the DendroPy phylogenetic tree manipulation library.
+##  Part of the DendroPy phylogenetic computation library.
 ##
 ##  Copyright 2007 Jeet Sukumaran and Mark T. Holder.
 ##
@@ -104,7 +104,7 @@ def parse_sequence_iupac_ambiguities(seq):
       return [char for char in result]
     else:
       return result
-
+          
 class NexusReader(datasets.Reader):
     """
     Encapsulates loading and parsing of a NEXUS format file.
@@ -188,7 +188,7 @@ class NexusReader(datasets.Reader):
         object.
         """
         datasets.Reader.__init__(self)
-        self.dataset = None
+        self.reset()
 
     ## Implementation of the datasets.Reader interface ##
 
@@ -224,7 +224,7 @@ class NexusReader(datasets.Reader):
         self.tree_translate_dict = {}
         token = self.read_next_token_ucase()
         if token != "#NEXUS":
-            ### Assume nexus tree file ###
+            ### if not NEXUS, assume NEWICK ###
             self.filehandle.seek(0)
             statement_block = self.filehandle.read()
             statement_block = statement_block.replace('\n','').replace('\r','')
@@ -261,15 +261,9 @@ class NexusReader(datasets.Reader):
                         #print token
                         self.skip_to_semicolon()
                         token = self.read_next_token_ucase()   
-        
-    def parse_nexus_file(self, dataset=None):
-        """
-        Main file parsing driver.
-        """
-        if dataset is None:
-            self.dataset = datasets.Dataset()
-        else:
-            self.dataset = dataset
+                        
+    def reset(self):
+        self.dataset = datasets.Dataset()
         self.interleave = False
         self.char_block_type = characters.StandardCharactersBlock        
         self.symbols = "012"        
@@ -281,7 +275,15 @@ class NexusReader(datasets.Reader):
         self.current_line_number = 1
         self.current_col_number = 1
         self.previous_file_char = None        
-        self.tree_translate_dict = {}
+        self.tree_translate_dict = {}    
+        
+    def parse_nexus_file(self, dataset=None):
+        """
+        Main file parsing driver.
+        """
+        self.reset()
+        if dataset is not None:
+            self.dataset = dataset
         token = self.read_next_token_ucase()
         if token != "#NEXUS":
             raise self.syntax_exception('Expecting "#NEXUS", but found "%s"' % token)
