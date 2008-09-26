@@ -67,7 +67,7 @@ def iterate_on_trees(tree_files, tf_iterator=dataio.iterate_over_trees):
     _LOG.info("Start time: %s" % start_time)        
     _LOG.info("  End time: %s" % end_time)
     run_time = end_time-start_time
-    _LOG.info("  Run time: %s" % utils.pretty_print_deltatime(run_time))
+    _LOG.info("  Run time: %s" % utils.pretty_print_timedelta(run_time))
     return run_time
         
 def compare_parse_methods(tree_files, methods):
@@ -77,13 +77,22 @@ def compare_parse_methods(tree_files, methods):
     _LOG.info("\n--- TREE ITERATION PERFORMANCE COMPARISON ---")        
     for m1 in methods:
         for m2 in methods[methods.index(m1)+1:]:
-            _LOG.info("<%s> vs. <%s> = %s " % (m1.__name__, m2.__name__, results[m1]-results[m2])) 
+            t1 = results[m1]
+            t2 = results[m2]
+            if t1 >= t2:
+                diff = t1 - t2
+                diff_sign = "+"
+            else:
+                diff = t2 - t1
+                diff_sign = "-"
+            diff_seconds = diff.seconds + float(diff.microseconds)/1000000          
+            _LOG.info("<%s> vs. <%s> = %s%s seconds " % (m1.__name__, m2.__name__, diff_sign, diff_seconds)) 
 
     
 class TreeIOTest(unittest.TestCase):
 
     def test_newick(self):
-        sources = utils.find_files(top=dendropy.tests.test_source_path(),
+        sources = utils.find_files(top=dendropy.tests.test_data_path(),
                                     recursive=False,
                                     filename_filter="*.newick.tre",
                                     dirname_filter=None,

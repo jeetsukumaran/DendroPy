@@ -42,10 +42,10 @@ def get_test_messenger(name):
     logger = get_logger(name)
     return _LOG.info
     
-def test_source_path(filename=None):
+def test_data_path(filename=None):
     if filename is None:
         filename = ""
-    return os.path.join(os.path.join(os.path.dirname(__file__),'sources'), filename)
+    return os.path.join(os.path.join(os.path.dirname(__file__),'data'), filename)
     
 def test_target_path(filename=None):
     if filename is None:
