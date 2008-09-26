@@ -282,6 +282,10 @@ class OrderedCaselessDict(dict):
                 self[key] = value
         return ocd
     
+def pretty_print_deltatime(deltatime):
+    hours, mins, secs = str(deltatime).split(":")
+    return("%s hour(s), %s minute(s), %s second(s)" % (hours, mins, secs))
+            
 def glob_match(pathname, pattern, respect_case=False, complement=False):
     if respect_case:
         if fnmatch.fnmatchcase(pathname, pattern):
