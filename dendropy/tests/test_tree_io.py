@@ -52,10 +52,9 @@ def iterate_on_trees(tree_files, tf_iterator=dataio.iterate_over_trees):
         minimal_logging = True
     else:
         minimal_logging = False
+    _LOG.info("\n*** ITERATOR: <%s> ***" % tf_iterator.__name__)        
     for tree_file_idx, tree_file in enumerate(tree_files):
-        if not minimal_logging:
-            _LOG.info("\n  Iterator: %s" % tf_iterator.__name__)
-            _LOG.info("      File: %s" % os.path.basename(tree_file))
+        _LOG.info("   - %s" % os.path.basename(tree_file))
         for tree_idx, tree in enumerate(tf_iterator(filepath=tree_file)):
             if not minimal_logging:
                 _LOG.debug("\n%s" % str(tree))
@@ -70,11 +69,12 @@ def iterate_on_trees(tree_files, tf_iterator=dataio.iterate_over_trees):
     _LOG.info("  Run time: %s" % utils.pretty_print_timedelta(run_time))
     return run_time
         
-def compare_parse_methods(tree_files, methods):
+def compare_parse_performance(tree_files, methods):
+    _LOG.info("\nRunning iterators for (speed) performance comparison ...")
     results = {}
     for method in methods:
         results[method] = iterate_on_trees(tree_files=tree_files, tf_iterator=method)
-    _LOG.info("\n--- TREE ITERATION PERFORMANCE COMPARISON ---")        
+    _LOG.info("\n---")        
     for m1 in methods:
         for m2 in methods[methods.index(m1)+1:]:
             t1 = results[m1]
@@ -88,6 +88,19 @@ def compare_parse_methods(tree_files, methods):
             diff_seconds = diff.seconds + float(diff.microseconds)/1000000          
             _LOG.info("<%s> vs. <%s> = %s%s seconds " % (m1.__name__, m2.__name__, diff_sign, diff_seconds)) 
 
+
+def compare_heavy(iterator, filename_filter=None):
+    sources = utils.find_files(top=dendropy.tests.test_data_path('heavy'),
+                                recursive=False,
+                                filename_filter=filename_filter,
+                                dirname_filter=None,
+                                excludes=None,
+                                complement=False,
+                                respect_case=False,
+                                expand_vars=True,
+                                include_hidden=False)
+    raw_input("Hit [ENTER] to begin iterating over the heavy files with %s: " % (iterator.__name__))
+    iterate_on_trees(sources, iterator)        
     
 class TreeIOTest(unittest.TestCase):
 
@@ -101,7 +114,7 @@ class TreeIOTest(unittest.TestCase):
                                     respect_case=False,
                                     expand_vars=True,
                                     include_hidden=False)
-        compare_parse_methods(sources, [dataio.tree_iter, dataio.iterate_over_trees])
+        compare_parse_performance(sources, [dataio.iterate_over_trees, dataio.tree_iter])
         
 
 
@@ -116,7 +129,9 @@ def getTestSuite():
     return additional_tests()
 
 
+
 if __name__ == "__main__":
     unittest.main()
-    
+    #compare_heavy(dataio.iterate_over_trees, "*.newick.tre")
+    #compare_heavy(dataio.tree_iter, "*.newick.tre")
     
