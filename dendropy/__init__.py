@@ -117,6 +117,7 @@ def get_logging_level():
             level = logging.NOTSET
     else:
         level = logging.NOTSET  
+    return level        
 
 def get_logger(name="dendropy"):
     """
@@ -134,7 +135,7 @@ def get_logger(name="dendropy"):
 #             logger_set = False
     logger = logging.getLogger(name)            
     if not logger_set:    
-        level = get_logging_level  
+        level = get_logging_level()
         rich_formatter = logging.Formatter("[%(asctime)s] %(filename)s (%(lineno)d): %(levelname) 8s: %(message)s")
         simple_formatter = logging.Formatter("%(levelname) 8s: %(message)s")
         raw_formatter = logging.Formatter("%(message)s")

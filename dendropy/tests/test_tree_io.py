@@ -28,8 +28,11 @@ Tests input/output of trees from files.
 
 import unittest
 import datetime
+import logging
 
 from dendropy import get_logger
+from dendropy import get_logging_level
+
 import dendropy.tests
 _LOG = get_logger("test_tree_io")
 
@@ -39,13 +42,18 @@ from dendropy import utils
 from dendropy import dataio
 ### MODULE THAT WE ARE TESTING ###
 
-def iterate_on_trees(tree_files, tf_iterator=dataio.iterate_over_trees, minimal_logging=False):
-    start_time = datetime.datetime.now()
+def iterate_on_trees(tree_files, tf_iterator=dataio.iterate_over_trees):
+    logging_level = get_logging_level()
     total_tree_files = len(tree_files)
-    total_trees = 0
+    total_trees = 0    
+    start_time = datetime.datetime.now()
+    if logging_level > logging.INFO:
+        minimal_logging = True
+    else:
+        minimal_logging = False
     for tree_file_idx, tree_file in enumerate(tree_files):
         if not minimal_logging:
-            _LOG.info("(File %d/%d: %s)" % (tree_file_idx+1, total_tree_files, tree_file))
+            _LOG.info("*** File %d/%d: %s" % (tree_file_idx+1, total_tree_files, tree_file))
         for tree_idx, tree in enumerate(tf_iterator(filepath=tree_file)):
             if not minimal_logging:
                 _LOG.debug("\n%s" % str(tree))
