@@ -30,6 +30,7 @@ import sys
 import dendropy
 from dendropy import datasets
 from dendropy import trees
+from dendropy import taxa
 from dendropy import nexml
 from dendropy import nexus
 from dendropy import newick
@@ -85,15 +86,53 @@ def iterate_over_trees(filepath=None, fileobj=None, text=None):
     at a time. Speed might have to be sacrificed for this!
     """
     
-    trees_block = trees.TreesBlock()        
-    token = "NEWICK"
+    taxa_block = taxa.TaxaBlock()        
+    nexus_reader = nexus.NexusReader()
+    filehandle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
+    nexus_reader.filehandle = filehandle
+    token = nexus_reader.read_next_token_ucase()
+    
     if token == "#NEXUS":
         file_format = "NEXUS"
-        filehandle.seek(0)
+        while not nexus_reader.eof:        
+            token = nexus_reader.read_next_token_ucase()
+            while token != None and token != 'BEGIN' and not nexus_reader.eof:
+                token = nexus_reader.read_next_token_ucase()
+            token = nexus_reader.read_next_token_ucase()
+            if token == 'TREES':
+                trees_block = nexus_reader.trees_block_factory()
+                trees_block.taxa_block = nexus_reader.get_default_taxa_block()
+                nexus_reader.dataset.add_trees_block(trees_block=trees_block)
+                nexus_reader.skip_to_semicolon() # move past BEGIN command
+                while not (token == 'END' or token == 'ENDBLOCK') and not nexus_reader.eof and not token==None:
+                    token = nexus_reader.read_next_token_ucase()
+                    if token == 'TRANSLATE':
+                        nexus_reader.parse_translate_statement()                         
+                    if token == 'TREE':
+                        tree = nexus_reader.parse_tree_statement(taxa_block)  
+                        trees_block.pop()
+                        yield tree
+                nexus_reader.skip_to_semicolon() # move past END command    
+            else:
+                # unknown block
+                while not (token == 'END' or token == 'ENDBLOCK') and not nexus_reader.eof and not token==None:
+                    #print token
+                    nexus_reader.skip_to_semicolon()
+                    token = nexus_reader.read_next_token_ucase()         
+        
     else:
-        ### if not NEXUS, assume NEWICK ###          
+        ### if not NEXUS, assume NEWICK ###      
+        
+        filehandle.seek(0)
         file_format = "NEWICK"
-        filehandle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
+
+        # Load entire file at once and then parse ...
+#         statement_block = filehandle.read()
+#         statement_block = statement_block.replace('\n','').replace('\r','')
+#         for statement in statement_block.split(';'):
+#             # -- parse statement and yield tree --
+
+        # Read stream byte-by-byte and parse as we go ...
         while True:
             statement = []
             ch = filehandle.read(1)
@@ -104,8 +143,7 @@ def iterate_over_trees(filepath=None, fileobj=None, text=None):
             if statement:                
                 statement = ''.join(statement).replace('\n','').replace('\r','').strip()            
                 newick_parser = newick.NewickTreeParser()
-                tree = newick_parser.parse_tree_statement(statement, trees_block)
-                trees_block.pop()
+                tree = newick_parser.parse_tree_statement(statement, taxa_block)
                 yield tree
             if ch == '':
                 break

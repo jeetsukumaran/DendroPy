@@ -29,7 +29,7 @@ This module handles the reading and writing of trees in NEWICK format.
 import re
 from dendropy import datasets
 from dendropy import trees
-
+from dendropy import taxa
 
 def from_string(trees_string):
     newick_reader = NewickTreeReader()
@@ -64,37 +64,19 @@ class NewickTreeReader(datasets.Reader):
         """
         datasets.Reader.__init__(self)
 
-    def read_trees(self, fileobj=None, text=None, trees_block=None):
+    def read_trees(self, fileobj=None, text=None, taxa_block=None):
         """
         Instantiates and returns a TreesBlock object based
         on the Newick-formatted contents read from the file
         descriptor object `fileobj`.
         """
-        if trees_block is None:
-            trees_block = self.trees_block_factory()
+        if taxa_block is None:
+            taxa_block = taxa.TaxaBlock()
         if fileobj:
-            return self.parse_trees(fileobj.read(), trees_block)
+            return self.parse_trees(fileobj.read(), taxa_block)
         else:
-            return self.parse_trees(text, trees_block)
+            return self.parse_trees(text, taxa_block)
             
-    def tree_iter(self, filepath=None, fileobj=None, text=None, trees_block=None):
-        """
-        Instantiates and returns a TreesBlock object based
-        on the Newick-formatted contents read from the file
-        descriptor object `fileobj`.
-        """
-        if trees_block is None:
-            trees_block = self.trees_block_factory()
-        filehandle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
-        statement_block = filehandle.read()           
-        statement_block = statement_block.replace('\n','').replace('\r','')
-        for statement in statement_block.split(';'):
-            statement = statement.strip() + ';'
-            newick_parser = NewickTreeParser()
-            tree = newick_parser.parse_tree_statement(statement, trees_block)
-            trees_block.pop()
-            yield tree
-
     ## Following methods are class-specific ##
 
     def parse_trees(self, statement_block, trees_block, translate_dict=None):
@@ -112,7 +94,7 @@ class NewickTreeReader(datasets.Reader):
         newick_parser = NewickTreeParser()
         trees = []
         for tree_statement in tree_statements:
-            newick_parser.parse_tree_statement(tree_statement, trees_block, translate_dict)
+            trees_block = newick_parser.parse_tree_statement(tree_statement, taxa_block, translate_dict)
         return trees_block
 
 class NewickTreeWriter(datasets.Writer):
@@ -213,31 +195,15 @@ class NewickTreeParser(object):
     punctuation = '\(\)\[\]\{\}\\\/\,\;\:\=\*\'\"\`\+\-\<\>'
     whitespace = ' \0\t\n\r'
 
-    def __init__(self, trees_block_factory=None, tree_factory=None, node_factory=None, edge_factory=None):
+    def __init__(self):
         """
-        Must be given tree factory to create trees.
+        Do dah.
         """
         self.statement = ''
         self.curr_pos = 0
         self.current_token = None
-        if trees_block_factory is None:
-            self.trees_block_factory = trees.TreesBlock
-        else:
-            self.trees_block_factory = trees_block_factory
-        if tree_factory is None:
-            self.tree_factory = trees.Tree
-        else:
-            self.tree_factory = tree_factory
-        if node_factory is None:
-            self.node_factory = trees.Node
-        else:
-            self.node_factory = node_factory
-        if edge_factory is None:
-            self.edge_factory = trees.TreesBlock
-        else:
-            self.edge_factory = edge_factory
 
-    def parse_tree_statement(self, tree_statement, trees_block, translate_dict=None):
+    def parse_tree_statement(self, tree_statement, taxa_block, translate_dict=None):
         """
         Processes a TREE command. Assumes that the input stream is
         located at the beginning of the statement (i.e., the first
@@ -247,7 +213,7 @@ class NewickTreeParser(object):
         self.curr_pos = 0
         self.current_token = None
         child_nodes = []
-        tree = self.tree_factory()
+        tree = trees.Tree()
         token = self.read_next_token()
         while token and token != ';' and token != ':':
             # process nodes until no more tokens, end of tree
@@ -280,8 +246,7 @@ class NewickTreeParser(object):
                     label = translate_dict[node.label]
                 else:
                     label = node.label                      
-                node.taxon = trees_block.taxa_block.find_taxon(label=label, update=True)            
-        trees_block.append(tree)
+                node.taxon = taxa_block.find_taxon(label=label, update=True)            
         return tree
 
     def parse_tree_node(self, tree):
@@ -290,7 +255,7 @@ class NewickTreeParser(object):
         positioned right after the '(' token in a TREE statement or
         right after a comma following a node inside a tree statement.
         """
-        node = self.node_factory()
+        node = trees.Node()
         token = self.read_next_token()
         while token and token != ')' and token != ',':            
             if token=="." or token not in NewickTreeParser.punctuation:
