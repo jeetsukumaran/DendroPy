@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 ############################################################################
-##  test_tree_iter.py
+##  test_tree_struct.py
 ##
 ##  Part of the DendroPy phylogenetic library.
 ##
@@ -29,7 +29,7 @@ Tests tree traversal.
 import unittest
 from dendropy import get_logger
 import dendropy.tests
-_LOG = get_logger("test_tree_iter")
+_LOG = get_logger("test_tree_struct")
 
 ### MODULE THAT WE ARE TESTING ###
 from dendropy import trees
