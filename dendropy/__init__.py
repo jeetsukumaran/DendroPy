@@ -99,6 +99,25 @@ import logging
 _LOGGING_LEVEL_ENVAR="PYTHON_LOGGING_LEVEL"
 _LOGGING_FORMAT_ENVAR="PYTHON_LOGGING_FORMAT"
 
+def get_logging_level():
+    if _LOGGING_LEVEL_ENVAR in os.environ:
+        if os.environ[_LOGGING_LEVEL_ENVAR].upper() == "NOTSET":
+            level = logging.NOTSET
+        elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "DEBUG":
+            level = logging.DEBUG 
+        elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "INFO":
+            level = logging.INFO
+        elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "WARNING":
+            level = logging.WARNING
+        elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "ERROR":
+            level = logging.ERROR
+        elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "CRITICAL":
+            level = logging.CRITICAL
+        else:
+            level = logging.NOTSET
+    else:
+        level = logging.NOTSET  
+
 def get_logger(name="dendropy"):
     """
     Returns a logger with name set as given, and configured 
@@ -115,23 +134,7 @@ def get_logger(name="dendropy"):
 #             logger_set = False
     logger = logging.getLogger(name)            
     if not logger_set:    
-        if _LOGGING_LEVEL_ENVAR in os.environ:
-            if os.environ[_LOGGING_LEVEL_ENVAR].upper() == "NOTSET":
-                level = logging.NOTSET
-            elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "DEBUG":
-                level = logging.DEBUG 
-            elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "INFO":
-                level = logging.INFO
-            elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "WARNING":
-                level = logging.WARNING
-            elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "ERROR":
-                level = logging.ERROR
-            elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "CRITICAL":
-                level = logging.CRITICAL
-            else:
-                level = logging.NOTSET
-        else:
-            level = logging.NOTSET    
+        level = get_logging_level  
         rich_formatter = logging.Formatter("[%(asctime)s] %(filename)s (%(lineno)d): %(levelname) 8s: %(message)s")
         simple_formatter = logging.Formatter("%(levelname) 8s: %(message)s")
         raw_formatter = logging.Formatter("%(message)s")
