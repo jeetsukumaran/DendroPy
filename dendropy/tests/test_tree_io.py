@@ -39,13 +39,19 @@ from dendropy import get_logging_level
 import dendropy.tests
 _LOG = get_logger("test_tree_io")
 
+from dendropy import taxa
+from dendropy import trees
 from dendropy import utils
 
-### MODULE THAT WE ARE TESTING ###
+### MODULES THAT WE ARE TESTING ###
 from dendropy import dataio
-### MODULE THAT WE ARE TESTING ###
+from dendropy import nexus
+### MODULES THAT WE ARE TESTING ###
 
 def iterate_on_trees(tree_files, tf_iterator=dataio.iterate_over_trees):
+    """
+    Test (supposedly) memory-economical iteration on trees.
+    """
     logging_level = get_logging_level()
     total_tree_files = len(tree_files)
     total_trees = 0
@@ -93,6 +99,9 @@ def compare_parse_performance(tree_files, methods):
 def test_tree_iter_performance(filename_filter,
                                heavy=False,
                                wait_to_start=False):
+    """
+    Test speed of (supposedly) memory-economical iteration on trees.
+    """                               
     if heavy:
         top = dendropy.tests.test_data_path('heavy')
     else:
@@ -110,8 +119,89 @@ def test_tree_iter_performance(filename_filter,
         raw_input("Hit [ENTER] to begin iterating over trees: ")
 
     iterate_on_trees(sources)
+    
+def get_anolis_consensus_tree():
+    leaves = {
+            "Anolis_ahli": 0.2642,
+            "Anolis_aliniger": 0.16,
+            "Anolis_alutaceus": 0.1619,
+            "Anolis_angusticeps": 0.0857,
+            "Anolis_bahorucoensis": 0.2267,
+            "Anolis_barahonae": 0.2115,
+            "Anolis_brevirostris": 0.1801,
+            "Anolis_coelestinus": 0.1932,
+            "Anolis_cristatellus": 0.2144,
+            "Anolis_cuvieri": 0.1687,
+            "Anolis_distichus": 0.1151,
+            "Anolis_equestris": 0.0227,
+            "Anolis_garmani": 0.1068,
+            "Anolis_grahami": 0.0864,
+            "Anolis_insolitus": 0.2439,
+            "Anolis_krugi": 0.1573,
+            "Anolis_lineatopus": 0.1957,
+            "Anolis_loysiana": 0.1836,
+            "Anolis_luteogularis": 0.0306,
+            "Anolis_marcanoi": 0.2359,
+            "Anolis_occultus": 0.4231,
+            "Anolis_olssoni": 0.2569,
+            "Anolis_ophiolepis": 0.0945,
+            "Anolis_paternus": 0.0595,
+            "Anolis_sagrei": 0.0968,
+            "Anolis_strahmi": 0.1978,
+            "Anolis_stratulus": 0.1973,
+            "Anolis_valencienni": 0.1643,
+            "Anolis_vanidicus": 0.206,
+            "Diplolaemus_darwinii": 0.3182,
+    }
+    
+    taxa_block = taxa.TaxaBlock()
+    leaf_nodes = []
+    for tax_label in leaves:
+        taxon = taxa_block.add_taxon(elem_id="TAXON_"+tax_label, label=tax_label)
+        node = trees.Node(elem_id="tax_label_"+tax_label, taxon=taxon)
+        node.edge.length = leaves[tax_label]
+
+def read_newick_tree(tree_filepath):
+    """
+    Wrapper to read and return a tree from a single-tree NEWICK file.
+    """
+    f = open(tree_filepath, 'r')
+    return nexus.parse_newick_string(f.read())
+    
+def write_newick_tree(tree, tree_filepath):
+    """
+    Wrapper to write a single tree to a NEWICK file.
+    """
+    nw = nexus.NewickTreeWriter()
+    f = open(tree_filepath, 'w')
+    tstr = nw.compose_tree(tree)
+    _LOG.info(tstr)
+    f.write(tstr)
+    
+def parse_tree_file(tree_filepath, 
+                    reader_method, 
+                    writer_method, 
+                    rereader_method=None):
+    """
+    Reads a (single) tree from a (single-)tree file,
+    writes it out, and reads it back in again.
+    """
+    if rereader_method is None:
+        rereader_method = reader_method
+    tree = reader_method(tree_filepath)
+    
+    tree1 = reader_method(tree_filepath)
+    taxa_block = tree1.infer_taxa_block()
 
 class TreeIOTest(unittest.TestCase):
+        
+    def test_tree_file_parse(self):
+        parse_tree_file(dendropy.tests.test_data_path('anolis.mbcon.newick.tre'),
+                        read_newick_tree,
+                        write_newick_tree)
+
+        
+        
 
     def test_dummy(self):
         _LOG.warning("\n\n*** TODO: Check correctness of tree!\n")

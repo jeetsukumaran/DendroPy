@@ -36,7 +36,6 @@ from dendropy import datasets
 from dendropy import taxa
 from dendropy import trees
 from dendropy import characters
-from dendropy import newick
 
 ############################################################################
 ## MODULE METHODS
@@ -181,8 +180,10 @@ class NexusStreamTokenizer(object):
     #######################################################################
     ## INSTANCE METHODS
 
-    def __init__(self):
+    def __init__(self, stream_handle=None):
         self.reset()
+        if stream_handle:
+            self.stream_handle = stream_handle
 
     def reset(self):
         self.stream_handle = None
@@ -522,7 +523,7 @@ class NexusReader(datasets.Reader):
             while token and token != ';':
                 statement.append(token)
                 token = self.stream_tokenizer.read_next_token(preserve_quotes=True)
-            newick_parser = newick.NewickTreeParser()
+            newick_parser = NewickTreeParser()
             tree = newick_parser.parse_tree_statement(tree_statement=''.join(statement),
                                                       taxa_block=taxa_block,
                                                       translate_dict=self.tree_translate_dict)
@@ -654,22 +655,10 @@ class NexusReader(datasets.Reader):
             else:
                 ## TODO: NO LABELS/TRANSPOSED ##
                 pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                
+                
+############################################################################
+## CLASS: NexusWriter
 
 class NexusWriter(datasets.Writer):
     """
@@ -717,7 +706,7 @@ class NexusWriter(datasets.Writer):
 
     def write_trees_block(self, trees_block, dest):
         block = []
-        newick_writer = newick.NewickTreeWriter()
+        newick_writer = NewickTreeWriter()
         block.append('BEGIN TREES;')
         for treeidx, tree in enumerate(trees_block):
             if tree.label:
@@ -767,7 +756,6 @@ class NexusWriter(datasets.Writer):
             ntaxstr = ""
         nexus.append('    DIMENSIONS %s NCHAR=%d;' % (ntaxstr, nchar))
         nexus.append('    FORMAT %s;' % self.compose_format_terms(char_block))
-#        nexus.append('    FORMAT DATATYPE=%s GAP=%s MISSING=%s MATCHCHAR=%s;' % (self.char_block_type, self.gap_char, self.missing_char, self.match_char))
         nexus.append('    MATRIX')
         taxa = char_block.keys()
         taxa.sort()
@@ -781,18 +769,240 @@ class NexusWriter(datasets.Writer):
         nexus.append('    ;')
         nexus.append('END;\n\n')
         dest.write('\n'.join(nexus))
+        
+        
+############################################################################
+## CLASS: NewickTreeReader        
+        
+class NewickTreeReader(datasets.Reader):
+    """
+    Implementation of TreeReader for NEWICK files and strings.
+    """
+    
+    def __init__(self):
+        """
+        This has changed so much so many times that any documentation
+        I put in here will probably be obselete in a matter of hours
+        so this comment is all you are getting.
+        """
+        datasets.Reader.__init__(self)
 
-def _io_test(source):
-    nexus_reader = NexusReader()
-    dataset = nexus_reader.get_dataset(filepath=source)
-    from dendropy import nexml
-    nexmlw = nexml.NexmlWriter()
-    print nexmlw.compose_dataset(dataset)
-    nexus_writer = NexusWriter()
-    print nexus_writer.compose_dataset(dataset)
+    def read_trees(self, fileobj=None, text=None, taxa_block=None):
+        """
+        Instantiates and returns a TreesBlock object based
+        on the Newick-formatted contents read from the file
+        descriptor object `fileobj`.
+        """
+        if taxa_block is None:
+            taxa_block = taxa.TaxaBlock()
+        if fileobj:
+            return self.parse_trees(fileobj.read(), taxa_block)
+        else:
+            return self.parse_trees(text, taxa_block)
+            
+    ## Following methods are class-specific ##
 
-if __name__ == "__main__":
-    source1 = "/Volumes/KANSAS/jeet/Documents/Codeworks/Portfolios/Python/Projects/Phylogenetics/DendroPy/versions/trunk/dendropy/tests/files/primates.nex"
-    source2 = "/Volumes/KANSAS/jeet/Documents/Codeworks/Portfolios/Python/Projects/Phylogenetics/DendroPy/versions/trunk/dendropy/tests/files/nexus_trees.tre"
-    #source = "/home/jeet/Documents/Codeworks/Portfolios/Python/Projects/Phylogenetics/DendroPy/versions/trunk/dendropy/tests/files/primate-mtDNA-interleaved.nex"
-    _io_test(source1)
+    def parse_trees(self, statement_block, trees_block, translate_dict=None):
+        """
+        Given a string block which defines trees in Newick format,
+        this parses the Newick strings and adds the trees found to
+        dataset.
+        """
+        statement_block = statement_block.replace('\n','').replace('\r','')
+        tree_statements = []
+        for statement in statement_block.split(';'):
+            statement = statement.strip()
+            if statement:
+                tree_statements.append(statement + ';')
+        newick_parser = NewickTreeParser()
+        trees = []
+        for tree_statement in tree_statements:
+            trees_block = newick_parser.parse_tree_statement(tree_statement, taxa_block, translate_dict)
+        return trees_block
+
+############################################################################
+## CLASS: NewickTreeWriter
+
+class NewickTreeWriter(datasets.Writer):
+    """
+    Handles representation and serialization of a DendroPy Tree object
+    in NEWICK format.
+    """
+
+    def __init__(self, **kwargs):
+        """
+        Instantiates the object, setting default for various
+        formatting/representation options.
+        """
+        self.edge_lengths = True
+        self.internal_labels = True
+        self.support_as_edge_lengths = False
+        self.support_as_labels = False
+        self.support_as_percentages = False
+        self.support_decimals = None
+
+    def write_dataset(self, dataset, dest):
+        """
+        Writes a DataSet object to a full document-level
+        representation of the format being implemented by the
+        deriving class. 
+        """
+        for trees_block in dataset.trees_blocks:
+            for tree in trees_block:
+                dest.write(self.compose_node(tree.seed_node) + ';\n')                                
+
+    ### Derived-class specific methods ###
+    
+    def compose_taxlabel(self, label):
+        if re.search('[' + NexusStreamTokenizer.whitespace + NexusStreamTokenizer.punctuation + ']', label) != None:
+            return "'" + label + "'"
+        else:
+            return label    
+    
+    def compose_tree(self, tree):
+        """
+        Convienience method.        
+        """
+        return self.compose_node(tree.seed_node)
+
+    def choose_display_tag(self, node):
+        """
+        Based on current settings, the attributes of a node, and
+        whether or not the node is a leaf, returns an appropriate tag.
+        """
+        if hasattr(node, 'taxon') and node.taxon:
+            return self.compose_taxlabel(node.taxon.label)
+        elif hasattr(node, 'label') and node.label:
+            return self.compose_taxlabel(node.label)
+        elif len(node.children()) == 0:
+            # force label if a leaf node
+            return self.compose_taxlabel(node.elem_id)
+        else:
+            return ""
+        
+    def compose_node(self, node):
+        """
+        Given a DendroPy Node, this returns the Node as a NEWICK
+        statement according to the class-defined formatting rules.
+        """
+        children = node.children()
+        if children:
+            subnodes = [self.compose_node(child) for child in children]
+            statement = '(' + ','.join(subnodes) + ')'
+            if self.internal_labels:
+                statement = statement + self.choose_display_tag(node)
+            if node.edge.length != None and self.edge_lengths:
+                try:
+                    statement =  "%s:%f" \
+                                % (statement, float(node.edge.length))
+                except ValueError:
+                    statement =  "%s:%s" \
+                                % (statement, node.edge.length)
+            return statement
+        else:
+            if self.internal_labels:
+                statement = self.choose_display_tag(node)
+            if node.edge.length != None and self.edge_lengths:
+                try:
+                    statement =  "%s:%0.10f" \
+                                % (statement, float(node.edge.length))
+                except ValueError:
+                    statement =  "%s:%s" \
+                                % (statement, node.edge.length)
+            return statement
+            
+############################################################################
+##  NEWICK Parsers
+
+def parse_newick_string(tree_statement, taxa_block=None, translate_dict=None):
+    """
+    Processes a TREE statement string.
+    """
+    if taxa_block is None:
+        taxa_block=taxa.TaxaBlock()    
+    stream_handle = StringIO.StringIO(tree_statement)
+    stream_tokenizer = NexusStreamTokenizer(stream_handle)
+    tree = parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
+                                     taxa_block=taxa_block,
+                                     translate_dict=translate_dict)
+    return tree                                     
+    
+def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=None):
+    """
+    Processes a TREE statement. Assumes that the input stream is
+    located at the beginning of the statement (i.e., the first
+    parenthesis that defines the tree).
+    """      
+    if taxa_block is None:
+        taxa_block=taxa.TaxaBlock()    
+    child_nodes = []
+    tree = trees.Tree()
+    token = stream_tokenizer.read_next_token()
+    while token and token != ';' and token != ':':
+        # process nodes until no more tokens, end of tree
+        # statement, or ':' is encountered, presumably outside
+        # main tree parenthetical statement (i.e., length of root
+        node = parse_newick_node_stream(stream_tokenizer, tree)
+        if node:
+            child_nodes.append(node)
+        token = stream_tokenizer.current_token
+        if stream_tokenizer.current_token == ')':
+            # OK, I'll be the first to admit that this is rather
+            # hacky but it works.
+            # If an end-parenthesis is encountered ...
+            token = stream_tokenizer.read_next_token()
+            if token and not token in NexusStreamTokenizer.punctuation:
+                break
+    for node in child_nodes:
+        tree.seed_node.add_child(node)
+    if token and not token in NexusStreamTokenizer.punctuation:
+        tree.seed_node.label = token
+        token = stream_tokenizer.read_next_token()
+    if token and token == ':':
+        length = stream_tokenizer.read_next_token(ignore_punctuation='-')
+        tree.seed_node.edge.length = length
+        
+    # convert labels at terminal nodes to taxa
+    for node in tree.leaves():
+        if node.label:
+            if translate_dict and node.label in translate_dict:
+                label = translate_dict[node.label]
+            else:
+                label = node.label                      
+            node.taxon = taxa_block.find_taxon(label=label, update=True)            
+    return tree
+
+def parse_newick_node_stream(stream_tokenizer, tree):
+    """
+    Processes a TREE statement. Assumes that the file reader is
+    positioned right after the '(' token in a TREE statement or
+    right after a comma following a node inside a tree statement.
+    """
+    node = trees.Node()
+    token = stream_tokenizer.read_next_token()
+    while token and token != ')' and token != ',':            
+        if token=="." or token not in NexusStreamTokenizer.punctuation:
+#                 if translate_dict and token in translate_dict:
+#                     label = translate_dict[token]
+#                 else:
+#                     label = token
+#                 node.taxon = taxa_block.find_taxon(label=label, update=True)
+            if node.label is None:
+                node.label = token
+            else:                    
+                node.label = node.label + token
+        if token == ':':
+            edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-')
+            try:
+                node.edge.length = float(edge_length_str)
+            except ValueError:
+                node.edge.length = edge_length_str
+        if token == '(':
+            while token and token != ')':
+                child_node = parse_newick_node_stream(stream_tokenizer, tree)
+                if child_node:
+                    node.add_child(child_node)
+                token = stream_tokenizer.current_token                  
+        token = stream_tokenizer.read_next_token()             
+    return node
+     
