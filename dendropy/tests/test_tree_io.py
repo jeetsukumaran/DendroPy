@@ -29,6 +29,7 @@ Tests input/output of trees from files.
 import unittest
 import datetime
 import logging
+import tempfile
 import os
 from optparse import OptionGroup
 from optparse import OptionParser
@@ -166,45 +167,51 @@ def read_newick_tree(tree_filepath):
     Wrapper to read and return a tree from a single-tree NEWICK file.
     """
     f = open(tree_filepath, 'r')
-    return nexus.parse_newick_string(f.read())
+    tstr = f.read()
+    _LOG.info('\nParsing "%s"' % os.path.basename(tree_filepath))
+    _LOG.debug(tstr)
+    tree = nexus.parse_newick_string(tstr)
+    _LOG.info("Leaves parsed: %s" % (", ".join([str(n) for n in tree.leaves()])))
+    return tree
     
 def write_newick_tree(tree, tree_filepath):
     """
     Wrapper to write a single tree to a NEWICK file.
     """
-    nw = nexus.NewickTreeWriter()
+    nw = nexus.NewickTreeWriter()    
     f = open(tree_filepath, 'w')
     tstr = nw.compose_tree(tree)
-    _LOG.info(tstr)
+    _LOG.info('\nWriting "%s"' % os.path.basename(tree_filepath))
+    _LOG.debug(tstr)
     f.write(tstr)
-    
-def parse_tree_file(tree_filepath, 
-                    reader_method, 
-                    writer_method, 
-                    rereader_method=None):
-    """
-    Reads a (single) tree from a (single-)tree file,
-    writes it out, and reads it back in again.
-    """
-    if rereader_method is None:
-        rereader_method = reader_method
-    tree = reader_method(tree_filepath)
-    
-    tree1 = reader_method(tree_filepath)
-    taxa_block = tree1.infer_taxa_block()
 
 class TreeIOTest(unittest.TestCase):
-        
-    def test_tree_file_parse(self):
-        parse_tree_file(dendropy.tests.test_data_path('anolis.mbcon.newick.tre'),
-                        read_newick_tree,
-                        write_newick_tree)
 
+    def parse_tree_file(self,
+                        tree_filepath, 
+                        reader_method, 
+                        writer_method):
+        """
+        Reads a (single) tree from a (single-)tree file,
+        writes it out, and reads it back in again.
+        """
+        tree1 = reader_method(tree_filepath)
+        taxa_block = tree1.infer_taxa_block()
+        tree1_fpath = tempfile.NamedTemporaryFile().name
+        writer_method(tree1, tree1_fpath)
+        tree2 = reader_method(tree1_fpath)
+        tree2_fpath = tempfile.NamedTemporaryFile().name
+        writer_method(tree2, tree2_fpath)
+        tree3 = reader_method(tree2_fpath)
         
+        s1 = open(tree1_fpath, "r").read()
+        s2 = open(tree1_fpath, "r").read()
+        self.assertEqual(s1, s2, "Reparsed tree strings do not match:\n\n%s\n\n%s" % (s1, s2)) 
         
-
-    def test_dummy(self):
-        _LOG.warning("\n\n*** TODO: Check correctness of tree!\n")
+    def test_tree_file_parse(self):    
+        self.parse_tree_file(dendropy.tests.test_data_path('anolis.mbcon.newick.tre'),
+                             read_newick_tree,
+                             write_newick_tree)
 
 def main_local():
     """

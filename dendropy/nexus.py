@@ -184,7 +184,7 @@ class NexusStreamTokenizer(object):
         self.reset()
         if stream_handle:
             self.stream_handle = stream_handle
-
+            
     def reset(self):
         self.stream_handle = None
         self.current_file_char = None
@@ -938,7 +938,7 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
     child_nodes = []
     tree = trees.Tree()
     token = stream_tokenizer.read_next_token()
-    while token and token != ';' and token != ':':
+    while token and token != ';' and token != ':':        
         # process nodes until no more tokens, end of tree
         # statement, or ':' is encountered, presumably outside
         # main tree parenthetical statement (i.e., length of root
