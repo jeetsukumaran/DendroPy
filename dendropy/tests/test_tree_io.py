@@ -30,6 +30,8 @@ import unittest
 import datetime
 import logging
 import os
+from optparse import OptionGroup
+from optparse import OptionParser
 
 from dendropy import get_logger
 from dendropy import get_logging_level
@@ -88,7 +90,6 @@ def compare_parse_performance(tree_files, methods):
             diff_seconds = diff.seconds + float(diff.microseconds)/1000000          
             _LOG.info("<%s> vs. <%s> = %s%s seconds " % (m1.__name__, m2.__name__, diff_sign, diff_seconds)) 
 
-
 def compare_heavy(iterator, filename_filter=None):
     sources = utils.find_files(top=dendropy.tests.test_data_path('heavy'),
                                 recursive=False,
@@ -100,38 +101,60 @@ def compare_heavy(iterator, filename_filter=None):
                                 expand_vars=True,
                                 include_hidden=False)
     raw_input("Hit [ENTER] to begin iterating over the heavy files with %s: " % (iterator.__name__))
-    iterate_on_trees(sources, iterator)        
-    
+    iterate_on_trees(sources, iterator)    
+
+def test_newick_performance():
+    sources = utils.find_files(top=dendropy.tests.test_data_path(),
+                                recursive=False,
+                                filename_filter="*.newick.tre",
+                                dirname_filter=None,
+                                excludes=None,
+                                complement=False,
+                                respect_case=False,
+                                expand_vars=True,
+                                include_hidden=False)
+    compare_parse_performance(sources, [dataio.iterate_over_trees, dataio.tree_iter])    
+                 
 class TreeIOTest(unittest.TestCase):
-
-    def test_newick(self):
-        sources = utils.find_files(top=dendropy.tests.test_data_path(),
-                                    recursive=False,
-                                    filename_filter="*.newick.tre",
-                                    dirname_filter=None,
-                                    excludes=None,
-                                    complement=False,
-                                    respect_case=False,
-                                    expand_vars=True,
-                                    include_hidden=False)
-        compare_parse_performance(sources, [dataio.iterate_over_trees, dataio.tree_iter])
+    
+    def test_dummy(self):
+        _LOG.warning("\n\n*** TODO: Check correctness of tree!\n")
         
-
-
-def additional_tests():
-    "returns all tests in this file as suite"
-    return unittest.TestLoader().loadTestsFromTestCase(TreeIOTest)
-
-def getTestSuite():
-    """Alias to the additional_tests().  This is unittest-style.
-    `additional_tests` is used by setuptools.
+def main_local():
     """
-    return additional_tests()
+    Main CLI handler.
+    """
 
+    parser = OptionParser(add_help_option=True)    
+       
+    parser.add_option('-p', '--perfomance',
+                        action='store_true',
+                        dest='performance',
+                        default=False,
+                        help='evaluate performance of tree iteration and parsing')
 
+    parser.add_option('-H', '--heavy',
+                        action='store_true',
+                        dest='heavy',
+                        default=False,
+                        help='run heavy performance tests')
+                        
+    (opts, args) = parser.parse_args()            
+    
+    if opts.performance:
+        test_newick_performance()
+    if opts.heavy:
+        compare_heavy(dataio.iterate_over_trees, "*.newick.tre")
+        compare_heavy(dataio.tree_iter, "*.newick.tre")        
 
+import sys                        
 if __name__ == "__main__":
-    unittest.main()
+    if len(sys.argv) == 1:
+        unittest.main()
+    else:        
+        main_local()
+  
+    
     #compare_heavy(dataio.iterate_over_trees, "*.newick.tre")
     #compare_heavy(dataio.tree_iter, "*.newick.tre")
     
