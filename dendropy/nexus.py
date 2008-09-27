@@ -222,18 +222,17 @@ class NexusReader(datasets.Reader):
         self.current_col_number = 1
         self.previous_file_char = None        
         self.tree_translate_dict = {}
+        taxa_block = taxa.TaxaBlock()        
         token = self.read_next_token_ucase()
         if token != "#NEXUS":
             ### if not NEXUS, assume NEWICK ###
             self.filehandle.seek(0)
             statement_block = self.filehandle.read()
             statement_block = statement_block.replace('\n','').replace('\r','')
-            trees_block = self.trees_block_factory()
             for statement in statement_block.split(';'):
                 statement = statement.strip() + ';'
                 newick_parser = newick.NewickTreeParser()
-                tree = newick_parser.parse_tree_statement(statement, trees_block)
-                trees_block.pop()
+                tree = newick_parser.parse_tree_statement(statement, taxa_block)
                 yield tree        
         else:
             while not self.eof:
@@ -242,17 +241,13 @@ class NexusReader(datasets.Reader):
                     token = self.read_next_token_ucase()
                 token = self.read_next_token_ucase()
                 if token == 'TREES':
-                    trees_block = self.trees_block_factory()
-                    trees_block.taxa_block = self.get_default_taxa_block()
-                    self.dataset.add_trees_block(trees_block=trees_block)
                     self.skip_to_semicolon() # move past BEGIN command
                     while not (token == 'END' or token == 'ENDBLOCK') and not self.eof and not token==None:
                         token = self.read_next_token_ucase()
                         if token == 'TRANSLATE':
                             self.parse_translate_statement()                         
                         if token == 'TREE':
-                            tree = self.parse_tree_statement(trees_block)  
-                            trees_block.pop()
+                            tree = self.parse_tree_statement(taxa_block)  
                             yield tree
                     self.skip_to_semicolon() # move past END command    
                 else:
