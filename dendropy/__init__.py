@@ -62,16 +62,6 @@ You should have received a copy of the GNU General Public License along
 with this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
-# global debugging flag
-if "DENDROPY_DEBUG" in os.environ:
-    if os.environ["DENDROPY_DEBUG"] \
-        and os.environ["DENDROPY_DEBUG"].lower()[0] in ["1", "t", "y", "d"]:
-        GLOBAL_DEBUG = True
-    else:
-        GLOBAL_DEBUG = False
-else:
-    GLOBAL_DEBUG = False
-
 # Global random number generator
 GLOBAL_RNG = random.Random()
 
@@ -102,9 +92,18 @@ if python_version < 2.3:
 
 import logging
 
-#_LOGGING_CONFIG_FILE=".dendropy-logging.conf"
-_LOGGING_LEVEL_ENVAR="PYTHON_LOGGING_LEVEL"
-_LOGGING_FORMAT_ENVAR="PYTHON_LOGGING_FORMAT"
+_LOGGING_LEVEL_ENVAR="DENDROPY_LOGGING_LEVEL"
+_LOGGING_FORMAT_ENVAR="DENDROPY_LOGGING_FORMAT"
+
+# global debugging flag
+if "DENDROPY_DEBUG" in os.environ:
+    if os.environ["DENDROPY_DEBUG"] \
+        and os.environ["DENDROPY_DEBUG"].lower()[0] in ["1", "t", "y", "d"]:
+        GLOBAL_DEBUG = True
+    else:
+        GLOBAL_DEBUG = False
+else:
+    GLOBAL_DEBUG = False
 
 def get_logging_level():
     if _LOGGING_LEVEL_ENVAR in os.environ:
