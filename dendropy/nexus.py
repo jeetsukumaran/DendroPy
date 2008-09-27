@@ -366,7 +366,7 @@ class NexusReader(datasets.Reader):
         self.reset()
         if dataset is not None:
             self.dataset = dataset
-        token = self.read_next_token_ucase()
+        token = self.stream_tokenizer.read_next_token_ucase()
         if token != "#NEXUS":
             raise self.syntax_exception('Expecting "#NEXUS", but found "%s"' % token)
         else:
@@ -420,11 +420,12 @@ class NexusReader(datasets.Reader):
                     while not (token == 'END' or token == 'ENDBLOCK') \
                         and not self.stream_tokenizer.eof \
                         and not token==None:
-                        token = self.read_next_token_ucase()
+                        token = self.stream_tokenizer.read_next_token_ucase()
                         if token == 'TRANSLATE':
                             self.parse_translate_statement()
                         if token == 'TREE':
-                            self.parse_tree_statement(trees_block)
+                            tree = self.parse_tree_statement(trees_block.taxa_block)
+                            trees_block.append(tree)
                     self.stream_tokenizer.skip_to_semicolon() # move past END command
                 else:
                     # unknown block
@@ -432,7 +433,7 @@ class NexusReader(datasets.Reader):
                         and not self.stream_tokenizer.eof \
                         and not token==None:
                         self.stream_tokenizer.skip_to_semicolon()
-                        token = self.read_next_token_ucase()
+                        token = self.stream_tokenizer.read_next_token_ucase()
         return self.dataset
 
     def syntax_exception(self, message):
@@ -518,15 +519,15 @@ class NexusReader(datasets.Reader):
             raise self.syntax_exception('Expecting "=" in definition of Tree "%s" but found "%s"' % (tree_name, token))
         else:
             # collect entire tree statement by accumulating tokens until we reach a semi-colon
-            statement = []
-            token = self.stream_tokenizer.read_next_token(preserve_quotes=True)
-            while token and token != ';':
-                statement.append(token)
-                token = self.stream_tokenizer.read_next_token(preserve_quotes=True)
-            newick_parser = NewickTreeParser()
-            tree = newick_parser.parse_tree_statement(tree_statement=''.join(statement),
-                                                      taxa_block=taxa_block,
-                                                      translate_dict=self.tree_translate_dict)
+#             statement = []
+#             token = self.stream_tokenizer.read_next_token(preserve_quotes=True)
+#             while token and token != ';':
+#                 statement.append(token)
+#                 token = self.stream_tokenizer.read_next_token(preserve_quotes=True)
+#             newick_parser = NewickTreeParser()
+            tree = parse_newick_tree_stream(stream_tokenizer=self.stream_tokenizer,
+                                            taxa_block=taxa_block,
+                                            translate_dict=self.tree_translate_dict)
             tree.label = tree_name
         if self.stream_tokenizer.current_token != ';':
             self.skip_to_semicolon()
@@ -916,7 +917,7 @@ class NewickTreeWriter(datasets.Writer):
 
 def parse_newick_string(tree_statement, taxa_block=None, translate_dict=None):
     """
-    Processes a TREE statement string.
+    Processes a (SINGLE) TREE statement string.
     """
     if taxa_block is None:
         taxa_block=taxa.TaxaBlock()    
@@ -929,7 +930,7 @@ def parse_newick_string(tree_statement, taxa_block=None, translate_dict=None):
     
 def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=None):
     """
-    Processes a TREE statement. Assumes that the input stream is
+    Processes a (SINGLE) TREE statement. Assumes that the input stream is
     located at the beginning of the statement (i.e., the first
     parenthesis that defines the tree).
     """      

@@ -43,6 +43,7 @@ _LOG = get_logger("test_tree_io")
 from dendropy import taxa
 from dendropy import trees
 from dendropy import utils
+from dendropy import datasets
 
 ### MODULES THAT WE ARE TESTING ###
 from dendropy import dataio
@@ -67,7 +68,7 @@ def iterate_on_trees(tree_files, tf_iterator=dataio.iterate_over_trees):
         for tree_idx, tree in enumerate(tf_iterator(filepath=tree_file)):
             if not minimal_logging:
                 _LOG.debug("\n%s" % str(tree))
-        total_trees += tree_idx
+        total_trees += (tree_idx + 1)
     if not minimal_logging:
         _LOG.debug("\n")
     end_time = datetime.datetime.now()
@@ -183,9 +184,35 @@ def write_newick_tree(tree, tree_filepath):
     f = open(tree_filepath, 'w')
     tstr = nw.compose_tree(tree)
     _LOG.info('\nWriting "%s"' % os.path.basename(tree_filepath))
-    _LOG.debug(tstr)
     f.write(tstr)
-
+    
+def read_nexus_tree(tree_filepath):
+    """
+    Wrapper to read and return a tree from a single-tree NEWICK file.
+    """
+    f = open(tree_filepath, 'r')
+    tstr = f.read()
+    _LOG.info('Reading "%s"' % os.path.basename(tree_filepath))
+    _LOG.debug(tstr)    
+    reader = nexus.NexusReader()
+    dataset = reader.get_dataset(text=tstr)
+    tree = dataset.trees_blocks[0][0]
+    leaves = tree.leaves()
+    _LOG.info("%d leaves on tree: %s" % (len(leaves), (", ".join([str(n.taxon) for n in leaves]))))
+    return tree
+    
+def write_nexus_tree(tree, tree_filepath):
+    """
+    Wrapper to write a single tree to a NEWICK file.
+    """
+    d = datasets.Dataset()
+    taxa_block = tree.infer_taxa_block()
+    tree_block = d.add_trees_block(taxa_block=taxa_block)
+    tree_block.append(tree)
+    nw = nexus.NexusWriter()    
+    _LOG.info('\nWriting "%s"' % os.path.basename(tree_filepath))
+    nw.store_dataset(d, tree_filepath)
+    
 class TreeIOTest(unittest.TestCase):
 
     def parse_tree_file(self,
@@ -208,12 +235,22 @@ class TreeIOTest(unittest.TestCase):
         s1 = open(tree1_fpath, "r").read()
         s2 = open(tree1_fpath, "r").read()
         self.assertEqual(s1, s2, "Reparsed tree strings do not match:\n\n%s\n\n%s" % (s1, s2)) 
-        _LOG.info("\nReparsed tree string match.")
+        _LOG.info("\n\n(reparsed tree string match)")
         
     def test_tree_file_parse(self):    
-        self.parse_tree_file(dendropy.tests.test_data_path('anolis.mbcon.newick.tre'),
+        t1 = dendropy.tests.test_data_path('anolis.mbcon.newick.tre')
+        t2 = dendropy.tests.test_data_path('anolis.mbcon.nex.tre')
+        _LOG.info("\n\n### Testing NEWICK tree parser ###\n")       
+        self.parse_tree_file(t1,
                              read_newick_tree,
                              write_newick_tree)
+        _LOG.info("\n\n### Testing NEXUS tree parser ###\n")                              
+        self.parse_tree_file(t2,
+                             read_nexus_tree,
+                             write_nexus_tree)    
+        _LOG.info("\n\n### Testing universal tree iterator ###\n")                     
+        tree_files = [t1, t2]                             
+        iterate_on_trees(tree_files)                        
 
 def main_local():
     """
