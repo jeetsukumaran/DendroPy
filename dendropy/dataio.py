@@ -95,7 +95,7 @@ def iterate_over_trees(filepath=None, fileobj=None, text=None):
         file_format = "NEXUS"
         while not nexus_reader.stream_tokenizer.eof:
             token = nexus_reader.stream_tokenizer.read_next_token_ucase()
-            while token != None and token != 'BEGIN' and not nexus_reader.eof:
+            while token != None and token != 'BEGIN' and not nexus_reader.stream_tokenizer.eof:
                 token = nexus_reader.stream_tokenizer.read_next_token_ucase()
             token = nexus_reader.stream_tokenizer.read_next_token_ucase()
             if token == 'TREES':
