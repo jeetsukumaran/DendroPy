@@ -63,7 +63,14 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
 # global debugging flag
-GLOBAL_DEBUG = False
+if "DENDROPY_DEBUG" in os.environ:
+    if os.environ["DENDROPY_DEBUG"] \
+        and os.environ["DENDROPY_DEBUG"].lower()[0] in ["1", "t", "y", "d"]:
+        GLOBAL_DEBUG = True
+    else:
+        GLOBAL_DEBUG = False
+else:
+    GLOBAL_DEBUG = False
 
 # Global random number generator
 GLOBAL_RNG = random.Random()
