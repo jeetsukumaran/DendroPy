@@ -196,15 +196,5 @@ class TreeIterTest(unittest.TestCase):
         _LOG.debug("  RESULT: %s" % (', '.join(expected)))        
         self.assertEqual(result, expected)
 
-def additional_tests():
-    "returns all tests in this file as suite"
-    return unittest.TestLoader().loadTestsFromTestCase(TreeIterTest)
-
-def getTestSuite():
-    """Alias to the additional_tests().  This is unittest-style.
-    `additional_tests` is used by setuptools.
-    """
-    return additional_tests()
-
 if __name__ == "__main__":
     unittest.main()

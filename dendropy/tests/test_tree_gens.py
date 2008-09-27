@@ -85,22 +85,6 @@ class TreeGenTest(unittest.TestCase):
         gene_trees = []
         while len(gene_trees) < 20:
             gene_trees.append(treegens.constrained_kingman(species_tree)[0])
-
-
-def additional_tests():
-    "returns all tests in this file as suite"
-    return unittest.TestLoader().loadTestsFromTestCase(TreeGenTest)
-
-
-def additional_tests():
-    "returns all tests in this file as suite"
-    return unittest.TestLoader().loadTestsFromTestCase(TreeGenTest)
-
-def getTestSuite():
-    """Alias to the additional_tests().  This is unittest-style.
-    `additional_tests` is used by setuptools.
-    """
-    return additional_tests()
-
+            
 if __name__ == "__main__":
     unittest.main()
