@@ -168,10 +168,11 @@ def read_newick_tree(tree_filepath):
     """
     f = open(tree_filepath, 'r')
     tstr = f.read()
-    _LOG.info('\nParsing "%s"' % os.path.basename(tree_filepath))
+    _LOG.info('Reading "%s"' % os.path.basename(tree_filepath))
     _LOG.debug(tstr)
     tree = nexus.parse_newick_string(tstr)
-    _LOG.info("Leaves parsed: %s" % (", ".join([str(n) for n in tree.leaves()])))
+    leaves = tree.leaves()
+    _LOG.info("%d leaves on tree: %s" % (len(leaves), (", ".join([str(n.taxon) for n in leaves]))))
     return tree
     
 def write_newick_tree(tree, tree_filepath):
@@ -207,6 +208,7 @@ class TreeIOTest(unittest.TestCase):
         s1 = open(tree1_fpath, "r").read()
         s2 = open(tree1_fpath, "r").read()
         self.assertEqual(s1, s2, "Reparsed tree strings do not match:\n\n%s\n\n%s" % (s1, s2)) 
+        _LOG.info("\nReparsed tree string match.")
         
     def test_tree_file_parse(self):    
         self.parse_tree_file(dendropy.tests.test_data_path('anolis.mbcon.newick.tre'),
