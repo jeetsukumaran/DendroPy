@@ -40,30 +40,30 @@ from dendropy import fasta
 def get_dataset(filepath=None, fileobj=None, text=None):
     """
     General-purpose multi-format file reader.
-    
+
     I've tried:
         (a) an extension-based approach
             -- failed due to inconsistency in user naming schemes
         (b) scanning to the first non-blank line and checking for signature patterns ("#NEXUS" etc.)
             -- failed due to flexibility in breaking up some patterns across multiple lines
         (c) scanning entire files for signature patterns
-            -- works, but expensive due to loading entire file into buffer 
+            -- works, but expensive due to loading entire file into buffer
         (d) brute-force: try reading files through various methods, until one works
             -- yuck, and not sure if there is any performance advantage over (c), but will do
-               for now ...
+               for now ..
     """
     file_handle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
     try:
         if dendropy.GLOBAL_DEBUG:
-            sys.stderr.write("Trying NEXML format ...\n")
-        return from_nexml(fileobj=file_handle)        
+            sys.stderr.write("Trying NEXML format ..\n")
+        return from_nexml(fileobj=file_handle)
     except Exception, e:
         if dendropy.GLOBAL_DEBUG:
-            sys.stderr.write("NEXML parse failed: %s\n" % e)    
+            sys.stderr.write("NEXML parse failed: %s\n" % e)
         file_handle.seek(0)
         try:
             if dendropy.GLOBAL_DEBUG:
-                sys.stderr.write("Trying NEXUS format ...\n")        
+                sys.stderr.write("Trying NEXUS format ..\n")
             return from_nexus(fileobj=file_handle)
         except Exception, e:
             if dendropy.GLOBAL_DEBUG:
@@ -71,7 +71,7 @@ def get_dataset(filepath=None, fileobj=None, text=None):
             file_handle.seek(0)
             try:
                 if dendropy.GLOBAL_DEBUG:
-                    sys.stderr.write("Trying NEWICK format ...\n")
+                    sys.stderr.write("Trying NEWICK format ..\n")
                 return from_newick(fileobj=file_handle)
             except Exception, e:
                 if dendropy.GLOBAL_DEBUG:
@@ -82,83 +82,72 @@ def get_dataset(filepath=None, fileobj=None, text=None):
 def iterate_over_trees(filepath=None, fileobj=None, text=None):
     """
     Generator to iterate over trees in data file.
-    Primary goal is to be memory efficient, storing no more than one tree 
+    Primary goal is to be memory efficient, storing no more than one tree
     at a time. Speed might have to be sacrificed for this!
     """
-    
-    taxa_block = taxa.TaxaBlock()        
+
+    taxa_block = taxa.TaxaBlock()
     nexus_reader = nexus.NexusReader()
-    filehandle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
-    nexus_reader.filehandle = filehandle
-    token = nexus_reader.read_next_token_ucase()
-    
+    nexus_reader.stream_tokenizer.stream_handle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
+    token = nexus_reader.stream_tokenizer.read_next_token_ucase()
+
     if token == "#NEXUS":
         file_format = "NEXUS"
-        while not nexus_reader.eof:        
-            token = nexus_reader.read_next_token_ucase()
+        while not nexus_reader.stream_tokenizer.eof:
+            token = nexus_reader.stream_tokenizer.read_next_token_ucase()
             while token != None and token != 'BEGIN' and not nexus_reader.eof:
-                token = nexus_reader.read_next_token_ucase()
-            token = nexus_reader.read_next_token_ucase()
+                token = nexus_reader.stream_tokenizer.read_next_token_ucase()
+            token = nexus_reader.stream_tokenizer.read_next_token_ucase()
             if token == 'TREES':
-                trees_block = nexus_reader.trees_block_factory()
-                trees_block.taxa_block = nexus_reader.get_default_taxa_block()
-                nexus_reader.dataset.add_trees_block(trees_block=trees_block)
-                nexus_reader.skip_to_semicolon() # move past BEGIN command
-                while not (token == 'END' or token == 'ENDBLOCK') and not nexus_reader.eof and not token==None:
-                    token = nexus_reader.read_next_token_ucase()
+                nexus_reader.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
+                while not (token == 'END' or token == 'ENDBLOCK') \
+                    and not nexus_reader.stream_tokenizer.eof \
+                    and not token==None:
+                    token = nexus_reader.stream_tokenizer.read_next_token_ucase()
                     if token == 'TRANSLATE':
-                        nexus_reader.parse_translate_statement()                         
+                        nexus_reader.parse_translate_statement()
                     if token == 'TREE':
-                        tree = nexus_reader.parse_tree_statement(taxa_block)  
-                        trees_block.pop()
+                        tree = nexus_reader.parse_tree_statement(taxa_block)
                         yield tree
-                nexus_reader.skip_to_semicolon() # move past END command    
+                nexus_reader.stream_tokenizer.skip_to_semicolon() # move past END command
             else:
                 # unknown block
-                while not (token == 'END' or token == 'ENDBLOCK') and not nexus_reader.eof and not token==None:
+                while not (token == 'END' or token == 'ENDBLOCK') \
+                    and not nexus_reader.stream_tokenizer.eof \
+                    and not token==None:
                     #print token
-                    nexus_reader.skip_to_semicolon()
-                    token = nexus_reader.read_next_token_ucase()         
-        
+                    nexus_reader.stream_tokenizer.skip_to_semicolon()
+                    token = nexus_reader.stream_tokenizer.read_next_token_ucase()
+
     else:
-        ### if not NEXUS, assume NEWICK ###      
-        
+        ### if not NEXUS, assume NEWICK ###
+        filehandle = nexus_reader.stream_tokenizer.stream_handle
         filehandle.seek(0)
         file_format = "NEWICK"
 
-        # Load entire file at once and then parse ...
+        # Load entire file at once and then parse ..
 #         statement_block = filehandle.read()
 #         statement_block = statement_block.replace('\n','').replace('\r','')
 #         for statement in statement_block.split(';'):
 #             # -- parse statement and yield tree --
 
-        # Read stream byte-by-byte and parse as we go ...
+        # Read stream byte-by-byte and parse as we go ..
         while True:
             statement = []
             ch = filehandle.read(1)
             while ch != '' and ch != ';':
                 if ch not in ['\n', '\r']:
                     statement.append(ch)
-                ch = filehandle.read(1)            
-            if statement:                
-                statement = ''.join(statement).replace('\n','').replace('\r','').strip()            
+                ch = filehandle.read(1)
+            if statement:
+                statement = ''.join(statement).replace('\n','').replace('\r','').strip()
                 newick_parser = newick.NewickTreeParser()
                 tree = newick_parser.parse_tree_statement(statement, taxa_block)
                 yield tree
             if ch == '':
                 break
-            
-def tree_iter(filepath=None, fileobj=None, text=None):
-    return nexus_tree_iter(filepath=filepath, fileobj=fileobj, text=text)
-                
-def nexus_tree_iter(filepath=None, fileobj=None, text=None):
-    nexus_reader = nexus.NexusReader()
-    return nexus_reader.tree_iter(filepath=filepath, fileobj=fileobj, text=text)
-    
-def newick_tree_iter(filepath=None, fileobj=None, text=None):
-    newick_reader = newick.NewickTreeReader()
-    return newick_reader.tree_iter(filepath=filepath, fileobj=fileobj, text=text)    
-        
+
+
 def from_nexml(filepath=None, fileobj=None, text=None):
     """
     Reads a nexml file and returns a corresponding Dataset object.
@@ -172,7 +161,7 @@ def from_nexus(filepath=None, fileobj=None, text=None):
     """
     nexus_reader = nexus.NexusReader()
     return nexus_reader.get_dataset(filepath=filepath, fileobj=fileobj, text=text)
-        
+
 def from_newick(filepath=None, fileobj=None, text=None):
     """
     Reads a Newick file and returns a corresponding Dataset object.
@@ -180,7 +169,7 @@ def from_newick(filepath=None, fileobj=None, text=None):
     newick_reader = newick.NewickTreeReader()
     file_handle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
     trees_block = newick_reader.read_trees(fileobj=file_handle, trees_block=None)
-    dataset = datasets.Dataset()    
+    dataset = datasets.Dataset()
     dataset.add_trees_block(trees_block=trees_block)
     return dataset
 
@@ -197,7 +186,7 @@ def to_nexml_string(dataset):
     """
     nexml_writer = nexml.NexmlWriter()
     return nexml_writer.compose_dataset(dataset=dataset)
-    
+
 def to_nexus_file(dataset, destination, simple=False):
     """
     Writes out a complete NEXUS document representation of the dataset.
@@ -211,7 +200,7 @@ def to_nexus_string(dataset):
     """
     nexus_writer = nexus.NexusWriter()
     return nexus_writer.compose_dataset(dataset=dataset)
-    
+
 def to_newick_file(dataset, destination):
     """
     Writes a Newick file representation of all TreesBlocks in given dataset.
@@ -239,7 +228,7 @@ def to_phylip_string(dataset):
     """
     phylip_writer = phylip.PhylipWriter()
     return phylip_writer.compose_dataset(dataset)
-    
+
 def to_fasta_file(dataset, destination):
     """
     Writes a fasta representation of the first char block in given dataset.
@@ -252,8 +241,8 @@ def to_fasta_string(dataset):
     Returns a fasta representation of the first char block in given dataset.
     """
     fasta_writer = fasta.FastaWriter()
-    return fasta_writer.compose_dataset(dataset)    
-    
+    return fasta_writer.compose_dataset(dataset)
+
 def from_nexus_to_phylip_file(nexus, phylip):
     """
     Reads a nexus file, saves as phylip.
