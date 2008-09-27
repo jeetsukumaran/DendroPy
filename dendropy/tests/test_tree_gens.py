@@ -59,9 +59,9 @@ class TreeGenTest(unittest.TestCase):
             if distance_from_tip > 0:
                 ages2.append(distance_from_tip)
         ages2.sort()
-        _LOG.info("-- AGES --")
-        _LOG.info([float(age) for age in ages])
-        _LOG.info([float(age) for age in ages2])
+        _LOG.debug("-- AGES --")
+        _LOG.debug([float(age) for age in ages])
+        _LOG.debug([float(age) for age in ages2])
         for index in range(len(ages2)):
             self.failIf(ages[index] - ages2[index] > 10e-6)
 
@@ -69,9 +69,9 @@ class TreeGenTest(unittest.TestCase):
         for edge in species_tree.postorder_edge_iter():
             pop_sizes2.append(edge.pop_size)
         pop_sizes2.sort()
-        _LOG.info("-- POP_SIZES --")
-        _LOG.info([float(pop_size) for pop_size in pop_sizes])
-        _LOG.info([float(pop_size) for pop_size in pop_sizes2])
+        _LOG.debug("-- POP_SIZES --")
+        _LOG.debug([float(pop_size) for pop_size in pop_sizes])
+        _LOG.debug([float(pop_size) for pop_size in pop_sizes2])
 
         # difficult to test due to uncertainty in order of child visits
 #         for index in range(len(pop_sizes2)):
@@ -81,7 +81,7 @@ class TreeGenTest(unittest.TestCase):
 
     def test_kingman_tree_in_species_tree(self, ntax=10):
         species_tree = self.get_species_tree(ntax)
-        _LOG.info("Generating 20 gene trees conditional on this species tree ...")
+        _LOG.debug("Generating 20 gene trees conditional on this species tree ...")
         gene_trees = []
         while len(gene_trees) < 20:
             gene_trees.append(treegens.constrained_kingman(species_tree)[0])

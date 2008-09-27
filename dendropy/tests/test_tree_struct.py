@@ -145,56 +145,55 @@ class TreeIterTest(unittest.TestCase):
         return ''.join(show)
 
     def test_leafiter(self):
-        _LOG.info('### LEAF ITERATION ###')
+        _LOG.debug('### LEAF ITERATION ###')
         result = [node.elem_id for node in self.tree1.leaf_iter()]
         expected = ["A", "C", "E", "H"]
-        _LOG.info("EXPECTED: %s" % (', '.join(result)))        
-        _LOG.info("  RESULT: %s" % (', '.join(expected)))        
+        _LOG.debug("EXPECTED: %s" % (', '.join(result)))        
+        _LOG.debug("  RESULT: %s" % (', '.join(expected)))        
         self.assertEqual(result, expected)
         result = [node.elem_id for node in self.tree2.leaf_iter()]
         expected = ["T1", "T2", "T3", "T4", "T5", "T6", "T13", "T7", "T8", "T9", "T10", "T14", "T11", "T12"]
-        _LOG.info("EXPECTED: %s" % (', '.join(result)))        
-        _LOG.info("  RESULT: %s" % (', '.join(expected)))        
+        _LOG.debug("EXPECTED: %s" % (', '.join(result)))        
+        _LOG.debug("  RESULT: %s" % (', '.join(expected)))        
         self.assertEqual(result, expected)
 
     def test_preorder(self):
-        _LOG.info('### PRE-ORDER ITERATION ###')    
+        _LOG.debug('### PRE-ORDER ITERATION ###')    
         result = [node.elem_id for node in self.tree1.preorder_node_iter()]
         expected = ["F", "B", "A", "D", "C", "E", "G", "I", "H"]
-        _LOG.info("EXPECTED: %s" % (', '.join(result)))        
-        _LOG.info("  RESULT: %s" % (', '.join(expected)))        
+        _LOG.debug("EXPECTED: %s" % (', '.join(result)))        
+        _LOG.debug("  RESULT: %s" % (', '.join(expected)))        
         self.assertEqual(result, expected)
         result = [node.elem_id for node in self.tree2.preorder_node_iter()]
         expected = ["i0", "i1", "i2", "i3", "T1", "i4", "i5", "T2", "T3", "T4", "i6", "T5", "T6", "T13", "i7", "i8", "T7", "i9", "T8", "T9", "T10", "T14", "i10", "T11", "T12"]
-        _LOG.info("EXPECTED: %s" % (', '.join(result)))        
-        _LOG.info("  RESULT: %s" % (', '.join(expected)))        
+        _LOG.debug("EXPECTED: %s" % (', '.join(result)))        
+        _LOG.debug("  RESULT: %s" % (', '.join(expected)))        
         self.assertEqual(result, expected)
 
-
     def test_postorder(self):
-        _LOG.info('### POST-ORDER ITERATION ###')     
+        _LOG.debug('### POST-ORDER ITERATION ###')     
         result = [node.elem_id for node in self.tree1.postorder_node_iter()]
         expected = ["A", "C", "E", "D", "B", "H", "I", "G", "F"]
-        _LOG.info("EXPECTED: %s" % (', '.join(result)))        
-        _LOG.info("  RESULT: %s" % (', '.join(expected)))        
+        _LOG.debug("EXPECTED: %s" % (', '.join(result)))        
+        _LOG.debug("  RESULT: %s" % (', '.join(expected)))        
         self.assertEqual(result, expected)
         result = [node.elem_id for node in self.tree2.postorder_node_iter()]
         expected = ["T1", "T2", "T3", "i5", "T4", "i4", "i3", "T5", "T6", "T13", "i6", "i2", "T7", "T8", "T9", "i9", "i8", "T10", "i7", "i1", "T14", "T11", "T12", "i10", "i0"]
-        _LOG.info("EXPECTED: %s" % (', '.join(result)))        
-        _LOG.info("  RESULT: %s" % (', '.join(expected)))        
+        _LOG.debug("EXPECTED: %s" % (', '.join(result)))        
+        _LOG.debug("  RESULT: %s" % (', '.join(expected)))        
         self.assertEqual(result, expected)
 
     def test_levelorder(self):
-        _LOG.info('### LEVEL-ORDER ITERATION ###')     
+        _LOG.debug('### LEVEL-ORDER ITERATION ###')     
         result = [node.elem_id for node in self.tree1.level_order_node_iter()]
         expected = ["F", "B", "G", "A", "D", "I", "C", "E", "H"]        
-        _LOG.info("EXPECTED: %s" % (', '.join(result)))        
-        _LOG.info("  RESULT: %s" % (', '.join(expected)))        
+        _LOG.debug("EXPECTED: %s" % (', '.join(result)))        
+        _LOG.debug("  RESULT: %s" % (', '.join(expected)))        
         self.assertEqual(result, expected)
         result = [node.elem_id for node in self.tree2.level_order_node_iter()]
         expected = ["i0", "i1", "T14", "i10", "i2", "i7", "T11", "T12", "i3", "i6", "i8", "T10", "T1", "i4", "T5", "T6", "T13", "T7", "i9", "i5", "T4", "T8", "T9", "T2", "T3"]
-        _LOG.info("EXPECTED: %s" % (', '.join(result)))        
-        _LOG.info("  RESULT: %s" % (', '.join(expected)))        
+        _LOG.debug("EXPECTED: %s" % (', '.join(result)))        
+        _LOG.debug("  RESULT: %s" % (', '.join(expected)))        
         self.assertEqual(result, expected)
 
 def additional_tests():
