@@ -90,7 +90,7 @@ def iterate_over_trees(filepath=None, fileobj=None, text=None):
     nexus_reader = nexus.NexusReader()
     nexus_reader.stream_tokenizer.stream_handle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
     token = nexus_reader.stream_tokenizer.read_next_token_ucase()
-
+    stream_tokenizer = nexus_reader.stream_tokenizer
     if token == "#NEXUS":
         file_format = "NEXUS"
         while not nexus_reader.stream_tokenizer.eof:
@@ -121,32 +121,11 @@ def iterate_over_trees(filepath=None, fileobj=None, text=None):
 
     else:
         ### if not NEXUS, assume NEWICK ###
-        filehandle = nexus_reader.stream_tokenizer.stream_handle
-        filehandle.seek(0)
-        file_format = "NEWICK"
-
-        # Load entire file at once and then parse ..
-#         statement_block = filehandle.read()
-#         statement_block = statement_block.replace('\n','').replace('\r','')
-#         for statement in statement_block.split(';'):
-#             # -- parse statement and yield tree --
-
-        # Read stream byte-by-byte and parse as we go ..
-        while True:
-            statement = []
-            ch = filehandle.read(1)
-            while ch != '' and ch != ';':
-                if ch not in ['\n', '\r']:
-                    statement.append(ch)
-                ch = filehandle.read(1)
-            if statement:
-                statement = ''.join(statement).replace('\n','').replace('\r','').strip()
-                newick_parser = newick.NewickTreeParser()
-                tree = newick_parser.parse_tree_statement(statement, taxa_block)
-                yield tree
-            if ch == '':
-                break
-
+        stream_tokenizer.stream_handle.seek(0)
+        while not stream_tokenizer.eof:
+            yield nexus.parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
+                                                 taxa_block=None, 
+                                                 translate_dict=None)
 
 def from_nexml(filepath=None, fileobj=None, text=None):
     """
