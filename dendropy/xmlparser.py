@@ -41,7 +41,7 @@ else:
 
 from dendropy import utils
 
-class XmlDocument(object):
+class xml_document(object):
     """
     ElementTree requires that the complete XML be loaded in memory
     before working with it, which may be discouraging when dealing
@@ -50,13 +50,13 @@ class XmlDocument(object):
     for messing with other sections of code.
     """
 
-    def __init__(self, element=None, filesrc=None):
+    def __init__(self, element=None, file=None):
         """
         Initializes reference to the ElementTree parser, passing it
         the a file descripter object to be read and parsed or the
         ElemenTree.Element object to be used as the root element.
         """
-        self.etree = ElementTree.ElementTree(element=element, file=filesrc)
+        self.etree = ElementTree.ElementTree(element=element, file=file)
 
     def parse_string(self, source):
         """

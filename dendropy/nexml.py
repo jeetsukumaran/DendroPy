@@ -188,12 +188,25 @@ def _from_nexml_dict_value(value, value_type):
         # what else to do?
         parsed_value = value
     return parsed_value
+        
+def iterate_over_trees(file=None):
+    """
+    Generator to iterate over trees in file without retaining any in memory.
+    """
+    xml_doc = xmlparser.xml_document(file=file)
+    dataset = datasets.Dataset()
+    nexml_reader = NexmlReader()
+    nexml_reader.parse_taxa_blocks(xml_doc, dataset)
+    nx_tree_parser = _NexmlTreesParser()
+    for trees_idx, trees_element in enumerate(xml_doc.getiterator('trees')):
+        for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, yield_tree=True):
+            yield tree
 
 class NexmlReader(datasets.Reader):
     """
     Implements thinterface for handling NEXML files.
     """
-
+    
     def __init__(self):
         """
         `tree_factory` is a DendroPy TreeFactory class or derived
@@ -213,10 +226,10 @@ class NexmlReader(datasets.Reader):
         used to instantiate objects.
         """
         start = time.clock()
-        xmldoc = xmlparser.XmlDocument(filesrc=file)
+        xml_doc = xmlparser.xml_document(file=file)
         self.load_time = time.clock() - start
         start = time.clock()
-        dataset = self.parse_dataset(xmldoc, dataset)
+        dataset = self.parse_dataset(xml_doc, dataset)
         self.parse_time = time.clock() - start
         return dataset
 
@@ -224,7 +237,7 @@ class NexmlReader(datasets.Reader):
 
     def parse_dataset(self, xml_doc, dataset):
         """
-        Given an XMLDocument, parses the XmlElement representation of
+        Given an xml_document, parses the XmlElement representation of
         taxon sets, character matrices, and trees into a DataSet object.
         """
         if dataset is None:
@@ -236,7 +249,7 @@ class NexmlReader(datasets.Reader):
         
     def parse_taxa_blocks(self, xml_doc, dataset):
         """
-        Given an XMLDocument, parses the XmlElement representation of
+        Given an xml_document, parses the XmlElement representation of
         taxon sets into a TaxaBlocks objects.
         """
         nxt = _NexmlTaxaParser(self.taxa_block_factory, self.taxon_factory)
@@ -245,7 +258,7 @@ class NexmlReader(datasets.Reader):
         
     def parse_char_blocks(self, xml_doc, dataset):
         """
-        Given an XMLDocument, parses the XmlElement representation of
+        Given an xml_document, parses the XmlElement representation of
         character sequences into a list of CharacterMatrix objects.
         """
         nxc = _NexmlCharBlockParser()
@@ -254,7 +267,7 @@ class NexmlReader(datasets.Reader):
 
     def parse_trees_blocks(self, xml_doc, dataset):
         """
-        Given an XmlDocument object, parses the XmlElement structural
+        Given an xml_document object, parses the XmlElement structural
         representations of a set of NEXML treeblocks (`nex:trees`) and
         returns a TreesBlocks object corresponding to the NEXML.
         """
@@ -364,15 +377,17 @@ class _NexmlTreesParser(_NexmlElementParser):
         else:
             self.edge_factory = edge_factory
 
-    def parse_trees(self, nxtrees, dataset, trees_idx=None):
+    def parse_trees(self, nxtrees, dataset, trees_idx=None, yield_tree=False):
         """
         Given an XmlElement object representing a NEXML treeblock,
         self.nxtrees (corresponding to a `nex:trees` element), this
         will construct and return a TreesBlock object defined by the
-        underlying NEXML. 
+        underlying NEXML. If `yield_tree` is True, then each tree is yielded,
+        *AND NOT ADDED TO THE DATASET* and nothing is returned at the end.
         """
         elem_id = nxtrees.get('id', "Trees" + str(trees_idx))
         label = nxtrees.get('label', None)
+        print label
         taxa_id = nxtrees.get('otus', None)
         if taxa_id is None:
             raise Exception("Taxa block not specified for trees block \"%s\"" % trees_block.elem_id)
@@ -449,7 +464,10 @@ class _NexmlTreesParser(_NexmlElementParser):
                     ### should we make this node the seed node by rerooting the tree here? ###
             else:
                 treeobj.seed_node.edge = None
-            trees_block.append(treeobj)
+            if yield_tree:
+                yield treeobj
+            else:
+                trees_block.append(treeobj)
 
     def parse_nodes(self, tree_element, taxa_block, node_factory):
         """
