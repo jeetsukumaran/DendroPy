@@ -33,6 +33,7 @@ import tempfile
 import os
 from optparse import OptionGroup
 from optparse import OptionParser
+import StringIO
 
 from dendropy import get_logger
 from dendropy import get_logging_level
@@ -65,7 +66,7 @@ def iterate_on_trees(tree_files, tf_iterator=dataio.iterate_over_trees):
     _LOG.info("\n*** ITERATOR: <%s> ***" % tf_iterator.__name__)
     for tree_file_idx, tree_file in enumerate(tree_files):
         _LOG.info("   - %s" % os.path.basename(tree_file))
-        for tree_idx, tree in enumerate(tf_iterator(filepath=tree_file)):
+        for tree_idx, tree in enumerate(tf_iterator(file=open(tree_file,'r'))):
             if not minimal_logging:
                 _LOG.debug("\n%s" % str(tree))
         total_trees += (tree_idx + 1)
@@ -195,7 +196,7 @@ def read_nexus_tree(tree_filepath):
     _LOG.info('Reading "%s"' % os.path.basename(tree_filepath))
     _LOG.debug(tstr)    
     reader = nexus.NexusReader()
-    dataset = reader.get_dataset(text=tstr)
+    dataset = reader.get_dataset(StringIO.StringIO(tstr))
     tree = dataset.trees_blocks[0][0]
     leaves = tree.leaves()
     _LOG.info("%d leaves on tree: %s" % (len(leaves), (", ".join([str(n.taxon) for n in leaves]))))

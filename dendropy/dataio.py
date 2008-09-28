@@ -36,7 +36,7 @@ from dendropy import nexus
 from dendropy import phylip
 from dendropy import fasta
 
-def get_dataset(filepath=None, fileobj=None, text=None):
+def get_dataset(file=None):
     """
     General-purpose multi-format file reader.
 
@@ -51,7 +51,7 @@ def get_dataset(filepath=None, fileobj=None, text=None):
             -- yuck, and not sure if there is any performance advantage over (c), but will do
                for now ..
     """
-    file_handle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
+    file_handle = datasets.Reader.get_file_handle(file=file)
     try:
         if dendropy.GLOBAL_DEBUG:
             sys.stderr.write("Trying NEXML format ..\n")
@@ -78,7 +78,7 @@ def get_dataset(filepath=None, fileobj=None, text=None):
                 file_handle.seek(0)
                 raise Exception("Unrecognized file format")
 
-def iterate_over_trees(filepath=None, fileobj=None, text=None):
+def iterate_over_trees(file=None):
     """
     Generator to iterate over trees in data file.
     Primary goal is to be memory efficient, storing no more than one tree
@@ -86,9 +86,7 @@ def iterate_over_trees(filepath=None, fileobj=None, text=None):
     """
 
     taxa_block = taxa.TaxaBlock()
-    
-    stream_handle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
-    stream_tokenizer = nexus.NexusStreamTokenizer(stream_handle)
+    stream_tokenizer = nexus.NexusStreamTokenizer(file)
     token = stream_tokenizer.read_next_token_ucase()
     if token == "#NEXUS":
         file_format = "NEXUS"
@@ -128,26 +126,26 @@ def iterate_over_trees(filepath=None, fileobj=None, text=None):
                                                  taxa_block=None, 
                                                  translate_dict=None)
 
-def from_nexml(filepath=None, fileobj=None, text=None):
+def from_nexml(file=None):
     """
     Reads a nexml file and returns a corresponding Dataset object.
     """
     nexml_reader = nexml.NexmlReader()
-    return nexml_reader.get_dataset(filepath=filepath, fileobj=fileobj, text=text)
+    return nexml_reader.get_dataset(file=file)
 
-def from_nexus(filepath=None, fileobj=None, text=None):
+def from_nexus(file=None):
     """
     Reads a NEXUS file and returns a correspoding Dataset object.
     """
     nexus_reader = nexus.NexusReader()
-    return nexus_reader.get_dataset(filepath=filepath, fileobj=fileobj, text=text)
+    return nexus_reader.get_dataset(file=file)
 
-# def from_newick(filepath=None, fileobj=None, text=None):
+# def from_newick(file=None):
 #     """
 #     Reads a Newick file and returns a corresponding Dataset object.
 #     """
 #     newick_reader = newick.NewickTreeReader()
-#     file_handle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
+#     file_handle = datasets.Reader.get_file_handle(file=file)
 #     trees_block = newick_reader.read_trees(fileobj=file_handle, trees_block=None)
 #     dataset = datasets.Dataset()
 #     dataset.add_trees_block(trees_block=trees_block)
