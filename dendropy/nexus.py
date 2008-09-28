@@ -38,7 +38,7 @@ from dendropy import trees
 from dendropy import characters
 
 ############################################################################
-## MODULE METHODS
+## charatcer mapping
 
 def map_to_iupac_ambiguity_code(states):
     """
@@ -106,6 +106,155 @@ def parse_sequence_iupac_ambiguities(seq):
       return [char for char in result]
     else:
       return result
+      
+############################################################################
+##  Fundamental NEWICK Tree parsers
+
+def parse_newick_string(tree_statement, taxa_block=None, translate_dict=None):
+    """
+    Processes a (SINGLE) TREE statement string.
+    """
+    if taxa_block is None:
+        taxa_block=taxa.TaxaBlock()    
+    stream_handle = StringIO.StringIO(tree_statement)
+    stream_tokenizer = NexusStreamTokenizer(stream_handle)
+    tree = parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
+                                     taxa_block=taxa_block,
+                                     translate_dict=translate_dict)
+    return tree                                     
+    
+def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=None):
+    """
+    Processes a (SINGLE) TREE statement. Assumes that the input stream is
+    located at the beginning of the statement (i.e., the first
+    parenthesis that defines the tree).
+    """      
+    if taxa_block is None:
+        taxa_block=taxa.TaxaBlock()    
+    child_nodes = []    
+    token = stream_tokenizer.read_next_token()
+    if token:
+        tree = trees.Tree()
+        while token and token != ';' and token != ':':        
+            # process nodes until no more tokens, end of tree
+            # statement, or ':' is encountered, presumably outside
+            # main tree parenthetical statement (i.e., length of root
+            node = parse_newick_node_stream(stream_tokenizer, tree)
+            if node:
+                child_nodes.append(node)
+            token = stream_tokenizer.current_token
+            if stream_tokenizer.current_token == ')':
+                # OK, I'll be the first to admit that this is rather
+                # hacky but it works.
+                # If an end-parenthesis is encountered ...
+                token = stream_tokenizer.read_next_token()
+                if token and not token in NexusStreamTokenizer.punctuation:
+                    break
+        for node in child_nodes:
+            tree.seed_node.add_child(node)
+        if token and not token in NexusStreamTokenizer.punctuation:
+            tree.seed_node.label = token
+            token = stream_tokenizer.read_next_token()
+        if token and token == ':':
+            length = stream_tokenizer.read_next_token(ignore_punctuation='-')
+            tree.seed_node.edge.length = length
+            
+        # convert labels at terminal nodes to taxa
+        for node in tree.leaves():
+            if node.label:
+                if translate_dict and node.label in translate_dict:
+                    label = translate_dict[node.label]
+                else:
+                    label = node.label                      
+                node.taxon = taxa_block.find_taxon(label=label, update=True)            
+        return tree
+    else:
+        return None
+
+def parse_newick_node_stream(stream_tokenizer, tree):
+    """
+    Processes a TREE statement. Assumes that the file reader is
+    positioned right after the '(' token in a TREE statement or
+    right after a comma following a node inside a tree statement.
+    """
+    node = trees.Node()
+    token = stream_tokenizer.read_next_token()
+    while token and token != ')' and token != ',':            
+        if token=="." or token not in NexusStreamTokenizer.punctuation:
+#                 if translate_dict and token in translate_dict:
+#                     label = translate_dict[token]
+#                 else:
+#                     label = token
+#                 node.taxon = taxa_block.find_taxon(label=label, update=True)
+            if node.label is None:
+                node.label = token
+            else:                    
+                node.label = node.label + token
+        if token == ':':
+            edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-')
+            try:
+                node.edge.length = float(edge_length_str)
+            except ValueError:
+                node.edge.length = edge_length_str
+        if token == '(':
+            while token and token != ')':
+                child_node = parse_newick_node_stream(stream_tokenizer, tree)
+                if child_node:
+                    node.add_child(child_node)
+                token = stream_tokenizer.current_token                  
+        token = stream_tokenizer.read_next_token()             
+    return node     
+    
+############################################################################
+## Tree iterator
+      
+def iterate_over_trees(file=None):
+    """
+    Generator to iterate over trees in data file.
+    Primary goal is to be memory efficient, storing no more than one tree
+    at a time. Speed might have to be sacrificed for this!
+    """
+
+    taxa_block = taxa.TaxaBlock()
+    stream_tokenizer = NexusStreamTokenizer(file)
+    token = stream_tokenizer.read_next_token_ucase()
+    if token == "#NEXUS":
+        file_format = "NEXUS"
+        nexus_reader = NexusReader()
+        nexus_reader.stream_tokenizer = stream_tokenizer
+        while not nexus_reader.stream_tokenizer.eof:
+            token = nexus_reader.stream_tokenizer.read_next_token_ucase()
+            while token != None and token != 'BEGIN' and not nexus_reader.stream_tokenizer.eof:
+                token = nexus_reader.stream_tokenizer.read_next_token_ucase()
+            token = nexus_reader.stream_tokenizer.read_next_token_ucase()
+            if token == 'TREES':
+                nexus_reader.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
+                while not (token == 'END' or token == 'ENDBLOCK') \
+                    and not nexus_reader.stream_tokenizer.eof \
+                    and not token==None:
+                    token = nexus_reader.stream_tokenizer.read_next_token_ucase()
+                    if token == 'TRANSLATE':
+                        nexus_reader.parse_translate_statement()
+                    if token == 'TREE':
+                        tree = nexus_reader.parse_tree_statement(taxa_block)
+                        yield tree
+                nexus_reader.stream_tokenizer.skip_to_semicolon() # move past END command
+            else:
+                # unknown block
+                while not (token == 'END' or token == 'ENDBLOCK') \
+                    and not nexus_reader.stream_tokenizer.eof \
+                    and not token==None:
+                    #print token
+                    nexus_reader.stream_tokenizer.skip_to_semicolon()
+                    token = nexus_reader.stream_tokenizer.read_next_token_ucase()
+
+    else:
+        ### if not NEXUS, assume NEWICK ###
+        stream_tokenizer.stream_handle.seek(0)
+        while not stream_tokenizer.eof:
+            yield parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
+                                                 taxa_block=None, 
+                                                 translate_dict=None)      
 
 ############################################################################
 ## CLASS: NexusStreamTokenizer
@@ -770,107 +919,7 @@ class NexusWriter(datasets.Writer):
         nexus.append('    ;')
         nexus.append('END;\n\n')
         dest.write('\n'.join(nexus))
-        
-        
-############################################################################
-##  NEWICK Parsers
-
-def parse_newick_string(tree_statement, taxa_block=None, translate_dict=None):
-    """
-    Processes a (SINGLE) TREE statement string.
-    """
-    if taxa_block is None:
-        taxa_block=taxa.TaxaBlock()    
-    stream_handle = StringIO.StringIO(tree_statement)
-    stream_tokenizer = NexusStreamTokenizer(stream_handle)
-    tree = parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
-                                     taxa_block=taxa_block,
-                                     translate_dict=translate_dict)
-    return tree                                     
-    
-def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=None):
-    """
-    Processes a (SINGLE) TREE statement. Assumes that the input stream is
-    located at the beginning of the statement (i.e., the first
-    parenthesis that defines the tree).
-    """      
-    if taxa_block is None:
-        taxa_block=taxa.TaxaBlock()    
-    child_nodes = []    
-    token = stream_tokenizer.read_next_token()
-    if token:
-        tree = trees.Tree()
-        while token and token != ';' and token != ':':        
-            # process nodes until no more tokens, end of tree
-            # statement, or ':' is encountered, presumably outside
-            # main tree parenthetical statement (i.e., length of root
-            node = parse_newick_node_stream(stream_tokenizer, tree)
-            if node:
-                child_nodes.append(node)
-            token = stream_tokenizer.current_token
-            if stream_tokenizer.current_token == ')':
-                # OK, I'll be the first to admit that this is rather
-                # hacky but it works.
-                # If an end-parenthesis is encountered ...
-                token = stream_tokenizer.read_next_token()
-                if token and not token in NexusStreamTokenizer.punctuation:
-                    break
-        for node in child_nodes:
-            tree.seed_node.add_child(node)
-        if token and not token in NexusStreamTokenizer.punctuation:
-            tree.seed_node.label = token
-            token = stream_tokenizer.read_next_token()
-        if token and token == ':':
-            length = stream_tokenizer.read_next_token(ignore_punctuation='-')
-            tree.seed_node.edge.length = length
-            
-        # convert labels at terminal nodes to taxa
-        for node in tree.leaves():
-            if node.label:
-                if translate_dict and node.label in translate_dict:
-                    label = translate_dict[node.label]
-                else:
-                    label = node.label                      
-                node.taxon = taxa_block.find_taxon(label=label, update=True)            
-        return tree
-    else:
-        return None
-
-def parse_newick_node_stream(stream_tokenizer, tree):
-    """
-    Processes a TREE statement. Assumes that the file reader is
-    positioned right after the '(' token in a TREE statement or
-    right after a comma following a node inside a tree statement.
-    """
-    node = trees.Node()
-    token = stream_tokenizer.read_next_token()
-    while token and token != ')' and token != ',':            
-        if token=="." or token not in NexusStreamTokenizer.punctuation:
-#                 if translate_dict and token in translate_dict:
-#                     label = translate_dict[token]
-#                 else:
-#                     label = token
-#                 node.taxon = taxa_block.find_taxon(label=label, update=True)
-            if node.label is None:
-                node.label = token
-            else:                    
-                node.label = node.label + token
-        if token == ':':
-            edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-')
-            try:
-                node.edge.length = float(edge_length_str)
-            except ValueError:
-                node.edge.length = edge_length_str
-        if token == '(':
-            while token and token != ')':
-                child_node = parse_newick_node_stream(stream_tokenizer, tree)
-                if child_node:
-                    node.add_child(child_node)
-                token = stream_tokenizer.current_token                  
-        token = stream_tokenizer.read_next_token()             
-    return node
-             
-        
+                
 ############################################################################
 ## CLASS: NewickTreeReader        
         

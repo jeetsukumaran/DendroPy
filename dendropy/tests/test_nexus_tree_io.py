@@ -39,7 +39,7 @@ from dendropy import get_logger
 from dendropy import get_logging_level
 
 import dendropy.tests
-_LOG = get_logger("test_tree_io")
+_LOG = get_logger("NEXUS/NEWICK Tree Parsing and Writing")
 
 from dendropy import taxa
 from dendropy import trees
@@ -47,11 +47,10 @@ from dendropy import utils
 from dendropy import datasets
 
 ### MODULES THAT WE ARE TESTING ###
-from dendropy import dataio
 from dendropy import nexus
 ### MODULES THAT WE ARE TESTING ###
 
-def iterate_on_trees(tree_files, tf_iterator=dataio.iterate_over_trees):
+def iterate_on_trees(tree_files, tf_iterator=nexus.iterate_over_trees):
     """
     Test (supposedly) memory-economical iteration on trees.
     """
@@ -311,5 +310,5 @@ if __name__ == "__main__":
         main_local()
 
 
-    #compare_heavy(dataio.iterate_over_trees, "*.newick.tre")
-    #compare_heavy(dataio.tree_iter, "*.newick.tre")
+    #compare_heavy(nexus.iterate_over_trees, "*.newick.tre")
+    #compare_heavy(nexus.tree_iter, "*.newick.tre")

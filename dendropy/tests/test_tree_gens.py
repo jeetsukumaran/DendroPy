@@ -30,7 +30,7 @@ import random
 import unittest
 from dendropy import get_logger
 import dendropy.tests
-_LOG = get_logger("test_tree_gens")
+_LOG = get_logger("Tree Generation and Simulation")
 
 ### MODULE THAT WE ARE TESTING ###
 from dendropy import treegens

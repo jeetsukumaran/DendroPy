@@ -51,7 +51,6 @@ def get_dataset(file=None):
             -- yuck, and not sure if there is any performance advantage over (c), but will do
                for now ..
     """
-    file_handle = datasets.Reader.get_file_handle(file=file)
     try:
         if dendropy.GLOBAL_DEBUG:
             sys.stderr.write("Trying NEXML format ..\n")
@@ -77,54 +76,6 @@ def get_dataset(file=None):
                     sys.stderr.write("NEWICK parse failed: %s\n" % e)
                 file_handle.seek(0)
                 raise Exception("Unrecognized file format")
-
-def iterate_over_trees(file=None):
-    """
-    Generator to iterate over trees in data file.
-    Primary goal is to be memory efficient, storing no more than one tree
-    at a time. Speed might have to be sacrificed for this!
-    """
-
-    taxa_block = taxa.TaxaBlock()
-    stream_tokenizer = nexus.NexusStreamTokenizer(file)
-    token = stream_tokenizer.read_next_token_ucase()
-    if token == "#NEXUS":
-        file_format = "NEXUS"
-        nexus_reader = nexus.NexusReader()
-        nexus_reader.stream_tokenizer = stream_tokenizer
-        while not nexus_reader.stream_tokenizer.eof:
-            token = nexus_reader.stream_tokenizer.read_next_token_ucase()
-            while token != None and token != 'BEGIN' and not nexus_reader.stream_tokenizer.eof:
-                token = nexus_reader.stream_tokenizer.read_next_token_ucase()
-            token = nexus_reader.stream_tokenizer.read_next_token_ucase()
-            if token == 'TREES':
-                nexus_reader.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
-                while not (token == 'END' or token == 'ENDBLOCK') \
-                    and not nexus_reader.stream_tokenizer.eof \
-                    and not token==None:
-                    token = nexus_reader.stream_tokenizer.read_next_token_ucase()
-                    if token == 'TRANSLATE':
-                        nexus_reader.parse_translate_statement()
-                    if token == 'TREE':
-                        tree = nexus_reader.parse_tree_statement(taxa_block)
-                        yield tree
-                nexus_reader.stream_tokenizer.skip_to_semicolon() # move past END command
-            else:
-                # unknown block
-                while not (token == 'END' or token == 'ENDBLOCK') \
-                    and not nexus_reader.stream_tokenizer.eof \
-                    and not token==None:
-                    #print token
-                    nexus_reader.stream_tokenizer.skip_to_semicolon()
-                    token = nexus_reader.stream_tokenizer.read_next_token_ucase()
-
-    else:
-        ### if not NEXUS, assume NEWICK ###
-        stream_tokenizer.stream_handle.seek(0)
-        while not stream_tokenizer.eof:
-            yield nexus.parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
-                                                 taxa_block=None, 
-                                                 translate_dict=None)
 
 def from_nexml(file=None):
     """
