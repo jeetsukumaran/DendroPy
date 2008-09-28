@@ -33,7 +33,6 @@ from dendropy import trees
 from dendropy import taxa
 from dendropy import nexml
 from dendropy import nexus
-from dendropy import newick
 from dendropy import phylip
 from dendropy import fasta
 
@@ -143,16 +142,16 @@ def from_nexus(filepath=None, fileobj=None, text=None):
     nexus_reader = nexus.NexusReader()
     return nexus_reader.get_dataset(filepath=filepath, fileobj=fileobj, text=text)
 
-def from_newick(filepath=None, fileobj=None, text=None):
-    """
-    Reads a Newick file and returns a corresponding Dataset object.
-    """
-    newick_reader = newick.NewickTreeReader()
-    file_handle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
-    trees_block = newick_reader.read_trees(fileobj=file_handle, trees_block=None)
-    dataset = datasets.Dataset()
-    dataset.add_trees_block(trees_block=trees_block)
-    return dataset
+# def from_newick(filepath=None, fileobj=None, text=None):
+#     """
+#     Reads a Newick file and returns a corresponding Dataset object.
+#     """
+#     newick_reader = newick.NewickTreeReader()
+#     file_handle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
+#     trees_block = newick_reader.read_trees(fileobj=file_handle, trees_block=None)
+#     dataset = datasets.Dataset()
+#     dataset.add_trees_block(trees_block=trees_block)
+#     return dataset
 
 def to_nexml_file(dataset, destination):
     """
@@ -182,19 +181,19 @@ def to_nexus_string(dataset):
     nexus_writer = nexus.NexusWriter()
     return nexus_writer.compose_dataset(dataset=dataset)
 
-def to_newick_file(dataset, destination):
-    """
-    Writes a Newick file representation of all TreesBlocks in given dataset.
-    """
-    newick_writer = newick.NewickTreeWriter()
-    newick_writer.store_dataset(dataset, destination)
-
-def to_newick_string(dataset):
-    """
-    Returns a Newick string representation of all TreesBlocks in given dataset.
-    """
-    newick_writer = newick.NewickTreeWriter()
-    return newick_writer.compose_dataset(dataset)
+# def to_newick_file(dataset, destination):
+#     """
+#     Writes a Newick file representation of all TreesBlocks in given dataset.
+#     """
+#     newick_writer = newick.NewickTreeWriter()
+#     newick_writer.store_dataset(dataset, destination)
+# 
+# def to_newick_string(dataset):
+#     """
+#     Returns a Newick string representation of all TreesBlocks in given dataset.
+#     """
+#     newick_writer = newick.NewickTreeWriter()
+#     return newick_writer.compose_dataset(dataset)
 
 def to_phylip_file(dataset, destination):
     """

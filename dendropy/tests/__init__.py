@@ -31,11 +31,6 @@ import os
 
 from dendropy import get_logger
 
-__all__ = [
-          "test_tree_io",
-          "test_tree_struct",
-          "test_tree_gens",
-          ]
           
 # pylint: disable-msg=C0111,W0401,W0611
 

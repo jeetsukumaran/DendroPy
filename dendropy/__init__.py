@@ -31,18 +31,6 @@ import os
 import sys
 import random
 
-__all__ = [
-	'base',
-    'characters',
-    'datasets',
-    'newick',
-    'nexml',
-    'taxa',
-    'trees',
-    'utils',
-    'xmlparser'
-          ]
-
 PACKAGE_NAME = "DendroPy"
 PACKAGE_VERSION = "2.0.0"
 PACKAGE_AUTHOR = "Jeet Sukumaran and Mark T. Holder"
