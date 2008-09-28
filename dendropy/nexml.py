@@ -218,7 +218,7 @@ class NexmlReader(datasets.Reader):
 
     ## Implementation of the datasets.Reader interface ##
 
-    def get_dataset(self, file, dataset=None):
+    def read_dataset(self, file, dataset=None):
         """
         Instantiates and returns a DataSet object based on the
         NEXML-formatted contents read from the file descriptor object
@@ -1161,7 +1161,7 @@ class NexmlWriter(datasets.Writer):
 def basic_test():
     source = "tests/sources/comprehensive.xml"
     nexmlr = NexmlReader()
-    dataset = nexmlr.get_dataset(source)                
+    dataset = nexmlr.read_dataset(source)                
     target = "tests/output/parsed.xml"                
     nexmlw = NexmlWriter()
     print

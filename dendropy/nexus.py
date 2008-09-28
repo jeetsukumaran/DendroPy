@@ -497,7 +497,7 @@ class NexusReader(datasets.Reader):
         self.match_char = '.'
         self.tree_translate_dict = {}
 
-    def get_dataset(self, file, dataset=None):
+    def read_dataset(self, file, dataset=None):
         """
         Instantiates and returns a DataSet object based on the
         NEXUS-formatted contents read from the file descriptor object
@@ -936,7 +936,7 @@ class NewickTreeReader(datasets.Reader):
         """
         datasets.Reader.__init__(self)
         
-    def get_dataset(self, file, dataset=None):
+    def read_dataset(self, file, dataset=None):
         """
         Instantiates and returns a DataSet object based on the
         NEWICK-formatted contents read from the file descriptor object

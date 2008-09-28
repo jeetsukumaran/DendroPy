@@ -205,49 +205,47 @@ class Reader(object):
         self.edge_factory = trees.Edge
         self.node_factory = trees.Node
         
-    def get_dataset(self, file, dataset=None):
+    def read_dataset(self, file, dataset=None):
         """
         Implementing classes should instantiate and return a Dataset
         object based on contents read from the file descriptor object
-        `fileobj`.
+        `file`.
         """
         raise NotImplementedError        
 
-    def get_matrices(self, file=None, char_block_factory=None):
+    def read_characters(self, file=None, char_block_factory=None):
         """
-        Instantiates and returns a list of CharMatrix objects from a filepath, a
-        file descriptor or direct text source respectively.
+        Instantiates and returns a list of CharacterBlock objects from a 
+        file (descriptor).
         """
         dataset = Dataset()        
         if char_block_factory is not None:
             dataset.char_block_factory = char_block_factory
-        dataset = self.get_dataset(file=file, dataset=dataset)
+        dataset = self.read_dataset(file=file, dataset=dataset)
         return dataset.char_blocks
 
-    def get_taxa(self, file=None, taxa_block_factory=None):
+    def read_taxa(self, file=None, taxa_block_factory=None):
         """
-        Instantiates and returns a list of TaxaBlock objects from a
-        filepath, a file descriptor or direct text source
-        respectively.
+        Instantiates and returns a list of TaxaBlock objects from a 
+        file (descriptor).
         """
         dataset = Dataset()        
         if taxa_block_factory is not None:
             dataset.taxa_block_factory = taxa_block_factory
-        dataset = self.get_dataset(file=file, dataset=dataset)
+        dataset = self.read_dataset(file=file, dataset=dataset)
         return dataset.taxa_blocks
 
-    def get_trees(self, file=None, trees_block_factory=None, tree_factory=None):
+    def read_trees(self, file=None, trees_block_factory=None, tree_factory=None):
         """
-        Instantiates and returns a list of Tree objects from a
-        filepath, a file descriptor or direct text source
-        respectively.
+        Instantiates and returns a list of TreeBlock objects from a 
+        file (descriptor).
         """
         dataset = Dataset()        
         if trees_block_factory is not None:
             dataset.trees_block_factory = trees_block_factory
         if tree_factory is not None:
             dataset.tree_factory = tree_factory
-        dataset = self.get_dataset(file=file, dataset=dataset)
+        dataset = self.read_dataset(file=file, dataset=dataset)
         return dataset.trees_blocks
 
 class Writer(object):
@@ -256,17 +254,17 @@ class Writer(object):
     object in various formats, to be implemented by derived classes.
     """
 
-    def store_dataset(self, dataset, destination, filemode='w'):
+    def store_dataset(self, dataset, file, filemode='w'):
         """
         Writes a DataSet object to the specified destination as a
         formatted fully-formed document (e.g., an entire file or a
         NEXML nexml element).
         """
-        if isinstance(destination, str):
-            filepath = os.path.expandvars(os.path.expanduser(destination))
-            destf = open(filepath, filemode)
+        if isinstance(file, str):
+            filepath = os.path.expandvars(os.path.expanduser(file))
+            destf = open(file, filemode)
         else:
-            destf = destination
+            destf = file
         self.write_dataset(dataset, destf)
 
     def compose_dataset(self, dataset):

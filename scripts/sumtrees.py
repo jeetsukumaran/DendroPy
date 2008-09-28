@@ -373,7 +373,7 @@ def main_cli():
     tt_trees = []
     if target_tree_filepath is not None:
         messenger.send("### MAPPING SUPPORT TO TARGET TREE(S) ###\n")         
-        tt_dataset = dataio.get_dataset(target_tree_filepath)        
+        tt_dataset = dataio.read_dataset(target_tree_filepath)        
         for tree_block in tt_dataset.trees_blocks:
             for tree in tree_block:
                 tsum.map_split_support_to_tree(tree, split_distribution)

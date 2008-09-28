@@ -195,7 +195,7 @@ def read_nexus_tree(tree_filepath):
     _LOG.info('Reading "%s"' % os.path.basename(tree_filepath))
     _LOG.debug(tstr)    
     reader = nexus.NexusReader()
-    dataset = reader.get_dataset(StringIO.StringIO(tstr))
+    dataset = reader.read_dataset(StringIO.StringIO(tstr))
     tree = dataset.trees_blocks[0][0]
     leaves = tree.leaves()
     _LOG.info("%d leaves on tree: %s" % (len(leaves), (", ".join([str(n.taxon) for n in leaves]))))
