@@ -87,12 +87,14 @@ def iterate_over_trees(filepath=None, fileobj=None, text=None):
     """
 
     taxa_block = taxa.TaxaBlock()
-    nexus_reader = nexus.NexusReader()
-    nexus_reader.stream_tokenizer.stream_handle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
-    token = nexus_reader.stream_tokenizer.read_next_token_ucase()
-    stream_tokenizer = nexus_reader.stream_tokenizer
+    
+    stream_handle = datasets.Reader.get_file_handle(filepath=filepath, fileobj=fileobj, text=text)
+    stream_tokenizer = nexus.NexusStreamTokenizer(stream_handle)
+    token = stream_tokenizer.read_next_token_ucase()
     if token == "#NEXUS":
         file_format = "NEXUS"
+        nexus_reader = nexus.NexusReader()
+        nexus_reader.stream_tokenizer = stream_tokenizer
         while not nexus_reader.stream_tokenizer.eof:
             token = nexus_reader.stream_tokenizer.read_next_token_ucase()
             while token != None and token != 'BEGIN' and not nexus_reader.stream_tokenizer.eof:
