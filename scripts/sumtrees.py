@@ -48,7 +48,7 @@ from dendropy import trees
 _program_name = 'SUMTREES'
 _program_subtitle = 'Phylogenetic Tree Split Support Summary'
 _program_date = 'Sept 21 2008'
-_program_version = 'Version 1.0.0 (%s)' % _program_date
+_program_version = 'Version 2.0.0 (%s)' % _program_date
 _program_author = 'Jeet Sukumaran'
 _program_contact = 'jeetsukumaran@gmail.com'
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
