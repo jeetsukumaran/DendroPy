@@ -150,7 +150,7 @@ def main_cli():
     target_tree_optgroup.add_option('--min-clade-freq', 
                       dest='min_clade_freq',
                       type='float', 
-                      default=0.5,
+                      default=0.95,
                       metavar='#.##',
                       help="minimum frequency or probability for a clade or a split to be included in the consensus tree, if used [default=%default]") 
     target_tree_optgroup.add_option('--no-branch-lengths',  
