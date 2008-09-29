@@ -50,8 +50,8 @@ class TreeGenTest(unittest.TestCase):
                                                  ages=ages,
                                                  num_genes=4,
                                                  pop_sizes=pop_sizes)
-        nxfpath = dendropy.tests.test_target_path('species_pop.xml')
-        nwfpath = dendropy.tests.test_target_path('species_pop.tre')
+        nxfpath = dendropy.tests.data_target_path('species_pop.xml')
+        nwfpath = dendropy.tests.data_target_path('species_pop.tre')
 
         ages2 = []
         for node in species_tree.postorder_node_iter():
