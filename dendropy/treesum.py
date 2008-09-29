@@ -197,7 +197,7 @@ class TreeSummarizer(object):
             
         return con_tree                
                                                 
-    def count_splits(self, tree_files, split_distribution=None):
+    def count_splits(self, tree_files, tree_iterator, split_distribution=None):
         """
         Given a list of trees file, a SplitsDistribution object (a new one, or,
         if passed as an argument) is returned collating the split data in the files.
@@ -214,7 +214,7 @@ class TreeSummarizer(object):
             else:
                 tree_file_obj = tree_file             
             current_file_note = "Tree file %d of %d: " % (tree_file_idx+1, total_tree_files)
-            for tree_idx, tree in enumerate(dataio.tree_iter(fileobj=tree_file_obj)):
+            for tree_idx, tree in enumerate(tree_iterator(src=open(tree_file, "r"))):
                 self.total_trees_read += 1
                 file_trees_read += 1
                 if not self.burnin or file_trees_read > self.burnin:

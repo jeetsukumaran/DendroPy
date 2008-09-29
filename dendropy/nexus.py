@@ -206,9 +206,23 @@ def parse_newick_node_stream(stream_tokenizer, tree):
     return node     
     
 ############################################################################
+## A universal nex-ish reader
+
+def get_dataset(src, dataset=None):
+    stream_tokenizer = NexusStreamTokenizer(src)
+    token = stream_tokenizer.read_next_token_ucase()
+    if token == "#NEXUS":
+        nexus_reader = NexusReader()
+        return nexus_reader.read_dataset(self, src=src, dataset=dataset)
+    else:
+        # assume NEWIC
+        newick_reader = NewickReader()
+        return newick_reader.read_dataset(self, src=src, dataset=dataset)
+        
+############################################################################
 ## Tree iterator
       
-def iterate_over_trees(file=None):
+def iterate_over_trees(src=None):
     """
     Generator to iterate over trees in data file.
     Primary goal is to be memory efficient, storing no more than one tree
@@ -216,7 +230,7 @@ def iterate_over_trees(file=None):
     """
 
     taxa_block = taxa.TaxaBlock()
-    stream_tokenizer = NexusStreamTokenizer(file)
+    stream_tokenizer = NexusStreamTokenizer(src)
     token = stream_tokenizer.read_next_token_ucase()
     if token == "#NEXUS":
         file_format = "NEXUS"

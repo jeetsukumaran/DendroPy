@@ -207,11 +207,16 @@ def main_cli():
                       dest='additional_comments',
                       default=None,
                       help="additional comments to be added to the summary file")                                              
+    output_filepath_optgroup.add_option('--newick', 
+                      action='store_true', 
+                      dest='phylip_format',
+                      default=False,
+                      help="save results in NEWICK (PHYLIP) format (default is to save in NEXUS format)")         
     output_filepath_optgroup.add_option('--phylip', 
                       action='store_true', 
                       dest='phylip_format',
                       default=False,
-                      help="save results in phylip format (default is to save in NEXUS format)")         
+                      help="same as --newick")
     output_filepath_optgroup.add_option('-r', '--replace', 
                       action='store_true', 
                       dest='replace',
@@ -340,7 +345,8 @@ def main_cli():
         tsum.progress_message_suffix = "\n"
 
     messenger.send("### COUNTING SPLITS ###\n")                
-    split_distribution = tsum.count_splits(tree_files=support_filepaths) 
+    split_distribution = tsum.count_splits(tree_files=support_filepaths, 
+                                           tree_iterator=nexus.iterate_over_trees) 
         
     report = []
     report.append("%d trees read from %d files." % (tsum.total_trees_read, len(support_filepaths)))
@@ -373,7 +379,7 @@ def main_cli():
     tt_trees = []
     if target_tree_filepath is not None:
         messenger.send("### MAPPING SUPPORT TO TARGET TREE(S) ###\n")         
-        tt_dataset = dataio.read_dataset(target_tree_filepath)        
+        tt_dataset = nexus.get_dataset(target_tree_filepath)        
         for tree_block in tt_dataset.trees_blocks:
             for tree in tree_block:
                 tsum.map_split_support_to_tree(tree, split_distribution)
@@ -429,7 +435,8 @@ def main_cli():
     trees_block = output_dataset.add_trees_block(trees_block=trees_block)
         
     if opts.phylip_format:
-        dataio.to_newick_file(output_dataset, destination=output_dest)
+        newick_writer = nexus.NewickWriter()
+        newick_writer.write_dataset(output_dataset, output_dest)
     else:
         nexus_writer = nexus.NexusWriter()
         if opts.include_taxa_block:
@@ -453,8 +460,7 @@ def main_cli():
             nexus_writer.comment.append("\n")
             nexus_writer.comment.append(opts.additional_comments)
             
-
-        nexus_writer.store_dataset(output_dataset, destination=output_dest)
+        nexus_writer.write_dataset(output_dataset, output_dest)
 
     if not opts.output_filepath:
         #messenger.send('<<<<<<<<<')     
