@@ -234,7 +234,8 @@ class TreeIOTest(unittest.TestCase):
         Round-trips a treefile.
         """
         reader = reader_class()
-        dataset = reader.read_dataset(src=open(tree_filepath, "r"))
+        _LOG.info("\nDATA FILE: \"%s\"" % os.path.basename(tree_filepath))
+        dataset = reader.read_dataset(src=open(tree_filepath, "r"))      
         for tb_idx, trees_block in enumerate(dataset.trees_blocks):
             for t_idx, tree in enumerate(trees_block):
             
@@ -246,10 +247,9 @@ class TreeIOTest(unittest.TestCase):
                             os.path.basename(tree_filepath)
                             ))
                 
-                _LOG.debug("TREE:\n---\n%s\n---" 
+                _LOG.debug("\nORIGINAL TREE >>>\n%s\n<<< ORIGINAL TREE" 
                             % tree.compose_newick()
-                              )
-                
+                              )                
                 # write ...
                 _LOG.info("(writing out)")
                 temp_dataset = datasets.Dataset()
@@ -260,7 +260,7 @@ class TreeIOTest(unittest.TestCase):
                 result1 = StringIO.StringIO()
                 writer.write_dataset(temp_dataset, result1)
                 result1 = result1.getvalue()                               
-                _LOG.debug("---\n%s\n---" % result1)
+                _LOG.debug("\nWRITE OUT >>>\n%s\n<<< WRITE OUT" % result1)
 
                 # read back ...
                 _LOG.info("(reading back)")           
@@ -271,11 +271,17 @@ class TreeIOTest(unittest.TestCase):
                 result2 = StringIO.StringIO()
                 writer.write_dataset(temp_dataset, result2)
                 result2 = result2.getvalue()                
-                _LOG.debug("---\n%s\n---" % result2)                
-
+                _LOG.debug("\nREAD IN >>>\n%s\n<<< READ IN" % result2)      
+                
                 # compare ...
-                self.assertEqual(result1, result2, "Reparsed tree strings do not match:\n\n%s\n\n%s" % (result1, result2))
+                _LOG.debug("\nREPARSED TREE >>>\n%s\n<<< REPARSED TREE\n" 
+                            % tree.compose_newick()
+                              )                    
+                self.assertEqual(result1, result2, "Reparsed tree strings do not match:\n\n" \
+                                                       +"FIRST >>>\n%s\n<<< FIRST\n\nSECOND >>>\n%s\n<<< SECOND" % (result1, result2))
                 _LOG.info("(reparsed tree string match)")
+            
+                
 
 
     def test_tree_file_parse(self):

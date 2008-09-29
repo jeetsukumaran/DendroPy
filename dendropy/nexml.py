@@ -199,7 +199,7 @@ def iterate_over_trees(file=None):
     nexml_reader.parse_taxa_blocks(xml_doc, dataset)
     nx_tree_parser = _NexmlTreesParser()
     for trees_idx, trees_element in enumerate(xml_doc.getiterator('trees')):
-        for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, yield_tree=True):
+        for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, add_to_trees_block=False):
             yield tree
 
 class NexmlReader(datasets.Reader):
@@ -271,9 +271,10 @@ class NexmlReader(datasets.Reader):
         representations of a set of NEXML treeblocks (`nex:trees`) and
         returns a TreesBlocks object corresponding to the NEXML.
         """
-        nxt = _NexmlTreesParser(self.trees_block_factory, self.tree_factory, self.node_factory, self.edge_factory)
+        nx_tree_parser = _NexmlTreesParser(self.trees_block_factory, self.tree_factory, self.node_factory, self.edge_factory)
         for trees_idx, trees_element in enumerate(xml_doc.getiterator('trees')):
-            nxt.parse_trees(trees_element, dataset, trees_idx)
+            for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, add_to_trees_block=True):
+                pass
 
 class _NexmlElementParser(object):
     """
@@ -377,17 +378,16 @@ class _NexmlTreesParser(_NexmlElementParser):
         else:
             self.edge_factory = edge_factory
 
-    def parse_trees(self, nxtrees, dataset, trees_idx=None, yield_tree=False):
+    def parse_trees(self, nxtrees, dataset, trees_idx=None, add_to_trees_block=True):
         """
         Given an XmlElement object representing a NEXML treeblock,
         self.nxtrees (corresponding to a `nex:trees` element), this
         will construct and return a TreesBlock object defined by the
-        underlying NEXML. If `yield_tree` is True, then each tree is yielded,
-        *AND NOT ADDED TO THE DATASET* and nothing is returned at the end.
+        underlying NEXML. If `add_to_trees_block` is False, then each tree,
+        *IS NOT ADDED TO THE DATASET*.
         """
         elem_id = nxtrees.get('id', "Trees" + str(trees_idx))
         label = nxtrees.get('label', None)
-        print label
         taxa_id = nxtrees.get('otus', None)
         if taxa_id is None:
             raise Exception("Taxa block not specified for trees block \"%s\"" % trees_block.elem_id)
@@ -415,13 +415,15 @@ class _NexmlTreesParser(_NexmlElementParser):
                 # this check if tail node id is specified
                 if edge.tail_node_id and edge.tail_node_id not in nodes:
                     msg = 'Edge "%s" specifies a non-defined ' \
-                          'source node ("%s")' % (edge.elem_id,
-                                                  edge.tail_node_id)
+                          'source node ("%s")\nCurrent nodes: %s' % (edge.elem_id,
+                                                                     edge.tail_node_id,
+                                                                     (','.join([n for n in nodes])))
                     raise Exception(msg)
                 if edge.head_node_id not in nodes:
                     msg = 'Edge "%s" specifies a non-defined ' \
-                          'target node ("%s")' % (edge.elem_id,
-                                                  edge.head_node_id)
+                          'target node ("%s")\nCurrent nodes: %s' % (edge.elem_id,
+                                                                     edge.head_node_id,
+                                                                     (','.join([n.elem_id for n in nodes])))
                     raise Exception(msg)
 
                 if edge.head_node_id and edge.tail_node_id:
@@ -456,18 +458,18 @@ class _NexmlTreesParser(_NexmlElementParser):
             if rootedge:
                 if rootedge.head_node_id not in nodes:
                     msg = 'Edge "%s" specifies a non-defined ' \
-                          'target node ("%s")' % (edge.elem_id,
-                                                  edge.head_node_id)
+                          'target node ("%s")\nCurrent nodes: %s' % (edge.elem_id,
+                                                                     edge.head_node_id,
+                                                                     (','.join([n.elem_id for n in nodes])))
                     raise Exception(msg)
                 else:
                     nodes[rootedge.head_node_id].edge = rootedge
                     ### should we make this node the seed node by rerooting the tree here? ###
             else:
                 treeobj.seed_node.edge = None
-            if yield_tree:
-                yield treeobj
-            else:
-                trees_block.append(treeobj)
+            if add_to_trees_block:
+               trees_block.append(treeobj)
+            yield treeobj
 
     def parse_nodes(self, tree_element, taxa_block, node_factory):
         """
