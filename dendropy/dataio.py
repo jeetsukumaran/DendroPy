@@ -23,56 +23,84 @@
 ############################################################################
 
 """
-Data i/o.
+Convenience packaging around readers/writers.
 """
 
 import sys
 import StringIO
 
-import dendropy
-from dendropy import datasets
-from dendropy import trees
-from dendropy import taxa
-from dendropy import nexml
-from dendropy import nexus
-from dendropy import phylip
-from dendropy import fasta
+from dendropy.datasets import Dataset
+from dendropy.trees import TreesBlock
 
-## file formats ##
-NEXUS       = 100
-NEWICK      = 200
-NEXML       = 300
-PHYLIP      = 400
-FASTA       = 600
-
-def get_dataset(reader, file=None, string=None):
+def source_file_handle(file=None, string=None):
     """
-    Convenience wrapper around reader.   
+    Construct an appropriate file handle (i.e. something that supports read()
+    operations) based on the given arguments.
     """
     if file is None and string is None:
         raise Exception("File or string source must be specified.")            
     if isinstance(file, str):
         file = open(file, "r")
-    elif string is not None:
-        file = StringIO.StringIO(string)        
-    return reader.read_dataset(file)
-    
-def dataset_from_nexml(file=None, string=None):
-    """
-    Reads a nexml file and returns a corresponding Dataset object.
-    """
-    get_dataset(reader=nexml.NexmlReader(), file=file, string=string)
+    return file        
 
-def dataset_from_newick(file=None, string=None):
+def read_dataset(reader, file=None, string=None):
     """
-    Reads a nexml file and returns a corresponding Dataset object.
+    Returns a Dataset object parsed from the source, where:
+        `reader`-  object derived from or otherwise implementing the 
+                   DatasetReader interface that is able to parse the 
+                   source (either `file` or `string`).
+        `file`   - can either be a file descriptor object/handle opened 
+                   for reading or a string indicating a filepath that 
+                   can be opened for reading using open().
+        `string` - a string containing the data to be parsed.
+    Either `file` or `string` must be given. If both are given, `file` is used.                
     """
-    get_dataset(reader=nexus.NewickReader(), file=file, string=string)
+    return reader.read_dataset(source_file_handle(file=file, string=string))
+    
+def read_trees(reader, file=None, string=None):
+    """
+    Returns a *list* of TreesBlock objects parsed from the source, where:
+        `reader`-  object derived from or otherwise implementing the 
+                   DatasetReader interface that is able to parse the 
+                   source (either `file` or `string`).
+        `file`   - can either be a file descriptor object/handle opened 
+                   for reading or a string indicating a filepath that 
+                   can be opened for reading using open().
+        `string` - a string containing the data to be parsed.
+    Either `file` or `string` must be given. If both are given, `file` is used.                
+    """
+    return reader.read_trees(source_file_handle(file=file, string=string))
 
-def dataset_from_nexus(file=None, string=None):
+def write_dataset(dataset, writer, dest=None):
     """
-    Reads a nexml file and returns a corresponding Dataset object.
+    Writes the Dataset object `dataset` using `writer` (a DatasetWriter or 
+    derived object) to `dest`. If `dest` is a string, then it is assumed to be
+    a path name, and open() is used to construct an output stream handle from it.
+    If `dest` is not given, then the dataset is written to a string and a string 
+    is returned.
     """
-    get_dataset(reader=nexus.NexusReader(), file=file, string=string)    
-    
-    
+    if dest is None:
+        dest = StringIO.StringIO()
+    if isinstance(dest, str):
+        dest = open(dest, "w")
+    writer.write_dataset(dataset, dest)
+    if hasattr(dest, "getvalue"):
+        return dest.getvalue()
+
+def write_trees(trees, writer, dest=None):
+    """
+    Writes the list of trees `trees` to `dest` using writer.
+    """
+    if isinstance(trees, trees_block):
+        trees_block = trees
+    else:
+        trees_block = TreesBlock()
+        for tree in trees:
+            trees_block.append(trees)
+        trees_block.normalize_taxa()
+    dataset = Dataset()
+    dataset.add_trees_block(trees_block=trees_block)
+    write_dataset(dataset=dataset,
+                  writer=writer,
+                  dest=dest)
+        

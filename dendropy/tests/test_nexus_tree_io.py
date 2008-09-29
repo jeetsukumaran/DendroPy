@@ -180,7 +180,7 @@ def write_newick_tree(tree, tree_filepath):
     """
     Wrapper to write a single tree to a NEWICK file.
     """
-    nw = nexus.NewickTreeWriter()    
+    nw = nexus.NewickWriter()    
     f = open(tree_filepath, 'w')
     tstr = nw.compose_tree(tree)
     _LOG.info('\nWriting "%s"' % os.path.basename(tree_filepath))
@@ -211,7 +211,7 @@ def write_nexus_tree(tree, tree_filepath):
     tree_block.append(tree)
     nw = nexus.NexusWriter()    
     _LOG.info('\nWriting "%s"' % os.path.basename(tree_filepath))
-    nw.store_dataset(d, tree_filepath)
+    nw.write_dataset(d, open(tree_filepath, 'w'))
     
 class TreeIOTest(unittest.TestCase):
 

@@ -497,13 +497,13 @@ class NexusReader(datasets.Reader):
         self.match_char = '.'
         self.tree_translate_dict = {}
 
-    def read_dataset(self, file, dataset=None):
+    def read_dataset(self, src, dataset=None):
         """
         Instantiates and returns a DataSet object based on the
         NEXUS-formatted contents read from the file descriptor object
         `file`.
         """
-        self.stream_tokenizer.stream_handle = file
+        self.stream_tokenizer.stream_handle = src
         return self.parse_nexus_file(dataset)
 
     ## Class-specific ##
@@ -856,7 +856,7 @@ class NexusWriter(datasets.Writer):
 
     def write_trees_block(self, trees_block, dest):
         block = []
-        newick_writer = NewickTreeWriter()
+        newick_writer = NewickWriter()
         block.append('BEGIN TREES;')
         for treeidx, tree in enumerate(trees_block):
             if tree.label:
@@ -921,9 +921,9 @@ class NexusWriter(datasets.Writer):
         dest.write('\n'.join(nexus))
                 
 ############################################################################
-## CLASS: NewickTreeReader        
+## CLASS: NewickReader        
         
-class NewickTreeReader(datasets.Reader):
+class NewickReader(datasets.Reader):
     """
     Implementation of TreeReader for NEWICK files and strings.
     """
@@ -936,7 +936,7 @@ class NewickTreeReader(datasets.Reader):
         """
         datasets.Reader.__init__(self)
         
-    def read_dataset(self, file, dataset=None):
+    def read_dataset(self, src, dataset=None):
         """
         Instantiates and returns a DataSet object based on the
         NEWICK-formatted contents read from the file descriptor object
@@ -944,7 +944,7 @@ class NewickTreeReader(datasets.Reader):
         """
         if dataset is None:
             dataset = datasets.Dataset()
-        trees_block = self.read_trees(file)            
+        trees_block = self.read_trees(src)            
         dataset.add_trees_block(trees_block)
 
     def read_trees(self, file=None, trees_block=None, taxa_block=None):
@@ -966,9 +966,9 @@ class NewickTreeReader(datasets.Reader):
         return trees_block
 
 ############################################################################
-## CLASS: NewickTreeWriter
+## CLASS: NewickWriter
 
-class NewickTreeWriter(datasets.Writer):
+class NewickWriter(datasets.Writer):
     """
     Handles representation and serialization of a DendroPy Tree object
     in NEWICK format.
@@ -995,9 +995,7 @@ class NewickTreeWriter(datasets.Writer):
         for trees_block in dataset.trees_blocks:
             for tree in trees_block:
                 dest.write(self.compose_node(tree.seed_node) + ';\n')                                
-
-    ### Derived-class specific methods ###
-    
+                
     def compose_taxlabel(self, label):
         if re.search('[' + NexusStreamTokenizer.whitespace + NexusStreamTokenizer.punctuation + ']', label) != None:
             return "'" + label + "'"

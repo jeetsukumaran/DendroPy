@@ -218,7 +218,7 @@ class NexmlReader(datasets.Reader):
 
     ## Implementation of the datasets.Reader interface ##
 
-    def read_dataset(self, file, dataset=None):
+    def read_dataset(self, src, dataset=None):
         """
         Instantiates and returns a DataSet object based on the
         NEXML-formatted contents read from the file descriptor object
@@ -226,7 +226,7 @@ class NexmlReader(datasets.Reader):
         used to instantiate objects.
         """
         start = time.clock()
-        xml_doc = xmlparser.xml_document(file=file)
+        xml_doc = xmlparser.xml_document(file=src)
         self.load_time = time.clock() - start
         start = time.clock()
         dataset = self.parse_dataset(xml_doc, dataset)

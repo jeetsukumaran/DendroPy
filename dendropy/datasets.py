@@ -205,15 +205,15 @@ class Reader(object):
         self.edge_factory = trees.Edge
         self.node_factory = trees.Node
         
-    def read_dataset(self, file, dataset=None):
+    def read_dataset(self, src, dataset=None):
         """
         Implementing classes should instantiate and return a Dataset
         object based on contents read from the file descriptor object
-        `file`.
+        `src`.
         """
         raise NotImplementedError        
 
-    def read_characters(self, file=None, char_block_factory=None):
+    def read_characters(self, src, char_block_factory=None):
         """
         Instantiates and returns a list of CharacterBlock objects from a 
         file (descriptor).
@@ -224,7 +224,7 @@ class Reader(object):
         dataset = self.read_dataset(file=file, dataset=dataset)
         return dataset.char_blocks
 
-    def read_taxa(self, file=None, taxa_block_factory=None):
+    def read_taxa(self, src, taxa_block_factory=None):
         """
         Instantiates and returns a list of TaxaBlock objects from a 
         file (descriptor).
@@ -235,7 +235,7 @@ class Reader(object):
         dataset = self.read_dataset(file=file, dataset=dataset)
         return dataset.taxa_blocks
 
-    def read_trees(self, file=None, trees_block_factory=None, tree_factory=None):
+    def read_trees(self, src, trees_block_factory=None, tree_factory=None):
         """
         Instantiates and returns a list of TreeBlock objects from a 
         file (descriptor).
@@ -254,18 +254,13 @@ class Writer(object):
     object in various formats, to be implemented by derived classes.
     """
 
-    def store_dataset(self, dataset, file, filemode='w'):
+    def write_dataset(self, dataset, dest):
         """
-        Writes a DataSet object to the specified destination as a
-        formatted fully-formed document (e.g., an entire file or a
-        NEXML nexml element).
+        Writes a Dataset object to a full document-level
+        representation of the format being implemented by the deriving
+        class. `dest` is an output stream that support 'write'.
         """
-        if isinstance(file, str):
-            filepath = os.path.expandvars(os.path.expanduser(file))
-            destf = open(file, filemode)
-        else:
-            destf = file
-        self.write_dataset(dataset, destf)
+        raise NotImplementedError
 
     def compose_dataset(self, dataset):
         """
@@ -273,15 +268,8 @@ class Writer(object):
         and formatted dataset document.
         """
         dataset_text = StringIO.StringIO()
-        self.store_dataset(dataset, dataset_text)
+        self.write_dataset(dataset, dataset_text)
         return dataset_text.getvalue()
-        
-    ### Following methods must be implemented by deriving classes  ###
 
-    def write_dataset(self, dataset, dest):
-        """
-        Writes a DataSet object to a full document-level
-        representation of the format being implemented by the deriving
-        class. `dest` is an output stream that support 'write'.
-        """
-        raise NotImplementedError
+
+
