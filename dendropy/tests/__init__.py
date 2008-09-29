@@ -30,6 +30,7 @@ import unittest
 import os
 
 from dendropy import get_logger
+from dendropy.utils import find_files
 
           
 # pylint: disable-msg=C0111,W0401,W0611
@@ -38,12 +39,30 @@ def get_test_messenger(name):
     logger = get_logger(name)
     return _LOG.info
     
-def test_data_path(filename=None):
+def data_source_path(filename=None):
     if filename is None:
         filename = ""
     return os.path.join(os.path.join(os.path.dirname(__file__),'data'), filename)
     
-def test_target_path(filename=None):
+def data_source_trees(format="*", heavy=False):
+    if heavy:
+        path = data_source_path(heavy)
+    else:
+        path = data_source_path()
+    filename_filter = "*.trees." + format
+    files = utils.find_files(top=path,
+                                recursive=False,
+                                filename_filter=filename_filter,
+                                dirname_filter=None,
+                                excludes=None,
+                                complement=False,
+                                respect_case=False,
+                                expand_vars=True,
+                                include_hidden=False)
+    return files                                
+    
+    
+def data_target_path(filename=None):
     if filename is None:
         filename = ""
     return os.path.join(os.path.join(os.path.dirname(__file__),'output'), filename)

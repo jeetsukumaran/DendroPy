@@ -503,6 +503,8 @@ class NexusReader(datasets.Reader):
         NEXUS-formatted contents read from the file descriptor object
         `file`.
         """
+        #self.reset()
+        self.stream_tokenizer = NexusStreamTokenizer()
         self.stream_tokenizer.stream_handle = src
         return self.parse_nexus_file(dataset)
 
@@ -590,7 +592,8 @@ class NexusReader(datasets.Reader):
         Returns an exception object parameterized with line and
         column number values.
         """
-        return NexusStreamTokenizer.SyntaxException(self.current_line_number, self.current_col_number, message)
+        return NexusStreamTokenizer.SyntaxException(self.stream_tokenizer.current_line_number, 
+                                                    self.stream_tokenizer.current_col_number, message)
 
     def parse_format_statement(self):
         """
@@ -945,7 +948,8 @@ class NewickReader(datasets.Reader):
         if dataset is None:
             dataset = datasets.Dataset()
         trees_block = self.read_trees(src)            
-        dataset.add_trees_block(trees_block)
+        dataset.add_trees_block(trees_block=trees_block)
+        return dataset
 
     def read_trees(self, file=None, trees_block=None, taxa_block=None):
         """
@@ -957,7 +961,7 @@ class NewickReader(datasets.Reader):
             trees_block = trees.TreesBlock()                    
         if taxa_block is None:
             taxa_block = taxa.TaxaBlock()
-            trees_block.taxa_block = taxa_block
+        trees_block.taxa_block = taxa_block
         stream_tokenizer = NexusStreamTokenizer(file)
         tree = parse_newick_tree_stream(stream_tokenizer, taxa_block=taxa_block)
         while tree is not None:

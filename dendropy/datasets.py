@@ -221,7 +221,7 @@ class Reader(object):
         dataset = Dataset()        
         if char_block_factory is not None:
             dataset.char_block_factory = char_block_factory
-        dataset = self.read_dataset(file=file, dataset=dataset)
+        dataset = self.read_dataset(src=src, dataset=dataset)
         return dataset.char_blocks
 
     def read_taxa(self, src, taxa_block_factory=None):
@@ -245,7 +245,7 @@ class Reader(object):
             dataset.trees_block_factory = trees_block_factory
         if tree_factory is not None:
             dataset.tree_factory = tree_factory
-        dataset = self.read_dataset(file=file, dataset=dataset)
+        dataset = self.read_dataset(src=src, dataset=dataset)
         return dataset.trees_blocks
 
 class Writer(object):
