@@ -38,6 +38,7 @@ except:
     pass
 import platform    
     
+import dendropy    
 from dendropy import dataio
 from dendropy import nexus
 from dendropy import splits
@@ -45,10 +46,10 @@ from dendropy import treesum
 from dendropy import datasets
 from dendropy import trees
 
-_program_name = 'SUMTREES'
-_program_subtitle = 'Phylogenetic Tree Split Support Summary'
+_program_name = 'SumTrees'
+_program_subtitle = 'Phylogenetic Tree Split Support Summarization'
 _program_date = 'Sept 21 2008'
-_program_version = 'Version 2.0.0 (%s)' % _program_date
+_program_version = 'Version 1.0.0 (%s)' % _program_date
 _program_author = 'Jeet Sukumaran'
 _program_contact = 'jeetsukumaran@gmail.com'
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
@@ -78,10 +79,10 @@ def check_support_files(filepaths, messenger):
         
 def show_splash(dest=sys.stderr, extended=False):
     lines = []
-    lines.append("%s" % _program_name)
-    lines.append("%s" % _program_subtitle)
+    lines.append("%s - %s" % (_program_name, _program_subtitle))
     lines.append("%s" % _program_version)
     lines.append("By %s" % _program_author)
+    lines.append("(using the DendroPy Phylogenetic Computation Library Version %s)" % (dendropy.PACKAGE_VERSION))
     if extended:
         lines.append('')
         lines.extend(_program_copyright.split('\n'))
@@ -147,7 +148,7 @@ def main_cli():
                        + "if not given, then a majority-rule clade consensus tree will be constructed based on the "
                        + "all the trees given in the support tree files (except for those discarded as burn-ins), "
                        + "and this will be used as the target tree")  
-    target_tree_optgroup.add_option('--min-clade-freq', 
+    target_tree_optgroup.add_option('-f', '--min-clade-freq', 
                       dest='min_clade_freq',
                       type='float', 
                       default=0.95,
@@ -173,11 +174,11 @@ def main_cli():
                       dest='support_as_labels',
                       default=True,
                       help="indicate branch support as branch lengths (otherwise support will be indicated by internal node labels)")   
-    output_tree_optgroup.add_option('-p', '--proportions',  
+    output_tree_optgroup.add_option('-p', '--percentages',  
                       action='store_false', 
                       dest='support_as_percentages',
                       default=True,
-                      help="indicate branch support as proportional frequencies (otherwise, will report as percentages by default)")     
+                      help="indicate branch support as percentages (otherwise, will report as proportions by default)")     
     output_tree_optgroup.add_option('-d', '--decimals', 
                       dest='support_label_decimals',
                       type='int', 
