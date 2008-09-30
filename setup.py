@@ -25,7 +25,8 @@
 """
 Package setup and installation.
 """
-
+import ez_setup
+ez_setup.use_setuptools()
 from setuptools import setup, find_packages
 import sys, os
 
@@ -44,7 +45,7 @@ A library for Python-based phylogenetic computation.""",
       packages=['dendropy'],
       package_dir={'dendropy': 'dendropy'},
       package_data={
-        "dendropy" : ["tests/sources/*"]
+        "dendropy" : ["tests/data/*"]
       },
       scripts=['scripts/sumtrees.py'],   
       test_suite = "dendropy.tests",
