@@ -6,3 +6,4 @@ DendroPy.egg-info*
 dendropy/tests/output/
 build/*
 dist/*
+setuptools-*.egg
