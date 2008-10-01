@@ -17,7 +17,7 @@ SumTrees is distributed and installed as part of the `DendroPy
 How to Install the Program
 ==========================
 
-1.  Download the latest version of DendropPy from `here <http://sourceforge.net/project/platformdownload.php?group_id=240391>`_.
+1.  Download the latest version of DendropPy from `here <http://sourceforge.net/project/showfiles.php?group_id=240391>`_.
 
 #.  Expand the downloaded archive
 
