@@ -212,7 +212,7 @@ SumTrees and DendroPy is flat-out broken under Python 3.0.
 
 All this can be summarized as the follows:
 
-.. warning::
+.. important::
 
     "Then, shalt thou count to **2.5**. 
     
@@ -310,6 +310,53 @@ Installation would involve unarchiving the download, entering the directory and 
     
 After this, DendroPy and SumTrees should work fine.
 More information on ElemenTrees can be found `on the ElementTreesproject website <http://effbot.org/zone/element.htm>`_.
+
+My Computer Says, ``urllib2.HTTPError: HTTP Error 404: Not Found``
+------------------------------------------------------------------
+
+If, when trying to install DendroPy, the following error occurs::
+
+    Downloading http://pypi.python.org/packages/2.6/s/setuptools/setuptools-0.6c9-py2.6.egg
+    Traceback (most recent call last):
+      File "setup.py", line 29, in <module>
+        ez_setup.use_setuptools()
+      File "/Users/jeet/Scratch/dendropy/ez_setup.py", line 94, in use_setuptools
+        return do_download()       
+      File "/Users/jeet/Scratch/dendropy/ez_setup.py", line 88, in do_download
+        egg = download_setuptools(version, download_base, to_dir, download_delay)
+      File "/Users/jeet/Scratch/dendropy/ez_setup.py", line 149, in download_setuptools
+        src = urllib2.urlopen(url)
+      File "/opt/python-2.6rc2/lib/python2.6/urllib2.py", line 124, in urlopen
+        return _opener.open(url, data, timeout)
+      File "/opt/python-2.6rc2/lib/python2.6/urllib2.py", line 389, in open
+        response = meth(req, response)
+      File "/opt/python-2.6rc2/lib/python2.6/urllib2.py", line 502, in http_response
+        'http', request, response, code, msg, hdrs)
+      File "/opt/python-2.6rc2/lib/python2.6/urllib2.py", line 427, in error
+        return self._call_chain(*args)
+      File "/opt/python-2.6rc2/lib/python2.6/urllib2.py", line 361, in _call_chain
+        result = func(*args)
+      File "/opt/python-2.6rc2/lib/python2.6/urllib2.py", line 510, in http_error_default
+        raise HTTPError(req.get_full_url(), code, msg, hdrs, fp)
+    urllib2.HTTPError: HTTP Error 404: Not Found
+
+this is because the Python installation "egg" for your version of Python (probably cutting-edge 2.6) could not be found on the web.
+Your options are, at this point:
+
+    * Find or install, and use, `Python 2.5 <http://www.python.org/download/releases/2.5.2>`.
+    * Download, build, and install `setuptools <http://peak.telecommunity.com/DevCenter/setuptools>`_  using your version of Python and try again.
+    * Try manually installing DendroPy (see below).    
+    * Wait for the folks `setuptools <http://peak.telecommunity.com/DevCenter/setuptools>`_ to release a version that works with your version of Python   
+
+Manual Installation
+===================
+
+The DendroPy library is actually quite straightforward to install manually, especially if you have any familiarity with Python and how Python files are organized.
+There are a couple of different things you could do:
+
+    * Add the current location of the ``dendropy`` subdirectory to your Python path environmental variable, ``$PYTHONPATH``, and place the file ``scripts\sumtrees.py`` on your system path. 
+    
+    * Copy (or symlink) the ``dendropy`` directory to the ``site-packages`` directory of your Python installation, and place the file ``scripts\sumtrees.py`` on your system path. 
 
 
 Bugs, Suggestions, Comments, etc.
