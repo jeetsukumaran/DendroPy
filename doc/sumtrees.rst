@@ -17,7 +17,7 @@ SumTrees is distributed and installed as part of the `DendroPy
 How to Install the Program
 ==========================
 
-1.  Download the latest version of DendropPy from `here <http://sourceforge.net/project/platformdownload.php?group_id=240391>`_.
+1.  Download the latest version of DendroPy from `here <http://sourceforge.net/project/platformdownload.php?group_id=240391>`_.
 
     If for some reason the previous link does not work, you could simply go to `DendroPy <http://sourceforge.net/projects/dendropy/>`_ site and from there navigate to the correct download page.
 
@@ -64,12 +64,28 @@ SumTrees is typically invoked by providing it a list of one or more tree files t
 
     $ sumtrees.py [OPTIONS] <TREEFILE> [<TREEFILE> [<TREEFILE> ...]]]
 
-Common options include specification of a target topology onto which to map the support ("``-t``" or "``--trees``"), an output file ("``-o``" or "``--output``"), and a burn-in value ("``-b``" or "``--burnin``").
+Common options include specification of a target topology onto which to map the support ("``-t``" or "``--target``"), an output file ("``-o``" or "``--output``"), and a burn-in value ("``-b``" or "``--burnin``").
 
 Full help on program usage and options is given by using the "``--help``" option::
     
     $ sumtrees.py --help
+    
+    
+Quick Recipes
+=============
+                
+    Calculate support for nodes on a specific tree, "``best.tre``" as given by a set of tree files, with support reported as percentages rounded to integers, and saving the result to "``results.sumtree``" ::
+    
+        $ sumtrees.py --decimals=0 --percentages --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+        
+        $ sumtrees.py -d0 -p -t best.tre treefile1.tre treefile2.tre treefile3.tre
 
+    Summarize a set of tree files using a 95% rule consensus tree, with support indicated as proportions (posterior probabilities) and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, and saving the result to "``results.sumtree``"::
+    
+        $ sumtrees.py --min-clade-freq=0.7 --burn-in=200 --support-as-labels --output=results.sumtrees treefile1.tre treefile2.tre treefile3.tre
+        
+        $ sumtrees.py -f0.7 -b200 -l -o results.sumtrees treefile1.tre treefile2.tre treefile3.tre
+ 
 
 Tutorials and Examples
 ======================
