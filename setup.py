@@ -33,11 +33,10 @@ import sys, os
 version = '2.0.0'
 
 setup(name='DendroPy',
-      version=version,
+      version=version,     
       author='Jeet Sukumaran and Mark T. Holder',
       author_email='jeet@ku.edu and mtholder@ku.edu',
-      maintainer = "Jeet Sukumaran and Mark Holder", 
-      maintainer_email = "jeet@ku.edu mtholder@ku.edu",      
+      url='http://sourceforge.net/projects/dendropy/',
       description="""\
 A library for Python-based phylogenetic computation.""",
       url='',
@@ -45,6 +44,7 @@ A library for Python-based phylogenetic computation.""",
       packages=['dendropy'],
       package_dir={'dendropy': 'dendropy'},
       package_data={
+        "" : ['doc/*'],
         "dendropy" : ["tests/data/*"]
       },
       scripts=['scripts/sumtrees.py'],   

@@ -1,7 +1,3 @@
-##############################################################
-SumTrees: Summarization of Split Support on Phylogenetic Trees
-##############################################################
-
 Introduction
 ============
 
@@ -15,20 +11,14 @@ The support for the splits will be mapped onto one or more target trees either i
 The target trees can be supplied by yourself, or, if no target trees are given, then a majority-rule clade consensus tree will be constructed based on the samples given.
 In the latter case, you have the option of specifying the minimum posterior probability or proportional frequency threshold for a clade to be included on the consensus tree.
 
-How to Get the Program
-======================
-
-SumTrees is distributed and installed as part of the `DendropPy
+SumTrees is distributed and installed as part of the `DendroPy
 <http://sourceforge.net/projects/dendropy/>`_ phylogenetic computation library, which can be found on SourceForge: http://sourceforge.net/projects/dendropy/.
 
 How to Install the Program
 ==========================
 
-1.  Download `DendropPy <http://sourceforge.net/projects/dendropy/>`_
+1.  Download the latest version of DendropPy from `here <http://sourceforge.net/project/platformdownload.php?group_id=240391>`_.
 
-    The download page can be found under ``Downloads > Browse Packages``. 
-    Make sure to select the latest version.
-    
 #.  Expand the downloaded archive
 
     This step varies depending on the operating system and the particular programs that you have installed. 
@@ -196,10 +186,13 @@ Thus, assuming that our Mr. Bayes runs are is in the files ``phylo.nex.run1.t`` 
     
     $ sumtrees.py --target=phylo.beast.tree --output=phylo.mb-beast.sumtrees --burnin=200 phylo.nex.run1.t phylo2.nex.run2.t
     
-Troubleshooting
-===============
+Prerequisites
+=============    
 
-The biggest problem faced by most users is not having the correct version of Python installed. You can check which version of Python you have running by typing::
+DendroPy is a `Python <http://www.python.org/>`_ library.
+It requires and presupposes not only the existence of a Python installation on your system, but also that this Python installation is available on the system path.
+
+The biggest problem faced by most users is not so much not having Python installed, but not having the correct version of Python installed. You can check which version of Python you have running by typing::
 
     $ python -V
     
@@ -211,7 +204,9 @@ SumTrees will not work with versions of Python prior to 2.4, such as Python 2.3.
 It is not for me.
 
 The program and library per se also works fine under Python 2.6 as-is, but due to the current unavailability of `setuptools <http://peak.telecommunity.com/DevCenter/setuptools>`_ as an automated download for Python 2.6, the installation and setup of the library is broken.  
-For the time being if you happen to be working with Python 2.6 installation, you will have to manually install the packages by copying the various files to the appropriate directory (the subdirectory ``dendropy'' gets moved to your Python installation `site-packages``, while the script file ``sumtrees.py`` can be placed anywhere on you system path. 
+For the time being, if you happen to be working with Python 2.6 installation, you will have to manually install the packages by copying the various files to the appropriate directories on your system. 
+Basically, the subdirectory ``dendropy`` gets moved to your Python installation ``site-packages``, while the script file ``sumtrees.py`` can be placed anywhere on you system path. 
+If you know what you are doing, this should be fairly trivial to do.
 
 SumTrees and DendroPy is flat-out broken under Python 3.0.
 
@@ -221,7 +216,9 @@ All this can be summarized as the follows:
 
     "Then, shalt thou count to **2.5**. 
     
-    No more. No less. 
+    No more. 
+    
+    No less. 
     
     **2.5** shalt be the number thou shalt count, and the number of the counting shall be **2.5**. 
     
@@ -229,6 +226,8 @@ All this can be summarized as the follows:
     
     **3.0** is right out."
 
+Troubleshooting
+===============
 
 My Computer Does Not Know What a Python Is
 -------------------------------------------
@@ -247,7 +246,7 @@ For your convenience, the clicking on the following links should lead you direct
     * `Mac OS X <http://www.python.org/ftp/python/2.5.2/python-2.5.2-macosx.dmg>`_
     * `Microsoft Windows <http://www.python.org/ftp/python/2.5.2/python-2.5.2.msi>`_
 
-For other platforms, the usuall "``./configure``", "``make``", and "``sudo make install``" dance should get you up and running the following:
+For other platforms, the usual "``./configure``", "``make``", and "``sudo make install``" dance should get you up and running the following:
 
     * `Cross-platform Source <http://www.python.org/ftp/python/2.5.2/Python-2.5.2.tgz>`_
 
@@ -330,20 +329,20 @@ Sukumaran, J. 2008. *SumTrees: Summarization of Split Support on Phylogenetic Tr
 Copyright, License and Warranty
 ===============================
 
-    Copyright |copy| 2008 Jeet Sukumaran.
-      
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License as
-    published by the Free Software Foundation; either version 3 of the
-    License, or (at your option) any later version.
-   
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
-    the `GNU General
-    Public License <http://www.gnu.org/licenses/gpl.html>`_ for more details.
+Copyright |copy| 2008 Jeet Sukumaran.
   
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+the `GNU General
+Public License <http://www.gnu.org/licenses/gpl.html>`_ for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 .. include:: <isonum.txt>

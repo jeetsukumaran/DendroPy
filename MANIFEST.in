@@ -1,3 +1,4 @@
 recursive-include dendropy/tests/data/ *
+recursive-include doc/ *
 prune dendropy/tests/data/heavy*
 prune TODO
