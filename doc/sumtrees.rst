@@ -1,3 +1,7 @@
+##############################################################
+SumTrees: Summarization of Split Support on Phylogenetic Trees
+##############################################################
+
 Introduction
 ============
 
@@ -46,24 +50,6 @@ How to Install the Program
         $ cd DendroPy-2.0.0
         $ sudo python setup.py install
         
-    You *might* get an error message that an additional installation helper (``setuptools``) needs to be downloaded::
-
-        Traceback (most recent call last):
-          File "setup.py", line 29, in <module>
-            from setuptools import setup, find_packages
-        ImportError: No module named setuptools
-
-    If so, you need to download the setuptools installer from http://peak.telecommunity.com/dist/ez_setup.py and run it using ``sudo python ez_setup.py``::
-
-        $ curl -O http://peak.telecommunity.com/dist/ez_setup.py
-        $ sudo python ez_setup.py
-
-
-    This will automatically download and install setuptools for you.
-    After this you can repeat the previous step to actually install the DendroPy library::
-
-        $ sudo python setup.py install
-
     The library installation will automatically create an executable script called ``sumtrees.py`` and place it on your system path for you, so that you can call it from anywhere.
 
 #.  If the installation was successful, you should be able to type     ``sumtrees.py`` in the terminal window and see something like the following (with possibly a different date or version number)::
@@ -213,14 +199,118 @@ Thus, assuming that our Mr. Bayes runs are is in the files ``phylo.nex.run1.t`` 
 Troubleshooting
 ===============
 
-Python? What Python?
---------------------
+The biggest problem faced by most users is not having the correct version of Python installed. You can check which version of Python you have running by typing::
+
+    $ python -V
+    
+SumTrees, and the DendroPy library that it is part of, works out-of-the-box with Python 2.5 (and all subvariants: 2.5.0, 2.5.1, 2.5.2, etc.). 
+
+It can be made to work under Python 2.4, but requires the download and installation of one additional module (`ElementTrees <http://effbot.org/downloads/#elementtree>`_). 
+
+SumTrees will not work with versions of Python prior to 2.4, such as Python 2.3. It can probably be made to work pretty easily, and if you have strong enough motiviation to use Python 2.3, it might be worth the effort for you.
+It is not for me.
+
+The program and library per se also works fine under Python 2.6 as-is, but due to the current unavailability of `setuptools <http://peak.telecommunity.com/DevCenter/setuptools>`_ as an automated download for Python 2.6, the installation and setup of the library is broken.  
+For the time being if you happen to be working with Python 2.6 installation, you will have to manually install the packages by copying the various files to the appropriate directory (the subdirectory ``dendropy'' gets moved to your Python installation `site-packages``, while the script file ``sumtrees.py`` can be placed anywhere on you system path. 
+
+SumTrees and DendroPy is flat-out broken under Python 3.0.
+
+All this can be summarized as the follows:
+
+.. warning::
+
+    "Then, shalt thou count to **2.5**. 
+    
+    No more. No less. 
+    
+    **2.5** shalt be the number thou shalt count, and the number of the counting shall be **2.5**. 
+    
+    **2.6** shalt thou not count, nor either count thou **2.4**, excepting that thou then proceed to **2.5**. 
+    
+    **3.0** is right out."
+
+
+My Computer Does Not Know What a Python Is
+-------------------------------------------
 
 If you get a message like::
 
     python: command not found
     
 it is either because Python is not installed on your system, or is not found on the system path.
+
+SumTrees is a Python script, and, as such, you will need to have a Python interpreter installed on your system.
+
+Otherwise, you must download and install Python 2.5 from: http://www.python.org/download/releases/2.5.2/.
+For your convenience, the clicking on the following links should lead you directly to the appropriate pre-compiled download:
+
+    * `Mac OS X <http://www.python.org/ftp/python/2.5.2/python-2.5.2-macosx.dmg>`_
+    * `Microsoft Windows <http://www.python.org/ftp/python/2.5.2/python-2.5.2.msi>`_
+
+For other platforms, the usuall "``./configure``", "``make``", and "``sudo make install``" dance should get you up and running the following:
+
+    * `Cross-platform Source <http://www.python.org/ftp/python/2.5.2/Python-2.5.2.tgz>`_
+
+Microsoft Windows users should also refer to the `"Python Windows FAQ" <http://www.python.org/doc/faq/windows.html>`_
+(http://www.python.org/doc/faq/windows.html)
+after installing Python, and pay particular attention to the
+`"How do I run a Python program under Windows?" <http://www.python.org/doc/faq/windows.html#id2>`_ section, as it will
+help them greatly in getting Python up and running on the system path.
+
+
+My Computer Says, "``ImportError: No module named setuptools``"
+----------------------------------------------------------------
+
+When trying to install DendroPy using ``sudo python setup.py``, if you get the following error::
+
+        Traceback (most recent call last):
+          File "setup.py", line 29, in <module>
+            from setuptools import setup, find_packages
+        ImportError: No module named setuptools
+        
+then this means that the automated download and installation of the `setuptools <http://peak.telecommunity.com/DevCenter/setuptools>`_ package failed for some reason.        
+
+If so, you need to download the setuptools installer from http://peak.telecommunity.com/dist/ez_setup.py and run it using ``sudo python ez_setup.py``::
+
+    $ curl -O http://peak.telecommunity.com/dist/ez_setup.py
+    $ sudo python ez_setup.py
+
+This will automatically download and install setuptools for you.
+After this you can repeat the previous step to actually install the DendroPy library::
+
+    $ sudo python setup.py install
+
+My Computer Says, "``ImportError: ElementTrees package not available``"
+-----------------------------------------------------------------------
+
+When trying to run SumTrees, if you get the following error::
+
+    XML parsing requires the ElementTrees package (http://effbot.org/zone/element.htm) installed if using Python older than Version 2.5.0.
+    Traceback (most recent call last):
+      File "dendropy/tests/test_tree_io.py", line 51, in ?
+        from dendropy import nexml
+      File "/Users/jeet/Documents/Projects/Phyloinformatics/DendroPy/dendropy/dendropy/nexml.py", line 37, in ?
+        from dendropy import xmlparser
+      File "/Users/jeet/Documents/Projects/Phyloinformatics/DendroPy/dendropy/dendropy/xmlparser.py", line 40, in ?
+        raise ImportError("ElementTrees package not available")
+    ImportError: ElementTrees package not available
+
+it is probably because you are running an older version of Python (such as Python 2.4), and this version is missing the `ElementTrees module <http://effbot.org/downloads/#elementtree>`_ that SumTrees uses.
+If you go to http://effbot.org/downloads/#elementtree, you should be able to download and install this module.
+For your convenience, here are some direct download links:
+    
+    * `For Linux, UNIX, Mac OS X, and other such excellent operating systems <http://effbot.org/media/downloads/elementtree-1.2.6-20050316.zip>`_
+
+    * `For Microsoft Windows <http://effbot.org/media/downloads/elementtree-1.2.6-20050316.win32.exe>`_
+
+Installation would involve unarchiving the download, entering the directory and running ``sudo python setup.py``::
+
+    $ unzip elementtree-1.2.6-20050316.zip
+    $ cd elementtree-1.2.6-20050316
+    $ sudo python setup.py
+    
+After this, DendroPy and SumTrees should work fine.
+More information on ElemenTrees can be found `on the ElementTreesproject website <http://effbot.org/zone/element.htm>`_.
 
 
 Bugs, Suggestions, Comments, etc.
@@ -235,7 +325,7 @@ How to Cite this Program
 
 If you use this program in your analysis, please cite it as:
 
-Sukumaran, J. 2008. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.* Distributed with the DendroPy Phylogenetic Computation Library Version 2.0.0 (http://sourceforge.net/projects/dendropy).
+Sukumaran, J. 2008. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.* Distributed with the *DendroPy Phylogenetic Computation Library Version 2.0.0* (http://sourceforge.net/projects/dendropy).
 
 Copyright, License and Warranty
 ===============================
