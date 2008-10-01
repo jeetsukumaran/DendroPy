@@ -372,7 +372,7 @@ Manual Installation
 The DendroPy library is actually quite straightforward to install manually, especially if you have any familiarity with Python and how Python files are organized.
 There are a couple of different things you could do:
 
-    * Add the current location of the "``dendropy``" subdirectory to your Python path environmental variable, ``$PYTHONPATH``", and place the file "``scripts\sumtrees.py``" on your system path. 
+    * Add the current location of the "``dendropy``" subdirectory to your Python path environmental variable, "``$PYTHONPATH``", and place the file "``scripts\sumtrees.py``" on your system path. 
     
     * Copy (or symlink) the "``dendropy``" directory to the "``site-packages``" directory of your Python installation, and place the file "``scripts\sumtrees.py``" on your system path. 
 
