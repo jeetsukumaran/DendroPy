@@ -5,7 +5,7 @@ SumTrees is a program to summarize non-parameteric bootstrap or Bayesian posteri
 
 The basis of the support assessment is typically given by a set of non-parametric bootstrap replicate tree samples produced by programs such as GARLI or RAxML, or by a set of MCMC tree samples produced by programs such as Mr. Bayes or BEAST.
 The proportion of trees out of the samples in which a particular split is found is taken to be the degree of support for that split as indicated by the samples.
-The samples that are the basis of the support can be distributed across multiple files, and a ``burn-in`` option allows for an initial number of trees in each file to be excluded from the analysis if they are not considered to be drawn from the true support distribution.
+The samples that are the basis of the support can be distributed across multiple files, and a burn-in option allows for an initial number of trees in each file to be excluded from the analysis if they are not considered to be drawn from the true support distribution.
 
 The support for the splits will be mapped onto one or more target trees either in terms of node labels or branch lengths.
 The target trees can be supplied by yourself, or, if no target trees are given, then a majority-rule clade consensus tree will be constructed based on the samples given.
@@ -17,32 +17,34 @@ SumTrees is distributed and installed as part of the `DendroPy
 How to Install the Program
 ==========================
 
-1.  Download the latest version of DendropPy from `here <http://sourceforge.net/project/showfiles.php?group_id=240391>`_.
+1.  Download the latest version of DendropPy from `here <http://sourceforge.net/project/platformdownload.php?group_id=240391>`_.
+
+    If for some reason the previous link does not work, you could simply go to `DendroPy <http://sourceforge.net/projects/dendropy/>`_ site and from there navigate to the correct download page.
 
 #.  Expand the downloaded archive
 
     This step varies depending on the operating system and the particular programs that you have installed. 
     In most cases, simply double-clicking on the file that you have downloaded should kick off the process.
-    Otherwise, open a terminal shell window and go to the directory in which you have downloaded the archive, and type ``tar -xvzf DendroPy-2.0.0.tar.gz``.
+    Otherwise, open a terminal shell window and go to the directory in which you have downloaded the archive, and type "``tar -xvzf DendroPy-2.0.0.tar.gz``".
     For example, say you saved the downloaded file on your desktop.
     Then, opening up the terminal and entering the following commands will take you to your Desktop and expand the archive::
     
         $ cd ~/Desktop
         $ tar -xvf DendroPy-2.0.0.tar.gz
     
-    One way or another, you should end up with a directory called ``DendroPy-2.0.0`` or something similar, which contains the entire Dendropy package.
+    One way or another, you should end up with a directory called "``DendroPy-2.0.0``" or something similar, which contains the entire Dendropy package.
     
 #.  Install the library
 
-    In the terminal shell, go to the directory of the package that you have just archived and type ``sudo python setup.py install``.
+    In the terminal shell, go to the directory of the package that you have just archived and type "``sudo python setup.py install``".
     Continuing the example from above::
 
         $ cd DendroPy-2.0.0
         $ sudo python setup.py install
         
-    The library installation will automatically create an executable script called ``sumtrees.py`` and place it on your system path for you, so that you can call it from anywhere.
+    The library installation will automatically create an executable script called "``sumtrees.py``" and place it on your system path for you, so that you can call it from anywhere.
 
-#.  If the installation was successful, you should be able to type     ``sumtrees.py`` in the terminal window and see something like the following (with possibly a different date or version number)::
+#.  If the installation was successful, you should be able to type     "``sumtrees.py``" in the terminal window and see something like the following (with possibly a different date or version number)::
 
         ====================================================================
         SumTrees - Phylogenetic Tree Split Support Summarization
@@ -62,9 +64,9 @@ SumTrees is typically invoked by providing it a list of one or more tree files t
 
     $ sumtrees.py [OPTIONS] <TREEFILE> [<TREEFILE> [<TREEFILE> ...]]]
 
-Common options include specification of a target topology onto which to map the support (``-t`` or ``--trees``), an output file (``-o`` or ``--output``), and a burn-in value (``-b`` or ``--burnin``).
+Common options include specification of a target topology onto which to map the support ("``-t``" or "``--trees``"), an output file ("``-o``" or "``--output``"), and a burn-in value ("``-b``" or "``--burnin``").
 
-Full help on program usage and options is given by using the ``--help`` option::
+Full help on program usage and options is given by using the "``--help``" option::
     
     $ sumtrees.py --help
 
@@ -76,13 +78,13 @@ At its most basic, you will need to supply SumTrees with the path to one or more
     
     $ sumtrees.py phylo.tre
 
-The above command will construct a 95% majority-rule consensus tree of the all trees found in the file ``phylo.tre``, with the internal node labels of the resulting consensus tree indicating the proportion of trees in ``phylo.tre`` in which that clade was found, while the branch lengths of the resulting consensus tree being set to the mean of the branch lengths of that clade across all the trees in ``phylo.tre``.
+The above command will construct a 95% majority-rule consensus tree of the all trees found in the file "``phylo.tre``", with the internal node labels of the resulting consensus tree indicating the proportion of trees in "``phylo.tre``" in which that clade was found, while the branch lengths of the resulting consensus tree being set to the mean of the branch lengths of that clade across all the trees in "``phylo.tre``".
 
-If you have split searches across multiple runs (across, for example, multiple computers, so as to speed up the search time), such that you have multiple tree files (``phylo.run1.tre``, ``phylo.run2.tre``, ``phylo.run3.tre``, ...), you can instruct SumTrees to consider all these files together when summarizing the support by simply listing them one after another separated by spaces::
+If you have split searches across multiple runs (across, for example, multiple computers, so as to speed up the search time), such that you have multiple tree files ("``phylo.run1.tre``", "``phylo.run2.tre``", "``phylo.run3.tre``", ...), you can instruct SumTrees to consider all these files together when summarizing the support by simply listing them one after another separated by spaces::
     
     $ sumtrees.py phylo.run1.tre phylo.run2.tre phylo.run3.tre
 
-As before, the above command will construct a 95% majority-rule consensus tree with clade supported indicated by internal node labels and branch lengths being the mean across all trees, but this time it will use all the trees found across all the files listed: ``phylo.run1.tre``, ``phylo.run2.tre``, and ``phylo.run3.tre``.
+As before, the above command will construct a 95% majority-rule consensus tree with clade supported indicated by internal node labels and branch lengths being the mean across all trees, but this time it will use all the trees found across all the files listed: "``phylo.run1.tre``", "``phylo.run2.tre``", and "``phylo.run3.tre``".
 
 You will notice that the final resulting tree is displayed to the terminal and not saved anywhere.
 It will probably be more useful if we can save it to a file for visualization for further analysis.
@@ -90,7 +92,7 @@ This can be done in one of two ways, either by redirecting the screen output to 
     
     $ sumtrees.py phylo.tre > phylo.consensus.sumtrees
 
-or by using the or ``--output`` option::
+or by using the or "``--output``" option::
     
     $ sumtrees.py --output=phylo.consensus.sumtrees phylo.tre 
 
@@ -100,11 +102,11 @@ If the files are in different directories, or you are not in the same directory 
  
 More extended options specify things like: where to save the output (by default it goes to the screen), the topology or tree to which to map the support (user-supplied or consensus tree), the output format (NEXUS by default, but it can also be NEWICK), whether support is indicated in terms of proportions or percentages etc. 
 All of these options are specified on the command line when invoking the program, with multiple options separated by spaces.
-Many of the options have two alternate forms, a long form (a word or phrase preceded by two dashes, e.g., ``--option``) and a short form (a single letter preceded by a single dash, ``-o``).
-The long form of the options needs an equals sign before setting the paramater (e.g., ``--option=1``), while the short one does not (e.g., ``-o1`` or ``-o 1``).
+Many of the options have two alternate forms, a long form (a word or phrase preceded by two dashes, e.g., "``--option``") and a short form (a single letter preceded by a single dash, "``-o``").
+The long form of the options needs an equals sign before setting the paramater (e.g., "``--option=1``"), while the short one does not (e.g., "``-o1``" or "``-o 1``").
 Most of the options have default values that will be used if not explicitly set when the program is invoked.
-The order that the options are given does *not* matter, i.e., ``sumtrees.py --option1=something --option2=something`` is the same as ``smtrees.py --option2=something --option1=something``.
-As mentioned above, full details on these options, their long and short forms, as well as their default values will be given by invoking the program with the ``--help`` or ``-h`` option: ``sumtrees.py --help``.
+The order that the options are given does *not* matter, i.e., "``sumtrees.py --option1=something --option2=something``" is the same as "``sumtrees.py --option2=something --option1=something``".
+As mentioned above, full details on these options, their long and short forms, as well as their default values will be given by invoking the program with the "``--help``" or "``-h``" option: "``sumtrees.py --help``".
 
 
 Summarizing Non-Parametric Bootstrap Support with a Consensus Tree
@@ -112,7 +114,7 @@ Summarizing Non-Parametric Bootstrap Support with a Consensus Tree
 
 Say you have completed a 1000-replicate non-parametric analysis of your dataset using a program such as GARLI or RAxML.
 You want to construct a 70% majority-rule consensus tree of the replicates, with support indicated as percentages on the node labels.
-If the bootstrap replicates are in the file ``phylo-boots.tre``, you would then enter the following command::
+If the bootstrap replicates are in the file "``phylo-boots.tre``", you would then enter the following command::
     
     $ sumtrees.py --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre 
 
@@ -120,12 +122,12 @@ Or, using the short option syntax::
     
     $ sumtrees.py -f0.7 -p -d0 phylo-boots.tre 
 
-Here, the ``--min-clade-freq=0.7`` or ``-f0.7`` option lowers the minimum threshold for clade inclusion to 70%.
-If you want a 50% majority-rule consenus tree instead, you would use ``--min-clade-freq=0.5`` or ``-f0.5``.
-The ``--percentages`` or ``-p`` option instructs SumTrees to report the support in terms of percentages, while the ``--decimals=0`` or ``-d 0`` option instructs SumTrees not to bother reporting any decimals. 
+Here, the "``--min-clade-freq=0.7``" or "``-f0.7``" option lowers the minimum threshold for clade inclusion to 70%.
+If you want a 50% majority-rule consenus tree instead, you would use "``--min-clade-freq=0.5``" or "``-f0.5``".
+The "``--percentages``" or "``-p``" option instructs SumTrees to report the support in terms of percentages, while the "``--decimals=0``" or "``-d 0``" option instructs SumTrees not to bother reporting any decimals. 
 Note that even if you instruct SumTrees to report the support in terms of percentages, the minimum clade inclusion threshold is still given in terms of proportions.
 
-Again, if we want to actually save the results to the file, we should use the ``--output`` option::
+Again, if we want to actually save the results to the file, we should use the "``--output``" option::
     
     $ sumtrees.py --output=phylo-mle-support.sumtrees --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
     $ sumtrees.py -o phylo-mle-support.sumtrees -f0.7 --p --d0 phylo-boots.tre
@@ -134,11 +136,11 @@ Summarizing Non-Parametric Bootstrap Support with an Estimate of the True Tree
 ------------------------------------------------------------------------------
 
 Say you also have a maximum likelihood estimate of the phylogeny, and want to annotate the nodes of the maximum likelihood tree with the proportion of trees out of the bootstrap replicates in which the node is found.
-Then, assuming your maximum likelihood tree is in the file, ``phylo-mle.tre``, and the bootstrap tree file is ``phylo-boots.tre``, you would use the ``--target`` options, as in the following command::
+Then, assuming your maximum likelihood tree is in the file, "``phylo-mle.tre``", and the bootstrap tree file is "``phylo-boots.tre``", you would use the "``--target``" options, as in the following command::
     
     $ sumtrees.py --target=phylo-mle.tre phylo-boots.tre
 
-Here, ``--target`` specifies the target topology onto which the support will be mapped, while the remaining (unprefixed) argument specifies the tree file that is the source of the support. 
+Here, "``--target``" specifies the target topology onto which the support will be mapped, while the remaining (unprefixed) argument specifies the tree file that is the source of the support. 
 An equivalent form of the same command, using the short option syntax is::
     
     $ sumtrees.py -t phylo-mle.tre phylo-boots.tre
@@ -151,14 +153,14 @@ If you want the support expressed in percentages instead of proportions, and the
 Summarizing MCMC Trees
 ----------------------
 
-Say you have just completed a BEAST analysis resulting in a file of MCMC tree samples called ``phylo.trees``. 
+Say you have just completed a BEAST analysis resulting in a file of MCMC tree samples called "``phylo.trees``". 
 While the program TreeAnnotator that is distributed along with BEAST does construct a tree summarizing the split support for you, it produces a MCCT topology as the summary tree.
-This is not the same summarization strategy as used by Mr. Bayes using its ``sumt`` command, and thus the two summary trees are not truly directly comparable.
+This is not the same summarization strategy as used by Mr. Bayes using its "``sumt``" command, and thus the two summary trees are not truly directly comparable.
 You can use SumTrees to construct a majority-rule clade consensus tree out of your BEAST MCMC samples, which you can then use to compare with your Mr. Bayes tree::
     
     $ sumtrees.py phylo.trees
 
-This command will construct a 95% majority rule clade consensus tree out of the all the trees found in ``phylo.trees``, label each node with its posterior probability and output the resulting tree in NEXUS format to the terminal.
+This command will construct a 95% majority rule clade consensus tree out of the all the trees found in "``phylo.trees``", label each node with its posterior probability and output the resulting tree in NEXUS format to the terminal.
 
 Of course, we want to discard the first few samples of trees, as these were probably not drawn in frequencies in proportion to the stationary distribution of the chain.
 To do this::
@@ -171,18 +173,18 @@ Again, instead of displaying the tree to the screen we can save it directly to a
     
     $ sumtrees.py --burnin=200 phylo.trees > phylo.trees.sumtrees
 
-or by using the ``-o`` or ``--output`` option::
+or by using the "``-o``" or "``--output``" option::
     
     $ sumtrees.py --output=phylo.trees.sumtrees --burnin=200 phylo.trees
 
-We might also have split up our analysis into multiple independent runs, resulting in multiple MCMC tree sample files (e.g., ``phylo1.trees``, ``phylo2.trees`` and ``phylo3.trees``).
+We might also have split up our analysis into multiple independent runs, resulting in multiple MCMC tree sample files (e.g., "``phylo1.trees``", "``phylo2.trees``" and "``phylo3.trees``").
 We can ask SumTrees to summarize posterior probability from across all these runs, treating the first 200 trees in *each* sample file as a burn-in by typing the following::
     
     $ sumtrees.py --output=phylo.trees.sumtrees --burnin=200 phylo1.trees phylo2.trees phylo3.trees
 
 Alternatively, we might be quite happy with the MCCT tree produced by BEAST, and in fact we want to see how the MCMC samples produced by Mr. Bayes map onto this tree (i.e., the posterior probability of the splits on the MCCT as given by the Mr. Bayes samples).
-To do this, we would supply the Mr. Bayes ``.run.t`` files as the tree samples to be summarized, and use the ``-t`` or ``--target`` option to instruct SumTrees to map the posterior probabilities onto the BEAST MCMCT tree.
-Thus, assuming that our Mr. Bayes runs are is in the files ``phylo.nex.run1.t`` and ``phylo.nex.run2.t``, and the BEAST summarized MCCT tree is in the file ``phylo.beast.tree`` we could type the following::
+To do this, we would supply the Mr. Bayes ``.run.t``" files as the tree samples to be summarized, and use the "``-t``" or "``--target``" option to instruct SumTrees to map the posterior probabilities onto the BEAST MCMCT tree.
+Thus, assuming that our Mr. Bayes runs are is in the files "``phylo.nex.run1.t``" and "``phylo.nex.run2.t``", and the BEAST summarized MCCT tree is in the file "``phylo.beast.tree``" we could type the following::
     
     $ sumtrees.py --target=phylo.beast.tree --output=phylo.mb-beast.sumtrees --burnin=200 phylo.nex.run1.t phylo2.nex.run2.t
     
@@ -205,7 +207,7 @@ It is not for me.
 
 The program and library per se also works fine under Python 2.6 as-is, but due to the current unavailability of `setuptools <http://peak.telecommunity.com/DevCenter/setuptools>`_ as an automated download for Python 2.6, the installation and setup of the library is broken.  
 For the time being, if you happen to be working with Python 2.6 installation, you will have to manually install the packages by copying the various files to the appropriate directories on your system. 
-Basically, the subdirectory ``dendropy`` gets moved to your Python installation ``site-packages``, while the script file ``sumtrees.py`` can be placed anywhere on you system path. 
+Basically, the subdirectory "``dendropy``" gets moved to your Python installation "``site-packages``", while the script file "``sumtrees.py``" can be placed anywhere on you system path. 
 If you know what you are doing, this should be fairly trivial to do.
 
 SumTrees and DendroPy is flat-out broken under Python 3.0.
@@ -258,9 +260,9 @@ help them greatly in getting Python up and running on the system path.
 
 
 My Computer Says, "``ImportError: No module named setuptools``"
-----------------------------------------------------------------
+---------------------------------------------------------------
 
-When trying to install DendroPy using ``sudo python setup.py``, if you get the following error::
+When trying to install DendroPy using "``sudo python setup.py``", if you get the following error::
 
         Traceback (most recent call last):
           File "setup.py", line 29, in <module>
@@ -269,7 +271,7 @@ When trying to install DendroPy using ``sudo python setup.py``, if you get the f
         
 then this means that the automated download and installation of the `setuptools <http://peak.telecommunity.com/DevCenter/setuptools>`_ package failed for some reason.        
 
-If so, you need to download the setuptools installer from http://peak.telecommunity.com/dist/ez_setup.py and run it using ``sudo python ez_setup.py``::
+If so, you need to download the setuptools installer from http://peak.telecommunity.com/dist/ez_setup.py and run it using "``sudo python ez_setup.py``"::
 
     $ curl -O http://peak.telecommunity.com/dist/ez_setup.py
     $ sudo python ez_setup.py
@@ -302,7 +304,7 @@ For your convenience, here are some direct download links:
 
     * `For Microsoft Windows <http://effbot.org/media/downloads/elementtree-1.2.6-20050316.win32.exe>`_
 
-Installation would involve unarchiving the download, entering the directory and running ``sudo python setup.py``::
+Installation would involve unarchiving the download, entering the directory and running "``sudo python setup.py``"::
 
     $ unzip elementtree-1.2.6-20050316.zip
     $ cd elementtree-1.2.6-20050316
@@ -311,8 +313,8 @@ Installation would involve unarchiving the download, entering the directory and 
 After this, DendroPy and SumTrees should work fine.
 More information on ElemenTrees can be found `on the ElementTreesproject website <http://effbot.org/zone/element.htm>`_.
 
-My Computer Says, ``urllib2.HTTPError: HTTP Error 404: Not Found``
-------------------------------------------------------------------
+My Computer Says, "``urllib2.HTTPError: HTTP Error 404: Not Found``"
+--------------------------------------------------------------------
 
 If, when trying to install DendroPy, the following error occurs::
 
@@ -354,9 +356,9 @@ Manual Installation
 The DendroPy library is actually quite straightforward to install manually, especially if you have any familiarity with Python and how Python files are organized.
 There are a couple of different things you could do:
 
-    * Add the current location of the ``dendropy`` subdirectory to your Python path environmental variable, ``$PYTHONPATH``, and place the file ``scripts\sumtrees.py`` on your system path. 
+    * Add the current location of the "``dendropy``" subdirectory to your Python path environmental variable, ``$PYTHONPATH``", and place the file "``scripts\sumtrees.py``" on your system path. 
     
-    * Copy (or symlink) the ``dendropy`` directory to the ``site-packages`` directory of your Python installation, and place the file ``scripts\sumtrees.py`` on your system path. 
+    * Copy (or symlink) the "``dendropy``" directory to the "``site-packages``" directory of your Python installation, and place the file "``scripts\sumtrees.py``" on your system path. 
 
 
 Bugs, Suggestions, Comments, etc.
