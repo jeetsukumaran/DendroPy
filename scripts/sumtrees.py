@@ -140,7 +140,7 @@ def main_cli():
 
     target_tree_optgroup = OptionGroup(parser, 'Target Tree Options')    
     parser.add_option_group(target_tree_optgroup)
-    target_tree_optgroup.add_option('-t','--tree',  
+    target_tree_optgroup.add_option('-t','--target',  
                   dest='target_tree_filepath',
                   default=None,
                   help="path to optional target, model or best topology tree file (Newick or NEXUS format) "
