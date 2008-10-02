@@ -433,6 +433,7 @@ class CharacterDataVector(list, taxa.TaxonLinked):
     def __init__(self, elem_id=None, label=None, taxon=None):
         list.__init__(self)
         taxa.TaxonLinked.__init__(self, elem_id=elem_id, label=label, taxon=taxon)
+        self.string_sep = ''
         
     def set_cell_by_index(self, column_index, cell):
         """
@@ -445,11 +446,15 @@ class CharacterDataVector(list, taxa.TaxonLinked):
     def values(self):
         return [cell.value for cell in self]
         
-    def __str__(self):
+    def values_as_strings(self):
         if self:
-            return ' '.join([str(cell.value) for cell in self])
+            return [str(cell.value) for cell in self]
         else:
-            return ''
+            return []
+            
+    def __str__(self):
+        return str(self.values_as_strings())
+            
 
 class CharacterDataMatrix(dict, base.Annotated):
     """
@@ -659,16 +664,6 @@ class CharactersBlock(taxa.TaxaLinked):
             map[char.elem_id] = char
         return map
         
-    def dump_str(self, sep=''):
-        """
-        Dumps matrix as dictionary with taxon labels as keys and 
-        sequence string as values.
-        """
-        d = {}
-        for t in self.matrix:
-            d[t] = sep.join([str(s) for s in self.matrix[t]])
-        return d            
-            
 class ContinuousCharactersBlock(CharactersBlock):
     """
     Character data container/manager manager.
