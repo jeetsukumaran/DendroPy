@@ -35,6 +35,25 @@ from dendropy import taxa
 from dendropy import characters
 from dendropy import trees
 from dendropy import xmlparser
+     
+############################################################################
+## Standard Tree Iterator
+      
+def iterate_over_trees(file=None):
+    """
+    Generator to iterate over trees in file without retaining any in memory.
+    """
+    xml_doc = xmlparser.xml_document(file=file)
+    dataset = datasets.Dataset()
+    nexml_reader = NexmlReader()
+    nexml_reader.parse_taxa_blocks(xml_doc, dataset)
+    nx_tree_parser = _NexmlTreesParser()
+    for trees_idx, trees_element in enumerate(xml_doc.getiterator('trees')):
+        for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, add_to_trees_block=False):
+            yield tree    
+
+############################################################################
+## Local Module Methods
 
 def _to_nexml_indent_items(items, indent="", indent_level=0):
     """
@@ -188,19 +207,10 @@ def _from_nexml_dict_value(value, value_type):
         # what else to do?
         parsed_value = value
     return parsed_value
-        
-def iterate_over_trees(file=None):
-    """
-    Generator to iterate over trees in file without retaining any in memory.
-    """
-    xml_doc = xmlparser.xml_document(file=file)
-    dataset = datasets.Dataset()
-    nexml_reader = NexmlReader()
-    nexml_reader.parse_taxa_blocks(xml_doc, dataset)
-    nx_tree_parser = _NexmlTreesParser()
-    for trees_idx, trees_element in enumerate(xml_doc.getiterator('trees')):
-        for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, add_to_trees_block=False):
-            yield tree
+
+
+############################################################################
+## NexmlReader
 
 class NexmlReader(datasets.Reader):
     """

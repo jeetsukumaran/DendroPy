@@ -61,7 +61,7 @@ class CharIOTest(unittest.TestCase):
                        }
         self.char_data = ["anolis",
                           "primates",
-                          "terrarana",
+                          #"terrarana",
                          ]
         self.char_files = {}
         self.char_check_files = {}

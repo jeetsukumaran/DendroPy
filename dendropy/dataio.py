@@ -31,47 +31,68 @@ import StringIO
 
 from dendropy.datasets import Dataset
 from dendropy.trees import TreesBlock
+from dendropy import nexus
+from dendropy import nexml
+from dendropy import fasta
+from dendropy import phylip
 
-def source_file_handle(file=None, string=None):
-    """
-    Construct an appropriate file handle (i.e. something that supports read()
-    operations) based on the given arguments.
-    """
-    if file is None and string is None:
-        raise Exception("File or string source must be specified.")            
-    if isinstance(file, str):
-        file = open(file, "r")
-    return file        
+############################################################################
+## File Formats
 
-def read_dataset(reader, file=None, string=None):
+NEXUS='NEXUS'
+NEWICK='NEWICK'
+NEXML='NEXML'
+FASTA='FASTA'
+PHYLIP='PHYLIP'
+FORMATS = [NEXUS, NEXML, NEWICK, FASTA, PHYLIP]
+
+READERS = {
+    NEXUS: nexus.NexusReader,
+    NEWICK: nexus.NewickReader,
+    NEXML: nexml.NexmlReader,
+}
+
+WRITERS = {
+    NEXUS: nexus.NexusWriter,
+    NEWICK: nexus.NewickWriter,
+    NEXML: nexml.NexmlWriter,
+    FASTA: fasta.FastaWriter,
+    PHYLIP: phylip.PhylipWriter,
+}
+
+############################################################################
+## Wrappers (Reading/Parsing)
+
+def get_dataset(format, file=None, string=None):
     """
     Returns a Dataset object parsed from the source, where:
-        `reader`-  object derived from or otherwise implementing the 
-                   DatasetReader interface that is able to parse the 
-                   source (either `file` or `string`).
+        `format` - file format specification
         `file`   - can either be a file descriptor object/handle opened 
                    for reading or a string indicating a filepath that 
                    can be opened for reading using open().
         `string` - a string containing the data to be parsed.
     Either `file` or `string` must be given. If both are given, `file` is used.                
     """
+    reader = get_reader(format)
     return reader.read_dataset(source_file_handle(file=file, string=string))
     
-def read_trees(reader, file=None, string=None):
+def get_trees(format, file=None, string=None):
     """
     Returns a *list* of TreesBlock objects parsed from the source, where:
-        `reader`-  object derived from or otherwise implementing the 
-                   DatasetReader interface that is able to parse the 
-                   source (either `file` or `string`).
+        `format` - file format specification
         `file`   - can either be a file descriptor object/handle opened 
                    for reading or a string indicating a filepath that 
                    can be opened for reading using open().
         `string` - a string containing the data to be parsed.
     Either `file` or `string` must be given. If both are given, `file` is used.                
     """
+    reader = get_reader(format)
     return reader.read_trees(source_file_handle(file=file, string=string))
+    
+############################################################################
+## Wrappers (Writing)    
 
-def write_dataset(dataset, writer, dest=None):
+def store_dataset(format, dataset, dest=None):
     """
     Writes the Dataset object `dataset` using `writer` (a DatasetWriter or 
     derived object) to `dest`. If `dest` is a string, then it is assumed to be
@@ -87,7 +108,7 @@ def write_dataset(dataset, writer, dest=None):
     if hasattr(dest, "getvalue"):
         return dest.getvalue()
 
-def write_trees(trees, writer, dest=None):
+def store_trees(format, trees, dest=None):
     """
     Writes the list of trees `trees` to `dest` using writer.
     """
@@ -103,4 +124,29 @@ def write_trees(trees, writer, dest=None):
     write_dataset(dataset=dataset,
                   writer=writer,
                   dest=dest)
-        
+
+############################################################################
+## Helpers
+
+def source_file_handle(file=None, string=None):
+    """
+    Construct an appropriate file handle (i.e. something that supports read()
+    operations) based on the given arguments.
+    """
+    if file is None and string is None:
+        raise Exception("File or string source must be specified.")            
+    if isinstance(file, str):
+        file = open(file, "r")
+    return file    
+    
+def get_reader(format):
+    """
+    Return reader of the appropriate format.
+    """
+    format = format.upper()
+    if format not in READERS:
+        raise Exception('Unrecognized format specificiation "%s", must be one of: %s' % (format,
+                                                                                         ", ".join([('"'+f+'"') for f in FORMATS]),
+                                                                                         ))
+    return READERS[format]()            
+    
