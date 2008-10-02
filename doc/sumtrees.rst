@@ -100,13 +100,13 @@ At its most basic, you will need to supply SumTrees with the path to one or more
     
     $ sumtrees.py phylo.tre
 
-The above command will construct a 95% majority-rule consensus tree of the all trees found in the file "``phylo.tre``", with the internal node labels of the resulting consensus tree indicating the proportion of trees in "``phylo.tre``" in which that clade was found, while the branch lengths of the resulting consensus tree being set to the mean of the branch lengths of that clade across all the trees in "``phylo.tre``".
+The above command will construct a 50% majority-rule consensus tree of the all trees found in the file "``phylo.tre``", with the internal node labels of the resulting consensus tree indicating the proportion of trees in "``phylo.tre``" in which that clade was found, while the branch lengths of the resulting consensus tree being set to the mean of the branch lengths of that clade across all the trees in "``phylo.tre``".
 
 If you have split searches across multiple runs (across, for example, multiple computers, so as to speed up the search time), such that you have multiple tree files ("``phylo.run1.tre``", "``phylo.run2.tre``", "``phylo.run3.tre``", ...), you can instruct SumTrees to consider all these files together when summarizing the support by simply listing them one after another separated by spaces::
     
     $ sumtrees.py phylo.run1.tre phylo.run2.tre phylo.run3.tre
 
-As before, the above command will construct a 95% majority-rule consensus tree with clade supported indicated by internal node labels and branch lengths being the mean across all trees, but this time it will use all the trees found across all the files listed: "``phylo.run1.tre``", "``phylo.run2.tre``", and "``phylo.run3.tre``".
+As before, the above command will construct a 50% majority-rule consensus tree with clade supported indicated by internal node labels and branch lengths being the mean across all trees, but this time it will use all the trees found across all the files listed: "``phylo.run1.tre``", "``phylo.run2.tre``", and "``phylo.run3.tre``".
 
 You will notice that the final resulting tree is displayed to the terminal and not saved anywhere.
 It will probably be more useful if we can save it to a file for visualization for further analysis.
@@ -144,7 +144,8 @@ Or, using the short option syntax::
     $ sumtrees.py -f0.7 -p -d0 phylo-boots.tre 
 
 Here, the "``--min-clade-freq=0.7``" or "``-f0.7``" option lowers the minimum threshold for clade inclusion to 70%.
-If you want a 50% majority-rule consenus tree instead, you would use "``--min-clade-freq=0.5``" or "``-f0.5``".
+If you want a 95% majority-rule consensus tree instead, you would use "``--min-clade-freq=0.95``" or "``-f0.95``".
+The default threshold if none is specified is 0.5 (50%).
 The "``--percentages``" or "``-p``" option instructs SumTrees to report the support in terms of percentages, while the "``--decimals=0``" or "``-d 0``" option instructs SumTrees not to bother reporting any decimals. 
 Note that even if you instruct SumTrees to report the support in terms of percentages, the minimum clade inclusion threshold is still given in terms of proportions.
 
