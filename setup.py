@@ -34,23 +34,15 @@ import sys
 import os
 import subprocess
 
-def read_dendropy_init():
+def get_dendropy_version():
     dpinit = os.path.join("dendropy", "__init__.py")
     if not os.path.exists(dpinit):
-        return "DendroPy #.#.#"
+        return "#.#.#"
     else:
-        p = subprocess.Popen(["python", dpinit], 
-                              shell=False,
-                              stdin=subprocess.PIPE,
-                              stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE)
-        p.wait()
-        return p.stdout.read()    
-
-def get_dendropy_version():
-    dp = read_dendropy_init()
-    name, version = dp.split(' ')
-    return version
+        dp_locals = {}
+        dp_globals = {}
+        execfile(dpinit, dp_globals, dp_locals)
+        return dp_locals['PACKAGE_VERSION']
 
 version = get_dendropy_version()
 
