@@ -39,7 +39,6 @@ setup(name='DendroPy',
       url='http://sourceforge.net/projects/dendropy/',
       description="""\
 A library for Python-based phylogenetic computation.""",
-      url='',
       license='GPL 3+',
       packages=['dendropy'],
       package_dir={'dendropy': 'dendropy'},
