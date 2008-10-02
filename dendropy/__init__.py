@@ -32,7 +32,7 @@ import sys
 import random
 
 PACKAGE_NAME = "DendroPy"
-PACKAGE_VERSION = "2.0.0"
+PACKAGE_VERSION = "2.0.1"
 PACKAGE_AUTHOR = "Jeet Sukumaran and Mark T. Holder"
 PACKAGE_COPYRIGHT = "Copyright 2008 Jeet Sukumaran and Mark T. Holder."
 PACKAGE_LICENSE = """
@@ -154,11 +154,6 @@ def get_logger(name="dendropy"):
         ch.setFormatter(logging_formatter)
         logger.addHandler(ch)
     return logger
-    
+  
 if __name__ == "__main__":
-    logger = get_logger()
-    logger.debug("debug message")
-    logger.info("info message")
-    logger.warn("warn message")
-    logger.error("error message")
-    logger.critical("critical message")
+    sys.stdout.write("%s %s\n" % (PACKAGE_NAME, PACKAGE_VERSION))

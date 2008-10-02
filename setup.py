@@ -27,10 +27,32 @@ Package setup and installation.
 """
 import ez_setup
 ez_setup.use_setuptools()
-from setuptools import setup, find_packages
-import sys, os
+from setuptools import setup
+from setuptools import find_packages
 
-version = '2.0.0'
+import sys
+import os
+import subprocess
+
+def read_dendropy_init():
+    dpinit = os.path.join("dendropy", "__init__.py")
+    if not os.path.exists(dpinit):
+        return "DendroPy #.#.#"
+    else:
+        p = subprocess.Popen(["python", dpinit], 
+                              shell=False,
+                              stdin=subprocess.PIPE,
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE)
+        p.wait()
+        return p.stdout.read()    
+
+def get_dendropy_version():
+    dp = read_dendropy_init()
+    name, version = dp.split(' ')
+    return version
+
+version = get_dendropy_version()
 
 setup(name='DendroPy',
       version=version,     
