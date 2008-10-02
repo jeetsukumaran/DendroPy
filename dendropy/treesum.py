@@ -179,22 +179,11 @@ class TreeSummarizer(object):
         for node in con_tree.leaves():
             split = node.edge.split_mask
             self.map_split_support_to_node(node, 1.0)
-            if self.support_as_labels and include_edge_lengths:            
-                node.edge.length = float(sum(split_distribution.split_edge_lengths[split])) / len(split_distribution.split_edge_lengths[split])
-                
-#         splits.encode_splits(con_tree, 
-#                              taxa_block, 
-#                              tree_split_edges_map=None,
-#                              tree_split_taxa_map=None,
-#                              tree_complemented_split_edges_map=None)                           
-#         for edge in con_tree.preorder_edge_iter():
-#             if self.support_as_labels:
-#                 edge.head_node.label = self.compose_support_label(split_distribution.split_frequencies[edge.split_mask])
-#                 edge.length = sum(split_distribution.split_edge_lengths[split]) / len(split_distribution.split_edge_lengths[split])
-#                 #print split_distribution.split_edge_lengths[split]
-#             else:
-#                 edge.length = split_distribution.split_frequencies[edge.split_mask]
-            
+            if self.support_as_labels and include_edge_lengths:
+                if split in split_distribution.split_edge_lengths:
+                    node.edge.length = float(sum(split_distribution.split_edge_lengths[split])) / len(split_distribution.split_edge_lengths[split])
+                else:
+                    node.edge.length = 0.0
         return con_tree                
                                                 
     def count_splits(self, tree_files, tree_iterator, split_distribution=None):
