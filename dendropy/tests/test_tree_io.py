@@ -39,7 +39,7 @@ from dendropy import get_logger
 from dendropy import get_logging_level
 
 import dendropy.tests
-_LOG = get_logger("NEXUS/NEWICK Tree Parsing and Writing")
+_LOG = get_logger("Tree Parsing and Writing")
 
 from dendropy import taxa
 from dendropy import trees
