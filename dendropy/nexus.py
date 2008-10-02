@@ -211,13 +211,14 @@ def parse_newick_node_stream(stream_tokenizer, tree):
 def get_dataset(src, dataset=None):
     stream_tokenizer = NexusStreamTokenizer(src)
     token = stream_tokenizer.read_next_token_ucase()
+    stream_tokenizer.stream_handle.seek(0)
     if token == "#NEXUS":
         nexus_reader = NexusReader()
-        return nexus_reader.read_dataset(self, src=src, dataset=dataset)
+        return nexus_reader.read_dataset(src=src, dataset=dataset)
     else:
-        # assume NEWIC
+        # assume NEWICK
         newick_reader = NewickReader()
-        return newick_reader.read_dataset(self, src=src, dataset=dataset)
+        return newick_reader.read_dataset(src=src, dataset=dataset)
         
 ############################################################################
 ## Tree iterator
