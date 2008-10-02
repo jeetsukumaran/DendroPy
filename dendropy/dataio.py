@@ -89,6 +89,17 @@ def get_trees(format, file=None, string=None):
     reader = get_reader(format)
     return reader.read_trees(source_file_handle(file=file, string=string))
     
+def get_nexus(file=None, string=None):
+    """
+    Returns a Dataset object parsed from a NEXUS or NEWICK source.
+        `file`   - can either be a file descriptor object/handle opened 
+                   for reading or a string indicating a filepath that 
+                   can be opened for reading using open().
+        `string` - a string containing the data to be parsed.
+    Either `file` or `string` must be given. If both are given, `file` is used.                
+    """
+    return nexus.read_dataset(source_file_handle(file=file, string=string))    
+    
 ############################################################################
 ## Wrappers (Writing)    
 

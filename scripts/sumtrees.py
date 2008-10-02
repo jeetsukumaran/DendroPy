@@ -39,7 +39,6 @@ except:
 import platform    
     
 import dendropy    
-from dendropy import dataio
 from dendropy import nexus
 from dendropy import splits
 from dendropy import treesum
@@ -57,26 +56,6 @@ _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
                  "There is NO WARRANTY,\nto the extent permitted by law."
 
-def check_support_files(filepaths, messenger):
-    messenger.send("### CHECKING SUPPORT FILES ###")
-    total_files = len(filepaths)
-    total_tree_count = 0
-    counts = {}
-    for file_idx, filepath in enumerate(filepaths):
-        messenger.send('\nParsing trees in file %d of %d: %s' % (file_idx+1, total_files, filepath))
-        file_tree_count = 0
-        for tree_idx, tree in enumerate(dataio.tree_iter(filepath=filepath)):
-            total_tree_count += 1
-            file_tree_count += 1
-            messenger.send("%d " % file_tree_count, newline=False)
-        messenger.send("")
-        counts[filepath] = file_tree_count            
-    messenger.send("")
-    for filepath in filepaths:
-        file_tree_count = counts[filepath]                                
-        sys.stdout.write('%s: %d trees\n' % (os.path.abspath(filepath), file_tree_count))
-        total_tree_count += file_tree_count
-        
 def show_splash(dest=sys.stderr, extended=False):
     lines = []
     lines.append("%s - %s" % (_program_name, _program_subtitle))
@@ -241,11 +220,6 @@ def main_cli():
                       dest='ignore_missing_target',
                       default=False,
                       help="ignore missing target tree file (will construct majority rule consensus tree if missing)") 
-    run_optgroup.add_option('--check', 
-                      action='store_true', 
-                      dest='check',
-                      default=False,
-                      help="will check (parse) all the support tree files, reporting numbers of trees in each file, but not actually calculate support")                       
   
     (opts, args) = parser.parse_args()
     messenger = Messenger(quiet=opts.quiet)
@@ -283,13 +257,6 @@ def main_cli():
         sys.exit(1)
         
     support_file_objs = [open(f, "r") for f in support_filepaths]
-                        
-    ###################################################
-    # Special op: parse, but not process support files
-                        
-    if opts.check:
-        check_support_files(support_filepaths, messenger)
-        sys.exit(0)
 
     ###################################################
     # Lots of other idiot-checking ...
@@ -380,7 +347,7 @@ def main_cli():
     tt_trees = []
     if target_tree_filepath is not None:
         messenger.send("### MAPPING SUPPORT TO TARGET TREE(S) ###\n")         
-        tt_dataset = nexus.get_dataset(open(target_tree_filepath, 'r'))
+        tt_dataset = nexus.read_dataset(open(target_tree_filepath, 'r'))
         for tree_block in tt_dataset.trees_blocks:
             for tree in tree_block:
                 tsum.map_split_support_to_tree(tree, split_distribution)
