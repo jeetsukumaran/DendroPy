@@ -537,7 +537,7 @@ class NexusReader(datasets.Reader):
         else:
             while not self.stream_tokenizer.eof:
                 token = self.stream_tokenizer.read_next_token_ucase()
-                while token != None and token != 'BEGIN' and not self.eof:
+                while token != None and token != 'BEGIN' and not self.stream_tokenizer.eof:
                     token = self.stream_tokenizer.read_next_token_ucase()
                 token = self.stream_tokenizer.read_next_token_ucase()
                 if token == 'TAXA':
@@ -801,7 +801,7 @@ class NexusReader(datasets.Reader):
             symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
             if True: # future: trap and handle no labels, transpose etc.
                 token = self.stream_tokenizer.read_next_token()
-                while token != ';' and not self.eof:
+                while token != ';' and not self.stream_tokenizer.eof:
                     taxon = taxa_block.find_taxon(label=token, update=True)
                     if taxon not in char_block:
                         char_block[taxon] = characters.CharacterDataVector(taxon=taxon)
@@ -812,7 +812,7 @@ class NexusReader(datasets.Reader):
                                 char_block[taxon].append(characters.CharacterDataCell(value=state))
                             self.read_next_char()
                     else:
-                        while len(char_block[taxon]) < self.file_specified_nchar and not self.eof:
+                        while len(char_block[taxon]) < self.file_specified_nchar and not self.stream_tokenizer.eof:
                             char_group = self.stream_tokenizer.read_next_token()
                             char_group = parse_sequence_iupac_ambiguities(char_group)
                             for char in char_group:
