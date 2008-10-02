@@ -21,6 +21,8 @@ How to Install the Program
 
     If for some reason the previous link does not work, you could simply go to `DendroPy <http://sourceforge.net/projects/dendropy/>`_ site and from there navigate to the correct download page.
 
+Note that you might end up downloading a newer version of DendroPy, in which case the version numbers in the file and directory names may not correspond exactly to those given in the examples. For example, you may end up with "``DendroPy-2.1.1rc3.tar.gz``" rather than "``DendroPy-2.0.0.tar.gz``". However, as long as you substitute the correct archive and directory name in the examples and discussion below, everything else should remain the same. 
+
 #.  Expand the downloaded archive
 
     This step varies depending on the operating system and the particular programs that you have installed. 
@@ -56,6 +58,8 @@ How to Install the Program
         No sources of support specified or could be found. Please provide the
         path to at least one (valid and existing) file containing non-
         parametric or MCMC tree samples to summarize.
+        
+    You can now delete the original downloaded archive and unpacked directory if you want.         
 
 How to Use the Program
 ======================
@@ -204,8 +208,11 @@ Thus, assuming that our Mr. Bayes runs are is in the files "``phylo.nex.run1.t``
     
     $ sumtrees.py --target=phylo.beast.tree --output=phylo.mb-beast.sumtrees --burnin=200 phylo.nex.run1.t phylo2.nex.run2.t
     
+Troubleshooting
+===============
+
 Prerequisites
-=============    
+-------------   
 
 DendroPy is a `Python <http://www.python.org/>`_ library.
 It requires and presupposes not only the existence of a Python installation on your system, but also that this Python installation is available on the system path.
@@ -230,22 +237,19 @@ SumTrees and DendroPy is flat-out broken under Python 3.0.
 
 All this can be summarized as the follows:
 
-.. important::
+.. pull-quote::
 
-    "Then, shalt thou count to **2.5**. 
+    Then, shalt thou count to **2.5**.
     
-    No more. 
+    No more.     
     
-    No less. 
+    No less.     
     
-    **2.5** shalt be the number thou shalt count, and the number of the counting shall be **2.5**. 
+    **2.5** shalt be the number thou shalt count, and the number of the counting shall be **2.5**.     
     
-    **2.6** shalt thou not count, nor either count thou **2.4**, excepting that thou then proceed to **2.5**. 
+    **2.6** shalt thou not count, nor either count thou **2.4**, excepting that thou then proceed to **2.5**.     
     
-    **3.0** is right out."
-
-Troubleshooting
-===============
+    **3.0** is right out.
 
 My Computer Does Not Know What a Python Is
 -------------------------------------------
@@ -394,7 +398,8 @@ Sukumaran, J. 2008. *SumTrees: Summarization of Split Support on Phylogenetic Tr
 Copyright, License and Warranty
 ===============================
 
-Copyright |copy| 2008 Jeet Sukumaran.
+SumTrees is |copy| 2008 Jeet Sukumaran.
+DendroPy is |copy| 2008 Jeet Sukumaran and Mark Holder.
   
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
