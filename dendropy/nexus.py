@@ -89,7 +89,7 @@ def iterate_over_trees(src=None):
                                                  translate_dict=None) 
 
 ############################################################################
-## A Universal Nex-ish Reader
+## Universal Nex-ish Readers
 
 def read_dataset(src, dataset=None):
     stream_tokenizer = NexusStreamTokenizer(src)
@@ -102,6 +102,10 @@ def read_dataset(src, dataset=None):
         # assume NEWICK
         newick_reader = NewickReader()
         return newick_reader.read_dataset(src=src, dataset=dataset)
+
+def read_trees(src, dataset=None):
+    dataset = read_dataset(src=src, dataset=dataset)
+    return dataset.trees_blocks
 
 ############################################################################
 ## character mapping
