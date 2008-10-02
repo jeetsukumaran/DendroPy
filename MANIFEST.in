@@ -2,4 +2,4 @@ include ez_setup.py
 recursive-include dendropy/tests/data/ *
 recursive-include doc/ *
 prune dendropy/tests/data/heavy*
-prune TODO
+prune TODO.txt
