@@ -89,8 +89,8 @@ Summarization of Posterior Probabilities of Clades with a Consensus Tree
 ------------------------------------------------------------------------
 Summarize a set of tree files using a 95% rule consensus tree, with support for clades indicated as proportions (posterior probabilities) and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, and saving the result to "``results.sumtree``"::
 
-    $ sumtrees.py --min-clade-freq=0.7 --burn-in=200 --support-as-labels --output=results.sumtrees treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -f0.7 -b200 -l -o results.sumtrees treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --min-clade-freq=0.95 --burn-in=200 --support-as-labels --output=results.sumtrees treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -f0.95 -b200 -l -o results.sumtrees treefile1.tre treefile2.tre treefile3.tre
  
 
 Tutorials and Examples
