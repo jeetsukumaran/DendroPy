@@ -27,7 +27,6 @@ Tree summarization.
 """
 
 import sys
-from dendropy import dataio
 from dendropy import splits
 from dendropy import taxa
 from dendropy import trees

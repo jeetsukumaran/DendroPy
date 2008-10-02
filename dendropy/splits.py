@@ -231,16 +231,6 @@ class SplitDistribution(object):
                 self.complemented_split_counts[split] = 1
             else:
                 self.complemented_split_counts[split] += 1    
-    
-if __name__ == "__main__":
-    import dataio
-    dataset = dataio.from_newick(text='(A,(B,(C,(D,(E,(F,(G,(H,I))))))))')
-    tree = dataset.trees_blocks[0][0]
-    taxa_block = dataset.trees_blocks[0].taxa_block
-    sd = encode_splits(tree, taxa_block)
-    for edge in tree.postorder_edge_iter():
-        print
-        print edge.head_node.taxon
-        print split_taxa_list(edge.split_mask, taxa_block)
+
     
     
