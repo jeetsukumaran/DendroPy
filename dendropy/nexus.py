@@ -800,14 +800,12 @@ class NexusReader(datasets.Reader):
         elif not self.file_specified_nchar:
             raise self.syntax_exception('NCHAR must be defined by DIMENSIONS command to non-zero value before MATRIX command')
         else:
-            char_block = self.new_char_block()
+            char_block = self.char_block_type()
             char_block.taxa_block = taxa_block
             if isinstance(char_block, characters.StandardCharactersBlock):
                 char_block = self.build_state_alphabet(char_block, self.symbols)
             self.dataset.add_char_block(char_block=char_block)
             symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
-            print symbol_state_map
-            sys.exit(0)
             if True: # future: trap and handle no labels, transpose etc.
                 token = self.stream_tokenizer.read_next_token()
                 while token != ';' and not self.stream_tokenizer.eof:

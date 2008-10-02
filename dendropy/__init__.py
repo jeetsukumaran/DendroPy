@@ -32,7 +32,7 @@ import sys
 import random
 
 PACKAGE_NAME = "DendroPy"
-PACKAGE_VERSION = "2.0.2rc1"
+PACKAGE_VERSION = "2.0.1"
 PACKAGE_AUTHOR = "Jeet Sukumaran and Mark T. Holder"
 PACKAGE_COPYRIGHT = "Copyright 2008 Jeet Sukumaran and Mark T. Holder."
 PACKAGE_LICENSE = """
