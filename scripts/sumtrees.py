@@ -298,8 +298,8 @@ def main_cli():
     if opts.target_tree_filepath is not None:
         target_tree_filepath = os.path.expanduser(os.path.expandvars(opts.target_tree_filepath))
         if not os.path.exists(target_tree_filepath):
-            if opts.ignore_missing_target:
-                messenger.send_error('Target tree file not found: "%s"\n' % target_tree_filepath)
+            messenger.send_error('Target tree file not found: "%s"\n' % target_tree_filepath)
+            if opts.ignore_missing_target:                
                 if not opts.quiet:
                     messenger.send('Will construct and use majority-rule consensus tree instead.\n')
                 target_tree_filepath = None
@@ -380,7 +380,7 @@ def main_cli():
     tt_trees = []
     if target_tree_filepath is not None:
         messenger.send("### MAPPING SUPPORT TO TARGET TREE(S) ###\n")         
-        tt_dataset = nexus.get_dataset(target_tree_filepath)        
+        tt_dataset = nexus.get_dataset(open(target_tree_filepath, 'r'))
         for tree_block in tt_dataset.trees_blocks:
             for tree in tree_block:
                 tsum.map_split_support_to_tree(tree, split_distribution)
