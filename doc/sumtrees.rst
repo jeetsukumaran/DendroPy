@@ -21,7 +21,7 @@ How to Install the Program
 
     If for some reason the previous link does not work, you could simply go to `DendroPy <http://sourceforge.net/projects/dendropy/>`_ site and from there navigate to the correct download page.
 
-Note that you might end up downloading a newer version of DendroPy, in which case the version numbers in the file and directory names may not correspond exactly to those given in the examples. For example, you may end up with "``DendroPy-2.1.1rc3.tar.gz``" rather than "``DendroPy-2.0.0.tar.gz``". However, as long as you substitute the correct archive and directory name in the examples and discussion below, everything else should remain the same. 
+    Note that you might end up downloading a newer version of DendroPy, in which case the version numbers in the file and directory names may not correspond exactly to those given in the examples. For example, you may end up with "``DendroPy-2.1.1rc3.tar.gz``" rather than "``DendroPy-2.0.0.tar.gz``". However, as long as you substitute the correct archive and directory name in the examples and discussion below, everything else should remain the same. 
 
 #.  Expand the downloaded archive
 
@@ -77,18 +77,20 @@ Full help on program usage and options is given by using the "``--help``" option
     
 Quick Recipes
 =============
-                
-    Calculate support for nodes on a specific tree, "``best.tre``" as given by a set of tree files, with support reported as percentages rounded to integers, and saving the result to "``results.sumtree``" ::
-    
-        $ sumtrees.py --decimals=0 --percentages --target=best.tre treefile1.tre treefile2.tre treefile3.tre
-        
-        $ sumtrees.py -d0 -p -t best.tre treefile1.tre treefile2.tre treefile3.tre
+                        
+Non-parametric Bootstrap Support of a Model Tree
+------------------------------------------------
+Calculate support for nodes on a specific tree, "``best.tre``" as given by a set of tree files, with support reported as percentages rounded to integers, and saving the result to "``results.sumtree``"::
 
-    Summarize a set of tree files using a 95% rule consensus tree, with support indicated as proportions (posterior probabilities) and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, and saving the result to "``results.sumtree``"::
-    
-        $ sumtrees.py --min-clade-freq=0.7 --burn-in=200 --support-as-labels --output=results.sumtrees treefile1.tre treefile2.tre treefile3.tre
-        
-        $ sumtrees.py -f0.7 -b200 -l -o results.sumtrees treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --decimals=0 --percentages --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -d0 -p -t best.tre treefile1.tre treefile2.tre treefile3.tre
+
+Summarization of Posterior Probabilities of Clades with a Consensus Tree
+------------------------------------------------------------------------
+Summarize a set of tree files using a 95% rule consensus tree, with support for clades indicated as proportions (posterior probabilities) and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, and saving the result to "``results.sumtree``"::
+
+    $ sumtrees.py --min-clade-freq=0.7 --burn-in=200 --support-as-labels --output=results.sumtrees treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -f0.7 -b200 -l -o results.sumtrees treefile1.tre treefile2.tre treefile3.tre
  
 
 Tutorials and Examples
@@ -127,7 +129,6 @@ The long form of the options needs an equals sign before setting the paramater (
 Most of the options have default values that will be used if not explicitly set when the program is invoked.
 The order that the options are given does *not* matter, i.e., "``sumtrees.py --option1=something --option2=something``" is the same as "``sumtrees.py --option2=something --option1=something``".
 As mentioned above, full details on these options, their long and short forms, as well as their default values will be given by invoking the program with the "``--help``" or "``-h``" option: "``sumtrees.py --help``".
-
 
 Summarizing Non-Parametric Bootstrap Support with a Consensus Tree
 ------------------------------------------------------------------
@@ -251,6 +252,7 @@ All this can be summarized as the follows:
     
     **3.0** is right out.
 
+
 My Computer Does Not Know What a Python Is
 -------------------------------------------
 
@@ -265,12 +267,12 @@ SumTrees is a Python script, and, as such, you will need to have a Python interp
 Otherwise, you must download and install Python 2.5 from: http://www.python.org/download/releases/2.5.2/.
 For your convenience, the clicking on the following links should lead you directly to the appropriate pre-compiled download:
 
-    * `Mac OS X <http://www.python.org/ftp/python/2.5.2/python-2.5.2-macosx.dmg>`_
-    * `Microsoft Windows <http://www.python.org/ftp/python/2.5.2/python-2.5.2.msi>`_
+* `Mac OS X <http://www.python.org/ftp/python/2.5.2/python-2.5.2-macosx.dmg>`_
+* `Microsoft Windows <http://www.python.org/ftp/python/2.5.2/python-2.5.2.msi>`_
 
 For other platforms, the usual "``./configure``", "``make``", and "``sudo make install``" dance should get you up and running the following:
 
-    * `Cross-platform Source <http://www.python.org/ftp/python/2.5.2/Python-2.5.2.tgz>`_
+* `Cross-platform Source <http://www.python.org/ftp/python/2.5.2/Python-2.5.2.tgz>`_
 
 Microsoft Windows users should also refer to the `"Python Windows FAQ" <http://www.python.org/doc/faq/windows.html>`_
 (http://www.python.org/doc/faq/windows.html)
@@ -320,9 +322,9 @@ it is probably because you are running an older version of Python (such as Pytho
 If you go to http://effbot.org/downloads/#elementtree, you should be able to download and install this module.
 For your convenience, here are some direct download links:
     
-    * `For Linux, UNIX, Mac OS X, and other such excellent operating systems <http://effbot.org/media/downloads/elementtree-1.2.6-20050316.zip>`_
+* `For Linux, UNIX, Mac OS X, and other such excellent operating systems <http://effbot.org/media/downloads/elementtree-1.2.6-20050316.zip>`_
 
-    * `For Microsoft Windows <http://effbot.org/media/downloads/elementtree-1.2.6-20050316.win32.exe>`_
+* `For Microsoft Windows <http://effbot.org/media/downloads/elementtree-1.2.6-20050316.win32.exe>`_
 
 Installation would involve unarchiving the download, entering the directory and running "``sudo python setup.py``"::
 
@@ -376,9 +378,9 @@ Manual Installation
 The DendroPy library is actually quite straightforward to install manually, especially if you have any familiarity with Python and how Python files are organized.
 There are a couple of different things you could do:
 
-    * Add the current location of the "``dendropy``" subdirectory to your Python path environmental variable, "``$PYTHONPATH``", and place the file "``scripts\sumtrees.py``" on your system path. 
-    
-    * Copy (or symlink) the "``dendropy``" directory to the "``site-packages``" directory of your Python installation, and place the file "``scripts\sumtrees.py``" on your system path. 
+* Add the current location of the "``dendropy``" subdirectory to your Python path environmental variable, "``$PYTHONPATH``", and place the file "``scripts\sumtrees.py``" on your system path. 
+
+* Copy (or symlink) the "``dendropy``" directory to the "``site-packages``" directory of your Python installation, and place the file "``scripts\sumtrees.py``" on your system path. 
 
 
 Bugs, Suggestions, Comments, etc.
