@@ -224,7 +224,7 @@ The biggest problem faced by most users is not so much not having Python install
     
 SumTrees, and the DendroPy library that it is part of, works out-of-the-box with Python 2.5 (and all subvariants: 2.5.0, 2.5.1, 2.5.2, etc.). 
 
-It can be made to work under Python 2.4, but requires the download and installation of one additional module (`ElementTrees <http://effbot.org/downloads/#elementtree>`_). 
+SumTrees itself works under Python 2.4 (though not all of DendroPy does: the NEXML parser requires the download and installation of one additional module (`ElementTrees <http://effbot.org/downloads/#elementtree>`_). 
 
 SumTrees will not work with versions of Python prior to 2.4, such as Python 2.3. It can probably be made to work pretty easily, and if you have strong enough motiviation to use Python 2.3, it might be worth the effort for you.
 It is not for me.
