@@ -71,9 +71,8 @@ A library for Python-based phylogenetic computation.""",
       # -*- Entry points: -*-
       """,      
       long_description="""\
-A pure-Python library for serialization/deserialization, parsing,
-analysis, manipulations, calculation and other operations on
-phylogenetic trees and data.""",
+A pure-Python library for reading, writing, simulating, manipulating and analyzing
+phylogenetic trees.""",
       classifiers = [
             "Environment :: Console",
             "Intended Audience :: Developers",
