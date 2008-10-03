@@ -178,6 +178,12 @@ class TreeSummarizer(object):
 
         ## here we add the support values and/or edge lengths for the terminal taxa ##
         for node in con_tree.leaves():
+            if not hasattr(node.edge, "split_mask"):
+                splits.encode_splits(con_tree, 
+                                     taxa_block, 
+                                     tree_split_edges_map=None,
+                                     tree_split_taxa_map=None,
+                                     tree_complemented_split_edges_map=None)                
             split = node.edge.split_mask
             self.map_split_support_to_node(node, 1.0)
             if self.support_as_labels and include_edge_lengths:

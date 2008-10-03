@@ -47,8 +47,8 @@ from dendropy import trees
 
 _program_name = 'SumTrees'
 _program_subtitle = 'Phylogenetic Tree Split Support Summarization'
-_program_date = 'Sept 21 2008'
-_program_version = 'Version 1.0.0 (%s)' % _program_date
+_program_date = 'Oct 4 2008'
+_program_version = 'Version 1.0.2 (%s)' % _program_date
 _program_author = 'Jeet Sukumaran'
 _program_contact = 'jeetsukumaran@gmail.com'
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
@@ -301,6 +301,9 @@ def main_cli():
     tsum.burnin = opts.burnin 
     tsum.support_as_labels = opts.support_as_labels 
     tsum.support_as_percentages = opts.support_as_percentages
+    if not opts.support_as_percentages and opts.support_label_decimals < 2:
+        messenger.send_error("(WARNING: proportions require that support will be reported to at least 2 decimal places)")
+        opts.support_label_decimals = 2
     tsum.support_label_decimals = opts.support_label_decimals
     tsum.ignore_node_ages = True # until a more efficient implementation is developed
     if opts.quiet:
@@ -318,7 +321,7 @@ def main_cli():
         
     report = []
     report.append("%d trees read from %d files." % (tsum.total_trees_read, len(support_filepaths)))
-    report.append("%d trees from each file ignored for burn-in." % (opts.burnin))
+    report.append("%d trees from each file requested to be ignored for burn-in." % (opts.burnin))
     report.append("%d trees ignored in total." % (tsum.total_trees_ignored))    
     report.append("%d trees considered in total for split support assessment." % (tsum.total_trees_counted))
     report.append("%d unique taxa across all trees." % len(split_distribution.taxa_block))
@@ -418,7 +421,9 @@ def main_cli():
             except:
                 username = "a user"
             nexus_writer.comment.append("%s %s by %s." % (_program_name, _program_version, _program_author))
-            nexus_writer.comment.append("Executed on %s (%s) by %s@%s." % (platform.node(), platform.system(), username, socket.gethostname()))            
+            python_version = sys.version.replace("\n", "").replace("[", "(").replace("]",")")            
+            nexus_writer.comment.append("Running under Python %s on %s." % (python_version, sys.platform))               
+            nexus_writer.comment.append("Executed on %s by %s@%s." % (platform.node(),  username, socket.gethostname()))         
             nexus_writer.comment.append("Basis of split support:")
             for support_file in support_filepaths:
                 nexus_writer.comment.append('  - "%s"' % os.path.abspath(support_file))            
