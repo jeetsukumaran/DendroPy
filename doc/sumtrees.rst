@@ -302,7 +302,7 @@ How to Cite this Program
 
 If you use this program in your analysis, please cite it as:
 
-    Sukumaran, J. 2008. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.* Part of the: *DendroPy Phylogenetic Computation Library Version 2.0.0* (http://sourceforge.net/projects/dendropy).
+    Sukumaran, J. 2008. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.2* Part of the: *DendroPy Phylogenetic Computation Library Version 2.0.3* (http://sourceforge.net/projects/dendropy).
     
     Sukumaran, J. and Mark T. Holder. 2008. *DendroPy Phylogenetic Computation Library Version 2.0.3* (http://sourceforge.net/projects/dendropy).
 
