@@ -154,8 +154,8 @@ Again, if we want to actually save the results to the file, we should use the "`
     $ sumtrees.py --output=phylo-mle-support.sumtrees --min-clade-freq=0.7 --percentages --decimals=0 phylo-boots.tre
     $ sumtrees.py -o phylo-mle-support.sumtrees -f0.7 --p --d0 phylo-boots.tre
 
-Summarizing Non-Parametric Bootstrap Support with an Estimate of the True Tree
-------------------------------------------------------------------------------
+Summarizing Non-Parametric Bootstrap Support of an Estimated Tree
+-----------------------------------------------------------------
 
 Say you also have a maximum likelihood estimate of the phylogeny, and want to annotate the nodes of the maximum likelihood tree with the proportion of trees out of the bootstrap replicates in which the node is found.
 Then, assuming your maximum likelihood tree is in the file, "``phylo-mle.tre``", and the bootstrap tree file is "``phylo-boots.tre``", you would use the "``--target``" options, as in the following command::
