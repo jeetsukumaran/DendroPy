@@ -44,7 +44,7 @@ from dendropy import treesum
 from dendropy import taxa   
 from dendropy import splits
 
-class SumTreesTest(unittest.TestCase):
+class SplitsOnTreesTest(unittest.TestCase):
     
     def setUp(self):
         self.data_files = [   
