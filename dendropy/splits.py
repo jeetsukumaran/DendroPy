@@ -30,13 +30,13 @@ from dendropy import taxa
 
 def is_non_singleton_split(split):
     """
-    Returns True if split is has more than one taxon.
+    Returns True if a split is NOT between a leaf and the rest of the taxa.
     """
     # ((split-1) & split) is True (non-zero) only
     # if split is not a power of 2, i.e., if split
     # has more than one bit turned on, i.e., if it
     # is a non-trivial split.    
-    return ((split-1) & split)     
+    return ((split-1) & split)
 
 def number_to_bitstring(num):
     """
