@@ -51,6 +51,16 @@ def split_as_string(split_mask, taxa_block, symbol1='.', symbol2='*'):
     s = number_to_bitstring(split_mask).rjust(len(taxa_block), '0')
     return s.replace('0', symbol1).replace('1', symbol2)
     
+def split_as_string_rev(split_mask, taxa_block, symbol1='.', symbol2='*'):
+    """
+    Returns a 'pretty' split representation, reversed, with first taxon
+    on the left.
+    """
+    return split_as_string(split_mask=split_mask, 
+                           taxa_block=taxa_block, 
+                           symbol1=symbol1,
+                           symbol2=symbol2)[::-1]
+    
 def split_taxa_list(split_mask, taxa_block, index=0):
     """
     Returns list of taxa represented by split.
