@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 ############################################################################
-##  test_splits.py
+##  test_tree_splits.py
 ##
 ##  Part of the DendroPy phylogenetic computation library.
 ##
@@ -23,7 +23,7 @@
 ############################################################################
 
 """
-Put SumTrees through its paces.
+Test split summarization, consensus tree building etc.
 """
 
 import unittest
