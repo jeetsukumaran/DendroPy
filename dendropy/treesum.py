@@ -148,7 +148,7 @@ class TreeSummarizer(object):
                          min_freq=0.5,
                          include_edge_lengths=True):
         """
-        Returns a consensus tree constructed from splits given in `split_freqs`.
+        Returns a consensus tree constructed from splits given in `split_distribution`.
         """
         taxa_block = split_distribution.taxa_block
         con_tree = treegens.star_tree(taxa_block)
@@ -185,13 +185,15 @@ class TreeSummarizer(object):
                     node.edge.length = 0.0
         return con_tree                
                                                 
-    def count_splits(self, tree_files, tree_iterator, split_distribution=None):
+    def count_splits(self, tree_files, tree_iterator, split_distribution=None, taxa_block=None):
         """
         Given a list of trees file, a SplitsDistribution object (a new one, or,
         if passed as an argument) is returned collating the split data in the files.
         """
         if split_distribution is None:
             split_distribution = splits.SplitDistribution()
+        if taxa_block is not None:
+            split_distribution.taxa_block = taxa_block            
 #         if not isinstance(tree_files, list):
 #             tree_files = [tree_files]
         total_tree_files = len(tree_files)
@@ -208,6 +210,7 @@ class TreeSummarizer(object):
                 if not self.burnin or file_trees_read > self.burnin:
                     self.total_trees_counted += 1
                     self.send_progress_message("%sCounting splits in tree %d" % (current_file_note, (tree_idx+1)))
+                    #tree.normalize_taxa(taxa_block=split_distribution.taxa_block, update_taxa_block=True)
                     split_distribution.count_splits(tree)
                 else:
                     self.total_trees_ignored += 1

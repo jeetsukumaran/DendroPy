@@ -44,11 +44,12 @@ def number_to_bitstring(num):
     """
     return num>0 and number_to_bitstring(num>>1)+str(num&1) or ''
     
-def split_as_string(split_mask, pad_len=0):
+def split_as_string(split_mask, taxa_block, symbol1='.', symbol2='*'):
     """
     Returns a 'pretty' split representation.
     """
-    return number_to_bitstring(split_mask).rjust(pad_len, '0')
+    s = number_to_bitstring(split_mask).rjust(len(taxa_block), '0')
+    return s.replace('0', symbol1).replace('1', symbol2)
     
 def split_taxa_list(split_mask, taxa_block, index=0):
     """

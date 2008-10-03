@@ -40,14 +40,16 @@ from dendropy import characters
 ############################################################################
 ## Standard Tree Iterator
       
-def iterate_over_trees(src=None):
+def iterate_over_trees(src=None, taxa_block=None):
     """
     Generator to iterate over trees in data file.
     Primary goal is to be memory efficient, storing no more than one tree
     at a time. Speed might have to be sacrificed for this!
     """
-
-    taxa_block = taxa.TaxaBlock()
+    if taxa_block is not None:
+        taxa_block = taxa_block
+    else:        
+        taxa_block = taxa.TaxaBlock()
     stream_tokenizer = NexusStreamTokenizer(src)
     token = stream_tokenizer.read_next_token_ucase()
     if token == "#NEXUS":
