@@ -302,13 +302,15 @@ How to Cite this Program
 
 If you use this program in your analysis, please cite it as:
 
-Sukumaran, J. 2008. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.* Distributed with the *DendroPy Phylogenetic Computation Library Version 2.0.0* (http://sourceforge.net/projects/dendropy).
+    Sukumaran, J. 2008. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.* Part of the: *DendroPy Phylogenetic Computation Library Version 2.0.0* (http://sourceforge.net/projects/dendropy).
+    
+    Sukumaran, J. and Mark T. Holder. 2008. *DendroPy Phylogenetic Computation Library Version 2.0.3* (http://sourceforge.net/projects/dendropy).
 
 Copyright, License and Warranty
 ===============================
 
-SumTrees is |copy| 2008 Jeet Sukumaran.
-DendroPy is |copy| 2008 Jeet Sukumaran and Mark Holder.
+SumTrees is: Copyright 2008 Jeet Sukumaran.
+DendroPy is: Copyright 2008 Jeet Sukumaran and Mark Holder.
   
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
@@ -323,6 +325,3 @@ Public License <http://www.gnu.org/licenses/gpl.html>`_ for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-.. include:: <isonum.txt>
-
