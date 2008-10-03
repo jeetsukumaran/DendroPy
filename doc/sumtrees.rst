@@ -182,7 +182,7 @@ You can use SumTrees to construct a majority-rule clade consensus tree out of yo
     
     $ sumtrees.py phylo.trees
 
-This command will construct a 95% majority rule clade consensus tree out of the all the trees found in "``phylo.trees``", label each node with its posterior probability and output the resulting tree in NEXUS format to the terminal.
+This command will construct a 50% majority rule clade consensus tree out of the all the trees found in "``phylo.trees``", label each node with its posterior probability and output the resulting tree in NEXUS format to the terminal.
 
 Of course, we want to discard the first few samples of trees, as these were probably not drawn in frequencies in proportion to the stationary distribution of the chain.
 To do this::
