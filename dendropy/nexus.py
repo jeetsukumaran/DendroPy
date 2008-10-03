@@ -84,12 +84,18 @@ def iterate_over_trees(src=None, taxa_block=None):
 
     else:
         ### if not NEXUS, assume NEWICK ###
+#         nr = NewickReader()
+#         trees = nr.read_trees(src, taxa_block=taxa_block)
+#         for t in trees:
+#             yield t
         stream_tokenizer.stream_handle.seek(0)
         while not stream_tokenizer.eof:
-            yield parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
+            tree = parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
                                                  taxa_block=None, 
                                                  translate_dict=None) 
-
+            if tree:
+                yield tree
+                                                 
 ############################################################################
 ## Universal Nex-ish Readers
 
@@ -240,7 +246,7 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
                     label = node.label                      
                 node.taxon = taxa_block.find_taxon(label=label, update=True)            
         return tree
-    else:
+    else:        
         return None
 
 def parse_newick_node_stream(stream_tokenizer, tree):
@@ -251,13 +257,8 @@ def parse_newick_node_stream(stream_tokenizer, tree):
     """
     node = trees.Node()
     token = stream_tokenizer.read_next_token()
-    while token and token != ')' and token != ',':            
+    while token and token != ')' and token != ',' and token != ";":  
         if token=="." or token not in NexusStreamTokenizer.punctuation:
-#                 if translate_dict and token in translate_dict:
-#                     label = translate_dict[token]
-#                 else:
-#                     label = token
-#                 node.taxon = taxa_block.find_taxon(label=label, update=True)
             if node.label is None:
                 node.label = token
             else:                    
@@ -274,7 +275,7 @@ def parse_newick_node_stream(stream_tokenizer, tree):
                 if child_node:
                     node.add_child(child_node)
                 token = stream_tokenizer.current_token                  
-        token = stream_tokenizer.read_next_token()             
+        token = stream_tokenizer.read_next_token()    
     return node     
         
      

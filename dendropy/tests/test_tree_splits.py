@@ -48,13 +48,13 @@ class SplitsOnTreesTest(unittest.TestCase):
     
     def setUp(self):
         self.data_files = [   
-            ["anolis.chars.nexus", "anolis.mbcon.trees.nexus"],
             ["anolis.chars.nexus", "anolis.mcmct.trees.nexus"],
-            ["primates.chars.nexus", "primates.mcmct.trees.nexus"],
+            ["primates.chars.nexus", "primates.mcmct.trees.newick"],
         ]
                 
     def check_split_summarization(self, data_file, tree_file, min_clade_freq=0.5, burnin=0):
-        tax_labels, biparts, bpc, bpf = paup.bipartitions(data_file, tree_file, min_clade_freq, burnin)
+        nexus_tree_file = tree_file.replace("newick", "nexus")
+        tax_labels, biparts, bpc, bpf = paup.bipartitions(data_file, nexus_tree_file, min_clade_freq, burnin)
         biparts = bpc.keys()
         biparts_c = []
         for bipart in biparts:
@@ -88,7 +88,7 @@ class SplitsOnTreesTest(unittest.TestCase):
             self.failUnless(s in dendropy_split_strings or s in dendropy_split_strings_c,
                             "DendroPy did not find: %s" % s)
                             
-        _LOG.info("\n--SUCCESS--\n")                            
+        _LOG.info("\n--SUCCESS--\n") 
                             
     def test_splits_summary(self):
         for df in self.data_files:
