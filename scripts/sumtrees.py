@@ -154,9 +154,9 @@ def main_cli():
                       default=True,
                       help="indicate branch support as branch lengths (otherwise support will be indicated by internal node labels)")   
     output_tree_optgroup.add_option('-p', '--percentages',  
-                      action='store_false', 
+                      action='store_true', 
                       dest='support_as_percentages',
-                      default=True,
+                      default=False,
                       help="indicate branch support as percentages (otherwise, will report as proportions by default)")     
     output_tree_optgroup.add_option('-d', '--decimals', 
                       dest='support_label_decimals',
@@ -313,8 +313,8 @@ def main_cli():
         tsum.progress_message_suffix = "\n"
 
     messenger.send("### COUNTING SPLITS ###\n")                
-    split_distribution = tsum.count_splits(tree_files=support_filepaths, 
-                                           tree_iterator=nexus.iterate_over_trees) 
+    split_distribution = tsum.count_splits_on_trees(tree_files=support_filepaths, 
+                                                    tree_iterator=nexus.iterate_over_trees) 
         
     report = []
     report.append("%d trees read from %d files." % (tsum.total_trees_read, len(support_filepaths)))

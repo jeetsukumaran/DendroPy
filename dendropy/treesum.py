@@ -69,7 +69,7 @@ class TreeSummarizer(object):
         self.progress_message_suffix = None
         self.total_trees_read = 0    
         self.total_trees_counted = 0         
-        self.total_trees_ignored = 0         
+        self.total_trees_ignored = 0
         
     def send_progress_message(self, msg):
         """
@@ -187,7 +187,7 @@ class TreeSummarizer(object):
                     node.edge.length = 0.0
         return con_tree                
                                                 
-    def count_splits(self, tree_files, tree_iterator, split_distribution=None, taxa_block=None):
+    def count_splits_on_trees(self, tree_files, tree_iterator, split_distribution=None, taxa_block=None):
         """
         Given a list of trees file, a SplitsDistribution object (a new one, or,
         if passed as an argument) is returned collating the split data in the files.
@@ -213,7 +213,7 @@ class TreeSummarizer(object):
                     self.total_trees_counted += 1
                     self.send_progress_message("%sCounting splits in tree %d" % (current_file_note, (tree_idx+1)))
                     #tree.normalize_taxa(taxa_block=split_distribution.taxa_block, update_taxa_block=True)
-                    split_distribution.count_splits(tree)
+                    split_distribution.count_splits_on_tree(tree)
                 else:
                     self.total_trees_ignored += 1
                     self.send_progress_message("%sSkipping tree %d (burn-in=%d)" % (current_file_note, (tree_idx+1), self.burnin))        
