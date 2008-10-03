@@ -54,7 +54,7 @@ def split_as_string(split_mask, taxa_block, symbol1='.', symbol2='*'):
 def split_as_string_rev(split_mask, taxa_block, symbol1='.', symbol2='*'):
     """
     Returns a 'pretty' split representation, reversed, with first taxon
-    on the left.
+    on the left (as given by PAUP*)
     """
     return split_as_string(split_mask=split_mask, 
                            taxa_block=taxa_block, 
