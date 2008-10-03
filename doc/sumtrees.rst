@@ -223,19 +223,12 @@ The biggest problem faced by most users is not so much not having Python install
 
     $ python -V
     
-SumTrees, and the DendroPy library that it is part of, works out-of-the-box with Python 2.5 (and all subvariants: 2.5.0, 2.5.1, 2.5.2, etc.). 
-
-SumTrees itself works under Python 2.4 (though not all of DendroPy does: the NEXML parser requires the download and installation of one additional module (`ElementTrees <http://effbot.org/downloads/#elementtree>`_). 
+SumTrees, and the DendroPy library that it is part of, works out-of-the-box with Python version 2.4 or greater, up to and including Python 2.6. 
 
 SumTrees will not work with versions of Python prior to 2.4, such as Python 2.3. It can probably be made to work pretty easily, and if you have strong enough motiviation to use Python 2.3, it might be worth the effort for you.
 It is not for me.
 
-The program and library per se also works fine under Python 2.6 as-is, but due to the current unavailability of `setuptools <http://peak.telecommunity.com/DevCenter/setuptools>`_ as an automated download for Python 2.6, the installation and setup of the library is broken.  
-For the time being, if you happen to be working with Python 2.6 installation, you will have to manually install the packages by copying the various files to the appropriate directories on your system. 
-Basically, the subdirectory "``dendropy``" gets moved to your Python installation "``site-packages``", while the script file "``sumtrees.py``" can be placed anywhere on you system path. 
-If you know what you are doing, this should be fairly trivial to do.
-
-SumTrees and DendroPy is flat-out broken under Python 3.0.
+SumTrees (and DendroPy, and, for that matter, most existing Python code) is flat-out broken under Python 3.0.
 
 All this can be summarized as the follows:
 
@@ -249,10 +242,9 @@ All this can be summarized as the follows:
     
     **2.5** shalt be the number thou shalt count, and the number of the counting shall be **2.5**.     
     
-    **2.6** shalt thou not count, nor either count thou **2.4**, excepting that thou then proceed to **2.5**.     
+    **3.0** shalt thou not count, nor either count thou **2.3**, excepting that thou then proceed to **2.5**.     
     
-    **3.0** is right out.
-
+    **4.0** is right out.
 
 My Computer Does Not Know What a Python Is
 -------------------------------------------
@@ -265,113 +257,21 @@ it is either because Python is not installed on your system, or is not found on 
 
 SumTrees is a Python script, and, as such, you will need to have a Python interpreter installed on your system.
 
-Otherwise, you must download and install Python 2.5 from: http://www.python.org/download/releases/2.5.2/.
+Otherwise, you must download and install Python 2.6 from: http://www.python.org/download/releases/2.6/.
 For your convenience, the clicking on the following links should lead you directly to the appropriate pre-compiled download:
 
-* `Mac OS X <http://www.python.org/ftp/python/2.5.2/python-2.5.2-macosx.dmg>`_
-* `Microsoft Windows <http://www.python.org/ftp/python/2.5.2/python-2.5.2.msi>`_
+* `Mac OS X <http://www.python.org/ftp/python/2.6/python-2.6-macosx.dmg>`_
+* `Microsoft Windows <http://www.python.org/ftp/python/2.6/python-2.6.msi>`_
 
-For other platforms, the usual "``./configure``", "``make``", and "``sudo make install``" dance should get you up and running the following:
+For other platforms, the usual "``./configure``", "``make``", and "``sudo make install``" dance should get you up and running with the following:
 
-* `Cross-platform Source <http://www.python.org/ftp/python/2.5.2/Python-2.5.2.tgz>`_
+* `Cross-platform Source <http://www.python.org/ftp/python/2.6/Python-2.6.tgz>`_
 
 Microsoft Windows users should also refer to the `"Python Windows FAQ" <http://www.python.org/doc/faq/windows.html>`_
 (http://www.python.org/doc/faq/windows.html)
 after installing Python, and pay particular attention to the
 `"How do I run a Python program under Windows?" <http://www.python.org/doc/faq/windows.html#id2>`_ section, as it will
 help them greatly in getting Python up and running on the system path.
-
-
-My Computer Says, "``ImportError: No module named setuptools``"
----------------------------------------------------------------
-
-When trying to install DendroPy using "``sudo python setup.py``", if you get the following error::
-
-        Traceback (most recent call last):
-          File "setup.py", line 29, in <module>
-            from setuptools import setup, find_packages
-        ImportError: No module named setuptools
-        
-then this means that the automated download and installation of the `setuptools <http://peak.telecommunity.com/DevCenter/setuptools>`_ package failed for some reason.        
-
-If so, you need to download the setuptools installer from http://peak.telecommunity.com/dist/ez_setup.py and run it using "``sudo python ez_setup.py``"::
-
-    $ curl -O http://peak.telecommunity.com/dist/ez_setup.py
-    $ sudo python ez_setup.py
-
-This will automatically download and install setuptools for you.
-After this you can repeat the previous step to actually install the DendroPy library::
-
-    $ sudo python setup.py install
-
-My Computer Says, "``ImportError: ElementTrees package not available``"
------------------------------------------------------------------------
-
-When trying to run SumTrees, if you get the following error::
-
-    XML parsing requires the ElementTrees package (http://effbot.org/zone/element.htm) installed if using Python older than Version 2.5.0.
-    Traceback (most recent call last):
-      File "dendropy/tests/test_tree_io.py", line 51, in ?
-        from dendropy import nexml
-      File "/Users/jeet/Documents/Projects/Phyloinformatics/DendroPy/dendropy/dendropy/nexml.py", line 37, in ?
-        from dendropy import xmlparser
-      File "/Users/jeet/Documents/Projects/Phyloinformatics/DendroPy/dendropy/dendropy/xmlparser.py", line 40, in ?
-        raise ImportError("ElementTrees package not available")
-    ImportError: ElementTrees package not available
-
-it is probably because you are running an older version of Python (such as Python 2.4), and this version is missing the `ElementTrees module <http://effbot.org/downloads/#elementtree>`_ that SumTrees uses.
-If you go to http://effbot.org/downloads/#elementtree, you should be able to download and install this module.
-For your convenience, here are some direct download links:
-    
-* `For Linux, UNIX, Mac OS X, and other such excellent operating systems <http://effbot.org/media/downloads/elementtree-1.2.6-20050316.zip>`_
-
-* `For Microsoft Windows <http://effbot.org/media/downloads/elementtree-1.2.6-20050316.win32.exe>`_
-
-Installation would involve unarchiving the download, entering the directory and running "``sudo python setup.py``"::
-
-    $ unzip elementtree-1.2.6-20050316.zip
-    $ cd elementtree-1.2.6-20050316
-    $ sudo python setup.py
-    
-After this, DendroPy and SumTrees should work fine.
-More information on ElemenTrees can be found `on the ElementTreesproject website <http://effbot.org/zone/element.htm>`_.
-
-My Computer Says, "``urllib2.HTTPError: HTTP Error 404: Not Found``"
---------------------------------------------------------------------
-
-If, when trying to install DendroPy, the following error occurs::
-
-    Downloading http://pypi.python.org/packages/2.6/s/setuptools/setuptools-0.6c9-py2.6.egg
-    Traceback (most recent call last):
-      File "setup.py", line 29, in <module>
-        ez_setup.use_setuptools()
-      File "/Users/jeet/Scratch/dendropy/ez_setup.py", line 94, in use_setuptools
-        return do_download()       
-      File "/Users/jeet/Scratch/dendropy/ez_setup.py", line 88, in do_download
-        egg = download_setuptools(version, download_base, to_dir, download_delay)
-      File "/Users/jeet/Scratch/dendropy/ez_setup.py", line 149, in download_setuptools
-        src = urllib2.urlopen(url)
-      File "/opt/python-2.6rc2/lib/python2.6/urllib2.py", line 124, in urlopen
-        return _opener.open(url, data, timeout)
-      File "/opt/python-2.6rc2/lib/python2.6/urllib2.py", line 389, in open
-        response = meth(req, response)
-      File "/opt/python-2.6rc2/lib/python2.6/urllib2.py", line 502, in http_response
-        'http', request, response, code, msg, hdrs)
-      File "/opt/python-2.6rc2/lib/python2.6/urllib2.py", line 427, in error
-        return self._call_chain(*args)
-      File "/opt/python-2.6rc2/lib/python2.6/urllib2.py", line 361, in _call_chain
-        result = func(*args)
-      File "/opt/python-2.6rc2/lib/python2.6/urllib2.py", line 510, in http_error_default
-        raise HTTPError(req.get_full_url(), code, msg, hdrs, fp)
-    urllib2.HTTPError: HTTP Error 404: Not Found
-
-this is because the Python installation "egg" for your version of Python (probably cutting-edge 2.6) could not be found on the web.
-Your options are, at this point:
-
-    * Find or install, and use, `Python 2.5 <http://www.python.org/download/releases/2.5.2>`.
-    * Download, build, and install `setuptools <http://peak.telecommunity.com/DevCenter/setuptools>`_  using your version of Python and try again.
-    * Try manually installing DendroPy (see below).    
-    * Wait for the folks `setuptools <http://peak.telecommunity.com/DevCenter/setuptools>`_ to release a version that works with your version of Python   
 
 Manual Installation
 ===================
@@ -383,13 +283,19 @@ There are a couple of different things you could do:
 
 * Copy (or symlink) the "``dendropy``" directory to the "``site-packages``" directory of your Python installation, and place the file "``scripts\sumtrees.py``" on your system path. 
 
-
 Bugs, Suggestions, Comments, etc.
 =================================
 
 If you encounter any problems, errors, crashes etc. while using this program, please let me know at jeet@ku.edu. If you include the term "sumtrees" anywhere on the subject line (e.g. "Problem such-and-such with bootscore), it would help greatly with getting through the spam filter. Please include all the datafiles involved, as 
 well the complete command used (with all the options and parameters) and the complete error message returned (simply cutting-and-pasting the terminal text should work fine).
 Please feel free to contact me if you have any other questions, suggestions or comments as well.
+
+Acknowledgments
+================
+SumTrees is part of the `DendroPy
+<http://sourceforge.net/projects/dendropy/>`_ library, which is authored by myself (`Jeet Sukumaran <http://people.ku.edu/~jeet>`_) and `Mark T. Holder <http://people.ku.edu/~mtholder>`_.
+We would like to thank all the people who have contributed suggestions, bug reports and critiqes, and especially our *de facto* beta testers who contributed valuable time and trusted our program with their valuable data: `Charles W. Linkem <http://people.ku.edu/~cwlinkem>`_ and `Jamie Oaks <http://people.ku.edu/~joaks1>`_.
+
 
 How to Cite this Program
 =========================
@@ -419,3 +325,4 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 .. include:: <isonum.txt>
+
