@@ -28,7 +28,7 @@ Split calculation and management.
 
 from dendropy import taxa
 from dendropy import trees
-from dendropy import treegens
+from dendropy import treegen
 
 def is_non_singleton_split(split):
     """
@@ -376,7 +376,7 @@ class TreeSplitSummarizer(object):
         Returns a consensus tree constructed from splits given in `split_distribution`.
         """
         taxa_block = split_distribution.taxa_block
-        con_tree = treegens.star_tree(taxa_block)
+        con_tree = treegen.star_tree(taxa_block)
         split_freqs = split_distribution.split_frequencies
         taxa_mask = taxa_block.all_taxa_bitmask()
         for split in split_freqs:          

@@ -33,7 +33,7 @@ import dendropy.tests
 _LOG = get_logger("Tree Generation and Simulation")
 
 ### MODULE THAT WE ARE TESTING ###
-from dendropy import treegens
+from dendropy import treegen
 ### MODULE THAT WE ARE TESTING ###
 
 class TreeGenTest(unittest.TestCase):
@@ -45,8 +45,8 @@ class TreeGenTest(unittest.TestCase):
         ages = [random.randint(1000,10000) for age in range(ntax)]
         ages.sort()
         pop_sizes = [random.randint(1000,10000) for pop in range(2*ntax+1)]
-        taxa_block = treegens.random_taxa_block(ntax)
-        species_tree = treegens.pop_gen_tree(taxa_block=taxa_block,
+        taxa_block = treegen.random_taxa_block(ntax)
+        species_tree = treegen.pop_gen_tree(taxa_block=taxa_block,
                                                  ages=ages,
                                                  num_genes=4,
                                                  pop_sizes=pop_sizes)
@@ -84,7 +84,7 @@ class TreeGenTest(unittest.TestCase):
         _LOG.debug("Generating 20 gene trees conditional on this species tree ...")
         gene_trees = []
         while len(gene_trees) < 20:
-            gene_trees.append(treegens.constrained_kingman(species_tree)[0])
+            gene_trees.append(treegen.constrained_kingman(species_tree)[0])
             
 if __name__ == "__main__":
     unittest.main()

@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 ############################################################################
-##  treegens.py
+##  treegen.py
 ##
 ##  Part of the DendroPy phylogenetic computation library.
 ##
