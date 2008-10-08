@@ -30,7 +30,34 @@ import copy
 
 from dendropy import GLOBAL_RNG
 from dendropy import characters
+from dendropy import charmodels
 
+def hky_char_block(seq_len,
+    model_tree,                   
+    taxon_block,
+    root_states=None,
+    rate_modifier=1.0, 
+    kappa=1.0,
+    base_freqs=[0.25, 0.25, 0.25, 0.25],
+    rng=None):
+    """
+    Convenience class to wrap generation of a CharacterBlock based on
+    the HKY model.
+    """
+    char_model = charmodels.Hky85CharacterModel(kappa=kappa, 
+                                                base_freqs=base_freqs)
+    char_evolver = CharEvolver(char_model=char_model,
+                               mutatation_rate=mutation_rate)
+    tree = char_evolver(tree=model_tree,
+        seq_len=seq_len,
+        root_states=None)
+        rng=rng)
+    char_matrix = compose_char_matrix(tree)
+    char_block = characters.DnaCharactersBlock()
+    char_block.taxon_block = taxon_block
+    char_block.matrix = char_matrix
+    return char_block
+        
 def compose_char_matrix(self, tree, include=None, exclude=None):
     """
     Returns a CharacterDataMatrix where the keys are the taxa of the leaves
@@ -52,19 +79,19 @@ def compose_char_matrix(self, tree, include=None, exclude=None):
         char_matrix[leaf.taxon] = cvec                                
     return char_matrix    
          
-class TreeEvolver(object):
+class CharEvolver(object):
     """
     Evolves sequences on a Tree.
     """
 
     def __init__(self,
-                 char_model=None,
-                 mutation_rate=None,
-                 seq_attr='sequences',
-                 char_model_attr="char_model",                 
-                 edge_length_attr="length",
-                 edge_rate_attr="mutation_rate",
-                 seq_label_attr='taxon'):
+     char_model=None,
+     mutation_rate=None,
+     seq_attr='sequences',
+     char_model_attr="char_model",                 
+     edge_length_attr="length",
+     edge_rate_attr="mutation_rate",
+     seq_label_attr='taxon'):
         """
         Sets up meta-data dealing with object nomenclature and semantics.
         """
@@ -77,12 +104,12 @@ class TreeEvolver(object):
         self.seq_label_attr = seq_label_attr
     
     def evolve_states(self,
-                     tree,
-                     seq_len,
-                     root_states=None,
-                     generate_root_states=True,
-                     in_place=False,
-                     rng=None):
+     tree,
+     seq_len,
+     root_states=None,
+     generate_root_states=True,
+     in_place=False,
+     rng=None):
         """
         Appends a new sequence of length `seq_len` to a list at each node
         in `tree`.  The attribute name of this list in each node is given
