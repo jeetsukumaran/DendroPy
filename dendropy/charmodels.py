@@ -82,19 +82,23 @@ class DiscreteCharacterModel(CharacterModel):
             rng = self.rng
         return self.char_model.stationary_sample(length, self.rng)
         
-    def generate_descendant_states(self, ancestral_states, edge_length, mutation_rate=1.0):
+    def generate_descendant_states(self, 
+        ancestral_states, 
+        edge_length, 
+        mutation_rate=1.0,
+        rng=None):
         """
         Returns descendent sequence given ancestral sequence.
         """        
         if rng is None:
             rng = self.rng        
-        pmat = self.char_model.pmatrix(edge_length, mutation_rate)
+        pmat = self.pmatrix(edge_length, mutation_rate)
         multi = distributions.sample_multinomial
         desc_states = []
         for state in ancestral_states:
-            anc_state_idx = self.char_model.state_alphabet.index(state)
+            anc_state_idx = self.state_alphabet.index(state)
             desc_state_idx = multi(pmat[anc_state_idx], rng)
-            desc_states.append(self.char_model.state_alphabet[desc_state_idx])        
+            desc_states.append(self.state_alphabet[desc_state_idx])        
         return desc_states
 
         

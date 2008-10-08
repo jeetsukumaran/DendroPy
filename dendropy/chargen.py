@@ -29,56 +29,69 @@ Evolves characters on tree.
 import copy
 
 from dendropy import GLOBAL_RNG
+from dendropy import datasets
 from dendropy import characters
 from dendropy import charmodels
 
-def hky_char_block(seq_len,
+def generate_hky_dataset(seq_len,
     model_tree,                   
-    taxon_block,
-    root_states=None,
-    rate_modifier=1.0, 
+    mutation_rate=1.0, 
     kappa=1.0,
     base_freqs=[0.25, 0.25, 0.25, 0.25],
+    root_states=None,    
+    dataset=None,
+    taxa_block=None,    
     rng=None):
     """
-    Convenience class to wrap generation of a CharacterBlock based on
+    Convenience class to wrap generation of a dataset based on
     the HKY model.
     """
     char_model = charmodels.Hky85CharacterModel(kappa=kappa, 
                                                 base_freqs=base_freqs)
-    char_evolver = CharEvolver(char_model=char_model,
-                               mutatation_rate=mutation_rate)
-    tree = char_evolver(tree=model_tree,
-        seq_len=seq_len,
-        root_states=None)
-        rng=rng)
-    char_matrix = compose_char_matrix(tree)
-    char_block = characters.DnaCharactersBlock()
-    char_block.taxon_block = taxon_block
-    char_block.matrix = char_matrix
-    return char_block
+    return generate_dataset(seq_len=seq_len,
+        model_tree=model_tree,
+        char_model=char_model,
+        mutation_rate=mutation_rate,
+        root_states=root_states,
+        dataset=dataset,
+        taxa_block=taxa_block,
+        rng=None)
         
-def compose_char_matrix(self, tree, include=None, exclude=None):
+
+def generate_dataset(seq_len,
+    model_tree,
+    char_model,
+    mutation_rate=1.0,       
+    root_states=None, 
+    dataset=None,
+    taxa_block=None,
+    rng=None):
     """
-    Returns a CharacterDataMatrix where the keys are the taxa of the leaves
-    of `source_tree` and the values are sequences, with each sequence being the
-    concatentation of all the sequences in the list of sequences associated with
-    each tip. Specific sequences to be included/excluded can be fine-tuned using
-    the `include` and `exclude` args, where `include`=None means to include all
-    by default, and `exclude`=None means to exclude all by default.
+    Wrapper to conveniently generate a dataset with
+    a characters block simulated under the given tree and character model.
     """
-    char_matrix = characters.CharacterDataMatrix()
-    for leaf in tree.leaves():
-        cvec = characters.CharacterDataVector(taxon=leaf.taxon)
-        seq_list = getattr(leaf, self.seq_attr)
-        for seq_idx, seq in enumeratge(seq_list):
-            if ((include is None) or (seq_idx in include))  \
-                and ((exclude is None) or (seq_idx not in exclude)):
-                for state in seq:
-                    cvec.append(characters.CharacterDataCell(value=state))
-        char_matrix[leaf.taxon] = cvec                                
-    return char_matrix    
-         
+    if dataset is None:
+        dataset = datasets.Dataset()
+    if taxa_block is None:
+        taxa_block = model_tree.infer_taxa_block()
+    if taxa_block not in dataset.taxa_blocks:
+        dataset.add_taxa_block(taxa_block=taxa_block)
+    
+#     char_model = charmodels.Hky85CharacterModel(kappa=kappa, 
+#                                                 base_freqs=base_freqs)
+    char_evolver = CharEvolver(char_model=char_model,
+                               mutation_rate=mutation_rate)
+    tree = char_evolver.evolve_states(tree=model_tree,
+        seq_len=seq_len,
+        root_states=None,
+        rng=rng)
+    char_matrix = char_evolver.compose_char_matrix(tree, taxa_block)
+    char_block = characters.DnaCharactersBlock()
+    char_block.taxa_block = taxa_block
+    char_block.matrix = char_matrix
+    dataset.add_char_block(char_block=char_block)
+    return dataset
+                         
 class CharEvolver(object):
     """
     Evolves sequences on a Tree.
@@ -155,6 +168,31 @@ class CharEvolver(object):
                     assert n_prev_seq > 0
                     n_prev_seq -= 1
         return tree
+        
+    def compose_char_matrix(self, tree, taxa_block=None, include=None, exclude=None):
+        """
+        Returns a CharacterDataMatrix where the keys are the taxa of the leaves
+        of `source_tree` and the values are sequences, with each sequence being the
+        concatentation of all the sequences in the list of sequences associated with
+        each tip. Specific sequences to be included/excluded can be fine-tuned using
+        the `include` and `exclude` args, where `include`=None means to include all
+        by default, and `exclude`=None means to exclude all by default.
+        """
+        char_matrix = characters.CharacterDataMatrix()
+        for leaf in tree.leaves():
+            cvec = characters.CharacterDataVector(taxon=leaf.taxon)
+            seq_list = getattr(leaf, self.seq_attr)
+            for seq_idx, seq in enumerate(seq_list):
+                if ((include is None) or (seq_idx in include))  \
+                    and ((exclude is None) or (seq_idx not in exclude)):
+                    for state in seq:
+                        cvec.append(characters.CharacterDataCell(value=state))
+            if taxa_block is not None:
+                taxon = taxa_block.find_taxon(label=leaf.taxon.label, update=True)
+            else:
+                taxon = leaf.taxon
+            char_matrix[taxon] = cvec                                
+        return char_matrix        
                         
     def generate_char_matrix(self, tree, seq_len=1000):
         """
@@ -169,7 +207,11 @@ class CharEvolver(object):
             states = getattr(leaf, self.seq_attr)[-1]
             for state in states:
                 cvec.append(characters.CharacterDataCell(value=state))
-            char_matrix[leaf.taxon] = cvec                                
+            if taxa_block is not None:
+                taxon = taxa_block.find_taxon(label=leaf.taxon.label, update=True)
+            else:
+                taxon = leaf.taxon
+            char_matrix[taxon] = cvec                              
         return char_matrix
 
 
