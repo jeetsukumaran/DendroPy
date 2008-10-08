@@ -111,6 +111,7 @@ def store_dataset(format, dataset, dest=None):
     If `dest` is not given, then the dataset is written to a string and a string 
     is returned.
     """
+    writer = get_writer(format)
     if dest is None:
         dest = StringIO.StringIO()
     if isinstance(dest, str):
@@ -132,8 +133,8 @@ def store_trees(format, trees, dest=None):
         trees_block.normalize_taxa()
     dataset = Dataset()
     dataset.add_trees_block(trees_block=trees_block)
-    write_dataset(dataset=dataset,
-                  writer=writer,
+    store_dataset(format,
+                  dataset=dataset,
                   dest=dest)
 
 ############################################################################
@@ -150,14 +151,27 @@ def source_file_handle(file=None, string=None):
         file = open(file, "r")
     return file    
     
+def get_writer(format):
+    """
+    Return reader of the appropriate format.
+    """
+    format = format.upper()
+    if format not in WRITERS:
+        raise Exception('Unrecognized format specificiation "%s", ' \
+            'must be one of: %s' % (format,
+             ", ".join([('"'+f+'"') for f in WRITERS]),
+             ))
+    return WRITERS[format]()      
+    
 def get_reader(format):
     """
     Return reader of the appropriate format.
     """
     format = format.upper()
     if format not in READERS:
-        raise Exception('Unrecognized format specificiation "%s", must be one of: %s' % (format,
-                                                                                         ", ".join([('"'+f+'"') for f in FORMATS]),
-                                                                                         ))
+        raise Exception('Unrecognized format specificiation "%s", ' \
+            'must be one of: %s' % (format,
+             ", ".join([('"'+f+'"') for f in READERS]),
+             ))
     return READERS[format]()            
     
