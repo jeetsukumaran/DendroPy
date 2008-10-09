@@ -30,6 +30,7 @@ import re
 import subprocess
 import tempfile
 from dendropy import datasets
+from dendropy import dataio
 
 def bipartitions(data_filepath,
                  tree_filepath,
