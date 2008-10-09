@@ -100,6 +100,11 @@ def iterate_over_trees(src=None, taxa_block=None):
 ## Universal Nex-ish Readers
 
 def read_dataset(src, dataset=None):
+    """
+    Note: due to usage of seek(), does not work on stream sources 
+    (such as stdin). In this case, client must either buffer stream to string
+    (e.g. src=StringIO.StringIO(sys.stdin.read())) or use direct methods.
+    """
     stream_tokenizer = NexusStreamTokenizer(src)
     token = stream_tokenizer.read_next_token_ucase()
     stream_tokenizer.stream_handle.seek(0)
