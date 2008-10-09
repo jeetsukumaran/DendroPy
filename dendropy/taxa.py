@@ -175,6 +175,12 @@ class TaxaBlock(list, base.IdTagged):
         """
         return pow(2, len(self)) - 1
         
+    def labels(self):
+        """
+        Convenience method to return all taxa labels.
+        """
+        return [str(taxon.label) for taxon in self]
+        
     def taxon_bitmask(self, taxon):
         """
         Returns unique bitmask of given taxon. Will raise index error if
