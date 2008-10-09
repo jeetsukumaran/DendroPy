@@ -591,7 +591,25 @@ class CharactersBlock(taxa.TaxaLinked):
         for taxon in self:
             if taxon not in self.taxa_block:
                 self.taxa_block.append(taxon)
-        self.taxa_block.sort()                
+        self.taxa_block.sort()
+        
+    def normalize_taxa(self, taxa_block=None, clear=True):
+        """
+        Rebuilds taxa block from scratch, or assigns taxon objects from
+        given taxa_block based on labels.
+        """
+        if taxa_block is None:
+            taxa_block = taxa.TaxaBlock()
+        if clear:
+            taxa_block.clear()
+        new_matrix = CharacterDataMatrix()            
+        for taxon, seq in self.matrix.items():
+            taxon = taxa_block.find_taxon(label=taxon.label, update=True)
+            new_matrix[taxon] = seq
+        taxa_block.sort()
+        self.taxa_block = taxa_block
+        self.matrix = new_matrix
+        return taxa_block         
         
     def vectors(self):
         """

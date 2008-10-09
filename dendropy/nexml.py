@@ -1170,18 +1170,3 @@ class NexmlWriter(datasets.Writer):
             parts = '\n'.join(parts)
             dest.write(parts + '\n')
 
-def basic_test():
-    source = "tests/sources/comprehensive.xml"
-    nexmlr = NexmlReader()
-    dataset = nexmlr.read_dataset(source)                
-    target = "tests/output/parsed.xml"                
-    nexmlw = NexmlWriter()
-    print
-    print
-    #print nexmlw.compose_dataset(dataset)
-    output = open(target, 'w')
-    nexmlw.store_dataset(dataset=dataset, destination=output)
-    
-if __name__ == "__main__":
-    basic_test()
-    

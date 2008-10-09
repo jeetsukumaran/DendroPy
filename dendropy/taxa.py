@@ -163,6 +163,19 @@ class TaxaBlock(list, base.IdTagged):
         """
         self.find_taxon(elem_id=elem_id, label=label, update=True)
         
+    def clear(self):
+        """
+        Removes all taxa from this block.
+        """
+        for t in self:
+            self.remove(t)
+            
+    def labels(self):
+        """
+        Convenience method to return all taxa labels.
+        """
+        return [str(taxon.label) for taxon in self]        
+        
     def complement_split_bitmask(self, split):
         """
         Returns complement of the split bitmask.
@@ -174,12 +187,6 @@ class TaxaBlock(list, base.IdTagged):
         Returns mask of all taxa.
         """
         return pow(2, len(self)) - 1
-        
-    def labels(self):
-        """
-        Convenience method to return all taxa labels.
-        """
-        return [str(taxon.label) for taxon in self]
         
     def taxon_bitmask(self, taxon):
         """

@@ -706,7 +706,7 @@ class NexusReader(datasets.Reader):
                                             translate_dict=self.tree_translate_dict)
             tree.label = tree_name
         if self.stream_tokenizer.current_token != ';':
-            self.skip_to_semicolon()
+            self.stream_tokenizer.skip_to_semicolon()
         return tree
 
     def parse_translate_statement(self):

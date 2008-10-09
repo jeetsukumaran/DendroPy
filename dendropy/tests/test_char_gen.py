@@ -61,7 +61,7 @@ end;
 class CharGenTest(unittest.TestCase):
     
     def testCharGen(self):
-        source_ds = dataio.get_nexus(model_tree_string)
+        source_ds = dataio.get_nexus(string=model_tree_string)
         tree_model = source_ds.trees_blocks[0][0]
         output_ds = chargen.generate_hky_dataset(10000, tree_model=tree_model)
         tb = output_ds.taxa_blocks[0]
@@ -74,7 +74,35 @@ class CharGenTest(unittest.TestCase):
 #         for t in cb:
 #             _LOG.info("\n%s:      %s" % (str(t), cb[t].values_as_string()))
             
-        _LOG.debug(dataio.store_dataset('nexus', output_ds))
+        _LOG.debug(dataio.store_dataset(dataset=output_ds, format='nexus'))
                     
 if __name__ == "__main__":
     unittest.main()
+
+# lset nst=6 rmatrix=estimate basefreq=equal rates=equal pinvar=0
+# lscore / userbrlen
+# Likelihood scores of tree(s) in memory:
+#   Likelihood settings:
+#     Number of substitution types  = 6
+#     Substitution rate-matrix parameters estimated via ML
+#     Assumed nucleotide frequencies (set by user):
+#       A=0.25000  C=0.25000  G=0.25000  T=0.25000
+#     Among-site rate variation:
+#       Assumed proportion of invariable sites  = none
+#       Distribution of rates at variable sites = equal
+#     These settings correspond to a submodel of the GTR model
+#     Number of distinct data patterns under this model = 954
+#     Molecular clock not enforced
+#     Branch lengths constrained to user-input values
+#     -ln L (unconstrained) = 58834.70584
+# 
+# Tree              1
+# -------------------
+# -ln L   59414.02245
+# Rate matrix R:
+#   AC        0.95326
+#   AG        0.96850
+#   AT        0.97641
+#   CG        1.00479
+#   CT        0.98176
+#   GT        1.00000

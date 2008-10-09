@@ -103,7 +103,7 @@ def get_nexus(file=None, string=None):
 ############################################################################
 ## Wrappers (Writing)    
 
-def store_dataset(format, dataset, dest=None):
+def store_dataset(dataset, format, dest=None):
     """
     Writes the Dataset object `dataset` using `writer` (a DatasetWriter or 
     derived object) to `dest`. If `dest` is a string, then it is assumed to be
@@ -133,8 +133,8 @@ def store_trees(format, trees, dest=None):
         trees_block.normalize_taxa()
     dataset = Dataset()
     dataset.add_trees_block(trees_block=trees_block)
-    store_dataset(format,
-                  dataset=dataset,
+    store_dataset(dataset=dataset,
+                  format=format,                  
                   dest=dest)
 
 ############################################################################

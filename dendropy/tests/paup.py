@@ -28,6 +28,7 @@ Various calls to PAUP* to calculate stuff.
 
 import re
 import subprocess
+from dendropy import datasets
 
 def bipartitions(data_filepath,
                  tree_filepath,
@@ -54,7 +55,7 @@ def bipartitions(data_filepath,
         'burnin': burnin+1,
     }
     paup_template = """\
-    set warnreset=yes;
+    set warnreset=no;
     set increase=auto;
     exe %(data_filepath)s;
     gett file=%(tree_filepath)s storebrlens=yes warntree=no unrooted=yes;
@@ -86,5 +87,60 @@ def bipartitions(data_filepath,
     return tax_labels, bipartitions, bipartition_counts, bipartition_freqs
 
 
-bipartitions("dendropy/tests/data/anolis.chars.nexus", "dendropy/tests/data/anolis.mbcon.trees.nexus")
+def estimate_char_model(model_tree,
+                        char_block,
+                        num_states=6,
+                        base_freqs_equal=True,
+                        gamma_rates=True,
+                        prop_invar=True):
+    """
+    Returns estimates of rates, base_frequencies, alpha, and prop_invar.
+    """
+    dataset = datasets.Dataset()
+    tree_block = dataset.add_trees_block()
+    tree_block.append(model_tree)
+    taxa_block = tree_block.normalize_taxa()
+    char_block.normalize_taxa(taxa_block=taxa_block)   
+    char_block = dataset.add_char_block(char_block=char_block)
+    print
+    print id(taxa_block)
+    for t in taxa_block:
+        print id(t), str(t)
+    print        
+    print id(char_block.taxa_block)
+    for t in char_block.taxa_block:
+        print id(t), str(t)   
+    tb = dataset.taxa_blocks[0]        
+    print        
+    print id(tb)
+    for t in tb:
+        print id(t), str(t)        
+    #print dataio.store_dataset(dataset=dataset, format='nexus')
+    paup_template = """\
+    set warnreset=no;
     
+"""    
+                        
+
+from dendropy import dataio
+from dendropy import chargen
+model_tree_string = """
+#NEXUS
+BEGIN TAXA;
+    DIMENSIONS NTAX=5;
+    TAXLABELS
+        A
+        B
+        C
+        D
+        E
+  ;
+END;
+begin trees;
+    tree true=(A:0.25,(B:0.25,(C:0.25,(D:0.25,E:0.25):0.25):0.25):0.25):0.25;
+end;
+"""
+source_ds = dataio.get_nexus(string=model_tree_string)
+tree_model = source_ds.trees_blocks[0][0]
+char_block = chargen.generate_hky_characters(10000, tree_model=tree_model)
+estimate_char_model(model_tree=tree_model, char_block=char_block)

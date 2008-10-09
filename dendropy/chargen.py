@@ -211,7 +211,9 @@ def generate_characters(seq_len,
     else:
         if taxa_block is not None:
             char_block.taxa_block = taxa_block  
-    char_block.extend_matrix(other_matrix=char_matrix)
+    char_block.extend_matrix(other_matrix=char_matrix, 
+        overwrite_existing=False, 
+        append_existing=True)
     return char_block
     
 ############################################################################

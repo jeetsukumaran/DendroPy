@@ -218,7 +218,6 @@ class TreeSummarizer(object):
                 if not self.burnin or file_trees_read > self.burnin:
                     self.total_trees_counted += 1
                     self.send_progress_message("%sCounting splits in tree %d" % (current_file_note, (tree_idx+1)))
-                    #tree.normalize_taxa(taxa_block=split_distribution.taxa_block, update_taxa_block=True)
                     split_distribution.count_splits_on_tree(tree)
                 else:
                     self.total_trees_ignored += 1
