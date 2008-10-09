@@ -446,14 +446,20 @@ class CharacterDataVector(list, taxa.TaxonLinked):
     def values(self):
         return [cell.value for cell in self]
         
-    def values_as_strings(self):
+    def values_as_string_list(self):
         if self:
             return [str(cell.value) for cell in self]
         else:
             return []
             
+    def values_as_string(self, sep=""):
+        if self:
+            return sep.join([str(cell.value) for cell in self])
+        else:
+            return ""        
+            
     def __str__(self):
-        return str(self.values_as_strings())
+        return str(self.values_as_string_list())
 
 class CharacterDataMatrix(dict, base.Annotated):
     """
@@ -466,20 +472,20 @@ class CharacterDataMatrix(dict, base.Annotated):
         dict.__init__(self)
         base.Annotated.__init__(self)
         
-    def extend_characters(self, other_char_block):
+    def extend_characters(self, other_matrix):
         """
         Extends this char_block by adding characters from sequences of taxa
         in given char_block to sequences of taxa with correspond labels in
         this one. Taxa in the second char_block that do not exist in the
         current one are ignored.
         """
-        label_taxon_map = dict([(taxon.label, taxon) for taxon in other_char_block])
+        label_taxon_map = dict([(taxon.label, taxon) for taxon in other_matrix])
         for taxon in self:
             if taxon.label in label_taxon_map:
-                self[taxon].extend(other_char_block[label_taxon_map[taxon.label]])
+                self[taxon].extend(other_matrix[label_taxon_map[taxon.label]])
                 
     def extend_taxa(self, 
-                    other_char_block, 
+                    other_matrix, 
                     overwrite_existing=False, 
                     append_existing=False):
         """
@@ -500,15 +506,15 @@ class CharacterDataMatrix(dict, base.Annotated):
         if overwrite_existing and append_existing:
             raise Exception("Can only specify to overwrite or append, not both")
         label_taxon_map = dict([(taxon.label, taxon) for taxon in self])
-        for other_taxon in other_char_block:
+        for other_taxon in other_matrix:
             if other_taxon.label in label_taxon_map:
                 this_taxon = label_taxon_map[other_taxon.label]
                 if overwrite_existing:
-                    self[this_taxon] = other_char_block[other_taxon]
+                    self[this_taxon] = other_matrix[other_taxon]
                 elif append_existing:
-                    self[this_taxon].extend(other_char_block[other_taxon])
+                    self[this_taxon].extend(other_matrix[other_taxon])
             else:
-                self[other_taxon] = other_char_block[other_taxon]
+                self[other_taxon] = other_matrix[other_taxon]
                                                                                                                    
 class CharactersBlock(taxa.TaxaLinked):
     """
@@ -524,14 +530,14 @@ class CharactersBlock(taxa.TaxaLinked):
         self.column_types = []
         self.markup_as_sequences = True
         
-    def extend_characters(self, other_matrix):
+    def extend_characters(self, other_char_block):
         """
         Extends this char_block by adding characters from sequences of taxa
         in given char_block to sequences of taxa with correspond labels in
         this one. Taxa in the second char_block that do not exist in the
         current one are ignored.
         """
-        self.char_block.extend_characters(other_char_block)
+        self.matrix.extend_characters(other_char_block.matrix)
                 
     def extend_taxa(self, 
                     other_char_block, 
@@ -550,7 +556,7 @@ class CharactersBlock(taxa.TaxaLinked):
         are True,  and a taxon in the other char_block is already present in
         the current one, then the sequence is ignored.
         """
-        self.char_block.extend_taxa(other_char_block.char_block, 
+        self.matrix.extend_taxa(other_char_block.char_block.matrix, 
             overwrite_existing=overwrite_existing, 
             append_existing=append_existing)
         for taxon in self:
@@ -752,10 +758,10 @@ class DiscreteCharactersBlock(CharactersBlock):
     
     default_symbol_state_map = property(_get_default_symbol_state_map)
                            
-    def add_characters(self, taxon, sequence):
+    def append_taxon_sequence(self, taxon, state_symbols):
         if taxon not in self:
             self[taxon] = CharacterDataVector(taxon=taxon)
-        for value in sequence:
+        for value in state_symbols:
             if isinstance(value, str):
                 symbol = value
             else:

@@ -129,15 +129,12 @@ class CharIOTest(unittest.TestCase):
                     _LOG.debug("")                    
                     for taxon in cb.matrix:
                         tax_label = str(taxon)
-                        seq = ''.join(cb.matrix[taxon].values_as_strings())                        
+                        seq = ''.join(cb.matrix[taxon].values_as_string_list())                        
                         _LOG.debug("%s          %s" % (tax_label, seq))
                         _LOG.debug("")
                         check_seq = check_data[tax_label]
                         self.failUnless(seq == check_seq, '\n\nSequences do not match for taxon "%s":\n\nEXPECTED >>>\n%s\n<<< EXPECTED\nFOUND >>>\n%s<<< FOUND' % (tax_label, check_seq, seq)) 
 
-                        
-                                                                                      
 
-import sys
 if __name__ == "__main__":
     unittest.main()
