@@ -538,6 +538,28 @@ class CharactersBlock(taxa.TaxaLinked):
         current one are ignored.
         """
         self.matrix.extend_characters(other_char_block.matrix)
+        
+    def extend_matrix(self, 
+        other_matrix, 
+        overwrite_existing=False, 
+        append_existing=False):
+        """
+        Extends this char_block by adding taxa and characters from the given
+        matrix to this one.  If `overwrite_existing` is True and a taxon
+        in the other matrix is already present in the current one, then
+        the sequence associated with the taxon in the second matrix
+        replaces the sequence in the current one. If `append_existing`
+        is True and a taxon in the other char_block is already present in
+        the current one, then the squence matrix with the taxon in
+        the second matrix will be added to the sequence in the current
+        one. If both are True, then an exception is raised. If neither
+        are True,  and a taxon in the other matrix is already present in
+        the current one, then the sequence is ignored.
+        """
+        self.matrix.extend(other_matrix, 
+            overwrite_existing=overwrite_existing, 
+            append_existing=append_existing)        
+        self.update_taxa()        
                 
     def extend(self, 
         other_char_block, 
@@ -559,9 +581,17 @@ class CharactersBlock(taxa.TaxaLinked):
         self.matrix.extend(other_char_block.matrix, 
             overwrite_existing=overwrite_existing, 
             append_existing=append_existing)
+        self.update_taxa()            
+            
+    def update_taxa(self):
+        """
+        Updates local taxa block by adding taxa not already managed.
+        Mainly for use after matrix extension
+        """
         for taxon in self:
             if taxon not in self.taxa_block:
                 self.taxa_block.append(taxon)
+        self.taxa_block.sort()                
         
     def vectors(self):
         """

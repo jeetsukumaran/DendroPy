@@ -208,11 +208,10 @@ def generate_characters(seq_len,
         char_block = characters.DnaCharactersBlock()
         if taxa_block is not None:
             char_block.taxa_block = taxa_block            
-        char_block.matrix = char_matrix
     else:
         if taxa_block is not None:
             char_block.taxa_block = taxa_block  
-        char_block.matrix.extend(char_matrix)
+    char_block.extend_matrix(other_matrix=char_matrix)
     return char_block
     
 ############################################################################

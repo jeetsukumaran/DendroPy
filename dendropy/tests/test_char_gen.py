@@ -41,10 +41,40 @@ _LOG = get_logger("Splits")
 
 from dendropy import chargen
 
+model_tree_string = """
+#NEXUS
+BEGIN TAXA;
+    DIMENSIONS NTAX=5;
+    TAXLABELS
+        A
+        B
+        C
+        D
+        E
+  ;
+END;
+begin trees;
+    tree true=(A:0.25,(B:0.25,(C:0.25,(D:0.25,E:0.25):0.25):0.25):0.25):0.25;
+end;
+"""
+
 class CharGenTest(unittest.TestCase):
     
     def testCharGen(self):
-        pass
+        source_ds = dataio.get_nexus(model_tree_string)
+        tree_model = source_ds.trees_blocks[0][0]
+        output_ds = chargen.generate_hky_dataset(10000, tree_model=tree_model)
+        tb = output_ds.taxa_blocks[0]
+        cb = output_ds.char_blocks[0]
+        cb_tb = output_ds.char_blocks[0].taxa_block
+#         _LOG.info("--      Taxa in Taxa Block: %s" % (" ".join([str(t) for t in tb]))) 
+#         _LOG.info("--Taxa in Characters Block: %s" % (" ".join([str(t) for t in cb]))) 
+#         _LOG.info("--Taxa in Charac. Block TB: %s" % (" ".join([str(t) for t in cb_tb])))        
+#         _LOG.info("\n--Sequences:")
+#         for t in cb:
+#             _LOG.info("\n%s:      %s" % (str(t), cb[t].values_as_string()))
+            
+        _LOG.debug(dataio.store_dataset('nexus', output_ds))
                     
 if __name__ == "__main__":
     unittest.main()
