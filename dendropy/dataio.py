@@ -120,22 +120,32 @@ def store_dataset(dataset, format, dest=None):
     if hasattr(dest, "getvalue"):
         return dest.getvalue()
 
-def store_trees(format, trees, dest=None):
+def store_trees(trees, format, dest=None):
     """
     Writes the list of trees `trees` to `dest` using writer.
     """
-    if isinstance(trees, trees_block):
+    if isinstance(trees, TreesBlock):
         trees_block = trees
     else:
         trees_block = TreesBlock()
         for tree in trees:
-            trees_block.append(trees)
+            trees_block.append(tree)
         trees_block.normalize_taxa()
     dataset = Dataset()
     dataset.add_trees_block(trees_block=trees_block)
     store_dataset(dataset=dataset,
                   format=format,                  
                   dest=dest)
+                  
+def store_chars(char_block, format, dest=None):
+    """
+    Writes the CharacterBlock `char_block` to `dest` using writer.
+    """
+    dataset = Dataset()
+    dataset.add_char_block(char_block=char_block)
+    store_dataset(dataset=dataset,
+                  format=format,                  
+                  dest=dest)                  
 
 ############################################################################
 ## Helpers
