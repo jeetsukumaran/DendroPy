@@ -34,32 +34,91 @@ from dendropy import characters
 from dendropy import charmodels
 
 def generate_hky_dataset(seq_len,
-    model_tree,                   
+    tree_model,                   
     mutation_rate=1.0, 
     kappa=1.0,
     base_freqs=[0.25, 0.25, 0.25, 0.25],
     root_states=None,    
     dataset=None,
-    taxa_block=None,    
+    taxa_block=None,
     rng=None):
     """
     Convenience class to wrap generation of a dataset based on
     the HKY model.
+    `seq_len`       : length of sequence (number of characters)
+    `tree_model`    : dendropy.trees.Tree object
+    `char_model`    : dendropy.charmodels.CharacterModel object
+    `mutation_rate` : mutation *modifier* rate (should be 1.0 if branch lengths
+                      on tree reflect true expected number of changes
+    `root_states`   : vector of root states (length must equal `seq_len`)
+    `dataset`       : a dendropy.datasets.Dataset object.
+                      if given, the new 
+                      dendropy.characters.CharacterBlock object will be added to
+                      this (along with a new taxa_block if required). Otherwise,
+                      a new dendropy.datasets.Dataset object will be created.
+    `taxa_block`    : if given, this will be the taxa manager used; otherwise
+                      new default one will be created
+    `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
+                      used                      
+    Returns: a dendropy.datasets.Dataset object object.
     """
     char_model = charmodels.Hky85CharacterModel(kappa=kappa, 
                                                 base_freqs=base_freqs)
     return generate_dataset(seq_len=seq_len,
-        model_tree=model_tree,
+        tree_model=tree_model,
         char_model=char_model,
-        mutation_rate=mutation_rate,
-        root_states=root_states,
+        mutation_rate=mutation_rate,       
+        root_states=root_states, 
         dataset=dataset,
         taxa_block=taxa_block,
-        rng=None)
+        rng=rng)  
         
-
+def generate_hky_characters(seq_len,
+    tree_model,                   
+    mutation_rate=1.0, 
+    kappa=1.0,
+    base_freqs=[0.25, 0.25, 0.25, 0.25],
+    root_states=None,    
+    char_block=None,
+    taxa_block=None,
+    rng=None):
+    """
+    Convenience class to wrap generation of a dataset based on
+    the HKY model.
+    `seq_len`       : length of sequence (number of characters)
+    `tree_model`    : dendropy.trees.Tree object
+    `mutation_rate` : mutation *modifier* rate (should be 1.0 if branch lengths
+                      on tree reflect true expected number of changes
+    `root_states`   : vector of root states (length must equal `seq_len`)
+    `char_block`    : dendropy.characters.CharacterBlock object.
+                      if given, new sequences for taxa on `tree_model` leaves 
+                      will be appended to existing sequences of corresponding 
+                      taxa in char_block; if not, a new 
+                      dendropy.characters.CharacterBlock object will be created
+    `taxa_block`    : if given, this will be the taxa manager used; otherwise
+                      new default one will be created
+    `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
+                      used                      
+    Returns: a dendropy.characters.CharacterBlock object.    
+    
+    Since characters will be appended to existing sequences, you can simulate a
+    sequences under a mixed model by calling this method multiple times with 
+    different character model parameter values and/or different mutation
+    rates, passing in the same `char_block` object each time.    
+    """
+    char_model = charmodels.Hky85CharacterModel(kappa=kappa, 
+                                                base_freqs=base_freqs)
+    return generate_characters(seq_len=seq_len,
+        tree_model=tree_model,
+        char_model=char_model,
+        mutation_rate=mutation_rate,       
+        root_states=root_states, 
+        char_block=char_block,
+        taxa_block=taxa_block,
+        rng=rng)    
+                
 def generate_dataset(seq_len,
-    model_tree,
+    tree_model,
     char_model,
     mutation_rate=1.0,       
     root_states=None, 
@@ -67,34 +126,99 @@ def generate_dataset(seq_len,
     taxa_block=None,
     rng=None):
     """
-    Wrapper to conveniently generate a dataset with
-    a characters block simulated under the given tree and character model.
+    Wrapper to conveniently generate a Dataset simulated under
+    the given tree and character model.
+    `seq_len`       : length of sequence (number of characters)
+    `tree_model`    : dendropy.trees.Tree object
+    `char_model`    : dendropy.charmodels.CharacterModel object
+    `mutation_rate` : mutation *modifier* rate (should be 1.0 if branch lengths
+                      on tree reflect true expected number of changes
+    `root_states`   : vector of root states (length must equal `seq_len`)
+    `dataset`       : a dendropy.datasets.Dataset object.
+                      if given, the new 
+                      dendropy.characters.CharacterBlock object will be added to
+                      this (along with a new taxa_block if required). Otherwise,
+                      a new dendropy.datasets.Dataset object will be created.
+    `taxa_block`    : if given, this will be the taxa manager used; otherwise
+                      new default one will be created
+    `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
+                      used                      
+    Returns: a dendropy.datasets.Dataset object object.
     """
     if dataset is None:
         dataset = datasets.Dataset()
-    if taxa_block is None:
-        taxa_block = model_tree.infer_taxa_block()
-    if taxa_block not in dataset.taxa_blocks:
-        dataset.add_taxa_block(taxa_block=taxa_block)
+    if taxa_block is not None and taxa_block not in dataset.taxa_blocks:
+        taxa_block = dataset.add_taxa_block(taxa_block=taxa_block)
+    char_block = generate_characters(seq_len=seq_len,
+        tree_model=tree_model,
+        char_model=char_model,
+        mutation_rate=mutation_rate,       
+        root_states=root_states, 
+        char_block=None,
+        taxa_block=taxa_block,
+        rng=None)
+    dataset.add_char_block(char_block=char_block)
+    return dataset
     
-#     char_model = charmodels.Hky85CharacterModel(kappa=kappa, 
-#                                                 base_freqs=base_freqs)
+def generate_characters(seq_len,
+    tree_model,
+    char_model,
+    mutation_rate=1.0,       
+    root_states=None, 
+    char_block=None,
+    taxa_block=None,
+    rng=None):
+    """
+    Wrapper to conveniently generate a characters block simulated under
+    the given tree and character model.
+    `seq_len`       : length of sequence (number of characters)
+    `tree_model`    : dendropy.trees.Tree object
+    `char_model`    : dendropy.charmodels.CharacterModel object
+    `mutation_rate` : mutation *modifier* rate (should be 1.0 if branch lengths
+                      on tree reflect true expected number of changes
+    `root_states`   : vector of root states (length must equal `seq_len`)
+    `char_block`    : dendropy.characters.CharacterBlock object.
+                      if given, new sequences for taxa on `tree_model` leaves 
+                      will be appended to existing sequences of corresponding 
+                      taxa in char_block; if not, a new 
+                      dendropy.characters.CharacterBlock object will be created
+    `taxa_block`    : if given, this will be the taxa manager used; otherwise
+                      new default one will be created
+    `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
+                      used
+                      
+    Returns: a dendropy.characters.CharacterBlock object.
+    
+    Since characters will be appended to existing sequences, you can simulate a
+    sequences under a mixed model by calling this method multiple times with 
+    different character models and/or different mutation rates, passing 
+    in the same `char_block` object each time.
+    """
     char_evolver = CharEvolver(char_model=char_model,
                                mutation_rate=mutation_rate)
-    tree = char_evolver.evolve_states(tree=model_tree,
+    tree = char_evolver.evolve_states(tree=tree_model,
         seq_len=seq_len,
         root_states=None,
         rng=rng)
     char_matrix = char_evolver.compose_char_matrix(tree, taxa_block)
-    char_block = characters.DnaCharactersBlock()
-    char_block.taxa_block = taxa_block
-    char_block.matrix = char_matrix
-    dataset.add_char_block(char_block=char_block)
-    return dataset
+    if char_block is None:
+        char_block = characters.DnaCharactersBlock()
+        if taxa_block is not None:
+            char_block.taxa_block = taxa_block            
+        char_block.matrix = char_matrix
+    else:
+        if taxa_block is not None:
+            char_block.taxa_block = taxa_block  
+        char_block.matrix.extend(char_matrix)
+    return char_block
+    
+############################################################################
+## Workhorse class(es)
+    
                          
 class CharEvolver(object):
     """
-    Evolves sequences on a Tree.
+    Evolves sequences on a tree.
     """
 
     def __init__(self,
