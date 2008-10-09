@@ -556,7 +556,7 @@ class CharactersBlock(taxa.TaxaLinked):
         are True,  and a taxon in the other char_block is already present in
         the current one, then the sequence is ignored.
         """
-        self.matrix.extend_taxa(other_char_block.char_block.matrix, 
+        self.matrix.extend_taxa(other_char_block.matrix, 
             overwrite_existing=overwrite_existing, 
             append_existing=append_existing)
         for taxon in self:
