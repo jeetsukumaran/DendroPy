@@ -110,7 +110,7 @@ def estimate_char_model(model_tree,
         'datafile' : df.name,
         'treefile' : tf.name,
         'nst': num_states,
-        'basefreq' : 'equal' if unequal_base_freqs else 'estimate',
+        'basefreq' : 'estimate' if unequal_base_freqs else 'equal',
         'rates' : 'gamma' if gamma_rates else 'equal',
         'pinvar' : 'estimate' if prop_invar else '0',
     }
