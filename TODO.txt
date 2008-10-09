@@ -1,2 +1,3 @@
-Add option to specify posterior probability support as comment in sumtrees.
-[Nexus node comment]
+
+* Add option to specify posterior probability support as Nexus node comment in SumTrees
+* Add "``clone``" methods for Dataset and all contained data structures
