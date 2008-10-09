@@ -27,23 +27,49 @@ Tests character block manipulations.
 """
 
 import unittest
+from copy import deepcopy
 from dendropy import get_logger
 from dendropy import get_logging_level
 import dendropy.tests
 from dendropy import datasets
 _LOG = get_logger("Character Block Structure")
 
+from dendropy import characters
+
 class CharStructTest(unittest.TestCase):
     
-    def testCharBlockMerger(self):
+    def testCharBlockMerge(self):
         ds1 = datasets.Dataset()
         tb1 = ds1.add_taxa_block(label="Dataset 1, Taxa Block 1")
         for i in range(1,11):
             tb1.add_taxon(label="T%02d" % i)
-        ds1 = datasets.Dataset()
-        tb1 = ds1.add_taxa_block(label="Dataset 2, Taxa Block 1")
+            
+        cb1 = ds1.add_char_block(char_block=characters.DnaCharactersBlock(label="Dataset 2, Taxa Block 1"))
+        for t in tb1:
+            cb1.append_taxon_sequence(t, state_symbols="AAAAAAAAAA")
+            
+        ds2 = datasets.Dataset()
+        tb2 = ds2.add_taxa_block(label="Dataset 2, Taxa Block 1")
         for i in range(1,21):
-            tb1.add_taxon(label="T%02d" % i)           
-                   
+            tb1.add_taxon(label="T%02d" % i)  
+            
+        cb2 = ds2.add_char_block(char_block=characters.DnaCharactersBlock(label="Dataset 2, Taxa Block 1"))
+        for t in tb2:
+            cb1.append_taxon_sequence(t, state_symbols="CCCCC")            
+            
+        ds1b = deepcopy(ds1)
+        cb = ds1b.char_blocks[0]
+        ntax_pre = len(cb)
+        nchars_pre = len(cb.values()[0])
+        cb.extend_characters(ds2.char_blocks[0])
+        self.failIf(len(cb) != ntax_pre, 
+                    "Number of taxa have changed after from %d to %d" % (ntax_pre, len(cb)))
+        for t in cb:
+            print cb[t], len(cb[t])
+            self.failIf(len(cb[t]) != 15,
+                "Data vector is incorrect length (%d):\n%s: %s" \
+                % (len(cb[t]), str(t), ("".join(str(cb[t])))))
+            self.failIf(".".join(cb[t]) != "AAAAAAAAAACCCCC",
+                "Incorrect sequence:\n%s: %s" % (str(t), "".join(cb[t])))
 if __name__ == "__main__":
     unittest.main()
