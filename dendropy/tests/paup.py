@@ -97,8 +97,8 @@ def estimate_char_model(model_tree,
                         prop_invar=True,
                         paup_path='paup'):
     """
-    Returns likelihood score as well as estimates of rates, base_frequencies, 
-    alpha, and prop_invar (as dictionary).
+    Returns likelihood score as well as estimates of rates, kappa, 
+    base_frequencies, alpha, prop_invar, etc. (as dictionary).
     """
     tf = tempfile.NamedTemporaryFile()
     dataio.store_trees(trees=[model_tree], format='nexus', dest=tf)
@@ -118,7 +118,7 @@ def estimate_char_model(model_tree,
     set warnreset=no;
     exe %(datafile)s;
     gettrees file=%(treefile)s storebrlens=yes;
-    lset rmatrix=estimate nst=%(nst)s basefreq=%(basefreq)s rates=%(rates)s shape=estimate pinvar=%(pinvar)s userbrlens=yes;
+    lset tratio=estimate rmatrix=estimate nst=%(nst)s basefreq=%(basefreq)s rates=%(rates)s shape=estimate pinvar=%(pinvar)s userbrlens=yes;
     lscore 1 / userbrlens=yes;
 """ 
     paup_run = subprocess.Popen(['%s -n' % paup_path],
@@ -135,6 +135,7 @@ def estimate_char_model(model_tree,
         'CG' : re.compile('  CG\s+([\d\.]+)'),
         'CT' : re.compile('  CT\s+([\d\.]+)'),
         'GT' : re.compile('  GT\s+([\d\.]+)'),
+        'kappa': re.compile('  kappa\s+([\d\.]+)'),
         'prop_invar' : re.compile('P_inv\s+([\d\.]+)'),
         'alpha' : re.compile('Shape\s+([\S]+)'),
     
@@ -156,6 +157,31 @@ def estimate_char_model(model_tree,
             try:
                 results[value_name] = float(results[value_name])
             except:
-                pass               
+                pass
+#     print stdout                
     return results
+#     
+# from dendropy import dataio
+# from dendropy import chargen
+# model_tree_string = """
+# #NEXUS
+# BEGIN TAXA;
+#     DIMENSIONS NTAX=5;
+#     TAXLABELS
+#         A
+#         B
+#         C
+#         D
+#         E
+#   ;
+# END;
+# begin trees;
+#     tree true=(A:0.25,(B:0.25,(C:0.25,(D:0.25,E:0.25):0.25):0.25):0.25):0.25;
+# end;
+# """
+# source_ds = dataio.get_nexus(string=model_tree_string)
+# tree_model = source_ds.trees_blocks[0][0]
+# char_block = chargen.generate_hky_characters(10000, tree_model=tree_model)
+# estimate_char_model(model_tree=tree_model, char_block=char_block, num_states=1)
+    
                 
