@@ -33,6 +33,9 @@ from dendropy import datasets
 from dendropy import characters
 from dendropy import charmodels
 
+############################################################################
+## Convenience wrappers
+
 def generate_hky_dataset(seq_len,
     tree_model,                   
     mutation_rate=1.0, 
@@ -83,8 +86,8 @@ def generate_hky_characters(seq_len,
     taxa_block=None,
     rng=None):
     """
-    Convenience class to wrap generation of a dataset based on
-    the HKY model.
+    Convenience class to wrap generation of characters (as a CharacterBlock
+    object) based on the HKY model.
     `seq_len`       : length of sequence (number of characters)
     `tree_model`    : dendropy.trees.Tree object
     `mutation_rate` : mutation *modifier* rate (should be 1.0 if branch lengths
@@ -169,7 +172,7 @@ def generate_characters(seq_len,
     taxa_block=None,
     rng=None):
     """
-    Wrapper to conveniently generate a characters block simulated under
+    Wrapper to conveniently generate a characters simulated under
     the given tree and character model.
     `seq_len`       : length of sequence (number of characters)
     `tree_model`    : dendropy.trees.Tree object
@@ -214,8 +217,7 @@ def generate_characters(seq_len,
     
 ############################################################################
 ## Workhorse class(es)
-    
-                         
+                             
 class CharEvolver(object):
     """
     Evolves sequences on a tree.
