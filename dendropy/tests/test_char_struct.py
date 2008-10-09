@@ -75,7 +75,7 @@ class CharStructTest(unittest.TestCase):
                 
         ds1b = deepcopy(ds1)
         cb = ds1b.char_blocks[0]
-        cb.extend_taxa(ds2.char_blocks[0], overwrite_existing=True)
+        cb.extend(ds2.char_blocks[0], overwrite_existing=True)
         target_ntax = 20
         self.failIf(len(cb) != target_ntax, 
                     "Number of rows in character block have not changed to %d (%d)" % (target_ntax, len(cb)))
@@ -100,7 +100,7 @@ class CharStructTest(unittest.TestCase):
                 
         ds1b = deepcopy(ds1)
         cb = ds1b.char_blocks[0]
-        cb.extend_taxa(ds2.char_blocks[0], append_existing=True)
+        cb.extend(ds2.char_blocks[0], append_existing=True)
         target_ntax = 20
         self.failIf(len(cb) != target_ntax, 
                     "Number of rows in character block have not changed to %d (%d)" % (target_ntax, len(cb)))

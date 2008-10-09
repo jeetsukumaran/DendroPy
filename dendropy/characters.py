@@ -484,10 +484,10 @@ class CharacterDataMatrix(dict, base.Annotated):
             if taxon.label in label_taxon_map:
                 self[taxon].extend(other_matrix[label_taxon_map[taxon.label]])
                 
-    def extend_taxa(self, 
-                    other_matrix, 
-                    overwrite_existing=False, 
-                    append_existing=False):
+    def extend(self, 
+        other_matrix, 
+        overwrite_existing=False, 
+        append_existing=False):
         """
         Extends this char_block by adding taxa and characters from the given
         char_block to this one.  If `overwrite_existing` is True and a taxon
@@ -539,10 +539,10 @@ class CharactersBlock(taxa.TaxaLinked):
         """
         self.matrix.extend_characters(other_char_block.matrix)
                 
-    def extend_taxa(self, 
-                    other_char_block, 
-                    overwrite_existing=False, 
-                    append_existing=False):
+    def extend(self, 
+        other_char_block, 
+        overwrite_existing=False, 
+        append_existing=False):
         """
         Extends this char_block by adding taxa and characters from the given
         char_block to this one.  If `overwrite_existing` is True and a taxon
@@ -556,7 +556,7 @@ class CharactersBlock(taxa.TaxaLinked):
         are True,  and a taxon in the other char_block is already present in
         the current one, then the sequence is ignored.
         """
-        self.matrix.extend_taxa(other_char_block.matrix, 
+        self.matrix.extend(other_char_block.matrix, 
             overwrite_existing=overwrite_existing, 
             append_existing=append_existing)
         for taxon in self:
