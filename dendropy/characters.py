@@ -377,7 +377,7 @@ INFINITE_SITES_STATE_ALPHABET = InfiniteSitesStateAlphabet()
 class ColumnType(base.IdTagged):
     """                                                                                                                                                                                                                                                                                                                                                                           
     A character format or type of a particular column: i.e., maps
-    a particular set of character state definitions to a column in a character matrix.
+    a particular set of character state definitions to a column in a character char_block.
     """
   
     def __init__(self, elem_id=None,label=None, state_alphabet=None):
@@ -400,7 +400,7 @@ class ColumnType(base.IdTagged):
       
 class CharacterDataCell(base.Annotated):
     """                                                                                                                                                                                                                                                                                                                                                                           
-    A container for the state / state value for a particular cell in a matrix.
+    A container for the state / state value for a particular cell in a char_block.
     """
   
     def __init__(self, value=None, column_type=None):
@@ -454,7 +454,6 @@ class CharacterDataVector(list, taxa.TaxonLinked):
             
     def __str__(self):
         return str(self.values_as_strings())
-            
 
 class CharacterDataMatrix(dict, base.Annotated):
     """
@@ -467,36 +466,50 @@ class CharacterDataMatrix(dict, base.Annotated):
         dict.__init__(self)
         base.Annotated.__init__(self)
         
-#     def __isint(value):
-#         try:
-#             i = int(value)
-#             return True
-#         except:
-#             return False
-#     __isint = staticmethod(__isint)
-#         
-#     def __getitem__(self, key):
-#         """
-#         Dictionary interface implementation to allow for index-based access to matrix
-#         """
-#         if key not in self:
-#             if self.__isint(key):
-#                 idx = int(key)
-#                 key = self.keys()[idx]
-#         # force normal index error
-#         return utils.OrderedCaselessDict.__getitem__(self, key)
-#        
-#     def __setitem__(self, key, value):
-#         """
-#         Dictionary interface implementation to allow for index-based access to matrix.
-#         """
-#         if key not in self:
-#             if self.__isint(key):
-#                 idx = int(key)
-#                 key = self.keys()[idx]
-#         # force normal index error
-#         return utils.OrderedCaselessDict.__setitem__(self, key, value)                    
-                              
+    def extend_characters(self, other_char_block):
+        """
+        Extends this char_block by adding characters from sequences of taxa
+        in given char_block to sequences of taxa with correspond labels in
+        this one. Taxa in the second char_block that do not exist in the
+        current one are ignored.
+        """
+        label_taxon_map = dict([(taxon.label, taxon) for taxon in other_char_block])
+        for taxon in self:
+            if taxon.label in label_taxon_map:
+                self[taxon].extend(other_char_block[label_taxon_map[taxon.label]])
+                
+    def extend_taxa(self, 
+                    other_char_block, 
+                    overwrite_existing=False, 
+                    append_existing=False):
+        """
+        Extends this char_block by adding taxa and characters from the given
+        char_block to this one.  If `overwrite_existing` is True and a taxon
+        in the other char_block is already present in the current one, then
+        the sequence associated with the taxon in the second char_block
+        replaces the sequence in the current one. If `append_existing`
+        is True and a taxon in the other char_block is already present in
+        the current one, then the squence associated with the taxon in
+        the second char_block will be added to the sequence in the current
+        one. If both are True, then an exception is raised. If neither
+        are True,  and a taxon in the other char_block is already present in
+        the current one, then the sequence is ignored.
+        Note that the containing CharactersBlock taxa_block has to be normalized 
+        after this operation.
+        """
+        if overwrite_existing and append_existing:
+            raise Exception("Can only specify to overwrite or append, not both")
+        label_taxon_map = dict([(taxon.label, taxon) for taxon in self])
+        for other_taxon in other_char_block:
+            if other_taxon.label in label_taxon_map:
+                this_taxon = label_taxon_map[other_taxon.label]
+                if overwrite_existing:
+                    self[this_taxon] = other_char_block[other_taxon]
+                elif append_existing:
+                    self[this_taxon].extend(other_char_block[other_taxon])
+            else:
+                self[other_taxon] = other_char_block[other_taxon]
+                                                                                                                   
 class CharactersBlock(taxa.TaxaLinked):
     """
     Character data container/manager manager.
@@ -511,6 +524,39 @@ class CharactersBlock(taxa.TaxaLinked):
         self.column_types = []
         self.markup_as_sequences = True
         
+    def extend_characters(self, other_matrix):
+        """
+        Extends this char_block by adding characters from sequences of taxa
+        in given char_block to sequences of taxa with correspond labels in
+        this one. Taxa in the second char_block that do not exist in the
+        current one are ignored.
+        """
+        self.char_block.extend_characters(other_char_block)
+                
+    def extend_taxa(self, 
+                    other_char_block, 
+                    overwrite_existing=False, 
+                    append_existing=False):
+        """
+        Extends this char_block by adding taxa and characters from the given
+        char_block to this one.  If `overwrite_existing` is True and a taxon
+        in the other char_block is already present in the current one, then
+        the sequence associated with the taxon in the second char_block
+        replaces the sequence in the current one. If `append_existing`
+        is True and a taxon in the other char_block is already present in
+        the current one, then the squence associated with the taxon in
+        the second char_block will be added to the sequence in the current
+        one. If both are True, then an exception is raised. If neither
+        are True,  and a taxon in the other char_block is already present in
+        the current one, then the sequence is ignored.
+        """
+        self.char_block.extend_taxa(other_char_block.char_block, 
+            overwrite_existing=overwrite_existing, 
+            append_existing=append_existing)
+        for taxon in self:
+            if taxon not in self.taxa_block:
+                self.taxa_block.append(taxon)
+        
     def vectors(self):
         """
         Returns list of vectors.        
@@ -522,6 +568,16 @@ class CharactersBlock(taxa.TaxaLinked):
                 return []
         else:
             return None
+            
+    # following allows a CharactersBlock object to simulate a dictionary            
+    # by `passing-through` calls to the underlying matrix
+        
+        
+    def __len__(self):
+        """
+        Dictionary interface implementation for direct access to matrix.
+        """    
+        return len(self.matrix)
         
     def __getitem__(self, key):
         """
@@ -557,38 +613,38 @@ class CharactersBlock(taxa.TaxaLinked):
     
     def iteritems(self):
         """
-        Returns an iterator over self's values.
+        Returns an iterator over matrix's values.
         """
         for key, value in self.matrix.iteritems():
             yield (key, value)
 
     def items(self):
         """
-        Returns key, value pairs in key-order.
+        Returns matrix key, value pairs in key-order.
         """
         return [(key, self.matrix[key]) for key in self.matrix.iterkeys()]
 
     def values(self):
         """
-        Returns list of key, value pairs.
+        Returns list of matrix key, value pairs.
         """
         return [v for v in self.matrix.itervalues()]
     
     def __iter__(self):
         """
-        Returns an iterator over self's ordered keys.
+        Returns an iterator over matrix's ordered keys.
         """
         return self.matrix.iterkeys()
     
     def __delitem__(self, key):
         """
-        Remove item with specified key.
+        Remove item from matrix with specified key.
         """
         super(dict, self.matrix).__delitem__(key)                
 
     def __contains__(self, key):
         """
-        Returns true if has key, regardless of case.
+        Returns true if matrix has key, regardless of case.
         """
         return dict(self.matrix).__contains__(key)
 
@@ -626,25 +682,25 @@ class CharactersBlock(taxa.TaxaLinked):
 
     def keys(self):
         """
-        Returns a copy of the ordered list of keys.
+        Returns a copy of the ordered list of matrix keys.
         """
         return list(self.matrix.keys())
 
     def clear(self):
         """
-        Deletes all items from the dictionary.
+        Deletes all items from the matrix dictionary.
         """
         self.matrix.clear()
 
     def has_key(self, key):
         """
-        Returns true if has key, regardless of case.
+        Returns true if matrix has key, regardless of case.
         """
         return key in self.matrix
 
     def get(self, key, def_val=None):
         """
-        Gets an item by its key, returning default if key not present.
+        Gets an item from matrix by its key, returning default if key not present.
         """
         return super(dict, self.matrix).get(key, def_val)
 
