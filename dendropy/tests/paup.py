@@ -28,6 +28,7 @@ Various calls to PAUP* to calculate stuff.
 
 import re
 import subprocess
+import tempfile
 from dendropy import datasets
 
 def bipartitions(data_filepath,
@@ -90,57 +91,70 @@ def bipartitions(data_filepath,
 def estimate_char_model(model_tree,
                         char_block,
                         num_states=6,
-                        base_freqs_equal=True,
+                        unequal_base_freqs=True,
                         gamma_rates=True,
-                        prop_invar=True):
+                        prop_invar=True,
+                        paup_path='paup'):
     """
-    Returns estimates of rates, base_frequencies, alpha, and prop_invar.
+    Returns likelihood score as well as estimates of rates, base_frequencies, 
+    alpha, and prop_invar (as dictionary).
     """
-    dataset = datasets.Dataset()
-    tree_block = dataset.add_trees_block()
-    tree_block.append(model_tree)
-    taxa_block = tree_block.normalize_taxa()
-    char_block.normalize_taxa(taxa_block=taxa_block)   
-    char_block = dataset.add_char_block(char_block=char_block)
-    print
-    print id(taxa_block)
-    for t in taxa_block:
-        print id(t), str(t)
-    print        
-    print id(char_block.taxa_block)
-    for t in char_block.taxa_block:
-        print id(t), str(t)   
-    tb = dataset.taxa_blocks[0]        
-    print        
-    print id(tb)
-    for t in tb:
-        print id(t), str(t)        
-    #print dataio.store_dataset(dataset=dataset, format='nexus')
+    tf = tempfile.NamedTemporaryFile()
+    dataio.store_trees(trees=[model_tree], format='nexus', dest=tf)
+    tf.flush()
+    df = tempfile.NamedTemporaryFile()
+    dataio.store_chars(char_block=char_block, format='nexus', dest=df)
+    df.flush()    
+    paup_args = {
+        'datafile' : df.name,
+        'treefile' : tf.name,
+        'nst': num_states,
+        'basefreq' : 'equal' if unequal_base_freqs else 'estimate',
+        'rates' : 'gamma' if gamma_rates else 'equal',
+        'pinvar' : 'estimate' if prop_invar else '0',
+    }
     paup_template = """\
     set warnreset=no;
-    
-"""    
-                        
+    exe %(datafile)s;
+    gettrees file=%(treefile)s storebrlens=yes;
+    lset rmatrix=estimate nst=%(nst)s basefreq=%(basefreq)s rates=%(rates)s shape=estimate pinvar=%(pinvar)s userbrlens=yes;
+    lscore 1 / userbrlens=yes;
+""" 
+    paup_run = subprocess.Popen(['%s -n' % paup_path],
+                                shell=True,
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE)
+    stdout, stderr = paup_run.communicate(paup_template % paup_args)
 
-from dendropy import dataio
-from dendropy import chargen
-model_tree_string = """
-#NEXUS
-BEGIN TAXA;
-    DIMENSIONS NTAX=5;
-    TAXLABELS
-        A
-        B
-        C
-        D
-        E
-  ;
-END;
-begin trees;
-    tree true=(A:0.25,(B:0.25,(C:0.25,(D:0.25,E:0.25):0.25):0.25):0.25):0.25;
-end;
-"""
-source_ds = dataio.get_nexus(string=model_tree_string)
-tree_model = source_ds.trees_blocks[0][0]
-char_block = chargen.generate_hky_characters(10000, tree_model=tree_model)
-estimate_char_model(model_tree=tree_model, char_block=char_block)
+    patterns = {
+        'likelihood' : re.compile('-ln L\s+([\d\.]+)'),
+        'AC' : re.compile('  AC\s+([\d\.]+)'),
+        'AG' : re.compile('  AG\s+([\d\.]+)'),
+        'AT' : re.compile('  AT\s+([\d\.]+)'),
+        'CG' : re.compile('  CG\s+([\d\.]+)'),
+        'CT' : re.compile('  CT\s+([\d\.]+)'),
+        'GT' : re.compile('  GT\s+([\d\.]+)'),
+        'prop_invar' : re.compile('P_inv\s+([\d\.]+)'),
+        'alpha' : re.compile('Shape\s+([\S]+)'),
+    
+    }
+
+    results = {}
+    for value_name in patterns:
+        results[value_name] = None
+    for line in stdout.split('\n'):
+        for value_name in patterns:
+            m = patterns[value_name].match(line)
+            if m:
+                results[value_name] = m.group(1)
+                
+    for value_name in results:
+        if value_name == 'likelihood':
+            results[value_name] = -1 * float(results[value_name])
+        elif results[value_name] is not None:
+            try:
+                results[value_name] = float(results[value_name])
+            except:
+                pass               
+    return results
+                
