@@ -147,10 +147,13 @@ def source_file_handle(file=None, string=None):
     """
     if file is None and string is None:
         raise Exception("File or string source must be specified.")            
-    if isinstance(file, str):
-        file = open(file, "r")
-    return file    
-    
+    if file is not None:        
+        if isinstance(file, str):
+            file = open(file, "r")        
+        return file
+    else:
+        return StringIO.StringIO(string)
+        
 def get_writer(format):
     """
     Return reader of the appropriate format.
