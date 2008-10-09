@@ -89,7 +89,7 @@ def bipartitions(data_filepath,
     return tax_labels, bipartitions, bipartition_counts, bipartition_freqs
 
 
-def estimate_char_model(model_tree,
+def estimate_char_model(tree_model,
                         char_block,
                         num_states=6,
                         unequal_base_freqs=True,
@@ -101,7 +101,7 @@ def estimate_char_model(model_tree,
     base_frequencies, alpha, prop_invar, etc. (as dictionary).
     """
     tf = tempfile.NamedTemporaryFile()
-    dataio.store_trees(trees=[model_tree], format='nexus', dest=tf)
+    dataio.store_trees(trees=[tree_model], format='nexus', dest=tf)
     tf.flush()
     df = tempfile.NamedTemporaryFile()
     dataio.store_chars(char_block=char_block, format='nexus', dest=df)
@@ -163,7 +163,7 @@ def estimate_char_model(model_tree,
 #     
 # from dendropy import dataio
 # from dendropy import chargen
-# model_tree_string = """
+# tree_model_string = """
 # #NEXUS
 # BEGIN TAXA;
 #     DIMENSIONS NTAX=5;
@@ -179,9 +179,9 @@ def estimate_char_model(model_tree,
 #     tree true=(A:0.25,(B:0.25,(C:0.25,(D:0.25,E:0.25):0.25):0.25):0.25):0.25;
 # end;
 # """
-# source_ds = dataio.get_nexus(string=model_tree_string)
+# source_ds = dataio.get_nexus(string=tree_model_string)
 # tree_model = source_ds.trees_blocks[0][0]
 # char_block = chargen.generate_hky_characters(10000, tree_model=tree_model)
-# estimate_char_model(model_tree=tree_model, char_block=char_block, num_states=1)
+# estimate_char_model(tree_model=tree_model, char_block=char_block, num_states=1)
     
                 

@@ -41,7 +41,7 @@ _LOG = get_logger("Splits")
 
 from dendropy import chargen
 
-model_tree_string = """
+tree_model_string = """
 #NEXUS
 BEGIN TAXA;
     DIMENSIONS NTAX=5;
@@ -62,7 +62,7 @@ class CharGenTest(unittest.TestCase):
 
 
     def setUp(self):
-        source_ds = dataio.get_nexus(string=model_tree_string)
+        source_ds = dataio.get_nexus(string=tree_model_string)
         self.tree_model = source_ds.trees_blocks[0][0]
    
     def estimate_params(self,
@@ -77,11 +77,11 @@ class CharGenTest(unittest.TestCase):
             tree_model=self.tree_model,
             kappa=kappa,
             base_freqs=base_freqs)
-        source_ds = dataio.get_nexus(string=model_tree_string)
+        source_ds = dataio.get_nexus(string=tree_model_string)
         tree_model = source_ds.trees_blocks[0][0]
         
         mle = dendropy.tests.paup.estimate_char_model(
-            model_tree=tree_model,
+            tree_model=tree_model,
             char_block=output_ds.char_blocks[0],
             num_states=2,
             unequal_base_freqs=unequal_base_freqs,
