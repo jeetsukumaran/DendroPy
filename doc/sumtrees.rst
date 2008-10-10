@@ -32,7 +32,7 @@ How to Install the Program
     Then, opening up the terminal and entering the following commands will take you to your Desktop and expand the archive::
     
         $ cd ~/Desktop
-        $ tar -xvf DendroPy-2.0.3.tar.gz
+        $ tar -xvzf DendroPy-2.0.3.tar.gz
     
     One way or another, you should end up with a directory called "``DendroPy-2.0.3``" or something similar, which contains the entire Dendropy package.
     
@@ -290,13 +290,6 @@ If you encounter any problems, errors, crashes etc. while using this program, pl
 well the complete command used (with all the options and parameters) and the complete error message returned (simply cutting-and-pasting the terminal text should work fine).
 Please feel free to contact me if you have any other questions, suggestions or comments as well.
 
-Acknowledgments
-================
-SumTrees is part of the `DendroPy
-<http://sourceforge.net/projects/dendropy/>`_ library, which is authored by myself (`Jeet Sukumaran <http://people.ku.edu/~jeet>`_) and `Mark T. Holder <http://people.ku.edu/~mtholder>`_.
-We would like to thank all the people who have contributed suggestions, bug reports and critiqes, and especially our *de facto* beta testers who contributed valuable time and trusted our program with their valuable data: `Charles W. Linkem <http://people.ku.edu/~cwlinkem>`_ and `Jamie Oaks <http://people.ku.edu/~joaks1>`_.
-
-
 How to Cite this Program
 =========================
 
@@ -325,3 +318,24 @@ Public License <http://www.gnu.org/licenses/gpl.html>`_ for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Acknowledgments
+================
+SumTrees is part of the `DendroPy
+<http://sourceforge.net/projects/dendropy/>`_ library, which is authored by myself (`Jeet Sukumaran <http://people.ku.edu/~jeet>`_) and `Mark T. Holder <http://people.ku.edu/~mtholder>`_.
+
+We would like to thank all the people who have contributed suggestions, bug reports and critiqes, and especially our *de facto* beta testers who contributed valuable time and trusted our program with their valuable data: `Charles W. Linkem <http://people.ku.edu/~cwlinkem>`_ and `Jamie Oaks <http://people.ku.edu/~joaks1>`_.
+
+Portions of `DendroPy
+<http://sourceforge.net/projects/dendropy/>`_ were developed under `CIPRES <http://www.phylo.org>`_, a multi-site collaboration funded by the `NSF <http://www.nsf.gov/>`_ Information Technology Research (ITR) program grant entitled "`BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics <http://www.phylo.org/about/acknowledgements>`_".
+
+.. image:: http://www.jeetworks.org/images/page-art/logo_cipres.gif
+    :height: 40   
+    :target: http://www.phylo.org/
+
+.. image:: http://www.jeetworks.org/images/page-art/nsf.gif
+    :width: 40
+    :target: http://www.nsf.gov/
+
+
+
