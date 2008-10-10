@@ -3,7 +3,7 @@
 ############################################################################
 ##  test_char_gen.py
 ##
-##  Part of the DendroPy phylogenetic computation library.
+##  Part of the DendroPy library for phylogenetic computing.
 ##
 ##  Copyright 2008 Jeet Sukumaran and Mark T. Holder.
 ##

@@ -1,5 +1,5 @@
-DendroPy Phylogenetic Computation Library
-=========================================
+DendroPy Phylogenetic Computing Library
+=======================================
 
 (C) 2008 Jeet Sukumaran and Mark T. Holder.
 

@@ -3,7 +3,7 @@
 ############################################################################
 ##  setup.py
 ##
-##  Part of the DendroPy phylogenetic computation library.
+##  Part of the DendroPy library for phylogenetic computing.
 ##
 ##  Copyright 2008 Jeet Sukumaran and Mark T. Holder.
 ##
@@ -52,7 +52,7 @@ setup(name='DendroPy',
       author_email='jeet@ku.edu and mtholder@ku.edu',
       url='http://sourceforge.net/projects/dendropy/',
       description="""\
-A library for Python-based phylogenetic computation.""",
+Phylogenetic computing library""",
       license='GPL 3+',
       packages=['dendropy'],
       package_dir={'dendropy': 'dendropy'},
@@ -71,8 +71,8 @@ A library for Python-based phylogenetic computation.""",
       # -*- Entry points: -*-
       """,      
       long_description="""\
-A pure-Python library for reading, writing, simulating, manipulating and analyzing
-phylogenetic trees.""",
+A Python library for phylogenetic computation, scripting, simulation,
+data processing and manipulation.""",
       classifiers = [
             "Environment :: Console",
             "Intended Audience :: Developers",
