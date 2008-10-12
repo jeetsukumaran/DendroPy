@@ -2,8 +2,11 @@ include ez_setup.py
 recursive-include dendropy/tests/data/ *
 recursive-include doc/ *
 prune dendropy/tests/data/heavy*
-prune TODO.txt
 include AUTHORS.txt
+include LICENSE.txt
 include COPYING.txt
 include README.txt
+include INSTALL.txt
+include TODO.txt
+include THANKS.txt
 
