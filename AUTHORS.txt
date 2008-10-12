@@ -1,7 +1,2 @@
-DendroPy AUTHORS -- the authors of DendroPy are:
-
-Jeet Sukumaran
-jeetsukumaran@gmail.com
-
-Mark T. Holder
-mtholder@ku.edu 
+Jeet Sukumaran <jeetsukumaran@gmail.com>
+Mark T. Holder <mtholder@ku.edu>

@@ -1,12 +1,15 @@
 include ez_setup.py
-recursive-include dendropy/tests/data/ *
 recursive-include doc/ *
-prune dendropy/tests/data/heavy*
-include AUTHORS.txt
-include LICENSE.txt
-include COPYING.txt
 include README.txt
 include INSTALL.txt
+include AUTHORS.txt
+include CHANGES.txt
+include ANNOUNCE.txt
+include LICENSE.txt
+include COPYING.txt
+include FAQ.txt
 include TODO.txt
 include THANKS.txt
-
+recursive-include */tests/data/ *
+prune */tests/data/heavy*
+prune *.DS_Store

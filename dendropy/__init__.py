@@ -31,8 +31,9 @@ import os
 import sys
 import random
 
+__version__ = "2.0.4"
 PACKAGE_NAME = "DendroPy"
-PACKAGE_VERSION = "2.0.4"
+PACKAGE_VERSION = __version__
 PACKAGE_AUTHOR = "Jeet Sukumaran and Mark T. Holder"
 PACKAGE_COPYRIGHT = "Copyright 2008 Jeet Sukumaran and Mark T. Holder."
 PACKAGE_LICENSE = """

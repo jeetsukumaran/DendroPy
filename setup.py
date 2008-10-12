@@ -29,25 +29,14 @@ import ez_setup
 ez_setup.use_setuptools()
 from setuptools import setup
 from setuptools import find_packages
+from dendropy import PACKAGE_VERSION
 
 import sys
 import os
 import subprocess
 
-def get_dendropy_version():
-    dpinit = os.path.join("dendropy", "__init__.py")
-    if not os.path.exists(dpinit):
-        return "#.#.#"
-    else:
-        dp_locals = {}
-        dp_globals = {}
-        execfile(dpinit, dp_globals, dp_locals)
-        return dp_locals['PACKAGE_VERSION']
-
-version = get_dendropy_version()
-
 setup(name='DendroPy',
-      version=version,     
+      version=PACKAGE_VERSION,     
       author='Jeet Sukumaran and Mark T. Holder',
       author_email='jeet@ku.edu and mtholder@ku.edu',
       url='http://sourceforge.net/projects/dendropy/',

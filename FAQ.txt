@@ -1,0 +1,6 @@
+#######################################
+Frequently Asked Questions for DendroPy
+#######################################
+
+#. Will you be releasing a GUI any time soon?
+   No.
