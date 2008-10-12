@@ -1,0 +1,4 @@
+We would like to thank all the people who have contributed suggestions, bug reports and critiques.
+
+Portions of `DendroPy
+<http://sourceforge.net/projects/dendropy/>`_ were developed under `CIPRES <http://www.phylo.org>`_, a multi-site collaboration funded by the `NSF <http://www.nsf.gov/>`_ Information Technology Research (ITR) program grant entitled "`BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics <http://www.phylo.org/about/acknowledgements>`_".
