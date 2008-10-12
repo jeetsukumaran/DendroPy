@@ -1,3 +1,4 @@
+global-exclude .DS_Store
 include ez_setup.py
 recursive-include doc/ *
 include README.txt
@@ -10,6 +11,5 @@ include COPYING.txt
 include FAQ.txt
 include TODO.txt
 include THANKS.txt
-recursive-include */tests/data/ *
+recursive-include */tests/ *
 prune */tests/data/heavy*
-prune *.DS_Store
