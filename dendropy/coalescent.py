@@ -31,6 +31,7 @@ from dendropy import distributions
 
 def time_to_coalescence(n_genes, pop_size=None, rng=None):
     """
+    A random draw from the "Kingman distribution":
     Time to go from n genes to n-1 genes; i.e. waiting time until two
     lineages coalesce.  This is a random number with an exponential
     distribution with a rate of (n choose 2). Time is in coalescent
@@ -47,7 +48,7 @@ def time_to_coalescence(n_genes, pop_size=None, rng=None):
 
 def expected_tmrca(n_genes, pop_size=None, rng=None):
     """
-    Expected value for the TMRCA in coalescent time units unless
+    Expected (mean) value for the TMRCA in coalescent time units unless
     population size > 1
     """
     if rng is None:
