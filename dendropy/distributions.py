@@ -235,3 +235,28 @@ def zprob(z):
     return prob    
     
     
+def geometric_rv(p, rng=None):
+    """ Geometric distribution per Devroye, Luc. _Non-Uniform Random Variate
+    Generation_, 1986, p 500. http://cg.scs.carleton.ca/~luc/rnbookindex.html
+    """
+    if rng is None:
+        rng = GLOBAL_RNG
+    # p should be in (0.0, 1.0].
+    if p <= 0.0 or p > 1.0:
+        raise ValueError("p must be in the interval (0.0, 1.0]")
+    elif p == 1.0:
+        # If p is exactly 1.0, then the only possible generated value is 1.
+        # Recognizing this case early means that we can avoid a log(0.0) later.
+        # The exact floating point comparison should be fine. log(eps) works just
+        # dandy.
+        return 1
+
+    # random() returns a number in [0, 1). The log() function does not
+    # like 0.
+    U = 1.0 - rng.random()
+
+    # Find the corresponding geometric variate by inverting the uniform variate.
+    G = int(math.ceil(math.log(U) / math.log(1.0 - p)))
+    return G
+    
+    
