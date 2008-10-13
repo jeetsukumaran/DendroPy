@@ -1,3 +1,4 @@
+
 #! /usr/bin/env python
 
 ############################################################################
@@ -28,17 +29,12 @@ dendropy testing suite
 
 import unittest
 import os
+import re
+import sys
 
 from dendropy import get_logger
 from dendropy.utils import find_files
-
-          
-# pylint: disable-msg=C0111,W0401,W0611
-
-def get_test_messenger(name):
-    logger = get_logger(name)
-    return _LOG.info
-    
+  
 def data_source_path(filename=None):
     if filename is None:
         filename = ""
@@ -60,27 +56,40 @@ def data_source_trees(format="*", heavy=False):
                                 expand_vars=True,
                                 include_hidden=False)
     return files                                
-    
-    
+       
 def data_target_path(filename=None):
     if filename is None:
         filename = ""
     return os.path.join(os.path.join(os.path.dirname(__file__),'output'), filename)
 
-def even_more_tests(all_suites):
-    "finds test from module introspection"
-    if __name__ != "__main__":
-         return 
-    #commented out
-    for i in __all__:
-        module = __import__("dendropy.tests.%s" % i)
-        _LOG.debug(i)
-        tests_mod = getattr(module, "tests")
-        sub_test_mod = getattr(tests_mod, i)
-        suite = sub_test_mod.additional_tests()
-        if suite:
-            all_suites.append(suite)
+def get_test_suite():
+    """
+    Creates a unittest.TestSuite from all of the modules in
+    `dendropy.tests`. Right now, assumes (a) no subdirectories (though
+    this can easily be accomodated) and (b) every test to be run is
+    sitting in a module with a file name of 'test*.py', and, conversely,
+    every file with a name of 'test*.py' has test(s) to be run.
+    """
+    # get list of test file names'
+    path = os.path.dirname(__file__)  
+    files = os.listdir(path)                               
+    test_file_pattern = re.compile("test.*\.py$", re.IGNORECASE)   
+    test_files = []
+    for f in files:
+        if test_file_pattern.search(f):
+            test_files.append("dendropy.tests." + os.path.splitext(f)[0])
+            
+    # extract the tests            
+    tests = unittest.defaultTestLoader.loadTestsFromNames(test_files)
+    
+    # return the suite
+    return unittest.TestSuite(tests) 
+
+def run():
+    "Runs all of the unittests"
+    runner = unittest.TextTestRunner()
+    runner.run(get_test_suite())
 
 if __name__ == "__main__":
-    test_all()
+    unittest.main()
 

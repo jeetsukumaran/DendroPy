@@ -195,6 +195,6 @@ class TreeIterTest(unittest.TestCase):
         _LOG.debug("EXPECTED: %s" % (', '.join(result)))        
         _LOG.debug("  RESULT: %s" % (', '.join(expected)))        
         self.assertEqual(result, expected)
-
+        
 if __name__ == "__main__":
     unittest.main()
