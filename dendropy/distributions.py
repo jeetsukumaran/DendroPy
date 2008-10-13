@@ -243,7 +243,7 @@ def geometric_rv(p, rng=None):
         rng = GLOBAL_RNG
     # p should be in (0.0, 1.0].
     if p <= 0.0 or p > 1.0:
-        raise ValueError("p must be in the interval (0.0, 1.0]")
+        raise ValueError("p = %s: p must be in the interval (0.0, 1.0]" % p)
     elif p == 1.0:
         # If p is exactly 1.0, then the only possible generated value is 1.
         # Recognizing this case early means that we can avoid a log(0.0) later.

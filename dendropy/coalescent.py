@@ -29,6 +29,31 @@ Methods for working with Kingman's n-coalescent framework.
 from dendropy import GLOBAL_RNG
 from dendropy import distributions
 
+def discrete_time_to_coalescence(n_genes, 
+                                 pop_size=None, 
+                                 haploid=True,
+                                 rng=None):
+    """
+    A random draw from the "Kingman distribution" (discrete time version):
+    Time to go from n genes to n-1 genes; i.e. waiting time until two
+    lineages coalesce. **`pop_size` = HAPLOID population size in the default
+    formulation!**
+    """
+    if pop_size is None or pop_size <= n_genes:
+        raise Exception("Population size must be >> num genes")
+    if haploid:
+        N = pop_size
+    else:
+        N = pop_size * 2
+    if rng is None:
+        rng = GLOBAL_RNG    
+    p = float(distributions.binomial_coefficient(n_genes, 2)) / N
+    tmrca = distributions.geometric_rv(p)
+    if pop_size is not None and pop_size >= 0:
+        return tmrca * pop_size
+    else:
+        return tmrca
+            
 def time_to_coalescence(n_genes, pop_size=None, rng=None):
     """
     A random draw from the "Kingman distribution" (continuous time version):
