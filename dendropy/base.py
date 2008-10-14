@@ -140,6 +140,8 @@ class IdTagged(Labelled):
     ensuring that this will never be None.
     """
 
+    instances = 0
+
     def normalize_id(id_str):
         """
         Given a string `id_str`, this returns a xs:NCName compliant
@@ -163,15 +165,22 @@ class IdTagged(Labelled):
         """
         Annotated.__init__(self)
         Labelled.__init__(self, label=label)
+        IdTagged.instances += 1
         if oid is None:
-            if label is None:
-                prefix = self.__class__.__name__[0].upper()
-                self.__oid = prefix + "ID" + str(id(self))
-            else:
-                self.__oid = self.normalize_id(label)
+            self.__oid = self._default_oid()
         else:
-            self.__oid = self.normalize_id(oid)                                
-
+            self.__oid = self.normalize_id(oid)
+            
+    def _default_oid(self):
+        """
+        Returns default oid.
+        """
+        if self.label is None:
+            prefix = self.__class__.__name__
+            return "_" + prefix + str(IdTagged.instances)            
+        else:
+            return self.normalize_id(self.label)        
+                
     def _get_oid(self):
         """
         Returns id.
@@ -187,6 +196,6 @@ class IdTagged(Labelled):
         if oid is not None:
             self.__oid = self.normalize_id(oid)
         else:
-            self.__oid = "ID" + str(id(self))
+            self.__oid = self._default_oid()
 
     oid = property(_get_oid, _set_oid)

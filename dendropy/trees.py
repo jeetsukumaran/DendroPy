@@ -791,8 +791,6 @@ class Edge(base.IdTagged):
         self.__tail_oid = None
         self.__head_oid = None
         self.rootedge = False
-
-        self.oid = oid
         if head_node is not None:
             self._set_head_node(head_node)
         if tail_node is not None:
