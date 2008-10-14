@@ -157,16 +157,26 @@ class Tree(base.IdTagged):
         """
         return [leaf for leaf in self.leaf_iter()]
 
-    def find_node(self, elem_id):
+    def find_node(self, filter_fn):
         """
-        Finds the first node with matching id.
+        Finds the first node for which filter_fn(node) = True.
         """
-        filter_fn = lambda x: x.elem_id == elem_id
+        #filter_fn = lambda x: x.elem_id == elem_id
         found = [node for node in self.preorder_node_iter(filter_fn)]
         if found and len(found) > 0:
             return found[0]
         else:
             return None
+            
+    def find_taxon_node(self, taxon_filter_fn=None):
+        """
+        Finds the first node for which taxon_filter_fn(node.taxon) == True.
+        """
+        for node in self.preorder_node_iter():
+            if hasattr(node, "taxon") and node.taxon is not None:
+                if taxon_filter_fn(node.taxon):
+                    return node
+        return None                    
 
     def find_edge(self, elem_id):
         """
