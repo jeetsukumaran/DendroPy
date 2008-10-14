@@ -147,9 +147,9 @@ def store_trees(trees_collection, format, dest=None):
         trees_block.normalize_taxa()
     dataset = Dataset()
     dataset.add_trees_block(trees_block=trees_block)
-    store_dataset(dataset=dataset,
-                  format=format,                  
-                  dest=dest)
+    return store_dataset(dataset=dataset,
+        format=format,                  
+        dest=dest)
                   
 def store_chars(char_block, format, dest=None):
     """
@@ -157,9 +157,9 @@ def store_chars(char_block, format, dest=None):
     """
     dataset = Dataset()
     dataset.add_char_block(char_block=char_block)
-    store_dataset(dataset=dataset,
-                  format=format,                  
-                  dest=dest)                  
+    return store_dataset(dataset=dataset,
+        format=format,                  
+        dest=dest)                  
 
 ############################################################################
 ## Helpers
