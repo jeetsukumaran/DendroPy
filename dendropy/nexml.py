@@ -1133,7 +1133,7 @@ class NexmlWriter(datasets.Writer):
         """
         if edge and edge.head_node:
             parts = []
-            if edge.tail_oid != None:
+            if edge.tail_node is not None:
                 tag = "edge"
                 parts.append('<%s' % tag)
             else:
@@ -1144,11 +1144,11 @@ class NexmlWriter(datasets.Writer):
                 parts.append('id="%s"' % edge.oid)
             # programmatically more efficent to do this in above
             # block, but want to maintain this tag order ...
-            if hasattr(edge, 'tail_oid') and edge.tail_oid:
-                parts.append('source="%s"' % edge.tail_oid)            
-            if edge.head_oid != None:
-                parts.append('target="%s"' % edge.head_oid)
-            if hasattr(edge, 'length') and edge.length != None:
+            if edge.tail_node is not None:
+                parts.append('source="%s"' % edge.tail_node.oid)            
+            if edge.head_node is not None:
+                parts.append('target="%s"' % edge.head_node.oid)
+            if hasattr(edge, 'length') and edge.length is not None:
                 parts.append('length="%s"' % edge.length)
 
             # only write if we have more than just the 'edge' and '/' bit

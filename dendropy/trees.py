@@ -786,106 +786,14 @@ class Edge(base.IdTagged):
         arbol.
         """
         base.IdTagged.__init__(self, oid=oid)
-        self.__tail_node = None
-        self.__head_node = None
-        self.__tail_oid = None
-        self.__head_oid = None
+        self.tail_node = None
+        self.head_node = None
         self.rootedge = False
         if head_node is not None:
-            self._set_head_node(head_node)
+            self.head_node = head_node
         if tail_node is not None:
-            self._set_tail_node(tail_node)
-        elif self.head_node:
-            self._set_tail_node(self.head_node.parent_node)
+            self.tail_node = tail_node
         self.length = length
-
-    def _get_tail_node(self):
-        """
-        Returns the source node.
-        """
-        return self.__tail_node
-
-    def _set_tail_node(self, node):
-        """
-        Sets the source node. Note: this *does* change the
-        tail_oid as well!
-        """
-        self.__tail_node = node
-        if self.__tail_node:
-            self.__tail_oid = node.oid
-        else:
-            self.__tail_oid = None
-
-    tail_node = property(_get_tail_node, _set_tail_node)
-
-    def _get_tail_oid(self):
-        """
-        Returns the given id of the source node if defined.
-        """
-        if self.__tail_oid == None and self.__tail_node:
-            self.__tail_oid = self.__tail_node.oid
-        return self.__tail_oid
-
-    def _set_tail_oid(self, oid):
-        """
-        Sets the source node id. Note: does *not* change the
-        tail_node itself!
-        """
-        self.__tail_oid = oid
-
-    tail_oid = property(_get_tail_oid, _set_tail_oid)
-                        
-    def _get_head_node(self):
-        """
-        Returns the target node.
-        """
-        return self.__head_node
-
-    def _set_head_node(self, node):
-        """
-        Sets the source node. Note: this *does* change the
-        head_oid as well!
-        """
-        self.__head_node = node
-        if self.__head_node:
-            self.__head_oid = node.oid
-        else:
-            self.__head_oid = None
-
-    head_node = property(_get_head_node, _set_head_node)
-
-    def _get_head_oid(self):
-        """
-        Returns the given id of the target node if defined.
-        """
-        if self.__head_oid == None and self.__head_node:
-            self.__head_oid = self.__head_node.oid
-        return self.__head_oid
-
-    def _set_head_oid(self, oid):
-        """
-        Sets the target node id. Note: does *not* change the
-        head_node itself!
-        """
-        self.__head_oid = oid
-
-    head_oid = property(_get_head_oid, _set_head_oid)
-
-    def bisect(self, bisecting_node):
-        """
-        Adds a new node, `node`, of the same class as the bisecting
-        node as the ancestor of `self.head_node`, and attaches `node`
-        to this node such that `node` is sister to `self.head_node`.
-        !UNTESTED!
-        """
-        new_node = bisecting_node.__class__()
-        new_node.add_child(self.head_node)
-        new_node.add_child(bisecting_node)
-        self.tail_node.remove_child(self.head_node)
-        self.tail_node.add_child(new_node)
-        self.head_node.parent_node = new_node
-        bisecting_node.parent_node = new_node
-        return new_node
 
     def new_edge(self, oid=None):
         """
