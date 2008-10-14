@@ -1136,15 +1136,18 @@ class NexmlWriter(datasets.Writer):
             if edge.tail_oid != None:
                 tag = "edge"
                 parts.append('<%s' % tag)
-                parts.append('source="%s"' % edge.tail_oid)
             else:
                 # EDGE-ON-ROOT:
                 tag = "rootedge"
-                parts.append('<%s' % tag) 
-            if edge.head_oid != None:
-                parts.append('target="%s"' % edge.head_oid)
+                parts.append('<%s' % tag)                            
             if hasattr(edge, 'oid') and edge.oid:
                 parts.append('id="%s"' % edge.oid)
+            # programmatically more efficent to do this in above
+            # block, but want to maintain this tag order ...
+            if hasattr(edge, 'tail_oid') and edge.tail_oid:
+                parts.append('source="%s"' % edge.tail_oid)            
+            if edge.head_oid != None:
+                parts.append('target="%s"' % edge.head_oid)
             if hasattr(edge, 'length') and edge.length != None:
                 parts.append('length="%s"' % edge.length)
 
