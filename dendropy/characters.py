@@ -45,13 +45,13 @@ class StateAlphabetElement(base.IdTagged):
     POLYMORPHIC_STATE = 2
     
     def __init__(self, 
-                 elem_id=None, 
+                 oid=None, 
                  label=None,
                  symbol=None, 
                  token=None, 
                  multistate=SINGLE_STATE, 
                  member_states=None):
-        base.IdTagged.__init__(self, elem_id=elem_id, label=label)
+        base.IdTagged.__init__(self, oid=oid, label=label)
         self.symbol = symbol
         self.token = token
         self.multistate = multistate
@@ -61,7 +61,7 @@ class StateAlphabetElement(base.IdTagged):
         return str(self.symbol)
         
     def __repr__(self):
-        return str([self.elem_id, 
+        return str([self.oid, 
                     self.symbol, 
                     '[' + (', '.join(self._get_fundamental_symbols())) + ']'])
         
@@ -84,7 +84,7 @@ class StateAlphabetElement(base.IdTagged):
         """
         Returns set of id's of all _get_fundamental states to which this state maps.
         """
-        return set([state.elem_id for state in self._get_fundamental_states()])
+        return set([state.oid for state in self._get_fundamental_states()])
         
     fundamental_ids = property(_get_fundamental_ids)          
         
@@ -109,8 +109,8 @@ class StateAlphabet(base.IdTagged, list):
     A set of states available for a particular character type/format.
     """
     
-    def __init__(self, elem_id=None, label=None):
-        base.IdTagged.__init__(self, elem_id=elem_id, label=label)  
+    def __init__(self, oid=None, label=None):
+        base.IdTagged.__init__(self, oid=oid, label=label)  
         list.__init__(self)
         
     def get_state(self, attr_name, value):
@@ -148,15 +148,15 @@ class StateAlphabet(base.IdTagged, list):
             map[state.symbol] = state
         return map
     
-    def get_states(self, elem_ids=None, symbols=None, tokens=None):
+    def get_states(self, oids=None, symbols=None, tokens=None):
         """
         Returns list of states with ids/symbols/tokens equal to values
         given in a list of ids/symbols/tokens (exact matches, one-to-one
         correspondence between state and attribute value in list).
         """
-        if elem_ids is not None:
-            attr_name = 'elem_id'
-            values = elem_ids
+        if oids is not None:
+            attr_name = 'oid'
+            values = oids
         elif symbols is not None:
             attr_name = 'symbol'
             values = symbols
@@ -170,13 +170,13 @@ class StateAlphabet(base.IdTagged, list):
             states.append(self.get_state(attr_name=attr_name, value=value))
         return states
     
-    def match_state(self, elem_ids=None, symbols=None, tokens=None):
+    def match_state(self, oids=None, symbols=None, tokens=None):
         """
         Returns SINGLE state that has ids/symbols/tokens as member states.
         """
-        if elem_ids is not None:
+        if oids is not None:
             attr_name = 'fundamental_ids'
-            values = elem_ids
+            values = oids
         elif symbols is not None:
             attr_name = 'fundamental_symbols'
             values = symbols
@@ -201,13 +201,13 @@ class StateAlphabet(base.IdTagged, list):
         """
         map = {}
         for state in self:
-            map[state.elem_id] = state
+            map[state.oid] = state
         return map
            
 class DnaStateAlphabet(StateAlphabet):
 
-    def __init__(self, elem_id=None, label=None):
-        StateAlphabet.__init__(self, elem_id=elem_id, label=label)
+    def __init__(self, oid=None, label=None):
+        StateAlphabet.__init__(self, oid=oid, label=label)
         self.append(StateAlphabetElement(symbol="A"))
         self.append(StateAlphabetElement(symbol="C"))     
         self.append(StateAlphabetElement(symbol="G"))
@@ -252,8 +252,8 @@ class DnaStateAlphabet(StateAlphabet):
         
 class RnaStateAlphabet(StateAlphabet):
 
-    def __init__(self, elem_id=None, label=None):
-        StateAlphabet.__init__(self, elem_id=elem_id, label=label)
+    def __init__(self, oid=None, label=None):
+        StateAlphabet.__init__(self, oid=oid, label=label)
         self.append(StateAlphabetElement(symbol="A"))
         self.append(StateAlphabetElement(symbol="C"))     
         self.append(StateAlphabetElement(symbol="G"))
@@ -298,8 +298,8 @@ class RnaStateAlphabet(StateAlphabet):
 
 class ProteinStateAlphabet(StateAlphabet):
 
-    def __init__(self, elem_id=None, label=None):
-        StateAlphabet.__init__(self, elem_id=elem_id, label=label)
+    def __init__(self, oid=None, label=None):
+        StateAlphabet.__init__(self, oid=oid, label=label)
         self.append(StateAlphabetElement(symbol="A"))
         self.append(StateAlphabetElement(symbol="C"))
         self.append(StateAlphabetElement(symbol="D"))
@@ -341,8 +341,8 @@ class ProteinStateAlphabet(StateAlphabet):
 
 class BinaryStateAlphabet(StateAlphabet):
 
-    def __init__(self, elem_id=None, label=None, allow_gaps=True, allow_missing=True):
-        StateAlphabet.__init__(self, elem_id=elem_id, label=label)
+    def __init__(self, oid=None, label=None, allow_gaps=True, allow_missing=True):
+        StateAlphabet.__init__(self, oid=oid, label=label)
         self.append(StateAlphabetElement(symbol="0"))
         self.append(StateAlphabetElement(symbol="1"))
         if allow_gaps:
@@ -358,13 +358,13 @@ class BinaryStateAlphabet(StateAlphabet):
                         
 class RestrictionSitesStateAlphabet(BinaryStateAlphabet):
 
-    def __init__(self, elem_id=None, label=None):
-        BinaryStateAlphabet.__init__(self, elem_id=elem_id, label=label)    
+    def __init__(self, oid=None, label=None):
+        BinaryStateAlphabet.__init__(self, oid=oid, label=label)    
         
 class InfiniteSitesStateAlphabet(BinaryStateAlphabet):
 
-    def __init__(self, elem_id=None, label=None):
-        BinaryStateAlphabet.__init__(self, elem_id=elem_id, label=label)
+    def __init__(self, oid=None, label=None):
+        BinaryStateAlphabet.__init__(self, oid=oid, label=label)
 
 ### GLOBAL STATE ALPHABETS ###                                       
 
@@ -380,8 +380,8 @@ class ColumnType(base.IdTagged):
     a particular set of character state definitions to a column in a character char_block.
     """
   
-    def __init__(self, elem_id=None,label=None, state_alphabet=None):
-        base.IdTagged.__init__(self, elem_id=elem_id, label=label)
+    def __init__(self, oid=None,label=None, state_alphabet=None):
+        base.IdTagged.__init__(self, oid=oid, label=label)
         self.__state_alphabet = None
         self.id_state_map = None
         self.state_alphabet = state_alphabet
@@ -430,9 +430,9 @@ class CharacterDataVector(list, taxa.TaxonLinked):
     A list of character data values.
     """
 
-    def __init__(self, elem_id=None, label=None, taxon=None):
+    def __init__(self, oid=None, label=None, taxon=None):
         list.__init__(self)
-        taxa.TaxonLinked.__init__(self, elem_id=elem_id, label=label, taxon=taxon)
+        taxa.TaxonLinked.__init__(self, oid=oid, label=label, taxon=taxon)
         self.string_sep = ''
         
     def set_cell_by_index(self, column_index, cell):
@@ -523,7 +523,7 @@ class CharactersBlock(taxa.TaxaLinked):
 
     def __init__(self, *args, **kwargs):
         """
-        Inits. Handles keyword arguments: `elem_id`, `label` and `taxa_block`.
+        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
         """
         taxa.TaxaLinked.__init__(self, *args, **kwargs)
         self.matrix = CharacterDataMatrix()
@@ -771,7 +771,7 @@ class CharactersBlock(taxa.TaxaLinked):
         """
         map = {}
         for char in self.column_types:
-            map[char.elem_id] = char
+            map[char.oid] = char
         return map
         
 class ContinuousCharactersBlock(CharactersBlock):
@@ -781,7 +781,7 @@ class ContinuousCharactersBlock(CharactersBlock):
 
     def __init__(self, *args, **kwargs):
         """
-        Inits. Handles keyword arguments: `elem_id`, `label` and `taxa_block`.
+        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
         """
         CharactersBlock.__init__(self, *args, **kwargs)
 
@@ -792,7 +792,7 @@ class DiscreteCharactersBlock(CharactersBlock):
 
     def __init__(self, *args, **kwargs):
         """
-        Inits. Handles keyword arguments: `elem_id`, `label` and `taxa_block`.
+        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
         """
         CharactersBlock.__init__(self, *args, **kwargs)
         self.state_alphabets = []
@@ -823,7 +823,7 @@ class StandardCharactersBlock(DiscreteCharactersBlock):
     
     def __init__(self, *args, **kwargs):
         """
-        Inits. Handles keyword arguments: `elem_id`, `label` and `taxa_block`.
+        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
         """
         DiscreteCharactersBlock.__init__(self, *args, **kwargs)
                          
@@ -834,7 +834,7 @@ class DnaCharactersBlock(DiscreteCharactersBlock):
     
     def __init__(self, *args, **kwargs):
         """
-        Inits. Handles keyword arguments: `elem_id`, `label` and `taxa_block`.
+        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
         """
         DiscreteCharactersBlock.__init__(self, *args, **kwargs)
         self.default_state_alphabet = DNA_STATE_ALPHABET
@@ -847,7 +847,7 @@ class RnaCharactersBlock(DiscreteCharactersBlock):
     
     def __init__(self, *args, **kwargs):
         """
-        Inits. Handles keyword arguments: `elem_id`, `label` and `taxa_block`.
+        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
         """
         DiscreteCharactersBlock.__init__(self, *args, **kwargs)
         self.default_state_alphabet = RNA_STATE_ALPHABET
@@ -860,7 +860,7 @@ class ProteinCharactersBlock(DiscreteCharactersBlock):
     
     def __init__(self, *args, **kwargs):
         """
-        Inits. Handles keyword arguments: `elem_id`, `label` and `taxa_block`.
+        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
         """        
         DiscreteCharactersBlock.__init__(self, *args, **kwargs)
         self.default_state_alphabet = PROTEIN_STATE_ALPHABET
@@ -873,7 +873,7 @@ class RestrictionSitesCharactersBlock(DiscreteCharactersBlock):
     
     def __init__(self, *args, **kwargs):
         """
-        Inits. Handles keyword arguments: `elem_id`, `label` and `taxa_block`.
+        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
         """
         DiscreteCharactersBlock.__init__(self, *args, **kwargs)
         self.default_state_alphabet = RESTRICTION_SITES_STATE_ALPHABET
@@ -886,7 +886,7 @@ class InfiniteSitesCharactersBlock(DiscreteCharactersBlock):
     
     def __init__(self, *args, **kwargs):
         """
-        Inits. Handles keyword arguments: `elem_id`, `label` and `taxa_block`.
+        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
         """
         DiscreteCharactersBlock.__init__(self, *args, **kwargs)
         self.default_state_alphabet = INFINITE_SITES_STATE_ALPHABET

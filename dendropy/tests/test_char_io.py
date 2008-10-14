@@ -99,7 +99,7 @@ class CharIOTest(unittest.TestCase):
                                                                                           
                 _LOG.info("\nTaxa Blocks:")                                                                                          
                 for tb_idx, tb in enumerate(dataset.taxa_blocks):
-                    _LOG.info("-- Taxa Block %d (%s \"%s\"): %d taxa" % (tb_idx+1, tb.elem_id, str(tb.label), len(tb)))
+                    _LOG.info("-- Taxa Block %d (%s \"%s\"): %d taxa" % (tb_idx+1, tb.oid, str(tb.label), len(tb)))
                     _LOG.debug("\n".join([("      " + str(t)) for t in tb]))
                     _LOG.debug("")
                     
@@ -109,7 +109,7 @@ class CharIOTest(unittest.TestCase):
                     if cb.matrix:
                         nchar = max([len(v) for v in cb.matrix.values()])
                     _LOG.info("-- Character Block %d (%s \"%s\"): %s with %d taxa and %d characters" % (cb_idx+1, 
-                                                                                            cb.elem_id, 
+                                                                                            cb.oid, 
                                                                                             str(cb.label), 
                                                                                             cb.__class__.__name__,
                                                                                             ntax, 
@@ -119,11 +119,11 @@ class CharIOTest(unittest.TestCase):
                     # check that all taxa in original is in character matrix
                     cb_taxa = [str(t) for t in cb.matrix]
                     for t in check_data:
-                        self.failUnless(t in cb_taxa, 'Taxon "%s" expected but not found in Character Block %d (%s)' % (t, cb_idx+1, cb.elem_id))
+                        self.failUnless(t in cb_taxa, 'Taxon "%s" expected but not found in Character Block %d (%s)' % (t, cb_idx+1, cb.oid))
                     
                     # and vice versa
                     for t in cb_taxa:
-                        self.failUnless(t in check_data, 'Taxon "%s" found in Character Block %d (%s) is unexpected' % (t, cb_idx+1, cb.elem_id))
+                        self.failUnless(t in check_data, 'Taxon "%s" found in Character Block %d (%s) is unexpected' % (t, cb_idx+1, cb.oid))
 
                     # check for sequence correspondence
                     _LOG.debug("")                    

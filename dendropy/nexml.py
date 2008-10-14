@@ -396,24 +396,24 @@ class _NexmlTreesParser(_NexmlElementParser):
         underlying NEXML. If `add_to_trees_block` is False, then each tree,
         *IS NOT ADDED TO THE DATASET*.
         """
-        elem_id = nxtrees.get('id', "Trees" + str(trees_idx))
+        oid = nxtrees.get('id', "Trees" + str(trees_idx))
         label = nxtrees.get('label', None)
         taxa_id = nxtrees.get('otus', None)
         if taxa_id is None:
-            raise Exception("Taxa block not specified for trees block \"%s\"" % trees_block.elem_id)
-        taxa_block = dataset.find_taxa_block(elem_id = taxa_id)
+            raise Exception("Taxa block not specified for trees block \"%s\"" % trees_block.oid)
+        taxa_block = dataset.find_taxa_block(oid = taxa_id)
         if not taxa_block:
             raise Exception("Taxa block \"%s\" not found" % taxa_id)
         taxa_block = taxa_block
         trees_block = dataset.add_trees_block(taxa_block=taxa_block, 
-                                            trees_block=self.trees_block_factory(elem_id=elem_id, label=label))
+                                            trees_block=self.trees_block_factory(oid=oid, label=label))
         self.parse_annotations(annotated=trees_block, nxelement=nxtrees)                                            
         tree_counter = 0
         for tree_element in nxtrees.getiterator('tree'):
             tree_counter = tree_counter + 1
-            elem_id = tree_element.get('id', tree_counter)
+            oid = tree_element.get('id', tree_counter)
             label = tree_element.get('label', '')
-            treeobj = self.tree_factory(elem_id=elem_id, label=label)
+            treeobj = self.tree_factory(oid=oid, label=label)
             tree_type_attr = tree_element.get('{http://www.w3.org/2001/XMLSchema-instance}type')
             treeobj.length_type = _from_nexml_tree_length_type(tree_type_attr)
             self.parse_annotations(annotated=treeobj, nxelement=tree_element)
@@ -425,15 +425,15 @@ class _NexmlTreesParser(_NexmlElementParser):
                 # this check if tail node id is specified
                 if edge.tail_node_id and edge.tail_node_id not in nodes:
                     msg = 'Edge "%s" specifies a non-defined ' \
-                          'source node ("%s")\nCurrent nodes: %s' % (edge.elem_id,
+                          'source node ("%s")\nCurrent nodes: %s' % (edge.oid,
                                                                      edge.tail_node_id,
                                                                      (','.join([n for n in nodes])))
                     raise Exception(msg)
                 if edge.head_node_id not in nodes:
                     msg = 'Edge "%s" specifies a non-defined ' \
-                          'target node ("%s")\nCurrent nodes: %s' % (edge.elem_id,
+                          'target node ("%s")\nCurrent nodes: %s' % (edge.oid,
                                                                      edge.head_node_id,
-                                                                     (','.join([n.elem_id for n in nodes])))
+                                                                     (','.join([n.oid for n in nodes])))
                     raise Exception(msg)
 
                 if edge.head_node_id and edge.tail_node_id:
@@ -468,9 +468,9 @@ class _NexmlTreesParser(_NexmlElementParser):
             if rootedge:
                 if rootedge.head_node_id not in nodes:
                     msg = 'Edge "%s" specifies a non-defined ' \
-                          'target node ("%s")\nCurrent nodes: %s' % (edge.elem_id,
+                          'target node ("%s")\nCurrent nodes: %s' % (edge.oid,
                                                                      edge.head_node_id,
-                                                                     (','.join([n.elem_id for n in nodes])))
+                                                                     (','.join([n.oid for n in nodes])))
                     raise Exception(msg)
                 else:
                     nodes[rootedge.head_node_id].edge = rootedge
@@ -492,13 +492,13 @@ class _NexmlTreesParser(_NexmlElementParser):
         for nxnode in tree_element.getiterator('node'):
             node_id = nxnode.get('id', None)
             nodes[node_id] = node_factory()
-            nodes[node_id].elem_id = node_id
+            nodes[node_id].oid = node_id
             nodes[node_id].label = nxnode.get('label', None)
             taxon_id = nxnode.get('otu', None)
             if taxon_id is not None:
-                taxon = taxa_block.find_taxon(elem_id=taxon_id, update=False)
+                taxon = taxa_block.find_taxon(oid=taxon_id, update=False)
                 if not taxon:
-                    raise Exception('Taxon with id "%s" not defined in taxa block "%s"' % (taxon_id, taxa.elem_id))
+                    raise Exception('Taxon with id "%s" not defined in taxa block "%s"' % (taxon_id, taxa.oid))
                 nodes[node_id].taxon = taxon
             self.parse_annotations(annotated=nodes[node_id], nxelement=nxnode)
         return nodes
@@ -511,7 +511,7 @@ class _NexmlTreesParser(_NexmlElementParser):
         if rootedge:
             edge = edge_factory()
             edge.head_node_id = rootedge.get('target', None)
-            edge.elem_id = rootedge.get('id', 'e' + str(id(edge)))
+            edge.oid = rootedge.get('id', 'e' + str(id(edge)))
             edge_length_str = length_type(rootedge.get('length', '0.0'))
             edge.rootedge = True
             edge_length = None
@@ -519,7 +519,7 @@ class _NexmlTreesParser(_NexmlElementParser):
                 edge_length = length_type(edge_length_str)
             except:
                 msg = 'Edge %d ("%s") `length` attribute is not a %s' \
-                      % (edge_counter, edge.elem_id, str(length_type))
+                      % (edge_counter, edge.oid, str(length_type))
                 raise Exception(msg)
             edge.length = edge_length
             self.parse_annotations(annotated=edge, nxelement=rootedge)            
@@ -531,7 +531,7 @@ class _NexmlTreesParser(_NexmlElementParser):
         """
         Given an XmlElement representation of a NEXML tree element
         this will return a dictionary of DendroPy Edge objects created with
-        the edge factory method, self.new_edge, with the elem_id as
+        the edge factory method, self.new_edge, with the oid as
         key. As at this stage, this method knows nothing about defined
         nodes, the Edge tail_node and head_node properties of the
         Edge are not set, but the tail_node_id and head_node_id are.
@@ -543,28 +543,28 @@ class _NexmlTreesParser(_NexmlElementParser):
             edge_counter = edge_counter + 1
             edge.tail_node_id = nxedge.get('source', None)
             edge.head_node_id = nxedge.get('target', None)
-            edge.elem_id = nxedge.get('id', 'e' + str(edge_counter))
+            edge.oid = nxedge.get('id', 'e' + str(edge_counter))
             edge_length_str = length_type(nxedge.get('length', '0.0'))
 
             if not edge.tail_node_id:
                 msg = 'Edge %d ("%s") does not have a source' \
-                      % (edge_counter, edge.elem_id)
+                      % (edge_counter, edge.oid)
                 raise Exception(msg)
 
             if not edge.head_node_id:
                 msg = 'Edge %d ("%s") does not have a target' \
-                      % (edge_counter, edge.elem_id)
+                      % (edge_counter, edge.oid)
                 raise Exception(msg)
             edge_length = None
             try:
                 edge_length = length_type(edge_length_str)
             except:
                 msg = 'Edge %d ("%s") `length` attribute is not a %s' \
-                      % (edge_counter, edge.elem_id, str(length_type))
+                      % (edge_counter, edge.oid, str(length_type))
                 raise Exception(msg)
             edge.length = edge_length
             self.parse_annotations(annotated=edge, nxelement=nxedge)            
-            edges[edge.elem_id] = edge
+            edges[edge.oid] = edge
         return edges
 
 class _NexmlTaxaParser(_NexmlElementParser):
@@ -591,9 +591,9 @@ class _NexmlTaxaParser(_NexmlElementParser):
         Given an XmlElement representing a nexml taxa block, this
         instantiates and returns a corresponding DendroPy Taxa object.
         """
-        elem_id = nxtaxa.get('id', None)
+        oid = nxtaxa.get('id', None)
         label = nxtaxa.get('label', None)
-        taxa_block = self.taxa_block_factory(elem_id=elem_id, label=label)
+        taxa_block = self.taxa_block_factory(oid=oid, label=label)
         self.parse_annotations(annotated=taxa_block, nxelement=nxtaxa) 
         for idx, nxtaxon in enumerate(nxtaxa.getiterator('otu')):
             taxon = self.taxon_factory(nxtaxon.get('id', "s" + str(idx) ), nxtaxon.get('label', "Taxon" + str(idx)))
@@ -622,14 +622,14 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         ("uncertain_state_set")
         and returns a corresponding StateAlphabetElement object.
         """
-        state = characters.StateAlphabetElement(elem_id=nxambiguous.get('id', None),
+        state = characters.StateAlphabetElement(oid=nxambiguous.get('id', None),
                                                 label=nxambiguous.get('label', None),
                                                 symbol=nxambiguous.get('symbol', None),
                                                 token=nxambiguous.get('token', None))
         state.member_states = []                                                    
         for nxmember in nxambiguous.getiterator('member'):
             member_state_id = nxmember.get('state', None)
-            member_state = state_alphabet.get_state('elem_id', member_state_id)
+            member_state = state_alphabet.get_state('oid', member_state_id)
             state.member_states.append(member_state)   
         state.multistate = characters.StateAlphabetElement.AMBIGUOUS_STATE    
         return state
@@ -640,14 +640,14 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         ("polymorphic_state_set")
         and returns a corresponding StateAlphabetElement object.
         """
-        state = characters.StateAlphabetElement(elem_id=nxpolymorphic.get('id', None),
+        state = characters.StateAlphabetElement(oid=nxpolymorphic.get('id', None),
                                                 label=nxpolymorphic.get('label', None),
                                                 symbol=nxpolymorphic.get('symbol', None),
                                                 token=nxpolymorphic.get('token', None))
         state.member_states = []                                                    
         for nxmember in nxpolymorphic.getiterator('member'):
             member_state_id = nxmember.get('state', None)
-            member_state = state_alphabet.get_state('elem_id', member_state_id)
+            member_state = state_alphabet.get_state('oid', member_state_id)
             state.member_states.append(member_state)
         for nxambiguous in nxpolymorphic.getiterator('uncertain_state_set'):
             state.member_states.append(self.parse_ambiguous_state(nxambiguous, state_alphabet))
@@ -660,10 +660,10 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         ("states"), this returns a corresponding StateAlphabet object.
         """
         
-        state_alphabet = characters.StateAlphabet(elem_id=nxstates.get('id', None),
+        state_alphabet = characters.StateAlphabet(oid=nxstates.get('id', None),
                                                          label=nxstates.get('label', None))
         for nxstate in nxstates.getiterator('state'):
-            state = characters.StateAlphabetElement(elem_id=nxstate.get('id', None),
+            state = characters.StateAlphabetElement(oid=nxstate.get('id', None),
                                                     label=nxstate.get('label', None),
                                                     symbol=nxstate.get('symbol', None),
                                                     token=nxstate.get('token', None))        
@@ -684,12 +684,12 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             for nxstates in nxformat.getiterator('states'):
                 char_block.state_alphabets.append(self.parse_state_alphabet(nxstates))
             for nxchars in nxformat.getiterator('char'):
-                col = characters.ColumnType(elem_id=nxchars.get('id', None))
+                col = characters.ColumnType(oid=nxchars.get('id', None))
                 char_state_set_id = nxchars.get('states')
                 if char_state_set_id is not None:
                     state_alphabet = None
                     for state_sets in char_block.state_alphabets:
-                        if state_sets.elem_id == char_state_set_id:
+                        if state_sets.oid == char_state_set_id:
                             state_alphabet = state_sets
                             break
                     if state_alphabet is None:
@@ -717,19 +717,19 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             char_block = characters.ContinuousCharactersBlock()
         else:
             raise NotImplementedError('Character Block %s (\"%s\"): Character type "%s" not supported.' 
-                % (char_block.elem_id, char_block.label, nxchartype))
+                % (char_block.oid, char_block.label, nxchartype))
             
-        elem_id = nxchars.get('id', None)
+        oid = nxchars.get('id', None)
         label = nxchars.get('label', None)
-        char_block.elem_id = elem_id
+        char_block.oid = oid
         char_block.label = label   
           
         taxa_id = nxchars.get('otus', None)
         if taxa_id is None:
-            raise Exception("Character Block %s (\"%s\"): Taxa block not specified for trees block \"%s\"" % (char_block.elem_id, char_block.label, char_block.elem_id))
-        taxa_block = dataset.find_taxa_block(elem_id = taxa_id)
+            raise Exception("Character Block %s (\"%s\"): Taxa block not specified for trees block \"%s\"" % (char_block.oid, char_block.label, char_block.oid))
+        taxa_block = dataset.find_taxa_block(oid = taxa_id)
         if not taxa_block:
-            raise Exception("Character Block %s (\"%s\"): Taxa block \"%s\" not found" % (char_block.elem_id, char_block.label, taxa_id))
+            raise Exception("Character Block %s (\"%s\"): Taxa block \"%s\" not found" % (char_block.oid, char_block.label, taxa_id))
         char_block.taxa_block = taxa_block
         self.parse_annotations(annotated=char_block, nxelement=nxchars)                
         
@@ -742,7 +742,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         
         if char_block.column_types:
             id_column_map = char_block.id_column_map()
-            column_ids = [char.elem_id for char in char_block.column_types]
+            column_ids = [char.oid for char in char_block.column_types]
         else:
             id_column_map = {}
             column_ids = [] 
@@ -751,11 +751,11 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             row_id = nxrow.get('id', None)
             label = nxrow.get('label', None)
             taxon_id = nxrow.get('otu', None)
-            taxon = taxa_block.find_taxon(elem_id=taxon_id, update=False)
+            taxon = taxa_block.find_taxon(oid=taxon_id, update=False)
             if not taxon:
-                raise Exception('Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_block.elem_id, char_block.label, taxon_id, taxa.elem_id))                   
+                raise Exception('Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_block.oid, char_block.label, taxon_id, taxa.oid))                   
                 
-            character_vector = characters.CharacterDataVector(elem_id=row_id, label=label, taxon=taxon)
+            character_vector = characters.CharacterDataVector(oid=row_id, label=label, taxon=taxon)
             self.parse_annotations(annotated=character_vector, nxelement=nxrow)
             
             if isinstance(char_block, characters.ContinuousCharactersBlock):
@@ -789,7 +789,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                             if char in symbol_state_map:
                                 state = symbol_state_map[char]
                             else:
-                                raise NameError('Character Block %s (\"%s\"): State with symbol "%s" in sequence "%s" not defined' % (char_block.elem_id, char_block.label, char, seq))
+                                raise NameError('Character Block %s (\"%s\"): State with symbol "%s" in sequence "%s" not defined' % (char_block.oid, char_block.label, char, seq))
                             character_vector.append(characters.CharacterDataCell(value=state))
                 else:
                     char_block.markup_as_sequences = False                
@@ -844,8 +844,8 @@ class NexmlWriter(datasets.Writer):
             dest.write(self.indent * indent_level)
             parts = []
             parts.append('otus')
-            if taxa_block.elem_id is not None:
-                parts.append('id="%s"' % taxa_block.elem_id)
+            if taxa_block.oid is not None:
+                parts.append('id="%s"' % taxa_block.oid)
             else:
                 raise Exception("Taxa block given without ID")
             if taxa_block.label:
@@ -860,8 +860,8 @@ class NexmlWriter(datasets.Writer):
                 dest.write(self.indent * (indent_level+1))
                 parts = []
                 parts.append('otu')
-                if taxon.elem_id is not None:
-                    parts.append('id="%s"' % taxon.elem_id)
+                if taxon.oid is not None:
+                    parts.append('id="%s"' % taxon.oid)
                 else:
                     raise Exception("Taxon without ID")
                 if taxon.label:
@@ -884,13 +884,13 @@ class NexmlWriter(datasets.Writer):
             dest.write(self.indent * indent_level)
             parts = []
             parts.append('trees')
-            if trees_block.elem_id is not None:
-                parts.append('id="%s"' % trees_block.elem_id)
+            if trees_block.oid is not None:
+                parts.append('id="%s"' % trees_block.oid)
             else:
                 raise Exception("Tree block given without ID")
             if trees_block.label:
                 parts.append('label="%s"' % trees_block.label)
-            parts.append('otus="%s"' % trees_block.taxa_block.elem_id)
+            parts.append('otus="%s"' % trees_block.taxa_block.oid)
             dest.write("<%s>\n" % ' '.join(parts))
             
             # annotate
@@ -909,7 +909,7 @@ class NexmlWriter(datasets.Writer):
         parts = []
         if state.multistate == characters.StateAlphabetElement.SINGLE_STATE:
             parts.append('%s<state id="%s" symbol="%s" />' 
-                                % (self.indent * indent_level, state.elem_id, state.symbol))
+                                % (self.indent * indent_level, state.oid, state.symbol))
         else:
             if state.multistate == characters.StateAlphabetElement.AMBIGUOUS_STATE:
                 tag = "uncertain_state_set"
@@ -917,7 +917,7 @@ class NexmlWriter(datasets.Writer):
                 tag = "polymorphic_state_set"
                 
             parts.append('%s<%s id="%s" symbol="%s">' 
-                            % (self.indent * indent_level, tag, state.elem_id, state.symbol))
+                            % (self.indent * indent_level, tag, state.oid, state.symbol))
             for member in state.member_states:
                 parts.extend(self.compose_state_definition(member, indent_level+1))
             parts.append("%s</%s>" % ((self.indent * indent_level), tag))
@@ -931,13 +931,13 @@ class NexmlWriter(datasets.Writer):
             dest.write(self.indent * indent_level)
             parts = []
             parts.append('characters')
-            if char_block.elem_id is not None:
-                parts.append('id="%s"' % char_block.elem_id)
+            if char_block.oid is not None:
+                parts.append('id="%s"' % char_block.oid)
             else:
                 raise Exception("Character block without ID")
             if char_block.label:
                 parts.append('label="%s"' % char_block.label)
-            parts.append('otus="%s"' % char_block.taxa_block.elem_id)                    
+            parts.append('otus="%s"' % char_block.taxa_block.oid)                    
             if isinstance(char_block, characters.DnaCharactersBlock):
                 xsi_datatype = 'nex:Dna'
             elif isinstance(char_block, characters.RnaCharactersBlock):
@@ -967,7 +967,7 @@ class NexmlWriter(datasets.Writer):
             if isinstance(char_block, characters.StandardCharactersBlock):
                 for state_alphabet in char_block.state_alphabets:
                     state_alphabet_parts.append('%s<states id="%s">' 
-                        % (self.indent * (indent_level+2), state_alphabet.elem_id))
+                        % (self.indent * (indent_level+2), state_alphabet.oid))
                     for state in state_alphabet:
                         state_alphabet_parts.extend(self.compose_state_definition(state, indent_level+3))
                     state_alphabet_parts.append('%s</states>' % (self.indent * (indent_level+2)))
@@ -976,11 +976,11 @@ class NexmlWriter(datasets.Writer):
             if char_block.column_types:
                 for column in char_block.column_types:
                     if column.state_alphabet:
-                        column_state = 'states="%s" ' % column.state_alphabet.elem_id
+                        column_state = 'states="%s" ' % column.state_alphabet.oid
                     else:
                         column_state = ' '
                     column_types_parts.append('%s<char id="%s"%s/>' 
-                        % ((self.indent*(indent_level+1)), column.elem_id, column_state))
+                        % ((self.indent*(indent_level+1)), column.oid, column_state))
                 
             if state_alphabet_parts or column_types_parts:
                 dest.write("%s<format>\n" % (self.indent*(indent_level+1)))
@@ -1001,12 +1001,12 @@ class NexmlWriter(datasets.Writer):
                 dest.write(self.indent*(indent_level+2))
                 parts = []
                 parts.append('row')
-                if row.elem_id is not None:
-                    parts.append('id="%s"' % row.elem_id)
+                if row.oid is not None:
+                    parts.append('id="%s"' % row.oid)
                 else:
                     raise Exception("Row without ID")
                 if taxon:
-                    parts.append('otu="%s"' % taxon.elem_id)
+                    parts.append('otu="%s"' % taxon.oid)
                 dest.write("<%s>\n" % ' '.join(parts))
                 
                 if isinstance(row, base.Annotated) and row.has_annotations():
@@ -1038,7 +1038,7 @@ class NexmlWriter(datasets.Writer):
                         parts = []
                         parts.append('%s<cell' % (self.indent*(indent_level+3)))
                         if cell.column_type is not None:
-                            parts.append('char="%s"' % cell.column_type.elem_id)
+                            parts.append('char="%s"' % cell.column_type.oid)
                         parts.append('state="%s"' % str(cell))
                         dest.write(' '.join(parts))
                         if isinstance(cell, base.Annotated) and cell.has_annotations():
@@ -1060,8 +1060,8 @@ class NexmlWriter(datasets.Writer):
         """
         parts = []
         parts.append('tree')
-        if hasattr(tree, 'elem_id') and tree.elem_id is not None:
-            parts.append('id="%s"' % tree.elem_id)
+        if hasattr(tree, 'oid') and tree.oid is not None:
+            parts.append('id="%s"' % tree.oid)
         else:
             parts.append('id="%s"' % ("Tree" + str(id(tree))))
         if hasattr(tree, 'label') and tree.label:
@@ -1113,11 +1113,11 @@ class NexmlWriter(datasets.Writer):
         """
         parts = []
         parts.append('<node')
-        parts.append('id="%s"' % node.elem_id)
+        parts.append('id="%s"' % node.oid)
         if hasattr(node, 'label') and node.label:
             parts.append('label="%s"' % node.label)
         if hasattr(node, 'taxon') and node.taxon:
-            parts.append('otu="%s"' % node.taxon.elem_id)
+            parts.append('otu="%s"' % node.taxon.oid)
         parts = ' '.join(parts)
         dest.write('%s%s' % ((self.indent * indent_level), parts))
         if node.has_annotations():
@@ -1133,18 +1133,18 @@ class NexmlWriter(datasets.Writer):
         """
         if edge and edge.head_node:
             parts = []
-            if edge.tail_elem_id != None:
+            if edge.tail_oid != None:
                 tag = "edge"
                 parts.append('<%s' % tag)
-                parts.append('source="%s"' % edge.tail_elem_id)
+                parts.append('source="%s"' % edge.tail_oid)
             else:
                 # EDGE-ON-ROOT:
                 tag = "rootedge"
                 parts.append('<%s' % tag) 
-            if edge.head_elem_id != None:
-                parts.append('target="%s"' % edge.head_elem_id)
-            if hasattr(edge, 'elem_id') and edge.elem_id:
-                parts.append('id="%s"' % edge.elem_id)
+            if edge.head_oid != None:
+                parts.append('target="%s"' % edge.head_oid)
+            if hasattr(edge, 'oid') and edge.oid:
+                parts.append('id="%s"' % edge.oid)
             if hasattr(edge, 'length') and edge.length != None:
                 parts.append('length="%s"' % edge.length)
 

@@ -46,11 +46,11 @@ class TaxonLinked(base.IdTagged):
     object.
     """
     
-    def __init__(self, elem_id=None, label=None, taxon=None):
+    def __init__(self, oid=None, label=None, taxon=None):
         """
         Initializes by calling base class.
         """
-        base.IdTagged.__init__(self, elem_id=elem_id, label=label)
+        base.IdTagged.__init__(self, oid=oid, label=label)
         self.__taxon = taxon
 
     def _get_taxon(self):
@@ -75,7 +75,7 @@ class TaxonLinked(base.IdTagged):
         else:
             taxon_obj = Taxon()
             taxon_obj.label = taxon
-            taxon_obj.elem_id = taxon
+            taxon_obj.oid = taxon
             self.__taxon = taxon_obj
 
     taxon = property(_get_taxon, _set_taxon)
@@ -86,11 +86,11 @@ class TaxaLinked(base.IdTagged):
     blocks.
     """
 
-    def __init__(self, elem_id=None, label=None, taxa_block=None):
+    def __init__(self, oid=None, label=None, taxa_block=None):
         """
         Initializes by calling base class.
         """
-        base.IdTagged.__init__(self, elem_id=elem_id, label=label)
+        base.IdTagged.__init__(self, oid=oid, label=label)
         self.__taxa_block = taxa_block
 
     def _get_taxa_block(self):
@@ -117,7 +117,7 @@ class TaxaBlock(list, base.IdTagged):
 
     def __init__(self, *args, **kwargs):
         """
-        Inits. Handles keyword arguments: `elem_id` and `label`.
+        Inits. Handles keyword arguments: `oid` and `label`.
         """
         list.__init__(self, *args)
         base.IdTagged.__init__(self, *args, **kwargs)
@@ -127,8 +127,8 @@ class TaxaBlock(list, base.IdTagged):
         String representation of self.
         """
         header = []
-        if self.elem_id:
-            header.append("%s" % str(self.elem_id))
+        if self.oid:
+            header.append("%s" % str(self.oid))
         if self.label:
             header.append("(\"%s\")" % self.label)
         taxlist = []
@@ -136,7 +136,7 @@ class TaxaBlock(list, base.IdTagged):
             taxlist.append(str(taxon))
         return ' '.join(header) + ' : [' + ', '.join(taxlist) + ']' 
 
-    def find_taxon(self, elem_id=None, label=None, update=False):
+    def find_taxon(self, oid=None, label=None, update=False):
         """
         Retrieves taxon object with given id OR label (if both are
         given, the first match found is returned). If taxon does not
@@ -144,24 +144,24 @@ class TaxaBlock(list, base.IdTagged):
         does not exist and update is True, then a new taxon is
         created, added, and returned.
         """
-        if not elem_id and not label:
+        if not oid and not label:
             raise Exception("Need to specify Element ID or Label.")
         for taxon in self:
-            if taxon.elem_id == elem_id \
+            if taxon.oid == oid \
                or taxon.label == label:
                 return taxon
         if not update:
-            raise Exception("Taxon not found: %s/%s" % (elem_id, label))
+            raise Exception("Taxon not found: %s/%s" % (oid, label))
         else:
-            taxon = Taxon(elem_id=elem_id, label=label)
+            taxon = Taxon(oid=oid, label=label)
             self.append(taxon)
             return taxon
             
-    def add_taxon(self, elem_id=None, label=None):
+    def add_taxon(self, oid=None, label=None):
         """
         Convenience function that wraps `find_taxon`.
         """
-        self.find_taxon(elem_id=elem_id, label=label, update=True)
+        self.find_taxon(oid=oid, label=label, update=True)
         
     def clear(self):
         """
@@ -197,7 +197,7 @@ class TaxaBlock(list, base.IdTagged):
             return pow(2, self.index(taxon))
         except ValueError:
             raise ValueError("Taxon with ID '%s' and label '%s' not found" 
-                             % (str(taxon.elem_id), str(taxon.label)))        
+                             % (str(taxon.oid), str(taxon.label)))        
                              
     def split_bitmask_string(self, split_bitmask):
         """
@@ -216,11 +216,11 @@ class Taxon(base.IdTagged):
         """
         return cmp(str(taxon1.label), str(taxon2.label))
 
-    def __init__(self, elem_id=None, label=None): 
+    def __init__(self, oid=None, label=None): 
         """
         Initializes by calling base class.
         """
-        base.IdTagged.__init__(self, elem_id=elem_id, label=label)
+        base.IdTagged.__init__(self, oid=oid, label=label)
 
     def __str__(self):
         """

@@ -147,43 +147,46 @@ class IdTagged(Labelled):
         (NameChar)*. NameChar is given by : Letter | Digit | '.' | '-'
         | '_' | ':'
         """
-        if not(id_str[0].isalpha or id_str[0] == '_' or id_str[0] == ':'):
+        if not id_str[0].isalpha \
+            and not id_str[0] == '_' \
+            and not id_str[0] == ':':
             id_str = '_' + id_str
         id_str = re.sub('[^\w\d\-\.]', '', id_str)
         return id_str
 
     normalize_id = staticmethod(normalize_id)
 
-    def __init__(self, elem_id=None, label=None):
+    def __init__(self, oid=None, label=None):
         """
         Initializes by calling base classes, and assigns element id if
         given.
         """
         Annotated.__init__(self)
         Labelled.__init__(self, label=label)
-        if elem_id is None:
+        if oid is None:
             if label is None:
-                self.__elem_id = "ID" + str(id(self))
+                prefix = self.__class__.__name__[0].upper()
+                self.__oid = prefix + "ID" + str(id(self))
             else:
-                self.__elem_id = self.normalize_id(label)
+                self.__oid = self.normalize_id(label)
         else:
-            self.__elem_id = self.normalize_id(elem_id)
+            self.__oid = self.normalize_id(oid)                                
 
-    def _get_elem_id(self):
+    def _get_oid(self):
         """
         Returns id.
         """
-        return self.__elem_id
+        return self.__oid
 
-    def _set_elem_id(self, elem_id):
+    def _set_oid(self, oid):
         """
-        Sets elem_id to elem_id if elem_id is not None (normalized to conform
+        Sets oid to oid if oid is not None (normalized to conform
         to xs:NCName specs if neccessary), otherwise sets to some
-        other elem_idue.
+        other oidue.
         """
-        if elem_id is not None:
-            self.__elem_id = self.normalize_id(elem_id)
+        if oid is not None:
+            self.__oid = self.normalize_id(oid)
         else:
-            self.__elem_id = "ID" + str(id(self))
+            self.__oid = "ID" + str(id(self))
 
-    elem_id = property(_get_elem_id, _set_elem_id)
+    oid = property(_get_oid, _set_oid)

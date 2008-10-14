@@ -73,42 +73,42 @@ class Dataset(object):
         object with a `taxa_block` attribute that points to a
         TaxaBlock object. This searches the current collection of
         taxon blocks to see if the referred taxon block exists, as
-        determined by the elem_id. If it does, then the referer's
+        determined by the oid. If it does, then the referer's
         taxa_block is set to point to it. If not, the taxa_block is
         added to the collection.
         """
         for taxa_block in self.taxa_blocks:
-            if taxa_block.elem_id == taxa_linked.taxa_block.elem_id:
+            if taxa_block.oid == taxa_linked.taxa_block.oid:
                 taxa_linked.taxa_block = taxa_block
                 return
         self.taxa_blocks.append(taxa_linked.taxa_block)
 
-    def find_taxa_block(self, elem_id=None, label=None):
+    def find_taxa_block(self, oid=None, label=None):
         """
         Returns taxon block based on element id or label, whichever is
         given and found first.
         """
         for taxa_block in self.taxa_blocks:
-            if (elem_id and taxa_block.elem_id == elem_id) \
+            if (oid and taxa_block.oid == oid) \
                or (label and taxa_block.label == label):
                 return taxa_block
         return None
 
-    def add_taxa_block(self, elem_id=None, label=None, taxa_block=None, taxa_block_factory=None):
+    def add_taxa_block(self, oid=None, label=None, taxa_block=None, taxa_block_factory=None):
         """
         Adds (and returns) new taxa block object, creating one using
         the default factory if not given.
         """
         if taxa_block is None:
             if taxa_block_factory is None:
-                taxa_block = taxa.TaxaBlock(elem_id=elem_id, label=label)
+                taxa_block = taxa.TaxaBlock(oid=oid, label=label)
             else:
-                taxa_block = taxa_block_factory(elem_id=elem_id, label=label)
+                taxa_block = taxa_block_factory(oid=oid, label=label)
         self.taxa_blocks.append(taxa_block)
         return taxa_block
 
     def add_taxa_linked_block(self,
-                              elem_id=None,
+                              oid=None,
                               label=None,
                               taxa_block=None,
                               linked_block=None,
@@ -120,7 +120,7 @@ class Dataset(object):
         """
         if linked_block is None:
             if linked_block_factory is not None:
-                linked_block = linked_block_factory(elem_id=elem_id, label=label)
+                linked_block = linked_block_factory(oid=oid, label=label)
                 if taxa_block is not None:
                     linked_block.taxa_block = taxa_block
                 else:
@@ -128,22 +128,22 @@ class Dataset(object):
             else:
                 raise Exception("Neither object nor method to create object given.")
         else:
-            if elem_id is not None:
-                linked_block.elem_id = elem_id
+            if oid is not None:
+                linked_block.oid = oid
             if label is not None:
                 linked_block.label = label
         if taxa_block is not None:
             linked_block.taxa_block = taxa_block
             ## normalize_taxa_linked takes care of this ...
 #             if taxa_block not in self.taxa_blocks \
-#                 and taxa_block.elem_id not in [tb.elem_id for tb in self.taxa_blocks]:
+#                 and taxa_block.oid not in [tb.oid for tb in self.taxa_blocks]:
 #                 self.taxa_blocks.append(taxa_block)
         if normalize_taxa_blocks:
             self.normalize_taxa_linked(linked_block)
         return linked_block
 
     def add_trees_block(self,
-                       elem_id=None,
+                       oid=None,
                        label=None,
                        taxa_block=None,
                        trees_block=None,
@@ -155,7 +155,7 @@ class Dataset(object):
         """
         if trees_block is None and trees_block_factory is None:
             trees_block_factory = trees.TreesBlock
-        trees_block = self.add_taxa_linked_block(elem_id=elem_id,
+        trees_block = self.add_taxa_linked_block(oid=oid,
                                                 label=label,
                                                 taxa_block=taxa_block,
                                                 linked_block=trees_block,
@@ -165,7 +165,7 @@ class Dataset(object):
         return trees_block
 
     def add_char_block(self,
-                       elem_id=None,
+                       oid=None,
                        label=None,
                        taxa_block=None,
                        char_block=None,
@@ -177,7 +177,7 @@ class Dataset(object):
         """
         if char_block is None and char_block_factory is None:
             char_block_factory = characters.CharactersBlock        
-        char_block = self.add_taxa_linked_block(elem_id=elem_id,
+        char_block = self.add_taxa_linked_block(oid=oid,
                                                 label=label,
                                                 taxa_block=taxa_block,
                                                 linked_block=char_block,

@@ -40,7 +40,7 @@ class TreesBlock(list, taxa.TaxaLinked):
 
     def __init__(self, *args, **kwargs):
         """
-        Inits. Handles keyword arguments: `elem_id`, `label` and `taxa_block`.
+        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
         """
         list.__init__(self, *args)
         taxa.TaxaLinked.__init__(self, *args, **kwargs)
@@ -93,18 +93,18 @@ class Tree(base.IdTagged):
 
     ## INSTANCE METHODS #######################################################
     
-    def __init__(self, elem_id=None, label=None, seed_node=None):
+    def __init__(self, oid=None, label=None, seed_node=None):
         """
         Initializes a Tree object by defining a base node which must
         be of type `Node` or derived from `Node`.
         """
-        base.IdTagged.__init__(self, elem_id=elem_id, label=label)
+        base.IdTagged.__init__(self, oid=oid, label=label)
         self.seed_node = None
         self.length_type = None
         if seed_node is not None:
             self.seed_node = seed_node
         else:
-            self.seed_node = Node(elem_id='n0', edge=Edge())
+            self.seed_node = Node(oid='n0', edge=Edge())
             
     def __str__(self):
         """
@@ -112,23 +112,23 @@ class Tree(base.IdTagged):
         """
         return self.compose_newick()
 
-    def new_node(self, elem_id=None, label=None):
+    def new_node(self, oid=None, label=None):
         """
         Returns a new node object of the class of this tree's seed
         node.
         """
-        node = self.seed_node.__class__(elem_id=elem_id,
+        node = self.seed_node.__class__(oid=oid,
                                         edge=self.new_edge())
         node.label = label
         return node
 
-    def new_edge(self, elem_id=None):
+    def new_edge(self, oid=None):
         """
         Returns a new edge object of the class of this tree's seed
         node's edge.
         """
         edge = self.seed_node.new_edge()
-        edge.elem_id = elem_id
+        edge.oid = oid
         return edge
 
     ## Easy access to seed_node edge ##
@@ -161,7 +161,7 @@ class Tree(base.IdTagged):
         """
         Finds the first node for which filter_fn(node) = True.
         """
-        #filter_fn = lambda x: x.elem_id == elem_id
+        #filter_fn = lambda x: x.oid == oid
         found = [node for node in self.preorder_node_iter(filter_fn)]
         if found and len(found) > 0:
             return found[0]
@@ -178,11 +178,11 @@ class Tree(base.IdTagged):
                     return node
         return None                    
 
-    def find_edge(self, elem_id):
+    def find_edge(self, oid):
         """
         Finds the first edge with matching id.
         """
-        filter_fn = lambda x: x.elem_id == elem_id
+        filter_fn = lambda x: x.oid == oid
         found = [edge for edge in self.preorder_edge_iter(filter_fn)]
         if found and len(found) > 0:
             return found[0]
@@ -395,7 +395,7 @@ class Node(taxa.TaxonLinked):
 
     ## UTILITIES #############################################################
 
-    def nodeset_hash(nodes, attribute='elem_id'):
+    def nodeset_hash(nodes, attribute='oid'):
         """
         Returns a hash of a set of nodes, based on the given
         attribute.
@@ -412,11 +412,11 @@ class Node(taxa.TaxonLinked):
     
     ## INSTANCE METHODS########################################################
 
-    def __init__(self, elem_id=None, label=None, taxon=None, edge=None):
+    def __init__(self, oid=None, label=None, taxon=None, edge=None):
         """
-        Inits. Handles keyword arguments: `elem_id` and `label`.
+        Inits. Handles keyword arguments: `oid` and `label`.
         """
-        taxa.TaxonLinked.__init__(self, elem_id=elem_id, label=label)
+        taxa.TaxonLinked.__init__(self, oid=oid, label=label)
         self.__edge = None        
         self.__child_nodes = []        
         self.__parent_node = None        
@@ -431,7 +431,7 @@ class Node(taxa.TaxonLinked):
         """
         String representation of the object: it's id.
         """
-        return str(self.elem_id)
+        return str(self.oid)
 
     def is_leaf(self):
         "Returns True if the node has no children"
@@ -516,13 +516,13 @@ class Node(taxa.TaxonLinked):
         self.__child_nodes.append(node)
         return node
 
-    def new_child(self, elem_id=None, edge_length=None, node_label=None, node_taxon=None):
+    def new_child(self, oid=None, edge_length=None, node_label=None, node_taxon=None):
         """
         Convenience class to create and add a new child to this node.
         """
         node = self.__class__()
-        if elem_id is not None:
-            node.elem_id = elem_id
+        if oid is not None:
+            node.oid = oid
         if node_label is not None:
             node.label = node_label
         if node_taxon is not None:
@@ -649,7 +649,7 @@ class Node(taxa.TaxonLinked):
 
     #### BELOW TO BE MOVED INTO A SPLITS CLASS ####
 
-    def local_split_set(self, attribute='elem_id'):
+    def local_split_set(self, attribute='oid'):
         """
         The split on the edge subtending this node is represented as
         a set with two members: an infratree hash and a supratree hash.
@@ -661,7 +661,7 @@ class Node(taxa.TaxonLinked):
         else:
             return None
 
-    def subtree_splits(self, attribute='elem_id'):
+    def subtree_splits(self, attribute='oid'):
         """
         Returns list of all sets of splits on the subtree descending
         from this node, using `attribute` to compose the hash.
@@ -681,20 +681,20 @@ class Node(taxa.TaxonLinked):
 
     #### ABOVE TO BE MOVED INTO A SPLITS CLASS ####
 
-    def new_node(self, elem_id=None, label=None):
+    def new_node(self, oid=None, label=None):
         """
         Returns a new node object of the same class as this node.
         """
-        node = self.__class__(elem_id)
+        node = self.__class__(oid)
         node.label = label
         return node
 
-    def new_edge(self, elem_id=None):
+    def new_edge(self, oid=None):
         """
         Returns a new edge object of the class of this node's edge.
         """
         edge = self.edge.new_edge()
-        edge.elem_id = elem_id
+        edge.oid = oid
         return edge
      
     ### FOR DEBUGGING ### 
@@ -714,7 +714,7 @@ class Node(taxa.TaxonLinked):
         elif hasattr(self, 'label') and self.label and (len(children)==0 or include_internal_labels):
             tag = self.label
         elif len(children) == 0:
-            tag = self.elem_id
+            tag = self.oid
         else:
             tag = ""
         if tag.count(' '):
@@ -777,7 +777,7 @@ class Edge(base.IdTagged):
     ## CLASS METHODS  ########################################################
     
     def __init__(self,
-                 elem_id=None,
+                 oid=None,
                  head_node=None,
                  tail_node=None,
                  length=None):
@@ -785,14 +785,14 @@ class Edge(base.IdTagged):
         Creates an edge from tail_node to head_node.  Modified from
         arbol.
         """
-        base.IdTagged.__init__(self, elem_id=elem_id)
+        base.IdTagged.__init__(self, oid=oid)
         self.__tail_node = None
         self.__head_node = None
-        self.__tail_elem_id = None
-        self.__head_elem_id = None
+        self.__tail_oid = None
+        self.__head_oid = None
         self.rootedge = False
 
-        self.elem_id = elem_id
+        self.oid = oid
         if head_node is not None:
             self._set_head_node(head_node)
         if tail_node is not None:
@@ -810,32 +810,32 @@ class Edge(base.IdTagged):
     def _set_tail_node(self, node):
         """
         Sets the source node. Note: this *does* change the
-        tail_elem_id as well!
+        tail_oid as well!
         """
         self.__tail_node = node
         if self.__tail_node:
-            self.__tail_elem_id = node.elem_id
+            self.__tail_oid = node.oid
         else:
-            self.__tail_elem_id = None
+            self.__tail_oid = None
 
     tail_node = property(_get_tail_node, _set_tail_node)
 
-    def _get_tail_elem_id(self):
+    def _get_tail_oid(self):
         """
         Returns the given id of the source node if defined.
         """
-        if self.__tail_elem_id == None and self.__tail_node:
-            self.__tail_elem_id = self.__tail_node.elem_id
-        return self.__tail_elem_id
+        if self.__tail_oid == None and self.__tail_node:
+            self.__tail_oid = self.__tail_node.oid
+        return self.__tail_oid
 
-    def _set_tail_elem_id(self, elem_id):
+    def _set_tail_oid(self, oid):
         """
         Sets the source node id. Note: does *not* change the
         tail_node itself!
         """
-        self.__tail_elem_id = elem_id
+        self.__tail_oid = oid
 
-    tail_elem_id = property(_get_tail_elem_id, _set_tail_elem_id)
+    tail_oid = property(_get_tail_oid, _set_tail_oid)
                         
     def _get_head_node(self):
         """
@@ -846,32 +846,32 @@ class Edge(base.IdTagged):
     def _set_head_node(self, node):
         """
         Sets the source node. Note: this *does* change the
-        head_elem_id as well!
+        head_oid as well!
         """
         self.__head_node = node
         if self.__head_node:
-            self.__head_elem_id = node.elem_id
+            self.__head_oid = node.oid
         else:
-            self.__head_elem_id = None
+            self.__head_oid = None
 
     head_node = property(_get_head_node, _set_head_node)
 
-    def _get_head_elem_id(self):
+    def _get_head_oid(self):
         """
         Returns the given id of the target node if defined.
         """
-        if self.__head_elem_id == None and self.__head_node:
-            self.__head_elem_id = self.__head_node.elem_id
-        return self.__head_elem_id
+        if self.__head_oid == None and self.__head_node:
+            self.__head_oid = self.__head_node.oid
+        return self.__head_oid
 
-    def _set_head_elem_id(self, elem_id):
+    def _set_head_oid(self, oid):
         """
         Sets the target node id. Note: does *not* change the
         head_node itself!
         """
-        self.__head_elem_id = elem_id
+        self.__head_oid = oid
 
-    head_elem_id = property(_get_head_elem_id, _set_head_elem_id)
+    head_oid = property(_get_head_oid, _set_head_oid)
 
     def bisect(self, bisecting_node):
         """
@@ -889,10 +889,10 @@ class Edge(base.IdTagged):
         bisecting_node.parent_node = new_node
         return new_node
 
-    def new_edge(self, elem_id=None):
+    def new_edge(self, oid=None):
         """
         Returns a new edge object of the same class of this edge.
         """
         edge = self.__class__()
-        edge.elem_id = elem_id
+        edge.oid = oid
         return edge

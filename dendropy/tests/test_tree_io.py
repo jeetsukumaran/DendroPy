@@ -147,8 +147,8 @@ def test_tree_iter_performance(format,
 #     taxa_block = taxa.TaxaBlock()
 #     leaf_nodes = []
 #     for tax_label in leaves:
-#         taxon = taxa_block.add_taxon(elem_id="TAXON_"+tax_label, label=tax_label)
-#         node = trees.Node(elem_id="tax_label_"+tax_label, taxon=taxon)
+#         taxon = taxa_block.add_taxon(oid="TAXON_"+tax_label, label=tax_label)
+#         node = trees.Node(oid="tax_label_"+tax_label, taxon=taxon)
 #         node.edge.length = leaves[tax_label]
 
 def read_newick_tree(tree_filepath):

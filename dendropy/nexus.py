@@ -1052,7 +1052,7 @@ class NewickWriter(datasets.Writer):
             return self.compose_taxlabel(node.label)
         elif len(node.children()) == 0:
             # force label if a leaf node
-            return self.compose_taxlabel(node.elem_id)
+            return self.compose_taxlabel(node.oid)
         else:
             return ""
         
