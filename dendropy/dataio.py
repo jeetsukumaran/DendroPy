@@ -62,32 +62,46 @@ WRITERS = {
 
 ############################################################################
 ## Wrappers (Reading/Parsing)
-
-def get_dataset(format, file=None, string=None):
+   
+def dataset_from_file(file, format):
     """
     Returns a Dataset object parsed from the source, where:
-        `format` - file format specification
         `file`   - can either be a file descriptor object/handle opened 
                    for reading or a string indicating a filepath that 
-                   can be opened for reading using open().
-        `string` - a string containing the data to be parsed.
-    Either `file` or `string` must be given. If both are given, `file` is used.                
+                   can be opened for reading using open().     
+        `format` - file format specification               
     """
     reader = get_reader(format)
-    return reader.read_dataset(source_file_handle(file=file, string=string))
+    return reader.read_dataset(source_file_handle(file=file))
     
-def get_trees(format, file=None, string=None):
+def dataset_from_string(string, format):
+    """
+    Returns a Dataset object parsed from the source, where:
+        `string` - a string containing the data to be parsed.   
+        `format` - file format specification               
+    """
+    reader = get_reader(format)
+    return reader.read_dataset(source_file_handle(string=string))    
+    
+def trees_from_file(file, format):
     """
     Returns a *list* of TreesBlock objects parsed from the source, where:
-        `format` - file format specification
         `file`   - can either be a file descriptor object/handle opened 
                    for reading or a string indicating a filepath that 
-                   can be opened for reading using open().
-        `string` - a string containing the data to be parsed.
-    Either `file` or `string` must be given. If both are given, `file` is used.                
+                   can be opened for reading using open().    
+        `format` - file format specification               
     """
     reader = get_reader(format)
-    return reader.read_trees(source_file_handle(file=file, string=string))
+    return reader.read_trees(source_file_handle(file=file))
+    
+def trees_from_string(string, format):
+    """
+    Returns a *list* of TreesBlock objects parsed from the source, where:
+        `string` - a string containing the data to be parsed.   
+        `format` - file format specification               
+    """
+    reader = get_reader(format)
+    return reader.read_trees(source_file_handle(string=string))     
     
 def get_nexus(file=None, string=None):
     """
@@ -120,15 +134,15 @@ def store_dataset(dataset, format, dest=None):
     if hasattr(dest, "getvalue"):
         return dest.getvalue()
 
-def store_trees(trees, format, dest=None):
+def store_trees(trees_collection, format, dest=None):
     """
     Writes the list of trees `trees` to `dest` using writer.
     """
-    if isinstance(trees, TreesBlock):
-        trees_block = trees
+    if isinstance(trees_collection, TreesBlock):
+        trees_block = trees_collection
     else:
         trees_block = TreesBlock()
-        for tree in trees:
+        for tree in trees_collection:
             trees_block.append(tree)
         trees_block.normalize_taxa()
     dataset = Dataset()

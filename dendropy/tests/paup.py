@@ -101,7 +101,7 @@ def estimate_char_model(tree_model,
     base_frequencies, alpha, prop_invar, etc. (as dictionary).
     """
     tf = tempfile.NamedTemporaryFile()
-    dataio.store_trees(trees=[tree_model], format='nexus', dest=tf)
+    dataio.store_trees([tree_model], format='nexus', dest=tf)
     tf.flush()
     df = tempfile.NamedTemporaryFile()
     dataio.store_chars(char_block=char_block, format='nexus', dest=df)
