@@ -55,6 +55,7 @@ class SplitsOnTreesTest(unittest.TestCase):
     def check_split_summarization(self, data_file, tree_file, min_clade_freq=0.5, burnin=0):
     
         # get PAUP's version of the splits ...
+        _LOG.info("PAUP is counting ...")
         nexus_tree_file = tree_file.replace("newick", "nexus")
         tax_labels, paup_biparts, paup_biparts_count, paup_biparts_freqs = paup.bipartitions(data_file, nexus_tree_file, min_clade_freq, burnin)
         paup_biparts_complemented = []
@@ -62,6 +63,7 @@ class SplitsOnTreesTest(unittest.TestCase):
             paup_biparts_complemented.append(bipart.replace('.','X').replace('*','.').replace('X','*'))
         
         # get our version ...
+        _LOG.info("DendroPy is counting ...")
         taxa_block = taxa.TaxaBlock() 
         for tax_label in tax_labels:
             taxa_block.add_taxon(label=tax_label.replace(' ', '_'))                  
@@ -74,27 +76,60 @@ class SplitsOnTreesTest(unittest.TestCase):
                                nexus.iterate_over_trees, 
                                split_distribution=sd)  
         contree = tsum.tree_from_splits(sd)
+        
+        
+        _LOG.info("Collating information ...")
         dendropy_split_strings = []
-        dendropy_split_strings_c = []
+        dendropy_string_split_map = {}
+        dendropy_complemented_split_strings = []
+        dendropy_string_complemented_split_map = {}
         for split in sd.splits:
             if splits.is_non_singleton_split(split) and (split ^ taxa_block.all_taxa_bitmask()):
-                dendropy_split_strings.append(splits.split_as_string_rev(split, sd.taxa_block, '.', '*'))
-                dendropy_split_strings_c.append(splits.split_as_string_rev(split, sd.taxa_block, '*', '.'))
+                ss = splits.split_as_string_rev(split, sd.taxa_block, '.', '*')
+                dendropy_split_strings.append(ss)
+                dendropy_string_split_map[ss] = split
+        for split in sd.complemented_splits:
+            if splits.is_non_singleton_split(split) and (split ^ taxa_block.all_taxa_bitmask()):
+                ss = splits.split_as_string_rev(split, sd.taxa_block, '.', '*')
+                dendropy_complemented_split_strings.append(ss)
+                dendropy_string_complemented_split_map[ss] = split
                 
         # make sure the distinct splits are the same across both versions
-        # (after taking into account complementation)
-      
+        _LOG.info("Checking for correspondence in split identity ...")
         for s in dendropy_split_strings:
             assert (s in paup_biparts) or (s in paup_biparts_complemented), \
                             "PAUP did not find: %s" % s
         for s in paup_biparts:
-            assert (s in dendropy_split_strings) or (s in dendropy_split_strings_c), \
+            assert (s in dendropy_split_strings) \
+                    or (s in dendropy_complemented_split_strings), \
                             "DendroPy did not find: %s" % s
                             
-        # make sure the frequencies are the same                                                                
-                            
-        _LOG.info("\n--SUCCESS--\n") 
-                            
+        # make sure the counts/freqs are the same
+        _LOG.info("Checking for correspondence in split counts/frequences ...")        
+        split_freqs, complemented_split_freqs = sd.calc_freqs()
+        for s in paup_biparts:
+            if s in dendropy_split_strings:
+                split = dendropy_string_split_map[s]
+                count = sd.split_counts[split]
+                freq = split_freqs[split]
+            else:
+                split = dendropy_string_complemented_split[s]
+                count = sd.complemented_split_counts[split]
+                freq = sd.complemented_split_freqs[split]             
+                
+            _LOG.debug("PAUP: %d (%f), DendroPy: %d (%f)" % (paup_biparts_count[s],
+                                                             paup_biparts_freqs[s],
+                                                             count,
+                                                             freq*100))
+            
+            assert paup_biparts_count[s] == count, \
+                   "Counts of split '%s': Expecting %d, but found %d" \
+                    % (s, paup_biparts_count[s], count)
+            assert dendropy.tests.is_almost_equal(paup_biparts_freqs[s], freq), \
+                   "Frequency of split '%s': Expecting %f, but found %f" \
+                    % (s, paup_biparts_freqs[s], perc)
+                    
+        _LOG.info("\n--SUCCESS--\n")                             
     def testSplitsSummary(self):
         for df in self.data_files:
             char_file = dendropy.tests.data_source_path(df[0])

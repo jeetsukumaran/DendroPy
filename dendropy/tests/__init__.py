@@ -61,6 +61,33 @@ def data_target_path(filename=None):
     if filename is None:
         filename = ""
     return os.path.join(os.path.join(os.path.dirname(__file__),'output'), filename)
+    
+
+###############################################################################    
+# this is/was a major PIA ...
+
+from decimal import Decimal, ROUND_HALF_UP
+
+def symmetric_arithmetic_round(n, digits=0):
+    """
+    Symmetric Arithmetic Rounding for decimal numbers
+    
+    Modified from:
+        http://pyxx.org/2007/10/28/how-to-round-decimal-numbers-in-python/
+    
+    d       - Decimal number to round
+    digits  - number of digits after the point to leave
+    """
+    d = Decimal("%s" % n)
+    dval = d.quantize(Decimal("1") / (Decimal('10') ** digits), \
+        ROUND_HALF_UP) 
+        
+def is_almost_equal(n1, n2, precision=2):
+    return symmetric_arithmetic_round(n1, precision) \
+        == symmetric_arithmetic_round(n2, precision)
+        
+###############################################################################        
+    
 
 def get_test_suite():
     """
