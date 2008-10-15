@@ -277,14 +277,12 @@ class TreeIOTest(unittest.TestCase):
                 _LOG.debug("\nREPARSED TREE >>>\n%s\n<<< REPARSED TREE\n" 
                             % tree.compose_newick()
                               )                    
-                self.assertEqual(result1, result2, "Reparsed tree strings do not match:\n\n" \
-                                                       +"FIRST >>>\n%s\n<<< FIRST\n\nSECOND >>>\n%s\n<<< SECOND" % (result1, result2))
-                _LOG.info("(reparsed tree string match)")
-            
-                
+                assert result1 == result2, \
+                       "Reparsed tree strings do not match:\n\n" \
+                                                       +"FIRST >>>\n%s\n<<< FIRST\n\nSECOND >>>\n%s\n<<< SECOND" % (result1, result2)
+                _LOG.info("(reparsed tree string match)")                            
 
-
-    def test_tree_file_parse(self):
+    def testTreeFileParse(self):
         for format in self.formats:
             _LOG.info('\n[Testing %s format parsing: <%s>, <%s>]'  % (format.upper(),
                                                                           self.readers[format].__name__,

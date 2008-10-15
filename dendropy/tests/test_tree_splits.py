@@ -82,15 +82,15 @@ class SplitsOnTreesTest(unittest.TestCase):
                 dendropy_split_strings_c.append(splits.split_as_string_rev(split, sd.taxa_block, '*', '.'))
       
         for s in dendropy_split_strings:
-            self.failUnless(s in biparts or s in biparts_c,
-                            "PAUP did not find: %s" % s)       
+            assert (s in biparts) or (s in biparts_c), \
+                            "PAUP did not find: %s" % s
         for s in biparts:
-            self.failUnless(s in dendropy_split_strings or s in dendropy_split_strings_c,
-                            "DendroPy did not find: %s" % s)
+            assert (s in dendropy_split_strings) or (s in dendropy_split_strings_c), \
+                            "DendroPy did not find: %s" % s
                             
         _LOG.info("\n--SUCCESS--\n") 
                             
-    def test_splits_summary(self):
+    def testSplitsSummary(self):
         for df in self.data_files:
             char_file = dendropy.tests.data_source_path(df[0])
             tree_file = dendropy.tests.data_source_path(df[1])

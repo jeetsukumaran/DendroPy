@@ -119,11 +119,13 @@ class CharIOTest(unittest.TestCase):
                     # check that all taxa in original is in character matrix
                     cb_taxa = [str(t) for t in cb.matrix]
                     for t in check_data:
-                        self.failUnless(t in cb_taxa, 'Taxon "%s" expected but not found in Character Block %d (%s)' % (t, cb_idx+1, cb.oid))
+                        assert t in cb_taxa, \
+                            'Taxon "%s" expected but not found in Character Block %d (%s)' % (t, cb_idx+1, cb.oid)
                     
                     # and vice versa
                     for t in cb_taxa:
-                        self.failUnless(t in check_data, 'Taxon "%s" found in Character Block %d (%s) is unexpected' % (t, cb_idx+1, cb.oid))
+                        assert t in check_data, \
+                            'Taxon "%s" found in Character Block %d (%s) is unexpected' % (t, cb_idx+1, cb.oid)
 
                     # check for sequence correspondence
                     _LOG.debug("")                    
@@ -133,7 +135,8 @@ class CharIOTest(unittest.TestCase):
                         _LOG.debug("%s          %s" % (tax_label, seq))
                         _LOG.debug("")
                         check_seq = check_data[tax_label]
-                        self.failUnless(seq == check_seq, '\n\nSequences do not match for taxon "%s":\n\nEXPECTED >>>\n%s\n<<< EXPECTED\nFOUND >>>\n%s<<< FOUND' % (tax_label, check_seq, seq)) 
+                        assert seq == check_seq, \
+                                    '\n\nSequences do not match for taxon "%s":\n\nEXPECTED >>>\n%s\n<<< EXPECTED\nFOUND >>>\n%s<<< FOUND' % (tax_label, check_seq, seq)
 
 
 if __name__ == "__main__":

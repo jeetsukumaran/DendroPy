@@ -48,7 +48,7 @@ class SumTreesTest(unittest.TestCase):
     def compose_sumtrees_command(self, args):
         return "%s %s" % (self.sumtrees_path, " ".join(args))        
         
-    def run_sumtrees(self, args):
+    def runSumTrees(self, args):
         command = self.compose_sumtrees_command(args)
         _LOG.info("\n"+command)
         run = subprocess.Popen(command, 
@@ -58,72 +58,72 @@ class SumTreesTest(unittest.TestCase):
         stdout, stderr = run.communicate()
         _LOG.debug(stderr)
         _LOG.debug(stdout)
-        self.failIf(run.returncode, "\nSumTrees exited with error: %s" % stderr)
+        assert run.returncode == 0, "\nSumTrees exited with error: %s" % stderr
                                     
-    def test_for_crash(self):
+    def testSumTreeOptions(self):
     
         support_file = dendropy.tests.data_source_path("anolis.mbcon.trees.nexus")
         target_file = dendropy.tests.data_source_path("anolis.mbcon.trees.nexus")
         outfile = tempfile.mktemp()
         
         # default options,
-        self.run_sumtrees([support_file])
+        self.runSumTrees([support_file])
         
         # default options, multiple files
-        self.run_sumtrees([support_file, support_file, support_file])
+        self.runSumTrees([support_file, support_file, support_file])
                        
         # burnin 
-        self.run_sumtrees(["--burnin=100", support_file])
+        self.runSumTrees(["--burnin=100", support_file])
         
         # target tree
-        self.run_sumtrees(["--target=%s" % target_file, support_file])
+        self.runSumTrees(["--target=%s" % target_file, support_file])
         
         # 95% consensus tree
-        self.run_sumtrees(["--min-clade-freq=0.95", support_file])
+        self.runSumTrees(["--min-clade-freq=0.95", support_file])
         
         # no branch lengths
-        self.run_sumtrees(["--no-branch-lengths", support_file])
+        self.runSumTrees(["--no-branch-lengths", support_file])
         
         # support as labels
-        self.run_sumtrees(["--support-as-labels", support_file])        
+        self.runSumTrees(["--support-as-labels", support_file])        
         
         # support as branch lengths
-        self.run_sumtrees(["--support-as-lengths", support_file])
+        self.runSumTrees(["--support-as-lengths", support_file])
         
         # support as percentages
-        self.run_sumtrees(["--percentages", support_file])
+        self.runSumTrees(["--percentages", support_file])
         
         # support decimals
-        self.run_sumtrees(["--decimals=0", support_file])        
+        self.runSumTrees(["--decimals=0", support_file])        
         
         # output to tmp file
         if os.path.exists(outfile):
             os.remove(outfile)
-        self.run_sumtrees(["--output=%s" % outfile, support_file])
-        self.run_sumtrees(["--replace --output=%s" % outfile, support_file])
+        self.runSumTrees(["--output=%s" % outfile, support_file])
+        self.runSumTrees(["--replace --output=%s" % outfile, support_file])
         if os.path.exists(outfile):
             os.remove(outfile)        
         
         # no taxa block
-        self.run_sumtrees(["--no-taxa-block", support_file])
+        self.runSumTrees(["--no-taxa-block", support_file])
         
         # no taxa block
-        self.run_sumtrees(["--no-meta-comments", support_file])
+        self.runSumTrees(["--no-meta-comments", support_file])
         
         # additional comments
-        self.run_sumtrees(["-m 'Test run of SumTrees'", support_file])
+        self.runSumTrees(["-m 'Test run of SumTrees'", support_file])
         
         # newick format
-        self.run_sumtrees(["--newick", support_file])
+        self.runSumTrees(["--newick", support_file])
         
         # ignore missing support files
-        self.run_sumtrees(["--ignore-missing-support", support_file, "dummy"])
+        self.runSumTrees(["--ignore-missing-support", support_file, "dummy"])
         
         # ignore missing target
-        self.run_sumtrees(["--ignore-missing-target", "--target=dummy", support_file])
+        self.runSumTrees(["--ignore-missing-target", "--target=dummy", support_file])
         
         # quiet
-        self.run_sumtrees(["--quiet", support_file])        
+        self.runSumTrees(["--quiet", support_file])        
         
         
 if __name__ == "__main__":

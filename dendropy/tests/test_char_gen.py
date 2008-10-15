@@ -104,8 +104,8 @@ class CharGenTest(unittest.TestCase):
                 #kappa_threshold = 10000.00 / float(seq_len)
                 kappa_threshold = kappa * 0.2
                 _LOG.info("Kappa: %s [error threshold: %f]" % (kappa_comp, kappa_threshold))
-                self.failIf(abs(kappa-mle['kappa']) > kappa_threshold,
-                            "Estimate over threshold (%f): %s" % (kappa_threshold, kappa_comp))
+                assert abs(kappa-mle['kappa']) < kappa_threshold, \
+                            "Estimate over threshold (%f): %s" % (kappa_threshold, kappa_comp)
                             
 if __name__ == "__main__":
     unittest.main()

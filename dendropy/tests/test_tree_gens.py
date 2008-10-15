@@ -63,7 +63,7 @@ class TreeGenTest(unittest.TestCase):
         _LOG.debug([float(age) for age in ages])
         _LOG.debug([float(age) for age in ages2])
         for index in range(len(ages2)):
-            self.failIf(ages[index] - ages2[index] > 10e-6)
+            assert (ages[index] - ages2[index]) < 10e-6
 
         pop_sizes2 = []
         for edge in species_tree.postorder_edge_iter():
@@ -72,14 +72,10 @@ class TreeGenTest(unittest.TestCase):
         _LOG.debug("-- POP_SIZES --")
         _LOG.debug([float(pop_size) for pop_size in pop_sizes])
         _LOG.debug([float(pop_size) for pop_size in pop_sizes2])
-
-        # difficult to test due to uncertainty in order of child visits
-#         for index in range(len(pop_sizes2)):
-#             self.failIf(pop_sizes[index] - pop_sizes2[index] > 10e-6)
-
+        
         return species_tree
 
-    def test_kingman_tree_in_species_tree(self, ntax=10):
+    def testKingmanTreeInSpeciesTree(self, ntax=10):
         species_tree = self.get_species_tree(ntax)
         _LOG.debug("Generating 20 gene trees conditional on this species tree ...")
         gene_trees = []

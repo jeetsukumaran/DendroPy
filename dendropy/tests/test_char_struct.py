@@ -62,77 +62,73 @@ class CharStructTest(unittest.TestCase):
         ntax_pre = len(cb)
         nchars_pre = len(cb.values()[0])
         cb.extend_characters(ds2.char_blocks[0])
-        self.failIf(len(cb) != ntax_pre, 
-                    "Number of taxa have changed after from %d to %d" % (ntax_pre, len(cb)))
+        assert len(cb) == ntax_pre, \
+                    "Number of taxa have changed after from %d to %d" % (ntax_pre, len(cb))
         for t in cb:
             _LOG.debug("\n%s: %s" \
                 % (str(t), cb[t].values_as_string()))
-            self.failIf(len(cb[t]) != 20,
+            assert len(cb[t]) == 20, \
                 "Data vector is incorrect length (%d):\n%s: %s" \
-                % (len(cb[t]), str(t), cb[t].values_as_string()))
-            self.failIf(cb[t].values_as_string() != "AAAAAAAAAACCCCCCCCCC",
-                "Incorrect sequence:\n%s: %s" % (str(t), cb[t].values_as_string()))
+                % (len(cb[t]), str(t), cb[t].values_as_string())
+            assert cb[t].values_as_string() == "AAAAAAAAAACCCCCCCCCC", \
+                "Incorrect sequence:\n%s: %s" % (str(t), cb[t].values_as_string())
                 
         ds1b = deepcopy(ds1)
         cb = ds1b.char_blocks[0]
         cb.extend(ds2.char_blocks[0], overwrite_existing=True)
         target_ntax = 20
-        self.failIf(len(cb) != target_ntax, 
-                    "Number of rows in character block have not changed to %d (%d)" % (target_ntax, len(cb)))
-        self.failIf(len(cb.taxa_block) != target_ntax, 
-                    "Number of taxa in taxa block have not changed to %d (%d)" % (target_ntax, len(cb)))                    
+        assert len(cb) == target_ntax,  \
+                    "Number of rows in character block have not changed to %d (%d)" % (target_ntax, len(cb))
+        assert len(cb.taxa_block) == target_ntax, \
+                    "Number of taxa in taxa block have not changed to %d (%d)" % (target_ntax, len(cb))
                     
         for t in tb2:
             cb_tb_labels = cb.taxa_block.labels()
-            self.failIf(t.label not in cb_tb_labels, 
-                "Taxon '%s' not found in taxa block:\n%s" % (str(t), str(cb_tb_labels)))
+            assert t.label in cb_tb_labels, \
+                "Taxon '%s' not found in taxa block:\n%s" % (str(t), str(cb_tb_labels))
             cb_labels = [t.label for t in cb]
-            self.failIf(t.label not in cb_labels,
-                "Taxon '%s' not found in char block:\n%s" % (str(t), str(cb_labels)))
+            assert t.label in cb_labels, \
+                "Taxon '%s' not found in char block:\n%s" % (str(t), str(cb_labels))
         for t in cb:
             _LOG.debug("\n%s: %s" \
                 % (str(t), cb[t].values_as_string()))                    
-            self.failIf(len(cb[t]) != 10,
+            assert len(cb[t]) == 10, \
                 "Data vector is incorrect length (%d):\n%s: %s" \
-                % (len(cb[t]), str(t), cb[t].values_as_string()))
-            self.failIf(cb[t].values_as_string() != "CCCCCCCCCC",
-                "Incorrect sequence:\n%s: %s" % (str(t), cb[t].values_as_string()))   
+                % (len(cb[t]), str(t), cb[t].values_as_string())
+            assert cb[t].values_as_string() == "CCCCCCCCCC", \
+                "Incorrect sequence:\n%s: %s" % (str(t), cb[t].values_as_string())
                 
         ds1b = deepcopy(ds1)
         cb = ds1b.char_blocks[0]
         cb.extend(ds2.char_blocks[0], append_existing=True)
         target_ntax = 20
-        self.failIf(len(cb) != target_ntax, 
-                    "Number of rows in character block have not changed to %d (%d)" % (target_ntax, len(cb)))
-        self.failIf(len(cb.taxa_block) != target_ntax, 
-                    "Number of taxa in taxa block have not changed to %d (%d)" % (target_ntax, len(cb)))                    
+        assert len(cb) == target_ntax, \
+                    "Number of rows in character block have not changed to %d (%d)" % (target_ntax, len(cb))
+        assert len(cb.taxa_block) == target_ntax, \
+                    "Number of taxa in taxa block have not changed to %d (%d)" % (target_ntax, len(cb))
         for t in tb2:
             cb_tb_labels = cb.taxa_block.labels()
-            self.failIf(t.label not in cb_tb_labels, 
-                "Taxon '%s' not found in taxa block:\n%s" % (str(t), str(cb_tb_labels)))
+            assert t.label in cb_tb_labels, \
+                "Taxon '%s' not found in taxa block:\n%s" % (str(t), str(cb_tb_labels))
             cb_labels = [t.label for t in cb]
-            self.failIf(t.label not in cb_labels,
-                "Taxon '%s' not found in char block:\n%s" % (str(t), str(cb_labels)))
+            assert t.label in cb_labels, \
+                "Taxon '%s' not found in char block:\n%s" % (str(t), str(cb_labels))
         for t in cb:
             _LOG.debug("\n%s: %s" \
                 % (str(t), cb[t].values_as_string()))
             tnum = int(t.label[-2:])
             if tnum > 10:
-                self.failIf(len(cb[t]) != 10,
+                assert len(cb[t]) == 10, \
                     "Data vector is incorrect length (%d):\n%s: %s" \
-                    % (len(cb[t]), str(t), cb[t].values_as_string()))
-                self.failIf(cb[t].values_as_string() != "CCCCCCCCCC",
-                    "Incorrect sequence:\n%s: %s" % (str(t), cb[t].values_as_string()))
+                    % (len(cb[t]), str(t), cb[t].values_as_string())
+                assert cb[t].values_as_string() == "CCCCCCCCCC", \
+                    "Incorrect sequence:\n%s: %s" % (str(t), cb[t].values_as_string())
             else:
-                self.failIf(len(cb[t]) != 20,
+                assert len(cb[t]) == 20, \
                     "Data vector is incorrect length (%d):\n%s: %s" \
-                    % (len(cb[t]), str(t), cb[t].values_as_string()))
-                self.failIf(cb[t].values_as_string() != "AAAAAAAAAACCCCCCCCCC",
-                    "Incorrect sequence:\n%s: %s" % (str(t), cb[t].values_as_string()))                 
-            
-                
-                
-                
-                
+                    % (len(cb[t]), str(t), cb[t].values_as_string())
+                assert cb[t].values_as_string() == "AAAAAAAAAACCCCCCCCCC", \
+                    "Incorrect sequence:\n%s: %s" % (str(t), cb[t].values_as_string())
+                                                                           
 if __name__ == "__main__":
     unittest.main()
