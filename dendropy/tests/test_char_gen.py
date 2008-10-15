@@ -37,7 +37,7 @@ from dendropy import get_logger
 import dendropy.tests
 from dendropy.tests import paup
 
-_LOG = get_logger("Splits")
+_LOG = get_logger("CharacterSimulationAndGeneration")
 
 from dendropy import chargen
 

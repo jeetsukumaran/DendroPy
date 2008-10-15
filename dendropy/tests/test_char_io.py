@@ -39,7 +39,7 @@ from dendropy import get_logger
 from dendropy import get_logging_level
 
 import dendropy.tests
-_LOG = get_logger("Character Parsing and Writing")
+_LOG = get_logger("CharacterParsingAndWriting")
 
 
 ### MODULES THAT WE ARE TESTING ###

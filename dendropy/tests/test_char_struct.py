@@ -32,7 +32,7 @@ from dendropy import get_logger
 from dendropy import get_logging_level
 import dendropy.tests
 from dendropy import datasets
-_LOG = get_logger("Character Block Structure")
+_LOG = get_logger("CharacterBlockStructure")
 
 from dendropy import characters
 

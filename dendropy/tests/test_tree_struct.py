@@ -29,7 +29,7 @@ Tests tree traversal.
 import unittest
 from dendropy import get_logger
 import dendropy.tests
-_LOG = get_logger("Tree Structure and Traversal")
+_LOG = get_logger("TreeStructureAndTraversal")
 
 ### MODULE THAT WE ARE TESTING ###
 from dendropy import trees

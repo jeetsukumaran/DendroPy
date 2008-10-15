@@ -37,7 +37,7 @@ from dendropy import nexus
 from dendropy import get_logger
 import dendropy.tests
 
-_LOG = get_logger("SumTrees Testing")
+_LOG = get_logger("SumTreesTesting")
 
 
 class SumTreesTest(unittest.TestCase):
