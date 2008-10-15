@@ -53,18 +53,18 @@ class SplitsOnTreesTest(unittest.TestCase):
         ]
                 
     def check_split_summarization(self, data_file, tree_file, min_clade_freq=0.5, burnin=0):
+    
+        # get PAUP's version of the splits ...
         nexus_tree_file = tree_file.replace("newick", "nexus")
-        tax_labels, biparts, bpc, bpf = paup.bipartitions(data_file, nexus_tree_file, min_clade_freq, burnin)
-        biparts = bpc.keys()
-        biparts_c = []
-        for bipart in biparts:
-            biparts_c.append(bipart.replace('.','X').replace('*','.').replace('X','*'))
+        tax_labels, paup_biparts, paup_biparts_count, paup_biparts_freqs = paup.bipartitions(data_file, nexus_tree_file, min_clade_freq, burnin)
+        paup_biparts_complemented = []
+        for bipart in paup_biparts:
+            paup_biparts_complemented.append(bipart.replace('.','X').replace('*','.').replace('X','*'))
         
-        # create taxa
+        # get our version ...
         taxa_block = taxa.TaxaBlock() 
         for tax_label in tax_labels:
-            taxa_block.add_taxon(label=tax_label.replace(' ', '_'))
-                  
+            taxa_block.add_taxon(label=tax_label.replace(' ', '_'))                  
         sd = splits.SplitDistribution(taxa_block=taxa_block)        
         tsum = treesum.TreeSummarizer()
         tsum.verbose = True
@@ -80,13 +80,18 @@ class SplitsOnTreesTest(unittest.TestCase):
             if splits.is_non_singleton_split(split) and (split ^ taxa_block.all_taxa_bitmask()):
                 dendropy_split_strings.append(splits.split_as_string_rev(split, sd.taxa_block, '.', '*'))
                 dendropy_split_strings_c.append(splits.split_as_string_rev(split, sd.taxa_block, '*', '.'))
+                
+        # make sure the distinct splits are the same across both versions
+        # (after taking into account complementation)
       
         for s in dendropy_split_strings:
-            assert (s in biparts) or (s in biparts_c), \
+            assert (s in paup_biparts) or (s in paup_biparts_complemented), \
                             "PAUP did not find: %s" % s
-        for s in biparts:
+        for s in paup_biparts:
             assert (s in dendropy_split_strings) or (s in dendropy_split_strings_c), \
                             "DendroPy did not find: %s" % s
+                            
+        # make sure the frequencies are the same                                                                
                             
         _LOG.info("\n--SUCCESS--\n") 
                             

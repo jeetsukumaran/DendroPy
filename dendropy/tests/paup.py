@@ -79,7 +79,7 @@ def bipartitions(data_filepath,
     for line in lines:
         bp_match = bipartition_pattern.match(line)
         if bp_match:
-            bipartitions.append(bp_match)
+            bipartitions.append(bp_match.group(1))
             bipartition_counts[bp_match.group(1)] = int(bp_match.group(2))
             bipartition_freqs[bp_match.group(1)] = float(bp_match.group(3))
         else:
