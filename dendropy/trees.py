@@ -115,7 +115,7 @@ class Tree(base.IdTagged):
         return self.compose_newick()
 
     ###########################################################################
-    ## Convenience methods
+    ## Getting/accessing methods
 
     def nodes(self, cmp_fn=None, filter_fn=None):
         """
@@ -135,8 +135,17 @@ class Tree(base.IdTagged):
     def find_node(self, filter_fn):
         """
         Finds the first node for which filter_fn(node) = True.
+        For example, if::
+        
+            filter_fn = lambda n: hasattr(n, 'genes') and n.genes is not None
+
+        then::
+            
+            t.find_node(filter_fn=filter_fn)
+            
+        will return all nodes which have an attributed 'genes' and this value
+        is not None.
         """
-        #filter_fn = lambda x: x.oid == oid
         found = [node for node in self.preorder_node_iter(filter_fn)]
         if found and len(found) > 0:
             return found[0]
