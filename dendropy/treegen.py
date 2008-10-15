@@ -75,8 +75,8 @@ def uniform_pure_birth(taxa_block,
     while len(leaves) < len(taxa_block):
         parent_node = rng.choice(leaves)
         edge_length = rng.expovariate(len(leaves)/birth_rate)
-        child1 = tree.new_node()
-        child2 = tree.new_node()
+        child1 = trees.Node()
+        child2 = trees.Node()
         child1.node_id = 'n' + str(count+1)
         child2.node_id = 'n' + str(count+2)
         child1.edge.length = edge_length

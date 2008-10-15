@@ -485,8 +485,7 @@ class _NexmlTreesParser(_NexmlElementParser):
         """
         Given an XmlElement representation of a NEXML tree element,
         (`nex:tree`) this will return a dictionary of DendroPy Node
-        objects created with the node factory method, self.new_node,
-        with the node_id as the key.
+        objects with the node_id as the key.
         """
         nodes = {}
         for nxnode in tree_element.getiterator('node'):

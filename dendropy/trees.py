@@ -31,7 +31,7 @@ from dendropy import base
 from dendropy import taxa
 
 ##############################################################################
-## TreesBlocks and TreesBlock
+## TreesBlock
 
 class TreesBlock(list, taxa.TaxaLinked):
     """
@@ -75,7 +75,8 @@ class Tree(base.IdTagged):
     root node as a node without children.
     """
 
-    ## STATIC METHODS #########################################################
+    ###########################################################################
+    ## Static methods
     
     def mrca(node1, node2):
         """
@@ -91,7 +92,8 @@ class Tree(base.IdTagged):
 
     mrca = staticmethod(mrca)
 
-    ## INSTANCE METHODS #######################################################
+    ###########################################################################
+    ## Special/Lifecycle methods
     
     def __init__(self, oid=None, label=None, seed_node=None):
         """
@@ -112,35 +114,8 @@ class Tree(base.IdTagged):
         """
         return self.compose_newick()
 
-    def new_node(self, oid=None, label=None):
-        """
-        Returns a new node object of the class of this tree's seed
-        node.
-        """
-        node = self.seed_node.__class__(oid=oid,
-                                        edge=self.new_edge())
-        node.label = label
-        return node
-
-    def new_edge(self, oid=None):
-        """
-        Returns a new edge object of the class of this tree's seed
-        node's edge.
-        """
-        edge = self.seed_node.new_edge()
-        edge.oid = oid
-        return edge
-
-    ## Easy access to seed_node edge ##
-
-    def _get_seed_edge(self):
-        """
-        Returns the edge of the base node.
-        """
-        return self.seed_node.edge
-    seed_edge = property(_get_seed_edge)
-
-    ## Convenience Methods ##
+    ###########################################################################
+    ## Convenience methods
 
     def nodes(self, cmp_fn=None, filter_fn=None):
         """
@@ -188,8 +163,9 @@ class Tree(base.IdTagged):
             return found[0]
         else:
             return None
-    
-    ## Node iterators ##
+
+    ###########################################################################
+    ## Node iterators
 
     def preorder_node_iter(self, filter_fn=None):
         """
@@ -220,7 +196,8 @@ class Tree(base.IdTagged):
         for node in self.seed_node.leaf_iter(self.seed_node, filter_fn):
             yield node
 
-    ## Edge iterators ##
+    ###########################################################################
+    ## Edge iterators
 
     def preorder_edge_iter(self, filter_fn=None):
         """
@@ -245,8 +222,9 @@ class Tree(base.IdTagged):
         for node in self.seed_node.level_order_iter(self.seed_node):
             if node.edge and (filter_fn is None or filter_fn(node.edge)):
                 yield node.edge
-                
-    ## Taxa ##
+    
+    ###########################################################################
+    ## Taxa 
     
     def infer_taxa_block(self):
         """
@@ -268,14 +246,16 @@ class Tree(base.IdTagged):
         """
         for node in self.postorder_node_iter():
             if node.taxon:
-                node.taxon = taxa_block.find_taxon(label=node.taxon.label, update=update_taxa_block)                    
-                
-    ## for debugging ##
-    def compose_newick(self, include_internal_labels=True):
-        return self.seed_node.compose_newick(include_internal_labels=include_internal_labels)
-                
-    ## basic tree manipulation ##
+                node.taxon = taxa_block.find_taxon(label=node.taxon.label, \
+                    update=update_taxa_block)       
+                    
+    ###########################################################################
+    ## Structure                    
+                    
     def deroot(self):
+        """
+        Deroot the tree.
+        """
         if self.seed_node:
             children = self.seed_node.children()
             if children and len(children) == 2:
@@ -292,7 +272,16 @@ class Tree(base.IdTagged):
                     new_edge_length += new_seed.edge.length
                     new_seed.edge = None
                 self.seed_node = new_seed
-                self.seed_node.add_child(new_child)
+                self.seed_node.add_child(new_child)                    
+                
+    ###########################################################################
+    ## For debugging
+    
+    def compose_newick(self, include_internal_labels=True):
+        return self.seed_node.compose_newick(include_internal_labels=include_internal_labels)
+                
+
+
         
 ##############################################################################
 ## Node
@@ -420,7 +409,6 @@ class Node(taxa.TaxonLinked):
         self.__edge = None        
         self.__child_nodes = []        
         self.__parent_node = None        
-#         self.__next_sib = None
         if edge is not None:
             self.edge = edge
         else:
@@ -468,17 +456,12 @@ class Node(taxa.TaxonLinked):
         Side effects: 
             - sets the parent of each child node to this node
             - sets the tail node of each child to self
-#             - sets the next_sib of each child correctly
         """
         self.__child_nodes = child_nodes
         for nidx in range(len(self.__child_nodes)):
             self.__child_nodes[nidx].parent = self
             self.__child_nodes[nidx].edge.tail_node = self
-#             if nidx < len(self.__child_nodes)-1:
-#                 self.__child_nodes[nidx].next_sib = self.__child_nodes[nidx+1]
-#             else:
-#                 self.__child_nodes[nidx].next_sib = None
-    
+
     def _get_parent_node(self):
         """Returns the parent node of this node."""
         return self.__parent_node
@@ -489,16 +472,6 @@ class Node(taxa.TaxonLinked):
         self.edge.tail_node = parent
         
     parent_node = property(_get_parent_node, _set_parent_node)
-
-#     def _get_next_sib(self):
-#         """Returns the next sibling of this node."""
-#         return self.__next_sib
-#     
-#     def _set_next_sib(self, next_sib):
-#         """Sets the next sibling of this node."""
-#         self.__next_sib = next_sib
-#         
-#     next_sib = property(_get_next_sib, _set_next_sib)
 
     def add_child(self, node, edge_length=None):
         """
@@ -616,88 +589,10 @@ class Node(taxa.TaxonLinked):
         return [node for node in \
                 self.postorder_iter(self, \
                                     lambda x: bool(len(node.child_nodes)==0))]
-
-    def sib_nodes(self):
-        """
-        Returns all children of parent except self.
-        """
-        if self.parent_node is not None:
-            return [node for node in self.parent_node.children() \
-                    if node != self]
-        else:
-            return []
-
-    def supratree_nodes(self):
-        """
-        Returns all nodes on a tree that do not descend from this edge.
-        """
-        nodes = []
-        node = self.parent_node
-        while node is not None:
-            for sib in node.sib_nodes():
-                nodes.extend(sib.infratree_nodes())
-            if node.parent_node:
-                nodes.append(node.parent_node)
-            node = node.parent_node
-        return nodes
-
-    def infratree_nodes(self):
-        """
-        Returns self and all nodes descended from self.
-        """
-        return [node for node in self.preorder_iter(self)]
-
-    #### BELOW TO BE MOVED INTO A SPLITS CLASS ####
-
-    def local_split_set(self, attribute='oid'):
-        """
-        The split on the edge subtending this node is represented as
-        a set with two members: an infratree hash and a supratree hash.
-        """
-        if self.parent_node and self.__child_nodes:
-            infra = self.nodeset_hash(self.infratree_nodes(), attribute)
-            supra = self.nodeset_hash(self.supratree_nodes(), attribute)
-            return frozenset([infra, supra])
-        else:
-            return None
-
-    def subtree_splits(self, attribute='oid'):
-        """
-        Returns list of all sets of splits on the subtree descending
-        from this node, using `attribute` to compose the hash.
-        """
-        if self.__child_nodes:
-            subsplits = set()
-            if self.local_split_set(attribute) != None:
-                subsplits.add(self.local_split_set(attribute))
-            if self.__child_nodes:
-                for child in self.__child_nodes:
-                    child_splits = child.subtree_splits(attribute)
-                    if child_splits:
-                        subsplits.update(child_splits)
-            return frozenset(subsplits)
-        else:
-            return frozenset()
-
-    #### ABOVE TO BE MOVED INTO A SPLITS CLASS ####
-
-    def new_node(self, oid=None, label=None):
-        """
-        Returns a new node object of the same class as this node.
-        """
-        node = self.__class__(oid)
-        node.label = label
-        return node
-
-    def new_edge(self, oid=None):
-        """
-        Returns a new edge object of the class of this node's edge.
-        """
-        edge = self.edge.new_edge()
-        edge.oid = oid
-        return edge
      
-    ### FOR DEBUGGING ### 
+    ########################################################################### 
+    ## for debugging
+    
     def compose_newick(self, include_internal_labels=True):
         """
         This returns the Node as a NEWICK
@@ -741,38 +636,6 @@ class Edge(base.IdTagged):
     An edge on a tree. This class implements only the core
     functionality needed for trees.
     """
-
-#     ## ITERATORS #############################################################
-    
-#     def preorder_iter(node, filter_fn=None):
-#         """
-#         Returns the edge of node and all descendents such that parents are
-#         returned before children.
-#         """
-#         return Edge.__node_edge_iter(node, node.preorder_iter, filter_fn)
-
-#     preorder_iter = staticmethod(preorder_iter)
-
-#     def postorder_iter(node, filter_fn=None):
-#         """
-#         Returns the edge of node and all descendents such that parents are
-#         returned before children.
-#         """
-#         return Edge.__node_edge_iter(node, node.postorder_iter, \
-#                                           filter_fn)
-
-#     postorder_iter = staticmethod(postorder_iter)
-
-#     def __node_edge_iter(node, node_iter, filter_fn=None):
-#         """
-#         Uses given node_iter to iterate over nodes, returning edges.
-#         """
-#         node_filter = lambda x: bool(filter_fn is None or filter_fn(x.edge))
-#         edge_caster = lambda x: x.edge
-#         return utils.RecastingIterator(node_iter(node, node_filter), \
-#                                        edge_caster)
-
-#     __node_edge_iter = staticmethod(__node_edge_iter)
 
     ## CLASS METHODS  ########################################################
     
