@@ -108,7 +108,7 @@ def coalesce(nodes,
     EXP(1/num_genes). If `period` is given and if this time is less
     than `period`, or if `period` is not given, then two nodes are
     selected at random from `nodes`, and coalesced: a new node is
-    created, and the two nodes are added as children to this node with
+    created, and the two nodes are added as child_nodes to this node with
     an edge length such the the total length from tip to the ancestral
     node is equal to the depth of the deepest child + `t`. The two
     nodes are removed from the list of nodes, and the new node is

@@ -98,10 +98,10 @@ def encode_splits(tree,
         taxa_block = tree.infer_taxa_block()
     split_map = {}
     for edge in tree.postorder_edge_iter():
-        children = edge.head_node.children()
-        if children:
+        child_nodes = edge.head_node.child_nodes()
+        if child_nodes:
             setattr(edge, edge_split_mask, 0)
-            for child in children:
+            for child in child_nodes:
                 setattr(edge, edge_split_mask, getattr(edge, edge_split_mask) | getattr(child.edge, edge_split_mask))
         else:
             if edge.head_node.taxon:

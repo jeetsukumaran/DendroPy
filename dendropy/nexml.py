@@ -453,7 +453,7 @@ class _NexmlTreesParser(_NexmlElementParser):
                     
             # If one parentless node found, this is the root: we use
             # it as the tree head node. If multiple parentless nodes
-            # are found, then we add them all as children of the
+            # are found, then we add them all as child_nodes of the
             # existing head node. If none, then we have some sort of
             # cyclicity, and we are not dealing with a tree.
             if len(parentless) == 1:

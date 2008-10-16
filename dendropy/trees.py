@@ -72,7 +72,7 @@ class Tree(base.IdTagged):
     seed_node attribute (from which the entire tree springs), which
     may or may not be the root node. The distinction is not
     consequential in the current implementation, which identifies the
-    root node as a node without children.
+    root node as a node without child_nodes.
     """
 
     ###########################################################################
@@ -126,9 +126,9 @@ class Tree(base.IdTagged):
             nodes.sort(cmp_fn)
         return nodes
     
-    def leaves(self):
+    def leaf_nodes(self):
         """
-        Returns list of leaves on the tree.
+        Returns list of leaf_nodes on the tree.
         """
         return [leaf for leaf in self.leaf_iter()]
 
@@ -199,7 +199,7 @@ class Tree(base.IdTagged):
 
     def leaf_iter(self, filter_fn=None):
         """
-        Returns an iterator over tree leaves (order determined by
+        Returns an iterator over tree leaf_nodes (order determined by
         postorder tree-traversal).
         """
         for node in self.seed_node.leaf_iter(self.seed_node, filter_fn):
@@ -266,14 +266,14 @@ class Tree(base.IdTagged):
         Deroot the tree.
         """
         if self.seed_node:
-            children = self.seed_node.children()
-            if children and len(children) == 2:
-                if len(children[0].children()) >= 2:
-                    new_child = children[0]
-                    new_seed = children[1]
-                else: #lif len(children[1].children()) >= 2:
-                    new_child = children[1]
-                    new_seed = children[0]
+            child_nodes = self.seed_node.child_nodes()
+            if child_nodes and len(child_nodes) == 2:
+                if len(child_nodes[0].child_nodes()) >= 2:
+                    new_child = child_nodes[0]
+                    new_seed = child_nodes[1]
+                else: #lif len(child_nodes[1].child_nodes()) >= 2:
+                    new_child = child_nodes[1]
+                    new_seed = child_nodes[0]
                 new_edge_length = 0.0
                 if new_child.edge.length:
                     new_edge_length += new_child.edge.length
@@ -305,9 +305,9 @@ class Node(taxa.TaxonLinked):
 
     def preorder_iter(node, filter_fn=None):
         """
-        Preorder traversal of the node and its children.  Returns node
+        Preorder traversal of the node and its child_nodes.  Returns node
         and all descendants such that node is returned before node's
-        children (and their children). Filtered by filter_fn: node is
+        child_nodes (and their child_nodes). Filtered by filter_fn: node is
         only returned if no filter_fn is given or if filter_fn returns
         True.
         """
@@ -318,16 +318,16 @@ class Node(taxa.TaxonLinked):
             node = stack.pop(0)
             if filter_fn is None or filter_fn(node):
                 yield node
-            children = node.children()
-            children.extend(stack)
-            stack = children
+            child_nodes = node.child_nodes()
+            child_nodes.extend(stack)
+            stack = child_nodes
     preorder_iter = staticmethod(preorder_iter)
 
     def postorder_iter(node, filter_fn=None):
         """
-        Postorder traversal of the node and its children.  Returns node
-        and all descendants such that node's children (and their
-        children) are visited before node.  Filtered by filter_fn:
+        Postorder traversal of the node and its child_nodes.  Returns node
+        and all descendants such that node's child_nodes (and their
+        child_nodes) are visited before node.  Filtered by filter_fn:
         node is only returned if no filter_fn is given or if filter_fn
         returns True.
         """
@@ -339,14 +339,14 @@ class Node(taxa.TaxonLinked):
                     yield node
             else:
                 stack.insert(0, (node, True))
-                children = [(n, False) for n in node.children()]
-                children.extend(stack)
-                stack = children
+                child_nodes = [(n, False) for n in node.child_nodes()]
+                child_nodes.extend(stack)
+                stack = child_nodes
     postorder_iter = staticmethod(postorder_iter)
 
     def leaf_iter(start_nd, filter_fn=None):
         """
-        Returns an iterator over the leaves that are descendants `of start_nd`
+        Returns an iterator over the leaf_nodes that are descendants `of start_nd`
         (order determined by postorder tree-traversal).
         """
         if filter_fn:
@@ -360,19 +360,19 @@ class Node(taxa.TaxonLinked):
 
     def level_order_iter(node, filter_fn=None):
         """
-        Level-order traversal of the node and its children. Filtered
+        Level-order traversal of the node and its child_nodes. Filtered
         by filter_fn: node is only returned if no filter_fn is given
         or if filter_fn returns True
         """
         if filter_fn is None or filter_fn(node):
             yield node
-        remaining = node.children()
+        remaining = node.child_nodes()
         while len(remaining) > 0:
             node = remaining.pop(0)
             if filter_fn is None or filter_fn(node):
                 yield node
-            children = node.children()
-            remaining.extend(children)
+            child_nodes = node.child_nodes()
+            remaining.extend(child_nodes)
             
     level_order_iter = staticmethod(level_order_iter)
 
@@ -431,7 +431,7 @@ class Node(taxa.TaxonLinked):
         return str(self.oid)
 
     def is_leaf(self):
-        "Returns True if the node has no children"
+        "Returns True if the node has no child_nodes"
         return bool(not self.__child_nodes)
                 
     ## Low-level methods for manipulating structure ##
@@ -453,7 +453,7 @@ class Node(taxa.TaxonLinked):
 
     edge = property(_get_edge, _set_edge)
         
-    def children(self):
+    def child_nodes(self):
         """
         Returns the a shallow-copy list of all child nodes.
         """
@@ -592,7 +592,7 @@ class Node(taxa.TaxonLinked):
 
     def leaf_nodes(self):
         """
-        Returns list of all leaves descended from this node (or just
+        Returns list of all leaf_nodes descended from this node (or just
         list with self as the only member if self is a leaf).
         """
         return [node for node in \
@@ -608,16 +608,16 @@ class Node(taxa.TaxonLinked):
         statement according to the given formatting rules.
         """
         statement = ''
-        children = self.children()
-        if children:
-            subnodes = [child.compose_newick() for child in children]
+        child_nodes = self.child_nodes()
+        if child_nodes:
+            subnodes = [child.compose_newick() for child in child_nodes]
             statement = '(' + ','.join(subnodes) + ')'
             
         if hasattr(self, 'taxon') and self.taxon:
             tag = self.taxon.label
-        elif hasattr(self, 'label') and self.label and (len(children)==0 or include_internal_labels):
+        elif hasattr(self, 'label') and self.label and (len(child_nodes)==0 or include_internal_labels):
             tag = self.label
-        elif len(children) == 0:
+        elif len(child_nodes) == 0:
             tag = self.oid
         else:
             tag = ""

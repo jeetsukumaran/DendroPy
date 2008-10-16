@@ -70,11 +70,11 @@ def uniform_pure_birth(taxa_block,
     else:
         tree = trees.Tree()
     
-    leaves = tree.leaves()
+    leaf_nodes = tree.leaf_nodes()
     count = 0
-    while len(leaves) < len(taxa_block):
-        parent_node = rng.choice(leaves)
-        edge_length = rng.expovariate(len(leaves)/birth_rate)
+    while len(leaf_nodes) < len(taxa_block):
+        parent_node = rng.choice(leaf_nodes)
+        edge_length = rng.expovariate(len(leaf_nodes)/birth_rate)
         child1 = trees.Node()
         child2 = trees.Node()
         child1.node_id = 'n' + str(count+1)
@@ -84,13 +84,13 @@ def uniform_pure_birth(taxa_block,
         parent_node.add_child(child1)
         parent_node.add_child(child2)
         count = count + 2
-        leaves = tree.leaves()        
-    leaves = tree.leaves()
-    for idx, leaf in enumerate(leaves):
+        leaf_nodes = tree.leaf_nodes()        
+    leaf_nodes = tree.leaf_nodes()
+    for idx, leaf in enumerate(leaf_nodes):
         leaf.taxon = taxa_block[idx]
     if ultrametricize:
-        max_distance_from_root = max([node.distance_from_root() for node in leaves])
-        for node in leaves:
+        max_distance_from_root = max([node.distance_from_root() for node in leaf_nodes])
+        for node in leaf_nodes:
             node.edge.length = node.edge.length + (max_distance_from_root - node.distance_from_root())
     return tree
 
@@ -160,7 +160,7 @@ def pop_gen_tree(tree=None,
         else:
             raise Exception("Either tree or taxa block must be given")
             
-    num_pops = len(tree.leaves())            
+    num_pops = len(tree.leaf_nodes())            
 
     # basic idiot-checking
     if ages is not None and len(ages) < (num_pops - 1):
@@ -191,7 +191,7 @@ def pop_gen_tree(tree=None,
                            filter_fn = lambda x : not x.is_leaf())
         # assign the ages
         for index, node in enumerate(nodes):
-            for child in node.children():
+            for child in node.child_nodes():
                 child.edge.length = ages[index] - child.distance_from_tip()
 
     # set the gene samples

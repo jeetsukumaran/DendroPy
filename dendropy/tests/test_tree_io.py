@@ -111,7 +111,7 @@ def test_tree_iter_performance(format,
     iterate_on_trees(sources)
 
 # def get_anolis_consensus_tree():
-#     leaves = {
+#     leaf_nodes = {
 #             "Anolis_ahli": 0.2642,
 #             "Anolis_aliniger": 0.16,
 #             "Anolis_alutaceus": 0.1619,
@@ -146,10 +146,10 @@ def test_tree_iter_performance(format,
 #
 #     taxa_block = taxa.TaxaBlock()
 #     leaf_nodes = []
-#     for tax_label in leaves:
+#     for tax_label in leaf_nodes:
 #         taxon = taxa_block.add_taxon(oid="TAXON_"+tax_label, label=tax_label)
 #         node = trees.Node(oid="tax_label_"+tax_label, taxon=taxon)
-#         node.edge.length = leaves[tax_label]
+#         node.edge.length = leaf_nodes[tax_label]
 
 def read_newick_tree(tree_filepath):
     """
@@ -160,8 +160,8 @@ def read_newick_tree(tree_filepath):
     _LOG.info('Reading "%s"' % os.path.basename(tree_filepath))
     _LOG.debug(tstr)
     tree = nexus.parse_newick_string(tstr)
-    leaves = tree.leaves()
-    _LOG.info("%d leaves on tree: %s" % (len(leaves), (", ".join([str(n.taxon) for n in leaves]))))
+    leaf_nodes = tree.leaf_nodes()
+    _LOG.info("%d leaf_nodes on tree: %s" % (len(leaf_nodes), (", ".join([str(n.taxon) for n in leaf_nodes]))))
     return tree
 
 def write_newick_tree(tree, tree_filepath):
@@ -185,8 +185,8 @@ def read_nexus_tree(tree_filepath):
     reader = nexus.NexusReader()
     dataset = reader.read_dataset(StringIO.StringIO(tstr))
     tree = dataset.trees_blocks[0][0]
-    leaves = tree.leaves()
-    _LOG.info("%d leaves on tree: %s" % (len(leaves), (", ".join([str(n.taxon) for n in leaves]))))
+    leaf_nodes = tree.leaf_nodes()
+    _LOG.info("%d leaf_nodes on tree: %s" % (len(leaf_nodes), (", ".join([str(n.taxon) for n in leaf_nodes]))))
     return tree
 
 def write_nexus_tree(tree, tree_filepath):

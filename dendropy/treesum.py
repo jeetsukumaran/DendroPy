@@ -43,7 +43,7 @@ def deepest_compatible_node(start_node, split, taxa_mask):
           compatible with split (i.e, includes all taxa in split) yet
           not equal to the split.
     """
-    for node in start_node.children():
+    for node in start_node.child_nodes():
         if (node.edge.split_mask ^ taxa_mask) & split:
             pass
         elif node.edge.split_mask != split:
@@ -168,7 +168,7 @@ class TreeSummarizer(object):
                 self.map_split_support_to_node(node=new_node, split_support=split_freqs[split])                
                 if self.support_as_labels and include_edge_lengths:
                         new_node.edge.length = float(sum(split_distribution.split_edge_lengths[split])) / len(split_distribution.split_edge_lengths[split])                
-                for node in parent_node.children():
+                for node in parent_node.child_nodes():
                     if (split ^ taxa_mask) & node.edge.split_mask:
                         pass
                     else:
@@ -177,7 +177,7 @@ class TreeSummarizer(object):
                 parent_node.add_child(new_node)
 
         ## here we add the support values and/or edge lengths for the terminal taxa ##
-        for node in con_tree.leaves():
+        for node in con_tree.leaf_nodes():
             if not hasattr(node.edge, "split_mask"):
                 splits.encode_splits(con_tree, 
                                      taxa_block, 

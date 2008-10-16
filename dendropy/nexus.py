@@ -243,7 +243,7 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
             tree.seed_node.edge.length = length
             
         # convert labels at terminal nodes to taxa
-        for node in tree.leaves():
+        for node in tree.leaf_nodes():
             if node.label:
                 if translate_dict and node.label in translate_dict:
                     label = translate_dict[node.label]
@@ -1050,7 +1050,7 @@ class NewickWriter(datasets.Writer):
             return self.compose_taxlabel(node.taxon.label)
         elif hasattr(node, 'label') and node.label:
             return self.compose_taxlabel(node.label)
-        elif len(node.children()) == 0:
+        elif len(node.child_nodes()) == 0:
             # force label if a leaf node
             return self.compose_taxlabel(node.oid)
         else:
@@ -1061,9 +1061,9 @@ class NewickWriter(datasets.Writer):
         Given a DendroPy Node, this returns the Node as a NEWICK
         statement according to the class-defined formatting rules.
         """
-        children = node.children()
-        if children:
-            subnodes = [self.compose_node(child) for child in children]
+        child_nodes = node.child_nodes()
+        if child_nodes:
+            subnodes = [self.compose_node(child) for child in child_nodes]
             statement = '(' + ','.join(subnodes) + ')'
             if self.internal_labels:
                 statement = statement + self.choose_display_tag(node)

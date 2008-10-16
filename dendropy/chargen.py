@@ -94,7 +94,7 @@ def generate_hky_characters(seq_len,
                       on tree reflect true expected number of changes
     `root_states`   : vector of root states (length must equal `seq_len`)
     `char_block`    : dendropy.characters.CharacterBlock object.
-                      if given, new sequences for taxa on `tree_model` leaves 
+                      if given, new sequences for taxa on `tree_model` leaf_nodes 
                       will be appended to existing sequences of corresponding 
                       taxa in char_block; if not, a new 
                       dendropy.characters.CharacterBlock object will be created
@@ -181,7 +181,7 @@ def generate_characters(seq_len,
                       on tree reflect true expected number of changes
     `root_states`   : vector of root states (length must equal `seq_len`)
     `char_block`    : dendropy.characters.CharacterBlock object.
-                      if given, new sequences for taxa on `tree_model` leaves 
+                      if given, new sequences for taxa on `tree_model` leaf_nodes 
                       will be appended to existing sequences of corresponding 
                       taxa in char_block; if not, a new 
                       dendropy.characters.CharacterBlock object will be created
@@ -298,7 +298,7 @@ class CharEvolver(object):
         
     def compose_char_matrix(self, tree, taxa_block=None, include=None, exclude=None):
         """
-        Returns a CharacterDataMatrix where the keys are the taxa of the leaves
+        Returns a CharacterDataMatrix where the keys are the taxa of the leaf_nodes
         of `source_tree` and the values are sequences, with each sequence being the
         concatentation of all the sequences in the list of sequences associated with
         each tip. Specific sequences to be included/excluded can be fine-tuned using
@@ -306,7 +306,7 @@ class CharEvolver(object):
         by default, and `exclude`=None means to exclude all by default.
         """
         char_matrix = characters.CharacterDataMatrix()
-        for leaf in tree.leaves():
+        for leaf in tree.leaf_nodes():
             cvec = characters.CharacterDataVector(taxon=leaf.taxon)
             seq_list = getattr(leaf, self.seq_attr)
             for seq_idx, seq in enumerate(seq_list):
@@ -329,7 +329,7 @@ class CharEvolver(object):
         """
         mtree = self.evolve_states(tree=tree, seq_len=seq_len)
         char_matrix = characters.CharacterDataMatrix()
-        for leaf in tree.leaves():
+        for leaf in tree.leaf_nodes():
             cvec = characters.CharacterDataVector(taxon=leaf.taxon)
             states = getattr(leaf, self.seq_attr)[-1]
             for state in states:
