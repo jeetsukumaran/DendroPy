@@ -73,14 +73,13 @@ class DiscreteCharacterModel(CharacterModel):
         this model acts.
         """
         CharacterModel.__init__(self, state_alphabet)
-    
-    def stationary_sample(self, length, rng=None):
+        
+    def pmatrix(self, tlen, rate=1.0):
         """
-        Returns root sequence.
-        """        
-        if rng is None:
-            rng = self.rng
-        return self.char_model.stationary_sample(length, self.rng)
+        Returns a matrix of nucleotide substitution
+        probabilities.
+        """
+        raise NotImplementedError      
         
     def generate_descendant_states(self, 
         ancestral_states, 

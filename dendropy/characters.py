@@ -645,12 +645,12 @@ class CharactersBlock(taxa.TaxaLinked):
         """
         self.matrix[key] = value
                 
-    def __contains__(self, key):
-        """
-        Dictionary interface implementation for direct access to matrix.
-        """
-        return key in self.matrix        
-                
+#     def __contains__(self, key):
+#         """
+#         Dictionary interface implementation for direct access to matrix.
+#         """
+#         return key in self.matrix        
+#                 
     def iterkeys(self):
         """
         Dictionary interface implementation for direct access to matrix.
@@ -694,45 +694,25 @@ class CharactersBlock(taxa.TaxaLinked):
         """
         Remove item from matrix with specified key.
         """
-        super(dict, self.matrix).__delitem__(key)                
+        return self.matrix.__delitem__(key)                
 
     def __contains__(self, key):
         """
         Returns true if matrix has key, regardless of case.
         """
-        return dict(self.matrix).__contains__(key)
+        return self.matrix.__contains__(key)
 
     def pop(self, key, alt_val=None):
         """
         a.pop(k[, x]):  a[k] if k in a, else x (and remove k)
         """
-        if key in self.matrix:
-            val = self.matrix[key]
-            self.matrix.__delitem__(key)
-            return val
-        else:
-            return alt_val
+        return self.matrix.pop(key, alt_val)
         
     def popitem(self):
         """
         a.popitem()  remove and last (key, value) pair
         """
-        key = self.matrix[-1]
-        item = (key, self.matrix[key])
-        self.matrix.__delitem__(key)
-        return item
-
-    def index(self, key):
-        """
-        Return the index of (caseless) key.
-        Raise KeyError if not found.
-        """
-        count = 0
-        for k in self.matrix.keys():
-            if k == key:
-                return count
-            count = count + 1
-        raise KeyError(key)
+        return self.matrix.popitem()
 
     def keys(self):
         """
@@ -756,13 +736,13 @@ class CharactersBlock(taxa.TaxaLinked):
         """
         Gets an item from matrix by its key, returning default if key not present.
         """
-        return super(dict, self.matrix).get(key, def_val)
+        return self.matrix.get(key, def_val)
 
     def setdefault(self, key, def_val=None):
         """
         Sets the default value to return if key not present.
         """
-        return super(dict, self.matrix).setdefault(key, def_val)
+        return self.matrix.setdefault(key, def_val)
       
     def id_column_map(self):
         """
@@ -891,16 +871,3 @@ class InfiniteSitesCharactersBlock(DiscreteCharactersBlock):
         DiscreteCharactersBlock.__init__(self, *args, **kwargs)
         self.default_state_alphabet = INFINITE_SITES_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)         
-
-if __name__ == "__main__":
-    dna = DnaStateAlphabets()
-    for s in dna:
-        print repr(s)
-    print
-    print
-    input = "\n"
-    while input:
-        input = raw_input("Enter symbol(s): ")
-        if input:
-            input = input.upper()
-            print repr(dna.match_state(symbols=input))

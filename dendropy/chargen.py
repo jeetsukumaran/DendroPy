@@ -321,24 +321,24 @@ class CharEvolver(object):
             char_matrix[taxon] = cvec                                
         return char_matrix        
                         
-    def generate_char_matrix(self, tree, seq_len=1000):
-        """
-        Evolves sequences on tree using default settings, and returns
-        CharacterDataMatrix where keys are taxon (objects) and values
-        are lists of sequence states.
-        """
-        mtree = self.evolve_states(tree=tree, seq_len=seq_len)
-        char_matrix = characters.CharacterDataMatrix()
-        for leaf in tree.leaf_nodes():
-            cvec = characters.CharacterDataVector(taxon=leaf.taxon)
-            states = getattr(leaf, self.seq_attr)[-1]
-            for state in states:
-                cvec.append(characters.CharacterDataCell(value=state))
-            if taxa_block is not None:
-                taxon = taxa_block.find_taxon(label=leaf.taxon.label, update=True)
-            else:
-                taxon = leaf.taxon
-            char_matrix[taxon] = cvec                              
-        return char_matrix
+#     def generate_char_matrix(self, tree, seq_len=1000):
+#         """
+#         Evolves sequences on tree using default settings, and returns
+#         CharacterDataMatrix where keys are taxon (objects) and values
+#         are lists of sequence states.
+#         """
+#         mtree = self.evolve_states(tree=tree, seq_len=seq_len)
+#         char_matrix = characters.CharacterDataMatrix()
+#         for leaf in tree.leaf_nodes():
+#             cvec = characters.CharacterDataVector(taxon=leaf.taxon)
+#             states = getattr(leaf, self.seq_attr)[-1]
+#             for state in states:
+#                 cvec.append(characters.CharacterDataCell(value=state))
+#             if taxa_block is not None:
+#                 taxon = taxa_block.find_taxon(label=leaf.taxon.label, update=True)
+#             else:
+#                 taxon = leaf.taxon
+#             char_matrix[taxon] = cvec                              
+#         return char_matrix
 
 
