@@ -176,7 +176,7 @@ def parse_sequence_iupac_ambiguities(seq):
             result = result + seq[pos-1:match.start()]
           else:
             result = result + seq[pos:match.start()]
-          result = result + map_to_ambiguity_code(match.group(1))
+          result = result + map_to_iupac_ambiguity_code(match.group(1))
           pos = match.end() + 1
           if pos < len(seq) - 1:
             match = pattern.search(seq, pos)
@@ -508,7 +508,11 @@ class NexusReader(datasets.Reader):
 
     class NotNexusFileException(NexusStreamTokenizer.SyntaxException):
         def __init__(self, filepath, row, column, message):
-            super(NotNexusFileException, self).__init__(filepath, row, column, message)
+            NexusStreamTokenizer.SyntaxException.__init__(self, \
+                filepath, 
+                row, 
+                column, 
+                message)
 
     def __init__(self):
         datasets.Reader.__init__(self)
@@ -825,7 +829,7 @@ class NexusReader(datasets.Reader):
                             if self.stream_tokenizer.current_file_char not in [' ', '\t']:
                                 state = symbol_state_map[self.stream_tokenizer.current_file_char]
                                 char_block[taxon].append(characters.CharacterDataCell(value=state))
-                            self.read_next_char()
+                            self.stream_tokenizer.read_next_char()
                     else:
                         while len(char_block[taxon]) < self.file_specified_nchar and not self.stream_tokenizer.eof:
                             char_group = self.stream_tokenizer.read_next_token()

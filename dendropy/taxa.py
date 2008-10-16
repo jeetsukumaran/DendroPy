@@ -215,6 +215,8 @@ class Taxon(base.IdTagged):
         Compares taxon1 and taxon2 based on label.
         """
         return cmp(str(taxon1.label), str(taxon2.label))
+    
+    cmp = staticmethod(cmp)
 
     def __init__(self, oid=None, label=None): 
         """

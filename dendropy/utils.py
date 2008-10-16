@@ -333,7 +333,7 @@ def find_files(top, recursive=True,
                     and (not filename_filter or glob_match(fpath, filename_filter, respect_case, complement)):
                     to_exclude = False
                     for e in excludes:
-                        if _glob_match(fpath, e, respect_case):
+                        if glob_match(fpath, e, respect_case):
                             to_exclude = True
                     if not to_exclude:
                         filepaths.append(abspath)

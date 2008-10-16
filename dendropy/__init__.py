@@ -72,10 +72,6 @@ def is_python_at_least(version):
     else:
         return False
 
-# not tested!
-if python_version < 2.3:
-    set = FrozenSet()
-
 ###############################################################################
 ## LOGGING
 

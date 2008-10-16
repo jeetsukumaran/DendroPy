@@ -311,19 +311,3 @@ def constrained_kingman(pop_tree,
         gene_trees_block.append(gene_tree)
     
     return gene_tree, poptree_copy
-    
-from dendropy import datasets    
-from dendropy import taxa     
-from dendropy import nexus
-if __name__ == "__main__":
-    nexus_writer = nexus.NexusWriter()
-    dataset = datasets.Dataset()
-    trees_block = dataset.add_trees_block()        
-    taxa_block = taxa.random_taxa_block(10)    
-    for i in range(0, 10):
-        #tree = uniform_pure_birth(taxa_block)
-        pop_tree = population_genes(taxa_block, num_genes=10)
-        #print pop_tree.compose_newick()
-        gtree, ptree = constrained_kingman(pop_tree, gene_trees_block=trees_block)
-    print nexus_writer.compose_dataset(dataset)
-    
