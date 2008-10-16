@@ -147,10 +147,10 @@ def _to_nexml_chartype(chartype):
     Returns nexml characters element attribute corresponding to given
     chartype.
     """
-    if chartype == characters.DNA_CHARTYPE:
-        return "nex:DnaSeqs"
-    if chartype == characters.RNA_CHARTYPE:
-        return "nex:RnaSeqs"
+#     if chartype == characters.DNA_CHARTYPE:
+#         return "nex:DnaSeqs"
+#     if chartype == characters.RNA_CHARTYPE:
+#         return "nex:RnaSeqs"
     return None
 
 def _to_nexml_tree_length_type(length_type):
@@ -400,7 +400,7 @@ class _NexmlTreesParser(_NexmlElementParser):
         label = nxtrees.get('label', None)
         taxa_id = nxtrees.get('otus', None)
         if taxa_id is None:
-            raise Exception("Taxa block not specified for trees block \"%s\"" % trees_block.oid)
+            raise Exception("Taxa block not specified for trees block \"%s\"" % oid)
         taxa_block = dataset.find_taxa_block(oid = taxa_id)
         if not taxa_block:
             raise Exception("Taxa block \"%s\" not found" % taxa_id)
@@ -497,7 +497,7 @@ class _NexmlTreesParser(_NexmlElementParser):
             if taxon_id is not None:
                 taxon = taxa_block.find_taxon(oid=taxon_id, update=False)
                 if not taxon:
-                    raise Exception('Taxon with id "%s" not defined in taxa block "%s"' % (taxon_id, taxa.oid))
+                    raise Exception('Taxon with id "%s" not defined in taxa block "%s"' % (taxon_id, taxa_block.oid))
                 nodes[node_id].taxon = taxon
             self.parse_annotations(annotated=nodes[node_id], nxelement=nxnode)
         return nodes
@@ -517,8 +517,8 @@ class _NexmlTreesParser(_NexmlElementParser):
             try:
                 edge_length = length_type(edge_length_str)
             except:
-                msg = 'Edge %d ("%s") `length` attribute is not a %s' \
-                      % (edge_counter, edge.oid, str(length_type))
+                msg = 'Edge "%s" `length` attribute is not a %s' \
+                      % (edge.oid, str(length_type))
                 raise Exception(msg)
             edge.length = edge_length
             self.parse_annotations(annotated=edge, nxelement=rootedge)            
@@ -752,7 +752,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             taxon_id = nxrow.get('otu', None)
             taxon = taxa_block.find_taxon(oid=taxon_id, update=False)
             if not taxon:
-                raise Exception('Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_block.oid, char_block.label, taxon_id, taxa.oid))                   
+                raise Exception('Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_block.oid, char_block.label, taxon_id, taxa_block.oid))                   
                 
             character_vector = characters.CharacterDataVector(oid=row_id, label=label, taxon=taxon)
             self.parse_annotations(annotated=character_vector, nxelement=nxrow)
