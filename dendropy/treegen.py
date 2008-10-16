@@ -257,7 +257,7 @@ def constrained_kingman(pop_tree,
                 gene_node = node_factory()
             else:
                 gene_node = trees.Node()
-            gene_node.taxon = gtaxa.find_taxon(label=leaf.taxon.label + '_' + str(gene_count+1), update=True)
+            gene_node.taxon = gtaxa.get_taxon(label=leaf.taxon.label + '_' + str(gene_count+1), update=True)
             gene_nodes.append(gene_node)
         leaf.gene_nodes = gene_nodes
 

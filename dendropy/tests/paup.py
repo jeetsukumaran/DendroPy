@@ -179,7 +179,7 @@ def estimate_char_model(tree_model,
 #     tree true=(A:0.25,(B:0.25,(C:0.25,(D:0.25,E:0.25):0.25):0.25):0.25):0.25;
 # end;
 # """
-# source_ds = dataio.get_nexus(string=tree_model_string)
+# source_ds = dataio.from_nexus(string=tree_model_string)
 # tree_model = source_ds.trees_blocks[0][0]
 # char_block = chargen.generate_hky_characters(10000, tree_model=tree_model)
 # estimate_char_model(tree_model=tree_model, char_block=char_block, num_states=1)

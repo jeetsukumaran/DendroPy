@@ -62,7 +62,7 @@ class CharGenTest(unittest.TestCase):
 
 
     def setUp(self):
-        source_ds = dataio.get_nexus(string=tree_model_string)
+        source_ds = dataio.from_nexus(string=tree_model_string)
         self.tree_model = source_ds.trees_blocks[0][0]
    
     def estimate_params(self,
@@ -77,7 +77,7 @@ class CharGenTest(unittest.TestCase):
             tree_model=self.tree_model,
             kappa=kappa,
             base_freqs=base_freqs)
-        source_ds = dataio.get_nexus(string=tree_model_string)
+        source_ds = dataio.from_nexus(string=tree_model_string)
         tree_model = source_ds.trees_blocks[0][0]
         
         mle = dendropy.tests.paup.estimate_char_model(

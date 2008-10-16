@@ -249,7 +249,7 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
                     label = translate_dict[node.label]
                 else:
                     label = node.label                      
-                node.taxon = taxa_block.find_taxon(label=label, update=True)            
+                node.taxon = taxa_block.get_taxon(label=label, update=True)            
         return tree
     else:        
         return None
@@ -821,7 +821,7 @@ class NexusReader(datasets.Reader):
             if True: # future: trap and handle no labels, transpose etc.
                 token = self.stream_tokenizer.read_next_token()
                 while token != ';' and not self.stream_tokenizer.eof:
-                    taxon = taxa_block.find_taxon(label=token, update=True)
+                    taxon = taxa_block.get_taxon(label=token, update=True)
                     if taxon not in char_block:
                         char_block[taxon] = characters.CharacterDataVector(taxon=taxon)
                     if self.interleave:

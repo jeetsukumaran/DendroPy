@@ -604,7 +604,7 @@ class CharactersBlock(taxa.TaxaLinked):
             taxa_block.clear()
         new_matrix = CharacterDataMatrix()            
         for taxon, seq in self.matrix.items():
-            taxon = taxa_block.find_taxon(label=taxon.label, update=True)
+            taxon = taxa_block.get_taxon(label=taxon.label, update=True)
             new_matrix[taxon] = seq
         taxa_block.sort()
         self.taxa_block = taxa_block

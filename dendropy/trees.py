@@ -57,7 +57,7 @@ class TreesBlock(list, taxa.TaxaLinked):
         for tree in self:
             for node in tree.postorder_node_iter():
                 if node.taxon:
-                    node.taxon = taxa_block.find_taxon(label=node.taxon.label, update=True)
+                    node.taxon = taxa_block.get_taxon(label=node.taxon.label, update=True)
         taxa_block.sort()
         self.taxa_block = taxa_block
         return taxa_block        
@@ -255,7 +255,7 @@ class Tree(base.IdTagged):
         """
         for node in self.postorder_node_iter():
             if node.taxon:
-                node.taxon = taxa_block.find_taxon(label=node.taxon.label, \
+                node.taxon = taxa_block.get_taxon(label=node.taxon.label, \
                     update=update_taxa_block)       
                     
     ###########################################################################

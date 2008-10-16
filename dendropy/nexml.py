@@ -495,7 +495,7 @@ class _NexmlTreesParser(_NexmlElementParser):
             nodes[node_id].label = nxnode.get('label', None)
             taxon_id = nxnode.get('otu', None)
             if taxon_id is not None:
-                taxon = taxa_block.find_taxon(oid=taxon_id, update=False)
+                taxon = taxa_block.get_taxon(oid=taxon_id, update=False)
                 if not taxon:
                     raise Exception('Taxon with id "%s" not defined in taxa block "%s"' % (taxon_id, taxa_block.oid))
                 nodes[node_id].taxon = taxon
@@ -750,7 +750,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             row_id = nxrow.get('id', None)
             label = nxrow.get('label', None)
             taxon_id = nxrow.get('otu', None)
-            taxon = taxa_block.find_taxon(oid=taxon_id, update=False)
+            taxon = taxa_block.get_taxon(oid=taxon_id, update=False)
             if not taxon:
                 raise Exception('Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_block.oid, char_block.label, taxon_id, taxa_block.oid))                   
                 

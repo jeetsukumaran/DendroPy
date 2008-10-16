@@ -315,7 +315,7 @@ class CharEvolver(object):
                     for state in seq:
                         cvec.append(characters.CharacterDataCell(value=state))
             if taxa_block is not None:
-                taxon = taxa_block.find_taxon(label=leaf.taxon.label, update=True)
+                taxon = taxa_block.get_taxon(label=leaf.taxon.label, update=True)
             else:
                 taxon = leaf.taxon
             char_matrix[taxon] = cvec                                
@@ -335,7 +335,7 @@ class CharEvolver(object):
 #             for state in states:
 #                 cvec.append(characters.CharacterDataCell(value=state))
 #             if taxa_block is not None:
-#                 taxon = taxa_block.find_taxon(label=leaf.taxon.label, update=True)
+#                 taxon = taxa_block.get_taxon(label=leaf.taxon.label, update=True)
 #             else:
 #                 taxon = leaf.taxon
 #             char_matrix[taxon] = cvec                              

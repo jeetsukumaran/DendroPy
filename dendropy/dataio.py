@@ -103,7 +103,7 @@ def trees_from_string(string, format):
     reader = get_reader(format)
     return reader.read_trees(source_file_handle(string=string))     
     
-def get_nexus(file=None, string=None):
+def from_nexus(file=None, string=None):
     """
     Returns a Dataset object parsed from a NEXUS or NEWICK source.
         `file`   - can either be a file descriptor object/handle opened 
