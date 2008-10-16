@@ -137,29 +137,3 @@ def symmetric_difference(tree1, tree2):
             sym_diff = sym_diff + 1   
             
     return sym_diff, false_positives, false_negatives
-    
-
-import sys
-import newick
-if __name__ == "__main__":
-    reader = newick.NewickTreeReader()
-    writer = newick.NewickTreeWriter()
-    
-#     trees = reader.read_trees(text='(3,(4,(1,2))); (2,(1,(3,4))); ')
-#     print "Distance: %d" % symmetric_difference(trees[0], trees[1])[0]    
-    
-   # trees = reader.read_trees(text='(3,(4,(1,2))); (2,(1,(3,4))); (1,(2,(3,4))); ((1,2),(3,4)); ((3,4),(1,2)); ((1,4),(3,2));')      
-    trees = reader.read_trees(text='(1,2,(3,(6,(4,5)))); (((1, 2),3),(4,5),6));')
-    for tree in trees:
-        splits.encode_splits(tree, trees.taxa_block)    
-    
-    for tree1 in trees:
-        for tree2 in trees:
-            distance = symmetric_difference(tree1, tree2)[0]
-            print writer.compose_tree(tree1), "vs.", writer.compose_tree(tree2), "= %d" % distance
-            if distance:
-                print tree1.splits
-                print tree1.complemented_splits
-                print tree2.splits
-                print tree2.complemented_splits
-                sys.exit(1)
