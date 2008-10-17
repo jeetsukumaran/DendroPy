@@ -67,6 +67,7 @@ class TreeSummarizer(object):
         self.write_message = None# sys.stderr.write
         self.progress_message_prefix = None
         self.progress_message_suffix = None
+        self.ignore_node_ages = True
         self.total_trees_read = 0    
         self.total_trees_counted = 0         
         self.total_trees_ignored = 0
@@ -200,6 +201,7 @@ class TreeSummarizer(object):
         """
         if split_distribution is None:
             split_distribution = splits.SplitDistribution()
+        split_distribution.ignore_node_ages = self.ignore_node_ages            
         if taxa_block is not None:
             split_distribution.taxa_block = taxa_block            
 #         if not isinstance(tree_files, list):
