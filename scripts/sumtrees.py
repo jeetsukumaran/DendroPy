@@ -448,14 +448,11 @@ def main_cli():
     messenger.send_multi(final_run_report)        
 
 if __name__ == '__main__':
-    if __DEBUG__:
+    try:
         main_cli()
-    else:        
-        try:
-            main_cli()
-        except (KeyboardInterrupt, EOFError), e:
-            messenger.send("Terminating (user-abort).\n")
-            sys.exit(1)
-        except Exception, e:
-            messenger.send("Error encountered: %s : %s.\n" % (str(type(e)), e.message))
-            sys.exit(1)
+    except (KeyboardInterrupt, EOFError), e:
+        messenger.send("Terminating (user-abort).\n")
+        sys.exit(1)
+    except:
+        messenger.send("Error encountered: %s : %s.\n" % (str(type(e)), e.message))
+        raise # reraise exception, with correct traceback
