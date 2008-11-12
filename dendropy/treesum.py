@@ -93,7 +93,7 @@ class TreeSummarizer(object):
         """                
         if self.support_as_percentages:
             if self.support_label_decimals == 0:
-                support_label = "%s" % (split_support_freq * 100)
+                support_label = "%d" % (split_support_freq * 100)
             else:                
                 support_label_template = "%%0.%df" % self.support_label_decimals
                 support_label = support_label_template % (split_support_freq * 100)
