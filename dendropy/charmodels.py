@@ -213,7 +213,7 @@ class Hky85CharacterModel(NucleotideCharacterModel):
         else:
             return rate
 
-    def _pij(self, state_i, state_j, tlen, rate=1.0):
+    def pij(self, state_i, state_j, tlen, rate=1.0):
         """
         Returns probability, p_ij, of going from state i to state j
         over time tlen at given rate. (tlen * rate = nu, expected
@@ -275,7 +275,7 @@ class Hky85CharacterModel(NucleotideCharacterModel):
         # in case later we want to allow characters passed in here
         state_i = state 
         for state_j in range(4):
-            pvec.append(self._pij(state_i, state_j, tlen=tlen, rate=rate))
+            pvec.append(self.pij(state_i, state_j, tlen=tlen, rate=rate))
         return pvec
         
     def pmatrix(self, tlen, rate=1.0):
