@@ -454,8 +454,8 @@ if __name__ == '__main__':
     try:
         main_cli()
     except (KeyboardInterrupt, EOFError), e:
-        messenger.send("Terminating (user-abort).\n")
+        sys.stderr.write("Terminating (user-abort).\n")
         sys.exit(1)
-    except:
-        messenger.send("Error encountered: %s : %s.\n" % (str(type(e)), e.message))
+    except Exception, e:
+        sys.stderr.write("Error encountered: %s : %s.\n" % (str(type(e)), e.message))
         raise # reraise exception, with correct traceback
