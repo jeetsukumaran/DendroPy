@@ -692,8 +692,10 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                             state_alphabet = state_sets
                             break
                     if state_alphabet is None:
-                        raise Exception("State set '%s' no defined" % char_state_set_id)
+                        raise Exception("State set '%s' not defined" % char_state_set_id)
                     col.state_alphabet = state_alphabet
+                elif char_block.default_state_alphabet is not None:
+                    col.state_alphabet = char_block.default_state_alphabet
                 char_block.column_types.append(col)
 
     def parse_char_block(self, nxchars, dataset):
@@ -798,7 +800,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                         column = id_column_map[column_id]
                         pos_idx = column_ids.index(column_id)
                         if column_id not in id_state_maps:
-                            id_state_maps[column_id] = column.state_alphabet.id_state_map()
+                            id_state_maps[column_id] = column.state_alphabet.symbol_state_map()
                         state = id_state_maps[column_id][nxcell.get('state')]
                         cell = characters.CharacterDataCell(value=state, column_type=column)
                         self.parse_annotations(annotated=cell, nxelement=nxcell)                        
