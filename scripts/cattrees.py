@@ -211,51 +211,53 @@ def main_cli():
                 messenger.send('')
             if not overwrite.lower().startswith("y"):
                 sys.exit(1)
-        output_dest = open(output_fpath, 'w')                
+        output_dest = open(output_fpath, 'w')  
+        
+    ###################################################
+    # write nexus header if neccessary        
+        
+    if opts.phylip_format:
+        pass
+    else:
+        output_dest.write("#NEXUS\n\n")
+        output_dest.write("Begin Trees;\n")
                 
     ###################################################
     # Main work begins here
     
     report = []
-    trees_block = trees.TreesBlock()
+    total_trees_added = 0
     for tree_filepath_idx, tree_filepath in enumerate(tree_filepaths):
-        messenger.send("Reading tree file %d of %d: %s" \
+        messenger.send("-- Reading tree file %d of %d: %s" \
             % (tree_filepath_idx+1, len(tree_filepaths), tree_filepath))
-        dataset = nexus.read_dataset(open(tree_filepath, "r"))
         trees_added = 0
-        for tree_count, tree in enumerate(dataset.trees_blocks[0]):
+        for tree_count, tree in enumerate(nexus.iterate_over_trees(src=open(tree_filepath, "r"))):
             if tree_count >= opts.burnin:
-                trees_block.append(tree)
                 trees_added += 1
-        message = "%d of %d trees added to tree collection (%d trees total)" \
-            % (trees_added, len(dataset.trees_blocks[0]), len(trees_block))
-        report.append("  - %s: %s" % (tree_filepath, message))
-        messenger.send(" " + message)
+                if opts.phylip_format:
+                    output_dest.write(tree.compose_newick() + ";\n")
+                else:                
+                    output_dest.write("tree %d = %s;\n" % (trees_added, tree.compose_newick()))
+        total_trees_added += trees_added
+        message = ("%s: %d of %d trees included (total = %d trees)" \
+            % (tree_filepath, trees_added, tree_count+1, total_trees_added))
+        report.append(message)
+        messenger.send("   " + message)
         
-    messenger.send("Collating trees ...")
-    trees_block.normalize_taxa()
-    output_dataset = datasets.Dataset()
-    output_dataset.add_trees_block(trees_block=trees_block, taxa_block=trees_block.taxa_block)
-    
     if opts.phylip_format:
-        newick_writer = nexus.NewickWriter()
-        newick_writer.write_dataset(output_dataset, output_dest)
+        pass
     else:
-        nexus_writer = nexus.NexusWriter()
-        if opts.include_taxa_block:
-            nexus_writer.simple = False
-        else:
-            nexus_writer.simple = True 
+        output_dest.write("End;\n")        
         if opts.include_meta_comments:
-            nexus_writer.comment = []
-            nexus_writer.comment.append("%s %s by %s." % (_program_name, _program_version, _program_author))
-            nexus_writer.comment.append("Source trees:")
-            nexus_writer.comment.extend(report)
+            output_dest.write("\n")
+            output_dest.write("[%d trees sourced from:]\n" % total_trees_added)
+            maxlen = max([len(tf) for tf in report])
+            for tf in report:
+                output_dest.write("[ %s ]\n" % tf.ljust(maxlen))
         if opts.additional_comments:
             nexus_writer.comment.append("\n")
             nexus_writer.comment.append(opts.additional_comments)
-            
-        nexus_writer.write_dataset(output_dataset, output_dest)    
+   
 
 if __name__ == '__main__':
     try:
