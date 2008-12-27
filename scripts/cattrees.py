@@ -38,7 +38,7 @@ from dendropy import trees
 _program_name = 'CatTrees'
 _program_subtitle = 'Phylogenetic Tree File Concatenation'
 _program_date = 'Dec 12 2008'
-_program_version = 'Version 1.0.0 (%s)' % _program_date
+_program_version = 'Version 1.1.0 (%s)' % _program_date
 _program_author = 'Jeet Sukumaran'
 _program_contact = 'jeetsukumaran@gmail.com'
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
