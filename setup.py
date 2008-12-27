@@ -49,7 +49,7 @@ Phylogenetic computing library""",
         "" : ['doc/*'],
         "dendropy" : ["tests/data/*"]
       },
-      scripts=['scripts/sumtrees.py'],   
+      scripts=['scripts/sumtrees.py', 'scripts/cattrees.py'],   
       test_suite = "dendropy.tests",
       include_package_data=True,         
       zip_safe=True,
