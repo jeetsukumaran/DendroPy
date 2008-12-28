@@ -38,7 +38,7 @@ from dendropy import trees
 _program_name = 'CatTrees'
 _program_subtitle = 'Phylogenetic Tree File Concatenation'
 _program_date = 'Dec 12 2008'
-_program_version = 'Version 1.1.0 (%s)' % _program_date
+_program_version = 'Version 1.2.0 (%s)' % _program_date
 _program_author = 'Jeet Sukumaran'
 _program_contact = 'jeetsukumaran@gmail.com'
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
@@ -105,8 +105,15 @@ def main_cli():
                         dest='burnin',
                         type='int', # also 'float', 'string' etc.
                         default=0, 
-                        help='number of trees to skip from the beginning of *each tree file* when counting support [default=%default]') 
-                                            
+                        help='number of trees to skip from the beginning of *each tree file* when counting support [default=%default]')                         
+    input_optgroup.add_option('-s', '--sample', 
+                        action='store',
+                        dest='sample_rate',
+                        metavar="SAMPLE_RATE",
+                        type='int', # also 'float', 'string' etc.
+                        default=1, 
+                        help='resample rate: only include one out of every SAMPLE_RATE trees')
+                                                                    
     output_filepath_optgroup = OptionGroup(parser, 'Output File Options')    
     parser.add_option_group(output_filepath_optgroup)                      
     output_filepath_optgroup.add_option('-o','--output',  
@@ -156,9 +163,7 @@ def main_cli():
                       dest='ignore_missing_support',
                       default=False,
                       help="ignore missing support tree files (at least one must exist!)")                       
-                                            
-
-                                                
+                                               
     (opts, args) = parser.parse_args()
     messenger = Messenger(quiet=opts.quiet)
     
@@ -174,7 +179,7 @@ def main_cli():
     for fpath in args:
         fpath = os.path.expanduser(os.path.expandvars(fpath))        
         if not os.path.exists(fpath):
-            messenger.send_error('Support file not found: "%s"' % fpath)
+            messenger.send_error('File not found: "%s"' % fpath)
             missing = True
         else:
             tree_filepaths.append(fpath)
@@ -183,12 +188,12 @@ def main_cli():
         if opts.ignore_missing_support:
             pass
         else:
-            messenger.send_formatted('Terminating due to missing support files. '
+            messenger.send_formatted('Terminating due to missing tree files. '
                    + 'Use the "--ignore-missing-support" option to continue even '
                    + 'if some files are missing.', force=True)
             sys.exit(1)
     if len(tree_filepaths) == 0:
-        messenger.send_formatted("No sources of support specified or could be found. "
+        messenger.send_formatted("No sources of trees specified or could be found. "
         + "Please specify path(s) to tree files to concatenate.", force=True)
         sys.exit(1)
         
@@ -232,15 +237,15 @@ def main_cli():
             % (tree_filepath_idx+1, len(tree_filepaths), tree_filepath))
         trees_added = 0
         for tree_count, tree in enumerate(nexus.iterate_over_trees(src=open(tree_filepath, "r"))):
-            if tree_count >= opts.burnin:
+            if tree_count >= opts.burnin and not (tree_count % opts.sample_rate):
                 trees_added += 1
                 if opts.phylip_format:
                     output_dest.write(tree.compose_newick() + ";\n")
                 else:                
                     output_dest.write("tree %d = %s;\n" % (trees_added, tree.compose_newick()))
         total_trees_added += trees_added
-        message = ("%s: %d of %d trees included (total = %d trees)" \
-            % (tree_filepath, trees_added, tree_count+1, total_trees_added))
+        message = ("%s: %d trees in file, sampling 1 tree of every %d trees after %d tree burn-in: %d trees added (current total = %d trees)" \
+            % (tree_filepath, tree_count+1, opts.sample_rate, opts.burnin, trees_added, total_trees_added))
         report.append(message)
         messenger.send("   " + message)
         
@@ -250,7 +255,7 @@ def main_cli():
         output_dest.write("End;\n")        
         if opts.include_meta_comments:
             output_dest.write("\n")
-            output_dest.write("[%d trees sourced from:]\n" % total_trees_added)
+            output_dest.write("[Total of %d trees sourced from:]\n" % total_trees_added)
             maxlen = max([len(tf) for tf in report])
             for tf in report:
                 output_dest.write("[ %s ]\n" % tf.ljust(maxlen))
@@ -258,7 +263,6 @@ def main_cli():
             nexus_writer.comment.append("\n")
             nexus_writer.comment.append(opts.additional_comments)
    
-
 if __name__ == '__main__':
     try:
         main_cli()
