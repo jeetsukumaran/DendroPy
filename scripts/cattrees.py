@@ -37,8 +37,8 @@ from dendropy import trees
 
 _program_name = 'CatTrees'
 _program_subtitle = 'Phylogenetic Tree File Concatenation'
-_program_date = 'Dec 12 2008'
-_program_version = 'Version 1.2.0 (%s)' % _program_date
+_program_date = 'Dec 28 2008'
+_program_version = 'Version 1.2.1 (%s)' % _program_date
 _program_author = 'Jeet Sukumaran'
 _program_contact = 'jeetsukumaran@gmail.com'
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
@@ -106,13 +106,13 @@ def main_cli():
                         type='int', # also 'float', 'string' etc.
                         default=0, 
                         help='number of trees to skip from the beginning of *each tree file* when counting support [default=%default]')                         
-    input_optgroup.add_option('-s', '--sample', 
+    input_optgroup.add_option('-s', '--stride', 
                         action='store',
-                        dest='sample_rate',
-                        metavar="SAMPLE_RATE",
+                        dest='stride',
+                        metavar="STRIDE",
                         type='int', # also 'float', 'string' etc.
                         default=1, 
-                        help='resample rate: only include one out of every SAMPLE_RATE trees')
+                        help='resample rate: only include one out of every STRID trees')
                                                                     
     output_filepath_optgroup = OptionGroup(parser, 'Output File Options')    
     parser.add_option_group(output_filepath_optgroup)                      
@@ -237,7 +237,7 @@ def main_cli():
             % (tree_filepath_idx+1, len(tree_filepaths), tree_filepath))
         trees_added = 0
         for tree_count, tree in enumerate(nexus.iterate_over_trees(src=open(tree_filepath, "r"))):
-            if tree_count >= opts.burnin and not (tree_count % opts.sample_rate):
+            if tree_count >= opts.burnin and not (tree_count % opts.stride):
                 trees_added += 1
                 if opts.phylip_format:
                     output_dest.write(tree.compose_newick() + ";\n")
@@ -245,7 +245,7 @@ def main_cli():
                     output_dest.write("tree %d = %s;\n" % (trees_added, tree.compose_newick()))
         total_trees_added += trees_added
         message = ("%s: %d trees in file, sampling 1 tree of every %d trees after %d tree burn-in: %d trees added (current total = %d trees)" \
-            % (tree_filepath, tree_count+1, opts.sample_rate, opts.burnin, trees_added, total_trees_added))
+            % (tree_filepath, tree_count+1, opts.stride, opts.burnin, trees_added, total_trees_added))
         report.append(message)
         messenger.send("   " + message)
         
