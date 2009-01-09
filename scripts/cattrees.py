@@ -112,7 +112,7 @@ def main_cli():
                         metavar="STRIDE",
                         type='int', # also 'float', 'string' etc.
                         default=1, 
-                        help='resample rate: only include one out of every STRID trees')
+                        help='resample rate: only include one out of every STRIDE trees')
                                                                     
     output_filepath_optgroup = OptionGroup(parser, 'Output File Options')    
     parser.add_option_group(output_filepath_optgroup)                      

@@ -121,13 +121,16 @@ def encode_splits(tree,
     if tree_complemented_splits or tree_complemented_split_edges_map:
         taxa_mask = taxa_block.all_taxa_bitmask()
         csplit_edges = {}
+        split_to_csplit = {}
         for split in split_map.keys():
             csplit = split ^ taxa_mask
             csplit_edges[csplit] = split_map[split]
+            split_to_csplit[split] = csplit            
         if tree_complemented_splits:
             setattr(tree, tree_complemented_splits, set(csplit_edges.keys()))
         if tree_complemented_split_edges_map:            
             setattr(tree, tree_complemented_split_edges_map, csplit_edges)        
+        setattr(tree, 'split_to_complemented_splits', split_to_csplit)
     return split_map
                 
 ############################################################################        
