@@ -31,7 +31,7 @@ import os
 import sys
 import random
 
-__version__ = "2.0.9"
+__version__ = "2.0.10"
 PACKAGE_NAME = "DendroPy"
 PACKAGE_VERSION = __version__
 PACKAGE_AUTHOR = "Jeet Sukumaran and Mark T. Holder"
