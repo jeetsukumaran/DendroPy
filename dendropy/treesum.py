@@ -90,20 +90,22 @@ class TreeSummarizer(object):
     def compose_support_label(self, split_support_freq):
         """
         Returns an appropriately composed and formatted support label.
-        """                
+        """
         if self.support_as_percentages:
-            if self.support_label_decimals == 0:
-                support_label = "%d" % (split_support_freq * 100)
+            if self.support_label_decimals <= 0:
+                support_label = "%d" % round(split_support_freq * 100, 0)
             else:                
                 support_label_template = "%%0.%df" % self.support_label_decimals
-                support_label = support_label_template % (split_support_freq * 100)
+                support_label = support_label_template % round(split_support_freq * 100, 
+                    self.support_label_decimals)
         else:                
-            if self.support_label_decimals < 0:
+            if self.support_label_decimals <= 0:
                 support_label_decimals = 2
             else:
                 support_label_decimals = self.support_label_decimals
-            support_label_template = "%%0.%df" % self.support_label_decimals
-            support_label = support_label_template % (split_support_freq * 100)                
+            support_label_template = "%%0.%df" % support_label_decimals
+            support_label = support_label_template % round(split_support_freq, 
+                support_label_decimals)
         return support_label            
         
     def map_split_support_to_node(self, node, split_support):

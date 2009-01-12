@@ -50,8 +50,8 @@ from dendropy import trees
 
 _program_name = 'SumTrees'
 _program_subtitle = 'Phylogenetic Tree Split Support Summarization'
-_program_date = 'Dec 26 2008'
-_program_version = 'Version 1.0.4 (%s)' % _program_date
+_program_date = 'Jan 12 2009'
+_program_version = 'Version 1.0.5 (%s)' % _program_date
 _program_author = 'Jeet Sukumaran'
 _program_contact = 'jeetsukumaran@gmail.com'
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
