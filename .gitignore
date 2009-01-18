@@ -1,4 +1,5 @@
 *.pyc
+*.kpf
 setup.cfg
 DendroPy.egg-info*
 .svn*
