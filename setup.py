@@ -35,6 +35,10 @@ import sys
 import os
 import subprocess
 
+script_names = ['cattrees.py', 
+              'rtreeoutgroup.py', 
+              'sumtrees.py', 
+              'treedepth.py',]
 setup(name='DendroPy',
       version=PACKAGE_VERSION,     
       author='Jeet Sukumaran and Mark T. Holder',
@@ -49,11 +53,7 @@ Phylogenetic computing library""",
         "" : ['doc/*'],
         "dendropy" : ["tests/data/*"]
       },
-      script_names = ['cattrees.py', 
-                      'rtreeoutgroup.py', 
-                      'sumtrees.py', 
-                      'treedepth.py',]
-      scripts=['scripts/%s' % i for i in script_names]
+      scripts = [('scripts/%s' % i) for i in script_names],
       test_suite = "dendropy.tests",
       include_package_data=True,         
       zip_safe=True,
