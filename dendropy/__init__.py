@@ -31,6 +31,7 @@ import os
 import sys
 import random
 
+
 __version__ = "2.0.10"
 PACKAGE_NAME = "DendroPy"
 PACKAGE_VERSION = __version__
