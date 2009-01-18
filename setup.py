@@ -53,7 +53,7 @@ Phylogenetic computing library""",
         "" : ['doc/*'],
         "dendropy" : ["tests/data/*"]
       },
-      scripts = [('scripts/%s' % i) for i in script_names],
+      scripts = [('dendropy/scripts/%s' % i) for i in script_names],
       test_suite = "dendropy.tests",
       include_package_data=True,         
       zip_safe=True,
