@@ -43,7 +43,7 @@ _LOG = get_logger("SumTreesTesting")
 class SumTreesTest(unittest.TestCase):
     
     def setUp(self):                                   
-        self.sumtrees_path = "sumtrees.py"   
+        self.sumtrees_path = dendropy.tests.scripts_source_path("sumtrees.py")
                 
     def compose_sumtrees_command(self, args):
         return "%s %s" % (self.sumtrees_path, " ".join(args))        

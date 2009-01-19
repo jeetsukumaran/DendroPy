@@ -40,6 +40,13 @@ def data_source_path(filename=None):
         filename = ""
     return os.path.join(os.path.join(os.path.dirname(__file__),'data'), filename)
     
+def scripts_source_path(filename=None):
+    if filename is None:
+        filename = ""
+    td = os.path.dirname(__file__)
+    dd = os.path.dirname(td)
+    return os.path.join(os.path.join(dd,'scripts'), filename)
+    
 def data_source_trees(format="*", heavy=False):
     if heavy:
         path = data_source_path(heavy)
