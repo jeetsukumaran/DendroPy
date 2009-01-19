@@ -31,7 +31,27 @@ import os
 import sys
 import random
 
-
+__all__ = ["base.py",
+        "characters.py",
+        "chargen.py",
+        "charmodels.py",
+        "coalescent.py",
+        "dataio.py",
+        "datasets.py",
+        "distributions.py",
+        "fasta.py",
+        "nexml.py",
+        "nexus.py",
+        "phylip.py",
+        "splits.py",
+        "taxa.py",
+        "treedists.py",
+        "treegen.py",
+        "trees.py",
+        "treesum.py",
+        "utils.py",
+        "xmlparser.py",
+]
 __version__ = "2.0.10"
 PACKAGE_NAME = "DendroPy"
 PACKAGE_VERSION = __version__

@@ -3,6 +3,8 @@
 
 import sys
 from dendropy import dataio
+import dendropy
+
 
 if __name__ == '__main__':
 
@@ -21,21 +23,8 @@ if __name__ == '__main__':
 
     prec = options.prec
     tree = dataio.trees_from_string(string=newick, format="NEWICK")[0]
-    node = None
-    for node in tree.postorder_node_iter():
-        ch = node.child_nodes()
-        if len(ch) == 0:
-            node.depth = 0.0
-        else:
-            first_child = ch[0]
-            node.depth = first_child.depth + first_child.edge.length
-            last_child = ch[-1]
-            for nnd in ch[1:]:
-                ocnd = nnd.depth + nnd.edge.length
-                if abs(node.depth - ocnd) > prec:
-                    sys.exit("Tree is not ultrametric (%f != %f)" % (node.depth, ocnd))
-    if node is None:
-        sys.exit("Empty tree encountered")
-    sys.stdout.write("%f\n" % node.depth)
+    dendropy.trees.add_depth_to_nodes(tree, options.prec)
+
+    sys.stdout.write("%f\n" % tree.seed_node.depth)
 
 
