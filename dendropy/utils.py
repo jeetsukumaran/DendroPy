@@ -350,4 +350,33 @@ def find_files(top, recursive=True,
                                                      respect_case=respect_case,
                                                      expand_vars=False))
     filepaths.sort()
-    return filepaths    
+    return filepaths
+
+def sample_mean_var_ml(x):
+    """Returns the sample mean and variance of x using the ML estimator of the 
+    sample variance.
+    """
+    n = len(x)
+    assert(n > 0)
+    if n == 1:
+        return x[0], 0
+    s = 0.0
+    ss = 0.0
+    for i in x:
+            s += i
+            ss += i*i
+    mu = s/n
+    var =  (ss/n) - mu*mu
+    return mu, var
+
+def sample_mean_var_unbiased(x):
+    """Returns the sample mean and variance of x using the common unbiased
+    estimator of the sample variance.
+    """
+    n = len(x)
+    assert(n > 0)
+    if n == 1:
+        return x[0], float('Inf')
+    mean, v = sample_mean_var_ml(x)
+    var = v*n/(n-1)
+    return mean, var
