@@ -261,7 +261,7 @@ def bounce_constrain(start_x, x, min_x=None, max_x=None):
 
 
 
-def simulate_mutation_rates(node, rng, **kwargs):
+def simulate_continuous(node, rng, **kwargs):
     """Takes a node and a random number generator object, `rng` This function
     "evolves" a set of rates on the subtree descending from the  `node`.
     
@@ -276,17 +276,17 @@ def simulate_mutation_rates(node, rng, **kwargs):
         `time_attr` is a string that specifies the name of the attribute 
             that returns the branch length in terms of time for a node. The 
             default is "edge_length"
-        `rate_attr` is the string that specifies the name of the attribute 
-            used to hold the rate for the nodes.  The root of the subtree is
-            assumed to have this field on calling of the function.  On success
-            all nodes in the subtree will have the attribute.  The default is
-            "mutation_rate"
-        `mean_rate_attr` if specified this is string that gives the name of 
-            attribute in each node that is mean rate for the branch (default is
-            None). This is filled in after time_attr and mut_rate_attr are read,
+        `val_attr` is the string that specifies the name of the attribute 
+            used to hold the value that is evolving along the nodes.  The root 
+            of the subtree is assumed to have this field on calling of the 
+            function.  On success all nodes in the subtree will have the 
+            attribute.  The default is "mutation_rate"
+        `mean_val_attr` if specified this is string that gives the name of 
+            attribute in each node that is mean value for the branch (default is
+            None). This is filled in after time_attr and val_attr are read,
             so it is permissible to have this attribute match one of thos 
-            strings (although it will make the model odd if the mean_rate_attr
-            is the same as the rate_attr
+            strings (although it will make the model odd if the mean_val_attr
+            is the same as the val_attr)
          `constrain_rate_mode` controls the behavior when the minimum or maximum 
             rate is simulated. The choices are "crop", and "linear_bounce"
             "crop" means that the rate is set to the most extreme value allowed.
@@ -309,16 +309,16 @@ def simulate_mutation_rates(node, rng, **kwargs):
     at the endpoints.
     
     """
-    nd_iter = Node.preorder_iter(node)
+    nd_iter = node.preorder_iter(node)
     # skip the first node -- it should already have a rate
     nd_iter.next()
     if kwargs.get("model", "KTB").upper() != "KTB":
         raise ValueError("Only the Kishino-Thorne-Bruno model is supported at this time")
-    rate_attr = kwargs.get("rate_attr", "mutation_rate")
-    if not rate_attr:
-        raise ValueError("rate_attr cannot be an empty string")
+    val_attr = kwargs.get("val_attr", "mutation_rate")
+    if not val_attr:
+        raise ValueError("val_attr cannot be an empty string")
     time_attr = kwargs.get("time_attr", "edge_length")
-    mean_rate_attr = kwargs.get("time_attr")
+    mean_val_attr = kwargs.get("mean_val_attr")
     constrain_rate_mode = kwargs.get("constrain_rate_mode", "crop").lower()
     if constrain_rate_mode not in ["crop", "linear_bounce"]:
         raise ValueError('Only "crop" and "linear_bounce" are supported at this time')
@@ -327,19 +327,19 @@ def simulate_mutation_rates(node, rng, **kwargs):
     if min_rate < 0.0:
         raise ValueError("min_rate cannot be less than 0")
     max_rate = kwargs.get("max_rate")
-    anc_rate = getattr(node, rate_attr)
+    anc_rate = getattr(node, val_attr)
     if max_rate is not None:
         if min_rate is not None:
             if min_rate > max_rate:
                 raise ValueError("max_rate must be greater than the min_rate")
             if min_rate == max_rate:
                 for nd in nd_iter:
-                    setattr(nd, rate_attr, min_rate)
-                    if mean_rate_attr:
+                    setattr(nd, val_attr, min_rate)
+                    if mean_val_attr:
                         # here we assume that the rate changed from the 
                         #   ancestral rate to the only allowed rate 
                         #   instantaneously, so the mean rat is min_rate
-                        setattr(nd, mean_rate_attr, min_rate) 
+                        setattr(nd, mean_val_attr, min_rate) 
                 return
         if max_rate <= 0.0:
             raise ValueError("max_rate must be positive")
@@ -353,9 +353,10 @@ def simulate_mutation_rates(node, rng, **kwargs):
     else:
         rate_func = _calc_KTB_rates_linear_bounce
     for nd in nd_iter:
-        starting_rate = getattr(nd.parent_node, rate_attr)
+        starting_rate = getattr(nd.parent_node, val_attr)
         duration = getattr(nd, time_attr)
         r, mr  = rate_func(starting_rate, duration, roeotroe, rng, min_rate, max_rate)
-        setattr(nd, rate_attr, r)
-        if mean_rate_attr:
-            setattr(nd, mean_rate_attr, 0.5*(min_rate + r))
+        setattr(nd, val_attr, r)
+        if mean_val_attr:
+            setattr(nd, mean_val_attr, mr)
+        

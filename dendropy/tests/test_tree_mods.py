@@ -38,7 +38,8 @@ import dendropy.tests
 _LOG = get_logger("TreeModification")
 
 ### MODULE THAT WE ARE TESTING ###
-from dendropy.treecalc import bounce_constrain, _calc_KTB_rate, _calc_TKP_rate
+from dendropy.treecalc import *
+from dendropy.treecalc import _calc_KTB_rate, _calc_TKP_rate
 ### MODULE THAT WE ARE TESTING ###
 
 
@@ -74,11 +75,38 @@ class KTBTest(unittest.TestCase):
 
         self.assertRaises(ValueError, _calc_TKP_rate, 0, 1 , 1 , rng)
 
-    def testKTBEvolve(self):
+    def testKTBEvolveCrop(self):
         rng = DebuggingRandom()
-        newick = "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);"
+        newick = "((t5:1611.75,t6:1611.75):3922.93,((t4:1043.81,(t2:754.11,t1:754.11):2896.9):6584.0,t3:1702.21):3832.47);"
         tree = dataio.trees_from_string(string=newick, format="NEWICK")[0]
-        c = copy.copy(tree)
+        root = tree.seed_node
+        root.mutation_rate = 1e-5
+        root.mean_edge_rate = root.mutation_rate
+        simulate_continuous(root, rng, roeotroe=0.01, 
+                            min_rate=1.0e-6, max_rate=1.0e-3, model='KTB',
+                            time_attr='edge_length', val_attr='mutation_rate',
+                            mean_val_attr='mean_edge_rate', 
+                            constrain_rate_mode="crop")
+        for i in tree.preorder_node_iter():
+            if i.edge_length is not None:
+                i.edge_length *= i.mean_edge_rate
+        #print(str(tree))
+    def testKTBEvolveLinearBounce(self):
+        rng = DebuggingRandom()
+        newick = "((t5:1611.75,t6:1611.75):3922.93,((t4:1043.81,(t2:754.11,t1:754.11):2896.9):6584.0,t3:1702.21):3832.47);"
+        tree = dataio.trees_from_string(string=newick, format="NEWICK")[0]
+        root = tree.seed_node
+        root.mutation_rate = 1e-5
+        root.mean_edge_rate = root.mutation_rate
+        simulate_continuous(root, rng, roeotroe=0.01, 
+                            min_rate=1.0e-6, max_rate=1.0e-3, model='KTB',
+                            time_attr='edge_length', val_attr='mutation_rate',
+                            mean_val_attr='mean_edge_rate', 
+                            constrain_rate_mode="linear_bounce")
+        for i in tree.preorder_node_iter():
+            if i.edge_length is not None:
+                i.edge_length *= i.mean_edge_rate
+        #print(str(tree))
         #self.assertEqual(c, tree)
 if __name__ == "__main__":
     unittest.main()

@@ -173,6 +173,15 @@ def get_logger(name="dendropy"):
         ch.setFormatter(logging_formatter)
         logger.addHandler(ch)
     return logger
-  
+
+_user_ini_checked = False
+if not _user_ini_checked:
+    import os
+    _user_ini_checked = True
+    p = os.path.expanduser("~/.dendropy/startup.py")
+    if os.path.exists(p):
+        execfile(p)
+    del p
+
 if __name__ == "__main__":
     sys.stdout.write("%s %s\n" % (PACKAGE_NAME, PACKAGE_VERSION))
