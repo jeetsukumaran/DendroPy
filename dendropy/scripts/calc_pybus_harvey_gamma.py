@@ -3,7 +3,7 @@
 if __name__ == '__main__':
     import sys
     from dendropy import dataio
-    from dendropy.trees import pybus_harvey_gamma
+    from dendropy.treecalc import pybus_harvey_gamma
 
     from optparse import OptionParser
     usage = """Takes a tree (which will be treated as rooted), and reports the list of taxa
@@ -26,7 +26,7 @@ This script can be useful when you are simulating rooted trees and need to do
 
     tree = dataio.trees_from_string(string=newick, format="NEWICK")[0]
     try:
-        sys.stdout.write("%f\n" % pybusHarveyGamma(tree))
+        sys.stdout.write("%f\n" % pybus_harvey_gamma(tree))
     except ValueError as x:
         sys.exit(str(x))
 
