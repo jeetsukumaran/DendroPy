@@ -36,7 +36,7 @@ import dendropy.tests
 _LOG = get_logger("TreeModification")
 
 ### MODULE THAT WE ARE TESTING ###
-from dendropy.trees import bounce_constrain, _calc_KTB_rate, _calc_TKP_rate
+from dendropy.treecalc import bounce_constrain, _calc_KTB_rate, _calc_TKP_rate
 ### MODULE THAT WE ARE TESTING ###
 
 
