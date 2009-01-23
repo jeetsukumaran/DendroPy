@@ -1,3 +1,3 @@
-
+* Easier way to create trees with these same leaf set in different options
 * Add option to specify posterior probability support as Nexus node comment in SumTrees
 * Add "``clone``" methods for Dataset and all contained data structures

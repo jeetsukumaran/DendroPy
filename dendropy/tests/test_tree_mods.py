@@ -29,7 +29,9 @@ Tests optional tree modifiers.
 import random
 import unittest
 import itertools
+import copy
 from dendropy import get_logger
+from dendropy import dataio
 from dendropy.tests.debugging_random import DebuggingRandom
 from dendropy.tests.util_for_testing import assert_vec_approx_equal, assert_mat_approx_equal
 import dendropy.tests
@@ -72,6 +74,12 @@ class KTBTest(unittest.TestCase):
 
         self.assertRaises(ValueError, _calc_TKP_rate, 0, 1 , 1 , rng)
 
+    def testKTBEvolve(self):
+        rng = DebuggingRandom()
+        newick = "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);"
+        tree = dataio.trees_from_string(string=newick, format="NEWICK")[0]
+        c = copy.copy(tree)
+        #self.assertEqual(c, tree)
 if __name__ == "__main__":
     unittest.main()
 

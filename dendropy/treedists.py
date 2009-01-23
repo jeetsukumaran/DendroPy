@@ -34,7 +34,7 @@ def robinson_foulds_calc(length_diffs):
     of edges from two trees, this returns the Robinson-Foulds distance (sum of
     absolute differences) between the two trees.
     """
-    return sum([abs(length_diffs[i][0]-length_diffs[i][1]) for i in range(len(length_diffs))])
+    return sum([abs(i[0] - i[1]) for i in length_diffs])
 
 def brlen_scores_calc(length_diffs):
     """
@@ -43,7 +43,8 @@ def brlen_scores_calc(length_diffs):
     squared differences) between the two trees. This is equivalent to the squared
     Euclidean distance between the two trees.
     """
-    return sum([pow(length_diffs[i][0]-length_diffs[i][1], 2) for i in range(len(length_diffs))])
+    d = [pow(i[0] - i[1], 2) for i in length_diffs]
+    return sum(d)
 
 def brlen_dists_calc(length_diffs):
     """
@@ -54,7 +55,17 @@ def brlen_dists_calc(length_diffs):
     """
     return pow(brlen_scores_calc(length_diffs), 0.5)
 
+USE_NEW_SD = True
 def splits_distance(tree1, 
+                    tree2, 
+                    dist_func=robinson_foulds_calc, 
+                    edge_length_attr="length",
+                    value_type=float):
+    if USE_NEW_SD:
+        return new_splits_distance(tree1, tree2, dist_func, edge_length_attr, value_type)
+    return old_splits_distance(tree1, tree2, dist_func, edge_length_attr, value_type)
+
+def new_splits_distance(tree1, 
                     tree2, 
                     dist_func=robinson_foulds_calc, 
                     edge_length_attr="length",
@@ -67,25 +78,100 @@ def splits_distance(tree1,
     lengths of a given split on tree1 and tree2 respectively.
     """
     length_diffs = []
-    split_set = set(tree1.split_edges.keys())
-    split_set.update(tree2.split_edges.keys())
-    for split in split_set:
+    split_edges2_copy = dict(tree2.split_edges) # O(n*(2*bind + dict_item_cost))
+    split_edges1_ref = tree1.split_edges
+    comp_split_edges1_ref = tree1.complemented_split_edges
+    comp_split_edges2_ref = tree2.complemented_split_edges
+    for split, edge in split_edges1_ref.iteritems(): # O n : 2*bind
+        elen1 = getattr(edge, edge_length_attr) # attr + bind
+        if elen1 is None:
+            elen1 = 0 # worst-case: bind
+        value1 = value_type(elen1) #  ctor + bind
+        try:
+            e2 = split_edges2_copy.pop(split) # attr + dict_lookup + bind
+            elen2 = getattr(e2, edge_length_attr) # attr + bind
+        except KeyError: # excep
+            e2 = comp_split_edges2_ref.get(split) # attr + dict_lookup + bind
+            if e2 is None: 
+                elen2 = 0
+            else:
+                elen2 = getattr(e2, edge_length_attr) # attr +  bind            
+        if elen2 is None: 
+            elen2 = 0 # worst-case: bind
+        value2 = value_type(elen2) #  ctor + bind # best case
+        length_diffs.append((value1,value2)) # ctor + listappend
     
-        if split in tree1.split_edges and getattr(tree1.split_edges[split], edge_length_attr):
-            value1 = value_type(getattr(tree1.split_edges[split], edge_length_attr))
-        elif split in tree1.complemented_split_edges and getattr(tree1.complemented_split_edges[split], edge_length_attr):
-            value1 = value_type(getattr(tree1.complemented_split_edges[split], edge_length_attr))            
+    for split, edge in split_edges2_copy.iteritems(): # best-case not executed, worst case O(n) : 2*bind
+        elen2 = getattr(edge, edge_length_attr) # attr +  bind
+        if elen2 is None:
+            elen2 = 0
+        value2 = value_type(elen2) #  ctor + bind
+        e1 = split_edges1_ref.get(split) # attr + dict_lookup + bind
+        if e1 is None:
+            e1 = comp_split_edges1_ref.get(split) # attr + dict_lookup + bind
+            if e1 is None:
+                elen1 = 0
+            else:
+                elen1 = getattr(e1, edge_length_attr) # attr  + bind
         else:
-            value1 = value_type(0)
-            
-        if split in tree2.split_edges and getattr(tree2.split_edges[split], edge_length_attr):
-            value2 = value_type(getattr(tree2.split_edges[split], edge_length_attr))
-        elif split in tree2.complemented_split_edges and getattr(tree2.complemented_split_edges[split], edge_length_attr):
-            value1 = value_type(getattr(tree2.complemented_split_edges[split], edge_length_attr))                   
+            elen1 = getattr(e1, edge_length_attr) # attr  + bind
+        if elen1 is None:
+            elen1 = 0
+        value1 = value_type(elen1)
+        length_diffs.append((value1,value2)) # ctor + listappend
+    # the numbers below do not reflect additions to the code to protect against
+    #   edges with length None
+    # loops
+    #  best-case:
+    #   O(n * (dict_lookup + 3*attr + 3*ctor + 7*bind + listappend))
+    #  worst-case:
+    #     separated: O(n * (2*dict_lookup + 4*attr + 3*ctor + 8*bind + listappend + excep) + n*(2*dict_lookup + 4*attr + 3*ctor + 8*bind + listappend))
+    #   or:
+    #     O(2n*(2*dict_lookup + 4*attr + 3*ctor + 8*bind + listappend + 0.5*excep))
+
+    # total
+    #  best-case:
+    #       O(n * (dict_lookup + 3*attr + 3*ctor + 8*bind + listappend + dict_item_cost))
+    #  worst-case:
+    #     O(2n*(2*dict_lookup + 4*attr + 3*ctor + 9*bind + listappend + 0.5*(dict_item_cost + excep))
+    return dist_func(length_diffs)
+
+def old_splits_distance(tree1, 
+                    tree2, 
+                    dist_func=robinson_foulds_calc, 
+                    edge_length_attr="length",
+                    value_type=float):
+    # old Code
+    length_diffs = []
+    split_set = set(tree1.split_edges.keys()) # O(n * (dict_lookup + key_item))
+    split_set.update(tree2.split_edges.keys())# O(n * (dict_lookup + key_item))
+    for split in split_set: # O n (best case)-> 2n (worst case) : bind 
+    
+        if split in tree1.split_edges and getattr(tree1.split_edges[split], edge_length_attr): # O(2*dict_lookup + 3*attr)
+            value1 = value_type(getattr(tree1.split_edges[split], edge_length_attr)) # O(dict_lookup + 2*attr + ctor + bind) # best case
+        elif split in tree1.complemented_split_edges and getattr(tree1.complemented_split_edges[split], edge_length_attr): # O(2*dict_lookup + 3*attr)
+            value1 = value_type(getattr(tree1.complemented_split_edges[split], edge_length_attr)) # worst_case:  O(dict_lookup + 2*attr + ctor + bind)
         else:
-            value2 = value_type(0)
+            value1 = value_type(0) # worst case: ctor + bind
             
-        length_diffs.append((value1,value2))
+        if split in tree2.split_edges and getattr(tree2.split_edges[split], edge_length_attr): # O(2*dict_lookup + 3*attr)
+            value2 = value_type(getattr(tree2.split_edges[split], edge_length_attr)) # O(dict_lookup + 2*attr + ctor + bind) # best case
+        elif split in tree2.complemented_split_edges and getattr(tree2.complemented_split_edges[split], edge_length_attr): # O(2*dict_lookup + 3*attr)
+            value1 = value_type(getattr(tree2.complemented_split_edges[split], edge_length_attr))# worst_case:  O(dict_lookup + 2*attr + ctor + bind) # 
+        else:
+            value2 = value_type(0) # ctor + bind
+            
+        length_diffs.append((value1,value2)) # listappend + ctor 
+    # loop best-case:
+    #   O(n*(6*dict_lookup + 10*attr + listappend + 3*ctor + 3*bind)
+    # loop worst-case:
+    #   O(2n*(7*dict_lookup + 12*attr + listappend + 3*ctor + 3*bind)
+    # 
+    # total before dist_func
+    # best-case:
+    #   O(n*(8*dict_lookup + 10*attr + listappend + 3*ctor + 3*bind + 2*key_item)
+    # loop worst-case:
+    #   O(2n*(10*dict_lookup + 12*attr + listappend + 3*ctor + 3*bind + key_item)
     return dist_func(length_diffs)
         
 def robinson_foulds_distance(tree1, tree2, edge_length_attr="length"):

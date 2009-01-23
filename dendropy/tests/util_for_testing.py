@@ -56,7 +56,7 @@ def mat_approx_equal(x, y, tol=1e-5):
     return True
     
 
-def failure(tester, msg):
+def _failure(tester, msg):
     calling_frame = inspect.currentframe().f_back.f_back
     co = calling_frame.f_code
     emsg = "%s\nCalled from file %s, line %d, in %s" % (msg, co.co_filename, calling_frame.f_lineno, co.co_name)
@@ -72,7 +72,7 @@ def assert_approx_equal(x, y, tester=None, tol=1e-5):
     AssertionErrors are raised.
     """
     if abs(x - y) >= tol:
-        failure(tester, "%f != %f" % (x, y))
+        _failure(tester, "%f != %f" % (x, y))
 
 def assert_vec_approx_equal(x, y, tester=None, tol=1e-5):
     """Returns True if each element in the iterable `x` differs by less than
@@ -82,13 +82,11 @@ def assert_vec_approx_equal(x, y, tester=None, tol=1e-5):
     AssertionErrors are raised.
     """
     if len(x) != len(y):
-        failure(tester, "vectors of numbers differ in length (%d vs %d)" % (len(x), len(y)))
+        _failure(tester, "vectors of numbers differ in length (%d vs %d)" % (len(x), len(y)))
     for n, itup in enumerate(itertools.izip(x, y)):
         i, j = itup
         if abs(i - j) >= tol:
-            calling_frame = inspect.currentframe().f_back
-            co = calling_frame.f_code
-            failure(tester, "%f != %f at element %d\n%s in file %s line:%d" % (i, j, n, co.co_name, co.co_filename, co.co_firstlineno))
+            _failure(tester, "%f != %f at element %d" % (i, j, n))
     
 
 def assert_mat_approx_equal(x, y, tester=None, tol=1e-5):
@@ -98,13 +96,13 @@ def assert_mat_approx_equal(x, y, tester=None, tol=1e-5):
     AssertionErrors are raised.
     """
     if len(x) != len(y):
-        failure(tester, "Matrices differs in length (%d vs %d)" % (len(x), len(y)))
+        _failure(tester, "Matrices differs in length (%d vs %d)" % (len(x), len(y)))
     for n, row_tup in enumerate(itertools.izip(x, y)):
         row_x, row_y = row_tup
         if len(row_x) != len(row_y):
-            failure(tester, "row %d of matrix differs in length (%d vs %d)" % (n, len(row_x), len(row_y)))
+            _failure(tester, "row %d of matrix differs in length (%d vs %d)" % (n, len(row_x), len(row_y)))
         for col, cell_tup in enumerate(itertools.izip(row_x, row_y)):
             i, j = cell_tup
             if abs(i - j) >= tol:
-                failure(tester, "%f != %f for column %d of row %d" % (i, j, col, n))
+                _failure(tester, "%f != %f for column %d of row %d" % (i, j, col, n))
 
