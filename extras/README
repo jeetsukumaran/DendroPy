@@ -1,0 +1,4 @@
+This directory contains extra files that are not necessary for installation
+	dot_dendropy is an example of a .dendropy directory that can be created 
+	in the user's home directory to allow run-time configuration of
+	some aspects of dendro_py
