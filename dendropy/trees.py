@@ -26,6 +26,7 @@
 This module handles the core definition of tree data structure class,
 as well as all the structural classes that make up a tree.
 """
+from cStringIO import StringIO
 
 from dendropy import base
 from dendropy import taxa
@@ -58,7 +59,7 @@ class TreesBlock(list, taxa.TaxaLinked):
         for tree in self:
             for node in tree.postorder_node_iter():
                 if node.taxon:
-                    node.taxon = taxa_block.get_taxon(label=node.taxon.label, update=True)
+                    node.taxon = taxa_block.get_taxon(label=node.taxon.label)
         taxa_block.sort()
         self.taxa_block = taxa_block
         return taxa_block        
@@ -248,16 +249,16 @@ class Tree(base.IdTagged):
         taxa_block.sort()
         return taxa_block
         
-    def normalize_taxa(self, taxa_block, update_taxa_block=True):
+    def normalize_taxa(self, taxa_block):
         """
         Reassigns tree taxa objects to corresponding taxa objects in
         given taxa_block, with identity of taxa objects determined by
         labels.
         """
         for node in self.postorder_node_iter():
-            if node.taxon:
-                node.taxon = taxa_block.get_taxon(label=node.taxon.label, \
-                    update=update_taxa_block)       
+            t = node.taxon
+            if t:
+                node.taxon = taxa_block.get_taxon(label=t.label)       
                     
     ###########################################################################
     ## Structure                    
@@ -287,8 +288,8 @@ class Tree(base.IdTagged):
     ###########################################################################
     ## For debugging
     
-    def compose_newick(self, include_internal_labels=True):
-        return self.seed_node.compose_newick(include_internal_labels=include_internal_labels)
+    def compose_newick(self, **kwargs):
+        return self.seed_node.compose_newick(**kwargs)
                 
 
 
@@ -614,44 +615,73 @@ class Node(taxa.TaxonLinked):
         return [node for node in \
                 self.postorder_iter(self, \
                                     lambda x: bool(len(node.child_nodes)==0))]
-     
-    ########################################################################### 
-    ## for debugging
-    
-    def compose_newick(self, include_internal_labels=True):
+
+
+    def get_node_str(self, **kwargs):
+        """returns a string that is an identifier for the node.  This is called
+        by the newick-writing functions, so the kwargs that affect how node 
+        labels show up in a newick string are the same ones used here:
+            `include_internal_labels` is a Boolean
         """
-        This returns the Node as a NEWICK
-        statement according to the given formatting rules.
-        """
-        statement = ''
-        child_nodes = self.child_nodes()
-        if child_nodes:
-            subnodes = [child.compose_newick() for child in child_nodes]
-            statement = '(' + ','.join(subnodes) + ')'
-            
+        is_leaf = (len(self.__child_nodes) == 0)
+        include_internal_labels = kwargs.get("include_internal_labels")
+        if (not is_leaf) and (not include_internal_labels):
+            return ""
         if hasattr(self, 'taxon') and self.taxon:
             tag = self.taxon.label
-        elif hasattr(self, 'label') and self.label and (len(child_nodes)==0 or include_internal_labels):
-            tag = self.label
-        elif len(child_nodes) == 0:
-            tag = self.oid
         else:
             tag = ""
+            try:
+                tag = self.label
+            except AttributeError:
+                if not is_leaf:
+                    tag = self.oid
+
         if tag.count(' '):
             if not (tag.startswith("\'") and tag.endswith("\'")) \
                and not (tag.startswith("\"") and tag.endswith("\"")):
                 tag = "'" + tag + "'"
-        
-        statement = statement + tag
+        return tag
+    ########################################################################### 
+    ## for debugging
+    
+    def compose_newick(self, **kwargs):
+        """
+        This returns the Node as a NEWICK
+        statement according to the given formatting rules.
+        """
+        out = StringIO()
+        self.write_newick(out, **kwargs)
+        return out.getvalue()
 
-        if self.edge and self.edge.length != None:
-            try:
-                statement =  "%s:%f" \
-                            % (statement, float(self.edge.length))
-            except ValueError:
-                statement =  "%s:%s" \
-                            % (statement, self.edge.length)
-        return statement       
+    def write_newick(self, out, **kwargs):
+        """
+        This returns the Node as a NEWICK
+        statement according to the given formatting rules.
+        """
+        edge_lengths = kwargs.get('edge_lengths', True)
+        child_nodes = self.child_nodes()
+        if child_nodes:
+            out.write('(')
+            f_child = child_nodes[0]
+            for child in child_nodes:
+                if child is not f_child:
+                    out.write(',')
+                child.write_newick(out, **kwargs)
+            out.write(')')
+
+        out.write(self.get_node_str(**kwargs))
+        e = self.edge
+        if e:
+            sel = e.length
+            if sel is not None:
+                s = ""
+                try:
+                    s = float(sel)
+                except ValueError:
+                    s = str(sel)
+                if s:
+                    out.write(":%s" % s)
 
 ##############################################################################
 ## Edge

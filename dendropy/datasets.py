@@ -94,7 +94,7 @@ class Dataset(object):
                 return taxa_block
         return None
 
-    def add_taxa_block(self, oid=None, label=None, taxa_block=None, taxa_block_factory=None):
+    def add_taxa_block(self, taxa_block=None, oid=None, label=None, taxa_block_factory=None):
         """
         Adds (and returns) new taxa block object, creating one using
         the default factory if not given.
@@ -205,15 +205,15 @@ class Reader(object):
         self.edge_factory = trees.Edge
         self.node_factory = trees.Node
         
-    def read_dataset(self, src, dataset=None):
+    def read_dataset(self, file_obj, dataset=None):
         """
         Implementing classes should instantiate and return a Dataset
         object based on contents read from the file descriptor object
-        `src`.
+        `file_obj`.
         """
         raise NotImplementedError        
 
-    def read_characters(self, src, char_block_factory=None):
+    def read_characters(self, file_obj, char_block_factory=None):
         """
         Instantiates and returns a list of CharacterBlock objects from a 
         file (descriptor).
@@ -221,10 +221,10 @@ class Reader(object):
         dataset = Dataset()        
         if char_block_factory is not None:
             dataset.char_block_factory = char_block_factory
-        dataset = self.read_dataset(src=src, dataset=dataset)
+        dataset = self.read_dataset(file_obj=file_obj, dataset=dataset)
         return dataset.char_blocks
 
-    def read_taxa(self, src, taxa_block_factory=None):
+    def read_taxa(self, file_obj, taxa_block_factory=None):
         """
         Instantiates and returns a list of TaxaBlock objects from a 
         file (descriptor).
@@ -232,10 +232,10 @@ class Reader(object):
         dataset = Dataset()        
         if taxa_block_factory is not None:
             dataset.taxa_block_factory = taxa_block_factory
-        dataset = self.read_dataset(file=file, dataset=dataset)
+        dataset = self.read_dataset(file_obj=file_obj, dataset=dataset)
         return dataset.taxa_blocks
 
-    def read_trees(self, src, trees_block_factory=None, tree_factory=None):
+    def read_trees(self, file_obj, trees_block_factory=None, tree_factory=None):
         """
         Instantiates and returns a list of TreeBlock objects from a 
         file (descriptor).
@@ -245,7 +245,7 @@ class Reader(object):
             dataset.trees_block_factory = trees_block_factory
         if tree_factory is not None:
             dataset.tree_factory = tree_factory
-        dataset = self.read_dataset(src=src, dataset=dataset)
+        dataset = self.read_dataset(file_obj=file_obj, dataset=dataset)
         return dataset.trees_blocks
 
 class Writer(object):

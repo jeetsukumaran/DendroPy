@@ -25,7 +25,7 @@
 """
 Tree distances.
 """
-
+from math import sqrt
 from dendropy import splits
 
 def robinson_foulds_calc(length_diffs):
@@ -53,7 +53,7 @@ def brlen_dists_calc(length_diffs):
     sum of squared differences) between the two trees. This is equivalent to the Euclidean
     branch length distance between the two trees.
     """
-    return pow(brlen_scores_calc(length_diffs), 0.5)
+    return sqrt(brlen_scores_calc(length_diffs))
 
 USE_NEW_SD = True
 def splits_distance(tree1, 

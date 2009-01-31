@@ -27,7 +27,7 @@ Convenience packaging around readers/writers.
 """
 
 import sys
-import StringIO
+from cStringIO import StringIO
 
 from dendropy.datasets import Dataset
 from dendropy.trees import TreesBlock
@@ -63,16 +63,16 @@ WRITERS = {
 ############################################################################
 ## Wrappers (Reading/Parsing)
    
-def dataset_from_file(file, format):
+def dataset_from_file(file_obj, format):
     """
     Returns a Dataset object parsed from the source, where:
-        `file`   - can either be a file descriptor object/handle opened 
+        `file_obj`   - can either be a file descriptor object/handle opened 
                    for reading or a string indicating a filepath that 
                    can be opened for reading using open().     
         `format` - file format specification               
     """
     reader = get_reader(format)
-    return reader.read_dataset(source_file_handle(file=file))
+    return reader.read_dataset(source_file_handle(file_obj=file_obj))
     
 def dataset_from_string(string, format):
     """
@@ -83,16 +83,16 @@ def dataset_from_string(string, format):
     reader = get_reader(format)
     return reader.read_dataset(source_file_handle(string=string))    
     
-def trees_from_file(file, format):
+def trees_from_file(file_obj, format):
     """
     Returns a *list* of TreesBlock objects parsed from the source, where:
-        `file`   - can either be a file descriptor object/handle opened 
+        `file_obj`   - can either be a file descriptor object/handle opened 
                    for reading or a string indicating a filepath that 
                    can be opened for reading using open().    
         `format` - file format specification               
     """
     reader = get_reader(format)
-    return reader.read_trees(source_file_handle(file=file))
+    return reader.read_trees(source_file_handle(file_obj=file_obj))
     
 def trees_from_string(string, format):
     """
@@ -103,16 +103,16 @@ def trees_from_string(string, format):
     reader = get_reader(format)
     return reader.read_trees(source_file_handle(string=string))     
     
-def from_nexus(file=None, string=None):
+def from_nexus(file_obj=None, string=None):
     """
     Returns a Dataset object parsed from a NEXUS or NEWICK source.
-        `file`   - can either be a file descriptor object/handle opened 
+        `file_obj`   - can either be a file descriptor object/handle opened 
                    for reading or a string indicating a filepath that 
                    can be opened for reading using open().
         `string` - a string containing the data to be parsed.
-    Either `file` or `string` must be given. If both are given, `file` is used.                
+    Either `file_obj` or `string` must be given. If both are given, `file_obj` is used.                
     """
-    return nexus.read_dataset(source_file_handle(file=file, string=string))    
+    return nexus.read_dataset(source_file_handle(file_obj=file_obj, string=string))    
     
 ############################################################################
 ## Wrappers (Writing)    
@@ -127,7 +127,7 @@ def store_dataset(dataset, format, dest=None):
     """
     writer = get_writer(format)
     if dest is None:
-        dest = StringIO.StringIO()
+        dest = StringIO()
     if isinstance(dest, str):
         dest = open(dest, "w")
     writer.write_dataset(dataset, dest)
@@ -164,19 +164,19 @@ def store_chars(char_block, format, dest=None):
 ############################################################################
 ## Helpers
 
-def source_file_handle(file=None, string=None):
+def source_file_handle(file_obj=None, string=None):
     """
-    Construct an appropriate file handle (i.e. something that supports read()
+    Construct an appropriate file_obj handle (i.e. something that supports read()
     operations) based on the given arguments.
     """
-    if file is None and string is None:
+    if file_obj is None and string is None:
         raise Exception("File or string source must be specified.")            
-    if file is not None:        
-        if isinstance(file, str):
-            file = open(file, "r")        
-        return file
+    if file_obj is not None:        
+        if isinstance(file_obj, str):
+            file_obj = open(file_obj, "r")        
+        return file_obj
     else:
-        return StringIO.StringIO(string)
+        return StringIO(string)
         
 def get_writer(format):
     """
@@ -202,3 +202,16 @@ def get_reader(format):
              ))
     return READERS[format]()            
     
+
+def trees_from_newick(nl):
+    """Takes an iterable list of newick strings (or files with just newick strings
+    in them.
+    """
+    reader = get_reader(NEWICK)
+    dataset = Dataset()
+    for t in nl:
+        f = t
+        if isinstance(t, str):
+            f = StringIO(t)
+        reader.read_dataset(file_obj=f, dataset=dataset)
+    return dataset

@@ -50,13 +50,13 @@ class xml_document(object):
     for messing with other sections of code.
     """
 
-    def __init__(self, element=None, file=None):
+    def __init__(self, element=None, file_obj=None):
         """
         Initializes reference to the ElementTree parser, passing it
         the a file descripter object to be read and parsed or the
         ElemenTree.Element object to be used as the root element.
         """
-        self.etree = ElementTree.ElementTree(element=element, file=file)
+        self.etree = ElementTree.ElementTree(element=element, file=file_obj)
 
     def parse_string(self, source):
         """

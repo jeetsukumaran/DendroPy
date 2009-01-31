@@ -236,7 +236,7 @@ def main_cli():
         messenger.send("-- Reading tree file %d of %d: %s" \
             % (tree_filepath_idx+1, len(tree_filepaths), tree_filepath))
         trees_added = 0
-        for tree_count, tree in enumerate(nexus.iterate_over_trees(src=open(tree_filepath, "r"))):
+        for tree_count, tree in enumerate(nexus.iterate_over_trees(file_obj=open(tree_filepath, "r"))):
             if tree_count >= opts.burnin and not (tree_count % opts.stride):
                 trees_added += 1
                 if opts.phylip_format:

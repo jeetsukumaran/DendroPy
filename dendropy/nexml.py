@@ -39,11 +39,11 @@ from dendropy import xmlparser
 ############################################################################
 ## Standard Tree Iterator
       
-def iterate_over_trees(file=None):
+def iterate_over_trees(file_obj=None):
     """
     Generator to iterate over trees in file without retaining any in memory.
     """
-    xml_doc = xmlparser.xml_document(file=file)
+    xml_doc = xmlparser.xml_document(file_obj=file_obj)
     dataset = datasets.Dataset()
     nexml_reader = NexmlReader()
     nexml_reader.parse_taxa_blocks(xml_doc, dataset)
@@ -228,7 +228,7 @@ class NexmlReader(datasets.Reader):
 
     ## Implementation of the datasets.Reader interface ##
 
-    def read_dataset(self, src, dataset=None):
+    def read_dataset(self, file_obj, dataset=None):
         """
         Instantiates and returns a DataSet object based on the
         NEXML-formatted contents read from the file descriptor object
@@ -236,7 +236,7 @@ class NexmlReader(datasets.Reader):
         used to instantiate objects.
         """
         start = time.clock()
-        xml_doc = xmlparser.xml_document(file=src)
+        xml_doc = xmlparser.xml_document(file_obj=file_obj)
         self.load_time = time.clock() - start
         start = time.clock()
         dataset = self.parse_dataset(xml_doc, dataset)
@@ -495,7 +495,7 @@ class _NexmlTreesParser(_NexmlElementParser):
             nodes[node_id].label = nxnode.get('label', None)
             taxon_id = nxnode.get('otu', None)
             if taxon_id is not None:
-                taxon = taxa_block.get_taxon(oid=taxon_id, update=False)
+                taxon = taxa_block.get_taxon(oid=taxon_id)
                 if not taxon:
                     raise Exception('Taxon with id "%s" not defined in taxa block "%s"' % (taxon_id, taxa_block.oid))
                 nodes[node_id].taxon = taxon
@@ -752,7 +752,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             row_id = nxrow.get('id', None)
             label = nxrow.get('label', None)
             taxon_id = nxrow.get('otu', None)
-            taxon = taxa_block.get_taxon(oid=taxon_id, update=False)
+            taxon = taxa_block.get_taxon(oid=taxon_id)
             if not taxon:
                 raise Exception('Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_block.oid, char_block.label, taxon_id, taxa_block.oid))                   
                 

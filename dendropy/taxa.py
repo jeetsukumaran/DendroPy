@@ -120,7 +120,8 @@ class TaxaBlock(list, base.IdTagged):
         Inits. Handles keyword arguments: `oid` and `label`.
         """
         list.__init__(self, *args)
-        base.IdTagged.__init__(self, *args, **kwargs)
+        base.IdTagged.__init__(self, oid=kwargs.get('oid'), label=kwargs.get('label'))
+        self._is_mutable = kwargs.get('is_mutable', True) # immutable constraints not fully implemented -- only enforced at the add_taxon stage)
 
     def __str__(self):
         """
@@ -136,7 +137,7 @@ class TaxaBlock(list, base.IdTagged):
             taxlist.append(str(taxon))
         return ' '.join(header) + ' : [' + ', '.join(taxlist) + ']' 
 
-    def get_taxon(self, oid=None, label=None, update=False):
+    def get_taxon(self, oid=None, label=None):
         """
         Retrieves taxon object with given id OR label (if both are
         given, the first match found is returned). If taxon does not
@@ -144,6 +145,7 @@ class TaxaBlock(list, base.IdTagged):
         does not exist and update is True, then a new taxon is
         created, added, and returned.
         """
+        update = self._is_mutable
         if not oid and not label:
             raise Exception("Need to specify Element ID or Label.")
         for taxon in self:
@@ -152,16 +154,15 @@ class TaxaBlock(list, base.IdTagged):
                 return taxon
         if not update:
             raise Exception("Taxon not found: %s/%s" % (oid, label))
-        else:
-            taxon = Taxon(oid=oid, label=label)
-            self.append(taxon)
-            return taxon
+        taxon = Taxon(oid=oid, label=label)
+        self.append(taxon)
+        return taxon
             
     def add_taxon(self, oid=None, label=None):
         """
         Convenience function that wraps `get_taxon`.
         """
-        self.get_taxon(oid=oid, label=label, update=True)
+        self.get_taxon(oid=oid, label=label)
         
     def clear(self):
         """

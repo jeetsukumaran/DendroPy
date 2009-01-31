@@ -66,7 +66,7 @@ def iterate_on_trees(tree_files, tf_iterator=nexus.iterate_over_trees):
     _LOG.info("\n*** ITERATOR: <%s> ***" % tf_iterator.__name__)
     for tree_file_idx, tree_file in enumerate(tree_files):
         _LOG.info("   - %s" % os.path.basename(tree_file))
-        for tree_idx, tree in enumerate(tf_iterator(file=open(tree_file,'r'))):
+        for tree_idx, tree in enumerate(tf_iterator(file_obj=open(tree_file,'r'))):
             if not minimal_logging:
                 _LOG.debug("\n%s" % str(tree))
         total_trees += (tree_idx + 1)
@@ -235,7 +235,7 @@ class TreeIOTest(unittest.TestCase):
         """
         reader = reader_class()
         _LOG.info("\nDATA FILE: \"%s\"" % os.path.basename(tree_filepath))
-        dataset = reader.read_dataset(src=open(tree_filepath, "r"))      
+        dataset = reader.read_dataset(file_obj=open(tree_filepath, "r"))      
         for tb_idx, trees_block in enumerate(dataset.trees_blocks):
             for t_idx, tree in enumerate(trees_block):
             
@@ -266,7 +266,7 @@ class TreeIOTest(unittest.TestCase):
                 _LOG.info("(reading back)")           
                 r2 = StringIO.StringIO(result1)
                 #r2 = open("/Users/jeet/Documents/Projects/Phyloinformatics/DendroPy/dendropy/dendropy/tests/data/anolis.mbcon.trees.nexus", "r")
-                temp_dataset2 = reader.read_dataset(src=r2)                                
+                temp_dataset2 = reader.read_dataset(file_obj=r2)                                
                 tree2 = temp_dataset2.trees_blocks[0][0]
                 result2 = StringIO.StringIO()
                 writer.write_dataset(temp_dataset, result2)

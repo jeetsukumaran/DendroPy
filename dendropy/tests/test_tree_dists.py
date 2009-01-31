@@ -28,6 +28,7 @@ Tests tree distances.
 
 import random
 import unittest
+import math
 from dendropy import get_logger
 import dendropy.tests
 _LOG = get_logger("TreeGenerationAndSimulation")
@@ -43,35 +44,24 @@ from dendropy import treedists
 class TreeDistTest(unittest.TestCase):
 
     def testEuclideanDist(self):
-        return
-        newick1 = "(t1:1,t2:2,(t3:3,t4:4):5)"  #"((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);"
-        newick3 = "(t1:1,t3:3,(t2:2,t4:4):5)"  # "((t5:0.161175,t6:0.161175):0.392293,((t2:0.075411,(t4:0.104381,t1:0.075411):1):0.065840,t3:0.170221):0.383247);"
-        tree1 = dataio.trees_from_string(string=newick1, format="NEWICK")[0]
-        encode_splits(tree1)
-        tree3 = dataio.trees_from_string(string=newick3, format="NEWICK", taxa_block=tree1)[0]
-        encode_splits(tree3)
-        d13 = treedists.euclidean_distance(tree1, tree3)
-        assert_approx_equal(d13, 7.0710678118654755)
-        pass
+        tree_list = [i[0] for i in dataio.trees_from_newick([
+                                       "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);",
+                                       "((t5:2.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);",
+                                       "((t5:0.161175,t6:0.161175):0.392293,((t2:0.075411,(t4:0.104381,t1:0.075411):1):0.065840,t3:0.170221):0.383247);",
+                                       "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);",
+                                       ]).trees_blocks]
+        #print "\n".join([str(i) for i in tree_list])
+        for i in tree_list:
+            encode_splits(i)
+        assert_approx_equal(treedists.euclidean_distance(tree_list[0], tree_list[1]), 2.0)
+        assert_approx_equal(treedists.euclidean_distance(tree_list[0], tree_list[2]), math.sqrt(2.0))
+        assert_approx_equal(treedists.euclidean_distance(tree_list[0], tree_list[3]), 0.97103099999999998)
 
+        assert_approx_equal(treedists.euclidean_distance(tree_list[1], tree_list[2]), math.sqrt(6.0))
+        assert_approx_equal(treedists.euclidean_distance(tree_list[1], tree_list[3]), 2.2232636377544162)
 
-        newick2 = "((t5:2.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);"
-        newick4 = "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);"
-        tree2 = dataio.trees_from_string(string=newick2, format="NEWICK")[0]
-        encode_splits(tree2)
-        tree4 = dataio.trees_from_string(string=newick4, format="NEWICK")[0]
-        encode_splits(tree4)
-        return
-        d12 = treedists.euclidean_distance(tree1, tree2)
-        assert_approx_equal(d12, 2.0)
-        d14 = treedists.euclidean_distance(tree1, tree4)
-        assert_approx_equal(d14, 2.0)
-        d23 = treedists.euclidean_distance(tree2, tree3)
-        assert_approx_equal(d23, 2.0)
-        d24 = treedists.euclidean_distance(tree2, tree4)
-        assert_approx_equal(d24, 2.0)
-        d34 = treedists.euclidean_distance(tree3, tree4)
-        assert_approx_equal(d34, 2.0)
+        assert_approx_equal(treedists.euclidean_distance(tree_list[2], tree_list[3]), 1.000419513484718)
+        
         
 
 
