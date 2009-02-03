@@ -44,15 +44,17 @@ def collapse_edge(edge):
     if not p:
         return
     children = to_del.child_nodes()
-    if not c:
+    if not children:
         raise ValueError('collapse_edge called with a terminal.')
     pos = p.child_nodes().index(to_del)
     p.remove_child(to_del)
     for child in children:
-        p.add_child(pos, child)
+        p.add_child(child, pos=pos)
         pos += 1
 
 def collapse_clade(node):
     """Collapses all internal edges that are descendants of node."""
-    leaves = [i for i in Node.leaf_iter(node)]
+    if node.is_leaf():
+        return
+    leaves = [i for i in trees.Node.leaf_iter(node)]
     node.set_children(leaves)

@@ -30,6 +30,49 @@ from dendropy import taxa
 from dendropy import trees
 from dendropy import treegen
 
+
+__n_bits_set = (0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4)
+def count_bits(a):
+    '''Returns the number of bits set to one.'''
+    global __n_bits_set
+    c = long(a)
+    if c != a:
+        raise ValueError('non-integer argument')
+    if c < 1L:
+        if c < 0L:
+            raise ValueError('negative argument')
+        return 0
+    n_bits = 0
+    while c > 0:
+        i = c & 0x0FL
+        n_bits += __n_bits_set[i]
+        c >>= 4
+    return n_bits
+
+def split_to_list(s, mask=-1, one_based=False, ordination_in_mask=False):
+    return [i for i in iter_split_indices(s, mask, one_based, ordination_in_mask)]
+    
+def iter_split_indices(s, mask=-1, one_based=False, ordination_in_mask=False):
+    '''returns the index of each bit that is on in `s` and the `mask`
+    
+        Iy 'one_based` is True then the 0x01 bit is returned as 1 instead of 0.
+        If `ordination_in_mask` is True then the indices returned will be the 
+            count of the 1's in the mask that are to the right of the bit rather
+            than the total number of digits to the right of the bit. Thus, the 
+            index will be the index in a taxon block that is the subset of the 
+            full set of taxa).
+    '''
+    currBitIndex = one_based and 1 or 0
+    test_bit = 1L
+    maskedSplitRep = s & mask
+    standard_ordination = not ordination_in_mask
+    while test_bit <= maskedSplitRep:
+        if maskedSplitRep & test_bit:
+            yield currBitIndex
+        if standard_ordination or (mask & test_bit):
+            currBitIndex += 1
+        test_bit <<=1
+
 def is_non_singleton_split(split):
     """
     Returns True if a split is NOT between a leaf and the rest of the taxa.
