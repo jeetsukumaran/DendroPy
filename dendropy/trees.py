@@ -499,7 +499,7 @@ class Node(taxa.TaxonLinked):
         
     parent_node = property(_get_parent_node, _set_parent_node)
 
-    def add_child(self, node, edge_length=None):
+    def add_child(self, node, edge_length=None, pos=None):
         """
         Adds a child node to this node. Results in the parent_node and
         containing_tree of the node being attached set to this node.
@@ -512,7 +512,10 @@ class Node(taxa.TaxonLinked):
             node.edge_length = edge_length
 #         if len(self.__child_nodes) > 0:
 #             self.__child_nodes[-1].next_sib = node
-        self.__child_nodes.append(node)
+        if pos is None:
+            self.__child_nodes.append(node)
+        else:
+            self.__child_nodes.insert(pos, node)
         return node
 
     def new_child(self, oid=None, edge_length=None, node_label=None, node_taxon=None):
@@ -534,7 +537,9 @@ class Node(taxa.TaxonLinked):
         parent of the node being removed set to None. Returns node
         that was just removed.
         """
-        if node and node in self.__child_nodes:
+        if not node:
+            raise Exception("Tried to remove an non-existing or null node")
+        if node in self.__child_nodes:
             node.parent_node = None
             node.edge.tail_node = None
             index = self.__child_nodes.index(node)
@@ -542,7 +547,7 @@ class Node(taxa.TaxonLinked):
 #                 self.__child_nodes[index-1].next_sib = None
             self.__child_nodes.remove(node)
         else:
-            raise Exception("Tried to remove an non-existing or null node")
+            raise Exception("Tried to remove a node that is not listed as a child")
         return node
         
     ## Basic node metrics ##
