@@ -160,7 +160,7 @@ class TreeSummarizer(object):
         for split in split_freqs:          
             if splits.is_non_singleton_split(split) \
                 and (split ^ taxa_mask) \
-                and (split_freqs[split] >= min_freq):            
+                and (split_freqs[split] > min_freq):            
                 splits.encode_splits(con_tree, 
                                      taxa_block, 
                                      tree_split_edges_map=None,
