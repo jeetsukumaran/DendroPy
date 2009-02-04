@@ -268,7 +268,7 @@ class SplitDistribution(object):
         """
         self.total_trees_counted += 1
         tree.normalize_taxa(taxa_block=self.taxa_block)
-        tree.deroot()
+        #tree.deroot()
         encode_splits(tree, 
                      self.taxa_block, 
                      tree_split_taxa_map=None)        
