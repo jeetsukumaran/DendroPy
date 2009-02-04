@@ -187,7 +187,9 @@ class TaxaBlock(list, base.IdTagged):
         """
         Returns mask of all taxa.
         """
-        return pow(2, len(self)) - 1
+        #return pow(2, len(self)) - 1
+        b = 1 << len(self)
+        return b - 1
         
     def taxon_bitmask(self, taxon):
         """
