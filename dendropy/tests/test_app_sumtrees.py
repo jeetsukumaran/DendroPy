@@ -59,9 +59,45 @@ class SumTreesTest(unittest.TestCase):
         _LOG.debug(stderr)
         _LOG.debug(stdout)
         assert run.returncode == 0, "\nSumTrees exited with error: %s" % stderr
-                                    
+
+    def test3Feb2009MajRuleBug(self):
+        import itertools
+        from dendropy.treedists import symmetric_difference
+        from dendropy.splits import SplitDistribution
+        from dendropy.treesum import TreeSummarizer
+        from dendropy import dataio
+        from dendropy.splits import encode_splits
+        fn1 = dendropy.tests.data_source_path("maj-rule-bug1.tre")
+        fn2 = dendropy.tests.data_source_path("maj-rule-bug2.tre")
+        
+        
+        tb1 = dataio.trees_from_file(open(fn1,"rU"),format="NEXUS")
+        tb2 = dataio.trees_from_file(open(fn2,"rU"),format="NEXUS")
+        tb1, tb2 = tb1[0], tb2[0]
+        taxa1 = tb1.taxa_block
+        tb2.normalize_taxa(taxa1, clear=False)
+        assert taxa1 == tb2.taxa_block
+        
+        firstSD = SplitDistribution(taxa_block=taxa1)
+        secondSD = SplitDistribution(taxa_block=taxa1)
+        
+        for o,t in itertools.izip(tb1, tb2):
+            encode_splits(o, taxa_block=taxa1)
+            encode_splits(t, taxa_block=taxa1)
+            firstSD.count_splits_on_tree(o)
+            secondSD.count_splits_on_tree(t)
+        
+            #print symmetric_difference(o,t)
+        
+        
+        ts = TreeSummarizer()         
+        firstMR = ts.tree_from_splits(firstSD, min_freq=0.5)
+        secondMR = ts.tree_from_splits(secondSD, min_freq=0.5)
+        self.assertEqual((0,0,0), symmetric_difference(firstMR, secondMR))
+
     def testSumTreeOptions(self):
-    
+        if "DENDROPY_QUICK_TESTS" in os.environ:
+            return
         support_file = dendropy.tests.data_source_path("anolis.mbcon.trees.nexus")
         target_file = dendropy.tests.data_source_path("anolis.mbcon.trees.nexus")
         outfile = tempfile.mktemp()
