@@ -105,6 +105,7 @@ class Tree(base.IdTagged):
         base.IdTagged.__init__(self, oid=oid, label=label)
         self.seed_node = None
         self.length_type = None
+        self.is_rooted = False
         if seed_node is not None:
             self.seed_node = seed_node
         else:
