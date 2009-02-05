@@ -117,7 +117,16 @@ def split_taxa_list(split_mask, taxa_block, index=0):
         split_mask = split_mask >> 1
         index += 1
     return taxa
-    
+
+def normalize_split(split, taxa_block):
+    """
+    Returns normal version of given split.
+    """
+    if split & 1:
+        return split
+    else:
+        return split ^ taxa_mask
+
 def normalize_splits(tree, 
                      taxa_block,
                      edge_split_mask='split_mask', 
@@ -156,9 +165,7 @@ def encode_splits(tree,
                   edge_split_mask='split_mask', 
                   tree_split_edges_map="split_edges",
                   tree_split_taxa_map="split_taxa",
-                  tree_splits_list="splits",
-                  tree_complemented_splits='complemented_splits',
-                  tree_complemented_split_edges_map="complemented_split_edges"):
+                  tree_splits_list="splits"):
     """
     Processes splits on a tree, encoding them as bitmask on each edge. 
     Returns a dictionary where the keys are splits and the values are edges.
@@ -167,8 +174,6 @@ def encode_splits(tree,
     If `tree_split_taxa_map` is given, then an additional tree attribute is set---
     a dictionary of splits to list of taxa represented by the split.
     If `tree_splits_list` is given, a set of all splits is added to the tree as an attribute
-    If `tree_complemented_split_edges_maps` is  gvien, a dictionary of all complements of the splits 
-    is also added, with the complemented splits as keys and the corresponding edges as values
     """
     if taxa_block is None:
         taxa_block = tree.infer_taxa_block()
@@ -183,6 +188,7 @@ def encode_splits(tree,
             if edge.head_node.taxon:
                 setattr(edge, edge_split_mask, taxa_block.taxon_bitmask(edge.head_node.taxon))
             else:
+                #raise Exception('Leaf node with no taxon')
                 setattr(edge, edge_split_mask, 0)
         split_map[getattr(edge, edge_split_mask)] = edge
     if tree_split_edges_map:
@@ -194,19 +200,19 @@ def encode_splits(tree,
         setattr(tree, tree_split_taxa_map, split_taxa)
     if tree_splits_list:
         setattr(tree, tree_splits_list, set(split_map.keys()))
-    if tree_complemented_splits or tree_complemented_split_edges_map:
-        taxa_mask = taxa_block.all_taxa_bitmask()
-        csplit_edges = {}
-        split_to_csplit = {}
-        for split in split_map.keys():
-            csplit = split ^ taxa_mask
-            csplit_edges[csplit] = split_map[split]
-            split_to_csplit[split] = csplit            
-        if tree_complemented_splits:
-            setattr(tree, tree_complemented_splits, set(csplit_edges.keys()))
-        if tree_complemented_split_edges_map:            
-            setattr(tree, tree_complemented_split_edges_map, csplit_edges)        
-        setattr(tree, 'split_to_complemented_splits', split_to_csplit)
+#     if tree_complemented_splits or tree_complemented_split_edges_map:
+#         taxa_mask = taxa_block.all_taxa_bitmask()
+#         csplit_edges = {}
+#         split_to_csplit = {}
+#         for split in split_map.keys():
+#             csplit = split ^ taxa_mask
+#             csplit_edges[csplit] = split_map[split]
+#             split_to_csplit[split] = csplit            
+#         if tree_complemented_splits:
+#             setattr(tree, tree_complemented_splits, set(csplit_edges.keys()))
+#         if tree_complemented_split_edges_map:            
+#             setattr(tree, tree_complemented_split_edges_map, csplit_edges)        
+#         setattr(tree, 'split_to_complemented_splits', split_to_csplit)
     return split_map
                 
 ############################################################################        
@@ -227,15 +233,15 @@ class SplitDistribution(object):
         else:
             self.taxa_block = taxa.TaxaBlock()
         self.splits = []
-        self.complemented_splits = []
+#         self.complemented_splits = []
         self.split_counts = {}
-        self.complemented_split_counts = {}
+#         self.complemented_split_counts = {}
         self.split_edge_lengths = {}
         self.split_node_ages = {}
         self.ignore_edge_lengths = False
         self.ignore_node_ages = False
         self.__split_freqs = None
-        self.__complemented_split_freqs = None
+#         self.__complemented_split_freqs = None
         self.__trees_counted_for_freqs = 0
         
     def splits_considered(self):
@@ -263,17 +269,17 @@ class SplitDistribution(object):
         Forces recalculation of frequencies.
         """
         self.__split_freqs = {}
-        self.__complemented_split_freqs = {}
+#         self.__complemented_split_freqs = {}
         if self.total_trees_counted == 0:
             total = 1
         else:
             total = self.total_trees_counted
         for split in self.split_counts:
             self.__split_freqs[split] = float(self.split_counts[split]) / total
-        for split in self.complemented_split_counts:
-            self.__complemented_split_freqs[split] = float(self.complemented_split_counts[split]) / total
+#         for split in self.complemented_split_counts:
+#             self.__complemented_split_freqs[split] = float(self.complemented_split_counts[split]) / total
         self.__trees_counted_for_freqs = self.total_trees_counted            
-        return self.__split_freqs, self.__complemented_split_freqs                
+        return self.__split_freqs
         
     def _get_split_frequencies(self):
         """
@@ -285,15 +291,15 @@ class SplitDistribution(object):
         
     split_frequencies = property(_get_split_frequencies)     
     
-    def _get_complemented_split_frequencies(self):
-        """
-        Returns dictionary of complemented splits : split frequencies.
-        """
-        if self.__complemented_split_freqs is None or self.__trees_counted_for_freqs != self.total_trees_counted:
-            self.calc_freqs()
-        return self.__complemented_split_freqs   
-        
-    complemented_split_frequencies = property(_get_complemented_split_frequencies)      
+#     def _get_complemented_split_frequencies(self):
+#         """
+#         Returns dictionary of complemented splits : split frequencies.
+#         """
+#         if self.__complemented_split_freqs is None or self.__trees_counted_for_freqs != self.total_trees_counted:
+#             self.calc_freqs()
+#         return self.__complemented_split_freqs   
+#         
+#     complemented_split_frequencies = property(_get_complemented_split_frequencies)      
 
     def count_splits_on_tree(self, tree):
         """
@@ -301,9 +307,8 @@ class SplitDistribution(object):
         """
         self.total_trees_counted += 1
         tree.normalize_taxa(taxa_block=self.taxa_block)
-        encode_splits(tree, 
-                     self.taxa_block, 
-                     tree_split_taxa_map=None)        
+        encode_splits(tree, self.taxa_block, tree_split_taxa_map=None)  
+        normalize_splits(tree, self.taxa_block, tree_split_taxa_map=None)
         for split in tree.splits:
             if split not in self.split_counts:
                 self.splits.append(split)
@@ -323,11 +328,9 @@ class SplitDistribution(object):
                 edge = tree.split_edges[split]
                 if edge.head_node is not None:
                     self.split_node_ages[split].append(edge.head_node.distance_from_tip())
-        for split in tree.complemented_splits:
-            if split not in self.complemented_split_counts:
-                self.complemented_splits.append(split)            
-                self.complemented_split_counts[split] = 1
-            else:
-                self.complemented_split_counts[split] += 1    
-
-                         
+#         for split in tree.complemented_splits:
+#             if split not in self.complemented_split_counts:
+#                 self.complemented_splits.append(split)            
+#                 self.complemented_split_counts[split] = 1
+#             else:
+#                 self.complemented_split_counts[split] += 1    

@@ -126,21 +126,21 @@ class TreeSummarizer(object):
         Maps splits support to the given tree.
         """
         split_frequencies = split_distribution.split_frequencies
-        complemented_split_frequencies = split_distribution.complemented_split_frequencies
         tree.normalize_taxa(taxa_block=split_distribution.taxa_block)
         splits.encode_splits(tree, 
                              taxa_block=split_distribution.taxa_block,
                              edge_split_mask='split_mask', 
                              tree_split_edges_map="split_edges",
                              tree_split_taxa_map=None,
-                             tree_splits_list=None,
-                             tree_complemented_splits=None,
-                             tree_complemented_split_edges_map=None)
+                             tree_splits_list=None)
+        splits.normalize_splits(tree, 
+                             taxa_block, 
+                             edge_split_mask='split_mask',
+                             tree_split_edges_map="split_edges",
+                             tree_split_taxa_map=None)                              
         for split in tree.split_edges:
             if split in split_frequencies:
                 split_support = split_frequencies[split]
-            elif split in complemented_split_frequencies:
-                split_support = complemented_split_frequencies[split]
             else:
                 split_support = 0.0
             self.map_split_support_to_node(tree.split_edges[split].head_node, split_support)                  
@@ -158,14 +158,20 @@ class TreeSummarizer(object):
         split_freqs = split_distribution.split_frequencies
         taxa_mask = taxa_block.all_taxa_bitmask()
         for split in split_freqs:          
-            if splits.is_non_singleton_split(split) \
+            if (split_freqs[split] > min_freq) \
                 and (split ^ taxa_mask) \
-                and (split_freqs[split] > min_freq):            
+                and ((split-1) & split) \
+                and (((split ^ taxa_mask) -1) & (split ^ taxa_mask)):  
+                # above min freq
+                # not root (i.e., all "1's")
+                # not singleton (i.e., one "1")
+                # not singleton (i.e., one "0")
                 splits.encode_splits(con_tree, 
                                      taxa_block, 
-                                     tree_split_edges_map=None,
-                                     tree_split_taxa_map=None,
-                                     tree_complemented_split_edges_map=None)
+                                     tree_split_taxa_map=None)
+                splits.normalize_splits(con_tree, 
+                                     taxa_block, 
+                                     tree_split_taxa_map=None)                                     
                 parent_node = deepest_compatible_node(con_tree.seed_node, split, taxa_mask)
                 new_node = trees.Node()
                 self.map_split_support_to_node(node=new_node, split_support=split_freqs[split])                
@@ -185,8 +191,11 @@ class TreeSummarizer(object):
                 splits.encode_splits(con_tree, 
                                      taxa_block, 
                                      tree_split_edges_map=None,
-                                     tree_split_taxa_map=None,
-                                     tree_complemented_split_edges_map=None)                
+                                     tree_split_taxa_map=None)
+                splits.normalize_splits(con_tree, 
+                                     taxa_block, 
+                                     tree_split_edges_map=None,
+                                     tree_split_taxa_map=None)                                      
             split = node.edge.split_mask
             self.map_split_support_to_node(node, 1.0)
             if self.support_as_labels and include_edge_lengths:
