@@ -117,7 +117,40 @@ def split_taxa_list(split_mask, taxa_block, index=0):
         split_mask = split_mask >> 1
         index += 1
     return taxa
-
+    
+def normalize_splits(tree, 
+                     taxa_block,
+                     edge_split_mask='split_mask', 
+                     tree_split_edges_map="split_edges",
+                     tree_split_taxa_map="split_taxa",
+                     tree_splits_list="splits"):
+    """
+    For a tree that has already been encoded with splits, this ensures that all
+    split masks have the same orientation.
+    """
+    taxa_mask = taxa_block.all_taxa_bitmask()
+    split_map = {}
+    for edge in tree.postorder_edge_iter():
+        old_split = getattr(edge, edge_split_mask)
+        if old_split & 1:
+            # taxon #1 bit is flipped: "normal" orientation
+            split_map[old_split] = edge
+        else:
+            new_split = old_split ^ taxa_mask
+            setattr(edge, edge_split_mask, new_split)
+            split_map[new_split] = edge
+            #print(split_as_string(old_split, taxa_block), " -> ", split_as_string(new_split, taxa_block))
+    if tree_split_edges_map:
+        setattr(tree, tree_split_edges_map, split_map)
+    if tree_split_taxa_map:
+        split_taxa = {}
+        for split in split_map:
+            split_taxa[split] = split_taxa_list(split, taxa_block)
+        setattr(tree, tree_split_taxa_map, split_taxa)
+    if tree_splits_list:
+        setattr(tree, tree_splits_list, set(split_map.keys()))
+    return split_map        
+        
 def encode_splits(tree, 
                   taxa_block=None, 
                   edge_split_mask='split_mask', 
