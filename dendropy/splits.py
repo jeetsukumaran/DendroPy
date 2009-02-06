@@ -175,7 +175,7 @@ class SplitDistribution(object):
         self.split_node_ages = {}
         self.ignore_edge_lengths = False
         self.ignore_node_ages = False
-        self.unrooted = False
+        self.unrooted = True
         self.__split_freqs = None
         self.__trees_counted_for_freqs = 0
         

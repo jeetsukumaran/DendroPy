@@ -32,7 +32,7 @@ from dendropy import taxa
 from dendropy import trees
 from dendropy import treegen
 
-def is_compatible(parent_split, child_split, taxa_mask, unrooted=True):
+def is_incompatible(parent_split, child_split, taxa_mask, unrooted=True):
     if unrooted:
         if not (parent_split & 1):
             parent_split = parent_split ^ taxa_mask
@@ -52,7 +52,7 @@ def deepest_compatible_node(start_node, split, taxa_mask, unrooted):
           not equal to the split.
     """
     for node in start_node.child_nodes():
-        if is_compatible(node.edge.split_mask, split, taxa_mask, unrooted):
+        if is_incompatible(node.edge.split_mask, split, taxa_mask, unrooted):
             pass
         elif (node.edge.split_mask != split) or (unrooted and ((node.edge.split_mask ^ taxa_mask) != split)):
             return deepest_compatible_node(node, split, taxa_mask, unrooted)
