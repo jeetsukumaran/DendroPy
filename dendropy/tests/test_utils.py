@@ -36,7 +36,7 @@ _LOG = get_logger("Utilities")
 from dendropy import utils
 ### MODULES THAT WE ARE TESTING ###
 
-class ComplementingDictTest(unittest.TestCase):
+class NormalizedBitmaskDict(unittest.TestCase):
 
     
     def test_complementing(self):
@@ -67,11 +67,7 @@ class ComplementingDictTest(unittest.TestCase):
         assert splits[0][1][0] not in d
         assert splits[1][0][0] not in d
         assert splits[1][1][0] not in d
-        print d.index(0xBB)
-
-            
-            
-        
+                               
 if __name__ == "__main__":
     unittest.main()
         

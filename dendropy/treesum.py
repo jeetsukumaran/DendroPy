@@ -32,13 +32,13 @@ from dendropy import taxa
 from dendropy import trees
 from dendropy import treegen
 
-def is_incompatible(parent_split, child_split, taxa_mask, unrooted=True):
-    if unrooted:
-        if not (parent_split & 1):
-            parent_split = parent_split ^ taxa_mask
-        if not (child_split & 1):
-            child_split = child_split ^ taxa_mask
+def is_incompatible(parent_split, child_split, taxa_mask, unrooted):
     return (parent_split ^ taxa_mask) & child_split
+#     if unrooted:
+#         return ((parent_split ^ taxa_mask) & child_split) \
+#             and ((parent_split ^ taxa_mask) & (child_split ^ taxa_mask))
+#     else:            
+#         return (parent_split ^ taxa_mask) & child_split
 
 def deepest_compatible_node(start_node, split, taxa_mask, unrooted):
     """
@@ -52,9 +52,16 @@ def deepest_compatible_node(start_node, split, taxa_mask, unrooted):
           not equal to the split.
     """
     for node in start_node.child_nodes():
-        if is_incompatible(node.edge.split_mask, split, taxa_mask, unrooted):
+        if unrooted:
+            if node.edge.split_mask & 1:
+                split_to_check = node.edge.split_mask
+            else:
+                split_to_check = node.edge.split_mask ^ taxa_mask            
+        else:
+            split_to_check = node.edge.split_mask
+        if is_incompatible(split_to_check, split, taxa_mask, unrooted):
             pass
-        elif (node.edge.split_mask != split) or (unrooted and ((node.edge.split_mask ^ taxa_mask) != split)):
+        elif (split_to_check != split):
             return deepest_compatible_node(node, split, taxa_mask, unrooted)
     return start_node                    
 
@@ -152,35 +159,48 @@ class TreeSummarizer(object):
                          include_edge_lengths=True):
         """
         Returns a consensus tree constructed from splits given in `split_distribution`.
-        """
+        """                      
         taxa_block = split_distribution.taxa_block
         con_tree = treegen.star_tree(taxa_block)
         split_freqs = split_distribution.split_frequencies
         taxa_mask = taxa_block.all_taxa_bitmask()
+        splits.encode_splits(con_tree, 
+                             taxa_block, 
+                             unrooted=split_distribution.unrooted)         
+        start_leaf = con_tree.split_edges[0x01].head_node        
         for split in split_freqs:          
             if (split_freqs[split] > min_freq) \
                 and (split ^ taxa_mask) \
                 and ((split-1) & split) \
                 and (((split ^ taxa_mask) -1) & (split ^ taxa_mask)):  
+                # ^^^^^^^
                 # above min freq
                 # not root (i.e., all "1's")
                 # not singleton (i.e., one "1")
                 # not singleton (i.e., one "0")
-                splits.encode_splits(con_tree, 
-                                     taxa_block, 
-                                     unrooted=split_distribution.unrooted)         
-                parent_node = deepest_compatible_node(con_tree.seed_node, split, taxa_mask, split_distribution.unrooted)
-                new_node = trees.Node()
-                self.map_split_support_to_node(node=new_node, split_support=split_freqs[split])                
-                if self.support_as_labels and include_edge_lengths:
-                        new_node.edge.length = float(sum(split_distribution.split_edge_lengths[split])) / len(split_distribution.split_edge_lengths[split])                
-                for node in parent_node.child_nodes():
-                    if is_incompatible(split, node.edge.split_mask, taxa_mask, split_distribution.unrooted):
-                        pass
-                    else:
-                        parent_node.remove_child(node)
-                        new_node.add_child(node)
-                parent_node.add_child(new_node)
+                
+                parent_node = start_leaf
+                while parent_node.edge.split_mask & split != split:
+                    parent_node = parent_node.parent_node
+                if parent_node.edge.split_mask == split:
+                    pass
+                else:                    
+                    new_node = trees.Node()
+                    self.map_split_support_to_node(node=new_node, split_support=split_freqs[split])                
+                    if self.support_as_labels and include_edge_lengths:
+                            new_node.edge.length = float(sum(split_distribution.split_edge_lengths[split])) / len(split_distribution.split_edge_lengths[split])                
+                                        
+                    new_node_children = []
+                    new_node.edge.split_mask = 0
+                    for child in parent_node.child_nodes():
+                        if child.edge.split_mask & split:
+                            assert child.edge.split_mask != split
+                            new_node_children.append(child)
+                    for child in new_node_children:
+                        parent_node.remove_child(child)
+                        new_node.add_child(child)
+                        new_node.edge.split_mask = new_node.edge.split_mask | child.edge.split_mask
+                    parent_node.add_child(new_node)
 
         ## here we add the support values and/or edge lengths for the terminal taxa ##
         for node in con_tree.leaf_nodes():
