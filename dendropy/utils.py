@@ -281,6 +281,148 @@ class OrderedCaselessDict(dict):
             if key.lower() not in self:
                 self[key] = value
         return ocd
+
+class ComplementingDict(dict):
+    """
+    Keys, {K_i}, are longs. Elements are accessible through both K and K ^ mask
+    if mask is defined and is_complementing is True.
+    """
+
+    def __init__(self, other=None, mask=None):
+        """
+        Creates the local set of keys, and then initializes self with
+        arguments, if any, by using the superclass methods, keeping
+        the ordered keys in sync.
+        """
+        dict.__init__(self)
+        self.mask = mask
+        self.is_complementing = False
+        if other:
+            if isinstance(other, ComplementingDict):
+                self.mask = other.mask
+            if isinstance(other, dict):                
+                for key, val in other.items():
+                    self[key] = val
+                    
+    def _check_complement(self):
+        return self.mask is None or not self.is_complementing
+    check_complement = property(_check_complement)        
+
+    def __getitem__(self, key):
+        """
+        Gets an item using a case-insensitive key.
+        """
+        item = self.get(key)
+        if item is None:
+            if not self.check_complement:
+                raise KeyError(key)
+            ckey = key ^ mask
+            item = self.get(ckey)
+            if item is None:
+                raise KeyError(key)
+        return item
+
+    def __delitem__(self, key):
+        """
+        Remove item with specified key.
+        """
+        if dict.__contains__(self, key):
+            dict.__delitem__(self, key)
+        else:
+            if not self.check_complement:            
+                raise KeyError(key)        
+            ckey = key ^ self.mask
+            if dict.__contains__(self, ckey):
+                dict.__delitem__(self, ckey)
+            else:
+                raise KeyError(key)
+
+    def __contains__(self, key):
+        """
+        Returns true if has key.
+        """
+        if dict.__contains__(self, key):
+            return True
+        if self.check_complement:
+            return False
+        if dict.__contains__(self, (key ^ mask)):
+            return True
+        return false            
+
+    def pop(self, key, alt_val=None):
+        """
+        a.pop(k[, x]):  a[k] if k in a, else x (and remove k)
+        """
+        if self.__contains__(key):
+            val = self[key]
+            del(self[key])
+        else:
+            return alt_val
+
+    def complemented_keys(self):
+        """
+        Returns a copy of complemented keys.        
+        """
+        if self.mask is not None:
+            return [ (k ^ self.mask) for k in self]
+        else:
+            raise Exception("mask not set")
+    
+    def index(self, key):
+        """
+        Return the index of key.
+        Raise KeyError if not found.
+        """
+        count = 0
+        for idx, k in enumerate(self):
+            if (k == key) or (self.check_complement and (k ^ self.mask) == key):
+                return count
+        raise KeyError(key)
+
+    def get(self, key, def_val=None):
+        """
+        Gets an item by its key, returning default if key not present.
+        """
+        if dict.__contains__(self, key) or not self.check_complement:
+            return dict.get(self, key, def_val)
+        elif self.check_complement:
+            return dict.get(self, key ^ self.mask, def_val)
+        return def_val  
+         
+    def setdefault(self, key, def_val=None):
+        """
+        Sets the default value to return if key not present.
+        """
+        dict.setdefault(self, def_val)
+
+    def update(self, other):
+        """
+        updates (and overwrites) key/value pairs:
+        k = { 'a':'A', 'b':'B', 'c':'C'}
+        q = { 'c':'C', 'd':'D', 'f':'F'}
+        k.update(q)
+        {'a': 'A', 'c': 'C', 'b': 'B', 'd': 'D', 'f': 'F'}
+        """
+        for key, val in other.items():
+            if not dict.__contains__(self, key) and not self.check_complement:
+                self[key] = val
+            elif self.check_complement and dict.__contains__(self, key ^ self.mask):
+                self[key ^ self.mask] = val
+            else:
+                self[key] = val
+
+    def fromkeys(self, iterable, value=None):
+        """
+        Creates a new dictionary with keys from seq and values set to value.
+        """
+        raise NotImplementedError
+#         cd = ComplementingDict(mask=self.mask)
+#         for key in iterable:
+#             if not dict.__contains__(self, key) and not self.check_complement:
+#                 self[key] = value
+#             elif self.check_complement and not dict.__contains__(self, key ^ self.mask):
+#                 self[key] = value
+#         return cd
     
 def pretty_print_timedelta(timedelta):
     hours, mins, secs = str(timedelta).split(":")
