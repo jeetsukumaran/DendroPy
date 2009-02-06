@@ -73,7 +73,7 @@ def iter_split_indices(s, mask=-1, one_based=False, ordination_in_mask=False):
             currBitIndex += 1
         test_bit <<=1
 
-def is_non_singleton_split(split):
+def is_non_singleton_split(split, mask):
     """
     Returns True if a split is NOT between a leaf and the rest of the taxa.
     """
@@ -81,7 +81,7 @@ def is_non_singleton_split(split):
     # if split is not a power of 2, i.e., if split
     # has more than one bit turned on, i.e., if it
     # is a non-trivial split.    
-    return ((split-1) & split)
+    return ((split-1) & split) and (((split^mask)-1) & (split^mask))
 
 def number_to_bitstring(num):
     """

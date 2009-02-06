@@ -32,39 +32,6 @@ from dendropy import taxa
 from dendropy import trees
 from dendropy import treegen
 
-def is_incompatible(parent_split, child_split, taxa_mask, unrooted):
-    return (parent_split ^ taxa_mask) & child_split
-#     if unrooted:
-#         return ((parent_split ^ taxa_mask) & child_split) \
-#             and ((parent_split ^ taxa_mask) & (child_split ^ taxa_mask))
-#     else:            
-#         return (parent_split ^ taxa_mask) & child_split
-
-def deepest_compatible_node(start_node, split, taxa_mask, unrooted):
-    """
-    Assumes:
-        - start_node is a node on a tree
-        - edges on tree have been decorated with splits
-        - start_node is compatible with split (root if all else fails)
-    Returns:
-        - deepest node in tree (i.e., furthest from root) that is
-          compatible with split (i.e, includes all taxa in split) yet
-          not equal to the split.
-    """
-    for node in start_node.child_nodes():
-        if unrooted:
-            if node.edge.split_mask & 1:
-                split_to_check = node.edge.split_mask
-            else:
-                split_to_check = node.edge.split_mask ^ taxa_mask            
-        else:
-            split_to_check = node.edge.split_mask
-        if is_incompatible(split_to_check, split, taxa_mask, unrooted):
-            pass
-        elif (split_to_check != split):
-            return deepest_compatible_node(node, split, taxa_mask, unrooted)
-    return start_node                    
-
 class TreeSummarizer(object):
     """
     Summarizes a distribution of trees.

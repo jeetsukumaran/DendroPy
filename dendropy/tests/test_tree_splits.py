@@ -84,15 +84,15 @@ class SplitsOnTreesTest(unittest.TestCase):
         dendropy_complemented_split_strings = []
         dendropy_string_complemented_split_map = {}
         for split in sd.splits:
-            if splits.is_non_singleton_split(split) and (split ^ taxa_block.all_taxa_bitmask()):
+            if splits.is_non_singleton_split(split, taxa_block.all_taxa_bitmask()) \
+                and (split ^ taxa_block.all_taxa_bitmask()):
                 ss = splits.split_as_string_rev(split, sd.taxa_block, '.', '*')
                 dendropy_split_strings.append(ss)
                 dendropy_string_split_map[ss] = split
-        for split in sd.complemented_splits:
-            if splits.is_non_singleton_split(split) and (split ^ taxa_block.all_taxa_bitmask()):
-                ss = splits.split_as_string_rev(split, sd.taxa_block, '.', '*')
+                rsplit = split ^ taxa_block.all_taxa_bitmask() 
+                ss = splits.split_as_string_rev(rsplit, sd.taxa_block, '.', '*')
                 dendropy_complemented_split_strings.append(ss)
-                dendropy_string_complemented_split_map[ss] = split
+                dendropy_string_complemented_split_map[ss] = rsplit
                 
         # make sure the distinct splits are the same across both versions
         _LOG.info("Checking for correspondence in split identity ...")
@@ -106,16 +106,17 @@ class SplitsOnTreesTest(unittest.TestCase):
                             
         # make sure the counts/freqs are the same
         _LOG.info("Checking for correspondence in split counts/frequences ...")        
-        split_freqs, complemented_split_freqs = sd.calc_freqs()
-        for s in paup_biparts:
+        split_freqs = sd.calc_freqs()
+        for idx, s in enumerate(paup_biparts):
             if s in dendropy_split_strings:
                 split = dendropy_string_split_map[s]
                 count = sd.split_counts[split]
                 freq = split_freqs[split]
             else:
-                split = dendropy_string_complemented_split[s]
-                count = sd.complemented_split_counts[split]
-                freq = sd.complemented_split_freqs[split]             
+                s2 = paup_biparts_complemented[idx]
+                split = dendropy_string_split_map[s2]
+                count = sd.split_counts[split]
+                freq = split_freqs[split]
                 
             _LOG.debug("PAUP: %d (%f), DendroPy: %d (%f)" % (paup_biparts_count[s],
                                                              paup_biparts_freqs[s],
