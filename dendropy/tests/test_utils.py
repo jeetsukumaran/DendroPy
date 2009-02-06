@@ -67,7 +67,7 @@ class ComplementingDictTest(unittest.TestCase):
         assert splits[0][1][0] not in d
         assert splits[1][0][0] not in d
         assert splits[1][1][0] not in d
-        
+        print d.index(0xBB)
 
             
             

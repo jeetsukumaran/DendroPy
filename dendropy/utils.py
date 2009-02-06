@@ -342,14 +342,6 @@ class NormalizedBitmaskDict(dict):
         """
         key = self.normalize_key(key)
         return dict.pop(self, key) 
-    
-    def index(self, key):
-        """
-        Return the index of key.
-        Raise KeyError if not found.
-        """
-        key = self.normalize_key(key)
-        return dict.index(self, key) 
 
     def get(self, key, def_val=None):
         """
