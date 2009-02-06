@@ -175,7 +175,7 @@ class TreeSummarizer(object):
                 if self.support_as_labels and include_edge_lengths:
                         new_node.edge.length = float(sum(split_distribution.split_edge_lengths[split])) / len(split_distribution.split_edge_lengths[split])                
                 for node in parent_node.child_nodes():
-                    if (split ^ taxa_mask) & node.edge.split_mask:
+                    if is_incompatible(split, node.edge.split_mask, taxa_mask, split_distribution.unrooted):
                         pass
                     else:
                         parent_node.remove_child(node)
