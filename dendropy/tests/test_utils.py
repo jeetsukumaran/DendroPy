@@ -43,26 +43,23 @@ class ComplementingDictTest(unittest.TestCase):
     
         mask = 0xFF # 1111 1111
         splits = [
-            ((0x03, '0000 0011'), (0xFC, '1111 1100')),
+            ((0x03, '0000 0011'), (0x03, '0000 0011')),
             ((0x34, '0011 0100'), (0xCB, '1100 1011')),
             ((0x44, '0100 0100'), (0xBB, '1011 1011')),
             ((0x12, '0001 0010'), (0xED, '1110 1101')),
-            ((0x75, '0111 0101'), (0x8A, '1000 1010')),
+            ((0x75, '0111 0101'), (0x75, '0111 0101')),
             ]
-        d = utils.ComplementingDict(mask=mask)
+        d = utils.NormalizedBitmaskDict(mask=mask)
         for s in splits:
             d[s[0][0]] = s[0][1]
-       
-        for k in d.keys():
-            assert d[k] == d[k ^ mask]
             
+        for s in splits:
+            assert s[0][0] in d
+            assert s[1][0] in d
+            assert d[s[0][0]] == d[s[1][0]]
+
         for k, v in d.items():
             pass
-            
-        c = d.complemented_keys()        
-        for s in splits:
-            assert s[1][0] in c 
-            assert d[s[1][0]] == d[s[0][0]]
         
         del d[splits[0][0][0]]
         del d[splits[1][1][0]]

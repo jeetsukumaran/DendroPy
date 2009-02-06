@@ -89,7 +89,7 @@ class OrderedCaselessDict(dict):
         """
         super(OrderedCaselessDict, self).__init__()
         self.__ordered_keys = []
-        if other:
+        if other is not None:
             if isinstance(other, dict):
                 for key, val in other.items():
                     if key.lower() not in self:
@@ -282,118 +282,87 @@ class OrderedCaselessDict(dict):
                 self[key] = value
         return ocd
 
-class ComplementingDict(dict):
+class NormalizedBitmaskDict(dict):
     """
-    Keys, {K_i}, are longs. Elements are accessible through both K and K ^ mask
-    if mask is defined and is_complementing is True.
+    Keys, {K_i}, are longs. `mask` must be provided before elements can be
+    added removed from dictionary. All keys are normalized such that the right-
+    most bit is '1'. That is, if the key's right-most bit is '1', it is added
+    as-is, otherwise it is complemented by XOR'ing it with 'mask'.
     """
 
     def __init__(self, other=None, mask=None):
         """
-        Creates the local set of keys, and then initializes self with
-        arguments, if any, by using the superclass methods, keeping
-        the ordered keys in sync.
+        Assigns mask, and then populates from `other`, if given.
         """
         dict.__init__(self)
         self.mask = mask
-        self.is_complementing = False
-        if other:
+        if other is not None:
             if isinstance(other, ComplementingDict):
                 self.mask = other.mask
             if isinstance(other, dict):                
                 for key, val in other.items():
                     self[key] = val
                     
-    def _check_complement(self):
-        return self.mask is None or not self.is_complementing
-    check_complement = property(_check_complement)        
+    def normalize_key(self, key):
+        if key & 1:
+            return key
+        else:
+            return key ^ self.mask
+            
+    def __setitem__(self, key, value):
+        """
+        Sets item with normalized key.
+        """
+        dict.__setitem__(self, self.normalize_key(key), value)
 
     def __getitem__(self, key):
         """
-        Gets an item using a case-insensitive key.
+        Gets an item by its key.
         """
-        item = self.get(key)
-        if item is None:
-            if not self.check_complement:
-                raise KeyError(key)
-            ckey = key ^ mask
-            item = self.get(ckey)
-            if item is None:
-                raise KeyError(key)
-        return item
+        key = self.normalize_key(key)
+        return dict.__getitem__(self, key)         
 
     def __delitem__(self, key):
         """
-        Remove item with specified key.
+        Remove item with normalized key.
         """
-        if dict.__contains__(self, key):
-            dict.__delitem__(self, key)
-        else:
-            if not self.check_complement:            
-                raise KeyError(key)        
-            ckey = key ^ self.mask
-            if dict.__contains__(self, ckey):
-                dict.__delitem__(self, ckey)
-            else:
-                raise KeyError(key)
+        key = self.normalize_key(key)
+        dict.__delitem__(self, key)
 
     def __contains__(self, key):
         """
-        Returns true if has key.
+        Returns true if has normalized key.
         """
-        if dict.__contains__(self, key):
-            return True
-        if self.check_complement:
-            return False
-        if dict.__contains__(self, (key ^ mask)):
-            return True
-        return false            
+        key = self.normalize_key(key)
+        return dict.__contains__(self, key)         
 
     def pop(self, key, alt_val=None):
         """
         a.pop(k[, x]):  a[k] if k in a, else x (and remove k)
         """
-        if self.__contains__(key):
-            val = self[key]
-            del(self[key])
-        else:
-            return alt_val
-
-    def complemented_keys(self):
-        """
-        Returns a copy of complemented keys.        
-        """
-        if self.mask is not None:
-            return [ (k ^ self.mask) for k in self]
-        else:
-            raise Exception("mask not set")
+        key = self.normalize_key(key)
+        return dict.pop(self, key) 
     
     def index(self, key):
         """
         Return the index of key.
         Raise KeyError if not found.
         """
-        count = 0
-        for idx, k in enumerate(self):
-            if (k == key) or (self.check_complement and (k ^ self.mask) == key):
-                return count
-        raise KeyError(key)
+        key = self.normalize_key(key)
+        return dict.index(self, key) 
 
     def get(self, key, def_val=None):
         """
         Gets an item by its key, returning default if key not present.
         """
-        if dict.__contains__(self, key) or not self.check_complement:
-            return dict.get(self, key, def_val)
-        elif self.check_complement:
-            return dict.get(self, key ^ self.mask, def_val)
-        return def_val  
+        key = self.normalize_key(key)
+        return dict.get(self, key, def_val) 
          
     def setdefault(self, key, def_val=None):
         """
         Sets the default value to return if key not present.
         """
-        dict.setdefault(self, def_val)
+        dict.setdefault(self, self.normalize_key(key), def_val)
 
     def update(self, other):
         """
@@ -404,25 +373,13 @@ class ComplementingDict(dict):
         {'a': 'A', 'c': 'C', 'b': 'B', 'd': 'D', 'f': 'F'}
         """
         for key, val in other.items():
-            if not dict.__contains__(self, key) and not self.check_complement:
-                self[key] = val
-            elif self.check_complement and dict.__contains__(self, key ^ self.mask):
-                self[key ^ self.mask] = val
-            else:
-                self[key] = val
+            self[self.normalize_key(key)] = val
 
     def fromkeys(self, iterable, value=None):
         """
         Creates a new dictionary with keys from seq and values set to value.
         """
         raise NotImplementedError
-#         cd = ComplementingDict(mask=self.mask)
-#         for key in iterable:
-#             if not dict.__contains__(self, key) and not self.check_complement:
-#                 self[key] = value
-#             elif self.check_complement and not dict.__contains__(self, key ^ self.mask):
-#                 self[key] = value
-#         return cd
     
 def pretty_print_timedelta(timedelta):
     hours, mins, secs = str(timedelta).split(":")
