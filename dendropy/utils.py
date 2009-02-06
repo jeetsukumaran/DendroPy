@@ -297,7 +297,7 @@ class NormalizedBitmaskDict(dict):
         dict.__init__(self)
         self.mask = mask
         if other is not None:
-            if isinstance(other, ComplementingDict):
+            if isinstance(other, NormalizedBitmaskDict):
                 self.mask = other.mask
             if isinstance(other, dict):                
                 for key, val in other.items():

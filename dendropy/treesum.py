@@ -32,7 +32,15 @@ from dendropy import taxa
 from dendropy import trees
 from dendropy import treegen
 
-def deepest_compatible_node(start_node, split, taxa_mask):
+def is_compatible(parent_split, child_split, taxa_mask, unrooted=True):
+    if unrooted:
+        if not (parent_split & 1):
+            parent_split = parent_split ^ taxa_mask
+        if not (child_split & 1):
+            child_split = child_split ^ taxa_mask
+    return (parent_split ^ taxa_mask) & child_split
+
+def deepest_compatible_node(start_node, split, taxa_mask, unrooted):
     """
     Assumes:
         - start_node is a node on a tree
@@ -44,10 +52,10 @@ def deepest_compatible_node(start_node, split, taxa_mask):
           not equal to the split.
     """
     for node in start_node.child_nodes():
-        if (node.edge.split_mask ^ taxa_mask) & split:
+        if is_compatible(node.edge.split_mask, split, taxa_mask, unrooted):
             pass
-        elif node.edge.split_mask != split:
-            return deepest_compatible_node(node, split, taxa_mask)
+        elif (node.edge.split_mask != split) or (unrooted and ((node.edge.split_mask ^ taxa_mask) != split)):
+            return deepest_compatible_node(node, split, taxa_mask, unrooted)
     return start_node                    
 
 class TreeSummarizer(object):
@@ -129,15 +137,7 @@ class TreeSummarizer(object):
         tree.normalize_taxa(taxa_block=split_distribution.taxa_block)
         splits.encode_splits(tree, 
                              taxa_block=split_distribution.taxa_block,
-                             edge_split_mask='split_mask', 
-                             tree_split_edges_map="split_edges",
-                             tree_split_taxa_map=None,
-                             tree_splits_list=None)
-        splits.normalize_splits(tree, 
-                             taxa_block, 
-                             edge_split_mask='split_mask',
-                             tree_split_edges_map="split_edges",
-                             tree_split_taxa_map=None)                              
+                             unrooted=split_distribution.unrooted)                            
         for split in tree.split_edges:
             if split in split_frequencies:
                 split_support = split_frequencies[split]
@@ -168,11 +168,8 @@ class TreeSummarizer(object):
                 # not singleton (i.e., one "0")
                 splits.encode_splits(con_tree, 
                                      taxa_block, 
-                                     tree_split_taxa_map=None)
-                splits.normalize_splits(con_tree, 
-                                     taxa_block, 
-                                     tree_split_taxa_map=None)                                     
-                parent_node = deepest_compatible_node(con_tree.seed_node, split, taxa_mask)
+                                     unrooted=split_distribution.unrooted)         
+                parent_node = deepest_compatible_node(con_tree.seed_node, split, taxa_mask, split_distribution.unrooted)
                 new_node = trees.Node()
                 self.map_split_support_to_node(node=new_node, split_support=split_freqs[split])                
                 if self.support_as_labels and include_edge_lengths:
@@ -190,13 +187,11 @@ class TreeSummarizer(object):
             if not hasattr(node.edge, "split_mask"):
                 splits.encode_splits(con_tree, 
                                      taxa_block, 
-                                     tree_split_edges_map=None,
-                                     tree_split_taxa_map=None)
-                splits.normalize_splits(con_tree, 
-                                     taxa_block, 
-                                     tree_split_edges_map=None,
-                                     tree_split_taxa_map=None)                                      
-            split = node.edge.split_mask
+                                     unrooted=split_distribution.unrooted) 
+            if split_distribution.unrooted:                                     
+                split = con_tree.split_edges.normalize_key(node.edge.split_mask)
+            else:
+                split = node.edge.split_mask
             self.map_split_support_to_node(node, 1.0)
             if self.support_as_labels and include_edge_lengths:
                 if split in split_distribution.split_edge_lengths:
