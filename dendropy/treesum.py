@@ -194,21 +194,17 @@ class TreeSummarizer(object):
                     parent_node.add_child(new_node)
 
         ## here we add the support values and/or edge lengths for the terminal taxa ##
-#         for node in con_tree.leaf_nodes():
-#             if not hasattr(node.edge, "split_mask"):
-#                 splits.encode_splits(con_tree, 
-#                                      taxa_block, 
-#                                      unrooted=split_distribution.unrooted) 
-#             if split_distribution.unrooted:                                     
-#                 split = con_tree.split_edges.normalize_key(node.edge.split_mask)
-#             else:
-#                 split = node.edge.split_mask
-#             self.map_split_support_to_node(node, 1.0)
-#             if self.support_as_labels and include_edge_lengths:
-#                 if split in split_distribution.split_edge_lengths:
-#                     node.edge.length = float(sum(split_distribution.split_edge_lengths[split])) / len(split_distribution.split_edge_lengths[split])
-#                 else:
-#                     node.edge.length = 0.0
+        for node in con_tree.leaf_nodes():
+            if split_distribution.unrooted:                                     
+                split = con_tree.split_edges.normalize_key(node.edge.split_mask)
+            else:
+                split = node.edge.split_mask
+            self.map_split_support_to_node(node, 1.0)
+            if self.support_as_labels and include_edge_lengths:
+                if split in split_distribution.split_edge_lengths:
+                    node.edge.length = float(sum(split_distribution.split_edge_lengths[split])) / len(split_distribution.split_edge_lengths[split])
+                else:
+                    node.edge.length = 0.0
         return con_tree                
                                                 
     def count_splits_on_trees(self, tree_files, tree_iterator, split_distribution=None, taxa_block=None):
