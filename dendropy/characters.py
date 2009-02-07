@@ -81,42 +81,32 @@ class StateAlphabetElement(base.IdTagged):
     fundamental_states = property(_get_fundamental_states)          
                  
     def _get_fundamental_ids(self):
-        """
-        Returns set of id's of all _get_fundamental states to which this state maps.
-        """
+        "Returns set of id's of all _get_fundamental states to which this state maps."
         return set([state.oid for state in self._get_fundamental_states()])
         
     fundamental_ids = property(_get_fundamental_ids)          
         
     def _get_fundamental_symbols(self):
-        """
-        Returns set of symbols of all _get_fundamental states to which this state maps.
-        """
+        "Returns set of symbols of all _get_fundamental states to which this state maps."
         return set([state.symbol for state in self._get_fundamental_states() if state.symbol]) 
         
     fundamental_symbols = property(_get_fundamental_symbols)
         
     def _get_fundamental_tokens(self):
-        """
-        Returns set of tokens of all _get_fundamental states to which this state maps.
-        """
+        "Returns set of tokens of all _get_fundamental states to which this state maps."
         return set([state.token for state in self._get_fundamental_states() if state.token])        
         
     fundamental_tokens = property(_get_fundamental_tokens)   
              
 class StateAlphabet(base.IdTagged, list):
-    """
-    A set of states available for a particular character type/format.
-    """
+    "A set of states available for a particular character type/format."
     
     def __init__(self, oid=None, label=None):
         base.IdTagged.__init__(self, oid=oid, label=label)  
         list.__init__(self)
         
     def get_state(self, attr_name, value):
-        """
-        Returns state in self in which attr_name equals value.
-        """
+        "Returns state in self in which attr_name equals value."
         for state in self:
             if getattr(state, attr_name) == value:
                 return state
@@ -133,9 +123,7 @@ class StateAlphabet(base.IdTagged, list):
         raise Exception("State with symbol of '%s' not defined" % symbol)
     
     def state_for_symbol(self, symbol):
-        """
-        Returns a StateAlphabetElement object corresponding to given symbol.
-        """
+        "Returns a StateAlphabetElement object corresponding to given symbol."
         return self.get_state('symbol', symbol)
         
     def symbol_state_map(self):
@@ -169,9 +157,7 @@ class StateAlphabet(base.IdTagged, list):
 
     
     def match_state(self, oids=None, symbols=None, tokens=None):
-        """
-        Returns SINGLE state that has ids/symbols/tokens as member states.
-        """
+        "Returns SINGLE state that has ids/symbols/tokens as member states."
         if oids is not None:
             attr_name = 'fundamental_ids'
             values = oids
@@ -194,9 +180,7 @@ class StateAlphabet(base.IdTagged, list):
         return None
     
     def id_state_map(self):
-        """
-        Returns dictionary of element id's to state objects.
-        """
+        "Returns dictionary of element id's to state objects."
         map = {}
         for state in self:
             map[state.oid] = state
@@ -353,13 +337,11 @@ class CharacterDataCell(base.Annotated):
     def __ne__(self, other):
         result = self.__eq__(other)
         if result is NotImplemented:
-            return result
+            return NotImplemented
         return not result
                 
 class CharacterDataVector(list, taxa.TaxonLinked):
-    """
-    A list of character data values.
-    """
+    "A list of character data values."
 
     def __init__(self, oid=None, label=None, taxon=None):
         list.__init__(self)
@@ -378,16 +360,10 @@ class CharacterDataVector(list, taxa.TaxonLinked):
         return [cell.value for cell in self]
         
     def values_as_string_list(self):
-        if self:
-            return [str(cell.value) for cell in self]
-        else:
-            return []
+        return [str(cell.value) for cell in self]
             
     def values_as_string(self, sep=""):
-        if self:
-            return sep.join([str(cell.value) for cell in self])
-        else:
-            return ""        
+        return sep.join(self.values_as_string_list())
             
     def __str__(self):
         return str(self.values_as_string_list())
@@ -448,14 +424,10 @@ class CharacterDataMatrix(dict, base.Annotated):
                 self[other_taxon] = other_matrix[other_taxon]
                                                                                                                    
 class CharactersBlock(taxa.TaxaLinked):
-    """
-    Character data container/manager manager.
-    """
+    "Character data container/manager manager."
 
     def __init__(self, *args, **kwargs):
-        """
-        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
-        """
+        "Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`."
         taxa.TaxaLinked.__init__(self, *args, **kwargs)
         self.matrix = CharacterDataMatrix()
         self.column_types = []
@@ -471,9 +443,9 @@ class CharactersBlock(taxa.TaxaLinked):
         self.matrix.extend_characters(other_char_block.matrix)
         
     def extend_matrix(self, 
-        other_matrix, 
-        overwrite_existing=False, 
-        append_existing=False):
+                      other_matrix,
+                      overwrite_existing=False, 
+                      append_existing=False):
         """
         Extends this char_block by adding taxa and characters from the given
         matrix to this one.  If `overwrite_existing` is True and a taxon
@@ -493,9 +465,9 @@ class CharactersBlock(taxa.TaxaLinked):
         self.update_taxa()        
                 
     def extend(self, 
-        other_char_block, 
-        overwrite_existing=False, 
-        append_existing=False):
+               other_char_block, 
+               overwrite_existing=False, 
+               append_existing=False):
         """
         Extends this char_block by adding taxa and characters from the given
         char_block to this one.  If `overwrite_existing` is True and a taxon
@@ -543,37 +515,27 @@ class CharactersBlock(taxa.TaxaLinked):
         return taxa_block         
         
     def vectors(self):
-        """
-        Returns list of vectors.        
-        """
+        "Returns list of vectors.        "
         if self.taxa_block is not None and self.matrix is not None:
             if len(self.matrix) > 0:
                 return [self.matrix[t] for t in self.taxa_block]
-            else:
-                return []
-        else:
-            return None
+            return []
+        return None
             
     # following allows a CharactersBlock object to simulate a dictionary            
     # by `passing-through` calls to the underlying matrix
         
         
     def __len__(self):
-        """
-        Dictionary interface implementation for direct access to matrix.
-        """    
+        "Dictionary interface implementation for direct access to matrix."    
         return len(self.matrix)
         
     def __getitem__(self, key):
-        """
-        Dictionary interface implementation for direct access to matrix.
-        """
+        "Dictionary interface implementation for direct access to matrix."
         return self.matrix[key]
         
     def __setitem__(self, key, value):
-        """
-        Dictionary interface implementation for direct access to matrix.
-        """
+        "Dictionary interface implementation for direct access to matrix."
         self.matrix[key] = value
                 
 #     def __contains__(self, key):
@@ -583,96 +545,66 @@ class CharactersBlock(taxa.TaxaLinked):
 #         return key in self.matrix        
 #                 
     def iterkeys(self):
-        """
-        Dictionary interface implementation for direct access to matrix.
-        """
+        "Dictionary interface implementation for direct access to matrix."
         for key in self.matrix:
             yield(key)
     
     def itervalues(self):
-        """
-        Dictionary interface implementation for direct access to matrix.
-        """
+        "Dictionary interface implementation for direct access to matrix."
         for value in self.matrix.values():
             yield(value)
     
     def iteritems(self):
-        """
-        Returns an iterator over matrix's values.
-        """
+        "Returns an iterator over matrix's values."
         for key, value in self.matrix.iteritems():
             yield (key, value)
 
     def items(self):
-        """
-        Returns matrix key, value pairs in key-order.
-        """
+        "Returns matrix key, value pairs in key-order."
         return [(key, self.matrix[key]) for key in self.matrix.iterkeys()]
 
     def values(self):
-        """
-        Returns list of matrix key, value pairs.
-        """
+        "Returns list of matrix key, value pairs."
         return [v for v in self.matrix.itervalues()]
     
     def __iter__(self):
-        """
-        Returns an iterator over matrix's ordered keys.
-        """
+        "Returns an iterator over matrix's ordered keys."
         return self.matrix.iterkeys()
     
     def __delitem__(self, key):
-        """
-        Remove item from matrix with specified key.
-        """
+        "Remove item from matrix with specified key."
         return self.matrix.__delitem__(key)                
 
     def __contains__(self, key):
-        """
-        Returns true if matrix has key, regardless of case.
-        """
+        "Returns true if matrix has key, regardless of case."
         return self.matrix.__contains__(key)
 
     def pop(self, key, alt_val=None):
-        """
-        a.pop(k[, x]):  a[k] if k in a, else x (and remove k)
-        """
+        "a.pop(k[, x]):  a[k] if k in a, else x (and remove k)"
         return self.matrix.pop(key, alt_val)
         
     def popitem(self):
-        """
-        a.popitem()  remove and last (key, value) pair
-        """
+        "a.popitem()  remove and last (key, value) pair"
         return self.matrix.popitem()
 
     def keys(self):
-        """
-        Returns a copy of the ordered list of matrix keys.
-        """
+        "Returns a copy of the ordered list of matrix keys."
         return list(self.matrix.keys())
 
     def clear(self):
-        """
-        Deletes all items from the matrix dictionary.
-        """
+        "Deletes all items from the matrix dictionary."
         self.matrix.clear()
 
     def has_key(self, key):
-        """
-        Returns true if matrix has key, regardless of case.
-        """
+        "Returns true if matrix has key, regardless of case."
         return key in self.matrix
 
     def get(self, key, def_val=None):
-        """
-        Gets an item from matrix by its key, returning default if key not present.
-        """
+        "Gets an item from matrix by its key, returning default if key not present."
         return self.matrix.get(key, def_val)
 
     def setdefault(self, key, def_val=None):
-        """
-        Sets the default value to return if key not present.
-        """
+        "Sets the default value to return if key not present."
         return self.matrix.setdefault(key, def_val)
       
     def id_column_map(self):
@@ -686,25 +618,17 @@ class CharactersBlock(taxa.TaxaLinked):
         return map
         
 class ContinuousCharactersBlock(CharactersBlock):
-    """
-    Character data container/manager manager.
-    """
+    "Character data container/manager manager."
 
     def __init__(self, *args, **kwargs):
-        """
-        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
-        """
+        "Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`."
         CharactersBlock.__init__(self, *args, **kwargs)
 
 class DiscreteCharactersBlock(CharactersBlock):
-    """
-    Character data container/manager manager.
-    """
+    "Character data container/manager manager."
 
     def __init__(self, *args, **kwargs):
-        """
-        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
-        """
+        "Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`."
         CharactersBlock.__init__(self, *args, **kwargs)
         self.state_alphabets = []
         self.default_state_alphabet = None
@@ -728,46 +652,32 @@ class DiscreteCharactersBlock(CharactersBlock):
             self[taxon].append(CharacterDataCell(value=self.default_symbol_state_map[symbol]))
                     
 class StandardCharactersBlock(DiscreteCharactersBlock):
-    """
-    `standard` data.
-    """
+    "`standard` data."
     
     def __init__(self, *args, **kwargs):
-        """
-        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
-        """
+        "Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`."
         DiscreteCharactersBlock.__init__(self, *args, **kwargs)
                          
 class DnaCharactersBlock(DiscreteCharactersBlock):
-    """
-    DNA nucleotide data.
-    """
+    "DNA nucleotide data."
     
     def __init__(self, *args, **kwargs):
-        """
-        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
-        """
+        "Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`."
         DiscreteCharactersBlock.__init__(self, *args, **kwargs)
         self.default_state_alphabet = DNA_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)         
 
 class RnaCharactersBlock(DiscreteCharactersBlock):
-    """
-    RNA nucleotide data.
-    """
+    "RNA nucleotide data."
     
     def __init__(self, *args, **kwargs):
-        """
-        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
-        """
+        "Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`."
         DiscreteCharactersBlock.__init__(self, *args, **kwargs)
         self.default_state_alphabet = RNA_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)      
         
 class ProteinCharactersBlock(DiscreteCharactersBlock):
-    """
-    Protein / amino acid data.
-    """
+    "Protein / amino acid data."
     
     def __init__(self, *args, **kwargs):
         """
@@ -778,27 +688,19 @@ class ProteinCharactersBlock(DiscreteCharactersBlock):
         self.state_alphabets.append(self.default_state_alphabet)               
         
 class RestrictionSitesCharactersBlock(DiscreteCharactersBlock):
-    """
-    Restriction sites data.
-    """
+    "Restriction sites data."
     
     def __init__(self, *args, **kwargs):
-        """
-        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
-        """
+        "Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`."
         DiscreteCharactersBlock.__init__(self, *args, **kwargs)
         self.default_state_alphabet = RESTRICTION_SITES_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)         
         
 class InfiniteSitesCharactersBlock(DiscreteCharactersBlock):
-    """
-    Infinite sites data.
-    """
+    "Infinite sites data."
     
     def __init__(self, *args, **kwargs):
-        """
-        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
-        """
+        "Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`."
         DiscreteCharactersBlock.__init__(self, *args, **kwargs)
         self.default_state_alphabet = INFINITE_SITES_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)         
