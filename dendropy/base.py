@@ -56,10 +56,13 @@ class Annotated(object):
         Add an attribute to the list of attributes that need to be
         persisted as an annotation.
         """
-        annotate_as = annotate_as is None and attr_name or attr_name
+        #@ Jeet, this next line used to be
+        #annotate_as = annotate_as is None and attr_name or attr_name
+        # I assume that was a bug (although it was not causing tests to fail).
+        annotate_as = annotate_as is None and attr_name or annotate_as  
         if attr_name not in self.__annotations:
             if not hasattr(self, attr_name):
-                print self.__dict__
+                #print self.__dict__
                 raise AttributeError(attr_name)
             else:
                 annote = Annotation(attr_name=attr_name,
@@ -67,7 +70,7 @@ class Annotated(object):
                 self.__annotations[annotate_as] = annote
         else:
             annote = self.__annotations[annotate_as]
-            annote.annotate_as = annotate_as
+            annote.annotate_as = annotate_as #@ Jeet, should this be: annote.attr_name = annotate_as
             annote.type_hint = type_hint
             
     def unannotate(self, attr_name):
@@ -75,10 +78,7 @@ class Annotated(object):
         Remove an attribute from the list of attributes to be
         persisted as an annotation.
         """
-        if attr_name not in self.__annotations:
-            return
-        else:
-            del(self.__annotations[attr_name])
+        self.__annotations.pop(attr_name, None)
 
     def annotations(self):
         """
@@ -116,15 +116,10 @@ class Annotated(object):
         Returns True if there are attributes to be persisted as
         annotations.
         """
-        if len(self.__annotations) > 0:
-            return True
-        else:
-            return False
+        return bool(len(self.__annotations) > 0)
 
 class Labelled(Annotated):
-    """
-    Provides for getting and setting of an object label.
-    """
+    "Provides for getting and setting of an object label."
 
     def __init__(self, label=None):
         """
@@ -149,9 +144,8 @@ class IdTagged(Labelled):
         (NameChar)*. NameChar is given by : Letter | Digit | '.' | '-'
         | '_' | ':'
         """
-        if not id_str[0].isalpha \
-            and not id_str[0] == '_' \
-            and not id_str[0] == ':':
+        f = id_str[0]
+        if not (f.isalpha or f == '_' or f == ':'):
             id_str = '_' + id_str
         id_str = re.sub('[^\w\d\-\.]', '', id_str)
         return id_str
@@ -163,7 +157,6 @@ class IdTagged(Labelled):
         Initializes by calling base classes, and assigns element id if
         given.
         """
-        Annotated.__init__(self)
         Labelled.__init__(self, label=label)
         IdTagged.instances += 1
         if oid is None:
