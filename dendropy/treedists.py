@@ -89,11 +89,7 @@ def new_splits_distance(tree1,
             e2 = split_edges2_copy.pop(split) # attr + dict_lookup + bind
             elen2 = getattr(e2, edge_length_attr) # attr + bind
         except KeyError: # excep
-            e2 = comp_split_edges2_ref.get(split) # attr + dict_lookup + bind
-            if e2 is None: 
-                elen2 = 0
-            else:
-                elen2 = getattr(e2, edge_length_attr) # attr +  bind            
+            elen2 = 0           
         if elen2 is None: 
             elen2 = 0 # worst-case: bind
         value2 = value_type(elen2) #  ctor + bind # best case
@@ -106,11 +102,7 @@ def new_splits_distance(tree1,
         value2 = value_type(elen2) #  ctor + bind
         e1 = split_edges1_ref.get(split) # attr + dict_lookup + bind
         if e1 is None:
-            e1 = comp_split_edges1_ref.get(split) # attr + dict_lookup + bind
-            if e1 is None:
-                elen1 = 0
-            else:
-                elen1 = getattr(e1, edge_length_attr) # attr  + bind
+            elen1 = 0
         else:
             elen1 = getattr(e1, edge_length_attr) # attr  + bind
         if elen1 is None:

@@ -191,10 +191,11 @@ class SplitDistribution(object):
         num_unique_splits = 0
         num_nt_splits = 0
         num_nt_unique_splits = 0
+        taxa_mask = self.taxa_block.all_taxa_bitmask()
         for s in self.split_counts:
             num_unique_splits += 1 
             num_splits += self.split_counts[s]
-            if is_non_singleton_split(s):
+            if is_non_singleton_split(s, taxa_mask):
                 num_nt_unique_splits += 1
                 num_nt_splits += self.split_counts[s]
         return num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits                                                        

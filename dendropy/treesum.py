@@ -45,7 +45,7 @@ def deepest_compatible_node(start_node, split, taxa_mask, unrooted):
     """
     for node in start_node.child_nodes():
         if (node.edge.split_mask & split) \
-                and (node.edge.split_mask & (split ^ taxa_mask)) \
+            and (unrooted and (node.edge.split_mask & (split ^ taxa_mask))) \
             and (node.edge.split_mask != split):
             return deepest_compatible_node(node, split, taxa_mask, unrooted)
     return start_node        
@@ -152,7 +152,7 @@ class TreeSummarizer(object):
         splits.encode_splits(con_tree, 
                              taxa_block, 
                              unrooted=split_distribution.unrooted)         
-        start_leaf = con_tree.split_edges[0x01].head_node        
+        #start_leaf = con_tree.split_edges[0x01].head_node        
         for split in split_freqs:          
             if (split_freqs[split] > min_freq) \
                 and (split ^ taxa_mask) \
@@ -181,6 +181,8 @@ class TreeSummarizer(object):
                     new_node_children = []
                     new_node.edge.split_mask = 0
                     for child in parent_node.child_nodes():
+                        # might need to modify the following if rooted splits
+                        # are used
                         if (child.edge.split_mask & (split ^ taxa_mask) ) \
                             and ((child.edge.split_mask ^ taxa_mask) & split):
                             assert child.edge.split_mask != split
