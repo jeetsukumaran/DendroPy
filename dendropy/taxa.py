@@ -29,16 +29,9 @@ import sys
 from dendropy import base
 
 
-_HEX_CODE_TO_BINARY = {'a': '1010', 'c': '1100', 'b': '1011', 'e': '1110', 'd': '1101', 'f': '1111', '1': '0001', '0': '0000', '3': '0011', '2': '0010', '5': '0101', '4': '0100', '7': '0111', '6': '0110', '9': '1001', '8': '1000'}
-
 def int_to_bitstring(n):
-    global _HEX_CODE_TO_BINARY
     assert n >= 0
-    if n == 0:
-        return "0"
-    h = hex(n)
-    b = "".join([_HEX_CODE_TO_BINARY[i] for i in h[2:]])
-    return b[b.find("1"):] 
+    return bin(n)[2:]
 
 class TaxonLinked(base.IdTagged):
     """
