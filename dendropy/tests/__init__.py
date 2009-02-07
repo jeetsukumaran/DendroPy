@@ -34,7 +34,17 @@ import sys
 
 from dendropy import get_logger
 from dendropy.utils import find_files
-  
+
+if "DENDROPY_FAST_TESTS" in os.environ:
+    FAST_TESTS_ONLY = True
+else:
+    FAST_TESTS_ONLY = False
+    
+def fast_testing_notification(logger, module_name, message=None):
+    if message is None:
+        message = "tests skipped"
+    logger.warning('FAST TEST MODE (%s): %s' % (module_name, message))
+
 def data_source_path(filename=None):
     if filename is None:
         filename = ""
