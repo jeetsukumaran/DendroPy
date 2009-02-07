@@ -70,7 +70,7 @@ class Annotated(object):
                 self.__annotations[annotate_as] = annote
         else:
             annote = self.__annotations[annotate_as]
-            annote.annotate_as = annotate_as #@ Jeet, should this be: annote.attr_name = annotate_as
+            annote.attr_name = annotate_as
             annote.type_hint = type_hint
             
     def unannotate(self, attr_name):
