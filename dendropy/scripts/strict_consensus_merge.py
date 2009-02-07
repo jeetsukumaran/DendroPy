@@ -252,9 +252,9 @@ def scmMergeSubTree(toModifyNode, toDestroyNode, leaf_intersection):
     
 def add_to_scm(tree_to_modify, tree_to_destroy, taxa_block):
     to_mod_root = tree_to_modify.seed_node
-    to_mod_split = to_mod_root.edge.split_mask
+    to_mod_split = to_mod_root.edge.clade_mask
     to_destroy_root = tree_to_destroy.seed_node
-    to_destroy_split = to_destroy_root.edge.split_mask
+    to_destroy_split = to_destroy_root.edge.clade_mask
     leaf_intersection = to_mod_split & to_destroy_split
     print str(tree_to_modify)
     print str(tree_to_destroy)
@@ -266,7 +266,7 @@ def add_to_scm(tree_to_modify, tree_to_destroy, taxa_block):
     if n_common_leaves == 2: # return a polytomy
         collapse_clade(to_mod_root)
         collapse_clade(to_destroy_root)
-        leaves_to_steal = [c for c in to_destroy_root.child_nodes() if not (leaf_intersection & c.edge.split_mask)]
+        leaves_to_steal = [c for c in to_destroy_root.child_nodes() if not (leaf_intersection & c.edge.clade_mask)]
         for leaf in leaves_to_steal:
             to_mod_root.add_child(leaf)
     else:

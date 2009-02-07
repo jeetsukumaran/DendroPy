@@ -48,6 +48,7 @@ class SplitsOnTreesTest(unittest.TestCase):
     
     def setUp(self):
         self.data_files = [   
+#             ["feb032009.tre", "feb032009.tre"],        
             ["anolis.chars.nexus", "anolis.mcmct.trees.nexus"],
             ["primates.chars.nexus", "primates.mcmct.trees.newick"],
         ]

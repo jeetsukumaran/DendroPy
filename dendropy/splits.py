@@ -118,17 +118,19 @@ def split_taxa_list(split_mask, taxa_block, index=0):
         index += 1
     return taxa
 
-def encode_splits(tree, taxa_block=None, unrooted=None):
+def encode_splits(tree, taxa_block=None):
     """
     Processes splits on a tree, encoding them as bitmask on each edge.    
+    Adds the following to each edge:
+        - `clade_mask` : a rooted split representation, i.e. a long/bitmask 
+            where bits corresponding to indexes of taxa descended from this 
+            edge are turned on
     Adds the following to the tree:
-        - a dictionary where the keys are splits and the values are edges.
-    If `unrooted` is False, or `unrooted` is None and the tree is unrooted,
-    then the split masks are stored in a normal dictionary.
-    If `unrooted` is True, or `unrooted` is None and the tree is rooted, then
-    the split masks are stored in a NormalizedBitmaskDictionary, where splits
-    are normalized with respect to the first bit (so the split mask in 
-    insensitive to rotation or rooting of the tree).
+        - `split_edges`: a dictionary where the keys are the normalized 
+            (unrooted) split representations and the values are edges. A 
+            normalized split_mask is where the clade_mask is complemented 
+            if the right-most bit is not '1' (or just the clade_mask 
+            otherwise).
     """
     if taxa_block is None:
         taxa_block = tree.infer_taxa_block()
@@ -136,20 +138,17 @@ def encode_splits(tree, taxa_block=None, unrooted=None):
     for edge in tree.postorder_edge_iter():
         child_nodes = edge.head_node.child_nodes()
         if child_nodes:
-            setattr(edge, "split_mask", 0)
+            setattr(edge, "clade_mask", 0)
             for child in child_nodes:
-                setattr(edge, "split_mask", getattr(edge, "split_mask") | getattr(child.edge, "split_mask"))
+                setattr(edge, "clade_mask", getattr(edge, "clade_mask") | getattr(child.edge, "clade_mask"))
         else:
             if edge.head_node.taxon:
-                setattr(edge, "split_mask", taxa_block.taxon_bitmask(edge.head_node.taxon))
+                setattr(edge, "clade_mask", taxa_block.taxon_bitmask(edge.head_node.taxon))
             else:
                 #raise Exception('Leaf node with no taxon')
-                setattr(edge, "split_mask", 0)
-        split_map[getattr(edge, "split_mask")] = edge
-    if (unrooted is not None and not unrooted) or (unrooted is None and tree.is_rooted):
-        tree.split_edges = split_map
-    else:
-        tree.split_edges = utils.NormalizedBitmaskDict(split_map, 
+                setattr(edge, "clade_mask", 0)
+        split_map[getattr(edge, "clade_mask")] = edge
+    tree.split_edges = utils.NormalizedBitmaskDict(split_map, 
             mask = taxa_block.all_taxa_bitmask())
                 
 ############################################################################        
@@ -230,8 +229,10 @@ class SplitDistribution(object):
         """
         self.total_trees_counted += 1
         tree.normalize_taxa(taxa_block=self.taxa_block)
-        encode_splits(tree, self.taxa_block, unrooted=self.unrooted)  
+        encode_splits(tree, self.taxa_block)  
         for split in tree.split_edges:
+            if not self.unrooted:
+                split = tree.split_edges[split].clade_mask
             if split not in self.split_counts:
                 self.splits.append(split)
                 self.split_counts[split] = 1
