@@ -1,9 +1,11 @@
-* Easier way to create trees with these same leaf set in different options
-* Add option to specify posterior probability support as Nexus node comment in SumTrees
-* Add "``clone``" methods for Dataset and all contained data structures
+* Easier way to create trees with these same leaf set in different options (i.e., data context approach)
 
-* Move taxon label validation to parse_newick_node_stream and allow the encoding 
-	of splits during the reading of a newick string:
+* Add option to specify posterior probability support as Nexus node comment in SumTrees
+
+* Add "``clone``" and "``merge``" methods for Dataset and all contained data structures
+
+* Move taxon label validation to parse_newick_node_stream and allow the encoding of splits during the reading of a newick string::
+
     if encoding_splits:
         if node.is_leaf():
             node.taxon = blah
@@ -14,4 +16,6 @@
             for child in node.child_nodes:
                 node.edge.split_mask |= child.edge.split_mask
     return node     
+
+* check element annotation (attribute names and ``annotate_as``)
 
