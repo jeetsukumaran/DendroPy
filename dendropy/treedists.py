@@ -80,8 +80,6 @@ def new_splits_distance(tree1,
     length_diffs = []
     split_edges2_copy = dict(tree2.split_edges) # O(n*(2*bind + dict_item_cost))
     split_edges1_ref = tree1.split_edges
-    comp_split_edges1_ref = tree1.complemented_split_edges
-    comp_split_edges2_ref = tree2.complemented_split_edges
     for split, edge in split_edges1_ref.iteritems(): # O n : 2*bind
         elen1 = getattr(edge, edge_length_attr) # attr + bind
         if elen1 is None:
@@ -91,11 +89,7 @@ def new_splits_distance(tree1,
             e2 = split_edges2_copy.pop(split) # attr + dict_lookup + bind
             elen2 = getattr(e2, edge_length_attr) # attr + bind
         except KeyError: # excep
-            e2 = comp_split_edges2_ref.get(split) # attr + dict_lookup + bind
-            if e2 is None: 
-                elen2 = 0
-            else:
-                elen2 = getattr(e2, edge_length_attr) # attr +  bind            
+            elen2 = 0           
         if elen2 is None: 
             elen2 = 0 # worst-case: bind
         value2 = value_type(elen2) #  ctor + bind # best case
@@ -108,11 +102,7 @@ def new_splits_distance(tree1,
         value2 = value_type(elen2) #  ctor + bind
         e1 = split_edges1_ref.get(split) # attr + dict_lookup + bind
         if e1 is None:
-            e1 = comp_split_edges1_ref.get(split) # attr + dict_lookup + bind
-            if e1 is None:
-                elen1 = 0
-            else:
-                elen1 = getattr(e1, edge_length_attr) # attr  + bind
+            elen1 = 0
         else:
             elen1 = getattr(e1, edge_length_attr) # attr  + bind
         if elen1 is None:
@@ -208,15 +198,15 @@ def symmetric_difference(tree1, tree2):
     false_positives = 0
     false_negatives = 0
     
-    for split in tree1.splits:
-        if (split in tree2.splits) or (split in tree2.complemented_splits):
+    for split in tree1.split_edges:
+        if split in tree2.split_edges:
             pass
         else:
             false_negatives = false_negatives + 1
             sym_diff = sym_diff + 1
     
-    for split in tree2.splits:
-        if (split in tree1.splits) or (split in tree1.complemented_splits):
+    for split in tree2.split_edges:
+        if split in tree1.split_edges:
             pass
         else:
             false_positives = false_positives + 1

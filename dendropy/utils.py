@@ -89,7 +89,7 @@ class OrderedCaselessDict(dict):
         """
         super(OrderedCaselessDict, self).__init__()
         self.__ordered_keys = []
-        if other:
+        if other is not None:
             if isinstance(other, dict):
                 for key, val in other.items():
                     if key.lower() not in self:
@@ -281,6 +281,97 @@ class OrderedCaselessDict(dict):
             if key.lower() not in self:
                 self[key] = value
         return ocd
+
+class NormalizedBitmaskDict(dict):
+    """
+    Keys, {K_i}, are longs. `mask` must be provided before elements can be
+    added removed from dictionary. All keys are normalized such that the right-
+    most bit is '1'. That is, if the key's right-most bit is '1', it is added
+    as-is, otherwise it is complemented by XOR'ing it with 'mask'.
+    """
+
+    def __init__(self, other=None, mask=None):
+        """
+        Assigns mask, and then populates from `other`, if given.
+        """
+        dict.__init__(self)
+        self.mask = mask
+        if other is not None:
+            if isinstance(other, NormalizedBitmaskDict):
+                self.mask = other.mask
+            if isinstance(other, dict):                
+                for key, val in other.items():
+                    self[key] = val
+                    
+    def normalize_key(self, key):
+        if key & 1:
+            return key
+        else:
+            return key ^ self.mask
+            
+    def __setitem__(self, key, value):
+        """
+        Sets item with normalized key.
+        """
+        dict.__setitem__(self, self.normalize_key(key), value)
+
+    def __getitem__(self, key):
+        """
+        Gets an item by its key.
+        """
+        key = self.normalize_key(key)
+        return dict.__getitem__(self, key)         
+
+    def __delitem__(self, key):
+        """
+        Remove item with normalized key.
+        """
+        key = self.normalize_key(key)
+        dict.__delitem__(self, key)
+
+    def __contains__(self, key):
+        """
+        Returns true if has normalized key.
+        """
+        key = self.normalize_key(key)
+        return dict.__contains__(self, key)         
+
+    def pop(self, key, alt_val=None):
+        """
+        a.pop(k[, x]):  a[k] if k in a, else x (and remove k)
+        """
+        key = self.normalize_key(key)
+        return dict.pop(self, key) 
+
+    def get(self, key, def_val=None):
+        """
+        Gets an item by its key, returning default if key not present.
+        """
+        key = self.normalize_key(key)
+        return dict.get(self, key, def_val) 
+         
+    def setdefault(self, key, def_val=None):
+        """
+        Sets the default value to return if key not present.
+        """
+        dict.setdefault(self, self.normalize_key(key), def_val)
+
+    def update(self, other):
+        """
+        updates (and overwrites) key/value pairs:
+        k = { 'a':'A', 'b':'B', 'c':'C'}
+        q = { 'c':'C', 'd':'D', 'f':'F'}
+        k.update(q)
+        {'a': 'A', 'c': 'C', 'b': 'B', 'd': 'D', 'f': 'F'}
+        """
+        for key, val in other.items():
+            self[self.normalize_key(key)] = val
+
+    def fromkeys(self, iterable, value=None):
+        """
+        Creates a new dictionary with keys from seq and values set to value.
+        """
+        raise NotImplementedError
     
 def pretty_print_timedelta(timedelta):
     hours, mins, secs = str(timedelta).split(":")
