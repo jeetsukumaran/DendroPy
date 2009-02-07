@@ -29,13 +29,9 @@ Infrastructure for object serialization and management.
 import re
 
 class Annotation(object):
-    """
-    Tracks the basic information need to serialize an attribute correctly.
-    """
+    "Tracks the basic information need to serialize an attribute correctly."
     def __init__(self, attr_name=None, type_hint=None):
-        """
-        Instantiates with optional initialization values.
-        """
+        "Instantiates with optional initialization values."
         self.attr_name = attr_name  # name of attribute
         self.type_hint = type_hint  # override introspective type determination
 
@@ -46,9 +42,7 @@ class Annotated(object):
     """
 
     def __init__(self):
-        """
-        Creates dictionary to track attributes that will be persisted.
-        """
+        "Creates dictionary to track attributes that will be persisted."
         self.__annotations = {}
 
     def annotate(self, attr_name, annotate_as=None, type_hint=None):
@@ -165,9 +159,7 @@ class IdTagged(Labelled):
             self.__oid = self.normalize_id(oid)
             
     def _default_oid(self):
-        """
-        Returns default oid.
-        """
+        "Returns default oid."
         if self.label is None:
             prefix = self.__class__.__name__
             return "_" + prefix + str(IdTagged.instances)            
@@ -175,9 +167,7 @@ class IdTagged(Labelled):
             return self.normalize_id(self.label)        
                 
     def _get_oid(self):
-        """
-        Returns id.
-        """
+        "Returns id."
         return self.__oid
 
     def _set_oid(self, oid):

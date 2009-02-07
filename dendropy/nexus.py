@@ -192,9 +192,7 @@ def parse_sequence_iupac_ambiguities(seq):
 ##  Fundamental NEWICK Tree parsers
 
 def parse_newick_string(tree_statement, taxa_block=None, translate_dict=None):
-    """
-    Processes a (SINGLE) TREE statement string.
-    """
+    "Processes a (SINGLE) TREE statement string."
     stream_handle = StringIO.StringIO(tree_statement)
     stream_tokenizer = NexusStreamTokenizer(stream_handle)
     tree = parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
@@ -283,9 +281,7 @@ def parse_newick_node_stream(stream_tokenizer, tree):
 ## CLASS: NexusStreamTokenizer
 
 class NexusStreamTokenizer(object):
-    """
-    Encapsulates reading NEXUS/NEWICK tokens from file.
-    """
+    "Encapsulates reading NEXUS/NEWICK tokens from file."
 
     #######################################################################
     ## STATIC METHODS
@@ -367,9 +363,7 @@ class NexusStreamTokenizer(object):
         self.previous_file_char = None
 
     def _get_current_file_char(self):
-        """
-        Returns the current character from the file stream.
-        """
+        "Returns the current character from the file stream."
         if self.__current_file_char == None:
             self.__current_file_char = self.read_next_char()
         return self.__current_file_char
@@ -421,9 +415,7 @@ class NexusStreamTokenizer(object):
     noncomment_file_char = property(read_noncomment_character)
 
     def skip_to_significant_character(self):
-        """
-        Advances to the first non-whitespace character outside a comment block.
-        """
+        "Advances to the first non-whitespace character outside a comment block."
         while (NexusStreamTokenizer.is_whitespace(self.current_file_char) or self.current_file_char=='[') and not self.eof:
             if self.current_file_char=='[':
                 self.read_noncomment_character()
@@ -485,9 +477,7 @@ class NexusStreamTokenizer(object):
             return None
 
     def skip_to_semicolon(self):
-        """
-        Advances the file stream cursor to the next semi-colon.
-        """
+        "Advances the file stream cursor to the next semi-colon."
         token = self.read_next_token()
         while token != ';' and not self.eof and token != None:
             token = self.read_next_token()
@@ -497,9 +487,7 @@ class NexusStreamTokenizer(object):
 ## CLASS: NexusReader
 
 class NexusReader(datasets.Reader):
-    """
-    Encapsulates loading and parsing of a NEXUS format file.
-    """
+    "Encapsulates loading and parsing of a NEXUS format file."
 
     class NotNexusFileException(NexusStreamTokenizer.SyntaxException):
         def __init__(self, filepath, row, column, message):
@@ -538,9 +526,7 @@ class NexusReader(datasets.Reader):
     ## Class-specific ##
 
     def parse_nexus_file(self, dataset=None):
-        """
-        Main file parsing driver.
-        """
+        "Main file parsing driver."
         self.reset()
         if dataset is not None:
             self.dataset = dataset
@@ -842,14 +828,10 @@ class NexusReader(datasets.Reader):
 ## CLASS: NexusWriter
 
 class NexusWriter(datasets.Writer):
-    """
-    Implements the DataWriter interface for handling NEXML files.
-    """
+    "Implements the DataWriter interface for handling NEXML files."
 
     def __init__(self, simple=False):
-        """
-        Calls the base class constructor.
-        """
+        "Calls the base class constructor."
         datasets.Writer.__init__(self)
         self.simple = simple
         self.write_rooting = True
@@ -962,9 +944,7 @@ class NexusWriter(datasets.Writer):
 ## CLASS: NewickReader        
         
 class NewickReader(datasets.Reader):
-    """
-    Implementation of TreeReader for NEWICK files and strings.
-    """
+    "Implementation of TreeReader for NEWICK files and strings."
     
     def __init__(self):
         """
@@ -1051,9 +1031,7 @@ class NewickWriter(datasets.Writer):
             return label    
     
     def compose_tree(self, tree):
-        """
-        Convienience method.        
-        """
+        "Convienience method.        "
         return self.compose_node(tree.seed_node)
 
     def choose_display_tag(self, node):

@@ -74,9 +74,7 @@ def iter_split_indices(s, mask=-1, one_based=False, ordination_in_mask=False):
         test_bit <<=1
 
 def is_non_singleton_split(split, mask):
-    """
-    Returns True if a split is NOT between a leaf and the rest of the taxa.
-    """
+    "Returns True if a split is NOT between a leaf and the rest of the taxa."
     # ((split-1) & split) is True (non-zero) only
     # if split is not a power of 2, i.e., if split
     # has more than one bit turned on, i.e., if it
@@ -84,15 +82,11 @@ def is_non_singleton_split(split, mask):
     return ((split-1) & split) and (((split^mask)-1) & (split^mask))
 
 def number_to_bitstring(num):
-    """
-    Returns a representation of a number as a bit string.
-    """
+    "Returns a representation of a number as a bit string."
     return num>0 and number_to_bitstring(num>>1)+str(num&1) or ''
     
 def split_as_string(split_mask, taxa_block, symbol1='.', symbol2='*'):
-    """
-    Returns a 'pretty' split representation.
-    """
+    "Returns a 'pretty' split representation."
     s = number_to_bitstring(split_mask).rjust(len(taxa_block), '0')
     return s.replace('0', symbol1).replace('1', symbol2)
     
@@ -107,9 +101,7 @@ def split_as_string_rev(split_mask, taxa_block, symbol1='.', symbol2='*'):
                            symbol2=symbol2)[::-1]
     
 def split_taxa_list(split_mask, taxa_block, index=0):
-    """
-    Returns list of taxa represented by split.
-    """
+    "Returns list of taxa represented by split."
     taxa = []
     while split_mask:
         if split_mask & 1:
@@ -155,14 +147,10 @@ def encode_splits(tree, taxa_block=None):
 ## SplitDistribution
 
 class SplitDistribution(object):
-    """
-    Collects information regarding splits over multiple trees.
-    """
+    "Collects information regarding splits over multiple trees."
     
     def __init__(self, taxa_block=None):
-        """
-        What else?
-        """
+        "What else?"
         self.total_trees_counted = 0
         if taxa_block is not None:
             self.taxa_block = taxa_block            
@@ -200,9 +188,7 @@ class SplitDistribution(object):
         return num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits                                                        
         
     def calc_freqs(self):
-        """
-        Forces recalculation of frequencies.
-        """
+        "Forces recalculation of frequencies."
         self.__split_freqs = {}
         if self.total_trees_counted == 0:
             total = 1
@@ -214,9 +200,7 @@ class SplitDistribution(object):
         return self.__split_freqs
         
     def _get_split_frequencies(self):
-        """
-        Returns dictionary of splits : split frequencies.
-        """
+        "Returns dictionary of splits : split frequencies."
         if self.__split_freqs is None or self.__trees_counted_for_freqs != self.total_trees_counted:
             self.calc_freqs()
         return self.__split_freqs   
@@ -224,9 +208,7 @@ class SplitDistribution(object):
     split_frequencies = property(_get_split_frequencies)         
 
     def count_splits_on_tree(self, tree):
-        """
-        Counts splits in this tree and add to totals.
-        """
+        "Counts splits in this tree and add to totals."
         self.total_trees_counted += 1
         tree.normalize_taxa(taxa_block=self.taxa_block)
         encode_splits(tree, self.taxa_block)  

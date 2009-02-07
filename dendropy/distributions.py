@@ -41,9 +41,7 @@ def factorial(num):
     return result
 
 def binomial_coefficient(population, sample):
-    """
-    Returns  `population` choose `sample`.
-    """
+    "Returns  `population` choose `sample`."
     s = max(sample, population - sample)
     assert s <= population
     assert population > -1

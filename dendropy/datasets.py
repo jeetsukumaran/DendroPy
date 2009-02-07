@@ -35,14 +35,10 @@ from dendropy import characters
 from dendropy import trees
 
 class Dataset(object):
-    """
-    Top-level data structure.
-    """
+    "Top-level data structure."
 
     def __init__(self, taxa_blocks=None, char_blocks=None, trees_blocks=None):
-        """
-        Instantiates collections of taxa, blocks, trees, and models.
-        """
+        "Instantiates collections of taxa, blocks, trees, and models."
         if taxa_blocks is None:
             self.taxa_blocks = []
         else:
@@ -192,9 +188,7 @@ class Reader(object):
     formats, to be implemented by derived classes.
     """
     def __init__(self):
-        """
-        Initializes.
-        """
+        "Initializes."
         # 0 = ignore all errors; 1 = print warning; 2 = raise exception
         self.error_level=0
         self.taxa_block_factory = taxa.TaxaBlock

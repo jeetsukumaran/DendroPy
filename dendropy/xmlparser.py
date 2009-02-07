@@ -59,9 +59,7 @@ class xml_document(object):
         self.etree = ElementTree.ElementTree(element=element, file=file_obj)
 
     def parse_string(self, source):
-        """
-        Loads an XML document from an XML string, source.
-        """
+        "Loads an XML document from an XML string, source."
         root = ElementTree.fromstring(source)
         self.etree = ElementTree(element=root)
 
@@ -97,9 +95,7 @@ class XmlElement(object):
         self.etree_element = element
 
     def getiterator(self, tag):
-        """
-        Returns an iterator over child elements with tags that match `tag`.
-        """
+        "Returns an iterator over child elements with tags that match `tag`."
         return utils.RecastingIterator(self.etree_element.getiterator(tag), \
                                        XmlElement)
 
@@ -111,7 +107,5 @@ class XmlElement(object):
         return self.etree_element.get(key, default)
 
     def find(self, path):
-        """
-        Finds all matching subelements, by tag name or path.
-        """
+        "Finds all matching subelements, by tag name or path."
         return self.etree_element.find(path)

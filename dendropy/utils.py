@@ -49,9 +49,7 @@ class RecastingIterator(object):
         self.casting_func = casting_func
         self.filter_func = filter_func
     def __iter__(self):
-        """
-        Returns self.
-        """
+        "Returns self."
         return self
     def next(self):
         """
@@ -104,96 +102,68 @@ class OrderedCaselessDict(dict):
                           self).__setitem__(key.lower(), val)
     
     def copy(self):
-        """
-        Returns a shallow copy of self.
-        """
+        "Returns a shallow copy of self."
         return self.__class__(self)
         
     def iterkeys(self):
-        """
-        Returns an iterator over self's ordered keys.
-        """
+        "Returns an iterator over self's ordered keys."
         return iter(self.__ordered_keys)
     
     def itervalues(self):
-        """
-        Returns an iterator over self's key, value pairs.
-        """
+        "Returns an iterator over self's key, value pairs."
         for key in self.iterkeys():
             yield self[key.lower()]
     
     def iteritems(self):
-        """
-        Returns an iterator over self's values.
-        """
+        "Returns an iterator over self's values."
         for key in self.iterkeys():
             yield (key, self[key.lower()])
 
     def items(self):
-        """
-        Returns key, value pairs in key-order.
-        """
+        "Returns key, value pairs in key-order."
         return [(key, self[key]) for key in self.iterkeys()]
 
     def values(self):
-        """
-        Returns list of key, value pairs.
-        """
+        "Returns list of key, value pairs."
         return [v for v in self.itervalues()]
     
     def __iter__(self):
-        """
-        Returns an iterator over self's ordered keys.
-        """
+        "Returns an iterator over self's ordered keys."
         return self.iterkeys()
     
     def __repr__(self):
-        """
-        Returns a representation of self's ordered keys.
-        """
+        "Returns a representation of self's ordered keys."
         return "%s([%s])" \
                % (self.__class__.__name__, ', \
                '.join(["(%r, %r)" % item for item in self.iteritems()]))
 
     def __str__(self):
-        """
-        Returns a string representation of self.
-        """
+        "Returns a string representation of self."
         return "{%s}" \
                % (', '.join(["(%r, %r)" % item for item in self.iteritems()]),)
 
     def __getitem__(self, key):
-        """
-        Gets an item using a case-insensitive key.
-        """
+        "Gets an item using a case-insensitive key."
         return super(OrderedCaselessDict, self).__getitem__(key.lower())
 
     def __setitem__(self, key, value):
-        """
-        Sets an item using a case-insensitive key,
-        """
+        "Sets an item using a case-insensitive key,"
         if key.lower() not in self:
             self.__ordered_keys.append(str(key))
         super(OrderedCaselessDict, self).__setitem__(key.lower(), value)
 
     def __delitem__(self, key):
-        """
-        Remove item with specified key.
-        """
+        "Remove item with specified key."
         del(self.__ordered_keys[self.index(key)])
         super(OrderedCaselessDict, \
               self).__delitem__(key.lower())                
 
     def __contains__(self, key):
-        """
-        Returns true if has key, regardless of case.
-        """
+        "Returns true if has key, regardless of case."
         return super(OrderedCaselessDict, self).__contains__(key.lower())
 
     def pop(self, key, alt_val=None):
-        """
-        a.pop(k[, x]):  a[k] if k in a, else x (and remove k)
-        """
+        "a.pop(k[, x]):  a[k] if k in a, else x (and remove k)"
         if key.lower() in self:
             val = self[key]
             self.__delitem__(key.lower())
@@ -202,18 +172,14 @@ class OrderedCaselessDict(dict):
             return alt_val
         
     def popitem(self):
-        """
-        a.popitem()  remove and last (key, value) pair
-        """
+        "a.popitem()  remove and last (key, value) pair"
         key = self.__ordered_keys[-1]
         item = (key, self[key.lower()])
         self.__delitem__(key)
         return item
 
     def caseless_keys(self):
-        """
-        Returns a copy of the ordered list of keys.
-        """
+        "Returns a copy of the ordered list of keys."
         return [k.lower() for k in self.__ordered_keys]
     
     def index(self, key):
@@ -229,34 +195,24 @@ class OrderedCaselessDict(dict):
         raise KeyError(key)
 
     def keys(self):
-        """
-        Returns a copy of the ordered list of keys.
-        """
+        "Returns a copy of the ordered list of keys."
         return list(self.__ordered_keys)
 
     def clear(self):
-        """
-        Deletes all items from the dictionary.
-        """
+        "Deletes all items from the dictionary."
         self.__ordered_keys = []
         super(OrderedCaselessDict, self).clear()
 
     def has_key(self, key):
-        """
-        Returns true if has key, regardless of case.
-        """
+        "Returns true if has key, regardless of case."
         return key.lower() in self
 
     def get(self, key, def_val=None):
-        """
-        Gets an item by its key, returning default if key not present.
-        """
+        "Gets an item by its key, returning default if key not present."
         return super(OrderedCaselessDict, self).get(key.lower(), def_val)
 
     def setdefault(self, key, def_val=None):
-        """
-        Sets the default value to return if key not present.
-        """
+        "Sets the default value to return if key not present."
         return super(OrderedCaselessDict, self).setdefault(key.lower(), def_val)
 
     def update(self, other):
@@ -273,9 +229,7 @@ class OrderedCaselessDict(dict):
             super(OrderedCaselessDict, self).__setitem__(key.lower(), val)
 
     def fromkeys(self, iterable, value=None):
-        """
-        Creates a new dictionary with keys from seq and values set to value.
-        """
+        "Creates a new dictionary with keys from seq and values set to value."
         ocd = OrderedCaselessDict()
         for key in iterable:
             if key.lower() not in self:
@@ -291,9 +245,7 @@ class NormalizedBitmaskDict(dict):
     """
 
     def __init__(self, other=None, mask=None):
-        """
-        Assigns mask, and then populates from `other`, if given.
-        """
+        "Assigns mask, and then populates from `other`, if given."
         dict.__init__(self)
         self.mask = mask
         if other is not None:
@@ -310,50 +262,36 @@ class NormalizedBitmaskDict(dict):
             return key ^ self.mask
             
     def __setitem__(self, key, value):
-        """
-        Sets item with normalized key.
-        """
+        "Sets item with normalized key."
         dict.__setitem__(self, self.normalize_key(key), value)
 
     def __getitem__(self, key):
-        """
-        Gets an item by its key.
-        """
+        "Gets an item by its key."
         key = self.normalize_key(key)
         return dict.__getitem__(self, key)         
 
     def __delitem__(self, key):
-        """
-        Remove item with normalized key.
-        """
+        "Remove item with normalized key."
         key = self.normalize_key(key)
         dict.__delitem__(self, key)
 
     def __contains__(self, key):
-        """
-        Returns true if has normalized key.
-        """
+        "Returns true if has normalized key."
         key = self.normalize_key(key)
         return dict.__contains__(self, key)         
 
     def pop(self, key, alt_val=None):
-        """
-        a.pop(k[, x]):  a[k] if k in a, else x (and remove k)
-        """
+        "a.pop(k[, x]):  a[k] if k in a, else x (and remove k)"
         key = self.normalize_key(key)
         return dict.pop(self, key) 
 
     def get(self, key, def_val=None):
-        """
-        Gets an item by its key, returning default if key not present.
-        """
+        "Gets an item by its key, returning default if key not present."
         key = self.normalize_key(key)
         return dict.get(self, key, def_val) 
          
     def setdefault(self, key, def_val=None):
-        """
-        Sets the default value to return if key not present.
-        """
+        "Sets the default value to return if key not present."
         dict.setdefault(self, self.normalize_key(key), def_val)
 
     def update(self, other):
@@ -368,9 +306,7 @@ class NormalizedBitmaskDict(dict):
             self[self.normalize_key(key)] = val
 
     def fromkeys(self, iterable, value=None):
-        """
-        Creates a new dictionary with keys from seq and values set to value.
-        """
+        "Creates a new dictionary with keys from seq and values set to value."
         raise NotImplementedError
     
 def pretty_print_timedelta(timedelta):

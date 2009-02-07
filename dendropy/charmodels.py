@@ -34,9 +34,7 @@ from dendropy import distributions
 from dendropy import characters
 
 class CharacterModel(object):
-    """
-    Base class for character evolution models.
-    """
+    "Base class for character evolution models."
 
     def __init__(self, state_alphabet, rng=None):
         """
@@ -63,9 +61,7 @@ class CharacterModel(object):
         raise NotImplementedError
 
 class DiscreteCharacterModel(CharacterModel):
-    """
-    Base class for discrete character substitution models.
-    """
+    "Base class for discrete character substitution models."
 
     def __init__(self, state_alphabet):
         """
@@ -102,14 +98,10 @@ class DiscreteCharacterModel(CharacterModel):
 
         
 class NucleotideCharacterModel(DiscreteCharacterModel):
-    """
-    General nucleotide substitution model.
-    """
+    "General nucleotide substitution model."
 
     def __init__(self, base_freqs=None, state_alphabet=None):
-        """
-        Sets up character set and base frequencies.
-        """
+        "Sets up character set and base frequencies."
         if state_alphabet is None:
             state_alphabet = characters.DNA_STATE_ALPHABET
         CharacterModel.__init__(self, state_alphabet)        
@@ -184,9 +176,7 @@ class Hky85CharacterModel(NucleotideCharacterModel):
     """
     
     def __init__(self, kappa=1.0, base_freqs=None):
-        """
-        If no arguments given, defaults to JC69.
-        """
+        "If no arguments given, defaults to JC69."
         NucleotideCharacterModel.__init__(self, base_freqs=base_freqs)
         self.correct_rate = True
         self.kappa = kappa
@@ -243,9 +233,7 @@ class Hky85CharacterModel(NucleotideCharacterModel):
         return pij
 
     def qmatrix(self, rate=1.0):
-        """
-        Returns the instantaneous rate of change matrix.
-        """
+        "Returns the instantaneous rate of change matrix."
         rate = self.corrected_substitution_rate(rate)
         qmatrix = []
         for state_i in range(4):
@@ -296,9 +284,7 @@ class Jc69CharacterModel(Hky85CharacterModel):
     kappa = 1.0, and base frequencies = [0.25, 0.25, 0.25, 0.25].
     """
     def __init__(self):
-        """
-        Sets up JC69 by setting Hky85 parameters.
-        """
+        "Sets up JC69 by setting Hky85 parameters."
         Hky85CharacterModel.__init__(self, 
                                      kappa=1.0,
                                      base_freqs=[0.25, 0.25, 0.25, 0.25])

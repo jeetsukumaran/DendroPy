@@ -40,9 +40,7 @@ from dendropy import xmlparser
 ## Standard Tree Iterator
       
 def iterate_over_trees(file_obj=None):
-    """
-    Generator to iterate over trees in file without retaining any in memory.
-    """
+    "Generator to iterate over trees in file without retaining any in memory."
     xml_doc = xmlparser.xml_document(file_obj=file_obj)
     dataset = datasets.Dataset()
     nexml_reader = NexmlReader()
@@ -64,9 +62,7 @@ def _to_nexml_indent_items(items, indent="", indent_level=0):
                      for item in items])
 
 def _to_nexml_dict(annotes_dict, indent="", indent_level=0):
-    """
-    Composes a nexml dict entry, given a python dictionary.
-    """
+    "Composes a nexml dict entry, given a python dictionary."
     main_indent = indent * indent_level    
     parts = []
     parts.append('%s<dict>' % main_indent)            
@@ -213,9 +209,7 @@ def _from_nexml_dict_value(value, value_type):
 ## NexmlReader
 
 class NexmlReader(datasets.Reader):
-    """
-    Implements thinterface for handling NEXML files.
-    """
+    "Implements thinterface for handling NEXML files."
     
     def __init__(self):
         """
@@ -287,14 +281,10 @@ class NexmlReader(datasets.Reader):
                 pass
 
 class _NexmlElementParser(object):
-    """
-    Base parser class: wraps around annotations/dictionary element handling.
-    """
+    "Base parser class: wraps around annotations/dictionary element handling."
     
     def __init__(self):
-        """
-        Right now, does nothing ...
-        """
+        "Right now, does nothing ..."
         pass
 
     def parse_annotations(self, annotated, nxelement):
@@ -362,14 +352,10 @@ class _NexmlElementParser(object):
                 annotated.annotate(an_key)
 
 class _NexmlTreesParser(_NexmlElementParser):
-    """
-    Parses an XmlElement representation of NEXML format tree blocks.
-    """
+    "Parses an XmlElement representation of NEXML format tree blocks."
 
     def __init__(self, trees_block_factory=None, tree_factory=None, node_factory=None, edge_factory=None):
-        """
-        Must be given tree factory to create trees.
-        """
+        "Must be given tree factory to create trees."
         super(_NexmlTreesParser, self).__init__()
         if trees_block_factory is None:
             self.trees_block_factory = trees.TreesBlock
@@ -503,9 +489,7 @@ class _NexmlTreesParser(_NexmlElementParser):
         return nodes
         
     def parse_root_edge(self, tree_element, length_type, edge_factory):
-        """
-        Returns the edge subtending the root node, or None if not defined.
-        """
+        "Returns the edge subtending the root node, or None if not defined."
         rootedge = tree_element.find('rootedge')
         if rootedge:
             edge = edge_factory()
@@ -567,14 +551,10 @@ class _NexmlTreesParser(_NexmlElementParser):
         return edges
 
 class _NexmlTaxaParser(_NexmlElementParser):
-    """
-    Parses an XmlElement representation of NEXML taxa blocks.
-    """
+    "Parses an XmlElement representation of NEXML taxa blocks."
 
     def __init__(self, taxa_block_factory=None, taxon_factory=None):
-        """
-        Does nothing too useful right now.
-        """
+        "Does nothing too useful right now."
         super(_NexmlTaxaParser, self).__init__()
         if taxa_block_factory is None:
             self.taxa_block_factory = taxa.TaxaBlock
@@ -601,14 +581,10 @@ class _NexmlTaxaParser(_NexmlElementParser):
         dataset.taxa_blocks.append(taxa_block)
         
 class _NexmlCharBlockParser(_NexmlElementParser):
-    """
-    Parses an XmlElement representation of NEXML taxa blocks.
-    """
+    "Parses an XmlElement representation of NEXML taxa blocks."
 
     def __init__(self):
-        """
-        Does nothing too useful right now.
-        """
+        "Does nothing too useful right now."
         super(_NexmlCharBlockParser, self).__init__()
 #         if char_block_factory is None:
 #             self.char_block_factory = characters.CharBlock()
@@ -811,14 +787,10 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         dataset.char_blocks.append(char_block)
                 
 class NexmlWriter(datasets.Writer):
-    """
-    Implements the DataWriter interface for handling NEXML files.
-    """
+    "Implements the DataWriter interface for handling NEXML files."
 
     def __init__(self):
-        """
-        Calls the base class constructor.
-        """
+        "Calls the base class constructor."
         datasets.Writer.__init__(self)
         self.indent = "    "
 
@@ -838,9 +810,7 @@ class NexmlWriter(datasets.Writer):
     ### class-specific  ###
             
     def write_taxa_blocks(self, taxa_blocks, dest, indent_level=1):
-        """
-        Writes out TaxaBlocks.
-        """
+        "Writes out TaxaBlocks."
         for idx, taxa_block in enumerate(taxa_blocks):
             dest.write(self.indent * indent_level)
             parts = []
@@ -878,9 +848,7 @@ class NexmlWriter(datasets.Writer):
             dest.write('</otus>\n')
 
     def write_trees_blocks(self, trees_blocks, dest, indent_level=1):
-        """
-        Writes out TreesBlocks.
-        """
+        "Writes out TreesBlocks."
         for idx, trees_block in enumerate(trees_blocks):
             dest.write(self.indent * indent_level)
             parts = []
@@ -904,9 +872,7 @@ class NexmlWriter(datasets.Writer):
             dest.write('</trees>\n')
 
     def compose_state_definition(self, state, indent_level):
-        """
-        Writes out state definition.
-        """
+        "Writes out state definition."
         parts = []
         if state.multistate == characters.StateAlphabetElement.SINGLE_STATE:
             parts.append('%s<state id="%s" symbol="%s" />' 
@@ -925,9 +891,7 @@ class NexmlWriter(datasets.Writer):
         return parts        
                                     
     def write_char_blocks(self, char_blocks, dest, indent_level=1):
-        """
-        Writes out character matrices.
-        """
+        "Writes out character matrices."
         for idx, char_block in enumerate(char_blocks):
             dest.write(self.indent * indent_level)
             parts = []
@@ -1085,9 +1049,7 @@ class NexmlWriter(datasets.Writer):
         dest.write('%s</tree>\n' % (self.indent * indent_level))            
         
     def write_to_nexml_open(self, dest, indent_level=0):
-        """
-        Writes the opening tag for a nexml element.
-        """
+        "Writes the opening tag for a nexml element."
         parts = []
         parts.append('<?xml version="1.0" encoding="ISO-8859-1"?>')
         parts.append('<nex:nexml')
@@ -1103,15 +1065,11 @@ class NexmlWriter(datasets.Writer):
         dest.write('\n'.join(parts))
 
     def write_to_nexml_close(self, dest, indent_level=0):
-        """
-        Closing tag for a nexml element.
-        """
+        "Closing tag for a nexml element."
         dest.write('%s</nex:nexml>' % (self.indent*indent_level))
 
     def write_node(self, node, dest, indent_level=0):
-        """
-        Writes out a NEXML node element.
-        """
+        "Writes out a NEXML node element."
         parts = []
         parts.append('<node')
         parts.append('id="%s"' % node.oid)
@@ -1129,9 +1087,7 @@ class NexmlWriter(datasets.Writer):
             dest.write(' />\n')
         
     def write_edge(self, edge, dest, indent_level=0):
-        """
-        Writes out a NEXML edge element.
-        """
+        "Writes out a NEXML edge element."
         if edge and edge.head_node:
             parts = []
             if edge.tail_node is not None:
@@ -1165,9 +1121,7 @@ class NexmlWriter(datasets.Writer):
                     dest.write(' />\n')
 
     def write_annotations(self, annotated, dest, indent_level=0):
-        """
-        Writes out annotations for an Annotable object.
-        """
+        "Writes out annotations for an Annotable object."
         annotes_dict = annotated.annotations()
         if len(annotes_dict) > 0:
             parts = _to_nexml_dict(annotes_dict, self.indent, indent_level)

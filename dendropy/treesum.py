@@ -51,14 +51,10 @@ def deepest_compatible_node(start_node, split, taxa_mask, unrooted):
     return start_node        
 
 class TreeSummarizer(object):
-    """
-    Summarizes a distribution of trees.
-    """
+    "Summarizes a distribution of trees."
     
     def __init__(self):
-        """
-        Initializes settings.
-        """
+        "Initializes settings."
         self.burnin = None 
         self.support_as_labels = True 
         self.support_as_percentages = False
@@ -73,9 +69,7 @@ class TreeSummarizer(object):
         self.total_trees_ignored = 0
         
     def send_progress_message(self, msg):
-        """
-        Writes progress message.
-        """
+        "Writes progress message."
         if self.verbose and self.write_message:
             if self.progress_message_prefix:
                 prefix = self.progress_message_prefix
@@ -88,9 +82,7 @@ class TreeSummarizer(object):
             self.write_message("%s%s%s" % (prefix, msg, suffix))                    
             
     def compose_support_label(self, split_support_freq):
-        """
-        Returns an appropriately composed and formatted support label.
-        """
+        "Returns an appropriately composed and formatted support label."
         if self.support_as_percentages:
             if self.support_label_decimals <= 0:
                 support_label = "%d" % round(split_support_freq * 100, 0)
@@ -109,9 +101,7 @@ class TreeSummarizer(object):
         return support_label            
         
     def map_split_support_to_node(self, node, split_support):
-        """
-        Appropriately sets up a node.
-        """
+        "Appropriately sets up a node."
         if self.support_as_labels:
             node.label = self.compose_support_label(split_support)
         else:
@@ -122,9 +112,7 @@ class TreeSummarizer(object):
         return node                
         
     def map_split_support_to_tree(self, tree, split_distribution):
-        """
-        Maps splits support to the given tree.
-        """
+        "Maps splits support to the given tree."
         split_frequencies = split_distribution.split_frequencies
         tree.normalize_taxa(taxa_block=split_distribution.taxa_block)
         splits.encode_splits(tree, taxa_block=split_distribution.taxa_block)                            

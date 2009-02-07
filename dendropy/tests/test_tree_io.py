@@ -52,9 +52,7 @@ from dendropy import nexml
 ### MODULES THAT WE ARE TESTING ###
 
 def iterate_on_trees(tree_files, tf_iterator=nexus.iterate_over_trees):
-    """
-    Test (supposedly) memory-economical iteration on trees.
-    """
+    "Test (supposedly) memory-economical iteration on trees."
     logging_level = get_logging_level()
     total_tree_files = len(tree_files)
     total_trees = 0
@@ -102,9 +100,7 @@ def compare_parse_performance(tree_files, methods):
 def test_tree_iter_performance(format,
                                heavy=False,
                                wait_to_start=False):
-    """
-    Test speed of (supposedly) memory-economical iteration on trees.
-    """
+    "Test speed of (supposedly) memory-economical iteration on trees."
     sources = dendropy.tests.data_source_path(format=format, heavy=heavy)
     if wait_to_start:
         raw_input("Hit [ENTER] to begin iterating over trees: ")
@@ -152,9 +148,7 @@ def test_tree_iter_performance(format,
 #         node.edge.length = leaf_nodes[tax_label]
 
 def read_newick_tree(tree_filepath):
-    """
-    Wrapper to read and return a tree from a single-tree NEWICK file.
-    """
+    "Wrapper to read and return a tree from a single-tree NEWICK file."
     f = open(tree_filepath, 'r')
     tstr = f.read()
     _LOG.info('Reading "%s"' % os.path.basename(tree_filepath))
@@ -165,9 +159,7 @@ def read_newick_tree(tree_filepath):
     return tree
 
 def write_newick_tree(tree, tree_filepath):
-    """
-    Wrapper to write a single tree to a NEWICK file.
-    """
+    "Wrapper to write a single tree to a NEWICK file."
     nw = nexus.NewickWriter()
     f = open(tree_filepath, 'w')
     tstr = nw.compose_tree(tree)
@@ -175,9 +167,7 @@ def write_newick_tree(tree, tree_filepath):
     f.write(tstr)
 
 def read_nexus_tree(tree_filepath):
-    """
-    Wrapper to read and return a tree from a single-tree NEWICK file.
-    """
+    "Wrapper to read and return a tree from a single-tree NEWICK file."
     f = open(tree_filepath, 'r')
     tstr = f.read()
     _LOG.info('Reading "%s"' % os.path.basename(tree_filepath))
@@ -190,9 +180,7 @@ def read_nexus_tree(tree_filepath):
     return tree
 
 def write_nexus_tree(tree, tree_filepath):
-    """
-    Wrapper to write a single tree to a NEWICK file.
-    """
+    "Wrapper to write a single tree to a NEWICK file."
     d = datasets.Dataset()
     taxa_block = tree.infer_taxa_block()
     tree_block = d.add_trees_block(taxa_block=taxa_block)
@@ -230,9 +218,7 @@ class TreeIOTest(unittest.TestCase):
                              tree_filepath,
                              reader_class,
                              writer_class):
-        """
-        Round-trips a treefile.
-        """
+        "Round-trips a treefile."
         reader = reader_class()
         _LOG.info("\nDATA FILE: \"%s\"" % os.path.basename(tree_filepath))
         dataset = reader.read_dataset(file_obj=open(tree_filepath, "r"))      
@@ -291,9 +277,7 @@ class TreeIOTest(unittest.TestCase):
                 self.round_trip_tree_file(tfile, self.readers[format], self.writers[format])
 
 def main_local():
-    """
-    Main CLI handler.
-    """
+    "Main CLI handler."
 
     parser = OptionParser(add_help_option=True)
 

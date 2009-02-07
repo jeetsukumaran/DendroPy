@@ -40,16 +40,12 @@ class TaxonLinked(base.IdTagged):
     """
     
     def __init__(self, oid=None, label=None, taxon=None):
-        """
-        Initializes by calling base class.
-        """
+        "Initializes by calling base class."
         base.IdTagged.__init__(self, oid=oid, label=label)
         self.__taxon = taxon
 
     def _get_taxon(self):
-        """
-        Returns taxon associated with this object.
-        """
+        "Returns taxon associated with this object."
         return self.__taxon
 
     def _set_taxon(self, taxon):
@@ -61,9 +57,7 @@ class TaxonLinked(base.IdTagged):
         and label, though it will be modified as neccessary to make it
         xs:NCName compliant for the id.
         """
-        if taxon is None:
-            self.__taxon = None
-        elif isinstance(taxon, Taxon):
+        if taxon is None or isinstance(taxon, Taxon):
             self.__taxon = taxon
         else:
             taxon_obj = Taxon()
@@ -80,15 +74,13 @@ class TaxaLinked(base.IdTagged):
     """
 
     def __init__(self, oid=None, label=None, taxa_block=None):
-        """
-        Initializes by calling base class.
-        """
+        "Initializes by calling base class."
         base.IdTagged.__init__(self, oid=oid, label=label)
         self.__taxa_block = taxa_block
 
     def _get_taxa_block(self):
         """
-        Returns taxon block associated with this object. If none is
+        Returns taxon block associated with this object. If none has been
         given, then it builds one.
         """
         if self.__taxa_block is None:
@@ -96,30 +88,22 @@ class TaxaLinked(base.IdTagged):
         return self.__taxa_block
 
     def _set_taxa_block(self, taxa_block):
-        """
-        Sets the taxon block for this object.
-        """
+        "Sets the taxon block for this object."
         self.__taxa_block = taxa_block
 
     taxa_block = property(_get_taxa_block, _set_taxa_block)
             
 class TaxaBlock(list, base.IdTagged):
-    """
-    Taxon manager.
-    """
+    "Taxon manager."
 
     def __init__(self, *args, **kwargs):
-        """
-        Inits. Handles keyword arguments: `oid` and `label`.
-        """
+        "Inits. Handles keyword arguments: `oid` and `label`."
         list.__init__(self, *args)
         base.IdTagged.__init__(self, oid=kwargs.get('oid'), label=kwargs.get('label'))
         self._is_mutable = kwargs.get('is_mutable', True) # immutable constraints not fully implemented -- only enforced at the add_taxon stage)
 
     def __str__(self):
-        """
-        String representation of self.
-        """
+        "String representation of self."
         header = []
         if self.oid:
             header.append("%s" % str(self.oid))
@@ -152,34 +136,24 @@ class TaxaBlock(list, base.IdTagged):
         return taxon
             
     def add_taxon(self, oid=None, label=None):
-        """
-        Convenience function that wraps `get_taxon`.
-        """
+        "Convenience function that wraps `get_taxon`."
         self.get_taxon(oid=oid, label=label)
         
     def clear(self):
-        """
-        Removes all taxa from this block.
-        """
+        "Removes all taxa from this block."
         for t in self:
             self.remove(t)
             
     def labels(self):
-        """
-        Convenience method to return all taxa labels.
-        """
+        "Convenience method to return all taxa labels."
         return [str(taxon.label) for taxon in self]        
         
     def complement_split_bitmask(self, split):
-        """
-        Returns complement of the split bitmask.
-        """
+        "Returns complement of the split bitmask."
         return split ^ self.all_taxa_bitmask()
             
     def all_taxa_bitmask(self):
-        """
-        Returns mask of all taxa.
-        """
+        "Returns mask of all taxa."
         #return pow(2, len(self)) - 1
         b = 1 << len(self)
         return b - 1
@@ -190,38 +164,29 @@ class TaxaBlock(list, base.IdTagged):
         taxon does not exist.
         """
         try:
-            return pow(2, self.index(taxon))
+            i = self.index(taxon)
+            return 1 << i
         except ValueError:
             raise ValueError("Taxon with ID '%s' and label '%s' not found" 
                              % (str(taxon.oid), str(taxon.label)))        
                              
     def split_bitmask_string(self, split_bitmask):
-        """
-        Returns bitstring representation of split_bitmask.
-        """
+        "Returns bitstring representation of split_bitmask."
         return "%s" % int_to_bitstring(split_bitmask).rjust(len(self), "0")
                                 
 class Taxon(base.IdTagged):
-    """
-    A taxon associated with a sequence or a node on a tree.
-    """
+    "A taxon associated with a sequence or a node on a tree."
     
     def cmp(taxon1, taxon2):
-        """
-        Compares taxon1 and taxon2 based on label.
-        """
+        "Compares taxon1 and taxon2 based on label."
         return cmp(str(taxon1.label), str(taxon2.label))
     
     cmp = staticmethod(cmp)
 
     def __init__(self, oid=None, label=None): 
-        """
-        Initializes by calling base class.
-        """
+        "Initializes by calling base class."
         base.IdTagged.__init__(self, oid=oid, label=label)
 
     def __str__(self):
-        """
-        String representation of self = taxon name.
-        """
+        "String representation of self = taxon name."
         return str(self.label)
