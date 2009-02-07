@@ -77,9 +77,7 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 GLOBAL_RNG = random.Random()
 
 def python_version():
-    """
-    Returns Python version as float.
-    """
+    "Returns Python version as float."
     major_ver = sys.version_info[0]
     minor_ver = sys.version_info[1]
     return major_ver + (float(minor_ver)/10)
@@ -89,10 +87,7 @@ def is_python_at_least(version):
     Returns True if Python version is at least as high as the argument
     (a numeric value).
     """
-    if python_version() >= version:
-        return True
-    else:
-        return False
+    return bool(python_version() >= version)
 
 ###############################################################################
 ## LOGGING

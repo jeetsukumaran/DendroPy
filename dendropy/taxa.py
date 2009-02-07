@@ -47,9 +47,7 @@ class TaxonLinked(base.IdTagged):
         self.__taxon = taxon
 
     def _get_taxon(self):
-        """
-        Returns taxon associated with this object.
-        """
+        "Returns taxon associated with this object."
         return self.__taxon
 
     def _set_taxon(self, taxon):
@@ -61,9 +59,7 @@ class TaxonLinked(base.IdTagged):
         and label, though it will be modified as neccessary to make it
         xs:NCName compliant for the id.
         """
-        if taxon is None:
-            self.__taxon = None
-        elif isinstance(taxon, Taxon):
+        if taxon is None or isinstance(taxon, Taxon):
             self.__taxon = taxon
         else:
             taxon_obj = Taxon()
@@ -80,15 +76,13 @@ class TaxaLinked(base.IdTagged):
     """
 
     def __init__(self, oid=None, label=None, taxa_block=None):
-        """
-        Initializes by calling base class.
-        """
+        "Initializes by calling base class."
         base.IdTagged.__init__(self, oid=oid, label=label)
         self.__taxa_block = taxa_block
 
     def _get_taxa_block(self):
         """
-        Returns taxon block associated with this object. If none is
+        Returns taxon block associated with this object. If none has been
         given, then it builds one.
         """
         if self.__taxa_block is None:
@@ -190,15 +184,14 @@ class TaxaBlock(list, base.IdTagged):
         taxon does not exist.
         """
         try:
-            return pow(2, self.index(taxon))
+            i = self.index(taxon)
+            return 1 << i
         except ValueError:
             raise ValueError("Taxon with ID '%s' and label '%s' not found" 
                              % (str(taxon.oid), str(taxon.label)))        
                              
     def split_bitmask_string(self, split_bitmask):
-        """
-        Returns bitstring representation of split_bitmask.
-        """
+        "Returns bitstring representation of split_bitmask."
         return "%s" % int_to_bitstring(split_bitmask).rjust(len(self), "0")
                                 
 class Taxon(base.IdTagged):
