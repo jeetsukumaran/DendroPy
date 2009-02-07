@@ -852,6 +852,7 @@ class NexusWriter(datasets.Writer):
         """
         datasets.Writer.__init__(self)
         self.simple = simple
+        self.write_rooting = True
         self.comment = []
 
     def compose_taxlabel(label):
@@ -895,7 +896,13 @@ class NexusWriter(datasets.Writer):
             else:
                 tree_name = str(treeidx)
             newick_str = newick_writer.compose_node(tree.seed_node)
-            block.append('    tree %s = %s;' % (tree_name, newick_str))
+            if tree.is_rooted and self.write_rooting:
+                rooting = "[&R] "
+            elif not tree.is_rooted and self.write_rooting:
+                rooting = "[&U] "
+            else:
+                rooting = ""
+            block.append('    tree %s = %s%s;' % (tree_name, rooting, newick_str))
         block.append('END;\n\n')
         dest.write('\n'.join(block))
 
