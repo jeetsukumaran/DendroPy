@@ -36,9 +36,7 @@ from dendropy import trees
 from dendropy import taxa
 
 def random_taxa_block(ntax=10, label_prefix="T"):
-    """
-    Generates a new block of taxa.
-    """
+    "Generates a new block of taxa."
     taxa_block = taxa.TaxaBlock()
     label_idx_length = int(math.log(ntax, 10)) + 1
     label_template = "%s%%0%dd" % (label_prefix, label_idx_length)
@@ -47,9 +45,7 @@ def random_taxa_block(ntax=10, label_prefix="T"):
     return taxa_block        
     
 def star_tree(taxa_block):
-    """
-    Builds and returns a star tree from the given taxa block.
-    """
+    "Builds and returns a star tree from the given taxa block."
     star_tree = trees.Tree()
     for taxon in taxa_block:
         star_tree.seed_node.new_child(node_taxon=taxon)    
@@ -60,9 +56,7 @@ def uniform_pure_birth(taxa_block,
                        ultrametricize=True,
                        tree_factory=None,
                        rng=None):
-    """
-    Generates a uniform-rate pure-birth process tree. 
-    """
+    "Generates a uniform-rate pure-birth process tree. "
     if rng is None:
         rng = GLOBAL_RNG # use the global rng by default
     if tree_factory is not None:

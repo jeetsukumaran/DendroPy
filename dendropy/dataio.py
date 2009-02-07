@@ -135,9 +135,7 @@ def store_dataset(dataset, format, dest=None):
         return dest.getvalue()
 
 def store_trees(trees_collection, format, dest=None):
-    """
-    Writes the list of trees `trees` to `dest` using writer.
-    """
+    "Writes the list of trees `trees` to `dest` using writer."
     if isinstance(trees_collection, TreesBlock):
         trees_block = trees_collection
     else:
@@ -152,9 +150,7 @@ def store_trees(trees_collection, format, dest=None):
         dest=dest)
                   
 def store_chars(char_block, format, dest=None):
-    """
-    Writes the CharacterBlock `char_block` to `dest` using writer.
-    """
+    "Writes the CharacterBlock `char_block` to `dest` using writer."
     dataset = Dataset()
     dataset.add_char_block(char_block=char_block)
     return store_dataset(dataset=dataset,
@@ -179,9 +175,7 @@ def source_file_handle(file_obj=None, string=None):
         return StringIO(string)
         
 def get_writer(format):
-    """
-    Return reader of the appropriate format.
-    """
+    "Return reader of the appropriate format."
     format = format.upper()
     if format not in WRITERS:
         raise Exception('Unrecognized format specificiation "%s", ' \
@@ -191,9 +185,7 @@ def get_writer(format):
     return WRITERS[format]()      
     
 def get_reader(format):
-    """
-    Return reader of the appropriate format.
-    """
+    "Return reader of the appropriate format."
     format = format.upper()
     if format not in READERS:
         raise Exception('Unrecognized format specificiation "%s", ' \

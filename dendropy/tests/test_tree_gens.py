@@ -39,9 +39,7 @@ from dendropy import treegen
 class TreeGenTest(unittest.TestCase):
 
     def get_species_tree(self, ntax=10):
-        """
-        Returns a species population tree, testing it in the process.
-        """
+        "Returns a species population tree, testing it in the process."
         ages = [random.randint(1000,10000) for age in range(ntax)]
         ages.sort()
         pop_sizes = [random.randint(1000,10000) for pop in range(2*ntax+1)]

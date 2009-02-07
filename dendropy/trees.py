@@ -36,14 +36,10 @@ import math
 ## TreesBlock
 
 class TreesBlock(list, taxa.TaxaLinked):
-    """
-    Tree manager.
-    """
+    "Tree manager."
 
     def __init__(self, *args, **kwargs):
-        """
-        Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`.
-        """
+        "Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`."
         list.__init__(self, *args)
         taxa.TaxaLinked.__init__(self, *args, **kwargs)
         
@@ -112,27 +108,21 @@ class Tree(base.IdTagged):
             self.seed_node = Node(oid='n0', edge=Edge())
             
     def __str__(self):
-        """
-        Dump Newick string.
-        """
+        "Dump Newick string."
         return self.compose_newick()
 
     ###########################################################################
     ## Getting/accessing methods
 
     def nodes(self, cmp_fn=None, filter_fn=None):
-        """
-        Returns list of nodes on the tree, sorted using cmp_fn.
-        """
+        "Returns list of nodes on the tree, sorted using cmp_fn."
         nodes = [node for node in self.preorder_node_iter(filter_fn)]
         if cmp_fn:
             nodes.sort(cmp_fn)
         return nodes
     
     def leaf_nodes(self):
-        """
-        Returns list of leaf_nodes on the tree.
-        """
+        "Returns list of leaf_nodes on the tree."
         return [leaf for leaf in self.leaf_iter()]
 
     def find_node(self, filter_fn):
@@ -156,9 +146,7 @@ class Tree(base.IdTagged):
             return None
             
     def find_taxon_node(self, taxon_filter_fn=None):
-        """
-        Finds the first node for which taxon_filter_fn(node.taxon) == True.
-        """
+        "Finds the first node for which taxon_filter_fn(node.taxon) == True."
         for node in self.preorder_node_iter():
             if hasattr(node, "taxon") and node.taxon is not None:
                 if taxon_filter_fn(node.taxon):
@@ -166,9 +154,7 @@ class Tree(base.IdTagged):
         return None                    
 
     def find_edge(self, oid):
-        """
-        Finds the first edge with matching id.
-        """
+        "Finds the first edge with matching id."
         filter_fn = lambda x: x.oid == oid
         found = [edge for edge in self.preorder_edge_iter(filter_fn)]
         if found and len(found) > 0:
@@ -180,23 +166,17 @@ class Tree(base.IdTagged):
     ## Node iterators
 
     def preorder_node_iter(self, filter_fn=None):
-        """
-        Returns preorder iterator over tree nodes.
-        """
+        "Returns preorder iterator over tree nodes."
         for node in self.seed_node.preorder_iter(self.seed_node, filter_fn):
             yield node
 
     def postorder_node_iter(self, filter_fn=None):
-        """
-        Returns postorder iterator over tree nodes.
-        """
+        "Returns postorder iterator over tree nodes."
         for node in self.seed_node.postorder_iter(self.seed_node, filter_fn):
             yield node
 
     def level_order_node_iter(self, filter_fn=None):
-        """
-        Returns level-order iterator over tree nodes.
-        """
+        "Returns level-order iterator over tree nodes."
         for node in self.seed_node.level_order_iter(self.seed_node, filter_fn):
             yield node
 
@@ -212,25 +192,19 @@ class Tree(base.IdTagged):
     ## Edge iterators
 
     def preorder_edge_iter(self, filter_fn=None):
-        """
-        Returns preorder iterator over tree edges.
-        """
+        "Returns preorder iterator over tree edges."
         for node in self.seed_node.preorder_iter(self.seed_node):
             if node.edge and (filter_fn is None or filter_fn(node.edge)):
                 yield node.edge
 
     def postorder_edge_iter(self, filter_fn=None):
-        """
-        Returns postorder iterator over tree edges.
-        """
+        "Returns postorder iterator over tree edges."
         for node in self.seed_node.postorder_iter(self.seed_node):
             if node.edge and (filter_fn is None or filter_fn(node.edge)):
                 yield node.edge
 
     def level_order_edge_iter(self, filter_fn=None):
-        """
-        Returns level-order iterator over tree edges.
-        """
+        "Returns level-order iterator over tree edges."
         for node in self.seed_node.level_order_iter(self.seed_node):
             if node.edge and (filter_fn is None or filter_fn(node.edge)):
                 yield node.edge
@@ -265,9 +239,7 @@ class Tree(base.IdTagged):
     ## Structure                    
                     
     def deroot(self):
-        """
-        Deroot the tree.
-        """
+        "Deroot the tree."
         if self.seed_node:
             child_nodes = self.seed_node.child_nodes()
             if child_nodes and len(child_nodes) == 2:
@@ -414,9 +386,7 @@ class Node(taxa.TaxonLinked):
     ## INSTANCE METHODS########################################################
 
     def __init__(self, oid=None, label=None, taxon=None, edge=None):
-        """
-        Inits. Handles keyword arguments: `oid` and `label`.
-        """
+        "Inits. Handles keyword arguments: `oid` and `label`."
         taxa.TaxonLinked.__init__(self, oid=oid, label=label)
         self.__edge = None        
         self.__child_nodes = []        
@@ -428,9 +398,7 @@ class Node(taxa.TaxonLinked):
         self.__edge.head_node = self            
 
     def __str__(self):
-        """
-        String representation of the object: it's id.
-        """
+        "String representation of the object: it's id."
         return str(self.oid)
 
     def is_leaf(self):
@@ -440,9 +408,7 @@ class Node(taxa.TaxonLinked):
     ## Low-level methods for manipulating structure ##
 
     def _get_edge(self):
-        """
-        Returns the edge subtending this node.
-        """
+        "Returns the edge subtending this node."
         return self.__edge
 
     def _set_edge(self, edge=None):
@@ -455,9 +421,7 @@ class Node(taxa.TaxonLinked):
             edge.head_node = self
 
     def _get_edge_length(self):
-        """
-        Returns the length of the edge  subtending this node.
-        """
+        "Returns the length of the edge  subtending this node."
         return self.__edge.length
 
     def _set_edge_length(self, v=None):
@@ -472,9 +436,7 @@ class Node(taxa.TaxonLinked):
     edge_length = property(_get_edge_length, _set_edge_length)
         
     def child_nodes(self):
-        """
-        Returns the a shallow-copy list of all child nodes.
-        """
+        "Returns the a shallow-copy list of all child nodes."
         return list(self.__child_nodes)
     
     def set_children(self, child_nodes):
@@ -520,9 +482,7 @@ class Node(taxa.TaxonLinked):
         return node
 
     def new_child(self, oid=None, edge_length=None, node_label=None, node_taxon=None):
-        """
-        Convenience class to create and add a new child to this node.
-        """
+        "Convenience class to create and add a new child to this node."
         node = self.__class__()
         if oid is not None:
             node.oid = oid
@@ -587,9 +547,7 @@ class Node(taxa.TaxonLinked):
             return 0.0
 
     def level(self):
-        """
-        Number of nodes between self and root.
-        """
+        "Number of nodes between self and root."
         if self.parent_node:
             return self.parent_node.level + 1
         else:
@@ -720,9 +678,7 @@ class Edge(base.IdTagged):
         self.length = length
 
     def new_edge(self, oid=None):
-        """
-        Returns a new edge object of the same class of this edge.
-        """
+        "Returns a new edge object of the same class of this edge."
         edge = self.__class__()
         edge.oid = oid
         return edge

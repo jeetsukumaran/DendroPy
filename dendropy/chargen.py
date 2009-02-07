@@ -37,14 +37,14 @@ from dendropy import charmodels
 ## Convenience wrappers
 
 def generate_hky_dataset(seq_len,
-    tree_model,                   
-    mutation_rate=1.0, 
-    kappa=1.0,
-    base_freqs=[0.25, 0.25, 0.25, 0.25],
-    root_states=None,    
-    dataset=None,
-    taxa_block=None,
-    rng=None):
+                         tree_model,                   
+                         mutation_rate=1.0, 
+                         kappa=1.0,
+                         base_freqs=[0.25, 0.25, 0.25, 0.25],
+                         root_states=None,    
+                         dataset=None,
+                         taxa_block=None,
+                         rng=None):
     """
     Convenience class to wrap generation of a dataset based on
     the HKY model.
@@ -77,14 +77,14 @@ def generate_hky_dataset(seq_len,
         rng=rng)  
         
 def generate_hky_characters(seq_len,
-    tree_model,                   
-    mutation_rate=1.0, 
-    kappa=1.0,
-    base_freqs=[0.25, 0.25, 0.25, 0.25],
-    root_states=None,    
-    char_block=None,
-    taxa_block=None,
-    rng=None):
+                            tree_model,                   
+                            mutation_rate=1.0, 
+                            kappa=1.0,
+                            base_freqs=[0.25, 0.25, 0.25, 0.25],
+                            root_states=None,    
+                            char_block=None,
+                            taxa_block=None,
+                            rng=None):
     """
     Convenience class to wrap generation of characters (as a CharacterBlock
     object) based on the HKY model.
@@ -112,22 +112,22 @@ def generate_hky_characters(seq_len,
     char_model = charmodels.Hky85CharacterModel(kappa=kappa, 
                                                 base_freqs=base_freqs)
     return generate_characters(seq_len=seq_len,
-        tree_model=tree_model,
-        char_model=char_model,
-        mutation_rate=mutation_rate,       
-        root_states=root_states, 
-        char_block=char_block,
-        taxa_block=taxa_block,
-        rng=rng)    
+                               tree_model=tree_model,
+                               char_model=char_model,
+                               mutation_rate=mutation_rate,       
+                               root_states=root_states, 
+                               char_block=char_block,
+                               taxa_block=taxa_block,
+                               rng=rng)    
                 
 def generate_dataset(seq_len,
-    tree_model,
-    char_model,
-    mutation_rate=1.0,       
-    root_states=None, 
-    dataset=None,
-    taxa_block=None,
-    rng=None):
+                     tree_model,
+                     char_model,
+                     mutation_rate=1.0,       
+                     root_states=None, 
+                     dataset=None,
+                     taxa_block=None,
+                     rng=None):
     """
     Wrapper to conveniently generate a Dataset simulated under
     the given tree and character model.
@@ -164,13 +164,13 @@ def generate_dataset(seq_len,
     return dataset
     
 def generate_characters(seq_len,
-    tree_model,
-    char_model,
-    mutation_rate=1.0,       
-    root_states=None, 
-    char_block=None,
-    taxa_block=None,
-    rng=None):
+                        tree_model,
+                        char_model,
+                        mutation_rate=1.0,       
+                        root_states=None, 
+                        char_block=None,
+                        taxa_block=None,
+                        rng=None):
     """
     Wrapper to conveniently generate a characters simulated under
     the given tree and character model.
@@ -220,9 +220,7 @@ def generate_characters(seq_len,
 ## Workhorse class(es)
                              
 class CharEvolver(object):
-    """
-    Evolves sequences on a tree.
-    """
+    "Evolves sequences on a tree."
 
     def __init__(self,
      char_model=None,
@@ -232,9 +230,7 @@ class CharEvolver(object):
      edge_length_attr="length",
      edge_rate_attr="mutation_rate",
      seq_label_attr='taxon'):
-        """
-        Sets up meta-data dealing with object nomenclature and semantics.
-        """
+        "Sets up meta-data dealing with object nomenclature and semantics."
         self.char_model = char_model
         self.mutation_rate = mutation_rate
         self.seq_attr = seq_attr

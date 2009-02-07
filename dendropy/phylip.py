@@ -32,21 +32,14 @@ PHYLIP format.
 from dendropy import datasets
 
 class PhylipWriter(datasets.Writer):
-    """
-    Implements the DataWriter interface for handling PHYLIP files.
-    """
+    "Implements the DataWriter interface for handling PHYLIP files."
     
     def __init__(self):
-        """
-        Calls the base class constructor.
-        """
+        "Calls the base class constructor."
         datasets.Writer.__init__(self)
         
     def write_dataset(self, dataset, dest):
-        """
-        Writes dataset to a full PHYLIP
-        document.
-        """
+        "Writes dataset to a full PHYLIP document."
         char_block = dataset.char_blocks[0]
         n_seqs = len(char_block.matrix)
         n_sites = len(char_block.matrix.values()[0])

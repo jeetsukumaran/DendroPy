@@ -32,21 +32,14 @@ import textwrap
 from dendropy import datasets
 
 class FastaWriter(datasets.Writer):
-    """
-    Implements the DataWriter interface for handling PHYLIP files.
-    """
+    "Implements the DataWriter interface for handling PHYLIP files."
     
     def __init__(self):
-        """
-        Calls the base class constructor.
-        """
+        "Calls the base class constructor."
         datasets.Writer.__init__(self)
         
     def write_dataset(self, dataset, dest):
-        """
-        Writes dataset to a full PHYLIP
-        document.
-        """
+        "Writes dataset to a full PHYLIP document."
         for char_block in dataset.char_blocks:
             for taxon in char_block.matrix:
                 dest.write(">%s\n" % str(taxon))
