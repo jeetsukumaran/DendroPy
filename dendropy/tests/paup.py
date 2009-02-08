@@ -190,7 +190,7 @@ class Paup(object):
         paup_template = []
         paup_template.extend(self.compose_list_taxa())
         paup_template.append("[!SPLITS COUNT BEGIN]")        
-        paup_template.append("contree / strict=no %s showtree=no grpfreq=yes majrule=yes percent=%d" % (treefile, percent));
+        paup_template.append("contree / strict=no %s showtree=no grpfreq=yes majrule=yes percent=%d;" % (treefile, percent));
         paup_template.append("[!SPLITS COUNT END]")
         return paup_template
     
@@ -363,7 +363,7 @@ def estimate_char_model(tree_model,
 class PaupWrapperDumbTests(unittest.TestCase):
     """
     Checks basic running of PAUP commands, and correct parsing/extraction of 
-    output. Does not do (or check) higher-level processing of output.1
+    output.
     """
 
     def check_taxa_block(self, filename, taxlabels):
@@ -379,16 +379,24 @@ class PaupWrapperDumbTests(unittest.TestCase):
         for i, t in enumerate(taxa_block):
             assert t.label == taxlabels[i]
                         
-    def check_group_freqs(self, treefile, group_freqs):
+    def check_group_freqs(self, treefile, group_freqs, taxa_filepath=None):
         """Calculates group frequencies from `filename`, make sure that 
         frequencies match `group_freqs` (given as dictionary of PAUP* group
         strings and their frequencies for the file)."""        
         p = Paup()
         commands = []             
-        commands.extend(p.compose_load_trees(tree_filepaths=[dendropy.tests.data_source_path(treefile)]))
+        commands.extend(p.compose_load_trees(tree_filepaths=[dendropy.tests.data_source_path(treefile)], 
+            taxa_filepath=dendropy.tests.data_source_path(taxa_filepath)))
         commands.extend(p.compose_count_splits())
         results = p.run(commands)
         bipartition_counts, bipartition_freqs = p.parse_group_freqs(results)
+        assert len(group_freqs) == len(bipartition_counts), "%d != %d" % (len(group_freqs), len(bipartition_counts))
+        assert len(group_freqs) == len(bipartition_freqs), "%d != %d" % (len(group_freqs), len(bipartition_freqs))
+        for g in group_freqs:
+            assert g in bipartition_counts
+            assert g in bipartition_freqs
+            assert group_freqs[g][0] == bipartition_counts[g]
+            assert group_freqs[g][1] == bipartition_freqs[g]
                        
     def testTaxaBlock(self):
         test_cases = (
@@ -410,7 +418,7 @@ class PaupWrapperDumbTests(unittest.TestCase):
             
     def testGroupFreqs(self):
         test_cases = (
-            ("anolis.mcmct.trees.nexus",
+            (("anolis.mcmct.trees.nexus", "anolis.chars.nexus"),
                 {
                 "......*...*..................." : (1000, 99.9), "...*...................*......" : (999, 99.8), "...................*.....*...." : (999, 99.8), "......................*.*....." : (998, 99.7), "...........*......*..........." : (994, 99.3), "............**..*..........*.." : (994, 99.3), ".*.....*......................" : (993, 99.2), "............**................" : (992, 99.1), ".***********..**.*****.*.**.**" : (991, 99.0), ".....*...*...................." : (991, 99.0), "........*......*..........*..." : (990, 98.9), "..*.........................*." : (990, 98.9), "...*.............*.....*......" : (987, 98.6), "......*.*.*....*..........*..." : (984, 98.3), "..............*......*........" : (970, 96.9), "..**.............*.....*....*." : (968, 96.7), ".***********..**.**********.**" : (961, 96.0), ".*..*..*...*......*.*........." : (894, 89.3), "........*......*.............." : (881, 88.0), "............**.............*.." : (872, 87.1), ".*..**.*.*.*..*...*.**........" : (867, 86.6),
                 ".*..********..**..*.**....*..." : (707, 70.6), ".*..*..*......................" : (681, 68.0), ".*..*..*...*..*...*.**........" : (506, 50.5), ".*..*..*............*........." : (463, 46.3), "..**.............*.*...*.*..**" : (397, 39.7), "..**.............*.*...*.*..*." : (322, 32.2), ".*..********..**..*.**....*..*" : (299, 29.9), "...................*.....*...*" : (298, 29.8), ".*..*..*...*......*..........." : (295, 29.5), ".....*...*....*......*........" : (255, 25.5), "..**.............*.....*....**" : (235, 23.5), "....*...............*........." : (142, 14.2), "......*.*.*....*..........*..*" : (140, 14.0), ".*..**.*.*.*......*.*........." : (139, 13.9), ".*.....*...*......*..........." : (137, 13.7), ".***********..**.*****.*.**.*." : (128, 12.8), "...........*......*.*........." : (125, 12.5), ".*..**.*.*.*..*...*.**.......*" : (117, 11.7), "........*.................*..." : (110, 11.0), ".*..*..*...*......*.*........*" : (110, 11.0), "............**..*............." : (104, 10.4),
@@ -426,7 +434,7 @@ class PaupWrapperDumbTests(unittest.TestCase):
                 }),
             )
         for i in test_cases:
-            self.check_group_freqs(i[0], i[1])            
+            self.check_group_freqs(i[0][0], i[1], i[0][1]) 
 
 if __name__ == "__main__":
     unittest.main()
