@@ -90,11 +90,27 @@ class Paup(object):
         paup_run = subprocess.Popen(['%s -n' % self.paup_path],
                                     shell=True,
                                     stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE)
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
         stdout, stderr = paup_run.communicate(commands)
-        return stdout.split("\n")
+        results = stdout.split("\n")
+        if stderr:
+            sys.stderr.write(stderr)
+            sys.exit(1)
+        # check results:
+#         for idx, line in enumerate(results):
+#             try:
+#                 assert not re.match("^Error\(.*", line)
+#             except AssertionError, e:
+#                 sys.stderr.write("Error in PAUP run:\n")
+#                 # write out PAUP error message with some context
+#                 i = 0
+#                 while (idx+i) < len(results) and i < 3:
+#                     sys.stderr.write(results[idx+i] + "\n")
+#                     i += 1
+        return results            
         
-    def parse_taxa_block(self, lines):
+    def parse_taxa_block(self, paup_output):
         """
         Given PAUP* output that includes a taxon listing as produced by
         `compose_list_taxa`, this parses out and returns a taxon block.
@@ -102,11 +118,11 @@ class Paup(object):
         taxlabels = []
         taxinfo_pattern = re.compile('\s*(\d+) (.*)\s+\-')
         idx = 0
-        for line in lines:
+        for line in paup_output:
             idx += 1
             if line == "TAXON LIST BEGIN":
                 break                  
-        for line in lines[idx:]:
+        for line in paup_output[idx:]:
             if line == "TAXON LIST END":
                 break
             ti_match = taxinfo_pattern.match(line)
@@ -117,7 +133,7 @@ class Paup(object):
             taxa_block.add_taxon(label=taxlabel.replace(' ', '_'))
         return taxa_block           
         
-    def parse_group_freqs(self, lines):
+    def parse_group_freqs(self, paup_output):
         """
         Given PAUP* output that includes a split counting procedure,
         this collects the splits and returns a dictionary of group strings and 
@@ -128,11 +144,11 @@ class Paup(object):
         bipartition_counts = {}
         bipartition_pattern = re.compile('([\.|\*]+)\s+([\d\.]+)\s+([\d\.]*)%')       
         idx = 0
-        for line in lines:
+        for line in paup_output:
             idx += 1
             if line == "SPLITS COUNT BEGIN":
                 break                  
-        for line in lines[idx:]:
+        for line in paup_output[idx:]:
             if line == "SPLITS COUNT END":
                 break
             bp_match = bipartition_pattern.match(line)
@@ -248,14 +264,14 @@ def bipartitions(data_filepath,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE)
     stdout, stderr = paup_run.communicate(paup_template % paup_args)
-    lines = stdout.split('\n')
+    paup_output = stdout.split('\n')
     tax_labels = []
     bipartitions = []
     bipartition_freqs = {}
     bipartition_counts = {}
     bipartition_pattern = re.compile('([\.|\*]+)\s+([\d\.]+)\s+([\d\.]*)%')
     taxinfo_pattern = re.compile('\s*(\d+) (.*)\s+\-')
-    for line in lines:
+    for line in paup_output:
         bp_match = bipartition_pattern.match(line)
         if bp_match:
             bipartitions.append(bp_match.group(1))
@@ -368,7 +384,11 @@ class PaupWrapperDumbTests(unittest.TestCase):
         frequencies match `group_freqs` (given as dictionary of PAUP* group
         strings and their frequencies for the file)."""        
         p = Paup()
-        pass         
+        commands = []             
+        commands.extend(p.compose_load_trees(tree_filepaths=[dendropy.tests.data_source_path(treefile)]))
+        commands.extend(p.compose_count_splits())
+        results = p.run(commands)
+        bipartition_counts, bipartition_freqs = p.parse_group_freqs(results)
                        
     def testTaxaBlock(self):
         test_cases = (
