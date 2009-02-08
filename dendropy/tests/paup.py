@@ -26,15 +26,155 @@
 Various calls to PAUP* to calculate stuff.
 """
 
-import re
+import os
+import sys
 import subprocess
 import tempfile
+import re
+
+import unittest
+import dendropy.tests
+from dendropy import get_logger
+_LOG = get_logger("PAUPWrapper")
+
 from dendropy import datasets
 from dendropy import dataio
+from dendropy import taxa
 
-import sys
+###############################################################################
+## PAUP* WRAPPER
+###############################################################################
 
-PAUP_PATH="paup"
+if "PAUP_PATH" in os.environ:
+    PAUP_PATH = os.environ["PAUP_PATH"]
+else:
+    PAUP_PATH = "paup"
+
+class Paup(object):
+    """ Wrapper around PAUP* """
+    
+    def __init__(self, paup_path=None):
+        if paup_path is None:
+            self.paup_path = PAUP_PATH
+        else:
+            self.paup_path = paup_path
+            
+    def run(self, commands):
+        """ executes given list of commands in PAUP*, 
+        return results of stdout and stderr """
+        commands = "\n".join(commands) + "\n"
+        paup_run = subprocess.Popen(['%s -n' % self.paup_path],
+                                    shell=True,
+                                    stdin=subprocess.PIPE,
+                                    stdout=subprocess.PIPE)
+        stdout, stderr = paup_run.communicate(commands)
+        return stdout.split("\n")
+        
+    def parse_taxa_block(self, lines):
+        """
+        Given PAUP* output that includes a taxon listing as produced by
+        `compose_list_taxa`, this parses out and returns a taxon block.
+        """
+        taxlabels = []
+        taxinfo_pattern = re.compile('\s*(\d+) (.*)\s+\-')
+        idx = 0
+        for line in lines:
+            idx += 1
+            if line == "TAXON LIST BEGIN":
+                break                  
+        for line in lines[idx:]:
+            if line == "TAXON LIST END":
+                break
+            ti_match = taxinfo_pattern.match(line)
+            if ti_match:
+                taxlabels.append(ti_match.group(2).strip())                
+        taxa_block = taxa.TaxaBlock() 
+        for taxlabel in taxlabels:
+            taxa_block.add_taxon(label=taxlabel.replace(' ', '_'))
+        return taxa_block           
+        
+    def parse_split_counts(self, lines, taxa_block=None):
+        """
+        Given PAUP* output that includes a split counting procedure,
+        this collects the splits and returns a SplitsDistribution object.
+        """        
+        if taxa_block is None:
+            taxa_block = self.parse_taxa_block(lines)
+        bipartitions = []
+        bipartition_freqs = {}
+        bipartition_counts = {}
+        bipartition_pattern = re.compile('([\.|\*]+)\s+([\d\.]+)\s+([\d\.]*)%')       
+        idx = 0
+        for line in lines:
+            idx += 1
+            if line == "SPLITS COUNT BEGIN":
+                break                  
+        for line in lines[idx:]:
+            if line == "SPLITS COUNT END":
+                break
+            bp_match = bipartition_pattern.match(line)
+            if bp_match:
+                bipartitions.append(bp_match.group(1))
+                bipartition_counts[bp_match.group(1)] = int(bp_match.group(2))
+                bipartition_freqs[bp_match.group(1)] = float(bp_match.group(3))        
+        
+    def compose_list_taxa(self):
+        """ 
+        Given a data file in memory, this gets PAUP* to print a list of 
+        taxa that can be used to build a TaxaBlock later.
+        """
+        return ["[!TAXON LIST BEGIN]\ntstatus / full;\n[!TAXON LIST END]\n"]
+        
+    def compose_count_splits(self, majrule_filepath=None, majrule_freq=0.5):
+        """
+        Given trees in memory, this composes a command to count the split
+        frequencies across the trees as well as a save the majority-rule
+        consensus tree if a path is given.
+        """
+        percent = 100 * majrule_freq
+        if majrule_filepath is not None:
+            treefile = " treefile=%s replace=yes "
+        else:
+            treefile = ""
+        paup_template = []
+        paup_template.extend(self.compose_list_taxa())
+        paup_template.append("[!SPLITS COUNT BEGIN]")        
+        paup_template.append("contree / strict=no %s showtree=no grpfreq=yes majrule=yes percent=%d" % (treefile, percent));
+        paup_template.append("[!SPLITS COUNT END]")
+        return paup_template
+    
+    def compose_load_trees(self,
+                           tree_filepaths,
+                           taxa_filepath=None, # for taxa block; leave None if taxa in treefile                                                     
+                           burnin=0,
+                           mode=7, # keep trees in memory, specify 3 to clear
+                           reset=True):
+        """
+        Composes commands to load a set of trees into PAUP*, with the specified 
+        number of burnin dropped.
+        """
+        if isinstance(tree_filepaths, str):
+            raise Exception("expecting list of filepaths, not string")
+        gettree_template = 'gett file= %%s storebrlens=yes warntree=no unrooted=yes from=%d mode=%%d;' % (burnin+1)
+        paup_template = []
+        paup_template.append("set warnreset=no; set increase=auto; set warnroot=no;")
+        if taxa_filepath is not None:
+            paup_template.append('execute %s;' % taxa_filepath)
+            paup_template.append(gettree_template % (tree_filepaths[0], mode))
+        else:
+            if reset:
+                paup_template.append('execute %s;' % tree_filepaths[0])
+            else:
+                paup_template.append(gettree_template % (tree_filepaths[0], mode))
+        for tree_filepath in tree_filepaths[1:]:
+            paup_template.append(gettree_template % (tree_filepath, 7))
+                        
+        return paup_template
+
+
+###############################################################################
+## OLD STUFF
+###############################################################################
 
 def bipartitions(data_filepath,
                  tree_filepath,
@@ -162,30 +302,48 @@ def estimate_char_model(tree_model,
                 results[value_name] = float(results[value_name])
             except:
                 pass
-#     print stdout                
+                
     return results
-#     
-# from dendropy import dataio
-# from dendropy import chargen
-# tree_model_string = """
-# #NEXUS
-# BEGIN TAXA;
-#     DIMENSIONS NTAX=5;
-#     TAXLABELS
-#         A
-#         B
-#         C
-#         D
-#         E
-#   ;
-# END;
-# begin trees;
-#     tree true=(A:0.25,(B:0.25,(C:0.25,(D:0.25,E:0.25):0.25):0.25):0.25):0.25;
-# end;
-# """
-# source_ds = dataio.from_nexus(string=tree_model_string)
-# tree_model = source_ds.trees_blocks[0][0]
-# char_block = chargen.generate_hky_characters(10000, tree_model=tree_model)
-# estimate_char_model(tree_model=tree_model, char_block=char_block, num_states=1)
+
+###############################################################################
+## TEST SUITE
+###############################################################################
+    
+class TreeDistTest(unittest.TestCase):
+
+    def check_taxa_block(self, filename, taxlabels):
+        p = Paup()
+        commands = []             
+        commands.extend(p.compose_load_trees([dendropy.tests.data_source_path(filename)]))
+        commands.extend(p.compose_list_taxa())
+        print commands
+        results = p.run(commands) 
+        taxa_block = p.parse_taxa_block(results)
+        assert len(taxa_block) == len(taxlabels)
+        for i, t in enumerate(taxa_block):
+            assert t.label == taxlabels[i]
+                       
+    def testTaxaBlock(self):
+        test_cases = (
+            ("feb032009.tre",("T01", "T02", "T03", "T04", "T05", "T06",
+            "T07", "T08", "T09", "T10", "T11", "T12", "T13", "T14",
+            "T15", "T16", "T17", "T18", "T19", "T20", "T21", "T22",
+            "T23", "T24", "T25", "T26", "T27", "T28", "T29", "T30",
+            "T31", "T32", "T33", "T34", "T35", "T36", "T37", "T38",
+            "T39", "T40", "T41", "T42", "T43", "T44", "T45", "T46",
+            "T47", "T48", "T49", "T50", "T51", "T52", "T53", "T54",
+            "T55", "T56", "T57", "T58", "T59")),
+            ("primates.chars.nexus", ("Lemur_catta", "Homo_sapiens",
+            "Pan", "Gorilla", "Pongo", "Hylobates", "Macaca_fuscata",
+            "Macaca_mulatta", "Macaca_fascicularis", "Macaca_sylvanus",
+            "Saimiri_sciureus", "Tarsius_syrichta", ))
+        )
+        
+        for i in test_cases:
+            self.check_taxa_block(i[0], i[1])
+
+if __name__ == "__main__":
+    unittest.main()
+    
     
                 
