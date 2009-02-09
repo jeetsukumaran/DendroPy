@@ -31,6 +31,10 @@ from dendropy import trees
 from dendropy import treegen
 from dendropy import utils
 
+def lowest_bit_only(s):
+    m = s & (s - 1)
+    return m ^ s
+
 __n_bits_set = (0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4)
 def count_bits(a):
     '''Returns the number of bits set to one.'''

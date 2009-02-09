@@ -72,6 +72,10 @@ class SplitTest(unittest.TestCase):
 
     def testCountBits(self):
         self.assertEqual(count_bits(21), 3)
+    
+    def testLowestBitOnly(self):
+        for n, expected in enumerate([0, 1, 2, 1, 4, 1, 2, 1, 8, 1, 2, 1, 4, 1, 2, 1, 16]):
+            self.assertEqual(lowest_bit_only(n), expected)
 
 if __name__ == "__main__":
     unittest.main()

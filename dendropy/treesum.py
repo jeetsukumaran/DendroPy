@@ -154,14 +154,22 @@ class TreeSummarizer(object):
                          min_freq=0.5,
                          include_edge_lengths=True):
         "Returns a consensus tree from splits in `split_distribution`."
+        leaf_to_root_search = True
+        
         taxa_block = split_distribution.taxa_block
         con_tree = treegen.star_tree(taxa_block)
         split_freqs = split_distribution.split_frequencies
         taxa_mask = taxa_block.all_taxa_bitmask()
         splits.encode_splits(con_tree, taxa_block)
-        #start_leaf = con_tree.split_edges[0x01].head_node
+        leaves = con_tree.leaf_nodes()
+        
+        if leaf_to_root_search:
+            to_leaf_dict = {}
+            for leaf in leaves:
+                to_leaf_dict[leaf.edge.clade_mask] = leaf
         include_edge_lengths = self.support_as_labels and include_edge_lengths
         unrooted = split_distribution.unrooted
+        
         to_try_to_add = []
         for s, f in split_freqs.iteritems():
             if (f > min_freq):
@@ -179,11 +187,22 @@ class TreeSummarizer(object):
                         to_try_to_add.append((f, m, m))
         to_try_to_add.sort(reverse=True)
 
+        root = con_tree.seed_node
+        root_edge = root.edge
         # Now when we add splits in order, we will do a greedy, extended majority-rule consensus tree
         for freq, split_to_add, split_in_dict in to_try_to_add:
-            parent_node = shallowest_containing_node(start_node=con_tree.seed_node,
-                                                  split=split_to_add,
-                                                  taxa_mask=taxa_mask)
+            if (split_to_add & root_edge.clade_mask) != split_to_add:
+                continue
+            elif leaf_to_root_search:
+                lb = splits.lowest_bit_only(split_to_add)
+                one_leaf = to_leaf_dict[lb]
+                parent_node = one_leaf
+                while (split_to_add & parent_node.edge.clade_mask) != split_to_add:
+                    parent_node = parent_node.parent_node
+            else:
+                parent_node = shallowest_containing_node(start_node=con_tree.seed_node,
+                                                      split=split_to_add,
+                                                      taxa_mask=taxa_mask)
             if parent_node is not None or parent_node.edge.clade_mask == split_to_add:
                 continue # split is not in tree, or already in tree.
             new_node = trees.Node()
@@ -212,7 +231,7 @@ class TreeSummarizer(object):
                 con_tree.split_edges[split_to_add] = new_edge
 
         ## here we add the support values and/or edge lengths for the terminal taxa ##
-        for node in con_tree.leaf_nodes():
+        for node in leaves:
             if unrooted:
                 split = con_tree.split_edges.normalize_key(node.edge.clade_mask)
             else:
