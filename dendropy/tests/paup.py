@@ -142,12 +142,14 @@ class Paup(object):
         bipartitions = []
         bipartition_freqs = {}
         bipartition_counts = {}
+        tree_count = None
+        tree_count_pattern = re.compile('.*Majority-rule consensus of ([\d]*) tree', re.I)
         bipartition_pattern = re.compile('([\.|\*]+)\s+([\d\.]+)\s+([\d\.]*)%')       
-        idx = 0
+        idx = 0        
         for line in paup_output:
             idx += 1
             if line == "SPLITS COUNT BEGIN":
-                break                  
+                break                        
         for line in paup_output[idx:]:
             if line == "SPLITS COUNT END":
                 break
@@ -156,7 +158,12 @@ class Paup(object):
                 bipartitions.append(bp_match.group(1))
                 bipartition_counts[bp_match.group(1)] = int(bp_match.group(2))
                 bipartition_freqs[bp_match.group(1)] = float(bp_match.group(3))
-        return bipartition_counts, bipartition_freqs
+            else:
+                tp_match = tree_count_pattern.match(line)
+                if tp_match:
+                    tree_count = int(tp_match.group(1))
+        assert tree_count is not None                    
+        return tree_count, bipartition_counts, bipartition_freqs
         
     def split_counts_from_group_freqs(self, 
         bipartition_counts,
@@ -189,6 +196,7 @@ class Paup(object):
             treefile = ""
         paup_template = []
         paup_template.extend(self.compose_list_taxa())
+        
         paup_template.append("[!SPLITS COUNT BEGIN]")        
         paup_template.append("contree / strict=no %s showtree=no grpfreq=yes majrule=yes percent=%d;" % (treefile, percent));
         paup_template.append("[!SPLITS COUNT END]")
@@ -389,7 +397,7 @@ class PaupWrapperDumbTests(unittest.TestCase):
             taxa_filepath=dendropy.tests.data_source_path(taxa_filepath)))
         commands.extend(p.compose_count_splits())
         results = p.run(commands)
-        bipartition_counts, bipartition_freqs = p.parse_group_freqs(results)
+        tree_count, bipartition_counts, bipartition_freqs = p.parse_group_freqs(results)
         assert len(group_freqs) == len(bipartition_counts), "%d != %d" % (len(group_freqs), len(bipartition_counts))
         assert len(group_freqs) == len(bipartition_freqs), "%d != %d" % (len(group_freqs), len(bipartition_freqs))
         for g in group_freqs:
