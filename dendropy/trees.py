@@ -139,11 +139,9 @@ class Tree(base.IdTagged):
         will return all nodes which have an attributed 'genes' and this value
         is not None.
         """
-        found = [node for node in self.preorder_node_iter(filter_fn)]
-        if found and len(found) > 0:
-            return found[0]
-        else:
-            return None
+        for node in self.preorder_node_iter(filter_fn):
+            return node
+        return None
             
     def find_taxon_node(self, taxon_filter_fn=None):
         "Finds the first node for which taxon_filter_fn(node.taxon) == True."
@@ -155,12 +153,10 @@ class Tree(base.IdTagged):
 
     def find_edge(self, oid):
         "Finds the first edge with matching id."
-        filter_fn = lambda x: x.oid == oid
-        found = [edge for edge in self.preorder_edge_iter(filter_fn)]
-        if found and len(found) > 0:
-            return found[0]
-        else:
-            return None
+        for edge in self.preorder_edge_iter():
+            if edge.oid == oid:
+                return edge
+        return None
 
     ###########################################################################
     ## Node iterators
@@ -264,7 +260,75 @@ class Tree(base.IdTagged):
     def compose_newick(self, **kwargs):
         return self.seed_node.compose_newick(**kwargs)
                 
+    def reroot_at(self, nd, flip_splits=False, suppress_deg_two=True):
+        """Takes an internal node, `nd` that must already be in the tree and 
+        reroots the tree such that `nd` the `seed_node` of the tree.
+        
+        If `flip_splits` is True, then the edges' `split` and the tree's 
+            `split_edges` attributes will be updated."""
+        old_par = nd.parent_node
+        if old_par is None:
+            return
+        if flip_splits:
+            taxa_mask = self.seed_node.edge.clade_mask
+        to_edge_dict = None
+        if flip_splits:
+            to_edge_dict = getattr(self, "split_edges", None)
 
+        if old_par is self.seed_node:
+            root_children = old_par.child_nodes()
+            if len(root_children) == 2 and suppress_deg_two:
+                # root (old_par) was of degree 2, thus we need to suppress the
+                #   node
+                fc = root_children[0]
+                if fc is nd:
+                    sister = root_children[1]
+                else:
+                    assert root_children[1] is nd
+                    sister = fc
+                if nd.edge.length:
+                    sister.edge.length += nd.edge.length
+                edge_to_del = nd.edge
+                nd.edge = old_par.edge
+                if flip_splits:
+                    assert nd.edge.clade_mask == taxa_mask
+                if to_edge_dict:
+                    del to_edge_dict[edge_to_del.clade_mask]
+                nd.add_child(sister, edge_length=sister.edge.length)
+                self.seed_node = nd
+                return
+        else:
+            self.reroot_at(old_par, flip_splits=flip_splits, suppress_deg_two=suppress_deg_two)
+        old_par.edge, nd.edge = nd.edge, old_par.edge
+        e = old_par.edge
+        if flip_splits:
+            if to_edge_dict:
+                del to_edge_dict[e.clade_mask]
+            e.clade_mask = e.clade_mask^taxa_mask
+            if to_edge_dict:
+                to_edge_dict[e.clade_mask] = e
+            assert nd.edge.clade_mask == taxa_mask
+        old_par.remove_child(nd)
+        nd.add_child(old_par, edge_length=e.length)
+        self.seed_node = nd
+
+    def to_outgroup_position(self, nd, flip_splits=False, suppress_deg_two=True):
+        """Reroots the tree at the parend of `nd` and makes `nd` the first child
+        of the new root.  This is just a convenience function to make it easy
+        to place a clade as the first child under the root.
+        
+        Assumes that `nd` and `nd.parent_node` and are in the tree 
+        
+        If `flip_splits` is True, then the edges' `split` and the tree's 
+            `split_edges` attributes will be updated.
+        If `suppress_deg_two` is True and the old root of the tree has an 
+            outdegree of 2, then the node will be removed from the tree.
+            """
+        p = nd.parent_node
+        self.reroot_at(p, flip_splits=flip_splits)
+        p.remove_child(nd)
+        p.add_child(nd, edge_length=nd.edge.length, pos=0)
+        
 
         
 ##############################################################################
@@ -462,7 +526,7 @@ class Node(taxa.TaxonLinked):
         
     parent_node = property(_get_parent_node, _set_parent_node)
 
-    def add_child(self, node, edge_length=None, pos=None):
+    def add_child(self, node, edge_length=None, pos=None): #@ Jeet, it doesn't seem like edge_length should be an arg of this function.
         """
         Adds a child node to this node. Results in the parent_node and
         containing_tree of the node being attached set to this node.
@@ -646,7 +710,7 @@ class Node(taxa.TaxonLinked):
                     s = str(sel)
                 if s:
                     out.write(":%s" % s)
-
+        
 ##############################################################################
 ## Edge
 
@@ -682,5 +746,6 @@ class Edge(base.IdTagged):
         edge = self.__class__()
         edge.oid = oid
         return edge
-
+    def invert(self):
+        self.head_node, self.tail_node = self.tail_node, self.head_node
 

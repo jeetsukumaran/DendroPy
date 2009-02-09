@@ -256,10 +256,13 @@ class NormalizedBitmaskDict(dict):
                     self[key] = val
                     
     def normalize_key(self, key):
+        #if key & 1:
+        #    return key
+        #else:
+        #    return key ^ self.mask
         if key & 1:
-            return key
-        else:
             return key ^ self.mask
+        return key
             
     def __setitem__(self, key, value):
         "Sets item with normalized key."
@@ -303,7 +306,7 @@ class NormalizedBitmaskDict(dict):
         {'a': 'A', 'c': 'C', 'b': 'B', 'd': 'D', 'f': 'F'}
         """
         for key, val in other.items():
-            self[self.normalize_key(key)] = val
+            dict.__setitem__(self, self.normalize_key(key), val)
 
     def fromkeys(self, iterable, value=None):
         "Creates a new dictionary with keys from seq and values set to value."

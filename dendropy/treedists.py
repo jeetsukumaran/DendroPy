@@ -190,26 +190,31 @@ def euclidean_distance(tree1, tree2, edge_length_attr="length", value_type=float
                            value_type=value_type)
                            
 def symmetric_difference(tree1, tree2):
+    "Returns the number of splits that are present in only 1 of the 2 trees."
+    t = false_positives_and_negatives(tree1, tree2)
+    return t[0] + t[1]
+
+def false_positives_and_negatives(reference_tree, test_tree):
     """
-    False pos = splits in tree2 NOT in tree1
-    False neg = splits in tree1 NOT in tree2
+    False pos = splits in test_tree NOT in reference_tree
+    False neg = splits in reference_tree NOT in test_tree
     """
     sym_diff = 0
     false_positives = 0
     false_negatives = 0
     
-    for split in tree1.split_edges:
-        if split in tree2.split_edges:
+    for split in reference_tree.split_edges:
+        if split in test_tree.split_edges:
             pass
         else:
             false_negatives = false_negatives + 1
             sym_diff = sym_diff + 1
     
-    for split in tree2.split_edges:
-        if split in tree1.split_edges:
+    for split in test_tree.split_edges:
+        if split in reference_tree.split_edges:
             pass
         else:
             false_positives = false_positives + 1
             sym_diff = sym_diff + 1   
             
-    return sym_diff, false_positives, false_negatives
+    return false_positives, false_negatives

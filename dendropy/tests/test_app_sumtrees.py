@@ -86,17 +86,16 @@ class SumTreesTest(unittest.TestCase):
             encode_splits(t, taxa_block=taxa1)
             firstSD.count_splits_on_tree(o)
             secondSD.count_splits_on_tree(t)
-        
-            #print symmetric_difference(o,t)
-        
-        
-        ts = TreeSummarizer()         
-        firstMR = ts.tree_from_splits(firstSD, min_freq=0.5)
-        secondMR = ts.tree_from_splits(secondSD, min_freq=0.5)
-        self.assertEqual((0,0,0), symmetric_difference(firstMR, secondMR))
+
+        ts = TreeSummarizer()
+        n_times = 1 # keep set to 1 except for benchmarking tree_from_splits
+        for i in xrange(n_times):
+            firstMR = ts.tree_from_splits(firstSD, min_freq=0.5)
+            secondMR = ts.tree_from_splits(secondSD, min_freq=0.5)
+        self.assertEqual(0, symmetric_difference(firstMR, secondMR))
 
     def testSumTreeOptions(self):
-        if "DENDROPY_QUICK_TESTS" in os.environ:
+        if "DENDROPY_FAST_TESTS" in os.environ:
             return
         support_file = dendropy.tests.data_source_path("anolis.mbcon.trees.nexus")
         target_file = dendropy.tests.data_source_path("anolis.mbcon.trees.nexus")

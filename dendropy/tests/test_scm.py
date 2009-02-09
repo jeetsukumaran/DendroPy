@@ -58,7 +58,6 @@ class SCMTest(unittest.TestCase):
         self.assertEqual(symmetric_difference(expected, output), 0)
 
     def testTwo(self):
-        return
         dataset = trees_from_newick([
             '(Athrotaxi,(Liriodchi,Nelumbo),Sagittari);',
             '(Basichlsac,(Lamprothma,Mougeotisp),(((Haplomitr2,Petalaphy),((Angiopteri,(((Azollacaro,((Dennstasam,(Oleandrapi,Polypodapp)),Dicksonant)),Vittarifle),Botrychbit)),(Isoetesmel,((((Agathismac,Agathisova),Pseudotsu),(((Libocedrus,Juniperusc),Callitris),Athrotaxi)),((Liriodchi,Nelumbo),Sagittari))))),Thuidium));',

@@ -31,7 +31,7 @@ import unittest
 import math
 from dendropy import get_logger
 import dendropy.tests
-_LOG = get_logger("TreeGenerationAndSimulation")
+_LOG = get_logger("tree diste   ")
 
 from dendropy import dataio
 from dendropy.splits import encode_splits
@@ -62,8 +62,43 @@ class TreeDistTest(unittest.TestCase):
 
         assert_approx_equal(treedists.euclidean_distance(tree_list[2], tree_list[3]), 1.000419513484718)
         
-        
+    def testSymmDiff(self):
+        newick = "((t5,t6),((t4,(t2,t1)),t3));"
+        d = dataio.trees_from_newick([newick])
+        ref = d.trees_blocks[0][0]
+        taxa_block = d.taxa_blocks[0]
 
+
+        encode_splits(ref, taxa_block=taxa_block)
+
+        o_newick = "((t1,t2),((t4,(t5,t6)),t3));"
+        o_tree = dataio.trees_from_newick([o_newick], taxa_block=taxa_block).trees_blocks[0][0]
+        encode_splits(o_tree, taxa_block=taxa_block)
+
+        self.assertEqual(treedists.symmetric_difference(o_tree, ref), 2)
+
+    def testSymmDiffWart(self):
+
+        newick = "((t5,t6),((t4,(t2,t1)),t3));"
+        d = dataio.trees_from_newick([newick])
+        tree = d.trees_blocks[0][0]
+        taxa_block = d.taxa_blocks[0]
+        ref = dataio.trees_from_newick([newick], taxa_block=taxa_block).trees_blocks[0][0]
+        ref = d.trees_blocks[0][0]
+
+
+        encode_splits(ref)#, taxa_block=taxa_block)
+
+        o_newick = "((t1,t2),((t4,(t5,t6)),t3));"
+        o_tree = dataio.trees_from_newick([o_newick], taxa_block=taxa_block).trees_blocks[0][0]
+        encode_splits(o_tree)#, taxa_block=taxa_block)
+        sd = treedists.symmetric_difference(o_tree, ref)
+        if sd == 0:
+            sys.stderr.write("""This is a pretty ugly wart in encode_splits: 
+These two trees are different, but are returning a symmetric difference of 0
+because the taxa_blocks are being inferred on the fly.  
+Both trees end up inferring different taxa_blocks, but the indices of the taxa
+hide the difference in the trees""")
 
 if __name__ == "__main__":
     unittest.main()

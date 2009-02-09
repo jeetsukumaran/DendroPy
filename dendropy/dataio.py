@@ -195,12 +195,15 @@ def get_reader(format):
     return READERS[format]()            
     
 
-def trees_from_newick(nl):
+def trees_from_newick(nl, taxa_block=None):
     """Takes an iterable list of newick strings (or files with just newick strings
     in them.
     """
     reader = get_reader(NEWICK)
-    dataset = Dataset()
+    if taxa_block is not None:
+        dataset = Dataset(taxa_blocks=[taxa_block])
+    else:
+        dataset = Dataset()
     for t in nl:
         f = t
         if isinstance(t, str):
