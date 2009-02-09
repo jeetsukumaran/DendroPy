@@ -139,11 +139,9 @@ class Tree(base.IdTagged):
         will return all nodes which have an attributed 'genes' and this value
         is not None.
         """
-        found = [node for node in self.preorder_node_iter(filter_fn)]
-        if found and len(found) > 0:
-            return found[0]
-        else:
-            return None
+        for node in self.preorder_node_iter(filter_fn):
+            return node
+        return None
             
     def find_taxon_node(self, taxon_filter_fn=None):
         "Finds the first node for which taxon_filter_fn(node.taxon) == True."
@@ -155,12 +153,10 @@ class Tree(base.IdTagged):
 
     def find_edge(self, oid):
         "Finds the first edge with matching id."
-        filter_fn = lambda x: x.oid == oid
-        found = [edge for edge in self.preorder_edge_iter(filter_fn)]
-        if found and len(found) > 0:
-            return found[0]
-        else:
-            return None
+        for edge in self.preorder_edge_iter():
+            if edge.oid == oid:
+                return edge
+        return None
 
     ###########################################################################
     ## Node iterators
