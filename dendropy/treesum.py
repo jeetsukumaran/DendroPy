@@ -197,6 +197,7 @@ class TreeSummarizer(object):
                     parent_node.remove_child(child)
                     new_node.add_child(child)
                     new_edge.clade_mask |= child.edge.clade_mask
+                con_tree.split_edges[new_edge.clade_mask] = new_edge.clade_mask
                 parent_node.add_child(new_node)
 
         ## here we add the support values and/or edge lengths for the terminal taxa ##
