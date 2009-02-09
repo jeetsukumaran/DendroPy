@@ -2,7 +2,7 @@
 
 * Add option to specify posterior probability support as Nexus node comment in SumTrees
 
-* Add "``clone``" and "``merge``" methods for Dataset and all contained data structures
+* Add "``clone``" and "``merge``" methods for Dataset and all contained data structures; for trees, taxa are shallow copies, but all other objects are deep copies
 
 * Move taxon label validation to parse_newick_node_stream and allow the encoding of splits during the reading of a newick string::
 
@@ -19,3 +19,6 @@
 
 * check element annotation (attribute names and ``annotate_as``)
 
+* make sure count_splits in split_distribution does not always pick splits rather than clades
+
+* trees have taxa_block; added during parsing

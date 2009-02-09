@@ -203,7 +203,7 @@ class TreeSummarizer(object):
                 parent_node = shallowest_containing_node(start_node=con_tree.seed_node,
                                                       split=split_to_add,
                                                       taxa_mask=taxa_mask)
-            if parent_node is not None or parent_node.edge.clade_mask == split_to_add:
+            if parent_node is None or parent_node.edge.clade_mask == split_to_add:
                 continue # split is not in tree, or already in tree.
             new_node = trees.Node()
             self.map_split_support_to_node(node=new_node, split_support=freq)
