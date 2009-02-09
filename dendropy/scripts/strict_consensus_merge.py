@@ -2,7 +2,7 @@
 import sys
 import copy
 from dendropy import dataio
-from dendropy.splits import encode_splits, split_to_list, count_bits
+from dendropy.splits import encode_splits, split_to_list, count_bits, lowest_bit_only
 from dendropy import get_logger
 from dendropy.treemanip import collapse_clade
 
@@ -188,9 +188,19 @@ def moveInterveningNodesToRefEdge(tree, leaf_intersection):
             if c.split & keepMovingSplitRep:
                 return
     
-def rootPortionSCM(toModify, toDestroy, leaf_intersection):
-    '''Roots trees at a common leaf, and deals with collisions along that terminal path will be the root's lChild after calling the function.'''
-    lowestCommonLeaf = getFirstBitAsIndex(leaf_intersection)
+def _root_portion_SCM(result_tree, tree_to_merge, leaf_intersection):
+    '''roots trees at a common leaf, and deals with collisions along that 
+    terminal path. 
+    
+    The leaf with the lowest index will be the root's first child after calling
+    the function.'''
+    lowest_leaf_mask = lowest_bit_only(leaf_intersection)
+    lowest_leaf_in_result_tree = result_tree.split_edges[lowest_leaf_mask].head_node
+    result_tree.reroot_at(lowest_leaf_in_result_tree.parent_node, flip_splits=True)
+
+    lowest_leaf_in_to_merge = tree_to_merge.split_edges[lowest_leaf_mask].head_node
+    tree_to_merge.reroot_at(lowest_leaf_in_to_merge.parent_node, flip_splits=True)
+
     toModRefNode = toModify.attachAtLeafByIndex(lowestCommonLeaf)
     toDestroyRefNode = toDestroy.attachAtLeafByIndex(lowestCommonLeaf)
     moveInterveningNodesToRefEdge(toModify, leaf_intersection)
@@ -270,7 +280,7 @@ def add_to_scm(tree_to_modify, tree_to_destroy, taxa_block):
         for leaf in leaves_to_steal:
             to_mod_root.add_child(leaf)
     else:
-        rootPortionSCM(tree_to_modify, tree_to_destroy, leaf_intersection)
+        _root_portion_SCM(tree_to_modify, tree_to_destroy, leaf_intersection)
         if verbose and showTrees:
             tree_to_modify.show('toModPostRoot.dot')
             tree_to_destroy.show('toDestroyPostRoot.dot')
