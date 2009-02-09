@@ -181,23 +181,25 @@ class TreeSummarizer(object):
             else:
                 new_node = trees.Node()
                 self.map_split_support_to_node(node=new_node, split_support=freq)
-                if include_edge_lengths:
-                    elen = split_distribution.split_edge_lengths[split_in_dict]
-                    new_node.edge.length = float(sum(elen)) / len(elen)
                 new_node_children = []
                 new_edge = new_node.edge
+                new_edge.clade_mask = 0
                 for child in parent_node.child_nodes():
                     # might need to modify the following if rooted splits
                     # are used
-                    if (child.edge.clade_mask & split_to_add ):
-                        assert child.edge.clade_mask != split_to_add
+                    cecm = child.edge.clade_mask
+                    if (cecm & split_to_add ):
+                        assert cecm != split_to_add
+                        new_edge.clade_mask |= cecm
                         new_node_children.append(child)
-                new_edge.clade_mask = 0
-                for child in new_node_children:
-                    parent_node.remove_child(child)
-                    new_node.add_child(child)
-                    new_edge.clade_mask |= child.edge.clade_mask
-                parent_node.add_child(new_node)
+                if new_edge.clade_mask == split_to_add:
+                    if include_edge_lengths:
+                        elen = split_distribution.split_edge_lengths[split_in_dict]
+                        new_edge.length = float(sum(elen)) / len(elen)
+                    for child in new_node_children:
+                        parent_node.remove_child(child)
+                        new_node.add_child(child)
+                    parent_node.add_child(new_node)
 
         ## here we add the support values and/or edge lengths for the terminal taxa ##
         for node in con_tree.leaf_nodes():
