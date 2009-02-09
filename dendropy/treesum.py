@@ -33,39 +33,46 @@ from dendropy import trees
 from dendropy import treegen
 
 
-def deepest_containing_node(start_node, split, taxa_mask):
+def shallowest_containing_node(start_node, split, taxa_mask):
+    """Returns the shallowest node in the tree (the node furthest from 
+    `start_node`) that has all of the taxa that are specified in `split` or
+    None if no appropriate node is found.
+
+    Assumes that edges on tree have been decorated with splits.
+    
+    It is possible that split is not compatible with the subtree that is 
+        returned! (compatibility tests are not fully performed).
+        
+    This function is used to find the "insertion point" for a new split via a
+        root to tip search.
     """
-    Assumes:
-        - start_node is a node on a tree
-        - edges on tree have been decorated with splits
-        - start_node is compatible with split (root if all else fails)
-    Returns:
-        - deepest node in tree (i.e., furthest from root) that is
-          compatible with split (i.e, includes all taxa in split) yet
-          not equal to the split.
-    """
-    split = split & taxa_mask
-    curr_node = start_node
     if (start_node.edge.clade_mask & split) != split:
         return None
+    curr_node = start_node
     last_match = start_node
     nd_source = iter(start_node.child_nodes())
     try:
         while True:
-            cm = curr_node.edge.clade_mask & taxa_mask
+            cm = curr_node.edge.clade_mask
             cms = (cm & split)
             if cms:
                 # for at least one taxon cm has 1 and split has 1
                 if cms == split:
                     # curr_node has all of the 1's that split has
                     if cm == split:
-                        return last_match
+                        return curr_node
                     last_match = curr_node
                     nd_source = iter(curr_node.child_nodes())
                 else:
+                    # we have reached a child that has some, but not all of the
+                    #   required taxa as descendants, so we return the last_match
                     return last_match
             curr_node = nd_source.next()
     except StopIteration:
+        # we shouldn't reach this if all of the descendants are properly
+        #   decorated with clade_mask attributes, but there may be some hacky
+        #   context in which we want to allow the function to be called with
+        #   leaves that have not been encoded with clade_masks.
         return last_match
 
 class TreeSummarizer(object):
@@ -172,35 +179,35 @@ class TreeSummarizer(object):
 
         # Now when we add splits in order, we will do a greedy, extended majority-rule consensus tree
         for freq, split_to_add, split_in_dict in to_try_to_add:
-            parent_node = deepest_containing_node(start_node=con_tree.seed_node,
+            parent_node = shallowest_containing_node(start_node=con_tree.seed_node,
                                                   split=split_to_add,
                                                   taxa_mask=taxa_mask)
-            if parent_node is None or parent_node.edge.clade_mask == split_to_add:
-                #or (split_distribution.unrooted and parent_node.edge.clade_mask == (split ^ taxa_mask)):
-                pass
-            else:
-                new_node = trees.Node()
-                self.map_split_support_to_node(node=new_node, split_support=freq)
-                new_node_children = []
-                new_edge = new_node.edge
-                new_edge.clade_mask = 0
-                for child in parent_node.child_nodes():
-                    # might need to modify the following if rooted splits
-                    # are used
-                    cecm = child.edge.clade_mask
-                    if (cecm & split_to_add ):
-                        assert cecm != split_to_add
-                        new_edge.clade_mask |= cecm
-                        new_node_children.append(child)
-                if new_edge.clade_mask == split_to_add:
-                    if include_edge_lengths:
-                        elen = split_distribution.split_edge_lengths[split_in_dict]
-                        new_edge.length = float(sum(elen)) / len(elen)
-                    for child in new_node_children:
-                        parent_node.remove_child(child)
-                        new_node.add_child(child)
-                    parent_node.add_child(new_node)
-                    con_tree.split_edges[split_to_add] = new_edge
+            if parent_node is not None or parent_node.edge.clade_mask == split_to_add:
+                continue # split is not in tree, or already in tree.
+            new_node = trees.Node()
+            self.map_split_support_to_node(node=new_node, split_support=freq)
+            new_node_children = []
+            new_edge = new_node.edge
+            new_edge.clade_mask = 0
+            for child in parent_node.child_nodes():
+                # might need to modify the following if rooted splits
+                # are used
+                cecm = child.edge.clade_mask
+                if (cecm & split_to_add ):
+                    assert cecm != split_to_add
+                    new_edge.clade_mask |= cecm
+                    new_node_children.append(child)
+            # Check to see if we have accumulated all of the bits that we
+            #   needed, but none that we don't need.
+            if new_edge.clade_mask == split_to_add:
+                if include_edge_lengths:
+                    elen = split_distribution.split_edge_lengths[split_in_dict]
+                    new_edge.length = float(sum(elen)) / len(elen)
+                for child in new_node_children:
+                    parent_node.remove_child(child)
+                    new_node.add_child(child)
+                parent_node.add_child(new_node)
+                con_tree.split_edges[split_to_add] = new_edge
 
         ## here we add the support values and/or edge lengths for the terminal taxa ##
         for node in con_tree.leaf_nodes():
