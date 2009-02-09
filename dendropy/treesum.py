@@ -200,6 +200,7 @@ class TreeSummarizer(object):
                         parent_node.remove_child(child)
                         new_node.add_child(child)
                     parent_node.add_child(new_node)
+                    con_tree.split_edges[split_to_add] = new_edge
 
         ## here we add the support values and/or edge lengths for the terminal taxa ##
         for node in con_tree.leaf_nodes():
