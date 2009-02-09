@@ -172,6 +172,8 @@ class TreeSummarizer(object):
                         if (c-1) & c: # not singleton (i.e., one "0")
                             if 1 & m:
                                 k = m ^ taxa_mask
+                            else:
+                                k = m
                             to_try_to_add.append((f, k, m))
                     else:
                         to_try_to_add.append((f, m, m))
