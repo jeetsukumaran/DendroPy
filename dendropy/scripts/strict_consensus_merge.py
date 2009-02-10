@@ -74,9 +74,9 @@ def reroot_on_lowest_common_index_path(t, common_mask):
         while True:
             c = nd_source.next()
             cm = c.edge.clade_mask
-            masked_cm = cm & comp_mask
+            masked_cm = cm & common_mask
             if masked_cm:
-                if masked_cm == comp_mask:
+                if masked_cm == without_lowest:
                     curr_n = c
                     children = curr_n.child_nodes()
                     assert(len(children) > 1)
