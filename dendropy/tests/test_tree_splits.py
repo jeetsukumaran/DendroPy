@@ -89,10 +89,10 @@ class SplitsOnTreesTest(unittest.TestCase):
             if splits.is_non_singleton_split(split, taxa_mask):
                 rsplit = taxa_block.complement_split_bitmask(split) 
                 if rsplit:
-                    ss = splits.split_as_string_rev(split, sd.taxa_block, '.', '*')
+                    ss = splits.split_as_string_rev(split, len(sd.taxa_block), '.', '*')
                     dendropy_split_strings.append(ss)
                     dendropy_string_split_map[ss] = split
-                    ss = splits.split_as_string_rev(rsplit, sd.taxa_block, '.', '*')
+                    ss = splits.split_as_string_rev(rsplit, len(sd.taxa_block), '.', '*')
                     dendropy_complemented_split_strings.append(ss)
                     dendropy_string_complemented_split_map[ss] = rsplit
                 

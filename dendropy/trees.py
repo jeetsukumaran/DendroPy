@@ -329,8 +329,12 @@ class Tree(base.IdTagged):
         p.remove_child(nd)
         p.add_child(nd, edge_length=nd.edge.length, pos=0)
         
+    def get_indented_form(self, **kwargs):
+        return self.seed_node.get_indented_form(**kwargs)
+    def write_indented_form(self, out, **kwargs):
+        return self.seed_node.get_indented_form(out, **kwargs)
 
-        
+       
 ##############################################################################
 ## Node
 
@@ -709,7 +713,53 @@ class Node(taxa.TaxonLinked):
                     s = str(sel)
                 if s:
                     out.write(":%s" % s)
+    def get_indented_form(self, **kwargs):
+        out = StringIO()
+        self.write_indented_form(out, **kwargs)
+        return out.getvalue()
+
+    def write_indented_form(self, out, **kwargs):
+        indentation = kwargs.get("indentation", "    ")
+        clade_masks = kwargs.get("clade_mask", False)
+        level = kwargs.get("level", 0)
+        to_deal_with = []
+        siblings = []
+        n = self
+        while True:
+            n._write_indented_form_line(out, level, **kwargs)
+            c = n.child_nodes()
+            if c:
+                level += 1
+                to_deal_with.append(siblings)
+                siblings = c[1:]
+                n = c[0]
+            elif siblings:
+                n = siblings.pop()
+            else:
+                while not siblings:
+                    if to_deal_with:
+                        level -= 1
+                        siblings = to_deal_with.pop()
+                    else:
+                        return
+                n = siblings.pop()
         
+    def _write_indented_form_line(self, out, level, **kwargs):
+        indentation = kwargs.get("indentation", "    ")
+        if self.is_leaf():
+            t = self.taxon
+            if t:
+                label = t.label
+            else:
+                label = "anonymous leaf"
+        else:
+            label = "internal"
+        if kwargs.get("clade_mask"):
+            from dendropy.splits import split_as_string
+            cm = "%s " % split_as_string(self.edge.clade_mask, kwargs.get("mask_width", 0))
+        else:
+            cm = ""
+        out.write("%s%s%s\n" % ( cm, indentation*level, label))
 ##############################################################################
 ## Edge
 

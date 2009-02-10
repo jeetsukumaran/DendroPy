@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import sys
 import copy
+import logging
+
 from dendropy import dataio
 from dendropy.splits import encode_splits, split_to_list, count_bits, lowest_bit_only
 from dendropy import get_logger
@@ -9,7 +11,7 @@ from dendropy.dataio import trees_from_newick
 
 _LOG = get_logger('scripts.strict_consensus_merge')
 verbose = False
-_LOG.debug("db")
+IS_DEBUG_LOGGING = _LOG.isEnabledFor(logging.DEBUG)
 
 from dendropy.utils import NormalizedBitmaskDict
 
@@ -133,7 +135,10 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
         assert(to_mod_root.edge.clade_mask == to_mod_split)
         to_consume_root = to_consume.seed_node
         assert(to_consume_root.edge.clade_mask == to_consume_split)
-
+    if IS_DEBUG_LOGGING:
+        nbits = count_bits(to_mod_split | to_consume_split)
+        _LOG.debug("After reroot to_modify:\n%s" % to_modify.get_indented_form(clade_mask=True, mask_width=nbits))
+        _LOG.debug("After reroot to_consume:\n%s" % to_consume.get_indented_form(clade_mask=True, mask_width=nbits))
     for s, e in tmse.iteritems():
         s = e.clade_mask
         masked = s & leaf_intersection
@@ -153,11 +158,15 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
     #   of the clade_masks for shallower nodes.  Thus if we reverse sort we
     #   get the edges in the order root->tip
     for split, path in to_mod_relevant_splits.iteritems():
+        if IS_DEBUG_LOGGING:
+            _LOG.debug("Split %s in to_mod_relevant_splits " % bin(split))
         path.sort(reverse=True)
         t = [i[1] for i in path]
         del path[:]
         path.extend(t)
     for split, path in to_consume_relevant_splits.iteritems():
+        if IS_DEBUG_LOGGING:
+            _LOG.debug("Split %s in to_consume_relevant_splits" % bin(split))
         path.sort(reverse=True)
         t = [i[1] for i in path]
         del path[:]
@@ -182,6 +191,10 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
         
     for masked_split, to_consume_path in to_consume_relevant_splits.iteritems():
         to_mod_path = to_mod_relevant_splits.get(masked_split)
+        if to_mod_path is None and IS_DEBUG_LOGGING:
+            _LOG.debug("Split %s returned None " % bin(masked_split))
+            _LOG.debug("Leaf intersection is %s" % bin(leaf_intersection))
+            _LOG.debug("to_mod_split is %s" % bin(to_mod_split))
         assert to_mod_path is not None
         to_mod_head = to_mod_path[-1].head_node
         to_mod_head_edge = to_mod_head.edge

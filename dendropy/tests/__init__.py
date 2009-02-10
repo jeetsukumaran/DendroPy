@@ -45,6 +45,12 @@ def fast_testing_notification(logger, module_name, message=None):
         message = "tests skipped"
     logger.warning('FAST TEST MODE (%s): %s' % (module_name, message))
 
+def do_slow_test(logger=None, module_name="", message=None):
+    if FAST_TESTS_ONLY:
+        if logger:
+            fast_testing_notification(logger, module_name, message)
+        return False
+    return True
 def data_source_path(filename=None):
     if filename is None:
         filename = ""

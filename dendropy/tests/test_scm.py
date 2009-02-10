@@ -31,7 +31,7 @@ import copy
 from dendropy import get_logger
 from dendropy.splits import encode_splits
 from dendropy.dataio import trees_from_newick
-import dendropy.tests
+from dendropy.tests import do_slow_test
 from dendropy.treedists import symmetric_difference
 _LOG = get_logger("StrictConsensusMerger")
 
@@ -51,8 +51,8 @@ class SCMTest(unittest.TestCase):
         self.kernelOfTest(trees, dataset.taxa_blocks[0])
 
     def dofour_five_compat(self, four_taxon_newick, five_taxon_newick):
-        sys.stdout.write("\n4 taxon:%s\n" % four_taxon_newick)
-        sys.stdout.write("5 taxon:%s\n" % five_taxon_newick)
+        #sys.stdout.write("\n4 taxon:%s\n" % four_taxon_newick)
+        #sys.stdout.write("5 taxon:%s\n" % five_taxon_newick)
         dataset = trees_from_newick([
             five_taxon_newick,
             four_taxon_newick,
@@ -70,7 +70,8 @@ class SCMTest(unittest.TestCase):
         self.kernelOfTest(trees, dataset.taxa_blocks[0])
 
     def testSimple(self):
-        
+        if not do_slow_test(_LOG, __name__, "skipping all rotation scm tests"):
+            return        
         clades = ['A', 'D', None, None]
         for m in [0, 1]:
             four_sisters = ['B', 'C']
@@ -143,7 +144,7 @@ class SCMTest(unittest.TestCase):
         if symmetric_difference(expected, output) != 0:
             self.fail("\n%s\n!=\n%s" % (str(output), str(expected)))
 
-    def stestThree(self):
+    def testThree(self):
         dataset = trees_from_newick([
             '(Athrotaxi,(Liriodchi,Nelumbo),Sagittari);',
             '(Basichlsac,(Lamprothma,Mougeotisp),(((Haplomitr2,Petalaphy),((Angiopteri,(((Azollacaro,((Dennstasam,(Oleandrapi,Polypodapp)),Dicksonant)),Vittarifle),Botrychbit)),(Isoetesmel,((((Agathismac,Agathisova),Pseudotsu),(((Libocedrus,Juniperusc),Callitris),Athrotaxi)),((Liriodchi,Nelumbo),Sagittari))))),Thuidium));',
