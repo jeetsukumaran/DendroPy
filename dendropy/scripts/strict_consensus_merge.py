@@ -5,10 +5,11 @@ from dendropy import dataio
 from dendropy.splits import encode_splits, split_to_list, count_bits, lowest_bit_only
 from dendropy import get_logger
 from dendropy.treemanip import collapse_clade, collapse_edge
+from dendropy.dataio import trees_from_newick
 
 _LOG = get_logger('scripts.strict_consensus_merge')
 verbose = False
-
+_LOG.debug("db")
 
 from dendropy.utils import NormalizedBitmaskDict
 
@@ -102,6 +103,7 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
     to_consume_split = to_consume_root.edge.clade_mask
 
     leaf_intersection = to_mod_split & to_consume_split
+
     n_common_leaves = count_bits(leaf_intersection)
     if n_common_leaves < 2:
         _LOG.error('trees must have at least 2 common leaves')
@@ -118,8 +120,10 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
         for child in to_mod_root.child_nodes():
             to_modify.split_edges[child.edge.clade_mask] = child.edge
         return
+    
+    # at least 3 leaves in common
     tmse = to_modify.split_edges
-
+    
     to_mod_relevant_splits = {}
     to_consume_relevant_splits = {}
     if not rooted:
@@ -131,13 +135,16 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
         assert(to_consume_root.edge.clade_mask == to_consume_split)
 
     for s, e in tmse.iteritems():
+        s = e.clade_mask
         masked = s & leaf_intersection
-        if masked:
+        if masked and masked != leaf_intersection:
             e_list = to_mod_relevant_splits.setdefault(masked, [])
             e_list.append((s, e))
+
     for s, e in to_consume.split_edges.iteritems():
+        s = e.clade_mask
         masked = s & leaf_intersection
-        if masked:
+        if masked and masked != leaf_intersection:
             e_list = to_consume_relevant_splits.setdefault(masked, [])
             e_list.append((s, e))
 
@@ -168,15 +175,11 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
     #       - attached to "relevant" nodes
     # We simply move these subtrees from the to_consume tree to the appropriate
     #   node in to_modify
-    new_subtrees = set()
     to_steal = [i for i in to_consume_root.child_nodes() if (i.edge.clade_mask & leaf_intersection) == 0]
-    nodes_to_reencode_from = set()
     for child in to_steal:
         to_mod_root.add_child(child)
-        new_subtrees.add(child)
         to_mod_root.edge.clade_mask |= child.edge.clade_mask
-        nodes_to_reencode_from.add(to_mod_root)
-
+        
     for masked_split, to_consume_path in to_consume_relevant_splits.iteritems():
         to_mod_path = to_mod_relevant_splits.get(masked_split)
         assert to_mod_path is not None
@@ -188,16 +191,12 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
                 # child is the root of a subtree that has no children in the leaf_intersection
                 to_mod_head.add_child(child)
                 to_mod_head_edge.clade_mask |= child.edge.clade_mask
-                new_subtrees.add(child)
-                nodes_to_reencode_from.add(to_mod_head)
         if len(to_consume_path) > 1:
-            nodes_to_reencode_from.add(to_mod_head)
             if len(to_mod_path) > 1:
                 # collision
                 for edge in to_mod_path[1:-1]:
-                    del tmse[edge.clade_mask]
                     collapse_edge(edge)
-                mid_node = path[0].head_node
+                mid_node = to_mod_path[0].head_node
                 for edge in to_consume_path[1:]:
                     p = edge.tail_node
                     avoid = edge.head_node
@@ -205,7 +204,6 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
                         if child is not avoid:
                             mid_node.add_child(child)
                             mid_node.clade_mask |= child.edge.clade_mask
-                            new_subtrees.add(child)
             else:
                 # we have to move the subtrees from to_consume to to_modify
                 to_mod_edge = to_mod_path[0]
@@ -223,7 +221,7 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
     encode_splits(to_modify, taxa_block=taxa_block)
                 
     
-def strict_consensus_merge(tree_list, taxa_block, copy_trees=False, rooted=False):
+def strict_consensus_merge(trees_to_merge, taxa_block, copy_trees=False, rooted=False):
     """Returns a tree that is the strict consensus merger of the input trees.
     
     If copy_trees is True then the trees will be copied before the merger 
@@ -231,7 +229,10 @@ def strict_consensus_merge(tree_list, taxa_block, copy_trees=False, rooted=False
     destroyed by the operation (and the modified first tree will be returned).
     """
     if copy_trees:
-        tree_list = [copy.copy(i) for i in tree_list]
+        tree_list = [copy.copy(i) for i in trees_to_merge]
+    else:
+        tree_list = list(trees_to_merge)
+        del trees_to_merge[1:]
     nTrees = len(tree_list)
     _LOG.debug('%d Trees to merge:\n%s\n' % (nTrees, '\n'.join([str(i) for i in tree_list])))
     if nTrees < 2:
@@ -253,21 +254,14 @@ if __name__ == '__main__':
 
     from optparse import OptionParser
     parser = OptionParser()
-    parser.add_option("-p", "--prec", dest="prec", default=0.00001, 
-        type="float",
-        help="The precision of the comparison that the node depth is equal regardless of tip to node path.")
     (options, args) = parser.parse_args()
-    if len(args) > 1:
-        sys.exit("At most one argument (a newick tree string with branch lengths) can be specified")
-    if len(args) == 1:
-        newick = args[0]
+    if len(args) > 0:
+        newick = args
     else:
-        newick = sys.stdin.readline()
-
-    prec = options.prec
-    tree = dataio.trees_from_string(string=newick, format="NEWICK")[0]
-    dendropy.trees.add_depth_to_nodes(tree, options.prec)
-
-    sys.stdout.write("%f\n" % tree.seed_node.depth)
+        newick = sys.stdin.readlines()
+    dataset = trees_from_newick(newick)
+    trees = [i[0] for i in dataset.trees_blocks]
+    o = strict_consensus_merge(trees, taxa_block=dataset.taxa_blocks[0])
+    sys.stdout.write("%s;\n" % str(o))
 
 

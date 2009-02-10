@@ -73,7 +73,8 @@ def data_source_trees(format="*", heavy=False):
                                 expand_vars=True,
                                 include_hidden=False)
     return files                                
-       
+_LOG = get_logger("tests")
+_LOG.info("debug msg")
 def data_target_path(filename=None):
     if filename is None:
         filename = ""
