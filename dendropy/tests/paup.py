@@ -95,7 +95,10 @@ class Paup(object):
         stdout, stderr = paup_run.communicate(commands)
         results = stdout.split("\n")
         if stderr:
-            sys.stderr.write(stderr)
+            sys.stderr.write("*** COMMANDS:\n")
+            sys.stderr.write(commands)
+            sys.stderr.write("*** ERROR:\n")
+            sys.stderr.write(stderr)            
             sys.exit(1)
         # check results:
 #         for idx, line in enumerate(results):
@@ -143,34 +146,53 @@ class Paup(object):
         bipartition_freqs = {}
         bipartition_counts = {}
         tree_count = None
-        tree_count_pattern = re.compile('.*Majority-rule consensus of ([\d]*) tree', re.I)
-        bipartition_pattern = re.compile('([\.|\*]+)\s+([\d\.]+)\s+([\d\.]*)%')
-        bipartition_pattern2 = re.compile('([\.|\*]+)\s+([\d\.]+)')
-        idx = 0        
-        for line in paup_output:
+        tree_count_pattern = re.compile('.*Majority-rule consensus of ([\d]*) tree.*', re.I)
+        
+        bipartition_section = re.compile('Bipartitions found in one or more trees and frequency of occurrence:')
+        bp_full_row_with_perc_col = re.compile('([\.|\*]+)\s+([\d\.]+)\s+([\d\.]*)%')
+        bp_full_row_with_no_perc_col = re.compile('([\.|\*]+)\s+([\d\.]+)')
+        bp_row = re.compile('([\.|\*]+).*')
+
+        # find tree count
+        for idx, line in enumerate(paup_output):
+            tp_match = tree_count_pattern.match(line)
+            if tp_match:
+                break
+        if not tp_match:
+            raise Exception("Failed to find tree count in PAUP* output")
+        tree_count = int(tp_match.group(1))
+                
+        while not bp_row.match(paup_output[idx]):
             idx += 1
-            if line == "SPLITS COUNT BEGIN":
-                break                        
+            
+        split_idx = 0
+        split_reps = {}
         for line in paup_output[idx:]:
             if line == "SPLITS COUNT END":
-                break
-            bp_match = bipartition_pattern.match(line)
+                 break        
+            bp_match = bp_full_row_with_perc_col.match(line)
+            if not bp_match:
+                bp_match = bp_full_row_with_no_perc_col.match(line)
             if bp_match:
-                bipartitions.append(bp_match.group(1))
-                bipartition_counts[bp_match.group(1)] = int(bp_match.group(2))
-                bipartition_freqs[bp_match.group(1)] = float(bp_match.group(3))
+                # full row, or end of partial rows      
+                if len(split_reps) == 0:
+                    split_rep = bp_match.group(1)
+                else:
+                    split_rep = split_reps[split_idx] + bp_match.group(1)
+                bipartition_counts[split_rep] = int(bp_match.group(2))
+                split_idx += 1
             else:
-                bp_match2 = bipartition_pattern2.match(line)
-                if bp_match2:
-                    bipartitions.append(bp_match2.group(1))
-                    bipartition_counts[bp_match2.group(1)] = int(bp_match2.group(2))
-                    bipartition_freqs[bp_match2.group(1)] = float(bp_match2.group(2))                
-                else:            
-                    tp_match = tree_count_pattern.match(line)
-                    if tp_match:
-                        tree_count = int(tp_match.group(1))
-        assert tree_count is not None                    
-        return tree_count, bipartition_counts, bipartition_freqs
+                # either (1) partial row or (2) break between sections
+                bp_match = bp_row.match(line)
+                if not bp_match:
+                    split_idx = 0
+                else:
+                    if split_idx in split_reps:
+                        split_reps[split_idx] += bp_match.group(1)
+                    else:
+                        split_reps[split_idx] = bp_match.group(1)
+                    split_idx += 1                   
+        return tree_count, bipartition_counts
         
     def split_counts_from_group_freqs(self, 
         bipartition_counts,
@@ -468,15 +490,13 @@ class PaupWrapperDumbTests(unittest.TestCase):
             taxa_filepath=taxafile))
         commands.extend(p.compose_count_splits())
         results = p.run(commands)
-        tree_count, bipartition_counts, bipartition_freqs = p.parse_group_freqs(results)
+        tree_count, bipartition_counts = p.parse_group_freqs(results)
         assert exp_tree_count == tree_count, "%d != %d" % (exp_tree_count, tree_count)
         assert len(group_freqs) == len(bipartition_counts), "%d != %d" % (len(group_freqs), len(bipartition_counts))
-        assert len(group_freqs) == len(bipartition_freqs), "%d != %d" % (len(group_freqs), len(bipartition_freqs))
         for g in group_freqs:
             assert g in bipartition_counts
-            assert g in bipartition_freqs
-            assert group_freqs[g][0] == bipartition_counts[g]
-            assert group_freqs[g][1] == bipartition_freqs[g]
+            assert group_freqs[g][0] == bipartition_counts[g], \
+                "%s != %s" % (group_freqs[g][0], bipartition_counts[g])
                        
     def testTaxaBlock(self):   
         for i in self.taxa_test_cases:
@@ -489,6 +509,3 @@ class PaupWrapperDumbTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-    
-    
-                
