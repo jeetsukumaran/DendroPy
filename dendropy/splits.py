@@ -133,11 +133,14 @@ def encode_splits(tree, taxa_block):
             where bits corresponding to indexes of taxa descended from this 
             edge are turned on
     Adds the following to the tree:
-        - `split_edges`: a dictionary where the keys are the normalized 
-            (unrooted) split representations and the values are edges. A 
-            normalized split_mask is where the clade_mask is complemented 
-            if the right-most bit is not '1' (or just the clade_mask 
-            otherwise).
+        - `split_edges`:
+            [if `tree.is_rooted`]: a dictionary where keys are the
+            splits and values are edges.        
+            [othersie]: a NormalizedBitmaskDictionary where the keys are the
+            normalized (unrooted) split representations and the values
+            are edges. A normalized split_mask is where the clade_mask
+            is complemented if the right-most bit is not '1' (or just
+            the clade_mask otherwise).
     """
     split_map = {}
     for edge in tree.postorder_edge_iter():
@@ -153,8 +156,11 @@ def encode_splits(tree, taxa_block):
                 #raise Exception('Leaf node with no taxon')
                 setattr(edge, "clade_mask", 0)
         split_map[getattr(edge, "clade_mask")] = edge
-    tree.split_edges = utils.NormalizedBitmaskDict(split_map, 
-            mask = taxa_block.all_taxa_bitmask())
+    if tree.is_rooted:
+        tree.split_edges = split_map
+    else:        
+        tree.split_edges = utils.NormalizedBitmaskDict(split_map, 
+                mask = taxa_block.all_taxa_bitmask())
                 
 ############################################################################        
 ## SplitDistribution
