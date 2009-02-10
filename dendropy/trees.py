@@ -526,7 +526,7 @@ class Node(taxa.TaxonLinked):
         
     parent_node = property(_get_parent_node, _set_parent_node)
 
-    def add_child(self, node, edge_length=None, pos=None): #@ Jeet, it doesn't seem like edge_length should be an arg of this function.
+    def add_child(self, node, edge_length=None, pos=None):
         """
         Adds a child node to this node. Results in the parent_node and
         containing_tree of the node being attached set to this node.
@@ -534,7 +534,6 @@ class Node(taxa.TaxonLinked):
         set to this. Returns node that was just attached.
         """
         node.parent_node = self
-        node.edge.tail_node = self
         if edge_length != None:
             node.edge_length = edge_length
 #         if len(self.__child_nodes) > 0:
