@@ -83,11 +83,16 @@ class Paup(object):
             self.paup_path = PAUP_PATH
         else:
             self.paup_path = paup_path
-            
-    def run(self, commands):
-        """ executes given list of commands in PAUP*, 
-        return results of stdout and stderr """
-        commands = "\n".join(commands) + "\n"
+        self.commands = []
+        self.output = []
+        
+    ##############################################################################
+    # WRAPPER OPERATIONS       
+                    
+    def run(self):
+        """ executes list of commands in PAUP*, 
+        return results of stdout """
+        commands = "\n".join(self.commands) + "\n"
         paup_run = subprocess.Popen(['%s -n' % self.paup_path],
                                     shell=True,
                                     stdin=subprocess.PIPE,
@@ -96,37 +101,102 @@ class Paup(object):
         stdout, stderr = paup_run.communicate(commands)
         results = stdout.split("\n")
         if stderr:
-            sys.stderr.write("\n*** ERROR FROM PAUP ***\n")
-            sys.stderr.write(stderr)          
-            sys.stderr.write("\n\n*** COMMANDS SENT TO PAUP ***\n\n")
-            sys.stderr.write(commands + "\n")
+            _LOG.error("\n*** ERROR FROM PAUP ***")
+            _LOG.error(stderr)          
+            _LOG.error("\n*** COMMANDS SENT TO PAUP ***\n")
+            _LOG.error(commands)
             sys.exit(1)
-        # check results:
-#         for idx, line in enumerate(results):
-#             try:
-#                 assert not re.match("^Error\(.*", line)
-#             except AssertionError, e:
-#                 sys.stderr.write("Error in PAUP run:\n")
-#                 # write out PAUP error message with some context
-#                 i = 0
-#                 while (idx+i) < len(results) and i < 3:
-#                     sys.stderr.write(results[idx+i] + "\n")
-#                     i += 1
-        return results            
+        self.output.extend(results)
+        return results
+                       
+    ##############################################################################
+    # PAUP COMMANDS     
+                 
+    def stage_list_taxa(self):
+        """ 
+        Given a data file in memory, this gets PAUP* to print a list of 
+        taxa that can be used to build a TaxaBlock later.
+        """
+        self.commands.append("[!TAXON LIST BEGIN]\ntstatus / full;\n[!TAXON LIST END]\n")
         
-    def parse_taxa_block(self, paup_output):
+    def stage_count_splits(self, majrule_filepath=None, majrule_freq=0.5):
+        """
+        Given trees in memory, this composes a command to count the split
+        frequencies across the trees as well as a save the majority-rule
+        consensus tree if a path is given.
+        """
+        percent = 100 * majrule_freq
+        if majrule_filepath is not None:
+            treefile = " treefile=%s replace=yes "
+        else:
+            treefile = ""
+        paup_template = []
+        paup_template.append("[!SPLITS COUNT BEGIN]")        
+        paup_template.append("contree / strict=no %s showtree=no grpfreq=yes majrule=yes percent=%d;" \
+            % (treefile, percent));
+        paup_template.append("[!SPLITS COUNT END]")
+        self.commands.extend(paup_template)
+        
+    def stage_execute_file(self,
+                             filepath,
+                             clear_trees=False):
+        """Executes file, optionally clearing trees from file if requested"""
+        self.commands.append("execute %s;" % filepath)
+        if clear_trees:
+            self.commands.append("cleartrees;")  
+            
+    def stage_deroot(self):
+        self.commands.append("deroot;")          
+    
+    def stage_load_trees(self,
+                           tree_filepaths,
+                           unrooted=True,                           
+                           burnin=0,
+                           mode=7): # keep trees in memory, specify 3 to clear
+        """
+        Composes commands to load a set of trees into PAUP*, with the specified 
+        number of burnin dropped. NOTE: Taxa Block must be active.
+        """
+        if isinstance(tree_filepaths, str):
+            raise Exception("expecting list of filepaths, not string")
+        if unrooted:
+            rooting = "unrooted=yes"
+        else:
+            rooting = "rooted=yes"
+        gettree_template = 'gett file= %%s storebrlens=yes warntree=no %s from=%d mode=%d;' % (rooting, burnin+1, mode)
+        paup_template = []
+        paup_template.append("set warnreset=no; set increase=auto; set warnroot=no;")
+        for tree_filepath in tree_filepaths:
+            paup_template.append(gettree_template % tree_filepath)                        
+        self.commands.extend(paup_template)
+        
+    ##############################################################################
+    # OUTPUT PARSERS   
+    
+    def split_counts_from_group_freqs(self, 
+        bipartition_counts,
+        taxa_block):
+        """
+        Returns a populated NormalizingBitmaskDict object based on the given
+        bipartition info, with keys = normalized splits and values = tuple 
+        (count, percentage).
+        """
+        #assert len(bipartition_freqs[0]) == len(taxa_block)
+        pass           
+                
+    def parse_taxa_block(self):
         """
         Given PAUP* output that includes a taxon listing as produced by
-        `compose_list_taxa`, this parses out and returns a taxon block.
+        `stage_list_taxa`, this parses out and returns a taxon block.
         """
         taxlabels = []
         taxinfo_pattern = re.compile('\s*(\d+) (.*)\s+\-')
         idx = 0
-        for line in paup_output:
+        for line in self.output:
             idx += 1
             if line == "TAXON LIST BEGIN":
                 break                  
-        for line in paup_output[idx:]:
+        for line in self.output[idx:]:
             if line == "TAXON LIST END":
                 break
             ti_match = taxinfo_pattern.match(line)
@@ -137,7 +207,7 @@ class Paup(object):
             taxa_block.add_taxon(label=taxlabel.replace(' ', '_'))
         return taxa_block           
         
-    def parse_group_freqs(self, paup_output):
+    def parse_group_freqs(self):
         """
         Given PAUP* output that includes a split counting procedure,
         this collects the splits and returns a dictionary of group strings and 
@@ -155,7 +225,7 @@ class Paup(object):
         bp_row = re.compile('([\.|\*]+).*')
 
         # find tree count
-        for idx, line in enumerate(paup_output):
+        for idx, line in enumerate(self.output):
             tp_match = tree_count_pattern.match(line)
             if tp_match:
                 break
@@ -163,12 +233,12 @@ class Paup(object):
             raise Exception("Failed to find tree count in PAUP* output")
         tree_count = int(tp_match.group(1))
                 
-        while not bp_row.match(paup_output[idx]):
+        while not bp_row.match(self.output[idx]):
             idx += 1
             
         split_idx = 0
         split_reps = {}
-        for line in paup_output[idx:]:
+        for line in self.output[idx:]:
             if line == "SPLITS COUNT END":
                  break        
             bp_match = bp_full_row_with_perc_col.match(line)
@@ -194,72 +264,6 @@ class Paup(object):
                         split_reps[split_idx] = bp_match.group(1)
                     split_idx += 1                   
         return tree_count, bipartition_counts
-        
-    def split_counts_from_group_freqs(self, 
-        bipartition_counts,
-        taxa_block):
-        """
-        Returns a populated NormalizingBitmaskDict object based on the given
-        bipartition info, with keys = normalized splits and values = tuple 
-        (count, percentage).
-        """
-        #assert len(bipartition_freqs[0]) == len(taxa_block)
-        pass
-        
-    def compose_list_taxa(self):
-        """ 
-        Given a data file in memory, this gets PAUP* to print a list of 
-        taxa that can be used to build a TaxaBlock later.
-        """
-        return ["[!TAXON LIST BEGIN]\ntstatus / full;\n[!TAXON LIST END]\n"]
-        
-    def compose_count_splits(self, majrule_filepath=None, majrule_freq=0.5):
-        """
-        Given trees in memory, this composes a command to count the split
-        frequencies across the trees as well as a save the majority-rule
-        consensus tree if a path is given.
-        """
-        percent = 100 * majrule_freq
-        if majrule_filepath is not None:
-            treefile = " treefile=%s replace=yes "
-        else:
-            treefile = ""
-        paup_template = []
-        paup_template.extend(self.compose_list_taxa())
-        
-        paup_template.append("[!SPLITS COUNT BEGIN]")        
-        paup_template.append("contree / strict=no %s showtree=no grpfreq=yes majrule=yes percent=%d;" % (treefile, percent));
-        paup_template.append("[!SPLITS COUNT END]")
-        return paup_template
-    
-    def compose_load_trees(self,
-                           tree_filepaths,
-                           taxa_filepath=None, # for taxa block; leave None if taxa in treefile                                                     
-                           burnin=0,
-                           mode=7, # keep trees in memory, specify 3 to clear
-                           reset=True):
-        """
-        Composes commands to load a set of trees into PAUP*, with the specified 
-        number of burnin dropped.
-        """
-        if isinstance(tree_filepaths, str):
-            raise Exception("expecting list of filepaths, not string")
-        gettree_template = 'gett file= %%s storebrlens=yes warntree=no unrooted=yes from=%d mode=%%d;' % (burnin+1)
-        paup_template = []
-        paup_template.append("set warnreset=no; set increase=auto; set warnroot=no;")
-        if taxa_filepath is not None:
-            paup_template.append('execute %s;' % taxa_filepath)
-            paup_template.append(gettree_template % (tree_filepaths[0], mode))
-        else:
-            if reset:
-                paup_template.append('execute %s;' % tree_filepaths[0])
-            else:
-                paup_template.append(gettree_template % (tree_filepaths[0], mode))
-        for tree_filepath in tree_filepaths[1:]:
-            paup_template.append(gettree_template % (tree_filepath, 7))
-                        
-        return paup_template
-
 
 ###############################################################################
 ## OLD STUFF
@@ -302,7 +306,7 @@ def bipartitions(data_filepath,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE)
     stdout, stderr = paup_run.communicate(paup_template % paup_args)
-    paup_output = stdout.split('\n')
+    results = stdout.split('\n')
     tax_labels = []
     bipartitions = []
     bipartition_freqs = {}
@@ -310,7 +314,7 @@ def bipartitions(data_filepath,
     bipartition_pattern = re.compile('([\.|\*]+)\s+([\d\.]+)\s+([\d\.]*)%')
     bipartition_pattern2 = re.compile('([\.|\*]+)\s+([\d\.]+)')
     taxinfo_pattern = re.compile('\s*(\d+) (.*)\s+\-')
-    for line in paup_output:
+    for line in results:
         bp_match = bipartition_pattern.match(line)
         if bp_match:
             bipartitions.append(bp_match.group(1))
@@ -443,7 +447,7 @@ class PaupWrapperDumbTests(unittest.TestCase):
     
         self.splits_test_cases = [
             PaupWrapperDumbTests.SplitsTestCase("feb032009.tre", 
-                None, 
+                "feb032009.tre",
                 "feb032009.splits.csv", 
                 100),
             PaupWrapperDumbTests.SplitsTestCase("anolis.mcmct.trees.nexus", 
@@ -451,7 +455,7 @@ class PaupWrapperDumbTests(unittest.TestCase):
                 "anolis.mcmct.trees.splits.csv", 
                 1001),    
             PaupWrapperDumbTests.SplitsTestCase("terrarana.random.unrooted.100.tre", 
-                None, 
+                "terrarana.random.unrooted.100.tre",
                 "terrarana.random.unrooted.100.splits.csv", 
                 100),                   
         ]
@@ -475,11 +479,10 @@ class PaupWrapperDumbTests(unittest.TestCase):
         """Loads a taxa block from `filename`, make sure taxa returned match
         `taxlabels`"""
         p = Paup()
-        commands = []             
-        commands.extend(p.compose_load_trees([dendropy.tests.data_source_path(filename)]))
-        commands.extend(p.compose_list_taxa())
-        results = p.run(commands) 
-        taxa_block = p.parse_taxa_block(results)
+        p.stage_execute_file(dendropy.tests.data_source_path(filename))
+        p.stage_list_taxa()
+        p.run()
+        taxa_block = p.parse_taxa_block()
         assert len(taxa_block) == len(taxlabels)
         for i, t in enumerate(taxa_block):
             assert t.label == taxlabels[i]
@@ -489,12 +492,11 @@ class PaupWrapperDumbTests(unittest.TestCase):
         frequencies match `group_freqs` (given as dictionary of PAUP* group
         strings and their counts for the file)."""        
         p = Paup()
-        commands = []
-        commands.extend(p.compose_load_trees(tree_filepaths=[treefile], 
-            taxa_filepath=taxafile))
-        commands.extend(p.compose_count_splits())
-        results = p.run(commands)
-        tree_count, bipartition_counts = p.parse_group_freqs(results)
+        p.stage_execute_file(taxafile, clear_trees=True)           
+        p.stage_load_trees(tree_filepaths=[treefile])
+        p.stage_count_splits()
+        p.run()
+        tree_count, bipartition_counts = p.parse_group_freqs()
         assert exp_tree_count == tree_count, "%s != %s" % (exp_tree_count, tree_count)
         assert len(group_freqs) == len(bipartition_counts), "%d != %d" % (len(group_freqs), len(bipartition_counts))
         for g in group_freqs:

@@ -1,4 +1,4 @@
-* Easier way to create trees with these same leaf set in different options (i.e., data context approach)
+* Data
 
 * Add option to specify posterior probability support as Nexus node comment in SumTrees
 
@@ -19,6 +19,4 @@
 
 * check element annotation (attribute names and ``annotate_as``)
 
-* make sure count_splits in split_distribution does not always pick splits rather than clades
-
-* trees have taxa_block; added during parsing
+* trees have taxa_block; added during parsing; TreesBlock normalizes taxa_block of tree objects as they are added, if neccessary
