@@ -753,7 +753,7 @@ class Node(taxa.TaxonLinked):
             else:
                 label = "anonymous leaf"
         else:
-            label = "internal"
+            label = "+"
         if kwargs.get("clade_mask"):
             from dendropy.splits import split_as_string
             cm = "%s " % split_as_string(self.edge.clade_mask, kwargs.get("mask_width", 0))
