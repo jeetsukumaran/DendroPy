@@ -37,10 +37,32 @@ def reroot_on_lowest_common_index_path(t, common_mask):
             break
         curr_n = p
         p = curr_n.parent_node
+
+    without_lowest = common_mask^l
+
     if (curr_n.edge.clade_mask & common_mask) == l:
         # we did not make it to the root.  Make curr_n, the first_child of the root
         t.to_outgroup_position(curr_n, flip_splits=True, suppress_deg_two=True)
-        return
+        avoid = curr_n
+        nd_source = iter(t.seed_node.child_nodes())
+        
+        try:
+            while True:
+                curr_n = nd_source.next()
+                if curr_n is not avoid:
+                    cm = (curr_n.edge.clade_mask & common_mask)
+                    if cm:
+                        if cm == without_lowest:
+                            r = t.seed_node
+                            t.reroot_at(curr_n, flip_splits=True, suppress_deg_two=True)
+                            t.to_outgroup_position(r, flip_splits=True, suppress_deg_two=True)
+                            nd_source = iter(t.seed_node.child_nodes())
+                            avoid = r
+                        else:
+                            return
+        except StopIteration:
+            assert False
+            return
     # we hit the root, now we walk up the tree, to find the a relevant internal
     lowest_on_path_to_l = curr_n
     taxa_mask = t.seed_node.clade_mask
@@ -128,6 +150,10 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
     
     to_mod_relevant_splits = {}
     to_consume_relevant_splits = {}
+    if IS_DEBUG_LOGGING:
+        nbits = count_bits(to_mod_split | to_consume_split)
+        _LOG.debug("After reroot to_modify:\n%s" % to_modify.get_indented_form(clade_mask=True, mask_width=nbits))
+        _LOG.debug("Before reroot to_consume:\n%s" % to_consume.get_indented_form(clade_mask=True, mask_width=nbits, indentation="   |"))
     if not rooted:
         reroot_on_lowest_common_index_path(to_modify, leaf_intersection)
         reroot_on_lowest_common_index_path(to_consume, leaf_intersection)
@@ -138,7 +164,7 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
     if IS_DEBUG_LOGGING:
         nbits = count_bits(to_mod_split | to_consume_split)
         _LOG.debug("After reroot to_modify:\n%s" % to_modify.get_indented_form(clade_mask=True, mask_width=nbits))
-        _LOG.debug("After reroot to_consume:\n%s" % to_consume.get_indented_form(clade_mask=True, mask_width=nbits))
+        _LOG.debug("After reroot to_consume:\n%s" % to_consume.get_indented_form(clade_mask=True, mask_width=nbits, indentation="   |"))
     for s, e in tmse.iteritems():
         s = e.clade_mask
         masked = s & leaf_intersection
