@@ -1,0 +1,772 @@
+#NEXUS 
+Begin taxa;
+	Dimensions ntax=362;
+	Taxlabels
+		Eleutherodactlyus_acmonis
+		Eleutherodactylus_alticola
+		Eleutherodactylus_amadeus
+		Eleutherodactylus_amplinympha
+		Eleutherodactylus_antillensis
+		Eleutherodactylus_apostates
+		Eleutherodactylus_armstrongi
+		Eleutherodactylus_atkinsi
+		Eleutherodactylus_notidodes
+		Eleutherodactylus_auriculatoides
+		Eleutherodactylus_barlagnei
+		Eleutherodactylus_bartonsmithi
+		Brachycephalus_ephippium
+		Craugastor_bransfordi
+		Eleutherodactylus_bresslerae
+		Eleutherodactylus_brevirostris
+		Eleutherodactylus_brittoni
+		Eleutherodactylus_casparii
+		Eleutherodactylus_cavernicola
+		Eleutherodactylus_cochranae
+		Eleutherodactylus_coqui
+		Eleutherodactylus_corona
+		Eleutherodactylus_cubanus
+		Eleutherodactylus_cundalli
+		Eleutherodactylus_cuneatus
+		Eleutherodactylus_darlingtoni
+		Eleutherodactylus_dimidiatus
+		Eleutherodactylus_dolomedes
+		Eleutherodactylus_abbotti
+		Pristimantis_acerus
+		Pristimantis_achatinus
+		Pristimantis_actites
+		Eleutherodactylus_albipes
+		Eleutherodactylus_alcoae
+		Craugastor_alfredi
+		Pristimantis_altamazonicus
+		Pristimantis_aniptopalmatus
+		Strabomantis_anomalus
+		Pristimantis_appendiculatus
+		Craugastor_augusti
+		Eleutherodactylus_auriculatus
+		Eleutherodactylus_glaphycompus
+		Haddadus_binotatus
+		Pristimantis_bipunctatus
+		Eleutherodactylus_blairhedgesi
+		Craugastor_bocourti
+		Craugastor_daryi
+		Pristimantis_buckleyi
+		Strabomantis_bufoniformis
+		Pristimantis_cajamarcensis
+		Pristimantis_calcarulatus
+		Eleutherodactylus_caribe
+		Pristimantis_celator
+		Pristimantis_ceuthospilus
+		Pristimantis_chalceus
+		Pristimantis_chloronotus
+		Pristimantis_citriogaster
+		Pristimantis_colomai
+		Pristimantis_condor
+		Pristimantis_conspicillatus
+		Eleutherodactylus_cooki
+		Pristimantis_cremnobates
+		Pristimantis_crenunguis
+		Pristimantis_croceoinguinus
+		Pristimantis_cryophilius
+		Pristimantis_curtipes
+		Pristimantis_devillei
+		Pristimantis_dissimulatus
+		Isodactylus_dolops
+		Pristimantis_duellmani
+		Isodactylus_elassodiscus
+		Eleutherodactylus_emiliae
+		Pristimantis_euphronides
+		Pristimantis_fenestratus
+		Craugastor_fitzingeri
+		Pristimantis_gentryi
+		Pristimantis_glandulosus
+		Eleutherodactlyus_gossei
+		Craugastor_montanus
+		Ischnocnema_guentheri
+		Pristimantis_sp_SBH266049
+		Eleutherodactylus_iberia
+		Pristimantis_imitatrix
+		Eleutherodactylus_inoptatus
+		Pristimantis_inusitatus
+		Ischnocnema_juipoca
+		Pristimantis_labiosus
+		Eleutherodactylus_lamprotes
+		Pristimantis_lanthanites
+		Pristimantis_latidiscus
+		Eleutherodactylus_leberi
+		Eleutherodactylus_lentus
+		Eleutherodactylus_leoncei
+		Pristimantis_leoni
+		Pristimantis_lirellus
+		Craugastor_longirostris
+		Pristimantis_luteolateralis
+		Pristimantis_lymani
+		Eleutherodactylus_maestrensis
+		Eleutherodactylus_marnockii
+		Eleutherodactylus_martinicensis
+		Pristimantis_melanogaster
+		Pristimantis_bromeliaceus
+		Strabomantis_necerus
+		Pristimantis_nyctophylax
+		Pristimantis_ocreatus
+		Pristimantis_ockendeni
+		Pristimantis_orcesi
+		Pristimantis_orestes
+		Eleutherodactylus_orientalis
+		Pristimantis_parvillus
+		Ischnocnema_parva
+		Pristimantis_peruvianus
+		Pristimantis_petrobardus
+		Pristimantis_phoxocephalus
+		Eleutherodactylus_planirostris
+		Eleutherodactylus_rogersi
+		Pristimantis_pluvicanorus
+		Craugastor_podiciferus
+		Craugastor_punctariolus
+		Pristimantis_pycnodermis
+		Craugastor_pygmaeus
+		Pristimantis_pyrrhomerus
+		Pristimantis_quinquagesimus
+		Craugastor_rhodopis
+		Pristimantis_rhodoplichus
+		Eleutherodactylus_richmondi
+		Pristimantis_ridens
+		Eleutherodactylus_riparius
+		Pristimantis_riveti
+		Eleutherodactylus_rivularis
+		Pristimantis_rozei
+		Pristimantis_sagittulus
+		Craugastor_sandersoni
+		Pristimantis_schultei
+		Pristimantis_shrevei
+		Pristimantis_simonbolivari
+		Pristimantis_skydmainos
+		Pristimantis_sp_AY326002
+		Eleutherodactylus_juanariveroi
+		Pristimantis_spinosus
+		Pristimantis_stictogaster
+		Pristimantis_subsigillatus
+		Strabomantis_sulcatus
+		Pristimantis_supernatis
+		Pristimantis_surdus
+		Eleutherodactylus_thomasi
+		Pristimantis_thymelensis
+		Pristimantis_thymalopsoides
+		Pristimantis_toftae
+		Pristimantis_festae
+		Pristimantis_truebae
+		Eleutherodactylus_unicolor
+		Pristimantis_unistrigatus
+		Pristimantis_urichi
+		Eleutherodactylus_cf_varleyi
+		Pristimantis_verecundus
+		Pristimantis_versicolor
+		Pristimantis_vertebralis
+		Pristimantis_walkeri
+		Pristimantis_wiensi
+		Pristimantis_wnigrum
+		Eleutherodactylus_zeus
+		Eleutherodactylus_zugi
+		Eleutherodactylus_eileenae
+		Eleutherodactylus_eneidae
+		Eleutherodactylus_etheridgei
+		Eleutherodactylus_eunaster
+		Eleutherodactylus_flavescens
+		Eleutherodactylus_fowleri
+		Eleutherodactylus_furcyensis
+		Eleutherodactylus_fuscus
+		Eleutherodactylus_glamyrus
+		Eleutherodactylus_glandulifer
+		Eleutherodactylus_glaucoreius
+		Eleutherodactylus_goini
+		Eleutherodactylus_grabhami
+		Eleutherodactylus_grahami
+		Eleutherodactylus_greyi
+		Eleutherodactylus_gryllus
+		Eleutherodactylus_guanahacabibes
+		Eleutherodactylus_guantanamera
+		Eleutherodactylus_gundlachi
+		Eleutherodactylus_haitianus
+		Eleutherodactylus_hedricki
+		Eleutherodactylus_heminota
+		Holoaden_bradei
+		Eleutherodactylus_hypostenor
+		Eleutherodactylus_intermedius
+		Eleutherodactylus_ionthus
+		Oreobates_quixensis
+		Oreobates_sp
+		Eleutherodactylus_jamaicensis
+		Eleutherodactylus_johnstonei
+		Eleutherodactylus_jugans
+		Eleutherodactylus_junori
+		Eleutherodactylus_limbatus
+		Litoria_caerulea
+		Eleutherodactylus_locustus
+		Eleutherodactylus_mariposa
+		Eleutherodactylus_melacara
+		Eleutherodactylus_minutus
+		Eleutherodactylus_monensis
+		Eleutherodactylus_montanus
+		Eleutherodactylus_sp_USNM337773
+		Eleutherodactylus_nortoni
+		Eleutherodactylus_nubicola
+		Eleutherodactylus_orcutti
+		Eleutherodactylus_oxyrhynchus
+		Eleutherodactylus_pantoni
+		Eleutherodactylus_parabates
+		Eleutherodactylus_parapelates
+		Eleutherodactylus_patricae
+		Eleutherodactylus_paulsoni
+		Eleutherodactylus_pentasyringos
+		Eleutherodactylus_pezopetrus
+		Phrynopus_bracki
+		Isodactylus_brunneus
+		Bryophryne_cophites
+		Isodactylus_peraccai
+		Psychrophrynella_sp_AY843720
+		Eleutherodactylus_pictissimus
+		Eleutherodactylus_pinarensis
+		Eleutherodactylus_pinchoni
+		Eleutherodactylus_pituinus
+		Eleutherodactylus_poolei
+		Eleutherodactylus_portoricensis
+		Eleutherodactylus_probolaeus
+		Rana_catesbeiana
+		Eleutherodactylus_rhodesi
+		Eleutherodactylus_ricordii
+		Eleutherodactylus_ronaldi
+		Eleutherodactylus_rufifemoralis
+		Eleutherodactylus_aporostegas
+		Eleutherodactylus_schwartzi
+		Eleutherodactylus_sciagraphus
+		Eleutherodactylus_sisyphodemus
+		Eleutherodactylus_symingtoni
+		Eleutherodactylus_toa
+		Eleutherodactylus_tonyi
+		Eleutherodactylus_turquiensis
+		Eleutherodactylus_olibrus
+		Eleutherodactylus_ventrilineatus
+		Eleutherodactylus_weinlandi
+		Eleutherodactylus_diplasius
+		Eleutherodactylus_wightmanae
+		Eleutherodactylus_andrewsi
+		Eleutherodactylus_klinikowskii
+		Phrynopus_auriculatus
+		Pristimantis_caprifer
+		Pristimantis_rhabdolaemus
+		Pristimantis_cruentus
+		Ischnocnema_hoehnei
+		Eleutherodactylus_glanduliferoides
+		Eleutherodactylus_chlorophenax
+		Eleutherodactylus_griphus
+		Eleutherodactylus_thorectes
+		Psychrophrynella_sp_KU173495
+		Eleutherodactylus_counouspeus
+		Eleutherodactylus_luteolus
+		Phrynopus_heimorum
+		Lynchius_sp
+		Psychrophrynella_sp_AM039710
+		Psychrophrynella_iatamasi
+		Phrynopus_bufoides
+		Noblella_sp
+		Phrynopus_horstpauli
+		Phrynopus_barthlenae
+		Phrynopus_kauneorum
+		Phrynopus_tautzorum
+		Phrynopus_pesantesi
+		Phrynopus_juniensis
+		Agalychnis_callidryas
+		Barycholos_ternetzi
+		Eleutherodactylus_varleyi
+		Eleutherodactylus_bakeri
+		Pristimantis_terraebolivaris
+		Eleutherodactylus_wetmorei
+		Eleutherodactylus_schmidti
+		Eleutherodactylus_sommeri
+		Eleutherodactylus_bothroboans
+		Pristimantis_rhabdocnemus
+		Phrynopus_tribulosus
+		Pristimantis_cruciocularis
+		Pristimantis_minutulus
+		Pristimantis_sp_SBH266045
+		Pristimantis_cf_mendax
+		Pristimantis_cf_rhabdolaemus
+		Pristimantis_sp_KU218140
+		Eleutherodactlyus_audanti
+		Pristimatnis_malkini
+		Pristimantis_ardalonychus
+		Oreobates_saxatilis
+		Pristimantis_simonsii
+		Oreobates_cruralis
+		Barycholos_pulcher
+		Lynchius_flavomaculatus
+		Pristimantis_diadematus
+		Craugastor_rupinius
+		Pristimantis_galdi
+		Pristimantis_eriphus
+		Eleutherodactylus_jaumei
+		Holoaden_luederwaldti
+		Craugastor_uno
+		Craugastor_spatulatus
+		Craugastor_berkenbuschii
+		Eleutherodactylus_pipilans
+		Eleutherodactylus_nitidus
+		Pristimantis_inguinalis
+		Unknown_anuran_sp
+		Pristimantis_zeuctotylus
+		Adelophryne_gutturosa
+		Craugastor_rugulosus
+		Craugastor_angelicus
+		Craugastor_laticeps
+		Diasporus_diastema
+		Craugastor_melanostictus
+		Craugastor_stuarti
+		Craugastor_loki
+		Pristimantis_caryophyllaceus
+		Craugastor_andi
+		Craugastor_megacephalus
+		Craugastor_lineatus
+		Craugastor_crassidigitus
+		Phyzelaphryne_miriame
+		Pristimantis_sp_LSUMZ16898
+		Strabomantis_biporcatus
+		Pristimantis_marmoratus
+		Pristimtantis_jester
+		Pristimantis_saltissimus
+		Pristimantis_dendrobatoides
+		Pristimantis_albertus
+		Psychrophrynella_wettsteini
+		Craugastor_sp_UTA51036
+		Craugastor_sp_SBH268103
+		Noblella_lochites
+		Pristimantis_crucifer
+		Pristimantis_sp_KU179221
+		Pristimantis_prolatus
+		Craugastor_obesus
+		Craugastor_emcelae
+		Pristimantis_sp_SBH268110
+		Craugastor_tarahumarensis
+		Ischnocnema_holti
+		Craugastor_sp_SBH268113
+		Pristimantis_pulvinatus
+		Lynchius_nebulanastes
+		Lynchius_parkeri
+		Leptodactylus_pentadactylus
+		Centrolene_prosoblepon
+		Dendrobates_sylvaticus
+		Bufo_melanostictus
+		Hyla_chinensis
+		Cryptobatrachus_sp
+		Ceratophrys_cornuta
+		Odontophrynus_achalensis
+		Melanophryniscus_klappenbachi
+		Telmatobius_verrucosus
+		Rhinoderma_darwinii
+		Pseudis_paradoxa
+		Pseudophryne_bibroni
+		Caudiverbera_caudiverbera
+		;
+End;
+
+Begin trees;  [Treefile saved Mon Feb  9 21:46:37 2009]
+[!
+>Data file = /Users/jeet/Documents/Projects/Phyloinformatics/DendroPy/dendropy/dendropy/tests/data/terrarana.chars.nexus
+>
+>Generating 30 (unrooted) random trees:
+>  Model = equiprobable
+>  Starting seed = 1666881597
+]
+	Translate
+		1 Eleutherodactlyus_acmonis,
+		2 Eleutherodactylus_alticola,
+		3 Eleutherodactylus_amadeus,
+		4 Eleutherodactylus_amplinympha,
+		5 Eleutherodactylus_antillensis,
+		6 Eleutherodactylus_apostates,
+		7 Eleutherodactylus_armstrongi,
+		8 Eleutherodactylus_atkinsi,
+		9 Eleutherodactylus_notidodes,
+		10 Eleutherodactylus_auriculatoides,
+		11 Eleutherodactylus_barlagnei,
+		12 Eleutherodactylus_bartonsmithi,
+		13 Brachycephalus_ephippium,
+		14 Craugastor_bransfordi,
+		15 Eleutherodactylus_bresslerae,
+		16 Eleutherodactylus_brevirostris,
+		17 Eleutherodactylus_brittoni,
+		18 Eleutherodactylus_casparii,
+		19 Eleutherodactylus_cavernicola,
+		20 Eleutherodactylus_cochranae,
+		21 Eleutherodactylus_coqui,
+		22 Eleutherodactylus_corona,
+		23 Eleutherodactylus_cubanus,
+		24 Eleutherodactylus_cundalli,
+		25 Eleutherodactylus_cuneatus,
+		26 Eleutherodactylus_darlingtoni,
+		27 Eleutherodactylus_dimidiatus,
+		28 Eleutherodactylus_dolomedes,
+		29 Eleutherodactylus_abbotti,
+		30 Pristimantis_acerus,
+		31 Pristimantis_achatinus,
+		32 Pristimantis_actites,
+		33 Eleutherodactylus_albipes,
+		34 Eleutherodactylus_alcoae,
+		35 Craugastor_alfredi,
+		36 Pristimantis_altamazonicus,
+		37 Pristimantis_aniptopalmatus,
+		38 Strabomantis_anomalus,
+		39 Pristimantis_appendiculatus,
+		40 Craugastor_augusti,
+		41 Eleutherodactylus_auriculatus,
+		42 Eleutherodactylus_glaphycompus,
+		43 Haddadus_binotatus,
+		44 Pristimantis_bipunctatus,
+		45 Eleutherodactylus_blairhedgesi,
+		46 Craugastor_bocourti,
+		47 Craugastor_daryi,
+		48 Pristimantis_buckleyi,
+		49 Strabomantis_bufoniformis,
+		50 Pristimantis_cajamarcensis,
+		51 Pristimantis_calcarulatus,
+		52 Eleutherodactylus_caribe,
+		53 Pristimantis_celator,
+		54 Pristimantis_ceuthospilus,
+		55 Pristimantis_chalceus,
+		56 Pristimantis_chloronotus,
+		57 Pristimantis_citriogaster,
+		58 Pristimantis_colomai,
+		59 Pristimantis_condor,
+		60 Pristimantis_conspicillatus,
+		61 Eleutherodactylus_cooki,
+		62 Pristimantis_cremnobates,
+		63 Pristimantis_crenunguis,
+		64 Pristimantis_croceoinguinus,
+		65 Pristimantis_cryophilius,
+		66 Pristimantis_curtipes,
+		67 Pristimantis_devillei,
+		68 Pristimantis_dissimulatus,
+		69 Isodactylus_dolops,
+		70 Pristimantis_duellmani,
+		71 Isodactylus_elassodiscus,
+		72 Eleutherodactylus_emiliae,
+		73 Pristimantis_euphronides,
+		74 Pristimantis_fenestratus,
+		75 Craugastor_fitzingeri,
+		76 Pristimantis_gentryi,
+		77 Pristimantis_glandulosus,
+		78 Eleutherodactlyus_gossei,
+		79 Craugastor_montanus,
+		80 Ischnocnema_guentheri,
+		81 Pristimantis_sp_SBH266049,
+		82 Eleutherodactylus_iberia,
+		83 Pristimantis_imitatrix,
+		84 Eleutherodactylus_inoptatus,
+		85 Pristimantis_inusitatus,
+		86 Ischnocnema_juipoca,
+		87 Pristimantis_labiosus,
+		88 Eleutherodactylus_lamprotes,
+		89 Pristimantis_lanthanites,
+		90 Pristimantis_latidiscus,
+		91 Eleutherodactylus_leberi,
+		92 Eleutherodactylus_lentus,
+		93 Eleutherodactylus_leoncei,
+		94 Pristimantis_leoni,
+		95 Pristimantis_lirellus,
+		96 Craugastor_longirostris,
+		97 Pristimantis_luteolateralis,
+		98 Pristimantis_lymani,
+		99 Eleutherodactylus_maestrensis,
+		100 Eleutherodactylus_marnockii,
+		101 Eleutherodactylus_martinicensis,
+		102 Pristimantis_melanogaster,
+		103 Pristimantis_bromeliaceus,
+		104 Strabomantis_necerus,
+		105 Pristimantis_nyctophylax,
+		106 Pristimantis_ocreatus,
+		107 Pristimantis_ockendeni,
+		108 Pristimantis_orcesi,
+		109 Pristimantis_orestes,
+		110 Eleutherodactylus_orientalis,
+		111 Pristimantis_parvillus,
+		112 Ischnocnema_parva,
+		113 Pristimantis_peruvianus,
+		114 Pristimantis_petrobardus,
+		115 Pristimantis_phoxocephalus,
+		116 Eleutherodactylus_planirostris,
+		117 Eleutherodactylus_rogersi,
+		118 Pristimantis_pluvicanorus,
+		119 Craugastor_podiciferus,
+		120 Craugastor_punctariolus,
+		121 Pristimantis_pycnodermis,
+		122 Craugastor_pygmaeus,
+		123 Pristimantis_pyrrhomerus,
+		124 Pristimantis_quinquagesimus,
+		125 Craugastor_rhodopis,
+		126 Pristimantis_rhodoplichus,
+		127 Eleutherodactylus_richmondi,
+		128 Pristimantis_ridens,
+		129 Eleutherodactylus_riparius,
+		130 Pristimantis_riveti,
+		131 Eleutherodactylus_rivularis,
+		132 Pristimantis_rozei,
+		133 Pristimantis_sagittulus,
+		134 Craugastor_sandersoni,
+		135 Pristimantis_schultei,
+		136 Pristimantis_shrevei,
+		137 Pristimantis_simonbolivari,
+		138 Pristimantis_skydmainos,
+		139 Pristimantis_sp_AY326002,
+		140 Eleutherodactylus_juanariveroi,
+		141 Pristimantis_spinosus,
+		142 Pristimantis_stictogaster,
+		143 Pristimantis_subsigillatus,
+		144 Strabomantis_sulcatus,
+		145 Pristimantis_supernatis,
+		146 Pristimantis_surdus,
+		147 Eleutherodactylus_thomasi,
+		148 Pristimantis_thymelensis,
+		149 Pristimantis_thymalopsoides,
+		150 Pristimantis_toftae,
+		151 Pristimantis_festae,
+		152 Pristimantis_truebae,
+		153 Eleutherodactylus_unicolor,
+		154 Pristimantis_unistrigatus,
+		155 Pristimantis_urichi,
+		156 Eleutherodactylus_cf_varleyi,
+		157 Pristimantis_verecundus,
+		158 Pristimantis_versicolor,
+		159 Pristimantis_vertebralis,
+		160 Pristimantis_walkeri,
+		161 Pristimantis_wiensi,
+		162 Pristimantis_wnigrum,
+		163 Eleutherodactylus_zeus,
+		164 Eleutherodactylus_zugi,
+		165 Eleutherodactylus_eileenae,
+		166 Eleutherodactylus_eneidae,
+		167 Eleutherodactylus_etheridgei,
+		168 Eleutherodactylus_eunaster,
+		169 Eleutherodactylus_flavescens,
+		170 Eleutherodactylus_fowleri,
+		171 Eleutherodactylus_furcyensis,
+		172 Eleutherodactylus_fuscus,
+		173 Eleutherodactylus_glamyrus,
+		174 Eleutherodactylus_glandulifer,
+		175 Eleutherodactylus_glaucoreius,
+		176 Eleutherodactylus_goini,
+		177 Eleutherodactylus_grabhami,
+		178 Eleutherodactylus_grahami,
+		179 Eleutherodactylus_greyi,
+		180 Eleutherodactylus_gryllus,
+		181 Eleutherodactylus_guanahacabibes,
+		182 Eleutherodactylus_guantanamera,
+		183 Eleutherodactylus_gundlachi,
+		184 Eleutherodactylus_haitianus,
+		185 Eleutherodactylus_hedricki,
+		186 Eleutherodactylus_heminota,
+		187 Holoaden_bradei,
+		188 Eleutherodactylus_hypostenor,
+		189 Eleutherodactylus_intermedius,
+		190 Eleutherodactylus_ionthus,
+		191 Oreobates_quixensis,
+		192 Oreobates_sp,
+		193 Eleutherodactylus_jamaicensis,
+		194 Eleutherodactylus_johnstonei,
+		195 Eleutherodactylus_jugans,
+		196 Eleutherodactylus_junori,
+		197 Eleutherodactylus_limbatus,
+		198 Litoria_caerulea,
+		199 Eleutherodactylus_locustus,
+		200 Eleutherodactylus_mariposa,
+		201 Eleutherodactylus_melacara,
+		202 Eleutherodactylus_minutus,
+		203 Eleutherodactylus_monensis,
+		204 Eleutherodactylus_montanus,
+		205 Eleutherodactylus_sp_USNM337773,
+		206 Eleutherodactylus_nortoni,
+		207 Eleutherodactylus_nubicola,
+		208 Eleutherodactylus_orcutti,
+		209 Eleutherodactylus_oxyrhynchus,
+		210 Eleutherodactylus_pantoni,
+		211 Eleutherodactylus_parabates,
+		212 Eleutherodactylus_parapelates,
+		213 Eleutherodactylus_patricae,
+		214 Eleutherodactylus_paulsoni,
+		215 Eleutherodactylus_pentasyringos,
+		216 Eleutherodactylus_pezopetrus,
+		217 Phrynopus_bracki,
+		218 Isodactylus_brunneus,
+		219 Bryophryne_cophites,
+		220 Isodactylus_peraccai,
+		221 Psychrophrynella_sp_AY843720,
+		222 Eleutherodactylus_pictissimus,
+		223 Eleutherodactylus_pinarensis,
+		224 Eleutherodactylus_pinchoni,
+		225 Eleutherodactylus_pituinus,
+		226 Eleutherodactylus_poolei,
+		227 Eleutherodactylus_portoricensis,
+		228 Eleutherodactylus_probolaeus,
+		229 Rana_catesbeiana,
+		230 Eleutherodactylus_rhodesi,
+		231 Eleutherodactylus_ricordii,
+		232 Eleutherodactylus_ronaldi,
+		233 Eleutherodactylus_rufifemoralis,
+		234 Eleutherodactylus_aporostegas,
+		235 Eleutherodactylus_schwartzi,
+		236 Eleutherodactylus_sciagraphus,
+		237 Eleutherodactylus_sisyphodemus,
+		238 Eleutherodactylus_symingtoni,
+		239 Eleutherodactylus_toa,
+		240 Eleutherodactylus_tonyi,
+		241 Eleutherodactylus_turquiensis,
+		242 Eleutherodactylus_olibrus,
+		243 Eleutherodactylus_ventrilineatus,
+		244 Eleutherodactylus_weinlandi,
+		245 Eleutherodactylus_diplasius,
+		246 Eleutherodactylus_wightmanae,
+		247 Eleutherodactylus_andrewsi,
+		248 Eleutherodactylus_klinikowskii,
+		249 Phrynopus_auriculatus,
+		250 Pristimantis_caprifer,
+		251 Pristimantis_rhabdolaemus,
+		252 Pristimantis_cruentus,
+		253 Ischnocnema_hoehnei,
+		254 Eleutherodactylus_glanduliferoides,
+		255 Eleutherodactylus_chlorophenax,
+		256 Eleutherodactylus_griphus,
+		257 Eleutherodactylus_thorectes,
+		258 Psychrophrynella_sp_KU173495,
+		259 Eleutherodactylus_counouspeus,
+		260 Eleutherodactylus_luteolus,
+		261 Phrynopus_heimorum,
+		262 Lynchius_sp,
+		263 Psychrophrynella_sp_AM039710,
+		264 Psychrophrynella_iatamasi,
+		265 Phrynopus_bufoides,
+		266 Noblella_sp,
+		267 Phrynopus_horstpauli,
+		268 Phrynopus_barthlenae,
+		269 Phrynopus_kauneorum,
+		270 Phrynopus_tautzorum,
+		271 Phrynopus_pesantesi,
+		272 Phrynopus_juniensis,
+		273 Agalychnis_callidryas,
+		274 Barycholos_ternetzi,
+		275 Eleutherodactylus_varleyi,
+		276 Eleutherodactylus_bakeri,
+		277 Pristimantis_terraebolivaris,
+		278 Eleutherodactylus_wetmorei,
+		279 Eleutherodactylus_schmidti,
+		280 Eleutherodactylus_sommeri,
+		281 Eleutherodactylus_bothroboans,
+		282 Pristimantis_rhabdocnemus,
+		283 Phrynopus_tribulosus,
+		284 Pristimantis_cruciocularis,
+		285 Pristimantis_minutulus,
+		286 Pristimantis_sp_SBH266045,
+		287 Pristimantis_cf_mendax,
+		288 Pristimantis_cf_rhabdolaemus,
+		289 Pristimantis_sp_KU218140,
+		290 Eleutherodactlyus_audanti,
+		291 Pristimatnis_malkini,
+		292 Pristimantis_ardalonychus,
+		293 Oreobates_saxatilis,
+		294 Pristimantis_simonsii,
+		295 Oreobates_cruralis,
+		296 Barycholos_pulcher,
+		297 Lynchius_flavomaculatus,
+		298 Pristimantis_diadematus,
+		299 Craugastor_rupinius,
+		300 Pristimantis_galdi,
+		301 Pristimantis_eriphus,
+		302 Eleutherodactylus_jaumei,
+		303 Holoaden_luederwaldti,
+		304 Craugastor_uno,
+		305 Craugastor_spatulatus,
+		306 Craugastor_berkenbuschii,
+		307 Eleutherodactylus_pipilans,
+		308 Eleutherodactylus_nitidus,
+		309 Pristimantis_inguinalis,
+		310 Unknown_anuran_sp,
+		311 Pristimantis_zeuctotylus,
+		312 Adelophryne_gutturosa,
+		313 Craugastor_rugulosus,
+		314 Craugastor_angelicus,
+		315 Craugastor_laticeps,
+		316 Diasporus_diastema,
+		317 Craugastor_melanostictus,
+		318 Craugastor_stuarti,
+		319 Craugastor_loki,
+		320 Pristimantis_caryophyllaceus,
+		321 Craugastor_andi,
+		322 Craugastor_megacephalus,
+		323 Craugastor_lineatus,
+		324 Craugastor_crassidigitus,
+		325 Phyzelaphryne_miriame,
+		326 Pristimantis_sp_LSUMZ16898,
+		327 Strabomantis_biporcatus,
+		328 Pristimantis_marmoratus,
+		329 Pristimtantis_jester,
+		330 Pristimantis_saltissimus,
+		331 Pristimantis_dendrobatoides,
+		332 Pristimantis_albertus,
+		333 Psychrophrynella_wettsteini,
+		334 Craugastor_sp_UTA51036,
+		335 Craugastor_sp_SBH268103,
+		336 Noblella_lochites,
+		337 Pristimantis_crucifer,
+		338 Pristimantis_sp_KU179221,
+		339 Pristimantis_prolatus,
+		340 Craugastor_obesus,
+		341 Craugastor_emcelae,
+		342 Pristimantis_sp_SBH268110,
+		343 Craugastor_tarahumarensis,
+		344 Ischnocnema_holti,
+		345 Craugastor_sp_SBH268113,
+		346 Pristimantis_pulvinatus,
+		347 Lynchius_nebulanastes,
+		348 Lynchius_parkeri,
+		349 Leptodactylus_pentadactylus,
+		350 Centrolene_prosoblepon,
+		351 Dendrobates_sylvaticus,
+		352 Bufo_melanostictus,
+		353 Hyla_chinensis,
+		354 Cryptobatrachus_sp,
+		355 Ceratophrys_cornuta,
+		356 Odontophrynus_achalensis,
+		357 Melanophryniscus_klappenbachi,
+		358 Telmatobius_verrucosus,
+		359 Rhinoderma_darwinii,
+		360 Pseudis_paradoxa,
+		361 Pseudophryne_bibroni,
+		362 Caudiverbera_caudiverbera
+		;
+tree PAUP_1 = [&U] (1:100,((((((((((((((((((((((((((((((2:71,(((84:115,340:127):42,191:97):38,(335:144,342:102):37):83):27,243:54):22,(21:97,307:97):24):87,288:94):13,((11:150,74:77):39,155:99):43):29,((((27:79,248:69):30,195:38):121,50:81):19,73:83):42):10,3:120):33,((44:102,251:100):27,339:79):34):32,136:84):27,282:79):59,(93:102,310:161):33):42,((((((((((((((((((((((((((((((((((4:106,((24:96,124:129):12,((66:47,268:76):99,176:82):9):27):77,64:95):32,128:78):48,348:101):58,((134:166,180:107):40,257:82):25):11,(85:132,189:91):20):32,61:98):23,355:96):25,207:84):19,30:122):14,(168:80,235:115):23):25,(75:87,341:87):128):24,167:69):52,328:118):19,((40:82,(78:150,119:116):49):35,47:76):60):36,(((((7:44,267:105):42,127:75):58,((100:125,347:106):40,229:139):41):74,287:61):23,146:68):40):22,(87:100,185:137):37):24,132:96):15,(17:91,(99:89,144:138):33):68):29,36:100):20,(111:115,224:132):13):70,5:81):18,(19:87,80:176):38):23,213:54):38,(214:101,306:180):34):54,299:150):35,(((46:139,((((((((67:97,221:111):29,336:120):44,((69:119,106:79):30,((((((82:96,255:79):22,(120:123,((227:86,272:61):72,297:79):40):73):13,(((((142:187,(193:20,(237:27,350:207):8):52):15,216:47):70,296:148):43,349:102):56,234:83):16):33,230:80):31,165:91):74,103:81):31):17):17,(105:88,244:131):21):37,79:137):14,(148:117,273:120):24):42,305:132):22,101:147):21):36,223:111):24,(137:103,198:95):27):24):19,(((41:100,233:77):39,269:77):29,59:114):36):21,281:109):30,((110:120,309:105):33,359:89):24):51,56:99):20,65:48):59,((8:102,291:119):25,((32:104,((42:129,161:98):39,293:91):40):50,184:109):22):14):37,275:92):23):22,9:92):30,((104:114,277:99):40,143:69):53):23,(((((((((((29:129,330:98):38,81:82):33,131:133):42,54:82):64,321:143):36,206:101):33,96:135):35,188:95):28,(126:105,314:133):44):33,(171:69,260:67):58):27,(60:99,70:79):47):11):25,(((((((((((((((28:161,157:74):32,311:96):59,187:91):78,308:94):31,240:67):49,((55:100,254:129):16,(109:91,343:146):21):38):24,((52:118,162:115):20,58:81):48):49,182:107):65,231:43):23,(((149:119,(181:103,(218:109,357:109):41):17):111,215:16):5,196:19):39):73,264:77):43,((37:45,(205:86,210:86):139):12,118:59):73):36,(43:138,249:106):33):50,323:144):31,(252:106,313:145):21):48):53,16:76):38,170:86):84,286:86):37,152:53):26,130:51):121,239:69):19,((((((((((13:182,((((((20:66,((26:69,(72:68,((((((83:87,245:149):20,150:94):81,203:76):35,246:93):18,((97:92,108:80):87,190:104):30):26,274:129):47):27):60,200:65):24):69,151:122):25,(270:98,302:71):46):27,324:146):53,129:75):28,33:53):35):18,(48:154,175:101):16):22,164:79):59,(((((((((((39:84,280:158):28,135:46):36,322:172):37,115:56):47,(86:130,(238:102,250:106):27):30):33,172:133):32,(89:113,(121:73,(122:119,183:133):56):18):27):41,159:70):38,327:113):38,320:87):32,326:80):60):21,(140:121,192:112):32):25,((256:143,300:101):26,358:80):25):25,(71:112,(((209:92,361:182):35,316:85):70,338:94):31):32):19,(((((15:118,102:118):31,(35:63,304:71):76):46,220:106):41,153:111):42,139:101):29):18,((((51:62,94:79):27,253:149):43,292:74):29,(166:154,329:88):27):36):70,(174:54,179:65):21):14):14,117:65):20,63:171):23,(((((((((((((((((6:73,325:158):24,((((((((((18:73,261:93):52,((98:101,241:118):25,352:96):20):45,158:82):38,283:105):61,163:80):36,204:76):22,(263:72,353:47):100):34,225:64):40,92:79):20,112:147):31):35,147:52):43,194:78):22,(90:73,123:77):87):14,278:85):23,45:74):64,57:117):18,((((((((((10:41,88:68):44,301:146):20,(((((((((((((68:62,266:102):52,160:77):26,333:140):44,77:56):35,125:161):38,((((((((95:108,197:117):35,(114:84,(345:141,354:95):42):31):38,318:121):29,((236:72,303:137):24,290:80):56):48,334:128):65,337:65):28,285:85):33,(247:145,295:99):43):18):48,344:97):31,(226:89,276:92):57):51,360:88):40,289:85):74,201:94):18,156:89):14,((133:116,((232:68,265:72):64,258:122):42):67,242:82):22):22):61,219:121):58,346:71):22,141:54):43,((14:159,332:91):39,(62:80,259:133):25):29):43,116:112):19,262:60):19,(31:90,49:112):38):28):55,(25:62,199:117):16):27,(178:9,(217:217,222:19):5):63):17,((((((12:81,76:130):26,34:67):24,317:199):30,173:64):29,(91:94,138:148):33):48,23:46):21):26,22:74):17,(211:68,(212:78,284:174):28):48):14,((53:142,186:78):21,((((((107:119,((113:113,351:125):37,208:108):36):36,202:136):34,294:83):31,356:84):30,298:96):79,228:75):17):24):12,(38:153,279:75):27):15,177:61):26):79,315:146):30,(312:154,362:98):40):59,331:106):19,154:86):71,(((145:62,271:70):78,319:127):64,169:106):39);
+tree PAUP_2 = [&U] (1:78,((((((((((((((((((((((((((((((((((((((((((((((((2:79,((((((5:72,((180:84,283:145):31,222:98):25):43,300:140):33,248:83):30,(((((16:62,279:70):26,323:180):27,(202:125,247:93):18):24,(23:68,((30:54,(((70:66,281:154):35,95:80):23,(106:64,(267:88,298:62):31):14):13):26,152:45):114):18):19,((18:109,(220:101,249:111):47):23,148:120):55):19):16,262:87):24,84:93):26):58,336:139):27,96:155):36,178:93):27,285:123):28,(((((((((((((3:69,((101:96,215:97):39,352:100):44):90,(((((9:87,((284:126,355:100):42,314:116):43):45,273:91):63,97:88):33,(37:75,(159:74,184:152):31):22):29,113:97):24):18,154:82):24,223:127):11,(83:69,(143:48,(146:59,(161:63,((200:28,232:26):79,239:80):98):31):38):35):48):51,280:117):17,(((25:99,(((((34:107,192:108):39,311:104):36,144:112):24,(302:124,354:109):12):23,(112:111,((114:80,357:125):28,287:66):59):40):21):32,157:110):32,211:114):19):43,250:92):19,((31:59,(277:86,299:172):23):34,(149:81,306:171):27):33):54,((((((4:91,((((50:101,69:95):41,172:127):18,((68:43,((186:117,334:147):68,252:67):62):29,85:41):64):69,171:72):25):21,(48:125,235:105):18):33,(((((80:139,93:118):42,293:90):44,(94:74,((169:148,315:131):43,(322:151,338:93):15):46):32):33,346:88):38,345:145):57):34,231:85):14,((((((((((((((((((((((((((6:36,22:30):27,309:173):23,164:67):32,(63:169,(168:59,177:84):9):12):19,210:75):85,62:94):25,132:87):77,205:86):58,241:40):13,207:35):103,162:116):69,122:83):31,47:67):57,((90:123,225:89):13,(242:96,333:137):20):48):19,87:109):23,(233:99,362:125):28):35,255:101):54,89:109):31,128:78):84,117:80):31,127:79):35,((27:117,191:119):25,229:153):49):20,((60:119,187:107):39,(82:100,343:138):19):38):19,(10:64,(74:129,193:94):18):37):22,(((109:83,118:90):66,214:108):17,265:69):53):29,316:115):24):14,24:87):45):14,((((((((((7:73,41:100):59,145:104):18,(254:75,261:89):54):32,((((((((((((((((((11:112,310:150):56,317:141):51,337:92):53,21:93):14,(65:86,359:91):47):49,246:71):43,147:83):21,206:86):19,(335:144,358:85):63):23,181:84):46,221:123):34,274:118):42,224:80):29,(142:145,257:83):27):19,(99:69,134:167):35):19,(35:164,216:81):25):31,(55:84,81:98):58):10,(251:119,275:110):22):25):27,77:96):20,165:136):41,123:80):47,319:138):27,(((((((((((((17:78,(204:61,234:93):26):38,(102:63,((259:110,361:147):78,320:71):33):89):53,45:63):19,(209:39,276:38):40):27,((((105:56,(119:159,301:94):32):59,(243:97,297:102):26):69,129:85):28,((116:83,360:145):22,140:101):30):14):29,(((61:102,253:117):26,(305:131,312:148):42):34,(72:71,268:81):41):35):14,((((((20:101,(((58:95,303:120):35,331:107):34,(66:92,318:150):17):73):25,(((((57:86,121:71):37,155:95):133,260:38):30,156:38):48,((88:95,308:114):25,324:143):32):17):18,((44:82,59:72):68,341:140):72):33,29:75):38,198:112):25,307:97):26):67,137:101):12,(19:141,54:98):13):19,(49:114,56:119):25):21,((39:100,296:161):36,104:95):34):46,92:106):34,79:114):32):18,266:104):38):14,208:107):20,((46:129,64:110):64,166:103):50):20):62,125:139):29,86:113):42,((36:96,350:108):18,(135:88,189:128):21):39):39,313:146):48,292:67):43,139:74):21,(53:75,203:148):21):25,263:85):34,163:106):21,(((((((((15:109,344:127):33,((((((33:108,120:124):36,(141:56,(151:89,349:117):33):46):21,(40:120,347:103):54):33,330:88):30,(((131:75,167:48):66,327:124):28,(240:99,286:125):11):23):17,270:96):21):20,((((26:98,226:92):63,218:101):36,282:98):42,28:123):25):44,138:92):9,((51:71,150:93):56,197:111):21):14,158:90):75,175:91):31,213:73):55,342:109):28):21,269:86):36,228:89):47,321:167):30,(((73:93,339:82):37,329:71):55,(290:101,325:129):59):21):32,103:92):18,(160:110,340:145):31):49,196:113):29,353:100):49,188:83):12,(219:148,236:69):30):31,190:107):26,(238:78,328:146):31):26,170:80):19,((((((52:43,((76:124,245:94):53,100:83):37):112,326:69):22,115:54):113,212:63):32,91:84):18,271:93):22):44,258:170):28,230:76):21,(107:172,256:92):20):26,(278:98,289:123):24):79,294:62):36,133:67):42,14:158):38,98:64):60,((13:85,272:69):90,183:98):33):12,((((43:170,244:81):15,(78:105,288:155):12):19,351:156):23,176:76):34):50,291:95):34,217:101):36,(75:139,199:124):47):18,(108:64,(111:84,173:144):30):51):27,185:137):37,(126:79,(201:130,295:97):37):31):27,32:105):104,195:55):25,((((((((((8:63,(12:78,194:66):50):42,(((38:103,237:126):14,71:107):42,(179:95,304:162):17):24):23,((((67:35,124:29):72,110:119):23,356:84):21,130:94):44):20,(227:106,348:121):25):36,153:98):15,264:87):24,(182:105,332:150):29):87,174:26):10,42:44):34,136:178):25);
+tree PAUP_3 = [&U] (1:82,(((((((((((((((((((((((((((((((((((((((((2:72,12:106):11,(176:67,188:101):15):17,((((17:100,(231:47,264:108):43):19,(117:76,293:155):23):26,360:151):25,(((((((28:60,243:49):47,((((((68:83,81:91):75,200:95):16,(76:124,215:118):13):42,307:95):31,199:92):28,103:131):34):17,(119:116,(245:102,332:134):35):62):13,(72:80,317:206):25):30,(168:69,183:86):11):21,241:62):29,(205:91,353:135):27):13):17):20,((29:81,(37:91,102:83):81):19,(111:144,260:92):9):33):16,318:185):13,(((((((((((((56:101,296:176):37,60:81):44,187:114):51,64:74):42,113:85):126,131:46):33,193:33):30,222:62):68,(73:109,144:121):53):20,(214:124,328:120):22):15,118:124):65,(((91:61,262:93):95,207:45):18,179:50):29):25,290:88):21):44,((108:36,272:92):37,284:77):82):11,((((((((((((((3:79,(44:70,((155:111,156:150):46,291:55):40):79):26,((((54:75,(128:87,349:126):29):56,221:105):66,((172:58,(267:78,352:53):121):20,203:46):53):30,182:109):26):56,304:139):30,136:110):36,82:98):49,305:114):36,263:79):89,232:58):22,213:51):65,((((((16:45,22:47):97,97:100):26,(70:73,347:114):29):21,((71:114,333:108):46,325:135):53):21,(115:63,252:96):35):26,(((((74:74,269:75):39,((((101:100,308:100):105,109:58):32,105:59):34,289:55):33):56,212:113):34,324:133):46,145:82):25):48):25,120:143):32,238:98):30,48:97):34,93:106):25):53,87:107):47,80:135):101,342:37):18,330:40):78,(((((((((24:103,258:146):30,(((52:70,(242:102,286:152):31):31,140:104):28,((88:111,341:145):45,362:99):42):27):62,(57:42,(59:48,177:188):14):63):25,160:94):32,227:135):23,(90:90,94:69):28):21,271:67):31,(228:125,295:114):25):15,(62:91,178:129):23):23):54,(((50:148,99:84):23,169:94):23,(69:141,173:90):26):25):72,45:47):19,237:46):42,(((((((((((4:96,(((((15:98,306:170):28,274:107):44,281:86):52,208:50):13,110:51):44):81,((((((((((((((((((((((((((((((((7:43,((((13:144,(((((((((((19:134,294:108):7,(143:95,220:112):25):120,246:42):16,20:37):63,147:85):25,(123:139,170:96):18):16,(211:86,217:144):21):53,((26:125,((31:75,195:140):25,36:81):33):41,66:71):38):21,(55:103,343:137):37):28,((43:166,209:96):17,(78:99,336:149):25):37):20,(226:89,234:90):48):39):44,300:91):27,(125:105,270:72):76):28,((146:83,180:165):18,(191:119,311:103):28):26):100):14,(163:71,276:67):21):26,247:69):46,249:140):34,21:75):19,(201:87,327:140):27):102,114:62):25,95:87):39,63:106):24,235:130):36,((9:132,152:68):27,329:78):28):17,((((18:139,((30:54,339:91):35,83:58):47):41,138:72):26,310:164):44,((92:129,133:91):40,309:81):26):23):52,239:102):29,96:153):24,(((((((((23:55,(((((((27:120,315:137):28,(135:107,219:109):28):36,319:146):27,(77:120,225:110):23):33,(216:46,240:38):68):27,192:121):53,171:59):22):37,(((32:124,((((124:49,287:76):50,359:76):61,223:107):32,303:99):28):30,(((((((34:65,233:55):101,161:57):28,(39:68,(86:163,130:55):28):32):22,159:65):23,((((((35:130,158:96):46,354:82):56,185:126):28,266:86):48,107:103):35,335:132):56):18,(((132:90,253:153):42,285:65):37,(149:69,204:147):14):24):48,(257:71,280:89):55):12):22,(89:153,197:98):18):39):25,316:110):22,162:149):32,181:84):6,(302:78,338:152):10):56,46:157):34,277:98):30,361:166):39):32,230:92):22,(326:93,331:110):62):22,256:104):16,(75:132,150:116):65):58,275:44):28,129:69):79,((38:101,334:140):50,344:95):40):77,282:79):32,157:70):62,229:134):30,218:111):31,(184:118,(292:104,299:135):44):37):13,(112:132,298:106):36):32,79:138):13,(((14:145,244:110):37,(104:100,(297:32,348:38):72):37):34,(53:73,((98:70,((206:98,251:150):24,279:71):81):40,320:81):28):54):29):30,47:94):17,268:67):19):31,345:137):11,((((10:31,((((((58:76,278:149):30,250:65):50,142:89):38,358:86):25,121:68):115,202:75):41):26,190:73):48,210:91):54,265:64):39):44,40:97):41,346:110):47,350:78):38,((((11:180,137:60):22,154:52):148,134:49):15,340:38):95):89,196:85):43,61:63):24,194:70):51):17,((((5:112,100:97):30,186:55):23,164:58):29,(148:50,(301:46,312:222):28):129):31):24,167:39):29,33:59):20,((65:44,126:53):67,357:99):82):14,236:50):42,198:112):28,224:87):16,(25:75,255:89):22):50,((85:64,139:80):62,(122:131,166:113):34):26):10,261:106):22,((84:76,254:102):25,127:63):55):26,288:134):63,248:53):33,189:63):14,174:43):17,(116:59,313:213):31):13,((((((((((8:105,141:110):39,321:147):50,355:77):59,51:60):30,337:52):59,314:134):30,(153:134,356:86):20):41,165:103):48,49:103):30,(106:108,351:114):36):89):18,42:58):19,175:92):56,((41:123,283:109):35,151:104):47):16,273:117):34,6:75):55,323:148):23,(67:109,322:126):42):72,259:85);
+tree PAUP_4 = [&U] (1:81,((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((2:43,96:223):30,231:43):15,(22:56,245:106):42):20,(((((51:153,72:66):34,52:42):62,237:29):10,208:30):14,(((71:120,246:117):29,(240:93,309:124):24):25,336:138):84):9):6,172:40):23,(278:103,279:59):32):12,(275:52,308:121):16):21,((((((((((4:58,(((11:96,147:81):68,(271:63,330:82):47):13,(((((35:160,(48:77,250:87):20):46,114:66):27,332:87):35,255:141):22,126:71):39):101):10,224:45):46,(175:95,361:186):44):67,((((58:76,(73:75,(149:70,302:159):29):47):61,219:99):38,335:125):27,(120:133,128:95):26):46):22,((9:59,235:82):65,315:146):25):23,321:165):34,((49:159,166:95):14,(223:76,307:99):37):41):25,((((25:112,((103:78,199:160):20,294:65):58):15,(((((((50:41,270:100):47,68:67):66,305:122):48,93:101):23,288:128):32,183:104):29,((((158:35,265:86):34,(251:105,329:82):21):80,(180:146,340:118):12):24,322:111):61):11):62,(70:46,123:46):38):11,((((31:67,311:107):30,320:90):16,(57:64,((129:122,355:89):57,150:80):53):24):30,136:88):42):66):30,243:82):15,220:139):50):21,((((((10:102,13:144):40,357:84):38,(185:126,328:128):25):20,(292:92,(295:81,(297:85,349:113):44):42):50):84,45:54):18,228:52):29):15,((((((((((((3:45,(((((((17:102,(139:108,347:108):61):37,296:147):35,(28:115,138:127):12):60,163:64):29,34:50):8,(168:65,319:201):27):14,19:71):29):93,285:104):24,((((((33:98,((192:105,298:109):28,264:68):48):39,299:126):29,267:55):41,38:90):46,337:83):25,(((((((44:99,(115:80,(233:75,268:77):63):27):33,100:134):23,66:88):58,(207:74,((210:119,350:129):7,331:131):36):38):22,206:107):56,109:84):30,(148:93,348:112):25):16):30):33,173:103):14,(107:143,165:119):13):42,121:75):18,(55:89,(198:81,(269:72,325:99):92):51):25):56,179:111):13,(((((((((((7:63,(((((((59:64,(94:76,253:156):32):38,64:81):91,281:84):34,276:75):30,354:134):29,280:89):27,(135:73,(215:147,301:95):21):64):26):15,((((43:126,(79:129,153:123):39):115,124:26):18,67:33):115,247:94):18):5,(105:137,242:99):29):14,193:78):18,151:147):29,230:68):40,353:121):32,316:95):32,42:77):53,((((61:75,283:149):30,170:59):78,157:111):24,(((84:115,356:85):14,(137:113,241:116):21):29,313:153):27):24):18,362:128):27):20,(((26:106,(261:88,303:69):67):23,(32:107,53:74):54):27,(27:113,293:125):26):21):46,18:72):8,((((((12:81,259:62):44,(15:82,254:83):13):17,(209:57,((212:117,257:56):9,239:72):17):14):58,(141:110,(((160:109,181:126):46,359:78):22,190:125):30):34):21,(144:119,343:136):41):48,197:59):11):14):40,201:107):54,154:103):22,40:122):17,(91:101,177:87):59):43,358:68):45,119:131):25,258:134):46,(((60:152,(99:59,(117:66,(217:107,345:135):84):30):30):26,156:56):65,304:141):28):27,(81:111,(((110:72,(187:132,202:107):38):48,274:113):49,312:133):49):40):27,((236:107,286:117):37,341:141):39):20,24:110):53,300:103):19,(118:114,205:135):26):33,(((8:122,333:115):33,(218:120,289:87):23):36,74:92):19):26,(((((65:102,80:135):26,290:108):58,338:73):20,266:95):25,(97:104,318:145):32):34):43,346:84):43,252:75):55,306:139):33,((14:130,((90:102,(134:126,((191:98,226:128):41,327:83):51):51):39,188:109):48):15,(291:122,314:121):27):36):61,((((5:76,63:160):25,211:69):55,282:131):29,16:90):27):21,((((((20:94,(116:83,159:140):19):35,77:132):21,(171:71,213:77):32):28,284:139):19,(169:112,277:125):29):31,203:89):21):15,(((((((47:86,(56:112,229:137):51):71,82:81):38,232:77):33,133:134):28,127:77):67,132:93):32,69:111):49):22,(101:115,326:130):26):56,200:70):15,(184:69,204:72):19):8,(41:67,227:87):17):33,(234:90,352:120):19):72,62:97):35,75:142):26,(131:129,249:122):32):52,143:66):13,(30:60,152:55):28):31,(((((23:95,130:125):17,(125:113,(260:148,317:131):28):80):16,((((29:75,(164:79,360:152):32):28,((36:86,162:96):99,((174:46,(216:63,273:147):24):27,196:62):28):11):24,((((((((54:112,(122:133,178:108):28):76,186:49):15,214:79):22,88:122):15,195:39):44,89:188):50,256:43):21,189:39):37):12,(((((95:103,142:99):30,106:46):43,344:145):32,145:64):121,167:46):9):41):56,287:95):17,(87:116,225:109):36):31):53,310:141):28,112:116):49,83:100):40,(46:135,140:130):40):23,(((37:125,194:118):31,86:122):45,238:87):31):47,98:78):23,(((78:129,((108:68,161:58):71,334:144):34):54,102:68):20,(85:60,221:149):21):24):20,(176:113,351:132):43):34,339:92):25,272:73):25,(146:83,324:147):24):35,104:110):14,262:53):55,92:107):13,((76:82,222:148):8,111:85):35):61,248:95):15,(6:85,(((((21:145,342:91):27,113:95):44,244:105):31,155:139):43,(182:117,(263:84,323:96):95):34):42):14):26,39:165);
+tree PAUP_5 = [&U] (1:88,(((((((((((((((((((((((2:84,(43:131,(((((((((50:139,195:88):27,255:89):27,(223:87,324:153):24):41,(79:105,96:100):67):39,288:132):53,209:70):64,180:86):26,184:64):87,219:109):38):58):74,200:39):18,12:29):67,141:126):29,16:69):71,319:136):75,309:78):20,32:104):21,(36:75,(147:74,274:124):116):21):45,(119:97,317:122):88):21,(205:96,302:80):61):42,(((39:78,339:82):33,107:85):40,((137:56,(235:169,326:78):21):25,176:152):12):23):32,58:92):18,154:80):43,((((3:85,357:120):33,(((6:61,((((((((40:129,360:109):80,276:59):23,228:73):21,(236:42,(286:117,351:116):93):20):35,(138:136,280:104):27):25,145:132):26,212:87):35,((197:36,265:111):34,244:54):35):24):57,124:106):23,((((((18:154,249:87):17,269:36):56,80:133):43,300:93):61,169:109):22,(125:174,202:105):32):36):15):20,(((((((55:87,282:85):70,78:115):35,306:131):50,259:99):72,134:112):34,335:104):72,213:81):35):35,(((((38:100,146:109):40,350:81):24,(305:97,314:114):60):40,(44:108,((99:122,301:112):37,347:93):43):25):21,(106:109,(167:30,181:49):93):15):15):23):31,352:93):28,116:109):60,47:73):33,343:97):34,((114:77,149:60):68,341:130):46):40,((((((((((((((((((((4:123,(((27:78,254:72):78,192:90):37,311:124):44):40,(48:60,(162:103,278:142):32):31):25,(98:90,331:100):34):28,49:116):20,(52:115,126:100):19):23,(((((37:116,220:99):64,207:78):25,88:91):26,((186:55,196:84):56,289:124):15):43,298:117):18):28,((((((5:108,342:134):29,((((11:87,310:175):63,172:56):10,(164:97,177:55):7):58,((((61:88,71:132):15,260:95):39,218:107):26,(312:147,333:104):58):28):17):39,(((13:149,97:102):23,(77:100,198:99):23):48,(19:121,(63:113,((((((65:58,152:63):43,((((85:100,355:84):21,296:150):43,329:102):21,(245:95,275:79):71):17):33,308:135):20,(234:122,294:102):20):50,349:95):35,327:98):45):31):24):12):24,292:113):22,((15:119,155:142):16,(69:105,(178:123,332:114):29):32):17):20,110:100):26):18,304:164):26,(31:105,(((((75:224,239:42):20,247:45):44,118:158):31,230:45):60,227:94):44):21):30,((26:52,291:176):22,203:46):47):32,(((((((((8:37,148:196):18,156:29):96,(103:96,354:110):32):32,(17:155,67:86):13):17,70:68):54,(91:80,(161:149,204:57):16):56):26,((((84:77,((153:84,336:171):39,163:62):26):38,222:84):20,(115:133,233:70):19):30,340:180):22):15,(((((((((28:77,(59:101,283:125):77):20,((((30:62,((128:92,(281:117,297:102):38):34,231:107):64):22,(((87:79,(151:60,268:76):50):39,(208:139,293:110):40):30,229:158):24):19,((89:83,261:91):63,111:75):49):66,((((((143:112,199:130):29,273:92):64,206:67):54,237:68):24,248:68):38,166:87):40):31):10,168:60):34,((((34:26,(121:183,241:47):18):38,((189:52,271:93):23,(290:78,295:139):47):12):36,(190:99,359:121):30):16,185:107):35):35,(68:105,(92:104,(262:55,361:94):96):28):49):13,(((171:109,217:125):21,191:104):53,175:106):29):18,(33:59,272:85):36):26,94:126):32,((((((((((((((46:140,109:109):81,129:66):53,101:87):78,144:99):19,(104:99,142:139):18):61,136:92):61,338:38):21,123:39):44,((139:78,251:108):23,182:152):39):27,264:81):80,(((((86:160,232:83):33,279:66):34,90:135):37,131:88):17,(201:116,243:70):18):15):21,216:73):11,((57:138,307:98):44,225:67):35):18,117:81):30):24):19,170:112):19):25,127:82):20,102:129):14,((((((((((7:39,60:189):11,45:44):120,150:83):51,158:48):21,54:67):51,(((22:93,321:169):33,226:82):68,345:135):46):32,221:117):63,179:77):27,173:75):34,250:137):21):15,210:110):39,66:104):25,(((((((((((((9:41,133:179):31,242:66):43,93:81):33,258:153):30,((76:72,252:89):89,194:74):22):27,165:85):67,53:90):24,(((24:144,((263:71,270:66):32,(266:100,284:74):22):60):21,(((((42:72,(51:144,246:105):29):52,356:79):36,253:106):41,(56:115,323:147):32):44,337:77):26):11,267:70):24):38,21:115):44,353:92):22,73:113):40,((((14:140,(((23:116,(105:65,135:58):60):25,(303:116,330:98):24):56,362:94):35):47,(285:82,(287:79,322:159):27):40):18,((157:103,174:115):44,299:123):26):45,29:109):27):23,(214:86,(224:115,240:68):20):55):24):24,(((((((20:76,211:71):136,64:50):29,83:44):45,108:71):63,140:126):34,315:145):27,(95:109,100:137):33):40):27,25:93):31,187:111):36):24,277:130):33,(((((10:78,344:132):27,(72:72,(159:98,334:157):54):22):34,(((((35:110,((((62:98,((120:143,130:87):35,238:103):27):33,316:131):31,(313:111,318:106):63):25,328:113):41):76,215:85):13,(183:82,348:134):23):21,((((41:104,320:127):26,(82:97,112:131):26):42,325:127):30,160:133):45):11,(((74:107,256:115):18,358:97):46,193:76):22):23):14,((81:102,132:90):25,(113:101,346:87):24):80):20,257:86):16):35,(122:155,188:99):34);
+tree PAUP_6 = [&U] (1:58,(((((((((((((((((((((((((((((((((((((((((2:74,(248:73,295:170):28):16,(84:68,(229:183,308:100):39):47):23,223:62):59,218:132):25,200:82):66,(282:107,343:136):27):61,149:47):19,157:70):52,(8:105,((139:119,156:119):13,(292:97,359:91):36):21):33):19,(((((3:124,64:104):16,((90:89,302:147):17,151:86):27):48,(((((((((((((45:137,162:97):36,161:72):41,281:107):24,(88:132,301:110):22):42,285:90):26,123:71):45,((120:85,(125:129,190:163):36):81,169:115):38):40,345:137):36,297:94):34,116:109):21,(145:99,192:111):41):16,270:89):30,183:107):23):14,((((86:110,144:110):56,166:107):44,329:102):42,((110:38,215:59):52,267:85):34):13):13,(100:108,101:107):61):34):48,59:89):14,(220:115,247:121):42):13,81:94):106,210:49):11,93:44):89,((((((((((((5:101,72:86):61,258:113):22,269:79):34,173:95):25,(36:107,(((((54:78,66:59):45,321:170):22,(194:133,338:92):13):29,((206:73,293:158):27,290:75):65):29,263:80):20):54):23,11:97):36,49:121):23,(((9:116,(271:66,311:65):65):20,337:80):50,20:128):21):62,326:86):22,60:95):39,((((133:114,195:120):54,341:114):60,310:139):52,202:101):64):27,((((((((((((((((((((((((((((((((((7:39,128:180):11,(((65:156,243:45):29,(172:60,(204:96,238:75):35):8):21,196:51):16):13,(185:105,349:129):61):13,147:52):27,((((14:145,320:99):44,(((((63:33,87:30):89,((158:93,313:144):48,255:94):34):31,279:101):24,142:126):22,((75:131,((118:88,152:76):59,197:111):34):46,227:108):26):22):33,186:95):20,73:146):56):13,(((13:149,(42:61,((179:66,239:47):12,(240:23,266:144):22):39):63):16,296:148):52,177:68):22):51,340:159):25,(12:74,89:160):32):24,184:82):49,((153:160,315:117):26,304:103):57):51,346:103):37,((((((21:120,289:106):16,325:132):53,106:66):35,351:131):37,114:74):31,104:109):24):36,350:91):22,(28:83,260:74):70):16,((((18:119,(((112:176,330:59):16,(217:156,284:74):14):44,124:48):60):8,((53:56,70:51):76,203:105):10):56,221:109):38,355:64):24):47,140:118):38,361:142):61,277:93):30,(((23:120,334:136):20,264:74):55,83:89):32):19,265:73):34,(300:92,336:148):25):18,(108:75,138:84):20):24,(44:87,171:144):34):32,48:73):51,(((47:139,199:84):41,131:81):38,211:74):64):19,((77:110,241:124):22,357:88):32):20,(16:47,168:37):69):36,356:72):21,261:89):32,175:127):45,(67:83,335:150):26):68,115:39):10,109:56):65,(((((((22:68,141:144):21,(33:53,317:217):24):26,25:61):57,((((31:38,57:64):32,(163:109,283:123):54):32,154:66):63,35:128):32):25,354:115):27,208:102):39,(((39:149,212:87):19,164:93):55,309:107):21):20):24):25):20,97:127):62,27:66):11,(6:57,(237:66,252:167):23):32):21,99:60):88,126:91):9,(((68:158,242:86):14,127:71):84,85:79):12):37,323:170):28,(38:95,(191:115,226:111):35):34):17,((56:113,213:105):29,324:122):36):48,312:147):43,187:96):35,150:116):37,(((((((((((((26:122,198:99):35,(((30:60,291:86):27,55:69):38,143:59):47):25,(((((((46:104,122:108):70,(201:122,(288:101,342:79):59):28):35,148:104):30,246:130):60,155:103):35,98:61):52,96:157):29):23,216:118):40,299:134):19,(319:138,358:97):29):95,178:49):28,78:54):28,113:168):29,257:66):12,(117:63,170:126):14):85,102:105):24,353:99):22):47,232:110):30,273:85):52,250:85):60,253:108):30,61:101):27,((((((((43:134,245:115):49,327:88):45,(121:96,228:129):21):27,135:76):18,(119:140,182:132):48):31,76:72):24,(71:112,333:110):49):20,(((50:96,352:93):38,181:124):26,160:98):36):39):34,34:77):10,(((((((4:47,224:47):64,193:82):37,80:157):21,((((40:144,328:97):27,74:76):76,(92:75,(95:145,180:106):29):28):42,205:76):20):43,((15:101,305:147):36,(137:60,339:83):62):33):18,(10:89,69:139):23):21,((24:134,32:123):27,347:107):39):29):21,214:118):18,(((19:79,((((((41:89,((231:82,274:119):59,322:155):41):32,(275:85,303:144):17):31,(((132:88,236:123):26,287:79):31,272:72):55):24,174:60):14,(280:77,348:140):45):16,((((129:88,233:68):60,136:123):23,(159:84,(((((219:104,251:129):41,306:120):31,268:63):49,316:118):40,(((225:74,262:58):68,286:116):19,(235:137,332:114):25):24):33):26):68,((176:50,((207:47,((254:51,278:128):19,276:29):62):14,244:53):13):38,209:59):21):15):21):27,79:168):23,(((29:85,91:79):26,(188:79,256:94):15):43,(130:56,146:69):89):20):17):17,58:136):30,((((17:88,(52:92,318:153):35):30,249:125):50,((37:95,62:88):86,189:75):13):23,((((((((((((51:73,(((134:149,298:107):40,331:105):37,362:114):40):26,((111:86,294:62):28,(259:112,344:106):65):30):28,360:113):30,107:102):41,230:127):41,103:65):34,94:72):29,105:58):80,(165:100,307:110):29):39,234:76):83,167:21):7,82:33):53):17):46,(222:61,314:196):31);
+tree PAUP_7 = [&U] (1:56,((((((((((((((((((((((((((((2:99,(((((((((((25:91,340:157):23,(115:119,208:105):11):41,143:85):33,221:115):35,45:90):40,273:98):29,146:101):42,((((32:126,345:133):44,38:85):78,(78:93,255:88):21):28,205:76):46):31,334:151):35,257:88):18,(148:120,198:105):35):31):28,251:123):34,194:111):54,141:74):35,96:155):49,95:66):43,89:115):45,((40:137,320:111):33,283:105):17):46,43:149):21,(69:114,103:97):28):30,((145:136,228:96):21,232:92):58):28,268:67):75,75:98):34,305:79):78,249:94):34,(55:109,206:135):27):36,((((81:186,147:48):14,241:47):97,149:90):10,(123:90,226:119):15):26):49,(((((((((((((((((((3:58,181:76):46,(185:92,(304:128,328:122):66):32):15,76:135):13,((6:58,((35:119,(((51:87,231:149):22,272:59):23,(58:96,68:74):26):67):90,248:60):20):41,199:96):22):18,(((((((((((11:128,(((97:118,120:143):23,(116:134,342:95):13):27,((176:84,307:95):65,287:97):25):35):20,54:100):39,233:84):24,((170:117,329:104):42,258:131):35):32,190:117):33,31:109):39,244:90):18,((((((23:30,((60:108,285:87):34,109:67):135):15,240:25):44,171:68):87,57:90):40,56:82):58,259:90):21):55,335:141):37,64:94):23,((((13:123,(129:135,349:99):39):57,229:119):57,326:94):23,270:73):40):58):35,9:59):30,234:81):39,360:136):18,72:82):29,290:71):24,((((144:123,346:110):60,246:85):81,168:33):13,209:35):63):44,165:67):26,(5:64,62:161):18):18,166:72):22,((27:73,(88:102,179:58):16):35,(50:156,201:91):26):31):20,29:72):21,236:77):19,(((19:83,(114:137,182:100):34):23,(30:135,180:100):25):20,(80:174,212:76):33):25):32,(((((((((((((((((((((((((((((((((((((((((((((((((((((((((4:85,354:135):44,((((((((((7:41,204:119):18,(8:51,339:173):12):56,28:51):13,186:28):87,(53:72,133:97):58):38,134:148):47,140:92):47,((107:156,(((110:104,341:153):21,157:113):32,172:97):6):44,((((135:145,183:90):13,224:96):64,210:27):11,237:26):52):22):20,216:61):12,((34:31,275:39):33,39:181):17):27):16,187:139):23,247:96):31,(86:132,(101:105,281:71):40):28):68,151:94):37,362:100):50,(112:76,(253:75,296:186):30):64):57,195:76):22,17:106):27,(15:78,122:171):24):19,((36:108,344:122):80,174:57):18):91,124:62):29,162:86):61,104:92):40,131:110):46,74:90):35,((((((((((12:153,289:66):24,108:57):32,(82:58,(99:68,213:90):26):102):9,337:70):105,167:36):39,260:23):15,215:30):44,(33:63,252:166):16):72,322:143):46,277:96):15):39,323:161):34,((41:144,126:90):11,(266:88,271:75):23):26):22,((((18:149,102:84):18,(49:135,105:82):18):23,312:169):36,65:73):29):27,(161:74,(324:137,327:110):42):22):45,219:109):18,(319:147,348:91):42):29,(331:118,333:121):34):20,(155:120,158:71):39):17,((((22:65,24:79):107,288:80):37,294:59):36,299:156):24):31,243:117):14,128:99):27,(10:99,(118:125,217:89):48):31):34,100:133):28,(((((87:85,((225:92,291:133):17,(230:63,(276:61,359:139):27):44):76):45,136:82):31,130:60):75,197:97):26,361:161):31):37,282:107):42,(71:74,262:64):43):18,(((((((42:110,218:127):25,79:121):35,173:94):39,((150:101,300:76):34,154:49):68):25,(91:121,306:158):34):38,352:79):46,347:92):32):47,343:123):30,223:98):24,(46:131,336:129):46):32,214:112):36,350:108):24,((222:85,351:164):31,238:67):51):24,((((((((((((20:83,250:151):20,178:91):15,227:89):27,(92:69,(((((117:115,356:91):21,314:138):36,256:110):44,298:122):28,119:135):58):20):23,(138:101,358:75):65):17,242:104):91,137:61):17,(77:56,(292:73,313:160):37):31):16,111:85):37,261:88):26,((((((((((((37:88,61:155):44,98:53):36,67:61):22,(142:94,353:114):21):72,315:138):63,184:77):48,156:63):26,295:154):23,93:64):65,220:113):29,((63:107,73:81):49,85:55):47):19,84:118):40):20,139:100):45):17,188:113):50,(((16:136,309:92):31,332:84):21,(48:64,113:98):25):31):21,((((52:118,159:75):26,317:175):31,(70:66,((153:80,245:67):33,235:56):119):20):38,301:94):19):48,59:81):42,14:141):55,((((94:40,(263:69,265:55):52):124,239:68):12,(189:69,330:163):13):18,((278:88,311:176):49,302:58):24):40):18,((21:92,(90:86,(264:64,297:64):79):61):29,(((((((26:63,357:164):23,279:46):105,(125:159,293:78):15):12,191:71):61,(175:99,308:92):56):38,(127:59,269:96):50):20,(132:127,202:128):29):17):30):59,160:99):26,310:161):32,152:71):48,((163:131,321:139):35,318:96):66):30,203:99):48,44:103):23,106:85):69,164:86):22):19):34,(193:65,325:173):9):14,207:49):42,274:137):48,211:51):39,280:54):67,(192:103,284:113):46):31,47:103):26,(((((((66:75,(286:72,303:147):29):28,83:56):77,355:76):51,254:88):24,267:65):65,169:88):36,177:69):53):32,121:106):16,(316:134,338:106):21):73,(196:74,200:120):25);
+tree PAUP_8 = [&U] (1:119,(((((((((((((((((((((((((((((((((((((((((((((((((((((2:126,337:103):6,(85:103,(177:47,275:44):91):6):42,345:137):52,107:97):21,261:77):25,(36:79,334:164):28):31,154:54):98,194:92):20,(((((((((((((((((8:36,((21:118,((((((50:65,(66:58,254:151):30):62,347:103):30,122:117):55,151:66):43,109:66):62,341:137):38):27,(((35:168,286:90):26,((143:63,346:72):28,252:98):16):36,139:82):40):116):13,18:47):45,321:208):29,168:54):61,69:119):33,(64:87,(82:131,90:98):21):40):22,(((((((((((9:84,167:72):56,135:94):23,331:110):90,178:52):28,93:42):51,((25:97,273:113):16,(80:113,(348:98,361:130):58):58):41):28,((((72:72,((216:79,249:150):29,226:79):31):34,281:77):30,129:89):30,((((94:82,140:164):24,(295:78,(320:114,351:129):43):39):27,(108:54,270:85):39):41,((255:86,(312:133,333:118):47):57,353:83):33):45):14):48,(126:70,250:87):48):17,(145:89,315:167):39):26,(184:90,234:86):52):12,((((((((((13:179,(34:53,(164:56,271:97):46):21):23,((((61:44,272:92):82,110:46):31,243:56):18,(237:54,306:216):19):11):17,((246:105,308:108):32,357:115):56):14,(((((((27:106,(130:95,327:110):38):36,47:97):48,326:89):25,(((150:112,325:161):48,191:91):50,287:61):39):39,(195:116,319:140):29):27,304:137):71,(147:70,214:98):13):22):11,(193:61,251:182):15):10,26:65):52,269:84):28,((((173:69,242:69):46,230:74):76,350:86):34,335:137):31):20,(30:105,213:106):18):10,(49:128,127:103):36):26):22):19,262:65):41,330:89):19,(158:84,362:127):18):20,((((((28:115,40:134):47,(((((33:64,260:64):23,97:168):12,176:62):43,(106:130,232:102):21):49,(103:79,((155:113,197:137):43,339:59):38):41):9):31,157:91):26,(92:110,(291:110,360:110):32):33):26,349:110):38,114:80):30):23,302:131):30,((((12:126,((14:178,284:85):15,(218:134,328:85):12):49):21,76:79):32,((((44:121,152:69):26,292:68):36,(313:147,355:84):32):23,(187:114,231:113):51):13):16,299:161):23):23,83:96):71,190:109):25,((20:111,236:69):18,24:56):43):36,75:182):14):25,238:96):53,54:93):29,359:85):59,4:88):16,(117:98,201:101):21):50,(((((3:118,((((79:122,301:108):45,101:132):53,98:64):23,(133:67,267:76):42):40):33,309:97):38,(((((((19:102,(((((((37:78,(((55:106,227:141):28,264:66):26,(119:150,297:98):27):48):28,(67:68,113:90):23):36,(229:123,(344:129,358:66):35):58):14,(134:155,141:90):26):43,221:104):28,(91:114,296:149):61):29,87:109):56):17,((183:97,202:115):37,(298:131,318:124):51):19):47,310:152):51,146:66):31,162:93):62,131:112):36,323:149):39):48,303:92):30,305:131):52):13,(41:127,65:102):26):30,132:104):21,203:109):13,((51:63,58:115):20,121:33):81):42,(45:87,(((172:129,338:111):39,352:66):51,322:128):59):13):61,189:45):13,241:48):37,(((52:53,(182:114,288:145):45):10,((56:115,220:111):64,169:90):52):30,186:43):28):40,(((((84:111,115:100):40,317:158):70,256:75):49,153:72):23,212:65):26):25,((138:96,144:109):83,188:55):24):36,63:154):13,((((((6:50,(181:73,211:110):27):106,68:95):19,31:68):34,((((((142:81,266:95):114,174:46):39,175:63):33,235:106):40,248:56):43,163:44):79):21,111:98):69,11:93):17):32,16:76):16,(((15:74,70:150):22,(((22:67,290:105):7,125:204):22,276:55):25):23,(((((104:118,209:103):33,329:109):75,239:65):33,224:85):25,307:100):23):16):23,((((((((10:143,137:73):41,160:58):31,285:60):96,280:91):27,99:84):28,(88:58,((128:112,314:138):97,199:69):22):35):61,96:152):29,81:126):63):11,(100:113,245:93):21):11,(((48:182,179:51):13,78:67):43,77:142):34):17,265:92):27,165:100):28,171:70):46,(46:132,(59:123,247:118):31):41):53,219:107):27,38:81):75,29:77):26,259:60):55,(((57:81,282:93):44,257:115):26,118:99):48):26,343:143):34,((((((23:36,116:51):14,(39:196,196:59):10):19,217:187):17,156:40):63,112:140):20,185:103):44):15,(210:111,332:150):27):20,((((7:68,200:94):33,(((((((((((((((17:97,283:131):31,((32:94,(((((62:92,95:90):45,279:113):37,(86:121,311:117):24):25,((89:134,293:114):24,268:66):31):27,(316:127,340:128):57):27):68,204:84):15):32,222:108):33,((148:62,263:83):61,274:123):48):20,((74:105,354:93):47,336:120):49):84,225:36):11,205:40):59,207:79):32,105:130):14,(42:98,124:117):24):12,((102:59,294:57):98,208:99):9):21,(((159:149,215:91):48,180:75):21,278:67):56):34,342:124):21,(((73:26,136:22):169,166:71):28,170:69):42):30,277:128):26):25,120:161):23,((((192:103,223:116):37,324:112):39,289:105):40,240:84):18):20):40,198:109):13,((5:93,244:88):61,123:98):16):19,((149:105,258:136):38,206:109):30):36,60:122):30,356:70):32,43:156):26,((161:59,(228:144,300:88):27):48,(233:94,253:128):33):34):32,71:112):39,53:121);
+tree PAUP_9 = [&U] (1:58,((((((((((((((((((((((((((((((((((((((((2:30,(((189:41,197:35):26,253:168):45,237:16):15):26,7:26):52,(((((((79:144,97:105):43,250:67):48,100:134):45,83:86):68,117:78):33,245:96):13,(309:70,337:76):86):29):35,335:165):28,290:81):51,((((33:119,94:101):23,120:123):63,114:71):25,330:77):62):17,(((((((((((30:149,42:73):20,279:58):33,((((46:165,52:85):14,(193:105,292:147):17):31,341:155):43,(((((((76:90,319:154):37,233:90):53,81:96):24,139:92):73,254:76):54,182:81):18,246:87):51):20):45,((124:90,352:98):41,321:147):37):40,(103:78,(151:57,(344:136,362:107):63):35):28):37,98:65):17,209:134):11,(31:66,(41:88,153:67):109):14):35,338:80):35,(169:141,328:106):18):31,(88:87,255:86):51):19):18,(((((25:30,((50:105,(78:92,171:60):75):22,(125:148,(199:146,326:102):28):35):101):18,239:31):63,303:135):24,((((34:60,((91:62,(140:94,361:181):33):61,347:134):40):20,(179:76,331:163):13):66,310:137):26,312:149):45):16,(231:90,299:179):19):45):25,136:137):15,(157:108,214:122):28):31,((((((((((((((((8:49,230:56):23,((((((((((((47:114,((105:73,111:85):33,150:83):50):27,60:91):54,((168:105,286:133):28,(185:139,358:87):18):18):55,((99:113,188:64):27,280:67):28):29,166:84):49,(((87:139,122:90):28,317:139):71,(90:115,181:131):20):27):32,306:165):24,(133:137,172:103):22):41,180:98):45,175:68):27,262:88):32,276:64):20):55,21:84):27,((137:86,191:110):83,165:82):24):20,((((149:37,183:200):9,289:35):61,(273:96,322:159):39):46,336:121):57):30,200:68):59,210:78):29,308:85):81,192:100):37,14:143):61,61:75):26,18:85):74,(((66:43,106:47):60,346:64):19,(95:75,(272:77,349:60):101):16):55):15,(258:132,323:150):64):16,36:111):44,223:96):25):17,((((((((((((((((((((((((((((((10:136,96:114):16,340:86):90,((((22:56,(177:74,291:158):26):21,(116:79,217:155):14):48,144:129):38,259:70):36):20,(224:58,235:75):45):43,301:133):22,((49:158,163:68):25,275:68):43):55,355:76):26,298:121):71,194:74):33,15:76):41,211:74):12,350:145):20,205:61):48,155:171):34,45:71):70,277:87):23,251:96):60,208:96):25,(249:124,257:90):26):26,85:103):21,(20:118,198:107):35):49,((((((((29:65,37:164):42,278:57):80,207:42):4,(186:88,196:51):8):23,(65:101,345:138):86):22,240:36):26,285:166):24,92:51):33):29,236:42):78,75:142):31,118:111):94,12:48):17,225:49):48,(55:89,143:73):76):25,82:85):32,((71:116,238:106):37,342:98):45):24):41,232:91):37,333:109):18,(84:61,263:92):50):40,23:88):32,266:93):45,220:91):63,(107:102,132:82):33):21,77:64):50,((38:102,227:114):30,(110:114,158:101):16):24):25,((((((((((((9:57,11:79):66,80:124):38,((293:83,(294:91,314:149):30):47,339:91):46):43,351:122):36,(17:111,(((24:114,62:124):26,((112:107,((218:108,252:102):25,270:73):50):43,204:102):16):35,134:155):24):30):20,(174:57,203:72):48):62,58:98):23,268:61):27,102:85):32,(43:142,184:110):51):27,162:108):44,((((((((35:151,300:86):11,261:72):67,135:43):22,311:95):80,(72:79,(73:148,(170:84,(248:94,284:157):25):46):26):28):39,176:80):37,318:145):18,(178:108,356:106):18):35):20):20,(((((((((((54:65,269:87):43,((89:117,128:81):51,343:131):24):24,((241:158,304:102):34,315:98):73):59,109:56):26,329:68):42,159:69):87,131:91):38,206:81):37,57:129):37,201:94):44,104:103):43):23,138:107):20,((((((((6:65,(((((59:98,((((63:102,((((69:72,274:132):62,(93:102,(113:98,229:143):56):38):66,130:59):47,74:83):36):20,(148:94,154:61):26):43,187:121):34,353:92):32):38,219:110):28,(161:102,281:113):19):41,213:81):20,264:84):64):25,228:73):22,307:96):22,243:44):26,332:176):35,216:40):12,(108:180,(156:41,167:26):24):18):15,256:65):80):26,((((((((((((4:91,(((((5:113,296:142):59,(((67:49,267:66):56,324:132):42,320:79):37):37,160:110):37,119:139):83,212:67):20):13,(40:170,234:79):29):42,((((70:97,164:127):14,(222:126,295:115):29):23,115:90):51,195:81):29):69,152:66):10,(19:161,121:74):21):14,(((28:144,146:86):16,221:124):47,123:55):23):18,(56:92,354:124):29):25,287:78):27,(51:70,334:171):31):38,(244:109,348:105):38):29,(((44:108,325:154):45,357:85):45,313:139):33):30,86:131):26):32,282:119):27,359:87):35,260:100):22,(13:133,316:112):50):28,68:108):22,242:132):48,48:56):27,288:98):48,190:139):30,((32:115,327:99):40,((215:126,283:118):31,360:100):32):22):28,((((3:52,((16:50,(26:63,((101:130,297:105):13,271:58):89):28):27,53:147):17):39,(126:121,173:103):26):54,145:96):26,305:150):33):17,(((((27:57,(39:165,302:70):25):43,64:139):48,(127:78,226:81):17):22,202:92):45,265:68):47):21,141:97):82,((129:69,142:181):21,147:54):14):31,247:65);
+tree PAUP_10 = [&U] (1:89,((((((((((((((((((((((((((((((((((2:169,154:73):13,64:72):54,(110:69,280:107):49):38,(253:128,362:113):33):29,(198:64,359:71):36):20,(49:110,316:131):32):31,317:185):37,((106:78,185:170):27,250:72):39):23,(((((((8:66,257:53):19,(((((((((((11:116,(((((38:108,164:133):29,54:94):20,(246:123,334:154):38):52,139:82):36,291:82):48):38,122:136):12,(102:69,137:63):52):42,153:116):31,295:108):32,(34:77,((80:138,88:114):37,95:110):44):42):25,97:122):29,(22:94,((36:110,167:110):27,283:112):33):23):32,((26:65,(52:72,321:193):23):47,314:156):28):11,46:163):48,(((14:167,182:121):41,100:89):36,(((((((((47:145,131:95):28,214:75):66,145:105):27,187:96):41,260:102):33,94:99):47,259:83):19,(103:127,238:79):31):35,193:72):21):30):11):13,264:116):22,(((77:98,335:129):95,117:61):27,99:66):20):21,247:80):39,146:138):10,254:84):74):17,((((((((37:101,299:135):92,163:68):40,203:57):28,171:57):69,347:106):62,337:62):29,338:63):36,((157:100,239:138):14,340:136):34):21):24,188:120):21,143:93):89,(197:44,215:46):21):18,92:53):74,(((31:71,(248:140,285:89):40):34,288:84):49,86:126):37):54,342:80):28,(79:163,159:60):23):21,148:89):43,((21:55,(212:78,325:164):26):76,134:140):43):21,((93:105,192:116):30,(151:92,341:156):34):35):27,207:102):23,((136:110,(221:68,267:50):85):62,140:118):27):64,130:59):30,81:89):32,114:66):35,144:138):31,135:62):49,331:114):35,(((((((((((3:59,7:48):64,(((((((((((27:76,172:52):23,((43:140,161:111):85,178:53):25):63,74:106):35,312:155):27,176:79):49,160:125):25,190:131):48,(158:88,348:107):19):16,262:51):48,287:78):24,((72:155,294:60):12,284:75):37):53):18,40:126):28,(((42:35,249:181):24,174:25):58,((91:75,(224:75,244:109):23):57,149:123):28):42):20,((((44:90,218:140):27,(((((45:47,302:46):87,361:151):24,293:106):45,179:86):83,128:81):23):33,132:83):34,((83:117,275:104):29,345:135):39):20):50,229:152):66,235:65):35,225:52):98,(((58:71,((((107:89,274:128):58,343:113):65,277:96):42,310:147):60):45,((76:47,(273:107,(336:136,339:103):41):55):42,150:82):14):26,133:75):50):11,((98:44,(332:93,351:152):45):41,109:70):42):40,199:132):22):38,(((((((((((((((((((((4:84,((155:187,208:75):7,(189:72,300:164):12):43):34,13:168):72,24:25):7,78:24):89,62:139):23,((((((((((((((((((5:121,((53:59,289:46):46,286:80):72):35,324:123):37,(68:58,265:75):51):26,(((17:83,((126:50,(200:160,298:83):26):60,327:98):86):24,173:48):81,111:104):22):16,266:110):29,((((((50:95,(((258:142,322:137):28,(281:108,320:118):35):44,304:123):38):24,(211:114,344:119):49):22,162:118):32,(222:87,236:55):66):14,((56:148,((125:61,305:169):24,319:36):78):42,313:102):74):18,((216:75,278:81):57,333:110):38):17):25,243:96):22,120:142):28,196:110):61,252:86):28,(124:75,352:113):25):16,269:84):23,65:60):96,127:67):30,10:44):23,(183:118,226:83):15):36,113:164):15,((87:95,141:82):87,242:82):21):14):21,206:95):22,(28:89,(57:97,329:92):85):35):17,(((138:93,(276:132,326:93):18):98,230:50):19,175:67):42):31,((((((((((((((((((((6:94,(((33:68,((234:74,272:79):57,323:153):48):60,353:103):15,((41:122,349:100):45,73:122):31):35):32,39:116):29,((129:100,219:128):35,232:85):47):40,35:128):25,82:88):21,67:124):35,18:79):43,(290:91,315:160):22):18,268:81):28,213:86):58,75:137):48,356:65):46,(((12:92,85:122):14,(16:74,(112:126,(180:95,204:75):50):28):37):57,123:83):10):34,48:64):28,((((((19:95,303:142):37,227:73):59,((((63:109,170:131):48,104:88):51,89:93):55,328:85):56):17,357:103):36,309:93):27,(90:89,101:148):31):25):14,(156:148,311:108):30):21,(121:62,292:90):30):18,((118:92,240:126):40,(301:98,346:72):24):24):46,166:148):15,(152:87,306:166):31):55):12,(((32:146,84:82):28,(147:82,251:155):16):25,((61:74,194:70):34,(66:134,233:67):22):23):13):23,201:103):21,307:109):23,(202:110,228:92):17):19,205:77):25,(108:154,223:74):32):18,(((115:124,209:94):18,(119:146,279:93):26):27,354:113):40):20,308:114):26,(55:89,(191:88,(231:125,282:124):36):32):70):17,((((((9:111,358:79):17,(60:98,142:100):49):76,168:60):23,177:70):14,((25:61,((255:120,330:116):17,261:79):89):16,((((((69:111,355:72):34,(195:87,263:79):43):52,96:141):34,210:104):34,105:113):59,186:70):19):12):35,350:141):26):26,(((((20:49,271:97):46,165:71):48,59:134):31,((70:153,181:71):24,(256:57,270:112):30):31):26,169:95):32):40):12,318:162):34,((23:84,245:83):27,((184:94,296:148):25,220:125):37):19):20,((29:113,116:54):12,241:49):55):26,(((((15:123,(30:47,51:58):71):41,297:78):27,217:100):43,237:109):19,71:112):36):19,360:147);
+tree PAUP_11 = [&U] (1:92,(((((((((((((((((((((((((((((((((((((((((2:81,(((39:88,151:77):115,213:47):28,225:53):46):24,((18:85,62:141):19,(((38:141,166:95):32,156:69):29,356:125):19):15):61,145:104):16,(((((((((((((((13:173,105:70):38,289:51):32,191:114):17,(118:97,336:156):31):22,(152:54,184:161):13):13,(((209:72,329:151):39,259:68):82,285:85):45):28,48:50):6,((125:152,205:118):74,139:58):59):9,67:44):16,((41:170,157:71):21,298:82):29):115,17:86):17,278:70):62,((106:85,293:105):41,112:108):34):37,((((55:82,(63:87,(((81:125,153:116):42,134:123):52,325:124):65):38):37,((79:99,((135:112,203:105):63,340:94):36):51,(239:126,294:97):14):30):32,234:123):28,136:117):25):24,102:80):30):25,((121:94,360:111):42,170:113):21):15,(20:63,(196:102,280:81):24):76):14,((66:68,251:87):52,352:78):46):21,((((((((((((4:134,217:101):81,54:51):22,36:67):91,(28:96,(107:167,(((175:59,181:57):33,295:169):30,178:51):42):25):25):27,(((5:100,((88:74,((91:166,149:77):24,132:79):93):27,275:71):12):32,117:64):16,(((((96:150,249:94):50,(124:64,263:75):37):40,((288:132,357:90):33,362:91):36):75,182:88):54,193:70):16):24):26,((((((((((((((((((((((((((((((((((((6:64,82:64):17,(33:50,87:173):21):41,(287:126,316:110):33):36,((30:104,100:129):26,((305:123,348:104):51,312:137):40):24):126,341:68):15,321:80):91,(((((40:112,((((53:107,355:71):28,(266:90,315:82):90):27,((122:130,233:107):31,160:108):23):20,(155:127,215:131):40):36):55,255:83):42,((((123:131,254:84):32,(165:61,262:75):56):34,241:77):38,220:133):19):17,((((154:62,328:54):177,247:28):18,210:32):53,195:70):36):45,268:75):44):51,50:79):37,138:79):48,230:116):24,75:150):24,(174:103,339:108):31):54,283:105):27,344:116):33,(159:96,354:99):31):33,(((69:103,(218:126,236:103):15):51,164:90):50,98:89):23):38,223:98):13,(188:97,310:166):42):15,(43:146,68:109):44):14,((((19:88,143:138):28,307:83):22,((49:78,272:61):66,273:87):73):36,257:62):48):62,(44:103,146:91):15):36,158:50):30,331:122):25,326:79):24,78:158):8,130:76):86,237:69):19,72:66):18,183:72):84,353:92):52,108:64):20,(77:80,144:137):18):33,227:135):20,(((((((((((((((15:68,168:68):43,((292:107,327:106):45,313:111):80):20,((25:84,(((((((35:58,304:76):64,261:76):64,((192:105,252:105):59,216:91):30):30,84:95):28,86:134):29,(((129:93,(180:102,358:125):24):23,224:84):11,(173:86,228:97):24):44):26,83:134):21):13,(31:81,89:134):74):22):65,23:32):10,110:24):45,74:161):23,92:47):53,46:162):36,238:67):67,258:133):27,32:132):27,((93:70,243:59):8,(214:96,302:67):7):63):55,37:90):30,65:64):28,((((((((27:70,185:127):21,176:53):52,290:67):68,(161:63,271:63):56):28,345:136):46,137:80):20,(((57:86,(((133:119,147:117):8,(172:127,338:113):8):19,((150:102,177:138):8,162:115):26):60):28,115:60):37,((58:158,222:92):20,171:60):75):25):15,350:113):19):30):23,(24:109,(322:135,346:104):53):36):20,((((45:88,232:90):20,((163:38,265:98):60,246:86):23):61,104:112):26,253:110):41):29):9,((51:150,199:102):25,131:81):38):17,(((((((((60:89,332:102):48,207:118):36,((264:74,269:60):39,311:61):67):51,281:86):153,314:36):13,299:41):115,303:112):39,((201:107,229:169):33,(226:96,317:181):28):37):47,(186:67,231:77):42):20):33,14:169):33,235:78):37,219:134):29,211:78):59):27,198:95):23,(189:109,319:152):34):43,73:114):10,(71:129,342:95):29):45,(101:73,((179:77,306:185):51,(194:61,361:202):10):17):76):16,(52:100,286:126):25):17,(((7:36,((248:42,270:125):47,308:84):44):82,(126:53,(284:72,323:190):31):63):18,(113:110,351:128):45):30):13,(42:110,64:129):15):40,99:97):17,((47:111,167:114):19,359:86):37):24,(((8:80,103:136):37,((((10:80,208:94):55,((221:139,337:66):28,330:87):49):27,333:112):49,200:78):21):17,29:75):43):37,(((((((((12:96,276:87):46,296:138):42,301:123):46,169:92):43,187:107):35,((59:126,260:108):18,274:128):29):71,141:52):15,(94:81,109:78):26):45,80:150):23):27,114:104):78,204:62):19,(9:57,127:83):8):25,61:69):94,85:87):16,(((((3:110,((((((21:85,250:138):27,116:86):64,309:99):42,324:115):33,190:133):42,300:105):29):14,(111:95,(120:102,335:114):72):45):22,197:105):32,(320:109,347:115):38):28,148:106):16):10,(70:81,202:147):37):17,((22:39,267:106):40,34:54):75):48,282:83):20,90:93):55,(11:82,(244:84,277:141):35):49):23,(((16:68,256:80):55,95:129):32,(((97:117,((140:88,(240:81,297:140):46):36,212:64):70):32,318:130):34,245:88):35):26):21,349:123):18,279:92):50,76:76):38,343:127):36,142:88):44,128:86):37,206:127):34,56:74):54,334:139):66,((26:72,242:115):29,(119:132,291:100):62):27);
+tree PAUP_12 = [&U] (1:148,((((((((((((((((((2:44,25:41):59,(98:55,(((218:113,325:151):28,264:56):81,332:78):38):86):18,((107:177,290:74):34,188:63):42):21,(64:148,116:81):16):45,(((68:116,315:141):50,153:111):29,318:130):32):19,152:112):29,302:100):44,249:103):43,328:91):32,69:109):37,128:95):41,(((((((((((((((((((((((((3:59,(56:169,215:75):19):54,211:73):30,(14:103,134:97):108):29,278:59):92,297:86):37,191:80):51,73:113):36,362:109):52,298:79):20,(76:71,244:151):13):16,(132:85,280:139):39):9,36:89):43,(((((((18:123,345:138):82,70:48):11,(48:49,(126:72,237:159):41):11):48,40:135):31,(194:135,277:110):23):15,(84:103,(((((202:82,213:64):52,355:94):25,233:72):66,295:105):37,321:158):36):52):19,(168:114,289:90):19):23):48,140:128):22,((((((5:106,(((34:101,((62:98,248:136):25,288:92):41):18,139:114):68,196:74):17):25,183:73):25,(((29:77,210:92):58,330:117):18,(94:106,(184:115,323:152):40):24):57):17,92:65):30,261:119):17,((7:62,(13:142,354:103):75):18,((((10:69,(16:73,((((58:72,262:57):37,(217:32,269:44):92):27,(60:105,146:81):17):46,320:74):87):29):33,228:81):28,((28:147,83:86):21,124:68):63):18,(179:77,(317:125,343:102):100):27):16):8):25):31,86:143):18,((((((((((((((((((((((((4:81,(259:77,341:181):40):36,(178:82,301:166):17):40,177:51):24,276:70):77,((((((((((((11:130,241:51):22,(75:215,117:48):16):10,82:41):48,101:104):40,112:131):41,200:74):17,(((52:116,251:108):35,122:117):34,356:64):74):24,185:96):55,((((((33:52,207:67):28,46:179):26,42:69):98,113:94):33,108:83):40,(204:100,314:146):30):29):50,((99:143,338:77):21,342:68):34):18,((95:98,238:116):30,(((131:145,157:96):21,133:78):31,272:77):29):18):5,(143:71,293:130):43):35):10,(50:116,208:131):11):14,51:103):53,(222:93,255:107):11):12,(170:117,181:80):24):38,((20:67,(((41:117,148:123):34,333:99):81,256:83):37):25,((205:79,319:175):38,206:65):25):18):60,232:39):11,12:34):60,147:86):17,(164:85,359:128):22):39,219:129):25,((((37:82,(((63:168,174:59):24,279:57):40,307:77):94):26,160:96):46,180:140):31,221:116):24):32,((49:107,((((77:41,(229:160,(311:100,326:79):42):40):46,145:70):64,(((284:106,331:97):85,352:56):27,350:76):33):42,281:106):33):29,((57:100,((163:76,(201:113,346:129):24):57,283:108):40):48,231:98):33):19):22,((54:76,136:79):44,81:81):66):22,(125:164,223:105):37):16,265:65):32,282:102):27,((31:86,336:147):40,360:100):31):40,173:110):19,((((((23:77,212:82):20,199:82):39,(130:49,266:98):101):24,((24:66,337:172):5,(((127:67,(189:83,294:140):33):30,299:177):52,172:56):10):31):30,186:70):59,103:112):18):34):30,(((((((((((8:40,(78:58,258:200):16):24,(27:73,243:55):16):13,(193:60,358:158):8):37,((55:73,286:85):81,253:111):59):31,((((((((17:118,109:125):18,((((110:94,151:137):30,(165:89,327:141):22):34,316:93):33,214:96):36):21,154:125):38,247:94):72,242:52):4,(38:158,182:65):17):49,224:58):21,235:65):39):65,96:146):73,123:57):38,292:74):16,65:40):75,344:114):26,322:146):39):48,74:83):28,102:65):21,((((((35:116,310:158):54,43:110):47,((246:97,260:87):49,268:63):32):39,((((79:131,273:108):23,(166:88,234:86):56):37,((129:129,252:117):31,348:99):22):24,300:121):14):51,105:70):34,149:57):27):89,216:82):36,225:62):23,169:86):58,((39:73,(118:81,(119:162,159:74):33):42):60,(275:114,303:115):25):34):31):17,(((((((6:62,197:63):31,(100:103,287:137):21):103,30:54):23,106:59):51,((312:155,329:105):32,340:129):35):34,304:140):26,((((9:82,306:186):49,209:60):30,19:62):79,135:93):22):24):16,(((32:155,245:94):54,308:81):27,239:67):74):16,309:118):25,(((((((((((((15:48,93:43):43,(((((((59:67,(114:65,158:60):39):100,176:82):50,88:62):28,226:70):31,254:103):30,227:67):40,(120:37,313:42):155):28):44,(285:90,339:88):65):19,296:173):24,240:76):78,349:87):18,353:78):45,(22:110,155:147):25):16,(((((45:148,115:76):21,(161:68,347:130):23):27,162:109):29,167:113):24,150:110):36):14,(144:124,236:98):28):18,(((((67:83,187:134):24,(90:79,(97:113,156:131):36):19):48,(335:142,357:88):35):22,91:137):37,((137:96,203:127):19,(142:91,291:82):34):34):25):11,(((((((26:148,121:88):15,271:60):28,53:79):28,(192:100,(198:74,351:117):53):44):31,(((47:67,(104:117,305:115):34):59,(66:53,((89:118,230:139):43,111:68):39):61):19,61:127):32):17,((((85:64,257:144):18,263:82):32,141:51):32,138:88):36):12,267:74):33):24,((72:68,171:77):29,274:130):61):22):22,((((((21:82,175:103):66,361:139):32,324:118):54,190:105):48,195:76):51,((44:99,334:167):32,(((80:160,250:86):37,87:88):30,270:77):32):42):31):67,220:76):18,71:83);
+tree PAUP_13 = [&U] (1:78,(((((((((((((2:33,177:34):4,(((((((((((((((((((((((((((((((((((((((((3:159,102:64):27,284:69):68,(200:126,313:139):33):41,325:139):33,(14:173,22:74):19):29,167:84):18,(50:149,168:78):5):15,(63:105,126:73):87):28,42:67):34,((((((((20:93,256:77):19,139:159):23,247:76):53,(((92:122,324:128):68,149:51):29,136:97):69):24,((95:112,322:151):56,238:78):28):27,(213:90,258:148):29):44,296:146):25,350:103):45):14,((((((4:155,294:75):21,(124:39,265:76):37):41,((((((31:126,316:107):48,170:70):23,(((39:95,205:145):12,285:88):87,290:68):26):31,234:74):58,351:119):28,(332:128,358:71):26):20):49,344:117):41,218:94):61,140:97):42):13,(52:51,147:79):38):52,69:107):26,161:95):39,41:116):24,((74:100,195:114):24,(115:83,((132:90,(271:66,307:78):79):32,295:91):44):33):43):37,(21:90,110:86):20):26,204:76):48,(160:101,(274:123,354:59):66):50):20,(((((((((9:48,(((122:130,342:109):36,269:52):89,185:71):34):57,321:169):30,((78:97,(91:83,(327:89,347:108):83):26):47,((98:51,268:66):71,361:147):45):28):34,38:95):32,(((15:110,66:114):20,(227:107,336:143):24):33,357:106):21):45,(250:89,(275:140,326:86):28):25):16,108:82):45,228:116):14,(133:93,(241:135,320:110):21):31):32):24,((((((((32:124,260:115):38,349:84):36,297:96):61,255:87):18,((45:51,174:70):17,93:41):55):39,263:93):16,(280:111,360:118):27):35,89:146):27):27,71:120):31,26:97):27,(((((7:60,194:101):11,(105:67,(135:57,201:159):20):101):31,25:44):42,28:80):61,123:101):12):48,67:73):36,352:99):34,(((((61:85,(189:73,330:159):22):23,(((79:96,233:149):26,306:115):64,(94:71,142:94):56):68):13,((129:71,208:44):28,240:31):45):63,107:124):31,112:119):23):51,165:105):21,207:80):57,((((12:86,308:112):50,((18:127,150:119):31,331:102):37):39,359:77):37,309:108):22):31,((((((27:56,(186:71,334:193):28):84,((80:133,145:118):51,299:115):41):60,64:71):42,57:82):34,58:70):23,(((62:108,101:135):36,187:87):57,148:92):29):41):19,264:83):36,(((((((((((((8:77,251:155):38,88:74):30,(29:35,267:113):43):29,127:67):28,((75:194,246:81):11,(134:194,180:79):11):43):28,(103:139,183:96):24):82,138:80):35,55:83):22,(((141:66,198:127):12,155:101):34,(300:81,355:115):23):34):51,166:135):26,217:98):79,259:67):22,182:84):51):25,((((((13:127,(318:127,356:97):27):58,((((37:117,248:118):27,335:138):43,((((270:80,329:75):107,278:72):43,279:63):47,310:162):29):33,173:90):18):19,(245:98,292:135):29):25,(((104:81,(202:137,220:96):46):40,305:130):54,212:89):21):20,153:94):28,((((86:154,199:91):51,231:57):28,171:56):68,121:115):18):18):45,40:127):51,70:64):14,((44:105,109:86):24,261:76):45):19,(((10:74,((301:136,362:100):40,312:131):46):34,96:157):48,(((((19:63,60:174):15,257:61):19,176:58):31,(111:136,((210:130,232:57):19,226:56):59):30):8,(158:141,236:68):16):39):62):6,159:83):46,((((((((((((((((((5:157,328:93):38,48:55):8,(184:169,289:55):10):31,346:85):21,(23:99,253:122):65):25,(((((((35:125,291:104):94,99:51):28,179:54):43,163:49):131,76:45):19,53:50):34,192:129):17):23,(118:109,337:72):29):26,339:86):39,(((59:93,85:59):66,209:97):31,303:100):33):33,((((((30:94,340:130):38,203:97):51,283:113):21,((72:132,114:89):22,((221:105,323:151):56,277:92):32):32):39,235:114):26,46:138):35):29,156:108):22,(((((49:114,197:115):16,(190:129,(252:58,266:95):77):22):62,229:145):44,315:131):33,((242:125,288:125):42,314:117):33):39):19,(((((((((((((((17:94,(172:102,188:67):10):36,281:49):87,353:94):45,157:81):40,162:90):76,84:77):34,(24:64,244:54):39):29,293:138):22,131:80):94,51:70):26,65:60):41,(237:91,((243:90,287:129):13,262:65):21):46):28,345:150):11,(128:113,193:111):21):20,(68:99,343:131):32):24):23,((97:135,196:117):29,144:110):33):30,87:115):67,169:84):35,223:71):63,(282:101,348:107):37):20):118,215:31):2):79,113:139):15,((16:104,90:115):32,304:135):36):50,222:79):25,(((((((6:113,((((((33:137,54:80):27,83:58):54,219:111):29,((((151:108,254:114):33,319:134):35,214:107):50,317:167):37):19,(56:89,143:64):43):16,272:75):30):17,(286:85,311:115):54):87,(178:68,302:63):9):13,34:33):37,((47:79,125:144):86,((82:89,225:76):15,((191:108,(230:108,273:109):28):62,206:84):25):18):26):28,81:150):21,164:88):21):77,(((11:79,(211:72,298:166):18):65,(43:138,(120:115,152:102):37):41):20,(((36:77,116:161):37,338:57):27,130:52):51):17):28,137:73):29,341:175):15,((100:108,224:98):73,154:90):23):32,(119:157,276:94):30):21,333:126):58,(((146:184,216:48):23,175:59):18,181:42):45):19,((73:106,(((77:88,249:105):116,117:40):19,239:45):106):12,106:84):89);
+tree PAUP_14 = [&U] (1:63,(((((((((((((((((((((((((((((((((((((((((((2:76,(190:109,312:168):46):46,329:128):38,52:61):56,106:95):12,((31:63,((((88:106,230:60):17,216:46):53,204:74):83,286:93):35):48,229:169):40):37,22:82):37,271:57):36,335:146):28,(((((((19:63,((((23:111,192:111):23,((292:117,362:102):44,322:112):55):24,(67:95,336:136):27):83,276:62):25):66,261:75):34,347:105):28,((((((24:37,(108:137,245:89):90):10,(147:56,175:52):1):27,240:27):128,124:61):24,(57:86,89:131):25):29,74:66):57):50,177:83):11,(131:92,253:138):21):58,160:122):15):28,118:118):28,(179:107,359:112):19):23,256:105):61,145:92):17,(130:84,303:113):25):40,327:106):30,162:97):45,100:150):42,102:83):56,104:88):99,9:28):22,200:61):28,61:62):40,((73:115,((187:119,228:111):45,358:64):41):62,254:78):46):20,(((45:88,((69:119,231:117):22,342:109):43):44,119:139):29,48:97):58):41,140:78):24,232:62):79,275:41):23,222:57):21,((34:25,(116:41,310:209):28):17,(273:101,340:146):82):22):83,323:141):65,320:74):47,298:84):33,(((7:108,355:78):36,(55:93,299:135):41):35,44:103):28):26,311:115):93,(((((((((10:138,149:73):31,330:76):49,120:124):78,223:74):15,(((((17:102,343:153):47,((((109:69,(296:180,332:90):46):94,206:83):41,(236:64,350:148):4):20,243:46):21):36,117:66):11,(((((40:152,111:87):36,(123:63,277:88):30):36,81:86):44,(90:110,167:113):3):74,156:61):15):32,284:167):7):25,214:101):20,((30:63,83:71):26,(((((36:70,137:56):36,161:44):67,212:117):36,351:114):48,((37:46,(64:46,346:56):96):16,133:46):63):23):77):66,278:67):21,227:67):36):17,(141:134,211:92):18):13,((((((157:155,238:62):41,239:67):72,306:146):25,264:67):37,(201:116,348:111):25):50,259:69):39):12,(21:80,((115:88,(122:115,(191:111,233:105):42):38):67,279:64):35):23):21,252:142):23,169:92):31,(((((((((((((((3:122,283:108):37,198:72):31,49:109):37,((((8:36,(((((((15:64,(246:93,281:92):44):39,63:143):25,33:59):31,(202:95,(331:121,341:153):62):37):49,((((((39:114,43:144):26,314:125):58,158:66):24,(85:56,((152:73,172:163):17,263:81):33):21):39,144:125):18,(65:80,242:144):15):20):45,128:86):29,143:71):124):12,82:31):141,326:62):29,107:83):64):51,195:88):20,(241:71,262:63):42):24,265:66):49,(142:97,291:76):40):29,250:89):36,(46:138,220:106):42):28,(18:111,(((((71:105,221:118):83,188:52):32,213:49):104,148:84):38,113:89):46):34):27,((((((((((((((5:99,288:148):19,((84:82,(((154:108,297:83):90,237:69):40,290:61):25):38,((150:157,194:97):22,274:108):34):12):24,((((((20:102,42:89):15,(((80:148,97:123):32,(159:99,(186:27,((234:89,313:178):92,257:18):12):93):18):47,127:86):19):40,272:69):24,((132:110,349:118):33,319:116):66):20,(50:95,(129:140,((146:82,293:106):29,267:57):35):25):39):22,((208:81,209:64):57,(305:144,309:108):43):34):39):23,164:97):23,((((((((((((((((((((((((12:70,135:137):33,(((25:33,((79:144,325:133):51,(91:84,165:67):40):84):14,196:44):50,(185:59,199:51):62):15):23,(260:59,285:166):21):33,168:70):29,183:67):114,51:65):27,54:60):29,337:75):50,(189:73,235:111):62):23,86:131):41,(87:114,121:71):17):22,(((((((27:72,171:73):23,176:48):54,333:133):38,180:89):93,60:86):55,62:62):26,((105:74,361:183):40,155:111):31):21):23,77:73):60,210:125):27,258:127):57,251:85):41,32:103):40,301:69):80,226:86):41,247:90):8,(205:99,302:77):17):26,((76:131,215:111):6,(151:127,316:123):21):21):26,68:131):26,(((14:152,197:105):24,356:96):44,203:75):33):24):15,(((((66:108,219:111):66,255:72):49,163:69):55,249:102):36,((((((75:152,(93:89,225:76):38):44,((78:107,98:119):14,(125:175,153:103):25):21):60,218:102):41,300:101):42,353:77):37,317:171):50):40):35,174:61):21,308:105):56,((((((6:59,((94:44,289:52):125,248:67):22):39,(56:138,173:91):23):64,114:76):32,321:169):38,(((((((13:158,58:88):71,295:60):77,217:55):13,268:25):42,(99:120,(270:70,304:98):60):50):44,136:98):48,357:90):31):26,354:98):32):23,103:109):28,110:107):23,((35:132,244:117):35,338:96):27):33,38:111):17,((((59:92,339:89):42,266:76):45,315:127):47,((112:112,352:95):29,(184:117,294:106):25):30):30):23):24,(((((((((((16:96,178:44):1,(92:46,182:152):5):53,166:91):68,344:107):28,138:111):30,101:121):27,(70:116,193:115):17):41,(47:90,(53:112,((134:124,280:125):42,318:95):54):34):32):20,(96:151,360:99):45):23,((72:62,((((126:45,269:92):46,287:65):96,207:81):19,(307:107,328:135):20):30):57,334:151):28):22,(41:117,(139:88,282:86):57):41):13):28,(((11:102,345:167):55,28:76):25,181:71):51):19,324:146):47):24,((4:36,(95:198,224:45):26):39,170:74):37):56,26:54):23,29:104);
+tree PAUP_15 = [&U] (1:66,(((((((((((((((((((((((((((((((((((((((((2:100,71:133):13,((53:78,325:174):34,145:69):76):61,260:44):8,(239:47,249:194):10):31,116:47):32,(56:160,72:63):18):52,153:67):65,20:41):16,227:42):80,322:160):26,(7:78,142:149):23):27,(((((((3:74,64:154):29,(33:62,((73:109,348:108):76,255:85):44):14):14,((((((24:20,78:27):102,(345:120,354:116):41):18,(229:143,306:143):49):40,281:108):13,(54:105,75:144):54):44,210:87):28):27,(((((27:115,184:72):25,(91:32,(201:25,(238:95,352:121):92):10):54):68,112:115):29,(50:115,236:101):19):22,57:120):40):15,((((90:138,276:86):17,(223:82,335:176):18):24,212:91):26,((183:115,(300:78,309:67):77):27,314:140):44):21):24,79:155):30,((((((((((((((((((((((((4:141,102:96):24,(32:97,(163:124,349:88):46):31):29,292:87):36,362:113):28,(((((141:69,187:130):36,151:70):34,320:92):60,351:114):43,181:115):42):21,((((224:88,291:149):27,234:69):85,331:99):26,328:94):35):21,((((((((((12:96,(146:96,321:158):55):25,347:105):39,(((((((((((((((25:41,(((69:167,129:64):33,275:51):21,80:186):20):88,(66:83,((81:81,(115:81,256:150):20):49,168:108):16):34):57,133:75):37,126:66):51,38:95):28,(((((41:105,55:140):15,268:65):30,205:83):51,86:120):37,214:106):52):30,330:94):23,(111:95,297:116):19):47,226:102):22,(263:72,316:77):75):44,(74:86,155:107):45):34,51:75):31,((76:104,175:146):21,315:146):39):36,358:79):35,174:96):25):31,((((((((((26:27,(34:31,303:190):19):1,(45:78,93:24):2):75,(39:165,213:68):25):22,190:99):46,109:120):10,(92:88,235:101):27):55,138:110):19,((193:131,283:109):37,286:97):29):39,40:128):29,278:113):18):24,343:128):39,167:87):15,(118:142,186:96):17):54,(77:76,336:130):26):29,121:76):21,(232:115,251:111):30):29):47,((11:69,225:56):36,(19:45,266:125):57):26):21,((10:55,311:194):27,(((156:75,220:146):42,259:56):32,290:54):26):14):40,355:87):24,(((((((((((22:53,((198:72,327:111):81,308:85):44):89,338:87):36,264:56):37,96:139):50,130:65):14,(((((((((30:50,(150:84,(217:89,344:144):51):56):15,((68:71,137:60):19,(158:40,171:169):23):14):41,((((((47:144,100:91):36,247:78):46,135:121):28,166:102):20,215:76):64,(((99:70,244:77):64,160:110):21,269:79):19):40):35,341:157):40,148:77):35,113:94):27,43:162):43,65:51):20,((95:115,323:150):43,104:105):52):15):24,((28:126,(114:87,324:140):27):49,((63:120,139:84):29,157:64):32):29):21,((84:120,332:121):29,219:112):43):38,87:86):38,277:82):63,101:120):27):32,192:129):48,(8:44,15:50):44):13,(127:98,233:57):20):88,(89:132,123:63):27):18,85:69):84,(((23:65,((221:115,307:133):28,(265:67,359:58):42):81):25,29:83):40,254:73):27):15,(52:51,(((82:52,196:48):55,204:88):19,261:108):31):24):29,(((9:93,218:123):42,333:97):41,159:94):42):20,173:92):28,94:121):12,302:97):39,124:89):23,(5:121,83:124):19):27):15):22,((36:122,((49:110,125:152):56,179:97):19):39,237:92):24):21,((((((((((((((((((((13:100,262:61):72,((103:105,(216:100,(273:114,301:124):21):36):28,(((((((107:114,361:156):43,(176:126,294:101):9):19,243:105):35,342:94):17,(143:82,350:102):32):41,147:103):14,(185:78,271:72):73):19):33):22,(((((((97:96,108:76):28,119:160):38,346:63):59,318:132):20,164:129):25,284:114):34,((178:153,304:107):26,334:99):68):24):46,58:94):41,312:141):86,203:54):25,131:69):39,((35:95,317:142):97,245:78):46):15,270:102):58,231:44):28,189:34):85,106:116):15,(16:100,((194:111,340:132):41,282:104):47):15):45,293:102):48,285:78):36,59:90):27,182:154):31,67:68):27,267:59):78,110:83):21):48,132:103):17,(299:152,326:88):41):25,272:72):21,(48:97,246:139):17):82,202:86):26,242:61):42,240:88):13,((((61:82,(105:77,149:71):90):37,117:75):33,((120:164,188:66):40,211:63):27):20,206:83):15):31,289:142):39,(((((((((((17:154,319:115):37,46:95):47,274:105):91,230:68):28,88:76):32,(207:79,250:150):24):24,305:168):54,18:49):51,195:35):6,42:44):39,(172:69,287:157):26):24):11,(((208:87,296:175):30,280:85):34,257:55):17):20,((140:98,252:142):45,197:60):19):46,(((((31:27,98:34):60,70:61):36,((134:131,161:110):33,170:103):54):30,(136:112,258:146):28):26,(44:110,165:131):25):44):14,((144:107,191:123):30,310:132):72):18,(21:90,(288:121,357:101):51):21):14,(122:162,180:107):26):27,248:105):55,337:87):12,((37:87,60:100):44,128:70):51):68,199:97):28,((((62:70,((154:43,(339:71,360:144):44):27,329:68):54):39,353:102):25,162:90):88,222:92):26):25,279:66):23,200:100):31,((((6:48,241:81):2,(209:53,228:98):5):62,253:120):19,(14:148,((152:51,298:87):57,356:74):42):42):28):29,295:143):43,169:85):52,177:48):26,313:207);
+tree PAUP_16 = [&U] (1:51,(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((2:83,163:68):16,(((((((((6:55,(318:137,360:110):85):37,240:45):18,75:198):25,193:52):110,107:105):21,(((55:92,89:108):32,190:144):57,64:81):33):31,301:84):43,343:141):20,(57:86,118:92):37):83):19,243:64):64,124:90):19,(((13:164,77:82):27,37:73):55,362:109):28):28,(35:138,164:114):38):34,349:96):66,246:85):15,((((((((7:19,(26:30,136:214):16):63,212:82):25,(((((20:76,(47:136,186:89):30):116,141:56):26,((128:90,150:96):38,328:74):21):16,(39:80,332:105):18):85,259:88):14):26,288:136):31,((16:51,62:175):16,28:59):48):14,(279:93,348:132):23):26,221:134):57,194:77):18):24,((180:77,(253:171,290:48):21):24,205:49):29):43,324:152):31,156:62):95,289:74):12,(94:80,260:143):13):20,31:81):42,((((((((((((9:69,347:144):31,244:89):82,66:65):27,98:65):33,(87:77,162:80):49):34,204:112):25,(((((((59:67,267:55):64,206:123):39,249:96):50,140:100):38,306:164):21,(214:120,235:93):32):66,(97:81,((226:115,293:105):69,284:73):24):49):18):21,123:81):31,((73:107,346:83):44,255:121):20):80,(((41:99,326:141):43,78:74):18,(147:69,166:109):10):11):17,275:60):57,79:144):22):17,(82:87,(300:108,304:132):54):34):18,(105:109,234:116):23):29,((21:99,(((((((23:151,103:72):34,157:68):50,350:91):70,302:79):26,182:103):43,133:122):29,((42:114,(191:76,(297:88,361:156):44):52):29,((44:138,319:113):34,120:83):79):30):33):13,270:94):24):19,(((84:67,188:71):32,227:73):49,334:163):27):36,(93:81,153:88):33):12,((((109:110,242:134):63,345:93):48,119:105):87,232:73):32):35,(((((((14:151,(((((29:72,175:101):36,(((56:103,(((88:60,274:125):58,252:137):35,195:73):57):19,269:80):29,(111:104,(112:112,(((189:85,238:67):30,336:150):41,213:75):54):50):28):46):24,52:71):77,((((((((33:47,196:84):83,135:79):23,((158:68,291:83):41,184:134):21):32,36:81):29,155:110):35,230:126):26,(70:68,322:171):34):16,121:73):22):39,143:59):41):19,(169:139,192:108):45):25,108:84):96,210:73):21,(266:129,276:33):37):27,216:53):29,(83:114,(187:126,228:104):15):50):19):29,24:62):25,236:49):51,32:150):25,12:82):27,40:158):25,(91:95,(117:82,308:99):43):19):76,19:25):4,207:20):119,330:103):32,(144:73,263:75):65):23,30:78):77,61:90):30,116:70):14,((34:62,199:106):7,(110:68,229:212):12):12):20,(((43:180,130:57):33,106:64):96,(100:103,239:67):26):22):70,71:114):36,298:104):16,(((132:107,314:140):38,203:96):55,145:90):29):20,(49:101,86:125):56):23,((((((((((((4:99,179:78):70,315:126):88,48:54):19,(149:58,292:99):11):34,311:92):70,233:88):29,(((((((5:147,63:89):29,154:80):45,257:101):41,354:91):30,251:107):49,((11:93,(65:67,320:95):72):19,(99:72,272:81):46):20):7,((((((((17:87,(((((((53:93,286:80):25,285:67):40,(134:176,159:60):25):34,58:77):44,339:76):70,223:92):45,335:137):62):40,25:64):30,(80:159,225:64):34):52,((((96:143,131:112):43,(127:117,219:108):26):42,198:76):30,258:136):38):43,342:113):37,357:82):27,268:71):48,224:101):28):24):22,((38:100,197:122):25,((68:62,(113:92,250:96):34):58,217:92):29):33):37,351:127):51,338:59):21,((50:52,160:80):23,95:68):46):43,(((46:111,299:112):41,((85:88,((168:57,(172:28,177:34):57):45,202:97):70):43,220:87):54):25,122:106):66):22):15,(((((((126:138,316:92):53,307:76):37,344:133):41,129:82):34,295:135):21,254:92):57,(146:89,321:165):35):36):12,(151:79,(218:113,305:132):53):35):16,(241:127,352:97):45):46,337:58):29,282:84):27,(((54:107,(201:117,317:169):49):26,237:113):61,329:72):31):20,(81:103,170:141):38):18,148:98):20,(45:145,115:79):14):69,(10:35,((((((((15:65,(22:60,((161:93,215:142):24,331:97):90):24):71,355:77):39,309:109):40,165:105):17,261:88):33,((((69:92,273:97):54,303:103):38,(185:126,283:114):26):41,256:100):26):36,(92:89,211:83):21):52,278:52):21):55):26,181:81):35,265:74):17,(114:110,178:115):11):49,((((60:106,287:80):40,139:66):28,333:139):23,294:59):40):14,262:63):24,152:72):102,27:60):15,18:72):23,72:45):32,271:91):32,101:109):55,353:88):30,((67:96,125:153):44,296:130):42):31,((245:119,358:87):35,327:91):42):23,(76:82,(((174:48,248:65):42,312:177):25,247:76):91):23):44,90:91):33,(74:58,(277:86,313:172):28):41):56,323:145):72,280:78):67,222:56):20,8:52):43,200:92):12,(340:95,341:102):131):28,(((142:120,359:85):18,264:64):96,231:59):18):32,(((((((3:26,((137:139,173:80):73,209:36):19):52,(((51:102,356:83):38,104:92):72,((((167:61,171:64):43,325:147):22,281:85):37,183:80):28):20):31,138:133):24,208:74):68,310:143):29,102:105):88,176:43):32);
+tree PAUP_17 = [&U] (1:86,(((((((((((((((((((((((((((((((((((((((((((2:95,144:134):27,(((100:95,175:97):59,288:131):29,(290:94,351:137):28):19):53,(((((6:142,159:70):28,162:93):27,(85:72,((111:102,317:165):36,((173:59,349:151):19,199:77):81):50):19):28,153:144):17,143:82):27):24,(32:99,(92:118,322:136):49):25):16,(57:95,87:86):45):23,(7:34,181:53):93):71,66:37):14,149:39):108,196:96):13,307:94):22,51:141):45,239:54):40,166:106):34,42:57):15,((146:74,(150:93,237:157):16):98,257:46):6):88,133:101):34,59:87):42,(191:98,(204:119,330:115):31):35):44,((((110:75,225:90):7,((197:70,226:105):10,318:176):15):31,210:75):16,(183:71,360:166):14):50):24,((16:100,107:156):21,(82:95,(106:80,139:79):68):9):13):59,128:89):30,292:77):21,271:67):17,(37:82,(164:136,356:85):40):45):23,((((((23:88,289:135):9,((((113:173,233:63):19,116:58):45,((182:112,(342:110,358:92):48):37,361:137):57):23,316:112):24):93,137:59):25,54:54):51,305:151):30,311:92):53):60,(163:74,169:91):40):20,(((((130:98,178:127):33,297:87):36,161:71):49,310:151):47,279:86):19):26,274:134):34,280:84):26,(152:123,185:122):13):29,(53:74,277:91):57):23,(202:123,345:151):38):29,296:173):25,((73:136,314:129):32,((((118:96,(120:113,(198:89,(268:67,343:84):56):47):63):82,275:69):27,194:77):68,119:125):24):37):27,((((((((((((((((((((((((((((((((((((((((((((((((((((3:85,(122:132,303:102):46):33,282:123):20,((((((((((((((11:166,126:73):12,300:79):57,84:107):25,((((((49:144,94:65):8,(123:73,353:132):9):98,308:93):29,203:64):76,287:82):29,312:154):33):35,(50:71,(69:95,(88:145,151:101):32):43):37):21,((52:150,109:62):25,(68:53,108:46):30):34):39,340:142):49,(((((((((25:65,(273:109,341:145):61):18,(208:90,333:158):13):46,(44:97,(48:21,(67:24,201:217):6):89):43):35,357:96):35,263:58):35,270:65):35,(34:36,167:45):75):5,265:54):37,45:88):34):33,127:93):23,70:110):32,((21:103,244:74):17,(55:158,189:79):10):27):29,12:85):16,269:97):23,((168:32,(174:29,352:173):8):62,281:90):31):37):25,(((62:84,332:105):35,(261:67,362:79):67):30,136:90):64):15,(216:103,321:170):40):44,331:102):38,283:97):65,36:74):34,339:67):35,(31:80,72:126):17):26,147:133):17,39:108):23,179:118):48,326:77):16,(((80:119,(102:121,323:145):35):52,(235:148,285:88):24):47,286:76):34):55,((19:100,200:86):57,350:99):28):51,131:83):30,(((((((((((9:67,(78:47,(93:29,(234:83,251:145):84):18):65):73,114:87):24,(((((30:83,336:118):67,276:81):29,211:87):27,(241:95,346:133):22):55,121:80):11):18,((98:93,327:107):24,266:90):46):19,(135:73,344:149):22):21,264:84):38,(((((((24:89,209:61):133,284:59):14,329:47):116,242:87):27,248:77):36,(((((38:122,236:97):38,140:79):36,212:75):27,(((41:114,355:82):23,(220:122,260:101):18):29,65:109):33):20,(((40:117,103:105):36,((83:97,((134:138,206:109):42,219:95):41):37,221:114):22):67,246:100):22):19):14,(26:84,((90:109,258:124):40,187:78):79):30):45):13,(33:100,301:131):19):25,299:167):22,(215:117,347:126):14):34,(172:72,205:93):21):14):28,224:97):35,27:57):34,195:63):42,262:67):43,79:123):35,61:107):18,96:156):47,(97:158,231:88):26):35,254:85):29,156:49):76,14:144):28,(112:125,304:132):29):29,(86:123,129:126):24):40,(((56:95,249:118):27,((58:89,81:96):29,(154:68,217:122):17):17):13,(291:89,338:68):25):63):24,((((((((5:124,171:55):28,((22:84,((((157:195,256:55):29,240:23):18,223:36):15,302:45):14):13,117:45):25):87,43:127):44,324:117):22,(46:138,229:153):30):81,188:65):27,(29:75,278:67):33):63,(138:90,319:145):38):34):33,(((((64:69,(145:53,272:85):56):71,176:110):19,71:114):35,((75:98,(238:161,335:101):23):79,(124:59,160:95):53):23):29,158:78):8):9,((17:185,328:59):43,115:42):45):53,259:108):20,35:126):31,((213:56,227:75):46,(243:59,315:178):24):45):70,252:82):38,142:95):25,((18:89,(76:138,180:106):23):79,309:86):21):25,298:78):27,218:135):21,294:61):49,(((13:132,101:127):60,95:84):27,((186:78,230:63):66,334:137):49):24):33,207:111):30,(125:121,313:91):86):25,(((4:122,(104:105,250:100):37):40,(((77:70,325:180):24,267:55):36,141:62):41):29,348:102):28):33,192:107):46,228:101):42,63:109):26,(((((((((8:67,(99:73,232:107):18):35,10:65):24,(222:84,295:157):24):42,((20:110,((28:137,354:100):47,47:75):44):35,60:118):32):38,306:158):38,245:78):69,293:99):57,89:117):29,148:89):42):42):31,184:111):27,320:107):23,(247:125,337:111):23):53,190:115):20,253:126):43,165:86):27,(15:74,(74:88,((((91:115,(132:159,177:71):9):39,193:43):35,214:86):82,105:89):19):76):35):13,(255:92,359:117):30):25,(155:177,170:93):40);
+tree PAUP_18 = [&U] (1:82,(((((((((((((((((((((((2:27,(256:37,315:234):17):41,65:169):16,117:52):41,(166:92,330:157):21):31,((((((((((((((((((15:44,(((108:59,177:170):17,298:74):42,264:72):113):21,(89:205,215:52):22):22,176:40):55,220:133):42,88:77):26,(209:78,(224:56,268:88):65):20):30,192:137):10,(((((((43:143,137:103):33,231:103):38,69:107):28,((124:23,(((134:131,362:96):56,175:118):108,149:30):25):50,329:89):52):60,165:98):29,174:70):20,(303:103,304:139):62):29):24,278:84):45,((37:71,(42:145,57:82):38):35,287:82):51):25,191:100):30,((((96:133,344:124):68,138:68):48,132:79):48,((151:105,((205:76,275:85):72,352:75):42):26,163:97):30):34):23,(187:107,297:108):26):29,361:173):24,(26:107,294:112):13):51,168:67):42,227:94):18,(80:147,318:117):69):23):35,(133:68,267:75):81):14,226:96):33,(((((((((((((((((((((((((4:94,(25:60,(307:87,359:131):40):32):61,35:126):21,(((68:180,240:56):19,228:47):73,(299:124,305:96):64):23):43,((((11:81,(136:144,(169:91,183:96):35):32):75,(128:100,277:97):24):42,158:60):50,351:124):26):29,123:94):25,(((40:116,((97:99,332:88):75,140:119):30):37,189:107):29,((51:93,173:136):24,(((63:98,139:106):30,279:122):26,292:91):20):33):13):33,257:97):24,(((91:97,196:98):65,155:122):33,312:137):46):24,44:120):42,147:77):25,(((((54:86,(71:103,((198:129,306:114):36,341:96):71):61):24,(55:76,(((((87:107,229:145):140,193:20):9,247:34):38,241:35):64,101:97):93):26):36,125:148):40,285:80):81,185:109):28):26,(200:74,204:64):41):16,(((((((((((((((((((((((13:172,(((60:107,162:106):32,(154:41,342:74):32):30,66:47):38):36,284:68):62,324:121):83,127:74):39,19:68):11,258:186):39,78:44):26,222:62):40,22:53):95,31:72):25,64:81):90,280:71):27,212:72):101,130:61):15,328:75):51,232:122):21,(((81:121,230:110):31,273:99):31,((((85:69,164:153):17,(111:85,313:164):29):47,159:58):22,150:88):49):22):72,171:66):25,203:58):44,234:81):99,76:54):22,115:48):60,350:97):67):18,213:61):23,(293:104,337:86):74):14,281:86):39,(((((16:70,(180:92,(239:88,322:172):31):46):26,((((29:89,52:77):15,(59:154,110:64):25):33,41:86):18,348:138):21):41,(67:79,(317:156,325:136):58):45):18,((((93:124,340:127):37,360:100):45,242:117):31,((126:76,338:65):23,(131:170,157:71):12):51):22):34,207:92):6):15,(((((((((((39:77,135:60):44,(((112:142,172:91):39,190:95):80,(311:117,331:102):25):18):55,153:105):23,(((((45:65,254:89):22,179:47):79,346:110):25,336:132):40,276:80):36):52,90:92):43,345:146):41,301:85):41,221:128):26,(((((47:151,53:74):17,((((119:146,152:90):44,327:86):22,272:58):64,339:83):21):24,102:63):33,262:55):41,(210:128,314:137):43):16):19,(145:104,199:145):24):19,(((122:129,251:108):47,283:95):63,260:101):19):34):65,181:45):15,302:37):32,(((56:85,326:74):105,92:66):19,245:94):41):14,(27:75,(62:89,118:107):96):25):6,(197:64,333:169):15):31,((((((5:52,261:109):43,((((((10:35,182:76):63,99:68):73,143:82):23,((141:67,(((214:98,((((244:143,349:83):42,354:69):44,250:95):64,246:94):44):56,218:95):56,252:77):25):50,356:91):24):64,129:87):37,206:81):28):50,335:147):25,(((48:65,109:73):30,(((208:111,320:113):41,310:138):44,255:91):69):26,291:89):58):52,211:90):29,((83:113,104:112):63,237:75):18):26):31,(70:88,249:105):60):15):41,(32:98,73:104):52):23,355:85):41,((((7:90,((77:120,316:123):29,296:129):45):21,((((14:161,50:92):32,58:71):52,((((20:61,(290:60,347:161):34):90,323:136):45,(219:69,270:84):47):55,353:92):28):33,86:124):43):27,(((((74:72,(116:142,282:98):34):31,188:116):39,142:97):25,103:80):53,(((((((106:67,161:66):27,148:77):32,358:106):32,309:75):35,288:88):83,235:99):19,248:96):40):26):21,((((((((((12:89,236:78):19,(46:142,(225:105,289:103):26):54):28,(100:115,((((114:62,300:79):28,195:141):22,121:60):51,(194:130,217:103):30):51):16):47,82:59):9,((98:118,202:110):54,167:47):9):109,30:61):23,286:79):73,238:85):29,266:94):34,259:93):28):16):44,178:83):7,(223:75,343:164):24):28,(9:64,38:134):31):32,84:78):47,263:76):45,94:95):32,((((3:72,((6:97,36:144):7,((((105:90,(156:82,269:81):60):41,295:92):45,170:109):36,357:96):36):27):47,((((((8:39,((((18:47,216:41):20,243:65):17,24:53):21,113:182):18):90,253:101):51,144:89):20,274:127):41,((34:60,72:74):69,120:126):25):28,(75:131,107:128):44):35):25,271:57):41,95:107):31):63,23:74):32,21:74):12,(28:117,184:87):31):14,((17:72,(265:62,334:88):124):27,(61:56,(233:89,321:183):48):15):26):19,(79:126,160:122):82):36,(((((33:119,49:111):42,146:76):54,319:129):70,308:95):32,(186:82,201:118):17):32);
+tree PAUP_19 = [&U] (1:60,(((((((((((((((((((((((((2:45,(((100:102,152:133):42,316:84):46,224:78):71):16,(((((((((((((((((((((((((((((((((((3:81,54:138):32,281:79):21,((((36:88,(245:122,305:129):59):44,192:93):50,340:107):81,228:84):30):17,(291:88,330:87):85):24,156:84):10,(123:83,286:78):87):22,207:70):72,339:96):20,(21:126,48:95):14):60,261:51):11,265:36):39,(((76:59,139:93):50,310:153):37,(((99:59,(((159:65,264:63):66,344:104):57,(165:102,171:84):27):55):25,183:81):51,263:82):38):36):36,282:105):83,19:71):31,307:88):44,((((((5:97,15:76):39,238:56):25,(131:90,277:142):22):37,300:129):27,((((((((((((((((((((((6:68,301:170):22,7:48):20,142:170):24,302:59):46,272:78):30,(321:154,346:93):58):73,20:71):29,278:55):51,327:126):25,(90:129,244:116):17):87,125:104):36,120:93):68,251:90):43,360:83):42,(135:94,225:117):27):19,((25:120,71:107):33,98:87):35):35,140:129):22,(((((67:74,(78:158,132:82):24):44,230:103):21,271:62):12,105:104):33,92:90):31):26,267:65):26,358:68):32,(168:99,361:174):35):31,(((((22:111,226:73):33,227:51):32,63:158):28,211:60):53,279:64):33):20):20,(75:111,119:103):90):25):43,312:154):49,331:102):38,252:94):70,204:82):26,186:85):29,91:102):51,39:132):19,((((26:76,((43:194,232:73):30,(194:45,269:105):38):51):60,115:93):24,318:137):36,176:90):23):15,(((241:118,320:127):25,(266:88,353:66):51):39,242:103):33):19,(74:93,((102:61,(136:104,297:126):23):47,236:118):14):53):19,201:113):29,94:105):82,110:40):16,45:42):53,(((95:116,(213:106,273:102):32):37,203:85):24,362:130):36):43,103:110):18,(187:98,283:126):46):83,8:29):14,181:43):24):92,109:100):20,(((((((((((((((((((4:66,(188:78,220:145):41):34,9:55):38,208:82):64,314:139):29,((49:108,68:103):34,(((128:129,306:124):33,335:91):77,167:99):26):26):23,270:90):26,173:101):63,121:62):37,157:65):95,254:72):20,((33:69,349:151):18,(59:161,197:65):13):25):24,16:63):19,240:53):35,202:112):53,(((17:118,(87:98,191:117):38):29,(162:119,257:117):16):29,149:98):20):27,328:117):20,(260:119,350:108):34):22,((((40:102,124:121):35,324:95):60,303:108):39,114:85):25):19,((((41:120,118:132):31,112:107):51,111:99):26,((55:108,345:142):30,(185:142,198:86):29):30):21):26):26,317:197):17,(((((((83:95,216:123):34,299:139):38,212:103):59,126:79):15,(334:140,354:99):56):37,143:64):12,((134:143,((249:99,336:135):53,289:77):25):45,337:55):29):36):29,((((((((35:158,155:110):40,(((137:124,355:80):12,259:111):58,154:78):15):16,(133:105,141:55):35):37,((42:128,151:102):30,69:96):42):37,166:130):13,(((184:85,234:91):45,268:69):25,342:110):30):24,((46:130,221:120):51,84:89):43):30,229:168):36):10,(23:73,(((28:83,(129:96,130:139):28):42,((62:102,((179:98,235:92):25,255:69):69):32,341:156):48):27,(190:58,262:89):70):26):66):30,298:117):14,((24:83,248:74):79,89:122):33):28,((((((((((((11:61,(66:154,182:86):27):27,88:62):27,61:62):46,((79:155,205:87):19,((((81:113,356:94):47,215:104):14,(122:83,322:108):81):41,116:80):29):29):25,86:154):30,((93:51,(174:54,285:166):30):37,280:91):23):25,233:54):76,(31:77,250:82):28):56,294:47):31,161:58):52,357:120):16,(38:129,70:74):20):27):14,(246:118,(288:121,319:150):37):42):13,(((((((((13:209,196:48):23,34:21):17,178:63):17,((((((((47:110,218:115):23,(175:142,359:96):26):37,113:108):76,153:88):22,(164:81,275:55):25):29,295:154):32,163:57):42,(((((108:161,193:74):6,(231:63,338:162):14):25,(189:57,253:168):19):15,169:115):23,172:43):23):16):21,117:43):95,32:113):23,(57:100,144:114):39):24,325:161):28,((53:108,104:120):22,217:95):51):32):44,56:88):45,96:143):75,101:89):55,276:61):17,((((80:131,219:112):89,82:42):46,195:53):29,127:95):18):70,343:125):22,138:113):50,((73:174,209:72):26,256:80):26):32,214:74):71,351:115):42,315:136):79,222:61):25,(((((((10:81,((27:71,243:57):35,64:143):22):38,((((((((((12:90,296:164):89,237:13):17,210:31):124,150:120):36,304:126):63,60:89):40,((((44:90,65:88):15,247:145):46,(106:77,158:58):15):22,284:82):27):22,((18:71,72:65):96,311:105):28):22,97:90):15,((((((((((37:123,348:68):11,(147:146,347:77):13):66,(77:78,160:87):22):30,(50:65,(200:131,313:134):69):17):16,107:100):19,(((51:85,332:94):56,290:104):37,333:108):56):18,(309:45,329:46):55):25,(((180:143,323:141):44,292:97):26,223:119):44):26,((145:100,293:106):21,258:126):61):26,326:80):21):53):10,(((58:128,177:97):19,308:83):64,85:104):27):34,(199:106,352:118):34):15,(14:185,239:76):28):19,(170:66,274:132):58):20,((((29:157,30:61):8,(146:68,287:70):20):70,206:109):17,(52:94,148:123):19):36):58);
+tree PAUP_20 = [&U] (1:104,((((((((((((((((((((((((((((((((((((2:118,(((((((((((((((((((((((((((((((((((((((3:79,228:66):39,185:96):30,124:126):59,82:42):19,216:37):25,((116:57,359:162):19,179:54):12):71,((47:95,352:91):37,(84:109,289:126):19):23):31,(87:118,144:123):27):45,320:93):35,((30:72,257:135):13,(53:80,220:142):20):16):28,326:88):35,307:143):14,57:89):30,((((63:144,131:108):27,180:96):43,(231:52,275:41):22):36,233:47):87):56,36:75):35,331:106):30,22:118):20,(32:99,114:77):35):43,351:139):43,(28:80,((33:82,105:129):20,(115:128,308:108):14):42):23):27,29:107):56,353:90):45,(((40:144,160:93):30,((64:72,(((99:132,338:88):18,(142:104,187:128):23):35,119:148):48):28,158:51):25):25,264:74):18):36,85:70):9,134:179):25,130:59):68,(227:87,(238:51,344:157):36):46):30,214:97):43,336:128):30,((70:94,246:139):26,356:76):32):53,23:81):23,((9:60,259:74):28,((((((((((((21:55,((133:149,166:96):20,178:77):51):29,205:60):50,27:75):16,183:76):31,((95:152,170:85):34,((101:87,280:70):39,(276:71,(323:151,357:103):72):35):13):32):16,122:175):22,193:66):15,(163:74,341:188):38):13,((139:91,((176:51,247:60):115,342:81):17):91,196:70):20):68,96:145):32,354:103):31,(121:113,230:100):18):44):17):18,(41:89,((103:77,126:70):91,239:76):29):20):74,321:152):42,113:100):38,46:141):27,((((34:46,(((72:70,98:132):19,(140:110,302:75):20):31,334:175):37):43,(150:103,(224:134,360:103):30):57):13,((((((((51:86,(202:140,358:71):45):33,221:112):46,83:85):27,(109:91,199:151):12):13,225:123):24,137:81):71,177:87):15,((((76:41,(151:49,(232:151,292:87):55):16):82,310:138):31,(186:123,350:102):17):57,92:80):15):21):49,291:111):33):33,125:148):29,((107:102,271:33):51,283:71):73):36):10,(((20:178,294:66):20,298:61):40,263:83):61):31,(19:43,93:46):66):27,(211:109,337:118):21):26,253:126):41,((((((((((((((((8:77,(((((((((((((((((((10:45,50:176):14,201:69):34,285:147):23,(((66:148,235:80):33,165:65):38,88:63):19):89,35:117):7,(44:138,345:127):16):48,309:118):43,213:80):33,349:110):24,((24:75,56:166):19,(194:96,223:79):11):50):23,(((((((138:78,((256:139,347:106):57,339:75):36):46,249:93):73,206:97):16,(197:78,348:133):33):25,245:85):67,141:89):19,293:107):39):23,274:138):38,204:69):57,237:52):11,(15:60,52:68):15):46,17:91):36,((((54:99,261:37):23,269:37):84,(173:106,312:142):47):38,335:136):64):15,((((78:52,195:93):14,240:34):61,218:143):31,234:79):41):11,272:92):31):27,(279:82,318:164):10):118,322:88):16,(((((55:85,300:83):68,127:102):36,296:145):33,(226:99,(295:106,361:148):58):28):88,306:111):40):21,314:69):80,191:103):83,203:55):53,254:60):31,248:74):83,192:91):41,(89:126,329:87):44):25,(62:43,265:70):65):35,(147:93,325:134):47):26,340:136):40,(106:87,217:119):18):22,(((43:135,222:122):99,157:49):18,94:46):47):45):23,362:120):20,(37:112,305:141):31):14,(112:139,146:94):28):21,((((((((((16:91,(303:95,319:157):41):64,132:74):41,277:85):46,219:115):48,145:67):27,(73:96,118:93):40):23,(((58:96,(181:86,267:62):77):33,75:143):45,((((((71:111,258:129):48,313:136):42,207:97):56,282:99):34,333:103):34,97:111):29):37):30,301:79):42,(169:122,(262:53,(330:114,343:128):27):41):32):30,172:121):40):28,(136:102,251:85):37):16,(42:150,102:81):22):20,(25:139,59:96):22):26,90:89):12,((39:77,328:73):57,189:125):22):37,69:126):24,108:66):17,((31:75,284:97):34,(86:129,281:99):57):18):37,4:152):12,((((((((7:47,175:49):15,260:23):26,61:124):26,129:47):44,287:148):22,((229:206,236:56):37,244:49):28):31,190:114):74,154:88):15):20,(77:98,212:130):18):36,288:109):16,((((14:93,((117:48,167:35):92,346:96):82):48,315:101):68,48:99):31,241:118):35):10,(38:138,332:103):22):21,(65:67,(168:112,317:178):55):22):17,67:70):39,(((((((5:116,49:118):28,((184:76,268:70):64,286:125):26):22,(123:110,(156:44,208:56):87):21):44,198:76):22,104:111):22,(6:120,155:138):22):30,((((12:69,159:152):15,182:78):65,((13:150,290:103):33,148:108):23):35,((120:104,304:113):71,311:105):49):17):13):35,((((26:63,143:160):20,((((((((((((((60:92,((200:123,252:105):29,(270:88,355:50):41):44):16,255:129):33,81:73):52,152:77):29,(188:106,299:147):41):25,266:96):30,162:92):84,316:95):49,164:69):43,80:146):32,100:82):42,79:151):52,110:59):20,243:52):16):37,(91:105,(135:130,(174:28,(209:47,242:141):14):56):18):20):48,((((68:83,111:84):56,(278:115,327:104):21):40,171:102):9,128:118):30):18):21,(11:92,215:93):47):17,(153:121,161:112):20):22,297:109):27,45:102):18,250:124):27,210:97):27,(74:103,324:130):50):19,(18:90,273:124):28):22,149:133);
+tree PAUP_21 = [&U] (1:125,(((((((((((((((((((2:51,(181:57,353:175):14):59,264:88):29,(14:150,(((57:131,235:116):21,((((199:119,315:154):16,263:79):49,200:85):43,361:155):31):35,262:57):41):33):24,(58:128,110:104):9):17,((((11:70,156:109):12,(20:68,((128:70,(158:71,258:164):25):22,(299:169,309:82):34):123):21):14,101:79):53,(90:140,203:97):9):28):62,30:72):22,340:146):25,(42:124,148:101):27):18,(192:117,328:96):42):44,307:114):30,13:138):47,(((249:160,346:44):20,284:54):53,317:187):26):27,36:88):95,(((((((((((((((((((((((4:84,(71:103,103:107):71):30,((((((6:30,(236:29,290:127):12):11,7:79):8,195:42):30,(204:111,215:63):27):22,((22:119,133:109):10,((130:53,319:186):30,294:56):45):86):21,216:52):38):30,91:93):30,221:146):42,27:67):25,(((((((((34:34,229:235):19,207:37):58,252:142):29,163:65):76,89:116):30,150:106):60,256:102):11,40:149):59,208:54):21):14,45:54):118,51:74):17,(80:168,157:81):31):17,251:82):33,(((32:113,168:127):38,283:95):44,(((125:154,(((162:98,347:126):36,((172:98,((324:116,325:144):56,354:96):48):55,320:89):31):44,329:69):27):27,298:77):45,341:152):28):37):15,(55:76,(127:129,323:146):59):36):23,265:71):17,142:96):23,(269:73,277:77):39):37,(((83:149,173:72):24,(84:77,((((164:76,230:73):52,357:112):44,165:79):35,259:48):29):26):27,(98:126,212:77):12):71):16,59:89):44,((67:120,(((93:66,301:173):28,174:39):42,213:76):39):18,72:76):51):13,(132:108,355:92):30):91,177:51):18,223:49):9,((21:89,337:138):61,275:43):11):14,(24:66,161:172):20):41):16,((((((((((((((((((((((((((((((5:98,(((((((26:71,(60:81,68:97):91):38,214:76):25,273:136):25,197:61):33,((79:109,(202:97,(231:40,(244:33,316:151):28):65):69):31,85:86):67):19,279:67):36,70:130):20):26,(((8:123,(87:103,160:97):38):19,282:102):55,((210:41,270:133):36,(240:50,274:153):16):45):31):41,151:111):22,(((17:108,(62:116,310:140):48):50,327:101):28,(((((29:56,(153:96,334:182):31):94,338:91):119,120:24):18,322:50):121,351:114):40):43):19,((((((((19:88,169:91):68,56:108):20,(((28:85,((66:101,119:133):84,222:70):28):75,137:86):26,220:105):36):31,238:97):31,(74:85,285:88):43):18,(326:109,362:124):24):30,188:111):29,(((47:104,331:128):30,117:112):31,(((49:104,306:162):26,(166:152,311:122):32):19,(75:131,(149:96,348:93):39):38):31):19):19):42,333:118):20,218:113):52,(186:76,(194:62,(226:79,233:98):15):45):38):29,(((((((12:85,((((107:97,146:74):61,321:138):72,(170:83,(248:60,267:101):53):31):28,(239:79,((271:53,305:98):72,295:91):81):18):32):37,52:59):61,288:112):45,336:117):20,(((82:124,126:103):25,((96:144,187:122):46,144:88):36):21,266:87):26):40,291:102):50,(((31:58,(138:66,(205:138,345:131):59):39):78,182:111):11,((92:74,122:162):40,140:89):38):28):20):24,237:85):20,(((16:68,114:142):23,228:64):30,(118:97,((123:73,292:87):31,255:134):38):68):20):30,(81:121,253:121):41):12,(64:102,(((((95:225,314:37):15,313:35):138,359:75):35,((106:72,139:87):56,171:91):47):22,312:143):39):44):48,((23:63,35:188):11,((25:53,206:109):19,(155:195,302:60):14):12):29):54,184:71):25,242:63):85,318:122):45,115:80):32,219:114):37,((15:46,189:47):84,356:100):13):28,(((((18:82,(((((((44:100,97:103):39,104:112):31,143:75):76,(61:95,((((113:114,191:108):95,179:54):21,257:52):53,358:109):20):19):10,(116:89,246:103):29):34,287:122):22,(((((((46:66,(193:190,335:72):30):93,108:94):22,(69:119,349:103):29):30,(241:50,260:35):93):20,102:106):41,((131:75,(159:119,(224:69,225:59):56):48):20,276:70):45):21,344:132):22):32):43,261:87):31,63:117):57,247:91):11,(78:96,360:151):14):36):9,(((((((9:47,(77:169,185:83):32):14,(141:153,278:84):10):22,33:97):22,201:74):75,135:88):21,(243:101,339:110):22):21,(112:133,330:102):39):44):28,129:96):37,48:109):51,88:84):25,167:70):48,((286:113,297:94):36,(304:142,308:132):28):33):16,154:109):50,183:93):14,10:83):20):67,86:128):28,43:133):61,(((((((((3:70,((76:136,((134:188,245:56):33,227:65):39):30,211:55):60):25,((((((65:78,(232:111,343:140):41):35,254:105):40,198:76):30,105:101):18,268:65):56,(209:79,234:103):24):19):74,((((((((((37:100,41:149):16,(39:106,99:135):16):23,289:74):23,100:160):29,(109:69,121:60):31):15,303:142):38,124:51):17,((53:64,(175:104,190:110):108):25,54:74):20):14,281:156):12,152:52):26):14,(111:82,332:99):40):18,(178:116,350:107):48):23,50:74):26,((38:94,(94:88,(180:120,296:152):61):31):48,250:75):40):24,((73:104,176:132):20,272:62):31):14,(280:136,300:88):30):24):16,((136:82,217:124):34,342:73):44):43,(145:99,((147:36,(196:56,352:171):17):106,293:97):30):35);
+tree PAUP_22 = [&U] (1:119,((((((((2:129,291:110):14,(152:107,214:117):15):27,(((((((((((((4:70,((63:103,151:87):52,249:83):90):21,308:107):30,194:65):74,92:54):20,(((((53:85,170:158):38,132:61):63,69:97):148,175:29):8,210:21):37):50,(((13:133,((((((21:108,162:134):25,((((((57:87,((73:89,(158:73,235:159):27):44,255:124):31):44,(179:69,((207:73,282:162):17,((261:85,295:65):112,276:66):18):23):67):19,(135:94,230:115):17):15,85:85):36,223:101):26,(301:98,315:146):47):17):33,(181:73,270:90):53):49,80:125):32,122:113):52,246:111):35):58,256:81):16,((18:106,98:114):20,112:115):39):19):83,102:91):12,(64:114,356:92):19):23,((148:66,267:62):73,353:92):28):29,(140:142,(149:79,(304:126,327:108):43):36):28):38,253:135):20,((99:74,(127:73,312:178):36):37,316:95):50):31,((((15:71,((62:145,178:75):31,166:87):18):64,(((((((((19:41,(74:180,167:38):15):31,228:51):53,200:88):67,(345:142,362:96):37):25,((32:106,75:146):33,((51:82,89:114):41,(241:136,352:88):25):17):30):24,((147:123,297:99):30,336:115):44):18,(((61:185,286:54):25,346:37):69,340:141):33):18,(55:68,(65:44,(((100:113,224:93):67,121:88):18,134:152):65):23):48):39,((40:131,((((81:72,265:61):65,119:123):57,173:99):43,142:100):28):27,(195:86,232:94):42):29):25):12,(154:116,206:116):26):19,355:87):23):25):40,157:85):16,269:86):19,((((((((((((((((((((3:108,96:160):42,38:80):43,339:104):49,275:90):25,((((((((26:74,153:96):13,(164:74,343:167):33):37,185:95):31,113:162):20,280:74):56,((39:80,272:66):62,258:126):49):16,((((28:118,218:133):31,180:101):64,(139:62,264:77):59):26,((77:61,((((131:113,317:163):36,146:108):20,(204:84,215:90):51):78,284:70):30):68,198:82):33):24):43,(156:60,266:107):46):5):30,357:120):19,((((((((22:60,202:132):11,((58:95,(79:93,(95:142,314:120):31):68):88,209:63):10):54,((33:120,((150:101,233:128):21,159:60):45):13,((((70:40,(((76:58,(193:101,234:80):98):12,((226:126,289:86):18,293:100):21):23,358:92):34):37,130:68):41,104:117):26,118:104):28):40):23,274:138):20,(110:103,(283:90,(292:106,334:134):48):58):20):29,((54:70,111:71):44,155:101):55):27,220:122):27,(190:133,251:127):21):28):34,248:105):14,141:116):53,((42:64,117:80):38,278:78):27):17,165:97):30,243:63):38,83:135):15,(((8:75,296:174):26,(((30:52,(252:89,351:141):29):57,(174:97,333:117):29):25,(((52:70,238:66):23,(279:56,322:188):25):45,(294:93,324:136):42):14):37):23,259:94):25):51,(56:80,(160:88,313:177):35):41):25,277:103):38,46:159):32,(((((((((((((((((((6:85,263:77):83,68:90):26,((35:122,338:115):27,120:91):54):36,184:131):20,(((36:69,124:65):25,126:47):33,332:100):42):34,((37:149,93:79):18,307:92):53):22,((((((((((17:109,((((((49:87,(325:157,330:99):45):61,299:117):34,191:104):55,138:82):112,189:46):10,(236:66,240:47):6):46):45,298:135):17,(((((59:139,290:95):35,196:75):59,(136:119,(197:104,347:122):29):18):16,309:120):27,302:91):27):21,192:127):40,(91:93,169:89):39):23,24:81):98,31:65):30,137:65):37,((20:108,(((50:97,((186:60,237:81):82,359:74):33):12,(213:113,354:112):25):36,337:87):56):29,125:156):40):24,((128:161,172:72):23,257:51):63):16):29,219:129):16,105:102):42,((((((((((((((((((((10:68,71:144):39,116:78):18,(((((11:188,342:65):12,329:49):110,((23:68,41:108):15,(47:140,129:105):14):29):31,16:62):30,144:147):26):14,101:113):23,(((25:66,254:89):20,((27:64,287:157):18,(183:69,(310:141,331:114):87):29):17):31,323:193):25):22,((((((((((14:129,((44:123,341:151):48,242:114):42):48,109:93):23,(29:117,360:121):35):37,43:138):42,245:87):41,320:111):24,((114:116,187:106):32,(188:89,216:75):52):22):65,60:94):29,326:79):99,171:70):23):18,(203:55,247:71):40):53,221:133):18,((((34:39,(((45:51,((133:92,161:77):64,318:117):99):25,222:58):21,350:166):15):42,303:151):12,(72:71,168:65):22):46,349:117):15):114,67:26):7,48:25):55,((97:130,305:139):38,231:104):55):23,((106:67,((143:90,(201:127,335:132):36):23,(199:135,319:145):33):56):25,361:170):23):45,321:164):32,311:106):63,(211:107,344:126):23):45,(212:73,((225:59,(260:74,306:190):42):16,271:94):33):19):25,78:88):16,((((((((66:59,328:90):26,273:124):27,(94:51,262:63):30):87,208:97):4,268:77):23,177:83):44,115:104):43,88:97):25):46,86:140):18):19,82:100):62,87:103):21,103:88):73,227:89):31,281:73):16,(12:72,285:144):26):23,244:100):18,(9:48,182:88):28):52,((((108:73,205:163):26,250:77):35,145:69):46,348:102):44):27):18,((5:100,300:146):21,(7:22,(163:101,176:38):15):60):41):32,90:110):28):7,(((84:87,107:160):32,239:80):74,123:82):15):39,217:109):28,(229:153,288:102):63);
+tree PAUP_23 = [&U] (1:88,((((((((((((((((((((((((((((((((((((((((((((((((2:72,(((7:33,196:47):106,81:93):10,68:100):74):10,(155:182,223:75):17):17,(244:72,245:106):23):28,((((32:103,44:106):34,((42:49,(198:126,222:88):37):97,58:79):19):57,324:135):20,271:61):62):18,248:86):18,(((46:182,101:116):30,208:78):37,56:140):26):22,((((((3:149,305:101):30,313:104):64,((112:113,357:95):38,330:121):33):35,(((47:68,274:123):52,(48:104,131:132):38):38,361:143):30):87,190:93):21,202:82):54):53,37:125):18,(((10:132,94:80):17,291:79):56,200:103):24):37,187:109):25,(((64:61,346:41):19,253:191):18,328:53):81):26,(((((((((24:70,(((89:129,297:88):37,((((107:96,(353:71,360:84):66):29,((130:70,(242:131,299:137):61):17,263:78):29):36,135:71):41,205:121):24):27,(((106:78,323:183):28,158:52):51,(203:114,((213:125,338:97):14,267:59):34):30):22):82):8,(231:65,243:59):16):38,((87:108,284:98):55,119:121):80):34,255:87):90,115:55):17,108:65):104,72:60):28,174:53):66,322:153):29):23,350:118):15,((55:73,114:76):60,163:102):25):19,303:115):21,((((((74:106,334:146):43,246:107):28,(278:111,285:126):16):53,(289:58,311:98):51):32,344:129):27,326:83):38):22,(83:108,181:118):24):17,((40:99,134:113):72,98:75):40):96,117:42):18,78:53):103,59:90):22,148:105):67,((52:60,((((69:89,261:75):66,331:103):69,91:85):69,92:59):31):21,((121:63,137:60):108,((199:124,241:60):16,216:36):41):10):26):61,232:66):27,194:64):132,113:71):39,150:59):49,53:71):75,(((63:115,(75:156,230:105):29):39,(71:138,256:99):27):24,((161:159,254:63):20,233:38):57):28):14,(147:88,348:123):29):32,11:113):16,192:126):18,((((((((((((((((8:74,((43:179,259:81):25,(164:92,355:97):17):27):64,333:111):27,301:119):29,156:95):36,332:118):10,(((30:49,325:198):26,141:41):59,79:126):40):21,(((((22:100,312:154):28,138:121):44,88:98):38,168:53):33,240:53):71):8,(143:67,154:69):58):31,(((45:33,(275:32,280:137):19):40,(250:110,304:135):79):16,((193:31,260:26):53,(227:86,(251:69,262:64):102):47):19):33):15,(195:68,264:89):56):27,((86:129,300:104):51,140:117):26):19,102:110):23,(((((((((35:145,126:96):25,356:73):46,132:84):17,(206:119,288:127):27):48,82:101):76,318:78):37,306:110):73,160:104):48,212:105):34):38,(((19:84,85:152):12,(((((((28:113,36:125):28,(80:154,178:94):29):30,(((29:88,352:122):37,129:85):63,146:91):17):48,118:97):28,90:104):82,110:59):23,257:57):18):34,(165:77,(218:107,249:105):61):47):27):12,(12:87,293:139):28):5,18:104):38):67,((54:85,(((((73:125,358:82):19,(123:97,127:130):18):49,185:119):13,(211:94,319:167):21):43,(120:110,(124:96,144:121):30):38):52):16,(287:83,294:55):19):18):27,292:83):13,66:60):41,((((5:71,(((((((14:124,(20:114,220:123):44):59,139:102):42,307:110):36,(((((34:35,273:156):19,116:43):86,258:120):38,362:105):29,((70:138,214:90):33,84:81):47):21):47,38:91):17,270:79):64,184:67):24):63,(295:113,340:139):37):30,103:106):27,226:103):54):18,((((((4:99,171:76):20,((31:112,234:108):27,349:103):57):26,177:72):76,337:86):23,162:119):30,((((13:155,((((((((((((((((15:66,(((128:103,210:133):36,327:98):18,(283:103,342:108):39):93):13,(95:171,228:59):14):19,247:66):29,((76:75,277:80):39,(136:105,180:159):21):85):12,(23:60,(100:99,320:148):47):18):56,329:115):33,(225:118,345:133):24):46,343:98):45,296:156):32,197:92):24,315:158):30,93:83):70,77:85):36,217:88):53,60:75):45,39:83):45):26,((209:125,298:116):36,321:143):38):28,(109:59,(152:42,157:68):35):41):40,((((33:73,(149:136,170:100):24):27,((201:85,235:71):21,(224:32,266:139):33):42):16,((125:145,(166:133,221:108):40):72,236:60):37):19,204:74):70):12):21):17,((((6:64,176:73):75,309:108):12,(175:134,282:126):15):33,219:121):39):21,151:89):15,(316:115,(336:131,359:82):32):68):27,67:52):47,191:88):73,17:99):50,239:60):12,((((((((((((((9:57,153:79):90,286:91):53,57:74):27,97:83):35,51:63):76,16:90):28,(((25:102,317:182):26,(310:148,347:108):48):33,(((((41:97,183:97):91,272:15):7,265:14):75,314:146):33,((50:73,65:49):72,((186:24,(276:27,354:199):14):44,302:70):62):21):14):18):14,(((((((((((((27:71,173:108):18,((142:228,237:20):10,207:16):43):33,((49:150,172:87):13,182:104):17):33,(229:96,268:71):122):29,279:67):31,96:170):36,281:78):22,(238:89,335:173):26):51,351:138):23,(61:61,269:84):55):64,341:134):34,133:107):35,122:123):45):58,189:67):22,21:95):18,(((104:178,167:47):28,179:44):39,290:78):12):17,(99:74,111:148):28):22,169:97):32,26:67):18):37,252:152):22,(((((62:77,215:162):35,159:64):33,339:69):84,188:91):30,308:100):25):26,(105:77,145:89):86);
+tree PAUP_24 = [&U] (1:90,((((((((((((((((((((((((((((((((((((((((((((((((((((2:35,177:32):64,((((((11:162,144:90):20,49:72):72,((((18:53,130:170):14,210:59):24,329:167):12,(131:77,147:58):24):55):14,191:129):35,82:74):21,277:135):23):35,(((((5:113,(((((8:67,((10:40,((((((((15:98,((74:97,314:137):37,267:58):58):28,(125:166,235:117):31):22,(((((((((((((((((30:46,(((35:120,(190:98,226:80):79):34,349:77):48,308:130):76):23,123:62):63,((((54:68,234:167):20,109:56):90,((182:97,((193:119,251:124):38,253:94):61):35,244:73):26):21,101:111):44):16,((79:121,(227:111,239:81):48):15,(203:113,324:129):24):42):26,294:95):28,245:116):51,332:92):37,102:55):25,63:110):24,124:50):21,((73:88,((97:86,(149:73,301:94):28):21,(103:89,330:75):25):31):25,(90:73,180:162):50):18):15,(53:58,(120:143,236:110):65):22):41,221:133):19,(((67:68,98:76):42,357:107):20,(111:98,360:119):19):24):45,168:103):30,119:140):15,262:66):30):22,(26:72,(((27:82,32:164):18,((117:68,281:118):11,((176:37,(196:48,224:137):26):27,261:135):17):20):16,(115:64,157:72):101):23):48):22,(108:73,(264:78,351:69):75):58):36,316:120):20,(60:127,225:95):27):28,43:159):68):36,29:56):50):23,(174:69,258:167):18):57,((136:89,271:47):61,((((179:71,(201:64,213:45):52):74,336:120):35,312:135):55,297:87):32):43):32,266:79):30,104:103):46):28,(((25:59,(72:63,(164:80,260:70):10):21):79,31:98):18,270:81):21):16,(175:112,343:144):36):23,250:123):15,(194:119,358:83):35):29):26,38:112):27,(61:106,(150:128,344:116):39):27):25,142:123):25,(((((((47:118,339:107):35,192:91):38,354:87):36,(212:112,220:109):34):25,(110:98,187:123):32):19,(76:111,163:107):19):26,86:130):23):39,173:92):28,273:104):76,247:77):19,279:52):107,57:83):25,289:65):35,(37:98,185:148):22):30,((((((((((((((3:35,(254:41,331:192):21):85,340:147):35,((114:78,359:122):25,311:93):58):26,(167:65,199:107):51):23,(((((13:144,293:107):56,58:80):48,233:99):34,361:154):35,282:105):28):51,310:149):44,40:96):60,118:87):40,137:61):62,71:103):37,((197:40,223:46):11,(218:192,275:46):7):72):35,89:136):34,(17:104,325:136):30):24,216:90):62):22,126:96):38,(45:58,(248:66,283:164):29):58):20,((((170:111,295:122):50,323:138):52,215:98):42,355:87):28):35,(274:124,(309:114,322:139):28):39):36,64:96):30,((((((((((((7:54,(((21:93,(159:87,((222:157,304:106):29,334:96):83):53):28,((((91:102,(((100:120,337:123):25,200:84):37,342:123):45):27,272:70):22,(112:136,153:108):25):27,121:106):24):63,22:65):16):67,((113:78,265:58):67,335:123):48):23,350:102):36,((9:29,211:50):46,(14:174,(((41:112,315:160):19,((44:101,((160:135,(183:31,(189:32,286:210):8):96):8,(276:90,303:125):32):48):41,48:81):59):36,202:99):20):26):41):38,300:109):19,(((((28:137,288:108):31,(81:88,(154:86,171:141):16):25):25,(94:79,346:88):34):34,(((((((50:69,298:59):53,(((59:92,148:99):48,317:147):50,184:120):33):23,((((51:88,362:123):21,(214:142,285:91):33):23,(161:74,306:172):28):18,268:75):17):37,237:134):8,((56:72,(128:91,141:62):33):45,249:101):36):26,(83:104,((132:136,208:94):33,232:87):51):24):17,88:123):25):20,(87:119,99:113):31):17):23,219:134):17,((((((20:113,198:112):18,((146:125,166:122):25,318:126):25):13,(((92:60,93:47):27,(257:68,345:189):8):63,347:121):38):35,140:100):24,(162:117,(278:110,321:155):39):46):36,24:104):41):15,(158:97,195:117):19):29,((33:128,133:102):25,85:76):25):28,252:98):16,(105:76,(188:75,263:87):84):24):20):46,204:123):18,((((((((16:74,116:56):32,129:61):14,319:207):27,207:40):17,(127:112,178:65):14):43,(75:94,134:89):124):38,169:84):57,155:143):21):38,333:113):32,(46:98,341:125):77):66,326:65):39,66:57):37,(69:93,299:151):41):77,52:70):36,246:93):38,296:154):53,95:116):18,269:78):27,((172:83,292:163):22,307:89):50):31,122:137):21,(((((55:70,181:155):22,284:83):66,186:104):39,353:92):21,(((65:62,138:90):35,352:102):21,((96:149,320:99):57,139:72):41):35):26):35,23:110):63,287:64):22,77:58):83,84:91):33,((((34:34,256:64):46,(106:96,217:110):68):9,((36:56,(107:76,(152:54,259:157):48):27):110,238:75):30):27,230:72):22):20,243:72):57,((68:97,(228:50,241:56):96):8,(135:88,313:159):19):30):14,151:114):56,((6:72,((80:142,348:86):48,327:80):92):28,((78:102,205:68):23,242:72):41):24):23,156:74):16,62:137):24,((((((((4:103,19:81):20,143:135):28,240:56):47,((209:102,(328:86,338:67):70):22,(229:136,305:135):55):30):31,291:118):28,290:107):21,(70:88,356:87):30):44,(231:86,255:106):23):20):20,302:82):12,(12:101,42:80):19):18,(39:85,145:72):94):30,(165:71,280:62):35):22,206:99);
+tree PAUP_25 = [&U] (1:72,(((((((((((((((((2:145,353:87):19,352:75):44,((53:123,275:98):27,317:163):42):45,((((((((((((((((((((3:95,14:152):35,160:112):25,(137:110,(((171:69,308:102):34,311:157):30,214:70):61):21):21,((((6:116,38:102):30,(((((((((13:146,((105:60,266:101):68,347:98):27):47,114:73):22,(((((((59:99,306:150):55,209:100):26,269:70):55,358:65):30,135:83):20,186:126):43,77:69):18):102,235:75):17,88:63):91,62:86):29,(((((((((((17:78,((((148:112,285:58):27,292:45):86,314:121):76,(177:92,225:71):16):41):13,271:96):14,((31:148,211:76):17,(84:88,246:81):22):21):66,((138:123,355:54):33,351:108):39):53,107:100):38,60:83):50,116:121):42,191:97):31,(((64:50,((((133:81,(154:75,239:156):26):42,328:69):32,323:167):29,250:98):51):33,298:47):56,287:68):35):24,(((134:138,153:123):48,(291:114,359:89):19):49,289:64):25):19,261:93):16):11,(76:61,(259:114,334:141):71):28):21,265:65):30):27,(((44:92,142:99):86,119:93):28,322:112):75):45,256:114):22):64,174:29):8,276:36):131,161:67):28,309:64):27,(201:150,331:87):53):36,67:53):57,343:124):41,(164:86,173:82):50):31,187:112):28,((((((((10:80,(35:133,273:104):44):58,144:92):35,253:112):48,102:108):32,319:130):43,(((121:140,140:101):50,307:73):22,241:73):72):50,251:87):30,139:91):34):28,((69:113,91:129):50,87:96):38):22,315:157):25,((70:61,(200:118,305:142):60):29,320:96):36):52,((85:122,((204:89,260:86):21,(212:81,332:161):15):27):30,184:89):22):39,93:82):19,(((5:69,((((11:89,((((26:38,(50:197,210:62):15):67,149:126):24,((196:106,326:134):13,296:158):24):59,238:67):31):83,113:103):32,132:87):49,47:87):73):38,175:88):28,(((((((21:105,243:69):13,((23:58,283:181):11,(172:69,234:110):16):15):31,220:152):7,(27:76,329:151):27):14,216:71):60,130:96):18,(268:54,(321:162,327:98):26):53):49):18):18):40,4:88):28,229:181):40,((((((((((((((((((((7:110,(299:133,357:112):21):8,120:127):44,(42:101,295:135):34):35,24:87):15,125:183):23,(((86:197,189:45):17,208:45):56,297:144):13):52,167:26):11,8:34):17,131:82):16,((12:95,156:76):9,((((((((41:92,(92:50,((96:208,197:54):12,(117:57,143:164):15):26):54):23,145:138):72,166:51):23,185:56):63,179:70):79,57:100):29,((122:109,(310:136,350:94):50):47,249:103):35):17,263:85):63):51):14,(((((((28:178,126:61):13,65:41):58,(34:62,262:52):68):20,(49:115,339:102):26):63,227:92):91,223:20):10,45:23):33):121,284:94):19,((((((22:73,95:149):31,278:81):73,(55:81,(89:102,(280:110,313:133):66):35):28):49,300:80):17,((((37:87,((((((((((61:93,330:146):31,(99:88,304:169):17):28,178:82):102,324:79):31,340:80):57,318:100):76,168:94):10,90:130):38,257:56):42,180:113):82):39,(68:62,(159:76,301:93):19):23):9,(83:86,103:83):16):22,344:166):20):22,282:92):23):55,349:106):29,((203:78,(221:144,224:103):31):34,267:75):28):46,(((((((((((((((((16:79,213:77):67,63:110):20,(((51:69,((110:144,115:73):26,136:77):36):28,(242:110,312:157):71):24,150:92):44):30,127:107):21,286:127):32,(((((((((((((((18:47,237:60):139,48:46):14,(123:57,346:97):22):38,80:156):16,(((104:113,248:122):34,303:99):72,152:65):13):28,79:149):41,151:60):26,((54:63,193:170):24,97:76):42):60,192:98):48,170:100):26,(56:115,236:102):20):28,258:144):29,190:119):26,(((30:38,337:72):26,(66:54,277:104):25):33,270:72):75):30,(((((29:96,(162:82,(252:60,264:81):56):77):27,361:153):82,195:58):36,240:43):8,((141:147,199:98):44,(181:52,247:67):21):11):65):18):22,281:91):32,((74:103,(231:128,345:134):25):25,335:122):54):23,((((32:85,(157:85,(194:96,222:103):84):41):55,360:97):38,228:102):39,218:116):42):36,206:92):24,(244:57,274:131):57):37,111:121):14,((((((82:94,232:90):80,109:60):35,94:76):6,290:146):19,106:73):68,176:101):20):22,((40:105,(255:113,336:137):45):37,325:138):48):39,101:114):20,(((72:109,81:117):24,362:106):65,78:76):16):23,52:77):21):21,(((((25:56,75:198):25,163:71):16,302:49):35,(43:159,316:105):51):20,(33:60,(39:83,(71:128,98:77):21):105):16):24):28,169:101):18,((20:91,215:79):27,118:157):23):32,128:136):19):14,(19:103,338:134):21):12,((9:70,294:132):27,(15:75,((146:71,(147:146,288:99):22):76,254:79):29):27):17):15,(73:106,(341:156,356:89):35):84):19,(165:90,(219:142,230:89):25):42):20,((((((((36:56,342:54):74,217:92):29,112:133):22,158:81):27,272:53):69,207:100):18,((124:74,(198:73,348:91):51):67,205:83):21):15,(((108:74,155:123):55,354:79):80,183:100):27):20):25,(46:126,293:109):75):24,129:95):29,((58:128,100:109):36,(226:73,245:76):33):22):24,(182:84,202:80):43):28,333:135):48,((188:92,279:63):24,233:52):26);
+tree PAUP_26 = [&U] (1:135,((((((((((((((((((((((((((2:78,((167:110,334:148):23,362:107):51):35,((95:108,((((197:76,266:92):35,271:53):42,348:106):44,237:89):57):26,192:111):32):14,267:93):41,247:73):52,224:75):63,350:99):27,(87:113,100:135):31):28,(((((65:76,184:137):22,187:104):49,142:99):24,((85:56,338:71):17,137:56):44):48,359:81):25):25,80:148):28,((36:80,146:62):47,190:161):18):24,121:86):39,((((((((5:74,(116:52,264:107):63):35,188:56):36,30:126):34,211:75):21,261:117):30,208:83):19,((((((((92:60,(219:101,301:113):96):11,(231:67,318:192):17):31,214:81):63,258:121):47,277:100):45,201:105):30,342:117):48,((104:136,193:89):31,227:91):22):25):34,270:83):25):32,88:109):24,(((((9:60,(((((((34:124,288:101):26,(((((44:130,223:104):33,((126:120,325:138):28,259:94):25):71,76:59):19,(75:164,148:94):26):24,138:93):23):11,(77:92,210:155):25):34,54:77):61,96:138):75,153:79):25,215:81):37):15,(((51:107,182:146):33,229:137):39,90:84):79):57,110:40):20,178:63):70,220:118):15):67,332:95):17,114:71):31,((((41:121,64:124):31,198:78):56,287:86):24,((62:83,(71:98,(160:122,234:107):46):34):34,244:112):26):28):24,((((((((((((23:31,207:54):80,154:116):24,(((97:95,132:89):64,283:87):47,278:101):28):26,(217:65,274:131):65):18,(46:149,242:121):26):29,113:129):35,222:102):19,((175:95,308:96):55,326:117):29):27,(255:109,343:128):30):24,((235:75,(262:58,268:59):28):73,353:96):27):65,130:63):16,48:69):30):16,(((216:82,292:160):12,254:73):92,294:67):19):17,((((((((((((((((((((((3:47,((202:107,305:165):56,256:58):49):29,94:142):25,131:74):53,112:142):26,(((((11:100,135:127):24,99:74):61,83:94):40,249:113):26,((103:89,246:163):30,149:53):45):40):18,(241:104,250:133):18):26,((((10:87,156:78):29,((((((13:132,(56:102,(((57:103,174:118):31,358:61):31,((118:115,(205:131,322:129):37):28,(125:146,336:109):51):44):29):39):84,238:54):36,19:72):43,(((((((((((((((((((26:106,295:126):27,349:110):32,(((33:63,177:63):24,251:154):26,203:48):52):50,122:114):43,123:88):48,144:103):38,323:136):49,((58:81,124:76):25,(315:175,320:78):23):24):31,59:88):26,352:108):23,(66:58,141:65):30):70,((159:139,183:103):13,168:60):38):37,91:121):32,(228:42,265:100):31):21,275:58):52,134:177):20,(171:91,191:128):21):30,(285:99,331:95):61):18,(143:123,302:96):14):25):26,((((72:67,(196:74,333:177):11):24,260:52):57,109:125):14,253:133):16):12,263:110):18):25,321:190):15,(24:109,221:140):22):30):19,(((((((((((((14:141,((70:68,299:153):44,98:61):52):37,(((21:144,115:77):16,(145:59,272:79):48):44,27:108):19):28,248:114):27,151:107):48,(93:92,213:77):17):20,((106:134,307:102):35,194:84):13):25,226:82):35,((43:156,204:92):26,(((79:123,356:82):33,(163:106,329:107):41):38,155:127):41):25):60,304:131):31,136:113):51,29:89):31,314:148):49,233:86):22):24,286:141):33,(173:93,236:69):19):16,179:71):117,107:83):26,284:57):46,55:50):57,81:85):103,45:66):18,101:101):42,(((((((6:71,17:127):13,(((((8:84,212:85):68,((47:118,291:89):37,50:79):40):20,(310:168,337:86):33):28,35:141):30,((((37:79,(53:90,169:152):28):71,240:82):15,(290:80,(341:163,357:102):54):34):37,339:119):22):45):18,276:62):71,344:113):22,89:139):73,82:58):18,257:56):32):4,((((32:91,128:86):57,346:66):43,(150:116,172:136):7):80,239:67):21):31,(((((4:75,((20:89,((((63:92,158:102):55,(129:94,(312:138,340:135):56):33):40,199:104):5,((316:109,(317:151,361:139):64):58,328:110):66):21):15,((102:109,335:125):37,(119:147,355:82):28):56):59):21,165:70):45,(((((((((((((((((((((((7:107,273:92):82,161:46):37,311:87):41,105:53):103,61:92):26,181:85):32,289:122):12,(108:134,117:107):11):13,(((((((16:120,293:93):28,152:75):52,180:120):26,60:117):39,200:87):33,(86:122,360:105):59):36,147:87):14):55,303:112):66,319:105):35,345:102):37,((((18:87,185:106):34,69:134):51,281:65):79,120:106):35):49,73:118):36,(12:75,84:78):59):20,((((22:64,38:154):28,78:67):50,((133:114,327:110):63,166:100):25):51,162:125):18):18,(189:102,347:129):30):52,330:92):25,157:80):102,(164:65,(176:72,280:107):21):27):21,(186:42,195:38):28):36,306:191):25,15:65):40):21,296:178):20,(243:67,282:162):26):11):21,225:83):75,(((((((25:78,((((((31:59,((40:116,((74:101,351:131):41,127:89):54):40,297:85):67):32,39:77):77,279:102):33,324:111):58,170:90):29,(((42:90,111:137):28,232:85):31,139:127):26):44):16,(28:85,(49:138,140:100):48):26):25,206:88):22,(230:79,(269:75,309:68):95):30):80,252:83):37,67:56):16,298:87):40):17):16,(52:66,245:99):71):16,68:103):41,209:109):42,354:86):44,218:94):47,313:138):47,300:114);
+tree PAUP_27 = [&U] (1:83,(((((((((((((((((((2:76,((61:136,(62:74,94:80):39):33,73:95):94):20,4:98):22,((((((((((((((((((((((((((((((((((((5:70,211:81):51,36:137):30,(34:63,(56:131,((190:57,262:90):64,(302:92,316:96):28):32):28):19):19,((6:61,(277:138,290:86):38):40,((((((((11:108,243:73):42,198:89):24,(((193:18,(237:25,276:114):8):109,341:142):36,349:100):33):46,(25:53,(132:148,(179:78,188:87):20):32):27):25,27:64):44,334:172):20,(28:105,54:134):15):20,((21:113,((((55:102,301:82):37,255:126):31,(103:87,197:133):22):24,146:79):45):25,358:84):35):17):23):76,((87:118,329:86):30,294:33):42):23,155:113):27,(((48:103,71:112):43,230:95):25,(((((77:153,236:64):49,213:55):32,361:174):35,225:63):34,(80:127,120:122):49):31):51):18,159:79):49,42:110):33,96:154):41,12:86):37,((53:90,((108:100,344:116):39,163:88):38):37,(172:115,352:98):22):21):20,354:113):35,(((7:53,(41:100,(143:151,239:73):16):23):64,((((32:110,114:66):26,(99:144,151:82):19):25,(153:106,312:154):70):26,126:74):40):13,((((((((((((((((14:133,(257:77,278:82):53):35,((63:98,(93:126,356:87):38):17,270:80):33):18,(79:126,222:118):31):41,152:89):14,(20:149,121:99):14):13,(85:79,(((134:114,(285:117,303:101):52):55,253:92):46,209:96):48):27):47,171:93):34,296:144):22,(333:124,359:78):34):49,72:89):49,321:159):25,((((26:49,58:168):21,(131:61,(208:31,272:124):26):25):71,(95:79,(162:94,310:154):43):63):39,306:149):24):25,(104:75,271:64):52):56,30:55):22,50:70):46,318:148):30):28):35,226:103):48,327:95):30,336:123):28,(84:113,161:98):36):20,(8:105,348:99):34):38,283:108):41,362:107):27,204:97):38,(((111:87,235:161):21,342:64):44,(178:129,(((201:124,218:105):49,317:143):69,284:100):34):16):35):47,295:102):43,332:84):40,130:69):27,(23:107,((268:80,287:53):65,((293:145,324:87):33,322:80):76):43):46):22,128:93):89,240:38):23,92:58):64,330:123):17,((15:116,313:149):35,57:102):37):14,((((66:52,(184:155,292:85):30):23,(118:95,185:157):40):25,300:80):50,(147:97,323:162):43):26):27,167:80):12,113:137):44,275:54):28):11,(((10:78,339:142):33,196:83):14,(325:133,328:124):62):26):36,248:80):36,212:67):73,(299:143,311:106):43):36,115:77):18,200:133):18,68:92):40,((((((82:100,101:84):38,202:76):82,(154:102,305:136):28):40,157:84):30,191:104):40,((119:226,215:33):14,260:19):98):26):24,((((((3:53,(((((16:64,33:61):65,(282:125,353:96):29):21,335:143):26,(286:89,337:66):60):76,156:60):24):61,((((59:150,177:86):23,224:79):72,138:89):13,261:88):35):42,(69:75,(97:116,125:150):52):41):31,76:80):31,(((40:127,288:110):65,258:103):37,221:86):56):35,127:120):21):29,169:128):14,135:109):58,174:53):25,(((17:82,((((31:130,307:87):43,259:56):34,234:67):33,(78:95,(166:69,(((170:60,(252:65,264:76):134):21,182:65):34,314:178):45):38):20):22):11,((43:197,194:75):31,245:51):34):57,45:73):11):23,256:62):61,(89:148,112:119):40):26,142:129):55,((((((((((((((((((((((((9:80,18:80):15,((((((((35:120,(148:90,(219:72,267:67):65):52):79,246:77):27,279:80):22,140:81):43,(((((47:61,(100:88,266:93):102):33,122:89):57,250:100):74,88:72):22,((((((52:25,241:108):7,186:24):45,(244:61,346:164):26):39,(220:134,242:95):34):40,98:105):37,232:77):25):7):66,291:108):18,((70:59,83:96):54,351:112):43):71,117:79):11):15,((51:134,173:95):39,203:66):15):31,217:153):24,((22:80,(((((((((((39:70,(107:96,((137:184,175:60):14,183:46):131):35):38,((((129:132,331:117):35,133:93):19,205:136):49,150:86):22):34,263:81):48,229:137):49,168:96):35,((49:114,350:96):37,(102:104,233:106):15):16):31,141:86):39,345:145):34,144:100):79,160:78):24,64:71):86):28,(((((((((((((29:81,(214:94,355:106):34):36,247:79):31,195:53):81,192:111):36,315:140):71,199:74):38,206:66):32,(((109:144,164:85):33,281:75):25,145:132):25):52,(228:41,265:101):37):19,231:57):94,65:72):19,251:94):73,116:83):15):16):11,((38:181,110:40):17,176:34):45):60,(298:109,(308:127,347:108):37):34):15,139:106):34,((((24:137,338:106):30,249:89):46,180:118):27,(207:89,343:155):27):36):24,304:142):33,(((81:80,((90:62,340:177):31,320:62):63):58,181:109):41,360:103):41):29,(274:148,289:65):39):20,(((13:158,60:93):31,((210:123,273:105):70,326:74):27):31,37:83):38):29,(136:116,254:121):26):25,187:121):67,(67:39,123:43):14):13,149:41):95,223:95):5,(189:91,357:131):18):33,((((((((44:106,227:126):21,86:125):40,((74:74,269:75):60,91:121):35):30,((105:75,106:70):48,238:107):18):36,124:70):21,319:164):29,(165:126,309:112):30):26,297:102):39):13,(158:112,280:124):14):30,(75:184,216:81):15):29,19:88):24,46:170):39);
+tree PAUP_28 = [&U] (1:62,((((((((((((((((((((((((((((2:49,110:52):6,(168:56,360:158):52):12,256:51):106,(39:74,326:72):49):29,31:67):56,75:149):80,204:57):30,(((42:87,288:152):72,169:59):28,61:53):31):41,(((130:74,231:152):18,285:76):95,167:55):15):29,203:59):70,336:128):28,319:139):45,((((34:96,(((51:87,229:162):24,((74:88,320:101):39,(((80:160,181:90):19,(175:105,298:164):14):52,343:119):44):35):34,313:139):36):48,(((70:79,356:96):19,(77:94,((((104:96,141:100):98,184:48):34,173:45):41,259:64):97):7):24,((((((89:112,(103:76,(128:78,(207:46,275:41):112):33):46):35,219:110):34,(((112:123,182:120):52,(249:104,284:117):22):37,135:73):32):16,(147:98,324:137):46):46,145:83):25,111:86):26):24):19,114:82):56,129:104):29):38,((153:86,(240:62,274:141):43):42,220:124):26):23,9:77):27,(137:103,258:140):41):35,323:163):49,201:85):56,(((((((((((((((((((((6:93,295:131):25,(125:158,230:101):26):53,(((27:88,(((((((47:65,261:83):59,312:138):51,277:107):35,(134:144,187:109):38):53,163:78):23,((81:142,170:102):16,234:70):51):35,109:115):32):38,267:70):33,(((83:79,(282:84,291:88):26):18,(96:144,101:129):70):25,102:59):43):22):20,85:81):22,254:130):54,329:69):26,332:103):28,158:63):61,40:121):31,353:82):24,50:95):46,119:137):47,218:83):72,((((7:73,10:76):55,86:117):23,48:106):53,78:100):4):21,215:77):48,38:112):100,245:23):13,278:16):79,238:69):44,45:59):15,((((11:82,84:74):49,171:59):35,(36:97,98:59):88):48,176:53):14):28):13,(191:167,193:78):14):53,44:125):17,((((((((((((((((((((((((((((((((((((((((((4:113,(((((((((((((((((((((14:174,17:100):33,260:74):85,328:94):24,((55:68,59:96):36,(56:74,(248:124,341:145):56):31):21):16,(289:82,315:173):24):29,(25:81,(91:67,262:87):59):71):15,(151:84,252:86):40):38,(((((((((37:94,250:85):25,136:92):41,(((88:134,294:90):18,((107:107,(217:94,((222:121,300:113):38,357:89):46):33):39,214:129):25):30,((142:121,325:144):29,321:147):59):12):15,(154:90,257:127):8):44,((((63:106,242:128):13,((((((65:100,255:113):1,331:131):66,206:47):40,200:86):82,160:92):33,162:95):26):92,164:70):25,208:79):58):16,((186:88,280:85):47,345:149):37):31,132:109):46,228:79):21,281:87):44):33,335:142):20,((116:75,(190:111,337:137):38):55,318:135):14):34,189:94):34,58:101):18,(30:96,180:139):12):32,(266:114,279:57):50):50,349:87):41,327:101):37,209:103):33,35:134):20,(97:138,197:101):22):44,221:118):24,((108:54,((213:118,293:107):33,347:87):79):29,143:50):57):47):30,355:64):46,299:150):45,18:94):27,((82:71,(113:147,212:96):20):47,157:125):14):21,((((133:115,183:121):17,(198:99,205:112):26):52,346:88):33,304:137):41):58,28:89):24,223:57):31,308:104):77,303:88):48,68:92):28,(165:120,350:99):26):32,49:119):29,224:114):31,(43:149,286:116):39):32,((((139:103,(202:72,232:59):93):25,333:105):34,152:73):44,305:141):25):29,79:132):32,90:96):71,225:62):65,179:51):14,117:59):45,((((8:70,(211:80,296:170):47):65,120:136):29,((62:62,283:121):40,121:66):52):48,41:94):29):31,(((15:81,185:92):49,(71:95,339:105):51):18,((32:125,46:133):50,253:97):49):31):16,269:96):26,((16:79,(297:99,342:104):61):25,((((95:104,351:127):80,246:84):53,178:67):36,306:174):30):22):16,(94:147,216:74):15):19,237:89):48,271:55):43,334:134):34,((73:82,310:186):43,309:67):63):73,199:92):28,156:68):25,((69:70,264:78):53,311:110):98):26,276:69):28,290:85):29,210:75):25,((((((((5:93,(((148:103,292:73):152,340:26):13,314:37):151):35,((118:93,149:81):96,239:74):19):22,174:77):33,21:83):35,251:132):13,(126:121,226:93):24):54,72:54):20,((33:58,105:153):20,52:62):11):16):64,(((((19:67,(((((24:66,((60:114,150:86):27,338:68):123):14,244:53):41,66:134):24,236:56):8,(((124:32,(196:107,227:85):120):14,159:41):110,131:85):18):20):56,(122:117,344:114):58):23,((26:78,29:84):54,287:102):24):47,161:95):23,273:109):29):59,330:75):36,57:85):57,235:122):23,(((((((12:96,354:120):24,233:73):58,(268:75,301:65):66):34,361:157):31,(241:77,270:92):44):21,(((263:67,272:63):43,348:37):71,317:149):67):28,((22:36,195:35):49,307:91):45):34):24):17,87:142):50,((3:53,358:143):26,302:65):17):14,93:65):77,359:86):50,((((((13:143,((138:109,362:114):48,247:98):22):39,((((23:47,((((67:43,106:40):37,265:58):99,243:54):33,99:60):41):15,166:112):18,177:58):60,192:131):22):43,194:89):22,((20:79,(123:140,316:100):43):31,(100:96,322:174):48):20):81,((53:72,172:166):9,64:89):27):18,76:65):14):11,(54:76,(((115:55,155:129):25,146:56):25,(((140:142,352:76):34,144:95):35,188:103):75):16):31):114,(92:60,127:116):15);
+tree PAUP_29 = [&U] (1:69,(((((((((((((((((((((((((((((((((((((2:133,(102:59,(112:150,320:85):37):50):28,342:83):25,(((((((((((((11:153,95:91):47,118:79):21,(133:77,(((181:154,252:81):29,294:70):32,325:164):39):14):55,((152:109,334:146):39,230:95):17):89,116:40):16,189:33):23,180:133):19,208:48):113,120:123):29,((187:87,261:76):71,315:111):33):51,38:93):59,139:88):20,((53:84,174:128):28,(((69:82,(119:139,123:102):37):61,250:78):19,264:68):30):28):28):32,((((((((((((((((((((((((((((((((((17:82,186:113):22,182:74):40,((((46:86,267:72):23,(257:113,288:114):71):42,318:83):59,361:148):72):11,(((100:101,223:71):36,((241:74,287:154):21,259:77):19):30,253:135):36):30,246:87):70,353:90):66,284:88):40,98:64):51,144:115):24,(150:111,243:114):27):50,304:121):48,219:91):41,200:103):55,65:68):17,(((22:132,155:125):17,((50:74,77:71):23,270:78):31):21,(32:117,156:127):28):23):29,(((88:83,(111:75,285:64):101):29,((((((157:91,(173:117,341:150):43):65,188:79):28,209:86):23,282:154):26,212:72):21,(197:87,202:109):24):19):46,(((((142:99,309:81):67,273:93):35,279:100):29,((236:90,319:167):36,339:101):29):17,151:104):35):25):88,165:59):20,225:34):133,299:101):32,306:99):29,262:82):42,317:129):67,(84:110,((((106:61,272:66):71,258:118):33,184:111):34,337:95):49):35):27,(343:128,350:96):37):42,115:74):20,49:124):16,(124:88,172:139):32):5,158:81):53,177:98):19,((((((47:88,107:142):35,(92:125,355:74):20):65,234:73):58,211:46):16,(266:139,290:24):21):43,269:84):44):12,(67:121,237:108):8):50,297:99):14,(51:96,336:131):31):16,(((30:97,171:114):30,71:100):30,166:121):45):24):63,((96:177,153:94):38,302:68):27):29,(72:68,196:78):8):18,33:49):54,(126:66,292:77):77):12,((8:83,(((((59:89,170:149):51,(97:20,160:18):54):33,((109:85,330:47):19,346:40):36):21,((117:58,359:160):17,260:45):124):12,64:71):84):12,(15:94,229:181):22):34):25,((((29:79,163:97):23,224:62):101,(132:91,286:103):28):18,300:92):43):19,(10:83,(217:106,322:146):46):37):39,89:136):20,((((((3:58,18:72):37,354:140):17,((20:108,79:142):41,28:78):23):72,295:103):41,(((((((((((((((((((4:73,127:85):16,329:155):15,101:74):57,62:125):25,167:78):72,114:76):22,((((16:64,((((195:39,276:33):60,198:113):22,206:91):13,265:95):27):50,245:58):11,(280:67,356:143):9):81,87:107):31):24,(81:90,(130:66,221:137):34):41):18,((((145:126,((220:120,277:107):45,228:100):9):49,222:70):45,169:104):60,358:68):34):27,128:102):17,(61:73,(91:80,113:182):25):80):20,332:118):17,(63:109,78:145):31):19,((41:126,(56:82,(149:72,240:139):28):45):15,(70:88,255:129):14):28):28,(278:105,313:140):44):19,(83:99,314:134):32):35,(((((21:150,74:56):35,(31:53,76:97):12):28,57:53):56,303:132):25,((((48:85,231:141):34,138:75):24,311:114):20,(137:76,((140:85,(210:65,216:47):59):53,271:53):67):17):18):30):27,345:157):34,60:94):30):27,94:74):41):40,205:115):23,((((((34:70,238:74):24,(201:93,344:137):28):32,235:89):62,136:124):29,327:107):35,(93:51,110:42):77):19):22,36:119):42,6:99):19,191:116):49,((45:42,176:40):34,(125:190,((179:60,275:52):34,308:96):24):30):21):18,(13:177,129:90):29):13,(25:77,249:165):18):39,(35:145,227:113):25):52,321:140):67,251:78):49,58:84):17,263:88):27,(((((5:99,(239:65,(316:103,324:143):48):33):20,52:69):31,(((((((26:46,215:40):27,203:43):37,(85:142,307:94):30):18,(99:60,(((146:112,281:111):29,312:137):74,168:62):33):25):32,274:136):38,226:84):16,((27:115,360:107):31,108:98):61):25):12,213:68):78,(66:32,159:32):59):25):9,((19:90,164:70):99,161:67):26):19,((((90:102,305:157):39,283:91):57,141:62):19,(143:83,214:150):28):19):38,37:90):34,(254:95,296:147):62):31,331:107):44,((103:204,247:33):10,207:17):91):26,(((((7:85,(((12:118,335:140):62,357:53):44,351:91):70):26,(((55:113,204:122):25,((82:112,(((105:62,(190:175,289:68):29):26,(183:100,194:90):86):21,154:73):50):28,348:96):19):34,86:129):28):38,43:148):31,185:120):22,(14:106,(((42:117,352:94):46,293:94):75,(75:87,340:76):47):25):78):39):15,(((148:50,199:203):22,301:50):48,298:86):65):22,((((23:74,256:34):16,175:24):8,24:11):103,(40:128,135:101):41):25):16,(((((((((((39:105,44:105):59,80:105):66,242:98):21,268:70):39,178:95):47,73:114):24,(291:116,349:116):20):36,((((122:120,162:123):43,347:89):42,134:121):53,(232:71,(244:98,362:138):29):49):33):19,(((54:81,131:165):9,(68:57,(104:137,326:68):30):37):53,147:109):19):14,(((((192:110,328:103):36,(193:123,310:135):47):37,333:111):38,338:88):39,233:96):28):29,323:184):23):58,((9:55,(121:100,218:102):82):39,248:80):33);
+tree PAUP_30 = [&U] (1:49,((((((((((((((((((((((((((((((((2:107,(95:98,303:119):46):9,(147:105,160:136):12):30,(((65:52,312:205):35,68:52):33,330:59):64):29,188:110):41,85:70):40,80:149):30,(((((((((8:115,47:106):16,89:142):57,((25:70,238:80):24,((((36:93,(131:46,(256:54,278:127):24):118):10,(252:104,346:81):19):45,((45:76,209:68):55,((64:74,265:64):64,273:92):50):22):50,153:100):20):20):25,228:68):67,314:140):16,((115:100,310:145):52,345:112):44):57,28:101):43,333:102):35,63:119):26):23,(((((((((4:140,293:112):31,((120:124,(161:76,((205:117,321:159):71,339:66):37):46):34,(247:136,362:101):30):27):24,(((30:73,90:82):23,150:89):23,(76:61,353:124):18):48):28,223:119):45,((39:76,254:155):23,309:71):25):29,135:66):19,(114:65,251:103):21):17,((((((6:107,105:120):11,(((23:148,55:80):11,54:67):66,189:95):23):14,(19:115,31:114):12):42,(((32:101,301:96):26,(225:70,262:62):72):29,250:82):40):15,(((((((((((20:89,291:154):31,231:64):37,41:88):27,168:82):27,199:91):38,117:60):12,((78:70,257:71):13,179:40):16):100,340:138):35,118:106):31,(299:144,331:116):25):32,296:164):37):45,326:85):17):54,355:87):22):14,(133:117,239:121):27):19,(182:144,285:99):26):42,217:96):40,(315:136,352:91):37):40,343:108):40,21:107):18,(354:93,357:77):47):33,(100:136,294:102):27):35,164:94):26,191:135):71,176:37):14,275:33):93,327:120):28,(141:66,143:71):44):14,(241:128,298:119):13):58,46:130):68,270:24):7,272:9):109,((((((((((((((((((((((((((((((((3:108,12:67):16,202:77):39,82:93):34,101:72):78,358:77):25,(((66:43,((70:69,((218:117,335:140):45,349:81):55):16,255:136):51):36,121:56):60,134:143):34):30,260:107):14,322:147):45,(((((((73:119,(167:57,243:56):81):58,351:85):46,350:67):81,159:60):33,132:79):89,213:70):26,236:65):38):40,325:138):30,71:122):28,((((((((((((((((((7:151,107:97):12,137:60):74,172:104):29,((17:117,(((44:101,169:142):52,145:80):47,125:146):40):35,263:87):28):29,258:128):31,((((((24:49,(((62:180,93:44):14,207:37):5,77:187):13):71,261:85):48,324:116):84,123:52):18,((((((((((35:99,(162:121,234:114):64):11,(((129:84,(185:90,304:169):43):72,300:102):57,318:96):17):50,360:109):29,(((((38:101,(((171:113,283:115):29,192:97):47,201:109):30):29,186:105):35,103:107):29,((((52:56,(122:166,279:66):28):47,91:106):65,98:74):28,(87:97,313:160):43):23):32,235:120):29):48,106:77):29,(((((((((((37:108,((144:107,347:106):60,224:110):25):54,(((196:29,208:20):48,306:201):27,222:53):50):38,227:82):22,212:73):31,116:75):21,(142:102,148:92):84):21,(((((((75:124,165:138):71,157:72):40,187:106):27,311:116):92,174:63):33,194:84):30,((127:128,230:41):1,(244:44,302:81):0):41):20):16,(240:63,295:163):22):24,(((((((138:86,316:157):34,158:65):41,190:146):51,320:78):47,336:117):55,198:80):60,290:79):27):50,(((((51:51,86:168):25,284:78):68,84:117):29,69:107):25,(83:109,170:121):30):22):45,56:92):18):37,342:76):29,287:71):29,146:47):17,(102:63,361:190):36):17):62,281:120):22):30,356:87):28,((13:137,((((40:110,253:128):47,((130:64,152:55):59,317:163):16):36,149:76):45,248:117):27):27,(113:125,193:113):27):36):12,((16:88,229:175):22,246:93):59):30,289:92):12,140:144):44,124:46):41,74:84):49,((((((((9:79,307:115):45,277:106):34,274:112):49,49:95):45,(67:95,99:125):12):24,154:92):49,42:109):19,((43:110,(214:100,226:105):65):52,341:139):46):26):35,308:125):20,155:137):47,(10:66,((((72:90,297:128):41,232:77):21,266:111):24,181:83):35):34):22,(29:77,(220:118,334:144):50):36):23):30,50:127):56,178:62):23,((173:95,177:76):14,268:96):23):28,26:61):24,(151:81,282:77):103):18,(33:65,(60:93,128:99):86):20):32,18:73):4,(((14:109,(15:32,(34:43,237:45):15):115):18,323:125):96,215:57):23):45,139:151):35,((200:74,242:74):26,206:73):19):20,((((5:117,((319:146,348:92):48,329:93):54):38,104:111):30,((249:71,276:144):11,271:34):50):69,204:65):22):33,184:68):79,109:90):15,269:73):30,(57:54,81:54):66):26,((58:93,163:123):20,(328:108,359:94):19):31):63,180:101):36,195:86):21,(((((((((((22:80,(((92:102,344:123):40,94:98):56,280:83):21):26,(48:122,(216:77,259:85):39):14):64,(119:150,126:92):28):41,59:82):18,(175:147,286:103):39):34,136:93):38,288:88):55,(96:152,183:110):38):26,((((203:117,219:110):35,305:115):92,221:65):12,264:20):68):31,(166:128,338:118):18):56,245:76):31):15,((61:86,197:86):23,(79:128,112:112):65):29):33):35,211:85):35,110:63):52,332:132):10,267:74):53,(11:98,(((((27:146,108:77):15,(88:149,337:77):11):43,(97:51,111:43):51):22,53:77):74,(156:67,(233:64,292:158):18):39):24):20):60,210:66);
+End;
