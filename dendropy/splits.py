@@ -99,13 +99,10 @@ def is_non_singleton_split(split, mask):
     # is a non-trivial split.    
     return not is_trivial_split(split, mask)
 
-def number_to_bitstring(num):
-    "Returns a representation of a number as a bit string."
-    return num>0 and number_to_bitstring(num>>1)+str(num&1) or ''
     
 def split_as_string(split_mask, taxa_block, symbol1='.', symbol2='*'):
     "Returns a 'pretty' split representation."
-    s = number_to_bitstring(split_mask).rjust(len(taxa_block), '0')
+    s = taxa.int_to_bitstring(split_mask).rjust(len(taxa_block), '0')
     return s.replace('0', symbol1).replace('1', symbol2)
     
 def split_as_string_rev(split_mask, taxa_block, symbol1='.', symbol2='*'):

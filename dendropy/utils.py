@@ -257,7 +257,7 @@ class NormalizedBitmaskDict(dict):
         
     def normalize_key(self, key):
         if key & 1:
-            return key ^ self.mask
+            return (~key) & self.mask
         return key
             
     def __setitem__(self, key, value):
