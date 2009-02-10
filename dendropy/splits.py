@@ -189,6 +189,12 @@ class SplitDistribution(object):
         self.__split_freqs = None
         self.__trees_counted_for_freqs = 0
         
+    def add_split_count(self, split, count):
+        if split not in self.splits:
+            self.splits.append(split)
+            self.split_counts[split] = 0
+        self.split_counts[split] += count
+        
     def splits_considered(self):
         """
         Returns 4 values:
