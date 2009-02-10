@@ -243,7 +243,13 @@ class NormalizedBitmaskDict(dict):
     most bit is '1'. That is, if the key's right-most bit is '1', it is added
     as-is, otherwise it is complemented by XOR'ing it with 'mask'.
     """
-
+    
+    def normalize(key, mask):
+        if key & 1:
+            return (~key) & mask
+        return key
+    normalize = staticmethod(normalize)        
+        
     def __init__(self, other=None, mask=None):
         "Assigns mask, and then populates from `other`, if given."
         dict.__init__(self)
@@ -256,9 +262,7 @@ class NormalizedBitmaskDict(dict):
                     self[key] = val
         
     def normalize_key(self, key):
-        if key & 1:
-            return (~key) & self.mask
-        return key
+        return NormalizedBitmaskDict.normalize(key, self.mask)
             
     def __setitem__(self, key, value):
         "Sets item with normalized key."
