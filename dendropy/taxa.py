@@ -28,11 +28,21 @@ This module provides classes and methods for managing taxa.
 import sys
 from dendropy import base
 
-
-def int_to_bitstring(n):
-    assert n >= 0
-    return bin(n)[2:]
-
+if sys.version_info[1] > 5 or sys.version_info[0] > 2:
+    def int_to_bitstring(n):
+        assert n >= 0
+        return bin(n)[2:]
+else:
+    def int_to_bitstring(n):
+        m = 1
+        sl = []
+        while m <= n:
+            if m & n:
+                sl.insert(0, '1')
+            else:
+                sl.insert(0, '0')
+            m <<= 1
+        return "".join(sl)
 class TaxonLinked(base.IdTagged):
     """
     Provides infrastructure for maintaining link/reference to a Taxon
