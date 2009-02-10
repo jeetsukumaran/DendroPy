@@ -4,7 +4,7 @@ import copy
 from dendropy import dataio
 from dendropy.splits import encode_splits, split_to_list, count_bits, lowest_bit_only
 from dendropy import get_logger
-from dendropy.treemanip import collapse_clade
+from dendropy.treemanip import collapse_clade, collapse_edge
 
 _LOG = get_logger('scripts.strict_consensus_merge')
 verbose = False
@@ -77,9 +77,20 @@ def reroot_on_lowest_common_index_path(t, common_mask):
         #   to the lowest index node the first child of the root
         t.to_outgroup_position(lowest_on_path_to_l, flip_splits=True, suppress_deg_two=True)
 
+def _collapse_paths_not_found(f, s, other_dict=None):
+    to_del = []
+    for masked_split, path in f.iteritems():
+        if masked_split not in s:
+            for edge in path:
+                if other_dict:
+                    del other_dict[edge.clade_mask]
+                collapse_edge(edge)
+            to_del.append(masked_split)
+    for k in to_del:
+        del f
 
 
-def add_to_scm(to_modify, to_consume, rooted=False):
+def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
     """Adds the tree `to_consume` to the tree `to_modify` in a strict consensus
     merge operation.  Both trees must have had encode_splits called on them."""
     if rooted:
@@ -103,7 +114,12 @@ def add_to_scm(to_modify, to_consume, rooted=False):
         for leaf in leaves_to_steal:
             to_mod_root.add_child(leaf)
             to_mod_root.edge.clade_mask |= leaf.edge.clade_mask
+        to_modify.split_edges = {to_mod_root.edge.clade_mask : to_mod_root.edge}
+        for child in to_mod_root.child_nodes():
+            to_modify.split_edges[child.edge.clade_mask] = child.edge
         return
+    tmse = to_modify.split_edges
+
     to_mod_relevant_splits = {}
     to_consume_relevant_splits = {}
     if not rooted:
@@ -114,23 +130,98 @@ def add_to_scm(to_modify, to_consume, rooted=False):
         to_consume_root = to_consume.seed_node
         assert(to_consume_root.edge.clade_mask == to_consume_split)
 
-    for s, e in to_modify.split_edges:
+    for s, e in tmse.iteritems():
         masked = s & leaf_intersection
-        e_list = to_mod_relevant_splits.setdefault(masked, [])
-        e_list.append(e)
-    for s, e in to_consume_relevant_splits.split_edges:
+        if masked:
+            e_list = to_mod_relevant_splits.setdefault(masked, [])
+            e_list.append((s, e))
+    for s, e in to_consume.split_edges.iteritems():
         masked = s & leaf_intersection
-        e_list = to_consume_relevant_splits.setdefault(masked, [])
-        e_list.append(e)
-    
-    to_steal = [i for i in to_consume_root.children() if (i.edge.clade_mask & leaf_intersection) == 0]
+        if masked:
+            e_list = to_consume_relevant_splits.setdefault(masked, [])
+            e_list.append((s, e))
+
+    # Because each of these paths radiates away from the root (none of the paths
+    #   cross the root), the clade_masks for deeper edges will be supersets
+    #   of the clade_masks for shallower nodes.  Thus if we reverse sort we
+    #   get the edges in the order root->tip
+    for split, path in to_mod_relevant_splits.iteritems():
+        path.sort(reverse=True)
+        t = [i[1] for i in path]
+        del path[:]
+        path.extend(t)
+    for split, path in to_consume_relevant_splits.iteritems():
+        path.sort(reverse=True)
+        t = [i[1] for i in path]
+        del path[:]
+        path.extend(t)
+    # first we'll collapse all paths in the common leafset in to_modify that 
+    #   are not in to_consume
+    _collapse_paths_not_found(to_mod_relevant_splits, to_consume_relevant_splits, tmse)
+    # Now we'll collapse all paths in the common leafset in to_consume that 
+    #   are not in to_modify
+    _collapse_paths_not_found(to_consume_relevant_splits, to_mod_relevant_splits)
+
+
+    # first we'll deal with subtrees that are:
+    #       - not in the leaf intersection set, and
+    #       - attached to "relevant" nodes
+    # We simply move these subtrees from the to_consume tree to the appropriate
+    #   node in to_modify
+    new_subtrees = set()
+    to_steal = [i for i in to_consume_root.child_nodes() if (i.edge.clade_mask & leaf_intersection) == 0]
+    nodes_to_reencode_from = set()
     for child in to_steal:
         to_mod_root.add_child(child)
+        new_subtrees.add(child)
         to_mod_root.edge.clade_mask |= child.edge.clade_mask
-    for split, path in to_consume_relevant_splits.iteritems():
-        code=here
-        
-        
+        nodes_to_reencode_from.add(to_mod_root)
+
+    for masked_split, to_consume_path in to_consume_relevant_splits.iteritems():
+        to_mod_path = to_mod_relevant_splits.get(masked_split)
+        assert to_mod_path is not None
+        to_mod_head = to_mod_path[-1].head_node
+        to_mod_head_edge = to_mod_head.edge
+        to_consume_head = to_consume_path[-1].head_node
+        for child in to_consume_head.child_nodes():
+            if (child.edge.clade_mask & leaf_intersection) == 0:
+                # child is the root of a subtree that has no children in the leaf_intersection
+                to_mod_head.add_child(child)
+                to_mod_head_edge.clade_mask |= child.edge.clade_mask
+                new_subtrees.add(child)
+                nodes_to_reencode_from.add(to_mod_head)
+        if len(to_consume_path) > 1:
+            nodes_to_reencode_from.add(to_mod_head)
+            if len(to_mod_path) > 1:
+                # collision
+                for edge in to_mod_path[1:-1]:
+                    del tmse[edge.clade_mask]
+                    collapse_edge(edge)
+                mid_node = path[0].head_node
+                for edge in to_consume_path[1:]:
+                    p = edge.tail_node
+                    avoid = edge.head_node
+                    for child in p.child_nodes():
+                        if child is not avoid:
+                            mid_node.add_child(child)
+                            mid_node.clade_mask |= child.edge.clade_mask
+                            new_subtrees.add(child)
+            else:
+                # we have to move the subtrees from to_consume to to_modify
+                to_mod_edge = to_mod_path[0]
+                to_mod_tail, to_mod_head = to_mod_edge.tail_node, to_mod_edge.head_node
+                deepest_edge_to_move = to_consume_path[0]
+                deepest_node_to_move = deepest_edge_to_move.head_node
+                tipmost_edge_to_move = to_consume_path[-1]
+                tipmost_node_to_move = tipmost_edge_to_move.tail_node
+                prev_head = tipmost_edge_to_move.head_node
+                
+                to_mod_tail.add_child(deepest_node_to_move)
+                to_mod_tail.remove_child(to_mod_head)
+                tipmost_node_to_move.add_child(to_mod_head)
+                tipmost_node_to_move.remove_child(prev_head)
+    encode_splits(to_modify, taxa_block=taxa_block)
+                
     
 def strict_consensus_merge(tree_list, taxa_block, copy_trees=False, rooted=False):
     """Returns a tree that is the strict consensus merger of the input trees.
@@ -147,13 +238,13 @@ def strict_consensus_merge(tree_list, taxa_block, copy_trees=False, rooted=False
         return tree_list[0]
     tree_iter = iter(tree_list)
     to_modify = tree_iter.next()
+    
     encode_splits(to_modify, taxa_block=taxa_block)
-
     if rooted:
         raise NotImplementedError("Rooted SCM is not implemented")
     for to_consume in tree_iter:
         encode_splits(to_consume, taxa_block=taxa_block)
-        add_to_scm(to_modify, to_consume)
+        add_to_scm(to_modify, to_consume, rooted, taxa_block=taxa_block)
 
     return to_modify
 

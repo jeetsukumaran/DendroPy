@@ -25,6 +25,7 @@
 Tests of the strict consensus merger
 """
 import os
+import sys
 import unittest
 from dendropy import get_logger
 from dendropy.splits import encode_splits
@@ -54,7 +55,9 @@ class SCMTest(unittest.TestCase):
         expected = trees[-1]
         input = trees[:-1]
         output = strict_consensus_merge(input, taxa_block=taxa_block)
+        encode_splits(output, taxa_block=taxa_block)
         encode_splits(expected, taxa_block=taxa_block)
+        sys.stdout.write("\n%s\n%s\n" % (str(output), str(expected)))
         self.assertEqual(symmetric_difference(expected, output), 0)
 
     def testTwo(self):
