@@ -254,14 +254,10 @@ class NormalizedBitmaskDict(dict):
             if isinstance(other, dict):                
                 for key, val in other.items():
                     self[key] = val
-                    
+        
     def normalize_key(self, key):
-        #if key & 1:
-        #    return key
-        #else:
-        #    return key ^ self.mask
         if key & 1:
-            return key ^ self.mask
+            return (~key) & self.mask
         return key
             
     def __setitem__(self, key, value):

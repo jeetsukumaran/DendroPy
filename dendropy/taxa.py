@@ -150,7 +150,7 @@ class TaxaBlock(list, base.IdTagged):
         
     def complement_split_bitmask(self, split):
         "Returns complement of the split bitmask."
-        return split ^ self.all_taxa_bitmask()
+        return (~split) & self.all_taxa_bitmask()
             
     def all_taxa_bitmask(self):
         "Returns mask of all taxa."

@@ -84,16 +84,17 @@ class SplitsOnTreesTest(unittest.TestCase):
         dendropy_string_split_map = {}
         dendropy_complemented_split_strings = []
         dendropy_string_complemented_split_map = {}
+        taxa_mask = taxa_block.all_taxa_bitmask()
         for split in sd.splits:
-            if splits.is_non_singleton_split(split, taxa_block.all_taxa_bitmask()) \
-                and (split ^ taxa_block.all_taxa_bitmask()):
-                ss = splits.split_as_string_rev(split, sd.taxa_block, '.', '*')
-                dendropy_split_strings.append(ss)
-                dendropy_string_split_map[ss] = split
-                rsplit = split ^ taxa_block.all_taxa_bitmask() 
-                ss = splits.split_as_string_rev(rsplit, sd.taxa_block, '.', '*')
-                dendropy_complemented_split_strings.append(ss)
-                dendropy_string_complemented_split_map[ss] = rsplit
+            if splits.is_non_singleton_split(split, taxa_mask):
+                rsplit = taxa_block.complement_split_bitmask(split) 
+                if rsplit:
+                    ss = splits.split_as_string_rev(split, sd.taxa_block, '.', '*')
+                    dendropy_split_strings.append(ss)
+                    dendropy_string_split_map[ss] = split
+                    ss = splits.split_as_string_rev(rsplit, sd.taxa_block, '.', '*')
+                    dendropy_complemented_split_strings.append(ss)
+                    dendropy_string_complemented_split_map[ss] = rsplit
                 
         # make sure the distinct splits are the same across both versions
         _LOG.info("Checking for correspondence in split identity ...")

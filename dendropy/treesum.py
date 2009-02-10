@@ -176,10 +176,10 @@ class TreeSummarizer(object):
                 m = s & taxa_mask
                 if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
                     if unrooted:
-                        c = m ^ taxa_mask
+                        c = (~m) & taxa_mask
                         if (c-1) & c: # not singleton (i.e., one "0")
                             if 1 & m:
-                                k = m ^ taxa_mask
+                                k = c
                             else:
                                 k = m
                             to_try_to_add.append((f, k, m))
