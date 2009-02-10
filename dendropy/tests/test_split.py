@@ -52,7 +52,7 @@ class SplitTest(unittest.TestCase):
         tree_list = [i[0] for i in dataset.trees_blocks]
         #print "\n".join([str(i) for i in tree_list])
         for i in tree_list:
-            encode_splits(i, taxa_block= dataset.taxa_blocks[0])
+            encode_splits(i, taxa_block=dataset.taxa_blocks[0])
         root1 = tree_list[0].seed_node
         root1e = root1.edge
         fc1 = root1.child_nodes()[0]
@@ -77,5 +77,15 @@ class SplitTest(unittest.TestCase):
         for n, expected in enumerate([0, 1, 2, 1, 4, 1, 2, 1, 8, 1, 2, 1, 4, 1, 2, 1, 16]):
             self.assertEqual(lowest_bit_only(n), expected)
 
+    def testIsTrivial(self):
+        y = True
+        n = False
+        for i, r in enumerate([y, y, y, n, y, n, n, y, y, n, n, y, n, y, y, y, y, y, y, n, y, n, n, y, y, n, n, y, n, y, y, y, ]):
+            self.assertEqual(r, is_trivial_split(i, 0xF))
+        for i, r in enumerate([y, y, y, n, y, n, n, n, y, n, n, n, n, n, n, y, y, n, n, n, n, n, n, y, n, n, n, y, n, y, y, y, ]):
+            self.assertEqual(r, is_trivial_split(i, 0x1F))
+                              #0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  7  8  9  0  1 
+        for i, r in enumerate([y, y, y, n, y, n, n, y, y, y, y, n, y, n, n, y, y, n, n, y, n, y, y, y, y, n, n, y, n, y, y, y, ]):
+            self.assertEqual(r, is_trivial_split(i, 0x17))
 if __name__ == "__main__":
     unittest.main()

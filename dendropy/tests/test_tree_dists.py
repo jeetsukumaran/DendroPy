@@ -44,15 +44,16 @@ from dendropy import treedists
 class TreeDistTest(unittest.TestCase):
 
     def testEuclideanDist(self):
-        tree_list = [i[0] for i in dataio.trees_from_newick([
+        d = dataio.trees_from_newick([
                                        "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);",
                                        "((t5:2.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);",
                                        "((t5:0.161175,t6:0.161175):0.392293,((t2:0.075411,(t4:0.104381,t1:0.075411):1):0.065840,t3:0.170221):0.383247);",
                                        "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);",
-                                       ]).trees_blocks]
+                                       ])
+        tree_list = [i[0] for i in d.trees_blocks]
         #print "\n".join([str(i) for i in tree_list])
         for i in tree_list:
-            encode_splits(i)
+            encode_splits(i, taxa_block=d.taxa_blocks[0])
         assert_approx_equal(treedists.euclidean_distance(tree_list[0], tree_list[1]), 2.0)
         assert_approx_equal(treedists.euclidean_distance(tree_list[0], tree_list[2]), math.sqrt(2.0))
         assert_approx_equal(treedists.euclidean_distance(tree_list[0], tree_list[3]), 0.97103099999999998)
@@ -77,28 +78,6 @@ class TreeDistTest(unittest.TestCase):
 
         self.assertEqual(treedists.symmetric_difference(o_tree, ref), 2)
 
-    def testSymmDiffWart(self):
-
-        newick = "((t5,t6),((t4,(t2,t1)),t3));"
-        d = dataio.trees_from_newick([newick])
-        tree = d.trees_blocks[0][0]
-        taxa_block = d.taxa_blocks[0]
-        ref = dataio.trees_from_newick([newick], taxa_block=taxa_block).trees_blocks[0][0]
-        ref = d.trees_blocks[0][0]
-
-
-        encode_splits(ref)#, taxa_block=taxa_block)
-
-        o_newick = "((t1,t2),((t4,(t5,t6)),t3));"
-        o_tree = dataio.trees_from_newick([o_newick], taxa_block=taxa_block).trees_blocks[0][0]
-        encode_splits(o_tree)#, taxa_block=taxa_block)
-        sd = treedists.symmetric_difference(o_tree, ref)
-        if sd == 0:
-            sys.stderr.write("""This is a pretty ugly wart in encode_splits: 
-These two trees are different, but are returning a symmetric difference of 0
-because the taxa_blocks are being inferred on the fly.  
-Both trees end up inferring different taxa_blocks, but the indices of the taxa
-hide the difference in the trees""")
 
 if __name__ == "__main__":
     unittest.main()

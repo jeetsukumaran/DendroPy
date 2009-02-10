@@ -77,13 +77,27 @@ def iter_split_indices(s, mask=-1, one_based=False, ordination_in_mask=False):
             currBitIndex += 1
         test_bit <<=1
 
+def is_trivial_split(split, mask):
+    """Returns True if the split occurs in any tree of the taxa `mask` -- if 
+    there is only fewer than two 1's or fewer than two 0's in `split` (among 
+    all of the that are 1 in mask)."""
+    masked = split & mask
+    if split == 0 or split == mask:
+        return True
+    if ((masked - 1) & masked) == 0:
+        return True
+    cm = (~split) & mask
+    if ((cm - 1) & cm) == 0:
+        return True
+    return False
+    
 def is_non_singleton_split(split, mask):
     "Returns True if a split is NOT between a leaf and the rest of the taxa."
     # ((split-1) & split) is True (non-zero) only
     # if split is not a power of 2, i.e., if split
     # has more than one bit turned on, i.e., if it
     # is a non-trivial split.    
-    return ((split-1) & split) and (((split^mask)-1) & (split^mask))
+    return not is_trivial_split(split, mask)
 
 def number_to_bitstring(num):
     "Returns a representation of a number as a bit string."

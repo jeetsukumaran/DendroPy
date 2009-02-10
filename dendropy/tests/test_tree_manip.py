@@ -96,18 +96,5 @@ class TreeManipTest(unittest.TestCase):
             encode_splits(r_tree, taxa_block=taxa_block)
             self.assertEqual(symmetric_difference(r_tree, ref), 0)
 
-    def testSDWart(self):
-        newick = "((t5,t6),((t4,(t2,t1)),t3));"
-        d = dataio.trees_from_newick([newick])
-        tree = d.trees_blocks[0][0]
-        taxa_block = d.taxa_blocks[0]
-        ref = dataio.trees_from_newick([newick], taxa_block=taxa_block).trees_blocks[0][0]
-        encode_splits(ref)
-
-        o_newick = "((t2, t1),((t4,(t5,t6)),t3));"
-        o_tree = dataio.trees_from_newick([o_newick], taxa_block=taxa_block).trees_blocks[0][0]
-        encode_splits(o_tree)
-        self.assertEqual(symmetric_difference(o_tree, ref), 2)
-
 if __name__ == "__main__":
     unittest.main()

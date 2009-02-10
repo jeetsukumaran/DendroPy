@@ -304,7 +304,7 @@ class Tree(base.IdTagged):
         if flip_splits:
             if to_edge_dict:
                 del to_edge_dict[e.clade_mask]
-            e.clade_mask = e.clade_mask^taxa_mask
+            e.clade_mask = (~(e.clade_mask)) & taxa_mask
             if to_edge_dict:
                 to_edge_dict[e.clade_mask] = e
             assert nd.edge.clade_mask == taxa_mask
