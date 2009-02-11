@@ -674,6 +674,19 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                     and char_block.default_state_alphabet is not None:
                     col.state_alphabet = char_block.default_state_alphabet
                 char_block.column_types.append(col)
+                
+    def create_standard_character_alphabet(self, char_block, symbol_list=None):
+        """
+        Returns a standard character state alphabet based on symbol_list. 
+        Defaults to '0' - '9' if not specified.
+        """
+        if symbol_list is None:
+            symbol_list = [str(i) for i in xrange(10)]
+        state_alphabet = characters.StateAlphabet()
+        for s in symbol_list:
+            state_alphabet.append(characters.StateAlphabetElement(symbol=s))
+        char_block.state_alphabets.append(state_alphabet)
+        char_block.default_state_alphabet = state_alphabet
 
     def parse_char_block(self, nxchars, dataset):
         """
@@ -714,6 +727,9 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         nxformat = nxchars.find('format')
         if nxformat is not None:
             self.parse_characters_format(nxformat, char_block)
+        elif isinstance(char_block, characters.StandardCharactersBlock):
+            # default to all integers < 10 as symbols
+            self.create_standard_character_alphabet(char_block)
             
         matrix = nxchars.find('matrix')
         self.parse_annotations(annotated=char_block.matrix, nxelement=matrix)
