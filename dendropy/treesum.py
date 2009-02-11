@@ -252,6 +252,8 @@ class TreeSummarizer(object):
         split_distribution.ignore_node_ages = self.ignore_node_ages
         if taxa_block is not None:
             split_distribution.taxa_block = taxa_block
+        else:
+            taxa_block = split_distributio.taxa_block
 #         if not isinstance(tree_files, list):
 #             tree_files = [tree_files]
         total_tree_files = len(tree_files)
@@ -262,14 +264,16 @@ class TreeSummarizer(object):
             else:
                 tree_file_obj = tree_file
             current_file_note = "Tree file %d of %d: " % (tree_file_idx+1, total_tree_files)
-            for tree_idx, tree in enumerate(tree_iterator(file_obj=open(tree_file, "r"))):
+            for tree_idx, tree in enumerate(tree_iterator(file_obj=open(tree_file, "rU"), taxa_block=taxa_block)):
                 self.total_trees_read += 1
                 file_trees_read += 1
                 if not self.burnin or file_trees_read > self.burnin:
                     self.total_trees_counted += 1
                     self.send_progress_message("%sCounting splits in tree %d" % (current_file_note, (tree_idx+1)))
+                    splits.encode_splits(tree, taxa_block=taxa_block)
                     split_distribution.count_splits_on_tree(tree)
                 else:
                     self.total_trees_ignored += 1
                     self.send_progress_message("%sSkipping tree %d (burn-in=%d)" % (current_file_note, (tree_idx+1), self.burnin))
         return split_distribution
+

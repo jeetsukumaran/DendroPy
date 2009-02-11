@@ -49,7 +49,7 @@ class SplitFreqsTest(unittest.TestCase):
     def setUp(self):
         self.large_cases = [ #('7180.tre', '7180.tre'), 
                              #('terrarana.random.unrooted.100.tre', 'terrarana.random.unrooted.100.tre'),
-                             ('terrarana.random.unrooted.30.tre', 'terrarana.random.rooted.30.tre')                            
+                             ('terrarana.random.unrooted.30.tre', 'terrarana.random.rooted.30.tre'),                     
                              ('anolis.mcmct.trees.nexus', 'anolis.chars.nexus'),                             
         ]
         self.small_cases = [ ('feb032009.tre', 'feb032009.tre'),
@@ -82,6 +82,7 @@ class SplitFreqsTest(unittest.TestCase):
 
             for tree_filepath in tree_filepaths:
                 for tree in nexus.iterate_over_trees(open(tree_filepath, "rU"), taxa_block):
+                    splits.encode_splits(tree, taxa_block)
                     dp_sd.count_splits_on_tree(tree)               
                     
             assert dp_sd.total_trees_counted == paup_sd.total_trees_counted

@@ -237,10 +237,13 @@ class SplitDistribution(object):
     split_frequencies = property(_get_split_frequencies)         
 
     def count_splits_on_tree(self, tree):
-        "Counts splits in this tree and add to totals."
+        """
+        Counts splits in this tree and add to totals. `tree` must be decorated
+        with splits, and no attempt is made to normalize taxa.
+        """
         self.total_trees_counted += 1
-        tree.normalize_taxa(taxa_block=self.taxa_block)
-        encode_splits(tree, self.taxa_block)  
+#         tree.normalize_taxa(taxa_block=self.taxa_block)
+#         encode_splits(tree, self.taxa_block)  
         for split in tree.split_edges:
             if not self.unrooted:
                 split = tree.split_edges[split].clade_mask
