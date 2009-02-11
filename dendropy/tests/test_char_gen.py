@@ -56,55 +56,58 @@ begin trees;
 end;
 """
 
-class CharGenTest(unittest.TestCase):
+if do_slow_test(_LOG, __name__, "skipping all sequence generation frequency checking"):
 
-
-    def setUp(self):
-        source_ds = dataio.from_nexus(string=tree_model_string)
-        self.tree_model = source_ds.trees_blocks[0][0]
-   
-    def estimate_params(self,
-        seq_len=10000,
-        kappa=1.0,
-        base_freqs=[0.25, 0.25, 0.25, 0.25],
-        unequal_base_freqs=True,
-        gamma_rates=False,
-        prop_invar=False):
-        
-        output_ds = chargen.generate_hky_dataset(seq_len, 
-            tree_model=self.tree_model,
-            kappa=kappa,
-            base_freqs=base_freqs)
-        source_ds = dataio.from_nexus(string=tree_model_string)
-        tree_model = source_ds.trees_blocks[0][0]
-        
-        mle = paup.estimate_char_model(
-            tree_model=tree_model,
-            char_block=output_ds.char_blocks[0],
-            num_states=2,
-            unequal_base_freqs=unequal_base_freqs,
-            gamma_rates=gamma_rates,
-            prop_invar=prop_invar) 
+    class CharGenTest(unittest.TestCase):
+    
+        def setUp(self):
+            source_ds = dataio.from_nexus(string=tree_model_string)
+            self.tree_model = source_ds.trees_blocks[0][0]
+       
+        def estimate_params(self,
+            seq_len=10000,
+            kappa=1.0,
+            base_freqs=[0.25, 0.25, 0.25, 0.25],
+            unequal_base_freqs=True,
+            gamma_rates=False,
+            prop_invar=False):
             
-        return mle
-                    
-    def testCharGen(self):
-        kappas = [float(i)/10 for i in range(10, 200, 20)]
-        base_freq_sets = [
-            [0.25, 0.25, 0.25, 0.25],
-            [0.4, 0.1, 0.4, 0.1]
-        ]
-        seq_len = 1000
-        for kappa in kappas:
-            for bf in base_freq_sets:
-                mle = self.estimate_params(kappa=kappa, base_freqs=bf)
-                kappa_comp = "True = %f, Estimated = %f" % (kappa, mle['kappa'])
-                #kappa_threshold = 10000.00 / float(seq_len)
-                kappa_threshold = kappa * 0.2
-                _LOG.info("Kappa: %s [error threshold: %f]" % (kappa_comp, kappa_threshold))
-                assert abs(kappa-mle['kappa']) < kappa_threshold, \
-                            "Estimate over threshold (%f): %s" % (kappa_threshold, kappa_comp)
-                            
-if __name__ == "__main__":
-    if do_slow_test(_LOG, __name__, "skipping all sequence generation frequency checking"):
+            output_ds = chargen.generate_hky_dataset(seq_len, 
+                tree_model=self.tree_model,
+                kappa=kappa,
+                base_freqs=base_freqs)
+            source_ds = dataio.from_nexus(string=tree_model_string)
+            tree_model = source_ds.trees_blocks[0][0]
+            
+            mle = paup.estimate_char_model(
+                tree_model=tree_model,
+                char_block=output_ds.char_blocks[0],
+                num_states=2,
+                unequal_base_freqs=unequal_base_freqs,
+                gamma_rates=gamma_rates,
+                prop_invar=prop_invar) 
+                
+            return mle
+                        
+        def testCharGen(self):
+            kappas = [float(i)/10 for i in range(10, 200, 20)]
+            base_freq_sets = [
+                [0.25, 0.25, 0.25, 0.25],
+                [0.4, 0.1, 0.4, 0.1]
+            ]
+            seq_len = 1000
+            for kappa in kappas:
+                for bf in base_freq_sets:
+                    mle = self.estimate_params(kappa=kappa, base_freqs=bf)
+                    kappa_comp = "True = %f, Estimated = %f" % (kappa, mle['kappa'])
+                    #kappa_threshold = 10000.00 / float(seq_len)
+                    kappa_threshold = kappa * 0.2
+                    _LOG.info("Kappa: %s [error threshold: %f]" % (kappa_comp, kappa_threshold))
+                    assert abs(kappa-mle['kappa']) < kappa_threshold, \
+                                "Estimate over threshold (%f): %s" % (kappa_threshold, kappa_comp)
+                                
+    if __name__ == "__main__":
+        #@ Mark, if the slow test skip condition test goes here, 
+        # it only gets checked when the module is executed directly; which
+        # means the condition does not get checked when invoked by setuptools
         unittest.main()
