@@ -20,3 +20,6 @@
 * check element annotation (attribute names and ``annotate_as``)
 
 * trees have taxa_block; added during parsing; TreesBlock normalizes taxa_block of tree objects as they are added, if neccessary
+
+* PAUPWrapper needs be able to return pairwise unweighted RF distances between trees given in a list
+
