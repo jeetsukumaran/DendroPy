@@ -253,7 +253,7 @@ class TreeSummarizer(object):
         if taxa_block is not None:
             split_distribution.taxa_block = taxa_block
         else:
-            taxa_block = split_distributio.taxa_block
+            taxa_block = split_distribution.taxa_block
 #         if not isinstance(tree_files, list):
 #             tree_files = [tree_files]
         total_tree_files = len(tree_files)
