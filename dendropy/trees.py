@@ -56,9 +56,9 @@ class TreesBlock(list, taxa.TaxaLinked):
         if clear:            
             taxa_block.clear()
         for tree in self:
-            for node in tree.postorder_node_iter():
-                if node.taxon:
-                    node.taxon = taxa_block.get_taxon(label=node.taxon.label)
+            print tree.taxa_block.oid
+            tree.normalize_taxa(taxa_block)
+            print tree.taxa_block.oid
         taxa_block.sort()
         self.taxa_block = taxa_block
         return taxa_block        
@@ -232,7 +232,8 @@ class Tree(base.IdTagged):
         for node in self.postorder_node_iter():
             t = node.taxon
             if t:
-                node.taxon = taxa_block.get_taxon(label=t.label)       
+                node.taxon = taxa_block.get_taxon(label=t.label)
+        self.taxa_block = taxa_block
                     
     ###########################################################################
     ## Structure                    
@@ -576,7 +577,7 @@ class Node(taxa.TaxonLinked):
         """
         self.__child_nodes = child_nodes
         for nidx in range(len(self.__child_nodes)):
-            self.__child_nodes[nidx].parent = self
+            self.__child_nodes[nidx].parent_node = self
             self.__child_nodes[nidx].edge.tail_node = self
 
     def _get_parent_node(self):
