@@ -474,11 +474,7 @@ class PaupWrapperDumbTests(unittest.TestCase):
             PaupWrapperDumbTests.SplitsTestCase("feb032009.tre", 
                 "feb032009.tre",
                 "feb032009.splits.csv", 
-                100),
-            PaupWrapperDumbTests.SplitsTestCase("anolis.mcmct.trees.nexus", 
-                "anolis.chars.nexus", 
-                "anolis.mcmct.trees.splits.csv", 
-                1001),    
+                100),   
             ]
             
         if dendropy.tests.FAST_TESTS_ONLY:
@@ -491,6 +487,11 @@ class PaupWrapperDumbTests(unittest.TestCase):
                     "terrarana.random.unrooted.100.tre", 
                     "terrarana.random.unrooted.100.splits.csv", 
                     100))
+            self.splits_test_cases.append(
+                PaupWrapperDumbTests.SplitsTestCase("anolis.mcmct.trees.nexus", 
+                "anolis.chars.nexus", 
+                "anolis.mcmct.trees.splits.csv", 
+                1001)) 
            
         self.taxa_test_cases = (
             ("feb032009.tre",("T01", "T02", "T03", "T04", "T05", "T06",
