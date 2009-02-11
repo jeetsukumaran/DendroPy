@@ -390,7 +390,6 @@ class _NexmlTreesParser(_NexmlElementParser):
         taxa_block = dataset.find_taxa_block(oid = taxa_id)
         if not taxa_block:
             raise Exception("Taxa block \"%s\" not found" % taxa_id)
-        taxa_block = taxa_block
         trees_block = dataset.add_trees_block(taxa_block=taxa_block, 
                                             trees_block=self.trees_block_factory(oid=oid, label=label))
         self.parse_annotations(annotated=trees_block, nxelement=nxtrees)                                            
@@ -400,10 +399,11 @@ class _NexmlTreesParser(_NexmlElementParser):
             oid = tree_element.get('id', tree_counter)
             label = tree_element.get('label', '')
             treeobj = self.tree_factory(oid=oid, label=label)
+            treeobj.taxa_block = taxa_block
             tree_type_attr = tree_element.get('{http://www.w3.org/2001/XMLSchema-instance}type')
             treeobj.length_type = _from_nexml_tree_length_type(tree_type_attr)
             self.parse_annotations(annotated=treeobj, nxelement=tree_element)
-            nodes = self.parse_nodes(tree_element, taxa_block=trees_block.taxa_block, node_factory=self.node_factory)
+            nodes = self.parse_nodes(tree_element, taxa_block=treeobj.taxa_block, node_factory=self.node_factory)
             edges = self.parse_edges(tree_element, length_type=treeobj.length_type, edge_factory=self.edge_factory)
             for edge in edges.values():
                 # EDGE-ON-ROOT:
@@ -670,7 +670,8 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                     if state_alphabet is None:
                         raise Exception("State set '%s' not defined" % char_state_set_id)
                     col.state_alphabet = state_alphabet
-                elif char_block.default_state_alphabet is not None:
+                elif hasattr(char_block, "default_state_alphabet") \
+                    and char_block.default_state_alphabet is not None:
                     col.state_alphabet = char_block.default_state_alphabet
                 char_block.column_types.append(col)
 
@@ -776,7 +777,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                         column = id_column_map[column_id]
                         pos_idx = column_ids.index(column_id)
                         if column_id not in id_state_maps:
-                            id_state_maps[column_id] = column.state_alphabet.symbol_state_map()
+                            id_state_maps[column_id] = column.state_alphabet.id_state_map()
                         state = id_state_maps[column_id][nxcell.get('state')]
                         cell = characters.CharacterDataCell(value=state, column_type=column)
                         self.parse_annotations(annotated=cell, nxelement=nxcell)                        
