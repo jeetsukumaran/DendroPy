@@ -39,107 +39,56 @@ from dendropy.tests import paup
 
 _LOG = get_logger("Splits")
 
-
+from dendropy import nexus
 from dendropy import treesum
 from dendropy import taxa   
 from dendropy import splits
-
-class SplitsOnTreesTest(unittest.TestCase):
-    
-    def setUp(self):
-        self.data_files = [   
-#             ["feb032009.tre", "feb032009.tre"],        
-            ["anolis.chars.nexus", "anolis.mcmct.trees.nexus"],
-            ["primates.chars.nexus", "primates.mcmct.trees.newick"],
-        ]
-                
-    def check_split_summarization(self, data_file, tree_file, min_clade_freq=0.5, burnin=0):
-    
-        # get PAUP's version of the splits ...
-        _LOG.info("PAUP is counting ...")
-        nexus_tree_file = tree_file.replace("newick", "nexus")
-        tax_labels, paup_biparts, paup_biparts_count, paup_biparts_freqs = paup.bipartitions(data_file, nexus_tree_file, min_clade_freq, burnin)
-        paup_biparts_complemented = []
-        for bipart in paup_biparts:
-            paup_biparts_complemented.append(bipart.replace('.','X').replace('*','.').replace('X','*'))
-        
-        # get our version ...
-        _LOG.info("DendroPy is counting ...")
-        taxa_block = taxa.TaxaBlock() 
-        for tax_label in tax_labels:
-            taxa_block.add_taxon(label=tax_label.replace(' ', '_'))                  
-        sd = splits.SplitDistribution(taxa_block=taxa_block)        
-        tsum = treesum.TreeSummarizer()
-        tsum.verbose = True
-        tsum.write_message = _LOG.debug
-        tsum.progress_message_suffix = " (%s)" % os.path.basename(tree_file)
-        sd = tsum.count_splits_on_trees([tree_file], 
-                               nexus.iterate_over_trees, 
-                               split_distribution=sd)  
-        contree = tsum.tree_from_splits(sd)
-        
-        
-        _LOG.info("Collating information ...")
-        dendropy_split_strings = []
-        dendropy_string_split_map = {}
-        dendropy_complemented_split_strings = []
-        dendropy_string_complemented_split_map = {}
-        taxa_mask = taxa_block.all_taxa_bitmask()
-        for split in sd.splits:
-            if splits.is_non_singleton_split(split, taxa_mask):
-                rsplit = taxa_block.complement_split_bitmask(split) 
-                if rsplit:
-                    ss = splits.split_as_string_rev(split, len(sd.taxa_block), '.', '*')
-                    dendropy_split_strings.append(ss)
-                    dendropy_string_split_map[ss] = split
-                    ss = splits.split_as_string_rev(rsplit, len(sd.taxa_block), '.', '*')
-                    dendropy_complemented_split_strings.append(ss)
-                    dendropy_string_complemented_split_map[ss] = rsplit
-                
-        # make sure the distinct splits are the same across both versions
-        _LOG.info("Checking for correspondence in split identity ...")
-        for s in dendropy_split_strings:
-            assert (s in paup_biparts) or (s in paup_biparts_complemented), \
-                            "PAUP did not find: %s" % s
-        for s in paup_biparts:
-            assert (s in dendropy_split_strings) \
-                    or (s in dendropy_complemented_split_strings), \
-                            "DendroPy did not find: %s" % s
-                            
-        # make sure the counts/freqs are the same
-        _LOG.info("Checking for correspondence in split counts/frequences ...")        
-        split_freqs = sd.calc_freqs()
-        for idx, s in enumerate(paup_biparts):
-            if s in dendropy_split_strings:
-                split = dendropy_string_split_map[s]
-                count = sd.split_counts[split]
-                freq = split_freqs[split]
-            else:
-                s2 = paup_biparts_complemented[idx]
-                split = dendropy_string_split_map[s2]
-                count = sd.split_counts[split]
-                freq = split_freqs[split]
-                
-            _LOG.debug("PAUP: %d (%f), DendroPy: %d (%f)" % (paup_biparts_count[s],
-                                                             paup_biparts_freqs[s],
-                                                             count,
-                                                             freq*100))
             
-            assert paup_biparts_count[s] == count, \
-                   "Counts of split '%s': Expecting %d, but found %d" \
-                    % (s, paup_biparts_count[s], count)
-            assert dendropy.tests.is_almost_equal(paup_biparts_freqs[s], freq), \
-                   "Frequency of split '%s': Expecting %f, but found %f" \
-                    % (s, paup_biparts_freqs[s], perc)
+class SplitFreqsTest(unittest.TestCase):
+
+    def setUp(self):
+        self.large_cases = [ ('7180.tre', '7180.tre'), 
+                             ('terrarana.random.unrooted.100.tre', 'terrarana.random.unrooted.100.tre'),
+        ]
+        self.small_cases = [ ('feb032009.tre', 'feb032009.tre'),
+                             ('maj-rule-bug1.tre', 'maj-rule-bug1.tre'),
+                             ('maj-rule-bug2.tre', 'maj-rule-bug2.tre'),
+                             ('primates.mcmct.trees.nexus', 'primate.chars.nexus'),
+                             ('anolis.mcmct.trees.nexus', 'anolis.chars.nexus'),
+                             ('terrarana.random.unrooted.30.tre', 'terrarana.random.rooted.30.tre')
+        ]
+        
+        if dendropy.tests.FAST_TESTS_ONLY:
+            self.test_cases = self.small_cases
+            dendropy.tests.fast_testing_notification(_LOG, 
+                module_name=__name__, 
+                message="skipping large tree files")
+        else:
+            self.test_cases = self.small_cases + self.large_cases
+    
+    def testSplits(self):
+        for tc in self.test_cases[0:1]:
+            _LOG.info("Testing split distribution on '%s'" % tc[0])
+            tree_filepaths = [dendropy.tests.data_source_path(tc[0])]
+            taxa_filepath = dendropy.tests.data_source_path(tc[1])
+            paup_sd = paup.get_split_distribution(tree_filepaths, taxa_filepath, 
+                        unrooted=True, burnin=0)
+            taxa_block = paup_sd.taxa_block
+            dp_sd = splits.SplitDistribution(taxa_block=taxa_block)
+            dp_sd.ignore_edge_lengths = True
+            dp_sd.ignore_node_ages = True
+            dp_sd.unrooted = True
+            for tree_filepath in tree_filepaths:
+                for tree in nexus.iterate_over_trees(open(tree_filepath, "rU"), taxa_block):
+                    splits.encode_splits(tree, taxa_block)
+                    dp_sd.count_splits_on_tree(tree)
                     
-        _LOG.info("\n--SUCCESS--\n")                             
-    def testSplitsSummary(self):
-        for df in self.data_files:
-            char_file = dendropy.tests.data_source_path(df[0])
-            tree_file = dendropy.tests.data_source_path(df[1])
-            if os.path.exists(char_file) and os.path.exists(tree_file):
-                _LOG.info("Checking splits in: %s" % os.path.basename(tree_file))
-                self.check_split_summarization(data_file=char_file, tree_file=tree_file)
+            assert dp_sd.total_trees_counted == paup_sd.total_trees_counted
+            assert len(dp_sd.splits) == len(paup_sd.splits),\
+                "dp = %d, sd = %d" % (len(dp_sd.splits), len(paup_sd.splits))
+            for split in dp_sd.splits:
+                assert split in paup_sd.splits
+                assert dp_sd.split_counts[split] == paup_sd.split_counts[split]
                 
 if __name__ == "__main__":
     unittest.main()
