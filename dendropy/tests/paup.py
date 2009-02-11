@@ -171,11 +171,11 @@ class Paup(object):
     ##############################################################################
     # OUTPUT PARSERS   
     
-    def split_counts_from_group_freqs(self, 
-                                      bipartition_counts,
-                                      tree_count,
-                                      taxa_block,
-                                      unrooted=True):
+    def build_split_distribution(self, 
+                                 bipartition_counts,
+                                 tree_count,
+                                 taxa_block,
+                                 unrooted=True):
         """
         Returns a populated SplitDistribution object based on the given 
         bipartition info.
@@ -187,7 +187,9 @@ class Paup(object):
         sd.ignore_edge_lengts = True
         sd.total_trees_counted = tree_count
         for g in bipartition_counts:
-            sd.add_split_count()
+            sd.add_split_count(paup_group_to_mask(g, normalized=unrooted),
+                bipartition_counts[g])
+        return sd
                 
     def parse_taxa_block(self):
         """
@@ -459,11 +461,18 @@ class PaupWrapperDumbTests(unittest.TestCase):
                 "anolis.chars.nexus", 
                 "anolis.mcmct.trees.splits.csv", 
                 1001),    
-            PaupWrapperDumbTests.SplitsTestCase("terrarana.random.unrooted.100.tre", 
-                "terrarana.random.unrooted.100.tre",
-                "terrarana.random.unrooted.100.splits.csv", 
-                100),                   
-        ]
+            ]
+            
+        if dendropy.tests.FAST_TESTS_ONLY:
+            dendropy.tests.fast_testing_notification(_LOG, 
+                module_name=__name__, 
+                message="skipping large tree files")
+        else:                    
+            self.splits_test_cases.append(
+                PaupWrapperDumbTests.SplitsTestCase("terrarana.random.unrooted.100.tre", 
+                    "terrarana.random.unrooted.100.tre", 
+                    "terrarana.random.unrooted.100.splits.csv", 
+                    100))
            
         self.taxa_test_cases = (
             ("feb032009.tre",("T01", "T02", "T03", "T04", "T05", "T06",
@@ -492,34 +501,40 @@ class PaupWrapperDumbTests(unittest.TestCase):
         for i, t in enumerate(taxa_block):
             assert t.label == taxlabels[i]
                         
-    def check_group_freqs(self, treefile, taxafile, exp_tree_count, group_freqs):
+    def check_group_freqs(self, treefile, taxafile, exp_tree_count, group_freqs, unrooted=True):
         """Calculates group frequencies from `filename`, make sure that 
         frequencies match `group_freqs` (given as dictionary of PAUP* group
         strings and their counts for the file)."""        
         p = Paup()
-        p.stage_execute_file(taxafile, clear_trees=True)           
+        p.stage_execute_file(taxafile, clear_trees=True)      
+        p.stage_list_taxa()        
         p.stage_load_trees(tree_filepaths=[treefile])
         p.stage_count_splits()
         p.run()
+        taxa_block = p.parse_taxa_block()
         tree_count, bipartition_counts = p.parse_group_freqs()
+
         assert exp_tree_count == tree_count, "%s != %s" % (exp_tree_count, tree_count)
         assert len(group_freqs) == len(bipartition_counts), "%d != %d" % (len(group_freqs), len(bipartition_counts))
         for g in group_freqs:
             assert g in bipartition_counts
             assert group_freqs[g] == bipartition_counts[g], \
                 "%s != %s" % (group_freqs[g], bipartition_counts[g])
-                       
-#     def testTaxaBlock(self):   
-#         for i in self.taxa_test_cases:
-#             self.check_taxa_block(i[0], i[1])
-#             
-#     def testGroupFreqs(self):
-#         for stc in self.splits_test_cases:
-#             splits = dict([ (s[0], int(s[1])) for s in csv.reader(open(stc.splitscsv_filepath, "rU"))])
-#             _LOG.info("Checking splits in %s" % stc.tree_filepath)
-#             self.check_group_freqs(stc.tree_filepath, 
-#                 stc.taxa_filepath, stc.num_trees, splits) 
                 
+        sd = p.build_split_distribution(bipartition_counts,
+                                      tree_count,
+                                      taxa_block,
+                                      unrooted=unrooted)
+                                      
+        sf = sd.split_frequencies                                      
+        for g in bipartition_counts:
+            s = paup_group_to_mask(g, normalized=unrooted)
+            assert s in sd.splits
+            assert s in sd.split_counts
+            assert sd.split_counts[s] == bipartition_counts[g]
+            assert sd.total_trees_counted == exp_tree_count
+            self.assertAlmostEqual(sf[s], float(bipartition_counts[g]) / exp_tree_count)
+        
     def testGroupRepToSplitMask(self):  
         for i in xrange(0xFF):       
             s = splits.split_as_string(i, 8, ".", "*")[::-1]
@@ -537,7 +552,19 @@ class PaupWrapperDumbTests(unittest.TestCase):
             r = paup_group_to_mask(s, normalized=True)
             normalized = utils.NormalizedBitmaskDict.normalize(i, 0xFF)
             assert r == normalized, "%s  =>  %s  =>  %s" \
-                % (splits.split_as_string(i, 8), s, splits.split_as_string(normalized, 8))                
+                % (splits.split_as_string(i, 8), s, splits.split_as_string(normalized, 8))            
+
+    def testTaxaBlock(self):   
+        for i in self.taxa_test_cases:
+            self.check_taxa_block(i[0], i[1])
+
+    def testGroupFreqs(self):
+        for stc in self.splits_test_cases:
+            splits = dict([ (s[0], int(s[1])) for s in csv.reader(open(stc.splitscsv_filepath, "rU"))])
+            _LOG.info("Checking splits in %s" % stc.tree_filepath)
+            self.check_group_freqs(stc.tree_filepath, 
+                stc.taxa_filepath, stc.num_trees, splits)
+               
 
 if __name__ == "__main__":
     unittest.main()
