@@ -83,15 +83,10 @@ def iterate_over_trees(file_obj=None, taxa_block=None):
                     token = nexus_reader.stream_tokenizer.read_next_token_ucase()
 
     else:
-        ### if not NEXUS, assume NEWICK ###
-#         nr = NewickReader()
-#         trees = nr.read_trees(file_obj, taxa_block=taxa_block)
-#         for t in trees:
-#             yield t
         stream_tokenizer.stream_handle.seek(0)
         while not stream_tokenizer.eof:
             tree = parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
-                                                 taxa_block=None, 
+                                                 taxa_block=taxa_block, 
                                                  translate_dict=None) 
             if tree:
                 yield tree
@@ -205,14 +200,16 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
     located at the beginning of the statement (i.e., the first
     parenthesis that defines the tree).
-    """      
-    if taxa_block is None:
-        taxa_block = taxa.TaxaBlock()    
-    child_nodes = []    
+    """    
     token = stream_tokenizer.read_next_token()
     if not token:
-        return None
+        return None    
     tree = trees.Tree()
+    if taxa_block is None:
+        taxa_block = taxa.TaxaBlock()    
+    else:
+        tree.taxa_block = taxa_block
+    child_nodes = []    
     while token and token != ';' and token != ':':        
         # process nodes until no more tokens, end of tree
         # statement, or ':' is encountered, presumably outside
