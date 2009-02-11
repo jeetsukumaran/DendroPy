@@ -47,15 +47,15 @@ from dendropy import splits
 class SplitFreqsTest(unittest.TestCase):
 
     def setUp(self):
-        self.large_cases = [ ('7180.tre', '7180.tre'), 
-                             ('terrarana.random.unrooted.100.tre', 'terrarana.random.unrooted.100.tre'),
+        self.large_cases = [ #('7180.tre', '7180.tre'), 
+                             #('terrarana.random.unrooted.100.tre', 'terrarana.random.unrooted.100.tre'),
+                             ('terrarana.random.unrooted.30.tre', 'terrarana.random.rooted.30.tre')                            
+                             ('anolis.mcmct.trees.nexus', 'anolis.chars.nexus'),                             
         ]
         self.small_cases = [ ('feb032009.tre', 'feb032009.tre'),
                              ('maj-rule-bug1.tre', 'maj-rule-bug1.tre'),
                              ('maj-rule-bug2.tre', 'maj-rule-bug2.tre'),
-                             ('primates.mcmct.trees.nexus', 'primate.chars.nexus'),
-                             ('anolis.mcmct.trees.nexus', 'anolis.chars.nexus'),
-                             ('terrarana.random.unrooted.30.tre', 'terrarana.random.rooted.30.tre')
+                             ('primates.mcmct.trees.nexus', 'primates.chars.nexus'),
         ]
         
         if dendropy.tests.FAST_TESTS_ONLY:
@@ -67,28 +67,41 @@ class SplitFreqsTest(unittest.TestCase):
             self.test_cases = self.small_cases + self.large_cases
     
     def testSplits(self):
-        for tc in self.test_cases[0:1]:
-            _LOG.info("Testing split distribution on '%s'" % tc[0])
+        unrooted = True
+        for tc in self.test_cases:
+            _LOG.info("Testing split counting on '%s'" % tc[0])
             tree_filepaths = [dendropy.tests.data_source_path(tc[0])]
             taxa_filepath = dendropy.tests.data_source_path(tc[1])
             paup_sd = paup.get_split_distribution(tree_filepaths, taxa_filepath, 
-                        unrooted=True, burnin=0)
+                        unrooted=unrooted, burnin=0)
             taxa_block = paup_sd.taxa_block
             dp_sd = splits.SplitDistribution(taxa_block=taxa_block)
             dp_sd.ignore_edge_lengths = True
             dp_sd.ignore_node_ages = True
-            dp_sd.unrooted = True
+            dp_sd.unrooted = unrooted
+
             for tree_filepath in tree_filepaths:
                 for tree in nexus.iterate_over_trees(open(tree_filepath, "rU"), taxa_block):
-                    splits.encode_splits(tree, taxa_block)
-                    dp_sd.count_splits_on_tree(tree)
+                    dp_sd.count_splits_on_tree(tree)               
                     
             assert dp_sd.total_trees_counted == paup_sd.total_trees_counted
-            assert len(dp_sd.splits) == len(paup_sd.splits),\
-                "dp = %d, sd = %d" % (len(dp_sd.splits), len(paup_sd.splits))
+           
+            # SplitsDistribution counts trivial splits, whereas PAUP*
+            # contree does not, so the following will not work
+#             assert len(dp_sd.splits) == len(paup_sd.splits),\
+#                 "dp = %d, sd = %d" % (len(dp_sd.splits), len(paup_sd.splits))
+
+            taxa_mask = taxa_block.all_taxa_bitmask()
             for split in dp_sd.splits:
-                assert split in paup_sd.splits
-                assert dp_sd.split_counts[split] == paup_sd.split_counts[split]
+                if not splits.is_trivial_split(split, taxa_mask):
+                    assert split in paup_sd.splits
+                    assert dp_sd.split_counts[split] == paup_sd.split_counts[split]
+                    paup_sd.splits.remove(split)
+                    
+            # if any splits remain here, they were not
+            # in dp_sd
+            assert len(paup_sd.splits) == 0
+                
                 
 if __name__ == "__main__":
     unittest.main()
