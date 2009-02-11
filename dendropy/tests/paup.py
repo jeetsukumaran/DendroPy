@@ -42,6 +42,7 @@ from dendropy import datasets
 from dendropy import dataio
 from dendropy import taxa
 from dendropy import splits
+from dendropy import utils
 
 ###############################################################################
 ## PAUP* WRAPPER
@@ -51,32 +52,29 @@ if "PAUP_PATH" in os.environ:
     PAUP_PATH = os.environ["PAUP_PATH"]
 else:
     PAUP_PATH = "paup"
-
+       
+def paup_group_to_mask(group_string, normalized=False):
+    """
+    This converts a PAUP* group representation (i.e. a string of askterisks
+    and periods, where the asterisks denote the taxon index counting from
+    left to right) to a mask representation:
+        - a clade mask, where 1's represent descendents of the split/edge 
+          (with taxon index counting from right to left, i.e., first taxon
+          is right-most bit)
+        - a split mask, an unrooted normalized version of the above, where 
+          if the right most bit is not 1 the clade mask is complemented 
+          (and not changed otherwise).
+    """
+    group_string = group_string[::-1] # flip to get correct orientation  
+    clade_mask = int(group_string.replace("*", "1").replace(".", "0"), 2)
+    if normalized:
+        mask=((2 ** len(group_string)) -1)
+        return utils.NormalizedBitmaskDict.normalize(clade_mask, mask)
+    else:
+        return clade_mask
+        
 class Paup(object):
     """ Wrapper around PAUP* """
-    
-    def paup_group_to_mask(group_string):
-        """
-        This converts a PAUP* group representation (i.e. a string of askterisks
-        and periods, where the asterisks denote the taxon index counting from
-        left to right) to a mask representation:
-            - a clade mask, where 1's represent descendents of the split/edge 
-              (with taxon index counting from right to left, i.e., first taxon
-              is right-most bit)
-            - a split mask, an unrooted normalized version of the above, where 
-              if the right most bit is not 1 the clade mask is complemented 
-              (and not changed otherwise).
-        """
-        group_string = group_string[::-1] # flip to get correct orientation
-        bit_string = group_string.replace("*", "1").replace(".", "0")
-        clade_mask = int(bit_string, 2)
-        if not (clade_mask & 1):
-            split_mask = int(group_string.replace("*", "0").replace(".", "1"), 2)
-        else:
-            split_mask = clade_mask[:]
-        return clade_mask, split_mask
-        
-    paup_group_to_mask = staticmethod(paup_group_to_mask)        
     
     def __init__(self, paup_path=None):
         if paup_path is None:
@@ -174,15 +172,22 @@ class Paup(object):
     # OUTPUT PARSERS   
     
     def split_counts_from_group_freqs(self, 
-        bipartition_counts,
-        taxa_block):
+                                      bipartition_counts,
+                                      tree_count,
+                                      taxa_block,
+                                      unrooted=True):
         """
-        Returns a populated NormalizingBitmaskDict object based on the given
-        bipartition info, with keys = normalized splits and values = tuple 
-        (count, percentage).
+        Returns a populated SplitDistribution object based on the given 
+        bipartition info.
         """
         #assert len(bipartition_freqs[0]) == len(taxa_block)
-        pass           
+        sd = splits.SplitDistribution(taxa_block=taxa_block)
+        sd.unrooted = unrooted
+        sd.ignore_node_ages = True
+        sd.ignore_edge_lengts = True
+        sd.total_trees_counted = tree_count
+        for g in bipartition_counts:
+            sd.add_split_count()
                 
     def parse_taxa_block(self):
         """
@@ -504,16 +509,35 @@ class PaupWrapperDumbTests(unittest.TestCase):
             assert group_freqs[g] == bipartition_counts[g], \
                 "%s != %s" % (group_freqs[g], bipartition_counts[g])
                        
-    def testTaxaBlock(self):   
-        for i in self.taxa_test_cases:
-            self.check_taxa_block(i[0], i[1])
-            
-    def testGroupFreqs(self):
-        for stc in self.splits_test_cases:
-            splits = dict([ (s[0], int(s[1])) for s in csv.reader(open(stc.splitscsv_filepath, "rU"))])
-            _LOG.info("Checking splits in %s" % stc.tree_filepath)
-            self.check_group_freqs(stc.tree_filepath, 
-                stc.taxa_filepath, stc.num_trees, splits) 
+#     def testTaxaBlock(self):   
+#         for i in self.taxa_test_cases:
+#             self.check_taxa_block(i[0], i[1])
+#             
+#     def testGroupFreqs(self):
+#         for stc in self.splits_test_cases:
+#             splits = dict([ (s[0], int(s[1])) for s in csv.reader(open(stc.splitscsv_filepath, "rU"))])
+#             _LOG.info("Checking splits in %s" % stc.tree_filepath)
+#             self.check_group_freqs(stc.tree_filepath, 
+#                 stc.taxa_filepath, stc.num_trees, splits) 
+                
+    def testGroupRepToSplitMask(self):  
+        for i in xrange(0xFF):       
+            s = splits.split_as_string(i, 8, ".", "*")[::-1]
+            r = paup_group_to_mask(s, normalized=False)
+            assert r == i, "%s  =>  %s  =>  %s" \
+                % (splits.split_as_string(i, 8), s, splits.split_as_string(r, 8))    
+        for i in xrange(0xFF):     
+            s = splits.split_as_string(i, 8, "*", ".")[::-1]
+            r = paup_group_to_mask(s, normalized=True)
+            normalized = utils.NormalizedBitmaskDict.normalize(i, 0xFF)
+            assert r == normalized, "%s  =>  %s  =>  %s" \
+                % (splits.split_as_string(i, 8), s, splits.split_as_string(normalized, 8))                 
+        for i in xrange(0xFF):     
+            s = splits.split_as_string(i, 8, ".", "*")[::-1]
+            r = paup_group_to_mask(s, normalized=True)
+            normalized = utils.NormalizedBitmaskDict.normalize(i, 0xFF)
+            assert r == normalized, "%s  =>  %s  =>  %s" \
+                % (splits.split_as_string(i, 8), s, splits.split_as_string(normalized, 8))                
 
 if __name__ == "__main__":
     unittest.main()
