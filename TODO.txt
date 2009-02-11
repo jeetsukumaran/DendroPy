@@ -23,6 +23,4 @@
 
 * PAUPWrapper needs be able to return pairwise unweighted RF distances between trees given in a list
 
-* Splits.count_splits_on_tree() ... does this really need to normalize_taxa and encode splits on every tree? Perhaps this should be left to client code
-
 * remove TaxaBlock from SplitDistribution
