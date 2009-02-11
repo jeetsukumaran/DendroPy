@@ -14,7 +14,7 @@ verbose = False
 IS_DEBUG_LOGGING = _LOG.isEnabledFor(logging.DEBUG)
 
 from dendropy.utils import NormalizedBitmaskDict
-
+g_taxa_block = None # temp hack
 def reroot_on_lowest_common_index_path(t, common_mask):
     """This operation is only for unrooted trees that are being merged using
     SCM. The path the separates the lowest index taxon in the leaf set 
@@ -40,6 +40,7 @@ def reroot_on_lowest_common_index_path(t, common_mask):
 
     without_lowest = common_mask^l
 
+    taxa_mask = t.seed_node.edge.clade_mask
     if (curr_n.edge.clade_mask & common_mask) == l:
         # we did not make it to the root.  Make curr_n, the first_child of the root
         t.to_outgroup_position(curr_n, flip_splits=True, suppress_deg_two=True)
@@ -50,13 +51,14 @@ def reroot_on_lowest_common_index_path(t, common_mask):
             while True:
                 curr_n = nd_source.next()
                 if curr_n is not avoid:
-                    cm = (curr_n.edge.clade_mask & common_mask)
+                    cm = (curr_n.edge.clade_mask & without_lowest)
                     if cm:
                         if cm == without_lowest:
                             r = t.seed_node
+                            assert curr_n.parent_node is r
                             t.reroot_at(curr_n, flip_splits=True, suppress_deg_two=True)
                             t.to_outgroup_position(r, flip_splits=True, suppress_deg_two=True)
-                            nd_source = iter(t.seed_node.child_nodes())
+                            nd_source = iter(curr_n.child_nodes())
                             avoid = r
                         else:
                             return
@@ -65,7 +67,6 @@ def reroot_on_lowest_common_index_path(t, common_mask):
             return
     # we hit the root, now we walk up the tree, to find the a relevant internal
     lowest_on_path_to_l = curr_n
-    taxa_mask = t.seed_node.clade_mask
     comp_mask = (~common_mask) & taxa_mask
     children = curr_n.child_nodes()
     assert(len(children) > 1)
@@ -150,21 +151,23 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
     
     to_mod_relevant_splits = {}
     to_consume_relevant_splits = {}
-    if IS_DEBUG_LOGGING:
-        nbits = count_bits(to_mod_split | to_consume_split)
-        _LOG.debug("After reroot to_modify:\n%s" % to_modify.get_indented_form(clade_mask=True, mask_width=nbits))
-        _LOG.debug("Before reroot to_consume:\n%s" % to_consume.get_indented_form(clade_mask=True, mask_width=nbits, indentation="   |"))
     if not rooted:
+        if IS_DEBUG_LOGGING:
+            assert to_modify._debug_tree_is_valid(splits=True)
+            assert to_consume._debug_tree_is_valid(splits=True)
+
         reroot_on_lowest_common_index_path(to_modify, leaf_intersection)
         reroot_on_lowest_common_index_path(to_consume, leaf_intersection)
+
+        if IS_DEBUG_LOGGING:
+            assert to_modify._debug_tree_is_valid(splits=True)
+            assert to_consume._debug_tree_is_valid(splits=True)
+
         to_mod_root = to_modify.seed_node
         assert(to_mod_root.edge.clade_mask == to_mod_split)
         to_consume_root = to_consume.seed_node
         assert(to_consume_root.edge.clade_mask == to_consume_split)
-    if IS_DEBUG_LOGGING:
-        nbits = count_bits(to_mod_split | to_consume_split)
-        _LOG.debug("After reroot to_modify:\n%s" % to_modify.get_indented_form(clade_mask=True, mask_width=nbits))
-        _LOG.debug("After reroot to_consume:\n%s" % to_consume.get_indented_form(clade_mask=True, mask_width=nbits, indentation="   |"))
+
     for s, e in tmse.iteritems():
         s = e.clade_mask
         masked = s & leaf_intersection
@@ -184,15 +187,11 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
     #   of the clade_masks for shallower nodes.  Thus if we reverse sort we
     #   get the edges in the order root->tip
     for split, path in to_mod_relevant_splits.iteritems():
-        if IS_DEBUG_LOGGING:
-            _LOG.debug("Split %s in to_mod_relevant_splits " % bin(split))
         path.sort(reverse=True)
         t = [i[1] for i in path]
         del path[:]
         path.extend(t)
     for split, path in to_consume_relevant_splits.iteritems():
-        if IS_DEBUG_LOGGING:
-            _LOG.debug("Split %s in to_consume_relevant_splits" % bin(split))
         path.sort(reverse=True)
         t = [i[1] for i in path]
         del path[:]
@@ -217,10 +216,6 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
         
     for masked_split, to_consume_path in to_consume_relevant_splits.iteritems():
         to_mod_path = to_mod_relevant_splits.get(masked_split)
-        if to_mod_path is None and IS_DEBUG_LOGGING:
-            _LOG.debug("Split %s returned None " % bin(masked_split))
-            _LOG.debug("Leaf intersection is %s" % bin(leaf_intersection))
-            _LOG.debug("to_mod_split is %s" % bin(to_mod_split))
         assert to_mod_path is not None
         to_mod_head = to_mod_path[-1].head_node
         to_mod_head_edge = to_mod_head.edge
@@ -267,6 +262,8 @@ def strict_consensus_merge(trees_to_merge, taxa_block, copy_trees=False, rooted=
     operation, if the `copy_trees` is False then the input trees will be 
     destroyed by the operation (and the modified first tree will be returned).
     """
+    global g_taxa_block
+    g_taxa_block = taxa_block
     if copy_trees:
         tree_list = [copy.copy(i) for i in trees_to_merge]
     else:
@@ -278,13 +275,25 @@ def strict_consensus_merge(trees_to_merge, taxa_block, copy_trees=False, rooted=
         return tree_list[0]
     tree_iter = iter(tree_list)
     to_modify = tree_iter.next()
+    to_modify.taxa_block = taxa_block
     
-    encode_splits(to_modify, taxa_block=taxa_block)
     if rooted:
         raise NotImplementedError("Rooted SCM is not implemented")
+    else:
+        to_modify.deroot()
+    encode_splits(to_modify, taxa_block=taxa_block)
+    if IS_DEBUG_LOGGING:
+        assert to_modify._debug_tree_is_valid(splits=False)
     for to_consume in tree_iter:
+        to_consume.taxa_block = taxa_block
+        if not rooted:
+            to_consume.deroot()
         encode_splits(to_consume, taxa_block=taxa_block)
+        if IS_DEBUG_LOGGING:
+            assert to_consume._debug_tree_is_valid(splits=True)
         add_to_scm(to_modify, to_consume, rooted, taxa_block=taxa_block)
+        if IS_DEBUG_LOGGING:
+            assert to_modify._debug_tree_is_valid(splits=False)
 
     return to_modify
 

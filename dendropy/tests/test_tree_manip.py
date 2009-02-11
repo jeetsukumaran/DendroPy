@@ -32,7 +32,8 @@ import math
 import copy
 from dendropy import get_logger
 from dendropy.treedists import symmetric_difference
-from dendropy.splits import encode_splits
+from dendropy.splits import encode_splits, split_to_list, count_bits, lowest_bit_only
+
 import dendropy.tests
 _LOG = get_logger("TreeGenerationAndSimulation")
 
@@ -95,6 +96,37 @@ class TreeManipTest(unittest.TestCase):
             r_tree = dataio.trees_from_newick([r_newick], taxa_block=taxa_block).trees_blocks[0][0]
             encode_splits(r_tree, taxa_block=taxa_block)
             self.assertEqual(symmetric_difference(r_tree, ref), 0)
+
+    def testRerootSplits(self):
+        newick = "((Athrotaxi,(Callitris,(Juniperusc,Libocedrus))),(((((((Basichlsac,(Mougeotisp,Lamprothma)),Thuidium),(Petalaphy,Haplomitr2)),((Botrychbit,(Vittarifle,((Dicksonant,((Polypodapp,Oleandrapi),Dennstasam)),Azollacaro))),Angiopteri)),Isoetesmel),((Sagittari,(Calochort,(Tacca,(Calathea,Ravenala)))),((Nelumbo,((((((Verbena,((Thunbergi,Acanthus),(Proboscid,Harpogoph))),Asclepias),Menyanthe),(Phyllonom,(Chamaedap,Pyrola))),((((Mirabilus,Pisum),Circaea),((Rheinward,Octomeles),Greyia)),Dudleya)),Phoradend)),(((Liriodchi,Annona),Gyrocarpu),Illicium)))),(Pseudotsu,(Agathisova,Agathismac))));"
+        d = dataio.trees_from_newick([newick])
+        tree = d.trees_blocks[0][0]
+        taxa_block = d.taxa_blocks[0]
+        ref = dataio.trees_from_newick([newick], taxa_block=taxa_block).trees_blocks[0][0]
+        encode_splits(tree, taxa_block=taxa_block)
+        encode_splits(ref, taxa_block=taxa_block)
+        r = tree.seed_node
+        curr_n = r.child_nodes()[1]
+        _LOG.debug("num root_children = %d" % len(r.child_nodes()))
+        former_mask = curr_n.edge.clade_mask
+        tm = r.edge.clade_mask
+        nbits = count_bits(tm)
+        from dendropy.splits import split_as_string
+        
+        _LOG.debug("Before reroot_at to_modify:\n%s" % tree.get_indented_form(clade_mask=True, mask_width=nbits))
+        _LOG.debug("%s = r" % r._get_indented_form_line(level=0, clade_mask=True, mask_width=nbits))
+        _LOG.debug("%s = curr_n" % curr_n._get_indented_form_line(level=0, clade_mask=True, mask_width=nbits))
+        tree.reroot_at(curr_n, flip_splits=True, suppress_deg_two=False)
+        _LOG.debug("After reroot_at to_modify:\n%s" % tree.get_indented_form(clade_mask=True, mask_width=nbits, indentation="  |"))
+        _LOG.debug("%s = r" % r._get_indented_form_line(level=0, clade_mask=True, mask_width=nbits))
+        _LOG.debug("%s = curr_n" % curr_n._get_indented_form_line(level=0, clade_mask=True, mask_width=nbits))
+        
+        new_root = tree.seed_node
+        self.assertEqual(tm, new_root.edge.clade_mask)
+        self.assertEqual(True, new_root is curr_n)
+        self.assertEqual(True, r.parent_node is curr_n)
+        flipped = (~(r.edge.clade_mask)) & tm
+        self.assertEqual(True, (former_mask == r.edge.clade_mask) or (flipped == former_mask))
 
 if __name__ == "__main__":
     unittest.main()

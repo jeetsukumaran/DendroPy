@@ -31,6 +31,9 @@ from cStringIO import StringIO
 from dendropy import base
 from dendropy import taxa
 import math
+from dendropy import get_logger
+_LOG = get_logger('dendropy.trees')
+
 
 ##############################################################################
 ## TreesBlock
@@ -235,24 +238,32 @@ class Tree(base.IdTagged):
     ## Structure                    
                     
     def deroot(self):
-        "Deroot the tree."
-        if self.seed_node:
-            child_nodes = self.seed_node.child_nodes()
-            if child_nodes and len(child_nodes) == 2:
-                if len(child_nodes[0].child_nodes()) >= 2:
-                    new_child = child_nodes[0]
-                    new_seed = child_nodes[1]
-                else: #lif len(child_nodes[1].child_nodes()) >= 2:
-                    new_child = child_nodes[1]
-                    new_seed = child_nodes[0]
-                new_edge_length = 0.0
-                if new_child.edge.length:
-                    new_edge_length += new_child.edge.length
-                if new_seed.edge.length:
-                    new_edge_length += new_seed.edge.length
-                    new_seed.edge = None
-                self.seed_node = new_seed
-                self.seed_node.add_child(new_child)                    
+        "Converts a degree-2 node at the root to a degree-3 node."
+        old_seed_node = self.seed_node
+        if not old_seed_node:
+            return
+        child_nodes = old_seed_node.child_nodes()
+        if len(child_nodes) != 2:
+            return
+            
+        if len(child_nodes[0].child_nodes()) >= 2:
+            new_child = child_nodes[0]
+            new_seed = child_nodes[1]
+        elif len(child_nodes[1].child_nodes()) >= 2:
+            new_child = child_nodes[1]
+            new_seed = child_nodes[0]
+        else:
+            return
+        new_edge_length = 0.0
+        if new_child.edge.length:
+            new_edge_length += new_child.edge.length
+        if new_seed.edge.length:
+            new_edge_length += new_seed.edge.length
+            new_seed.edge = None
+        old_seed_node.set_children([])
+        self.seed_node = new_seed
+        new_seed.parent_node = None
+        self.seed_node.add_child(new_child)                    
                 
     ###########################################################################
     ## For debugging
@@ -262,7 +273,7 @@ class Tree(base.IdTagged):
                 
     def reroot_at(self, nd, flip_splits=False, suppress_deg_two=True):
         """Takes an internal node, `nd` that must already be in the tree and 
-        reroots the tree such that `nd` the `seed_node` of the tree.
+        reroots the tree such that `nd` is the `seed_node` of the tree.
         
         If `flip_splits` is True, then the edges' `split` and the tree's 
             `split_edges` attributes will be updated."""
@@ -323,8 +334,9 @@ class Tree(base.IdTagged):
             `split_edges` attributes will be updated.
         If `suppress_deg_two` is True and the old root of the tree has an 
             outdegree of 2, then the node will be removed from the tree.
-            """
+        """
         p = nd.parent_node
+        assert p is not None
         self.reroot_at(p, flip_splits=flip_splits)
         p.remove_child(nd)
         p.add_child(nd, edge_length=nd.edge.length, pos=0)
@@ -333,6 +345,54 @@ class Tree(base.IdTagged):
         return self.seed_node.get_indented_form(**kwargs)
     def write_indented_form(self, out, **kwargs):
         return self.seed_node.get_indented_form(out, **kwargs)
+    def _debug_tree_is_valid(self, **kwargs):
+        """Performs sanity-checks of the tree data structure.
+        
+        kwargs:
+            `splits` if True specifies that the split_edge and clade_mask attributes
+                are checked.
+        """
+        check_splits = kwargs.get('splits', False)
+        taxa_block = kwargs.get('taxa_block')
+        if taxa_block is None:
+            taxa_block = self.taxa_block
+        if check_splits:
+            taxa_mask = self.seed_node.edge.clade_mask
+        nodes = set()
+        edges = set()
+        curr_node = self.seed_node
+        assert(curr_node.parent_node is None)
+        assert(curr_node.edge.tail_node is None)
+        ancestors = []
+        siblings = []
+        while curr_node:
+            curr_edge = curr_node.edge
+            assert(curr_edge not in edges)
+            edges.add(curr_edge)
+            assert(curr_node not in nodes)
+            nodes.add(curr_node)
+            assert(curr_edge.tail_node is curr_node.parent_node)
+            assert(curr_edge.head_node is curr_node)
+            if check_splits:
+                cm = 0
+                clade_mask = curr_edge.clade_mask
+                assert((clade_mask | taxa_mask) == taxa_mask)
+            c = curr_node.child_nodes()
+            if c:
+                for child in c:
+                    assert child.parent_node is curr_node
+                    if check_splits:
+                        cm |= child.edge.clade_mask
+            elif check_splits:
+                cm = taxa_block.taxon_bitmask(curr_node.taxon)
+            if check_splits:
+                assert((cm & taxa_mask) == clade_mask)
+                assert self.split_edges[clade_mask] == curr_edge
+            curr_node, level = _preorder_list_manip(curr_node, siblings, ancestors)
+        if check_splits:
+            for s, e in self.split_edges.iteritems():
+                assert(e in edges)
+        return True
 
        
 ##############################################################################
@@ -590,15 +650,15 @@ class Node(taxa.TaxonLinked):
                 return float(self.edge.length)
             else:
                 distance_from_root = float(self.edge.length)
-                par_node = self.parent_node
+                parent_node = self.parent_node
                 # The root is identified when a node with no
                 # parent is encountered. If we want to use some
                 # other criteria (e.g., where a is_root property
                 # is True), we modify it here.
-                while par_node:
-                    if par_node.edge.length != None:
-                        distance_from_root = distance_from_root + float(par_node.edge.length)
-                    par_node = par_node.parent_node
+                while parent_node:
+                    if parent_node.edge.length != None:
+                        distance_from_root = distance_from_root + float(parent_node.edge.length)
+                    parent_node = parent_node.parent_node
                 return distance_from_root                    
         elif not self.parent_node and self.edge.length != None:
             return float(self.edge.length)
@@ -722,27 +782,17 @@ class Node(taxa.TaxonLinked):
         indentation = kwargs.get("indentation", "    ")
         clade_masks = kwargs.get("clade_mask", False)
         level = kwargs.get("level", 0)
-        to_deal_with = []
+        ancestors = []
         siblings = []
         n = self
-        while True:
+        while n is not None:
             n._write_indented_form_line(out, level, **kwargs)
-            c = n.child_nodes()
-            if c:
-                level += 1
-                to_deal_with.append(siblings)
-                siblings = c[1:]
-                n = c[0]
-            elif siblings:
-                n = siblings.pop()
-            else:
-                while not siblings:
-                    if to_deal_with:
-                        level -= 1
-                        siblings = to_deal_with.pop()
-                    else:
-                        return
-                n = siblings.pop()
+            n, lev = _preorder_list_manip(n, siblings, ancestors)
+            level += lev
+    def _get_indented_form_line(self, level, **kwargs):
+        out = StringIO()
+        self._write_indented_form_line(out, level, **kwargs)
+        return out.getvalue()
         
     def _write_indented_form_line(self, out, level, **kwargs):
         indentation = kwargs.get("indentation", "    ")
@@ -797,4 +847,30 @@ class Edge(base.IdTagged):
         return edge
     def invert(self):
         self.head_node, self.tail_node = self.tail_node, self.head_node
+
+
+def _preorder_list_manip(n, siblings, ancestors):
+    """Helper function for recursion free preorder traversal, that does not 
+    rely on attributes of the node other than child_nodes() (thus it is useful
+    for debuggging).
+    
+    Returns the next node (or None) and the number of levels toward the root 
+    the function "moved"
+    """
+    levels_moved = 0
+    c = n.child_nodes()
+    if c:
+        levels_moved += 1
+        ancestors.append(list(siblings))
+        del siblings[:]
+        siblings.extend(c[1:])
+        return c[0], levels_moved
+    while not siblings:
+        if ancestors:
+            levels_moved -= 1
+            del siblings[:]
+            siblings.extend(ancestors.pop())
+        else:
+            return None, levels_moved
+    return siblings.pop(), levels_moved
 
