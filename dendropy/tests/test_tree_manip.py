@@ -113,13 +113,7 @@ class TreeManipTest(unittest.TestCase):
         nbits = count_bits(tm)
         from dendropy.splits import split_as_string
         
-        _LOG.debug("Before reroot_at to_modify:\n%s" % tree.get_indented_form(clade_mask=True, mask_width=nbits))
-        _LOG.debug("%s = r" % r._get_indented_form_line(level=0, clade_mask=True, mask_width=nbits))
-        _LOG.debug("%s = curr_n" % curr_n._get_indented_form_line(level=0, clade_mask=True, mask_width=nbits))
         tree.reroot_at(curr_n, flip_splits=True, suppress_deg_two=False)
-        _LOG.debug("After reroot_at to_modify:\n%s" % tree.get_indented_form(clade_mask=True, mask_width=nbits, indentation="  |"))
-        _LOG.debug("%s = r" % r._get_indented_form_line(level=0, clade_mask=True, mask_width=nbits))
-        _LOG.debug("%s = curr_n" % curr_n._get_indented_form_line(level=0, clade_mask=True, mask_width=nbits))
         
         new_root = tree.seed_node
         self.assertEqual(tm, new_root.edge.clade_mask)

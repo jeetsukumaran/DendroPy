@@ -797,14 +797,7 @@ class Node(taxa.TaxonLinked):
         
     def _write_indented_form_line(self, out, level, **kwargs):
         indentation = kwargs.get("indentation", "    ")
-        if self.is_leaf():
-            t = self.taxon
-            if t:
-                label = t.label
-            else:
-                label = "anonymous leaf"
-        else:
-            label = "+"
+        label = format_node(self, **kwargs)
         if kwargs.get("clade_mask"):
             from dendropy.splits import split_as_string
             cm = "%s " % split_as_string(self.edge.clade_mask, kwargs.get("mask_width", 0))
@@ -875,3 +868,35 @@ def _preorder_list_manip(n, siblings, ancestors):
             return None, levels_moved
     return siblings.pop(), levels_moved
 
+def format_node(nd, **kwargs):
+    if nd.is_leaf():
+        t = nd.taxon
+        if t:
+            label = t.label
+        else:
+            label = "anonymous leaf"
+    else:
+        label = "* %s" % str(nd.oid)
+    return label
+
+def debug_check_tree(tree, logger_obj=None, **kwargs):
+    import logging, inspect
+    if logger_obj and logger_obj.isEnabledFor(logging.DEBUG):
+        try:
+            assert tree._debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
+        except:
+            calling_frame = inspect.currentframe().f_back
+            co = calling_frame.f_code
+            emsg = "%s\nCalled from file %s, line %d, in %s" % (msg, co.co_filename, calling_frame.f_lineno, co.co_name)
+            _LOG.debug("%s" % str(tree))
+            _LOG.debug("%s" % tree.get_indented_form(**kwargs))
+            if msg:
+                _LOG.debug(msg)
+    assert tree._debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
+
+def format_split(split, width=None, **kwargs):
+    from dendropy.splits import split_as_string
+    if width is None:
+        width = len(kwargs.get("taxa"))
+    s = split_as_string(split, width, symbol1=kwargs.get("off_symbol"), symbol2=kwargs.get("on_symbol"))
+    return s

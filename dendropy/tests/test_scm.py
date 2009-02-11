@@ -41,6 +41,34 @@ from dendropy.scripts.strict_consensus_merge import strict_consensus_merge
 
 _counter = 0
 class SCMTest(unittest.TestCase):
+    def testOrderDependent(self):
+        o = ['(1,5,(2,(3,4))', '(2,4,(3,(6,7)))', '(3,4,(6,(7,8)))']
+        n = [o[0], o[2], o[1], '(1,2,3,4,5,6,7,8)']
+        dataset = trees_from_newick(n)
+        trees = [i[0] for i in dataset.trees_blocks]
+        self.kernelOfTest(trees, dataset.taxa_blocks[0])
+
+        expected = '(1,5,(2,((3,(6,(7,8))),4)))'
+        dataset = trees_from_newick(o + [expected])
+        trees = [i[0] for i in dataset.trees_blocks]
+        self.kernelOfTest(trees, dataset.taxa_blocks[0])
+        
+        o.reverse()
+        dataset = trees_from_newick(o + [expected])
+        trees = [i[0] for i in dataset.trees_blocks]
+        self.kernelOfTest(trees, dataset.taxa_blocks[0])
+    def kernelOfTest(self, trees, taxa_block):
+        if 'TESTING_SCM' not in os.environ:
+            _LOG.warn("'TESTING_SCM' not in os.environ")
+            return
+        expected = trees[-1]
+        input = trees[:-1]
+        output = strict_consensus_merge(input, taxa_block=taxa_block)
+        encode_splits(output, taxa_block=taxa_block)
+        encode_splits(expected, taxa_block=taxa_block)
+        if symmetric_difference(expected, output) != 0:
+            self.fail("\n%s\n!=\n%s" % (str(output), str(expected)))
+
     def testPolytomy(self):
         dataset = trees_from_newick([
             '(Athrotaxi,(Liriodchi,Nelumbo2),Sagittari2);',
@@ -68,7 +96,7 @@ class SCMTest(unittest.TestCase):
             ])
         trees = [i[0] for i in dataset.trees_blocks]
         self.kernelOfTest(trees, dataset.taxa_blocks[0])
-
+        
     def testSimple(self):
         if not do_slow_test(_LOG, __name__, "skipping all rotation scm tests"):
             return        
@@ -132,17 +160,6 @@ class SCMTest(unittest.TestCase):
                                                 five_taxon_newick = '(%s)' % ','.join(nc)
                                                 self.dofour_five_compat(four_taxon_newick, five_taxon_newick)
                                 
-
-    def kernelOfTest(self, trees, taxa_block):
-        if not "TESTING_DENDROPY_SCM" in os.environ:
-            return
-        expected = trees[-1]
-        input = trees[:-1]
-        output = strict_consensus_merge(input, taxa_block=taxa_block)
-        encode_splits(output, taxa_block=taxa_block)
-        encode_splits(expected, taxa_block=taxa_block)
-        if symmetric_difference(expected, output) != 0:
-            self.fail("\n%s\n!=\n%s" % (str(output), str(expected)))
 
     def testThree(self):
         o = [

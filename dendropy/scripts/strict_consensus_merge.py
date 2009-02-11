@@ -8,6 +8,7 @@ from dendropy.splits import encode_splits, split_to_list, count_bits, lowest_bit
 from dendropy import get_logger
 from dendropy.treemanip import collapse_clade, collapse_edge
 from dendropy.dataio import trees_from_newick
+from dendropy.trees import debug_check_tree, format_split
 
 _LOG = get_logger('scripts.strict_consensus_merge')
 verbose = False
@@ -113,7 +114,7 @@ def _collapse_paths_not_found(f, s, other_dict=None):
                 collapse_edge(edge)
             to_del.append(masked_split)
     for k in to_del:
-        del f
+        del k
 
 
 def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
@@ -128,6 +129,8 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
     to_consume_split = to_consume_root.edge.clade_mask
 
     leaf_intersection = to_mod_split & to_consume_split
+    if IS_DEBUG_LOGGING:
+        _LOG.debug("add_to_scm:\n  %s\n  + %s\n%s" % (str(to_modify), str(to_consume), format_split(leaf_intersection, taxa=taxa_block)))
 
     n_common_leaves = count_bits(leaf_intersection)
     if n_common_leaves < 2:
@@ -153,15 +156,15 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
     to_consume_relevant_splits = {}
     if not rooted:
         if IS_DEBUG_LOGGING:
-            assert to_modify._debug_tree_is_valid(splits=True)
-            assert to_consume._debug_tree_is_valid(splits=True)
+            debug_check_tree(to_modify, splits=True, logger_obj=_LOG)
+            debug_check_tree(to_consume, splits=True, logger_obj=_LOG)
 
         reroot_on_lowest_common_index_path(to_modify, leaf_intersection)
         reroot_on_lowest_common_index_path(to_consume, leaf_intersection)
 
         if IS_DEBUG_LOGGING:
-            assert to_modify._debug_tree_is_valid(splits=True)
-            assert to_consume._debug_tree_is_valid(splits=True)
+            debug_check_tree(to_modify, splits=True, logger_obj=_LOG)
+            debug_check_tree(to_consume, splits=True, logger_obj=_LOG)
 
         to_mod_root = to_modify.seed_node
         assert(to_mod_root.edge.clade_mask == to_mod_split)
@@ -196,6 +199,9 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
         t = [i[1] for i in path]
         del path[:]
         path.extend(t)
+    if IS_DEBUG_LOGGING:
+        debug_check_tree(to_modify, splits=True, logger_obj=_LOG)
+        debug_check_tree(to_consume, splits=True, logger_obj=_LOG)
     # first we'll collapse all paths in the common leafset in to_modify that 
     #   are not in to_consume
     _collapse_paths_not_found(to_mod_relevant_splits, to_consume_relevant_splits, tmse)
@@ -216,7 +222,15 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
         
     for masked_split, to_consume_path in to_consume_relevant_splits.iteritems():
         to_mod_path = to_mod_relevant_splits.get(masked_split)
-        assert to_mod_path is not None
+        if True: #to_mod_path is None:
+            if IS_DEBUG_LOGGING:
+                _LOG.debug("%s = mask" % format_split(leaf_intersection, taxa=taxa_block))
+                _LOG.debug("%s = masked" % format_split(masked_split, taxa=taxa_block))
+                _LOG.debug("%s = raw" % format_split(to_consume_path[-1].clade_mask, taxa=taxa_block))
+                for k, v in to_mod_relevant_splits.iteritems():
+                    _LOG.debug("%s in to_mod_relevant_splits" % format_split(k, taxa=taxa_block))
+                
+            assert to_mod_path is not None
         to_mod_head = to_mod_path[-1].head_node
         to_mod_head_edge = to_mod_head.edge
         to_consume_head = to_consume_path[-1].head_node
