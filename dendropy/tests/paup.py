@@ -44,34 +44,37 @@ from dendropy import taxa
 from dendropy import splits
 from dendropy import utils
 
-###############################################################################
-## PAUP* WRAPPER
-###############################################################################
-
 if "PAUP_PATH" in os.environ:
     PAUP_PATH = os.environ["PAUP_PATH"]
 else:
     PAUP_PATH = "paup"
-       
-def paup_group_to_mask(group_string, normalized=False):
-    """
-    This converts a PAUP* group representation (i.e. a string of askterisks
-    and periods, where the asterisks denote the taxon index counting from
-    left to right) to a mask representation:
-        - a clade mask, where 1's represent descendents of the split/edge 
-          (with taxon index counting from right to left, i.e., first taxon
-          is right-most bit)
-        - a split mask, an unrooted normalized version of the above, where 
-          if the right most bit is not 1 the clade mask is complemented 
-          (and not changed otherwise).
-    """
-    group_string = group_string[::-1] # flip to get correct orientation  
-    clade_mask = int(group_string.replace("*", "1").replace(".", "0"), 2)
-    if normalized:
-        mask=((2 ** len(group_string)) -1)
-        return utils.NormalizedBitmaskDict.normalize(clade_mask, mask)
-    else:
-        return clade_mask
+
+    
+###############################################################################
+# HIGHER-LEVEL CONVENIENCE AND UTILITY METHODS 
+    
+def get_split_distribution(tree_filepaths, 
+                           taxa_filepath, 
+                           unrooted=True, 
+                           burnin=0):
+    """Returns a SplitDistribution object of splits calculated over
+    specified trees"""
+    p = Paup()
+    p.stage_execute_file(taxa_filepath, clear_trees=True)      
+    p.stage_list_taxa()        
+    p.stage_load_trees(tree_filepaths=tree_filepaths, unrooted=unrooted, burnin=burnin)
+    p.stage_count_splits()
+    p.run()
+    taxa_block = p.parse_taxa_block()
+    tree_count, bipartition_counts = p.parse_group_freqs() 
+    sd = build_split_distribution(bipartition_counts,
+                                  tree_count,
+                                  taxa_block,
+                                  unrooted=unrooted)
+    return sd                                  
+    
+###############################################################################
+## PAUP* WRAPPER
         
 class Paup(object):
     """ Wrapper around PAUP* """
@@ -84,8 +87,7 @@ class Paup(object):
         self.commands = []
         self.output = []
         
-    ##############################################################################
-    # WRAPPER OPERATIONS       
+    ### WRAPPER OPERATIONS ###      
                     
     def run(self):
         """ executes list of commands in PAUP*, 
@@ -107,8 +109,7 @@ class Paup(object):
         self.output.extend(results)
         return results
                        
-    ##############################################################################
-    # PAUP COMMANDS     
+    ### PAUP COMMANDS ###   
                  
     def stage_list_taxa(self):
         """ 
@@ -168,29 +169,8 @@ class Paup(object):
             paup_template.append(gettree_template % tree_filepath)                        
         self.commands.extend(paup_template)
         
-    ##############################################################################
-    # OUTPUT PARSERS   
-    
-    def build_split_distribution(self, 
-                                 bipartition_counts,
-                                 tree_count,
-                                 taxa_block,
-                                 unrooted=True):
-        """
-        Returns a populated SplitDistribution object based on the given 
-        bipartition info.
-        """
-        #assert len(bipartition_freqs[0]) == len(taxa_block)
-        sd = splits.SplitDistribution(taxa_block=taxa_block)
-        sd.unrooted = unrooted
-        sd.ignore_node_ages = True
-        sd.ignore_edge_lengts = True
-        sd.total_trees_counted = tree_count
-        for g in bipartition_counts:
-            sd.add_split_count(paup_group_to_mask(g, normalized=unrooted),
-                bipartition_counts[g])
-        return sd
-                
+    ### OUTPUT PARSERS ### 
+                    
     def parse_taxa_block(self):
         """
         Given PAUP* output that includes a taxon listing as produced by
@@ -271,6 +251,45 @@ class Paup(object):
                         split_reps[split_idx] = bp_match.group(1)
                     split_idx += 1                   
         return tree_count, bipartition_counts
+
+###############################################################################
+# UTILITY METHODS     
+    
+def build_split_distribution(bipartition_counts,
+                             tree_count,
+                             taxa_block,
+                             unrooted=True):
+    """
+    Returns a populated SplitDistribution object based on the given 
+    bipartition info.
+    """
+    sd = splits.SplitDistribution(taxa_block=taxa_block)
+    sd.unrooted = unrooted
+    sd.total_trees_counted = tree_count
+    for g in bipartition_counts:
+        sd.add_split_count(paup_group_to_mask(g, normalized=unrooted),
+            bipartition_counts[g])
+    return sd    
+    
+def paup_group_to_mask(group_string, normalized=False):
+    """
+    This converts a PAUP* group representation (i.e. a string of askterisks
+    and periods, where the asterisks denote the taxon index counting from
+    left to right) to a mask representation:
+        - a clade mask, where 1's represent descendents of the split/edge 
+          (with taxon index counting from right to left, i.e., first taxon
+          is right-most bit)
+        - a split mask, an unrooted normalized version of the above, where 
+          if the right most bit is not 1 the clade mask is complemented 
+          (and not changed otherwise).
+    """
+    group_string = group_string[::-1] # flip to get correct orientation  
+    clade_mask = int(group_string.replace("*", "1").replace(".", "0"), 2)
+    if normalized:
+        mask=((2 ** len(group_string)) -1)
+        return utils.NormalizedBitmaskDict.normalize(clade_mask, mask)
+    else:
+        return clade_mask
 
 ###############################################################################
 ## OLD STUFF
@@ -413,8 +432,7 @@ def estimate_char_model(tree_model,
 
 ###############################################################################
 ## TEST SUITE (for new stuff)
-###############################################################################
-    
+
 class PaupWrapperDumbTests(unittest.TestCase):
     """
     Checks basic running of PAUP commands, and correct parsing/extraction of 
@@ -508,7 +526,7 @@ class PaupWrapperDumbTests(unittest.TestCase):
         p = Paup()
         p.stage_execute_file(taxafile, clear_trees=True)      
         p.stage_list_taxa()        
-        p.stage_load_trees(tree_filepaths=[treefile])
+        p.stage_load_trees(tree_filepaths=[treefile], unrooted=unrooted)
         p.stage_count_splits()
         p.run()
         taxa_block = p.parse_taxa_block()
@@ -521,7 +539,7 @@ class PaupWrapperDumbTests(unittest.TestCase):
             assert group_freqs[g] == bipartition_counts[g], \
                 "%s != %s" % (group_freqs[g], bipartition_counts[g])
                 
-        sd = p.build_split_distribution(bipartition_counts,
+        sd = build_split_distribution(bipartition_counts,
                                       tree_count,
                                       taxa_block,
                                       unrooted=unrooted)
@@ -563,8 +581,7 @@ class PaupWrapperDumbTests(unittest.TestCase):
             splits = dict([ (s[0], int(s[1])) for s in csv.reader(open(stc.splitscsv_filepath, "rU"))])
             _LOG.info("Checking splits in %s" % stc.tree_filepath)
             self.check_group_freqs(stc.tree_filepath, 
-                stc.taxa_filepath, stc.num_trees, splits)
-               
+                stc.taxa_filepath, stc.num_trees, splits)              
 
 if __name__ == "__main__":
     unittest.main()
