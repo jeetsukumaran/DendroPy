@@ -82,8 +82,8 @@ class SumTreesTest(unittest.TestCase):
         secondSD = SplitDistribution(taxa_block=taxa1)
         
         for o,t in itertools.izip(tb1, tb2):
-            encode_splits(o, taxa_block=taxa1)
-            encode_splits(t, taxa_block=taxa1)
+            encode_splits(o)
+            encode_splits(t)
             firstSD.count_splits_on_tree(o)
             secondSD.count_splits_on_tree(t)
 

@@ -140,7 +140,8 @@ class TreeSummarizer(object):
         "Maps splits support to the given tree."
         split_frequencies = split_distribution.split_frequencies
         tree.normalize_taxa(taxa_block=split_distribution.taxa_block)
-        splits.encode_splits(tree, taxa_block=split_distribution.taxa_block)
+        assert tree.taxa_block is split_distribution.taxa_block
+        splits.encode_splits(tree)
         for split in tree.split_edges:
             if split in split_frequencies:
                 split_support = split_frequencies[split]
@@ -160,7 +161,7 @@ class TreeSummarizer(object):
         con_tree = treegen.star_tree(taxa_block)
         split_freqs = split_distribution.split_frequencies
         taxa_mask = taxa_block.all_taxa_bitmask()
-        splits.encode_splits(con_tree, taxa_block)
+        splits.encode_splits(con_tree)
         leaves = con_tree.leaf_nodes()
         
         if leaf_to_root_search:
@@ -270,7 +271,8 @@ class TreeSummarizer(object):
                 if not self.burnin or file_trees_read > self.burnin:
                     self.total_trees_counted += 1
                     self.send_progress_message("%sCounting splits in tree %d" % (current_file_note, (tree_idx+1)))
-                    splits.encode_splits(tree, taxa_block=taxa_block)
+                    assert(taxa_block is tree.taxa_block)
+                    splits.encode_splits(tree)
                     split_distribution.count_splits_on_tree(tree)
                 else:
                     self.total_trees_ignored += 1

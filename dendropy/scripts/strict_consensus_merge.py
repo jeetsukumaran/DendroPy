@@ -266,7 +266,7 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
                 to_mod_tail.remove_child(to_mod_head)
                 tipmost_node_to_move.add_child(to_mod_head)
                 tipmost_node_to_move.remove_child(prev_head)
-    encode_splits(to_modify, taxa_block=taxa_block)
+    encode_splits(to_modify)
                 
     
 def strict_consensus_merge(trees_to_merge, taxa_block, copy_trees=False, rooted=False):
@@ -295,14 +295,14 @@ def strict_consensus_merge(trees_to_merge, taxa_block, copy_trees=False, rooted=
         raise NotImplementedError("Rooted SCM is not implemented")
     else:
         to_modify.deroot()
-    encode_splits(to_modify, taxa_block=taxa_block)
+    encode_splits(to_modify)
     if IS_DEBUG_LOGGING:
         assert to_modify._debug_tree_is_valid(splits=False)
     for to_consume in tree_iter:
         to_consume.taxa_block = taxa_block
         if not rooted:
             to_consume.deroot()
-        encode_splits(to_consume, taxa_block=taxa_block)
+        encode_splits(to_consume)
         if IS_DEBUG_LOGGING:
             assert to_consume._debug_tree_is_valid(splits=True)
         add_to_scm(to_modify, to_consume, rooted, taxa_block=taxa_block)

@@ -53,7 +53,7 @@ class TreeDistTest(unittest.TestCase):
         tree_list = [i[0] for i in d.trees_blocks]
         #print "\n".join([str(i) for i in tree_list])
         for i in tree_list:
-            encode_splits(i, taxa_block=d.taxa_blocks[0])
+            encode_splits(i)
         assert_approx_equal(treedists.euclidean_distance(tree_list[0], tree_list[1]), 2.0)
         assert_approx_equal(treedists.euclidean_distance(tree_list[0], tree_list[2]), math.sqrt(2.0))
         assert_approx_equal(treedists.euclidean_distance(tree_list[0], tree_list[3]), 0.97103099999999998)
@@ -70,11 +70,11 @@ class TreeDistTest(unittest.TestCase):
         taxa_block = d.taxa_blocks[0]
 
 
-        encode_splits(ref, taxa_block=taxa_block)
+        encode_splits(ref)
 
         o_newick = "((t1,t2),((t4,(t5,t6)),t3));"
         o_tree = dataio.trees_from_newick([o_newick], taxa_block=taxa_block).trees_blocks[0][0]
-        encode_splits(o_tree, taxa_block=taxa_block)
+        encode_splits(o_tree)
 
         self.assertEqual(treedists.symmetric_difference(o_tree, ref), 2)
 

@@ -52,7 +52,7 @@ class SplitTest(unittest.TestCase):
         tree_list = [i[0] for i in dataset.trees_blocks]
         #print "\n".join([str(i) for i in tree_list])
         for i in tree_list:
-            encode_splits(i, taxa_block=dataset.taxa_blocks[0])
+            encode_splits(i)
         root1 = tree_list[0].seed_node
         root1e = root1.edge
         fc1 = root1.child_nodes()[0]

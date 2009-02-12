@@ -82,7 +82,7 @@ class SplitFreqsTest(unittest.TestCase):
 
             for tree_filepath in tree_filepaths:
                 for tree in nexus.iterate_over_trees(open(tree_filepath, "rU"), taxa_block):
-                    splits.encode_splits(tree, taxa_block)
+                    splits.encode_splits(tree)
                     dp_sd.count_splits_on_tree(tree)               
                     
             assert dp_sd.total_trees_counted == paup_sd.total_trees_counted

@@ -33,7 +33,7 @@ import copy
 from dendropy import get_logger
 from dendropy.treedists import symmetric_difference
 from dendropy.splits import encode_splits, split_to_list, count_bits, lowest_bit_only
-
+from dendropy.trees import debug_check_tree
 import dendropy.tests
 _LOG = get_logger("TreeGenerationAndSimulation")
 
@@ -51,27 +51,35 @@ class TreeManipTest(unittest.TestCase):
         root = tree.seed_node
         fc = root.child_nodes()[0]
         collapse_edge(fc.edge)
+        debug_check_tree(tree)
         self.assertEqual(str(tree), "(t5,t6,((t4,(t2,t1)),t3))")
 
     def testCollapseClade(self):
         tree = dataio.trees_from_newick(["((t5,t6),((t4,(t2,t1)),t3));"]).trees_blocks[0][0]
+        encode_splits(tree)
         root = tree.seed_node
         root_children = root.child_nodes()
         fc = root_children[0]
         collapse_clade(fc)
+        debug_check_tree(tree, splits=True)
         self.assertEqual(str(tree), "((t5,t6),((t4,(t2,t1)),t3))")
         fc1 = root_children[1]
         fc1children = fc1.child_nodes()
         fc1child = fc1children[0]
         collapse_clade(fc1child)
+        debug_check_tree(tree)
         self.assertEqual(str(tree), "((t5,t6),((t4,t2,t1),t3))")
         collapse_clade(fc1)
+        debug_check_tree(tree)
         self.assertEqual(str(tree), "((t5,t6),(t4,t2,t1,t3))")
         collapse_clade(root)
+        debug_check_tree(tree)
+        debug_check_tree(tree)
         self.assertEqual(str(tree), "(t5,t6,t4,t2,t1,t3)")
         tree = dataio.trees_from_newick(["((t5,t6),((t4,(t2,t1)),t3));"]).trees_blocks[0][0]
         root = tree.seed_node
         collapse_clade(root)
+        debug_check_tree(tree)
         self.assertEqual(str(tree), "(t5,t6,t4,t2,t1,t3)")
 
     def testReroot(self):
@@ -80,11 +88,11 @@ class TreeManipTest(unittest.TestCase):
         tree = d.trees_blocks[0][0]
         taxa_block = d.taxa_blocks[0]
         ref = dataio.trees_from_newick([newick], taxa_block=taxa_block).trees_blocks[0][0]
-        encode_splits(ref, taxa_block=taxa_block)
+        encode_splits(ref)
 
         o_newick = "((t2, t1),((t4,(t5,t6)),t3));"
         o_tree = dataio.trees_from_newick([o_newick], taxa_block=taxa_block).trees_blocks[0][0]
-        encode_splits(o_tree, taxa_block=taxa_block)
+        encode_splits(o_tree)
         self.assertEqual(symmetric_difference(o_tree, ref), 2)
 
         taxa_labels = ["t%d" % i for i in xrange(1,7)]
@@ -94,7 +102,7 @@ class TreeManipTest(unittest.TestCase):
             tree.to_outgroup_position(nd)
             r_newick =  str(tree)
             r_tree = dataio.trees_from_newick([r_newick], taxa_block=taxa_block).trees_blocks[0][0]
-            encode_splits(r_tree, taxa_block=taxa_block)
+            encode_splits(r_tree)
             self.assertEqual(symmetric_difference(r_tree, ref), 0)
 
     def testRerootSplits(self):
@@ -103,8 +111,8 @@ class TreeManipTest(unittest.TestCase):
         tree = d.trees_blocks[0][0]
         taxa_block = d.taxa_blocks[0]
         ref = dataio.trees_from_newick([newick], taxa_block=taxa_block).trees_blocks[0][0]
-        encode_splits(tree, taxa_block=taxa_block)
-        encode_splits(ref, taxa_block=taxa_block)
+        encode_splits(tree)
+        encode_splits(ref)
         r = tree.seed_node
         curr_n = r.child_nodes()[1]
         _LOG.debug("num root_children = %d" % len(r.child_nodes()))

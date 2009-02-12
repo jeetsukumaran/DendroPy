@@ -129,7 +129,7 @@ def split_taxa_list(split_mask, taxa_block, index=0):
         index += 1
     return taxa
 
-def encode_splits(tree, taxa_block):
+def encode_splits(tree):
     """
     Processes splits on a tree, encoding them as bitmask on each edge.    
     Adds the following to each edge:
@@ -146,6 +146,7 @@ def encode_splits(tree, taxa_block):
             is complemented if the right-most bit is not '1' (or just
             the clade_mask otherwise).
     """
+    taxa_block = tree.taxa_block
     split_map = {}
     for edge in tree.postorder_edge_iter():
         child_nodes = edge.head_node.child_nodes()
@@ -243,7 +244,7 @@ class SplitDistribution(object):
         """
         self.total_trees_counted += 1
 #         tree.normalize_taxa(taxa_block=self.taxa_block)
-#         encode_splits(tree, self.taxa_block)  
+#         encode_splits(tree)
         for split in tree.split_edges:
             if not self.unrooted:
                 split = tree.split_edges[split].clade_mask

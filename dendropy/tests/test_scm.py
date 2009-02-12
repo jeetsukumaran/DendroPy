@@ -64,8 +64,8 @@ class SCMTest(unittest.TestCase):
         expected = trees[-1]
         input = trees[:-1]
         output = strict_consensus_merge(input, taxa_block=taxa_block)
-        encode_splits(output, taxa_block=taxa_block)
-        encode_splits(expected, taxa_block=taxa_block)
+        encode_splits(output)
+        encode_splits(expected)
         if symmetric_difference(expected, output) != 0:
             self.fail("\n%s\n!=\n%s" % (str(output), str(expected)))
 
