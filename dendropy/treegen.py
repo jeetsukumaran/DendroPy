@@ -306,3 +306,14 @@ def constrained_kingman(pop_tree,
         gene_trees_block.append(gene_tree)
     
     return gene_tree, poptree_copy
+
+
+def randomly_rotate(tree, rng=None):
+    "Randomly rotates the branches around all internal nodes in the `tree`"
+    if rng is None:
+        rng = GLOBAL_RNG # use the global rng by default
+    internal_nodes = tree.internal_nodes()
+    for nd in internal_nodes:
+        c = nd.child_nodes()
+        rng.shuffle(c)
+        nd.set_children(c)
