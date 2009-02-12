@@ -202,6 +202,12 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
     if IS_DEBUG_LOGGING:
         to_modify.debug_check_tree(splits=True, logger_obj=_LOG)
         to_consume.debug_check_tree(splits=True, logger_obj=_LOG)
+    
+    for k, v in to_mod_relevant_splits.iteritems():
+        _LOG.debug("%s in to_mod_relevant_splits" % format_split(k, taxa=taxa_block))
+    for k, v in to_consume_relevant_splits.iteritems():
+        _LOG.debug("%s in to_consume_relevant_splits" % format_split(k, taxa=taxa_block))
+
     # first we'll collapse all paths in the common leafset in to_modify that 
     #   are not in to_consume
     _collapse_paths_not_found(to_mod_relevant_splits, to_consume_relevant_splits, tmse)
@@ -222,15 +228,14 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
         
     for masked_split, to_consume_path in to_consume_relevant_splits.iteritems():
         to_mod_path = to_mod_relevant_splits.get(masked_split)
-        if True: #to_mod_path is None:
-            if IS_DEBUG_LOGGING:
-                _LOG.debug("%s = mask" % format_split(leaf_intersection, taxa=taxa_block))
-                _LOG.debug("%s = masked" % format_split(masked_split, taxa=taxa_block))
-                _LOG.debug("%s = raw" % format_split(to_consume_path[-1].clade_mask, taxa=taxa_block))
-                for k, v in to_mod_relevant_splits.iteritems():
-                    _LOG.debug("%s in to_mod_relevant_splits" % format_split(k, taxa=taxa_block))
+        if IS_DEBUG_LOGGING and to_mod_path is None: #to_mod_path is None:
+            _LOG.debug("%s = mask" % format_split(leaf_intersection, taxa=taxa_block))
+            _LOG.debug("%s = masked" % format_split(masked_split, taxa=taxa_block))
+            _LOG.debug("%s = raw" % format_split(to_consume_path[-1].clade_mask, taxa=taxa_block))
+            for k, v in to_mod_relevant_splits.iteritems():
+                _LOG.debug("%s in to_mod_relevant_splits" % format_split(k, taxa=taxa_block))
                 
-            assert to_mod_path is not None
+        assert to_mod_path is not None
         to_mod_head = to_mod_path[-1].head_node
         to_mod_head_edge = to_mod_head.edge
         to_consume_head = to_consume_path[-1].head_node

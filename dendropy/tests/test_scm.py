@@ -29,6 +29,7 @@ import sys
 import unittest
 import copy
 from dendropy import get_logger
+from dendropy.taxa import TaxaBlock
 from dendropy.splits import encode_splits
 from dendropy.dataio import trees_from_newick
 from dendropy.tests import is_test_enabled, TestLevel
@@ -53,6 +54,14 @@ class SCMTest(unittest.TestCase):
         if symmetric_difference(expected, output) != 0:
             self.fail("\n%s\n!=\n%s" % (str(output), str(expected)))
 
+    def testConflict(self):
+        o = ['(1,5,(2,((3,6),4)))', '(2,1,(3,(6,4)))', ]
+        n = [o[0], o[1], '(1,5,(2,(3,6,4)))']
+        dataset = trees_from_newick(n, taxa_block=TaxaBlock([str(i) for i in xrange(1,7)]))
+        trees = [i[0] for i in dataset.trees_blocks]
+        self.kernelOfTest(trees, dataset.taxa_blocks[0])
+_LOG.warn("hiddentests")
+class A:
     def testOrderDependent(self):
         o = ['(1,5,(2,(3,4))', '(2,4,(3,(6,7)))', '(3,4,(6,(7,8)))']
         n = [o[0], o[2], o[1], '(1,2,3,4,5,6,7,8)']

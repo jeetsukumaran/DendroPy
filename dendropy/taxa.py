@@ -105,10 +105,23 @@ class TaxaLinked(base.IdTagged):
             
 class TaxaBlock(list, base.IdTagged):
     "Taxon manager."
+    def _to_taxon(s):
+        if isinstance(s, Taxon):
+            return s
+        if isinstance(s, str):
+            return Taxon(label=s)
+        raise ValueError("Cannot convert %s to Taxon" % str(s))
 
+    _to_taxon = staticmethod(_to_taxon)
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid` and `label`."
-        list.__init__(self, *args)
+        la = len(args)
+        if la > 0:
+            if la > 1:
+                raise TypeError("TaxaBlock() takes at most 1 non-keyword argument %d were given" % la)
+            list.__init__(self, [TaxaBlock._to_taxon(i) for i in args[0]])
+        else:
+            list.__init__(self)
         base.IdTagged.__init__(self, oid=kwargs.get('oid'), label=kwargs.get('label'))
         self._is_mutable = kwargs.get('is_mutable', True) # immutable constraints not fully implemented -- only enforced at the add_taxon stage)
 
