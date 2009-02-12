@@ -478,7 +478,7 @@ class PaupWrapperDumbTests(unittest.TestCase):
                 100),   
             ]
         from dendropy.tests import is_test_enabled, TestLevel    
-        if is_test_enabled(TestLevel.NORMAL, _LOG, module_name=__name__, message="skipping large tree files"):
+        if is_test_enabled(TestLevel.SLOW, _LOG, module_name=__name__, message="skipping large tree files"):
             self.splits_test_cases.append(
                 PaupWrapperDumbTests.SplitsTestCase("terrarana.random.unrooted.100.tre", 
                     "terrarana.random.unrooted.100.tre", 

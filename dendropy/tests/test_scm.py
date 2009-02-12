@@ -99,7 +99,7 @@ class SCMTest(unittest.TestCase):
         self.kernelOfTest(trees, dataset.taxa_blocks[0])
         
     def testSimple(self):
-        if not is_test_enabled(TestLevel.NORMAL, _LOG, module_name=__name__, message="skipping all rotation scm tests"):
+        if not is_test_enabled(TestLevel.SLOW, _LOG, module_name=__name__, message="skipping all rotation scm tests"):
             return        
         clades = ['A', 'D', None, None]
         for m in [0, 1]:

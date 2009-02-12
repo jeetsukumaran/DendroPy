@@ -55,7 +55,7 @@ small_cases = [ ('feb032009.tre', 'feb032009.tre'),
                      ('primates.mcmct.trees.nexus', 'primates.chars.nexus'),
 ]
 test_cases = small_cases
-if is_test_enabled(TestLevel.NORMAL, _LOG, module_name=__name__, message="skipping large tree files"):
+if is_test_enabled(TestLevel.SLOW, _LOG, module_name=__name__, message="skipping large tree files"):
     test_cases.extend(test_cases)
 
 class SplitFreqsTest(unittest.TestCase):
