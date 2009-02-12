@@ -761,8 +761,10 @@ class NexusReader(datasets.Reader):
         taxa_block = self.get_default_taxa_block(taxa_block)
         token = self.stream_tokenizer.read_next_token()
         while token != ';':
-            taxon = taxa.Taxon(label=token)
-            taxa_block.append(taxon)
+            taxa_block.add_taxon(label=token)
+#             if token not in taxa_block.labels():
+#                 taxon = taxa.Taxon(label=token)
+#                 taxa_block.append(taxon)
             token = self.stream_tokenizer.read_next_token()
 
     def build_state_alphabet(self, char_block, symbols):
