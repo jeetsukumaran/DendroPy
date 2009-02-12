@@ -94,9 +94,29 @@ class TreeGenTest(unittest.TestCase):
         rng = DebuggingRandom()
         encode_splits(ref)
         encode_splits(changing)
+        orig_root = changing.seed_node
         for i in xrange(50):
             randomly_rotate(changing, rng=rng)
             self.assertNotEqual(str(changing), n)
+            self.assertEqual(orig_root, changing.seed_node)
+            changing.debug_check_tree(logger_obj=_LOG, splits=True)
+            if symmetric_difference(ref, changing) != 0:
+                self.fail("\n%s\n!=\n%s" % (str(ref), str(changing)))
+
+    def testRandomlyReorient(self):
+        n = '(Basichlsac,(Lamprothma,Mougeotisp),(((Haplomitr2,Petalaphy),((Angiopteri,(((Azollacaro,((Dennstasam,(Oleandrapi,Polypodapp)),Dicksonant)),Vittarifle),Botrychbit)),(Isoetesmel,((((Agathismac,Agathisova),Pseudotsu),(((Libocedrus,Juniperusc),Callitris),Athrotaxi)),((Liriodchi,Nelumbo),Sagittari))))),Thuidium));'
+        m = [n, n]
+        dataset = dataio.trees_from_newick(m)
+        trees = [i[0] for i in dataset.trees_blocks]
+        ref = trees[0]
+        changing = trees[1]
+        rng = DebuggingRandom()
+        encode_splits(ref)
+        encode_splits(changing)
+        for i in xrange(50):
+            randomly_reorient_tree(changing, rng=rng, splits=True)
+            self.assertNotEqual(str(changing), n)
+            changing.debug_check_tree(logger_obj=_LOG, splits=True)
             if symmetric_difference(ref, changing) != 0:
                 self.fail("\n%s\n!=\n%s" % (str(ref), str(changing)))
 

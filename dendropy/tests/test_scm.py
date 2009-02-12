@@ -34,6 +34,8 @@ from dendropy.splits import encode_splits
 from dendropy.dataio import trees_from_newick
 from dendropy.tests import is_test_enabled, TestLevel
 from dendropy.treedists import symmetric_difference
+from dendropy.tests.debugging_random import DebuggingRandom
+from dendropy.treegen import randomly_reorient_tree
 _LOG = get_logger("StrictConsensusMerger")
 
 ### MODULE THAT WE ARE TESTING ###
@@ -43,9 +45,6 @@ from dendropy.scripts.strict_consensus_merge import strict_consensus_merge
 _counter = 0
 class SCMTest(unittest.TestCase):
     def kernelOfTest(self, trees, taxa_block):
-        if 'TESTING_SCM' not in os.environ:
-            _LOG.warn("'TESTING_SCM' not in os.environ")
-            return
         expected = trees[-1]
         input = trees[:-1]
         output = strict_consensus_merge(input, taxa_block=taxa_block)
@@ -56,12 +55,29 @@ class SCMTest(unittest.TestCase):
 
     def testConflict(self):
         o = ['(1,5,(2,((3,6),4)))', '(2,1,(3,(6,4)))', ]
-        n = [o[0], o[1], '(1,5,(2,(3,6,4)))']
+        m = [o[0], o[1], '(1,5,(2,(3,6,4)))']
+        n = list(m)
         dataset = trees_from_newick(n, taxa_block=TaxaBlock([str(i) for i in xrange(1,7)]))
         trees = [i[0] for i in dataset.trees_blocks]
         self.kernelOfTest(trees, dataset.taxa_blocks[0])
-_LOG.warn("hiddentests")
-class A:
+        
+        rng = DebuggingRandom()
+        for i in xrange(50):
+            n = list(m)
+            dataset = trees_from_newick(n, taxa_block=TaxaBlock([str(i) for i in xrange(1,7)]))
+            trees = [i[0] for i in dataset.trees_blocks]
+            for t in trees:
+                randomly_reorient_tree(t, rng=rng)
+            self.kernelOfTest(trees, dataset.taxa_blocks[0])
+
+        
+        
+        o = ['(1,5,(3,((2,6),4)))', '(2,1,(3,(6,4)))', ]
+        n = [o[0], o[1], '((1,5),2,3,6,4)']
+        dataset = trees_from_newick(n, taxa_block=TaxaBlock([str(i) for i in xrange(1,7)]))
+        trees = [i[0] for i in dataset.trees_blocks]
+        self.kernelOfTest(trees, dataset.taxa_blocks[0])
+
     def testOrderDependent(self):
         o = ['(1,5,(2,(3,4))', '(2,4,(3,(6,7)))', '(3,4,(6,(7,8)))']
         n = [o[0], o[2], o[1], '(1,2,3,4,5,6,7,8)']
