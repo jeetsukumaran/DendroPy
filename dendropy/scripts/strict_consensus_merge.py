@@ -8,7 +8,7 @@ from dendropy.splits import encode_splits, split_to_list, count_bits, lowest_bit
 from dendropy import get_logger
 from dendropy.treemanip import collapse_clade, collapse_edge
 from dendropy.dataio import trees_from_newick
-from dendropy.trees import debug_check_tree, format_split
+from dendropy.trees import format_split
 
 _LOG = get_logger('scripts.strict_consensus_merge')
 verbose = False
@@ -156,15 +156,15 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
     to_consume_relevant_splits = {}
     if not rooted:
         if IS_DEBUG_LOGGING:
-            debug_check_tree(to_modify, splits=True, logger_obj=_LOG)
-            debug_check_tree(to_consume, splits=True, logger_obj=_LOG)
+            to_modify.debug_check_tree(splits=True, logger_obj=_LOG)
+            to_consume.debug_check_tree(splits=True, logger_obj=_LOG)
 
         reroot_on_lowest_common_index_path(to_modify, leaf_intersection)
         reroot_on_lowest_common_index_path(to_consume, leaf_intersection)
 
         if IS_DEBUG_LOGGING:
-            debug_check_tree(to_modify, splits=True, logger_obj=_LOG)
-            debug_check_tree(to_consume, splits=True, logger_obj=_LOG)
+            to_modify.debug_check_tree(splits=True, logger_obj=_LOG)
+            to_consume.debug_check_tree(splits=True, logger_obj=_LOG)
 
         to_mod_root = to_modify.seed_node
         assert(to_mod_root.edge.clade_mask == to_mod_split)
@@ -200,8 +200,8 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
         del path[:]
         path.extend(t)
     if IS_DEBUG_LOGGING:
-        debug_check_tree(to_modify, splits=True, logger_obj=_LOG)
-        debug_check_tree(to_consume, splits=True, logger_obj=_LOG)
+        to_modify.debug_check_tree(splits=True, logger_obj=_LOG)
+        to_consume.debug_check_tree(splits=True, logger_obj=_LOG)
     # first we'll collapse all paths in the common leafset in to_modify that 
     #   are not in to_consume
     _collapse_paths_not_found(to_mod_relevant_splits, to_consume_relevant_splits, tmse)

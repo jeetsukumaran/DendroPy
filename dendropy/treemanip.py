@@ -31,6 +31,8 @@ import copy
 import math
 
 from dendropy import trees
+from dendropy import get_logger
+_LOG = get_logger('dendropy.treemanip')
 
 
 def collapse_edge(edge):

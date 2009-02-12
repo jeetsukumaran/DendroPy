@@ -42,31 +42,31 @@ from dendropy.splits import *
 
 class SplitTest(unittest.TestCase):
 
-    def testEuclideanDist(self):
+    def testCladeMasks(self):
         dataset = dataio.trees_from_newick([
                                        "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);",
-                                       "((t5:2.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);",
-                                       "((t5:0.161175,t6:0.161175):0.392293,((t2:0.075411,(t4:0.104381,t1:0.075411):1):0.065840,t3:0.170221):0.383247);",
-                                       "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);",
                                        ])
         tree_list = [i[0] for i in dataset.trees_blocks]
-        #print "\n".join([str(i) for i in tree_list])
+        _LOG.error(str(tree_list[0].taxa_block))
         for i in tree_list:
+            _LOG.debug(i.get_indented_form())
             encode_splits(i)
+            _LOG.debug(i.get_indented_form(splits=True))
+            i.debug_check_tree(splits=True, logger_obj=_LOG)
         root1 = tree_list[0].seed_node
         root1e = root1.edge
-        fc1 = root1.child_nodes()[0]
-        fc1e = fc1.edge
         self.assertEqual(split_to_list(root1e.clade_mask), range(6))
         self.assertEqual(split_to_list(root1e.clade_mask, one_based=True), range(1,7))
         self.assertEqual(split_to_list(root1e.clade_mask, mask=21, one_based=True), [1, 3, 5])
         self.assertEqual(split_to_list(root1e.clade_mask, mask=21), [0, 2, 4])
         self.assertEqual(count_bits(root1e.clade_mask), 6)
 
-        self.assertEqual(split_to_list(fc1e.clade_mask), range(2))
-        self.assertEqual(split_to_list(fc1e.clade_mask, one_based=True), range(1,3))
-        self.assertEqual(split_to_list(fc1e.clade_mask, mask=21, one_based=True), [1])
-        self.assertEqual(split_to_list(fc1e.clade_mask, mask=21), [0])
+        fc1 = root1.child_nodes()[0]
+        fc1e = fc1.edge
+        self.assertEqual(split_to_list(fc1e.clade_mask), [0, 1])
+        self.assertEqual(split_to_list(fc1e.clade_mask, one_based=True), [1, 2])
+        self.assertEqual(split_to_list(fc1e.clade_mask, mask=0x15, one_based=True), [1])
+        self.assertEqual(split_to_list(fc1e.clade_mask, mask=0x15), [0])
         self.assertEqual(count_bits(fc1e.clade_mask), 2)
 
 

@@ -250,31 +250,26 @@ class Tree(base.IdTagged):
                     
     def deroot(self):
         "Converts a degree-2 node at the root to a degree-3 node."
-        old_seed_node = self.seed_node
-        if not old_seed_node:
+        seed_node = self.seed_node
+        if not seed_node:
             return
-        child_nodes = old_seed_node.child_nodes()
+        child_nodes = seed_node.child_nodes()
         if len(child_nodes) != 2:
             return
             
-        if len(child_nodes[0].child_nodes()) >= 2:
-            new_child = child_nodes[0]
-            new_seed = child_nodes[1]
-        elif len(child_nodes[1].child_nodes()) >= 2:
-            new_child = child_nodes[1]
-            new_seed = child_nodes[0]
+        if len(child_nodes[1].child_nodes()) >= 2:
+            to_keep, to_del = child_nodes
+        elif len(child_nodes[0].child_nodes()) >= 2:
+            to_del, to_keep = child_nodes
         else:
             return
-        new_edge_length = 0.0
-        if new_child.edge.length:
-            new_edge_length += new_child.edge.length
-        if new_seed.edge.length:
-            new_edge_length += new_seed.edge.length
-            new_seed.edge = None
-        old_seed_node.set_children([])
-        self.seed_node = new_seed
-        new_seed.parent_node = None
-        self.seed_node.add_child(new_child)                    
+        to_del_edge = to_del.edge
+        try:
+            to_keep.edge.length += to_del_edge.length
+        except:
+            pass
+        from dendropy.treemanip import collapse_edge
+        collapse_edge(to_del_edge)
                 
     ###########################################################################
     ## For debugging
@@ -353,9 +348,30 @@ class Tree(base.IdTagged):
         p.add_child(nd, edge_length=nd.edge.length, pos=0)
         
     def get_indented_form(self, **kwargs):
-        return self.seed_node.get_indented_form(**kwargs)
+        out = StringIO()
+        self.write_indented_form(out, **kwargs)
+        return out.getvalue()
+
     def write_indented_form(self, out, **kwargs):
-        return self.seed_node.get_indented_form(out, **kwargs)
+        if kwargs.get("splits"):
+            if not kwargs.get("taxa"):
+                kwargs["taxa"] = self.taxa_block
+        self.seed_node.write_indented_form(out, **kwargs)
+
+    def debug_check_tree(self, logger_obj=None, **kwargs):
+        import logging, inspect
+        if logger_obj and logger_obj.isEnabledFor(logging.DEBUG):
+            try:
+                assert self._debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
+            except:
+                calling_frame = inspect.currentframe().f_back
+                co = calling_frame.f_code
+                emsg = "%s\nCalled from file %s, line %d, in %s" % (msg, co.co_filename, calling_frame.f_lineno, co.co_name)
+                _LOG.debug("%s" % str(self))
+                _LOG.debug("%s" % self.get_indented_form(**kwargs))
+                if msg:
+                    _LOG.debug(msg)
+        assert self._debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
     def _debug_tree_is_valid(self, **kwargs):
         """Performs sanity-checks of the tree data structure.
         
@@ -791,7 +807,7 @@ class Node(taxa.TaxonLinked):
 
     def write_indented_form(self, out, **kwargs):
         indentation = kwargs.get("indentation", "    ")
-        clade_masks = kwargs.get("clade_mask", False)
+        clade_masks = kwargs.get("splits", True)
         level = kwargs.get("level", 0)
         ancestors = []
         siblings = []
@@ -800,6 +816,7 @@ class Node(taxa.TaxonLinked):
             n._write_indented_form_line(out, level, **kwargs)
             n, lev = _preorder_list_manip(n, siblings, ancestors)
             level += lev
+
     def _get_indented_form_line(self, level, **kwargs):
         out = StringIO()
         self._write_indented_form_line(out, level, **kwargs)
@@ -808,9 +825,8 @@ class Node(taxa.TaxonLinked):
     def _write_indented_form_line(self, out, level, **kwargs):
         indentation = kwargs.get("indentation", "    ")
         label = format_node(self, **kwargs)
-        if kwargs.get("clade_mask"):
-            from dendropy.splits import split_as_string
-            cm = "%s " % split_as_string(self.edge.clade_mask, kwargs.get("mask_width", 0))
+        if kwargs.get("splits"):
+            cm = "%s " % format_split(self.edge.clade_mask, **kwargs)
         else:
             cm = ""
         out.write("%s%s%s\n" % ( cm, indentation*level, label))
@@ -876,7 +892,7 @@ def _preorder_list_manip(n, siblings, ancestors):
             siblings.extend(ancestors.pop())
         else:
             return None, levels_moved
-    return siblings.pop(), levels_moved
+    return siblings.pop(0), levels_moved
 
 def format_node(nd, **kwargs):
     if nd.is_leaf():
@@ -889,20 +905,6 @@ def format_node(nd, **kwargs):
         label = "* %s" % str(nd.oid)
     return label
 
-def debug_check_tree(tree, logger_obj=None, **kwargs):
-    import logging, inspect
-    if logger_obj and logger_obj.isEnabledFor(logging.DEBUG):
-        try:
-            assert tree._debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
-        except:
-            calling_frame = inspect.currentframe().f_back
-            co = calling_frame.f_code
-            emsg = "%s\nCalled from file %s, line %d, in %s" % (msg, co.co_filename, calling_frame.f_lineno, co.co_name)
-            _LOG.debug("%s" % str(tree))
-            _LOG.debug("%s" % tree.get_indented_form(**kwargs))
-            if msg:
-                _LOG.debug(msg)
-    assert tree._debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
 
 def format_split(split, width=None, **kwargs):
     from dendropy.splits import split_as_string
@@ -910,3 +912,4 @@ def format_split(split, width=None, **kwargs):
         width = len(kwargs.get("taxa"))
     s = split_as_string(split, width, symbol1=kwargs.get("off_symbol"), symbol2=kwargs.get("on_symbol"))
     return s
+

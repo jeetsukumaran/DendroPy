@@ -129,14 +129,14 @@ def split_taxa_list(split_mask, taxa_block, index=0):
         index += 1
     return taxa
 
-def encode_splits(tree):
+def encode_splits(tree, create_dict=True, delete_degree_two=True):
     """
     Processes splits on a tree, encoding them as bitmask on each edge.    
     Adds the following to each edge:
         - `clade_mask` : a rooted split representation, i.e. a long/bitmask 
             where bits corresponding to indexes of taxa descended from this 
             edge are turned on
-    Adds the following to the tree:
+    If `create_dict` is True, then the following is added to the tree:
         - `split_edges`:
             [if `tree.is_rooted`]: a dictionary where keys are the
             splits and values are edges.        
@@ -145,29 +145,55 @@ def encode_splits(tree):
             are edges. A normalized split_mask is where the clade_mask
             is complemented if the right-most bit is not '1' (or just
             the clade_mask otherwise).
+    If `delete_degree_two` is True then degree 2 nodes (outdegree one in the
+        rooted case) will be deleted as they are encountered (this is required
+        if the split_edges dictionary is to refer to all edges in the tree).
     """
     taxa_block = tree.taxa_block
     if taxa_block is None:
         taxa_block = tree.infer_taxa_block()
-    split_map = {}
-    for edge in tree.postorder_edge_iter():
-        child_nodes = edge.head_node.child_nodes()
-        if child_nodes:
-            setattr(edge, "clade_mask", 0)
-            for child in child_nodes:
-                setattr(edge, "clade_mask", getattr(edge, "clade_mask") | getattr(child.edge, "clade_mask"))
+
+    if create_dict:
+        if tree.is_rooted:
+            tree.split_edges = {}
         else:
-            if edge.head_node.taxon:
-                setattr(edge, "clade_mask", taxa_block.taxon_bitmask(edge.head_node.taxon))
+            d = utils.NormalizedBitmaskDict(mask=taxa_block.all_taxa_bitmask())
+            tree.split_edges = d
+        split_map = tree.split_edges
+    if delete_degree_two and (not tree.is_rooted):
+        c = tree.seed_node.child_nodes()
+        if len(c) == 2:
+            tree.deroot()
+
+    for edge in tree.postorder_edge_iter():
+        cm = 0
+        h = edge.head_node
+        child_nodes = h.child_nodes()
+        nc = len(child_nodes)
+        if nc > 0:
+            if nc == 1 and delete_degree_two:
+                p = edge.tail_node
+                c = child_nodes[0]
+                try:
+                    c.edge.length += edge.length
+                except:
+                    pass
+                if p is not None:
+                    pos = p.child_nodes().index(h)
+                    p.add_child(c, pos=pos)
+                    p.remove_child(h)
+                else:
+                    assert h is tree.seed_node
             else:
-                #raise Exception('Leaf node with no taxon')
-                setattr(edge, "clade_mask", 0)
-        split_map[getattr(edge, "clade_mask")] = edge
-    if tree.is_rooted:
-        tree.split_edges = split_map
-    else:        
-        tree.split_edges = utils.NormalizedBitmaskDict(split_map, 
-                mask = taxa_block.all_taxa_bitmask())
+                for child in child_nodes:
+                    cm |= child.edge.clade_mask
+        else:
+            t = edge.head_node.taxon
+            if t:
+                cm = taxa_block.taxon_bitmask(t)
+        edge.clade_mask = cm
+        if create_dict:
+            split_map[cm] = edge
                 
 ############################################################################        
 ## SplitDistribution

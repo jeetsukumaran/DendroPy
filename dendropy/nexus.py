@@ -971,19 +971,20 @@ class NewickReader(datasets.Reader):
         dataset.add_trees_block(trees_block=trees_block, taxa_block=taxa_block)
         return dataset
 
-    def read_trees(self, file_obj=None, trees_block=None, taxa_block=None):
+    def read_trees(self, file_obj=None, taxa_block=None):
         """
         Instantiates and returns a TreesBlock object based
         on the Newick-formatted contents read from the file
         descriptor object `file_obj`.
         """
-        if trees_block is None:
-            trees_block = trees.TreesBlock()                    
-        if taxa_block is None:
-            taxa_block = taxa.TaxaBlock()
-        trees_block.taxa_block = taxa_block
+        trees_block = trees.TreesBlock()                    
+        if taxa_block is not None:
+            trees_block.taxa_block = taxa_block
         stream_tokenizer = NexusStreamTokenizer(file_obj)
         tree = parse_newick_tree_stream(stream_tokenizer, taxa_block=taxa_block)
+        if taxa_block is None:
+            taxa_block = tree.taxa_block
+            trees_block.taxa_block = taxa_block
         while tree is not None:
             trees_block.append(tree)
             tree = parse_newick_tree_stream(stream_tokenizer, taxa_block=taxa_block)
