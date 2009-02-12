@@ -181,6 +181,44 @@ class Dataset(object):
                                                 normalize_taxa_blocks=normalize_taxa_blocks)
         self.char_blocks.append(char_block)
         return char_block
+        
+    ###########################################################################
+    ## reader/writers
+    
+    def read(self, src, format):
+        """
+        Populates this dataset from `src`, given in `format`. `src`
+        is a file descriptor object, `format` is one of the supported file
+        format identifiers: 'NEXUS' (incl. 'NEWICK'), 'NEXML' etc.
+        """
+        from dendropy import dataio
+        reader = dataio.get_reader(format)
+        reader.read_dataset(src, self)
+        return self    
+        
+    def read_trees(self, src, format):
+        """
+        Populates this dataset with trees from `src`, given in `format`. `src`
+        is a file descriptor object, `format` is one of the supported file
+        format identifiers: 'NEXUS' (incl. 'NEWICK'), 'NEXML' etc. A list of
+        all trees read will be returned. In single-taxon-block data formats
+        (e.g., NEXUS, NEWICK), all trees will share the same existing TaxonBlock
+        (which will be expanded to include new taxa in the trees, if any).
+        """
+        from dendropy import dataio
+        reader = dataio.get_reader(format)
+        reader.include_characters = False
+        old_trees_block_len = len(self.trees_blocks)
+        reader.read_dataset(src, self)
+        new_trees_block_len = len(self.trees_blocks)
+        if new_trees_block_len > old_trees_block_len:
+            idxs = range(old_trees_block_len, new_trees_block_len)
+            new_trees = []
+            for idx in idxs:
+                new_trees.extend(self.trees_blocks[idx])
+            return new_trees
+        else:
+            return []
 
 class Reader(object):
     """
@@ -198,48 +236,43 @@ class Reader(object):
         self.tree_factory = trees.Tree
         self.edge_factory = trees.Edge
         self.node_factory = trees.Node
+        self.include_characters = True
+        self.include_trees = True
         
     def read_dataset(self, file_obj, dataset=None):
         """
         Implementing classes should instantiate and return a Dataset
         object based on contents read from the file descriptor object
-        `file_obj`.
+        `file_obj`. If `dataset` is given, then this will be populated,
+        otherwise a new one will be created. If `taxa_block` is given, 
+        then this will be used (and added to `dataset`.
         """
-        raise NotImplementedError        
+        raise NotImplementedError
 
-    def read_characters(self, file_obj, char_block_factory=None):
+    def read_characters(self, file_obj):
         """
         Instantiates and returns a list of CharacterBlock objects from a 
         file (descriptor).
         """
         dataset = Dataset()        
-        if char_block_factory is not None:
-            dataset.char_block_factory = char_block_factory
-        dataset = self.read_dataset(file_obj=file_obj, dataset=dataset)
+        dataset = self.read_dataset(file_obj=file_obj)
         return dataset.char_blocks
 
-    def read_taxa(self, file_obj, taxa_block_factory=None):
+    def read_taxa(self, file_obj):
         """
         Instantiates and returns a list of TaxaBlock objects from a 
         file (descriptor).
         """
         dataset = Dataset()        
-        if taxa_block_factory is not None:
-            dataset.taxa_block_factory = taxa_block_factory
-        dataset = self.read_dataset(file_obj=file_obj, dataset=dataset)
+        dataset = self.read_dataset(file_obj=file_obj)
         return dataset.taxa_blocks
 
-    def read_trees(self, file_obj, trees_block_factory=None, tree_factory=None):
+    def read_trees(self, file_obj):
         """
         Instantiates and returns a list of TreeBlock objects from a 
         file (descriptor).
         """
-        dataset = Dataset()        
-        if trees_block_factory is not None:
-            dataset.trees_block_factory = trees_block_factory
-        if tree_factory is not None:
-            dataset.tree_factory = tree_factory
-        dataset = self.read_dataset(file_obj=file_obj, dataset=dataset)
+        dataset = self.read_dataset(file_obj=file_obj)
         return dataset.trees_blocks
 
 class Writer(object):
