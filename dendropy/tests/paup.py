@@ -44,6 +44,7 @@ from dendropy import taxa
 from dendropy import splits
 from dendropy import utils
 
+
 if "PAUP_PATH" in os.environ:
     PAUP_PATH = os.environ["PAUP_PATH"]
 else:
@@ -476,12 +477,8 @@ class PaupWrapperDumbTests(unittest.TestCase):
                 "feb032009.splits.csv", 
                 100),   
             ]
-            
-        if dendropy.tests.FAST_TESTS_ONLY:
-            dendropy.tests.fast_testing_notification(_LOG, 
-                module_name=__name__, 
-                message="skipping large tree files")
-        else:                    
+        from dendropy.tests import is_test_enabled, TestLevel    
+        if is_test_enabled(TestLevel.NORMAL, _LOG, module_name=__name__, message="skipping large tree files"):
             self.splits_test_cases.append(
                 PaupWrapperDumbTests.SplitsTestCase("terrarana.random.unrooted.100.tre", 
                     "terrarana.random.unrooted.100.tre", 

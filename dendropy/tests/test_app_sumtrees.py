@@ -36,7 +36,13 @@ import sys
 from dendropy import nexus
 from dendropy import get_logger
 import dendropy.tests
-
+from dendropy.tests import is_test_enabled, TestLevel
+import itertools
+from dendropy.treedists import symmetric_difference
+from dendropy.splits import SplitDistribution
+from dendropy.treesum import TreeSummarizer
+from dendropy import dataio
+from dendropy.splits import encode_splits
 _LOG = get_logger("SumTreesTesting")
 
 
@@ -50,7 +56,7 @@ class SumTreesTest(unittest.TestCase):
         
     def runSumTrees(self, args):
         command = self.compose_sumtrees_command(args)
-        _LOG.info("\n"+command)
+        _LOG.debug("\n"+command)
         run = subprocess.Popen(command, 
                                shell=True,
                                stdout=subprocess.PIPE,
@@ -61,12 +67,8 @@ class SumTreesTest(unittest.TestCase):
         assert run.returncode == 0, "\nSumTrees exited with error: %s" % stderr
 
     def test3Feb2009MajRuleBug(self):
-        import itertools
-        from dendropy.treedists import symmetric_difference
-        from dendropy.splits import SplitDistribution
-        from dendropy.treesum import TreeSummarizer
-        from dendropy import dataio
-        from dendropy.splits import encode_splits
+        if not is_test_enabled(TestLevel.NORMAL, _LOG, module_name=__name__, message="skipping sumtree argument tests"):
+            return
         fn1 = dendropy.tests.data_source_path("maj-rule-bug1.tre")
         fn2 = dendropy.tests.data_source_path("maj-rule-bug2.tre")
         
@@ -95,15 +97,14 @@ class SumTreesTest(unittest.TestCase):
         self.assertEqual(0, symmetric_difference(firstMR, secondMR))
 
     def testSumTreeOptions(self):
-        if "DENDROPY_FAST_TESTS" in os.environ:
-            return
         support_file = dendropy.tests.data_source_path("anolis.mbcon.trees.nexus")
         target_file = dendropy.tests.data_source_path("anolis.mbcon.trees.nexus")
         outfile = tempfile.mktemp()
         
         # default options,
         self.runSumTrees([support_file])
-        
+        if not is_test_enabled(TestLevel.SLOW, _LOG, module_name=__name__, message="skipping sumtree argument tests"):
+            return
         # default options, multiple files
         self.runSumTrees([support_file, support_file, support_file])
                        

@@ -35,7 +35,7 @@ import sys
 from dendropy import nexus
 from dendropy import get_logger
 import dendropy.tests
-from dendropy.tests import paup
+from dendropy.tests import paup, is_test_enabled, TestLevel
 
 _LOG = get_logger("Splits")
 
@@ -44,31 +44,26 @@ from dendropy import treesum
 from dendropy import taxa   
 from dendropy import splits
             
+large_cases = [ #('7180.tre', '7180.tre'), 
+                     #('terrarana.random.unrooted.100.tre', 'terrarana.random.unrooted.100.tre'),
+                     ('terrarana.random.unrooted.30.tre', 'terrarana.random.rooted.30.tre'),                     
+                     ('anolis.mcmct.trees.nexus', 'anolis.chars.nexus'),                             
+]
+small_cases = [ ('feb032009.tre', 'feb032009.tre'),
+                     ('maj-rule-bug1.tre', 'maj-rule-bug1.tre'),
+                     ('maj-rule-bug2.tre', 'maj-rule-bug2.tre'),
+                     ('primates.mcmct.trees.nexus', 'primates.chars.nexus'),
+]
+test_cases = small_cases
+if is_test_enabled(TestLevel.NORMAL, _LOG, module_name=__name__, message="skipping large tree files"):
+    test_cases.extend(test_cases)
+
 class SplitFreqsTest(unittest.TestCase):
 
-    def setUp(self):
-        self.large_cases = [ #('7180.tre', '7180.tre'), 
-                             #('terrarana.random.unrooted.100.tre', 'terrarana.random.unrooted.100.tre'),
-                             ('terrarana.random.unrooted.30.tre', 'terrarana.random.rooted.30.tre'),                     
-                             ('anolis.mcmct.trees.nexus', 'anolis.chars.nexus'),                             
-        ]
-        self.small_cases = [ ('feb032009.tre', 'feb032009.tre'),
-                             ('maj-rule-bug1.tre', 'maj-rule-bug1.tre'),
-                             ('maj-rule-bug2.tre', 'maj-rule-bug2.tre'),
-                             ('primates.mcmct.trees.nexus', 'primates.chars.nexus'),
-        ]
-        
-        if dendropy.tests.FAST_TESTS_ONLY:
-            self.test_cases = self.small_cases
-            dendropy.tests.fast_testing_notification(_LOG, 
-                module_name=__name__, 
-                message="skipping large tree files")
-        else:
-            self.test_cases = self.small_cases + self.large_cases
     
     def testSplits(self):
         unrooted = True
-        for tc in self.test_cases:
+        for tc in test_cases:
             _LOG.info("Testing split counting on '%s'" % tc[0])
             tree_filepaths = [dendropy.tests.data_source_path(tc[0])]
             taxa_filepath = dendropy.tests.data_source_path(tc[1])

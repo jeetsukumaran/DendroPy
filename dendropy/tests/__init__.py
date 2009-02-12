@@ -1,4 +1,3 @@
-
 #! /usr/bin/env python
 
 ############################################################################
@@ -34,23 +33,45 @@ import sys
 
 from dendropy import get_logger
 from dendropy.utils import find_files
-
-if "DENDROPY_FAST_TESTS" in os.environ:
-    FAST_TESTS_ONLY = True
-else:
-    FAST_TESTS_ONLY = False
+_LOG = get_logger("tests")
     
 def fast_testing_notification(logger, module_name, message=None):
     if message is None:
         message = "tests skipped"
     logger.warning('FAST TEST MODE (%s): %s' % (module_name, message))
 
-def do_slow_test(logger=None, module_name="", message=None):
-    if FAST_TESTS_ONLY:
+class TestLevel:
+    FAST, NORMAL, SLOW, EXHAUSTIVE = 0, 10, 20, 30
+
+def get_current_testing_level():
+    l = os.environ.get("DENDROPY_TESTING_LEVEL")
+    if l is None:
+        if "DENDROPY_FAST_TESTS" in os.environ:
+            return TestLevel.FAST
+        return TestLevel.NORMAL
+    try:
+        return int(l)
+    except:
+        l = l.upper()
+        if l == "FAST":
+            return TestLevel.FAST
+        if l == "NORMAL":
+            return TestLevel.NORMAL
+        if l == "SLOW":
+            return TestLevel.SLOW
+        if l == "EXHAUSTIVE":
+            return TestLevel.EXHAUSTIVE
+        _LOG.warn("the value %s for DENDROPY_TESTING_LEVEL is not recognized.  Using NORMAL level" % l)
+    return TestLevel.NORMAL
+
+def is_test_enabled(level, logger=None, module_name="", message=None):
+    tl = get_current_testing_level()
+    if level > tl:
         if logger:
             fast_testing_notification(logger, module_name, message)
         return False
     return True
+
 def data_source_path(filename=None):
     if filename is None:
         filename = ""
@@ -79,7 +100,7 @@ def data_source_trees(format="*", heavy=False):
                                 expand_vars=True,
                                 include_hidden=False)
     return files                                
-_LOG = get_logger("tests")
+
 
 def data_target_path(filename=None):
     if filename is None:

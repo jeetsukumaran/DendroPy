@@ -114,7 +114,7 @@ def _collapse_paths_not_found(f, s, other_dict=None):
                 collapse_edge(edge)
             to_del.append(masked_split)
     for k in to_del:
-        del k
+        del f[k]
 
 
 def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
