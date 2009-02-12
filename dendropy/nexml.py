@@ -247,8 +247,10 @@ class NexmlReader(datasets.Reader):
         if dataset is None:
             dataset = datasets.Dataset()
         self.parse_taxa_blocks(xml_doc, dataset)
-        self.parse_char_blocks(xml_doc, dataset)
-        self.parse_trees_blocks(xml_doc, dataset)
+        if self.include_characters:
+            self.parse_char_blocks(xml_doc, dataset)
+        if self.include_trees:            
+            self.parse_trees_blocks(xml_doc, dataset)
         return dataset
         
     def parse_taxa_blocks(self, xml_doc, dataset):
