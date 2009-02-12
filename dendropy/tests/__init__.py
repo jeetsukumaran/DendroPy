@@ -35,23 +35,23 @@ from dendropy import get_logger
 from dendropy.utils import find_files
 _LOG = get_logger("tests")
     
-def fast_testing_notification(logger, module_name, message=None):
-    if message is None:
-        message = "tests skipped"
-    logger.warning('FAST TEST MODE (%s): %s' % (module_name, message))
 
 class TestLevel:
     FAST, NORMAL, SLOW, EXHAUSTIVE = 0, 10, 20, 30
-
-def get_current_testing_level():
-    l = os.environ.get("DENDROPY_TESTING_LEVEL")
-    if l is None:
-        if "DENDROPY_FAST_TESTS" in os.environ:
-            return TestLevel.FAST
-        return TestLevel.NORMAL
-    try:
-        return int(l)
-    except:
+    def name(i):
+        if i <= TestLevel.FAST:
+            return "FAST"
+        if i <= TestLevel.NORMAL:
+            return "NORMAL"
+        if i <= TestLevel.SLOW:
+            return "SLOW"
+        return "EXHAUSTIVE"
+    name = staticmethod(name)
+    def name_to_int(l):
+        try:
+            return int(l)
+        except:
+            pass
         l = l.upper()
         if l == "FAST":
             return TestLevel.FAST
@@ -61,6 +61,23 @@ def get_current_testing_level():
             return TestLevel.SLOW
         if l == "EXHAUSTIVE":
             return TestLevel.EXHAUSTIVE
+        raise ValueError("TestLevel %s unrecognized" % l)
+    name_to_int = staticmethod(name_to_int)
+    
+def fast_testing_notification(logger, module_name, message=None, level=TestLevel.FAST):
+    if message is None:
+        message = "tests skipped"
+    logger.warning('\nRunning in %s Testing Level. Skipping %s tests in %s: %s' % (TestLevel.name(get_current_testing_level()), TestLevel.name(level), module_name, message))
+
+def get_current_testing_level():
+    l = os.environ.get("DENDROPY_TESTING_LEVEL")
+    if l is None:
+        if "DENDROPY_FAST_TESTS" in os.environ:
+            return TestLevel.FAST
+        return TestLevel.NORMAL
+    try:
+        return TestLevel.name_to_int(l)
+    except:
         _LOG.warn("the value %s for DENDROPY_TESTING_LEVEL is not recognized.  Using NORMAL level" % l)
     return TestLevel.NORMAL
 
@@ -68,7 +85,7 @@ def is_test_enabled(level, logger=None, module_name="", message=None):
     tl = get_current_testing_level()
     if level > tl:
         if logger:
-            fast_testing_notification(logger, module_name, message)
+            fast_testing_notification(logger, module_name, message, level)
         return False
     return True
 
