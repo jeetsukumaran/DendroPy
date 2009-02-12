@@ -46,7 +46,7 @@ def random_taxa_block(ntax=10, label_prefix="T"):
     
 def star_tree(taxa_block):
     "Builds and returns a star tree from the given taxa block."
-    star_tree = trees.Tree()
+    star_tree = trees.Tree(taxa=taxa_block)
     for taxon in taxa_block:
         star_tree.seed_node.new_child(node_taxon=taxon)    
     return star_tree       
@@ -61,8 +61,9 @@ def uniform_pure_birth(taxa_block,
         rng = GLOBAL_RNG # use the global rng by default
     if tree_factory is not None:
         tree = tree_factory()
+        tree.taxa_block = taxa_block
     else:
-        tree = trees.Tree()
+        tree = trees.Tree(taxa=taxa_block)
     
     leaf_nodes = tree.leaf_nodes()
     count = 0

@@ -147,6 +147,8 @@ def encode_splits(tree):
             the clade_mask otherwise).
     """
     taxa_block = tree.taxa_block
+    if taxa_block is None:
+        taxa_block = tree.infer_taxa_block()
     split_map = {}
     for edge in tree.postorder_edge_iter():
         child_nodes = edge.head_node.child_nodes()

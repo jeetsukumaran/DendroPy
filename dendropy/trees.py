@@ -56,13 +56,22 @@ class TreesBlock(list, taxa.TaxaLinked):
         if clear:            
             taxa_block.clear()
         for tree in self:
-            print tree.taxa_block.oid
             tree.normalize_taxa(taxa_block)
-            print tree.taxa_block.oid
         taxa_block.sort()
         self.taxa_block = taxa_block
         return taxa_block        
 
+    def __setitem__(self, key, tree):
+        """
+        Makes sure tree.taxa_block = self.taxa_block.
+        """
+        if tree.taxa_block is not self.taxa_block:
+            tb_mutable = self.taxa_block._is_mutable
+            self.taxa_block._is_mutable = True
+            tree.normalize_taxa(self.taxa_block)
+            self.taxa_block._is_mutable = tb_mutable
+        list.__setitem__(self, key, tree)
+        
 ##############################################################################
 ## Tree
 
@@ -96,7 +105,7 @@ class Tree(base.IdTagged):
     ###########################################################################
     ## Special/Lifecycle methods
     
-    def __init__(self, oid=None, label=None, seed_node=None):
+    def __init__(self, oid=None, label=None, seed_node=None, taxa=None):
         """
         Initializes a Tree object by defining a base node which must
         be of type `Node` or derived from `Node`.
@@ -109,7 +118,7 @@ class Tree(base.IdTagged):
             self.seed_node = seed_node
         else:
             self.seed_node = Node(oid='n0', edge=Edge())
-            
+        self.taxa_block = taxa
     def __str__(self):
         "Dump Newick string."
         return self.compose_newick()
@@ -221,6 +230,7 @@ class Tree(base.IdTagged):
             if node.taxon and (node.taxon not in taxa_block):
                 taxa_block.append(node.taxon)
         taxa_block.sort()
+        self.taxa_block = taxa_block
         return taxa_block
         
     def normalize_taxa(self, taxa_block):

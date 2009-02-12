@@ -207,8 +207,7 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
     tree = trees.Tree()
     if taxa_block is None:
         taxa_block = taxa.TaxaBlock()    
-    else:
-        tree.taxa_block = taxa_block
+    tree.taxa_block = taxa_block
     child_nodes = []    
     while token and token != ';' and token != ':':        
         # process nodes until no more tokens, end of tree

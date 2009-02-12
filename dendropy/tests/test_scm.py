@@ -31,7 +31,7 @@ import copy
 from dendropy import get_logger
 from dendropy.splits import encode_splits
 from dendropy.dataio import trees_from_newick
-from dendropy.tests import do_slow_test
+from dendropy.tests import is_test_enabled, TestLevel
 from dendropy.treedists import symmetric_difference
 _LOG = get_logger("StrictConsensusMerger")
 
@@ -41,6 +41,18 @@ from dendropy.scripts.strict_consensus_merge import strict_consensus_merge
 
 _counter = 0
 class SCMTest(unittest.TestCase):
+    def kernelOfTest(self, trees, taxa_block):
+        if 'TESTING_SCM' not in os.environ:
+            _LOG.warn("'TESTING_SCM' not in os.environ")
+            return
+        expected = trees[-1]
+        input = trees[:-1]
+        output = strict_consensus_merge(input, taxa_block=taxa_block)
+        encode_splits(output)
+        encode_splits(expected)
+        if symmetric_difference(expected, output) != 0:
+            self.fail("\n%s\n!=\n%s" % (str(output), str(expected)))
+
     def testOrderDependent(self):
         o = ['(1,5,(2,(3,4))', '(2,4,(3,(6,7)))', '(3,4,(6,(7,8)))']
         n = [o[0], o[2], o[1], '(1,2,3,4,5,6,7,8)']
@@ -57,17 +69,6 @@ class SCMTest(unittest.TestCase):
         dataset = trees_from_newick(o + [expected])
         trees = [i[0] for i in dataset.trees_blocks]
         self.kernelOfTest(trees, dataset.taxa_blocks[0])
-    def kernelOfTest(self, trees, taxa_block):
-        if 'TESTING_SCM' not in os.environ:
-            _LOG.warn("'TESTING_SCM' not in os.environ")
-            return
-        expected = trees[-1]
-        input = trees[:-1]
-        output = strict_consensus_merge(input, taxa_block=taxa_block)
-        encode_splits(output)
-        encode_splits(expected)
-        if symmetric_difference(expected, output) != 0:
-            self.fail("\n%s\n!=\n%s" % (str(output), str(expected)))
 
     def testPolytomy(self):
         dataset = trees_from_newick([
@@ -98,7 +99,7 @@ class SCMTest(unittest.TestCase):
         self.kernelOfTest(trees, dataset.taxa_blocks[0])
         
     def testSimple(self):
-        if not do_slow_test(_LOG, __name__, "skipping all rotation scm tests"):
+        if not is_test_enabled(TestLevel.SLOW, _LOG, module_name=__name__, message="skipping all rotation scm tests"):
             return        
         clades = ['A', 'D', None, None]
         for m in [0, 1]:

@@ -36,7 +36,7 @@ from dendropy import dataio
 from dendropy import get_logger
 _LOG = get_logger("CharacterSimulationAndGeneration")
 
-from dendropy.tests import paup, do_slow_test
+from dendropy.tests import paup, is_test_enabled, TestLevel
 from dendropy import chargen
 
 tree_model_string = """
@@ -56,7 +56,7 @@ begin trees;
 end;
 """
 
-if do_slow_test(_LOG, __name__, "skipping all sequence generation frequency checking"):
+if is_test_enabled(TestLevel.SLOW, _LOG, __name__, "skipping all sequence generation frequency checking"):
 
     class CharGenTest(unittest.TestCase):
     
