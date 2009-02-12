@@ -61,6 +61,17 @@ class TreesBlock(list, taxa.TaxaLinked):
         self.taxa_block = taxa_block
         return taxa_block        
 
+    def __setitem__(self, key, tree):
+        """
+        Makes sure tree.taxa_block = self.taxa_block.
+        """
+        if tree.taxa_block is not self.taxa_block:
+            tb_mutable = self.taxa_block._is_mutable
+            self.taxa_block._is_mutable = True
+            tree.normalize_taxa(self.taxa_block)
+            self.taxa_block._is_mutable = tb_mutable
+        list.__setitem__(self, key, tree)
+        
 ##############################################################################
 ## Tree
 
