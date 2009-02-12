@@ -7,7 +7,6 @@ from dendropy import dataio
 from dendropy.splits import encode_splits, split_to_list, count_bits, lowest_bit_only
 from dendropy import get_logger
 from dendropy.treemanip import collapse_clade, collapse_edge
-from dendropy.dataio import trees_from_newick
 from dendropy.trees import format_split
 
 _LOG = get_logger('scripts.strict_consensus_merge')
@@ -15,7 +14,7 @@ verbose = False
 IS_DEBUG_LOGGING = _LOG.isEnabledFor(logging.DEBUG)
 
 from dendropy.utils import NormalizedBitmaskDict
-g_taxa_block = None # temp hack
+
 def reroot_on_lowest_common_index_path(t, common_mask):
     """This operation is only for unrooted trees that are being merged using
     SCM. The path the separates the lowest index taxon in the leaf set 
@@ -117,9 +116,11 @@ def _collapse_paths_not_found(f, s, other_dict=None):
         del f[k]
 
 
-def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
+def add_to_scm(to_modify, to_consume, rooted=False):
     """Adds the tree `to_consume` to the tree `to_modify` in a strict consensus
     merge operation.  Both trees must have had encode_splits called on them."""
+    assert(to_modify.taxa_block is to_consume.taxa_block)
+    taxa_block = to_consume.taxa_block
     if rooted:
         raise NotImplementedError("rooted form of add_to_scm not implemented")
     to_mod_root = to_modify.seed_node
@@ -274,15 +275,13 @@ def add_to_scm(to_modify, to_consume, rooted=False, taxa_block=None):
     encode_splits(to_modify)
                 
     
-def strict_consensus_merge(trees_to_merge, taxa_block, copy_trees=False, rooted=False):
+def strict_consensus_merge(trees_to_merge, copy_trees=False, rooted=False):
     """Returns a tree that is the strict consensus merger of the input trees.
     
     If copy_trees is True then the trees will be copied before the merger 
     operation, if the `copy_trees` is False then the input trees will be 
     destroyed by the operation (and the modified first tree will be returned).
     """
-    global g_taxa_block
-    g_taxa_block = taxa_block
     if copy_trees:
         tree_list = [copy.copy(i) for i in trees_to_merge]
     else:
@@ -294,7 +293,6 @@ def strict_consensus_merge(trees_to_merge, taxa_block, copy_trees=False, rooted=
         return tree_list[0]
     tree_iter = iter(tree_list)
     to_modify = tree_iter.next()
-    to_modify.taxa_block = taxa_block
     
     if rooted:
         raise NotImplementedError("Rooted SCM is not implemented")
@@ -304,13 +302,12 @@ def strict_consensus_merge(trees_to_merge, taxa_block, copy_trees=False, rooted=
     if IS_DEBUG_LOGGING:
         assert to_modify._debug_tree_is_valid(splits=False)
     for to_consume in tree_iter:
-        to_consume.taxa_block = taxa_block
         if not rooted:
             to_consume.deroot()
         encode_splits(to_consume)
         if IS_DEBUG_LOGGING:
             assert to_consume._debug_tree_is_valid(splits=True)
-        add_to_scm(to_modify, to_consume, rooted, taxa_block=taxa_block)
+        add_to_scm(to_modify, to_consume, rooted)
         if IS_DEBUG_LOGGING:
             assert to_modify._debug_tree_is_valid(splits=False)
 
@@ -318,17 +315,39 @@ def strict_consensus_merge(trees_to_merge, taxa_block, copy_trees=False, rooted=
 
 
 if __name__ == '__main__':
-
+    from dendropy.dataio import trees_from_newick, dataset_from_file
     from optparse import OptionParser
     parser = OptionParser()
+    parser.add_option('-f', '--format', dest='format',
+                        type='str', default="newick", help='The input format') 
     (options, args) = parser.parse_args()
-    if len(args) > 0:
-        newick = args
+    if len(args) == 0:
+        sys.exit("Expecting a filename as an argument")
+    format = options.format.upper()
+
+    trees = []
+    if format == "NEXUS" or format == "NEXML":
+        for fn in args:
+            fo = open(f, "rU")
+            d = dataset_from_file(fo, format=format)
+            t = []
+            for tb in d.trees_blocks:
+                t.extend(tb)
+            trees.extend(t)
+    elif format == "PHYLIP" or format == "NEWICK":
+        newicks = []
+        for f in args:
+            fo = open(f, "rU")
+            for line in fo:
+                l = line.strip()
+                if l:
+                    newicks.append(l)
+        dataset = trees_from_newick(newicks)
+        trees = [i[0] for i in dataset.trees_blocks]
     else:
-        newick = sys.stdin.readlines()
-    dataset = trees_from_newick(newick)
-    trees = [i[0] for i in dataset.trees_blocks]
-    o = strict_consensus_merge(trees, taxa_block=dataset.taxa_blocks[0])
+        sys.exit("Unknown format %s" % format)
+    
+    o = strict_consensus_merge(trees)
     sys.stdout.write("%s;\n" % str(o))
 
 
