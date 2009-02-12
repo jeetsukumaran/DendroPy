@@ -56,9 +56,7 @@ class TreesBlock(list, taxa.TaxaLinked):
         if clear:            
             taxa_block.clear()
         for tree in self:
-            print tree.taxa_block.oid
             tree.normalize_taxa(taxa_block)
-            print tree.taxa_block.oid
         taxa_block.sort()
         self.taxa_block = taxa_block
         return taxa_block        
