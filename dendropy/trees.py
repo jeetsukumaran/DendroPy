@@ -137,6 +137,10 @@ class Tree(base.IdTagged):
         "Returns list of leaf_nodes on the tree."
         return [leaf for leaf in self.leaf_iter()]
 
+    def internal_nodes(self):
+        "Returns list of internal node in the tree."
+        return self.nodes(filter_fn=lambda x : not x.is_leaf())
+    
     def find_node(self, filter_fn):
         """
         Finds the first node for which filter_fn(node) = True.
@@ -277,24 +281,24 @@ class Tree(base.IdTagged):
     def compose_newick(self, **kwargs):
         return self.seed_node.compose_newick(**kwargs)
                 
-    def reroot_at(self, nd, flip_splits=False, suppress_deg_two=True):
+    def reroot_at(self, nd, splits=False, delete_deg_two=True):
         """Takes an internal node, `nd` that must already be in the tree and 
         reroots the tree such that `nd` is the `seed_node` of the tree.
         
-        If `flip_splits` is True, then the edges' `split` and the tree's 
+        If `splits` is True, then the edges' `clade_mask` and the tree's 
             `split_edges` attributes will be updated."""
         old_par = nd.parent_node
         if old_par is None:
             return
-        if flip_splits:
+        if splits:
             taxa_mask = self.seed_node.edge.clade_mask
         to_edge_dict = None
-        if flip_splits:
+        if splits:
             to_edge_dict = getattr(self, "split_edges", None)
 
         if old_par is self.seed_node:
             root_children = old_par.child_nodes()
-            if len(root_children) == 2 and suppress_deg_two:
+            if len(root_children) == 2 and delete_deg_two:
                 # root (old_par) was of degree 2, thus we need to suppress the
                 #   node
                 fc = root_children[0]
@@ -307,7 +311,7 @@ class Tree(base.IdTagged):
                     sister.edge.length += nd.edge.length
                 edge_to_del = nd.edge
                 nd.edge = old_par.edge
-                if flip_splits:
+                if splits:
                     assert nd.edge.clade_mask == taxa_mask
                 if to_edge_dict:
                     del to_edge_dict[edge_to_del.clade_mask]
@@ -315,10 +319,10 @@ class Tree(base.IdTagged):
                 self.seed_node = nd
                 return
         else:
-            self.reroot_at(old_par, flip_splits=flip_splits, suppress_deg_two=suppress_deg_two)
+            self.reroot_at(old_par, splits=splits, delete_deg_two=delete_deg_two)
         old_par.edge, nd.edge = nd.edge, old_par.edge
         e = old_par.edge
-        if flip_splits:
+        if splits:
             if to_edge_dict:
                 del to_edge_dict[e.clade_mask]
             e.clade_mask = (~(e.clade_mask)) & taxa_mask
@@ -329,21 +333,21 @@ class Tree(base.IdTagged):
         nd.add_child(old_par, edge_length=e.length)
         self.seed_node = nd
 
-    def to_outgroup_position(self, nd, flip_splits=False, suppress_deg_two=True):
+    def to_outgroup_position(self, nd, splits=False, delete_deg_two=True):
         """Reroots the tree at the parend of `nd` and makes `nd` the first child
         of the new root.  This is just a convenience function to make it easy
         to place a clade as the first child under the root.
         
         Assumes that `nd` and `nd.parent_node` and are in the tree 
         
-        If `flip_splits` is True, then the edges' `split` and the tree's 
+        If `splits` is True, then the edges' `clade_mask` and the tree's 
             `split_edges` attributes will be updated.
-        If `suppress_deg_two` is True and the old root of the tree has an 
+        If `delete_deg_two` is True and the old root of the tree has an 
             outdegree of 2, then the node will be removed from the tree.
         """
         p = nd.parent_node
         assert p is not None
-        self.reroot_at(p, flip_splits=flip_splits)
+        self.reroot_at(p, splits=splits)
         p.remove_child(nd)
         p.add_child(nd, edge_length=nd.edge.length, pos=0)
         
@@ -366,11 +370,9 @@ class Tree(base.IdTagged):
             except:
                 calling_frame = inspect.currentframe().f_back
                 co = calling_frame.f_code
-                emsg = "%s\nCalled from file %s, line %d, in %s" % (msg, co.co_filename, calling_frame.f_lineno, co.co_name)
+                emsg = "\nCalled from file %s, line %d, in %s" % (co.co_filename, calling_frame.f_lineno, co.co_name)
                 _LOG.debug("%s" % str(self))
                 _LOG.debug("%s" % self.get_indented_form(**kwargs))
-                if msg:
-                    _LOG.debug(msg)
         assert self._debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
     def _debug_tree_is_valid(self, **kwargs):
         """Performs sanity-checks of the tree data structure.

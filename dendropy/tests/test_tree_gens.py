@@ -29,11 +29,15 @@ Tests tree generation.
 import random
 import unittest
 from dendropy import get_logger
+from dendropy.tests.debugging_random import DebuggingRandom
+import dendropy.dataio as dataio
+from dendropy.splits import encode_splits
+from dendropy.treedists import symmetric_difference
 import dendropy.tests
 _LOG = get_logger("TreeGenerationAndSimulation")
 
 ### MODULE THAT WE ARE TESTING ###
-from dendropy import treegen
+from dendropy.treegen import *
 ### MODULE THAT WE ARE TESTING ###
 
 class TreeGenTest(unittest.TestCase):
@@ -43,8 +47,8 @@ class TreeGenTest(unittest.TestCase):
         ages = [random.randint(1000,10000) for age in range(ntax)]
         ages.sort()
         pop_sizes = [random.randint(1000,10000) for pop in range(2*ntax+1)]
-        taxa_block = treegen.random_taxa_block(ntax)
-        species_tree = treegen.pop_gen_tree(taxa_block=taxa_block,
+        taxa_block = random_taxa_block(ntax)
+        species_tree = pop_gen_tree(taxa_block=taxa_block,
                                                  ages=ages,
                                                  num_genes=4,
                                                  pop_sizes=pop_sizes)
@@ -78,7 +82,43 @@ class TreeGenTest(unittest.TestCase):
         _LOG.debug("Generating 20 gene trees conditional on this species tree ...")
         gene_trees = []
         while len(gene_trees) < 20:
-            gene_trees.append(treegen.constrained_kingman(species_tree)[0])
+            gene_trees.append(constrained_kingman(species_tree)[0])
             
+    def testRandomlyRotate(self):
+        n = '(Basichlsac,(Lamprothma,Mougeotisp),(((Haplomitr2,Petalaphy),((Angiopteri,(((Azollacaro,((Dennstasam,(Oleandrapi,Polypodapp)),Dicksonant)),Vittarifle),Botrychbit)),(Isoetesmel,((((Agathismac,Agathisova),Pseudotsu),(((Libocedrus,Juniperusc),Callitris),Athrotaxi)),((Liriodchi,Nelumbo),Sagittari))))),Thuidium));'
+        m = [n, n]
+        dataset = dataio.trees_from_newick(m)
+        trees = [i[0] for i in dataset.trees_blocks]
+        ref = trees[0]
+        changing = trees[1]
+        rng = DebuggingRandom()
+        encode_splits(ref)
+        encode_splits(changing)
+        orig_root = changing.seed_node
+        for i in xrange(50):
+            randomly_rotate(changing, rng=rng)
+            self.assertNotEqual(str(changing), n)
+            self.assertEqual(orig_root, changing.seed_node)
+            changing.debug_check_tree(logger_obj=_LOG, splits=True)
+            if symmetric_difference(ref, changing) != 0:
+                self.fail("\n%s\n!=\n%s" % (str(ref), str(changing)))
+
+    def testRandomlyReorient(self):
+        n = '(Basichlsac,(Lamprothma,Mougeotisp),(((Haplomitr2,Petalaphy),((Angiopteri,(((Azollacaro,((Dennstasam,(Oleandrapi,Polypodapp)),Dicksonant)),Vittarifle),Botrychbit)),(Isoetesmel,((((Agathismac,Agathisova),Pseudotsu),(((Libocedrus,Juniperusc),Callitris),Athrotaxi)),((Liriodchi,Nelumbo),Sagittari))))),Thuidium));'
+        m = [n, n]
+        dataset = dataio.trees_from_newick(m)
+        trees = [i[0] for i in dataset.trees_blocks]
+        ref = trees[0]
+        changing = trees[1]
+        rng = DebuggingRandom()
+        encode_splits(ref)
+        encode_splits(changing)
+        for i in xrange(50):
+            randomly_reorient_tree(changing, rng=rng, splits=True)
+            self.assertNotEqual(str(changing), n)
+            changing.debug_check_tree(logger_obj=_LOG, splits=True)
+            if symmetric_difference(ref, changing) != 0:
+                self.fail("\n%s\n!=\n%s" % (str(ref), str(changing)))
+
 if __name__ == "__main__":
     unittest.main()

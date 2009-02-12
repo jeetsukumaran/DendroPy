@@ -306,3 +306,28 @@ def constrained_kingman(pop_tree,
         gene_trees_block.append(gene_tree)
     
     return gene_tree, poptree_copy
+
+
+def randomly_reorient_tree(tree, rng=None, splits=False):
+    """Randomly picks a new rooting position and rotates the branches around all 
+    internal nodes in the `tree`.
+    
+    If `splits` is True, the the `clade_mask` and `split_edges` attributes 
+        kept valid.
+    """
+    nd = rng.sample(tree.nodes(), 1)[0]
+    if nd.is_leaf():
+        tree.to_outgroup_position(nd, splits=splits)
+    else:
+        tree.reroot_at(nd, splits=splits)
+    randomly_rotate(tree, rng=rng)
+
+def randomly_rotate(tree, rng=None):
+    "Randomly rotates the branches around all internal nodes in the `tree`"
+    if rng is None:
+        rng = GLOBAL_RNG # use the global rng by default
+    internal_nodes = tree.internal_nodes()
+    for nd in internal_nodes:
+        c = nd.child_nodes()
+        rng.shuffle(c)
+        nd.set_children(c)

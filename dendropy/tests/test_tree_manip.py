@@ -51,7 +51,7 @@ class TreeManipTest(unittest.TestCase):
         self.assertEqual(str(tree), "((t5,t6),((t4,(t2,t1)),t3))")
         fc = root.child_nodes()[0]
         collapse_edge(fc.edge)
-        tree.debug_check_tree()
+        tree.debug_check_tree(logger_obj=_LOG)
         self.assertEqual(str(tree), "(t5,t6,((t4,(t2,t1)),t3))")
 
     def testCollapseClade(self):
@@ -67,19 +67,19 @@ class TreeManipTest(unittest.TestCase):
         fc2children = fc2.child_nodes()
         t124child = fc2children[0]
         collapse_clade(t124child)
-        tree.debug_check_tree()
+        tree.debug_check_tree(logger_obj=_LOG)
         self.assertEqual(str(tree), "(t5,t6,((t4,t2,t1),t3))")
         collapse_clade(fc2)
-        tree.debug_check_tree()
+        tree.debug_check_tree(logger_obj=_LOG)
         self.assertEqual(str(tree), "(t5,t6,(t4,t2,t1,t3))")
         collapse_clade(root)
-        tree.debug_check_tree()
-        tree.debug_check_tree()
+        tree.debug_check_tree(logger_obj=_LOG)
+        tree.debug_check_tree(logger_obj=_LOG)
         self.assertEqual(str(tree), "(t5,t6,t4,t2,t1,t3)")
         tree = dataio.trees_from_newick(["((t5,t6),((t4,(t2,t1)),t3));"]).trees_blocks[0][0]
         root = tree.seed_node
         collapse_clade(root)
-        tree.debug_check_tree()
+        tree.debug_check_tree(logger_obj=_LOG)
         self.assertEqual(str(tree), "(t5,t6,t4,t2,t1,t3)")
 
     def testReroot(self):
@@ -120,7 +120,7 @@ class TreeManipTest(unittest.TestCase):
         nbits = count_bits(tm)
         from dendropy.splits import split_as_string
         
-        tree.reroot_at(curr_n, flip_splits=True, suppress_deg_two=False)
+        tree.reroot_at(curr_n, splits=True, delete_deg_two=False)
         
         new_root = tree.seed_node
         self.assertEqual(tm, new_root.edge.clade_mask)
