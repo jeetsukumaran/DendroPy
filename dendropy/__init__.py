@@ -53,7 +53,7 @@ __all__ = ["base.py",
         "utils.py",
         "xmlparser.py",
 ]
-__version__ = "2.0.10"
+__version__ = "2.1.0a"
 PACKAGE_NAME = "DendroPy"
 PACKAGE_VERSION = __version__
 PACKAGE_AUTHOR = "Jeet Sukumaran and Mark T. Holder"
