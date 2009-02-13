@@ -104,6 +104,15 @@ class SCMTest(unittest.TestCase):
         trees = [i[0] for i in dataset.trees_blocks]
         self.kernelOfTest(trees)
 
+    def testInsertPath(self):
+        dataset = trees_from_newick([
+            '(((1,2),3),4,5);',
+            '(1,2,(3,(7,(8,(9,(4,5))))));',
+            '(1,2,(3,(7,(8,(9,(4,5))))));',
+            ])
+        trees = [i[0] for i in dataset.trees_blocks]
+        self.kernelOfTest(trees)
+
     def testPolytomy(self):
         dataset = trees_from_newick([
             '(Athrotaxi,(Liriodchi,Nelumbo2),Sagittari2);',
