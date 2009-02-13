@@ -1085,7 +1085,7 @@ class NewickWriter(datasets.Writer):
             statement = '(' + ','.join(subnodes) + ')'
             if self.internal_labels:
                 statement = statement + self.choose_display_tag(node)
-            if node.edge.length != None and self.edge_lengths:
+            if node.edge and node.edge.length != None and self.edge_lengths:
                 try:
                     statement =  "%s:%f" \
                                 % (statement, float(node.edge.length))
@@ -1096,7 +1096,7 @@ class NewickWriter(datasets.Writer):
         else:
             if self.internal_labels:
                 statement = self.choose_display_tag(node)
-            if node.edge.length != None and self.edge_lengths:
+            if node.edge and node.edge.length != None and self.edge_lengths:
                 try:
                     statement =  "%s:%0.10f" \
                                 % (statement, float(node.edge.length))
