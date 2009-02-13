@@ -116,7 +116,14 @@ def read_trees(file_obj, dataset=None):
     return dataset.trees_blocks
 
 ############################################################################
-## character mapping
+## support functions
+
+def _parse_taxon_label(token, stream_tokenizer):
+    if not stream_tokenizer.quoted_token and token.count("_"):
+        taxlabel = token.replace("_", " ")
+    else:
+        taxlabel = token
+    return taxlabel 
 
 def map_to_iupac_ambiguity_code(states):
     """
@@ -195,7 +202,7 @@ def parse_newick_string(tree_statement, taxa_block=None, translate_dict=None):
     tree = parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
                                      taxa_block=taxa_block,
                                      translate_dict=translate_dict)
-    return tree                                     
+    return tree    
     
 def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=None):
     """
@@ -229,7 +236,7 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
     for node in child_nodes:
         tree.seed_node.add_child(node)
     if token and not token in NexusStreamTokenizer.punctuation:
-        tree.seed_node.label = token
+        tree.seed_node.label = _parse_taxon_label(token, stream_tokenizer)
         token = stream_tokenizer.read_next_token()
     if token and token == ':':
         length = stream_tokenizer.read_next_token(ignore_punctuation='-')
@@ -256,9 +263,9 @@ def parse_newick_node_stream(stream_tokenizer, tree):
     while token and token != ')' and token != ',' and token != ";":  
         if token=="." or token not in NexusStreamTokenizer.punctuation:
             if node.label is None:
-                node.label = token
+                node.label = _parse_taxon_label(token, stream_tokenizer)
             else:                    
-                node.label = node.label + token
+                node.label = node.label + _parse_taxon_label(token, stream_tokenizer)
         if token == ':':
             edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-')
             try:
@@ -352,6 +359,7 @@ class NexusStreamTokenizer(object):
             self.stream_handle = stream_handle
             
     def reset(self):
+        self.quoted_token = False
         self.stream_handle = None
         self.current_file_char = None
         self.current_token = None
@@ -434,6 +442,7 @@ class NexusStreamTokenizer(object):
             if not self.eof:
                 if self.current_file_char == "'":
                     self.read_next_char()
+                    self.quoted_token = True
                     end_quote = False
                     while not end_quote and not self.eof:
                         if self.current_file_char == "'":
@@ -449,6 +458,7 @@ class NexusStreamTokenizer(object):
                     if preserve_quotes:
                         token = "'" + token + "'"
                 else:
+                    self.quoted_token = False
                     if NexusStreamTokenizer.is_punctuation(self.current_file_char) and self.current_file_char not in ignore_punctuation:
                         token = self.current_file_char
                         self.read_next_char()
@@ -600,8 +610,7 @@ class NexusReader(datasets.Reader):
                     token = self.consume_to_end_of_block(token)
 
         return self.dataset
-        
-        
+
     def consume_to_end_of_block(self, token):
         while not (token == 'END' or token == 'ENDBLOCK') \
             and not self.stream_tokenizer.eof \
@@ -775,20 +784,17 @@ class NexusReader(datasets.Reader):
         else:
             if taxa_block not in self.dataset.taxa_blocks:
                 self.dataset.taxa_blocks.insert(taxa_block)
-        return taxa_block
-
+        return taxa_block                          
+          
     def parse_taxlabels_statement(self, taxa_block=None):
         """
         Processes a TAXLABELS command. Assumes that the file reader is
         positioned right after the "TAXLABELS" token in a TAXLABELS command.
         """
-        taxa_block = self.get_default_taxa_block(taxa_block)
+        taxa_block = self.get_default_taxa_block(taxa_block)                
         token = self.stream_tokenizer.read_next_token()
         while token != ';':
-            taxa_block.add_taxon(label=token)
-#             if token not in taxa_block.labels():
-#                 taxon = taxa.Taxon(label=token)
-#                 taxa_block.append(taxon)
+            taxa_block.add_taxon(label=_parse_taxon_label(token, self.stream_tokenizer))        
             token = self.stream_tokenizer.read_next_token()
 
     def build_state_alphabet(self, char_block, symbols):
@@ -824,7 +830,7 @@ class NexusReader(datasets.Reader):
             if True: # future: trap and handle no labels, transpose etc.
                 token = self.stream_tokenizer.read_next_token()
                 while token != ';' and not self.stream_tokenizer.eof:
-                    taxon = taxa_block.get_taxon(label=token)
+                    taxon = taxa_block.get_taxon(label=_parse_taxon_label(token, self.stream_tokenizer))
                     if taxon not in char_block:
                         if self.include_characters:
                             char_block[taxon] = characters.CharacterDataVector(taxon=taxon)
