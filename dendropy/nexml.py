@@ -1085,7 +1085,7 @@ class NexmlWriter(datasets.Writer):
 
     def write_to_nexml_close(self, dest, indent_level=0):
         "Closing tag for a nexml element."
-        dest.write('%s</nex:nexml>' % (self.indent*indent_level))
+        dest.write('%s</nex:nexml>\n' % (self.indent*indent_level))
 
     def write_node(self, node, dest, indent_level=0):
         "Writes out a NEXML node element."
