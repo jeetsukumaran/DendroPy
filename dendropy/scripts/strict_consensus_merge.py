@@ -204,10 +204,6 @@ def add_to_scm(to_modify, to_consume, rooted=False):
         to_modify.debug_check_tree(splits=True, logger_obj=_LOG)
         to_consume.debug_check_tree(splits=True, logger_obj=_LOG)
     
-    for k, v in to_mod_relevant_splits.iteritems():
-        _LOG.debug("%s in to_mod_relevant_splits" % format_split(k, taxa=taxa_block))
-    for k, v in to_consume_relevant_splits.iteritems():
-        _LOG.debug("%s in to_consume_relevant_splits" % format_split(k, taxa=taxa_block))
 
     # first we'll collapse all paths in the common leafset in to_modify that 
     #   are not in to_consume
@@ -257,7 +253,7 @@ def add_to_scm(to_modify, to_consume, rooted=False):
                     for child in p.child_nodes():
                         if child is not avoid:
                             mid_node.add_child(child)
-                            mid_node.clade_mask |= child.edge.clade_mask
+                            mid_node.edge.clade_mask |= child.edge.clade_mask
             else:
                 # we have to move the subtrees from to_consume to to_modify
                 to_mod_edge = to_mod_path[0]
@@ -328,7 +324,7 @@ if __name__ == '__main__':
     trees = []
     if format == "NEXUS" or format == "NEXML":
         for fn in args:
-            fo = open(f, "rU")
+            fo = open(fn, "rU")
             d = dataset_from_file(fo, format=format)
             t = []
             for tb in d.trees_blocks:

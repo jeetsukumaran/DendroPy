@@ -95,6 +95,15 @@ class SCMTest(unittest.TestCase):
         trees = [i[0] for i in dataset.trees_blocks]
         self.kernelOfTest(trees)
 
+    def testMultiEdgeCollision(self):
+        dataset = trees_from_newick([
+            '(1,2,(3,(4,(5,6))));',
+            '(1,2,(3,(7,(8,6))));',
+            '(1,2,(3,(4,5,6,7,8)));',
+            ])
+        trees = [i[0] for i in dataset.trees_blocks]
+        self.kernelOfTest(trees)
+
     def testPolytomy(self):
         dataset = trees_from_newick([
             '(Athrotaxi,(Liriodchi,Nelumbo2),Sagittari2);',
