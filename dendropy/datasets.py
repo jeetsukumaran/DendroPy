@@ -194,7 +194,16 @@ class Dataset(object):
         from dendropy import dataio
         reader = dataio.get_reader(format)
         reader.read_dataset(src, self)
-        return self    
+        return self
+        
+    def from_string(self, string, format):
+        """
+        Populates this dataset from `string`, given in `format`. `src`
+        is a file descriptor object, `format` is one of the supported file
+        format identifiers: 'NEXUS' (incl. 'NEWICK'), 'NEXML' etc.
+        """
+        src = StringIO.StringIO(string)
+        return self.read(src, format)
         
     def read_trees(self, src, format):
         """
@@ -221,6 +230,15 @@ class Dataset(object):
             return new_trees
         else:
             return []
+            
+    def trees_from_string(self, string, format):
+        """
+        Populates this dataset from `string`, given in `format`. `src`
+        is a file descriptor object, `format` is one of the supported file
+        format identifiers: 'NEXUS' (incl. 'NEWICK'), 'NEXML' etc.
+        """
+        src = StringIO.StringIO(string)
+        return self.read_trees(src, format)            
             
     def write(self, dest, format):
         """
