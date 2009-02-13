@@ -36,6 +36,9 @@ from dendropy import nexml
 from dendropy import fasta
 from dendropy import phylip
 
+from dendropy import get_logger
+_LOG = get_logger('dataio')
+
 ############################################################################
 ## File Formats
 
@@ -71,6 +74,7 @@ def dataset_from_file(file_obj, format):
                    can be opened for reading using open().     
         `format` - file format specification               
     """
+    _LOG.warning("'dataio.dataset_from_file()' is deprecated; use 'read()' method of a Dataset object instead")
     reader = get_reader(format)
     return reader.read_dataset(source_file_handle(file_obj=file_obj))
     
@@ -80,6 +84,7 @@ def dataset_from_string(string, format):
         `string` - a string containing the data to be parsed.   
         `format` - file format specification               
     """
+    _LOG.warning("'dataio.dataset_from_string()' is deprecated; use 'from_string()' method of a Dataset object instead")
     reader = get_reader(format)
     return reader.read_dataset(source_file_handle(string=string))    
     
@@ -91,6 +96,7 @@ def trees_from_file(file_obj, format):
                    can be opened for reading using open().    
         `format` - file format specification               
     """
+    _LOG.warning("'dataio.trees_from_file()' is deprecated: use 'read_trees()' method of a Dataset object instead")
     reader = get_reader(format)
     return reader.read_trees(source_file_handle(file_obj=file_obj))
     
@@ -100,6 +106,7 @@ def trees_from_string(string, format):
         `string` - a string containing the data to be parsed.   
         `format` - file format specification               
     """
+    _LOG.warning("'dataio.trees_from_string()' is deprecated: use 'trees_from_string()' method of a Dataset object instead")
     reader = get_reader(format)
     return reader.read_trees(source_file_handle(string=string))     
     
@@ -112,6 +119,7 @@ def from_nexus(file_obj=None, string=None):
         `string` - a string containing the data to be parsed.
     Either `file_obj` or `string` must be given. If both are given, `file_obj` is used.                
     """
+    _LOG.warning("'dataio.from_nexus() is deprecated: use 'read()' method of a Dataset object instead")
     return nexus.read_dataset(source_file_handle(file_obj=file_obj, string=string))    
     
 ############################################################################
@@ -125,6 +133,7 @@ def store_dataset(dataset, format, dest=None):
     If `dest` is not given, then the dataset is written to a string and a string 
     is returned.
     """
+    _LOG.warning("'dataio.store_dataset()' is deprecated: use 'write()' method of a Dataset object instead")
     writer = get_writer(format)
     if dest is None:
         dest = StringIO()
@@ -136,6 +145,7 @@ def store_dataset(dataset, format, dest=None):
 
 def store_trees(trees_collection, format, dest=None):
     "Writes the list of trees `trees` to `dest` using writer."
+    _LOG.warning("'dataio.store_trees()' is deprecated: use 'write()' method of a Dataset object instead")
     if isinstance(trees_collection, TreesBlock):
         trees_block = trees_collection
     else:
@@ -151,6 +161,7 @@ def store_trees(trees_collection, format, dest=None):
                   
 def store_chars(char_block, format, dest=None):
     "Writes the CharacterBlock `char_block` to `dest` using writer."
+    _LOG.warning("'dataio.store_chars()' is deprecated: use 'write()' method of a Dataset object instead")
     dataset = Dataset()
     dataset.add_char_block(char_block=char_block)
     return store_dataset(dataset=dataset,
