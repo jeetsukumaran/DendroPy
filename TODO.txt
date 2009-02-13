@@ -26,3 +26,5 @@
 * remove TaxaBlock from SplitDistribution
 
 * hard-code PAUPWrapper test results to run if PAUP* not present
+
+* nexus reader now really only handles nucleotide character blocks 100% correctly; ambiguity/polymorphisms in proteins and standard characters will not be parsed
