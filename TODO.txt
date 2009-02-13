@@ -24,3 +24,5 @@
 * PAUPWrapper needs be able to return pairwise unweighted RF distances between trees given in a list
 
 * remove TaxaBlock from SplitDistribution
+
+* hard-code PAUPWrapper test results to run if PAUP* not present
