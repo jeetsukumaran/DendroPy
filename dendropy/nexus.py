@@ -664,6 +664,16 @@ class NexusReader(datasets.Reader):
                     self.gap_char = token
                 else:
                     raise self.syntax_exception('Expecting "=" after GAP keyword')
+            elif token == 'INTERLEAVE':
+                token = self.stream_tokenizer.read_next_token_ucase()
+                if token == '=':
+                    token = self.stream_tokenizer.read_next_token_ucase()
+                    if token.upper().startswith("N"):
+                        self.interleave = False
+                    else:
+                        self.interleave = True
+                else:
+                    self.interleave = True                    
             elif token == 'MISSING':
                 token = self.stream_tokenizer.read_next_token_ucase()
                 if token == '=':
