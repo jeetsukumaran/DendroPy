@@ -198,12 +198,14 @@ class Dataset(object):
         
     def read_trees(self, src, format):
         """
-        Populates this dataset with trees from `src`, given in `format`. `src`
-        is a file descriptor object, `format` is one of the supported file
-        format identifiers: 'NEXUS' (incl. 'NEWICK'), 'NEXML' etc. A list of
-        all trees read will be returned. In single-taxon-block data formats
-        (e.g., NEXUS, NEWICK), all trees will share the same existing TaxonBlock
-        (which will be expanded to include new taxa in the trees, if any).
+        Populates this dataset with trees from `src`, given in `format`.
+        `src` is a file descriptor object, `format` is one of the
+        supported file format identifiers: 'NEXUS' (incl. 'NEWICK'),
+        'NEXML' etc. A (plain) list of all trees read (including those
+        from multiple TreesBlocks will be returned). In
+        single-taxon-block data formats (e.g., NEXUS, NEWICK), all trees
+        will share the same existing TaxonBlock (which will be expanded
+        to include new taxa in the trees, if any).
         """
         from dendropy import dataio
         reader = dataio.get_reader(format)
@@ -219,6 +221,14 @@ class Dataset(object):
             return new_trees
         else:
             return []
+            
+    def write(self, dest, format):
+        """
+        Writes dataset to `dest`, a file descriptor object, in `format`.
+        """
+        from dendropy import dataio
+        writer = dataio.get_writer(format)
+        writer.write_dataset(self, dest)              
 
 class Reader(object):
     """
