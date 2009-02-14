@@ -474,7 +474,7 @@ def main_cli():
     if split_edges_dest:
         for split in split_distribution.splits:
             row = []
-            row.append(str(split))
+            row.append(nexus.split_to_newick(split, split_distribution.taxa_block))
             for edge_length in split_distribution.split_edge_lengths[split]:
                 row.append("%f" % edge_length)
             split_edges_dest.write("%s\n" % ("\t".join(row)))                
