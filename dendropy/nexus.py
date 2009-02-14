@@ -118,6 +118,23 @@ def read_trees(file_obj, dataset=None):
 ############################################################################
 ## support functions
 
+def split_to_newick(split, taxa_block):
+    """
+    Represents a split as a newick string.
+    """
+    taxlabels = taxa_block.labels()
+    idx = 0
+    left = []
+    right = []
+    while split:
+        if split & 1:
+            left.append(taxlabels[idx])
+        else:
+            right.append(taxlabels[idx])
+        idx += 1
+        split = split >> 1
+    return "((%s), (%s))" % (", ".join(left), ", ".join(right))
+
 def _parse_taxon_label(token, stream_tokenizer):
     if not stream_tokenizer.quoted_token and token.count("_"):
         taxlabel = token.replace("_", " ")
