@@ -41,7 +41,7 @@ except:
     pass
 import platform    
     
-import dendropy    
+import dendropy
 from dendropy import nexus
 from dendropy import splits
 from dendropy import treesum
@@ -50,14 +50,32 @@ from dendropy import trees
 
 _program_name = 'SumTrees'
 _program_subtitle = 'Phylogenetic Tree Split Support Summarization'
-_program_date = 'Jan 12 2009'
-_program_version = 'Version 1.0.5 (%s)' % _program_date
+_program_date = 'Feb 13 2009'
+_program_version = 'Version 1.1.0 (%s)' % _program_date
 _program_author = 'Jeet Sukumaran'
 _program_contact = 'jeetsukumaran@gmail.com'
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
                  "License GPLv3+: GNU GPL version 3 or later.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
                  "There is NO WARRANTY,\nto the extent permitted by law."
+                 
+def confirm_overwrite(filepath, 
+                      messenger, 
+                      replace_without_asking=False, 
+                      file_desc="Output"):
+    if os.path.exists(filepath):           
+        if replace_without_asking:
+            overwrite = 'y'
+        else:
+            messenger.send_error('%s file already exists: "%s"' % (file_desc, filepath))
+            overwrite = raw_input("Overwrite (y/N)? ")
+            messenger.send('')
+        if not overwrite.lower().startswith("y"):
+            return False
+        else:            
+            return True
+    else:
+        return True
 
 def show_splash(dest=sys.stderr, extended=False):
     lines = []
@@ -144,6 +162,7 @@ def main_cli():
                           + "of the given branch across all trees considered; this option forces branch " \
                           + "lengths to be unspecified (obviously, this is only applicable if you do not ask the support to be mapped as "  \
                           + "branch lengths)")
+                          
     output_tree_optgroup = OptionGroup(parser, 'Output Tree Options')    
     parser.add_option_group(output_tree_optgroup)          
     output_tree_optgroup.add_option('-l','--support-as-labels',  
@@ -168,7 +187,6 @@ def main_cli():
                       default=2,
                       help="number of decimal places in indication of support values [default=%default]")  
 
-                                            
     output_filepath_optgroup = OptionGroup(parser, 'Output File Options')    
     parser.add_option_group(output_filepath_optgroup)                      
     output_filepath_optgroup.add_option('-o','--output',  
@@ -204,7 +222,17 @@ def main_cli():
                       action='store_true', 
                       dest='replace',
                       default=False,
-                      help="replace/overwrite output file without asking if it already exists ")  
+                      help="replace/overwrite output file without asking if it already exists ")
+                      
+    other_optgroup = OptionGroup(parser, 'Other Options')    
+    parser.add_option_group(other_optgroup)
+    
+    other_optgroup.add_option('-e','--split-edges',  
+                  dest='split_edges_filepath',
+                  default=None,
+                  metavar='FILEPATH',
+                  help="if specified, a tab-delimited file of splits and their edge " \
+                    + "lengths across runs will be saved to FILEPATH")
                                               
     run_optgroup = OptionGroup(parser, 'Program Run Options')    
     parser.add_option_group(run_optgroup)         
@@ -283,16 +311,20 @@ def main_cli():
         output_dest = sys.stdout
     else:
         output_fpath = os.path.expanduser(os.path.expandvars(opts.output_filepath))
-        if os.path.exists(output_fpath):           
-            if opts.replace:
-                overwrite = 'y'
-            else:
-                messenger.send_error('Output path already exists: "%s"' % output_fpath)
-                overwrite = raw_input("Overwrite (y/N)? ")
-                messenger.send('')
-            if not overwrite.lower().startswith("y"):
-                sys.exit(1)
-        output_dest = open(output_fpath, 'w')                
+        if confirm_overwrite(output_fpath, messenger, opts.replace):
+            output_dest = open(output_fpath, "w")
+        else:
+            sys.exit(1)
+
+    if opts.split_edges_filepath:
+        split_edges_filepath = os.path.expanduser(os.path.expandvars(opts.split_edges_filepath))
+        if confirm_overwrite(split_edges_filepath, messenger, opts.replace):
+            split_edges_dest = open(split_edges_filepath, "w")
+        else:
+            sys.exit(1)
+    else:
+        split_edges_dest = None
+        
                 
     ###################################################
     # Main work begins here: Count the splits
@@ -382,8 +414,7 @@ def main_cli():
         comments.extend(report)
     messenger.send("")
                 
-    end_time = datetime.datetime.now()        
-    
+    end_time = datetime.datetime.now()            
    
     ###################################################
     #  RESULTS    
@@ -424,6 +455,8 @@ def main_cli():
             except:
                 username = "a user"
             nexus_writer.comment.append("%s %s by %s." % (_program_name, _program_version, _program_author))
+            nexus_writer.comment.append("Using DendroPy Version %s by Jeet Sukumaran and Mark T. Holder." 
+                % dendropy.PACKAGE_VERSION)
             python_version = sys.version.replace("\n", "").replace("[", "(").replace("]",")")            
             nexus_writer.comment.append("Running under Python %s on %s." % (python_version, sys.platform))               
             nexus_writer.comment.append("Executed on %s by %s@%s." % (platform.node(),  username, socket.gethostname()))         
@@ -437,7 +470,15 @@ def main_cli():
             nexus_writer.comment.append(opts.additional_comments)
             
         nexus_writer.write_dataset(output_dataset, output_dest)
-
+        
+    if split_edges_dest:
+        for split in split_distribution.splits:
+            row = []
+            row.append(str(split))
+            for edge_length in split_distribution.split_edge_lengths[split]:
+                row.append("%f" % edge_length)
+            split_edges_dest.write("%s\n" % ("\t".join(row)))                
+        
     if not opts.output_filepath:
         #messenger.send('<<<<<<<<<')     
         pass
