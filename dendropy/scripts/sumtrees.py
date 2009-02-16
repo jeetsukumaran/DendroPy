@@ -476,7 +476,7 @@ def main_cli():
             row = []
             row.append(nexus.split_to_newick(split, split_distribution.taxa_block))
             for edge_length in split_distribution.split_edge_lengths[split]:
-                row.append("%f" % edge_length)
+                row.append("%s" % edge_length)
             split_edges_dest.write("%s\n" % ("\t".join(row)))                
         
     if not opts.output_filepath:
