@@ -118,6 +118,7 @@ def read_trees(file_obj, dataset=None):
 ############################################################################
 ## support functions
 
+from dendropy import splits
 def split_to_newick(split, taxa_block):
     """
     Represents a split as a newick string.
@@ -126,13 +127,14 @@ def split_to_newick(split, taxa_block):
     idx = 0
     left = []
     right = []
-    while split:
+    while split >= 0 and idx < len(taxlabels):
         if split & 1:
             left.append(taxlabels[idx])
         else:
             right.append(taxlabels[idx])
         idx += 1
         split = split >> 1
+    assert ( len(left) + len(right) ) == len(taxlabels)
     return "((%s), (%s))" % (", ".join(left), ", ".join(right))
 
 def _parse_taxon_label(token, stream_tokenizer):
