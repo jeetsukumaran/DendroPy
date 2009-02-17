@@ -180,3 +180,12 @@ if not _user_ini_checked:
 
 if __name__ == "__main__":
     sys.stdout.write("%s %s\n" % (PACKAGE_NAME, PACKAGE_VERSION))
+
+def deprecation(message, logger_obj=None, stacklevel=3):
+    try:
+        import warnings
+        warnings.warn(message, DeprecationWarning, stacklevel=stacklevel)
+    except:
+        if logger_obj:
+            logger_obj.warning(message)
+    

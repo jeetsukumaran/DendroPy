@@ -28,7 +28,7 @@ import random
 import unittest
 import itertools
 from dendropy import get_logger
-from dendropy import dataio
+from dendropy.datasets import Dataset
 from dendropy.tests.debugging_random import DebuggingRandom
 from dendropy.tests.util_for_testing import assert_vec_approx_equal, assert_approx_equal
 import dendropy.tests
@@ -42,7 +42,8 @@ from dendropy.treecalc import pybus_harvey_gamma
 class CalcTreeTest(unittest.TestCase):
     def testPHGamma(self):
         newick = "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);"
-        tree = dataio.trees_from_string(string=newick, format="NEWICK")[0]
+        d = Dataset()
+        tree = d.trees_from_string(string=newick, format="NEWICK")[0]
         assert_approx_equal(pybus_harvey_gamma(tree), 0.546276)
 
 if __name__ == "__main__":

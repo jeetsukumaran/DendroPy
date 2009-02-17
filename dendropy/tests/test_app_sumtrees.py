@@ -43,6 +43,7 @@ from dendropy.splits import SplitDistribution
 from dendropy.treesum import TreeSummarizer
 from dendropy import dataio
 from dendropy.splits import encode_splits
+from dendropy.datasets import Dataset
 _LOG = get_logger("SumTreesTesting")
 
 
@@ -71,14 +72,12 @@ class SumTreesTest(unittest.TestCase):
             return
         fn1 = dendropy.tests.data_source_path("maj-rule-bug1.tre")
         fn2 = dendropy.tests.data_source_path("maj-rule-bug2.tre")
+        d = Dataset()
         
-        
-        tb1 = dataio.trees_from_file(open(fn1,"rU"),format="NEXUS")
-        tb2 = dataio.trees_from_file(open(fn2,"rU"),format="NEXUS")
-        tb1, tb2 = tb1[0], tb2[0]
-        taxa1 = tb1.taxa_block
-        tb2.normalize_taxa(taxa1, clear=False)
-        assert taxa1 == tb2.taxa_block
+        tb1 = d.read_trees(open(fn1,"rU"), format="NEXUS")
+        tb2 = d.read_trees(open(fn2,"rU"),format="NEXUS")
+        taxa1 = d.taxa_blocks[0]
+        assert taxa1 == tb2[0].taxa_block
         
         firstSD = SplitDistribution(taxa_block=taxa1)
         secondSD = SplitDistribution(taxa_block=taxa1)
