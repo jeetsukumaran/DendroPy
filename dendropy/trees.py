@@ -374,6 +374,7 @@ class Tree(base.IdTagged):
                 _LOG.debug("%s" % str(self))
                 _LOG.debug("%s" % self.get_indented_form(**kwargs))
         assert self._debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
+
     def _debug_tree_is_valid(self, **kwargs):
         """Performs sanity-checks of the tree data structure.
         
@@ -798,10 +799,12 @@ class Node(taxa.TaxonLinked):
                 s = ""
                 try:
                     s = float(sel)
+                    s = str(s)
                 except ValueError:
                     s = str(sel)
                 if s:
                     out.write(":%s" % s)
+
     def get_indented_form(self, **kwargs):
         out = StringIO()
         self.write_indented_form(out, **kwargs)

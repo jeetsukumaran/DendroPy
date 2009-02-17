@@ -36,6 +36,7 @@ from optparse import OptionParser
 import StringIO
 
 from dendropy import get_logger
+from dendropy import dataio
 from dendropy import get_logging_level
 
 import dendropy.tests
@@ -275,6 +276,22 @@ class TreeIOTest(unittest.TestCase):
                                                                           self.writers[format].__name__))
             for tfile in self.tree_files[format]:
                 self.round_trip_tree_file(tfile, self.readers[format], self.writers[format])
+    def testStoreEdgeLens(self):
+        n = '((((((t4:0.06759,t32:0.06759):0.198252,t39:0.265842):0.135924,((t9:0.244134,(((t23:0.014408,t49:0.014408):0.040121,t16:0.05453):0.156614,t2:0.211144):0.03299):0.013224,t34:0.257358):0.144408):0.112116,(((t45:0.110713,(t47:0.019022,t8:0.019022):0.09169):0.163042,((t1:0.168924,(((((t15:0.012356,t30:0.012356):0.000247,t18:0.012603):0.037913,t22:0.050516):0.076193,(t44:0.071301,t46:0.071301):0.055407):0.037072,(((((t50:0.00000,t29:0.00000):0.01744,t35:0.017441):0.066422,t10:0.083863):0.047231,((t6:0.012709,(t26:0.00805,t40:0.00805):0.004659):0.043941,t11:0.05665):0.074443):0.008316,t31:0.13941):0.024371):0.005144):0.025169,t33:0.194093):0.079662):0.183823,(t48:0.343218,((t41:0.032738,t27:0.032738):0.229887,((t5:0.030394,t43:0.030394):0.204863,((((t14:0.028794,t24:0.028794):0.002007,t3:0.030801):0.181488,t38:0.212289):0.017427,(t17:0.01869,t25:0.01869):0.211027):0.005541):0.027368):0.080592):0.11436):0.056304):0.078832,(t21:0.107754,t13:0.107754):0.48496):0.114273,((t36:0.352531,(((t12:0.042324,t7:0.042324):0.155519,t19:0.197843):0.016322,(t37:0.12614,t28:0.12614):0.088025):0.138366):0.147704,(t42:0.088633,t20:0.088633):0.411601):0.206753)'
+        tree = dataio.trees_from_string(string=n, format="NEWICK")[0]
+        for nd in tree.postorder_node_iter():
+            if nd is not tree.seed_node:
+                if nd.edge.length is None:
+                    _LOG.info("%s has edge length of None" % trees.format_node(nd))
+                    self.assertTrue(nd.edge.length is not None)
+
+        ts = str(tree)
+        tree = dataio.trees_from_string(string=ts, format="NEWICK")[0]
+        for nd in tree.postorder_node_iter():
+            if nd is not tree.seed_node:
+                if nd.edge.length is None:
+                    _LOG.warn("%s has edge length of None" % trees.format_node(nd))
+                    self.assertTrue(nd.edge.length is not None)
 
 def main_local():
     "Main CLI handler."
