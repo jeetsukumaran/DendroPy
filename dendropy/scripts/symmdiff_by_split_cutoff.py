@@ -195,18 +195,19 @@ def main_cli():
     sp_list = []
     for split, count in split_distribution.split_counts.iteritems():
         freq = count/n_read
-        m = split & taxa_mask
-        if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
-            if unrooted:
-                c = (~m) & taxa_mask
-                if (c-1) & c: # not singleton (i.e., one "0")
-                    if 1 & m:
-                        k = c
-                    else:
-                        k = m
-                    sp_list.append((freq, k, m))
-            else:
-                sp_list.append((freq, m, m))
+        if not splits.is_trivial_split(split, taxa_mask):
+            m = split & taxa_mask
+            if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
+                if unrooted:
+                    c = (~m) & taxa_mask
+                    if (c-1) & c: # not singleton (i.e., one "0")
+                        if 1 & m:
+                            k = c
+                        else:
+                            k = m
+                        sp_list.append((freq, k, m))
+                else:
+                    sp_list.append((freq, m, m))
     sp_list.sort(reverse=True)
     
     root = con_tree.seed_node
@@ -266,18 +267,19 @@ def main_cli():
     ref_set = set()
     for s in ref_tree.split_edges.iterkeys():
         m = s & taxa_mask
-        c = (~m) & taxa_mask
-        if (c-1) & c: # not singleton (i.e., one "0")
-            if 1 & m:
-                k = c
-            else:
-                k = m
+        if 1 & m:
+            k = (~m) & taxa_mask
+        else:
+            k = m
+        if not splits.is_trivial_split(k, taxa_mask):
             ref_set.add(k)
         
     all_set = set()
     compat_set = set()
+    
+    _LOG.debug("%d edges is the reference tree" % (len(ref_set)))
+
     print "freq\tcompatFP\tcompatFN\tcompatSD\tallFP\tallFN\tallSD"
-    print "1.1\t%d\t%d" % (len(ref_set.symmetric_difference(compat_set)), len(ref_set.symmetric_difference(all_set)) )
     for all_el, compat_el in itertools.izip(all_splits_by_freq, compat_splits_by_freq):
         freq = all_el[0]
         all_sp = all_el[1]
