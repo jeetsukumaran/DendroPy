@@ -224,7 +224,10 @@ class TreeSummarizer(object):
             if new_edge.clade_mask == split_to_add:
                 if include_edge_lengths:
                     elen = split_distribution.split_edge_lengths[split_in_dict]
-                    new_edge.length = float(sum(elen)) / len(elen)
+                    if len(elen) > 0:
+                        new_edge.length = float(sum(elen)) / len(elen)
+                    else:
+                        new_edge.length = None
                 for child in new_node_children:
                     parent_node.remove_child(child)
                     new_node.add_child(child)
@@ -240,7 +243,10 @@ class TreeSummarizer(object):
             self.map_split_support_to_node(node, 1.0)
             if include_edge_lengths:
                 elen = split_distribution.split_edge_lengths.get(split, [0.0])
-                node.edge.length = float(sum(elen)) / len(elen)
+                if len(elen) > 0:
+                    node.edge.length = float(sum(elen)) / len(elen)
+                else:
+                    new_edge.length = None
         return con_tree
 
     def count_splits_on_trees(self, tree_files, tree_iterator, split_distribution=None, taxa_block=None):

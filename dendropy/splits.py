@@ -286,8 +286,9 @@ class SplitDistribution(object):
                     self.split_edge_lengths[split] = []    
                 if tree.split_edges[split].length is not None: 
                     self.split_edge_lengths[split].append(tree.split_edges[split].length)
-                else:
-                    self.split_edge_lengths[split].append(0.0)
+                # for correct behavior when some or all trees have no edge lengths
+#                 else:
+#                     self.split_edge_lengths[split].append(0.0)
             if not self.ignore_node_ages:  
                 if split not in self.split_node_ages:
                     self.split_node_ages[split] = []
