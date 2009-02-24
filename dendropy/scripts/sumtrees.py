@@ -396,10 +396,7 @@ def main_cli():
         comments.append(support_indication + ".")
     else:
         messenger.send("### CONSTRUCTING CLADE CONSENSUS TREE ###\n")
-        if opts.min_clade_freq < 0.5:
-            messenger.send("Minimum frequency threshold for clade inclusion is greater than 0.5: reset to 0.5.", force=True)
-            min_freq = 0.5
-        elif opts.min_clade_freq > 1.0:
+        if opts.min_clade_freq > 1.0:
             messenger.send("Maximum frequency threshold for clade inclusion is 1.0: reset to 1.0.", force=True)
             min_freq = 1.0
         else:            
