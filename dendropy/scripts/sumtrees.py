@@ -23,7 +23,6 @@
 """
 CLI wrapper for tree summarization.
 """
-
 __DEBUG__ = True
 
 import os
