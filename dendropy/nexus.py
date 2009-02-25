@@ -38,7 +38,8 @@ from dendropy import datasets
 from dendropy import taxa
 from dendropy import trees
 from dendropy import characters   
-
+from dendropy import get_logger
+_LOG = get_logger("dendropy.nexus")
 ############################################################################
 ## Standard Tree Iterator
       
@@ -107,13 +108,6 @@ def split_to_newick(split, taxa_block):
         split = split >> 1
     assert ( len(left) + len(right) ) == len(taxlabels)
     return "((%s), (%s))" % (", ".join(left), ", ".join(right))
-
-def _parse_taxon_label(token, stream_tokenizer):
-    if not stream_tokenizer.quoted_token and token.count("_"):
-        taxlabel = token.replace("_", " ")
-    else:
-        taxlabel = token
-    return taxlabel 
 
 def map_to_iupac_ambiguity_code(states):
     """
@@ -226,7 +220,7 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
     for node in child_nodes:
         tree.seed_node.add_child(node)
     if token and not token in NexusStreamTokenizer.punctuation:
-        tree.seed_node.label = _parse_taxon_label(token, stream_tokenizer)
+        tree.seed_node.label = token
         token = stream_tokenizer.read_next_token()
     if token and token == ':':
         length = stream_tokenizer.read_next_token(ignore_punctuation='-')
@@ -253,9 +247,9 @@ def parse_newick_node_stream(stream_tokenizer, tree):
     while token and token != ')' and token != ',' and token != ";":  
         if token=="." or token not in NexusStreamTokenizer.punctuation:
             if node.label is None:
-                node.label = _parse_taxon_label(token, stream_tokenizer)
+                node.label = token
             else:                    
-                node.label = node.label + _parse_taxon_label(token, stream_tokenizer)
+                node.label = node.label + token
         if token == ':':
             edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-')
             try:
@@ -348,7 +342,6 @@ class NexusStreamTokenizer(object):
             self.stream_handle = stream_handle
             
     def reset(self):
-        self.quoted_token = False
         self.stream_handle = None
         self.current_file_char = None
         self.current_token = None
@@ -417,7 +410,7 @@ class NexusStreamTokenizer(object):
                 self.read_next_char()
         return self.current_file_char
 
-    def read_next_token(self, ignore_punctuation=None, preserve_quotes=False):
+    def iread_next_token(self, ignore_punctuation=None, preserve_quotes=False):
         """
         Reads the next token in the file stream. A token in this context is any word or punctuation character
         outside of a comment block.
@@ -465,46 +458,48 @@ class NexusStreamTokenizer(object):
             self.current_token = None
 
 
-#     def read_next_token(self, ignore_punctuation=None):
-#         """
-#         Reads the next token in the file stream. A token in this context is any word or punctuation character
-#         outside of a comment block.
-#         """
-#         if ignore_punctuation == None:
-#             ignore_punctuation = []
-#         self.current_token = None
-#         if self.eof:
-#             return None
-#         c = self.skip_to_significant_character()
-#         if self.eof:
-#             return None
-#         token = StringIO()
-#         if c == "'":
-#             self.read_next_char()
-#             self.quoted_token = True
-#             while not self.eof:
-#                 if c == "'":
-#                     c = self.read_next_char()
-#                     if c == "'":
-#                         token.write("'")
-#                         c = self.read_next_char()
-#                     else:
-#                         break
-#                 else:
-#                     token.write(c)
-#                     self.read_next_char()
-#         else:
-#             self.quoted_token = False
-#             if NexusStreamTokenizer.is_punctuation(c) and c not in ignore_punctuation:
-#                 token.write(c)
-#                 self.read_next_char()
-#             else:
-#                 while not self.eof and (not NexusStreamTokenizer.is_whitespace_or_punctuation(c) or c in ignore_punctuation):
-#                     token.write(c)
-#                     c = self.read_next_char()
-#         tokenstr = token.getvalue()
-#         self.current_token = tokenstr
-#         return tokenstr
+    def read_next_token(self, ignore_punctuation=None):
+        """
+        Reads the next token in the file stream. A token in this context is any word or punctuation character
+        outside of a comment block.
+        """
+        if ignore_punctuation == None:
+            ignore_punctuation = []
+        self.current_token = None
+        if self.eof:
+            return None
+        c = self.skip_to_significant_character()
+        if self.eof:
+            return None
+        token = StringIO()
+        if c == "'":
+            c = self.read_next_char()
+            while not self.eof:
+                if c == "'":
+                    c = self.read_next_char()
+                    if c == "'":
+                        token.write("'")
+                        c = self.read_next_char()
+                    else:
+                        break
+                else:
+                    token.write(c)
+                    c = self.read_next_char()
+        else:
+            if NexusStreamTokenizer.is_punctuation(c) and c not in ignore_punctuation:
+                if c == '_':
+                    c = ' '
+                token.write(c)
+                self.read_next_char()
+            else:
+                while not self.eof and (not NexusStreamTokenizer.is_whitespace_or_punctuation(c) or c in ignore_punctuation):
+                    if c == '_':
+                        c = ' '
+                    token.write(c)
+                    c = self.read_next_char()
+        tokenstr = token.getvalue()
+        self.current_token = tokenstr
+        return tokenstr
 
     def read_next_token_ucase(self, ignore_punctuation=[]):
         """
@@ -768,7 +763,7 @@ class NexusReader(datasets.Reader):
             if token != ',' and token != ';':
                 raise self.syntax_exception('Expecting "," in TRANSLATE statement after definition for %s = "%s", but found "%s" instead' % (translation_token, translation_label, token))
             else:
-                self.tree_translate_dict[translation_token] = _parse_taxon_label(translation_label, self.stream_tokenizer)
+                self.tree_translate_dict[translation_token] = translation_label
 
     def parse_dimensions_statement(self):
         """
@@ -820,7 +815,7 @@ class NexusReader(datasets.Reader):
         taxa_block = self.get_default_taxa_block(taxa_block)                
         token = self.stream_tokenizer.read_next_token()
         while token != ';':
-            label=_parse_taxon_label(token, self.stream_tokenizer)
+            label = token
             taxa_block.add_taxon(label=label)        
             token = self.stream_tokenizer.read_next_token()
 
@@ -857,7 +852,7 @@ class NexusReader(datasets.Reader):
             if True: # future: trap and handle no labels, transpose etc.
                 token = self.stream_tokenizer.read_next_token()
                 while token != ';' and not self.stream_tokenizer.eof:
-                    taxon = taxa_block.get_taxon(label=_parse_taxon_label(token, self.stream_tokenizer))
+                    taxon = taxa_block.get_taxon(label=token)
                     if taxon not in char_block:
                         if self.include_characters:
                             char_block[taxon] = characters.CharacterDataVector(taxon=taxon)
