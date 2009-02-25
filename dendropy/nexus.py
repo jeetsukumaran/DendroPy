@@ -450,7 +450,7 @@ class NexusStreamTokenizer(object):
                 self.read_next_char()
         return self.current_file_char
 
-    def iread_next_token(self, ignore_punctuation=None, preserve_quotes=False):
+    def read_next_token(self, ignore_punctuation=None, preserve_quotes=False):
         """
         Reads the next token in the file stream. A token in this context is any word or punctuation character
         outside of a comment block.
@@ -494,49 +494,46 @@ class NexusStreamTokenizer(object):
             self.current_token = None
         return self.current_token
 
-    def read_next_token(self, ignore_punctuation=None):
-        """
-        Reads the next token in the file stream. A token in this context is any word or punctuation character
-        outside of a comment block.
-        """
-        if ignore_punctuation == None:
-            ignore_punctuation = []
-        self.current_token = None
-        if self.eof:
-            return None
-        c = self.skip_to_significant_character()
-        if self.eof:
-            return None
-        token = StringIO()
-        if c == "'":
-            self.read_next_char()
-            self.quoted_token = True
-            while not self.eof:
-                if c == "'":
-                    c = self.read_next_char()
-                    if c == "'":
-                        token.write("'")
-                        c = self.read_next_char()
-                    else:
-                        break
-                else:
-                    token.write(c)
-                    self.read_next_char()
-        else:
-            self.quoted_token = False
-            if NexusStreamTokenizer.is_punctuation(c) and c not in ignore_punctuation:
-                token.write(c)
-                self.read_next_char()
-            else:
-                while not self.eof and (not NexusStreamTokenizer.is_whitespace_or_punctuation(c) or c in ignore_punctuation):
-                    if c == '_':
-                        token.write(' ')
-                    else:
-                        token.write(c)
-                    c = self.read_next_char()
-        tokenstr = token.getvalue()
-        self.current_token = tokenstr
-        return tokenstr
+#     def read_next_token(self, ignore_punctuation=None):
+#         """
+#         Reads the next token in the file stream. A token in this context is any word or punctuation character
+#         outside of a comment block.
+#         """
+#         if ignore_punctuation == None:
+#             ignore_punctuation = []
+#         self.current_token = None
+#         if self.eof:
+#             return None
+#         c = self.skip_to_significant_character()
+#         if self.eof:
+#             return None
+#         token = StringIO()
+#         if c == "'":
+#             self.read_next_char()
+#             self.quoted_token = True
+#             while not self.eof:
+#                 if c == "'":
+#                     c = self.read_next_char()
+#                     if c == "'":
+#                         token.write("'")
+#                         c = self.read_next_char()
+#                     else:
+#                         break
+#                 else:
+#                     token.write(c)
+#                     self.read_next_char()
+#         else:
+#             self.quoted_token = False
+#             if NexusStreamTokenizer.is_punctuation(c) and c not in ignore_punctuation:
+#                 token.write(c)
+#                 self.read_next_char()
+#             else:
+#                 while not self.eof and (not NexusStreamTokenizer.is_whitespace_or_punctuation(c) or c in ignore_punctuation):
+#                     token.write(c)
+#                     c = self.read_next_char()
+#         tokenstr = token.getvalue()
+#         self.current_token = tokenstr
+#         return tokenstr
 
     def read_next_token_ucase(self, ignore_punctuation=[]):
         """
@@ -852,7 +849,8 @@ class NexusReader(datasets.Reader):
         taxa_block = self.get_default_taxa_block(taxa_block)                
         token = self.stream_tokenizer.read_next_token()
         while token != ';':
-            taxa_block.add_taxon(label=_parse_taxon_label(token, self.stream_tokenizer))        
+            label=_parse_taxon_label(token, self.stream_tokenizer)
+            taxa_block.add_taxon(label=label)        
             token = self.stream_tokenizer.read_next_token()
 
     def build_state_alphabet(self, char_block, symbols):
