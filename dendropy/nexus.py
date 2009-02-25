@@ -193,7 +193,7 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
     located at the beginning of the statement (i.e., the first
     parenthesis that defines the tree).
-    """    
+    """
     token = stream_tokenizer.read_next_token()
     if not token:
         return None    
@@ -231,6 +231,7 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
         if node.label:
             if translate_dict and node.label in translate_dict:
                 label = translate_dict[node.label]
+                node.label = label
             else:
                 label = node.label                      
             node.taxon = taxa_block.get_taxon(label=label)
@@ -660,6 +661,9 @@ class NexusReader(datasets.Reader):
                         trees_block.taxa_block = self.get_default_taxa_block()
                         self.dataset.add_trees_block(trees_block=trees_block)
                         self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
+                        self.tree_translate_dict = {}
+                        for n, t in enumerate(trees_block.taxa_block):
+                            self.tree_translate_dict[n+1] = t.label
                         while not (token == 'END' or token == 'ENDBLOCK') \
                             and not self.stream_tokenizer.eof \
                             and not token==None:
@@ -934,6 +938,9 @@ class NexusReader(datasets.Reader):
                 token = self.stream_tokenizer.read_next_token_ucase()
             token = self.stream_tokenizer.read_next_token_ucase()
             if token == 'TREES':
+                self.tree_translate_dict = {}
+                for n, t in enumerate(taxa_block):
+                    self.tree_translate_dict[n+1] = t.label
                 self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
                 while not (token == 'END' or token == 'ENDBLOCK') \
                     and not self.stream_tokenizer.eof \
