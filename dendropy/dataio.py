@@ -220,3 +220,90 @@ def trees_from_newick(nl, taxa_block=None):
             f = StringIO(t)
         reader.read_dataset(file_obj=f, dataset=dataset)
     return dataset
+
+
+
+class MultiFileTreeIterator(object):
+    def __init__(self, sources=[], 
+                       core_iterator=None, 
+                       taxa_block=None, 
+                       dataset=None, 
+                       format=None, 
+                       from_index=0, 
+                       progress_func=None):
+        """An iterable collection of trees from multiple sources
+            `sources` is as list of tree sources each can be either a file path (a str) 
+                or a file-like object
+            Either
+                `core_iterator` or `dataset` must be specified as the source of the iterator
+                If the `dataset` is used, the the `format` must be specified
+             
+            `from_index` can be used to skip the first `from_index` trees from _EACH_ file
+                this is useful if you want to discard a certain number of trees from the beginning of each run
+                as burnin.
+               
+            If `progress_func` is specified verbose messages will be sent to it for every tree processed.
+        """
+        if dataset is None:
+            self.dataset = Dataset()
+        else:
+            self.dataset = dataset
+        self.taxa_block = taxa_block
+        if core_iterator is None:
+            if format is None:
+                raise ValueError("Either 'core_iterator' or 'format' flags must be used")
+            self.using_data_it = True
+            self.format = format
+        else:
+            self.using_data_it = False
+            self._core_iterator = core_iterator
+        self.progress_func = progress_func
+        self.sources = sources
+        self.total_trees_read = 0
+        self.total_trees_ignored = 0
+        self.total_num_sources_read = 0
+        self.from_index = from_index
+
+    def __iter__(self):
+        si = self.from_index
+        tb = self.taxa_block
+        progress_func = self.progress_func
+        self.curr_trees_read = 0
+        self.curr_trees_ignored = 0
+        self.curr_num_sources_read = 0
+        for source_ind, tree_source in enumerate(self.sources):
+            if isinstance(tree_source, str):
+                fo = open(tree_source, "rU")
+            else:
+                fo = tree_source
+            if progress_func:
+                current_file_note = "Tree file %d of %d: " % (source_ind + 1, len(self.sources))
+            self.curr_num_sources_read += 1
+            self.total_num_sources_read += 1
+            for n, tree in enumerate(self._raw_iter(fo, tb)):
+                if (not si) or (n >= si):
+                    if tb is None:
+                        tb = tree.taxa_block
+                    self.total_trees_read += 1
+                    self.curr_trees_read += 1
+                    if progress_func:
+                        progress_func("%sProcessing tree %d" % (current_file_note, (n+1)))
+                    yield tree
+                else:
+                    self.total_trees_ignored += 1
+                    self.curr_trees_ignored += 1
+                    if progress_func:
+                        progress_func("%sSkipping tree %d (# to skip=%d)" % (current_file_note, (n+1), si))
+
+    def _raw_iter(self, fo, tb):
+        if self.using_data_it:
+            for tree in self.dataset.iterate_over_trees(fo, taxa_block=tb, format=self.format):
+                yield tree
+        else:
+            for tree in self._core_iterator(fo, taxa_block=tb):
+                yield tree
+        
+        
+
+
+

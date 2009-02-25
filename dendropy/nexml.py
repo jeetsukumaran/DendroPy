@@ -39,16 +39,6 @@ from dendropy import xmlparser
 ############################################################################
 ## Standard Tree Iterator
       
-def iterate_over_trees(file_obj=None):
-    "Generator to iterate over trees in file without retaining any in memory."
-    xml_doc = xmlparser.xml_document(file_obj=file_obj)
-    dataset = datasets.Dataset()
-    nexml_reader = NexmlReader()
-    nexml_reader.parse_taxa_blocks(xml_doc, dataset)
-    nx_tree_parser = _NexmlTreesParser()
-    for trees_idx, trees_element in enumerate(xml_doc.getiterator('trees')):
-        for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, add_to_trees_block=False):
-            yield tree    
 
 ############################################################################
 ## Local Module Methods
@@ -281,6 +271,21 @@ class NexmlReader(datasets.Reader):
         for trees_idx, trees_element in enumerate(xml_doc.getiterator('trees')):
             for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, add_to_trees_block=True):
                 pass
+
+    def iterate_over_trees(file_obj, taxa_block=None, dataset=None):
+        "Generator to iterate over trees in file without retaining any in memory."
+        xml_doc = xmlparser.xml_document(file_obj=file_obj)
+        if dataset is None:
+            dataset = datasets.Dataset() or dataset
+        if taxa_block is None:
+            taxa_block = taxa.TaxaBlock()
+        if not (taxa_block in dataset.taxa_blocks):
+            dataset.taxa_blocks.append(taxa_block)
+        self.parse_taxa_blocks(xml_doc, dataset)
+        nx_tree_parser = _NexmlTreesParser()
+        for trees_idx, trees_element in enumerate(xml_doc.getiterator('trees')):
+            for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, add_to_trees_block=False):
+                yield tree    
 
 class _NexmlElementParser(object):
     "Base parser class: wraps around annotations/dictionary element handling."

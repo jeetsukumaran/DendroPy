@@ -47,11 +47,11 @@ import dendropy
 from dendropy import nexus
 from dendropy import splits
 from dendropy import treesum
-from dendropy import datasets
+from dendropy import datasets, 
 from dendropy import trees
 from dendropy import treegen
 from dendropy import get_logger
-from dendropy.datasets import Dataset
+from dendropy.datasets import Dataset, MultiFileTreeIterator
 _LOG = get_logger("symmdiff_by_split_cutoff")
 
 _program_name = 'symmdiff_by_split_cutoff'
@@ -168,12 +168,14 @@ def main_cli():
 
 
 
-    _LOG.debug("### COUNTING SPLITS ###\n")                
-    split_distribution = tsum.count_splits_on_trees(tree_files=sampled_filepaths, tree_iterator=nexus.iterate_over_trees, taxa_block=taxa) 
+    _LOG.debug("### COUNTING SPLITS ###\n") 
+    split_distribution = splits.SplitDistribution(taxa_block=taxa)
+    tree_source = MultiFileTreeIterator(filepaths=sampled_filepaths, core_iterator=nexus.iterate_over_trees)
+    tsum.count_splits_on_trees(tree_source, split_distribution) 
         
     report = []
     report.append("%d trees read from %d files." % (tsum.total_trees_read, len(sampled_filepaths)))
-    report.append("%d trees ignored in total." % (tsum.total_trees_ignored))    
+    report.append("%d trees ignored in total." % (tree_source.total_trees_ignored))    
     report.append("%d trees considered in total for split support assessment." % (tsum.total_trees_counted))
     report.append("%d unique taxa across all trees." % len(split_distribution.taxa_block))
     num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = split_distribution.splits_considered()
