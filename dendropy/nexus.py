@@ -375,11 +375,23 @@ class NexusStreamTokenizer(object):
                     self.current_line_number = self.current_line_number + 1
                     self.current_col_number = 0
                 self.previous_file_char = self.__current_file_char
-                self.current_col_number = self.current_col_number + 1
+                self.current_col_number += 1
             self.current_file_char = read_char
             return self.__current_file_char
         return None
 
+    def _raw_read_next_char(self):
+            read_char = self.stream_handle.read(1) # returns empty string if EOF
+            if read_char == '':
+                raise StopIteration()
+            if self.previous_file_char == '\n':
+                self.current_line_number = self.current_line_number + 1
+                self.current_col_number = 0
+            self.previous_file_char = self.__current_file_char
+            self.current_col_number += 1
+            self.current_file_char = read_char
+            return self.__current_file_char
+        
     def skip_comment(self):
         """
         Reads characters from the file until current comment block (and
@@ -410,53 +422,6 @@ class NexusStreamTokenizer(object):
                 self.read_next_char()
         return self.current_file_char
 
-    def iread_next_token(self, ignore_punctuation=None, preserve_quotes=False):
-        """
-        Reads the next token in the file stream. A token in this context is any word or punctuation character
-        outside of a comment block.
-        """
-        if ignore_punctuation == None:
-            ignore_punctuation = []
-        if not self.eof:
-            token = StringIO()
-            self.skip_to_significant_character()
-            if not self.eof:
-                if self.current_file_char == "'":
-                    self.read_next_char()
-                    self.quoted_token = True
-                    end_quote = False
-                    while not end_quote and not self.eof:
-                        if self.current_file_char == "'":
-                            self.read_next_char()
-                            if self.current_file_char == "'":
-                                token.write("'")
-                                self.read_next_char()
-                            else:
-                                end_quote = True
-                        else:
-                            token.write(self.current_file_char)
-                            self.read_next_char()
-                    if preserve_quotes:
-                        token.write("'")
-                        token.write(token.getvalue())
-                        token.write("'")
-                else:
-                    self.quoted_token = False
-                    if NexusStreamTokenizer.is_punctuation(self.current_file_char) and self.current_file_char not in ignore_punctuation:
-                        token.write(self.current_file_char)
-                        self.read_next_char()
-                    else:
-                        while not self.eof and (not NexusStreamTokenizer.is_whitespace_or_punctuation(self.current_file_char) or self.current_file_char in ignore_punctuation):
-                            token.write(self.current_file_char)
-                            self.read_next_char()
-                tokenstr = token.getvalue()
-                self.current_token = tokenstr
-                return tokenstr
-            else:
-                self.current_token = None
-        else:
-            self.current_token = None
-
 
     def read_next_token(self, ignore_punctuation=None):
         """
@@ -471,8 +436,8 @@ class NexusStreamTokenizer(object):
         c = self.skip_to_significant_character()
         if self.eof:
             return None
-        token = StringIO()
         if c == "'":
+            token = StringIO()
             c = self.read_next_char()
             while not self.eof:
                 if c == "'":
@@ -489,15 +454,87 @@ class NexusStreamTokenizer(object):
             if NexusStreamTokenizer.is_punctuation(c) and c not in ignore_punctuation:
                 if c == '_':
                     c = ' '
-                token.write(c)
+                self.current_token = c
                 self.read_next_char()
-            else:
-                while not self.eof and (not NexusStreamTokenizer.is_whitespace_or_punctuation(c) or c in ignore_punctuation):
+                return c
+            token = StringIO()
+            while not self.eof and (not NexusStreamTokenizer.is_whitespace_or_punctuation(c) or c in ignore_punctuation):
+                if c == '_':
+                    c = ' '
+                token.write(c)
+                c = self.read_next_char()
+        tokenstr = token.getvalue()
+        self.current_token = tokenstr
+        return tokenstr
+
+    def hidden_read_next_token(self, ignore_punctuation=None):
+        """
+        Reads the next token in the file stream. A token in this context is any word or punctuation character
+        outside of a comment block.
+        """
+        if ignore_punctuation == None:
+            ignore_punctuation = []
+        self.current_token = None
+        if self.eof:
+            return None
+        c = self.skip_to_significant_character()
+        if self.eof:
+            return None
+        if c == "'":
+            token = StringIO()
+            try:
+                fastfunc = self._raw_read_next_char
+                c = fastfunc()
+                while True:
+                    if c == "'":
+                        c = self.read_next_char()
+                        if c == "'":
+                            token.write("'")
+                            c = fastfunc()
+                        else:
+                            break
+                    else:
+                        token.write(c)
+                        c = fastfunc()
+            except StopIteration:
+                self.eof = True
+                raise self.syntax_exception("Unexpected end of file inside quoted token")
+            tokenstr = token.getvalue()
+        else:
+            quick_check = NexusStreamTokenizer.is_punctuation
+            if quick_check(c) and c not in ignore_punctuation:
+                if c == '_':
+                    c = ' '
+                self.current_token = c
+                self.read_next_char()
+                return c
+            token = StringIO()
+            fget = self.stream_handle.read
+            quick_check = NexusStreamTokenizer.is_whitespace_or_punctuation
+
+            if ignore_punctuation:
+                while (not quick_check(c)) or c in ignore_punctuation:
                     if c == '_':
                         c = ' '
                     token.write(c)
-                    c = self.read_next_char()
-        tokenstr = token.getvalue()
+                    prev = c
+                    c = fget()
+                    if not c:
+                        break
+            else:
+                while not quick_check(c):
+                    if c == '_':
+                        c = ' '
+                    token.write(c)
+                    prev = c
+                    c = fget()
+                    if not c:
+                        break
+            tokenstr = token.getvalue()
+            self.current_col_number += len(tokenstr)      
+            self.current_file_char = c
+            self.previous_file_char = prev
+        
         self.current_token = tokenstr
         return tokenstr
 
@@ -1084,7 +1121,8 @@ class NewickReader(datasets.Reader):
             trees_block.append(tree)
             tree = parse_newick_tree_stream(stream_tokenizer, taxa_block=taxa_block)
         return trees_block
-    def iterate_over_trees(self, file_obj=None, taxa_block=None):
+
+    def iterate_over_trees(self, file_obj=None, taxa_block=None, dataset=None):
         """
         Generator to iterate over trees in data file.
         Primary goal is to be memory efficient, storing no more than one tree

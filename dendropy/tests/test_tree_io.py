@@ -241,8 +241,6 @@ END;
                 
 
 
-_LOG.warn("SKIPPING lots")
-if False:
     def setUp(self):
         self.formats = ["newick",
                         "nexus",
