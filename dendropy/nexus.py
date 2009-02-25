@@ -458,7 +458,7 @@ class NexusStreamTokenizer(object):
         if ignore_punctuation == None:
             ignore_punctuation = []
         if not self.eof:
-            token = ''
+            token = StringIO()
             self.skip_to_significant_character()
             if not self.eof:
                 if self.current_file_char == "'":
@@ -469,30 +469,34 @@ class NexusStreamTokenizer(object):
                         if self.current_file_char == "'":
                             self.read_next_char()
                             if self.current_file_char == "'":
-                                token = token + "'"
+                                token.write("'")
                                 self.read_next_char()
                             else:
                                 end_quote = True
                         else:
-                            token = token + self.current_file_char
+                            token.write(self.current_file_char)
                             self.read_next_char()
                     if preserve_quotes:
-                        token = "'" + token + "'"
+                        token.write("'")
+                        token.write(token.getvalue())
+                        token.write("'")
                 else:
                     self.quoted_token = False
                     if NexusStreamTokenizer.is_punctuation(self.current_file_char) and self.current_file_char not in ignore_punctuation:
-                        token = self.current_file_char
+                        token.write(self.current_file_char)
                         self.read_next_char()
                     else:
                         while not self.eof and (not NexusStreamTokenizer.is_whitespace_or_punctuation(self.current_file_char) or self.current_file_char in ignore_punctuation):
-                            token = token + self.current_file_char
+                            token.write(self.current_file_char)
                             self.read_next_char()
-                self.current_token = token
+                tokenstr = token.getvalue()
+                self.current_token = tokenstr
+                return tokenstr
             else:
                 self.current_token = None
         else:
             self.current_token = None
-        return self.current_token
+
 
 #     def read_next_token(self, ignore_punctuation=None):
 #         """
