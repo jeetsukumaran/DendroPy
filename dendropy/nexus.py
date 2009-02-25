@@ -42,57 +42,24 @@ from dendropy import characters
 ############################################################################
 ## Standard Tree Iterator
       
-def iterate_over_trees(file_obj=None, taxa_block=None):
+def iterate_over_trees(file_obj=None, taxa_block=None, dataset=None):
     """
     Generator to iterate over trees in data file.
     Primary goal is to be memory efficient, storing no more than one tree
     at a time. Speed might have to be sacrificed for this!
     """
-    if taxa_block is not None:
-        taxa_block = taxa_block
-    else:        
-        taxa_block = taxa.TaxaBlock()
+    if dataset is None:
+        dataset = datasets.Dataset()
     stream_tokenizer = NexusStreamTokenizer(file_obj)
     token = stream_tokenizer.read_next_token_ucase()
     if token == "#NEXUS":
         file_format = "NEXUS"
-        nexus_reader = NexusReader()
-        nexus_reader.stream_tokenizer = stream_tokenizer
-        while not nexus_reader.stream_tokenizer.eof:
-            token = nexus_reader.stream_tokenizer.read_next_token_ucase()
-            while token != None and token != 'BEGIN' and not nexus_reader.stream_tokenizer.eof:
-                token = nexus_reader.stream_tokenizer.read_next_token_ucase()
-            token = nexus_reader.stream_tokenizer.read_next_token_ucase()
-            if token == 'TREES':
-                nexus_reader.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
-                while not (token == 'END' or token == 'ENDBLOCK') \
-                    and not nexus_reader.stream_tokenizer.eof \
-                    and not token==None:
-                    token = nexus_reader.stream_tokenizer.read_next_token_ucase()
-                    if token == 'TRANSLATE':
-                        nexus_reader.parse_translate_statement()
-                    if token == 'TREE':
-                        tree = nexus_reader.parse_tree_statement(taxa_block)
-                        yield tree
-                nexus_reader.stream_tokenizer.skip_to_semicolon() # move past END command
-            else:
-                # unknown block
-                while not (token == 'END' or token == 'ENDBLOCK') \
-                    and not nexus_reader.stream_tokenizer.eof \
-                    and not token==None:
-                    #print token
-                    nexus_reader.stream_tokenizer.skip_to_semicolon()
-                    token = nexus_reader.stream_tokenizer.read_next_token_ucase()
-
     else:
         stream_tokenizer.stream_handle.seek(0)
-        while not stream_tokenizer.eof:
-            tree = parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
-                                                 taxa_block=taxa_block, 
-                                                 translate_dict=None) 
-            if tree:
-                yield tree
-                                                 
+        file_format = "NEWICK"
+    for tree in dataset.iterate_over_trees(file_obj, taxa_block=taxa_block, format=file_format):
+        yield tree
+
 ############################################################################
 ## Universal Nex-ish Readers
 
@@ -913,6 +880,43 @@ class NexusReader(datasets.Reader):
                 ## TODO: NO LABELS/TRANSPOSED ##
                 pass
                 
+    def iterate_over_trees(self, file_obj=None, taxa_block=None, dataset=None):
+        """
+        Generator to iterate over trees in data file.
+        Primary goal is to be memory efficient, storing no more than one tree
+        at a time. Speed might have to be sacrificed for this!
+        """
+        if dataset is None:
+            dataset = datasets.Dataset()
+        if not (taxa_block in dataset.taxa_blocks):
+            dataset.taxa_blocks.append(taxa_block)
+        stream_tokenizer = NexusStreamTokenizer(file_obj)
+        self.stream_tokenizer = stream_tokenizer
+        while not self.stream_tokenizer.eof:
+            token = self.stream_tokenizer.read_next_token_ucase()
+            while token != None and token != 'BEGIN' and not self.stream_tokenizer.eof:
+                token = self.stream_tokenizer.read_next_token_ucase()
+            token = self.stream_tokenizer.read_next_token_ucase()
+            if token == 'TREES':
+                self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
+                while not (token == 'END' or token == 'ENDBLOCK') \
+                    and not self.stream_tokenizer.eof \
+                    and not token==None:
+                    token = self.stream_tokenizer.read_next_token_ucase()
+                    if token == 'TRANSLATE':
+                        self.parse_translate_statement()
+                    if token == 'TREE':
+                        tree = self.parse_tree_statement(taxa_block)
+                        yield tree
+                self.stream_tokenizer.skip_to_semicolon() # move past END command
+            else:
+                # unknown block
+                while not (token == 'END' or token == 'ENDBLOCK') \
+                    and not self.stream_tokenizer.eof \
+                    and not token==None:
+                    #print token
+                    self.stream_tokenizer.skip_to_semicolon()
+                    token = self.stream_tokenizer.read_next_token_ucase()
                 
 ############################################################################
 ## CLASS: NexusWriter
@@ -1083,6 +1087,25 @@ class NewickReader(datasets.Reader):
             trees_block.append(tree)
             tree = parse_newick_tree_stream(stream_tokenizer, taxa_block=taxa_block)
         return trees_block
+    def iterate_over_trees(self, file_obj=None, taxa_block=None):
+        """
+        Generator to iterate over trees in data file.
+        Primary goal is to be memory efficient, storing no more than one tree
+        at a time. Speed might have to be sacrificed for this!
+        """
+        if dataset is None:
+            dataset = datasets.Dataset() or dataset
+        if not (taxa_block in dataset.taxa_blocks):
+            dataset.taxa_blocks.append(taxa_block)
+        stream_tokenizer = NexusStreamTokenizer(file_obj)
+        token = stream_tokenizer.read_next_token_ucase()
+        stream_tokenizer.stream_handle.seek(0)
+        while not stream_tokenizer.eof:
+            tree = parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
+                                                 taxa_block=taxa_block, 
+                                                 translate_dict=None) 
+            if tree:
+                yield tree
 
 ############################################################################
 ## CLASS: NewickWriter

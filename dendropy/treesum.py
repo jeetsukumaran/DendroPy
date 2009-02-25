@@ -80,7 +80,6 @@ class TreeSummarizer(object):
 
     def __init__(self):
         "Initializes settings."
-        self.burnin = None
         self.support_as_labels = True
         self.support_as_percentages = False
         self.support_label_decimals = 2
@@ -249,39 +248,21 @@ class TreeSummarizer(object):
                     new_edge.length = None
         return con_tree
 
-    def count_splits_on_trees(self, tree_files, tree_iterator, split_distribution=None, taxa_block=None):
+    def count_splits_on_trees(self, tree_iterator, split_distribution=None):
         """
         Given a list of trees file, a SplitsDistribution object (a new one, or,
         if passed as an argument) is returned collating the split data in the files.
         """
         if split_distribution is None:
             split_distribution = splits.SplitDistribution()
-        split_distribution.ignore_node_ages = self.ignore_node_ages
-        if taxa_block is not None:
-            split_distribution.taxa_block = taxa_block
-        else:
-            taxa_block = split_distribution.taxa_block
-#         if not isinstance(tree_files, list):
-#             tree_files = [tree_files]
-        total_tree_files = len(tree_files)
-        for tree_file_idx, tree_file in enumerate(tree_files):
-            file_trees_read = 0
-            if isinstance(tree_file, str):
-                tree_file_obj = open(tree_file, "r")
+        taxa_block = None   
+        for tree_idx, tree in enumerate(tree_iterator):
+            self.total_trees_counted += 1
+            if taxa_block is None:
+                taxa_block = tree.taxa_block
             else:
-                tree_file_obj = tree_file
-            current_file_note = "Tree file %d of %d: " % (tree_file_idx+1, total_tree_files)
-            for tree_idx, tree in enumerate(tree_iterator(file_obj=open(tree_file, "rU"), taxa_block=taxa_block)):
-                self.total_trees_read += 1
-                file_trees_read += 1
-                if not self.burnin or file_trees_read > self.burnin:
-                    self.total_trees_counted += 1
-                    self.send_progress_message("%sCounting splits in tree %d" % (current_file_note, (tree_idx+1)))
-                    assert(taxa_block is tree.taxa_block)
-                    splits.encode_splits(tree)
-                    split_distribution.count_splits_on_tree(tree)
-                else:
-                    self.total_trees_ignored += 1
-                    self.send_progress_message("%sSkipping tree %d (burn-in=%d)" % (current_file_note, (tree_idx+1), self.burnin))
+                assert(taxa_block is tree.taxa_block)
+            splits.encode_splits(tree)
+            split_distribution.count_splits_on_tree(tree)
         return split_distribution
 

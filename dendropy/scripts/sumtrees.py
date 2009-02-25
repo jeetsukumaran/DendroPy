@@ -47,6 +47,8 @@ from dendropy import splits
 from dendropy import treesum
 from dendropy import datasets
 from dendropy import trees
+from dendropy.dataio import MultiFileTreeIterator
+
 
 _program_name = 'SumTrees'
 _program_subtitle = 'Phylogenetic Tree Split Support Summarization'
@@ -350,9 +352,9 @@ def main_cli():
         tsum.progress_message_prefix = ""
         tsum.progress_message_suffix = "\n"
 
-    messenger.send("### COUNTING SPLITS ###\n")                
-    split_distribution = tsum.count_splits_on_trees(tree_files=support_filepaths, 
-                                                    tree_iterator=nexus.iterate_over_trees) 
+    messenger.send("### COUNTING SPLITS ###\n")
+    tree_source = MultiFileTreeIterator(sources=support_filepaths, core_iterator=nexus.iterate_over_trees)
+    split_distribution = tsum.count_splits_on_trees(tree_source) 
         
     report = []
     report.append("%d trees read from %d files." % (tsum.total_trees_read, len(support_filepaths)))

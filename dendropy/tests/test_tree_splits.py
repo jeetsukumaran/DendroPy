@@ -73,13 +73,14 @@ class SplitFreqsTest(unittest.TestCase):
             paup_sd = paup.get_split_distribution(tree_filepaths, taxa_filepath,
                         unrooted=unrooted, burnin=0)
             taxa_block = paup_sd.taxa_block
+            print taxa_block
             dp_sd = splits.SplitDistribution(taxa_block=taxa_block)
             dp_sd.ignore_edge_lengths = True
             dp_sd.ignore_node_ages = True
             dp_sd.unrooted = unrooted
 
             for tree_filepath in tree_filepaths:
-                for tree in nexus.iterate_over_trees(open(tree_filepath, "rU"), taxa_block):
+                for tree in nexus.iterate_over_trees(open(tree_filepath, "rU"), taxa_block=taxa_block):
                     splits.encode_splits(tree)
                     dp_sd.count_splits_on_tree(tree)
 

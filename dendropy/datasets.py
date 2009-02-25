@@ -230,7 +230,18 @@ class Dataset(object):
             return new_trees
         else:
             return []
-            
+
+    def iterate_over_trees(self, src, format, taxa_block=None):
+        from dendropy import dataio
+        reader = dataio.get_reader(format)
+        reader.include_characters = False
+        if taxa_block is None:
+            for tree in reader.iterate_over_trees(src, dataset=self):
+                yield tree
+        else:
+            for tree in reader.iterate_over_trees(src, taxa_block=taxa_block, dataset=self):
+                yield tree
+ 
     def trees_from_string(self, string, format):
         """
         Populates this dataset from `string`, given in `format`. `src`
@@ -325,6 +336,4 @@ class Writer(object):
         dataset_text = StringIO.StringIO()
         self.write_dataset(dataset, dataset_text)
         return dataset_text.getvalue()
-
-
 
