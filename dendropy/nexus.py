@@ -290,8 +290,7 @@ class NexusStreamTokenizer(object):
     has_whitespace = staticmethod(has_whitespace)
 
     def is_punctuation(char):
-        if char:
-            return char in NexusStreamTokenizer.punctuation
+        return char in NexusStreamTokenizer.punctuation
 
     is_punctuation = staticmethod(is_punctuation)
 
@@ -423,7 +422,7 @@ class NexusStreamTokenizer(object):
         return self.current_file_char
 
 
-    def read_next_token(self, ignore_punctuation=None):
+    def hidden_read_next_token(self, ignore_punctuation=None):
         """
         Reads the next token in the file stream. A token in this context is any word or punctuation character
         outside of a comment block.
@@ -467,7 +466,7 @@ class NexusStreamTokenizer(object):
         self.current_token = tokenstr
         return tokenstr
 
-    def hidden_read_next_token(self, ignore_punctuation=None):
+    def read_next_token(self, ignore_punctuation=None):
         """
         Reads the next token in the file stream. A token in this context is any word or punctuation character
         outside of a comment block.
@@ -518,7 +517,7 @@ class NexusStreamTokenizer(object):
                         c = ' '
                     token.write(c)
                     prev = c
-                    c = fget()
+                    c = fget(1)
                     if not c:
                         break
             else:
@@ -527,7 +526,7 @@ class NexusStreamTokenizer(object):
                         c = ' '
                     token.write(c)
                     prev = c
-                    c = fget()
+                    c = fget(1)
                     if not c:
                         break
             tokenstr = token.getvalue()
@@ -585,6 +584,10 @@ class NexusReader(datasets.Reader):
         self.match_char = '.'
         self.tree_translate_dict = {}
 
+    def prepare_to_read_file(self, file_obj):
+        self.stream_tokenizer = NexusStreamTokenizer()
+        self.stream_tokenizer.stream_handle = file_obj
+
     def read_dataset(self, file_obj, dataset=None):
         """
         Instantiates and returns a DataSet object based on the
@@ -592,8 +595,7 @@ class NexusReader(datasets.Reader):
         `file_obj`.
         """
         #self.reset()
-        self.stream_tokenizer = NexusStreamTokenizer()
-        self.stream_tokenizer.stream_handle = file_obj
+        self.prepare_to_read_file(file_obj)
         return self.parse_nexus_file(dataset)
 
     ## Class-specific ##
