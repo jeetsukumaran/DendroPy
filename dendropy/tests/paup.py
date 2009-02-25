@@ -192,7 +192,7 @@ class Paup(object):
                 taxlabels.append(ti_match.group(2).strip())                
         taxa_block = taxa.TaxaBlock() 
         for taxlabel in taxlabels:
-            taxa_block.add_taxon(label=taxlabel.replace(' ', '_'))
+            taxa_block.add_taxon(label=taxlabel)
         return taxa_block           
         
     def parse_group_freqs(self):
