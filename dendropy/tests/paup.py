@@ -499,10 +499,10 @@ class PaupWrapperDumbTests(unittest.TestCase):
             "T39", "T40", "T41", "T42", "T43", "T44", "T45", "T46",
             "T47", "T48", "T49", "T50", "T51", "T52", "T53", "T54",
             "T55", "T56", "T57", "T58", "T59")),
-            ("primates.chars.nexus", ("Lemur_catta", "Homo_sapiens",
-            "Pan", "Gorilla", "Pongo", "Hylobates", "Macaca_fuscata",
-            "Macaca_mulatta", "Macaca_fascicularis", "Macaca_sylvanus",
-            "Saimiri_sciureus", "Tarsius_syrichta", ))
+            ("primates.chars.nexus", ("Lemur catta", "Homo sapiens",
+            "Pan", "Gorilla", "Pongo", "Hylobates", "Macaca fuscata",
+            "Macaca mulatta", "Macaca fascicularis", "Macaca sylvanus",
+            "Saimiri sciureus", "Tarsius syrichta", ))
         )               
 
     def check_taxa_block(self, filename, taxlabels):
