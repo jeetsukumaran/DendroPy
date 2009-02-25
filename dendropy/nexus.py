@@ -316,7 +316,8 @@ class NexusStreamTokenizer(object):
 
     punctuation = '\(\)\[\]\{\}\\\/\,\;\:\=\*\'\"\`\+\-\<\>'
     whitespace = ' \0\t\n\r'
-
+    multi_char_needs_quoting = re.compile(' \0\t\n\r\(\)\[\]\{\}\\\/\,\;\:\=\*\'\"\`\+\-\<\>_')
+    single_char_needs_quoting = re.compile(' \0\t\n\r\[\'_')
     def is_whitespace(char):
         return char in NexusStreamTokenizer.whitespace
 
@@ -354,9 +355,7 @@ class NexusStreamTokenizer(object):
                 label = "'" + label
             if (label[-1] == "'" and label[-2] == "'") or label[-1] != "'":
                 label = label + "'"
-            return label
-        else:
-            return label
+        return label
 
     validate_identifier = staticmethod(validate_identifier)
 
@@ -451,7 +450,7 @@ class NexusStreamTokenizer(object):
                 self.read_next_char()
         return self.current_file_char
 
-    def read_next_token(self, ignore_punctuation=None, preserve_quotes=False):
+    def iread_next_token(self, ignore_punctuation=None, preserve_quotes=False):
         """
         Reads the next token in the file stream. A token in this context is any word or punctuation character
         outside of a comment block.
@@ -495,7 +494,7 @@ class NexusStreamTokenizer(object):
             self.current_token = None
         return self.current_token
 
-    def fread_next_token(self, ignore_punctuation=None):
+    def read_next_token(self, ignore_punctuation=None):
         """
         Reads the next token in the file stream. A token in this context is any word or punctuation character
         outside of a comment block.
@@ -926,12 +925,12 @@ class NexusWriter(datasets.Writer):
         self.write_rooting = True
         self.comment = []
 
-    def compose_taxlabel(label):
+    def escape_token(label):
         if NexusStreamTokenizer.has_whitespace(label) or NexusStreamTokenizer.has_punctuation(label):
             return "'" + label + "'"
         else:
             return label
-    compose_taxlabel = staticmethod(compose_taxlabel)
+    escape_token = staticmethod(escape_token)
 
     def write_dataset(self, dataset, dest):
         """
@@ -973,7 +972,7 @@ class NexusWriter(datasets.Writer):
                 rooting = "[&U] "
             else:
                 rooting = ""
-            block.append('    tree %s = %s%s;' % (tree_name, rooting, newick_str))
+            block.append('    tree %s = %s%s;' % (self.escape_token(tree_name), rooting, newick_str))
         block.append('END;\n\n')
         dest.write('\n'.join(block))
 
@@ -983,7 +982,7 @@ class NexusWriter(datasets.Writer):
         block.append('    DIMENSIONS NTAX=%d;' % len(taxa_block))
         block.append('    TAXLABELS')
         for taxon in taxa_block:
-            block.append('        %s' % self.compose_taxlabel(taxon.label))
+            block.append('        %s' % self.escape_token(taxon.label))
         block.append('  ;')
         block.append('END;\n\n')
         dest.write('\n'.join(block))
@@ -1004,7 +1003,7 @@ class NexusWriter(datasets.Writer):
 
     def write_char_block(self, char_block, dest, simple_nexus=False):
         nexus = []
-        taxlabels = [taxon.label for taxon in char_block]
+        taxlabels = [self.escape_token(taxon.label) for taxon in char_block]
         max_label_len = max([len(label) for label in taxlabels])
         nchar = max([len(seq) for seq in char_block.values()])
         if simple_nexus:
@@ -1024,7 +1023,7 @@ class NexusWriter(datasets.Writer):
             seq = ''.join([str(seq_sym) for seq_sym in seq_vec])
 #             seq.replace('~','-')
             seq = seq.ljust(nchar, '-')
-            nexus.append('%s    %s' % (self.compose_taxlabel(taxon.label).ljust(max_label_len), seq))
+            nexus.append('%s    %s' % (self.escape_token(taxon.label).ljust(max_label_len), seq))
         nexus.append('    ;')
         nexus.append('END;\n\n')
         dest.write('\n'.join(nexus))

@@ -41,13 +41,13 @@ _LOG = get_logger("Splits")
 
 from dendropy import nexus
 from dendropy import treesum
-from dendropy import taxa   
+from dendropy import taxa
 from dendropy import splits
-            
-large_cases = [ #('7180.tre', '7180.tre'), 
+
+large_cases = [ #('7180.tre', '7180.tre'),
                      #('terrarana.random.unrooted.100.tre', 'terrarana.random.unrooted.100.tre'),
-                     ('terrarana.random.unrooted.30.tre', 'terrarana.random.rooted.30.tre'),                     
-                     ('anolis.mcmct.trees.nexus', 'anolis.chars.nexus'),                             
+                     ('terrarana.random.unrooted.30.tre', 'terrarana.random.rooted.30.tre'),
+                     ('anolis.mcmct.trees.nexus', 'anolis.chars.nexus'),
 ]
 small_cases = [ ('feb032009.tre', 'feb032009.tre'),
                      ('maj-rule-bug1.tre', 'maj-rule-bug1.tre'),
@@ -63,14 +63,14 @@ if is_test_enabled(TestLevel.SLOW, _LOG, module_name=__name__, message="skipping
 
 class SplitFreqsTest(unittest.TestCase):
 
-    
+
     def testSplits(self):
         unrooted = True
         for tc in test_cases:
             _LOG.info("Testing split counting on '%s'" % tc[0])
             tree_filepaths = [dendropy.tests.data_source_path(tc[0])]
             taxa_filepath = dendropy.tests.data_source_path(tc[1])
-            paup_sd = paup.get_split_distribution(tree_filepaths, taxa_filepath, 
+            paup_sd = paup.get_split_distribution(tree_filepaths, taxa_filepath,
                         unrooted=unrooted, burnin=0)
             taxa_block = paup_sd.taxa_block
             dp_sd = splits.SplitDistribution(taxa_block=taxa_block)
@@ -81,10 +81,10 @@ class SplitFreqsTest(unittest.TestCase):
             for tree_filepath in tree_filepaths:
                 for tree in nexus.iterate_over_trees(open(tree_filepath, "rU"), taxa_block):
                     splits.encode_splits(tree)
-                    dp_sd.count_splits_on_tree(tree)               
-                    
+                    dp_sd.count_splits_on_tree(tree)
+
             assert dp_sd.total_trees_counted == paup_sd.total_trees_counted
-           
+
             # SplitsDistribution counts trivial splits, whereas PAUP*
             # contree does not, so the following will not work
 #             assert len(dp_sd.splits) == len(paup_sd.splits),\
@@ -96,11 +96,11 @@ class SplitFreqsTest(unittest.TestCase):
                     assert split in paup_sd.splits
                     assert dp_sd.split_counts[split] == paup_sd.split_counts[split]
                     paup_sd.splits.remove(split)
-                    
+
             # if any splits remain here, they were not
             # in dp_sd
             assert len(paup_sd.splits) == 0
-                
-                
+
+
 if __name__ == "__main__":
     unittest.main()
