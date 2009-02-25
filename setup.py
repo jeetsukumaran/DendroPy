@@ -36,9 +36,11 @@ import os
 import subprocess
 
 script_names = ['cattrees.py', 
-              'rtreeoutgroup.py', 
-              'sumtrees.py', 
-              'treedepth.py',]
+                'incrGarl.py',
+                'rtreeoutgroup.py', 
+                'sumtrees.py', 
+                'symmdiff_by_split_cutoff.py',
+                'treedepth.py',]
 setup(name='DendroPy',
       version=PACKAGE_VERSION,     
       author='Jeet Sukumaran and Mark T. Holder',

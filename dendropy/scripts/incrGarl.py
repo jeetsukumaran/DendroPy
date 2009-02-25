@@ -1,9 +1,9 @@
 #! /usr/bin/env python
 
 ############################################################################
-##  symmdiff_by_split_cutoff.py
+##  sumtrees.py
 ##
-##  Copyright 2009 Mark T. Holder
+##  Copyright 2008 Jeet Sukumaran.
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -29,32 +29,20 @@ __DEBUG__ = True
 
 import os
 import sys
-import textwrap
 import itertools
 from optparse import OptionParser
-from optparse import OptionGroup
 
-import datetime
-import time
-import socket
-try:
-    import getpass
-except:
-    pass
-import platform    
-    
-import dendropy
 from dendropy import nexus
-from dendropy import splits
+from dendropy.splits import encode_splits
 from dendropy import treesum
 from dendropy import datasets
 from dendropy import trees
 from dendropy import treegen
 from dendropy import get_logger
 from dendropy.datasets import Dataset
-_LOG = get_logger("symmdiff_by_split_cutoff")
+_LOG = get_logger("incrGarl.py")
 
-_program_name = 'symmdiff_by_split_cutoff'
+_program_name = 'incrGarl.py'
 _program_version = "0.01"
 _program_author = 'Mark T. Holder'
 _program_contact = 'mtholder@ku.edu'
@@ -63,49 +51,23 @@ _program_copyright = "Copyright (C) 2008 Mark T. Holder.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
                  "There is NO WARRANTY,\nto the extent permitted by law."
                  
-def confirm_overwrite(filepath, 
-                      messenger, 
-                      replace_without_asking=False, 
-                      file_desc="Output"):
-    if os.path.exists(filepath):           
-        if replace_without_asking:
-            overwrite = 'y'
-        else:
-            messenger.send_error('%s file already exists: "%s"' % (file_desc, filepath))
-            overwrite = raw_input("Overwrite (y/N)? ")
-            messenger.send('')
-        if not overwrite.lower().startswith("y"):
-            return False
-        else:            
-            return True
-    else:
-        return True
-
-def show_splash(dest=sys.stderr, extended=False):
-    lines = []
-    lines.append("%s" % (_program_name))
-    lines.append("%s" % _program_version)
-    lines.append("By %s" % _program_author)
-    lines.append("(using the DendroPy Phylogenetic Computation Library Version %s)" % (dendropy.PACKAGE_VERSION))
-    if extended:
-        lines.append('')
-        lines.extend(_program_copyright.split('\n'))
-    header_max = max([len(i) for i in lines]) + 1
-    sbars = '=' * header_max
-    dest.write("%s\n" % sbars)
-    dest.write("%s\n" % ('\n'.join(lines)))
-    dest.write("%s\n\n" % sbars)       
-        
-def main_cli():
-    
+if __name__ == '__main__':
     description =  '%s %s ' % (_program_name, _program_version)    
     usage = "%prog [options] <TREES FILE> [<TREES FILE> [<TREES FILE> [...]]"
     
     parser = OptionParser(usage=usage, add_help_option=True, version = _program_version, description=description)
-    parser.add_option('-r','--reference',  
-                  dest='reference_tree_filepath',
+    parser.add_option('-d','--data',  
+                  dest='data_filepath',
                   default=None,
-                  help="path to file containing the reference (true) tree")  
+                  help="path to file containing the reference data (must be readable by GARLI and Dendropy)")  
+    parser.add_option('-t','--tree',  
+                  dest='intree_filepath',
+                  default=None,
+                  help="path to file containing the starting collection of trees (must be readable by GARLI and Dendropy)")  
+    parser.add_option('-c','--conf',  
+                  dest='conf',
+                  default=None,
+                  help="path to a garli conf file")  
     parser.add_option('-v', '--verbose', 
                       action='store_false', 
                       dest='quiet',
@@ -113,7 +75,48 @@ def main_cli():
                       help="Verbose mode") 
   
     (opts, args) = parser.parse_args()
-                                    
+
+    data_file = opts.data_filepath
+    intree_file = opts.intree_filepath
+    if data_file is None:
+        sys.exit("Data file must be specified")
+    if intree_file is None:
+        sys.exit("Input tree file must be specified")
+    for f in [data_file, intree_file]:
+        if not os.path.exists(f):
+            sys.exit("%s does not exist" % f)
+
+    d = Dataset()
+    d.read(open(data_file, "rU"), format="NEXUS")
+    taxa = d.taxa_blocks[0]
+    full_taxa_mask = taxa.all_taxa_bitmask()
+    _LOG.debug("%s = full_taxa_mask" % bin(full_taxa_mask))
+    assert(len(d.taxa_blocks) == 1)
+    characters = d.char_blocks[0]
+    assert(len(d.char_blocks) == 1)
+    assert(len(characters) == len(taxa))
+    inp_trees = d.read_trees(open(intree_file, "rU"), format="NEXUS")
+    assert(inp_trees)
+    current_taxon_mask = None
+    for tree in inp_trees:
+        assert tree.taxa_block is taxa
+        encode_splits(tree)
+        if current_taxon_mask is None:
+            current_taxon_mask = tree.seed_node.edge.clade_mask
+            _LOG.debug("%s = current_taxon_mask" % bin(current_taxon_mask))
+            assert( (current_taxon_mask | full_taxa_mask) == full_taxa_mask)
+            toadd_taxon_mask = current_taxon_mask ^ full_taxa_mask
+        else:
+            assert(current_taxon_mask == tree.seed_node.edge.clade_mask)
+    next_toadd = lowest_bit_only(current_taxon_mask)
+    if (next_toadd - 1) != current_taxon_mask:
+        sys.exit("In this version, taxa must be added to the tree in the order that they appear in the matrix")
+            
+        
+    sys.exit(0)
+    
+    
+    
     ###################################################
     # Support file idiot checking
         
@@ -294,15 +297,3 @@ def main_cli():
         
         print "%f\t%d\t%d\t%d\t%d\t%d\t%d" % (freq, compat_fp, compat_fn, compat_fp + compat_fn, all_fp, all_fn, all_fp + all_fn )
         
-        
-
-
-if __name__ == '__main__':
-    try:
-        main_cli()
-    except (KeyboardInterrupt, EOFError), e:
-        sys.stderr.write("Terminating (user-abort).\n")
-        sys.exit(1)
-    except Exception, e:
-        sys.stderr.write("Error encountered: %s : %s.\n" % (str(type(e)), e.message))
-        raise # reraise exception, with correct traceback
