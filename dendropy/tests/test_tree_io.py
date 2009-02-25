@@ -294,7 +294,15 @@ class TreeIOTest(unittest.TestCase):
                 if nd.edge.length is None:
                     _LOG.warn("%s has edge length of None" % trees.format_node(nd))
                     self.assertTrue(nd.edge.length is not None)
-
+    def testTreeRead(self):
+        rd = dendropy.tests.data_source_path("rana.nex")
+        rt = dendropy.tests.data_source_path("rana.tre")
+        d = Dataset()
+        d.read(open(rd, "rU"), format="NEXUS")
+        self.assertEqual(len(d.taxa_blocks[0]), 64)
+        d.read_trees(open(rt, "rU"), format="NEXUS")
+        self.assertEqual(len(d.taxa_blocks[0]), 64)
+        
 def main_local():
     "Main CLI handler."
 
