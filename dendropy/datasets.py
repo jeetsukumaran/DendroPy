@@ -28,7 +28,7 @@ trees, models etc.
 """
 
 import os
-import StringIO
+from cStringIO import StringIO
 
 from dendropy import taxa
 from dendropy import characters
@@ -202,7 +202,7 @@ class Dataset(object):
         is a file descriptor object, `format` is one of the supported file
         format identifiers: 'NEXUS' (incl. 'NEWICK'), 'NEXML' etc.
         """
-        src = StringIO.StringIO(string)
+        src = StringIO(string)
         return self.read(src, format)
         
     def read_trees(self, src, format):
@@ -250,7 +250,7 @@ class Dataset(object):
         is a file descriptor object, `format` is one of the supported file
         format identifiers: 'NEXUS' (incl. 'NEWICK'), 'NEXML' etc.
         """
-        src = StringIO.StringIO(string)
+        src = StringIO(string)
         return self.read_trees(src, format)            
             
     def write(self, dest, format):
@@ -335,7 +335,7 @@ class Writer(object):
         Returns a string representation of a DataSet as a fully-formed
         and formatted dataset document.
         """
-        dataset_text = StringIO.StringIO()
+        dataset_text = StringIO()
         self.write_dataset(dataset, dataset_text)
         return dataset_text.getvalue()
 

@@ -68,7 +68,7 @@ def read_dataset(file_obj, dataset=None):
     """
     Note: due to usage of seek(), does not work on stream sources 
     (such as stdin). In this case, client must either buffer stream to string
-    (e.g. file_obj=StringIO.StringIO(sys.stdin.read())) or use direct methods.
+    (e.g. file_obj=StringIO(sys.stdin.read())) or use direct methods.
     """
     stream_tokenizer = NexusStreamTokenizer(file_obj)
     token = stream_tokenizer.read_next_token_ucase()
@@ -181,7 +181,7 @@ def parse_sequence_iupac_ambiguities(seq):
 
 def parse_newick_string(tree_statement, taxa_block=None, translate_dict=None):
     "Processes a (SINGLE) TREE statement string."
-    stream_handle = StringIO.StringIO(tree_statement)
+    stream_handle = StringIO(tree_statement)
     stream_tokenizer = NexusStreamTokenizer(stream_handle)
     tree = parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
                                      taxa_block=taxa_block,

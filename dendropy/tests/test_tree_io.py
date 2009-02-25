@@ -33,7 +33,7 @@ import tempfile
 import os
 from optparse import OptionGroup
 from optparse import OptionParser
-import StringIO
+from cStringIO import StringIO
 
 from dendropy import get_logger
 from dendropy.datasets import Dataset
@@ -45,6 +45,8 @@ _LOG = get_logger("TreeParsingAndWriting")
 from dendropy import taxa
 from dendropy import trees
 from dendropy import utils
+from dendropy.splits import encode_splits
+from dendropy import treedists
 from dendropy import datasets
 
 ### MODULES THAT WE ARE TESTING ###
@@ -174,7 +176,7 @@ def read_nexus_tree(tree_filepath):
     _LOG.info('Reading "%s"' % os.path.basename(tree_filepath))
     _LOG.debug(tstr)
     reader = nexus.NexusReader()
-    dataset = reader.read_dataset(StringIO.StringIO(tstr))
+    dataset = reader.read_dataset(StringIO(tstr))
     tree = dataset.trees_blocks[0][0]
     leaf_nodes = tree.leaf_nodes()
     _LOG.info("%d leaf_nodes on tree: %s" % (len(leaf_nodes), (", ".join([str(n.taxon) for n in leaf_nodes]))))
@@ -236,7 +238,7 @@ BEGIN TREES;
     tree 'con 50 majrule' = [&U] ('Anolis ahli':0.2642130000,((('Anolis garmani':0.1068380000,'Anolis grahami':0.0863670000)1.00:0.069511,'Anolis valencienni':0.1642630000)0.87:0.020752,'Anolis lineatopus':0.1957260000)1.00:0.077682,((((((('Anolis aliniger':0.1600010000,'Anolis coelestinus':0.1932310000)1.00:0.071920,'Anolis bahorucoensis':0.2266880000)0.68:0.023043,('Anolis equestris':0.0227020000,'Anolis luteogularis':0.0306410000)1.00:0.198165,'Anolis occultus':0.4231200000)0.89:0.056277,('Anolis barahonae':0.2114890000,'Anolis cuvieri':0.1686700000)1.00:0.084190,('Anolis insolitus':0.2438820000,'Anolis olssoni':0.2568770000)1.00:0.050618)0.86:0.031679,(('Anolis brevirostris':0.1801300000,'Anolis distichus':0.1151360000)1.00:0.123136,(('Anolis cristatellus':0.2144360000,'Anolis krugi':0.1573300000)0.93:0.036788,'Anolis stratulus':0.1973470000)1.00:0.081037)1.00:0.056582)0.77:0.021826,(('Anolis alutaceus':0.1619060000,'Anolis vanidicus':0.2059960000)1.00:0.118216,(('Anolis angusticeps':0.0857100000,'Anolis paternus':0.0595110000)1.00:0.153413,'Anolis loysiana':0.1836280000)1.00:0.042858)1.00:0.057139,('Anolis marcanoi':0.2359120000,'Anolis strahmi':0.1977660000)1.00:0.141032,'Diplolaemus darwinii':0.6364930000)1.00:0.067869,('Anolis ophiolepis':0.0945010000,'Anolis sagrei':0.0967580000)1.00:0.179398)0.96:0.044895);
 END;
 """
-        r2 = StringIO.StringIO(f)
+        r2 = StringIO(f)
         temp_dataset2 = nexus.NexusReader().read_dataset(file_obj=r2)                                
                 
 
@@ -295,18 +297,18 @@ END;
                 temp_trees_block.append(tree)
                 temp_dataset.add_trees_block(trees_block=temp_trees_block)
                 writer = writer_class()
-                result1 = StringIO.StringIO()
+                result1 = StringIO()
                 writer.write_dataset(temp_dataset, result1)
                 result1 = result1.getvalue()                               
                 _LOG.debug("\nWRITE OUT >>>\n%s\n<<< WRITE OUT" % result1)
 
                 # read back ...
                 _LOG.info("(reading back)")           
-                r2 = StringIO.StringIO(result1)
+                r2 = StringIO(result1)
                 #r2 = open("/Users/jeet/Documents/Projects/Phyloinformatics/DendroPy/dendropy/dendropy/tests/data/anolis.mbcon.trees.nexus", "r")
                 temp_dataset2 = reader.read_dataset(file_obj=r2)                                
                 tree2 = temp_dataset2.trees_blocks[0][0]
-                result2 = StringIO.StringIO()
+                result2 = StringIO()
                 writer.write_dataset(temp_dataset, result2)
                 result2 = result2.getvalue()                
                 _LOG.debug("\nREAD IN >>>\n%s\n<<< READ IN" % result2)      
@@ -345,6 +347,7 @@ END;
                 if nd.edge.length is None:
                     _LOG.warn("%s has edge length of None" % trees.format_node(nd))
                     self.assertTrue(nd.edge.length is not None)
+
     def testTaxaWithUnderscoreRead(self):
         rd = dendropy.tests.data_source_path("rana.nex")
         rt = dendropy.tests.data_source_path("rana.tre")
@@ -353,6 +356,26 @@ END;
         self.assertEqual(len(d.taxa_blocks[0]), 64)
         d.read_trees(open(rt, "rU"), format="NEXUS")
         self.assertEqual(len(d.taxa_blocks[0]), 64)
+
+    def testNoTranslate(self):
+        f = """#NEXUS
+Begin taxa ;
+    dimensions ntax = 4;
+    taxlabels a b c d ;
+end;
+begin trees;
+    tree t = (1,2,(3,4));
+    tree s =  (a,b,(d,c));
+end;
+"""
+        d = Dataset()
+        d.read(StringIO(f), format="NEXUS")
+        t = d.trees_blocks[0][0]
+        s = d.trees_blocks[0][1]
+        self.assertEqual(t.taxa_block, s.taxa_block)
+        encode_splits(s)
+        encode_splits(t)
+        self.assertEqual(treedists.symmetric_difference(t, s), 0)
 
 def main_local():
     "Main CLI handler."
