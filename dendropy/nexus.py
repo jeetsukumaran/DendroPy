@@ -486,10 +486,7 @@ class NexusStreamTokenizer(object):
                         self.read_next_char()
                     else:
                         while not self.eof and (not NexusStreamTokenizer.is_whitespace_or_punctuation(self.current_file_char) or self.current_file_char in ignore_punctuation):
-                            if self.current_file_char == '_':
-                                token = token + ' '
-                            else:
-                                token = token + self.current_file_char
+                            token = token + self.current_file_char
                             self.read_next_char()
                 self.current_token = token
             else:
@@ -804,7 +801,7 @@ class NexusReader(datasets.Reader):
             if token != ',' and token != ';':
                 raise self.syntax_exception('Expecting "," in TRANSLATE statement after definition for %s = "%s", but found "%s" instead' % (translation_token, translation_label, token))
             else:
-                self.tree_translate_dict[translation_token] = translation_label
+                self.tree_translate_dict[translation_token] = _parse_taxon_label(translation_label, self.stream_tokenizer)
 
     def parse_dimensions_statement(self):
         """
