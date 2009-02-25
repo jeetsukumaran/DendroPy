@@ -33,10 +33,10 @@ import itertools
 from optparse import OptionParser
 
 from dendropy import nexus
-from dendropy.splits import encode_splits
+from dendropy.splits import encode_splits, lowest_bit_only
 from dendropy import treesum
 from dendropy import datasets
-from dendropy import trees
+from dendropy.trees import format_split
 from dendropy import treegen
 from dendropy import get_logger
 from dendropy.datasets import Dataset
@@ -108,8 +108,10 @@ if __name__ == '__main__':
             toadd_taxon_mask = current_taxon_mask ^ full_taxa_mask
         else:
             assert(current_taxon_mask == tree.seed_node.edge.clade_mask)
-    next_toadd = lowest_bit_only(current_taxon_mask)
+    next_toadd = lowest_bit_only(current_taxon_mask^full_taxa_mask)
     if (next_toadd - 1) != current_taxon_mask:
+        _LOG.debug("%s = next_toadd" % format_split(next_toadd, taxa=taxa))
+        _LOG.debug("%s = current_taxon_mask\n(next_toadd - 1) != current_taxon_mask" % format_split(current_taxon_mask, taxa=taxa))
         sys.exit("In this version, taxa must be added to the tree in the order that they appear in the matrix")
             
         
