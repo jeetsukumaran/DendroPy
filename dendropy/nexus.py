@@ -32,7 +32,7 @@ blocks, data blocks, trees blocks etc. is undefined.
 import re
 import os
 import sys
-import StringIO
+from cStringIO import StringIO
 
 from dendropy import datasets
 from dendropy import taxa
@@ -419,8 +419,7 @@ class NexusStreamTokenizer(object):
                 self.current_col_number = self.current_col_number + 1
             self.current_file_char = read_char
             return self.__current_file_char
-        else:
-            return None
+        return None
 
     def skip_comment(self):
         """
@@ -487,7 +486,10 @@ class NexusStreamTokenizer(object):
                         self.read_next_char()
                     else:
                         while not self.eof and (not NexusStreamTokenizer.is_whitespace_or_punctuation(self.current_file_char) or self.current_file_char in ignore_punctuation):
-                            token = token + self.current_file_char
+                            if self.current_file_char == '_':
+                                token = token + ' '
+                            else:
+                                token = token + self.current_file_char
                             self.read_next_char()
                 self.current_token = token
             else:
@@ -495,6 +497,50 @@ class NexusStreamTokenizer(object):
         else:
             self.current_token = None
         return self.current_token
+
+    def fread_next_token(self, ignore_punctuation=None):
+        """
+        Reads the next token in the file stream. A token in this context is any word or punctuation character
+        outside of a comment block.
+        """
+        if ignore_punctuation == None:
+            ignore_punctuation = []
+        self.current_token = None
+        if self.eof:
+            return None
+        c = self.skip_to_significant_character()
+        if self.eof:
+            return None
+        token = StringIO()
+        if c == "'":
+            self.read_next_char()
+            self.quoted_token = True
+            while not self.eof:
+                if c == "'":
+                    c = self.read_next_char()
+                    if c == "'":
+                        token.write("'")
+                        c = self.read_next_char()
+                    else:
+                        break
+                else:
+                    token.write(c)
+                    self.read_next_char()
+        else:
+            self.quoted_token = False
+            if NexusStreamTokenizer.is_punctuation(c) and c not in ignore_punctuation:
+                token.write(c)
+                self.read_next_char()
+            else:
+                while not self.eof and (not NexusStreamTokenizer.is_whitespace_or_punctuation(c) or c in ignore_punctuation):
+                    if c == '_':
+                        token.write(' ')
+                    else:
+                        token.write(c)
+                    c = self.read_next_char()
+        tokenstr = token.getvalue()
+        self.current_token = tokenstr
+        return tokenstr
 
     def read_next_token_ucase(self, ignore_punctuation=[]):
         """
@@ -736,13 +782,6 @@ class NexusReader(datasets.Reader):
         if token != '=':
             raise self.syntax_exception('Expecting "=" in definition of Tree "%s" but found "%s"' % (tree_name, token))
         else:
-            # collect entire tree statement by accumulating tokens until we reach a semi-colon
-#             statement = []
-#             token = self.stream_tokenizer.read_next_token(preserve_quotes=True)
-#             while token and token != ';':
-#                 statement.append(token)
-#                 token = self.stream_tokenizer.read_next_token(preserve_quotes=True)
-#             newick_parser = NewickTreeParser()
             tree = parse_newick_tree_stream(stream_tokenizer=self.stream_tokenizer,
                                             taxa_block=taxa_block,
                                             translate_dict=self.tree_translate_dict)
