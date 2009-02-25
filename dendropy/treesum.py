@@ -88,9 +88,7 @@ class TreeSummarizer(object):
         self.progress_message_prefix = None
         self.progress_message_suffix = None
         self.ignore_node_ages = True
-        self.total_trees_read = 0
         self.total_trees_counted = 0
-        self.total_trees_ignored = 0
 
     def send_progress_message(self, msg):
         "Writes progress message."
@@ -245,7 +243,7 @@ class TreeSummarizer(object):
                 if len(elen) > 0:
                     node.edge.length = float(sum(elen)) / len(elen)
                 else:
-                    new_edge.length = None
+                    node.edge.length = None
         return con_tree
 
     def count_splits_on_trees(self, tree_iterator, split_distribution=None):
@@ -255,10 +253,12 @@ class TreeSummarizer(object):
         """
         if split_distribution is None:
             split_distribution = splits.SplitDistribution()
-        taxa_block = None   
+        taxa_block = split_distribution.taxa_block
         for tree_idx, tree in enumerate(tree_iterator):
             self.total_trees_counted += 1
             if taxa_block is None:
+                assert(split_distribution.taxa_block is None)
+                split_distribution.taxa_block = tree.taxa_block
                 taxa_block = tree.taxa_block
             else:
                 assert(taxa_block is tree.taxa_block)

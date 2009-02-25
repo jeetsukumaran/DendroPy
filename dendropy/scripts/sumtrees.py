@@ -334,7 +334,6 @@ def main_cli():
     
     comments = []
     tsum = treesum.TreeSummarizer()
-    tsum.burnin = opts.burnin 
     tsum.support_as_labels = opts.support_as_labels 
     tsum.support_as_percentages = opts.support_as_percentages
     if not opts.support_as_percentages and opts.support_label_decimals < 2:
@@ -352,15 +351,22 @@ def main_cli():
         tsum.progress_message_suffix = "\n"
 
     messenger.send("### COUNTING SPLITS ###\n")
-    tree_source = MultiFileTreeIterator(sources=support_filepaths, core_iterator=nexus.iterate_over_trees)
-    split_distribution = tsum.count_splits_on_trees(tree_source) 
-        
+    tree_source = MultiFileTreeIterator(sources=support_filepaths,
+                                        core_iterator=nexus.iterate_over_trees, 
+                                        from_index=opts.burnin,
+                                        progress_func=tsum.send_progress_message)
+
+    split_distribution = tsum.count_splits_on_trees(tree_source)
+    if split_distribution.taxa_block is None:
+        assert(tsum.total_trees_counted == 0)
+        split_distribution.taxa_block = dendropy.taxa.TaxaBlock() # we just produce an empty block so we don't crash as we report nothing of interest
     report = []
-    report.append("%d trees read from %d files." % (tsum.total_trees_read, len(support_filepaths)))
+    report.append("%d trees read from %d files." % (tree_source.total_trees_read, len(support_filepaths)))
     report.append("%d trees from each file requested to be ignored for burn-in." % (opts.burnin))
-    report.append("%d trees ignored in total." % (tsum.total_trees_ignored))    
+    report.append("%d trees ignored in total." % (tree_source.total_trees_ignored))    
     report.append("%d trees considered in total for split support assessment." % (tsum.total_trees_counted))
-    report.append("%d unique taxa across all trees." % len(split_distribution.taxa_block))
+    n_taxa = len(split_distribution.taxa_block)
+    report.append("%d unique taxa across all trees." % n_taxa)
     num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = split_distribution.splits_considered()
     report.append("%d unique splits out of %d total splits counted." % (num_unique_splits, num_splits))
     report.append("%d unique non-trivial splits out of %d total non-trivial splits counted." % (num_nt_unique_splits, num_nt_splits))

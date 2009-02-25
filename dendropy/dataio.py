@@ -224,7 +224,13 @@ def trees_from_newick(nl, taxa_block=None):
 
 
 class MultiFileTreeIterator(object):
-    def __init__(self, sources=[], core_iterator=None, taxa_block=None, dataset=None, format=None, from_index=0, progress_func=None):
+    def __init__(self, sources=[], 
+                       core_iterator=None, 
+                       taxa_block=None, 
+                       dataset=None, 
+                       format=None, 
+                       from_index=0, 
+                       progress_func=None):
         """An iterable collection of trees from multiple sources
             `sources` is as list of tree sources each can be either a file path (a str) 
                 or a file-like object
@@ -259,7 +265,6 @@ class MultiFileTreeIterator(object):
         self.from_index = from_index
 
     def __iter__(self):
-        _LOG.debug("In MultiFileTreeIterator.next")
         si = self.from_index
         tb = self.taxa_block
         progress_func = self.progress_func
@@ -275,8 +280,10 @@ class MultiFileTreeIterator(object):
                 current_file_note = "Tree file %d of %d: " % (source_ind + 1, len(self.sources))
             self.curr_num_sources_read += 1
             self.total_num_sources_read += 1
-            for n, tree in enumerate(self._raw_iter(fo, tb)):                
-                if si and n >= si:
+            for n, tree in enumerate(self._raw_iter(fo, tb)):
+                if (not si) or (n >= si):
+                    if tb is None:
+                        tb = tree.taxa_block
                     self.total_trees_read += 1
                     self.curr_trees_read += 1
                     if progress_func:
@@ -287,16 +294,13 @@ class MultiFileTreeIterator(object):
                     self.curr_trees_ignored += 1
                     if progress_func:
                         progress_func("%sSkipping tree %d (# to skip=%d)" % (current_file_note, (n+1), si))
-            if self.using_data_it and (tb is None and len(self.dataset.taxa_blocks)):
-                assert len(self.dataset.taxa_blocks) == 1
-                tb = self.dataset.taxa_blocks[0]
 
     def _raw_iter(self, fo, tb):
         if self.using_data_it:
             for tree in self.dataset.iterate_over_trees(fo, taxa_block=tb, format=self.format):
                 yield tree
         else:
-            for tree in self._core_iterator(fo, taxa_block=tb, dataset=self.dataset):
+            for tree in self._core_iterator(fo, taxa_block=tb):
                 yield tree
         
         

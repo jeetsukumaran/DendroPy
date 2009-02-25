@@ -204,10 +204,7 @@ class SplitDistribution(object):
     def __init__(self, taxa_block=None):
         "What else?"
         self.total_trees_counted = 0
-        if taxa_block is not None:
-            self.taxa_block = taxa_block            
-        else:
-            self.taxa_block = taxa.TaxaBlock()
+        self.taxa_block = taxa_block
         self.splits = []
         self.split_counts = {}
         self.split_edge_lengths = {}
@@ -232,6 +229,8 @@ class SplitDistribution(object):
             total number of non-trivial splits counted
             total number of unique non-trivial splits counted
         """
+        if not self.split_counts:
+            return 0, 0, 0, 0
         num_splits = 0
         num_unique_splits = 0
         num_nt_splits = 0
@@ -270,9 +269,12 @@ class SplitDistribution(object):
         Counts splits in this tree and add to totals. `tree` must be decorated
         with splits, and no attempt is made to normalize taxa.
         """
+        if self.taxa_block is None:
+            self.taxa_block = tree.taxa_block
+        else:
+            assert tree.taxa_block is self.taxa_block
         self.total_trees_counted += 1
-#         tree.normalize_taxa(taxa_block=self.taxa_block)
-#         encode_splits(tree)
+
         for split in tree.split_edges:
             if not self.unrooted:
                 split = tree.split_edges[split].clade_mask

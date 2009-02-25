@@ -888,6 +888,8 @@ class NexusReader(datasets.Reader):
         """
         if dataset is None:
             dataset = datasets.Dataset()
+        if taxa_block is None:
+            taxa_block = taxa.TaxaBlock()
         if not (taxa_block in dataset.taxa_blocks):
             dataset.taxa_blocks.append(taxa_block)
         stream_tokenizer = NexusStreamTokenizer(file_obj)
@@ -1095,6 +1097,8 @@ class NewickReader(datasets.Reader):
         """
         if dataset is None:
             dataset = datasets.Dataset() or dataset
+        if taxa_block is None:
+            taxa_block = taxa.TaxaBlock()
         if not (taxa_block in dataset.taxa_blocks):
             dataset.taxa_blocks.append(taxa_block)
         stream_tokenizer = NexusStreamTokenizer(file_obj)

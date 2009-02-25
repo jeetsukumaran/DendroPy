@@ -57,7 +57,7 @@ class SumTreesTest(unittest.TestCase):
         
     def runSumTrees(self, args):
         command = self.compose_sumtrees_command(args)
-        _LOG.debug("\n"+command)
+        _LOG.debug("Invocation:\n"+command)
         run = subprocess.Popen(command, 
                                shell=True,
                                stdout=subprocess.PIPE,
@@ -94,7 +94,6 @@ class SumTreesTest(unittest.TestCase):
             firstMR = ts.tree_from_splits(firstSD, min_freq=0.5)
             secondMR = ts.tree_from_splits(secondSD, min_freq=0.5)
         self.assertEqual(0, symmetric_difference(firstMR, secondMR))
-
     def testSumTreeOptions(self):
         support_file = dendropy.tests.data_source_path("anolis.mbcon.trees.nexus")
         target_file = dendropy.tests.data_source_path("anolis.mbcon.trees.nexus")

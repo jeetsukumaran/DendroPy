@@ -235,11 +235,13 @@ class Dataset(object):
         from dendropy import dataio
         reader = dataio.get_reader(format)
         reader.include_characters = False
+        if not taxa_block in self.taxa_blocks:
+            self.taxa_blocks.append(taxa_block)
         if taxa_block is None:
             for tree in reader.iterate_over_trees(src, dataset=self):
                 yield tree
         else:
-            for tree in reader.iterate_over_trees(src, taxa_block=taxa_block, dataset=self):
+            for tree in reader.iterate_over_trees(src, taxa_block=taxa_block):
                 yield tree
  
     def trees_from_string(self, string, format):

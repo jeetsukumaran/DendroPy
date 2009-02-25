@@ -277,6 +277,8 @@ class NexmlReader(datasets.Reader):
         xml_doc = xmlparser.xml_document(file_obj=file_obj)
         if dataset is None:
             dataset = datasets.Dataset() or dataset
+        if taxa_block is None:
+            taxa_block = taxa.TaxaBlock()
         if not (taxa_block in dataset.taxa_blocks):
             dataset.taxa_blocks.append(taxa_block)
         self.parse_taxa_blocks(xml_doc, dataset)
