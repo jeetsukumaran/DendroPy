@@ -87,7 +87,7 @@ def dataset_from_string(string, format):
     reader = get_reader(format)
     return reader.read_dataset(source_file_handle(string=string))    
     
-def trees_from_file(file_obj, format):
+def trees_from_file(file_obj, format, encode_splits=False):
     """
     Returns a *list* of TreesBlock objects parsed from the source, where:
         `file_obj`   - can either be a file descriptor object/handle opened 
@@ -97,9 +97,9 @@ def trees_from_file(file_obj, format):
     """
     deprecation("'dataio.trees_from_file()' is deprecated: use 'read_trees()' method of a Dataset object instead", logger_obj=_LOG)
     reader = get_reader(format)
-    return reader.read_trees(source_file_handle(file_obj=file_obj))
+    return reader.read_trees(source_file_handle(file_obj=file_obj), encode_splits=encode_splits)
     
-def trees_from_string(string, format):
+def trees_from_string(string, format, encode_splits=False):
     """
     Returns a *list* of TreesBlock objects parsed from the source, where:
         `string` - a string containing the data to be parsed.   
@@ -107,7 +107,7 @@ def trees_from_string(string, format):
     """
     deprecation("'dataio.trees_from_string()' is deprecated: use 'trees_from_string()' method of a Dataset object instead", logger_obj=_LOG)
     reader = get_reader(format)
-    return reader.read_trees(source_file_handle(string=string))     
+    return reader.read_trees(source_file_handle(string=string), encode_splits=encode_splits)     
     
 def from_nexus(file_obj=None, string=None):
     """

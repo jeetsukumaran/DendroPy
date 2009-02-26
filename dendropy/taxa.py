@@ -162,6 +162,14 @@ class TaxaBlock(list, base.IdTagged):
     def add_taxon(self, oid=None, label=None):
         "Convenience function that wraps `get_taxon`."
         self.get_taxon(oid=oid, label=label)
+
+    def add_new_taxon(self, oid=None, label=None):
+        "Add taxon that you know is not already in the taxon list"
+        if not self._is_mutable:
+            raise Exception("Taxon %s/%s cannot be added to an immutable taxon block" % (oid, label))
+        taxon = Taxon(oid=oid, label=label)
+        self.append(taxon)
+        return taxon
         
     def clear(self):
         "Removes all taxa from this block."

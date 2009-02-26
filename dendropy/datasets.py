@@ -205,7 +205,7 @@ class Dataset(object):
         src = StringIO(string)
         return self.read(src, format)
         
-    def read_trees(self, src, format):
+    def read_trees(self, src, format, encode_splits=False):
         """
         Populates this dataset with trees from `src`, given in `format`.
         `src` is a file descriptor object, `format` is one of the
@@ -220,7 +220,12 @@ class Dataset(object):
         reader = dataio.get_reader(format)
         reader.include_characters = False
         old_trees_block_len = len(self.trees_blocks)
+        pes = reader.encode_splits
+        reader.encode_splits = encode_splits
+
         reader.read_dataset(src, self)
+
+        reader.encode_splits = pes
         new_trees_block_len = len(self.trees_blocks)
         if new_trees_block_len > old_trees_block_len:
             idxs = range(old_trees_block_len, new_trees_block_len)

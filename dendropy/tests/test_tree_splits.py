@@ -80,11 +80,12 @@ class SplitFreqsTest(unittest.TestCase):
             dp_sd.unrooted = unrooted
 
             for tree_filepath in tree_filepaths:
+                _LOG.debug("About to read %s" % tree_filepath)
                 for tree in nexus.iterate_over_trees(open(tree_filepath, "rU"), taxa_block=taxa_block):
                     splits.encode_splits(tree)
                     dp_sd.count_splits_on_tree(tree)
 
-            assert dp_sd.total_trees_counted == paup_sd.total_trees_counted
+            self.assertEqual(dp_sd.total_trees_counted, paup_sd.total_trees_counted)
 
             # SplitsDistribution counts trivial splits, whereas PAUP*
             # contree does not, so the following will not work
@@ -94,8 +95,8 @@ class SplitFreqsTest(unittest.TestCase):
             taxa_mask = taxa_block.all_taxa_bitmask()
             for split in dp_sd.splits:
                 if not splits.is_trivial_split(split, taxa_mask):
-                    assert split in paup_sd.splits
-                    assert dp_sd.split_counts[split] == paup_sd.split_counts[split]
+                    self.assertTrue(split in paup_sd.splits)
+                    self.assertEqual(dp_sd.split_counts[split], paup_sd.split_counts[split])
                     paup_sd.splits.remove(split)
 
             # if any splits remain here, they were not
