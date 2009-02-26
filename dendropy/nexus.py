@@ -40,6 +40,24 @@ from dendropy import trees
 from dendropy import characters   
 from dendropy import get_logger
 _LOG = get_logger("dendropy.nexus")
+
+#######################################################################
+## NESTED CLASSES
+
+class SyntaxException(Exception):
+
+    def __init__(self, row=None, column=None, message=None):
+        self.row = row
+        self.column = column
+        self.message = message
+
+    def __str__(self):
+        if self.row is None:
+            t = ""
+        else:
+            t =  " IN LINE %d" % self.row
+        return 'ERROR PARSING FILE%s: %s' % (t, self.message)
+
 ############################################################################
 ## Standard Tree Iterator
       
@@ -187,7 +205,17 @@ def parse_newick_string(tree_statement, taxa_block=None, translate_dict=None):
                                      taxa_block=taxa_block,
                                      translate_dict=translate_dict)
     return tree    
-    
+
+class StrToTaxon(object):
+    def __init__(self, taxa, translate_dict=None):
+        self.taxa = taxa
+        self.translate = translate_dict or {}
+    def get_taxon(self, label, taxon_required=True):
+        v = self.translate.get(label)
+        if v is not None:
+            return v
+        return self.taxa.get_taxon(label=label, taxon_required=taxon_required)
+        
 def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=None):
     """
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
@@ -201,71 +229,57 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
     if taxa_block is None:
         taxa_block = taxa.TaxaBlock()    
     tree.taxa_block = taxa_block
-    child_nodes = []    
-    while token and token != ';' and token != ':':        
-        # process nodes until no more tokens, end of tree
-        # statement, or ':' is encountered, presumably outside
-        # main tree parenthetical statement (i.e., length of root
-        node = parse_newick_node_stream(stream_tokenizer, tree)
-        if node:
-            child_nodes.append(node)
-        token = stream_tokenizer.current_token
-        if stream_tokenizer.current_token == ')':
-            # OK, I'll be the first to admit that this is rather
-            # hacky but it works.
-            # If an end-parenthesis is encountered ...
-            token = stream_tokenizer.read_next_token()
-            if token and not token in NexusStreamTokenizer.punctuation:
-                break
-    for node in child_nodes:
-        tree.seed_node.add_child(node)
-    if token and not token in NexusStreamTokenizer.punctuation:
-        tree.seed_node.label = token
-        token = stream_tokenizer.read_next_token()
-    if token and token == ':':
-        length = stream_tokenizer.read_next_token(ignore_punctuation='-')
-        tree.seed_node.edge.length = length
-        
-    # convert labels at terminal nodes to taxa
-    for node in tree.leaf_nodes():
-        if node.label:
-            if translate_dict and node.label in translate_dict:
-                label = translate_dict[node.label]
-                node.label = label
-            else:
-                label = node.label                      
-            node.taxon = taxa_block.get_taxon(label=label)
-    return tree
 
-def parse_newick_node_stream(stream_tokenizer, tree):
-    """
-    Processes a TREE statement. Assumes that the file reader is
-    positioned right after the '(' token in a TREE statement or
-    right after a comma following a node inside a tree statement.
-    """
-    node = trees.Node()
-    token = stream_tokenizer.read_next_token()
-    while token and token != ')' and token != ',' and token != ";":  
-        if token=="." or token not in NexusStreamTokenizer.punctuation:
-            if node.label is None:
-                node.label = token
-            else:                    
-                node.label = node.label + token
-        if token == ':':
-            edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-')
-            try:
-                node.edge.length = float(edge_length_str)
-            except ValueError:
-                node.edge.length = edge_length_str
+    stt = StrToTaxon(taxa_block, translate_dict)
+
+    tree.seed_node = trees.Node()
+    curr_node = tree.seed_node
+
+    while True:
+        #_LOG.debug("token=%s" % token)
+        #_LOG.debug("curr_node = %s, par = %s" % (str(curr_node), str(curr_node.parent_node)))
+        if not token or token == ';':
+            if curr_node is not tree.seed_node:
+                raise stream_tokenizer.syntax_exception('Unbalanced parentheses -- not enough ")" characters found in tree description')
+            break
         if token == '(':
-            while token and token != ')':
-                child_node = parse_newick_node_stream(stream_tokenizer, tree)
-                if child_node:
-                    node.add_child(child_node)
-                token = stream_tokenizer.current_token                  
-        token = stream_tokenizer.read_next_token()    
-    return node     
-        
+            tmp_node = trees.Node()
+            curr_node.add_child(tmp_node)
+            curr_node = tmp_node
+            token = stream_tokenizer.read_next_token()
+        elif token == ',':
+            tmp_node = trees.Node()
+            if curr_node.is_leaf() and not curr_node.taxon:
+                raise stream_tokenizer.syntax_exception('Missing taxon specifier in a tree -- found either a "(," or ",," construct.')
+            p = curr_node.parent_node
+            if not p:
+                raise stream_tokenizer.syntax_exception('Comma found one the "outside" of a newick tree description')
+            p.add_child(tmp_node)
+            curr_node = tmp_node
+            token = stream_tokenizer.read_next_token()
+        else:
+            if token == ')':
+                if curr_node.is_leaf() and not curr_node.taxon:
+                    raise stream_tokenizer.syntax_exception('Missing taxon specifier in a tree -- found either a "(," or ",," construct.')
+                p = curr_node.parent_node
+                if not p:
+                    raise stream_tokenizer.syntax_exception('Unbalanced parentheses -- too many ")" characters found in tree description')
+                curr_node = p
+            else:
+                t = stt.get_taxon(label=token, taxon_required=curr_node.is_leaf())
+                if t is None:
+                    curr_node.label = token
+                else:
+                    curr_node.taxon = t
+            token = stream_tokenizer.read_next_token()    
+            if token == ':':
+                edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-')
+                try:
+                    curr_node.edge.length = float(edge_length_str)
+                except ValueError:
+                    curr_node.edge.length = edge_length_str
+                token = stream_tokenizer.read_next_token()
+    return tree
      
 ############################################################################
 ## CLASS: NexusStreamTokenizer
@@ -320,18 +334,6 @@ class NexusStreamTokenizer(object):
 
     validate_identifier = staticmethod(validate_identifier)
 
-    #######################################################################
-    ## NESTED CLASSES
-
-    class SyntaxException(Exception):
-
-        def __init__(self, row, column, message):
-            self.row = row
-            self.column = column
-            self.message = message
-
-        def __str__(self):
-            return 'ERROR PARSING FILE IN LINE %d: %s' % (self.row, self.message)
 
     #######################################################################
     ## INSTANCE METHODS
@@ -475,10 +477,13 @@ class NexusStreamTokenizer(object):
         if ignore_punctuation == None:
             ignore_punctuation = []
         self.current_token = None
+        #_LOG.debug("On entry: self.current_file_char = %s" % self.current_file_char)
         if self.eof:
+            #_LOG.debug("EOF before skip_to_significant_character")
             return None
         c = self.skip_to_significant_character()
         if self.eof:
+            #_LOG.debug("EOF after skip_to_significant_character")
             return None
         if c == "'":
             token = StringIO()
@@ -555,16 +560,23 @@ class NexusStreamTokenizer(object):
         while token != ';' and not self.eof and token != None:
             token = self.read_next_token()
             pass
-
+    def syntax_exception(self, message):
+            """
+            Returns an exception object parameterized with line and
+            column number values.
+            """
+            return SyntaxException(row=self.current_line_number, 
+                                   column=self.current_col_number, 
+                                   message=message)
 ############################################################################
 ## CLASS: NexusReader
 
 class NexusReader(datasets.Reader):
     "Encapsulates loading and parsing of a NEXUS format file."
 
-    class NotNexusFileException(NexusStreamTokenizer.SyntaxException):
+    class NotNexusFileException(SyntaxException):
         def __init__(self, filepath, row, column, message):
-            NexusStreamTokenizer.SyntaxException.__init__(self, \
+            SyntaxException.__init__(self, \
                 filepath, 
                 row, 
                 column, 
@@ -663,13 +675,13 @@ class NexusReader(datasets.Reader):
                         self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
                         self.tree_translate_dict = {}
                         for n, t in enumerate(trees_block.taxa_block):
-                            self.tree_translate_dict[n+1] = t.label
+                            self.tree_translate_dict[str(n + 1)] = t
                         while not (token == 'END' or token == 'ENDBLOCK') \
                             and not self.stream_tokenizer.eof \
                             and not token==None:
                             token = self.stream_tokenizer.read_next_token_ucase()
                             if token == 'TRANSLATE':
-                                self.parse_translate_statement()
+                                self.parse_translate_statement(trees_block.taxa_block)
                             if token == 'TREE':
                                 tree = self.parse_tree_statement(trees_block.taxa_block)
                                 trees_block.append(tree)
@@ -695,8 +707,7 @@ class NexusReader(datasets.Reader):
         Returns an exception object parameterized with line and
         column number values.
         """
-        return NexusStreamTokenizer.SyntaxException(self.stream_tokenizer.current_line_number, 
-                                                    self.stream_tokenizer.current_col_number, message)
+        return self.stream_tokenizer.syntax_exception(message)
 
     def parse_format_statement(self):
         """
@@ -792,21 +803,24 @@ class NexusReader(datasets.Reader):
             self.stream_tokenizer.skip_to_semicolon()
         return tree
 
-    def parse_translate_statement(self):
+    def parse_translate_statement(self, taxa):
         """
         Processes a TRANSLATE command. Assumes that the file reader is
         positioned right after the "TRANSLATE" token in a TRANSLATE command.
         """
         token = self.stream_tokenizer.current_token
-        while token and token != ';':
+        while True:
             translation_token = self.stream_tokenizer.read_next_token()
             translation_label = self.stream_tokenizer.read_next_token()
+            t = taxa.get_taxon(label=translation_label)
+            self.tree_translate_dict[translation_token] = t
+
             token = self.stream_tokenizer.read_next_token() # ","
             #print translation_token, translation_label, token
-            if token != ',' and token != ';':
+            if (not token) or (token == ';'):
+                break
+            if token != ',':
                 raise self.syntax_exception('Expecting "," in TRANSLATE statement after definition for %s = "%s", but found "%s" instead' % (translation_token, translation_label, token))
-            else:
-                self.tree_translate_dict[translation_token] = translation_label
 
     def parse_dimensions_statement(self):
         """
@@ -940,14 +954,14 @@ class NexusReader(datasets.Reader):
             if token == 'TREES':
                 self.tree_translate_dict = {}
                 for n, t in enumerate(taxa_block):
-                    self.tree_translate_dict[n+1] = t.label
+                    self.tree_translate_dict[str(n + 1)] = t
                 self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
                 while not (token == 'END' or token == 'ENDBLOCK') \
                     and not self.stream_tokenizer.eof \
                     and not token==None:
                     token = self.stream_tokenizer.read_next_token_ucase()
                     if token == 'TRANSLATE':
-                        self.parse_translate_statement()
+                        self.parse_translate_statement(taxa_block)
                     if token == 'TREE':
                         tree = self.parse_tree_statement(taxa_block)
                         yield tree

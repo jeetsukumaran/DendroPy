@@ -53,6 +53,23 @@ class SCMTest(unittest.TestCase):
         if symmetric_difference(expected, output) != 0:
             self.fail("\n%s\n!=\n%s" % (str(output), str(expected)))
 
+    def testOrderDependent(self):
+        o = ['(1,5,(2,(3,4)))', '(2,4,(3,(6,7)))', '(3,4,(6,(7,8)))']
+        n = [o[0], o[2], o[1], '(1,2,3,4,5,6,7,8)']
+        dataset = trees_from_newick(n)
+        trees = [i[0] for i in dataset.trees_blocks]
+        self.kernelOfTest(trees)
+    
+        expected = '(1,5,(2,((3,(6,(7,8))),4)))'
+        dataset = trees_from_newick(o + [expected])
+        trees = [i[0] for i in dataset.trees_blocks]
+        self.kernelOfTest(trees)
+        
+        o.reverse()
+        dataset = trees_from_newick(o + [expected])
+        trees = [i[0] for i in dataset.trees_blocks]
+        self.kernelOfTest(trees)
+
     def testConflict(self):
         o = ['(1,5,(2,((3,6),4)))', '(2,1,(3,(6,4)))', ]
         m = [o[0], o[1], '(1,5,(2,(3,6,4)))']
@@ -78,22 +95,6 @@ class SCMTest(unittest.TestCase):
         trees = [i[0] for i in dataset.trees_blocks]
         self.kernelOfTest(trees)
 
-    def testOrderDependent(self):
-        o = ['(1,5,(2,(3,4))', '(2,4,(3,(6,7)))', '(3,4,(6,(7,8)))']
-        n = [o[0], o[2], o[1], '(1,2,3,4,5,6,7,8)']
-        dataset = trees_from_newick(n)
-        trees = [i[0] for i in dataset.trees_blocks]
-        self.kernelOfTest(trees)
-
-        expected = '(1,5,(2,((3,(6,(7,8))),4)))'
-        dataset = trees_from_newick(o + [expected])
-        trees = [i[0] for i in dataset.trees_blocks]
-        self.kernelOfTest(trees)
-        
-        o.reverse()
-        dataset = trees_from_newick(o + [expected])
-        trees = [i[0] for i in dataset.trees_blocks]
-        self.kernelOfTest(trees)
 
     def testMultiEdgeCollision(self):
         dataset = trees_from_newick([

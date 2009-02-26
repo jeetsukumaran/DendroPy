@@ -250,8 +250,6 @@ end;
         print s
         self.assertEqual(treedists.symmetric_difference(t, s), 0)
 
-_LOG.warn("Skipping")
-if False:
     def testParseSpacy(self):
         f = """#NEXUS
 

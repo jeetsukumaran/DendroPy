@@ -137,7 +137,7 @@ class TaxaBlock(list, base.IdTagged):
             taxlist.append(str(taxon))
         return ' '.join(header) + ' : [' + ', '.join(taxlist) + ']' 
 
-    def get_taxon(self, oid=None, label=None):
+    def get_taxon(self, oid=None, label=None, taxon_required=True):
         """
         Retrieves taxon object with given id OR label (if both are
         given, the first match found is returned). If taxon does not
@@ -149,14 +149,15 @@ class TaxaBlock(list, base.IdTagged):
         if not oid and not label:
             raise Exception("Need to specify Element ID or Label.")
         for taxon in self:
-            if taxon.oid == oid \
-               or taxon.label == label:
+            if taxon.oid == oid or taxon.label == label:
                 return taxon
-        if not update:
-            raise Exception("Taxon not found: %s/%s" % (oid, label))
-        taxon = Taxon(oid=oid, label=label)
-        self.append(taxon)
-        return taxon
+        if taxon_required:
+            if not update:
+                raise Exception("Taxon not found: %s/%s" % (oid, label))
+            taxon = Taxon(oid=oid, label=label)
+            self.append(taxon)
+            return taxon
+        return None
             
     def add_taxon(self, oid=None, label=None):
         "Convenience function that wraps `get_taxon`."

@@ -55,7 +55,7 @@ class TreeManipTest(unittest.TestCase):
         self.assertEqual(str(tree), "(t5,t6,((t4,(t2,t1)),t3))")
 
     def testCollapseClade(self):
-        tree = dataio.trees_from_newick(["(t5,t6),((t4,(t2,t1)),t3));"]).trees_blocks[0][0]
+        tree = dataio.trees_from_newick(["(t5,t6,((t4,(t2,t1)),t3));"]).trees_blocks[0][0]
         encode_splits(tree)
         root = tree.seed_node
         root_children = root.child_nodes()
