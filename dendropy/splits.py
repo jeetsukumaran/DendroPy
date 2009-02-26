@@ -30,6 +30,8 @@ from dendropy import taxa
 from dendropy import trees
 from dendropy import treegen
 from dendropy import utils
+from dendropy import get_logger
+_LOG = get_logger("dendropy.splits")
 
 def lowest_bit_only(s):
     m = s & (s - 1)
@@ -274,8 +276,10 @@ class SplitDistribution(object):
         else:
             assert tree.taxa_block is self.taxa_block
         self.total_trees_counted += 1
+        _LOG.debug("%s" % str(tree.split_edges))
 
         for split in tree.split_edges:
+            _LOG.debug("%s" % bin(split))
             if not self.unrooted:
                 split = tree.split_edges[split].clade_mask
             if split not in self.split_counts:
