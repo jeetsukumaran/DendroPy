@@ -214,7 +214,10 @@ class StrToTaxon(object):
         v = self.translate.get(label)
         if v is not None:
             return v
-        return self.taxa.get_taxon(label=label, taxon_required=taxon_required)
+        t = self.taxa.get_taxon(label=label, taxon_required=taxon_required)
+        if t is not None:
+            self.translate[label] = t #@this could lead to problems when we support multiple taxon blocks, but now it'll speed thing up
+        return t
         
 def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=None):
     """
