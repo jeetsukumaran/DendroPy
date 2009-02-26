@@ -96,7 +96,6 @@ class KTBTest(unittest.TestCase):
         for i in tree.preorder_node_iter():
             if i.edge_length is not None:
                 i.edge_length *= i.mean_edge_rate
-        #print(str(tree))
     def testKTBEvolveLinearBounce(self):
         rng = DebuggingRandom()
         newick = "((t5:1611.75,t6:1611.75):3922.93,((t4:1043.81,(t2:754.11,t1:754.11):2896.9):6584.0,t3:1702.21):3832.47);"
@@ -113,7 +112,6 @@ class KTBTest(unittest.TestCase):
         for i in tree.preorder_node_iter():
             if i.edge_length is not None:
                 i.edge_length *= i.mean_edge_rate
-        #print(str(tree))
         #self.assertEqual(c, tree)
 if __name__ == "__main__":
     unittest.main()

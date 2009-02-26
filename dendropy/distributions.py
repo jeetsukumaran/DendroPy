@@ -76,7 +76,6 @@ def poisson_rv(rate, rng=None):
     p = 1.0
     k = 0.0
     while p >= L:
-        #print p, L, k
         k = k + 1.0
         u = rng.random()
         p = p * u

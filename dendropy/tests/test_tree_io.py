@@ -224,8 +224,6 @@ end;
         self.assertEqual(t.taxa_block, s.taxa_block)
         encode_splits(s)
         encode_splits(t)
-        print t
-        print s
         self.assertEqual(treedists.symmetric_difference(t, s), 0)
 
     def testNoTranslate(self):
@@ -246,8 +244,6 @@ end;
         self.assertEqual(t.taxa_block, s.taxa_block)
         encode_splits(s)
         encode_splits(t)
-        print t
-        print s
         self.assertEqual(treedists.symmetric_difference(t, s), 0)
 
     def testParseSpacy(self):

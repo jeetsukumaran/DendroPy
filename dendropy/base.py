@@ -56,7 +56,6 @@ class Annotated(object):
         annotate_as = annotate_as is None and attr_name or annotate_as  
         if attr_name not in self.__annotations:
             if not hasattr(self, attr_name):
-                #print self.__dict__
                 raise AttributeError(attr_name)
             else:
                 annote = Annotation(attr_name=attr_name,
