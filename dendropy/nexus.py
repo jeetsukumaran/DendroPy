@@ -219,7 +219,8 @@ class StrToTaxon(object):
         if t is not None:
             self.translate[label] = t #@this could lead to problems when we support multiple taxon blocks, but now it'll speed thing up
         return t
-        
+    def index(self, t):
+        return self.taxa.index(t)
 def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=None, encode_splits=False):
     """
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
@@ -238,6 +239,8 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
 
     tree.seed_node = trees.Node()
     curr_node = tree.seed_node
+    if encode_splits:
+        curr_node.edge.clade_mask = 0L
 
     while True:
         if not token or token == ';':
@@ -246,16 +249,22 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
             break
         if token == '(':
             tmp_node = trees.Node()
+            if encode_splits:
+                tmp_node.edge.clade_mask = 0L
             curr_node.add_child(tmp_node)
             curr_node = tmp_node
             token = stream_tokenizer.read_next_token()
         elif token == ',':
             tmp_node = trees.Node()
+            if encode_splits:
+                tmp_node.edge.clade_mask = 0L
             if curr_node.is_leaf() and not curr_node.taxon:
                 raise stream_tokenizer.syntax_exception('Missing taxon specifier in a tree -- found either a "(," or ",," construct.')
             p = curr_node.parent_node
             if not p:
                 raise stream_tokenizer.syntax_exception('Comma found one the "outside" of a newick tree description')
+                if encode_splits:
+                    p.edge.clade_mask |= curr_node.clade_mask
             p.add_child(tmp_node)
             curr_node = tmp_node
             token = stream_tokenizer.read_next_token()
@@ -266,13 +275,22 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
                 p = curr_node.parent_node
                 if not p:
                     raise stream_tokenizer.syntax_exception('Unbalanced parentheses -- too many ")" characters found in tree description')
+                if encode_splits:
+                    p.edge.clade_mask |= curr_node.clade_mask
                 curr_node = p
             else:
-                t = stt.get_taxon(label=token, taxon_required=curr_node.is_leaf())
+                is_leaf = curr_node.is_leaf()
+                t = stt.get_taxon(label=token, taxon_required=is_leaf)
                 if t is None:
                     curr_node.label = token
                 else:
                     curr_node.taxon = t
+                    if encode_splits:
+                        try:
+                            cm = t.clade_mask
+                        except:
+                            cm = 1 << (stt.index(t))
+                        curr_no = cm
             token = stream_tokenizer.read_next_token()    
             if token == ':':
                 edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-')
