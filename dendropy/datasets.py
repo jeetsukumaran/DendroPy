@@ -205,7 +205,7 @@ class Dataset(object):
         src = StringIO(string)
         return self.read(src, format)
         
-    def read_trees(self, src, format, encode_splits=False):
+    def read_trees(self, src, format, encode_splits=False, rooted=None):
         """
         Populates this dataset with trees from `src`, given in `format`.
         `src` is a file descriptor object, `format` is one of the
@@ -222,10 +222,15 @@ class Dataset(object):
         old_trees_block_len = len(self.trees_blocks)
         pes = reader.encode_splits
         reader.encode_splits = encode_splits
-
+        pdr = reader.default_rooting
+        if rooted is not None:
+            reader.default_rooting = rooted
+        
         reader.read_dataset(src, self)
 
         reader.encode_splits = pes
+        reader.default_rooting = pdr
+
         new_trees_block_len = len(self.trees_blocks)
         if new_trees_block_len > old_trees_block_len:
             idxs = range(old_trees_block_len, new_trees_block_len)
@@ -249,14 +254,14 @@ class Dataset(object):
             for tree in reader.iterate_over_trees(src, taxa_block=taxa_block):
                 yield tree
  
-    def trees_from_string(self, string, format):
+    def trees_from_string(self, string, format, encode_splits=False, rooted=None):
         """
         Populates this dataset from `string`, given in `format`. `src`
         is a file descriptor object, `format` is one of the supported file
         format identifiers: 'NEXUS' (incl. 'NEWICK'), 'NEXML' etc.
         """
         src = StringIO(string)
-        return self.read_trees(src, format)            
+        return self.read_trees(src, format, encode_splits=encode_splits, rooted=rooted)
             
     def write(self, dest, format):
         """

@@ -208,7 +208,7 @@ def parse_newick_string(tree_statement,
                         taxa_block=None, 
                         translate_dict=None, 
                         encode_splits=False, 
-                        rooted=RootingInterpretation.UNKNOWN_DEF_ROOTED):
+                        rooted=RootingInterpretation.UNKNOWN_DEF_UNROOTED):
     "Processes a (SINGLE) TREE statement string."
     stream_handle = StringIO(tree_statement)
     stream_tokenizer = NexusStreamTokenizer(stream_handle)
@@ -238,7 +238,7 @@ def parse_newick_tree_stream(stream_tokenizer,
                              taxa_block=None,
                              translate_dict=None,
                              encode_splits=False,
-                             rooted=RootingInterpretation.UNKNOWN_DEF_ROOTED):
+                             rooted=RootingInterpretation.UNKNOWN_DEF_UNROOTED):
     """
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
     located at the beginning of the statement (i.e., the first
@@ -1181,6 +1181,7 @@ class NewickReader(datasets.Reader):
         """
         datasets.Reader.__init__(self)
         self.encode_splits = False
+        self.default_rooting = RootingInterpretation.UNKNOWN_DEF_UNROOTED
         
     def read_dataset(self, file_obj, dataset=None):
         """
@@ -1213,13 +1214,13 @@ class NewickReader(datasets.Reader):
         if taxa_block is not None:
             trees_block.taxa_block = taxa_block
         stream_tokenizer = NexusStreamTokenizer(file_obj)
-        tree = parse_newick_tree_stream(stream_tokenizer, taxa_block=taxa_block, encode_splits=self.encode_splits)
+        tree = parse_newick_tree_stream(stream_tokenizer, taxa_block=taxa_block, encode_splits=self.encode_splits, rooted=self.default_rooting)
         if taxa_block is None:
             taxa_block = tree.taxa_block
             trees_block.taxa_block = taxa_block
         while tree is not None:
             trees_block.append(tree)
-            tree = parse_newick_tree_stream(stream_tokenizer, taxa_block=taxa_block, encode_splits=self.encode_splits)
+            tree = parse_newick_tree_stream(stream_tokenizer, taxa_block=taxa_block, encode_splits=self.encode_splits, rooted=self.default_rooting)
         return trees_block
 
     def iterate_over_trees(self, file_obj=None, taxa_block=None, dataset=None):
@@ -1241,7 +1242,8 @@ class NewickReader(datasets.Reader):
             tree = parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
                                                  taxa_block=taxa_block, 
                                                  translate_dict=None,
-                                                 encode_splits=self.encode_splits) 
+                                                 encode_splits=self.encode_splits,
+                                                 rooted=self.default_rooting) 
             if tree:
                 yield tree
 
