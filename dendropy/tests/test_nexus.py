@@ -113,7 +113,14 @@ END;
             token = tokenizer.read_next_token()
             self.assertEqual(token, e)
 
-
+    def testComments(self):
+        f = "  i [f]t [i] y"
+        r2 = StringIO(f)
+        tokenizer = nexus.NexusStreamTokenizer(r2)
+        expected = ['i', 't', 'y']
+        for e in expected:
+            token = tokenizer.read_next_token()
+            self.assertEqual(e, token)
 import sys
 if __name__ == "__main__":
     if len(sys.argv) == 1:

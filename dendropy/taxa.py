@@ -26,7 +26,8 @@
 This module provides classes and methods for managing taxa.
 """
 import sys
-from dendropy import base
+from dendropy import base, get_logger
+_LOG = get_logger('dendropy.taxa')
 
 if sys.version_info[1] > 5 or sys.version_info[0] > 2:
     def int_to_bitstring(n):
@@ -124,7 +125,15 @@ class TaxaBlock(list, base.IdTagged):
             list.__init__(self)
         base.IdTagged.__init__(self, oid=kwargs.get('oid'), label=kwargs.get('label'))
         self._is_mutable = kwargs.get('is_mutable', True) # immutable constraints not fully implemented -- only enforced at the add_taxon stage)
-
+    def lock(self):
+        self._is_mutable = False
+    def unlock(self):
+        self._is_mutable = True
+    def get_is_locked(self):
+        return self._is_mutable
+    def set_is_locked(self, v):
+        self._is_mutable = bool(v)
+    is_locked = property(get_is_locked, set_is_locked)
     def __str__(self):
         "String representation of self."
         header = []
@@ -197,7 +206,9 @@ class TaxaBlock(list, base.IdTagged):
         """
         try:
             i = self.index(taxon)
-            return 1 << i
+            m = 1 << i
+            #_LOG.debug("%s for %s" % (bin(m), taxon.label))
+            return m
         except ValueError:
             raise ValueError("Taxon with ID '%s' and label '%s' not found" 
                              % (str(taxon.oid), str(taxon.label)))        

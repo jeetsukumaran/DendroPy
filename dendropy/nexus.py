@@ -404,16 +404,19 @@ class NexusStreamTokenizer(object):
         """
         cmt_body = StringIO()
         c = self.current_file_char
+        assert c == '['
+        c = self.read_next_char()
         nesting = 1
         while not self.eof:
-            if c != ']':
+            #_LOG.debug("Comment char %s" % c)
+            if c == ']':
                 if nesting == 1:
                     break
                 nesting -= 1
-            cmt_body.write(c)
-            c == self.read_next_char()
             if c == '[':
-                nesting +=1
+                nesting += 1
+            cmt_body.write(c)
+            c = self.read_next_char()
         self.comments.append(cmt_body.getvalue())
         self.read_next_char()
 
@@ -610,7 +613,7 @@ class NexusReader(datasets.Reader):
                     token = self.stream_tokenizer.read_next_token_ucase()
                 token = self.stream_tokenizer.read_next_token_ucase()
                 if token == 'TAXA':
-                    self._parse_taxa_block(taxa_block)
+                    self._parse_taxa_block()
                 elif token == 'CHARACTERS':
                     if self.include_characters:
                         self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
@@ -641,7 +644,7 @@ class NexusReader(datasets.Reader):
                             self.parse_matrix_statement()
                     self.stream_tokenizer.skip_to_semicolon() # move past END command
                 elif token == 'TREES':
-                    self._parse_trees_Block()
+                    self._parse_trees_block()
                 else:
                     # unknown block
                     token = self.consume_to_end_of_block(token)
@@ -942,6 +945,7 @@ class NexusReader(datasets.Reader):
         self.stream_tokenizer.skip_to_semicolon() # move past END statement
 
     def _parse_trees_block(self):
+        token = 'TREES'
         if self.include_trees:
             trees_block = trees.TreesBlock()
             trees_block.taxa_block = self.get_default_taxa_block()
