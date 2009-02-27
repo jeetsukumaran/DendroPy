@@ -41,6 +41,13 @@ from dendropy import characters
 from dendropy import get_logger
 _LOG = get_logger("dendropy.nexus")
 
+
+class RootingInterpretation:
+    UNKNOWN_DEF_ROOTED = 0
+    UNKNOWN_DEF_UNROOTED = 1
+    ROOTED = 2
+    UNROOTED = 3
+    
 #######################################################################
 ## NESTED CLASSES
 
@@ -197,14 +204,19 @@ def parse_sequence_iupac_ambiguities(seq):
 ############################################################################
 ##  Fundamental NEWICK Tree parsers
 
-def parse_newick_string(tree_statement, taxa_block=None, translate_dict=None, encode_splits=False):
+def parse_newick_string(tree_statement, 
+                        taxa_block=None, 
+                        translate_dict=None, 
+                        encode_splits=False, 
+                        rooted=RootingInterpretation.UNKNOWN_DEF_ROOTED):
     "Processes a (SINGLE) TREE statement string."
     stream_handle = StringIO(tree_statement)
     stream_tokenizer = NexusStreamTokenizer(stream_handle)
     tree = parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
                                      taxa_block=taxa_block,
                                      translate_dict=translate_dict, 
-                                     encode_splits=encode_splits)
+                                     encode_splits=encode_splits,
+                                     rooted=rooted)
     return tree    
 
 class StrToTaxon(object):
@@ -221,7 +233,8 @@ class StrToTaxon(object):
         return t
     def index(self, t):
         return self.taxa.index(t)
-def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=None, encode_splits=False):
+
+def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=None, encode_splits=False, rooted=RootingInterpretation.UNKNOWN_DEF_ROOTED):
     """
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
     located at the beginning of the statement (i.e., the first
@@ -598,6 +611,7 @@ class NexusReader(datasets.Reader):
         self.tree_translate_dict = {}
         self.tax_label_lookup = {}
         self.encode_splits = False
+        self.default_rooting = RootingInterpretation.UNKNOWN_DEF_ROOTED
 
     def prepare_to_read_file(self, file_obj):
         self.stream_tokenizer = NexusStreamTokenizer()
@@ -769,10 +783,18 @@ class NexusReader(datasets.Reader):
         if token != '=':
             raise self.syntax_exception('Expecting "=" in definition of Tree "%s" but found "%s"' % (tree_name, token))
         else:
+            rooted = self.default_rooting
+            if rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED or rooted == RootingInterpretation.UNKNOWN_DEF_UNROOTED:
+                for c in self.stream_tokenizer.comments:
+                    if c == '&U' or c == '&u':
+                        rooted = RootingInterpretation.UNROOTED
+                    elif c == '&R' or c == '&r':
+                        rooted = RootingInterpretation.ROOTED
             tree = parse_newick_tree_stream(stream_tokenizer=self.stream_tokenizer,
                                             taxa_block=taxa_block,
                                             translate_dict=self.tree_translate_dict,
-                                            encode_splits=self.encode_splits)
+                                            encode_splits=self.encode_splits,
+                                            rooted=rooted)
             tree.label = tree_name
         if self.stream_tokenizer.current_token != ';':
             self.stream_tokenizer.skip_to_semicolon()
