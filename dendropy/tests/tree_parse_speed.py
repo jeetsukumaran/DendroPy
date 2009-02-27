@@ -33,10 +33,7 @@ import os
 import datetime
 
 from dendropy import nexus
-from dendropy.dataio import MultiFileTreeIterator
 
-def progress_report(msg):
-    sys.stderr.write(msg + "\n")
 
 def main():   
     usage = "%prog [options] <TREES FILE> [<TREES FILE> [<TREES FILE> [...]]"
@@ -62,19 +59,20 @@ def main():
     if len(support_filepaths) == 0:
         sys.stderr.write("No valid tree files specified or found.")
         sys.exit(1)            
-    
-    if not opts.verbose:
-        progress_func = None
-    else:
-        progress_func = progress_report
-        
-    tree_source = MultiFileTreeIterator(sources=support_filepaths,
-                                        core_iterator=nexus.iterate_over_trees, 
-                                        progress_func=progress_func)
 
-    start_time = datetime.datetime.now()                                     
-    for tree_idx, tree in enumerate(tree_source):
-        pass
+        
+#     tree_source = MultiFileTreeIterator(sources=support_filepaths,
+#                                         core_iterator=nexus.iterate_over_trees, 
+#                                         progress_func=progress_func)
+
+    start_time = datetime.datetime.now()
+    total_trees_read = 0
+    for tree_file in support_filepaths:
+        f = open(tree_file, "rU")
+        for idx, tree in enumerate(nexus.iterate_over_trees(f)):
+            pass
+        total_trees_read += idx            
+        
     end_time = datetime.datetime.now()
     parse_time = end_time-start_time
     
