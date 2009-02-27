@@ -234,7 +234,11 @@ class StrToTaxon(object):
     def index(self, t):
         return self.taxa.index(t)
 
-def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=None, encode_splits=False, rooted=RootingInterpretation.UNKNOWN_DEF_ROOTED):
+def parse_newick_tree_stream(stream_tokenizer, 
+                             taxa_block=None,
+                             translate_dict=None,
+                             encode_splits=False,
+                             rooted=RootingInterpretation.UNKNOWN_DEF_ROOTED):
     """
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
     located at the beginning of the statement (i.e., the first
@@ -248,6 +252,22 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
         taxa_block = taxa.TaxaBlock()    
     tree.taxa_block = taxa_block
 
+    if encode_splits:
+        if rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED or rooted == RootingInterpretation.UNKNOWN_DEF_UNROOTED:
+            for c in self.stream_tokenizer.comments:
+                if c == '&U' or c == '&u':
+                    rooted = RootingInterpretation.UNROOTED
+                    break
+                elif c == '&R' or c == '&r':
+                    rooted = RootingInterpretation.ROOTED
+                    break            
+        if rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED or RootingInterpretation.ROOTED:
+            tree.split_edges = {}
+        else:
+            d = utils.NormalizedBitmaskDict(mask=taxa_block.all_taxa_bitmask())
+            tree.split_edges = d
+        split_map = tree.split_edges
+
     stt = StrToTaxon(taxa_block, translate_dict)
 
     tree.seed_node = trees.Node()
@@ -259,6 +279,8 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
         if not token or token == ';':
             if curr_node is not tree.seed_node:
                 raise stream_tokenizer.syntax_exception('Unbalanced parentheses -- not enough ")" characters found in tree description')
+            if encode_splits:
+                split_map[curr_node.edge.clade_mask] = curr_node.edge
             break
         if token == '(':
             tmp_node = trees.Node()
@@ -269,15 +291,14 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
             token = stream_tokenizer.read_next_token()
         elif token == ',':
             tmp_node = trees.Node()
-            if encode_splits:
-                tmp_node.edge.clade_mask = 0L
             if curr_node.is_leaf() and not curr_node.taxon:
                 raise stream_tokenizer.syntax_exception('Missing taxon specifier in a tree -- found either a "(," or ",," construct.')
             p = curr_node.parent_node
             if not p:
                 raise stream_tokenizer.syntax_exception('Comma found one the "outside" of a newick tree description')
                 if encode_splits:
-                    p.edge.clade_mask |= curr_node.clade_mask
+                    tmp_node.edge.clade_mask = 0L
+                    p.edge.clade_mask |= curr_node.edge.clade_mask
             p.add_child(tmp_node)
             curr_node = tmp_node
             token = stream_tokenizer.read_next_token()
@@ -289,7 +310,9 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
                 if not p:
                     raise stream_tokenizer.syntax_exception('Unbalanced parentheses -- too many ")" characters found in tree description')
                 if encode_splits:
-                    p.edge.clade_mask |= curr_node.clade_mask
+                    cm |= curr_node.edge.clade_mask
+                    p.edge.clade_mask = cm
+                    split_map[cm] = curr_node.edge
                 curr_node = p
             else:
                 is_leaf = curr_node.is_leaf()
@@ -303,7 +326,10 @@ def parse_newick_tree_stream(stream_tokenizer, taxa_block=None, translate_dict=N
                             cm = t.clade_mask
                         except:
                             cm = 1 << (stt.index(t))
-                        curr_no = cm
+                        e = curr_node.edge
+                        e.clade_mask = cm
+                        split_map[cm] = e
+
             token = stream_tokenizer.read_next_token()    
             if token == ':':
                 edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-')
@@ -788,8 +814,10 @@ class NexusReader(datasets.Reader):
                 for c in self.stream_tokenizer.comments:
                     if c == '&U' or c == '&u':
                         rooted = RootingInterpretation.UNROOTED
+                        break
                     elif c == '&R' or c == '&r':
                         rooted = RootingInterpretation.ROOTED
+                        break
             tree = parse_newick_tree_stream(stream_tokenizer=self.stream_tokenizer,
                                             taxa_block=taxa_block,
                                             translate_dict=self.tree_translate_dict,
