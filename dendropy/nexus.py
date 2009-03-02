@@ -404,7 +404,7 @@ class NexusStreamTokenizer(object):
         """
         cmt_body = StringIO()
         c = self.current_file_char
-        assert c == '['
+#         assert c == '['
         c = self.read_next_char()
         nesting = 1
         while not self.eof:
