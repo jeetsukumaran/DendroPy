@@ -51,9 +51,9 @@ from dendropy.dataio import MultiFileTreeIterator
 
 _program_name = 'SumTrees'
 _program_subtitle = 'Phylogenetic Tree Split Support Summarization'
-_program_date = 'Feb 13 2009'
-_program_version = 'Version 1.1.0 (%s)' % _program_date
-_program_author = 'Jeet Sukumaran'
+_program_date = 'Mar 03 2009'
+_program_version = 'Version 1.1.1 (%s)' % _program_date
+_program_author = 'Jeet Sukumaran and Mark T. Holder'
 _program_contact = 'jeetsukumaran@gmail.com'
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
                  "License GPLv3+: GNU GPL version 3 or later.\n" \
