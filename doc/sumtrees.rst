@@ -17,31 +17,33 @@ SumTrees is distributed and installed as part of the `DendroPy
 How to Install the Program
 ==========================
 
-1.  Download the latest version of DendroPy from `here <http://sourceforge.net/project/platformdownload.php?group_id=240391>`_.
+1.  Download the latest release of DendroPy from `here     <http://sourceforge.net/project/platformdownload.php?group_id=240391>`_:
+
+    http://sourceforge.net/project/platformdownload.php?group_id=240391
 
     If for some reason the previous link does not work, you could simply go to `DendroPy <http://sourceforge.net/projects/dendropy/>`_ site and from there navigate to the correct download page.
 
-    Note that you might end up downloading a newer version of DendroPy, in which case the version numbers in the file and directory names may not correspond exactly to those given in the examples. For instance, you may end up with "``DendroPy-2.1.1rc3.tar.gz``" rather than "``DendroPy-2.0.4.tar.gz``". However, as long as you substitute the correct archive and directory name in the examples and discussion below, everything else should remain the same. 
+    Note that you might end up downloading a newer version of DendroPy, in which case the version numbers in the file and directory names may not correspond exactly to those given in the examples. For instance, you may end up with "``DendroPy-2.2.1rc3.tar.gz``" rather than "``DendroPy-2.1.3.tar.gz``". However, as long as you substitute the correct archive and directory name in the examples and discussion below, everything else should remain the same. 
 
 #.  Expand the downloaded archive
 
     This step varies depending on the operating system and the particular programs that you have installed. 
     In most cases, simply double-clicking on the file that you have downloaded should kick off the process.
-    Otherwise, open a terminal shell window and go to the directory in which you have downloaded the archive, and type "``tar -xvzf DendroPy-2.0.4.tar.gz``".
+    Otherwise, open a terminal shell window and go to the directory in which you have downloaded the archive, and type "``tar -xvzf DendroPy-2.1.3.tar.gz``".
     For example, say you saved the downloaded file on your desktop.
     Then, opening up the terminal and entering the following commands will take you to your Desktop and expand the archive::
     
         $ cd ~/Desktop
-        $ tar -xvzf DendroPy-2.0.4.tar.gz
+        $ tar -xvzf DendroPy-2.1.3.tar.gz
     
-    One way or another, you should end up with a directory called "``DendroPy-2.0.4``" or something similar, which contains the entire Dendropy package.
+    One way or another, you should end up with a directory called "``DendroPy-2.1.3``" or something similar, which contains the entire Dendropy package.
     
 #.  Install the library
 
     In the terminal shell, go to the directory of the package that you have just archived and type "``sudo python setup.py install``".
     Continuing the example from above::
 
-        $ cd DendroPy-2.0.4
+        $ cd DendroPy-2.1.3
         $ sudo python setup.py install
         
     The library installation will automatically create an executable script called "``sumtrees.py``" and place it on your system path for you, so that you can call it from anywhere.
@@ -50,9 +52,9 @@ How to Install the Program
 
         ====================================================================
         SumTrees - Phylogenetic Tree Split Support Summarization
-        Version 1.0.0 (Sept 21 2008)
-        By Jeet Sukumaran
-        (using the DendroPy Phylogenetic Computation Library Version 2.0.0)
+        Version 1.1.1 (Mar 03 2009)
+        By Jeet Sukumaran and Mark T. Holder
+        (using the DendroPy Phylogenetic Computation Library Version 2.1.3)
         ====================================================================
         
         No sources of support specified or could be found. Please provide the
@@ -283,6 +285,12 @@ There are a couple of different things you could do:
 
 * Copy (or symlink) the "``dendropy``" directory to the "``site-packages``" directory of your Python installation, and place the file "``scripts\sumtrees.py``" on your system path. 
 
+Repository Access
+=================
+The DendroPy public-access `Git <http://git-scm.com/>`_ repository can be cloned from:
+    
+        git://dendropy.git.sourceforge.net/gitroot/dendropy
+
 Bugs, Suggestions, Comments, etc.
 =================================
 
@@ -295,15 +303,12 @@ How to Cite this Program
 
 If you use this program in your analysis, please cite it as:
 
-    Sukumaran, J. 2008. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.2* Part of the: *DendroPy Phylogenetic Computation Library Version 2.0.4* (http://sourceforge.net/projects/dendropy).
+    Sukumaran, J. and Mark T. Holder. 2008. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.2*. Part of the *DendroPy Phylogenetic Computation Library Version 2.1.3* (http://sourceforge.net/projects/dendropy).
     
-    Sukumaran, J. and Mark T. Holder. 2008. *DendroPy Phylogenetic Computation Library Version 2.0.4* (http://sourceforge.net/projects/dendropy).
-
 Copyright, License and Warranty
 ===============================
 
-SumTrees is: Copyright 2008 Jeet Sukumaran.
-DendroPy is: Copyright 2008 Jeet Sukumaran and Mark Holder.
+SumTrees and DendroPy are: Copyright 2008 Jeet Sukumaran and Mark T. Holder.
   
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
