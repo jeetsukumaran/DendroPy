@@ -33,6 +33,8 @@ from cStringIO import StringIO
 from dendropy import taxa
 from dendropy import characters
 from dendropy import trees
+from dendropy import get_logger
+_LOG = get_logger("dendropy.datasets")
 
 class Dataset(object):
     "Top-level data structure."
@@ -220,12 +222,13 @@ class Dataset(object):
         reader = dataio.get_reader(format)
         reader.include_characters = False
         old_trees_block_len = len(self.trees_blocks)
+
         pes = reader.encode_splits
         reader.encode_splits = encode_splits
         pdr = reader.default_rooting
         if rooted is not None:
             reader.default_rooting = rooted
-        
+        _LOG.debug("reader.encode_splits = %s" % str(reader.encode_splits))
         reader.read_dataset(src, self)
 
         reader.encode_splits = pes
@@ -241,10 +244,18 @@ class Dataset(object):
         else:
             return []
 
-    def iterate_over_trees(self, src, format, taxa_block=None):
+    def iterate_over_trees(self, src, format, taxa_block=None, encode_splits=False, rooted=None):
         from dendropy import dataio
         reader = dataio.get_reader(format)
         reader.include_characters = False
+
+        pes = reader.encode_splits
+        reader.encode_splits = encode_splits
+        pdr = reader.default_rooting
+        if rooted is not None:
+            reader.default_rooting = rooted
+
+
         if not taxa_block in self.taxa_blocks:
             self.taxa_blocks.append(taxa_block)
         if taxa_block is None:
@@ -253,6 +264,9 @@ class Dataset(object):
         else:
             for tree in reader.iterate_over_trees(src, taxa_block=taxa_block):
                 yield tree
+
+        reader.encode_splits = pes
+        reader.default_rooting = pdr
  
     def trees_from_string(self, string, format, encode_splits=False, rooted=None):
         """

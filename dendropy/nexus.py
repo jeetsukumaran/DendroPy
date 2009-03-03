@@ -252,6 +252,7 @@ def parse_newick_tree_stream(stream_tokenizer,
         taxa_block = taxa.TaxaBlock()    
     tree.taxa_block = taxa_block
 
+    #_LOG.debug("parse_newick_tree_stream, encode_splits = %s" % str(encode_splits))
     if encode_splits:
         if rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED or rooted == RootingInterpretation.UNKNOWN_DEF_UNROOTED:
             for c in self.stream_tokenizer.comments:
@@ -624,6 +625,8 @@ class NexusReader(datasets.Reader):
     def __init__(self):
         datasets.Reader.__init__(self)
         self.stream_tokenizer = NexusStreamTokenizer()
+        self.encode_splits = False
+        self.default_rooting = RootingInterpretation.UNKNOWN_DEF_ROOTED
         self.reset()
 
     def reset(self):
@@ -636,8 +639,6 @@ class NexusReader(datasets.Reader):
         self.match_char = '.'
         self.tree_translate_dict = {}
         self.tax_label_lookup = {}
-        self.encode_splits = False
-        self.default_rooting = RootingInterpretation.UNKNOWN_DEF_ROOTED
 
     def prepare_to_read_file(self, file_obj):
         self.stream_tokenizer = NexusStreamTokenizer()
@@ -808,22 +809,24 @@ class NexusReader(datasets.Reader):
         token = self.stream_tokenizer.read_next_token()
         if token != '=':
             raise self.syntax_exception('Expecting "=" in definition of Tree "%s" but found "%s"' % (tree_name, token))
-        else:
-            rooted = self.default_rooting
-            if rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED or rooted == RootingInterpretation.UNKNOWN_DEF_UNROOTED:
-                for c in self.stream_tokenizer.comments:
-                    if c == '&U' or c == '&u':
-                        rooted = RootingInterpretation.UNROOTED
-                        break
-                    elif c == '&R' or c == '&r':
-                        rooted = RootingInterpretation.ROOTED
-                        break
-            tree = parse_newick_tree_stream(stream_tokenizer=self.stream_tokenizer,
-                                            taxa_block=taxa_block,
-                                            translate_dict=self.tree_translate_dict,
-                                            encode_splits=self.encode_splits,
-                                            rooted=rooted)
-            tree.label = tree_name
+
+        rooted = self.default_rooting
+        if rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED or rooted == RootingInterpretation.UNKNOWN_DEF_UNROOTED:
+            for c in self.stream_tokenizer.comments:
+                if c == '&U' or c == '&u':
+                    rooted = RootingInterpretation.UNROOTED
+                    break
+                elif c == '&R' or c == '&r':
+                    rooted = RootingInterpretation.ROOTED
+                    break
+        #_LOG.debug("rooted = %s self.encode_splits = %s" %(str(rooted), str(self.encode_splits)))
+        tree = parse_newick_tree_stream(stream_tokenizer=self.stream_tokenizer,
+                                        taxa_block=taxa_block,
+                                        translate_dict=self.tree_translate_dict,
+                                        encode_splits=self.encode_splits,
+                                        rooted=rooted)
+        tree.label = tree_name
+
         if self.stream_tokenizer.current_token != ';':
             self.stream_tokenizer.skip_to_semicolon()
         return tree
@@ -1046,7 +1049,7 @@ class NexusReader(datasets.Reader):
                 self.tree_translate_dict[l] = t
                 self.tax_label_lookup[l] = t
                 if self.encode_splits:
-                    ti = taxa.index(t)
+                    ti = taxa_block.index(t)
                     t.clade_mask = (1 << ti)
 
 

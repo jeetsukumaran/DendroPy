@@ -42,6 +42,7 @@ from dendropy.treedists import symmetric_difference
 from dendropy.splits import SplitDistribution
 from dendropy.treesum import TreeSummarizer
 from dendropy import dataio
+from dendropy.nexus import RootingInterpretation
 from dendropy.splits import encode_splits
 from dendropy.datasets import Dataset
 _LOG = get_logger("SumTreesTesting")
@@ -74,8 +75,8 @@ class SumTreesTest(unittest.TestCase):
         fn2 = dendropy.tests.data_source_path("maj-rule-bug2.tre")
         d = Dataset()
         
-        tb1 = d.read_trees(open(fn1,"rU"), format="NEXUS")
-        tb2 = d.read_trees(open(fn2,"rU"),format="NEXUS")
+        tb1 = d.read_trees(open(fn1,"rU"), format="NEXUS", encode_splits=True, rooted=RootingInterpretation.UNROOTED)
+        tb2 = d.read_trees(open(fn2,"rU"), format="NEXUS", encode_splits=True, rooted=RootingInterpretation.UNROOTED)
         taxa1 = d.taxa_blocks[0]
         assert taxa1 == tb2[0].taxa_block
         
@@ -83,8 +84,8 @@ class SumTreesTest(unittest.TestCase):
         secondSD = SplitDistribution(taxa_block=taxa1)
         
         for o,t in itertools.izip(tb1, tb2):
-            encode_splits(o)
-            encode_splits(t)
+            #encode_splits(o)
+            #encode_splits(t)
             firstSD.count_splits_on_tree(o)
             secondSD.count_splits_on_tree(t)
 
