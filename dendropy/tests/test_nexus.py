@@ -100,7 +100,7 @@ BEGIN TREES;
 END;
 """
         r2 = StringIO(f)
-        tokenizer = nexus.NexusStreamTokenizer(r2)
+        tokenizer = nexus.PurePythonNexusStreamTokenizer(r2)
         expected = ['#NEXUS', 'BEGIN', 'TAXA', ';', 'DIMENSIONS', 'NTAX', '=', 
                     '30', ';', 'TAXLABELS', 'Anolis ahli', 'Anolis garmani', 
                     'Anolis grahami', 'Anolis valencienni', 'Anolis lineatopus', 
@@ -116,7 +116,7 @@ END;
     def testComments(self):
         f = "  i [f]t [i] y"
         r2 = StringIO(f)
-        tokenizer = nexus.NexusStreamTokenizer(r2)
+        tokenizer = nexus.PurePythonNexusStreamTokenizer(r2)
         expected = ['i', 't', 'y']
         for e in expected:
             token = tokenizer.read_next_token()
