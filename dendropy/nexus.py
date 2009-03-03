@@ -823,7 +823,7 @@ class PurePythonNexusReader(datasets.Reader):
             self.stream_tokenizer.skip_to_semicolon()
         return tree
 
-    def parse_translate_statement(self, taxa):
+    def _parse_translate_statement(self, taxa):
         """
         Processes a TRANSLATE command. Assumes that the file reader is
         positioned right after the "TRANSLATE" token in a TRANSLATE command.
@@ -872,7 +872,7 @@ class PurePythonNexusReader(datasets.Reader):
                     raise self.syntax_exception('Expecting "=" after NCHAR keyword')
             token = self.stream_tokenizer.read_next_token_ucase()
 
-    def get_default_taxa_block(self, taxa_block=None):
+    def _get_default_taxa_block(self, taxa_block=None):
         if taxa_block is None:
             if len(self.dataset.taxa_blocks) == 0:
                 taxa_block = taxa.TaxaBlock()
@@ -889,14 +889,14 @@ class PurePythonNexusReader(datasets.Reader):
         Processes a TAXLABELS command. Assumes that the file reader is
         positioned right after the "TAXLABELS" token in a TAXLABELS command.
         """
-        taxa_block = self.get_default_taxa_block(taxa_block)                
+        taxa_block = self._get_default_taxa_block(taxa_block)                
         token = self.stream_tokenizer.read_next_token()
         while token != ';':
             label = token
             taxa_block.add_taxon(label=label)        
             token = self.stream_tokenizer.read_next_token()
 
-    def build_state_alphabet(self, char_block, symbols):
+    def _build_state_alphabet(self, char_block, symbols):
         sa = characters.StateAlphabet()
         for symbol in symbols:
             sa.append(characters.StateAlphabetElement(symbol=symbol))
@@ -914,7 +914,7 @@ class PurePythonNexusReader(datasets.Reader):
         is positioned right after the "MATRIX" token in a MATRIX command,
         and that NTAX and NCHAR have been specified accurately.
         """
-        taxa_block = self.get_default_taxa_block(taxa_block)
+        taxa_block = self._get_default_taxa_block(taxa_block)
         if not self.file_specified_ntax:
             raise self.syntax_exception('NTAX must be defined by DIMENSIONS command to non-zero value before MATRIX command')
         elif not self.file_specified_nchar:
@@ -923,7 +923,7 @@ class PurePythonNexusReader(datasets.Reader):
             char_block = self.char_block_type()
             char_block.taxa_block = taxa_block
             if isinstance(char_block, characters.StandardCharactersBlock):
-                char_block = self.build_state_alphabet(char_block, self.symbols)
+                char_block = self._build_state_alphabet(char_block, self.symbols)
             self.dataset.add_char_block(char_block=char_block)
             symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
             if True: # future: trap and handle no labels, transpose etc.
@@ -981,7 +981,7 @@ class PurePythonNexusReader(datasets.Reader):
                     and not token==None:
                     token = self.stream_tokenizer.read_next_token_ucase()
                     if token == 'TRANSLATE':
-                        self.parse_translate_statement(taxa_block)
+                        self._parse_translate_statement(taxa_block)
                     if token == 'TREE':
                         tree = self._parse_tree_statement(taxa_block)
                         yield tree
@@ -993,6 +993,40 @@ class PurePythonNexusReader(datasets.Reader):
                     and not token==None:
                     self.stream_tokenizer.skip_to_semicolon()
                     token = self.stream_tokenizer.read_next_token_ucase()
+
+    def _parse_taxa_block(self, taxa_block=None):
+        token = ''
+        self.stream_tokenizer.skip_to_semicolon() # move past BEGIN statement
+        while not (token == 'END' or token == 'ENDBLOCK') \
+            and not self.stream_tokenizer.eof \
+            and not token==None:
+            token = self.stream_tokenizer.read_next_token_ucase()
+            if token == 'DIMENSIONS':
+                self._parse_dimensions_statement()
+            if token == 'TAXLABELS':
+                self._parse_taxlabels_statement(taxa_block)
+        self.stream_tokenizer.skip_to_semicolon() # move past END statement
+
+    def _parse_trees_block(self):
+        token = 'TREES'
+        if self.include_trees:
+            trees_block = trees.TreesBlock()
+            trees_block.taxa_block = self._get_default_taxa_block()
+            self.dataset.add_trees_block(trees_block=trees_block)
+            self._prepare_to_parse_trees(trees_block.taxa_block)
+            self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
+            while not (token == 'END' or token == 'ENDBLOCK') \
+                and not self.stream_tokenizer.eof \
+                and not token==None:
+                token = self.stream_tokenizer.read_next_token_ucase()
+                if token == 'TRANSLATE':
+                    self._parse_translate_statement(trees_block.taxa_block)
+                if token == 'TREE':
+                    tree = self._parse_tree_statement(trees_block.taxa_block)
+                    trees_block.append(tree)
+            self.stream_tokenizer.skip_to_semicolon() # move past END command
+        else:
+            token = self.consume_to_end_of_block(token)
 
     def _prepare_to_parse_trees(self, taxa_block):
 
@@ -1300,8 +1334,6 @@ try:
         "Encapsulates loading and parsing of a NEXUS format file."
     
         def __init__(self):
-            CODE
-                HERE
             datasets.Reader.__init__(self)
             self.stream_tokenizer = PurePythonNexusStreamTokenizer()
             self.encode_splits = False
@@ -1321,8 +1353,6 @@ try:
         ## Class-specific ##
     
         def _parse_nexus_file(self, dataset=None):
-            CODE
-                HERE
             return self.dataset
                 
             
@@ -1360,35 +1390,7 @@ try:
             if self.stream_tokenizer.current_token != ';':
                 self.stream_tokenizer.skip_to_semicolon()
             return tree
-    
-    
-    
-        def get_default_taxa_block(self, taxa_block=None):
-            if taxa_block is None:
-                if len(self.dataset.taxa_blocks) == 0:
-                    taxa_block = taxa.TaxaBlock()
-                    self.dataset.add_taxa_block(taxa_block=taxa_block)
-                else:
-                    taxa_block = self.dataset.taxa_blocks[0]
-            else:
-                if taxa_block not in self.dataset.taxa_blocks:
-                    self.dataset.taxa_blocks.append(taxa_block)
-            return taxa_block                          
-              
-    
-        def build_state_alphabet(self, char_block, symbols):
-            sa = characters.StateAlphabet()
-            for symbol in symbols:
-                sa.append(characters.StateAlphabetElement(symbol=symbol))
-            if self.missing_char:
-                sa.append(characters.StateAlphabetElement(symbol=self.missing_char,
-                                               multistate=characters.StateAlphabetElement.AMBIGUOUS_STATE,
-                                               member_states=sa.get_states(symbols=symbols)))
-            char_block.state_alphabets = [sa]
-            char_block.default_state_alphabet = char_block.state_alphabets[0]
-            return char_block
-    
-                    
+
         def iterate_over_trees(self, file_obj=None, taxa_block=None, dataset=None):
             """
             Generator to iterate over trees in data file.
