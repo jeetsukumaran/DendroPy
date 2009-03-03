@@ -1330,66 +1330,135 @@ class NewickWriter(datasets.Writer):
             
 try:
     import nclwrapper
-    class NCLNexusReader(object):
+    from threading import Thread, Event
+
+    _LOG.debug("Using NCLNexusReader")
+
+
+    class NCLTreeStream(nclwrapper.NxsTreeStream):
+        """Simple thread-safe class that waits for `pause_event', and signals the
+        presence of a new tree by `ready_event`"""
+        def __init__(self, pause_event, ready_event):
+            self.pause_event = pause_event 
+            self.ready_event = ready_event
+            self.tree = None
+        def handleTree(self, ftd, tb):
+            t = ftd.GetTreeTokens()
+            self.pause_event.wait()
+            self.pause_event.clear()
+            self.taxa_block =  tb
+            self.tree =  t
+            self.ready_event.set()
+            return False
+
+    class NCLTreeStreamThread(Thread):
+        def __init__(self, file_path, pause_event, ready_event, format="NEXUS", **kwargs):
+            """Subclass of thread ,that uses a NCLTreeStream to get trees
+            from NCL one at a time"""
+            self.nts = NCLTreeStream(pause_event, ready_event)
+            self.file_path = file_path
+            self.format = format
+            self.exception = None
+            Thread.__init__(self, 
+                            group=None, 
+                            target=None, 
+                            name=None, 
+                            args=tuple(), 
+                            kwargs=dict(**kwargs))
+        def run(self):
+            try:
+                self.nts.ReadFilepath(self.file_path, self.format)
+            except ValueError, v:
+                self.exception = v
+
+            
+
+    class NCLBasedReader(object):
         "Encapsulates loading and parsing of a NEXUS format file."
     
-        def __init__(self):
+        def __init__(self, format="NEXUS"):
             datasets.Reader.__init__(self)
-            self.stream_tokenizer = PurePythonNexusStreamTokenizer()
+            self.purePythonReader = PurePythonNexusReader()
             self.encode_splits = False
             self.default_rooting = RootingInterpretation.UNKNOWN_DEF_ROOTED
             self._reset()
-        
+            self.format = format
+ 
+        def _get_fp(self, f):
+            "Returns filepath and True if the file that f refers to exists on the filesystem"
+            try:
+                n = file_obj.name
+                use_ncl = os.path.exists(n)
+                return n, use_ncl
+            except AttributeError:
+                return "", False
+            
         def read_dataset(self, file_obj, dataset=None):
             """
             Instantiates and returns a DataSet object based on the
             NEXUS-formatted contents read from the file descriptor object
             `file_obj`.
             """
-            #self._reset()
-            self._prepare_to_read_file(file_obj)
-            return self._parse_nexus_file(dataset)
+            n, use_ncl = self._get_fp(file_obj)
+            if not use_ncl:
+                self.purePythonReader.encode_splits = self.encode_splits
+                self.purePythonReader.default_rooting = self.default_rooting
+                return self.purePythonReader.read_dataset(file_obj, dataset=dataset)
+            self.read_filepath_into_dataset(n, dataset=dataset)
 
-        ## Class-specific ##
-    
-        def _parse_nexus_file(self, dataset=None):
-            return self.dataset
-                
+        def read_filepath_into_dataset(self, file_path, dataset=None):
+            m = nclwrapper.MultiFormatReader()
+            m.ReadFilepath(file_path, self.format)
+            ntb = m.GetNumTaxaBlocks()
+            for i in xrange(ntb):
+                tb = m.GetTaxaBlock(i)
+                print "Taxa block index", i, ":"
+                print tb.GetAllLabels()
+                nab = m.GetNumAssumptionsBlocks(tb)
+                for k in xrange(nab):
+                    a = m.GetAssumptionsBlock(tb, k)
+                    cs = a.GetTaxSetNames()
+                    print "TaxSets have the names " , str(cs)
+                ncb = m.GetNumCharactersBlocks(tb)
+                for j in xrange(ntb):
+                    print "Char block index", j, " for Taxa block index", i, ":"
+                    cb = m.GetCharactersBlock(tb, j)
+                    raw = cb.GetRawDiscreteMatrixRef()
+                    print "raw matrix:\n", raw
+                    mp = cb.GetDatatypeMapperForCharRef(0)
+                    sym = mp.GetSymbols()
+                    print "symbols:\n", sym
+                    d = mp.GetPythonicStateVectors()
+                    print "State code in raw matrix to state index:", str(d)
+                    tsm = []
+                    for el in d:
+                        x = "".join([sym[c] for c in el])
+                        if len(x) == 1:
+                            tsm.append(x)
+                        else:
+                            tsm.append('{%s}' % x)
+                    tsm[-2] = '-'
+                    tsm[-1] = '?'
+                    print "State code to string mapper is:", tsm
+                    print "matrix is :"
+                    for row in raw:
+                        print "".join([tsm[x] for x in row])
+                    s = cb.GetExcludedIndexSet()
+                    print "Excluded chars =", str(nclwrapper.NxsSetReader.GetSetAsVector(s))
+                    nab = m.GetNumAssumptionsBlocks(cb)
+                    for k in xrange(nab):
+                        a = m.GetAssumptionsBlock(cb, k)
+                        cs = a.GetCharSetNames()
+                        print "CharSets have the names " , str(cs)
+                ntrb = m.GetNumTreesBlocks(tb)
+                for j in xrange(ntrb):
+                    print "Trees block index", j, " for Taxa block index", i, ":"
+                    trb = m.GetTreesBlock(tb, j)
+                    for k in xrange(trb.GetNumTrees()):
+                        ftd = trb.GetFullTreeDescription(i)
+                        print "tree ", k, "=", ftd.GetNewick()
             
-        def _parse_tree_statement(self, taxa_block):
-            """
-            Processes a TREE command. Assumes that the file reader is
-            positioned right after the "TREE" token in a TREE command.
-            Calls on the NewickStatementParser of the trees module.
-            """
-            token = self.stream_tokenizer.read_next_token()
-            if token == '*':
-                token = self.stream_tokenizer.read_next_token()
-            tree_name = token
-            token = self.stream_tokenizer.read_next_token()
-            if token != '=':
-                raise self.syntax_exception('Expecting "=" in definition of Tree "%s" but found "%s"' % (tree_name, token))
-    
-            rooted = self.default_rooting
-            if rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED or rooted == RootingInterpretation.UNKNOWN_DEF_UNROOTED:
-                for c in self.stream_tokenizer.comments:
-                    if c == '&U' or c == '&u':
-                        rooted = RootingInterpretation.UNROOTED
-                        break
-                    elif c == '&R' or c == '&r':
-                        rooted = RootingInterpretation.ROOTED
-                        break
-            #_LOG.debug("rooted = %s self.encode_splits = %s" %(str(rooted), str(self.encode_splits)))
-            tree = parse_newick_tree_stream(stream_tokenizer=self.stream_tokenizer,
-                                            taxa_block=taxa_block,
-                                            translate_dict=self.tree_translate_dict,
-                                            encode_splits=self.encode_splits,
-                                            rooted=rooted)
-            tree.label = tree_name
-    
-            if self.stream_tokenizer.current_token != ';':
-                self.stream_tokenizer.skip_to_semicolon()
-            return tree
+
 
         def iterate_over_trees(self, file_obj=None, taxa_block=None, dataset=None):
             """
@@ -1397,63 +1466,38 @@ try:
             Primary goal is to be memory efficient, storing no more than one tree
             at a time. Speed might have to be sacrificed for this!
             """
+            
+            n, use_ncl = self._get_fp(file_obj)
+            if not use_ncl:
+                self.purePythonReader.encode_splits = self.encode_splits
+                self.purePythonReader.default_rooting = self.default_rooting
+                for tree in self.purePythonReader.iterate_over_trees(file_obj, taxa_block=taxa_block, dataset=dataset):
+                    yield tree
+                return                
             if dataset is None:
                 dataset = datasets.Dataset()
             if taxa_block is None:
                 taxa_block = taxa.TaxaBlock()
             if not (taxa_block in dataset.taxa_blocks):
                 dataset.taxa_blocks.append(taxa_block)
-            stream_tokenizer = PurePythonNexusStreamTokenizer(file_obj)
-            self.stream_tokenizer = stream_tokenizer
-            while not self.stream_tokenizer.eof:
-                token = self.stream_tokenizer.read_next_token_ucase()
-                while token != None and token != 'BEGIN' and not self.stream_tokenizer.eof:
-                    token = self.stream_tokenizer.read_next_token_ucase()
-                token = self.stream_tokenizer.read_next_token_ucase()
-                if token == 'TAXA':
-                    self._parse_taxa_block(taxa_block)
-                elif token == 'TREES':
-                    self._prepare_to_parse_trees(taxa_block)
-                    self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
-                    while not (token == 'END' or token == 'ENDBLOCK') \
-                        and not self.stream_tokenizer.eof \
-                        and not token==None:
-                        token = self.stream_tokenizer.read_next_token_ucase()
-                        if token == 'TRANSLATE':
-                            self.parse_translate_statement(taxa_block)
-                        if token == 'TREE':
-                            tree = self._parse_tree_statement(taxa_block)
-                            yield tree
-                    self.stream_tokenizer.skip_to_semicolon() # move past END command
-                else:
-                    # unknown block
-                    while not (token == 'END' or token == 'ENDBLOCK') \
-                        and not self.stream_tokenizer.eof \
-                        and not token==None:
-                        self.stream_tokenizer.skip_to_semicolon()
-                        token = self.stream_tokenizer.read_next_token_ucase()
+
+            need_tree_event = Event()
+            tree_ready_event = Event()
+            ntst = NCLTreeStreamThread(n, pause_event=need_tree_event, ready_event=tree_ready_event, format=self.format)
+            buffer = self.nts
+            ntst.run()
+            need_tree_event.set()
+            while ntst.isAlive():
+                tree_ready_event.wait()
+                tree_ready_event.clear()
+                self.taxa_block = buffer.taxa_block
+                self.curr_tree_desc = buffer.tree
+                need_tree_event.set()
+                self.curr_tree = self._ncl_to_native_tree(self.taxa_block, self.curr_tree_desc)
+                yield self.curr_tree
+            del self.curr_tree_desc
+            del self.curr_tree
                     
-    
-        def _parse_trees_block(self):
-            token = 'TREES'
-            if self.include_trees:
-                trees_block = trees.TreesBlock()
-                trees_block.taxa_block = self.get_default_taxa_block()
-                self.dataset.add_trees_block(trees_block=trees_block)
-                self._prepare_to_parse_trees(trees_block.taxa_block)
-                self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
-                while not (token == 'END' or token == 'ENDBLOCK') \
-                    and not self.stream_tokenizer.eof \
-                    and not token==None:
-                    token = self.stream_tokenizer.read_next_token_ucase()
-                    if token == 'TRANSLATE':
-                        self.parse_translate_statement(trees_block.taxa_block)
-                    if token == 'TREE':
-                        tree = self._parse_tree_statement(trees_block.taxa_block)
-                        trees_block.append(tree)
-                self.stream_tokenizer.skip_to_semicolon() # move past END command
-            else:
-                token = self._consume_to_end_of_block(token)
     
         def _prepare_to_parse_treedescriptions(self, taxa_block):
                 # tree descriptions from NCL are all 1-based integers
