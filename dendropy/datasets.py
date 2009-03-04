@@ -256,12 +256,12 @@ class Dataset(object):
             reader.default_rooting = rooted
 
 
-        if not taxa_block in self.taxa_blocks:
-            self.taxa_blocks.append(taxa_block)
         if taxa_block is None:
             for tree in reader.iterate_over_trees(src, dataset=self):
                 yield tree
         else:
+            if  not taxa_block in self.taxa_blocks:
+                self.taxa_blocks.append(taxa_block)
             for tree in reader.iterate_over_trees(src, taxa_block=taxa_block):
                 yield tree
 

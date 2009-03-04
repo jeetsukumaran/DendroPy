@@ -74,8 +74,10 @@ def iterate_over_trees(file_obj=None, taxa_block=None, dataset=None):
     Primary goal is to be memory efficient, storing no more than one tree
     at a time. Speed might have to be sacrificed for this!
     """
+    _LOG.debug("dataset = %s" % str(dataset))
     if dataset is None:
         dataset = datasets.Dataset()
+    _LOG.debug("dataset.taxa_blocks = %s" % str(dataset.taxa_blocks))
     stream_tokenizer = PurePythonNexusStreamTokenizer(file_obj)
     token = stream_tokenizer.read_next_token_ucase()
     if token == "#NEXUS":
@@ -583,7 +585,7 @@ class PurePythonNexusStreamTokenizer(object):
         self.current_token = tokenstr
         return tokenstr
 
-    def read_next_token_ucase(self, ignore_punctuation=[]):
+    def read_next_token_ucase(self, ignore_punctuation=()):
         """
         Reads the next token in the file stream, upper-casing it
         before returning it.
@@ -1330,35 +1332,50 @@ class NewickWriter(datasets.Writer):
             
 try:
     import nclwrapper
+except:
+    NexusStreamTokenizer = PurePythonNexusStreamTokenizer
+    NexusReader = PurePythonNexusReader
+else:
     from threading import Thread, Event
 
     _LOG.debug("Using NCLNexusReader")
 
 
     class NCLTreeStream(nclwrapper.NxsTreeStream):
-        """Simple thread-safe class that waits for `pause_event', and signals the
+        """Simple thread-safe class that waits for `need_tree_event', and signals the
         presence of a new tree by `ready_event`"""
-        def __init__(self, pause_event, ready_event):
-            self.pause_event = pause_event 
+        def __init__(self, need_tree_event, ready_event):
+            self.need_tree_event = need_tree_event 
             self.ready_event = ready_event
-            self.tree = None
+            self.tree_tokens = None
+            self.taxa_block =  None
+            nclwrapper.NxsTreeStream.__init__(self)
         def handleTree(self, ftd, tb):
             t = ftd.GetTreeTokens()
-            self.pause_event.wait()
-            self.pause_event.clear()
-            self.taxa_block =  tb
-            self.tree =  t
+            _LOG.warn("NCLTreeStream waiting for need_tree_event")
+            self.need_tree_event.wait()
+            self.need_tree_event.clear()
+            _LOG.warn("- NCLTreeStream GOT need_tree_event")
+            try:
+                self.ncl_taxa_block =  tb.GetTaxaBlockPtr()
+                tb_iid = self.ncl_taxa_block.GetInstanceIdentifierString()
+                _LOG.warn("GetInstanceIdentifierString = %s " % tb_iid)
+                self.tree_tokens =  t
+            except Exception, v:
+                _LOG.warn("Exception: %s" % str(v))
+            _LOG.warn("- NCLTreeStream SET tree_ready")
             self.ready_event.set()
             return False
 
     class NCLTreeStreamThread(Thread):
-        def __init__(self, file_path, pause_event, ready_event, format="NEXUS", **kwargs):
+        def __init__(self, file_path, need_tree_event, ready_event, format="NEXUS", **kwargs):
             """Subclass of thread ,that uses a NCLTreeStream to get trees
             from NCL one at a time"""
-            self.nts = NCLTreeStream(pause_event, ready_event)
+            self.nts = NCLTreeStream(need_tree_event, ready_event)
             self.file_path = file_path
             self.format = format
             self.exception = None
+            self.reader = nclwrapper.MultiFormatReader()
             Thread.__init__(self, 
                             group=None, 
                             target=None, 
@@ -1366,14 +1383,57 @@ try:
                             args=tuple(), 
                             kwargs=dict(**kwargs))
         def run(self):
+            self.done = False
             try:
-                self.nts.ReadFilepath(self.file_path, self.format)
+                _LOG.warn("warning: %s %s %s" % (self.file_path, self.format, self.reader))
+                self.nts.ReadFilepath(self.file_path, self.format, self.reader)
             except ValueError, v:
                 self.exception = v
+            _LOG.warn("NCLTreeStreamThread waiting for need_tree_event")
+            self.nts.need_tree_event.wait()
+            self.nts.need_tree_event.clear()
+            _LOG.warn("* NCLTreeStreamThread GOT need_tree_event")
+            self.done = True
+            self.nts.tree_tokens = None
+            self.nts.taxa_block = None
+            _LOG.warn("* NCLTreeStreamThread SET ready_event")
+            self.nts.ready_event.set()
 
-            
+    def _ncl_datatype_enum_to_dendropy(d):
+        e = nclwrapper.NxsCharactersBlock
+        if d == e.dna or d == e.nucleotide:
+            return characters.DnaCharactersBlock
+        if d == e.rna:
+            return characters.RnaCharactersBlock
+        if d == e.protein:
+            return characters.ProteinCharactersBlock
+        if (d == e.continuous) or (d == e.mixed) or (d == e.codon):
+            s = d == e.continuous and "continuous" or (d == e.mixed and "mixed" or "codon")
+            raise NotImplementedError("%s datatype not supported" % s)
 
-    class NCLBasedReader(object):
+    class ListOfTokenIterator(object):
+        def __init__(self, tokens):
+            self.tokens_iter = iter(tokens)
+            self.eof = False
+            self.queued = None
+        def __iter__(self):
+            return self
+        def read_next_token(self, ignore_punctuation=None):
+            if not self.eof:
+                try:
+                    return self.tokens_iter.next()
+                except StopIteration:
+                    self.eof = True
+            return ""
+
+        def read_next_token_ucase(self):
+            t = self.read_next_token()
+            if t:
+                return t.upper()
+        def syntax_exception(self, msg):
+            return SyntaxException(message=msg)
+        
+    class NCLBasedReader(datasets.Reader):
         "Encapsulates loading and parsing of a NEXUS format file."
     
         def __init__(self, format="NEXUS"):
@@ -1381,11 +1441,12 @@ try:
             self.purePythonReader = PurePythonNexusReader()
             self.encode_splits = False
             self.default_rooting = RootingInterpretation.UNKNOWN_DEF_ROOTED
-            self._reset()
             self.format = format
- 
-        def _get_fp(self, f):
-            "Returns filepath and True if the file that f refers to exists on the filesystem"
+            self._prev_taxa_block = ""
+            self.ncl_taxa_to_native = {}
+            self._taxa_to_fill = None
+        def _get_fp(self, file_obj):
+            "Returns filepath and True if the file that `file_obj` refers to exists on the filesystem"
             try:
                 n = file_obj.name
                 use_ncl = os.path.exists(n)
@@ -1404,61 +1465,99 @@ try:
                 self.purePythonReader.encode_splits = self.encode_splits
                 self.purePythonReader.default_rooting = self.default_rooting
                 return self.purePythonReader.read_dataset(file_obj, dataset=dataset)
-            self.read_filepath_into_dataset(n, dataset=dataset)
+            return self.read_filepath_into_dataset(n, dataset=dataset)
 
         def read_filepath_into_dataset(self, file_path, dataset=None):
+            if dataset is None:
+                dataset = datasets.Dataset()
+            self._taxa_to_fill = None
             m = nclwrapper.MultiFormatReader()
-            m.ReadFilepath(file_path, self.format)
-            ntb = m.GetNumTaxaBlocks()
-            for i in xrange(ntb):
-                tb = m.GetTaxaBlock(i)
-                print "Taxa block index", i, ":"
-                print tb.GetAllLabels()
-                nab = m.GetNumAssumptionsBlocks(tb)
-                for k in xrange(nab):
-                    a = m.GetAssumptionsBlock(tb, k)
-                    cs = a.GetTaxSetNames()
-                    print "TaxSets have the names " , str(cs)
-                ncb = m.GetNumCharactersBlocks(tb)
-                for j in xrange(ntb):
-                    print "Char block index", j, " for Taxa block index", i, ":"
-                    cb = m.GetCharactersBlock(tb, j)
-                    raw = cb.GetRawDiscreteMatrixRef()
-                    print "raw matrix:\n", raw
-                    mp = cb.GetDatatypeMapperForCharRef(0)
-                    sym = mp.GetSymbols()
-                    print "symbols:\n", sym
-                    d = mp.GetPythonicStateVectors()
-                    print "State code in raw matrix to state index:", str(d)
-                    tsm = []
-                    for el in d:
-                        x = "".join([sym[c] for c in el])
-                        if len(x) == 1:
-                            tsm.append(x)
-                        else:
-                            tsm.append('{%s}' % x)
-                    tsm[-2] = '-'
-                    tsm[-1] = '?'
-                    print "State code to string mapper is:", tsm
-                    print "matrix is :"
-                    for row in raw:
-                        print "".join([tsm[x] for x in row])
-                    s = cb.GetExcludedIndexSet()
-                    print "Excluded chars =", str(nclwrapper.NxsSetReader.GetSetAsVector(s))
-                    nab = m.GetNumAssumptionsBlocks(cb)
-                    for k in xrange(nab):
-                        a = m.GetAssumptionsBlock(cb, k)
-                        cs = a.GetCharSetNames()
-                        print "CharSets have the names " , str(cs)
-                ntrb = m.GetNumTreesBlocks(tb)
-                for j in xrange(ntrb):
-                    print "Trees block index", j, " for Taxa block index", i, ":"
-                    trb = m.GetTreesBlock(tb, j)
-                    for k in xrange(trb.GetNumTrees()):
-                        ftd = trb.GetFullTreeDescription(i)
-                        print "tree ", k, "=", ftd.GetNewick()
-            
 
+            self._register_taxa_context(m, dataset.taxa_blocks)
+
+            m.ReadFilepath(file_path, self.format)
+            
+            num_taxa_blocks = m.GetNumTaxaBlocks()
+            supporting_exsets = False
+            supporting_charset_exsets = False
+            for i in xrange(num_taxa_blocks):
+                ncl_tb = m.GetTaxaBlock(i)
+                taxa_block = _ncl_taxa_block_to_native(ncl_tb)
+                dataset.taxa_blocks.append(taxa_block)
+                #nab = m.GetNumAssumptionsBlocks(ncl_tb)
+                #for k in xrange(nab):
+                #    a = m.GetAssumptionsBlock(ncl_tb, k)
+                #    cs = a.GetTaxSetNames()
+                #    print "TaxSets have the names " , str(cs)
+                num_char_blocks = m.GetNumCharactersBlocks(ncl_tb)
+                for j in xrange(num_char_blocks):
+                    ncl_cb = m.GetCharactersBlock(ncl_tb, j)
+                    raw_matrix = ncl_cb.GetRawDiscreteMatrixRef()
+                    if ncl_cb.IsMixedType():
+                        _LOG.warn("Mixed datatype character blocks are not supported in Dendropy.  Skipping...")
+                        continue
+                    dt = _ncl_datatype_enum_to_dendropy(ncl_cb.GetDataType())
+                    mapper = ncl_cb.GetDatatypeMapperForCharRef(0)
+                    sym = mapper.GetSymbols()
+                    state_codes_mapping = mapper.GetPythonicStateVectors()
+                    for row in raw_matrix:
+                        _LOG.warn("This is where we would create a data matrix")
+                    #dataset.characters_blocks.append(char_block)
+                    
+                    if supporting_exsets:
+                        s = ncl_cb.GetExcludedIndexSet()
+                        print "Excluded chars =", str(nclwrapper.NxsSetReader.GetSetAsVector(s))
+                    if supporting_charset_exsets:
+                        nab = m.GetNumAssumptionsBlocks(ncl_cb)
+                        for k in xrange(nab):
+                            a = m.GetAssumptionsBlock(ncl_cb, k)
+                            cs = a.GetCharSetNames()
+                            print "CharSets have the names " , str(cs)
+                ntrb = m.GetNumTreesBlocks(ncl_tb)
+                for j in xrange(ntrb):
+                    trees_block = trees.TreesBlock()
+                    trees_block.taxa_block = taxa_block
+                    ncl_trb = m.GetTreesBlock(ncl_tb, j)
+                    for k in xrange(ncl_trb.GetNumTrees()):
+                        ftd = ncl_trb.GetFullTreeDescription(k)
+                        t = self._ncl_tree_tokens_to_native_tree(ncl_tb, taxa_block, ftd.GetTreeTokens())
+                        trees_block.append(t)
+                    dataset.trees_blocks.append(trees_block)
+            return dataset
+
+        def _ncl_taxa_block_to_native(self, ncl_tb):
+            labels = ncl_tb.GetAllLabels()
+            if self._taxa_to_fill is None:
+                taxa_block =  taxa.TaxaBlock(labels)
+            else:
+                taxa_block = self._taxa_to_fill
+                self._taxa_to_fill = None
+                taxa_block.extend(labels)
+            tbiid = ncl_tb.GetInstanceIdentifierString()
+            _LOG.debug("ncl %s to %s" % (tbiid, str(taxa_block)))
+            self.ncl_taxa_to_native[tbiid] = taxa_block
+            return taxa_block
+            
+        def _ncl_tree_tokens_to_native_tree(self, ncl_tb, taxa_block, tree_tokens):
+            if taxa_block is None:
+                taxa_block = self.ncl_taxa_to_native.get(ncl_tb.GetInstanceIdentifierString())
+                if taxa_block is None:
+                    taxa_block = self._ncl_taxa_block_to_native(ncl_tb)
+                    
+            self.taxa_block = taxa_block        
+            lti = ListOfTokenIterator(tree_tokens)
+            if not self._prev_taxa_block is taxa_block:
+                self.tree_translate_dict = {}
+                for n, t in enumerate(taxa_block):
+                    self.tree_translate_dict[str(n + 1)] = t
+                self._prev_taxa_block = taxa_block
+
+            return parse_newick_tree_stream(lti, 
+                                            taxa_block=taxa_block,
+                                            translate_dict=self.tree_translate_dict,
+                                            encode_splits=self.encode_splits,
+                                            rooted=self.default_rooting)
+            
 
         def iterate_over_trees(self, file_obj=None, taxa_block=None, dataset=None):
             """
@@ -1466,7 +1565,10 @@ try:
             Primary goal is to be memory efficient, storing no more than one tree
             at a time. Speed might have to be sacrificed for this!
             """
-            
+            if taxa_block is not None and len(taxa_block) == 0:
+                self._taxa_to_fill = taxa_block
+            else:
+                self._taxa_to_fill = None
             n, use_ncl = self._get_fp(file_obj)
             if not use_ncl:
                 self.purePythonReader.encode_splits = self.encode_splits
@@ -1474,28 +1576,41 @@ try:
                 for tree in self.purePythonReader.iterate_over_trees(file_obj, taxa_block=taxa_block, dataset=dataset):
                     yield tree
                 return                
+            _LOG.debug("dataset = %s" % str(dataset))
             if dataset is None:
                 dataset = datasets.Dataset()
+            _LOG.debug("dataset.taxa_blocks = %s" % str(dataset.taxa_blocks))
             if taxa_block is None:
                 taxa_block = taxa.TaxaBlock()
-            if not (taxa_block in dataset.taxa_blocks):
+            if taxa_block and not (taxa_block in dataset.taxa_blocks):
                 dataset.taxa_blocks.append(taxa_block)
 
             need_tree_event = Event()
             tree_ready_event = Event()
-            ntst = NCLTreeStreamThread(n, pause_event=need_tree_event, ready_event=tree_ready_event, format=self.format)
-            buffer = self.nts
-            ntst.run()
+            ntst = NCLTreeStreamThread(n, need_tree_event=need_tree_event, ready_event=tree_ready_event, format=self.format)
+
+            ncl_streamer = ntst.nts
+            
+            self._register_taxa_context(ntst.reader, dataset.taxa_blocks)
+            
+            ntst.start()
+            _LOG.warn("iterate_over_trees setting  needtree")
             need_tree_event.set()
-            while ntst.isAlive():
+            while True:
+                _LOG.warn("+ iterate_over_trees waiting for tree_ready_event")
+                if ntst.done:
+                    break
                 tree_ready_event.wait()
                 tree_ready_event.clear()
-                self.taxa_block = buffer.taxa_block
-                self.curr_tree_desc = buffer.tree
+                _LOG.warn(" + iterate_over_trees GOT tree_ready_event")
+                ncl_taxa_block = ncl_streamer.ncl_taxa_block
+                self.curr_tree_tokens = ncl_streamer.tree_tokens
+                ncl_streamer.tree_tokens = None
+                _LOG.warn(" + iterate_over_trees SET need_tree_event")
                 need_tree_event.set()
-                self.curr_tree = self._ncl_to_native_tree(self.taxa_block, self.curr_tree_desc)
+                self.curr_tree = self._ncl_tree_tokens_to_native_tree(ncl_taxa_block, None, self.curr_tree_tokens)
                 yield self.curr_tree
-            del self.curr_tree_desc
+            del self.curr_tree_tokens
             del self.curr_tree
                     
     
@@ -1507,11 +1622,35 @@ try:
                     if self.encode_splits:
                         t.clade_mask = (1 << n)
 
+        def _register_taxa_context(self, ncl_reader, incoming_taxa_blocks):
+            print incoming_taxa_blocks
+            if not incoming_taxa_blocks:
+                return
+            num_taxa_blocks = ncl_reader.GetNumTaxaBlocks()
+            existing_taxa_blocks = []
+            for i in xrange(num_taxa_blocks):
+                ncl_tb = ncl_reader.GetTaxaBlock(i)
+                labels = list(ncl_tb.GetAllLabels())
+                existing_taxa_blocks.append(ncl_tb, labels)
+            
+            to_add = []
+            for tb in incoming_taxa_blocks:
+                print tb
+                found = False
+                l = [i.label for i in tb]
+                for k, v in existing_taxa_blocks:
+                    if l == v:
+                        found = True
+                        self.ncl_taxa_to_native[k.GetInstanceIdentifierString()] = tb
+                        break
+                if not found:
+                    to_add.append(tb)
+
+            for tb in to_add:
+                tn = tuple([i.label for i in tb])
+                ncl_tb = ncl_reader.RegisterTaxa(tn)
+                self.ncl_taxa_to_native[ncl_tb.GetInstanceIdentifierString()] = tb
+
         
-        
-    NexusStreamTokenizer = NCLNexusStreamTokenizer
-    NexusReader = NCLNexusReader
-except:
-    NexusStreamTokenizer = PurePythonNexusStreamTokenizer
-    NexusReader = PurePythonNexusReader
+    NexusReader = NCLBasedReader
     
