@@ -95,7 +95,7 @@ class SumTreesTest(unittest.TestCase):
             firstMR = ts.tree_from_splits(firstSD, min_freq=0.5)
             secondMR = ts.tree_from_splits(secondSD, min_freq=0.5)
         self.assertEqual(0, symmetric_difference(firstMR, secondMR))
-_LOG.warn("SKIPPING APPTESTS")
+
 def testSumTreeOptions(self):
         support_file = dendropy.tests.data_source_path("anolis.mbcon.trees.nexus")
         target_file = dendropy.tests.data_source_path("anolis.mbcon.trees.nexus")

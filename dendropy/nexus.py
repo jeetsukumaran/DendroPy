@@ -74,10 +74,8 @@ def iterate_over_trees(file_obj=None, taxa_block=None, dataset=None):
     Primary goal is to be memory efficient, storing no more than one tree
     at a time. Speed might have to be sacrificed for this!
     """
-    _LOG.debug("dataset = %s" % str(dataset))
     if dataset is None:
         dataset = datasets.Dataset()
-    _LOG.debug("dataset.taxa_blocks = %s" % str(dataset.taxa_blocks))
     stream_tokenizer = PurePythonNexusStreamTokenizer(file_obj)
     token = stream_tokenizer.read_next_token_ucase()
     if token == "#NEXUS":
@@ -229,6 +227,7 @@ class StrToTaxon(object):
         v = self.translate.get(label)
         if v is not None:
             return v
+        #_LOG.debug("translate_dict miss: %s " % label)
         t = self.taxa.get_taxon(label=label, taxon_required=taxon_required)
         if t is not None:
             self.translate[label] = t #@this could lead to problems when we support multiple taxon blocks, but now it'll speed thing up
@@ -254,7 +253,6 @@ def parse_newick_tree_stream(stream_tokenizer,
         taxa_block = taxa.TaxaBlock()    
     tree.taxa_block = taxa_block
 
-    #_LOG.debug("parse_newick_tree_stream, encode_splits = %s" % str(encode_splits))
     if encode_splits:
         if rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED or rooted == RootingInterpretation.UNKNOWN_DEF_UNROOTED:
             for c in self.stream_tokenizer.comments:
@@ -468,7 +466,6 @@ class PurePythonNexusStreamTokenizer(object):
         c = self.read_next_char()
         nesting = 1
         while not self.eof:
-            #_LOG.debug("Comment char %s" % c)
             if c == ']':
                 if nesting == 1:
                     break
@@ -813,7 +810,6 @@ class PurePythonNexusReader(datasets.Reader):
                 elif c == '&R' or c == '&r':
                     rooted = RootingInterpretation.ROOTED
                     break
-        #_LOG.debug("rooted = %s self.encode_splits = %s" %(str(rooted), str(self.encode_splits)))
         tree = parse_newick_tree_stream(stream_tokenizer=self.stream_tokenizer,
                                         taxa_block=taxa_block,
                                         translate_dict=self.tree_translate_dict,
@@ -1350,20 +1346,17 @@ else:
             self.tree_tokens = None
             self.taxa_block =  None
             nclwrapper.NxsTreeStream.__init__(self)
+
         def handleTree(self, ftd, tb):
             t = ftd.GetTreeTokens()
-            _LOG.warn("NCLTreeStream waiting for need_tree_event")
             self.need_tree_event.wait()
             self.need_tree_event.clear()
-            _LOG.warn("- NCLTreeStream GOT need_tree_event")
             try:
                 self.ncl_taxa_block =  tb.GetTaxaBlockPtr()
                 tb_iid = self.ncl_taxa_block.GetInstanceIdentifierString()
-                _LOG.warn("GetInstanceIdentifierString = %s " % tb_iid)
                 self.tree_tokens =  t
             except Exception, v:
                 _LOG.warn("Exception: %s" % str(v))
-            _LOG.warn("- NCLTreeStream SET tree_ready")
             self.ready_event.set()
             return False
 
@@ -1386,18 +1379,14 @@ else:
         def run(self):
             self.done = False
             try:
-                _LOG.warn("warning: %s %s %s" % (self.file_path, self.format, self.reader))
                 self.nts.ReadFilepath(self.file_path, self.format, self.reader)
             except ValueError, v:
                 self.exception = v
-            _LOG.warn("NCLTreeStreamThread waiting for need_tree_event")
             self.nts.need_tree_event.wait()
             self.nts.need_tree_event.clear()
-            _LOG.warn("* NCLTreeStreamThread GOT need_tree_event")
             self.done = True
             self.nts.tree_tokens = None
             self.nts.taxa_block = None
-            _LOG.warn("* NCLTreeStreamThread SET ready_event")
             self.nts.ready_event.set()
 
     def _ncl_datatype_enum_to_dendropy(d):
@@ -1443,7 +1432,7 @@ else:
             self.encode_splits = False
             self.default_rooting = RootingInterpretation.UNKNOWN_DEF_ROOTED
             self.format = format
-            self._prev_taxa_block = ""
+            self._prev_taxa_block = None
             self.ncl_taxa_to_native = {}
             self._taxa_to_fill = None
         def _get_fp(self, file_obj):
@@ -1528,6 +1517,86 @@ else:
                     dataset.trees_blocks.append(trees_block)
             return dataset
 
+
+        def iterate_over_trees(self, file_obj=None, taxa_block=None, dataset=None):
+            """
+            Generator to iterate over trees in data file.
+            Primary goal is to be memory efficient, storing no more than one tree
+            at a time. Speed might have to be sacrificed for this!
+            """
+            if taxa_block is not None and len(taxa_block) == 0:
+                self._taxa_to_fill = taxa_block
+            else:
+                self._taxa_to_fill = None
+            n, use_ncl = self._get_fp(file_obj)
+            if not use_ncl:
+                self.purePythonReader.encode_splits = self.encode_splits
+                self.purePythonReader.default_rooting = self.default_rooting
+                for tree in self.purePythonReader.iterate_over_trees(file_obj, taxa_block=taxa_block, dataset=dataset):
+                    yield tree
+                return                
+            if dataset is None:
+                dataset = datasets.Dataset()
+            if taxa_block is None:
+                taxa_block = taxa.TaxaBlock()
+            if taxa_block and not (taxa_block in dataset.taxa_blocks):
+                dataset.taxa_blocks.append(taxa_block)
+
+            need_tree_event = Event()
+            tree_ready_event = Event()
+            ntst = NCLTreeStreamThread(n, need_tree_event=need_tree_event, ready_event=tree_ready_event, format=self.format)
+
+            ncl_streamer = ntst.nts
+            
+            self._register_taxa_context(ntst.reader, dataset.taxa_blocks)
+            
+            ntst.start()
+            need_tree_event.set()
+            while True:
+                if ntst.done:
+                    break
+                tree_ready_event.wait()
+                tree_ready_event.clear()
+                ncl_taxa_block = ncl_streamer.ncl_taxa_block
+                self.curr_tree_tokens = ncl_streamer.tree_tokens
+                ncl_streamer.tree_tokens = None
+                need_tree_event.set()
+                self.curr_tree = self._ncl_tree_tokens_to_native_tree(ncl_taxa_block, None, self.curr_tree_tokens)
+                if self.curr_tree:
+                    yield self.curr_tree
+            del self.curr_tree_tokens
+            del self.curr_tree
+                    
+    
+
+        def _register_taxa_context(self, ncl_reader, incoming_taxa_blocks):
+            if not incoming_taxa_blocks:
+                return
+            num_taxa_blocks = ncl_reader.GetNumTaxaBlocks()
+            existing_taxa_blocks = []
+            for i in xrange(num_taxa_blocks):
+                ncl_tb = ncl_reader.GetTaxaBlock(i)
+                labels = list(ncl_tb.GetAllLabels())
+                existing_taxa_blocks.append(ncl_tb, labels)
+            
+            to_add = []
+            for tb in incoming_taxa_blocks:
+                found = False
+                l = [i.label for i in tb]
+                for k, v in existing_taxa_blocks:
+                    if l == v:
+                        found = True
+                        self.ncl_taxa_to_native[k.GetInstanceIdentifierString()] = tb
+                        break
+                if not found:
+                    to_add.append(tb)
+
+            for tb in to_add:
+                tn = tuple([i.label for i in tb])
+                ncl_tb = ncl_reader.RegisterTaxa(tn)
+                iid = ncl_tb.GetInstanceIdentifierString()
+                self.ncl_taxa_to_native[iid] = tb
+
         def _ncl_taxa_block_to_native(self, ncl_tb):
             tbiid = ncl_tb.GetInstanceIdentifierString()
             taxa_block = self.ncl_taxa_to_native.get(tbiid)
@@ -1557,6 +1626,8 @@ else:
                 self.tree_translate_dict = {}
                 for n, t in enumerate(taxa_block):
                     self.tree_translate_dict[str(n + 1)] = t
+                    if self.encode_splits:
+                        t.clade_mask = (1 << n)
                 self._prev_taxa_block = taxa_block
 
             return parse_newick_tree_stream(lti, 
@@ -1565,101 +1636,6 @@ else:
                                             encode_splits=self.encode_splits,
                                             rooted=self.default_rooting)
             
-
-        def iterate_over_trees(self, file_obj=None, taxa_block=None, dataset=None):
-            """
-            Generator to iterate over trees in data file.
-            Primary goal is to be memory efficient, storing no more than one tree
-            at a time. Speed might have to be sacrificed for this!
-            """
-            if taxa_block is not None and len(taxa_block) == 0:
-                self._taxa_to_fill = taxa_block
-            else:
-                self._taxa_to_fill = None
-            n, use_ncl = self._get_fp(file_obj)
-            if not use_ncl:
-                self.purePythonReader.encode_splits = self.encode_splits
-                self.purePythonReader.default_rooting = self.default_rooting
-                for tree in self.purePythonReader.iterate_over_trees(file_obj, taxa_block=taxa_block, dataset=dataset):
-                    yield tree
-                return                
-            _LOG.debug("dataset = %s" % str(dataset))
-            if dataset is None:
-                dataset = datasets.Dataset()
-            _LOG.debug("dataset.taxa_blocks = %s" % str(dataset.taxa_blocks))
-            if taxa_block is None:
-                taxa_block = taxa.TaxaBlock()
-            if taxa_block and not (taxa_block in dataset.taxa_blocks):
-                dataset.taxa_blocks.append(taxa_block)
-
-            need_tree_event = Event()
-            tree_ready_event = Event()
-            ntst = NCLTreeStreamThread(n, need_tree_event=need_tree_event, ready_event=tree_ready_event, format=self.format)
-
-            ncl_streamer = ntst.nts
-            
-            self._register_taxa_context(ntst.reader, dataset.taxa_blocks)
-            
-            ntst.start()
-            _LOG.warn("iterate_over_trees setting  needtree")
-            need_tree_event.set()
-            while True:
-                _LOG.warn("+ iterate_over_trees waiting for tree_ready_event")
-                if ntst.done:
-                    break
-                tree_ready_event.wait()
-                tree_ready_event.clear()
-                _LOG.warn(" + iterate_over_trees GOT tree_ready_event")
-                ncl_taxa_block = ncl_streamer.ncl_taxa_block
-                self.curr_tree_tokens = ncl_streamer.tree_tokens
-                ncl_streamer.tree_tokens = None
-                _LOG.warn(" + iterate_over_trees SET need_tree_event")
-                need_tree_event.set()
-                self.curr_tree = self._ncl_tree_tokens_to_native_tree(ncl_taxa_block, None, self.curr_tree_tokens)
-                if self.curr_tree:
-                    yield self.curr_tree
-            del self.curr_tree_tokens
-            del self.curr_tree
-                    
-    
-        def _prepare_to_parse_treedescriptions(self, taxa_block):
-                # tree descriptions from NCL are all 1-based integers
-                self.tree_translate_dict = {}
-                for n, t in enumerate(taxa_block):
-                    self.tree_translate_dict[str(n + 1)] = t
-                    if self.encode_splits:
-                        t.clade_mask = (1 << n)
-
-        def _register_taxa_context(self, ncl_reader, incoming_taxa_blocks):
-            print incoming_taxa_blocks
-            if not incoming_taxa_blocks:
-                return
-            num_taxa_blocks = ncl_reader.GetNumTaxaBlocks()
-            existing_taxa_blocks = []
-            for i in xrange(num_taxa_blocks):
-                ncl_tb = ncl_reader.GetTaxaBlock(i)
-                labels = list(ncl_tb.GetAllLabels())
-                existing_taxa_blocks.append(ncl_tb, labels)
-            
-            to_add = []
-            for tb in incoming_taxa_blocks:
-                print tb
-                found = False
-                l = [i.label for i in tb]
-                for k, v in existing_taxa_blocks:
-                    if l == v:
-                        found = True
-                        self.ncl_taxa_to_native[k.GetInstanceIdentifierString()] = tb
-                        break
-                if not found:
-                    to_add.append(tb)
-
-            for tb in to_add:
-                tn = tuple([i.label for i in tb])
-                ncl_tb = ncl_reader.RegisterTaxa(tn)
-                iid = ncl_tb.GetInstanceIdentifierString()
-                _LOG.debug("Registered %s to %s" % (iid, str(tb)))
-                self.ncl_taxa_to_native[iid] = tb
 
         
     NexusReader = NCLBasedReader

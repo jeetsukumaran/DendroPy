@@ -262,9 +262,7 @@ class TreeSummarizer(object):
                 assert(split_distribution.taxa_block is None)
                 split_distribution.taxa_block = tree.taxa_block
                 taxa_block = tree.taxa_block
-                _LOG.debug("taxa_block = %s" % str(taxa_block))
             else:
-                _LOG.debug("%s should be %s" %(str(taxa_block), str(tree.taxa_block)))
                 assert(taxa_block is tree.taxa_block)
             splits.encode_splits(tree)
             split_distribution.count_splits_on_tree(tree)
