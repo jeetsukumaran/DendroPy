@@ -11,3 +11,5 @@ As mentioned above, this currently only works under Python 2.5. You can also man
     * Copy (or symlink) the ``dendropy`` directory to the ``site-packages`` directory of your Python installation
     
 You might also want to place the scripts in the ``scripts/`` subdirectory on your system path.
+
+Note: If you install the Nexus Class Library version 2.2 compiled with the --with-swig-python option passed to configure, then dendropy can use NCL to parse files. This improves the speed of the parse and will handle some exotic NEXUS syntaxes that are not supported by dendropy's pure-python parser.
