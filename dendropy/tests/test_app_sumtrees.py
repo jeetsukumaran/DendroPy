@@ -78,7 +78,7 @@ class SumTreesTest(unittest.TestCase):
         tb1 = d.read_trees(open(fn1,"rU"), format="NEXUS", encode_splits=True, rooted=RootingInterpretation.UNROOTED)
         tb2 = d.read_trees(open(fn2,"rU"), format="NEXUS", encode_splits=True, rooted=RootingInterpretation.UNROOTED)
         taxa1 = d.taxa_blocks[0]
-        assert taxa1 == tb2[0].taxa_block
+        self.assertEqual(taxa1, tb2[0].taxa_block)
         
         firstSD = SplitDistribution(taxa_block=taxa1)
         secondSD = SplitDistribution(taxa_block=taxa1)
@@ -95,7 +95,8 @@ class SumTreesTest(unittest.TestCase):
             firstMR = ts.tree_from_splits(firstSD, min_freq=0.5)
             secondMR = ts.tree_from_splits(secondSD, min_freq=0.5)
         self.assertEqual(0, symmetric_difference(firstMR, secondMR))
-    def testSumTreeOptions(self):
+_LOG.warn("SKIPPING APPTESTS")
+def testSumTreeOptions(self):
         support_file = dendropy.tests.data_source_path("anolis.mbcon.trees.nexus")
         target_file = dendropy.tests.data_source_path("anolis.mbcon.trees.nexus")
         outfile = tempfile.mktemp()

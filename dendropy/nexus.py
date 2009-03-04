@@ -1376,6 +1376,7 @@ else:
             self.format = format
             self.exception = None
             self.reader = nclwrapper.MultiFormatReader()
+            self.reader.cullIdenticalTaxaBlocks(True)
             Thread.__init__(self, 
                             group=None, 
                             target=None, 
@@ -1472,6 +1473,7 @@ else:
                 dataset = datasets.Dataset()
             self._taxa_to_fill = None
             m = nclwrapper.MultiFormatReader()
+            m.cullIdenticalTaxaBlocks(True)
 
             self._register_taxa_context(m, dataset.taxa_blocks)
 
@@ -1482,7 +1484,7 @@ else:
             supporting_charset_exsets = False
             for i in xrange(num_taxa_blocks):
                 ncl_tb = m.GetTaxaBlock(i)
-                taxa_block = _ncl_taxa_block_to_native(ncl_tb)
+                taxa_block = self._ncl_taxa_block_to_native(ncl_tb)
                 dataset.taxa_blocks.append(taxa_block)
                 #nab = m.GetNumAssumptionsBlocks(ncl_tb)
                 #for k in xrange(nab):
@@ -1521,11 +1523,17 @@ else:
                     for k in xrange(ncl_trb.GetNumTrees()):
                         ftd = ncl_trb.GetFullTreeDescription(k)
                         t = self._ncl_tree_tokens_to_native_tree(ncl_tb, taxa_block, ftd.GetTreeTokens())
-                        trees_block.append(t)
+                        if t:
+                            trees_block.append(t)
                     dataset.trees_blocks.append(trees_block)
             return dataset
 
         def _ncl_taxa_block_to_native(self, ncl_tb):
+            tbiid = ncl_tb.GetInstanceIdentifierString()
+            taxa_block = self.ncl_taxa_to_native.get(tbiid)
+            if taxa_block is not None:
+                return taxa_block
+                
             labels = ncl_tb.GetAllLabels()
             if self._taxa_to_fill is None:
                 taxa_block =  taxa.TaxaBlock(labels)
@@ -1533,16 +1541,15 @@ else:
                 taxa_block = self._taxa_to_fill
                 self._taxa_to_fill = None
                 taxa_block.extend(labels)
-            tbiid = ncl_tb.GetInstanceIdentifierString()
-            _LOG.debug("ncl %s to %s" % (tbiid, str(taxa_block)))
             self.ncl_taxa_to_native[tbiid] = taxa_block
             return taxa_block
             
         def _ncl_tree_tokens_to_native_tree(self, ncl_tb, taxa_block, tree_tokens):
+            if not tree_tokens:
+                return None
             if taxa_block is None:
-                taxa_block = self.ncl_taxa_to_native.get(ncl_tb.GetInstanceIdentifierString())
-                if taxa_block is None:
-                    taxa_block = self._ncl_taxa_block_to_native(ncl_tb)
+                iid = ncl_tb.GetInstanceIdentifierString()
+                taxa_block = self._ncl_taxa_block_to_native(ncl_tb)
                     
             self.taxa_block = taxa_block        
             lti = ListOfTokenIterator(tree_tokens)
@@ -1609,7 +1616,8 @@ else:
                 _LOG.warn(" + iterate_over_trees SET need_tree_event")
                 need_tree_event.set()
                 self.curr_tree = self._ncl_tree_tokens_to_native_tree(ncl_taxa_block, None, self.curr_tree_tokens)
-                yield self.curr_tree
+                if self.curr_tree:
+                    yield self.curr_tree
             del self.curr_tree_tokens
             del self.curr_tree
                     
@@ -1649,7 +1657,9 @@ else:
             for tb in to_add:
                 tn = tuple([i.label for i in tb])
                 ncl_tb = ncl_reader.RegisterTaxa(tn)
-                self.ncl_taxa_to_native[ncl_tb.GetInstanceIdentifierString()] = tb
+                iid = ncl_tb.GetInstanceIdentifierString()
+                _LOG.debug("Registered %s to %s" % (iid, str(tb)))
+                self.ncl_taxa_to_native[iid] = tb
 
         
     NexusReader = NCLBasedReader
