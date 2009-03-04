@@ -1372,6 +1372,7 @@ else:
             self.file_path = file_path
             self.format = format
             self.exception = None
+            self.done = False
             self.reader = nclwrapper.MultiFormatReader()
             self.reader.cullIdenticalTaxaBlocks(True)
             Thread.__init__(self, 
