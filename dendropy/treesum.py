@@ -248,7 +248,7 @@ class TreeSummarizer(object):
                     node.edge.length = None
         return con_tree
 
-    def count_splits_on_trees(self, tree_iterator, split_distribution=None):
+    def count_splits_on_trees(self, tree_iterator, split_distribution=None, trees_splits_encoded=False):
         """
         Given a list of trees file, a SplitsDistribution object (a new one, or,
         if passed as an argument) is returned collating the split data in the files.
@@ -264,7 +264,8 @@ class TreeSummarizer(object):
                 taxa_block = tree.taxa_block
             else:
                 assert(taxa_block is tree.taxa_block)
-            splits.encode_splits(tree)
+            if not trees_splits_encoded:
+                splits.encode_splits(tree)
             split_distribution.count_splits_on_tree(tree)
         return split_distribution
 

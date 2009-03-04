@@ -36,6 +36,21 @@ from dendropy import trees
 from dendropy import get_logger
 _LOG = get_logger("dendropy.datasets")
 
+def cache_reader_state(reader, **kwargs):
+    cache = { "encode_splits" : reader.encode_splits,
+              "finish_node_func": reader.finish_node_func,
+            }
+    reader.encode_splits = kwargs.get("encode_splits", False)
+    reader.finish_node_func = kwargs.get("finish_node_func")
+    r = kwargs.get("default_rooting")
+    if r is not None:
+        cache["default_rooting"] = reader.default_rooting
+        reader.default_rooting = r
+    return cache
+def restore_reader_state(reader, cache):
+    for k, v in cache.iteritems():
+        setattr(reader, k, v)
+    
 class Dataset(object):
     "Top-level data structure."
 
@@ -207,7 +222,7 @@ class Dataset(object):
         src = StringIO(string)
         return self.read(src, format)
         
-    def read_trees(self, src, format, encode_splits=False, rooted=None):
+    def read_trees(self, src, format, encode_splits=False, rooted=None, finish_node_func=None):
         """
         Populates this dataset with trees from `src`, given in `format`.
         `src` is a file descriptor object, `format` is one of the
@@ -223,16 +238,15 @@ class Dataset(object):
         reader.include_characters = False
         old_trees_block_len = len(self.trees_blocks)
 
-        pes = reader.encode_splits
-        reader.encode_splits = encode_splits
-        pdr = reader.default_rooting
-        if rooted is not None:
-            reader.default_rooting = rooted
-        _LOG.debug("reader.encode_splits = %s" % str(reader.encode_splits))
+        added = {"encode_splits":encode_splits, 
+                 "default_rooting":rooted, 
+                 "finish_node_func":finish_node_func,
+                 }
+        cache = cache_reader_state(reader, **added)
+        
         reader.read_dataset(src, self)
 
-        reader.encode_splits = pes
-        reader.default_rooting = pdr
+        restore_reader_state(reader, cache)
 
         new_trees_block_len = len(self.trees_blocks)
         if new_trees_block_len > old_trees_block_len:
@@ -244,16 +258,16 @@ class Dataset(object):
         else:
             return []
 
-    def iterate_over_trees(self, src, format, taxa_block=None, encode_splits=False, rooted=None):
+    def iterate_over_trees(self, src, format, taxa_block=None, encode_splits=False, rooted=None, finish_node_func=None):
         from dendropy import dataio
         reader = dataio.get_reader(format)
         reader.include_characters = False
 
-        pes = reader.encode_splits
-        reader.encode_splits = encode_splits
-        pdr = reader.default_rooting
-        if rooted is not None:
-            reader.default_rooting = rooted
+        added = {"encode_splits":encode_splits, 
+                 "default_rooting":rooted, 
+                 "finish_node_func":finish_node_func,
+                 }
+        cache = cache_reader_state(reader, **added)
 
 
         if taxa_block is None:
@@ -265,17 +279,18 @@ class Dataset(object):
             for tree in reader.iterate_over_trees(src, taxa_block=taxa_block):
                 yield tree
 
-        reader.encode_splits = pes
-        reader.default_rooting = pdr
+        restore_reader_state(reader, cache)
+        
+        
  
-    def trees_from_string(self, string, format, encode_splits=False, rooted=None):
+    def trees_from_string(self, string, format, encode_splits=False, rooted=None, finish_node_func=None):
         """
         Populates this dataset from `string`, given in `format`. `src`
         is a file descriptor object, `format` is one of the supported file
         format identifiers: 'NEXUS' (incl. 'NEWICK'), 'NEXML' etc.
         """
         src = StringIO(string)
-        return self.read_trees(src, format, encode_splits=encode_splits, rooted=rooted)
+        return self.read_trees(src, format, encode_splits=encode_splits, rooted=rooted, finish_node_func=finish_node_func)
             
     def write(self, dest, format):
         """

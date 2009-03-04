@@ -354,9 +354,10 @@ def main_cli():
     tree_source = MultiFileTreeIterator(sources=support_filepaths,
                                         core_iterator=nexus.iterate_over_trees, 
                                         from_index=opts.burnin,
-                                        progress_func=tsum.send_progress_message)
+                                        progress_func=tsum.send_progress_message,
+                                        encode_splits=True)
 
-    split_distribution = tsum.count_splits_on_trees(tree_source)
+    split_distribution = tsum.count_splits_on_trees(tree_source, trees_splits_encoded=True)
     if split_distribution.taxa_block is None:
         assert(tsum.total_trees_counted == 0)
         split_distribution.taxa_block = dendropy.taxa.TaxaBlock() # we just produce an empty block so we don't crash as we report nothing of interest
@@ -369,7 +370,7 @@ def main_cli():
     report.append("%d unique taxa across all trees." % n_taxa)
     num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = split_distribution.splits_considered()
     report.append("%d unique splits out of %d total splits counted." % (num_unique_splits, num_splits))
-    report.append("%d unique non-trivial splits out of %d total non-trivial splits counted." % (num_nt_unique_splits, num_nt_splits))
+    #report.append("%d unique non-trivial splits out of %d total non-trivial splits counted." % (num_nt_unique_splits, num_nt_splits))
         
     comments.extend(report)
     messenger.send("---")

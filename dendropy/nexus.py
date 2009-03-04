@@ -81,7 +81,7 @@ class SyntaxException(Exception):
 ############################################################################
 ## Standard Tree Iterator
       
-def iterate_over_trees(file_obj=None, taxa_block=None, dataset=None):
+def iterate_over_trees(file_obj=None, taxa_block=None, dataset=None, **kwargs):
     """
     Generator to iterate over trees in data file.
     Primary goal is to be memory efficient, storing no more than one tree
@@ -96,7 +96,7 @@ def iterate_over_trees(file_obj=None, taxa_block=None, dataset=None):
     else:
         stream_tokenizer.stream_handle.seek(0)
         file_format = "NEWICK"
-    for tree in dataset.iterate_over_trees(file_obj, taxa_block=taxa_block, format=file_format):
+    for tree in dataset.iterate_over_trees(file_obj, taxa_block=taxa_block, format=file_format, **kwargs):
         yield tree
 
 ############################################################################
@@ -221,7 +221,8 @@ def parse_newick_string(tree_statement,
                         taxa_block=None, 
                         translate_dict=None, 
                         encode_splits=False, 
-                        rooted=RootingInterpretation.UNKNOWN_DEF_UNROOTED):
+                        rooted=RootingInterpretation.UNKNOWN_DEF_UNROOTED,
+                        finish_node_func=None):
     "Processes a (SINGLE) TREE statement string."
     stream_handle = StringIO(tree_statement)
     stream_tokenizer = PurePythonNexusStreamTokenizer(stream_handle)
@@ -229,7 +230,8 @@ def parse_newick_string(tree_statement,
                                      taxa_block=taxa_block,
                                      translate_dict=translate_dict, 
                                      encode_splits=encode_splits,
-                                     rooted=rooted)
+                                     rooted=rooted,
+                                     finish_node_func=finish_node_func)
     return tree    
 
 class StrToTaxon(object):
@@ -252,7 +254,8 @@ def parse_newick_tree_stream(stream_tokenizer,
                              taxa_block=None,
                              translate_dict=None,
                              encode_splits=False,
-                             rooted=RootingInterpretation.UNKNOWN_DEF_UNROOTED):
+                             rooted=RootingInterpretation.UNKNOWN_DEF_UNROOTED,
+                             finish_node_func=None):
     """
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
     located at the beginning of the statement (i.e., the first
@@ -268,13 +271,14 @@ def parse_newick_tree_stream(stream_tokenizer,
 
     if encode_splits:
         if rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED or rooted == RootingInterpretation.UNKNOWN_DEF_UNROOTED:
-            for c in self.stream_tokenizer.comments:
-                if c == '&U' or c == '&u':
-                    rooted = RootingInterpretation.UNROOTED
-                    break
-                elif c == '&R' or c == '&r':
+            r = stream_tokenizer.tree_rooted_comment()
+            if r is not None:
+                if r:
                     rooted = RootingInterpretation.ROOTED
-                    break            
+                else:
+                    rooted = RootingInterpretation.UNROOTED
+
+
         if rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED or RootingInterpretation.ROOTED:
             tree.split_edges = {}
         else:
@@ -313,6 +317,8 @@ def parse_newick_tree_stream(stream_tokenizer,
                 if encode_splits:
                     tmp_node.edge.clade_mask = 0L
                     p.edge.clade_mask |= curr_node.edge.clade_mask
+            if finish_node_func is not None:
+                finish_node_func(curr_node, tree)
             p.add_child(tmp_node)
             curr_node = tmp_node
             token = stream_tokenizer.read_next_token()
@@ -327,6 +333,8 @@ def parse_newick_tree_stream(stream_tokenizer,
                     cm |= curr_node.edge.clade_mask
                     p.edge.clade_mask = cm
                     split_map[cm] = curr_node.edge
+                if finish_node_func is not None:
+                    finish_node_func(curr_node, tree)
                 curr_node = p
             else:
                 is_leaf = curr_node.is_leaf()
@@ -435,6 +443,17 @@ class PurePythonNexusStreamTokenizer(object):
         self.__current_file_char = new_char
 
     current_file_char = property(_get_current_file_char, _set_current_file_char)
+
+    def tree_rooted_comment(self):
+        """This is as hack it is called at the beginning of reading a tree. 
+        Returns True if &R in comments, False in &U and None if no command comment
+        is found """
+        for c in self.comments:
+            if c == '&U' or c == '&u':
+                return False
+            if c == '&R' or c == '&r':
+                return True
+        return False
 
     def read_next_char(self):
         """
@@ -631,6 +650,7 @@ class PurePythonNexusReader(datasets.Reader):
         self.stream_tokenizer = PurePythonNexusStreamTokenizer()
         self.encode_splits = False
         self.default_rooting = RootingInterpretation.UNKNOWN_DEF_ROOTED
+        self.finish_node_func = None
         self._reset()
 
     def _reset(self):
@@ -662,7 +682,7 @@ class PurePythonNexusReader(datasets.Reader):
 
     def _parse_nexus_file(self, dataset=None):
         "Main file parsing driver."
-        encode_splits = self.encode_splits
+        finish_node_func = self.finish_node_func
         self._reset()
         if dataset is not None:
             self.dataset = dataset
@@ -827,7 +847,8 @@ class PurePythonNexusReader(datasets.Reader):
                                         taxa_block=taxa_block,
                                         translate_dict=self.tree_translate_dict,
                                         encode_splits=self.encode_splits,
-                                        rooted=rooted)
+                                        rooted=rooted,
+                                        finish_node_func=self.finish_node_func)
         tree.label = tree_name
 
         if self.stream_tokenizer.current_token != ';':
@@ -1178,6 +1199,8 @@ class NewickReader(datasets.Reader):
         datasets.Reader.__init__(self)
         self.encode_splits = False
         self.default_rooting = RootingInterpretation.UNKNOWN_DEF_UNROOTED
+        self.finish_node_func = None
+
         
     def read_dataset(self, file_obj, dataset=None):
         """
@@ -1210,13 +1233,13 @@ class NewickReader(datasets.Reader):
         if taxa_block is not None:
             trees_block.taxa_block = taxa_block
         stream_tokenizer = PurePythonNexusStreamTokenizer(file_obj)
-        tree = parse_newick_tree_stream(stream_tokenizer, taxa_block=taxa_block, encode_splits=self.encode_splits, rooted=self.default_rooting)
+        tree = parse_newick_tree_stream(stream_tokenizer, taxa_block=taxa_block, encode_splits=self.encode_splits, rooted=self.default_rooting, finish_node_func=self.finish_node_func)
         if taxa_block is None:
             taxa_block = tree.taxa_block
             trees_block.taxa_block = taxa_block
         while tree is not None:
             trees_block.append(tree)
-            tree = parse_newick_tree_stream(stream_tokenizer, taxa_block=taxa_block, encode_splits=self.encode_splits, rooted=self.default_rooting)
+            tree = parse_newick_tree_stream(stream_tokenizer, taxa_block=taxa_block, encode_splits=self.encode_splits, rooted=self.default_rooting, finish_node_func=self.finish_node_func)
         return trees_block
 
     def iterate_over_trees(self, file_obj=None, taxa_block=None, dataset=None):
@@ -1239,7 +1262,8 @@ class NewickReader(datasets.Reader):
                                                  taxa_block=taxa_block, 
                                                  translate_dict=None,
                                                  encode_splits=self.encode_splits,
-                                                 rooted=self.default_rooting) 
+                                                 rooted=self.default_rooting,
+                                                 finish_node_func=self.finish_node_func) 
             if tree:
                 yield tree
 
@@ -1353,12 +1377,14 @@ else:
 
         def handleTree(self, ftd, tb):
             t = ftd.GetTreeTokens()
+            rooted_flag = ftd.IsRooted()
             self.need_tree_event.wait()
             self.need_tree_event.clear()
             try:
                 self.ncl_taxa_block =  tb.GetTaxaBlockPtr()
                 tb_iid = self.ncl_taxa_block.GetInstanceIdentifierString()
                 self.tree_tokens =  t
+                self.rooted_flag = rooted_flag
             except Exception, v:
                 _LOG.warn("Exception: %s" % str(v))
             self.ready_event.set()
@@ -1410,6 +1436,12 @@ else:
             self.tokens_iter = iter(tokens)
             self.eof = False
             self.queued = None
+            self.tree_rooted = None
+
+        def tree_rooted_comment(self):
+            "This is a hack, and only works if you have just one tree in the token stream"
+            return self.tree_rooted
+
         def __iter__(self):
             return self
         def read_next_token(self, ignore_punctuation=None):
@@ -1435,6 +1467,7 @@ else:
             self.purePythonReader = PurePythonNexusReader()
             self.encode_splits = False
             self.default_rooting = RootingInterpretation.UNKNOWN_DEF_ROOTED
+            self.finish_node_func = None
             self.format = format
             self._prev_taxa_block = None
             self.ncl_taxa_to_native = {}
@@ -1458,6 +1491,7 @@ else:
             if not use_ncl:
                 self.purePythonReader.encode_splits = self.encode_splits
                 self.purePythonReader.default_rooting = self.default_rooting
+                self.purePythonReader.finish_node_func = self.finish_node_func
                 return self.purePythonReader.read_dataset(file_obj, dataset=dataset)
             return self.read_filepath_into_dataset(n, dataset=dataset)
 
@@ -1563,7 +1597,9 @@ else:
                     ncl_trb = m.GetTreesBlock(ncl_tb, j)
                     for k in xrange(ncl_trb.GetNumTrees()):
                         ftd = ncl_trb.GetFullTreeDescription(k)
-                        t = self._ncl_tree_tokens_to_native_tree(ncl_tb, taxa_block, ftd.GetTreeTokens())
+                        tokens = ftd.GetTreeTokens()
+                        rooted_flag = ftd.IsRooted()
+                        t = self._ncl_tree_tokens_to_native_tree(ncl_tb, taxa_block, tokens, rooted_flag=rooted_flag)
                         if t:
                             trees_block.append(t)
                     dataset.add_trees_block(trees_block=trees_block)
@@ -1584,6 +1620,7 @@ else:
             if not use_ncl:
                 self.purePythonReader.encode_splits = self.encode_splits
                 self.purePythonReader.default_rooting = self.default_rooting
+                self.purePythonReader.finish_node_func = self.finish_node_func
                 for tree in self.purePythonReader.iterate_over_trees(file_obj, taxa_block=taxa_block, dataset=dataset):
                     yield tree
                 return                
@@ -1611,9 +1648,10 @@ else:
                 tree_ready_event.clear()
                 ncl_taxa_block = ncl_streamer.ncl_taxa_block
                 self.curr_tree_tokens = ncl_streamer.tree_tokens
+                rooted_flag = ncl_streamer.rooted_flag
                 ncl_streamer.tree_tokens = None
                 need_tree_event.set()
-                self.curr_tree = self._ncl_tree_tokens_to_native_tree(ncl_taxa_block, None, self.curr_tree_tokens)
+                self.curr_tree = self._ncl_tree_tokens_to_native_tree(ncl_taxa_block, None, self.curr_tree_tokens, rooted_flag=rooted_flag)
                 if self.curr_tree:
                     yield self.curr_tree
             del self.curr_tree_tokens
@@ -1665,7 +1703,7 @@ else:
             self.ncl_taxa_to_native[tbiid] = taxa_block
             return taxa_block
             
-        def _ncl_tree_tokens_to_native_tree(self, ncl_tb, taxa_block, tree_tokens):
+        def _ncl_tree_tokens_to_native_tree(self, ncl_tb, taxa_block, tree_tokens, rooted_flag=None):
             if not tree_tokens:
                 return None
             if taxa_block is None:
@@ -1674,6 +1712,7 @@ else:
                     
             self.taxa_block = taxa_block        
             lti = ListOfTokenIterator(tree_tokens)
+            lti.tree_rooted = rooted_flag
             if not self._prev_taxa_block is taxa_block:
                 self.tree_translate_dict = {}
                 for n, t in enumerate(taxa_block):
@@ -1686,7 +1725,8 @@ else:
                                             taxa_block=taxa_block,
                                             translate_dict=self.tree_translate_dict,
                                             encode_splits=self.encode_splits,
-                                            rooted=self.default_rooting)
+                                            rooted=self.default_rooting,
+                                            finish_node_func=self.finish_node_func)
             
 
         

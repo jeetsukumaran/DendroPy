@@ -231,7 +231,8 @@ class MultiFileTreeIterator(object):
                        dataset=None, 
                        format=None, 
                        from_index=0, 
-                       progress_func=None):
+                       progress_func=None,
+                       **kwargs):
         """An iterable collection of trees from multiple sources
             `sources` is as list of tree sources each can be either a file path (a str) 
                 or a file-like object
@@ -264,6 +265,7 @@ class MultiFileTreeIterator(object):
         self.total_trees_ignored = 0
         self.total_num_sources_read = 0
         self.from_index = from_index
+        self.iterator_kwargs = kwargs
 
     def __iter__(self):
         si = self.from_index
@@ -298,10 +300,10 @@ class MultiFileTreeIterator(object):
 
     def _raw_iter(self, fo, tb):
         if self.using_data_it:
-            for tree in self.dataset.iterate_over_trees(fo, taxa_block=tb, format=self.format):
+            for tree in self.dataset.iterate_over_trees(fo, taxa_block=tb, format=self.format, **(self.iterator_kwargs)):
                 yield tree
         else:
-            for tree in self._core_iterator(fo, taxa_block=tb):
+            for tree in self._core_iterator(fo, taxa_block=tb, **(self.iterator_kwargs)):
                 yield tree
         
         
