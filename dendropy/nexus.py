@@ -47,7 +47,20 @@ class RootingInterpretation:
     UNKNOWN_DEF_UNROOTED = 1
     ROOTED = 2
     UNROOTED = 3
-    
+
+
+def build_state_alphabet(char_block, symbols, missing):
+    sa = characters.StateAlphabet()
+    for symbol in symbols:
+        sa.append(characters.StateAlphabetElement(symbol=symbol))
+    if self.missing_char:
+        sa.append(characters.StateAlphabetElement(symbol=missing,
+                                       multistate=characters.StateAlphabetElement.AMBIGUOUS_STATE,
+                                       member_states=sa.get_states(symbols=symbols)))
+    char_block.state_alphabets = [sa]
+    char_block.default_state_alphabet = char_block.state_alphabets[0]
+    return char_block
+
 #######################################################################
 ## NESTED CLASSES
 
@@ -895,16 +908,7 @@ class PurePythonNexusReader(datasets.Reader):
             token = self.stream_tokenizer.read_next_token()
 
     def _build_state_alphabet(self, char_block, symbols):
-        sa = characters.StateAlphabet()
-        for symbol in symbols:
-            sa.append(characters.StateAlphabetElement(symbol=symbol))
-        if self.missing_char:
-            sa.append(characters.StateAlphabetElement(symbol=self.missing_char,
-                                           multistate=characters.StateAlphabetElement.AMBIGUOUS_STATE,
-                                           member_states=sa.get_states(symbols=symbols)))
-        char_block.state_alphabets = [sa]
-        char_block.default_state_alphabet = char_block.state_alphabets[0]
-        return char_block
+        return build_state_alphabet(char_block, symbols, missing=self.missing_char):
 
     def _parse_matrix_statement(self, taxa_block=None):
         """
@@ -1457,6 +1461,52 @@ else:
                 return self.purePythonReader.read_dataset(file_obj, dataset=dataset)
             return self.read_filepath_into_dataset(n, dataset=dataset)
 
+    def _ncl_characters_block_to_native(self, taxa_block, ncl_cb):
+        """
+        Processes a FORMAT command. Assumes that the file reader is
+        positioned right after the "FORMAT" token in a FORMAT command.
+        """
+        raw_matrix = ncl_cb.GetRawDiscreteMatrixRef()
+        if ncl_cb.IsMixedType():
+            _LOG.warn("Mixed datatype character blocks are not supported in Dendropy.  Skipping...")
+            continue
+        char_block_type = _ncl_datatype_enum_to_dendropy(ncl_cb.GetDataType())
+        mapper = ncl_cb.GetDatatypeMapperForCharRef(0)
+        symbols = mapper.GetSymbols()
+        state_codes_mapping = mapper.GetPythonicStateVectors()
+        for row in raw_matrix:
+            _LOG.warn("This is where we would create a data matrix")
+            
+        char_block = self.char_block_type()
+        char_block.taxa_block = taxa_block
+        if isinstance(char_block, characters.StandardCharactersBlock):
+            char_block = self.build_state_alphabet(char_block, symbols, '?')
+        symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
+        
+        assert (len(raw_matrix) == len(taxa_block))
+        for row_ind, taxon in enumerate(taxa_block):
+            v = characters.CharacterDataVector(taxon=taxon)
+            char_block[taxon] = v
+            if self.include_characters:
+                state = symbol_state_map[char]
+                v.append(characters.CharacterDataCell(value=state))
+        token = self.stream_tokenizer.read_next_token()
+            
+        #dataset.characters_blocks.append(char_block)
+        supporting_exsets = False
+        supporting_charset_exsets = False
+
+        if supporting_exsets:
+            s = ncl_cb.GetExcludedIndexSet()
+            print "Excluded chars =", str(nclwrapper.NxsSetReader.GetSetAsVector(s))
+        if supporting_charset_exsets:
+            nab = m.GetNumAssumptionsBlocks(ncl_cb)
+            for k in xrange(nab):
+                a = m.GetAssumptionsBlock(ncl_cb, k)
+                cs = a.GetCharSetNames()
+                print "CharSets have the names " , str(cs)
+
+
         def read_filepath_into_dataset(self, file_path, dataset=None):
             if dataset is None:
                 dataset = datasets.Dataset()
@@ -1469,12 +1519,10 @@ else:
             m.ReadFilepath(file_path, self.format)
             
             num_taxa_blocks = m.GetNumTaxaBlocks()
-            supporting_exsets = False
-            supporting_charset_exsets = False
             for i in xrange(num_taxa_blocks):
                 ncl_tb = m.GetTaxaBlock(i)
                 taxa_block = self._ncl_taxa_block_to_native(ncl_tb)
-                dataset.taxa_blocks.append(taxa_block)
+                dataset.add_taxa_block(taxa_block=taxa_block)
                 #nab = m.GetNumAssumptionsBlocks(ncl_tb)
                 #for k in xrange(nab):
                 #    a = m.GetAssumptionsBlock(ncl_tb, k)
@@ -1483,27 +1531,8 @@ else:
                 num_char_blocks = m.GetNumCharactersBlocks(ncl_tb)
                 for j in xrange(num_char_blocks):
                     ncl_cb = m.GetCharactersBlock(ncl_tb, j)
-                    raw_matrix = ncl_cb.GetRawDiscreteMatrixRef()
-                    if ncl_cb.IsMixedType():
-                        _LOG.warn("Mixed datatype character blocks are not supported in Dendropy.  Skipping...")
-                        continue
-                    dt = _ncl_datatype_enum_to_dendropy(ncl_cb.GetDataType())
-                    mapper = ncl_cb.GetDatatypeMapperForCharRef(0)
-                    sym = mapper.GetSymbols()
-                    state_codes_mapping = mapper.GetPythonicStateVectors()
-                    for row in raw_matrix:
-                        _LOG.warn("This is where we would create a data matrix")
-                    #dataset.characters_blocks.append(char_block)
-                    
-                    if supporting_exsets:
-                        s = ncl_cb.GetExcludedIndexSet()
-                        print "Excluded chars =", str(nclwrapper.NxsSetReader.GetSetAsVector(s))
-                    if supporting_charset_exsets:
-                        nab = m.GetNumAssumptionsBlocks(ncl_cb)
-                        for k in xrange(nab):
-                            a = m.GetAssumptionsBlock(ncl_cb, k)
-                            cs = a.GetCharSetNames()
-                            print "CharSets have the names " , str(cs)
+                    char_block = self._ncl_characters_block_to_native(taxa_block, ncl_cb)
+                    self.dataset.add_char_block(char_block=char_block)
                 ntrb = m.GetNumTreesBlocks(ncl_tb)
                 for j in xrange(ntrb):
                     trees_block = trees.TreesBlock()
@@ -1514,7 +1543,7 @@ else:
                         t = self._ncl_tree_tokens_to_native_tree(ncl_tb, taxa_block, ftd.GetTreeTokens())
                         if t:
                             trees_block.append(t)
-                    dataset.trees_blocks.append(trees_block)
+                    dataset.add_trees_block(trees_block=trees_block)
             return dataset
 
 
