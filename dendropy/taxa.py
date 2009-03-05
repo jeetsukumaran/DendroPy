@@ -205,9 +205,14 @@ class TaxaBlock(list, base.IdTagged):
         taxon does not exist.
         """
         try:
+            return taxon.clade_mask
+        except AttributeError:
+            pass
+        try:
             i = self.index(taxon)
             m = 1 << i
             #_LOG.debug("%s for %s" % (bin(m), taxon.label))
+            taxon.clade_mask = m
             return m
         except ValueError:
             raise ValueError("Taxon with ID '%s' and label '%s' not found" 

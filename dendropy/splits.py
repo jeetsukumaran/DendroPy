@@ -278,25 +278,22 @@ class SplitDistribution(object):
             assert tree.taxa_block is self.taxa_block
         self.total_trees_counted += 1
 
-        for split in tree.split_edges:
+        for split, edge in tree.split_edges.iteritems():
             if not self.unrooted:
-                split = tree.split_edges[split].clade_mask
+                split = edge.clade_mask
             if split not in self.split_counts:
                 self.splits.append(split)
                 self.split_counts[split] = 1
             else:
                 self.split_counts[split] += 1     
-            if not self.ignore_edge_lengths:                
-                if split not in self.split_edge_lengths:
-                    self.split_edge_lengths[split] = []    
-                if tree.split_edges[split].length is not None: 
-                    self.split_edge_lengths[split].append(tree.split_edges[split].length)
+            if not self.ignore_edge_lengths:
+                sel = self.split_edge_lengths.setdefault(split,[])
+                if edge.length is not None: 
+                    sel.append(tree.split_edges[split].length)
                 # for correct behavior when some or all trees have no edge lengths
 #                 else:
 #                     self.split_edge_lengths[split].append(0.0)
-            if not self.ignore_node_ages:  
-                if split not in self.split_node_ages:
-                    self.split_node_ages[split] = []
-                edge = tree.split_edges[split]
+            if not self.ignore_node_ages:
+                sna = self.split_node_ages.setdefault(split, [])
                 if edge.head_node is not None:
-                    self.split_node_ages[split].append(edge.head_node.distance_from_tip())
+                    sna.append(edge.head_node.distance_from_tip())
