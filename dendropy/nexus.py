@@ -1373,39 +1373,53 @@ else:
     class NCLTreeStream(nclwrapper.NxsTreeStream):
         """Simple thread-safe class that waits for `need_tree_event', and signals the
         presence of a new tree by `ready_event`"""
-        def __init__(self, need_tree_event, ready_event):
+        def __init__(self, need_tree_event, ready_event, die_event):
             self.need_tree_event = need_tree_event 
             self.ready_event = ready_event
             self.tree_tokens = None
-            self.taxa_block =  None
+            self.ncl_taxa_block =  None
+            self.exception = None
+            self.die_event = die_event
             nclwrapper.NxsTreeStream.__init__(self)
 
         def handleTree(self, ftd, tb):
             t = ftd.GetTreeTokens()
             rooted_flag = ftd.IsRooted()
+            if self.die_event.isSet():
+                raise RuntimeError("exception in calling thread")
             self.need_tree_event.wait()
             self.need_tree_event.clear()
+            if self.die_event.isSet():
+                raise RuntimeError("exception in calling thread")
             try:
                 self.ncl_taxa_block =  tb.GetTaxaBlockPtr()
                 tb_iid = self.ncl_taxa_block.GetInstanceIdentifierString()
                 self.tree_tokens =  t
                 self.rooted_flag = rooted_flag
             except Exception, v:
-                _LOG.warn("Exception: %s" % str(v))
+                _LOG.debug("NCLTreeStream Exception: %s" % str(v))
+                self.exception = v
+                self.ncl_taxa_block = None
+                self.tree_tokens = None
+                self.rooted_flag = None
+                self.ready_event.set()
+                raise v
+
             self.ready_event.set()
             return False
 
     class NCLTreeStreamThread(Thread):
-        def __init__(self, file_path, need_tree_event, ready_event, format="NEXUS", **kwargs):
+        def __init__(self, file_path, need_tree_event, ready_event, die_event, format="NEXUS", **kwargs):
             """Subclass of thread ,that uses a NCLTreeStream to get trees
             from NCL one at a time"""
-            self.nts = NCLTreeStream(need_tree_event, ready_event)
+            self.nts = NCLTreeStream(need_tree_event, ready_event, die_event)
             self.file_path = file_path
             self.format = format
             self.exception = None
             self.done = False
             self.reader = nclwrapper.MultiFormatReader()
             self.reader.cullIdenticalTaxaBlocks(True)
+            self.die_event = die_event
             Thread.__init__(self, 
                             group=None, 
                             target=None, 
@@ -1414,15 +1428,23 @@ else:
                             kwargs=dict(**kwargs))
         def run(self):
             self.done = False
+            self.exception = None
             try:
-                self.nts.ReadFilepath(self.file_path, self.format, self.reader)
-            except ValueError, v:
-                self.exception = v
-            self.nts.need_tree_event.wait()
-            self.nts.need_tree_event.clear()
+                if not self.die_event.isSet():
+                    self.nts.ReadFilepath(self.file_path, self.format, self.reader)
+            except Exception, v:
+                if self.nts.exception:
+                    self.exception = self.nts.exception
+                else:
+                    self.exception = v
+                _LOG.debug("NCLTreeStreamThread Exception: %s" % str(self.exception))
+            else:    
+                self.nts.need_tree_event.wait()
+                self.nts.need_tree_event.clear()
             self.done = True
             self.nts.tree_tokens = None
             self.nts.taxa_block = None
+            self.rooted_flag = None
             self.nts.ready_event.set()
 
     def _ncl_datatype_enum_to_dendropy(d):
@@ -1639,30 +1661,45 @@ else:
 
             need_tree_event = Event()
             tree_ready_event = Event()
-            ntst = NCLTreeStreamThread(n, need_tree_event=need_tree_event, ready_event=tree_ready_event, format=self.format)
+            die_event = Event()
+            ntst = NCLTreeStreamThread(n, need_tree_event=need_tree_event, ready_event=tree_ready_event, die_event=die_event, format=self.format)
 
             ncl_streamer = ntst.nts
             
             self._register_taxa_context(ntst.reader, dataset.taxa_blocks)
             
             ntst.start()
-            need_tree_event.set()
-            while True:
-                if ntst.done:
-                    break
-                tree_ready_event.wait()
-                tree_ready_event.clear()
-                ncl_taxa_block = ncl_streamer.ncl_taxa_block
-                self.curr_tree_tokens = ncl_streamer.tree_tokens
-                rooted_flag = ncl_streamer.rooted_flag
-                ncl_streamer.tree_tokens = None
+            try:
                 need_tree_event.set()
-                self.curr_tree = self._ncl_tree_tokens_to_native_tree(ncl_taxa_block, None, self.curr_tree_tokens, rooted_flag=rooted_flag)
-                if self.curr_tree:
-                    yield self.curr_tree
-            del self.curr_tree_tokens
-            del self.curr_tree
-                    
+                self.curr_tree_tokens = None
+                self.curr_tree = None
+                while True:
+                    if ntst.done:
+                        break
+                    tree_ready_event.wait()
+                    tree_ready_event.clear()
+                    ncl_taxa_block = ncl_streamer.ncl_taxa_block
+                    self.curr_tree_tokens = ncl_streamer.tree_tokens
+                    if self.curr_tree_tokens is None:
+                        break
+                    rooted_flag = ncl_streamer.rooted_flag
+                    ncl_streamer.tree_tokens = None
+                    need_tree_event.set()
+                    self.curr_tree = self._ncl_tree_tokens_to_native_tree(ncl_taxa_block, None, self.curr_tree_tokens, rooted_flag=rooted_flag)
+                    if self.curr_tree:
+                        yield self.curr_tree
+                del self.curr_tree_tokens
+                del self.curr_tree
+            except Exception, v:
+                _LOG.debug("%s" % str(v))
+                die_event.set()
+                need_tree_event.set()
+                raise
+            if ntst.exception:
+                raise ntst.exception
+            die_event.set()
+
+                
     
 
         def _register_taxa_context(self, ncl_reader, incoming_taxa_blocks):
