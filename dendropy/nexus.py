@@ -37,6 +37,7 @@ from cStringIO import StringIO
 from dendropy import datasets
 from dendropy import taxa
 from dendropy import trees
+from dendropy import utils
 from dendropy import characters   
 from dendropy import get_logger
 _LOG = get_logger("dendropy.nexus")
@@ -242,7 +243,6 @@ class StrToTaxon(object):
         v = self.translate.get(label)
         if v is not None:
             return v
-        #_LOG.debug("translate_dict miss: %s " % label)
         t = self.taxa.get_taxon(label=label, taxon_required=taxon_required)
         if t is not None:
             self.translate[label] = t #@this could lead to problems when we support multiple taxon blocks, but now it'll speed thing up
@@ -279,10 +279,11 @@ def parse_newick_tree_stream(stream_tokenizer,
                     rooted = RootingInterpretation.UNROOTED
 
 
-        if rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED or RootingInterpretation.ROOTED:
+        if rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED or rooted == RootingInterpretation.ROOTED:
             tree.split_edges = {}
         else:
-            d = utils.NormalizedBitmaskDict(mask=taxa_block.all_taxa_bitmask())
+            atb = taxa_block.all_taxa_bitmask()
+            d = utils.NormalizedBitmaskDict(mask=atb)
             tree.split_edges = d
         split_map = tree.split_edges
 
@@ -314,9 +315,12 @@ def parse_newick_tree_stream(stream_tokenizer,
             p = curr_node.parent_node
             if not p:
                 raise stream_tokenizer.syntax_exception('Comma found one the "outside" of a newick tree description')
-                if encode_splits:
-                    tmp_node.edge.clade_mask = 0L
-                    p.edge.clade_mask |= curr_node.edge.clade_mask
+            if encode_splits:
+                tmp_node.edge.clade_mask = 0L
+                e = curr_node.edge
+                u = e.clade_mask
+                split_map[u] = e
+                p.edge.clade_mask |= u
             if finish_node_func is not None:
                 finish_node_func(curr_node, tree)
             p.add_child(tmp_node)
@@ -330,9 +334,10 @@ def parse_newick_tree_stream(stream_tokenizer,
                 if not p:
                     raise stream_tokenizer.syntax_exception('Unbalanced parentheses -- too many ")" characters found in tree description')
                 if encode_splits:
-                    cm |= curr_node.edge.clade_mask
-                    p.edge.clade_mask = cm
-                    split_map[cm] = curr_node.edge
+                    e = curr_node.edge
+                    u = e.clade_mask
+                    p.edge.clade_mask |= u
+                    split_map[u] = curr_node.edge
                 if finish_node_func is not None:
                     finish_node_func(curr_node, tree)
                 curr_node = p

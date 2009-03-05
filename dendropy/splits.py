@@ -159,7 +159,8 @@ def encode_splits(tree, create_dict=True, delete_degree_two=True):
         if tree.is_rooted:
             tree.split_edges = {}
         else:
-            d = utils.NormalizedBitmaskDict(mask=taxa_block.all_taxa_bitmask())
+            atb = taxa_block.all_taxa_bitmask()
+            d = utils.NormalizedBitmaskDict(mask=atb)
             tree.split_edges = d
         split_map = tree.split_edges
     if delete_degree_two and (not tree.is_rooted):
