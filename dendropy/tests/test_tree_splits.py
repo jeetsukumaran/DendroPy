@@ -59,7 +59,7 @@ test_cases = small_cases
 if is_test_enabled(TestLevel.NORMAL, _LOG, module_name=__name__, message="skipping medium tree files"):
     test_cases.extend(med_cases)
 if is_test_enabled(TestLevel.SLOW, _LOG, module_name=__name__, message="skipping large tree files"):
-    test_cases.extend(test_cases)
+    test_cases.extend(large_cases)
 
 class SplitFreqsTest(unittest.TestCase):
 
