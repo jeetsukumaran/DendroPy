@@ -47,7 +47,6 @@ class SplitTest(unittest.TestCase):
                                        "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);",
                                        ])
         tree_list = [i[0] for i in dataset.trees_blocks]
-        _LOG.error(str(tree_list[0].taxa_block))
         for i in tree_list:
             _LOG.debug(i.get_indented_form())
             encode_splits(i)
