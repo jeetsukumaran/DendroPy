@@ -30,6 +30,7 @@ trees, models etc.
 import os
 from cStringIO import StringIO
 
+from dendropy import base
 from dendropy import taxa
 from dendropy import characters
 from dendropy import trees
@@ -51,11 +52,12 @@ def restore_reader_state(reader, cache):
     for k, v in cache.iteritems():
         setattr(reader, k, v)
     
-class Dataset(object):
+class Dataset(Element):
     "Top-level data structure."
 
     def __init__(self, taxa_blocks=None, char_blocks=None, trees_blocks=None):
         "Instantiates collections of taxa, blocks, trees, and models."
+        base.Element.__init__(self)
         if taxa_blocks is None:
             self.taxa_blocks = []
         else:
