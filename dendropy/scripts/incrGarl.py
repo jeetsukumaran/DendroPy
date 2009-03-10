@@ -30,6 +30,7 @@ __DEBUG__ = True
 import os
 import sys
 import itertools
+import copy
 from optparse import OptionParser
 
 from dendropy import nexus
@@ -50,7 +51,181 @@ _program_copyright = "Copyright (C) 2008 Mark T. Holder.\n" \
                  "License GPLv3+: GNU GPL version 3 or later.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
                  "There is NO WARRANTY,\nto the extent permitted by law."
-                 
+
+TAXON_TO_TRANSLATE = {}
+
+GARLI_GENERAL = (
+			"datafname",
+			"constraintfile",
+			"xstreefname",
+			"streefname",
+			"runmode",
+			"incompletetreefname",
+			"attachmentspertaxon",
+			"ofprefix",
+			"randseed",
+			"availablememory",
+			"logevery",
+			"saveevery",
+			"refinestart",
+			"outputeachbettertopology",
+			"outputcurrentbesttopology",
+			"enforcetermconditions",
+			"genthreshfortopoterm",
+			"scorethreshforterm",
+			"significanttopochange",
+			"outputphyliptree",
+			"outputmostlyuselessfiles",
+			"writecheckpoints",
+			"restart",
+			"outgroup",
+			"searchreps",
+			"datatype",
+			"ratematrix",
+			"statefrequencies",
+			"ratehetmodel",
+			"numratecats",
+			"invariantsites",
+			)
+GARLI_MASTER = (
+			"nindivs",
+			"holdover",
+			"selectionintensity",
+			"holdoverpenalty",
+			"stopgen",
+			"stoptime",
+			"startoptprec",
+			"minoptprec",
+			"numberofprecreductions",
+			"treerejectionthreshold",
+			"topoweight",
+			"modweight",
+			"brlenweight",
+			"randnniweight",
+			"randsprweight",
+			"limsprweight",
+			"intervallength",
+			"intervalstostore",
+			"limsprrange",
+			"meanbrlenmuts",
+			"gammashapebrlen",
+			"gammashapemodel",
+			"uniqueswapbias",
+			"distanceswapbias",
+			"bootstrapreps",
+			"resampleproportion",
+			"inferinternalstateprobs",
+			)
+
+
+DEFAULT_GARLI_CONF = {"datafname" : "rana.nex",
+        "constraintfile" : "none",
+        "xstreefname" : "rana.tre",
+        "streefname" : "incomplete",
+        "runmode" : "10",
+        "incompletetreefname" : "rana.tre",
+        "attachmentspertaxon" : "50",
+        "ofprefix" : "rana2.nuc.GTRIG",
+        "randseed" : "71836",
+        "availablememory" : "512",
+        "logevery" : "10",
+        "saveevery" : "100",
+        "refinestart" : "1",
+        "outputeachbettertopology" : "0",
+        "outputcurrentbesttopology" : "0",
+        "enforcetermconditions" : "1",
+        "genthreshfortopoterm" : "20000",
+        "scorethreshforterm" : "0.05",
+        "significanttopochange" : "0.01",
+        "outputphyliptree" : "0",
+        "outputmostlyuselessfiles" : "0",
+        "writecheckpoints" : "0",
+        "restart" : "0",
+        "outgroup" : "1",
+        "searchreps" : "1",
+        "datatype" : "aminoacid",
+        "ratematrix" : "jones",
+        "statefrequencies" : "empirical",
+        "ratehetmodel" : "gamma",
+        "numratecats" : "4",
+        "invariantsites" : "estimate",
+        "nindivs" : "4",
+        "holdover" : "1",
+        "selectionintensity" : "0.5",
+        "holdoverpenalty" : "0",
+        "stopgen" : "10",
+        "stoptime" : "30",
+        "startoptprec" : "0.5",
+        "minoptprec" : "0.01",
+        "numberofprecreductions" : "10",
+        "treerejectionthreshold" : "50.0",
+        "topoweight" : "0.0",
+        "modweight" : "0.05",
+        "brlenweight" : "0.2",
+        "randnniweight" : "0.1",
+        "randsprweight" : "0.3",
+        "limsprweight" : "0.6",
+        "intervallength" : "100",
+        "intervalstostore" : "5",
+        "limsprrange" : "1",
+        "meanbrlenmuts" : "5",
+        "gammashapebrlen" : "1000",
+        "gammashapemodel" : "1000",
+        "uniqueswapbias" : "0.1",
+        "distanceswapbias" : "1.0",
+        "bootstrapreps" : "0",
+        "resampleproportion" : "1.0",
+        "inferinternalstateprobs" : "0",
+        }
+
+def write_garli_conf(out, conf):
+    out.write("[general]\n")
+    for k in GARLI_GENERAL:
+        out.write("%s = %s\n" % (k, conf[k]))
+    out.write("[master]\n")
+    for k in GARLI_MASTER:
+        out.write("%s = %s\n" % (k, conf[k]))
+
+def rev_trans_func(t):
+    global TAXON_TO_TRANSLATE
+    return TAXON_TO_TRANSLATE[t]
+
+def write_tree_file(outstream, tree, dataset):
+    outstream.write("#NEXUS\nBegin Trees;\n  Translate")
+    sep = ""
+    for n, taxon in enumerate(dataset.taxa_blocks[0]):
+        outstream.write(sep)
+        sep = ',\n '
+        outstream.write(" %d %s " % ((n + 1), nexus.NexusWriter.escape_token(taxon.label)))
+    
+    outstream.write(";\n Tree a = [&U] %s ;\nEnd;\n" % tree.compose_newick(reverse_translate=rev_trans_func))
+    
+def addToTree(tree, conf, dataset):
+    tmp_tree_filename = ".tmp.tre"
+    f = open(tmp_tree_filename, "w")
+    write_tree_file(f, tree, dataset)
+    f.close()
+
+    conf["incompletetreefname"] = tmp_tree_filename
+
+    tmp_conf_file = ".garli.conf"
+    f = open(tmp_conf_file, "w")
+    write_garli_conf(f, conf)
+    f.close()
+
+    
+def read_garli_conf(f):
+    default_conf = copy.copy(DEFAULT_GARLI_CONF)
+    for line in f:
+        s = line.split("=")
+        if len(s) > 1:
+            k = s[0].strip().lower()
+            v = "=".join(s[1:]).strip()
+            if not k in default_conf:
+                raise RuntimeError("Key %s is not understood" % k)
+            default_conf[k] = v
+    return default_conf
+    
 if __name__ == '__main__':
     description =  '%s %s ' % (_program_name, _program_version)    
     usage = "%prog [options] <TREES FILE> [<TREES FILE> [<TREES FILE> [...]]"
@@ -75,21 +250,27 @@ if __name__ == '__main__':
                       help="Verbose mode") 
   
     (opts, args) = parser.parse_args()
-
+    conf_file = opts.conf
+    if conf_file is None:
+        sys.exit("Expecting a conf file template for GARLI")
     data_file = opts.data_filepath
     intree_file = opts.intree_filepath
     if data_file is None:
         sys.exit("Data file must be specified")
     if intree_file is None:
         sys.exit("Input tree file must be specified")
-    for f in [data_file, intree_file]:
+    for f in [data_file, intree_file, conf_file]:
         if not os.path.exists(f):
             sys.exit("%s does not exist" % f)
 
+    conf = read_garli_conf(open(conf_file, "rU"))
+    write_garli_conf(sys.stdout, conf)
     d = Dataset()
     d.read(open(data_file, "rU"), format="NEXUS")
     taxa = d.taxa_blocks[0]
     full_taxa_mask = taxa.all_taxa_bitmask()
+    for n, taxon in enumerate(taxa):
+        TAXON_TO_TRANSLATE[taxon] = str(n + 1)
     _LOG.debug("%s = full_taxa_mask" % bin(full_taxa_mask))
     assert(len(d.taxa_blocks) == 1)
     characters = d.char_blocks[0]
@@ -113,9 +294,13 @@ if __name__ == '__main__':
         _LOG.debug("%s = next_toadd" % format_split(next_toadd, taxa=taxa))
         _LOG.debug("%s = current_taxon_mask\n(next_toadd - 1) != current_taxon_mask" % format_split(current_taxon_mask, taxa=taxa))
         sys.exit("In this version, taxa must be added to the tree in the order that they appear in the matrix")
-            
-        
+
+
+    conf["datafname"] = data_file
+    for tree in inp_trees:
+        trees = addToTree(tree, conf, d)
     sys.exit(0)
+    
     
     
     

@@ -279,6 +279,8 @@ class Tree(base.IdTagged):
     ## For debugging
     
     def compose_newick(self, **kwargs):
+        """kwargs["reverse_translate"] can be function that takes a taxon and 
+           returns the label to appear in the tree."""
         return self.seed_node.compose_newick(**kwargs)
                 
     def reroot_at(self, nd, splits=False, delete_deg_two=True):
@@ -748,21 +750,26 @@ class Node(taxa.TaxonLinked):
         include_internal_labels = kwargs.get("include_internal_labels")
         if (not is_leaf) and (not include_internal_labels):
             return ""
-        if hasattr(self, 'taxon') and self.taxon:
-            tag = self.taxon.label
-        else:
+        try:
+            t = self.taxon
+            rt = kwargs.get("reverse_translate")
+            if rt:
+                tag = rt(t)
+            else:
+                tag = t.label
+                
+        except AttributeError:
             tag = ""
             try:
                 tag = self.label
             except AttributeError:
                 if not is_leaf:
                     tag = self.oid
+        if "raw_labels" in kwargs:
+            return tag
+        from dendropy.nexus import NexusWriter 
+        return NexusWriter.escape_token(tag)
 
-        if tag.count(' '):
-            if not (tag.startswith("\'") and tag.endswith("\'")) \
-               and not (tag.startswith("\"") and tag.endswith("\"")):
-                tag = "'" + tag + "'"
-        return tag
     ########################################################################### 
     ## for debugging
     
