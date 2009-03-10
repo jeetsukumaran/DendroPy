@@ -32,6 +32,7 @@ import sys
 import itertools
 import copy
 from optparse import OptionParser
+from subprocess import Popen, PIPE
 
 from dendropy import nexus
 from dendropy.splits import encode_splits, lowest_bit_only
@@ -199,7 +200,20 @@ def write_tree_file(outstream, tree, dataset):
         outstream.write(" %d %s " % ((n + 1), nexus.NexusWriter.escape_token(taxon.label)))
     
     outstream.write(";\n Tree a = [&U] %s ;\nEnd;\n" % tree.compose_newick(reverse_translate=rev_trans_func))
-    
+
+
+def run_garli(conf, commands):
+    tmp_conf_file = ".garli.conf"
+    f = open(tmp_conf_file, "w")
+    write_garli_conf(f, conf)
+    f.close()
+    garli_instance = Popen(["iGarli", tmp_conf_file], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    gstdout, gstderr = garli_instance.communicate("\n".join(commands))
+    rc = garli_instance.wait()
+    if rc != 0:
+        sys.exit(gstderr)
+        
+
 def addToTree(tree, conf, dataset):
     tmp_tree_filename = ".tmp.tre"
     f = open(tmp_tree_filename, "w")
@@ -208,11 +222,8 @@ def addToTree(tree, conf, dataset):
 
     conf["incompletetreefname"] = tmp_tree_filename
 
-    tmp_conf_file = ".garli.conf"
-    f = open(tmp_conf_file, "w")
-    write_garli_conf(f, conf)
-    f.close()
-
+    
+    run_garli(conf, ["run", "quit"])
     
 def read_garli_conf(f):
     default_conf = copy.copy(DEFAULT_GARLI_CONF)
@@ -265,18 +276,18 @@ if __name__ == '__main__':
 
     conf = read_garli_conf(open(conf_file, "rU"))
     write_garli_conf(sys.stdout, conf)
-    d = Dataset()
-    d.read(open(data_file, "rU"), format="NEXUS")
-    taxa = d.taxa_blocks[0]
+    dataset = Dataset()
+    dataset.read(open(data_file, "rU"), format="NEXUS")
+    taxa = dataset.taxa_blocks[0]
     full_taxa_mask = taxa.all_taxa_bitmask()
     for n, taxon in enumerate(taxa):
         TAXON_TO_TRANSLATE[taxon] = str(n + 1)
     _LOG.debug("%s = full_taxa_mask" % bin(full_taxa_mask))
-    assert(len(d.taxa_blocks) == 1)
-    characters = d.char_blocks[0]
-    assert(len(d.char_blocks) == 1)
+    assert(len(dataset.taxa_blocks) == 1)
+    characters = dataset.char_blocks[0]
+    assert(len(dataset.char_blocks) == 1)
     assert(len(characters) == len(taxa))
-    inp_trees = d.read_trees(open(intree_file, "rU"), format="NEXUS")
+    inp_trees = dataset.read_trees(open(intree_file, "rU"), format="NEXUS")
     assert(inp_trees)
     current_taxon_mask = None
     for tree in inp_trees:
@@ -296,191 +307,26 @@ if __name__ == '__main__':
         sys.exit("In this version, taxa must be added to the tree in the order that they appear in the matrix")
 
 
-    conf["datafname"] = data_file
-    for tree in inp_trees:
-        trees = addToTree(tree, conf, d)
+    conf["datafname"] = os.path.join("..", data_file)
+
+
+    n = len(dataset.taxa_blocks[0])
+    dirn = "t%d" % n
+    if not os.path.exists(dirn):
+        os.makedirs(dirn)
+        if not os.path.exists(dirn):
+            sys.exit("Could not make %s" % dirn)
+    if not os.path.isdir(dirn):
+        sys.exit("%s is not a directory" % dirn)
+    orig_dir = os.getcwd()
+    os.chdir(dirn)
+
+    try:
+        for tree_ind, tree in enumerate(inp_trees):
+            conf["ofprefix"] = "from%d" % tree_ind
+            trees = addToTree(tree, conf, dataset)
+    finally:
+        os.chdir(orig_dir)
+        
     sys.exit(0)
     
-    
-    
-    
-    ###################################################
-    # Support file idiot checking
-        
-    sampled_filepaths = []        
-    missing = False 
-    for fpath in args:
-        fpath = os.path.expanduser(os.path.expandvars(fpath))        
-        if not os.path.exists(fpath):
-            sys.exit('Sampled trees file not found: "%s"' % fpath)
-        sampled_filepaths.append(fpath)
-    if not sampled_filepaths:
-        sys.exit("Expecting arguments indicating files that contain sampled trees")
-        
-    sampled_file_objs = [open(f, "rU") for f in sampled_filepaths]
-
-    ###################################################
-    # Lots of other idiot-checking ...
-    
-    # target tree
-    if opts.reference_tree_filepath is None:
-        sys.exit("A reference tree must be specified (use -h to see all options)")
-    reference_tree_filepath = os.path.expanduser(os.path.expandvars(opts.reference_tree_filepath))
-    if not os.path.exists(reference_tree_filepath):
-        sys.exit('Reference tree file not found: "%s"\n' % reference_tree_filepath)
-
-    d = Dataset()
-    ref_trees  = d.read_trees(open(reference_tree_filepath, 'ru'), format="NEXUS")
-    
-    if len(ref_trees) != 1:
-        sys.exit("Expecting one reference tree")
-    ref_tree = ref_trees[0]
-    splits.encode_splits(ref_tree)
-    assert(len(d.taxa_blocks) == 1)
-    taxa = d.taxa_blocks[0]
-    
-    
-    ###################################################
-    # Main work begins here: Count the splits
-    
-    start_time = datetime.datetime.now()
-    
-    comments = []
-    tsum = treesum.TreeSummarizer()
-    tsum.burnin = 0
-    if opts.quiet:
-        tsum.verbose = False
-        tsum.write_message = None
-    else:
-        tsum.verbose = True
-        tsum.write_message = sys.stderr.write
-
-
-
-
-    _LOG.debug("### COUNTING SPLITS ###\n")                
-    split_distribution = tsum.count_splits_on_trees(tree_files=sampled_filepaths, tree_iterator=nexus.iterate_over_trees, taxa_block=taxa) 
-        
-    report = []
-    report.append("%d trees read from %d files." % (tsum.total_trees_read, len(sampled_filepaths)))
-    report.append("%d trees ignored in total." % (tsum.total_trees_ignored))    
-    report.append("%d trees considered in total for split support assessment." % (tsum.total_trees_counted))
-    report.append("%d unique taxa across all trees." % len(split_distribution.taxa_block))
-    num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = split_distribution.splits_considered()
-    report.append("%d unique splits out of %d total splits counted." % (num_unique_splits, num_splits))
-    report.append("%d unique non-trivial splits out of %d total non-trivial splits counted." % (num_nt_unique_splits, num_nt_splits))
-        
-    _LOG.debug("\n".join(report))
-
-
-    con_tree = treegen.star_tree(taxa)
-    taxa_mask = taxa.all_taxa_bitmask()
-    splits.encode_splits(con_tree)
-    leaves = con_tree.leaf_nodes()
-    
-    to_leaf_dict = {}
-    for leaf in leaves:
-        to_leaf_dict[leaf.edge.clade_mask] = leaf
-    unrooted = True
-    n_read = float(tsum.total_trees_read)
-    sp_list = []
-    for split, count in split_distribution.split_counts.iteritems():
-        freq = count/n_read
-        if not splits.is_trivial_split(split, taxa_mask):
-            m = split & taxa_mask
-            if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
-                if unrooted:
-                    c = (~m) & taxa_mask
-                    if (c-1) & c: # not singleton (i.e., one "0")
-                        if 1 & m:
-                            k = c
-                        else:
-                            k = m
-                        sp_list.append((freq, k, m))
-                else:
-                    sp_list.append((freq, m, m))
-    sp_list.sort(reverse=True)
-    
-    root = con_tree.seed_node
-    root_edge = root.edge
-
-    curr_freq = 1.1
-    curr_all_splits_list = []
-    curr_compat_splits_list = []
-    all_splits_by_freq = []
-    compat_splits_by_freq = []
-
-    # Now when we add splits in order, we will do a greedy, extended majority-rule consensus tree
-    for freq, split_to_add, split_in_dict in sp_list:
-        if abs(curr_freq-freq) > 0.000001:
-            # dropping down to the next lowest freq
-            curr_l = [freq, []]
-            curr_all_splits_list = curr_l[1]
-            all_splits_by_freq.append(curr_l)
-            curr_l = [freq, []]
-            curr_compat_splits_list = curr_l[1]
-            compat_splits_by_freq.append(curr_l)
-            curr_freq = freq
-        
-        curr_all_splits_list.append(split_to_add)
-
-        if (split_to_add & root_edge.clade_mask) != split_to_add:
-            continue
-        lb = splits.lowest_bit_only(split_to_add)
-        one_leaf = to_leaf_dict[lb]
-        parent_node = one_leaf
-        while (split_to_add & parent_node.edge.clade_mask) != split_to_add:
-            parent_node = parent_node.parent_node
-        if parent_node is None or parent_node.edge.clade_mask == split_to_add:
-            continue # split is not in tree, or already in tree.
-        
-        new_node = trees.Node()
-        new_node_children = []
-        new_edge = new_node.edge
-        new_edge.clade_mask = 0
-        for child in parent_node.child_nodes():
-            # might need to modify the following if rooted splits
-            # are used
-            cecm = child.edge.clade_mask
-            if (cecm & split_to_add ):
-                assert cecm != split_to_add
-                new_edge.clade_mask |= cecm
-                new_node_children.append(child)
-        # Check to see if we have accumulated all of the bits that we
-        #   needed, but none that we don't need.
-        if new_edge.clade_mask == split_to_add:
-            for child in new_node_children:
-                parent_node.remove_child(child)
-                new_node.add_child(child)
-            parent_node.add_child(new_node)
-            con_tree.split_edges[split_to_add] = new_edge
-            curr_compat_splits_list.append(split_to_add)
-    ref_set = set()
-    for s in ref_tree.split_edges.iterkeys():
-        m = s & taxa_mask
-        if 1 & m:
-            k = (~m) & taxa_mask
-        else:
-            k = m
-        if not splits.is_trivial_split(k, taxa_mask):
-            ref_set.add(k)
-        
-    all_set = set()
-    compat_set = set()
-    
-    _LOG.debug("%d edges is the reference tree" % (len(ref_set)))
-
-    print "freq\tcompatFP\tcompatFN\tcompatSD\tallFP\tallFN\tallSD"
-    for all_el, compat_el in itertools.izip(all_splits_by_freq, compat_splits_by_freq):
-        freq = all_el[0]
-        all_sp = all_el[1]
-        all_set.update(all_sp)
-        all_fn = len(ref_set - all_set)
-        all_fp = len(all_set - ref_set)
-        compat_sp = compat_el[1]
-        compat_set.update(compat_sp)
-        compat_fn = len(ref_set - compat_set)
-        compat_fp = len(compat_set - ref_set)
-        
-        print "%f\t%d\t%d\t%d\t%d\t%d\t%d" % (freq, compat_fp, compat_fn, compat_fp + compat_fn, all_fp, all_fn, all_fp + all_fn )
-        
