@@ -52,6 +52,7 @@ def restore_reader_state(reader, cache):
     for k, v in cache.iteritems():
         setattr(reader, k, v)
     
+
 class Dataset(base.Element):
     "Top-level data structure."
 
