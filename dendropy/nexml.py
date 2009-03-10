@@ -1078,8 +1078,10 @@ class NexmlWriter(datasets.Writer):
                      % (self.indent * (indent_level+1)))
         parts.append('%sxsi:schemaLocation="http://www.nexml.org/1.0 nexml.xsd"'
                      % (self.indent * (indent_level+1)))
+        parts.append('%S xmlns="http://www.nexml.org/1.0
+                     % (self.indent * (indent_level+1))) 
         parts.append('%sxmlns:nex="http://www.nexml.org/1.0">\n'
-                     % (self.indent * (indent_level+1)))
+                     % (self.indent * (indent_level+1)))                     
         dest.write('\n'.join(parts))
 
     def write_to_nexml_close(self, dest, indent_level=0):
