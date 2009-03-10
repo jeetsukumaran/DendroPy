@@ -41,8 +41,16 @@ class AnnotesDict(dict):
     def __init__(self):
         AnnotesDict.annotation_dict_instances += 1
         self.oid = "dict" + str(AnnotesDict.annotation_dict_instances)
+
+class Element(object):
+    """
+    Base class for elements that will be serialized.
+    """
+    def __init__(self):
+        self.attributes = []    ## extra attributes to be written during XML serialization
+        self.extensions = []    ## DOM extensions to be written during XML serialization
         
-class Annotated(object):
+class Annotated(Element):
     """
     Base class from which all classes that need to persist object attributes
     beyond the core elements (such as id, label, etc.) will derive.
@@ -50,6 +58,7 @@ class Annotated(object):
     
     def __init__(self):
         "Creates dictionary to track attributes that will be persisted."
+        Element.__init__(self)
         self.__annotations = {}
 
     def annotate(self, attr_name, annotate_as=None, type_hint=None):
