@@ -35,12 +35,19 @@ class Annotation(object):
         self.attr_name = attr_name  # name of attribute
         self.type_hint = type_hint  # override introspective type determination
 
+class AnnotesDict(dict):
+    annotation_dict_instances = 0
+    
+    def __init__(self):
+        AnnotesDict.annotation_dict_instances += 1
+        self.oid = "dict" + str(AnnotesDict.annotation_dict_instances)
+        
 class Annotated(object):
     """
     Base class from which all classes that need to persist object attributes
     beyond the core elements (such as id, label, etc.) will derive.
     """
-
+    
     def __init__(self):
         "Creates dictionary to track attributes that will be persisted."
         self.__annotations = {}
@@ -80,7 +87,7 @@ class Annotated(object):
         'annotations()' method is called to populate the dictionary
         value.
         """        
-        annote_dict = {}
+        annote_dict = AnnotesDict()
         for key, value in self.__annotations.items():
             if hasattr(self, value.attr_name):
                 attr_value = getattr(self, value.attr_name)

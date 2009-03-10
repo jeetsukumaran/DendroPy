@@ -55,7 +55,7 @@ def _to_nexml_dict(annotes_dict, indent="", indent_level=0):
     "Composes a nexml dict entry, given a python dictionary."
     main_indent = indent * indent_level    
     parts = []
-    parts.append('%s<dict>' % main_indent)            
+    parts.append('%s<dict id="%s">' % (main_indent,  annotes_dict.oid))
     keyvals = _to_nexml_dict_keyvalues(annotes_dict=annotes_dict,
                                     indent=indent,
                                     indent_level=indent_level+1)
@@ -71,38 +71,32 @@ def _to_nexml_dict_keyvalues(annotes_dict, indent="", indent_level=0):
     parts = []
     subindent = indent * (indent_level + 0)
     for key, value in annotes_dict.items():
-        parts.append('%s<key>%s</key>' % (subindent, key))
-        anvalue = _to_nexml_dict_value(value=value[0],
-                                       type_hint=value[1],
-                                       indent=indent,
-                                       indent_level=indent_level)
-        parts.append(_to_nexml_indent_items(anvalue, indent, indent_level=0))
+#         parts.append('%s<key>%s</key>' % (subindent, key))
+#         anvalue = _to_nexml_dict_value(value=value[0],
+#                                        type_hint=value[1],
+#                                        indent=indent,
+#                                        indent_level=indent_level)
+
+        annote_value = value[0]
+        type_hint = value[1]
+        if type_hint is None:
+            value_type = _to_nexml_dict_value_type(annote_value)
+        else:
+            value_type = type_hint
+        if value_type == 'boolean':
+            annote_value = str(annote_value==True).lower()
+        if isinstance(annote_value, list):
+            value_str = '%s<%s id="%s">%s</%s>' % (subindent,
+                                           value_type,
+                                           key,
+                                           ' '.join([str(item) for item in annote_value]),
+                                           value_type)
+            parts.append(value_str)
+        elif isinstance(annote_value, dict):
+            parts.append(_to_nexml_indent_items(_to_nexml_dict(annote_value, indent=indent, indent_level=indent_level), indent, indent_level=0))
+        else:
+            parts.append('%s<%s id="%s">%s</%s>' % (subindent, value_type, key, str(annote_value), value_type))
     return parts    
-    
-def _to_nexml_dict_value(value, type_hint=None, indent="", indent_level=0):
-    """
-    Returns a list of lines nexml representation of a value. Right now, only deals
-    with lists/vector types vs 'others'. Which means dictionaries will
-    not get returned properly, and thus client code must handle nested
-    dictionaries themselves.
-    """
-    main_indent = indent * indent_level
-    if type_hint is None:
-        value_type = _to_nexml_dict_value_type(value)
-    else:
-        value_type = type_hint
-    if value_type == 'boolean':
-        value = str(value==True).lower()
-    if isinstance(value, list):
-        value_str = "%s<%s>%s</%s>" % (main_indent,
-                                       value_type,
-                                       ' '.join([str(item) for item in value]),
-                                       value_type)
-        return [value_str]
-    elif isinstance(value, dict):
-        return _to_nexml_dict(value, indent=indent, indent_level=indent_level)
-    else:
-        return ["%s<%s>%s</%s>" % (main_indent, value_type, str(value), value_type)]
 
 def _to_nexml_dict_value_type(value):
     """
