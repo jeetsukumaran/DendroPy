@@ -1089,9 +1089,11 @@ class NexusWriter(datasets.Writer):
 
     def escape_token(label):
         if PurePythonNexusStreamTokenizer.has_whitespace(label) or PurePythonNexusStreamTokenizer.has_punctuation(label):
-            return "'" + label + "'"
-        else:
-            return label
+            s = label.split("'")
+            if len(s) == 1:
+                return "'" + label + "'"
+            return "'%s'" % "''".join(s)
+        return label
     escape_token = staticmethod(escape_token)
 
     def write_dataset(self, dataset, dest):
