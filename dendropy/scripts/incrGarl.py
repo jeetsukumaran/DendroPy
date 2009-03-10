@@ -31,6 +31,7 @@ import os
 import sys
 import itertools
 import copy
+import re
 from optparse import OptionParser
 from subprocess import Popen, PIPE
 
@@ -212,9 +213,22 @@ def run_garli(conf, commands):
     rc = garli_instance.wait()
     if rc != 0:
         sys.exit(gstderr)
-        
 
-def addToTree(tree, conf, dataset):
+
+GARLI_SCORE_PATTERN = re.compile(r"\[!GarliScore ([-0-9.]+)\]")
+def read_garli_scores(inp):
+    sc = []
+    for line in inp:
+        m = GARLI_SCORE_PATTERN.search(line)
+        if m:
+            g = m.group(1)
+            sc.append(float(g))
+    return sc
+
+def add_to_tree(tree, conf, dataset, tree_ind):
+    ofprefix = "from%d" % tree_ind
+    conf["ofprefix"] = ofprefix
+
     tmp_tree_filename = ".tmp.tre"
     f = open(tmp_tree_filename, "w")
     write_tree_file(f, tree, dataset)
@@ -224,6 +238,17 @@ def addToTree(tree, conf, dataset):
 
     
     run_garli(conf, ["run", "quit"])
+    
+    output_tree = ofprefix + ".best.tre"
+    t = dataset.read_trees(open(output_tree, "rU"), format="NEXUS")
+    del dataset.trees_blocks[-1]
+    sc = read_garli_scores(open(output_tree, "rU"))
+    if len(t) != len(sc):
+        sys.exit("Did not read the same number of trees (%d) as scores (%d) from %s" % (len(t), len(sc), output_tree))
+    for otree, osc in itertools.izip(t, sc):
+        otree.score = osc
+    return t
+    
     
 def read_garli_conf(f):
     default_conf = copy.copy(DEFAULT_GARLI_CONF)
@@ -323,8 +348,9 @@ if __name__ == '__main__':
 
     try:
         for tree_ind, tree in enumerate(inp_trees):
-            conf["ofprefix"] = "from%d" % tree_ind
-            trees = addToTree(tree, conf, dataset)
+            trees = add_to_tree(tree, conf, dataset, tree_ind)
+            for t in trees:
+                print t.score
     finally:
         os.chdir(orig_dir)
         
