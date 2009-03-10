@@ -1078,7 +1078,7 @@ class NexmlWriter(datasets.Writer):
                      % (self.indent * (indent_level+1)))
         parts.append('%sxsi:schemaLocation="http://www.nexml.org/1.0 nexml.xsd"'
                      % (self.indent * (indent_level+1)))
-        parts.append('%S xmlns="http://www.nexml.org/1.0
+        parts.append('%s xmlns="http://www.nexml.org/1.0'
                      % (self.indent * (indent_level+1))) 
         parts.append('%sxmlns:nex="http://www.nexml.org/1.0">\n'
                      % (self.indent * (indent_level+1)))                     
@@ -1147,4 +1147,9 @@ class NexmlWriter(datasets.Writer):
             parts = _to_nexml_dict(annotes_dict, self.indent, indent_level)
             parts = '\n'.join(parts)
             dest.write(parts + '\n')
-
+            
+        ### HACK TO SUPPORT RICH STRUCTURED METADATA ###  
+        from xml.etree import ElementTree
+        for e in annotated.extensions:
+            dest.write(ElementTree.tostring(e))
+ 
