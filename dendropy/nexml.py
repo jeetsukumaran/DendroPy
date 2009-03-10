@@ -820,6 +820,7 @@ class NexmlWriter(datasets.Writer):
         document.
         """
         self.write_to_nexml_open(dest, indent_level=0)
+        self.write_extensions(dataset, dest)
         self.write_taxa_blocks(taxa_blocks=dataset.taxa_blocks, dest=dest)
         self.write_char_blocks(char_blocks=dataset.char_blocks, dest=dest)
         self.write_trees_blocks(trees_blocks=dataset.trees_blocks, dest=dest)
@@ -842,6 +843,7 @@ class NexmlWriter(datasets.Writer):
             dest.write("<%s>\n" % ' '.join(parts))
             
             # annotate
+            self.write_extensions(taxa_block, dest, indent_level=indent_level+1)
             if isinstance(taxa_block, base.Annotated) and taxa_block.has_annotations():
                 self.write_annotations(taxa_block, dest, indent_level=indent_level+1)
                 
@@ -857,6 +859,7 @@ class NexmlWriter(datasets.Writer):
                     parts.append('label="%s"' % taxon.label)
                 if isinstance(taxon, base.Annotated) and taxon.has_annotations():
                     dest.write("<%s>\n" % ' '.join(parts))
+                    self.write_extensions(taxon, dest, indent_level=indent_level+2)
                     self.write_annotations(taxon, dest, indent_level=indent_level+2)
                     dest.write(self.indent * (indent_level+1))
                     dest.write("</otu>\n")
@@ -881,6 +884,7 @@ class NexmlWriter(datasets.Writer):
             dest.write("<%s>\n" % ' '.join(parts))
             
             # annotate
+            self.write_extensions(trees_block, dest, indent_level=indent_level+1)
             if isinstance(trees_block, base.Annotated) and trees_block.has_annotations():
                 self.write_annotations(trees_block, dest, indent_level=indent_level+1)            
             
@@ -944,6 +948,7 @@ class NexmlWriter(datasets.Writer):
             dest.write("<%s>\n" % ' '.join(parts))
             
             # annotate
+            self.write_extensions(char_block, dest, indent_level=indent_level+1)
             if isinstance(char_block, base.Annotated) and char_block.has_annotations():
                 self.write_annotations(char_block, dest, indent_level=indent_level+1)            
             state_alphabet_parts = []
@@ -977,6 +982,7 @@ class NexmlWriter(datasets.Writer):
            
             dest.write("%s<matrix>\n" % (self.indent * (indent_level+1)))
             
+            self.write_extensions(char_block.matrix, dest, indent_level=indent_level+1)
             if isinstance(char_block.matrix, base.Annotated) and char_block.matrix.has_annotations():
                 self.write_annotations(char_block.matrix, dest, indent_level=indent_level+1)            
             
@@ -992,6 +998,7 @@ class NexmlWriter(datasets.Writer):
                     parts.append('otu="%s"' % taxon.oid)
                 dest.write("<%s>\n" % ' '.join(parts))
                 
+                self.write_extensions(row, dest, indent_level=indent_level+3)
                 if isinstance(row, base.Annotated) and row.has_annotations():
                     self.write_annotations(row, dest, indent_level=indent_level+3)            
                 
@@ -1026,6 +1033,7 @@ class NexmlWriter(datasets.Writer):
                         dest.write(' '.join(parts))
                         if isinstance(cell, base.Annotated) and cell.has_annotations():
                             dest.write('>\n')
+                            self.write_extensions(cell, dest, indent_level=indent_level+4)
                             self.write_annotations(cell, dest, indent_level=indent_level+4)            
                             dest.write('%s</cell>' % (self.indent*(indent_level+3)))
                         else:
@@ -1057,8 +1065,9 @@ class NexmlWriter(datasets.Writer):
         dest.write('%s<%s>\n'
                    % (self.indent * indent_level, parts))   
         # annotate
+        self.write_extensions(tree, dest, indent_level=indent_level+1)
         if isinstance(tree, base.Annotated) and tree.has_annotations():
-            self.write_annotations(tree, dest, indent_level=indent_level+1)  
+            self.write_annotations(tree, dest, indent_level=indent_level+1)            
             
         for node in tree.preorder_node_iter():
             self.write_node(node=node, dest=dest, indent_level=indent_level+1)
@@ -1078,8 +1087,8 @@ class NexmlWriter(datasets.Writer):
                      % (self.indent * (indent_level+1)))
         parts.append('%sxsi:schemaLocation="http://www.nexml.org/1.0 nexml.xsd"'
                      % (self.indent * (indent_level+1)))
-#         parts.append('%sxmlns="http://www.nexml.org/1.0"'
-#                      % (self.indent * (indent_level+1))) 
+        parts.append('%sxmlns="http://www.nexml.org/1.0"'
+                     % (self.indent * (indent_level+1))) 
         parts.append('%sxmlns:nex="http://www.nexml.org/1.0">\n'
                      % (self.indent * (indent_level+1)))                     
         dest.write('\n'.join(parts))
@@ -1101,6 +1110,7 @@ class NexmlWriter(datasets.Writer):
         dest.write('%s%s' % ((self.indent * indent_level), parts))
         if node.has_annotations():
             dest.write('>\n')
+            self.write_extensions(node, dest, indent_level=indent_level+1)
             self.write_annotations(node, dest, indent_level=indent_level+1)
             dest.write('%s</node>\n' % (self.indent * indent_level))
         else:
@@ -1134,6 +1144,7 @@ class NexmlWriter(datasets.Writer):
                 dest.write('%s%s' % ((self.indent * indent_level), parts))
                 if edge.has_annotations():
                     dest.write('>\n')
+                    self.write_extensions(edge, dest, indent_level=indent_level+1)
                     self.write_annotations(edge, dest,
                                            indent_level=indent_level+1)
                     dest.write('%s</%s>\n' % ((self.indent * indent_level), tag))
@@ -1142,14 +1153,18 @@ class NexmlWriter(datasets.Writer):
 
     def write_annotations(self, annotated, dest, indent_level=0):
         "Writes out annotations for an Annotable object."
-        annotes_dict = annotated.annotations()
-        if len(annotes_dict) > 0:
-            parts = _to_nexml_dict(annotes_dict, self.indent, indent_level)
-            parts = '\n'.join(parts)
-            dest.write(parts + '\n')
+        
+        if hasattr(annotated, "annotations"):
+            annotes_dict = annotated.annotations()
+            if len(annotes_dict) > 0:
+                parts = _to_nexml_dict(annotes_dict, self.indent, indent_level)
+                parts = '\n'.join(parts)
+                dest.write(parts + '\n')
             
+    def write_extensions(self, element, dest, indent_level=0):           
         ### HACK TO SUPPORT RICH STRUCTURED METADATA ###  
         from xml.etree import ElementTree
-        for e in annotated.extensions:
+        for e in element.extensions:
             dest.write(ElementTree.tostring(e))
+            dest.write("\n")
  
