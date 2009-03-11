@@ -294,9 +294,10 @@ class _NexmlElementParser(object):
         and passes it to the dictionary parse if found. Results are
         placed as attributes of `annotated`.
         """
-        xml_dict = nxelement.find('dict')
-        if xml_dict:
-            return self.parse_dict(annotated=annotated, xml_dict=xml_dict)
+        pass
+#         xml_dict = nxelement.find('dict')
+#         if xml_dict:
+#             return self.parse_dict(annotated=annotated, xml_dict=xml_dict)
 
     def parse_dict(self, annotated, xml_dict):
         """
@@ -528,7 +529,7 @@ class _NexmlTreesParser(_NexmlElementParser):
             edge.tail_node_id = nxedge.get('source', None)
             edge.head_node_id = nxedge.get('target', None)
             edge.oid = nxedge.get('id', 'e' + str(edge_counter))
-            edge_length_str = length_type(nxedge.get('length', '0.0'))
+            edge_length_str = length_type(nxedge.get('length', 0.0))
 
             if not edge.tail_node_id:
                 msg = 'Edge %d ("%s") does not have a source' \
@@ -1153,13 +1154,13 @@ class NexmlWriter(datasets.Writer):
 
     def write_annotations(self, annotated, dest, indent_level=0):
         "Writes out annotations for an Annotable object."
-        
-        if hasattr(annotated, "annotations"):
-            annotes_dict = annotated.annotations()
-            if len(annotes_dict) > 0:
-                parts = _to_nexml_dict(annotes_dict, self.indent, indent_level)
-                parts = '\n'.join(parts)
-                dest.write(parts + '\n')
+        pass
+#         if hasattr(annotated, "annotations"):
+#             annotes_dict = annotated.annotations()
+#             if len(annotes_dict) > 0:
+#                 parts = _to_nexml_dict(annotes_dict, self.indent, indent_level)
+#                 parts = '\n'.join(parts)
+#                 dest.write(parts + '\n')
             
     def write_extensions(self, element, dest, indent_level=0):           
         ### HACK TO SUPPORT RICH STRUCTURED METADATA ###  
