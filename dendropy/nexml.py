@@ -1080,12 +1080,12 @@ class NexmlWriter(datasets.Writer):
         parts = []
         parts.append('<?xml version="1.0" encoding="ISO-8859-1"?>')
         parts.append('<nex:nexml')
-        parts.append('%sversion="1.0"' % (self.indent * (indent_level+1)))
+        parts.append('%sversion="0.8"' % (self.indent * (indent_level+1)))
         parts.append('%sxmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
                      % (self.indent * (indent_level+1)))
         parts.append('%sxmlns:xml="http://www.w3.org/XML/1998/namespace"' \
                      % (self.indent * (indent_level+1)))
-        parts.append('%sxsi:schemaLocation="http://www.nexml.org/1.0 nexml.xsd"'
+        parts.append('%sxsi:schemaLocation="http://www.nexml.org/1.0 ../xsd/nexml.xsd"'
                      % (self.indent * (indent_level+1)))
         parts.append('%sxmlns="http://www.nexml.org/1.0"'
                      % (self.indent * (indent_level+1))) 
