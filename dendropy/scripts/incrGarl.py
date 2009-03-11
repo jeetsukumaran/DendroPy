@@ -36,7 +36,7 @@ from optparse import OptionParser
 from subprocess import Popen, PIPE
 
 from dendropy import nexus
-from dendropy.splits import encode_splits, lowest_bit_only
+from dendropy.splits import encode_splits, lowest_bit_only, iter_split_indices
 from dendropy import treesum
 from dendropy import datasets
 from dendropy.trees import format_split
@@ -330,29 +330,46 @@ if __name__ == '__main__':
         _LOG.debug("%s = next_toadd" % format_split(next_toadd, taxa=taxa))
         _LOG.debug("%s = current_taxon_mask\n(next_toadd - 1) != current_taxon_mask" % format_split(current_taxon_mask, taxa=taxa))
         sys.exit("In this version, taxa must be added to the tree in the order that they appear in the matrix")
+    
+    inds = [i for i in iter_split_indices(current_taxon_mask+1)]
+    assert(len(inds) == 1)
+    curr_n_taxa = inds[0]
+    datafname = "data.nex"
+    conf["datafname"] = os.path.join(datafname)
 
 
-    conf["datafname"] = os.path.join("..", data_file)
-
-
-    n = len(dataset.taxa_blocks[0])
-    dirn = "t%d" % n
-    if not os.path.exists(dirn):
-        os.makedirs(dirn)
+    
+    nexusWriter = nexus.NexusWriter()
+    
+    while curr_n_taxa <  len(taxa):
+        n = len(dataset.taxa_blocks[0])
+        dirn = "t%d" % n
         if not os.path.exists(dirn):
-            sys.exit("Could not make %s" % dirn)
-    if not os.path.isdir(dirn):
-        sys.exit("%s is not a directory" % dirn)
-    orig_dir = os.getcwd()
-    os.chdir(dirn)
-
-    try:
-        for tree_ind, tree in enumerate(inp_trees):
-            trees = add_to_tree(tree, conf, dataset, tree_ind)
-            for t in trees:
-                print t.score
-    finally:
-        os.chdir(orig_dir)
+            os.makedirs(dirn)
+            if not os.path.exists(dirn):
+                sys.exit("Could not make %s" % dirn)
+        if not os.path.isdir(dirn):
+            sys.exit("%s is not a directory" % dirn)
+        orig_dir = os.getcwd()
+        os.chdir(dirn)
         
+        curr_n_taxa += 1
+        culled = Dataset()
+        culled.taxa_blocks.append([i for i in taxa[:curr_n_taxa]])
+        sys.exit(str(characters))
+        culled.char_blocks.append([i for i in characters[:curr_n_taxa]])
+        
+        o = open(datafname, "rU")
+        nexusWriter.write_dataset(culled, o);
+        o.close()
+        
+        try:
+            for tree_ind, tree in enumerate(inp_trees):
+                trees = add_to_tree(tree, conf, dataset, tree_ind)
+                for t in trees:
+                    print t.score
+        finally:
+            os.chdir(orig_dir)
+            
     sys.exit(0)
     
