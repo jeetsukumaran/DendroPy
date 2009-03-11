@@ -41,8 +41,6 @@ else:
 
 from dendropy import utils
 
-NEXML_NAMESPACE = "http://www.nexml.org/1.0"
-
 class xml_document(object):
     """
     ElementTree requires that the complete XML be loaded in memory
@@ -52,14 +50,13 @@ class xml_document(object):
     for messing with other sections of code.
     """
 
-    def __init__(self, element=None, file_obj=None, default_namespace=None):
+    def __init__(self, element=None, file_obj=None):
         """
         Initializes reference to the ElementTree parser, passing it
         the a file descripter object to be read and parsed or the
         ElemenTree.Element object to be used as the root element.
         """
         self.etree = ElementTree.ElementTree(element=element, file=file_obj)
-        self.default_namespace = default_namespace
 
     def parse_string(self, source):
         "Loads an XML document from an XML string, source."
@@ -74,13 +71,11 @@ class xml_document(object):
         root = ElementTree.parse(source=source)
         self.etree = ElementTree(element=root)    
 
-    def getiterator(self, tag, namespace=NEXML_NAMESPACE):
+    def getiterator(self, tag):
         """
         Returns an iterator over all top-level elements from the root element
         that have the matching tag.
         """
-        if namespace:
-            tag = "{%s}%s" %(namespace, tag)
         return utils.RecastingIterator(self.etree.getroot().getiterator(tag), \
                                        XmlElement)
         
@@ -99,24 +94,18 @@ class XmlElement(object):
         """
         self.etree_element = element
 
-    def getiterator(self, tag, namespace=NEXML_NAMESPACE):    
+    def getiterator(self, tag):
         "Returns an iterator over child elements with tags that match `tag`."
-        if namespace:
-            tag = "{%s}%s" %(namespace, tag)        
         return utils.RecastingIterator(self.etree_element.getiterator(tag), \
                                        XmlElement)
 
-    def get(self, key, default=None, namespace=NEXML_NAMESPACE):
+    def get(self, key, default=None):
         """
         Returns the attribute of this element with matching key, or
         substituting default if not found.
         """
-        if namespace:
-            key = "{%s}%s" % (namespace, key)        
         return self.etree_element.get(key, default)
 
-    def find(self, path, namespace=NEXML_NAMESPACE):
+    def find(self, path):
         "Finds all matching subelements, by tag name or path."
-        if namespace:
-            path = "{%s}%s" %(namespace, path)        
         return self.etree_element.find(path)

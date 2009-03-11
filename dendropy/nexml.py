@@ -37,6 +37,10 @@ from dendropy import trees
 from dendropy import xmlparser
      
 ############################################################################
+## Standard Tree Iterator
+      
+
+############################################################################
 ## Local Module Methods
 
 def _to_nexml_indent_items(items, indent="", indent_level=0):
@@ -299,21 +303,19 @@ class _NexmlElementParser(object):
         This parses an xml_dict and sets the attributes of annotable
         correspondingly.
         """
-        pass
-        ### DISABLED UNTIL STANDARD STABILIZES ###
-#         xml_keys = []
-#         xml_values = []            
-#         for child in xml_dict.getchildren():
-#             if child.tag == 'key':
-#                 xml_keys.append(child)
-#             else:
-#                 xml_values.append(child)
-#         if len(xml_keys) > 0 or len(xml_values) > 0:
-#             if len(xml_keys) == len(xml_values):
-#                 xml_keyvals = dict(zip(xml_keys, xml_values))
-#                 self.parse_keyvals(annotated, xml_keyvals)
-#             else:
-#                 raise Exception("Unequal numbers of keys and values in annotations")                    
+        xml_keys = []
+        xml_values = []            
+        for child in xml_dict.getchildren():
+            if child.tag == 'key':
+                xml_keys.append(child)
+            else:
+                xml_values.append(child)
+        if len(xml_keys) > 0 or len(xml_values) > 0:
+            if len(xml_keys) == len(xml_values):
+                xml_keyvals = dict(zip(xml_keys, xml_values))
+                self.parse_keyvals(annotated, xml_keyvals)
+            else:
+                raise Exception("Unequal numbers of keys and values in annotations")                    
 
     def parse_keyvals(self, annotated, xml_keyvals):
         """
@@ -381,9 +383,9 @@ class _NexmlTreesParser(_NexmlElementParser):
         underlying NEXML. If `add_to_trees_block` is False, then each tree,
         *IS NOT ADDED TO THE DATASET*.
         """
-        oid = nxtrees.get('id', "Trees" + str(trees_idx), None)
-        label = nxtrees.get('label', None, None)
-        taxa_id = nxtrees.get('otus', None, None)
+        oid = nxtrees.get('id', "Trees" + str(trees_idx))
+        label = nxtrees.get('label', None)
+        taxa_id = nxtrees.get('otus', None)
         if taxa_id is None:
             raise Exception("Taxa block not specified for trees block \"%s\"" % oid)
         taxa_block = dataset.find_taxa_block(oid = taxa_id)
@@ -395,8 +397,8 @@ class _NexmlTreesParser(_NexmlElementParser):
         tree_counter = 0
         for tree_element in nxtrees.getiterator('tree'):
             tree_counter = tree_counter + 1
-            oid = tree_element.get('id', str(tree_counter), None)
-            label = tree_element.get('label', '', None)
+            oid = tree_element.get('id', tree_counter)
+            label = tree_element.get('label', '')
             treeobj = self.tree_factory(oid=oid, label=label)
             treeobj.taxa_block = taxa_block
             tree_type_attr = tree_element.get('{http://www.w3.org/2001/XMLSchema-instance}type')
@@ -474,11 +476,11 @@ class _NexmlTreesParser(_NexmlElementParser):
         """
         nodes = {}
         for nxnode in tree_element.getiterator('node'):
-            node_id = nxnode.get('id', None, None)
+            node_id = nxnode.get('id', None)
             nodes[node_id] = node_factory()
             nodes[node_id].oid = node_id
-            nodes[node_id].label = nxnode.get('label', None, None)
-            taxon_id = nxnode.get('otu', None, None)
+            nodes[node_id].label = nxnode.get('label', None)
+            taxon_id = nxnode.get('otu', None)
             if taxon_id is not None:
                 taxon = taxa_block.get_taxon(oid=taxon_id)
                 if not taxon:
@@ -489,12 +491,12 @@ class _NexmlTreesParser(_NexmlElementParser):
         
     def parse_root_edge(self, tree_element, length_type, edge_factory):
         "Returns the edge subtending the root node, or None if not defined."
-        rootedge = tree_element.find('rootedge', None)
+        rootedge = tree_element.find('rootedge')
         if rootedge:
             edge = edge_factory()
-            edge.head_node_id = rootedge.get('target', None, None)
+            edge.head_node_id = rootedge.get('target', None)
             edge.oid = rootedge.get('id', 'e' + str(id(edge)))
-            edge_length_str = length_type(rootedge.get('length', '0.0', None))
+            edge_length_str = length_type(rootedge.get('length', '0.0'))
             edge.rootedge = True
             edge_length = None
             try:
@@ -523,10 +525,10 @@ class _NexmlTreesParser(_NexmlElementParser):
         for nxedge in tree_element.getiterator('edge'):
             edge = edge_factory()
             edge_counter = edge_counter + 1
-            edge.tail_node_id = nxedge.get('source', None, None)
-            edge.head_node_id = nxedge.get('target', None, None)
+            edge.tail_node_id = nxedge.get('source', None)
+            edge.head_node_id = nxedge.get('target', None)
             edge.oid = nxedge.get('id', 'e' + str(edge_counter))
-            edge_length_str = length_type(nxedge.get('length', '0.0', None))
+            edge_length_str = length_type(nxedge.get('length', '0.0'))
 
             if not edge.tail_node_id:
                 msg = 'Edge %d ("%s") does not have a source' \
@@ -569,8 +571,8 @@ class _NexmlTaxaParser(_NexmlElementParser):
         Given an XmlElement representing a nexml taxa block, this
         instantiates and returns a corresponding DendroPy Taxa object.
         """
-        oid = nxtaxa.get('id', None, None)
-        label = nxtaxa.get('label', None, None)
+        oid = nxtaxa.get('id', None)
+        label = nxtaxa.get('label', None)
         taxa_block = self.taxa_block_factory(oid=oid, label=label)
         self.parse_annotations(annotated=taxa_block, nxelement=nxtaxa) 
         for idx, nxtaxon in enumerate(nxtaxa.getiterator('otu')):
@@ -692,7 +694,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         Given an XmlElement representing a nexml characters block, this
         instantiates and returns a corresponding DendroPy CharacterMatrix object.
         """
-        nxchartype = nxchars.get('type', None, "http://www.w3.org/2001/XMLSchema-instance")
+        nxchartype = nxchars.get('{http://www.w3.org/2001/XMLSchema-instance}type', None)
         if nxchartype.startswith('nex:Dna'):
             char_block = characters.DnaCharactersBlock()
         elif nxchartype.startswith('nex:Rna'):
@@ -709,12 +711,12 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             raise NotImplementedError('Character Block %s (\"%s\"): Character type "%s" not supported.' 
                 % (char_block.oid, char_block.label, nxchartype))
             
-        oid = nxchars.get('id', None, None)
-        label = nxchars.get('label', None, None)
+        oid = nxchars.get('id', None)
+        label = nxchars.get('label', None)
         char_block.oid = oid
         char_block.label = label   
           
-        taxa_id = nxchars.get('otus', None, None)
+        taxa_id = nxchars.get('otus', None)
         if taxa_id is None:
             raise Exception("Character Block %s (\"%s\"): Taxa block not specified for trees block \"%s\"" % (char_block.oid, char_block.label, char_block.oid))
         taxa_block = dataset.find_taxa_block(oid = taxa_id)
@@ -1078,12 +1080,12 @@ class NexmlWriter(datasets.Writer):
         parts = []
         parts.append('<?xml version="1.0" encoding="ISO-8859-1"?>')
         parts.append('<nex:nexml')
-        parts.append('%sversion="0.8"' % (self.indent * (indent_level+1)))
+        parts.append('%sversion="1.0"' % (self.indent * (indent_level+1)))
         parts.append('%sxmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
                      % (self.indent * (indent_level+1)))
         parts.append('%sxmlns:xml="http://www.w3.org/XML/1998/namespace"' \
                      % (self.indent * (indent_level+1)))
-        parts.append('%sxsi:schemaLocation="http://www.nexml.org/1.0 ../xsd/nexml.xsd"'
+        parts.append('%sxsi:schemaLocation="http://www.nexml.org/1.0 nexml.xsd"'
                      % (self.indent * (indent_level+1)))
         parts.append('%sxmlns="http://www.nexml.org/1.0"'
                      % (self.indent * (indent_level+1))) 
