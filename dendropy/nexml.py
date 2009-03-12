@@ -897,10 +897,13 @@ class NexmlWriter(datasets.Writer):
             dest.write(self.indent * indent_level)                
             dest.write('</trees>\n')
 
-    def compose_state_definition(self, state, indent_level):
+    def compose_state_definition(self, state, indent_level, member_state=False):
         "Writes out state definition."
         parts = []
-        if state.multistate == characters.StateAlphabetElement.SINGLE_STATE:
+        if member_state:
+            parts.append('%s<member state="%s"/>' 
+                                % (self.indent * indent_level, state.oid))
+        elif state.multistate == characters.StateAlphabetElement.SINGLE_STATE:
             parts.append('%s<state id="%s" symbol="%s" />' 
                                 % (self.indent * indent_level, state.oid, state.symbol))
         else:
@@ -912,7 +915,7 @@ class NexmlWriter(datasets.Writer):
             parts.append('%s<%s id="%s" symbol="%s">' 
                             % (self.indent * indent_level, tag, state.oid, state.symbol))
             for member in state.member_states:
-                parts.extend(self.compose_state_definition(member, indent_level+1))
+                parts.extend(self.compose_state_definition(member, indent_level+1, member_state=True))
             parts.append("%s</%s>" % ((self.indent * indent_level), tag))
         return parts        
                                     
@@ -961,7 +964,14 @@ class NexmlWriter(datasets.Writer):
                     state_alphabet_parts.append('%s<states id="%s">' 
                         % (self.indent * (indent_level+2), state_alphabet.oid))
                     for state in state_alphabet:
-                        state_alphabet_parts.extend(self.compose_state_definition(state, indent_level+3))
+                        if state.multistate == characters.StateAlphabetElement.SINGLE_STATE:
+                            state_alphabet_parts.extend(self.compose_state_definition(state, indent_level+3))
+                    for state in state_alphabet:
+                        if state.multistate == characters.StateAlphabetElement.POLYMORPHIC_STATE:
+                            state_alphabet_parts.extend(self.compose_state_definition(state, indent_level+3))
+                    for state in state_alphabet:
+                        if state.multistate == characters.StateAlphabetElement.AMBIGUOUS_STATE:
+                            state_alphabet_parts.extend(self.compose_state_definition(state, indent_level+3))                        
                     state_alphabet_parts.append('%s</states>' % (self.indent * (indent_level+2)))
             
             column_types_parts = []
