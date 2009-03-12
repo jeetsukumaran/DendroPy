@@ -141,6 +141,15 @@ class Tree(base.IdTagged):
         "Returns list of internal node in the tree."
         return self.nodes(filter_fn=lambda x : not x.is_leaf())
     
+    def find_node_for_taxon(self, taxon):
+        for node in self.preorder_node_iter():
+            try:
+                if node.taxon is taxon:
+                    return node
+            except:
+                pass
+        return None
+
     def find_node(self, filter_fn):
         """
         Finds the first node for which filter_fn(node) = True.

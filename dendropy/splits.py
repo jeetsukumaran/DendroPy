@@ -130,6 +130,28 @@ def split_taxa_list(split_mask, taxa_block, index=0):
         split_mask = split_mask >> 1
         index += 1
     return taxa
+    
+    
+def find_edge_from_split(root, split_to_find, mask=-1):
+    """Searches for a clade_mask (in the rooted context -- it does not flip the
+    bits) within the subtree descending from `root`.
+    
+    Returns None if no such node is found.
+    
+    Recursive impl, but should be an order(log(N)) operation."""
+    e = root.edge
+    cm = e.clade_mask
+    i = cm & split_to_find
+    if i != split_to_find:
+        return None
+    if (mask&cm) == split_to_find:
+        return e
+    for child in root.child_nodes():
+        r = find_edge_from_split(child, split_to_find, mask=mask)
+        if r is not None:
+            return r
+    return None
+    
 
 def encode_splits(tree, create_dict=True, delete_degree_two=True):
     """

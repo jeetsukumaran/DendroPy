@@ -37,9 +37,11 @@ from subprocess import Popen, PIPE
 
 from dendropy import nexus
 from dendropy.splits import encode_splits, lowest_bit_only, iter_split_indices
+from dendropy.characters import CharactersBlock
+from dendropy.taxa import TaxaBlock
 from dendropy import treesum
 from dendropy import datasets
-from dendropy.trees import format_split
+from dendropy.trees import format_split, TreesBlock
 from dendropy import treegen
 from dendropy import get_logger
 from dendropy.datasets import Dataset
@@ -192,15 +194,16 @@ def rev_trans_func(t):
     global TAXON_TO_TRANSLATE
     return TAXON_TO_TRANSLATE[t]
 
-def write_tree_file(outstream, tree, dataset):
+def write_tree_file(outstream, trees_block, dataset):
     outstream.write("#NEXUS\nBegin Trees;\n  Translate")
     sep = ""
     for n, taxon in enumerate(dataset.taxa_blocks[0]):
         outstream.write(sep)
         sep = ',\n '
         outstream.write(" %d %s " % ((n + 1), nexus.NexusWriter.escape_token(taxon.label)))
-    
-    outstream.write(";\n Tree a = [&U] %s ;\nEnd;\n" % tree.compose_newick(reverse_translate=rev_trans_func))
+    for tree in trees_block:
+        outstream.write(";\n Tree a = [&U] %s ;\n" % tree.compose_newick(reverse_translate=rev_trans_func))
+    outstream.write("End;\n")
 
 
 def run_garli(conf, commands):
@@ -227,11 +230,13 @@ def read_garli_scores(inp):
 
 def add_to_tree(tree, conf, dataset, tree_ind):
     ofprefix = "from%d" % tree_ind
-    conf["ofprefix"] = ofprefix
 
+    conf["ofprefix"] = ofprefix
+    conf["streefname"] = "incomplete"
+    
     tmp_tree_filename = ".tmp.tre"
     f = open(tmp_tree_filename, "w")
-    write_tree_file(f, tree, dataset)
+    write_tree_file(f, [tree], dataset)
     f.close()
 
     conf["incompletetreefname"] = tmp_tree_filename
@@ -312,28 +317,8 @@ if __name__ == '__main__':
     characters = dataset.char_blocks[0]
     assert(len(dataset.char_blocks) == 1)
     assert(len(characters) == len(taxa))
-    inp_trees = dataset.read_trees(open(intree_file, "rU"), format="NEXUS")
-    assert(inp_trees)
-    current_taxon_mask = None
-    for tree in inp_trees:
-        assert tree.taxa_block is taxa
-        encode_splits(tree)
-        if current_taxon_mask is None:
-            current_taxon_mask = tree.seed_node.edge.clade_mask
-            _LOG.debug("%s = current_taxon_mask" % bin(current_taxon_mask))
-            assert( (current_taxon_mask | full_taxa_mask) == full_taxa_mask)
-            toadd_taxon_mask = current_taxon_mask ^ full_taxa_mask
-        else:
-            assert(current_taxon_mask == tree.seed_node.edge.clade_mask)
-    next_toadd = lowest_bit_only(current_taxon_mask^full_taxa_mask)
-    if (next_toadd - 1) != current_taxon_mask:
-        _LOG.debug("%s = next_toadd" % format_split(next_toadd, taxa=taxa))
-        _LOG.debug("%s = current_taxon_mask\n(next_toadd - 1) != current_taxon_mask" % format_split(current_taxon_mask, taxa=taxa))
-        sys.exit("In this version, taxa must be added to the tree in the order that they appear in the matrix")
-    
-    inds = [i for i in iter_split_indices(current_taxon_mask+1)]
-    assert(len(inds) == 1)
-    curr_n_taxa = inds[0]
+
+
     datafname = "data.nex"
     conf["datafname"] = os.path.join(datafname)
 
@@ -341,9 +326,40 @@ if __name__ == '__main__':
     
     nexusWriter = nexus.NexusWriter()
     
-    while curr_n_taxa <  len(taxa):
-        n = len(dataset.taxa_blocks[0])
-        dirn = "t%d" % n
+    while True:
+        if intree_file:
+            inp_trees = dataset.read_trees(open(intree_file, "rU"), format="NEXUS")
+            intree_file = ""
+            assert(inp_trees)
+            current_taxon_mask = None
+
+            for tree in inp_trees:
+                assert tree.taxa_block is taxa
+                encode_splits(tree)
+                if current_taxon_mask is None:
+                    current_taxon_mask = tree.seed_node.edge.clade_mask
+                    _LOG.debug("%s = current_taxon_mask" % bin(current_taxon_mask))
+                    assert( (current_taxon_mask | full_taxa_mask) == full_taxa_mask)
+                    toadd_taxon_mask = current_taxon_mask ^ full_taxa_mask
+                else:
+                    assert(current_taxon_mask == tree.seed_node.edge.clade_mask)
+            next_toadd = lowest_bit_only(current_taxon_mask^full_taxa_mask)
+            if (next_toadd - 1) != current_taxon_mask:
+                _LOG.debug("%s = next_toadd" % format_split(next_toadd, taxa=taxa))
+                _LOG.debug("%s = current_taxon_mask\n(next_toadd - 1) != current_taxon_mask" % format_split(current_taxon_mask, taxa=taxa))
+                sys.exit("In this version, taxa must be added to the tree in the order that they appear in the matrix")
+
+        current_taxon_mask = inp_trees[0].seed_node.edge.clade_mask
+        inds = [i for i in iter_split_indices(current_taxon_mask+1)]
+        assert(len(inds) == 1)
+        curr_n_taxa = inds[0]
+    
+        curr_n_taxa += 1
+        if curr_n_taxa > len(taxa):
+            break
+
+        _LOG.debug("Adding taxon %d" % curr_n_taxa)
+        dirn = "t%d" % curr_n_taxa
         if not os.path.exists(dirn):
             os.makedirs(dirn)
             if not os.path.exists(dirn):
@@ -353,21 +369,44 @@ if __name__ == '__main__':
         orig_dir = os.getcwd()
         os.chdir(dirn)
         
-        curr_n_taxa += 1
+
+        culled_taxa = TaxaBlock(taxa[:curr_n_taxa])
+        culled_chars = copy.copy(characters)
+        culled_chars.taxa_block = culled_taxa
+        culled_chars.matrix = copy.copy(characters.matrix)
+        culled_chars.matrix.clear()
+        #culled_chars = characters.__class__(taxa_block=culled_taxa)
+        #culled_chars.column_types = characters.column_types
+        #culled_chars.markup_as_sequences = characters.markup_as_sequences
+        template_matrix = characters.matrix
+        for taxon in culled_taxa:
+            culled_chars.matrix[taxon] = template_matrix[taxon]
+
         culled = Dataset()
-        culled.taxa_blocks.append([i for i in taxa[:curr_n_taxa]])
-        sys.exit(str(characters))
-        culled.char_blocks.append([i for i in characters[:curr_n_taxa]])
+        culled.taxa_blocks.append(culled_taxa)
+        culled.char_blocks.append(culled_chars)
         
-        o = open(datafname, "rU")
+        o = open(datafname, "w")
         nexusWriter.write_dataset(culled, o);
         o.close()
         
         try:
+            next_round_trees = TreesBlock(taxa_block=culled_taxa)
             for tree_ind, tree in enumerate(inp_trees):
-                trees = add_to_tree(tree, conf, dataset, tree_ind)
+                trees = add_to_tree(tree, conf, culled, tree_ind)
                 for t in trees:
                     print t.score
+                    encode_splits(t)
+                    alt_t = check_neighborhood_after_addition(t, 
+                # this is where we should evaluate which trees need to be maintained for the next round.
+                next_round_trees.extend(trees)
+            del dataset.trees_blocks[:]
+            dataset.trees_blocks.append(next_round_trees)
+            o = open("incrgarli.tre", "w")
+            write_tree_file(o, next_round_trees, culled)
+            o.close()
+            inp_trees = next_round_trees
+            
         finally:
             os.chdir(orig_dir)
             

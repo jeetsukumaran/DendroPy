@@ -63,7 +63,18 @@ if is_test_enabled(TestLevel.SLOW, _LOG, module_name=__name__, message="skipping
 
 class SplitFreqsTest(unittest.TestCase):
 
+    def testFindSplits(self):
+        unrooted = True
+        for tc in test_cases:
+            for tree_filepath in [dendropy.tests.data_source_path(tc[0])]:                
+                for tree in nexus.iterate_over_trees(open(tree_filepath, "rU")):
+                    splits.encode_splits(tree)
+                    for edge in tree.preorder_edge_iter():
+                        cm = edge.clade_mask
+                        e = splits.find_edge_from_split(tree.seed_node, cm)
+                        self.assertTrue(e is edge)
 
+        
     def testSplits(self):
         unrooted = True
         for tc in test_cases:
