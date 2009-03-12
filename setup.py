@@ -40,7 +40,8 @@ script_names = ['cattrees.py',
                 'rtreeoutgroup.py', 
                 'sumtrees.py', 
                 'symmdiff_by_split_cutoff.py',
-                'treedepth.py',]
+                'treedepth.py',
+                'nexus-to-nexml.py',]
 setup(name='DendroPy',
       version=PACKAGE_VERSION,     
       author='Jeet Sukumaran and Mark T. Holder',
