@@ -29,16 +29,16 @@ NEXML format.
 
 import time
 import textwrap
+from xml.sax.saxutils import quoteattr
 from dendropy import base
 from dendropy import datasets
 from dendropy import taxa
 from dendropy import characters
 from dendropy import trees
 from dendropy import xmlparser
-     
-############################################################################
-## Standard Tree Iterator
-      
+
+def quoteattr(x):
+    return str(x)
 
 ############################################################################
 ## Local Module Methods
@@ -843,7 +843,7 @@ class NexmlWriter(datasets.Writer):
             else:
                 raise Exception("Taxa block given without ID")
             if taxa_block.label:
-                parts.append('label="%s"' % taxa_block.label)
+                parts.append('label="%s"' % quoteattr(taxa_block.label))
             dest.write("<%s>\n" % ' '.join(parts))
             
             # annotate
@@ -860,7 +860,7 @@ class NexmlWriter(datasets.Writer):
                 else:
                     raise Exception("Taxon without ID")
                 if taxon.label:
-                    parts.append('label="%s"' % taxon.label)
+                    parts.append('label="%s"' % quoteattr(taxon.label))
                 if isinstance(taxon, base.Annotated) and taxon.has_annotations():
                     dest.write("<%s>\n" % ' '.join(parts))
                     self.write_extensions(taxon, dest, indent_level=indent_level+2)
@@ -883,7 +883,7 @@ class NexmlWriter(datasets.Writer):
             else:
                 raise Exception("Tree block given without ID")
             if trees_block.label:
-                parts.append('label="%s"' % trees_block.label)
+                parts.append('label="%s"' % quoteattr(trees_block.label))
             parts.append('otus="%s"' % trees_block.taxa_block.oid)
             dest.write("<%s>\n" % ' '.join(parts))
             
@@ -927,7 +927,7 @@ class NexmlWriter(datasets.Writer):
             else:
                 raise Exception("Character block without ID")
             if char_block.label:
-                parts.append('label="%s"' % char_block.label)
+                parts.append('label="%s"' % quoteattr(char_block.label))
             parts.append('otus="%s"' % char_block.taxa_block.oid)                    
             if isinstance(char_block, characters.DnaCharactersBlock):
                 xsi_datatype = 'nex:Dna'
@@ -956,7 +956,7 @@ class NexmlWriter(datasets.Writer):
             if isinstance(char_block, base.Annotated) and char_block.has_annotations():
                 self.write_annotations(char_block, dest, indent_level=indent_level+1)            
             state_alphabet_parts = []
-            if isinstance(char_block, characters.StandardCharactersBlock):
+            if hasattr(char_block, "state_alphabets"): #isinstance(char_block, characters.StandardCharactersBlock):
                 for state_alphabet in char_block.state_alphabets:
                     state_alphabet_parts.append('%s<states id="%s">' 
                         % (self.indent * (indent_level+2), state_alphabet.oid))
@@ -968,7 +968,7 @@ class NexmlWriter(datasets.Writer):
             if char_block.column_types:
                 for column in char_block.column_types:
                     if column.state_alphabet:
-                        column_state = 'states="%s" ' % column.state_alphabet.oid
+                        column_state = ' states="%s" ' % column.state_alphabet.oid
                     else:
                         column_state = ' '
                     column_types_parts.append('%s<char id="%s"%s/>' 
@@ -1060,7 +1060,7 @@ class NexmlWriter(datasets.Writer):
         else:
             parts.append('id="%s"' % ("Tree" + str(id(tree))))
         if hasattr(tree, 'label') and tree.label:
-            parts.append('label="%s"' % tree.label)
+            parts.append('label="%s"' % quoteattr(tree.label))
         if hasattr(tree, 'length_type') and tree.length_type:
             parts.append('xsi:type="%s"' % _to_nexml_tree_length_type(tree.length_type))
         else:
@@ -1107,7 +1107,7 @@ class NexmlWriter(datasets.Writer):
         parts.append('<node')
         parts.append('id="%s"' % node.oid)
         if hasattr(node, 'label') and node.label:
-            parts.append('label="%s"' % node.label)
+            parts.append('label="%s"' % quoteattr(node.label))
         if hasattr(node, 'taxon') and node.taxon:
             parts.append('otu="%s"' % node.taxon.oid)
         parts = ' '.join(parts)
