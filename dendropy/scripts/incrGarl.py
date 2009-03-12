@@ -36,9 +36,10 @@ from optparse import OptionParser
 from subprocess import Popen, PIPE
 
 from dendropy import nexus
-from dendropy.splits import encode_splits, lowest_bit_only, iter_split_indices
+from dendropy.splits import encode_splits, lowest_bit_only, iter_split_indices, find_edge_from_split
 from dendropy.characters import CharactersBlock
 from dendropy.taxa import TaxaBlock
+from dendropy.treedists import symmetric_difference
 from dendropy import treesum
 from dendropy import datasets
 from dendropy.trees import format_split, TreesBlock
@@ -59,136 +60,203 @@ _program_copyright = "Copyright (C) 2008 Mark T. Holder.\n" \
 TAXON_TO_TRANSLATE = {}
 
 GARLI_GENERAL = (
-			"datafname",
-			"constraintfile",
-			"xstreefname",
-			"streefname",
-			"runmode",
-			"incompletetreefname",
-			"attachmentspertaxon",
-			"ofprefix",
-			"randseed",
-			"availablememory",
-			"logevery",
-			"saveevery",
-			"refinestart",
-			"outputeachbettertopology",
-			"outputcurrentbesttopology",
-			"enforcetermconditions",
-			"genthreshfortopoterm",
-			"scorethreshforterm",
-			"significanttopochange",
-			"outputphyliptree",
-			"outputmostlyuselessfiles",
-			"writecheckpoints",
-			"restart",
-			"outgroup",
-			"searchreps",
-			"datatype",
-			"ratematrix",
-			"statefrequencies",
-			"ratehetmodel",
-			"numratecats",
-			"invariantsites",
-			)
+            "datafname",
+            "constraintfile",
+            "xstreefname",
+            "streefname",
+            "runmode",
+            "incompletetreefname",
+            "attachmentspertaxon",
+            "ofprefix",
+            "randseed",
+            "availablememory",
+            "logevery",
+            "saveevery",
+            "refinestart",
+            "outputeachbettertopology",
+            "outputcurrentbesttopology",
+            "enforcetermconditions",
+            "genthreshfortopoterm",
+            "scorethreshforterm",
+            "significanttopochange",
+            "outputphyliptree",
+            "outputmostlyuselessfiles",
+            "writecheckpoints",
+            "restart",
+            "outgroup",
+            "searchreps",
+            "datatype",
+            "ratematrix",
+            "statefrequencies",
+            "ratehetmodel",
+            "numratecats",
+            "invariantsites",
+            )
 GARLI_MASTER = (
-			"nindivs",
-			"holdover",
-			"selectionintensity",
-			"holdoverpenalty",
-			"stopgen",
-			"stoptime",
-			"startoptprec",
-			"minoptprec",
-			"numberofprecreductions",
-			"treerejectionthreshold",
-			"topoweight",
-			"modweight",
-			"brlenweight",
-			"randnniweight",
-			"randsprweight",
-			"limsprweight",
-			"intervallength",
-			"intervalstostore",
-			"limsprrange",
-			"meanbrlenmuts",
-			"gammashapebrlen",
-			"gammashapemodel",
-			"uniqueswapbias",
-			"distanceswapbias",
-			"bootstrapreps",
-			"resampleproportion",
-			"inferinternalstateprobs",
-			)
+            "nindivs",
+            "holdover",
+            "selectionintensity",
+            "holdoverpenalty",
+            "stopgen",
+            "stoptime",
+            "startoptprec",
+            "minoptprec",
+            "numberofprecreductions",
+            "treerejectionthreshold",
+            "topoweight",
+            "modweight",
+            "brlenweight",
+            "randnniweight",
+            "randsprweight",
+            "limsprweight",
+            "intervallength",
+            "intervalstostore",
+            "limsprrange",
+            "meanbrlenmuts",
+            "gammashapebrlen",
+            "gammashapemodel",
+            "uniqueswapbias",
+            "distanceswapbias",
+            "bootstrapreps",
+            "resampleproportion",
+            "inferinternalstateprobs",
+            )
 
+class GarliConf(object):
+    def __init__(self):
+        self.datafname = "rana.nex",
+        self.constraintfile =  "none"
+        self.xstreefname =  "rana.tre"
+        self.streefname =  "incomplete"
+        self.runmode =  "10"
+        self.incompletetreefname =  "rana.tre"
+        self.attachmentspertaxon =  "50"
+        self.ofprefix =  "rana2.nuc.GTRIG"
+        self.randseed =  "71836"
+        self.availablememory =  "512"
+        self.logevery =  "10"
+        self.saveevery =  "100"
+        self.refinestart =  "1"
+        self.outputeachbettertopology =  "0"
+        self.outputcurrentbesttopology =  "0"
+        self.enforcetermconditions =  "1"
+        self.genthreshfortopoterm =  "20000"
+        self.scorethreshforterm =  "0.05"
+        self.significanttopochange =  "0.01"
+        self.outputphyliptree =  "0"
+        self.outputmostlyuselessfiles =  "0"
+        self.writecheckpoints =  "0"
+        self.restart =  "0"
+        self.outgroup =  "1"
+        self.searchreps =  "1"
+        self.datatype =  "aminoacid"
+        self.ratematrix =  "jones"
+        self.statefrequencies =  "empirical"
+        self.ratehetmodel =  "gamma"
+        self.numratecats =  "4"
+        self.invariantsites =  "estimate"
+        self.nindivs =  "4"
+        self.holdover =  "1"
+        self.selectionintensity =  "0.5"
+        self.holdoverpenalty =  "0"
+        self.stopgen =  "10"
+        self.stoptime =  "30"
+        self.startoptprec =  "0.5"
+        self.minoptprec =  "0.01"
+        self.numberofprecreductions =  "10"
+        self.treerejectionthreshold =  "50.0"
+        self.topoweight =  "0.0"
+        self.modweight =  "0.05"
+        self.brlenweight =  "0.2"
+        self.randnniweight =  "0.1"
+        self.randsprweight =  "0.3"
+        self.limsprweight =  "0.6"
+        self.intervallength =  "100"
+        self.intervalstostore =  "5"
+        self.limsprrange =  "1"
+        self.meanbrlenmuts =  "5"
+        self.gammashapebrlen =  "1000"
+        self.gammashapemodel =  "1000"
+        self.uniqueswapbias =  "0.1"
+        self.distanceswapbias =  "1.0"
+        self.bootstrapreps =  "0"
+        self.resampleproportion =  "1.0"
+        self.inferinternalstateprobs =  "0"
 
-DEFAULT_GARLI_CONF = {"datafname" : "rana.nex",
-        "constraintfile" : "none",
-        "xstreefname" : "rana.tre",
-        "streefname" : "incomplete",
-        "runmode" : "10",
-        "incompletetreefname" : "rana.tre",
-        "attachmentspertaxon" : "50",
-        "ofprefix" : "rana2.nuc.GTRIG",
-        "randseed" : "71836",
-        "availablememory" : "512",
-        "logevery" : "10",
-        "saveevery" : "100",
-        "refinestart" : "1",
-        "outputeachbettertopology" : "0",
-        "outputcurrentbesttopology" : "0",
-        "enforcetermconditions" : "1",
-        "genthreshfortopoterm" : "20000",
-        "scorethreshforterm" : "0.05",
-        "significanttopochange" : "0.01",
-        "outputphyliptree" : "0",
-        "outputmostlyuselessfiles" : "0",
-        "writecheckpoints" : "0",
-        "restart" : "0",
-        "outgroup" : "1",
-        "searchreps" : "1",
-        "datatype" : "aminoacid",
-        "ratematrix" : "jones",
-        "statefrequencies" : "empirical",
-        "ratehetmodel" : "gamma",
-        "numratecats" : "4",
-        "invariantsites" : "estimate",
-        "nindivs" : "4",
-        "holdover" : "1",
-        "selectionintensity" : "0.5",
-        "holdoverpenalty" : "0",
-        "stopgen" : "10",
-        "stoptime" : "30",
-        "startoptprec" : "0.5",
-        "minoptprec" : "0.01",
-        "numberofprecreductions" : "10",
-        "treerejectionthreshold" : "50.0",
-        "topoweight" : "0.0",
-        "modweight" : "0.05",
-        "brlenweight" : "0.2",
-        "randnniweight" : "0.1",
-        "randsprweight" : "0.3",
-        "limsprweight" : "0.6",
-        "intervallength" : "100",
-        "intervalstostore" : "5",
-        "limsprrange" : "1",
-        "meanbrlenmuts" : "5",
-        "gammashapebrlen" : "1000",
-        "gammashapemodel" : "1000",
-        "uniqueswapbias" : "0.1",
-        "distanceswapbias" : "1.0",
-        "bootstrapreps" : "0",
-        "resampleproportion" : "1.0",
-        "inferinternalstateprobs" : "0",
-        }
+    def write_garli_conf(self, out):
+        conf = self.__dict__
+        out.write("[general]\n")
+        for k in GARLI_GENERAL:
+            out.write("%s = %s\n" % (k, conf[k]))
+        out.write("[master]\n")
+        for k in GARLI_MASTER:
+            out.write("%s = %s\n" % (k, conf[k]))
 
-def write_garli_conf(out, conf):
-    out.write("[general]\n")
-    for k in GARLI_GENERAL:
-        out.write("%s = %s\n" % (k, conf[k]))
-    out.write("[master]\n")
-    for k in GARLI_MASTER:
-        out.write("%s = %s\n" % (k, conf[k]))
+    def run(self, commands):
+        tmp_conf_file = ".garli.conf"
+        f = open(tmp_conf_file, "w")
+        self.write_garli_conf(f)
+        f.close()
+        garli_instance = Popen(["iGarli", tmp_conf_file], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        gstdout, gstderr = garli_instance.communicate("\n".join(commands))
+        rc = garli_instance.wait()
+        if rc != 0:
+            sys.exit(gstderr)
+
+    def check_neighborhood_after_addition(self, tree, nd, edge_dist, dataset, tree_ind):
+        ofprefix = "nbhood%dfromtree%d" % (edge_dist, tree_ind)
+        
+        self.ofprefix = ofprefix
+        self.streefname = "incomplete"
+        
+        tmp_tree_filename = ".tmp.tre"
+        f = open(tmp_tree_filename, "w")
+        write_tree_file(f, [tree], dataset)
+        f.close()
+    
+        self.incompletetreefname = tmp_tree_filename
+    
+        
+        self.run(["run", "quit"])
+        
+        output_tree = ofprefix + ".best.tre"
+        t = dataset.read_trees(open(output_tree, "rU"), format="NEXUS")
+        del dataset.trees_blocks[-1]
+        sc = read_garli_scores(open(output_tree, "rU"))
+        if len(t) != len(sc):
+            sys.exit("Did not read the same number of trees (%d) as scores (%d) from %s" % (len(t), len(sc), output_tree))
+        for otree, osc in itertools.izip(t, sc):
+            otree.score = osc
+        t.sort(cmp=cmp_score)
+        return t
+    
+    def add_to_tree(self, tree, dataset, tree_ind):
+        ofprefix = "from%d" % tree_ind
+    
+        self.ofprefix = ofprefix
+        self.streefname = "incomplete"
+        
+        tmp_tree_filename = ".tmp.tre"
+        f = open(tmp_tree_filename, "w")
+        write_tree_file(f, [tree], dataset)
+        f.close()
+    
+        self.incompletetreefname = tmp_tree_filename
+    
+        
+        self.run(["run", "quit"])
+        
+        output_tree = ofprefix + ".best.tre"
+        t = dataset.read_trees(open(output_tree, "rU"), format="NEXUS")
+        del dataset.trees_blocks[-1]
+        sc = read_garli_scores(open(output_tree, "rU"))
+        if len(t) != len(sc):
+            sys.exit("Did not read the same number of trees (%d) as scores (%d) from %s" % (len(t), len(sc), output_tree))
+        for otree, osc in itertools.izip(t, sc):
+            otree.score = osc
+        t.sort(cmp=cmp_score)
+        return t
+        
 
 def rev_trans_func(t):
     global TAXON_TO_TRANSLATE
@@ -206,16 +274,6 @@ def write_tree_file(outstream, trees_block, dataset):
     outstream.write("End;\n")
 
 
-def run_garli(conf, commands):
-    tmp_conf_file = ".garli.conf"
-    f = open(tmp_conf_file, "w")
-    write_garli_conf(f, conf)
-    f.close()
-    garli_instance = Popen(["iGarli", tmp_conf_file], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    gstdout, gstderr = garli_instance.communicate("\n".join(commands))
-    rc = garli_instance.wait()
-    if rc != 0:
-        sys.exit(gstderr)
 
 
 GARLI_SCORE_PATTERN = re.compile(r"\[!GarliScore ([-0-9.]+)\]")
@@ -228,44 +286,23 @@ def read_garli_scores(inp):
             sc.append(float(g))
     return sc
 
-def add_to_tree(tree, conf, dataset, tree_ind):
-    ofprefix = "from%d" % tree_ind
 
-    conf["ofprefix"] = ofprefix
-    conf["streefname"] = "incomplete"
-    
-    tmp_tree_filename = ".tmp.tre"
-    f = open(tmp_tree_filename, "w")
-    write_tree_file(f, [tree], dataset)
-    f.close()
-
-    conf["incompletetreefname"] = tmp_tree_filename
-
-    
-    run_garli(conf, ["run", "quit"])
-    
-    output_tree = ofprefix + ".best.tre"
-    t = dataset.read_trees(open(output_tree, "rU"), format="NEXUS")
-    del dataset.trees_blocks[-1]
-    sc = read_garli_scores(open(output_tree, "rU"))
-    if len(t) != len(sc):
-        sys.exit("Did not read the same number of trees (%d) as scores (%d) from %s" % (len(t), len(sc), output_tree))
-    for otree, osc in itertools.izip(t, sc):
-        otree.score = osc
-    return t
-    
     
 def read_garli_conf(f):
-    default_conf = copy.copy(DEFAULT_GARLI_CONF)
+    default_conf = GarliConf()
     for line in f:
         s = line.split("=")
         if len(s) > 1:
             k = s[0].strip().lower()
             v = "=".join(s[1:]).strip()
-            if not k in default_conf:
+            if not k in default_conf.__dict__:
                 raise RuntimeError("Key %s is not understood" % k)
-            default_conf[k] = v
+            setattr(default_conf, k, v)
     return default_conf
+
+
+def cmp_score(x, y):
+    return cmp(x.score, y.score)
     
 if __name__ == '__main__':
     description =  '%s %s ' % (_program_name, _program_version)    
@@ -304,8 +341,7 @@ if __name__ == '__main__':
         if not os.path.exists(f):
             sys.exit("%s does not exist" % f)
 
-    conf = read_garli_conf(open(conf_file, "rU"))
-    write_garli_conf(sys.stdout, conf)
+    garli = read_garli_conf(open(conf_file, "rU"))
     dataset = Dataset()
     dataset.read(open(data_file, "rU"), format="NEXUS")
     taxa = dataset.taxa_blocks[0]
@@ -320,7 +356,7 @@ if __name__ == '__main__':
 
 
     datafname = "data.nex"
-    conf["datafname"] = os.path.join(datafname)
+    garli.datafname = os.path.join(datafname)
 
 
     
@@ -392,12 +428,27 @@ if __name__ == '__main__':
         
         try:
             next_round_trees = TreesBlock(taxa_block=culled_taxa)
+            
             for tree_ind, tree in enumerate(inp_trees):
-                trees = add_to_tree(tree, conf, culled, tree_ind)
+                trees = garli.add_to_tree(tree, culled, tree_ind)
+                to_save = []
                 for t in trees:
                     print t.score
                     encode_splits(t)
-                    alt_t = check_neighborhood_after_addition(t, 
+                    split = 1 << (curr_n_taxa - 1)
+                    e = find_edge_from_split(t.seed_node, split)
+                    if e is None:
+                        sys.exit("Could not find split %s" % (bin(split)[2:]))
+                        assert e is not None
+                    alt_t = garli.check_neighborhood_after_addition(t, e.tail_node, 2, culled, tree_ind)
+                    encode_splits(alt_t[0])
+                    if symmetric_difference(alt_t[0], t) != 0:
+                        e = find_edge_from_split(tree.seed_node, split)
+                        further_t = garli.check_neighborhood_after_addition(alt_t, e.tail_node, 3, culled, tree_ind)
+                        to_save.extend(further_t)
+                    else:
+                        to_save.append(t)
+                        
                 # this is where we should evaluate which trees need to be maintained for the next round.
                 next_round_trees.extend(trees)
             del dataset.trees_blocks[:]
