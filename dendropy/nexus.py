@@ -1362,6 +1362,9 @@ class NewickWriter(datasets.Writer):
             return statement
             
 try:
+    import os
+    if "DENDROPY_BYPASS_NCL" in os.environ:
+        raise ImportError("pretending not to have nclwrapper because DENDROPY_BYPASS_NCL is defined")
     import nclwrapper
 except:
     NexusStreamTokenizer = PurePythonNexusStreamTokenizer
