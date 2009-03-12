@@ -781,9 +781,11 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                     seq = nxrow.findtext('seq')
                     if seq is not None:
                         seq = seq.replace(' ', '').replace('\n', '').replace('\r', '')
-                        for col_idx, char in enumerate(seq):                            
+                        col_idx = 0
+                        for char in seq:
                             symbol_state_map = char_block.column_types[col_idx].state_alphabet.symbol_state_map()                                                
                             if char in symbol_state_map:
+                                col_idx += 1
                                 state = symbol_state_map[char]
                             else:
                                 raise NameError('Character Block %s (\"%s\"): State with symbol "%s" in sequence "%s" not defined' % (char_block.oid, char_block.label, char, seq))

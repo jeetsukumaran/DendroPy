@@ -142,7 +142,16 @@ class XmlElement(object):
         
     def findtext(self, text):
         "Finds free text contained in element"
-        return self.etree_element.findtext(text)
+        i = self.etree_element.findtext(text)
+        if not i:
+            i = self.etree_element.findtext("{http://www.nexml.org/1.0}"+text)
+            if i:
+                diagnose_namespace(text, "decorated with NeXML namespace")
+            else:
+                diagnose_namespace(text, "NOT FOUND")
+        else: 
+            diagnose_namespace(text, "no namespace decoration")
+        return i        
 
     def find(self, path):
         "Finds all matching subelements, by tag name or path."
