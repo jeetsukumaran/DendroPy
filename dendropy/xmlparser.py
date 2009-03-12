@@ -48,7 +48,7 @@ diagnosed_tags = []
 def diagnose_namespace(tag, namespace):
     if tag not in diagnosed_tags:
         diagnosed_tags.append(tag)            
-        sys.stdout.write("% 20s\t%s\n" % (tag, namespace))
+#         sys.stdout.write("% 20s\t%s\n" % (tag, namespace))
 
 class xml_document(object):
     """
@@ -139,6 +139,10 @@ class XmlElement(object):
         else: 
             diagnose_namespace(key, "no namespace decoration")
         return i
+        
+    def findtext(self, text):
+        "Finds free text contained in element"
+        return self.etree_element.findtext(text)
 
     def find(self, path):
         "Finds all matching subelements, by tag name or path."
@@ -151,4 +155,7 @@ class XmlElement(object):
                 diagnose_namespace(path, "NOT FOUND")
         else: 
             diagnose_namespace(path, "no namespace decoration")
-        return i
+        if i:            
+            return XmlElement(i)
+        else:
+            return None

@@ -726,12 +726,12 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         char_block.taxa_block = taxa_block
         self.parse_annotations(annotated=char_block, nxelement=nxchars)                
         
-        nxformat = nxchars.find('format')
+        nxformat = nxchars.find('format')        
         if nxformat is not None:
             self.parse_characters_format(nxformat, char_block)
         elif isinstance(char_block, characters.StandardCharactersBlock):
-            # default to all integers < 10 as symbols
-            self.create_standard_character_alphabet(char_block)
+            # default to all integers < 10 as symbols            
+            self.create_standard_character_alphabet(char_block)            
             
         matrix = nxchars.find('matrix')
         self.parse_annotations(annotated=char_block.matrix, nxelement=matrix)
@@ -776,12 +776,13 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                         character_vector.set_cell_by_index(pos_idx, cell)
             else:
                 if nxchartype.endswith('Seqs'):
-                    char_block.markup_as_sequences = True                
-                    symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
+                    char_block.markup_as_sequences = True            
+#                     symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
                     seq = nxrow.findtext('seq')
                     if seq is not None:
                         seq = seq.replace(' ', '').replace('\n', '').replace('\r', '')
-                        for char in seq:
+                        for col_idx, char in enumerate(seq):                            
+                            symbol_state_map = char_block.column_types[col_idx].state_alphabet.symbol_state_map()                                                
                             if char in symbol_state_map:
                                 state = symbol_state_map[char]
                             else:
