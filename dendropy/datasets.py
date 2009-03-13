@@ -241,15 +241,17 @@ class Dataset(base.Element):
         reader.include_characters = False
         old_trees_block_len = len(self.trees_blocks)
 
-        added = {"encode_splits":encode_splits, 
-                 "default_rooting":rooted, 
-                 "finish_node_func":finish_node_func,
-                 }
-        cache = cache_reader_state(reader, **added)
+        if format.upper() == "NEXUS" or format.upper() == "NEWICK":
+            added = {"encode_splits":encode_splits, 
+                     "default_rooting":rooted, 
+                     "finish_node_func":finish_node_func,
+                     }
+            cache = cache_reader_state(reader, **added)
         
         reader.read_dataset(src, self)
-
-        restore_reader_state(reader, cache)
+        
+        if format.upper() == "NEXUS" or format.upper() == "NEWICK":
+            restore_reader_state(reader, cache)
 
         new_trees_block_len = len(self.trees_blocks)
         if new_trees_block_len > old_trees_block_len:
