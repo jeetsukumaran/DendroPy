@@ -163,7 +163,15 @@ def main_cli():
                           + "of the given branch across all trees considered; this option forces branch " \
                           + "lengths to be unspecified (obviously, this is only applicable if you do not ask the support to be mapped as "  \
                           + "branch lengths)")
-                          
+
+    source_tree_optgroup = OptionGroup(parser, 'Source Tree Options')    
+    parser.add_option_group(source_tree_optgroup)          
+    source_tree_optgroup.add_option('--from-newick',  
+                      action='store_true', 
+                      dest='from_newick_format',
+                      default=False,
+                      help="support trees are in Newick format [default=NEXUS]")            
+                            
     output_tree_optgroup = OptionGroup(parser, 'Output Tree Options')    
     parser.add_option_group(output_tree_optgroup)          
     output_tree_optgroup.add_option('-l','--support-as-labels',  
@@ -209,14 +217,14 @@ def main_cli():
                       dest='additional_comments',
                       default=None,
                       help="additional comments to be added to the summary file")                                              
-    output_filepath_optgroup.add_option('--newick', 
+    output_filepath_optgroup.add_option('--to-newick', 
                       action='store_true', 
-                      dest='phylip_format',
+                      dest='to_newick_format',
                       default=False,
                       help="save results in NEWICK (PHYLIP) format (default is to save in NEXUS format)")         
-    output_filepath_optgroup.add_option('--phylip', 
+    output_filepath_optgroup.add_option('--to-phylip', 
                       action='store_true', 
-                      dest='phylip_format',
+                      dest='to_newick_format',
                       default=False,
                       help="same as --newick")
     output_filepath_optgroup.add_option('-r', '--replace', 
@@ -354,8 +362,13 @@ def main_cli():
         tsum.progress_message_suffix = "\n"
 
     messenger.send("### COUNTING SPLITS ###\n")
+    if opts.from_newick_format:
+        file_format = "newick"
+    else:
+        file_format = None
     tree_source = MultiFileTreeIterator(sources=support_file_objs,
                                         core_iterator=nexus.iterate_over_trees, 
+                                        format=file_format,
                                         from_index=opts.burnin,
                                         progress_func=tsum.send_progress_message,
                                         encode_splits=True)
@@ -447,7 +460,7 @@ def main_cli():
         trees_block.append(tree)
     trees_block = output_dataset.add_trees_block(trees_block=trees_block)
         
-    if opts.phylip_format:
+    if opts.to_newick_format:
         newick_writer = nexus.NewickWriter()
         newick_writer.write_dataset(output_dataset, output_dest)
     else:

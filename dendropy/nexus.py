@@ -82,7 +82,7 @@ class SyntaxException(Exception):
 ############################################################################
 ## Standard Tree Iterator
       
-def iterate_over_trees(file_obj=None, taxa_block=None, dataset=None, **kwargs):
+def iterate_over_trees(file_obj=None, taxa_block=None, dataset=None, file_format=None, **kwargs):
     """
     Generator to iterate over trees in data file.
     Primary goal is to be memory efficient, storing no more than one tree
@@ -90,13 +90,18 @@ def iterate_over_trees(file_obj=None, taxa_block=None, dataset=None, **kwargs):
     """
     if dataset is None:
         dataset = datasets.Dataset()
-    stream_tokenizer = PurePythonNexusStreamTokenizer(file_obj)
-    token = stream_tokenizer.read_next_token_ucase()
-    if token == "#NEXUS":
-        file_format = "NEXUS"
-    else:
-        stream_tokenizer.stream_handle.seek(0)
-        file_format = "NEWICK"
+    stream_tokenizer = PurePythonNexusStreamTokenizer(file_obj)    
+    if file_format is None:
+        try:
+            stream_tokenizer.stream_handle.seek(0)
+        except IOError:
+            raise Exception("File format of non-random access source (such as stdin) must be specified in advance.")
+        token = stream_tokenizer.read_next_token_ucase()
+        if token == "#NEXUS":
+            file_format = "NEXUS"
+        else:
+            stream_tokenizer.stream_handle.seek(0)
+            file_format = "NEWICK"
     for tree in dataset.iterate_over_trees(file_obj, taxa_block=taxa_block, format=file_format, **kwargs):
         yield tree
 
@@ -1262,8 +1267,9 @@ class NewickReader(datasets.Reader):
         if not (taxa_block in dataset.taxa_blocks):
             dataset.taxa_blocks.append(taxa_block)
         stream_tokenizer = PurePythonNexusStreamTokenizer(file_obj)
-        token = stream_tokenizer.read_next_token_ucase()
-        stream_tokenizer.stream_handle.seek(0)
+        # WTF???
+#         token = stream_tokenizer.read_next_token_ucase()
+#         stream_tokenizer.stream_handle.seek(0)
         while not stream_tokenizer.eof:
             tree = parse_newick_tree_stream(stream_tokenizer=stream_tokenizer, 
                                                  taxa_block=taxa_block, 

@@ -251,11 +251,11 @@ class MultiFileTreeIterator(object):
         else:
             self.dataset = dataset
         self.taxa_block = taxa_block
+        self.format = format        
         if core_iterator is None:
-            if format is None:
+            if self.format is None:
                 raise ValueError("Either 'core_iterator' or 'format' flags must be used")
             self.using_data_it = True
-            self.format = format
         else:
             self.using_data_it = False
             self._core_iterator = core_iterator
@@ -303,7 +303,7 @@ class MultiFileTreeIterator(object):
             for tree in self.dataset.iterate_over_trees(fo, taxa_block=tb, format=self.format, **(self.iterator_kwargs)):
                 yield tree
         else:
-            for tree in self._core_iterator(fo, taxa_block=tb, **(self.iterator_kwargs)):
+            for tree in self._core_iterator(fo, taxa_block=tb, file_format=self.format, **(self.iterator_kwargs)):
                 yield tree
         
         
