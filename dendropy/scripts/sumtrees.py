@@ -166,11 +166,16 @@ def main_cli():
 
     source_tree_optgroup = OptionGroup(parser, 'Source Tree Options')    
     parser.add_option_group(source_tree_optgroup)          
-    source_tree_optgroup.add_option('--from-newick',  
+    source_tree_optgroup.add_option('--from-newick-stream',  
                       action='store_true', 
-                      dest='from_newick_format',
+                      dest='from_newick_stream',
                       default=False,
-                      help="support trees are in Newick format [default=NEXUS]")            
+                      help="support trees will be streamed in Newick format")            
+    source_tree_optgroup.add_option('--from-nexus-stream',  
+                      action='store_true', 
+                      dest='from_nexus_stream',
+                      default=False,
+                      help="support trees will be streamed in NEXUS format")                      
                             
     output_tree_optgroup = OptionGroup(parser, 'Output Tree Options')    
     parser.add_option_group(output_tree_optgroup)          
@@ -272,7 +277,9 @@ def main_cli():
     # Support file idiot checking
         
     support_filepaths = []     
-    if len(args) == 0:
+    if len(args) == 0 and (opts.from_newick_stream or opts.from_nexus_stream):
+        if not opts.quiet:
+            sys.stderr.write("(reading trees from standard input)")
         support_file_objs = [sys.stdin]           
     else:
         missing = False 
@@ -362,8 +369,10 @@ def main_cli():
         tsum.progress_message_suffix = "\n"
 
     messenger.send("### COUNTING SPLITS ###\n")
-    if opts.from_newick_format:
+    if opts.from_newick_stream:
         file_format = "newick"
+    elif opts.from_nexus_stream:
+        file_format = "nexus"
     else:
         file_format = None
     tree_source = MultiFileTreeIterator(sources=support_file_objs,
