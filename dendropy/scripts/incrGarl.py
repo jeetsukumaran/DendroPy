@@ -207,14 +207,21 @@ class GarliConf(object):
         ofprefix = "nbhood%dfromtree%d" % (edge_dist, tree_ind)
         
         self.ofprefix = ofprefix
-        self.streefname = "incomplete"
         
         tmp_tree_filename = ".tmp.tre"
         f = open(tmp_tree_filename, "w")
         write_tree_file(f, [tree], dataset)
         f.close()
+
+        tmp_tree_filename = ".tmpconstrain.tre"
+        f = open(tmp_tree_filename, "w")
+        c = copy.deepcopy(tree)
+        write_tree_file(f, [tree], dataset)
+        f.close()
     
-        self.incompletetreefname = tmp_tree_filename
+        self.streefname = tmp_tree_filename
+        self.constraintfile = "none"
+
     
         
         self.run(["run", "quit"])
@@ -235,6 +242,7 @@ class GarliConf(object):
     
         self.ofprefix = ofprefix
         self.streefname = "incomplete"
+        self.constraintfile = "none"
         
         tmp_tree_filename = ".tmp.tre"
         f = open(tmp_tree_filename, "w")
