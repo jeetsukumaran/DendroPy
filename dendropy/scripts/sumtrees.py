@@ -263,32 +263,35 @@ def main_cli():
     ###################################################
     # Support file idiot checking
         
-    support_filepaths = []        
-    missing = False 
-    for fpath in args:
-        fpath = os.path.expanduser(os.path.expandvars(fpath))        
-        if not os.path.exists(fpath):
-            messenger.send_error('Support file not found: "%s"' % fpath)
-            missing = True
-        else:
-            support_filepaths.append(fpath)
-    if missing:
-        messenger.send("")
-        if opts.ignore_missing_support:
-            pass
-        else:
-            messenger.send_formatted('Terminating due to missing support files. '
-                   + 'Use the "--ignore-missing-support" option to continue even '
-                   + 'if some files are missing.', force=True)
+    support_filepaths = []     
+    if len(args) == 0:
+        support_file_objs = [sys.stdin]           
+    else:
+        missing = False 
+        for fpath in args:
+            fpath = os.path.expanduser(os.path.expandvars(fpath))        
+            if not os.path.exists(fpath):
+                messenger.send_error('Support file not found: "%s"' % fpath)
+                missing = True
+            else:
+                support_filepaths.append(fpath)
+        if missing:
+            messenger.send("")
+            if opts.ignore_missing_support:
+                pass
+            else:
+                messenger.send_formatted('Terminating due to missing support files. '
+                       + 'Use the "--ignore-missing-support" option to continue even '
+                       + 'if some files are missing.', force=True)
+                sys.exit(1)
+        if len(support_filepaths) == 0:
+            messenger.send_formatted("No sources of support specified or could be found. "
+            + "Please provide the path to at least one (valid and existing) file "
+            + "containing non-parametric or MCMC tree samples "
+            + "to summarize.", force=True)
             sys.exit(1)
-    if len(support_filepaths) == 0:
-        messenger.send_formatted("No sources of support specified or could be found. "
-        + "Please provide the path to at least one (valid and existing) file "
-        + "containing non-parametric or MCMC tree samples "
-        + "to summarize.", force=True)
-        sys.exit(1)
-        
-    support_file_objs = [open(f, "r") for f in support_filepaths]
+            
+        support_file_objs = [open(f, "r") for f in support_filepaths]
 
     ###################################################
     # Lots of other idiot-checking ...
@@ -351,7 +354,7 @@ def main_cli():
         tsum.progress_message_suffix = "\n"
 
     messenger.send("### COUNTING SPLITS ###\n")
-    tree_source = MultiFileTreeIterator(sources=support_filepaths,
+    tree_source = MultiFileTreeIterator(sources=support_file_objs,
                                         core_iterator=nexus.iterate_over_trees, 
                                         from_index=opts.burnin,
                                         progress_func=tsum.send_progress_message,
