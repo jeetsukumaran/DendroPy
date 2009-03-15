@@ -47,7 +47,7 @@ import dendropy
 from dendropy import nexus
 from dendropy import splits
 from dendropy import treesum
-from dendropy import datasets, 
+from dendropy import datasets
 from dendropy import trees
 from dendropy import treegen
 from dendropy import get_logger
