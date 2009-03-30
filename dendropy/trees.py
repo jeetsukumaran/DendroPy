@@ -879,7 +879,12 @@ class Edge(base.IdTagged):
         return edge
     def invert(self):
         self.head_node, self.tail_node = self.tail_node, self.head_node
-
+    def is_terminal(self):
+        "Returns True if the head node has no children"
+        return bool(self.head_node and self.head_node.is_leaf())
+    def is_internal(self):
+        "Returns True if the head node has children"
+        return bool(self.head_node and not self.head_node.is_leaf())
 
 def _preorder_list_manip(n, siblings, ancestors):
     """Helper function for recursion free preorder traversal, that does not 
