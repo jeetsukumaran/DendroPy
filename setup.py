@@ -37,6 +37,7 @@ import subprocess
 
 script_names = ['cattrees.py', 
                 'incrGarl.py',
+                'long_branch_symmdiff.py',
                 'rtreeoutgroup.py', 
                 'sumtrees.py', 
                 'symmdiff_by_split_cutoff.py',
