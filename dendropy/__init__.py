@@ -52,6 +52,7 @@ __all__ = ["base.py",
         "treesum.py",
         "utils.py",
         "xmlparser.py",
+        "high_level.py",
 ]
 __version__ = "2.3.3"
 PACKAGE_NAME = "DendroPy"
