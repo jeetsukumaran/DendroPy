@@ -261,7 +261,7 @@ def parse_newick_tree_stream(stream_tokenizer,
                              encode_splits=False,
                              rooted=RootingInterpretation.UNKNOWN_DEF_UNROOTED,
                              finish_node_func=None,
-                             edge_len_are_numbers=True):
+                             edge_len_type=float):
     """
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
     located at the beginning of the statement (i.e., the first
@@ -367,10 +367,14 @@ def parse_newick_tree_stream(stream_tokenizer,
             if token == ':':
                 edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-')
                 try:
-                    curr_node.edge.length = float(edge_length_str)
+                    curr_node.edge.length = edge_len_type(edge_length_str)
                 except:
                     if edge_len_are_numbers:
-                        raise TypeError("Expecting a number for a branch length, but found %s" % edge_length_str)
+                        try: 
+                            msg = 'Expecting the : in a tree string to be followed by type %s found "%s"' % (str(edge_len_type), edge_length_str)
+                        except:
+                            msg = 'Illegal "%s" after : in tree string' % (edge_length_str)
+                        raise TypeError(msg)
                     else:
                         curr_node.edge.length = edge_length_str
                 token = stream_tokenizer.read_next_token()
