@@ -281,7 +281,6 @@ def probability_of_coalescent_tree(tree, haploid_pop_size):
     lp = 0.0
     for kt in kts:
         k2N = float(distributions.binomial_coefficient(kt[0], 2)) / haploid_pop_size
-        lp =  lp + math.log(k2N) + (-k2N * kt[1])
-    print lp
+        lp =  lp + math.log(k2N) - (k2N * kt[1])
     p = math.exp(lp)
     return p
