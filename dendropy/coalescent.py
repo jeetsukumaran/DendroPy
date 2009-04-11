@@ -238,4 +238,15 @@ def node_waiting_time_pairs(tree):
         intervals.append( (d[0], d[1] - depths[i][1]) )
     return intervals
 
-         
+def num_genes_waiting_times_pairs(tree):
+    """Returns list of tuples of (number of genes in the sample, waiting time
+    till coalescent event / size of coalescent interval) for the given tree"""
+    nwti = node_waiting_time_pairs(tree)
+#     num_genes = len(tree.taxa_block)
+    num_genes = len(tree.leaf_nodes())
+    num_genes_wt = []
+    for n in nwti:
+        num_genes_wt.append((num_genes, n[1]))
+        num_genes = num_genes - len(n[0].child_nodes()) + 1 
+    return num_genes_wt      
+
