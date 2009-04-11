@@ -28,6 +28,7 @@ Methods for working with Kingman's n-coalescent framework.
 
 from dendropy import GLOBAL_RNG
 from dendropy import distributions
+from dendropy import treecalc
 
 def discrete_time_to_coalescence(n_genes, 
                                  pop_size=None, 
@@ -213,3 +214,8 @@ def coalesce(nodes,
 
     # return the list of nodes that have not coalesced
     return nodes
+
+def coalescence_intervals(tree):
+    """Returns list of coalescence intervals on `tree`."""
+    treecalc.add_depth_to_nodes(tree)
+    
