@@ -266,10 +266,22 @@ def probability_of_coalescent_tree(tree, haploid_pop_size):
     $k$ alleles in the sample (i.e., for $k$ alleles to coalesce into
     $k-1$ alleles).
     """
-    kts = num_genes_waiting_times_pairs(tree)
-    p = 1.0
+    kts = num_genes_waiting_times_pairs(tree)  
+#     p = 1.0
+#     for kt in kts:
+#         print "****"
+#         print "p = %s" % p
+#         print "k = %s" % kt[0]
+#         print "t = %s" % kt[1]
+#         print "k2N = %s" % k2N
+#         print "e^(-k2N * t) = %s" % math.exp(-k2N * kt[1])
+#         k2N = float(distributions.binomial_coefficient(kt[0], 2)) / haploid_pop_size
+#         p *=  k2N * math.exp(-k2N * kt[1])
+#         print "p' = %s" %  p
+    lp = 0.0
     for kt in kts:
         k2N = float(distributions.binomial_coefficient(kt[0], 2)) / haploid_pop_size
-        p *=  k2N * math.exp(-k2N * kt[1])
+        lp =  lp + math.log(k2N) + (-k2N * kt[1])
+    print lp
+    p = math.exp(lp)
     return p
-
