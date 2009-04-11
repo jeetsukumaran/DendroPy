@@ -65,7 +65,7 @@ if __name__ == '__main__':
     parser.add_option('-f', '--format', dest='format',
                         type='str', default="newick", help='The input format (default is newick)') 
     parser.add_option('-c', '--cutoff', dest='cutoff',
-                        type='str', default="0.000001", help='The minimum edge length (any branches shorter than this will be collapsed).') 
+                        type='str', default=0.0, help='The minimum edge length (any branches shorter than this will be collapsed).') 
     parser.add_option('-p', '--paup-style', dest='paup',
                         action="store_true", default=False, help="Produce an output in the same format as PAUP's TreeDist command.") 
     (options, args) = parser.parse_args()

@@ -123,8 +123,8 @@ def read_dataset(file_obj, dataset=None):
         reader = NewickReader()
     return reader.read_dataset(file_obj=file_obj, dataset=dataset)
 
-def read_trees(file_obj, dataset=None):
-    dataset = read_dataset(file_obj=file_obj, dataset=dataset)
+def read_trees(file_obj, dataset=None, **kwargs):
+    dataset = read_dataset(file_obj=file_obj, dataset=dataset, **kwargs)
     return dataset.trees_blocks
 
 ############################################################################
@@ -260,7 +260,8 @@ def parse_newick_tree_stream(stream_tokenizer,
                              translate_dict=None,
                              encode_splits=False,
                              rooted=RootingInterpretation.UNKNOWN_DEF_UNROOTED,
-                             finish_node_func=None):
+                             finish_node_func=None,
+                             edge_len_type=float):
     """
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
     located at the beginning of the statement (i.e., the first
@@ -366,9 +367,16 @@ def parse_newick_tree_stream(stream_tokenizer,
             if token == ':':
                 edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-')
                 try:
-                    curr_node.edge.length = float(edge_length_str)
-                except ValueError:
-                    curr_node.edge.length = edge_length_str
+                    curr_node.edge.length = edge_len_type(edge_length_str)
+                except:
+                    if edge_len_are_numbers:
+                        try: 
+                            msg = 'Expecting the : in a tree string to be followed by type %s found "%s"' % (str(edge_len_type), edge_length_str)
+                        except:
+                            msg = 'Illegal "%s" after : in tree string' % (edge_length_str)
+                        raise TypeError(msg)
+                    else:
+                        curr_node.edge.length = edge_length_str
                 token = stream_tokenizer.read_next_token()
     return tree
      
@@ -1235,7 +1243,7 @@ class NewickReader(datasets.Reader):
         dataset.add_trees_block(trees_block=trees_block, taxa_block=taxa_block)
         return dataset
 
-    def read_trees(self, file_obj=None, taxa_block=None):
+    def read_trees(self, file_obj=None, taxa_block=None, **kwargs):
         """
         Instantiates and returns a TreesBlock object based
         on the Newick-formatted contents read from the file

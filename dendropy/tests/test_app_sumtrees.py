@@ -150,7 +150,7 @@ class SumTreesTest(unittest.TestCase):
         self.runSumTrees(["-m 'Test run of SumTrees'", support_file])
         
         # newick format
-        self.runSumTrees(["--newick", support_file])
+        self.runSumTrees(["--to-newick", support_file])
         
         # ignore missing support files
         self.runSumTrees(["--ignore-missing-support", support_file, "dummy"])
