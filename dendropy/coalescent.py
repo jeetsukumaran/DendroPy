@@ -25,7 +25,7 @@
 """
 Methods for working with Kingman's n-coalescent framework.
 """
-
+import math
 from dendropy import GLOBAL_RNG
 from dendropy import distributions
 from dendropy import treecalc
@@ -249,4 +249,27 @@ def num_genes_waiting_times_pairs(tree):
         num_genes_wt.append((num_genes, n[1]))
         num_genes = num_genes - len(n[0].child_nodes()) + 1 
     return num_genes_wt      
+
+def probability_of_coalescent_tree(tree, haploid_pop_size):
+    """
+    Under the classical neutral coalescent \citep{Kingman1982,
+    Kingman1982b}, the waiting times between coalescent events in a
+    sample of $k$ alleles segregating in a  population of (haploid) size
+    $N_e$ is distributed exponentially with a rate parameter of
+    $\frac{{k \choose 2}}{N_e}$:
+    
+    \begin{align}
+         \Pr(T) =  \frac{{k \choose 2}}{N_e} \e{-  \frac{{k \choose 2}}{N_e} T},
+    \end{align}
+    
+    where $T$ is the length of  (chronological) time in which there are
+    $k$ alleles in the sample (i.e., for $k$ alleles to coalesce into
+    $k-1$ alleles).
+    """
+    kts = num_genes_waiting_times_pairs(tree)
+    p = 1.0
+    for kt in kts:
+        k2N = float(distributions.binomial_coefficient(kt[0], 2)) / haploid_pop_size
+        p *=  k2N * math.exp(-k2N * kt[1])
+    return p
 
