@@ -33,11 +33,13 @@ _LOG = get_logger("TreeCoal")
 from dendropy import coalescent
 ### MODULE THAT WE ARE TESTING ###
 
-class CalcTreeTest(unittest.TestCase):
-    def testIntervals(self):
+class CalcIntervalsTest(unittest.TestCase):
+
+    def testSimple1(self):
         d = datasets.Dataset()
-        t = d.trees_from_string("((((a:1, b:1):1, c:2):1, d:3, e:3):2, (f:2, g:2):3)", "newick")[0]
+        t = d.trees_from_string("((((a:1, b:1):1, c:2):1, d:3, e:3):2, (f:4, g:4):1)", "newick")[0]
         intervals = coalescent.coalescence_intervals(t)
+        assert intervals == [1.0, 1.0, 1.0, 1.0, 1.0], "intervals found = %s" % ", ".join(intervals)
 
 if __name__ == "__main__":
     unittest.main()

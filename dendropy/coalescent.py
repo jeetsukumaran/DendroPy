@@ -218,4 +218,10 @@ def coalesce(nodes,
 def coalescence_intervals(tree):
     """Returns list of coalescence intervals on `tree`."""
     treecalc.add_depth_to_nodes(tree)
-    
+    depths = [n.depth for n in tree.internal_nodes()]
+    depths.sort()
+    intervals = []
+    intervals.append(depths[0])
+    for i, d in enumerate(depths[1:]):
+        intervals.append(d - depths[i])
+    return intervals
