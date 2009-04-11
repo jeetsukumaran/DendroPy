@@ -225,3 +225,17 @@ def coalescence_intervals(tree):
     for i, d in enumerate(depths[1:]):
         intervals.append(d - depths[i])
     return intervals
+
+def node_waiting_time_pairs(tree):
+    """Returns list of tuples of (node, coalescent interval [= time between
+    last coalescent event and current node age])"""
+    treecalc.add_depth_to_nodes(tree)
+    depths = [(n, n.depth) for n in tree.internal_nodes()]    
+    depths.sort(lambda x, y: int(x[1] - y[1]))            
+    intervals = []
+    intervals.append(depths[0])
+    for i, d in enumerate(depths[1:]):
+        intervals.append( (d[0], d[1] - depths[i][1]) )
+    return intervals
+
+         
