@@ -35,7 +35,8 @@ import sys
 import os
 import subprocess
 
-script_names = ['cattrees.py', 
+script_names = ['cattrees.py',
+                'extract-coalescent-frames.py',
                 'incrGarl.py',
                 'long_branch_symmdiff.py',
                 'rtreeoutgroup.py', 
