@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 ############################################################################
-##  prob-coal-tree.py
+##  coal-goodness-of-fit.py
 ##
 ##  Part of the DendroPy library for phylogenetic computing.
 ##
@@ -23,8 +23,8 @@
 ############################################################################
 
 """
-Extracts coalescent frames (# alleles : waiting time for coalescence) from a
-set of trees.
+Applies a goodness-of-fit test to evaluate the fit of a set of trees to 
+Kingman's neutral coalescent model
 """
 
 import sys
@@ -36,8 +36,8 @@ from dendropy import coalescent
 from dendropy import distributions
 
 _prog_usage = '%prog [options] <tree-files>'
-_prog_version = 'WTD Version 1.0'
-_prog_description = 'returns distribution of waiting times of coalescent frames of a set of trees'
+_prog_version = 'COAL-GOODNESS-OF-FIT Version 1.0'
+_prog_description = "applies a goodness-of-fit test to evaluate the fit of a set of trees to Kingman's neutral coalescent model"
 _prog_author = 'Jeet Sukumaran and Mark T. Holder'
 _prog_copyright = 'Copyright (C) 2009 Jeet Sukumaran and Mark T. Holder.'
 
@@ -50,13 +50,6 @@ def main():
         add_help_option=True, 
         version=_prog_version, 
         description=_prog_description)
-        
-    parser.add_option('-s', '--summarize-means',
-        action='store',
-        dest='summarize_means',
-        default=None,
-        metavar='FILENAME',
-        help='summarize means to this file (default="%default")')
         
     parser.add_option('-n', '--pop-size', '-N',
         action='store',
@@ -79,11 +72,8 @@ def main():
         sys.stderr.write("%s" % parser.get_usage())
         sys.exit(1)
        
-    output = sys.stdout
-    output.write("k\twaiting_time\n")
-    
     coal_frames = {}
-
+    num_trees = 0
     for a in args:
         fpath = os.path.expandvars(os.path.expanduser(a))
         if not os.path.exists(fpath):
@@ -93,20 +83,31 @@ def main():
             d = datasets.Dataset()
             ctrees = d.read_trees(open(fpath, "rU"), "NEXUS")
             for t in ctrees:
+                num_trees += 1
                 cf = coalescent.coalescent_frames(t)
                 for k, wt in cf:
-                    output.write("%d\t%s\n" % (k, wt))
                     if k not in coal_frames:
                         coal_frames[k] = []
                     coal_frames[k].append(wt)
-                    
-    if opts.summarize_means is not None:
-        smfile = open(os.path.expandvars(os.path.expanduser(opts.summarize_means)), "w")
-        smfile.write("k\tmean_wt\texpected_wt\n")
-        for k, wt in coal_frames.items():
-            actual_mean = float(sum(wt))/len(wt)        
-            expected_mean = float(opts.pop_size) / distributions.binomial_coefficient(k, 2)
-            smfile.write("%d\t%s\t%s\n" % (k, actual_mean, expected_mean))
-                
+
+#     sum_x = 0
+#     n = 0
+#     for k, wts in coal_frames.items():
+#         exp_mean = float(opts.pop_size) / distributions.binomial_coefficient(k, 2)
+#         for wt in wts:
+#             x = pow((wt - exp_mean), 2) / exp_mean
+#             sum_x += x
+#             n += 1
+#     sys.stdout.write("X=%s, n=%s, df=%s\n" % (sum_x, n, n-1))
+    sys.stderr.write("k\tmean_wt\texpected_wt\tx\n")
+    sum_x = 0
+    
+    for k, wt in coal_frames.items():
+        obs_mean = float(sum(wt))/len(wt)        
+        exp_mean = float(opts.pop_size) / distributions.binomial_coefficient(k, 2)
+        x = pow((obs_mean - exp_mean), 2) / exp_mean
+        sum_x += x       
+        sys.stderr.write("%d\t%s\t%s\t%s\n" % (k, obs_mean, exp_mean, x))
+    sys.stdout.write("X^ = %s (num. trees = %s)\n" % (sum_x, num_trees))
 if __name__ == "__main__":
     main()
