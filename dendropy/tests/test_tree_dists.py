@@ -31,8 +31,9 @@ import unittest
 import math
 from dendropy import get_logger
 import dendropy.tests
-_LOG = get_logger("tree diste   ")
+_LOG = get_logger("tree dists")
 
+from dendropy import datasets
 from dendropy import dataio
 from dendropy.splits import encode_splits
 from dendropy.tests.util_for_testing import assert_approx_equal, assert_vec_approx_equal, assert_mat_approx_equal
@@ -69,7 +70,6 @@ class TreeDistTest(unittest.TestCase):
         ref = d.trees_blocks[0][0]
         taxa_block = d.taxa_blocks[0]
 
-
         encode_splits(ref)
 
         o_newick = "((t1,t2),((t4,(t5,t6)),t3));"
@@ -77,7 +77,24 @@ class TreeDistTest(unittest.TestCase):
         encode_splits(o_tree)
 
         self.assertEqual(treedists.symmetric_difference(o_tree, ref), 2)
+        
+    def test_pat_distance(self):
+        d = datasets.Dataset()
+        tree = d.trees_from_string("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", "newick")[0]
+        encode_splits(tree)
 
+        def _chk_distance(t1, t2, exp_distance):
+            tax1 = tree.taxa_block.get_taxon(label=t1)
+            tax2 = tree.taxa_block.get_taxon(label=t2)        
+            pd = treedists.patristic_distance(tree, tax1, tax2)
+            assert pd == exp_distance, ("%s, %s: Expecting %d, but received %d" % (t1, t2, exp_distance, pd))
+            
+        _chk_distance("a", "b", 2)
+        _chk_distance("a", "c", 4)
+        _chk_distance("b", "c", 4)
+        _chk_distance("a", "d", 6)
+        _chk_distance("f", "d", 4)
+        _chk_distance("c", "d", 6)
 
 if __name__ == "__main__":
     unittest.main()
