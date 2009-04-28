@@ -310,9 +310,11 @@ def num_deep_coalescences(species_tree, gene_tree):
     for gnd in gene_tree.postorder_node_iter():
         gsplit = gnd.edge.clade_mask
         sanc = treesum.shallowest_containing_node(species_tree.seed_node, gsplit, taxa_mask)
-        if not hasattr(sanc, "gene_nodes"):
-            sanc.gene_nodes = []
-        sanc.gene_nodes.append(gnd)        
+        
+#         if not hasattr(sanc, "gene_nodes"):
+#             sanc.gene_nodes = []
+#         sanc.gene_nodes.append(gnd)        
+
         gnd.species_node = sanc
         deep_coal_occurs = False
         for child in gnd.child_nodes():
@@ -323,9 +325,10 @@ def num_deep_coalescences(species_tree, gene_tree):
     return dc
     
 #     num_deep_coal = 0
-#     for snd in species_tree.postorder_node_iter():    
-#         if hasattr(snd, "gene_nodes"):
-#             num_deep_coal += len(snd.gene_nodes) - 1            
+#     for sne in species_tree.postorder_edge_iter():    
+#         if hasattr(sne.tail_node, "gene_nodes"):
+#             if len(sne.tail_node.gene_nodes) > 1:
+#                 num_deep_coal += 1
 #     return num_deep_coal            
 
 
