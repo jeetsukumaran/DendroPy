@@ -98,7 +98,7 @@ class DeepCoalTest(unittest.TestCase):
 #                 print st.compose_newick()
 #                 print "----------------------"
 #                 print gt.compose_newick()                
-                print st.compose_newick(),  gt.compose_newick(),  dc, self.expected_deep_coalescences[idx]             
+                print st.compose_newick(),  gt.compose_newick(),  dc, self.expected_deep_coalescences[idx], dc - self.expected_deep_coalescences[idx]             
 #                 assert dc == self.expected_deep_coalescences[idx], \
 #                     "expecting %d, but received %d" % (self.expected_deep_coalescences[idx], dc)
                 idx += 1   

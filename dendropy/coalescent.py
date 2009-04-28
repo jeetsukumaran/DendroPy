@@ -305,20 +305,28 @@ def num_deep_coalescences(species_tree, gene_tree):
         encode_splits was called, is_rooted must have been set to True)
     """
     from dendropy import treesum
+    dc = 0
     taxa_mask = species_tree.taxa_block.all_taxa_bitmask()
     for gnd in gene_tree.postorder_node_iter():
         gsplit = gnd.edge.clade_mask
         sanc = treesum.shallowest_containing_node(species_tree.seed_node, gsplit, taxa_mask)
         if not hasattr(sanc, "gene_nodes"):
             sanc.gene_nodes = []
-        sanc.gene_nodes.append(gnd)            
+        sanc.gene_nodes.append(gnd)        
+        gnd.species_node = sanc
+        deep_coal_occurs = False
+        for child in gnd.child_nodes():
+            if child.species_node is sanc:
+                deep_coal_occurs = True
+        if deep_coal_occurs:
+            dc += 1            
+    return dc
     
-    num_deep_coal = 0
-    for snd in species_tree.postorder_node_iter():
-        if hasattr(snd, "gene_nodes"):
-            num_deep_coal += len(snd.gene_nodes) - 1
-            
-    return num_deep_coal            
+#     num_deep_coal = 0
+#     for snd in species_tree.postorder_node_iter():    
+#         if hasattr(snd, "gene_nodes"):
+#             num_deep_coal += len(snd.gene_nodes) - 1            
+#     return num_deep_coal            
 
 
     
