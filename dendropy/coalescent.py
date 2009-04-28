@@ -284,3 +284,41 @@ def probability_of_coalescent_tree(tree, haploid_pop_size):
         lp =  lp + math.log(k2N) - (k2N * kt[1])
     p = math.exp(lp)
     return p
+
+def num_deep_coalescences(species_tree, gene_tree):
+    """
+    Given two trees (with splits encoded), this returns the number of deep 
+    coalescences implied by the gene tree reconciled on the species tree, 
+    based on the algorithm described here:
+    
+        Goodman, M. J. Czelnusiniak, G. W. Moore, A. E. Romero-Herrera, and 
+        G. Matsuda. 1979. Fitting the gene lineage into its species lineage,
+        a parsimony strategy illustrated bu cladograms constructed from globin
+        sequences. Syst. Zool. 19: 99-113.
+        
+        Maddison, W. P. 1997. Gene trees in species trees. Syst. Biol. 46: 
+        523-536.
+        
+    Note that for correct results, 
+        (a) trees must be rooted (i.e., is_rooted = True)  
+        (b) split masks must have been added as rooted (i.e., when 
+        encode_splits was called, is_rooted must have been set to True)
+    """
+    from dendropy import treesum
+    taxa_mask = species_tree.taxa_block.all_taxa_bitmask()
+    for gnd in gene_tree.postorder_node_iter():
+        gsplit = gnd.edge.clade_mask
+        sanc = treesum.shallowest_containing_node(species_tree.seed_node, gsplit, taxa_mask)
+        if not hasattr(sanc, "gene_nodes"):
+            sanc.gene_nodes = []
+        sanc.gene_nodes.append(gnd)            
+    
+    num_deep_coal = 0
+    for snd in species_tree.postorder_node_iter():
+        if hasattr(snd, "gene_nodes"):
+            num_deep_coal += len(snd.gene_nodes) - 1
+            
+    return num_deep_coal            
+
+
+    

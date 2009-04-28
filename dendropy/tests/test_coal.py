@@ -27,6 +27,8 @@ Tests coalescence calculations.
 import unittest
 from dendropy import get_logger
 from dendropy import datasets
+from dendropy import splits
+from dendropy import treesum
 _LOG = get_logger("TreeCoal")
 
 ### MODULE THAT WE ARE TESTING ###
@@ -47,7 +49,60 @@ class CalcIntervalsTest(unittest.TestCase):
 #         print check, check2
         ### TODO: Actually come up a with a decent coalescent tree, calculated the probability,
         ###       and check if it is equal
-        
+                  
+class DeepCoalTest(unittest.TestCase):
+    
+    def setUp(self):
+        self.dataset = datasets.Dataset()
+        self.gene_trees = self.dataset.trees_from_string("""
+            [&R] (A,(B,(C,D))); [&R] ((A,C),(B,D)); [&R] (C,(A,(B,D)));
+            """, "NEWICK")
+        self.species_trees = self.dataset.trees_from_string("""
+            [&R] (A,(B,(C,D)));
+            [&R] (A,(C,(B,D)));
+            [&R] (A,(D,(C,B)));
+            [&R] (B,(A,(C,D)));
+            [&R] (B,(C,(A,D)));
+            [&R] (B,(D,(C,A)));
+            [&R] (C,(A,(B,D)));
+            [&R] (C,(B,(A,D)));
+            [&R] (C,(D,(B,A)));
+            [&R] (D,(A,(B,C)));
+            [&R] (D,(B,(A,C)));
+            [&R] (D,(C,(B,A)));
+            [&R] ((A,B),(C,D));
+            [&R] ((A,C),(B,D));
+            [&R] ((A,D),(C,B));
+            """, "NEWICK")
+            
+        assert len(self.dataset.taxa_blocks) == 1      
+        tb = self.dataset.taxa_blocks[0]
+        for t in self.gene_trees + self.species_trees:
+            assert t.taxa_block == tb
+            t.is_rooted = True
+            splits.encode_splits(t)
+            
+        # expected results, for each gene tree / species tree pairing, with
+        # cycling through species trees for each gene tree
+        self.expected_deep_coalescences = [ 0, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 1, 2, 2,
+                                            2, 1, 2, 2, 2, 1, 1, 2, 2, 2, 1, 2, 2, 0, 1,
+                                            2, 1, 2, 3, 3, 3, 0, 1, 1, 3, 3, 3, 2, 1, 2 ]                                                 
+        assert len(self.expected_deep_coalescences) == len(self.gene_trees) * len(self.species_trees)                                          
+                            
+    def testDeepCoalCounting(self):
+        idx = 0
+        for gt in self.gene_trees:
+            for st in self.species_trees:
+                dc = coalescent.num_deep_coalescences(st, gt)
+#                 print "**********************"
+#                 print st.compose_newick()
+#                 print "----------------------"
+#                 print gt.compose_newick()                
+                print st.compose_newick(),  gt.compose_newick(),  dc, self.expected_deep_coalescences[idx]             
+#                 assert dc == self.expected_deep_coalescences[idx], \
+#                     "expecting %d, but received %d" % (self.expected_deep_coalescences[idx], dc)
+                idx += 1   
+    
 if __name__ == "__main__":
     unittest.main()
 
