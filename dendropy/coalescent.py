@@ -308,20 +308,21 @@ def num_deep_coalescences(species_tree, gene_tree):
     dc = 0
     taxa_mask = species_tree.taxa_block.all_taxa_bitmask()
     for gnd in gene_tree.postorder_node_iter():
-        gsplit = gnd.edge.clade_mask
-        sanc = treesum.shallowest_containing_node(species_tree.seed_node, gsplit, taxa_mask)
-        
-#         if not hasattr(sanc, "gene_nodes"):
-#             sanc.gene_nodes = []
-#         sanc.gene_nodes.append(gnd)        
-
-        gnd.species_node = sanc
-        deep_coal_occurs = False
-        for child in gnd.child_nodes():
-            if child.species_node is sanc:
-                deep_coal_occurs = True
-        if deep_coal_occurs:
-            dc += 1            
+        gn_children = gnd.child_nodes()
+        if len(gn_children) > 0:
+            ssplit = 0
+            for gn_child in gn_children:
+                ssplit = ssplit | gn_child.species_node.edge.clade_mask
+            sanc = treesum.shallowest_containing_node(species_tree.seed_node, ssplit, taxa_mask)     
+            gnd.species_node = sanc
+            deep_coal_occurs = False
+            for gn_child in gn_children:
+                if gn_child.species_node is sanc:
+                    deep_coal_occurs = True
+            if deep_coal_occurs:
+                dc += 1
+        else:
+            gnd.species_node = species_tree.find_taxon_node(lambda x : x.label == gnd.taxon.label)
     return dc
     
 #     num_deep_coal = 0
