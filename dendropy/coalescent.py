@@ -29,6 +29,7 @@ import math
 from dendropy import GLOBAL_RNG
 from dendropy import distributions
 from dendropy import treecalc
+from dendropy import trees
 
 def discrete_time_to_coalescence(n_genes, 
                                  pop_size=None, 
@@ -285,11 +286,11 @@ def probability_of_coalescent_tree(tree, haploid_pop_size):
     p = math.exp(lp)
     return p
 
-def num_deep_coalescences(species_tree, gene_tree):
+def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
     """
-    Given two trees (with splits encoded), this returns the number of deep 
-    coalescences implied by the gene tree reconciled on the species tree, 
-    based on the algorithm described here:
+    Given two trees (with splits encoded), this returns the number of gene 
+    duplications implied by the gene tree reconciled on the species tree, based 
+    on the algorithm described here:
     
         Goodman, M. J. Czelnusiniak, G. W. Moore, A. E. Romero-Herrera, and 
         G. Matsuda. 1979. Fitting the gene lineage into its species lineage,
@@ -303,6 +304,11 @@ def num_deep_coalescences(species_tree, gene_tree):
         (a) trees must be rooted (i.e., is_rooted = True)  
         (b) split masks must have been added as rooted (i.e., when 
         encode_splits was called, is_rooted must have been set to True)
+    
+    By default (if `otu_association` is None), each gene tree terminal maps onto the
+    corresponding terminal on the species tree. Otherwise, `otu_association` should be
+    a dictionary with gene terminals as keys as corresponding species terminals
+    as values.    
     """
     from dendropy import treesum
     dc = 0
@@ -322,15 +328,70 @@ def num_deep_coalescences(species_tree, gene_tree):
             if deep_coal_occurs:
                 dc += 1
         else:
-            gnd.species_node = species_tree.find_taxon_node(lambda x : x.label == gnd.taxon.label)
+            if otu_association is None:
+                gnd.species_node = species_tree.find_node(lambda x : x.taxon == gnd.taxon)
+            else:
+                gnd.species_node = species_tree.find_node(lambda x : x.taxon == otu_association[gnd.taxon]) 
     return dc
     
-#     num_deep_coal = 0
-#     for sne in species_tree.postorder_edge_iter():    
-#         if hasattr(sne.tail_node, "gene_nodes"):
-#             if len(sne.tail_node.gene_nodes) > 1:
-#                 num_deep_coal += 1
-#     return num_deep_coal            
-
-
     
+###############################################################################
+## EXPERIMENTAL STUFF
+###############################################################################
+
+def get_mrca(tree, tax_set):
+    from dendropy import treesum
+    split = 0
+    for t in tax_set:
+        split |= tree.taxa_block.taxon_bitmask(t)
+    mrca = treesum.shallowest_containing_node(tree.seed_node, split, tree.taxa_block.all_taxa_bitmask())
+    return mrca
+
+def count_num_descendents_of_mrca(tree, tax_set):
+    """
+    Given a set of taxa, this counts the total number of descendents of the
+    mrca of the taxa. 
+    """
+    mrca = get_mrca(tree, tax_set)
+    return len( [x for x in trees.Node.leaf_iter(mrca)] )    
+    
+def node_desc_str(nd):
+    cn = [x for x in trees.Node.leaf_iter(nd)]
+    return str([c.taxon.label for c in cn])
+
+def ndc(tree, tax_sets):
+    import copy
+    from dendropy import splits
+    n = 0
+    for tax_set in tax_sets:
+        num_desc_mrca = count_num_descendents_of_mrca(tree, tax_set)
+        if num_desc_mrca > len(tax_set):
+            mrca = get_mrca(tree, tax_set)
+            dupe_tax_sets = []
+            for nd in trees.Node.postorder_iter(mrca):
+                print "--"
+                print node_desc_str(nd)
+                dupe_tree = copy.deepcopy(tree)
+                dupe_deleted_node = dupe_tree.find_node(lambda x : x.edge.clade_mask == nd.edge.clade_mask)
+                if dupe_deleted_node.parent_node is None:
+                    continue                                
+                deleted_node_desc_taxa = [dn.taxon for dn in trees.Node.leaf_iter(dupe_deleted_node)]
+                deleted_node_desc_taxa_labels = [q.label for q in deleted_node_desc_taxa]
+                print "deleted_node_desc_taxa = ", str(deleted_node_desc_taxa_labels)
+                dupe_tax_set = []
+                for t in tax_set:
+                    if t.label not in deleted_node_desc_taxa_labels:
+                        dupe_tax_set.append(t)
+#                 if dupe_tax_set in dupe_tax_sets:
+#                     continue
+#                 dupe_tax_sets.append(dupe_tax_set)                    
+                print "dupe_tax_set = ", str([q.label for q in dupe_tax_set])                        
+                dupe_deleted_node.parent_node.remove_child(dupe_deleted_node)
+#                 splits.encode_splits(dupe_tree)
+                dupe_num_desc_mrca = count_num_descendents_of_mrca(dupe_tree, dupe_tax_set)
+                print dupe_num_desc_mrca, len(dupe_tax_set)
+                if dupe_num_desc_mrca == len(dupe_tax_set):
+                    print "\nCOUNTING DC = ", str([q.label for q in dupe_tax_set])
+                    print
+                    n += 1
+    return n
