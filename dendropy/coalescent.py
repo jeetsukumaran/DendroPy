@@ -337,35 +337,33 @@ def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
     from dendropy import treesum
     taxa_mask = species_tree.taxa_block.all_taxa_bitmask()
     
-    # clears list if already exists,
-    # creates list if not
-    for snd in species_tree.postorder_node_iter():
-        snd.gene_nodes = []
+    species_node_gene_nodes = {}
+    gene_node_species_nodes = {}
     
     for gnd in gene_tree.postorder_node_iter():
         gn_children = gnd.child_nodes()
         if len(gn_children) > 0:
             ssplit = 0
             for gn_child in gn_children:
-                ssplit = ssplit | gn_child.species_node.edge.clade_mask
+                ssplit = ssplit | gene_node_species_nodes[gn_child].edge.clade_mask
             sanc = treesum.shallowest_containing_node(species_tree.seed_node, ssplit, taxa_mask)     
-            gnd.species_node = sanc
-            if not hasattr(sanc, "gene_nodes"):
-                sanc.gene_nodes = []
-            sanc.gene_nodes.append(gnd)                
+            gene_node_species_nodes[gnd] = sanc
+            if sanc not in species_node_gene_nodes:
+                species_node_gene_nodes[sanc] = []
+            species_node_gene_nodes[sanc].append(gnd)                
         else: 
             if otu_association is None:
-                gnd.species_node = species_tree.find_node(lambda x : x.taxon == gnd.taxon)
+                gene_node_species_nodes[gnd] = species_tree.find_node(lambda x : x.taxon == gnd.taxon)
             else:
-                gnd.species_node = species_tree.find_node(lambda x : x.taxon == otu_association[gnd.taxon]) 
-            gnd.species_node.gene_nodes = [gnd]                
+                gene_node_species_nodes[gnd] = species_tree.find_node(lambda x : x.taxon == otu_association[gnd.taxon])                
+#             species_node_gene_nodes[gene_node_species_nodes[gnd]] = [gnd]
             
     contained_gene_lineages = {}            
     for snd in species_tree.postorder_node_iter():
-        if hasattr(snd, "gene_nodes"):
-            for gnd in snd.gene_nodes:
+        if snd in species_node_gene_nodes:
+            for gnd in species_node_gene_nodes[snd]:
                 for gnd_child in gnd.child_nodes():
-                    sanc = gnd_child.species_node
+                    sanc = gene_node_species_nodes[gnd_child]
                     p = sanc
                     while p is not None and p != snd:
                         if p.edge not in contained_gene_lineages:
