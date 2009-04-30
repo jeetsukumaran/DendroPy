@@ -60,6 +60,7 @@ class DeepCoalTest(unittest.TestCase):
 #         self.species_trees = self.dataset.trees_from_string("""
 #             [&R] (B,(C,(A,D)ad)adc)bcad;
 #             """, "NEWICK")
+#         self.expected_deep_coalescences = [ 2 ]  
                     
         self.gene_trees = self.dataset.trees_from_string("""
             [&R] (A,(B,(C,D))); [&R] ((A,C),(B,D)); [&R] (C,(A,(B,D)));
@@ -81,21 +82,22 @@ class DeepCoalTest(unittest.TestCase):
             [&R] ((A,C),(B,D));
             [&R] ((A,D),(C,B));
             """, "NEWICK")
-#             
+                        
+        # expected results, for each gene tree / species tree pairing, with
+        # cycling through species trees for each gene tree
+        self.expected_deep_coalescences = [ 0, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 1, 2, 2,
+                                            2, 1, 2, 2, 2, 1, 1, 2, 2, 2, 1, 2, 2, 0, 1,
+                                            2, 1, 2, 3, 3, 3, 0, 1, 1, 3, 3, 3, 2, 1, 2 ]                                                 
+        assert len(self.expected_deep_coalescences) == len(self.gene_trees) * len(self.species_trees)       
+        
+        
+        ## prep trees ##
         assert len(self.dataset.taxa_blocks) == 1      
         tb = self.dataset.taxa_blocks[0]
         for t in self.gene_trees + self.species_trees:
             assert t.taxa_block == tb
             t.is_rooted = True
-            splits.encode_splits(t)
-            
-        # expected results, for each gene tree / species tree pairing, with
-        # cycling through species trees for each gene tree
-#         self.expected_deep_coalescences = [ 2 ]         
-        self.expected_deep_coalescences = [ 0, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 1, 2, 2,
-                                            2, 1, 2, 2, 2, 1, 1, 2, 2, 2, 1, 2, 2, 0, 1,
-                                            2, 1, 2, 3, 3, 3, 0, 1, 1, 3, 3, 3, 2, 1, 2 ]                                                 
-        assert len(self.expected_deep_coalescences) == len(self.gene_trees) * len(self.species_trees)       
+            splits.encode_splits(t)        
  
 #     def testX(self):
 #         d = datasets.Dataset()
