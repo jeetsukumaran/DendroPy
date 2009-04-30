@@ -310,8 +310,31 @@ def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
     a dictionary with gene terminals as keys as corresponding species terminals
     as values.    
     """
+#     from dendropy import treesum
+#     dc = 0
+#     taxa_mask = species_tree.taxa_block.all_taxa_bitmask()
+#     for gnd in gene_tree.postorder_node_iter():
+#         gn_children = gnd.child_nodes()
+#         if len(gn_children) > 0:
+#             ssplit = 0
+#             for gn_child in gn_children:
+#                 ssplit = ssplit | gn_child.species_node.edge.clade_mask
+#             sanc = treesum.shallowest_containing_node(species_tree.seed_node, ssplit, taxa_mask)     
+#             gnd.species_node = sanc
+#             deep_coal_occurs = False
+#             for gn_child in gn_children:
+#                 if gn_child.species_node is sanc:
+#                     deep_coal_occurs = True
+#             if deep_coal_occurs:
+#                 dc += 1
+#         else:
+#             if otu_association is None:
+#                 gnd.species_node = species_tree.find_node(lambda x : x.taxon == gnd.taxon)
+#             else:
+#                 gnd.species_node = species_tree.find_node(lambda x : x.taxon == otu_association[gnd.taxon]) 
+#     return dc
+
     from dendropy import treesum
-    dc = 0
     taxa_mask = species_tree.taxa_block.all_taxa_bitmask()
     for gnd in gene_tree.postorder_node_iter():
         gn_children = gnd.child_nodes()
@@ -321,17 +344,73 @@ def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
                 ssplit = ssplit | gn_child.species_node.edge.clade_mask
             sanc = treesum.shallowest_containing_node(species_tree.seed_node, ssplit, taxa_mask)     
             gnd.species_node = sanc
-            deep_coal_occurs = False
-            for gn_child in gn_children:
-                if gn_child.species_node is sanc:
-                    deep_coal_occurs = True
-            if deep_coal_occurs:
-                dc += 1
-        else:
+            if not hasattr(sanc, "gene_nodes"):
+                sanc.gene_nodes = []
+            sanc.gene_nodes.append(gnd)                
+        else: 
             if otu_association is None:
                 gnd.species_node = species_tree.find_node(lambda x : x.taxon == gnd.taxon)
             else:
                 gnd.species_node = species_tree.find_node(lambda x : x.taxon == otu_association[gnd.taxon]) 
+            gnd.species_node.gene_nodes = [gnd]                
+            
+    contained_gene_lineages = {}            
+    for snd in species_tree.postorder_node_iter():
+        if hasattr(snd, "gene_nodes"):
+            for gnd in snd.gene_nodes:
+                for gnd_child in gnd.child_nodes():
+                    sanc = gnd_child.species_node
+                    p = sanc
+                    while p is not None and p != snd:
+                        if p.edge not in contained_gene_lineages:
+                            contained_gene_lineages[p.edge] = 0
+                        contained_gene_lineages[p.edge] += 1
+                        p = p.parent_node
+                        
+    dc = 0                        
+    for v in contained_gene_lineages.values():                
+        dc += v - 1
+
+    return dc
+
+#     from dendropy import treesum
+#     dc = 0
+#     taxa_mask = species_tree.taxa_block.all_taxa_bitmask()
+#     for gnd in gene_tree.postorder_node_iter():
+#         gn_children = gnd.child_nodes()
+#         if len(gn_children) > 0:
+#             ssplit = 0
+#             for gn_child in gn_children:
+#                 ssplit = ssplit | gn_child.species_node.edge.clade_mask
+#             sanc = treesum.shallowest_containing_node(species_tree.seed_node, ssplit, taxa_mask)     
+#             gnd.species_node = sanc
+#             if not hasattr(sanc, "gene_nodes"):
+#                 sanc.gene_nodes = []
+#             sanc.gene_nodes.append(gnd)                
+#         else: 
+#             if otu_association is None:
+#                 gnd.species_node = species_tree.find_node(lambda x : x.taxon == gnd.taxon)
+#             else:
+#                 gnd.species_node = species_tree.find_node(lambda x : x.taxon == otu_association[gnd.taxon]) 
+#             gnd.species_node.gene_nodes = [gnd]                
+#             
+#     for snd in species_tree.postorder_node_iter():
+#         if hasattr(snd, "gene_nodes"):
+#             dc += len(snd.gene_nodes) - 1
+#          
+#          
+#     def xlabl(n):
+#         if n.taxon is not None:
+#             return n.taxon.label
+#         else:
+#             return n.label
+#     print    
+#     for snd in species_tree.postorder_node_iter():
+#         print
+#         print xlabl(snd), ": "
+#         if hasattr(snd, "gene_nodes"):
+#             print " ", str([xlabl(n) for n in snd.gene_nodes])
+            
     return dc
     
     

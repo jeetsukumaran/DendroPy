@@ -54,6 +54,13 @@ class DeepCoalTest(unittest.TestCase):
     
     def setUp(self):
         self.dataset = datasets.Dataset()
+#         self.gene_trees = self.dataset.trees_from_string("""
+#             [&R] ((A,C)ac,(B,D)bd)acbd;
+#             """, "NEWICK")
+#         self.species_trees = self.dataset.trees_from_string("""
+#             [&R] (B,(C,(A,D)ad)adc)bcad;
+#             """, "NEWICK")
+                    
         self.gene_trees = self.dataset.trees_from_string("""
             [&R] (A,(B,(C,D))); [&R] ((A,C),(B,D)); [&R] (C,(A,(B,D)));
             """, "NEWICK")
@@ -74,7 +81,7 @@ class DeepCoalTest(unittest.TestCase):
             [&R] ((A,C),(B,D));
             [&R] ((A,D),(C,B));
             """, "NEWICK")
-            
+#             
         assert len(self.dataset.taxa_blocks) == 1      
         tb = self.dataset.taxa_blocks[0]
         for t in self.gene_trees + self.species_trees:
@@ -84,6 +91,7 @@ class DeepCoalTest(unittest.TestCase):
             
         # expected results, for each gene tree / species tree pairing, with
         # cycling through species trees for each gene tree
+#         self.expected_deep_coalescences = [ 2 ]         
         self.expected_deep_coalescences = [ 0, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 1, 2, 2,
                                             2, 1, 2, 2, 2, 1, 1, 2, 2, 2, 1, 2, 2, 0, 1,
                                             2, 1, 2, 3, 3, 3, 0, 1, 1, 3, 3, 3, 2, 1, 2 ]                                                 
@@ -109,25 +117,25 @@ class DeepCoalTest(unittest.TestCase):
 #                 assoc[t] = d.taxa_blocks[0].get_taxon(label="B")
 #         print coalescent.num_deep_coalescences(st, gt, assoc)
 
-    def testX(self):
-        d = datasets.Dataset()
-    
-        def _get_tree(s):        
-            t = d.trees_from_string(s, "newick")[0]
-            t.is_rooted = True
-            splits.encode_splits(t)
-            return t
-        
-        st = _get_tree("(A,B)")
-        gt = _get_tree("((((a1,a2),a3), (b1,b2)), (b3,(b4,b5)))")
-        
-        tb = d.taxa_blocks[0]
-        tax_sets = []
-        tax_sets.append( [tb.get_taxon("b1"), tb.get_taxon("b2"), tb.get_taxon("b3"), tb.get_taxon("b4"),  tb.get_taxon("b5")] )
-        print coalescent.ndc(gt, tax_sets)
+#     def testX2(self):
+#         d = datasets.Dataset()
+#     
+#         def _get_tree(s):        
+#             t = d.trees_from_string(s, "newick")[0]
+#             t.is_rooted = True
+#             splits.encode_splits(t)
+#             return t
+#         
+#         st = _get_tree("(A,B)")
+#         gt = _get_tree("((((a1,a2),a3), (b1,b2)), (b3,(b4,b5)))")
+#         
+#         tb = d.taxa_blocks[0]
+#         tax_sets = []
+#         tax_sets.append( [tb.get_taxon("b1"), tb.get_taxon("b2"), tb.get_taxon("b3"), tb.get_taxon("b4"),  tb.get_taxon("b5")] )
+#         print coalescent.ndc(gt, tax_sets)
         
                 
-    def txestDeepCoalCounting(self):
+    def testDeepCoalCounting(self):
         idx = 0
         for gt in self.gene_trees:
             for st in self.species_trees:
@@ -141,19 +149,6 @@ class DeepCoalTest(unittest.TestCase):
 #                     "expecting %d, but received %d" % (self.expected_deep_coalescences[idx], dc)
                 idx += 1          
  
-    def txestDeepCoalCounting(self):
-        idx = 0
-        for gt in self.gene_trees:
-            for st in self.species_trees:
-                dc = coalescent.num_deep_coalescences(st, gt)
-#                 print "**********************"
-#                 print st.compose_newick()
-#                 print "----------------------"
-#                 print gt.compose_newick()                
-                print st.compose_newick(),  gt.compose_newick(),  dc, self.expected_deep_coalescences[idx], dc - self.expected_deep_coalescences[idx]             
-#                 assert dc == self.expected_deep_coalescences[idx], \
-#                     "expecting %d, but received %d" % (self.expected_deep_coalescences[idx], dc)
-                idx += 1   
     
 if __name__ == "__main__":
     unittest.main()
