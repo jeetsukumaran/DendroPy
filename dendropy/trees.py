@@ -88,7 +88,7 @@ class Tree(base.IdTagged):
     ###########################################################################
     ## Static methods
     
-    def mrca(node1, node2):
+    def ancestor(node1, node2):
         """
         Returns the most-recent common ancestor node of node1 and
         node2.
@@ -100,8 +100,8 @@ class Tree(base.IdTagged):
                     return node1_anc
         return None
 
-    mrca = staticmethod(mrca)
-
+    ancestor = staticmethod(ancestor)
+    
     ###########################################################################
     ## Special/Lifecycle methods
     

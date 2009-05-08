@@ -30,6 +30,7 @@ from dendropy import GLOBAL_RNG
 from dendropy import distributions
 from dendropy import treecalc
 from dendropy import trees
+from dendropy import splits
 
 def discrete_time_to_coalescence(n_genes, 
                                  pop_size=None, 
@@ -319,7 +320,7 @@ def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
 #             ssplit = 0
 #             for gn_child in gn_children:
 #                 ssplit = ssplit | gn_child.species_node.edge.clade_mask
-#             sanc = treesum.shallowest_containing_node(species_tree.seed_node, ssplit, taxa_mask)     
+#             sanc = splits.mrca(species_tree.seed_node, ssplit, taxa_mask)     
 #             gnd.species_node = sanc
 #             deep_coal_occurs = False
 #             for gn_child in gn_children:
@@ -334,7 +335,6 @@ def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
 #                 gnd.species_node = species_tree.find_node(lambda x : x.taxon == otu_association[gnd.taxon]) 
 #     return dc
 
-    from dendropy import treesum
     taxa_mask = species_tree.taxa_block.all_taxa_bitmask()
     
     species_node_gene_nodes = {}
@@ -346,7 +346,7 @@ def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
             ssplit = 0
             for gn_child in gn_children:
                 ssplit = ssplit | gene_node_species_nodes[gn_child].edge.clade_mask
-            sanc = treesum.shallowest_containing_node(species_tree.seed_node, ssplit, taxa_mask)     
+            sanc = splits.mrca(species_tree.seed_node, ssplit, taxa_mask)     
             gene_node_species_nodes[gnd] = sanc
             if sanc not in species_node_gene_nodes:
                 species_node_gene_nodes[sanc] = []
@@ -376,3 +376,11 @@ def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
         dc += v - 1
 
     return dc
+
+
+def deep_coal_implied_by_grouping(tree, tax_set):
+    """
+    Returns the number of deep coalescences on tree `tree` that would result
+    if the taxa in `tax_set` formed a monophyletic group.
+    """
+    pass
