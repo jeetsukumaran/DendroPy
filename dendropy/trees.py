@@ -27,7 +27,7 @@ This module handles the core definition of tree data structure class,
 as well as all the structural classes that make up a tree.
 """
 from cStringIO import StringIO
-
+import copy
 from dendropy import base
 from dendropy import taxa
 import math
@@ -120,8 +120,18 @@ class Tree(base.IdTagged):
             self.seed_node = Node(oid='n0', edge=Edge())
         self.taxa_block = taxa
 
-#    def __deepcopy__(self, memo):
-#        pass
+    def __deepcopy__(self, memo):
+        o = self.__class__(label=self.label, taxa=self.taxa_block) # we treat the taxa as immutable and copy the reference even in a deepcopy
+        memo[id(self)] = o
+        if self.seed_node is not None:
+            new_v = copy.deepcopy(self.seed_node, memo)
+            o.seed_node = new_v
+        else:
+            o.seed_node = None
+        for k, v in self.__dict__.iteritems():
+            if not k in ['seed_node', 'taxa_block']:
+                o.__dict__[k] = copy.deepcopy(v, memo)
+        return o
     def __str__(self):
         "Dump Newick string."
         return self.compose_newick()
@@ -559,7 +569,7 @@ class Node(taxa.TaxonLinked):
 
     def __init__(self, oid=None, label=None, taxon=None, edge=None):
         "Inits. Handles keyword arguments: `oid` and `label`."
-        taxa.TaxonLinked.__init__(self, oid=oid, label=label)
+        taxa.TaxonLinked.__init__(self, oid=oid, label=label, taxon=taxon)
         self.__edge = None        
         self.__child_nodes = []        
         self.__parent_node = None        
@@ -568,6 +578,19 @@ class Node(taxa.TaxonLinked):
         else:
             self.edge = Edge(head_node=self)
         self.__edge.head_node = self            
+
+    def __deepcopy__(self, memo):
+        o = self.__class__(label=self.label, taxon=self.taxon)
+        memo[id(self)] = o
+        if self.edge is None:
+            o.edge = None
+        else:
+            c_edge = copy.deepcopy(self.edge, memo)
+            o.edge = c_edge
+        o.parent_node = copy.deepcopy(self.parent_node, memo)
+        for c in self.child_nodes():
+            o.add_child(copy.deepcopy(c, memo))
+        return o
 
     def __str__(self):
         "String representation of the object: it's id."
@@ -883,6 +906,15 @@ class Edge(base.IdTagged):
         if tail_node is not None:
             self.tail_node = tail_node
         self.length = length
+
+    def __deepcopy__(self, memo):
+        o = self.__class__()
+        memo[id(self)] = o
+        o.tail_node = copy.deepcopy(self.tail_node, memo)
+        o.head_node = copy.deepcopy(self.head_node, memo)
+        o.length = copy.deepcopy(self.length, memo)
+        o.rootedge = copy.deepcopy(self.rootedge, memo)
+        return o
 
     def new_edge(self, oid=None):
         "Returns a new edge object of the same class of this edge."

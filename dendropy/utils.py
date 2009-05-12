@@ -27,6 +27,7 @@ This module contains various utility functions and methods.
 """
 
 import os
+import copy
 import fnmatch
 
 class RecastingIterator(object):
@@ -260,7 +261,14 @@ class NormalizedBitmaskDict(dict):
             if isinstance(other, dict):                
                 for key, val in other.items():
                     self[key] = val
-        
+    def __deepcopy__(self, memo):
+        o = NormalizedBitmaskDict()
+        memo[id(self)] = o
+        o.mask = self.mask
+        for key, val in self.items():
+            o[key] = copy.deepcopy(val, memo)
+        return o
+
     def normalize_key(self, key):
         return NormalizedBitmaskDict.normalize(key, self.mask)
             

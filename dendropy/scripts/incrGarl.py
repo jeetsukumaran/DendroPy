@@ -314,7 +314,7 @@ def cmp_score(x, y):
     
 if __name__ == '__main__':
     description =  '%s %s ' % (_program_name, _program_version)    
-    usage = "%prog [options] <TREES FILE> [<TREES FILE> [<TREES FILE> [...]]"
+    usage = "%prog --conf=template.conf --data=data.nex --tree=start.tre"
     
     parser = OptionParser(usage=usage, add_help_option=True, version = _program_version, description=description)
     parser.add_option('-d','--data',  
