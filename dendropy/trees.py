@@ -120,8 +120,8 @@ class Tree(base.IdTagged):
             self.seed_node = Node(oid='n0', edge=Edge())
         self.taxa_block = taxa
 
-    def __deepcopy__(self, memo):
-        
+#    def __deepcopy__(self, memo):
+#        pass
     def __str__(self):
         "Dump Newick string."
         return self.compose_newick()
