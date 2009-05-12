@@ -51,7 +51,7 @@ from dendropy import datasets
 
 ### MODULES THAT WE ARE TESTING ###
 from dendropy import nexus
-from dendropy import nexml
+# from dendropy import nexml
 ### MODULES THAT WE ARE TESTING ###
 
 def iterate_on_trees(tree_files, tf_iterator=nexus.iterate_over_trees):
@@ -298,15 +298,15 @@ END;
     def setUp(self):
         self.formats = ["newick",
                         "nexus",
-                        "nexml",
+#                         "nexml",
                        ]
         self.readers = {"newick": nexus.NewickReader,        
                         "nexus": nexus.NexusReader,
-                        "nexml": nexml.NexmlReader,
+#                         "nexml": nexml.NexmlReader,
                        }        
         self.writers = {"newick": nexus.NewickWriter,        
                         "nexus": nexus.NexusWriter,
-                        "nexml": nexml.NexmlWriter,
+#                         "nexml": nexml.NexmlWriter,
                        }
         self.tree_data = ["anolis.mbcon",
                           #"anolis.mcmct",

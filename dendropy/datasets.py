@@ -30,6 +30,7 @@ trees, models etc.
 import os
 from cStringIO import StringIO
 
+from dendropy import base
 from dendropy import taxa
 from dendropy import characters
 from dendropy import trees
@@ -51,11 +52,13 @@ def restore_reader_state(reader, cache):
     for k, v in cache.iteritems():
         setattr(reader, k, v)
     
-class Dataset(object):
+
+class Dataset(base.Element):
     "Top-level data structure."
 
     def __init__(self, taxa_blocks=None, char_blocks=None, trees_blocks=None):
         "Instantiates collections of taxa, blocks, trees, and models."
+        base.Element.__init__(self)
         if taxa_blocks is None:
             self.taxa_blocks = []
         else:
@@ -238,15 +241,17 @@ class Dataset(object):
         reader.include_characters = False
         old_trees_block_len = len(self.trees_blocks)
 
-        added = {"encode_splits":encode_splits, 
-                 "default_rooting":rooted, 
-                 "finish_node_func":finish_node_func,
-                 }
-        cache = cache_reader_state(reader, **added)
+        if format.upper() == "NEXUS" or format.upper() == "NEWICK":
+            added = {"encode_splits":encode_splits, 
+                     "default_rooting":rooted, 
+                     "finish_node_func":finish_node_func,
+                     }
+            cache = cache_reader_state(reader, **added)
         
         reader.read_dataset(src, self)
-
-        restore_reader_state(reader, cache)
+        
+        if format.upper() == "NEXUS" or format.upper() == "NEWICK":
+            restore_reader_state(reader, cache)
 
         new_trees_block_len = len(self.trees_blocks)
         if new_trees_block_len > old_trees_block_len:

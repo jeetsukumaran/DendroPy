@@ -25,9 +25,12 @@
 """
 Methods for working with Kingman's n-coalescent framework.
 """
-
+import math
 from dendropy import GLOBAL_RNG
 from dendropy import distributions
+from dendropy import treecalc
+from dendropy import trees
+from dendropy import splits
 
 def discrete_time_to_coalescence(n_genes, 
                                  pop_size=None, 
@@ -213,3 +216,171 @@ def coalesce(nodes,
 
     # return the list of nodes that have not coalesced
     return nodes
+
+def coalescence_intervals(tree):
+    """Returns list of coalescence intervals on `tree`."""
+    treecalc.add_depth_to_nodes(tree)
+    depths = [n.depth for n in tree.internal_nodes()]
+    depths.sort()
+    intervals = []
+    intervals.append(depths[0])
+    for i, d in enumerate(depths[1:]):
+        intervals.append(d - depths[i])
+    return intervals
+
+def node_waiting_time_pairs(tree):
+    """Returns list of tuples of (node, coalescent interval [= time between
+    last coalescent event and current node age])"""
+    treecalc.add_depth_to_nodes(tree)
+    depths = [(n, n.depth) for n in tree.internal_nodes()]    
+    depths.sort(lambda x, y: int(x[1] - y[1]))            
+    intervals = []
+    intervals.append(depths[0])
+    for i, d in enumerate(depths[1:]):
+        intervals.append( (d[0], d[1] - depths[i][1]) )
+    return intervals
+
+def coalescent_frames(tree):
+    """Returns list of tuples of (number of genes in the sample, waiting time
+    till coalescent event / size of coalescent interval) for the given tree"""
+    nwti = node_waiting_time_pairs(tree)
+#     num_genes = len(tree.taxa_block)
+    num_genes = len(tree.leaf_nodes())
+    num_genes_wt = []
+    for n in nwti:
+        num_genes_wt.append((num_genes, n[1]))
+        num_genes = num_genes - len(n[0].child_nodes()) + 1 
+    return num_genes_wt      
+
+def probability_of_coalescent_tree(tree, haploid_pop_size):
+    """
+    Under the classical neutral coalescent \citep{Kingman1982,
+    Kingman1982b}, the waiting times between coalescent events in a
+    sample of $k$ alleles segregating in a  population of (haploid) size
+    $N_e$ is distributed exponentially with a rate parameter of
+    $\frac{{k \choose 2}}{N_e}$:
+    
+    \begin{align}
+         \Pr(T) =  \frac{{k \choose 2}}{N_e} \e{-  \frac{{k \choose 2}}{N_e} T},
+    \end{align}
+    
+    where $T$ is the length of  (chronological) time in which there are
+    $k$ alleles in the sample (i.e., for $k$ alleles to coalesce into
+    $k-1$ alleles).
+    """
+    kts = coalescent_frames(tree)  
+#     p = 1.0
+#     for kt in kts:
+#         print "****"
+#         print "p = %s" % p
+#         print "k = %s" % kt[0]
+#         print "t = %s" % kt[1]
+#         print "k2N = %s" % k2N
+#         print "e^(-k2N * t) = %s" % math.exp(-k2N * kt[1])
+#         k2N = float(distributions.binomial_coefficient(kt[0], 2)) / haploid_pop_size
+#         p *=  k2N * math.exp(-k2N * kt[1])
+#         print "p' = %s" %  p
+    lp = 0.0
+    for kt in kts:
+        k2N = float(distributions.binomial_coefficient(kt[0], 2)) / haploid_pop_size
+        lp =  lp + math.log(k2N) - (k2N * kt[1])
+    p = math.exp(lp)
+    return p
+
+def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
+    """
+    Given two trees (with splits encoded), this returns the number of gene 
+    duplications implied by the gene tree reconciled on the species tree, based 
+    on the algorithm described here:
+    
+        Goodman, M. J. Czelnusiniak, G. W. Moore, A. E. Romero-Herrera, and 
+        G. Matsuda. 1979. Fitting the gene lineage into its species lineage,
+        a parsimony strategy illustrated bu cladograms constructed from globin
+        sequences. Syst. Zool. 19: 99-113.
+        
+        Maddison, W. P. 1997. Gene trees in species trees. Syst. Biol. 46: 
+        523-536.
+        
+    Note that for correct results, 
+        (a) trees must be rooted (i.e., is_rooted = True)  
+        (b) split masks must have been added as rooted (i.e., when 
+        encode_splits was called, is_rooted must have been set to True)
+    
+    By default (if `otu_association` is None), each gene tree terminal maps onto the
+    corresponding terminal on the species tree. Otherwise, `otu_association` should be
+    a dictionary with gene terminals as keys as corresponding species terminals
+    as values.    
+    """
+#     from dendropy import treesum
+#     dc = 0
+#     taxa_mask = species_tree.taxa_block.all_taxa_bitmask()
+#     for gnd in gene_tree.postorder_node_iter():
+#         gn_children = gnd.child_nodes()
+#         if len(gn_children) > 0:
+#             ssplit = 0
+#             for gn_child in gn_children:
+#                 ssplit = ssplit | gn_child.species_node.edge.clade_mask
+#             sanc = splits.mrca(species_tree.seed_node, ssplit, taxa_mask)     
+#             gnd.species_node = sanc
+#             deep_coal_occurs = False
+#             for gn_child in gn_children:
+#                 if gn_child.species_node is sanc:
+#                     deep_coal_occurs = True
+#             if deep_coal_occurs:
+#                 dc += 1
+#         else:
+#             if otu_association is None:
+#                 gnd.species_node = species_tree.find_node(lambda x : x.taxon == gnd.taxon)
+#             else:
+#                 gnd.species_node = species_tree.find_node(lambda x : x.taxon == otu_association[gnd.taxon]) 
+#     return dc
+
+    taxa_mask = species_tree.taxa_block.all_taxa_bitmask()
+    
+    species_node_gene_nodes = {}
+    gene_node_species_nodes = {}
+    
+    for gnd in gene_tree.postorder_node_iter():
+        gn_children = gnd.child_nodes()
+        if len(gn_children) > 0:
+            ssplit = 0
+            for gn_child in gn_children:
+                ssplit = ssplit | gene_node_species_nodes[gn_child].edge.clade_mask
+            sanc = splits.mrca(species_tree.seed_node, ssplit, taxa_mask)     
+            gene_node_species_nodes[gnd] = sanc
+            if sanc not in species_node_gene_nodes:
+                species_node_gene_nodes[sanc] = []
+            species_node_gene_nodes[sanc].append(gnd)                
+        else: 
+            if otu_association is None:
+                gene_node_species_nodes[gnd] = species_tree.find_node(lambda x : x.taxon == gnd.taxon)
+            else:
+                gene_node_species_nodes[gnd] = species_tree.find_node(lambda x : x.taxon == otu_association[gnd.taxon])                
+#             species_node_gene_nodes[gene_node_species_nodes[gnd]] = [gnd]
+            
+    contained_gene_lineages = {}            
+    for snd in species_tree.postorder_node_iter():
+        if snd in species_node_gene_nodes:
+            for gnd in species_node_gene_nodes[snd]:
+                for gnd_child in gnd.child_nodes():
+                    sanc = gene_node_species_nodes[gnd_child]
+                    p = sanc
+                    while p is not None and p != snd:
+                        if p.edge not in contained_gene_lineages:
+                            contained_gene_lineages[p.edge] = 0
+                        contained_gene_lineages[p.edge] += 1
+                        p = p.parent_node
+                        
+    dc = 0                        
+    for v in contained_gene_lineages.values():                
+        dc += v - 1
+
+    return dc
+
+
+def deep_coal_implied_by_grouping(tree, tax_set):
+    """
+    Returns the number of deep coalescences on tree `tree` that would result
+    if the taxa in `tax_set` formed a monophyletic group.
+    """
+    pass

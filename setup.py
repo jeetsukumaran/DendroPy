@@ -35,12 +35,18 @@ import sys
 import os
 import subprocess
 
-script_names = ['cattrees.py', 
+script_names = ['cattrees.py',
+                'extract-coalescent-frames.py',
+                'coal-goodness-of-fit.py',
                 'incrGarl.py',
+                'long_branch_symmdiff.py',
                 'rtreeoutgroup.py', 
+		'strict_consensus_merge.py',
                 'sumtrees.py', 
                 'symmdiff_by_split_cutoff.py',
-                'treedepth.py',]
+                'treedepth.py',
+                'nexus-to-nexml.py',
+                'prob-coal-tree.py']
 setup(name='DendroPy',
       version=PACKAGE_VERSION,     
       author='Jeet Sukumaran and Mark T. Holder',
@@ -72,7 +78,7 @@ data processing and manipulation.""",
             "Environment :: Console",
             "Intended Audience :: Developers",
             "Intended Audience :: Science/Research",
-            "License :: OSI Approved :: GNU Library or  General Public License (GPL)",
+            "License :: OSI Approved :: GNU General Public License (GPL)",
             "Natural Language :: English",
             "Operating System :: OS Independent",
             "Programming Language :: Python",

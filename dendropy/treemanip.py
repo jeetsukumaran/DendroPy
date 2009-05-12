@@ -34,7 +34,6 @@ from dendropy import trees
 from dendropy import get_logger
 _LOG = get_logger('dendropy.treemanip')
 
-
 def collapse_edge(edge):
     '''Inserts all children of the head_node of edge as children of the
     tail_node of edge in the same place in the child_node list that head_node

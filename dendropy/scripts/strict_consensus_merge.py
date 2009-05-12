@@ -116,7 +116,7 @@ def _collapse_paths_not_found(f, s, other_dict=None):
         del f[k]
 
 
-def add_to_scm(to_modify, to_consume, rooted=False):
+def add_to_scm(to_modify, to_consume, rooted=False, gordons_supertree=False):
     """Adds the tree `to_consume` to the tree `to_modify` in a strict consensus
     merge operation.  Both trees must have had encode_splits called on them."""
     assert(to_modify.taxa_block is to_consume.taxa_block)
@@ -244,16 +244,41 @@ def add_to_scm(to_modify, to_consume, rooted=False):
         if len(to_consume_path) > 1:
             if len(to_mod_path) > 1:
                 # collision
-                for edge in to_mod_path[1:-1]:
-                    collapse_edge(edge)
-                mid_node = to_mod_path[0].head_node
-                for edge in to_consume_path[1:]:
-                    p = edge.tail_node
-                    avoid = edge.head_node
-                    for child in p.child_nodes():
-                        if child is not avoid:
-                            mid_node.add_child(child)
-                            mid_node.edge.clade_mask |= child.edge.clade_mask
+                if gordons_supertree:
+                    for edge in to_mod_path[2:]:
+                        p = edge.tail_node
+                        c = edge.head_node
+                        sibs = p.child_nodes()
+                        for sib in sibs:
+                            _LOG.debug("sib is %s" % (sib.compose_newick()))
+                            if sib is not c:
+                                if not sib.is_leaf():
+                                    collapse_clade(sib)
+                                    collapse_edge(sib.edge)
+                        collapse_edge(p.edge)
+                    mid_node = to_mod_path[0].head_node
+                    for edge in to_consume_path[1:]:
+                        p = edge.tail_node
+                        avoid = edge.head_node
+                        for child in p.child_nodes():
+                            _LOG.debug("child is %s" % (child.compose_newick()))
+                            if child is not avoid:
+                                mid_node.add_child(child)
+                                collapse_clade(child)
+                                if not child.is_leaf():
+                                    collapse_edge(child.edge)
+                                mid_node.edge.clade_mask |= child.edge.clade_mask
+                else:
+                    for edge in to_mod_path[1:-1]:
+                        collapse_edge(edge)
+                    mid_node = to_mod_path[0].head_node
+                    for edge in to_consume_path[1:]:
+                        p = edge.tail_node
+                        avoid = edge.head_node
+                        for child in p.child_nodes():
+                            if child is not avoid:
+                                mid_node.add_child(child)
+                                mid_node.edge.clade_mask |= child.edge.clade_mask
             else:
                 # we have to move the subtrees from to_consume to to_modify
                 to_mod_edge = to_mod_path[0]
@@ -271,7 +296,7 @@ def add_to_scm(to_modify, to_consume, rooted=False):
     encode_splits(to_modify)
                 
     
-def strict_consensus_merge(trees_to_merge, copy_trees=False, rooted=False):
+def strict_consensus_merge(trees_to_merge, copy_trees=False, rooted=False, gordons_supertree=False):
     """Returns a tree that is the strict consensus merger of the input trees.
     
     If copy_trees is True then the trees will be copied before the merger 
@@ -303,7 +328,7 @@ def strict_consensus_merge(trees_to_merge, copy_trees=False, rooted=False):
         encode_splits(to_consume)
         if IS_DEBUG_LOGGING:
             assert to_consume._debug_tree_is_valid(splits=True)
-        add_to_scm(to_modify, to_consume, rooted)
+        add_to_scm(to_modify, to_consume, rooted, gordons_supertree=gordons_supertree)
         if IS_DEBUG_LOGGING:
             assert to_modify._debug_tree_is_valid(splits=False)
 
@@ -316,6 +341,8 @@ if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option('-f', '--format', dest='format',
                         type='str', default="newick", help='The input format') 
+    parser.add_option('-g', '--gordon', dest='gordons',
+                        action="store_true", default=False, help="Specify to use the Gordon's strict consensus") 
     (options, args) = parser.parse_args()
     if len(args) == 0:
         sys.exit("Expecting a filename as an argument")
@@ -343,7 +370,7 @@ if __name__ == '__main__':
     else:
         sys.exit("Unknown format %s" % format)
     
-    o = strict_consensus_merge(trees)
+    o = strict_consensus_merge(trees, gordons_supertree=options.gordons)
     sys.stdout.write("%s;\n" % str(o))
 
 

@@ -52,8 +52,9 @@ __all__ = ["base.py",
         "treesum.py",
         "utils.py",
         "xmlparser.py",
+        "high_level.py",
 ]
-__version__ = "2.2.0"
+__version__ = "2.4.0"
 PACKAGE_NAME = "DendroPy"
 PACKAGE_VERSION = __version__
 PACKAGE_AUTHOR = "Jeet Sukumaran and Mark T. Holder"

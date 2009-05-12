@@ -1,4 +1,4 @@
-* Dataset.read() etc.
+** if tree has rootedge, root node must have is_rooted set to true
 
 * Add option to specify posterior probability support as Nexus node comment in SumTrees
 

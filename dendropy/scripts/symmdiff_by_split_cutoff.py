@@ -47,11 +47,12 @@ import dendropy
 from dendropy import nexus
 from dendropy import splits
 from dendropy import treesum
-from dendropy import datasets, 
+from dendropy import datasets
 from dendropy import trees
 from dendropy import treegen
 from dendropy import get_logger
-from dendropy.datasets import Dataset, MultiFileTreeIterator
+from dendropy.datasets import Dataset
+from dendropy.dataio import MultiFileTreeIterator
 _LOG = get_logger("symmdiff_by_split_cutoff")
 
 _program_name = 'symmdiff_by_split_cutoff'

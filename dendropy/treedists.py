@@ -27,6 +27,27 @@ Tree distances.
 """
 from math import sqrt
 from dendropy import splits
+from dendropy import treesum
+
+def patristic_distance(tree, taxon1, taxon2): 
+    """
+    Given a tree with splits encoded, and two taxa on that tree, returns the 
+    patristic distance between the two.
+    """
+    split = tree.taxa_block.taxon_bitmask(taxon1) | tree.taxa_block.taxon_bitmask(taxon2)    
+    mrca = splits.mrca(tree.seed_node, split, tree.taxa_block.all_taxa_bitmask())
+    dist = 0
+    n = tree.find_node(lambda x: x.taxon == taxon1)
+    while n != mrca:
+        if n.edge.length is not None:
+            dist += n.edge.length
+        n = n.parent_node
+    n = tree.find_node(lambda x: x.taxon == taxon2)
+    while n != mrca:
+        if n.edge.length is not None:
+            dist += n.edge.length
+        n = n.parent_node
+    return dist   
 
 def robinson_foulds_calc(length_diffs):
     """

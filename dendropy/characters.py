@@ -274,12 +274,12 @@ class BinaryStateAlphabet(StateAlphabet):
 class RestrictionSitesStateAlphabet(BinaryStateAlphabet):
 
     def __init__(self, oid=None, label=None):
-        BinaryStateAlphabet.__init__(self, oid=oid, label=label)    
+        BinaryStateAlphabet.__init__(self, oid=oid, label=label, allow_gaps=False, allow_missing=False)    
         
 class InfiniteSitesStateAlphabet(BinaryStateAlphabet):
 
     def __init__(self, oid=None, label=None):
-        BinaryStateAlphabet.__init__(self, oid=oid, label=label)
+        BinaryStateAlphabet.__init__(self, oid=oid, label=label, allow_gaps=False, allow_missing=False)
 
 ### GLOBAL STATE ALPHABETS ###                                       
 

@@ -78,12 +78,12 @@ class DatasetReadTest(unittest.TestCase):
     def testBasicCharactersRead(self):
         test_cases = [
             ['anolis.chars.nexus', 'nexus', 'anolis.chars.csv'],
-            ['anolis.chars.nexml', 'nexml', 'anolis.chars.csv'],
+#             ['anolis.chars.nexml', 'nexml', 'anolis.chars.csv'],
             ['primates.chars.nexus', 'nexus', 'primates.chars.csv'],
             ['primates.chars.interleaved.nexus', 'nexus', 'primates.chars.csv'],
             ['primates.chars.simple.nexus', 'nexus', 'primates.chars.csv'],
             ['primates.chars.simple.interleaved.nexus', 'nexus', 'primates.chars.csv'],
-            ['primates.chars.nexml', 'nexml', 'primates.chars.csv'],
+#             ['primates.chars.nexml', 'nexml', 'primates.chars.csv'],
         ]
         
         for t in test_cases:

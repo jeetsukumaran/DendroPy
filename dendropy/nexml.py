@@ -29,16 +29,18 @@ NEXML format.
 
 import time
 import textwrap
+# import cgi
+from xml.sax.saxutils import quoteattr
 from dendropy import base
 from dendropy import datasets
 from dendropy import taxa
 from dendropy import characters
 from dendropy import trees
 from dendropy import xmlparser
-     
-############################################################################
-## Standard Tree Iterator
-      
+
+def protect_attr(x):
+#     return cgi.escape(x)
+    return quoteattr(x)
 
 ############################################################################
 ## Local Module Methods
@@ -294,9 +296,10 @@ class _NexmlElementParser(object):
         and passes it to the dictionary parse if found. Results are
         placed as attributes of `annotated`.
         """
-        xml_dict = nxelement.find('dict')
-        if xml_dict:
-            return self.parse_dict(annotated=annotated, xml_dict=xml_dict)
+        pass
+#         xml_dict = nxelement.find('dict')
+#         if xml_dict:
+#             return self.parse_dict(annotated=annotated, xml_dict=xml_dict)
 
     def parse_dict(self, annotated, xml_dict):
         """
@@ -528,7 +531,7 @@ class _NexmlTreesParser(_NexmlElementParser):
             edge.tail_node_id = nxedge.get('source', None)
             edge.head_node_id = nxedge.get('target', None)
             edge.oid = nxedge.get('id', 'e' + str(edge_counter))
-            edge_length_str = length_type(nxedge.get('length', '0.0'))
+            edge_length_str = length_type(nxedge.get('length', 0.0))
 
             if not edge.tail_node_id:
                 msg = 'Edge %d ("%s") does not have a source' \
@@ -725,12 +728,12 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         char_block.taxa_block = taxa_block
         self.parse_annotations(annotated=char_block, nxelement=nxchars)                
         
-        nxformat = nxchars.find('format')
+        nxformat = nxchars.find('format')        
         if nxformat is not None:
             self.parse_characters_format(nxformat, char_block)
         elif isinstance(char_block, characters.StandardCharactersBlock):
-            # default to all integers < 10 as symbols
-            self.create_standard_character_alphabet(char_block)
+            # default to all integers < 10 as symbols            
+            self.create_standard_character_alphabet(char_block)            
             
         matrix = nxchars.find('matrix')
         self.parse_annotations(annotated=char_block.matrix, nxelement=matrix)
@@ -775,13 +778,16 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                         character_vector.set_cell_by_index(pos_idx, cell)
             else:
                 if nxchartype.endswith('Seqs'):
-                    char_block.markup_as_sequences = True                
-                    symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
+                    char_block.markup_as_sequences = True            
+#                     symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
                     seq = nxrow.findtext('seq')
                     if seq is not None:
                         seq = seq.replace(' ', '').replace('\n', '').replace('\r', '')
+                        col_idx = 0
                         for char in seq:
+                            symbol_state_map = char_block.column_types[col_idx].state_alphabet.symbol_state_map()                                                
                             if char in symbol_state_map:
+                                col_idx += 1
                                 state = symbol_state_map[char]
                             else:
                                 raise NameError('Character Block %s (\"%s\"): State with symbol "%s" in sequence "%s" not defined' % (char_block.oid, char_block.label, char, seq))
@@ -820,6 +826,7 @@ class NexmlWriter(datasets.Writer):
         document.
         """
         self.write_to_nexml_open(dest, indent_level=0)
+        self.write_extensions(dataset, dest)
         self.write_taxa_blocks(taxa_blocks=dataset.taxa_blocks, dest=dest)
         self.write_char_blocks(char_blocks=dataset.char_blocks, dest=dest)
         self.write_trees_blocks(trees_blocks=dataset.trees_blocks, dest=dest)
@@ -838,10 +845,11 @@ class NexmlWriter(datasets.Writer):
             else:
                 raise Exception("Taxa block given without ID")
             if taxa_block.label:
-                parts.append('label="%s"' % taxa_block.label)
+                parts.append('label=%s' % protect_attr(taxa_block.label))
             dest.write("<%s>\n" % ' '.join(parts))
             
             # annotate
+            self.write_extensions(taxa_block, dest, indent_level=indent_level+1)
             if isinstance(taxa_block, base.Annotated) and taxa_block.has_annotations():
                 self.write_annotations(taxa_block, dest, indent_level=indent_level+1)
                 
@@ -854,9 +862,10 @@ class NexmlWriter(datasets.Writer):
                 else:
                     raise Exception("Taxon without ID")
                 if taxon.label:
-                    parts.append('label="%s"' % taxon.label)
+                    parts.append('label=%s' % protect_attr(taxon.label))
                 if isinstance(taxon, base.Annotated) and taxon.has_annotations():
                     dest.write("<%s>\n" % ' '.join(parts))
+                    self.write_extensions(taxon, dest, indent_level=indent_level+2)
                     self.write_annotations(taxon, dest, indent_level=indent_level+2)
                     dest.write(self.indent * (indent_level+1))
                     dest.write("</otu>\n")
@@ -876,11 +885,12 @@ class NexmlWriter(datasets.Writer):
             else:
                 raise Exception("Tree block given without ID")
             if trees_block.label:
-                parts.append('label="%s"' % trees_block.label)
+                parts.append('label=%s' % protect_attr(trees_block.label))
             parts.append('otus="%s"' % trees_block.taxa_block.oid)
             dest.write("<%s>\n" % ' '.join(parts))
             
             # annotate
+            self.write_extensions(trees_block, dest, indent_level=indent_level+1)
             if isinstance(trees_block, base.Annotated) and trees_block.has_annotations():
                 self.write_annotations(trees_block, dest, indent_level=indent_level+1)            
             
@@ -889,10 +899,13 @@ class NexmlWriter(datasets.Writer):
             dest.write(self.indent * indent_level)                
             dest.write('</trees>\n')
 
-    def compose_state_definition(self, state, indent_level):
+    def compose_state_definition(self, state, indent_level, member_state=False):
         "Writes out state definition."
         parts = []
-        if state.multistate == characters.StateAlphabetElement.SINGLE_STATE:
+        if member_state:
+            parts.append('%s<member state="%s"/>' 
+                                % (self.indent * indent_level, state.oid))
+        elif state.multistate == characters.StateAlphabetElement.SINGLE_STATE:
             parts.append('%s<state id="%s" symbol="%s" />' 
                                 % (self.indent * indent_level, state.oid, state.symbol))
         else:
@@ -904,7 +917,7 @@ class NexmlWriter(datasets.Writer):
             parts.append('%s<%s id="%s" symbol="%s">' 
                             % (self.indent * indent_level, tag, state.oid, state.symbol))
             for member in state.member_states:
-                parts.extend(self.compose_state_definition(member, indent_level+1))
+                parts.extend(self.compose_state_definition(member, indent_level+1, member_state=True))
             parts.append("%s</%s>" % ((self.indent * indent_level), tag))
         return parts        
                                     
@@ -919,7 +932,7 @@ class NexmlWriter(datasets.Writer):
             else:
                 raise Exception("Character block without ID")
             if char_block.label:
-                parts.append('label="%s"' % char_block.label)
+                parts.append('label=%s' % protect_attr(char_block.label))
             parts.append('otus="%s"' % char_block.taxa_block.oid)                    
             if isinstance(char_block, characters.DnaCharactersBlock):
                 xsi_datatype = 'nex:Dna'
@@ -944,22 +957,30 @@ class NexmlWriter(datasets.Writer):
             dest.write("<%s>\n" % ' '.join(parts))
             
             # annotate
+            self.write_extensions(char_block, dest, indent_level=indent_level+1)
             if isinstance(char_block, base.Annotated) and char_block.has_annotations():
                 self.write_annotations(char_block, dest, indent_level=indent_level+1)            
             state_alphabet_parts = []
-            if isinstance(char_block, characters.StandardCharactersBlock):
+            if hasattr(char_block, "state_alphabets"): #isinstance(char_block, characters.StandardCharactersBlock):
                 for state_alphabet in char_block.state_alphabets:
                     state_alphabet_parts.append('%s<states id="%s">' 
                         % (self.indent * (indent_level+2), state_alphabet.oid))
                     for state in state_alphabet:
-                        state_alphabet_parts.extend(self.compose_state_definition(state, indent_level+3))
+                        if state.multistate == characters.StateAlphabetElement.SINGLE_STATE:
+                            state_alphabet_parts.extend(self.compose_state_definition(state, indent_level+3))
+                    for state in state_alphabet:
+                        if state.multistate == characters.StateAlphabetElement.POLYMORPHIC_STATE:
+                            state_alphabet_parts.extend(self.compose_state_definition(state, indent_level+3))
+                    for state in state_alphabet:
+                        if state.multistate == characters.StateAlphabetElement.AMBIGUOUS_STATE:
+                            state_alphabet_parts.extend(self.compose_state_definition(state, indent_level+3))                        
                     state_alphabet_parts.append('%s</states>' % (self.indent * (indent_level+2)))
             
             column_types_parts = []
             if char_block.column_types:
                 for column in char_block.column_types:
                     if column.state_alphabet:
-                        column_state = 'states="%s" ' % column.state_alphabet.oid
+                        column_state = ' states="%s" ' % column.state_alphabet.oid
                     else:
                         column_state = ' '
                     column_types_parts.append('%s<char id="%s"%s/>' 
@@ -977,6 +998,7 @@ class NexmlWriter(datasets.Writer):
            
             dest.write("%s<matrix>\n" % (self.indent * (indent_level+1)))
             
+            self.write_extensions(char_block.matrix, dest, indent_level=indent_level+1)
             if isinstance(char_block.matrix, base.Annotated) and char_block.matrix.has_annotations():
                 self.write_annotations(char_block.matrix, dest, indent_level=indent_level+1)            
             
@@ -992,6 +1014,7 @@ class NexmlWriter(datasets.Writer):
                     parts.append('otu="%s"' % taxon.oid)
                 dest.write("<%s>\n" % ' '.join(parts))
                 
+                self.write_extensions(row, dest, indent_level=indent_level+3)
                 if isinstance(row, base.Annotated) and row.has_annotations():
                     self.write_annotations(row, dest, indent_level=indent_level+3)            
                 
@@ -1022,10 +1045,15 @@ class NexmlWriter(datasets.Writer):
                         parts.append('%s<cell' % (self.indent*(indent_level+3)))
                         if cell.column_type is not None:
                             parts.append('char="%s"' % cell.column_type.oid)
-                        parts.append('state="%s"' % str(cell))
+                        if hasattr(cell, "value") and hasattr(cell.value, "oid"):
+                            v = cell.value.oid
+                        else:
+                            v = str(cell.value)
+                        parts.append('state="%s"' % v)
                         dest.write(' '.join(parts))
                         if isinstance(cell, base.Annotated) and cell.has_annotations():
                             dest.write('>\n')
+                            self.write_extensions(cell, dest, indent_level=indent_level+4)
                             self.write_annotations(cell, dest, indent_level=indent_level+4)            
                             dest.write('%s</cell>' % (self.indent*(indent_level+3)))
                         else:
@@ -1048,7 +1076,7 @@ class NexmlWriter(datasets.Writer):
         else:
             parts.append('id="%s"' % ("Tree" + str(id(tree))))
         if hasattr(tree, 'label') and tree.label:
-            parts.append('label="%s"' % tree.label)
+            parts.append('label=%s' % protect_attr(tree.label))
         if hasattr(tree, 'length_type') and tree.length_type:
             parts.append('xsi:type="%s"' % _to_nexml_tree_length_type(tree.length_type))
         else:
@@ -1057,8 +1085,9 @@ class NexmlWriter(datasets.Writer):
         dest.write('%s<%s>\n'
                    % (self.indent * indent_level, parts))   
         # annotate
+        self.write_extensions(tree, dest, indent_level=indent_level+1)
         if isinstance(tree, base.Annotated) and tree.has_annotations():
-            self.write_annotations(tree, dest, indent_level=indent_level+1)  
+            self.write_annotations(tree, dest, indent_level=indent_level+1)            
             
         for node in tree.preorder_node_iter():
             self.write_node(node=node, dest=dest, indent_level=indent_level+1)
@@ -1071,15 +1100,17 @@ class NexmlWriter(datasets.Writer):
         parts = []
         parts.append('<?xml version="1.0" encoding="ISO-8859-1"?>')
         parts.append('<nex:nexml')
-        parts.append('%sversion="1.0"' % (self.indent * (indent_level+1)))
+        parts.append('%sversion="0.8"' % (self.indent * (indent_level+1)))
         parts.append('%sxmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
                      % (self.indent * (indent_level+1)))
         parts.append('%sxmlns:xml="http://www.w3.org/XML/1998/namespace"' \
                      % (self.indent * (indent_level+1)))
-        parts.append('%sxsi:schemaLocation="http://www.nexml.org/1.0 nexml.xsd"'
+        parts.append('%sxsi:schemaLocation="http://www.nexml.org/1.0 ../xsd/nexml.xsd"'
                      % (self.indent * (indent_level+1)))
+        parts.append('%sxmlns="http://www.nexml.org/1.0"'
+                     % (self.indent * (indent_level+1))) 
         parts.append('%sxmlns:nex="http://www.nexml.org/1.0">\n'
-                     % (self.indent * (indent_level+1)))
+                     % (self.indent * (indent_level+1)))                     
         dest.write('\n'.join(parts))
 
     def write_to_nexml_close(self, dest, indent_level=0):
@@ -1092,13 +1123,14 @@ class NexmlWriter(datasets.Writer):
         parts.append('<node')
         parts.append('id="%s"' % node.oid)
         if hasattr(node, 'label') and node.label:
-            parts.append('label="%s"' % node.label)
+            parts.append('label=%s' % protect_attr(node.label))
         if hasattr(node, 'taxon') and node.taxon:
             parts.append('otu="%s"' % node.taxon.oid)
         parts = ' '.join(parts)
         dest.write('%s%s' % ((self.indent * indent_level), parts))
         if node.has_annotations():
             dest.write('>\n')
+            self.write_extensions(node, dest, indent_level=indent_level+1)
             self.write_annotations(node, dest, indent_level=indent_level+1)
             dest.write('%s</node>\n' % (self.indent * indent_level))
         else:
@@ -1132,6 +1164,7 @@ class NexmlWriter(datasets.Writer):
                 dest.write('%s%s' % ((self.indent * indent_level), parts))
                 if edge.has_annotations():
                     dest.write('>\n')
+                    self.write_extensions(edge, dest, indent_level=indent_level+1)
                     self.write_annotations(edge, dest,
                                            indent_level=indent_level+1)
                     dest.write('%s</%s>\n' % ((self.indent * indent_level), tag))
@@ -1140,9 +1173,18 @@ class NexmlWriter(datasets.Writer):
 
     def write_annotations(self, annotated, dest, indent_level=0):
         "Writes out annotations for an Annotable object."
-        annotes_dict = annotated.annotations()
-        if len(annotes_dict) > 0:
-            parts = _to_nexml_dict(annotes_dict, self.indent, indent_level)
-            parts = '\n'.join(parts)
-            dest.write(parts + '\n')
-
+        pass
+#         if hasattr(annotated, "annotations"):
+#             annotes_dict = annotated.annotations()
+#             if len(annotes_dict) > 0:
+#                 parts = _to_nexml_dict(annotes_dict, self.indent, indent_level)
+#                 parts = '\n'.join(parts)
+#                 dest.write(parts + '\n')
+            
+    def write_extensions(self, element, dest, indent_level=0):           
+        ### HACK TO SUPPORT RICH STRUCTURED METADATA ###  
+        from xml.etree import ElementTree
+        for e in element.extensions:
+            dest.write(ElementTree.tostring(e))
+            dest.write("\n")
+ 
