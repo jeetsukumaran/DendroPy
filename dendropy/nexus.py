@@ -317,7 +317,8 @@ def parse_newick_tree_stream(stream_tokenizer,
         elif token == ',':
             tmp_node = trees.Node()
             if curr_node.is_leaf() and not curr_node.taxon:
-                raise stream_tokenizer.syntax_exception('Missing taxon specifier in a tree -- found either a "(," or ",," construct.')
+                curr_node.taxon = taxa.Taxon(label="")
+                #raise stream_tokenizer.syntax_exception('Missing taxon specifier in a tree -- found either a "(," or ",," construct.')
             p = curr_node.parent_node
             if not p:
                 raise stream_tokenizer.syntax_exception('Comma found one the "outside" of a newick tree description')
@@ -335,7 +336,8 @@ def parse_newick_tree_stream(stream_tokenizer,
         else:
             if token == ')':
                 if curr_node.is_leaf() and not curr_node.taxon:
-                    raise stream_tokenizer.syntax_exception('Missing taxon specifier in a tree -- found either a "(," or ",," construct.')
+                    curr_node.taxon = taxa.Taxon(label="")
+                    #raise stream_tokenizer.syntax_exception('Missing taxon specifier in a tree -- found either a "(," or ",," construct.')
                 p = curr_node.parent_node
                 if not p:
                     raise stream_tokenizer.syntax_exception('Unbalanced parentheses -- too many ")" characters found in tree description')
