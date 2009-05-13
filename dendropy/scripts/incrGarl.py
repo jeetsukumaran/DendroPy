@@ -26,7 +26,7 @@ Symmetric difference between collection of trees and a reference tree displayed
 """
 
 __DEBUG__ = True
-
+VERBOSE = True
 import os
 import sys
 import itertools
@@ -123,6 +123,9 @@ GARLI_MASTER = (
             "inferinternalstateprobs",
             )
 
+class GARLI_ENUM:
+    NORMAL_RUNMODE, INCR_RUNMODE = "0", "10"
+
 class GarliConf(object):
     def __init__(self):
         self.datafname = "rana.nex",
@@ -200,8 +203,13 @@ class GarliConf(object):
         f.close()
         invoc = ["iGarli", tmp_conf_file]
         _LOG.debug("Running:\n  %s\nfrom\n  %s" % (" ".join(invoc), os.path.abspath(os.curdir)))
-        garli_instance = Popen(invoc, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        gstdout, gstderr = garli_instance.communicate("\n".join(commands))
+        if VERBOSE:
+            garli_instance = Popen(invoc, stdin=PIPE)
+            garli_instance.communicate("\n".join(commands))
+            gstderr = ""
+        else:
+            garli_instance = Popen(invoc, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            gstdout, gstderr = garli_instance.communicate("\n".join(commands))
         rc = garli_instance.wait()
         if rc != 0:
             sys.exit(gstderr)
@@ -213,20 +221,21 @@ class GarliConf(object):
         
         tmp_tree_filename = ".tmp.tre"
         f = open(tmp_tree_filename, "w")
-        write_tree_file(f, [tree], dataset)
+        write_newick_file(f, [tree], dataset)
         f.close()
 
         tmp_tree_filename = ".tmpconstrain.tre"
         f = open(tmp_tree_filename, "w")
         mapper = {}
         c = copy.deepcopy(tree, mapper)
-        new_nd = mapper[nd]
+        new_nd = mapper[id(nd)]
         nd .collapse_neighborhood(edge_dist)
-        write_tree_file(f, [tree], dataset)
+        write_constraint_file(f, [tree], dataset)
         f.close()
     
-        self.streefname = tmp_tree_filename
-        self.constraintfile = "none"
+        self.runmode = GARLI_ENUM.NORMAL_RUNMODE
+        self.streefname = ".tmp.tre"
+        self.constraintfile = tmp_tree_filename
 
     
         
@@ -256,7 +265,7 @@ class GarliConf(object):
         f.close()
     
         self.incompletetreefname = tmp_tree_filename
-    
+        self.runmode = GARLI_ENUM.INCR_RUNMODE
         
         self.run(["run", "quit"])
         
@@ -287,6 +296,14 @@ def write_tree_file(outstream, trees_block, dataset):
         outstream.write(";\n Tree a = [&U] %s ;\n" % tree.compose_newick(reverse_translate=rev_trans_func))
     outstream.write("End;\n")
 
+def write_constraint_file(outstream, trees_block, dataset):
+    write_newick_file(outstream, trees_block, dataset, '+')
+
+def write_newick_file(outstream, trees_block, dataset, pref=''):
+    tree = trees_block[0]
+    assert(len(trees_block) == 1)
+    outstream.write("%s%s;\n" % (pref, tree.compose_newick()))
+    
 
 
 
@@ -345,6 +362,7 @@ if __name__ == '__main__':
     if conf_file is None:
         sys.exit("Expecting a conf file template for GARLI")
     if opts.verbose:
+        VERBOSE = True
         _LOG.setLevel(logging.DEBUG)
     data_file = opts.data_filepath
     intree_file = opts.intree_filepath

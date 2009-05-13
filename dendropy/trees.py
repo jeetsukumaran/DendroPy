@@ -932,8 +932,10 @@ class Edge(base.IdTagged):
         h = self.head_node
         if h.is_leaf():
             return
-        c = h.child_nodes()
         t = self.tail_node
+        if t is None:
+            return
+        c = h.child_nodes()
         pc = t.child_nodes()
         pos = len(pc)
         try:
