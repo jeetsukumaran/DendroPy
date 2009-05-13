@@ -32,6 +32,7 @@ import sys
 import itertools
 import copy
 import re
+import logging
 from optparse import OptionParser
 from subprocess import Popen, PIPE
 
@@ -197,7 +198,9 @@ class GarliConf(object):
         f = open(tmp_conf_file, "w")
         self.write_garli_conf(f)
         f.close()
-        garli_instance = Popen(["iGarli", tmp_conf_file], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        invoc = ["iGarli", tmp_conf_file]
+        _LOG.debug("Running:\n  %s\nfrom\n  %s" % (" ".join(invoc), os.path.abspath(os.curdir)))
+        garli_instance = Popen(invoc, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         gstdout, gstderr = garli_instance.communicate("\n".join(commands))
         rc = garli_instance.wait()
         if rc != 0:
@@ -215,7 +218,10 @@ class GarliConf(object):
 
         tmp_tree_filename = ".tmpconstrain.tre"
         f = open(tmp_tree_filename, "w")
-        c = copy.deepcopy(tree)
+        mapper = {}
+        c = copy.deepcopy(tree, mapper)
+        new_nd = mapper[nd]
+        nd .collapse_neighborhood(edge_dist)
         write_tree_file(f, [tree], dataset)
         f.close()
     
@@ -330,15 +336,16 @@ if __name__ == '__main__':
                   default=None,
                   help="path to a garli conf file")  
     parser.add_option('-v', '--verbose', 
-                      action='store_false', 
-                      dest='quiet',
-                      default=True,
+                      action='store_true', 
+                      dest='verbose',
+                      default=False,
                       help="Verbose mode") 
-  
     (opts, args) = parser.parse_args()
     conf_file = opts.conf
     if conf_file is None:
         sys.exit("Expecting a conf file template for GARLI")
+    if opts.verbose:
+        _LOG.setLevel(logging.DEBUG)
     data_file = opts.data_filepath
     intree_file = opts.intree_filepath
     if data_file is None:
@@ -448,11 +455,11 @@ if __name__ == '__main__':
                     if e is None:
                         sys.exit("Could not find split %s" % (bin(split)[2:]))
                         assert e is not None
-                    alt_t = garli.check_neighborhood_after_addition(t, e.tail_node, 2, culled, tree_ind)
+                    alt_t = garli.check_neighborhood_after_addition(t, e.head_node, 2, culled, tree_ind)
                     encode_splits(alt_t[0])
                     if symmetric_difference(alt_t[0], t) != 0:
                         e = find_edge_from_split(tree.seed_node, split)
-                        further_t = garli.check_neighborhood_after_addition(alt_t, e.tail_node, 3, culled, tree_ind)
+                        further_t = garli.check_neighborhood_after_addition(alt_t, e.head_node, 3, culled, tree_ind)
                         to_save.extend(further_t)
                     else:
                         to_save.append(t)

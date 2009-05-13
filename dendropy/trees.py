@@ -596,6 +596,18 @@ class Node(taxa.TaxonLinked):
         "String representation of the object: it's id."
         return str(self.oid)
 
+    def collapse_neighborhood(self, dist):
+        if dist < 1:
+            return
+        next_node = self.parent_node or self
+        children = self.child_nodes()
+        for ch in children:
+            if not ch.is_leaf():
+                ch.edge.collapse()
+        if not self.is_leaf():
+            self.edge.collapse()
+        next_node.collapse_neighborhood(dist - 1)
+        
     def is_leaf(self):
         "Returns True if the node has no child_nodes"
         return bool(not self.__child_nodes)
@@ -915,6 +927,23 @@ class Edge(base.IdTagged):
         o.length = copy.deepcopy(self.length, memo)
         o.rootedge = copy.deepcopy(self.rootedge, memo)
         return o
+
+    def collapse(self):
+        h = self.head_node
+        if h.is_leaf():
+            return
+        c = h.child_nodes()
+        t = self.tail_node
+        pc = t.child_nodes()
+        pos = len(pc)
+        try:
+            pos = pc.index(h)
+        except:
+            pass
+        for i, ch in enumerate(c):
+            t.add_child(ch, pos=pos + i)
+        t.remove_child(h)
+        
 
     def new_edge(self, oid=None):
         "Returns a new edge object of the same class of this edge."
