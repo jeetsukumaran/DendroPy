@@ -287,7 +287,7 @@ def probability_of_coalescent_tree(tree, haploid_pop_size):
     p = math.exp(lp)
     return p
 
-def num_deep_coalescences(species_tree, gene_tree):
+def num_deep_coalescences_with_fitted_tree(species_tree, gene_tree):
     """
     Given two trees (with splits encoded), this returns the number of gene 
     duplications implied by the gene tree reconciled on the species tree, based 
@@ -346,7 +346,7 @@ def num_deep_coalescences(species_tree, gene_tree):
     return dc
 
 
-def deep_coal_implied_by_grouping(tree, tax_set):
+def num_deep_coalescences_with_grouping(tree, tax_set):
     """
     Returns the number of deep coalescences on tree `tree` that would result
     if the taxa in `tax_set` formed a monophyletic group.
