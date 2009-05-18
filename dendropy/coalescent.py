@@ -287,7 +287,7 @@ def probability_of_coalescent_tree(tree, haploid_pop_size):
     p = math.exp(lp)
     return p
 
-def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
+def num_deep_coalescences(species_tree, gene_tree):
     """
     Given two trees (with splits encoded), this returns the number of gene 
     duplications implied by the gene tree reconciled on the species tree, based 
@@ -305,36 +305,8 @@ def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
         (a) trees must be rooted (i.e., is_rooted = True)  
         (b) split masks must have been added as rooted (i.e., when 
         encode_splits was called, is_rooted must have been set to True)
-    
-    By default (if `otu_association` is None), each gene tree terminal maps onto the
-    corresponding terminal on the species tree. Otherwise, `otu_association` should be
-    a dictionary with gene terminals as keys as corresponding species terminals
-    as values.    
+      
     """
-#     from dendropy import treesum
-#     dc = 0
-#     taxa_mask = species_tree.taxa_block.all_taxa_bitmask()
-#     for gnd in gene_tree.postorder_node_iter():
-#         gn_children = gnd.child_nodes()
-#         if len(gn_children) > 0:
-#             ssplit = 0
-#             for gn_child in gn_children:
-#                 ssplit = ssplit | gn_child.species_node.edge.clade_mask
-#             sanc = splits.mrca(species_tree.seed_node, ssplit, taxa_mask)     
-#             gnd.species_node = sanc
-#             deep_coal_occurs = False
-#             for gn_child in gn_children:
-#                 if gn_child.species_node is sanc:
-#                     deep_coal_occurs = True
-#             if deep_coal_occurs:
-#                 dc += 1
-#         else:
-#             if otu_association is None:
-#                 gnd.species_node = species_tree.find_node(lambda x : x.taxon == gnd.taxon)
-#             else:
-#                 gnd.species_node = species_tree.find_node(lambda x : x.taxon == otu_association[gnd.taxon]) 
-#     return dc
-
     taxa_mask = species_tree.taxa_block.all_taxa_bitmask()
     
     species_node_gene_nodes = {}
@@ -352,11 +324,7 @@ def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
                 species_node_gene_nodes[sanc] = []
             species_node_gene_nodes[sanc].append(gnd)                
         else: 
-            if otu_association is None:
-                gene_node_species_nodes[gnd] = species_tree.find_node(lambda x : x.taxon == gnd.taxon)
-            else:
-                gene_node_species_nodes[gnd] = species_tree.find_node(lambda x : x.taxon == otu_association[gnd.taxon])                
-#             species_node_gene_nodes[gene_node_species_nodes[gnd]] = [gnd]
+            gene_node_species_nodes[gnd] = species_tree.find_node(lambda x : x.taxon == gnd.taxon)
             
     contained_gene_lineages = {}            
     for snd in species_tree.postorder_node_iter():
