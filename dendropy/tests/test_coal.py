@@ -93,7 +93,7 @@ class DeepCoalTest(unittest.TestCase):
         _LOG.info("Species\t\tGene\t\tDC\t\tExp.DC\t\tDiff")
         for gt in gene_trees:
             for st in species_trees:
-                dc = coalescent.num_deep_coalescences_with_fitted_tree(st, gt)        
+                dc = coalescent.num_deep_coalescences_with_fitted_tree(gt, st)        
                 _LOG.info("%s\t\t%s\t\t%s\t\t%s\t\t%s" 
                     % (st.compose_newick(),
                        gt.compose_newick(),

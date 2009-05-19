@@ -288,7 +288,7 @@ def probability_of_coalescent_tree(tree, haploid_pop_size):
     p = math.exp(lp)
     return p
 
-def num_deep_coalescences_with_fitted_tree(species_tree, gene_tree):
+def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
     """
     Given two trees (with splits encoded), this returns the number of gene 
     duplications implied by the gene tree reconciled on the species tree, based 
