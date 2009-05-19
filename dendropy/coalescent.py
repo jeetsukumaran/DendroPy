@@ -346,22 +346,24 @@ def num_deep_coalescences_with_fitted_tree(species_tree, gene_tree):
 
     return dc
 
-def num_deep_coalescences_with_grouping(tree, tax_set):
+def num_deep_coalescences_with_grouping(tree, tax_sets):
     """
     Returns the number of deep coalescences on tree `tree` that would result
-    if the taxa in `tax_set` formed a monophyletic group.
+    if the taxa in `tax_sets` formed mutually-exclusive monophyletic groups.
+    `tax_sets` == partition of taxa: list of lists, with the inner lists 
+    consisting of taxon objects forming a monophyletic group.
     """
     dc_tree = trees.Tree()
     dc_tree.taxa_block = taxa.TaxaBlock()
     
-    for t in range(2):
+    for t in range(len(tax_sets)):
         dc_tree.taxa_block.append(taxa.Taxon(label=str(t)))
     
     def _get_dc_taxon(nd):
-        if nd.taxon in tax_set:
-            return dc_tree.taxa_block[0]
-        else:
-            return dc_tree.taxa_block[1]
+        for idx, tax_set in enumerate(tax_sets):
+            if nd.taxon in tax_set:
+                return dc_tree.taxa_block[idx]
+        assert "taxon not found in partition: '%s'" % nd.taxon.label                
         
     src_dc_map = {}        
     for snd in tree.postorder_node_iter():
@@ -394,7 +396,7 @@ def num_deep_coalescences_with_grouping(tree, tax_set):
                     cnd.taxon = taxa_set[0]
                     nnd.add_child(cnd)
     dc_tree.seed_node = nnd
-    return len(dc_tree.leaf_nodes()) - 2                    
+    return len(dc_tree.leaf_nodes()) - len(tax_sets)                    
 
                 
     

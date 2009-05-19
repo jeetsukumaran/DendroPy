@@ -114,11 +114,13 @@ class DeepCoalTest(unittest.TestCase):
         for idx, src_tree in enumerate(src_trees):
             dataset = datasets.Dataset()
             tree = dataset.trees_from_string(src_tree, "NEWICK")[0]
-            group = []
+            groups = [[],[]]
             for taxon in tree.taxa_block:
                 if taxon.label.startswith('a'):
-                    group.append(taxon)
-            dc = coalescent.num_deep_coalescences_with_grouping(tree, group)
+                    groups[0].append(taxon)
+                else:
+                    groups[1].append(taxon)
+            dc = coalescent.num_deep_coalescences_with_grouping(tree, groups)
             assert dc == results[idx]
             
 if __name__ == "__main__":
