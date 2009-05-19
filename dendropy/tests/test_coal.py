@@ -52,7 +52,7 @@ class CalcIntervalsTest(unittest.TestCase):
                   
 class DeepCoalTest(unittest.TestCase):
  
-    def testDeepCoalCounting(self):
+    def testFittedDeepCoalCounting(self):
         dataset = datasets.Dataset()                    
         gene_trees = dataset.trees_from_string("""
             [&R] (A,(B,(C,D))); [&R] ((A,C),(B,D)); [&R] (C,(A,(B,D)));
@@ -102,8 +102,25 @@ class DeepCoalTest(unittest.TestCase):
                        dc - expected_deep_coalescences[idx]))
                 assert dc == expected_deep_coalescences[idx]                       
                 idx += 1          
- 
-    
+     
+    def testGroupedDeepCoalCounting(self):
+        src_trees = [ "((a1,a2)x,b1)y;",
+                      "((a1, (a2, a3), b1), (b2,(b3,b4)))",
+                      "(((((a1, a2),a3), b1), b2), (b3, ((b4,b5),b6)))",
+                      "((b1, (b2, b3), a1), (a2,(a3, a4)))",
+                      "(((((b1, b2),b3), a1), a2), (a3, ((a4,a5),a6)))",
+                    ]
+        results = [0, 1, 2, 1, 2]                    
+        for idx, src_tree in enumerate(src_trees):
+            dataset = datasets.Dataset()
+            tree = dataset.trees_from_string(src_tree, "NEWICK")[0]
+            group = []
+            for taxon in tree.taxa_block:
+                if taxon.label.startswith('a'):
+                    group.append(taxon)
+            dc = coalescent.num_deep_coalescences_with_grouping(tree, group)
+            assert dc == results[idx]
+            
 if __name__ == "__main__":
     unittest.main()
 

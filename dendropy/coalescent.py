@@ -30,6 +30,7 @@ from dendropy import GLOBAL_RNG
 from dendropy import distributions
 from dendropy import treecalc
 from dendropy import trees
+from dendropy import taxa
 from dendropy import splits
 
 def discrete_time_to_coalescence(n_genes, 
@@ -345,10 +346,62 @@ def num_deep_coalescences_with_fitted_tree(species_tree, gene_tree):
 
     return dc
 
-
 def num_deep_coalescences_with_grouping(tree, tax_set):
     """
     Returns the number of deep coalescences on tree `tree` that would result
     if the taxa in `tax_set` formed a monophyletic group.
     """
-    pass
+    dc_tree = trees.Tree()
+    dc_tree.taxa_block = taxa.TaxaBlock()
+    
+    for t in range(2):
+        dc_tree.taxa_block.append(taxa.Taxon(label=str(t)))
+    
+    def _get_dc_taxon(nd):
+        if nd.taxon in tax_set:
+            return dc_tree.taxa_block[0]
+        else:
+            return dc_tree.taxa_block[1]
+        
+    src_dc_map = {}        
+    for snd in tree.postorder_node_iter():
+        nnd = trees.Node()
+        src_dc_map[snd] = nnd
+        children = snd.child_nodes()
+        if len(children) == 0:
+            nnd.taxon = _get_dc_taxon(snd)
+        else:
+            taxa_set = []
+            for cnd in children:
+                dc_node = src_dc_map[cnd]
+                if len(dc_node.child_nodes()) > 1:
+                    nnd.add_child(dc_node)
+                else:
+                    ctax = dc_node.taxon
+                    if ctax is not None and ctax not in taxa_set:
+                        taxa_set.append(ctax)
+                    del src_dc_map[cnd]  
+            if len(taxa_set) > 1:          
+                for t in taxa_set:
+                    cnd = trees.Node()
+                    cnd.taxon = t
+                    nnd.add_child(cnd)
+            else:
+                if len(nnd.child_nodes()) == 0:
+                    nnd.taxon = taxa_set[0]
+                elif len(taxa_set) == 1:
+                    cnd = trees.Node()
+                    cnd.taxon = taxa_set[0]
+                    nnd.add_child(cnd)
+    dc_tree.seed_node = nnd
+    return len(dc_tree.leaf_nodes()) - 2                    
+
+                
+    
+    dc = 0
+    for idx, n in enumerate(tree.preorder_node_iter()):
+        if idx == 0:
+            continue
+        if len(n.__group) > 1:
+            dc += 1
+    return dc
