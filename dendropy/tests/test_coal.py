@@ -104,24 +104,31 @@ class DeepCoalTest(unittest.TestCase):
                 idx += 1          
      
     def testGroupedDeepCoalCounting(self):
-        src_trees = [ "((a1,a2)x,b1)y;",
-                      "((a1, (a2, a3), b1), (b2,(b3,b4)))",
-                      "(((((a1, a2),a3), b1), b2), (b3, ((b4,b5),b6)))",
-                      "((b1, (b2, b3), a1), (a2,(a3, a4)))",
-                      "(((((b1, b2),b3), a1), a2), (a3, ((a4,a5),a6)))",
-                    ]
-        results = [0, 1, 2, 1, 2]                    
-        for idx, src_tree in enumerate(src_trees):
+        src_trees = { "((a1,a2)x,b1)y;" : 0,
+                      "((a1, (a2, a3), b1), (b2,(b3,b4)))" : 1,
+                      "(((((a1, a2),a3), b1), b2), (b3, ((b4,b5),b6)))" : 2,
+                      "((b1, (b2, b3), a1), (a2,(a3, a4)))" : 1,
+                      "(((((b1, b2),b3), a1), a2), (a3, ((a4,a5),a6)))" : 2,
+                      "((a1,a2),(b1,b2),(c1,c2))" : 0,
+                      "((a1,a2),(b1,b2,c3),(c1,c2))" : 1,
+                      "(((a1,a2),(b1,b2),c1),c2)" : 1
+                    }
+        for src_tree, expected in src_trees.items():
             dataset = datasets.Dataset()
             tree = dataset.trees_from_string(src_tree, "NEWICK")[0]
             groups = [[],[]]
             for taxon in tree.taxa_block:
                 if taxon.label.startswith('a'):
                     groups[0].append(taxon)
-                else:
+                elif taxon.label.startswith('b'):
                     groups[1].append(taxon)
+                elif taxon.label.startswith('c'):
+                    if len(groups) < 3:
+                        groups.append([])
+                    groups[2].append(taxon)                        
             dc = coalescent.num_deep_coalescences_with_grouping(tree, groups)
-            assert dc == results[idx]
+            assert dc == expected, \
+                "deep coalescences by groups: expecting %d, but found %d" % (expected, dc)
             
 if __name__ == "__main__":
     unittest.main()
