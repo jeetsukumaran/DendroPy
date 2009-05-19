@@ -349,7 +349,8 @@ def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
 def num_deep_coalescences_with_grouping(tree, tax_sets):
     """
     Returns the number of deep coalescences on tree `tree` that would result
-    if the taxa in `tax_sets` formed mutually-exclusive monophyletic groups.
+    if the taxa in `tax_sets` formed K mutually-exclusive monophyletic groups,
+    where K = len(tax_sets)
     `tax_sets` == partition of taxa: list of lists, with the inner lists 
     consisting of taxon objects forming a monophyletic group.
     """
@@ -397,13 +398,3 @@ def num_deep_coalescences_with_grouping(tree, tax_sets):
                     nnd.add_child(cnd)
     dc_tree.seed_node = nnd
     return len(dc_tree.leaf_nodes()) - len(tax_sets)                    
-
-                
-    
-    dc = 0
-    for idx, n in enumerate(tree.preorder_node_iter()):
-        if idx == 0:
-            continue
-        if len(n.__group) > 1:
-            dc += 1
-    return dc
