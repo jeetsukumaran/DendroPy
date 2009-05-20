@@ -86,3 +86,8 @@ def prune_taxa(tree, taxa):
                     children[0].edge.length += nd.edge.length
             nd.parent_node.remove_child(nd)
     return tree
+    
+def retain_taxa(tree, taxa):
+    """Removes all taxa *not* in `taxa` from the tree."""
+    to_prune = [t for t in tree.taxa_block if t not in taxa]
+    return prune_taxa(tree, to_prune)
