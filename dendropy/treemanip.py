@@ -59,3 +59,30 @@ def collapse_clade(node):
         return
     leaves = [i for i in trees.Node.leaf_iter(node)]
     node.set_children(leaves)
+    
+def prune_taxa(tree, taxa):
+    """Removes terminal edges associated with taxa in `taxa` from `tree`."""
+    for taxon in taxa:
+        nd = tree.find_node(lambda x: x.taxon == taxon)
+        if nd is not None:
+            nd.edge.tail_node.remove_child(nd)
+    # clean up dead leaves            
+    for nd in tree.postorder_node_iter():
+        if nd.taxon is None and len(nd.child_nodes()) == 0:
+            dnd = nd
+            while dnd.taxon is None and len(dnd.child_nodes()) == 0:
+                new_dnd = dnd.parent_node
+                new_dnd.remove_child(dnd)
+                dnd = new_dnd
+    # remove outdegree 1 nodes                
+    for nd in tree.postorder_node_iter():
+        children = nd.child_nodes()
+        if nd.parent_node is not None and len(children) == 1:
+            nd.parent_node.add_child(children[0])
+            if nd.edge.length is not None:
+                if children[0].edge.length is None:
+                    children[0].edge.length = nd.edge.length
+                else:                    
+                    children[0].edge.length += nd.edge.length
+            nd.parent_node.remove_child(nd)
+    return tree

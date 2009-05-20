@@ -37,6 +37,10 @@ import dendropy.tests
 _LOG = get_logger("TreeGenerationAndSimulation")
 
 from dendropy import dataio
+from dendropy import datasets
+from dendropy import trees
+from dendropy import treedists
+from dendropy import splits
 from dendropy.tests.util_for_testing import assert_approx_equal, assert_vec_approx_equal, assert_mat_approx_equal
 
 ### MODULE THAT WE ARE TESTING ###
@@ -128,6 +132,25 @@ class TreeManipTest(unittest.TestCase):
         self.assertEqual(True, r.parent_node is curr_n)
         flipped = (~(r.edge.clade_mask)) & tm
         self.assertEqual(True, (former_mask == r.edge.clade_mask) or (flipped == former_mask))
-
+        
+    def testPruneTaxa(self):
+        original = ["((a:2,(b:2,(c:1,d:1):4):3):4, (e:4,(f:3,(g:6,((h:1,i:3),(j:2,k:3):4):3):2):1):1):1"]
+        results = ["((e,(f,(g,k))),(b,d))"]
+        for idx, src in enumerate(original):
+            d = datasets.Dataset()
+            tree = d.trees_from_string(src, "NEWICK")[0]
+            to_prune = [tree.taxa_block.get_taxon(label="a"),
+                        tree.taxa_block.get_taxon(label="c"),
+                        tree.taxa_block.get_taxon(label="h"),
+                        tree.taxa_block.get_taxon(label="i"),
+                        tree.taxa_block.get_taxon(label="j")
+                       ]
+            prune_taxa(tree, to_prune)
+            assert tree._debug_tree_is_valid()
+            etree = d.trees_from_string(results[idx], "NEWICK")[0]            
+            splits.encode_splits(tree)
+            splits.encode_splits(etree)
+            assert treedists.symmetric_difference(tree, etree) == 0
+        
 if __name__ == "__main__":
     unittest.main()
