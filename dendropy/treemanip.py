@@ -70,7 +70,7 @@ def prune_taxa(tree, taxa):
     for nd in tree.postorder_node_iter():
         if nd.taxon is None and len(nd.child_nodes()) == 0:
             dnd = nd
-            while dnd.taxon is None and len(dnd.child_nodes()) == 0:
+            while dnd.taxon is None and dnd.parent_node is not None and len(dnd.child_nodes()) == 0:
                 new_dnd = dnd.parent_node
                 new_dnd.remove_child(dnd)
                 dnd = new_dnd
