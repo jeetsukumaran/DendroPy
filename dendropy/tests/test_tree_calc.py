@@ -35,7 +35,7 @@ import dendropy.tests
 _LOG = get_logger("TreeModification")
 
 ### MODULE THAT WE ARE TESTING ###
-from dendropy.continuous import pybus_harvey_gamma
+from dendropy.treestats import pybus_harvey_gamma
 ### MODULE THAT WE ARE TESTING ###
 
 
