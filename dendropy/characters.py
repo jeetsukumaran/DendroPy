@@ -206,6 +206,7 @@ class DnaStateAlphabet(StateAlphabet):
         StateAlphabet.__init__(self, oid=oid, label=label)
         for sym in DnaStateAlphabet._states:
             self.append(StateAlphabetElement(symbol=sym))
+        self.gap = self[-1]            
         for a in DnaStateAlphabet._ambig:
             k, v = a[0], a[1]
             self.append(StateAlphabetElement(symbol=k,
@@ -233,6 +234,7 @@ class RnaStateAlphabet(StateAlphabet):
         StateAlphabet.__init__(self, oid=oid, label=label)
         for sym in RnaStateAlphabet._states:
             self.append(StateAlphabetElement(symbol=sym))
+        self.gap = self[-1]            
         for a in RnaStateAlphabet._ambig:
             k, v = a[0], a[1]
             self.append(StateAlphabetElement(symbol=k,
@@ -249,6 +251,7 @@ class ProteinStateAlphabet(StateAlphabet):
         StateAlphabet.__init__(self, oid=oid, label=label)
         for sym in ProteinStateAlphabet._states:
             self.append(StateAlphabetElement(symbol=sym))
+        self.gap = self[-1]            
         for a in ProteinStateAlphabet._ambig:
             k, v = a[0], a[1]
             self.append(StateAlphabetElement(symbol=k,
@@ -261,7 +264,8 @@ class BinaryStateAlphabet(StateAlphabet):
         self.append(StateAlphabetElement(symbol="0"))
         self.append(StateAlphabetElement(symbol="1"))
         if allow_gaps:
-            self.append(StateAlphabetElement(symbol="-")) 
+            self.append(StateAlphabetElement(symbol="-"))
+            self.gap = self[-1]
             if allow_missing:
                 self.append(StateAlphabetElement(symbol="?", 
                                                    multistate=StateAlphabetElement.AMBIGUOUS_STATE,
