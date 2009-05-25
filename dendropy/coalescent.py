@@ -220,7 +220,7 @@ def coalesce(nodes,
 
 def coalescence_intervals(tree):
     """Returns list of coalescence intervals on `tree`."""
-    treecalc.add_depth_to_nodes(tree)
+    trees.add_depth_to_nodes(tree)
     depths = [n.depth for n in tree.internal_nodes()]
     depths.sort()
     intervals = []
@@ -232,7 +232,7 @@ def coalescence_intervals(tree):
 def node_waiting_time_pairs(tree):
     """Returns list of tuples of (node, coalescent interval [= time between
     last coalescent event and current node age])"""
-    treecalc.add_depth_to_nodes(tree)
+    trees.add_depth_to_nodes(tree)
     depths = [(n, n.depth) for n in tree.internal_nodes()]    
     depths.sort(lambda x, y: int(x[1] - y[1]))            
     intervals = []

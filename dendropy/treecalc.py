@@ -31,31 +31,6 @@ In general you have to explicitly call the functions again if the tree is
 """
 import math
 
-def add_depth_to_nodes(tree, prec=0.0000001):
-    """Takes an ultrametric `tree` and adds a `depth` attribute to each internal
-    node.  The `depth` is the sum of edge lengths from the node to the tips.
-    
-    If the lengths of different paths to the node differ by more than `prec`, 
-        then a ValueError exception will be raised indicating deviation from
-        ultrametricty.
-    """
-    
-    node = None    
-    for node in tree.postorder_node_iter():
-        ch = node.child_nodes()
-        if len(ch) == 0:
-            node.depth = 0.0
-        else:
-            first_child = ch[0]
-            node.depth = first_child.depth + first_child.edge.length
-            last_child = ch[-1]
-            for nnd in ch[1:]:
-                ocnd = nnd.depth + nnd.edge.length
-                if abs(node.depth - ocnd) > prec:
-                    raise ValueError("Tree is not ultrametric")
-    if node is None:
-        raise ValueError("Empty tree encountered")
-
 def pybus_harvey_gamma(tree, prec=0.00001):
     """Returns the gamma statistic of Pybus and Harvey (2000). This statistic 
     is used to test for constancy of birth and death rates over the course of
@@ -260,7 +235,6 @@ def bounce_constrain(start_x, x, min_x=None, max_x=None):
     return x, mx
 
 
-
 def simulate_continuous(node, rng, **kwargs):
     """Takes a node and a random number generator object, `rng` This function
     "evolves" a set of rates on the subtree descending from the  `node`.
@@ -360,3 +334,5 @@ def simulate_continuous(node, rng, **kwargs):
         if mean_val_attr:
             setattr(nd, mean_val_attr, mr)
         
+
+
