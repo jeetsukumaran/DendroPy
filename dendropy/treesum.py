@@ -28,6 +28,7 @@ Tree summarization.
 
 import sys
 from dendropy import splits
+from dendropy import treestruct
 from dendropy import taxa
 from dendropy import trees
 from dendropy import treegen
@@ -157,7 +158,7 @@ class TreeSummarizer(object):
                 while (split_to_add & parent_node.edge.clade_mask) != split_to_add:
                     parent_node = parent_node.parent_node
             else:
-                parent_node = splits.mrca(start_node=con_tree.seed_node,
+                parent_node = treestruct.mrca(start_node=con_tree.seed_node,
                                                       split=split_to_add,
                                                       taxa_mask=taxa_mask)
             if parent_node is None or parent_node.edge.clade_mask == split_to_add:

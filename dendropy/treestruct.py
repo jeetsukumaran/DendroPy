@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 ############################################################################
-##  treemanip.py
+##  treestruct.py
 ##
 ##  Part of the DendroPy library for phylogenetic computing.
 ##
@@ -32,7 +32,49 @@ import math
 
 from dendropy import trees
 from dendropy import get_logger
-_LOG = get_logger('dendropy.treemanip')
+_LOG = get_logger('dendropy.treestruct')
+
+def mrca(start_node, split, taxa_mask):
+    """Returns the shallowest node in the tree (the node furthest from 
+    `start_node`) that has all of the taxa that are specified in `split` or
+    None if no appropriate node is found.
+
+    Assumes that edges on tree have been decorated with splits.
+    
+    It is possible that split is not compatible with the subtree that is 
+        returned! (compatibility tests are not fully performed).
+        
+    This function is used to find the "insertion point" for a new split via a
+        root to tip search.
+    """
+    if (start_node.edge.clade_mask & split) != split:
+        return None
+    curr_node = start_node
+    last_match = start_node
+    nd_source = iter(start_node.child_nodes())
+    try:
+        while True:
+            cm = curr_node.edge.clade_mask
+            cms = (cm & split)
+            if cms:
+                # for at least one taxon cm has 1 and split has 1
+                if cms == split:
+                    # curr_node has all of the 1's that split has
+                    if cm == split:
+                        return curr_node
+                    last_match = curr_node
+                    nd_source = iter(curr_node.child_nodes())
+                else:
+                    # we have reached a child that has some, but not all of the
+                    #   required taxa as descendants, so we return the last_match
+                    return last_match
+            curr_node = nd_source.next()
+    except StopIteration:
+        # we shouldn't reach this if all of the descendants are properly
+        #   decorated with clade_mask attributes, but there may be some hacky
+        #   context in which we want to allow the function to be called with
+        #   leaves that have not been encoded with clade_masks.
+        return last_match
 
 def collapse_edge(edge):
     '''Inserts all children of the head_node of edge as children of the

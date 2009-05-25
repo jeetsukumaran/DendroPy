@@ -299,7 +299,7 @@ class Tree(base.IdTagged):
             to_keep.edge.length += to_del_edge.length
         except:
             pass
-        from dendropy.treemanip import collapse_edge
+        from dendropy.treestruct import collapse_edge
         collapse_edge(to_del_edge)
                 
     ###########################################################################

@@ -28,10 +28,9 @@ Methods for working with Kingman's n-coalescent framework.
 import math
 from dendropy import GLOBAL_RNG
 from dendropy import distributions
-from dendropy import continuous
 from dendropy import trees
 from dendropy import taxa
-from dendropy import splits
+from dendropy import treestruct
 
 def discrete_time_to_coalescence(n_genes, 
                                  pop_size=None, 
@@ -319,7 +318,7 @@ def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
             ssplit = 0
             for gn_child in gn_children:
                 ssplit = ssplit | gene_node_species_nodes[gn_child].edge.clade_mask
-            sanc = splits.mrca(species_tree.seed_node, ssplit, taxa_mask)     
+            sanc = treestruct.mrca(species_tree.seed_node, ssplit, taxa_mask)     
             gene_node_species_nodes[gnd] = sanc
             if sanc not in species_node_gene_nodes:
                 species_node_gene_nodes[sanc] = []

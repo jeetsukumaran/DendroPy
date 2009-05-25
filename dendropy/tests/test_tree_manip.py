@@ -44,10 +44,10 @@ from dendropy import splits
 from dendropy.tests.util_for_testing import assert_approx_equal, assert_vec_approx_equal, assert_mat_approx_equal
 
 ### MODULE THAT WE ARE TESTING ###
-from dendropy.treemanip import *
+from dendropy.treestruct import *
 ### MODULE THAT WE ARE TESTING ###
 
-class TreeManipTest(unittest.TestCase):
+class treestructTest(unittest.TestCase):
 
     def testCollapseEdge(self):
         tree = dataio.trees_from_newick(["((t5,t6),((t4,(t2,t1)),t3));"]).trees_blocks[0][0]
