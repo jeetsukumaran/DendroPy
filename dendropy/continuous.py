@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 ############################################################################
-##  treecalc.py
+##  continuous.py
 ##
 ##  Part of the DendroPy library for phylogenetic computing.
 ##

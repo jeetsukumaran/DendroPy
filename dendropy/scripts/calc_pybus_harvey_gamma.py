@@ -3,7 +3,7 @@
 if __name__ == '__main__':
     import sys
     from dendropy import dataio
-    from dendropy.treecalc import pybus_harvey_gamma
+    from dendropy.continuous import pybus_harvey_gamma
 
     from optparse import OptionParser
     usage = """Takes a tree (which will be treated as rooted), and reports the list of taxa

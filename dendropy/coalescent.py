@@ -28,7 +28,7 @@ Methods for working with Kingman's n-coalescent framework.
 import math
 from dendropy import GLOBAL_RNG
 from dendropy import distributions
-from dendropy import treecalc
+from dendropy import continuous
 from dendropy import trees
 from dendropy import taxa
 from dendropy import splits

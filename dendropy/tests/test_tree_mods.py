@@ -38,8 +38,8 @@ import dendropy.tests
 _LOG = get_logger("TreeModification")
 
 ### MODULE THAT WE ARE TESTING ###
-from dendropy.treecalc import *
-from dendropy.treecalc import _calc_KTB_rate, _calc_TKP_rate
+from dendropy.continuous import *
+from dendropy.continuous import _calc_KTB_rate, _calc_TKP_rate
 ### MODULE THAT WE ARE TESTING ###
 
 
