@@ -33,8 +33,8 @@ def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
     Returns pair of values: total number of pairwise differences observed between
     all sequences, and mean number of pairwise differences pair base.
     """
-    sum_pi = 0.0
-    mean_pi = 0.0
+    sum_diff = 0.0
+    mean_diff = 0.0
     total_counted = 0
     comps = 0
     for vidx, i in enumerate(char_vectors):
@@ -52,19 +52,14 @@ def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
                     total_counted += 1
                     if c1.value is not c2.value:
                         diff += 1
-            sum_pi += float(diff)    
-            mean_pi += float(diff) / counted
-    return sum_pi, mean_pi / comps
+            sum_diff += float(diff)    
+            mean_diff += float(diff) / counted
+    return sum_diff, mean_diff / comps
     
 def _nucleotide_diversity(char_vectors, state_alphabet, ignore_uncertain=True):
     """
-    Returns $k$ (Tajima 1983; Wakely 1996), calculated for a set of sequences:
-    
-    k = \frac{\right(\sum \sum \k_{ij}\left)}{n \choose 2}
-
-    where $k_{ij}$ is the number of pairwise differences between the
-    $i$th and $j$th sequence, and $n$ is the number of DNA sequences
-    sampled.       
+    Returns $\pi$, the proportional nucleotide diversity, calculated for a 
+    list of character vectors.       
     """
     return _count_differences(char_vectors, state_alphabet, ignore_uncertain)[1]
 
@@ -78,9 +73,8 @@ def _average_number_of_pairwise_differences(char_vectors, state_alphabet, ignore
     $i$th and $j$th sequence, and $n$ is the number of DNA sequences
     sampled.       
     """
-    sum_pi, mean_pi = _count_differences(char_vectors, state_alphabet, ignore_uncertain)    
-    print sum_pi, mean_pi
-    return sum_pi / distributions.binomial_coefficient(len(char_vectors), 2)
+    sum_diff, mean_diff = _count_differences(char_vectors, state_alphabet, ignore_uncertain)    
+    return sum_diff / distributions.binomial_coefficient(len(char_vectors), 2)
     
 def average_number_of_pairwise_differences(char_block, ignore_uncertain=True):
     """
@@ -88,12 +82,8 @@ def average_number_of_pairwise_differences(char_block, ignore_uncertain=True):
     """
     return _average_number_of_pairwise_differences(char_block.vectors(), char_block.default_state_alphabet, ignore_uncertain)
 
-def nucelotide_diversity(char_block, ignore_uncertain=True):
+def nucleotide_diversity(char_block, ignore_uncertain=True):
     """
-    Returns $k$, calculated for a character block.
+    Returns $\pi$, calculated for a character block.
     """
     return _nucleotide_diversity(char_block.vectors(), char_block.default_state_alphabet, ignore_uncertain)
-
-
-    
-        

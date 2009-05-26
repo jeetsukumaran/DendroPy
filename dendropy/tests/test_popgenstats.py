@@ -28,6 +28,7 @@ Tests input/output of trees from files.
 
 import unittest
 import StringIO
+import math
 from dendropy import get_logger
 from dendropy import datasets
 
@@ -41,8 +42,8 @@ class PopGenStatsTests(unittest.TestCase):
     def test1(self):
         import StringIO
         from dendropy import datasets   
-        d = datasets.Dataset()
-        s = StringIO.StringIO("""
+
+        s1 = StringIO.StringIO("""
     #NEXUS 
     
     Begin data;
@@ -56,8 +57,13 @@ class PopGenStatsTests(unittest.TestCase):
         ;
     End;
     """)
+        d = datasets.Dataset()    
+        d.read(s1, "NEXUS")
+        print popgenstats.average_number_of_pairwise_differences(d.char_blocks[0], ignore_uncertain=True)
+        print popgenstats.nucleotide_diversity(d.char_blocks[0], ignore_uncertain=True)
     
-        s = StringIO.StringIO("""
+    
+        s2 = StringIO.StringIO("""
     #NEXUS 
     
     BEGIN TAXA;
@@ -97,9 +103,11 @@ class PopGenStatsTests(unittest.TestCase):
         ;
     END;
     """)
-    
-        d.read(s, "NEXUS")
-        print popgenstats.average_number_of_pairwise_differences(d.char_blocks[0], ignore_uncertain=True)
+        d = datasets.Dataset()    
+        d.read(s2, "NEXUS")
+        assert abs(popgenstats.average_number_of_pairwise_differences(d.char_blocks[0], ignore_uncertain=True) - 111.0606) < 0.001
+        assert abs(popgenstats.nucleotide_diversity(d.char_blocks[0], ignore_uncertain=True) - 0.2343) < 0.001
+
         
 
 if __name__ == "__main__":
