@@ -144,7 +144,7 @@ def _variance_of_pairwise_differences_between_populations(char_x, char_y, mean_d
             ss_diffs += (float(diffs - mean_diff) ** 2)
     return float(ss_diffs)/(len(char_x)*len(char_y))
 
-def wakeleys_sigma(char_block, taxon_groups, ignore_uncertain=True):
+def wakeleys_Psi(char_block, taxon_groups, ignore_uncertain=True):
     """         
     Returns Wakeley's Sigma, as described in:
     
