@@ -35,9 +35,10 @@ def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
     """
     sum_diff = 0.0
     mean_diff = 0.0
+    sq_diff = 0.0
     total_counted = 0
     comps = 0
-    for vidx, i in enumerate(char_vectors):
+    for vidx, i in enumerate(char_vectors[:-1]):
         for j in char_vectors[vidx+1:]:
             if len(i) != len(j):
                 raise Exception("sequences of unequal length")
@@ -58,7 +59,8 @@ def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
                         diff += 1
             sum_diff += float(diff)    
             mean_diff += float(diff) / counted
-    return sum_diff, mean_diff / comps
+            sq_diff += diff ** 2
+    return sum_diff, mean_diff / comps, sq_diff
     
 def _nucleotide_diversity(char_vectors, state_alphabet, ignore_uncertain=True):
     """
@@ -77,7 +79,7 @@ def _average_number_of_pairwise_differences(char_vectors, state_alphabet, ignore
     $i$th and $j$th sequence, and $n$ is the number of DNA sequences
     sampled.       
     """
-    sum_diff, mean_diff = _count_differences(char_vectors, state_alphabet, ignore_uncertain)    
+    sum_diff, mean_diff, sq_diff = _count_differences(char_vectors, state_alphabet, ignore_uncertain)    
     return sum_diff / distributions.binomial_coefficient(len(char_vectors), 2)
     
 def average_number_of_pairwise_differences(char_block, ignore_uncertain=True):
@@ -92,19 +94,82 @@ def nucleotide_diversity(char_block, ignore_uncertain=True):
     """
     return _nucleotide_diversity(char_block.vectors(), char_block.default_state_alphabet, ignore_uncertain)
 
-def excess_number_of_nucleotide_differences(char_block, taxon_groups):
+def _average_number_of_pairwise_differences_between_populations(char_x, char_y, state_alphabet, ignore_uncertain=True):
     """
-    
-    Nei, M. and W.-H. Li. 1989. Mathematical model for studying genetic 
-    variation in terms of restriction endonucleases. Proc. Natl. Acad. Sci.
-    76: 5269-5273.
+    Implements Eq (3) of:
     
     Wakeley, J. 1996. Distinguishing migration from isolation using the 
     variance of pairwise differences. Theoretical Population Biology 49: 
-    369-386.
-    
-    Takhata, N. and Nei, M. 1985. Gene genealogy and variance of 
-    interpopulational nucleotide differences. Genetics 110: 325-344.
-    
+    369-386.      
     """
-    pass
+    diffs = 0
+    for sx in char_x:
+        for sy in char_y:
+            for cidx, c in enumerate(sx):
+                c1 = c
+                c2 = sy[cidx]
+                if (not ignore_uncertain) \
+                    or (c1.value is not state_alphabet.gap \
+                        and c2.value is not state_alphabet.gap \
+                        and len(c1.value.fundamental_ids) == 1 \
+                        and len(c2.value.fundamental_ids) == 1):
+                    if c1.value is not c2.value:
+                        diffs += 1
+    dxy = float(1)/(len(char_x) * len(char_y)) * float(diffs)    
+    return dxy
+
+def _variance_of_pairwise_differences_between_populations(char_x, char_y, mean_diff, state_alphabet, ignore_uncertain=True):
+    """
+    Implements Eq (10) of:
+    
+    Wakeley, J. 1996. Distinguishing migration from isolation using the 
+    variance of pairwise differences. Theoretical Population Biology 49: 
+    369-386.      
+    """
+    ss_diffs = 0
+    for sx in char_x:
+        for sy in char_y:
+            diffs = 0
+            for cidx, c in enumerate(sx):
+                c1 = c
+                c2 = sy[cidx]
+                if (not ignore_uncertain) \
+                    or (c1.value is not state_alphabet.gap \
+                        and c2.value is not state_alphabet.gap \
+                        and len(c1.value.fundamental_ids) == 1 \
+                        and len(c2.value.fundamental_ids) == 1):
+                    if c1.value is not c2.value:
+                        diffs += 1
+            ss_diffs += (float(diffs - mean_diff) ** 2)
+    return float(ss_diffs)/(len(char_x)+len(char_y))
+
+def wakeley1996(char_block, taxon_groups, ignore_uncertain=True):
+    """         
+    Returns vectors of statistics used to test for isolation vs. migration as
+    described in:
+    
+    Wakeley, J. 1996. Distinguishing migration from isolation using the 
+    variance of pairwise differences. Theoretical Population Biology 49: 
+    369-386   
+    """
+    char_x = []
+    char_y = []
+    state_alphabet = char_block.default_state_alphabet
+    for t in char_block.taxa_block:
+        if t in taxon_groups[0]:
+            char_x.append(char_block[t])
+        else:
+            char_y.append(char_block[t])
+            
+    diffs_x, mean_diffs_x, sq_diff_x = _count_differences(char_x, state_alphabet, ignore_uncertain)            
+    diffs_y, mean_diffs_y, sq_diff_y = _count_differences(char_y, state_alphabet, ignore_uncertain)
+    d_x = diffs_x / distributions.binomial_coefficient(len(char_x), 2)
+    d_y = diffs_y / distributions.binomial_coefficient(len(char_y), 2)
+    d_xy = _average_number_of_pairwise_differences_between_populations(char_x, char_y, state_alphabet, ignore_uncertain)
+    s2_x = sq_diff_x - (d_x ** 2)
+    s2_y = sq_diff_y - (d_y ** 2)
+    s2_xy = _variance_of_pairwise_differences_between_populations(char_x, char_y, d_xy, state_alphabet, ignore_uncertain)
+    
+    
+    
+    return (s2_x, s2_y, s2_xy)
