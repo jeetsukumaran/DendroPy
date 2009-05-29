@@ -170,6 +170,13 @@ def wakeley1996(char_block, taxon_groups, ignore_uncertain=True):
     s2_y = sq_diff_y - (d_y ** 2)
     s2_xy = _variance_of_pairwise_differences_between_populations(char_x, char_y, d_xy, state_alphabet, ignore_uncertain)
     
+    n = len(char_block)
+    n_x = len(char_x)
+    n_y = len(char_y)
+    a = n * (n-1)
+    ax = n_x * (n_x - 1)
+    ay = n_y * (n_y - 1)
+    k = average_number_of_pairwise_differences(char_block, ignore_uncertain)
+    sigma = float(1)/(a) * ( ax * (s2_x/d_x) + ay * (s2_y/d_y) + (2 * n_x * n_y * s2_xy/k))
     
-    
-    return (s2_x, s2_y, s2_xy)
+    return sigma
