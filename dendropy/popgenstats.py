@@ -47,7 +47,11 @@ def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
             for cidx, c in enumerate(i):
                 c1 = c
                 c2 = j[cidx]
-                if (not ignore_uncertain) or (c1.value is not state_alphabet.gap and c2.value is not state_alphabet.gap and len(c1.value.fundamental_ids) == 1 and len(c2.value.fundamental_ids) == 1):                 
+                if (not ignore_uncertain) \
+                    or (c1.value is not state_alphabet.gap \
+                        and c2.value is not state_alphabet.gap \
+                        and len(c1.value.fundamental_ids) == 1 \
+                        and len(c2.value.fundamental_ids) == 1):
                     counted += 1
                     total_counted += 1
                     if c1.value is not c2.value:
@@ -87,3 +91,20 @@ def nucleotide_diversity(char_block, ignore_uncertain=True):
     Returns $\pi$, calculated for a character block.
     """
     return _nucleotide_diversity(char_block.vectors(), char_block.default_state_alphabet, ignore_uncertain)
+
+def excess_number_of_nucleotide_differences(char_block, taxon_groups):
+    """
+    
+    Nei, M. and W.-H. Li. 1989. Mathematical model for studying genetic 
+    variation in terms of restriction endonucleases. Proc. Natl. Acad. Sci.
+    76: 5269-5273.
+    
+    Wakeley, J. 1996. Distinguishing migration from isolation using the 
+    variance of pairwise differences. Theoretical Population Biology 49: 
+    369-386.
+    
+    Takhata, N. and Nei, M. 1985. Gene genealogy and variance of 
+    interpopulational nucleotide differences. Genetics 110: 325-344.
+    
+    """
+    pass
