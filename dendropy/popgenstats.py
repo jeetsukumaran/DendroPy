@@ -26,6 +26,7 @@
 Population genetic statistics.
 """
 
+import math
 from dendropy import distributions
 
 def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
@@ -59,7 +60,7 @@ def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
                         diff += 1
             sum_diff += float(diff)    
             mean_diff += float(diff) / counted
-            sq_diff += diff ** 2
+            sq_diff += (diff ** 2)
     return sum_diff, mean_diff / comps, sq_diff
     
 def _nucleotide_diversity(char_vectors, state_alphabet, ignore_uncertain=True):
@@ -141,12 +142,11 @@ def _variance_of_pairwise_differences_between_populations(char_x, char_y, mean_d
                     if c1.value is not c2.value:
                         diffs += 1
             ss_diffs += (float(diffs - mean_diff) ** 2)
-    return float(ss_diffs)/(len(char_x)+len(char_y))
+    return float(ss_diffs)/(len(char_x)*len(char_y))
 
-def wakeley1996(char_block, taxon_groups, ignore_uncertain=True):
+def wakeleys_sigma(char_block, taxon_groups, ignore_uncertain=True):
     """         
-    Returns vectors of statistics used to test for isolation vs. migration as
-    described in:
+    Returns Wakeley's Sigma, as described in:
     
     Wakeley, J. 1996. Distinguishing migration from isolation using the 
     variance of pairwise differences. Theoretical Population Biology 49: 
@@ -166,17 +166,16 @@ def wakeley1996(char_block, taxon_groups, ignore_uncertain=True):
     d_x = diffs_x / distributions.binomial_coefficient(len(char_x), 2)
     d_y = diffs_y / distributions.binomial_coefficient(len(char_y), 2)
     d_xy = _average_number_of_pairwise_differences_between_populations(char_x, char_y, state_alphabet, ignore_uncertain)
-    s2_x = sq_diff_x - (d_x ** 2)
-    s2_y = sq_diff_y - (d_y ** 2)
+    s2_x = (float(sq_diff_x) / distributions.binomial_coefficient(len(char_x), 2) ) - (d_x ** 2)
+    s2_y = (float(sq_diff_y) / distributions.binomial_coefficient(len(char_y), 2) ) - (d_y ** 2)
     s2_xy = _variance_of_pairwise_differences_between_populations(char_x, char_y, d_xy, state_alphabet, ignore_uncertain)
     
     n = len(char_block)
-    n_x = len(char_x)
-    n_y = len(char_y)
-    a = n * (n-1)
-    ax = n_x * (n_x - 1)
-    ay = n_y * (n_y - 1)
+    n_x = float(len(char_x))
+    n_y = float(len(char_y))
+    a = float(n * (n-1))
+    ax = float(n_x * (n_x - 1))
+    ay = float(n_y * (n_y - 1))
     k = average_number_of_pairwise_differences(char_block, ignore_uncertain)
-    sigma = float(1)/(a) * ( ax * (s2_x/d_x) + ay * (s2_y/d_y) + (2 * n_x * n_y * s2_xy/k))
-    
+    sigma = (float(1)/(a)) * ( ax * (math.sqrt(s2_x)/d_x) + ay * (math.sqrt(s2_y)/d_y) + (2 * n_x * n_y * math.sqrt(s2_xy)/k))
     return sigma
