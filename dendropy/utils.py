@@ -20,15 +20,155 @@
 ##  You should have received a copy of the GNU General Public License along
 ##  with this program. If not, see <http://www.gnu.org/licenses/>.
 ##
+##  Parts of this file (the threading code) were written by Mark T. Holder
+##      as a part of CIPRES (event_consumer.py in the PIPRes python lib).
+##
 ############################################################################
 
 """
 This module contains various utility functions and methods.
 """
-
+import sys
+import time
 import os
 import copy
 import fnmatch
+
+from threading import Event, Thread
+
+
+
+class LineReadingThread(Thread):
+    """A thread that will read the input stream - designed to work with a file 
+    thas is being written. Note that if the file does not end with a newline
+    and the keep_going() method does not return False, then the thread will not
+    terminate
+    
+    self.keep_going()
+    is called with each line. (sub classes should override).
+    
+    LineReadingThread.__init__ must be called by subclasses.
+    """
+    def __init__(self, lineCallback=None, stream=None, filename="", stop_event=None, sleep_interval=0.1, store_lines=False, is_file=True, subproc=None, *args, **kwargs):
+        """`lineCallback` is the callable that takes a string that is each line, and 
+        returns False to stop reading.  This is a way of using the class without
+        sub-classing and overriding keep_going
+        
+        `stream` is in input file-like object
+        `filename` can be sent instead of `stream`, it should be the path to the file to read.
+        `stop_event` is an Event, that will kill the thread if it is triggered.
+        `sleep_interval` is the interval to sleep while waiting for a new tree to appear.
+        other arguments are passed to the Thread.__init__()
+        """
+        self.stream = stream
+        self.filename = filename 
+        self.lineCallback = lineCallback
+        self.unfinished = None
+        self.stop_event = stop_event
+        self.sleep_interval = sleep_interval
+        self.store_lines = store_lines
+        self.is_file = is_file
+        self.lines = []
+        self.subproc = subproc
+        Thread.__init__(self,group=None, target=None, name=None, 
+                        args=tuple(*args), kwargs=dict(**kwargs))
+
+    def wait_for_file_to_appear(self, filename):
+        """Blocks until the file `filename` appears or stop_event is triggered.
+        
+        Returns True if `filename` exists.
+        
+        Checks for the stop_event *before* checking for the file existence. 
+        (paup_wrap and raxml_wrap threads depend on this behavior).
+        """
+        while True:
+            if (self.stop_event is not None) and self.stop_event.isSet():
+                return False
+            if os.path.exists(filename):
+                return True
+            #_LOG.debug("Waiting for %s" %filename)
+            time.sleep(self.sleep_interval)
+
+    def open_file_when_exists(self, filename):
+        """Blocks until the file `filename` appears and then returns a file 
+        object opened in rU mode.
+        
+        Returns None if the stop event is triggered.
+        """
+        if self.wait_for_file_to_appear(filename):
+            return open(filename, "rU")
+        return None
+
+
+    def run(self):
+        if self.stream is None:
+            if not self.filename:
+                _LOG.debug('"stream" and "filename" both None when LineReadingThread.run called')
+                return
+            self.stream = self.open_file_when_exists(self.filename)
+            if self.stream is None:
+                return
+        self._read_stream()
+
+    def keep_going(self, line):
+        print "In keep_going:", line
+        if self.lineCallback is None:
+            r = True
+            if self.store_lines:
+                self.lines.append(line)
+            if self.subproc:
+                print "subproc is not None"
+                if self.subproc.returncode is not None:
+                    print "subproc.returncode is not None"
+                    if self.store_lines:
+                        print "about to readlines"
+                        line.extend(self.stream.readlines())
+                else:
+                    print "subproc.returncode is not None"
+
+                r = False
+            else:
+                print "subproc is None"
+            return r
+        return self.lineCallback(line)
+
+    def _read_stream(self):
+        self.unfinished = ""
+        while True:
+            if (self.stop_event is not None) and self.stop_event.isSet():
+                # when we terminate because of an event setting,
+                # we pass any unfinished line that we have to 
+                if not self.unfinished is None:
+                    self.keep_going(self.unfinished)
+                return
+            print "about to readline"
+            line = self.stream.readline()
+            if not line:
+                print "line is empty"
+                if self.subproc is not None:
+                    print "subproc is not None"
+                    if self.subproc.returncode is not None:
+                        print "subproc.returncode is not None"
+                        break
+                    else:
+                        print "subproc.returncode is None"
+                else:
+                    print "subproc is None"
+            else:
+                print 'line is "%s"' % line
+            if not line.endswith("\n"):
+                if self.unfinished:
+                    self.unfinished = self.unfinished + line
+                else:
+                    self.unfinished = line
+                time.sleep(self.sleep_interval)
+            else:
+                if self.unfinished:
+                    line = self.unfinished + line
+                self.unfinished = ""
+                if not self.keep_going(line):
+                    return
+
 
 class RecastingIterator(object):
     """

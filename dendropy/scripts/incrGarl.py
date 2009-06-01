@@ -47,6 +47,7 @@ from dendropy.trees import format_split, TreesBlock
 from dendropy import treegen
 from dendropy import get_logger
 from dendropy.datasets import Dataset
+from dendropy.utils import LineReadingThread
 _LOG = get_logger("incrGarl.py")
 
 _program_name = 'incrGarl.py'
@@ -186,6 +187,7 @@ class GarliConf(object):
         self.bootstrapreps =  "0"
         self.resampleproportion =  "1.0"
         self.inferinternalstateprobs =  "0"
+        self.garli_instance = None
 
     def write_garli_conf(self, out):
         conf = self.__dict__
@@ -196,23 +198,42 @@ class GarliConf(object):
         for k in GARLI_MASTER:
             out.write("%s = %s\n" % (k, conf[k]))
 
-    def run(self, commands):
-        tmp_conf_file = ".garli.conf"
-        f = open(tmp_conf_file, "w")
-        self.write_garli_conf(f)
-        f.close()
-        invoc = ["iGarli", tmp_conf_file]
-        _LOG.debug("Running:\n  %s\nfrom\n  %s" % (" ".join(invoc), os.path.abspath(os.curdir)))
-        if VERBOSE:
-            garli_instance = Popen(invoc, stdin=PIPE)
-            garli_instance.communicate("\n".join(commands))
-            gstderr = ""
-        else:
-            garli_instance = Popen(invoc, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    def run(self, commands, terminate_run=True):
+        if self.garli_instance is None:
+            tmp_conf_file = ".garli.conf"
+            f = open(tmp_conf_file, "w")
+            self.write_garli_conf(f)
+            f.close()
+            invoc = ["iGarli", tmp_conf_file]
+            _LOG.debug("Running:\n  %s\nfrom\n  %s" % (" ".join(invoc), os.path.abspath(os.curdir)))
+            _LOG.debug("### BEGIN COMMANDS ###:\n%s\n###END COMMANDS ###" % ("\n".join(commands)))
+            if terminate_run:
+                commands.append("quit")
+            s = Popen(invoc, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            self.garli_instance = s
+            self.stderrThread = LineReadingThread(stream=s.stderr, store_lines=True, subproc=s)
+            self.stderrThread.start()
+            self.stdoutThread = LineReadingThread(stream=s.stdout, store_lines=True, subproc=s)
+            self.stdoutThread.start()
+        if terminate_run:
             gstdout, gstderr = garli_instance.communicate("\n".join(commands))
-        rc = garli_instance.wait()
-        if rc != 0:
-            sys.exit(gstderr)
+            if VERBOSE:
+                print gstdout
+            rc = garli_instance.wait()
+            if rc != 0:
+                sys.exit(gstderr)
+            self.garli_instance = None
+        else:
+            garli_prompt = "iGarli>"
+            for command in commands:
+                self.garli_instance.stdin.write(command)
+                stderr_line = ""
+                while not stderr_line.startswith(garli_prompt):
+                    stderr_line = self.garli_instance.stderr.readline()
+                    print "garli stderr =", stderr_line
+                    stdout_lines = self.garli_instance.stdout.read()
+                    print "garli stdout =", stdout_lines
+            
 
     def check_neighborhood_after_addition(self, tree, nd, edge_dist, dataset, tree_ind):
         ofprefix = "nbhood%dfromtree%d" % (edge_dist, tree_ind)
@@ -239,7 +260,7 @@ class GarliConf(object):
 
     
         
-        self.run(["run", "quit"])
+        self.run(["run"], terminate_run=True)
         
         output_tree = ofprefix + ".best.tre"
         t = dataset.read_trees(open(output_tree, "rU"), format="NEXUS")
@@ -267,7 +288,7 @@ class GarliConf(object):
         self.incompletetreefname = tmp_tree_filename
         self.runmode = GARLI_ENUM.INCR_RUNMODE
         
-        self.run(["run", "quit"])
+        self.run(["run"], terminate_run=False)
         
         output_tree = ofprefix + ".best.tre"
         t = dataset.read_trees(open(output_tree, "rU"), format="NEXUS")
@@ -468,19 +489,20 @@ if __name__ == '__main__':
                 for t in trees:
                     print t.score
                     encode_splits(t)
-                    split = 1 << (curr_n_taxa - 1)
-                    e = find_edge_from_split(t.seed_node, split)
-                    if e is None:
-                        sys.exit("Could not find split %s" % (bin(split)[2:]))
-                        assert e is not None
-                    alt_t = garli.check_neighborhood_after_addition(t, e.head_node, 2, culled, tree_ind)
-                    encode_splits(alt_t[0])
-                    if symmetric_difference(alt_t[0], t) != 0:
-                        e = find_edge_from_split(tree.seed_node, split)
-                        further_t = garli.check_neighborhood_after_addition(alt_t, e.head_node, 3, culled, tree_ind)
-                        to_save.extend(further_t)
-                    else:
-                        to_save.append(t)
+                    if False:
+                        split = 1 << (curr_n_taxa - 1)
+                        e = find_edge_from_split(t.seed_node, split)
+                        if e is None:
+                            sys.exit("Could not find split %s" % (bin(split)[2:]))
+                            assert e is not None
+                        alt_t = garli.check_neighborhood_after_addition(t, e.head_node, 2, culled, tree_ind)
+                        encode_splits(alt_t[0])
+                        if symmetric_difference(alt_t[0], t) != 0:
+                            e = find_edge_from_split(tree.seed_node, split)
+                            further_t = garli.check_neighborhood_after_addition(alt_t, e.head_node, 3, culled, tree_ind)
+                            to_save.extend(further_t)
+                        else:
+                            to_save.append(t)
                         
                 # this is where we should evaluate which trees need to be maintained for the next round.
                 next_round_trees.extend(trees)
