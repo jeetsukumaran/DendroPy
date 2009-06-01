@@ -6,7 +6,7 @@ import itertools
 from dendropy import dataio
 from dendropy.splits import encode_splits
 from dendropy import get_logger
-from dendropy.treemanip import collapse_edge
+from dendropy.treestruct import collapse_edge
 from dendropy.treedists import symmetric_difference
 from dendropy.trees import format_split, Edge
 

@@ -6,7 +6,7 @@ import logging
 from dendropy import dataio
 from dendropy.splits import encode_splits, split_to_list, count_bits, lowest_bit_only
 from dendropy import get_logger
-from dendropy.treemanip import collapse_clade, collapse_edge
+from dendropy.treestruct import collapse_clade, collapse_edge
 from dendropy.trees import format_split
 
 _LOG = get_logger('scripts.strict_consensus_merge')

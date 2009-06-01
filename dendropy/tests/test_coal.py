@@ -51,13 +51,13 @@ class CalcIntervalsTest(unittest.TestCase):
         ###       and check if it is equal
                   
 class DeepCoalTest(unittest.TestCase):
-    
-    def setUp(self):
-        self.dataset = datasets.Dataset()                    
-        self.gene_trees = self.dataset.trees_from_string("""
+ 
+    def testFittedDeepCoalCounting(self):
+        dataset = datasets.Dataset()                    
+        gene_trees = dataset.trees_from_string("""
             [&R] (A,(B,(C,D))); [&R] ((A,C),(B,D)); [&R] (C,(A,(B,D)));
             """, "NEWICK")
-        self.species_trees = self.dataset.trees_from_string("""
+        species_trees = dataset.trees_from_string("""
             [&R] (A,(B,(C,D)));
             [&R] (A,(C,(B,D)));
             [&R] (A,(D,(C,B)));
@@ -77,35 +77,59 @@ class DeepCoalTest(unittest.TestCase):
                         
         # expected results, for each gene tree / species tree pairing, with
         # cycling through species trees for each gene tree
-        self.expected_deep_coalescences = [ 0, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 1, 2, 2,
+        expected_deep_coalescences = [ 0, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 1, 2, 2,
                                             2, 1, 2, 2, 2, 1, 1, 2, 2, 2, 1, 2, 2, 0, 2,
                                             2, 1, 2, 3, 3, 3, 0, 1, 1, 3, 3, 3, 2, 1, 2 ]                                                 
-        assert len(self.expected_deep_coalescences) == len(self.gene_trees) * len(self.species_trees)       
+        assert len(expected_deep_coalescences) == len(gene_trees) * len(species_trees)       
                 
         ## prep trees ##
-        assert len(self.dataset.taxa_blocks) == 1      
-        tb = self.dataset.taxa_blocks[0]
-        for t in self.gene_trees + self.species_trees:
+        assert len(dataset.taxa_blocks) == 1      
+        tb = dataset.taxa_blocks[0]
+        for t in gene_trees + species_trees:
             assert t.taxa_block == tb
             t.is_rooted = True
-            splits.encode_splits(t)        
-
-    def testDeepCoalCounting(self):
+            splits.encode_splits(t)    
         idx = 0
         _LOG.info("Species\t\tGene\t\tDC\t\tExp.DC\t\tDiff")
-        for gt in self.gene_trees:
-            for st in self.species_trees:
-                dc = coalescent.num_deep_coalescences(st, gt)        
+        for gt in gene_trees:
+            for st in species_trees:
+                dc = coalescent.num_deep_coalescences_with_fitted_tree(gt, st)        
                 _LOG.info("%s\t\t%s\t\t%s\t\t%s\t\t%s" 
                     % (st.compose_newick(),
                        gt.compose_newick(),
                        dc, 
-                       self.expected_deep_coalescences[idx], 
-                       dc - self.expected_deep_coalescences[idx]))
-                assert dc == self.expected_deep_coalescences[idx]                       
+                       expected_deep_coalescences[idx], 
+                       dc - expected_deep_coalescences[idx]))
+                assert dc == expected_deep_coalescences[idx]                       
                 idx += 1          
- 
-    
+     
+    def testGroupedDeepCoalCounting(self):
+        src_trees = { "((a1,a2)x,b1)y;" : 0,
+                      "((a1, (a2, a3), b1), (b2,(b3,b4)))" : 1,
+                      "(((((a1, a2),a3), b1), b2), (b3, ((b4,b5),b6)))" : 2,
+                      "((b1, (b2, b3), a1), (a2,(a3, a4)))" : 1,
+                      "(((((b1, b2),b3), a1), a2), (a3, ((a4,a5),a6)))" : 2,
+                      "((a1,a2),(b1,b2),(c1,c2))" : 0,
+                      "((a1,a2),(b1,b2,c3),(c1,c2))" : 1,
+                      "(((a1,a2),(b1,b2),c1),c2)" : 1
+                    }
+        for src_tree, expected in src_trees.items():
+            dataset = datasets.Dataset()
+            tree = dataset.trees_from_string(src_tree, "NEWICK")[0]
+            groups = [[],[]]
+            for taxon in tree.taxa_block:
+                if taxon.label.startswith('a'):
+                    groups[0].append(taxon)
+                elif taxon.label.startswith('b'):
+                    groups[1].append(taxon)
+                elif taxon.label.startswith('c'):
+                    if len(groups) < 3:
+                        groups.append([])
+                    groups[2].append(taxon)                        
+            dc = coalescent.num_deep_coalescences_with_grouping(tree, groups)
+            assert dc == expected, \
+                "deep coalescences by groups: expecting %d, but found %d" % (expected, dc)
+            
 if __name__ == "__main__":
     unittest.main()
 

@@ -28,9 +28,9 @@ Methods for working with Kingman's n-coalescent framework.
 import math
 from dendropy import GLOBAL_RNG
 from dendropy import distributions
-from dendropy import treecalc
 from dendropy import trees
-from dendropy import splits
+from dendropy import taxa
+from dendropy import treestruct
 
 def discrete_time_to_coalescence(n_genes, 
                                  pop_size=None, 
@@ -219,7 +219,7 @@ def coalesce(nodes,
 
 def coalescence_intervals(tree):
     """Returns list of coalescence intervals on `tree`."""
-    treecalc.add_depth_to_nodes(tree)
+    trees.add_depth_to_nodes(tree)
     depths = [n.depth for n in tree.internal_nodes()]
     depths.sort()
     intervals = []
@@ -231,7 +231,7 @@ def coalescence_intervals(tree):
 def node_waiting_time_pairs(tree):
     """Returns list of tuples of (node, coalescent interval [= time between
     last coalescent event and current node age])"""
-    treecalc.add_depth_to_nodes(tree)
+    trees.add_depth_to_nodes(tree)
     depths = [(n, n.depth) for n in tree.internal_nodes()]    
     depths.sort(lambda x, y: int(x[1] - y[1]))            
     intervals = []
@@ -287,7 +287,7 @@ def probability_of_coalescent_tree(tree, haploid_pop_size):
     p = math.exp(lp)
     return p
 
-def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
+def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
     """
     Given two trees (with splits encoded), this returns the number of gene 
     duplications implied by the gene tree reconciled on the species tree, based 
@@ -305,36 +305,8 @@ def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
         (a) trees must be rooted (i.e., is_rooted = True)  
         (b) split masks must have been added as rooted (i.e., when 
         encode_splits was called, is_rooted must have been set to True)
-    
-    By default (if `otu_association` is None), each gene tree terminal maps onto the
-    corresponding terminal on the species tree. Otherwise, `otu_association` should be
-    a dictionary with gene terminals as keys as corresponding species terminals
-    as values.    
+      
     """
-#     from dendropy import treesum
-#     dc = 0
-#     taxa_mask = species_tree.taxa_block.all_taxa_bitmask()
-#     for gnd in gene_tree.postorder_node_iter():
-#         gn_children = gnd.child_nodes()
-#         if len(gn_children) > 0:
-#             ssplit = 0
-#             for gn_child in gn_children:
-#                 ssplit = ssplit | gn_child.species_node.edge.clade_mask
-#             sanc = splits.mrca(species_tree.seed_node, ssplit, taxa_mask)     
-#             gnd.species_node = sanc
-#             deep_coal_occurs = False
-#             for gn_child in gn_children:
-#                 if gn_child.species_node is sanc:
-#                     deep_coal_occurs = True
-#             if deep_coal_occurs:
-#                 dc += 1
-#         else:
-#             if otu_association is None:
-#                 gnd.species_node = species_tree.find_node(lambda x : x.taxon == gnd.taxon)
-#             else:
-#                 gnd.species_node = species_tree.find_node(lambda x : x.taxon == otu_association[gnd.taxon]) 
-#     return dc
-
     taxa_mask = species_tree.taxa_block.all_taxa_bitmask()
     
     species_node_gene_nodes = {}
@@ -346,17 +318,13 @@ def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
             ssplit = 0
             for gn_child in gn_children:
                 ssplit = ssplit | gene_node_species_nodes[gn_child].edge.clade_mask
-            sanc = splits.mrca(species_tree.seed_node, ssplit, taxa_mask)     
+            sanc = treestruct.mrca(species_tree.seed_node, ssplit, taxa_mask)     
             gene_node_species_nodes[gnd] = sanc
             if sanc not in species_node_gene_nodes:
                 species_node_gene_nodes[sanc] = []
             species_node_gene_nodes[sanc].append(gnd)                
         else: 
-            if otu_association is None:
-                gene_node_species_nodes[gnd] = species_tree.find_node(lambda x : x.taxon == gnd.taxon)
-            else:
-                gene_node_species_nodes[gnd] = species_tree.find_node(lambda x : x.taxon == otu_association[gnd.taxon])                
-#             species_node_gene_nodes[gene_node_species_nodes[gnd]] = [gnd]
+            gene_node_species_nodes[gnd] = species_tree.find_node(lambda x : x.taxon == gnd.taxon)
             
     contained_gene_lineages = {}            
     for snd in species_tree.postorder_node_iter():
@@ -377,10 +345,55 @@ def num_deep_coalescences(species_tree, gene_tree, otu_association=None):
 
     return dc
 
-
-def deep_coal_implied_by_grouping(tree, tax_set):
+def num_deep_coalescences_with_grouping(tree, tax_sets):
     """
     Returns the number of deep coalescences on tree `tree` that would result
-    if the taxa in `tax_set` formed a monophyletic group.
+    if the taxa in `tax_sets` formed K mutually-exclusive monophyletic groups,
+    where K = len(tax_sets)
+    `tax_sets` == partition of taxa: list of lists, with the inner lists 
+    consisting of taxon objects forming a monophyletic group.
     """
-    pass
+    dc_tree = trees.Tree()
+    dc_tree.taxa_block = taxa.TaxaBlock()
+    
+    for t in range(len(tax_sets)):
+        dc_tree.taxa_block.append(taxa.Taxon(label=str(t)))
+    
+    def _get_dc_taxon(nd):
+        for idx, tax_set in enumerate(tax_sets):
+            if nd.taxon in tax_set:
+                return dc_tree.taxa_block[idx]
+        assert "taxon not found in partition: '%s'" % nd.taxon.label                
+        
+    src_dc_map = {}        
+    for snd in tree.postorder_node_iter():
+        nnd = trees.Node()
+        src_dc_map[snd] = nnd
+        children = snd.child_nodes()
+        if len(children) == 0:
+            nnd.taxon = _get_dc_taxon(snd)
+        else:
+            taxa_set = []
+            for cnd in children:
+                dc_node = src_dc_map[cnd]
+                if len(dc_node.child_nodes()) > 1:
+                    nnd.add_child(dc_node)
+                else:
+                    ctax = dc_node.taxon
+                    if ctax is not None and ctax not in taxa_set:
+                        taxa_set.append(ctax)
+                    del src_dc_map[cnd]  
+            if len(taxa_set) > 1:          
+                for t in taxa_set:
+                    cnd = trees.Node()
+                    cnd.taxon = t
+                    nnd.add_child(cnd)
+            else:
+                if len(nnd.child_nodes()) == 0:
+                    nnd.taxon = taxa_set[0]
+                elif len(taxa_set) == 1:
+                    cnd = trees.Node()
+                    cnd.taxon = taxa_set[0]
+                    nnd.add_child(cnd)
+    dc_tree.seed_node = nnd
+    return len(dc_tree.leaf_nodes()) - len(tax_sets)                    

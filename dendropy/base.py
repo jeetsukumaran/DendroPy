@@ -153,7 +153,10 @@ class IdTagged(Labelled):
         (NameChar)*. NameChar is given by : Letter | Digit | '.' | '-'
         | '_' | ':'
         """
-        f = id_str[0]
+        if len(id_str) > 0:
+            f = id_str[0]
+        else:
+            f = '_' + str(id(id_str))
         if not (f.isalpha or f == '_' or f == ':'):
             id_str = '_' + id_str
         id_str = re.sub('[^\w\d\-\.]', '', id_str)

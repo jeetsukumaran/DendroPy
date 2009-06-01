@@ -317,6 +317,8 @@ def parse_newick_tree_stream(stream_tokenizer,
         elif token == ',':
             tmp_node = trees.Node()
             if curr_node.is_leaf() and not curr_node.taxon:
+#                 curr_node.taxon = taxa.Taxon(oid="UNAMED_" + str(id(curr_node)), label='')                
+#                 taxa_block.append(curr_node.taxon)
                 raise stream_tokenizer.syntax_exception('Missing taxon specifier in a tree -- found either a "(," or ",," construct.')
             p = curr_node.parent_node
             if not p:
@@ -335,6 +337,8 @@ def parse_newick_tree_stream(stream_tokenizer,
         else:
             if token == ')':
                 if curr_node.is_leaf() and not curr_node.taxon:
+#                     curr_node.taxon = taxa.Taxon(oid="UNAMED_" + str(id(curr_node)), label='')                
+#                     taxa_block.append(curr_node.taxon)
                     raise stream_tokenizer.syntax_exception('Missing taxon specifier in a tree -- found either a "(," or ",," construct.')
                 p = curr_node.parent_node
                 if not p:

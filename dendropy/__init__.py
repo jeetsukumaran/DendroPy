@@ -46,7 +46,7 @@ __all__ = ["base.py",
         "splits.py",
         "taxa.py",
         "treedists.py",
-        "treecalc.py",
+        "continuous.py",
         "treegen.py",
         "trees.py",
         "treesum.py",
@@ -54,7 +54,7 @@ __all__ = ["base.py",
         "xmlparser.py",
         "high_level.py",
 ]
-__version__ = "2.4.0"
+__version__ = "2.5.0"
 PACKAGE_NAME = "DendroPy"
 PACKAGE_VERSION = __version__
 PACKAGE_AUTHOR = "Jeet Sukumaran and Mark T. Holder"
