@@ -299,7 +299,7 @@ class PopGenStatsTests(unittest.TestCase):
                 groups[0].append(t)
             else:
                 groups[1].append(t)
-        sigma = popgenstats.wakeleys_sigma(d.char_blocks[0], groups)            
+        sigma = popgenstats.wakeleys_Psi(d.char_blocks[0], groups)            
         assert (sigma - 0.82) ** 2 <= 0.02 ** 2     
 
 if __name__ == "__main__":
