@@ -609,12 +609,9 @@ class Node(taxa.TaxonLinked):
     def __deepcopy__(self, memo):
         o = self.__class__(label=self.label, taxon=self.taxon)
         memo[id(self)] = o
-        if self.edge is None:
-            o.edge = None
-        else:
-            c_edge = copy.deepcopy(self.edge, memo)
-            o.edge = c_edge
-        o.parent_node = copy.deepcopy(self.parent_node, memo)
+        for k, v in self.__dict__.iteritems():
+            if not k in ['__child_nodes']:
+                o.__dict__[k] = copy.deepcopy(v, memo)
         for c in self.child_nodes():
             o.add_child(copy.deepcopy(c, memo))
         return o

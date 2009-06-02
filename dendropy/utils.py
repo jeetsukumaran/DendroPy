@@ -35,9 +35,10 @@ import copy
 import fnmatch
 
 from threading import Event, Thread
+from dendropy import get_logger
+_LOG = get_logger('dendropy.utils')
 
-
-
+DEFAULT_SLEEP_INTERVAL=0.1
 class LineReadingThread(Thread):
     """A thread that will read the input stream - designed to work with a file 
     thas is being written. Note that if the file does not end with a newline
@@ -49,7 +50,7 @@ class LineReadingThread(Thread):
     
     LineReadingThread.__init__ must be called by subclasses.
     """
-    def __init__(self, lineCallback=None, stream=None, filename="", stop_event=None, sleep_interval=0.1, store_lines=False, is_file=True, subproc=None, *args, **kwargs):
+    def __init__(self, lineCallback=None, stream=None, filename="", stop_event=None, sleep_interval=DEFAULT_SLEEP_INTERVAL, store_lines=False, is_file=True, subproc=None, *args, **kwargs):
         """`lineCallback` is the callable that takes a string that is each line, and 
         returns False to stop reading.  This is a way of using the class without
         sub-classing and overriding keep_going
@@ -63,13 +64,14 @@ class LineReadingThread(Thread):
         self.stream = stream
         self.filename = filename 
         self.lineCallback = lineCallback
-        self.unfinished = None
+        self.unfinished_line = None
         self.stop_event = stop_event
         self.sleep_interval = sleep_interval
         self.store_lines = store_lines
         self.is_file = is_file
         self.lines = []
         self.subproc = subproc
+        self.stop_on_subproc_exit = False
         Thread.__init__(self,group=None, target=None, name=None, 
                         args=tuple(*args), kwargs=dict(**kwargs))
 
@@ -111,63 +113,70 @@ class LineReadingThread(Thread):
         self._read_stream()
 
     def keep_going(self, line):
-        print "In keep_going:", line
+        _LOG.debug("In keep_going: " + line)
+        if self.store_lines:
+            self.lines.append(line)
+            _LOG.debug("self.lines = %s" % str(self.lines))
         if self.lineCallback is None:
             r = True
-            if self.store_lines:
-                self.lines.append(line)
             if self.subproc:
-                print "subproc is not None"
-                if self.subproc.returncode is not None:
-                    print "subproc.returncode is not None"
-                    if self.store_lines:
-                        print "about to readlines"
-                        line.extend(self.stream.readlines())
+                _LOG.debug("subproc is not None")
+                if self.subproc.returncode is None:
+                    _LOG.debug("subproc.returncode is None")
                 else:
-                    print "subproc.returncode is not None"
-
-                r = False
+                    _LOG.debug("subproc.returncode is %d" % self.subproc.returncode)
+                    if self.store_lines:
+                        _LOG.debug("about to call readlines")
+                        line = line + "\n".join(self.stream.readlines())
+                    r = False
             else:
-                print "subproc is None"
+                _LOG.debug("subproc is None")
             return r
         return self.lineCallback(line)
 
     def _read_stream(self):
-        self.unfinished = ""
+        self.unfinished_line = ""
         while True:
             if (self.stop_event is not None) and self.stop_event.isSet():
                 # when we terminate because of an event setting,
-                # we pass any unfinished line that we have to 
-                if not self.unfinished is None:
-                    self.keep_going(self.unfinished)
-                return
-            print "about to readline"
+                # we pass any unfinished_line line that we have to 
+                if not self.unfinished_line is None:
+                    self.keep_going(self.unfinished_line)
+                break
+            _LOG.debug("about to readline")
             line = self.stream.readline()
             if not line:
-                print "line is empty"
-                if self.subproc is not None:
-                    print "subproc is not None"
-                    if self.subproc.returncode is not None:
-                        print "subproc.returncode is not None"
-                        break
+                _LOG.debug("line is empty")
+                if self.stop_on_subproc_exit:
+                    self.subproc.poll()
+                    if self.subproc is not None:
+                        _LOG.debug("subproc is not None")
+                        if self.subproc.returncode is not None:
+                            _LOG.debug("subproc.returncode is %d" % self.subproc.returncode)
+                            _LOG.debug("%s" % repr(self.stream))
+                            l = "".join(self.stream.readlines())
+                            if l:
+                                self.keep_going(l)
+                            break
+                        else:
+                            _LOG.debug("subproc.returncode is None")
                     else:
-                        print "subproc.returncode is None"
-                else:
-                    print "subproc is None"
+                        _LOG.debug("subproc is None")
             else:
-                print 'line is "%s"' % line
+                _LOG.debug('line is "%s"' % line)
             if not line.endswith("\n"):
-                if self.unfinished:
-                    self.unfinished = self.unfinished + line
+                if self.unfinished_line:
+                    self.unfinished_line = self.unfinished_line + line
                 else:
-                    self.unfinished = line
+                    self.unfinished_line = line
                 time.sleep(self.sleep_interval)
             else:
-                if self.unfinished:
-                    line = self.unfinished + line
-                self.unfinished = ""
+                if self.unfinished_line:
+                    line = self.unfinished_line + line
+                self.unfinished_line = ""
                 if not self.keep_going(line):
-                    return
+                    break
+        _LOG.debug("LineReadingThread exiting")
 
 
 class RecastingIterator(object):

@@ -74,7 +74,6 @@ class SplitFreqsTest(unittest.TestCase):
                         e = splits.find_edge_from_split(tree.seed_node, cm)
                         self.assertTrue(e is edge)
 
-        
     def testSplits(self):
         unrooted = True
         for tc in test_cases:
