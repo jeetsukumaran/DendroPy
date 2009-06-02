@@ -618,7 +618,6 @@ class Node(taxa.TaxonLinked):
         """
         self.__edge.length = v
         
-
     edge = property(_get_edge, _set_edge)
     edge_length = property(_get_edge_length, _set_edge_length)
         
@@ -640,11 +639,11 @@ class Node(taxa.TaxonLinked):
 
     def _get_parent_node(self):
         """Returns the parent node of this node."""
-        return self.__parent_node
+        return self.edge.tail_node
     
     def _set_parent_node(self, parent):
         """Sets the parent node of this node."""
-        self.__parent_node = parent
+#         self.__parent_node = parent
         self.edge.tail_node = parent
         
     parent_node = property(_get_parent_node, _set_parent_node)
