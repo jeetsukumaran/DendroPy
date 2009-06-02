@@ -943,14 +943,14 @@ class Edge(base.IdTagged):
             self.tail_node = tail_node
         self.length = length
 
-    def __deepcopy__(self, memo):
-        o = self.__class__()
-        memo[id(self)] = o
-        o.tail_node = copy.deepcopy(self.tail_node, memo)
-        o.head_node = copy.deepcopy(self.head_node, memo)
-        o.length = copy.deepcopy(self.length, memo)
-        o.rootedge = copy.deepcopy(self.rootedge, memo)
-        return o
+#     def __deepcopy__(self, memo):
+#         o = self.__class__()
+#         memo[id(self)] = o
+#         o.tail_node = copy.deepcopy(self.tail_node, memo)
+#         o.head_node = copy.deepcopy(self.head_node, memo)
+#         o.length = copy.deepcopy(self.length, memo)
+#         o.rootedge = copy.deepcopy(self.rootedge, memo)
+#         return o
 
     def collapse(self):
         h = self.head_node
