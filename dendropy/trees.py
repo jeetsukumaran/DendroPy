@@ -577,7 +577,7 @@ class Node(taxa.TaxonLinked):
         taxa.TaxonLinked.__init__(self, oid=oid, label=label)
         self.__edge = None        
         self.__child_nodes = []        
-        self.__parent_node = None        
+#         self.__parent_node = None        
         if edge is not None:
             self.edge = edge
         else:
