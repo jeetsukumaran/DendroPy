@@ -188,6 +188,7 @@ class GarliConf(object):
         self.resampleproportion =  "1.0"
         self.inferinternalstateprobs =  "0"
         self.garli_instance = None
+        self.garli_stopped_event = None
 
     def write_garli_conf(self, out):
         conf = self.__dict__
@@ -198,8 +199,12 @@ class GarliConf(object):
         for k in GARLI_MASTER:
             out.write("%s = %s\n" % (k, conf[k]))
 
+    def quit(self):
+        return self.run(["quit"], terminate_run=True);
+
     def run(self, commands, terminate_run=True):
         if self.garli_instance is None:
+            assert(self.garli_stopped_event is None)
             tmp_conf_file = ".garli.conf"
             f = open(tmp_conf_file, "w")
             self.write_garli_conf(f)
@@ -211,9 +216,11 @@ class GarliConf(object):
                 commands.append("quit")
             s = Popen(invoc, stdin=PIPE, stdout=PIPE, stderr=PIPE)
             self.garli_instance = s
-            self.stderrThread = LineReadingThread(stream=s.stderr, store_lines=True, subproc=s)
+            e = Event()
+            self.garli_stopped_event = e
+            self.stderrThread = LineReadingThread(stream=s.stderr, store_lines=True, subproc=s, stop_event=e)
             self.stderrThread.start()
-            self.stdoutThread = LineReadingThread(stream=s.stdout, store_lines=True, subproc=s)
+            self.stdoutThread = LineReadingThread(stream=s.stdout, store_lines=True, subproc=s, stop_event=e)
             self.stdoutThread.start()
         if terminate_run:
             gstdout, gstderr = garli_instance.communicate("\n".join(commands))
@@ -222,6 +229,8 @@ class GarliConf(object):
             rc = garli_instance.wait()
             if rc != 0:
                 sys.exit(gstderr)
+            self.garli_stopped_event.set()
+            self.garli_stopped_event = None
             self.garli_instance = None
         else:
             garli_prompt = "iGarli>"

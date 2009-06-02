@@ -50,7 +50,17 @@ class LineReadingThread(Thread):
     
     LineReadingThread.__init__ must be called by subclasses.
     """
-    def __init__(self, lineCallback=None, stream=None, filename="", stop_event=None, sleep_interval=DEFAULT_SLEEP_INTERVAL, store_lines=False, is_file=True, subproc=None, *args, **kwargs):
+    def __init__(self, 
+                lineCallback=None, 
+                stream=None, 
+                filename="", 
+                stop_event=None, 
+                sleep_interval=DEFAULT_SLEEP_INTERVAL, 
+                store_lines=False, 
+                is_file=True, 
+                subproc=None, 
+                *args,
+                **kwargs):
         """`lineCallback` is the callable that takes a string that is each line, and 
         returns False to stop reading.  This is a way of using the class without
         sub-classing and overriding keep_going
@@ -71,7 +81,7 @@ class LineReadingThread(Thread):
         self.is_file = is_file
         self.lines = []
         self.subproc = subproc
-        self.stop_on_subproc_exit = False
+        self.stop_on_subproc_exit = kwargs.get('stop_on_subproc_exit', False)
         Thread.__init__(self,group=None, target=None, name=None, 
                         args=tuple(*args), kwargs=dict(**kwargs))
 
