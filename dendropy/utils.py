@@ -34,7 +34,7 @@ import os
 import copy
 import fnmatch
 
-from threading import Event, Thread
+from threading import Event, Thread, Lock
 from dendropy import get_logger
 _LOG = get_logger('dendropy.utils')
 
@@ -78,6 +78,8 @@ class LineReadingThread(Thread):
         self.stop_event = stop_event
         self.sleep_interval = sleep_interval
         self.store_lines = store_lines
+        if store_lines:
+            self.line_list_lock = Lock()
         self.is_file = is_file
         self.lines = []
         self.subproc = subproc
@@ -125,8 +127,12 @@ class LineReadingThread(Thread):
     def keep_going(self, line):
         _LOG.debug("In keep_going: " + line)
         if self.store_lines:
-            self.lines.append(line)
-            _LOG.debug("self.lines = %s" % str(self.lines))
+            self.line_list_lock.acquire()
+            try:
+                self.lines.append(line)
+                _LOG.debug("self.lines = %s" % str(self.lines))
+            finally:
+                self.line_list_lock.release()
         if self.lineCallback is None:
             r = True
             if self.subproc:

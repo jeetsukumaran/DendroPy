@@ -33,6 +33,7 @@ import itertools
 import copy
 import re
 import logging
+import time
 from optparse import OptionParser
 from subprocess import Popen, PIPE
 
@@ -47,7 +48,7 @@ from dendropy.trees import format_split, TreesBlock
 from dendropy import treegen
 from dendropy import get_logger
 from dendropy.datasets import Dataset
-from dendropy.utils import LineReadingThread
+from dendropy.utils import LineReadingThread, Event
 _LOG = get_logger("incrGarl.py")
 
 _program_name = 'incrGarl.py'
@@ -126,6 +127,61 @@ GARLI_MASTER = (
 
 class GARLI_ENUM:
     NORMAL_RUNMODE, INCR_RUNMODE = "0", "10"
+
+SLEEP_INTERVAL = 0.05
+
+class GarliStdErrThread(LineReadingThread):
+    def __init__(self, prompt, *args, **kwargs):
+        LineReadingThread.__init__(self, *args, **kwargs)
+        self.prompt = prompt
+        self.n_prompts_read = 0
+        self.n_lines_to_skip = 0
+        self.igarli_comment = (0,0)
+        self.prompt_pattern = re.compile(r'iGarli\[(\d+)\s*-\s*(\d+)\]')
+        self.start_of_prev_read = 0
+    def wait_for_prompt(self):
+        self.start_of_prev_read = self.n_lines_to_skip
+        while True:
+            self.line_list_lock.acquire()
+            try:
+                to_parse = self.lines[self.n_lines_to_skip:]
+            finally:
+                self.line_list_lock.release()
+
+            if to_parse:
+                for n, line in enumerate(to_parse):
+                    if line.startswith(self.prompt):
+                        _LOG.debug("prompt found")
+                        m = self.prompt_pattern.match(line)
+                        if m:
+                            self.n_lines_to_skip += n + 1
+                            self.igarli_comment = tuple([int(i) for i in m.groups()])
+                            self.n_prompts_read += 1
+                            _LOG.debug("comment from prompt = %s" % str(self.igarli_comment))
+                            return True
+                    else:
+                        _LOG.debug("%s... does not start with %s" % (line[:10], self.prompt))
+                self.n_lines_to_skip += len(to_parse)
+            if self.stop_event is not None:
+                if self.stop_event.isSet():
+                    return False
+                else:
+                    _LOG.debug("stop_event not triggered")
+            else:
+                _LOG.debug("no stop_event registered")
+            _LOG.debug("Sleeping unparsed stderr = %s" % "\nline: ".join(to_parse))
+            time.sleep(SLEEP_INTERVAL)
+            # check to see if iGarli is still running after we slept
+            self.subproc.poll()
+            if self.subproc.returncode is not None:
+                self.stop_event.set()
+    def lines_between_prompt(self):
+        self.line_list_lock.acquire()
+        try:
+            return self.lines[self.start_of_prev_read:self.n_lines_to_skip]
+        finally:
+            self.line_list_lock.release()
+
 
 class GarliConf(object):
     def __init__(self):
@@ -218,31 +274,34 @@ class GarliConf(object):
             self.garli_instance = s
             e = Event()
             self.garli_stopped_event = e
-            self.stderrThread = LineReadingThread(stream=s.stderr, store_lines=True, subproc=s, stop_event=e)
+            self.stderrThread = GarliStdErrThread(prompt="iGarli[", stream=s.stderr, store_lines=True, subproc=s, stop_event=e)
             self.stderrThread.start()
             self.stdoutThread = LineReadingThread(stream=s.stdout, store_lines=True, subproc=s, stop_event=e)
             self.stdoutThread.start()
+
+        assert(self.stderrThread is not None)
+        for command in commands:
+            self.garli_instance.poll()
+            if self.garli_instance.returncode is not None:
+                _LOG.debug("triggering stop_event in command loop")
+                self.garli_stopped_event.set()
+            if self.stderrThread.wait_for_prompt():
+                _LOG.debug("***ISSUING command ***\n%s\n" % command) 
+                self.garli_instance.stdin.write(command + '\n')
+            else:
+                sys.exit('iGarli exited before I even had a chance to tell it "%s".  How frustrating for me!' % command)
+
         if terminate_run:
-            gstdout, gstderr = garli_instance.communicate("\n".join(commands))
-            if VERBOSE:
-                print gstdout
-            rc = garli_instance.wait()
+            rc = self.garli_instance.wait()
             if rc != 0:
                 sys.exit(gstderr)
+        else:
+            self.garli_instance.poll()
+        if self.garli_instance.returncode is not None:
+            _LOG.debug("triggering stop_event after commands")
             self.garli_stopped_event.set()
             self.garli_stopped_event = None
             self.garli_instance = None
-        else:
-            garli_prompt = "iGarli>"
-            for command in commands:
-                self.garli_instance.stdin.write(command)
-                stderr_line = ""
-                while not stderr_line.startswith(garli_prompt):
-                    stderr_line = self.garli_instance.stderr.readline()
-                    print "garli stderr =", stderr_line
-                    stdout_lines = self.garli_instance.stdout.read()
-                    print "garli stdout =", stdout_lines
-            
 
     def check_neighborhood_after_addition(self, tree, nd, edge_dist, dataset, tree_ind):
         ofprefix = "nbhood%dfromtree%d" % (edge_dist, tree_ind)
@@ -297,7 +356,7 @@ class GarliConf(object):
         self.incompletetreefname = tmp_tree_filename
         self.runmode = GARLI_ENUM.INCR_RUNMODE
         
-        self.run(["run"], terminate_run=False)
+        self.run([], terminate_run=True)
         
         output_tree = ofprefix + ".best.tre"
         t = dataset.read_trees(open(output_tree, "rU"), format="NEXUS")
