@@ -207,7 +207,7 @@ class DNAModel(object):
             self.freqs[0], self.freqs[1], self.freqs[2], 1.0 - self.freqs[0] - self.freqs[1] - self.freqs[2], 
             self.shape,
             self.p_invar)
-        return r'[!GarliModel  r %.5f %.5f %.5f %.5f %.5f e %.5f %.5f %.5f %.5f a %.5f p %.5f ]' % t
+        return r'r %.5f %.5f %.5f %.5f %.5f e %.5f %.5f %.5f %.5f a %.5f p %.5f' % t
 
 class TreeModel(object):
     def __init__(self, name="unnamed", score=None, model=None, tree=None):
@@ -218,7 +218,17 @@ class TreeModel(object):
     def __cmp__(self, other):
         return cmp(self.score, other.score)
     def __str__(self):
-        return '[iGarli %s ] tree %s = [&U][!GarliScore %f]%s %s' % (self.name, self.name, self.score, str(self.model), str(self.tree))
+        return '[iGarli %s ] tree %s = [&U][!GarliScore %f][!GarliModel %s ] %s' % (self.name, self.name, self.score, str(self.model), str(self.tree))
+
+
+def tree_has_structure(t):
+    "returns True if there are internal nodes that are not the root"
+    root = t.seed_node
+    for n in root.child_nodes():
+        if not n.is_leaf():
+            return True
+    return False
+
 class GarliConf(object):
     def __init__(self):
         self.line_pattern = garli_line_pattern = re.compile(r'\[iGarli (\d+) \] tree best = \[&U\]\[!GarliScore ([-.0-9]*)\]%s (\(.*\))' % garli_dna_model_pattern)
@@ -345,15 +355,19 @@ class GarliConf(object):
             self.garli_stopped_event = None
             self.garli_instance = None
 
-    def check_neighborhood_after_addition(self, tree, nd, edge_dist, dataset, tree_ind):
+    def check_neighborhood_after_addition(self, tree_model, nd, edge_dist, dataset, tree_ind):
+        tree = tree_model.tree
         ofprefix = "nbhood%dfromtree%d" % (edge_dist, tree_ind)
         
         self.ofprefix = ofprefix
         
         tmp_tree_filename = ".tmp.tre"
         f = open(tmp_tree_filename, "w")
-        write_newick_file(f, [tree], dataset)
+        write_tree_file(f, [tree], dataset)
         f.close()
+        # it seems a little odd to call this incompletetreefname rather than streefname
+        #   but we'd like to trigger the interactive mode, and this is one way of doing that.
+        self.incompletetreefname = tmp_tree_filename
 
         tmp_tree_filename = ".tmpconstrain.tre"
         f = open(tmp_tree_filename, "w")
@@ -361,26 +375,62 @@ class GarliConf(object):
         c = copy.deepcopy(tree, mapper)
         new_nd = mapper[id(nd)]
         nd .collapse_neighborhood(edge_dist)
+        _LOG.debug("Checking neighborhood by constraining %s" % str(tree))
         write_constraint_file(f, [tree], dataset)
         f.close()
     
-        self.runmode = GARLI_ENUM.NORMAL_RUNMODE
-        self.streefname = ".tmp.tre"
-        self.constraintfile = tmp_tree_filename
+        self.runmode = GARLI_ENUM.INCR_RUNMODE # NORMAL_RUNMODE
 
+        #garli does not like stars as constraints
+        do_constraint = tree_has_structure(tree)
+        if do_constraint:
+            # cache settings
+            pcf = self.constraintfile
+            self.constraintfile = tmp_tree_filename
+        
+        self.run(["model = %s" % str(tree_model.model),
+                  "run"], terminate_run=True)
+        if do_constraint:
+            # restore cached settings
+            self.constraintfile = pcf 
+        
+        err_lines = self.stderrThread.lines_between_prompt()
+        r = self.parse_igarli_lines(err_lines, dataset)
+        r.sort(reverse=True)
+        return r
+
+
+    def add_to_tree(self, tree, dataset, tree_ind):
+        ofprefix = "from%d" % tree_ind
     
+        self.ofprefix = ofprefix
+        self.streefname = "incomplete"
+        self.constraintfile = "none"
+        
+        tmp_tree_filename = ".tmp.tre"
+        f = open(tmp_tree_filename, "w")
+        write_tree_file(f, [tree], dataset)
+        f.close()
+    
+        self.incompletetreefname = tmp_tree_filename
+        self.runmode = GARLI_ENUM.INCR_RUNMODE
+
+        # store the settings that we must override
+        ptw = self.topoweight
+        psg = self.stopgen
+        self.topoweight = 0.0
+        self.stopgen = 1000
         
         self.run(["run"], terminate_run=True)
+
+        # restore the settings that we had to override
+        self.topoweight = ptw
+        self.stopgen = psg
         
-        output_tree = ofprefix + ".best.tre"
-        t = self.read_trees(dataset, stream=open(output_tree, "rU"), format="NEXUS")
-        sc = read_garli_scores(open(output_tree, "rU"))
-        if len(t) != len(sc):
-            sys.exit("Did not read the same number of trees (%d) as scores (%d) from %s" % (len(t), len(sc), output_tree))
-        for otree, osc in itertools.izip(t, sc):
-            otree.score = osc
-        t.sort(cmp=cmp_score)
-        return t
+        err_lines = self.stderrThread.lines_between_prompt()
+        r = self.parse_igarli_lines(err_lines, dataset)
+        r.sort(reverse=True)
+        return r
     
     def parse_igarli_lines(self, line_list, dataset):
         tm_list = []
@@ -417,27 +467,6 @@ class GarliConf(object):
         return t
 
 
-    def add_to_tree(self, tree, dataset, tree_ind):
-        ofprefix = "from%d" % tree_ind
-    
-        self.ofprefix = ofprefix
-        self.streefname = "incomplete"
-        self.constraintfile = "none"
-        
-        tmp_tree_filename = ".tmp.tre"
-        f = open(tmp_tree_filename, "w")
-        write_tree_file(f, [tree], dataset)
-        f.close()
-    
-        self.incompletetreefname = tmp_tree_filename
-        self.runmode = GARLI_ENUM.INCR_RUNMODE
-        
-        self.run(["run"], terminate_run=True)
-        
-        err_lines = self.stderrThread.lines_between_prompt()
-        r = self.parse_igarli_lines(err_lines, dataset)
-        r.sort(reverse=True)
-        return r
         
 
 def rev_trans_func(t):
@@ -628,23 +657,50 @@ if __name__ == '__main__':
                 to_save = []
                 for tm in tree_model_list:
                     print tm.score
-                    t = tm.tree
-                    encode_splits(t)
+                    step_add_tree = tm.tree
+                    encode_splits(step_add_tree)
                     split = 1 << (curr_n_taxa - 1)
-                    e = find_edge_from_split(t.seed_node, split)
-                    assert e is not None, "Could not find split %s.  Root mask is %s" % (bin(split)[2:], bin(t.seed_node.edge.clade_mask)[2:])
-                    if False:
-                        alt_t = garli.check_neighborhood_after_addition(t, e.head_node, 2, culled, tree_ind)
-                        encode_splits(alt_t[0].tree)
+                    e = find_edge_from_split(step_add_tree.seed_node, split)
+                    assert e is not None, "Could not find split %s.  Root mask is %s" % (bin(split)[2:], bin(step_add_tree.seed_node.edge.clade_mask)[2:])
+                    
+                    garli.topoweight = 1.0
+                    garli.stopgen = 1000
+
+                    nt_list = garli.check_neighborhood_after_addition(tm, e.head_node, 2, culled, tree_ind)
+                    deeper_search_start = []
+                    better_tm = tm
+                    for nt in nt_list:
+                        encode_splits(nt.tree)
+                        if symmetric_difference(nt.tree, step_add_tree) != 0:
+                            deeper_search_start.append(nt)
+                        elif nt.score > better_tm.score:
+                            better_tm = nt
+
+
+                    if deeper_search_start:
+                        entire_neighborhood = [better_tm] + deeper_search_start
+                        for alt_tm in deeper_search_start:
+                            e = find_edge_from_split(alt_tm.tree.seed_node, split)
+
+                            assert e is not None, "Could not find split %s.  Root mask is %s" % (bin(split)[2:], bin(alt_tm.tree.seed_node.edge.clade_mask)[2:])
+
+                            nt_list = garli.check_neighborhood_after_addition(alt_tm, e.head_node, 3, culled, tree_ind)
+                            for nt in nt_list:
+                                encode_splits(nt.tree)
+                                entire_neighborhood.append(nt)
+                        entire_neighborhood.sort(reverse=True)
+                        to_add = []
+                        for nt in entire_neighborhood:
+                            found = False
+                            for x in to_add:
+                                if symmetric_difference(x.tree, nt.tree) == 0:
+                                    found = True
+                                    break
+                            if not found:
+                                to_add.append(nt)
+                        to_save.extend(to_add)
                     else:
-                        _LOG.warn("Skipping neighborhood search!!!")
-                        alt_t = [tm]
-                    if symmetric_difference(alt_t[0].tree, t) != 0:
-                        e = find_edge_from_split(tree.seed_node, split)
-                        further_t = garli.check_neighborhood_after_addition(alt_t, e.head_node, 3, culled, tree_ind)
-                        to_save.extend(further_t)
-                    else:
-                        to_save.append(tm)
+                        to_save.append(better_tm)
                         
                 # this is where we should evaluate which trees need to be maintained for the next round.
                 next_round_trees.extend(to_save)
