@@ -432,7 +432,7 @@ class GarliConf(object):
         self.incompletetreefname = tmp_tree_filename
         self.runmode = GARLI_ENUM.INCR_RUNMODE
         
-        self.run([], terminate_run=True)
+        self.run(["run"], terminate_run=True)
         
         err_lines = self.stderrThread.lines_between_prompt()
         r = self.parse_igarli_lines(err_lines, dataset)
@@ -633,14 +633,18 @@ if __name__ == '__main__':
                     split = 1 << (curr_n_taxa - 1)
                     e = find_edge_from_split(t.seed_node, split)
                     assert e is not None, "Could not find split %s.  Root mask is %s" % (bin(split)[2:], bin(t.seed_node.edge.clade_mask)[2:])
-                    alt_t = garli.check_neighborhood_after_addition(t, e.head_node, 2, culled, tree_ind)
-                    encode_splits(alt_t[0])
-                    if symmetric_difference(alt_t[0], t) != 0:
+                    if False:
+                        alt_t = garli.check_neighborhood_after_addition(t, e.head_node, 2, culled, tree_ind)
+                        encode_splits(alt_t[0].tree)
+                    else:
+                        _LOG.warn("Skipping neighborhood search!!!")
+                        alt_t = [tm]
+                    if symmetric_difference(alt_t[0].tree, t) != 0:
                         e = find_edge_from_split(tree.seed_node, split)
                         further_t = garli.check_neighborhood_after_addition(alt_t, e.head_node, 3, culled, tree_ind)
                         to_save.extend(further_t)
                     else:
-                        to_save.append(t)
+                        to_save.append(tm)
                         
                 # this is where we should evaluate which trees need to be maintained for the next round.
                 next_round_trees.extend(to_save)
@@ -648,7 +652,7 @@ if __name__ == '__main__':
             inp_trees = [i.tree for i in next_round_trees]
             full_dataset.trees_blocks.append(inp_trees)
             o = open("incrgarli.tre", "w")
-            write_tree_file(o, next_round_trees, culled)
+            write_tree_file(o, [i.tree for i in next_round_trees], culled)
             o.close()
             
         finally:
