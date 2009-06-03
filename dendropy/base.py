@@ -59,7 +59,7 @@ class Annotated(Element):
     def __init__(self):
         "Creates dictionary to track attributes that will be persisted."
         Element.__init__(self)
-        self.__annotations = {}
+        self._annotations = {}
 
     def annotate(self, attr_name, annotate_as=None, type_hint=None):
         """
@@ -70,15 +70,15 @@ class Annotated(Element):
         #annotate_as = annotate_as is None and attr_name or attr_name
         # I assume that was a bug (although it was not causing tests to fail).
         annotate_as = annotate_as is None and attr_name or annotate_as  
-        if attr_name not in self.__annotations:
+        if attr_name not in self._annotations:
             if not hasattr(self, attr_name):
                 raise AttributeError(attr_name)
             else:
                 annote = Annotation(attr_name=attr_name,
                                     type_hint=type_hint)
-                self.__annotations[annotate_as] = annote
+                self._annotations[annotate_as] = annote
         else:
-            annote = self.__annotations[annotate_as]
+            annote = self._annotations[annotate_as]
             annote.attr_name = annotate_as
             annote.type_hint = type_hint
             
@@ -172,9 +172,9 @@ class IdTagged(Labelled):
         Labelled.__init__(self, label=label)
         IdTagged.instances += 1
         if oid is None:
-            self.__oid = self._default_oid()
+            self._oid = self._default_oid()
         else:
-            self.__oid = self.normalize_id(oid)
+            self._oid = self.normalize_id(oid)
             
     def _default_oid(self):
         "Returns default oid."
@@ -186,7 +186,7 @@ class IdTagged(Labelled):
                 
     def _get_oid(self):
         "Returns id."
-        return self.__oid
+        return self._oid
 
     def _set_oid(self, oid):
         """
@@ -195,8 +195,8 @@ class IdTagged(Labelled):
         other oidue.
         """
         if oid is not None:
-            self.__oid = self.normalize_id(oid)
+            self._oid = self.normalize_id(oid)
         else:
-            self.__oid = self._default_oid()
+            self._oid = self._default_oid()
 
     oid = property(_get_oid, _set_oid)

@@ -66,7 +66,7 @@ WRITERS = {
 ############################################################################
 ## Wrappers (Reading/Parsing)
    
-def dataset_from_file(file_obj, format):
+def dataset_from_file(file_obj, format, **kwargs):
     """
     Returns a Dataset object parsed from the source, where:
         `file_obj`   - can either be a file descriptor object/handle opened 
@@ -76,9 +76,9 @@ def dataset_from_file(file_obj, format):
     """
     deprecation("'dataio.dataset_from_file()' is deprecated; use 'read()' method of a Dataset object instead", logger_obj=_LOG)
     reader = get_reader(format)
-    return reader.read_dataset(source_file_handle(file_obj=file_obj))
+    return reader.read_dataset(source_file_handle(file_obj=file_obj), **kwargs)
     
-def dataset_from_string(string, format):
+def dataset_from_string(string, format, **kwargs):
     """
     Returns a Dataset object parsed from the source, where:
         `string` - a string containing the data to be parsed.   
@@ -86,9 +86,9 @@ def dataset_from_string(string, format):
     """
     deprecation("'dataio.dataset_from_string()' is deprecated; use 'from_string()' method of a Dataset object instead", logger_obj=_LOG)
     reader = get_reader(format)
-    return reader.read_dataset(source_file_handle(string=string))    
+    return reader.read_dataset(source_file_handle(string=string), **kwargs)    
     
-def trees_from_file(file_obj, format, encode_splits=False, rooted=RootingInterpretation.UNKNOWN_DEF_UNROOTED):
+def trees_from_file(file_obj, format, encode_splits=False, rooted=RootingInterpretation.UNKNOWN_DEF_UNROOTED, **kwargs):
     """
     Returns a *list* of TreesBlock objects parsed from the source, where:
         `file_obj`   - can either be a file descriptor object/handle opened 
@@ -98,9 +98,9 @@ def trees_from_file(file_obj, format, encode_splits=False, rooted=RootingInterpr
     """
     deprecation("'dataio.trees_from_file()' is deprecated: use 'read_trees()' method of a Dataset object instead", logger_obj=_LOG)
     reader = get_reader(format)
-    return reader.read_trees(source_file_handle(file_obj=file_obj), encode_splits=encode_splits, rooted=rooted)
+    return reader.read_trees(source_file_handle(file_obj=file_obj), encode_splits=encode_splits, rooted=rooted, **kwargs)
     
-def trees_from_string(string, format, encode_splits=False, rooted=RootingInterpretation.UNKNOWN_DEF_UNROOTED):
+def trees_from_string(string, format, encode_splits=False, rooted=RootingInterpretation.UNKNOWN_DEF_UNROOTED, **kwargs):
     """
     Returns a *list* of TreesBlock objects parsed from the source, where:
         `string` - a string containing the data to be parsed.   
@@ -108,9 +108,9 @@ def trees_from_string(string, format, encode_splits=False, rooted=RootingInterpr
     """
     deprecation("'dataio.trees_from_string()' is deprecated: use 'trees_from_string()' method of a Dataset object instead", logger_obj=_LOG)
     reader = get_reader(format)
-    return reader.read_trees(source_file_handle(string=string), encode_splits=encode_splits, rooted=rooted)
+    return reader.read_trees(source_file_handle(string=string), encode_splits=encode_splits, rooted=rooted, **kwargs)
     
-def from_nexus(file_obj=None, string=None):
+def from_nexus(file_obj=None, string=None, **kwargs):
     """
     Returns a Dataset object parsed from a NEXUS or NEWICK source.
         `file_obj`   - can either be a file descriptor object/handle opened 
@@ -120,7 +120,7 @@ def from_nexus(file_obj=None, string=None):
     Either `file_obj` or `string` must be given. If both are given, `file_obj` is used.                
     """
     deprecation("'dataio.from_nexus() is deprecated: use 'read()' method of a Dataset object instead", logger_obj=_LOG)
-    return nexus.read_dataset(source_file_handle(file_obj=file_obj, string=string))    
+    return nexus.read_dataset(source_file_handle(file_obj=file_obj, string=string), **kwargs)    
     
 ############################################################################
 ## Wrappers (Writing)    
@@ -206,7 +206,7 @@ def get_reader(format):
     return READERS[format]()            
     
 
-def trees_from_newick(nl, taxa_block=None):
+def trees_from_newick(nl, taxa_block=None, **kwargs):
     """Takes an iterable list of newick strings (or files with just newick strings
     in them.
     """
@@ -219,7 +219,7 @@ def trees_from_newick(nl, taxa_block=None):
         f = t
         if isinstance(t, str):
             f = StringIO(t)
-        reader.read_dataset(file_obj=f, dataset=dataset)
+        reader.read_dataset(file_obj=f, dataset=dataset, **kwargs)
     return dataset
 
 

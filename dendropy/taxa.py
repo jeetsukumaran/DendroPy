@@ -53,11 +53,11 @@ class TaxonLinked(base.IdTagged):
     def __init__(self, oid=None, label=None, taxon=None):
         "Initializes by calling base class."
         base.IdTagged.__init__(self, oid=oid, label=label)
-        self.__taxon = taxon
+        self._taxon = taxon
 
     def _get_taxon(self):
         "Returns taxon associated with this object."
-        return self.__taxon
+        return self._taxon
 
     def _set_taxon(self, taxon):
         """
@@ -69,12 +69,12 @@ class TaxonLinked(base.IdTagged):
         xs:NCName compliant for the id.
         """
         if taxon is None or isinstance(taxon, Taxon):
-            self.__taxon = taxon
+            self._taxon = taxon
         else:
             taxon_obj = Taxon()
             taxon_obj.label = taxon
             taxon_obj.oid = taxon
-            self.__taxon = taxon_obj
+            self._taxon = taxon_obj
 
     taxon = property(_get_taxon, _set_taxon)
 
@@ -87,20 +87,20 @@ class TaxaLinked(base.IdTagged):
     def __init__(self, oid=None, label=None, taxa_block=None):
         "Initializes by calling base class."
         base.IdTagged.__init__(self, oid=oid, label=label)
-        self.__taxa_block = taxa_block
+        self._taxa_block = taxa_block
 
     def _get_taxa_block(self):
         """
         Returns taxon block associated with this object. If none has been
         given, then it builds one.
         """
-        if self.__taxa_block is None:
+        if self._taxa_block is None:
             self.__taxa_block= TaxaBlock()
-        return self.__taxa_block
+        return self._taxa_block
 
     def _set_taxa_block(self, taxa_block):
         "Sets the taxon block for this object."
-        self.__taxa_block = taxa_block
+        self._taxa_block = taxa_block
 
     taxa_block = property(_get_taxa_block, _set_taxa_block)
             

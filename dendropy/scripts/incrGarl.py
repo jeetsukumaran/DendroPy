@@ -210,7 +210,7 @@ class DNAModel(object):
         return r'[!GarliModel  r %.5f %.5f %.5f %.5f %.5f e %.5f %.5f %.5f %.5f a %.5f p %.5f ]' % t
 
 class TreeModel(object):
-    def __init__(self, name, score, model, tree):
+    def __init__(self, name="unnamed", score=None, model=None, tree=None):
         self.model = model
         self.score = score
         self.name = name
@@ -392,8 +392,9 @@ class GarliConf(object):
                 model = self.model_class(model_params)
                 tree_string = g[-1]
                 newick_stream = cStringIO.StringIO(tree_string)
-                tree = dataset.read_trees(newick_stream, format="newick")
-                tm = TreeModel(name=result_number, score=score, model=model, tree=tree_string)
+                tree_list = dataset.read_trees(newick_stream, format="newick")
+                assert(len(tree_list) == 1)
+                tm = TreeModel(name=result_number, score=score, model=model, tree=tree_list[0])
                 tm_list.append(tm)
         return tm_list
 
@@ -419,22 +420,7 @@ class GarliConf(object):
         err_lines = self.stderrThread.lines_between_prompt()
         r = self.parse_igarli_lines(err_lines)
         r.sort(reverse=True)
-        
-        sys.exit("%s" % "\n".join([str(i) for i in r]))
-        
-        
-        
-        
-        output_tree = ofprefix + ".best.tre"
-        t = dataset.read_trees(open(output_tree, "rU"), format="NEXUS")
-        del dataset.trees_blocks[-1]
-        sc = read_garli_scores(open(output_tree, "rU"))
-        if len(t) != len(sc):
-            sys.exit("Did not read the same number of trees (%d) as scores (%d) from %s" % (len(t), len(sc), output_tree))
-        for otree, osc in itertools.izip(t, sc):
-            otree.score = osc
-        t.sort(cmp=cmp_score)
-        return t
+        return r
         
 
 def rev_trans_func(t):
@@ -616,37 +602,37 @@ if __name__ == '__main__':
         o.close()
         
         try:
-            next_round_trees = TreesBlock(taxa_block=culled_taxa)
+            next_round_trees = [TreeModel(tree=i) for i in TreesBlock(taxa_block=culled_taxa)]
             
             for tree_ind, tree in enumerate(inp_trees):
-                trees = garli.add_to_tree(tree, culled, tree_ind)
+                tree_model_list = garli.add_to_tree(tree, culled, tree_ind)
                 to_save = []
-                for t in trees:
-                    print t.score
+                for tm in tree_model_list:
+                    print tm.score
+                    t = tm.tree
                     encode_splits(t)
-                    if False:
-                        split = 1 << (curr_n_taxa - 1)
-                        e = find_edge_from_split(t.seed_node, split)
-                        if e is None:
-                            sys.exit("Could not find split %s" % (bin(split)[2:]))
-                            assert e is not None
-                        alt_t = garli.check_neighborhood_after_addition(t, e.head_node, 2, culled, tree_ind)
-                        encode_splits(alt_t[0])
-                        if symmetric_difference(alt_t[0], t) != 0:
-                            e = find_edge_from_split(tree.seed_node, split)
-                            further_t = garli.check_neighborhood_after_addition(alt_t, e.head_node, 3, culled, tree_ind)
-                            to_save.extend(further_t)
-                        else:
-                            to_save.append(t)
+                    split = 1 << (curr_n_taxa - 1)
+                    e = find_edge_from_split(t.seed_node, split)
+                    if e is None:
+                        sys.exit("Could not find split %s.  Root mask is %s" % (bin(split)[2:], bin(t.seed_node.edge.clade_mask)[2:]))
+                        assert e is not None
+                    alt_t = garli.check_neighborhood_after_addition(t, e.head_node, 2, culled, tree_ind)
+                    encode_splits(alt_t[0])
+                    if symmetric_difference(alt_t[0], t) != 0:
+                        e = find_edge_from_split(tree.seed_node, split)
+                        further_t = garli.check_neighborhood_after_addition(alt_t, e.head_node, 3, culled, tree_ind)
+                        to_save.extend(further_t)
+                    else:
+                        to_save.append(t)
                         
                 # this is where we should evaluate which trees need to be maintained for the next round.
-                next_round_trees.extend(trees)
+                next_round_trees.extend(to_save)
             del dataset.trees_blocks[:]
-            dataset.trees_blocks.append(next_round_trees)
+            inp_trees = [i.tree for i in next_round_trees]
+            dataset.trees_blocks.append(inp_trees)
             o = open("incrgarli.tre", "w")
             write_tree_file(o, next_round_trees, culled)
             o.close()
-            inp_trees = next_round_trees
             
         finally:
             os.chdir(orig_dir)

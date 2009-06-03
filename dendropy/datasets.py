@@ -93,11 +93,17 @@ class Dataset(base.Element):
         taxa_block is set to point to it. If not, the taxa_block is
         added to the collection.
         """
-        for taxa_block in self.taxa_blocks:
-            if taxa_block.oid == taxa_linked.taxa_block.oid:
-                taxa_linked.taxa_block = taxa_block
-                return
-        self.taxa_blocks.append(taxa_linked.taxa_block)
+        if getattr(taxa_linked, "taxa_block", None) is None:
+            if len(self.taxa_blocks) != 1:
+                raise ValueError("taxa_linked object must have a taxa_block when being added to a dataset that does not have one taxa_block")
+            taxa_linked.taxa_block = self.taxa_blocks[0]
+        else:    
+            for taxa_block in self.taxa_blocks:
+                tl_tb_oid = taxa_linked.taxa_block.oid
+                if taxa_block.oid == tl_tb_oid:
+                    taxa_linked.taxa_block = taxa_block
+                    return
+            self.taxa_blocks.append(taxa_linked.taxa_block)
 
     def find_taxa_block(self, oid=None, label=None):
         """
@@ -225,7 +231,7 @@ class Dataset(base.Element):
         src = StringIO(string)
         return self.read(src, format)
         
-    def read_trees(self, src, format, encode_splits=False, rooted=None, finish_node_func=None):
+    def read_trees(self, src, format, encode_splits=False, rooted=None, finish_node_func=None, **kwargs):
         """
         Populates this dataset with trees from `src`, given in `format`.
         `src` is a file descriptor object, `format` is one of the
@@ -248,7 +254,7 @@ class Dataset(base.Element):
                      }
             cache = cache_reader_state(reader, **added)
         
-        reader.read_dataset(src, self)
+        reader.read_dataset(src, self, **kwargs)
         
         if format.upper() == "NEXUS" or format.upper() == "NEWICK":
             restore_reader_state(reader, cache)
@@ -288,14 +294,14 @@ class Dataset(base.Element):
         
         
  
-    def trees_from_string(self, string, format, encode_splits=False, rooted=None, finish_node_func=None):
+    def trees_from_string(self, string, format, encode_splits=False, rooted=None, finish_node_func=None, **kwargs):
         """
         Populates this dataset from `string`, given in `format`. `src`
         is a file descriptor object, `format` is one of the supported file
         format identifiers: 'NEXUS' (incl. 'NEWICK'), 'NEXML' etc.
         """
         src = StringIO(string)
-        return self.read_trees(src, format, encode_splits=encode_splits, rooted=rooted, finish_node_func=finish_node_func)
+        return self.read_trees(src, format, encode_splits=encode_splits, rooted=rooted, finish_node_func=finish_node_func, **kwargs)
             
     def write(self, dest, format):
         """
@@ -352,12 +358,12 @@ class Reader(object):
         dataset = self.read_dataset(file_obj=file_obj)
         return dataset.taxa_blocks
 
-    def read_trees(self, file_obj):
+    def read_trees(self, file_obj, **kwargs):
         """
         Instantiates and returns a list of TreeBlock objects from a 
         file (descriptor).
         """
-        dataset = self.read_dataset(file_obj=file_obj)
+        dataset = self.read_dataset(file_obj=file_obj, **kwargs)
         return dataset.trees_blocks
 
 class Writer(object):

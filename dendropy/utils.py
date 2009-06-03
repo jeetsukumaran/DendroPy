@@ -252,7 +252,7 @@ class OrderedCaselessDict(dict):
         the ordered keys in sync.
         """
         super(OrderedCaselessDict, self).__init__()
-        self.__ordered_keys = []
+        self._ordered_keys = []
         if other is not None:
             if isinstance(other, dict):
                 for key, val in other.items():
@@ -320,7 +320,7 @@ class OrderedCaselessDict(dict):
 
     def __delitem__(self, key):
         "Remove item with specified key."
-        del(self.__ordered_keys[self.index(key)])
+        del(self._ordered_keys[self.index(key)])
         super(OrderedCaselessDict, \
               self).__delitem__(key.lower())                
 
@@ -339,7 +339,7 @@ class OrderedCaselessDict(dict):
         
     def popitem(self):
         "a.popitem()  remove and last (key, value) pair"
-        key = self.__ordered_keys[-1]
+        key = self._ordered_keys[-1]
         item = (key, self[key.lower()])
         self.__delitem__(key)
         return item
@@ -354,7 +354,7 @@ class OrderedCaselessDict(dict):
         Raise KeyError if not found.
         """
         count = 0
-        for k in self.__ordered_keys:
+        for k in self._ordered_keys:
             if k.lower() == key.lower():
                 return count
             count = count + 1
@@ -366,7 +366,7 @@ class OrderedCaselessDict(dict):
 
     def clear(self):
         "Deletes all items from the dictionary."
-        self.__ordered_keys = []
+        self._ordered_keys = []
         super(OrderedCaselessDict, self).clear()
 
     def has_key(self, key):

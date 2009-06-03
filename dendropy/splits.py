@@ -235,8 +235,8 @@ class SplitDistribution(object):
         self.ignore_edge_lengths = False
         self.ignore_node_ages = True
         self.unrooted = True
-        self.__split_freqs = None
-        self.__trees_counted_for_freqs = 0
+        self._split_freqs = None
+        self._trees_counted_for_freqs = 0
         
     def add_split_count(self, split, count):
         if split not in self.splits:
@@ -269,21 +269,21 @@ class SplitDistribution(object):
         
     def calc_freqs(self):
         "Forces recalculation of frequencies."
-        self.__split_freqs = {}
+        self._split_freqs = {}
         if self.total_trees_counted == 0:
             total = 1
         else:
             total = self.total_trees_counted
         for split in self.split_counts:
-            self.__split_freqs[split] = float(self.split_counts[split]) / total
-        self.__trees_counted_for_freqs = self.total_trees_counted            
-        return self.__split_freqs
+            self._split_freqs[split] = float(self.split_counts[split]) / total
+        self._trees_counted_for_freqs = self.total_trees_counted            
+        return self._split_freqs
         
     def _get_split_frequencies(self):
         "Returns dictionary of splits : split frequencies."
-        if self.__split_freqs is None or self.__trees_counted_for_freqs != self.total_trees_counted:
+        if self._split_freqs is None or self._trees_counted_for_freqs != self.total_trees_counted:
             self.calc_freqs()
-        return self.__split_freqs   
+        return self._split_freqs   
         
     split_frequencies = property(_get_split_frequencies)         
 
