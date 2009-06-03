@@ -34,6 +34,7 @@ import copy
 import re
 import logging
 import time
+import cStringIO
 from optparse import OptionParser
 from subprocess import Popen, PIPE
 
@@ -182,9 +183,46 @@ class GarliStdErrThread(LineReadingThread):
         finally:
             self.line_list_lock.release()
 
+garli_dna_model_pattern = r'\[!GarliModel  r ([.0-9]*) ([.0-9]*) ([.0-9]*) ([.0-9]*) ([.0-9]*) e ([.0-9]*) ([.0-9]*) ([.0-9]*) [.0-9]* a ([.0-9]*) p ([.0-9]*) \]'
 
+class DNAModel(object):
+    def __init__(self, params):
+        assert(len(params) == 10)
+        self.r_mat = params[:5]
+        self.r_mat.append(1.0)
+        self.freqs = params[5:8]
+        self.freqs.append(1 - sum(self.freqs))
+        self.shape = params[8]
+        self.p_invar = params[9]
+    def _normalize_r_mat(self):
+        assert(len(self.r_mat) == 6)
+        gt_rate = self.r_mat[-1]
+        nr = [i/gt_rate for i in self.r_mat[:6]]
+        nr.append(1.0)
+        self.r_mat = nr
+            
+    def __str__(self):
+        self._normalize_r_mat()
+        t = (self.r_mat[0], self.r_mat[1], self.r_mat[2], self.r_mat[3], self.r_mat[4],
+            self.freqs[0], self.freqs[1], self.freqs[2], 1.0 - self.freqs[0] - self.freqs[1] - self.freqs[2], 
+            self.shape,
+            self.p_invar)
+        return r'[!GarliModel  r %.5f %.5f %.5f %.5f %.5f e %.5f %.5f %.5f %.5f a %.5f p %.5f ]' % t
+
+class TreeModel(object):
+    def __init__(self, name, score, model, tree):
+        self.model = model
+        self.score = score
+        self.name = name
+        self.tree = tree
+    def __cmp__(self, other):
+        return cmp(self.score, other.score)
+    def __str__(self):
+        return '[iGarli %s ] tree %s = [&U][!GarliScore %f]%s %s' % (self.name, self.name, self.score, str(self.model), str(self.tree))
 class GarliConf(object):
     def __init__(self):
+        self.line_pattern = garli_line_pattern = re.compile(r'\[iGarli (\d+) \] tree best = \[&U\]\[!GarliScore ([-.0-9]*)\]%s (\(.*\))' % garli_dna_model_pattern)
+        self.model_class = DNAModel
         self.datafname = "rana.nex",
         self.constraintfile =  "none"
         self.xstreefname =  "rana.tre"
@@ -289,7 +327,7 @@ class GarliConf(object):
                 _LOG.debug("***ISSUING command ***\n%s\n" % command) 
                 self.garli_instance.stdin.write(command + '\n')
             else:
-                sys.exit('iGarli exited before I even had a chance to tell it "%s".  How frustrating for me!' % command)
+                sys.exit('iGarli exited before I even had a chance to tell it "%s".  How frustrating for me!.\nThe full err stream is:\n%s' % (command, "\n".join(self.stderrThread.lines)))
 
         if terminate_run:
             rc = self.garli_instance.wait()
@@ -341,6 +379,26 @@ class GarliConf(object):
         t.sort(cmp=cmp_score)
         return t
     
+    def parse_igarli_lines(self, line_list):
+        tm_list = []
+        for line in line_list:
+            if line.startswith('[iGarli '):
+                m = self.line_pattern.match(line)
+                assert(m)
+                g = m.groups()
+                result_number = g[0]
+                score = float(g[1])
+                model_params = [float(i) for i in g[2:-1]]
+                model = self.model_class(model_params)
+                tree_string = g[-1]
+                newick_stream = cStringIO.StringIO(tree_string)
+                tree = dataset.read_trees(newick_stream, format="newick")
+                tm = TreeModel(name=result_number, score=score, model=model, tree=tree_string)
+                tm_list.append(tm)
+        return tm_list
+
+
+
     def add_to_tree(self, tree, dataset, tree_ind):
         ofprefix = "from%d" % tree_ind
     
@@ -357,6 +415,15 @@ class GarliConf(object):
         self.runmode = GARLI_ENUM.INCR_RUNMODE
         
         self.run([], terminate_run=True)
+        
+        err_lines = self.stderrThread.lines_between_prompt()
+        r = self.parse_igarli_lines(err_lines)
+        r.sort(reverse=True)
+        
+        sys.exit("%s" % "\n".join([str(i) for i in r]))
+        
+        
+        
         
         output_tree = ofprefix + ".best.tre"
         t = dataset.read_trees(open(output_tree, "rU"), format="NEXUS")
