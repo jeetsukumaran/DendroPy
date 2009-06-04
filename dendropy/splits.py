@@ -317,3 +317,35 @@ class SplitDistribution(object):
                 sna = self.split_node_ages.setdefault(split, [])
                 if edge.head_node is not None:
                     sna.append(edge.head_node.distance_from_tip())
+
+def collapse_conflicting(subtree_root, split, clade_mask):
+	"""Takes a node that is the root of a subtree.  Collapses every edge in the
+	subtree that conflicts with split.  This can include the edge subtending 
+	subtree_root.
+	"""
+	
+	# we flip splits so that both the split and each edges split  have the
+	# lowest bit of the clade mask set to one
+	lb = lowest_bit_only(clade_mask)
+
+	if lb & split:
+		cropped_split = split & clade_mask
+	else:
+		cropped_split = (~split) & clade_mask
+
+	to_collapse_head_nodes = []
+	for nd in trees.Node.postorder_iter(subtree_root):
+		if not nd.is_leaf():
+			ncm = nd.edge.clade_mask
+			if lb & ncm:
+				nd_split = ncm & clade_mask
+			else:
+				nd_split = (~ncm) & clade_mask
+
+			cm_union = nd_split | cropped_split
+			if (cm_union != nd_split) and (cm_union != cropped_split):
+				to_collapse_head_nodes.append(nd)
+	for nd in to_collapse_head_nodes:
+		e = nd.edge
+		e.collapse()
+			

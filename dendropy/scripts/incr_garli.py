@@ -39,7 +39,7 @@ from optparse import OptionParser
 from subprocess import Popen, PIPE
 
 from dendropy import nexus
-from dendropy.splits import encode_splits, lowest_bit_only, iter_split_indices, find_edge_from_split
+from dendropy.splits import encode_splits, lowest_bit_only, iter_split_indices, find_edge_from_split, collapse_conflicting, is_trivial_split, split_as_string
 from dendropy.characters import CharactersBlock
 from dendropy.taxa import TaxaBlock
 from dendropy.treedists import symmetric_difference
@@ -245,8 +245,18 @@ class GarliConf(object):
         self.neighborhood_modweight = 0.0
         self.neighborhood_stopgen = 100
         
+        self.negcon_topoweight = 0.5
+        self.negcon_modweight = 0.01
+        self.negcon_stopgen = 100
+
         self.first_neighborhood = 3
         self.neighborhood_incr = 1
+        self.curr_n_taxa = None
+        
+        self.split_diversity_multiplier = 1.0 # the number multiplied by the "split_diversity_score" when evaluating which trees to carry over
+                                              # higher values mean that trees with lower likelihoods may score better.
+        self._max_trees_carried_over = 1000 # the maximum number of trees to carry over between iterations
+        
         # The next section are GARLI settings
         self.datafname = "rana.nex",
         self.constraintfile =  "none"
@@ -314,6 +324,11 @@ class GarliConf(object):
         self.line_pattern = garli_line_pattern = re.compile(r'\[iGarli (\d+) \] tree best = \[&U\]\[!GarliScore ([-.0-9]*)\]%s (\(.*\))' % garli_dna_model_pattern)
         self.model_class = DNAModel
 
+    def get_max_trees_carried_over(self):
+        return self._max_trees_carried_over
+
+    max_trees_carried_over = property(get_max_trees_carried_over)
+    
     def cache_settings(self):
         d = {}
         for k in GARLI_ALL:
@@ -402,6 +417,47 @@ class GarliConf(object):
     
     modweight = property(get_modweight, set_modweight)
     
+    def find_best_conflicting(self, starting_tree, split, dataset):
+        new_starting = TreeModel(model=starting_tree.model)
+        new_starting.tree = copy.deepcopy(starting_tree.tree)
+        root = new_starting.tree.seed_node
+        collapse_conflicting(root, split, root.edge.clade_mask)
+
+        tmp_tree_filename = ".tmp.tre"
+        write_trees_to_filepath([new_starting], dataset, tmp_tree_filename)
+        self.cache_settings()
+
+        try:
+    
+            tmp_constrain_filename = ".tmpconstrain.tre"
+            self.constraintfile = tmp_constrain_filename
+            f = open(tmp_constrain_filename, "w")
+            f.write("-%s\n" % split_as_string(split, self.curr_n_taxa, '.', '*'))
+            f.close()
+    
+            self.ofprefix = "negconst%d" % (split)
+            
+            # it seems a little odd to call this incompletetreefname rather 
+            #   than streefname but we'd like to trigger the interactive mode, 
+            #   and this is one way of doing that.
+            self.incompletetreefname = tmp_tree_filename
+            self.runmode = GARLI_ENUM.INCR_RUNMODE # NORMAL_RUNMODE
+            self.topoweight = self.negcon_topoweight
+            self.modweight = self.negcon_modweight
+            self.stopgen = self.negcon_stopgen
+            self.run(["model = %s" % str(new_starting.model),
+                      "run"], terminate_run=True)
+        finally:
+            self.restore_settings()
+
+        err_lines = self.stderrThread.lines_between_prompt()
+        r = self.parse_igarli_lines(err_lines, dataset)
+        r.sort(reverse=True)
+        for tm in r:
+            encode_splits(tm.tree)
+            assert split not in tm.tree.split_edges
+        return r
+       
     def check_neighborhood_after_addition(self, tree_model, nd, edge_dist, dataset, tree_ind):
         tmp_tree_filename = ".tmp.tre"
         write_trees_to_filepath([tree_model], dataset, tmp_tree_filename)
@@ -446,9 +502,9 @@ class GarliConf(object):
         return r
 
 
-    def add_to_tree(self, tree, dataset, tree_ind, stop_gen):
+    def add_to_tree(self, tree_model, dataset, tree_ind, stop_gen):
         tmp_tree_filename = ".tmp.tre"
-        write_trees_to_filepath([tree], dataset, tmp_tree_filename)
+        write_trees_to_filepath([tree_model], dataset, tmp_tree_filename)
         self.cache_settings()
         try:
             self.ofprefix = "from%d" % tree_ind
@@ -459,8 +515,11 @@ class GarliConf(object):
             self.stopgen = stop_gen
             self.incompletetreefname = tmp_tree_filename
             self.runmode = GARLI_ENUM.INCR_RUNMODE
-    
-            self.run(["run"], terminate_run=True)
+            invoc = []
+            if tree_model.model:
+                invoc.append("model = %s" % str(tree_model.model))
+            invoc.append("run")
+            self.run(invoc, terminate_run=True)
         finally:
             self.restore_settings()
 
@@ -536,35 +595,35 @@ class GarliConf(object):
         current_taxon_mask = inp_trees[0].tree.seed_node.edge.clade_mask
         inds = [i for i in iter_split_indices(current_taxon_mask + 1)]
         assert(len(inds) == 1)
-        curr_n_taxa = inds[0]
+        self.curr_n_taxa = inds[0]
         # reset the add_tree_stopgen to its initial setting
         self.add_tree_stopgen = self.init_stopgen
         self.tree_scoring_stop_gen = self.init_tree_scoring_stopgen
         # Score the original trees
-        orig_dir = self._cd_for_work_dir(curr_n_taxa)
+        orig_dir = self._cd_for_work_dir()
         try:
-            culled = self._write_garli_input(curr_n_taxa, full_dataset)
+            culled = self._write_garli_input(full_dataset)
             culled_taxa = culled.taxa_blocks[0]
             self.set_active_taxa(culled_taxa)
-            inp_trees = self.score_tree_list(curr_n_taxa, full_dataset, inp_trees, stop_gen=self.tree_scoring_stop_gen)
+            inp_trees = self.score_tree_list(full_dataset, inp_trees, stop_gen=self.tree_scoring_stop_gen)
         finally:
             os.chdir(orig_dir)
-        curr_n_taxa += 1
+        self.curr_n_taxa += 1
         
         
-        while curr_n_taxa <= len(taxa):
-            _LOG.debug("Adding taxon %d" % curr_n_taxa)            
-            orig_dir = self._cd_for_work_dir(curr_n_taxa)
+        while self.curr_n_taxa <= len(taxa):
+            _LOG.debug("Adding taxon %d" % self.curr_n_taxa)            
+            orig_dir = self._cd_for_work_dir()
             try:
-                inp_trees = self._do_add_taxon_incremental_step(curr_n_taxa, full_dataset, inp_trees)
+                inp_trees = self._do_add_taxon_incremental_step(full_dataset, inp_trees)
             finally:
                 os.chdir(orig_dir)
-            curr_n_taxa += 1
+            self.curr_n_taxa += 1
 
-    def _cd_for_work_dir(self, curr_n_taxa):
+    def _cd_for_work_dir(self):
         """changes the current directory to a working directory for the specified
         number of taxa and returns the absolute path to the previous directory."""
-        dirn = "t%d" % curr_n_taxa
+        dirn = "t%d" % self.curr_n_taxa
         if not os.path.exists(dirn):
             os.makedirs(dirn)
             if not os.path.exists(dirn):
@@ -576,7 +635,7 @@ class GarliConf(object):
         os.chdir(dirn)
         return orig_dir
 
-    def _write_garli_input(self, curr_n_taxa, full_dataset):
+    def _write_garli_input(self, full_dataset):
         assert len(full_dataset.taxa_blocks) == 1
         taxa = full_dataset.taxa_blocks[0]
 
@@ -584,7 +643,7 @@ class GarliConf(object):
         characters = full_dataset.char_blocks[0]
         assert(len(characters) == len(taxa))
         
-        culled_taxa = TaxaBlock(taxa[:curr_n_taxa])
+        culled_taxa = TaxaBlock(taxa[:self.curr_n_taxa])
         culled_chars = copy.copy(characters)
         culled_chars.taxa_block = culled_taxa
         culled_chars.matrix = copy.copy(characters.matrix)
@@ -606,11 +665,155 @@ class GarliConf(object):
         o.close()
         return culled
 
-    def select_trees_for_next_round(self, curr_n_taxa, culled, next_round_trees):
+
+    def select_trees_for_next_round(self, culled, curr_results):
+        all_taxa_bitmask = curr_results[0].tree.seed_node.edge.clade_mask
+        assert all_taxa_bitmask == ((1 << self.curr_n_taxa) - 1)
+        ########################################
+        # First, we make sure that there are not duplicate topologies
+        # Because we reverse sort, we'll be retaining the tree with the
+        #   best score
+        #####
+        curr_results.sort(reverse=True)
+        set_of_split_sets = set()
+        unique_topos = []
+        for tm in curr_results:
+            add_nontriv_splits_attr(tm, all_taxa_bitmask)
+            if tm.splits not in set_of_split_sets:
+                unique_topos.append(tm)
+                set_of_split_sets.add(tm.splits)
+        curr_results = unique_topos
+        set_of_split_sets.clear()
+        _LOG.debug('There were %d unique result topologiesfor ntax = %d ' % (len(curr_results), self.curr_n_taxa))
+
+        ########################################
+        # the trees can be hefty, so lets eliminate unneeded references
+        #####
+        del unique_topos
+
+
+        ########################################
+        # Make sure to keep the next_round_trees list (and a set that helps us
+        #   identify unique trees.
+        #####
+        ml_est = curr_results[0]
+        curr_results.pop(0)
+        next_round_trees = [ml_est]
+        
+        ########################################
+        # Now we identify best trees that LACK the splits in the ML tree
+        #####
+        ml_split_dict = ml_est.tree.split_edges
+        unanimous_splits = []
+        best_disagreeing_index_set = set()
+        for split in ml_split_dict.iterkeys():
+            if not is_trivial_split(split, all_taxa_bitmask):
+                found = False
+                for n, tm in enumerate(curr_results):
+                    if split not in tm.tree.split_edges:
+                        best_disagreeing_index_set.add(n)
+                        found = True
+                        break
+                if not found:
+                    unanimous_splits.append(split)
+
+        ########################################
+        # now we add the trees that "must" be included because they do NOT have
+        #   a split that is in the current ML tree.
+        # We do this with a reverse sorted list so that we can pop them off of
+        #   the curr_results list without invalidating the list of indices to move
+        #####
+        bdis_list = list(best_disagreeing_index_set)
+        bdis_list.sort(reverse=True)
+        for tree_ind in bdis_list:
+            tm = curr_results.pop(tree_ind)
+            next_round_trees.append(tm)
+        
+        ########################################
+        # Now we have to augment our list of trees such that we have exemplar trees
+        #   that conflict with every split in the ML tree
+        # We'll do this by starting from a version of the ML tree that has been
+        #   collapsed so that it does not conflict with the split
+        #####
+        _LOG.debug('There were %d unanimous splits in the curr_results for ntax = %d ' % (len(unanimous_splits), self.curr_n_taxa))
+        for split in unanimous_splits:
+            best_conflicting = self.find_best_conflicting(starting_tree=ml_est, split=split, dataset=culled)
+            for b in best_conflicting:
+                add_nontriv_splits_attr(b, all_taxa_bitmask)
+
+            best_conflicting.sort(reverse=True)
+            tm = best_conflicting[0]
+            next_round_trees.append(tm)
+            curr_results.extend(best_conflicting[1:])
+        
+        
+        ########################################
+        # To keep the remaining trees in next_round_trees diverse we will
+        #   try to add trees that maximize a score which is:
+        #       lambda*tree_split_rarity + lnL
+        #   where lambda is a tuning parameter and tree_split_rarity is:
+        #       n_tree_times_splits = num_trees_in_next_round_trees * num_splits_per_tree
+        #       split_occurrence = num_trees_in_next_round_trees_that_have_split
+        #       tree_split_rarity = n_tree_times_splits - SUM split_occurrence
+        #   in which the summation is taken over all splits in the tree
+        #####
+        max_len = self.max_trees_carried_over
+        num_trees_to_add = max_len - len(next_round_trees)
+        if num_trees_to_add > len(curr_results):
+            split_count = {}
+            n_tree_times_splits = 0
+            for tm in next_round_trees:
+                for k in tm.splits:
+                    split_count[k] = split_count.get(k, 0) + 1
+                    n_tree_times_splits += 1
+            for tm in curr_results:
+                tm.tree_split_rarity = n_tree_times_splits
+                for split in tm.splits:
+                    tm.tree_split_rarity -= split_count.get(split, 0)
+            def split_diversity_cmp(x, y, lambda_mult=self.split_diversity_multiplier):
+                x.retention_score = lambda_mult*x.tree_split_rarity + x.score
+                y.retention_score = lambda_mult*y.tree_split_rarity + y.score
+                return cmp(x.retention_score, y.retention_score)
+            curr_results.sort(cmp=split_diversity_cmp, reverse=True)
+
+        ########################################
+        # We are now going to try to add elements (in order) from curr_results
+        #   until we run out of trees to add or we reach max_len
+        #####
+        n_added = 0
+        try:
+            set_of_split_sets.clear()
+            for tm in next_round_trees:
+                set_of_split_sets.add(tm.splits)
+
+            cri = iter(curr_results)
+            while n_added < num_trees_to_add:
+                tm = cri.next()
+                if tm.splits not in set_of_split_sets:
+                    set_of_split_sets.add(tm.splits)
+                    next_round_trees.append(tm)
+                    n_added += 1
+        except StopIteration:
+            pass
+        _LOG.debug('Added %d trees that were not "required" to guarantee that no splits were unanimous for ntax = %d' % (n_added, self.curr_n_taxa))
+
+        ########################################
+        # the trees can be hefty, so lets free unneeded memory
+        #####
+        del curr_results[:]
+        
+        ########################################
+        # Finally, lets get a decent score for each tree before moving to the next round
+        #   because the trees are big, we'll replace each element rather
+        #   than allowing a duplicate list to be created.
+        #####
+        for i in range(len(next_round_trees)):
+            next_round_trees[i] = self.score_tree(next_round_trees[i], culled, n, self.tree_scoring_stop_gen) 
+
         return next_round_trees
 
-    def score_tree_list(self, curr_n_taxa, full_dataset, inp_trees, stop_gen):
-        culled = self._write_garli_input(curr_n_taxa, full_dataset)
+    def score_tree_list(self, full_dataset, inp_trees, stop_gen):
+        culled = self._write_garli_input(full_dataset)
         culled_taxa = culled.taxa_blocks[0]
         self.set_active_taxa(culled_taxa)
         rescored = []
@@ -626,8 +829,8 @@ class GarliConf(object):
         o.close()
         return rescored
 
-    def _do_add_taxon_incremental_step(self, curr_n_taxa, full_dataset, inp_trees):
-        culled = self._write_garli_input(curr_n_taxa, full_dataset)
+    def _do_add_taxon_incremental_step(self, full_dataset, inp_trees):
+        culled = self._write_garli_input(full_dataset)
         culled_taxa = culled.taxa_blocks[0]
         self.set_active_taxa(culled_taxa)
         next_round_trees = []
@@ -636,10 +839,10 @@ class GarliConf(object):
             tree_model_list = self.add_to_tree(tree, culled, tree_ind, self.add_tree_stopgen)
             to_save = []
             for tm in tree_model_list:
-                print "Tree %d for %d taxa: %f" % (tree_ind, curr_n_taxa, tm.score)
+                print "Tree %d for %d taxa: %f" % (tree_ind, self.curr_n_taxa, tm.score)
                 step_add_tree = tm.tree
                 encode_splits(step_add_tree)
-                split = 1 << (curr_n_taxa - 1)
+                split = 1 << (self.curr_n_taxa - 1)
                 e = find_edge_from_split(step_add_tree.seed_node, split)
                 assert e is not None, "Could not find split %s.  Root mask is %s" % (bin(split)[2:], bin(step_add_tree.seed_node.edge.clade_mask)[2:])
 
@@ -683,7 +886,7 @@ class GarliConf(object):
             # this is where we should evaluate which trees need to be maintained for the next round.
             next_round_trees.extend(to_save)
         
-        next_round_trees = self.select_trees_for_next_round(curr_n_taxa, culled, next_round_trees)
+        next_round_trees = self.select_trees_for_next_round(culled, next_round_trees)
         
         del full_dataset.trees_blocks[:]
         full_dataset.trees_blocks.append([i.tree for i in next_round_trees])
@@ -714,6 +917,10 @@ def write_trees_to_filepath(tree_list, dataset, filepath):
         write_tree_file(f, tree_list, dataset)
         f.close()
 
+_tm_template = ";\n Tree %s = [&U][!GarliScore %f][!GarliModel %s ] %s ;\n"
+_tm_unscored_template = ";\n Tree %s = [&U][!GarliModel %s ] %s ;\n"
+_tree_template = ";\n Tree a = [&U] %s ;\n"
+
 def write_tree_file(outstream, tree_model_list, dataset):
     outstream.write("#NEXUS\nBegin Trees;\n  Translate")
     sep = ""
@@ -721,20 +928,21 @@ def write_tree_file(outstream, tree_model_list, dataset):
         outstream.write(sep)
         sep = ',\n '
         outstream.write(" %d %s " % ((n + 1), nexus.NexusWriter.escape_token(taxon.label)))
-    tm_template = ";\n Tree %s = [&U][!GarliScore %f][!GarliModel %s ] %s ;\n"
-    tree_template = ";\n Tree a = [&U] %s ;\n"
     for tm in tree_model_list:
         try:
             tree = tm.tree
         except:
             newick = tm.compose_newick(reverse_translate=rev_trans_func)
-            msg = tree_template % newick
+            msg = _tree_template % newick
         else:
             newick = tree.compose_newick(reverse_translate=rev_trans_func)
             if tm.model:
-                msg = tm_template % (tm.name, tm.score, str(tm.model), newick)
+                if tm.score:
+                    msg = _tm_template % (tm.name, tm.score, str(tm.model), newick)
+                else:
+                    msg = _tm_unscored_template % (tm.name, str(tm.model), newick)
             else:
-                msg = tree_template % newick
+                msg = _tree_template % newick
         outstream.write(msg)
 
     outstream.write("End;\n")
@@ -747,7 +955,12 @@ def write_newick_file(outstream, trees_block, dataset, pref=''):
     assert(len(trees_block) == 1)
     outstream.write("%s%s;\n" % (pref, tree.compose_newick()))
 
-
+def add_nontriv_splits_attr(tm, all_taxa_bitmask):
+    all_spl = tm.tree.split_edges.keys()
+    non_triv = [i for i in all_spl if not is_trivial_split(i, all_taxa_bitmask)]
+    non_triv.sort()
+    tm.splits = tuple(non_triv)
+    
 
 
 GARLI_SCORE_PATTERN = re.compile(r"\[!GarliScore ([-0-9.]+)\]")
