@@ -125,6 +125,12 @@ class TaxaBlock(list, base.IdTagged):
             list.__init__(self)
         base.IdTagged.__init__(self, oid=kwargs.get('oid'), label=kwargs.get('label'))
         self._is_mutable = kwargs.get('is_mutable', True) # immutable constraints not fully implemented -- only enforced at the add_taxon stage)
+
+    def __deepcopy__(self, memo):
+        o = self.__class__(list(self), label=self.label, is_mutable=self._is_mutable)
+        memo[id(self)] = o
+        return o
+
     def lock(self):
         self._is_mutable = False
     def unlock(self):
@@ -225,7 +231,10 @@ class TaxaBlock(list, base.IdTagged):
 class Taxon(base.IdTagged):
     "A taxon associated with a sequence or a node on a tree."
     def __deepcopy__(self, memo):
-        assert False
+        "Should not be copied"
+        memo[id(self)] = self
+        return self
+
     def cmp(taxon1, taxon2):
         "Compares taxon1 and taxon2 based on label."
         return cmp(str(taxon1.label), str(taxon2.label))
