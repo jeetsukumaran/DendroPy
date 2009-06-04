@@ -610,7 +610,7 @@ class Node(taxa.TaxonLinked):
         o = self.__class__(label=self.label, taxon=self.taxon)
         memo[id(self)] = o
         for k, v in self.__dict__.iteritems():
-            if not k in ['_child_nodes']:
+            if not k in ['_child_nodes', '_taxon']:
                 o.__dict__[k] = copy.deepcopy(v, memo)
         for c in self.child_nodes():
             o.add_child(copy.deepcopy(c, memo))
@@ -623,15 +623,16 @@ class Node(taxa.TaxonLinked):
     def collapse_neighborhood(self, dist):
         if dist < 1:
             return
-        next_node = self.parent_node or self
         children = self.child_nodes()
         for ch in children:
             if not ch.is_leaf():
                 ch.edge.collapse()
-        if not self.is_leaf():
+        if self.parent_node:
+            p = self.parent_node
             self.edge.collapse()
-        next_node.collapse_neighborhood(dist - 1)
-        
+            p.collapse_neighborhood(dist -1)
+        else:
+            self.collapse_neighborhood(dist - 1)
     def is_leaf(self):
         "Returns True if the node has no child_nodes"
         return bool(not self._child_nodes)

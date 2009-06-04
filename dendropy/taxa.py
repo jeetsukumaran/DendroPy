@@ -224,7 +224,8 @@ class TaxaBlock(list, base.IdTagged):
                                 
 class Taxon(base.IdTagged):
     "A taxon associated with a sequence or a node on a tree."
-    
+    def __deepcopy__(self, memo):
+        assert False
     def cmp(taxon1, taxon2):
         "Compares taxon1 and taxon2 based on label."
         return cmp(str(taxon1.label), str(taxon2.label))
