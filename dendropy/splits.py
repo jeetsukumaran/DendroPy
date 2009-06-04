@@ -334,7 +334,7 @@ def collapse_conflicting(subtree_root, split, clade_mask):
 		cropped_split = (~split) & clade_mask
 
 	to_collapse_head_nodes = []
-	for nd in trees.Node.postorder_iter(subtree_root):
+	for nd in subtree_root.postorder_iter(subtree_root):
 		if not nd.is_leaf():
 			ncm = nd.edge.clade_mask
 			if lb & ncm:
@@ -345,6 +345,7 @@ def collapse_conflicting(subtree_root, split, clade_mask):
 			cm_union = nd_split | cropped_split
 			if (cm_union != nd_split) and (cm_union != cropped_split):
 				to_collapse_head_nodes.append(nd)
+		
 	for nd in to_collapse_head_nodes:
 		e = nd.edge
 		e.collapse()

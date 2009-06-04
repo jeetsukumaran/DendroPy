@@ -45,7 +45,7 @@ from dendropy.splits import *
 class SplitTest(unittest.TestCase):
     def testCollapseConflicting(self):
         tb = taxa.TaxaBlock([str(i+1) for i in range(5)])
-        dataset = dataio.trees_from_newick(["(5,((4,3),2),1)", "(5,(4,3,2),1)"], taxa_block=tb)
+        dataset = dataio.trees_from_newick(["(5,((4,3),2),1)", "(5,(4,3,2),1)", "(5,((4,3),2),1)", "(5,(4,3),2,1)", "(5,((4,3),2),1)", "(5,4,3,2,1)"], taxa_block=tb)
         tree = dataset.trees_blocks[0][0]
         expected_tree = dataset.trees_blocks[1][0]
         encode_splits(tree)
@@ -55,6 +55,27 @@ class SplitTest(unittest.TestCase):
         encode_splits(tree)
         encode_splits(expected_tree)
         self.assertEqual(treedists.symmetric_difference(tree, expected_tree), 0)
+        
+        tree = dataset.trees_blocks[2][0]
+        expected_tree = dataset.trees_blocks[3][0]
+        encode_splits(tree)
+        all_cm = tree.seed_node.edge.clade_mask
+        split_to_target = 0x3
+        collapse_conflicting(tree.seed_node, split_to_target, all_cm)
+        encode_splits(tree)
+        encode_splits(expected_tree)
+        self.assertEqual(treedists.symmetric_difference(tree, expected_tree), 0)
+
+        tree = dataset.trees_blocks[4][0]
+        expected_tree = dataset.trees_blocks[5][0]
+        encode_splits(tree)
+        all_cm = tree.seed_node.edge.clade_mask
+        split_to_target = 0x5
+        collapse_conflicting(tree.seed_node, split_to_target, all_cm)
+        encode_splits(tree)
+        encode_splits(expected_tree)
+        self.assertEqual(treedists.symmetric_difference(tree, expected_tree), 0)
+        
 
     def testCladeMasks(self):
         dataset = dataio.trees_from_newick([

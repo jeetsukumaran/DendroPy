@@ -39,7 +39,7 @@ from optparse import OptionParser
 from subprocess import Popen, PIPE
 
 from dendropy import nexus
-from dendropy.splits import encode_splits, lowest_bit_only, iter_split_indices, find_edge_from_split, collapse_conflicting, is_trivial_split, split_as_string
+from dendropy.splits import encode_splits, lowest_bit_only, iter_split_indices, find_edge_from_split, collapse_conflicting, is_trivial_split, split_as_string_rev
 from dendropy.characters import CharactersBlock
 from dendropy.taxa import TaxaBlock
 from dendropy.treedists import symmetric_difference
@@ -421,7 +421,9 @@ class GarliConf(object):
         new_starting = TreeModel(model=starting_tree.model)
         new_starting.tree = copy.deepcopy(starting_tree.tree)
         root = new_starting.tree.seed_node
-        collapse_conflicting(root, split, root.edge.clade_mask)
+        e = find_edge_from_split(root, split, root.edge.clade_mask)
+        if e:
+            e.collapse()
 
         tmp_tree_filename = ".tmp.tre"
         write_trees_to_filepath([new_starting], dataset, tmp_tree_filename)
@@ -432,7 +434,7 @@ class GarliConf(object):
             tmp_constrain_filename = ".tmpconstrain.tre"
             self.constraintfile = tmp_constrain_filename
             f = open(tmp_constrain_filename, "w")
-            f.write("-%s\n" % split_as_string(split, self.curr_n_taxa, '.', '*'))
+            f.write("-%s\n" % split_as_string_rev(split, self.curr_n_taxa, '.', '*'))
             f.close()
     
             self.ofprefix = "negconst%d" % (split)
