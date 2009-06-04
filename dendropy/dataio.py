@@ -206,7 +206,7 @@ def get_reader(format):
     return READERS[format]()            
     
 
-def trees_from_newick(nl, taxa_block=None, **kwargs):
+def trees_from_newick(newick_list, taxa_block=None, **kwargs):
     """Takes an iterable list of newick strings (or files with just newick strings
     in them.
     """
@@ -215,7 +215,7 @@ def trees_from_newick(nl, taxa_block=None, **kwargs):
         dataset = Dataset(taxa_blocks=[taxa_block])
     else:
         dataset = Dataset()
-    for t in nl:
+    for t in newick_list:
         f = t
         if isinstance(t, str):
             f = StringIO(t)
