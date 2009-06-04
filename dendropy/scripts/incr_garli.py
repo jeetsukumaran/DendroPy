@@ -200,11 +200,11 @@ class DNAModel(object):
         nr = [i/gt_rate for i in self.r_mat[:6]]
         nr.append(1.0)
         self.r_mat = nr
-            
+
     def __str__(self):
         self._normalize_r_mat()
         t = (self.r_mat[0], self.r_mat[1], self.r_mat[2], self.r_mat[3], self.r_mat[4],
-            self.freqs[0], self.freqs[1], self.freqs[2], 1.0 - self.freqs[0] - self.freqs[1] - self.freqs[2], 
+            self.freqs[0], self.freqs[1], self.freqs[2], 1.0 - self.freqs[0] - self.freqs[1] - self.freqs[2],
             self.shape,
             self.p_invar)
         return r'r %.5f %.5f %.5f %.5f %.5f e %.5f %.5f %.5f %.5f a %.5f p %.5f' % t
@@ -338,7 +338,7 @@ class GarliConf(object):
                 _LOG.debug("triggering stop_event in command loop")
                 self.garli_stopped_event.set()
             if self.stderrThread.wait_for_prompt():
-                _LOG.debug("***ISSUING command ***\n%s\n" % command) 
+                _LOG.debug("***ISSUING command ***\n%s\n" % command)
                 self.garli_instance.stdin.write(command + '\n')
             else:
                 assert False, 'iGarli exited before I even had a chance to tell it "%s".  How frustrating for me!\nThe full err stream is:\n%s' % (command, "".join(self.stderrThread.lines))
@@ -358,9 +358,9 @@ class GarliConf(object):
     def check_neighborhood_after_addition(self, tree_model, nd, edge_dist, dataset, tree_ind):
         tree = tree_model.tree
         ofprefix = "nbhood%dfromtree%d" % (edge_dist, tree_ind)
-        
+
         self.ofprefix = ofprefix
-        
+
         tmp_tree_filename = ".tmp.tre"
         f = open(tmp_tree_filename, "w")
         write_tree_file(f, [tree], dataset)
@@ -378,7 +378,7 @@ class GarliConf(object):
         _LOG.debug("Checking neighborhood by constraining %s" % str(tree))
         write_constraint_file(f, [tree], dataset)
         f.close()
-    
+
         self.runmode = GARLI_ENUM.INCR_RUNMODE # NORMAL_RUNMODE
 
         #garli does not like stars as constraints
@@ -387,13 +387,13 @@ class GarliConf(object):
             # cache settings
             pcf = self.constraintfile
             self.constraintfile = tmp_tree_filename
-        
+
         self.run(["model = %s" % str(tree_model.model),
                   "run"], terminate_run=True)
         if do_constraint:
             # restore cached settings
-            self.constraintfile = pcf 
-        
+            self.constraintfile = pcf
+
         err_lines = self.stderrThread.lines_between_prompt()
         r = self.parse_igarli_lines(err_lines, dataset)
         r.sort(reverse=True)
@@ -402,16 +402,16 @@ class GarliConf(object):
 
     def add_to_tree(self, tree, dataset, tree_ind):
         ofprefix = "from%d" % tree_ind
-    
+
         self.ofprefix = ofprefix
         self.streefname = "incomplete"
         self.constraintfile = "none"
-        
+
         tmp_tree_filename = ".tmp.tre"
         f = open(tmp_tree_filename, "w")
         write_tree_file(f, [tree], dataset)
         f.close()
-    
+
         self.incompletetreefname = tmp_tree_filename
         self.runmode = GARLI_ENUM.INCR_RUNMODE
 
@@ -420,18 +420,18 @@ class GarliConf(object):
         psg = self.stopgen
         self.topoweight = 0.0
         self.stopgen = 1000
-        
+
         self.run(["run"], terminate_run=True)
 
         # restore the settings that we had to override
         self.topoweight = ptw
         self.stopgen = psg
-        
+
         err_lines = self.stderrThread.lines_between_prompt()
         r = self.parse_igarli_lines(err_lines, dataset)
         r.sort(reverse=True)
         return r
-    
+
     def parse_igarli_lines(self, line_list, dataset):
         tm_list = []
         for line in line_list:
@@ -466,8 +466,137 @@ class GarliConf(object):
         del dataset.trees_blocks[-1]
         return t
 
+    def incrementally_build_trees(self, full_dataset, inp_trees):
+        assert len(full_dataset.taxa_blocks) == 1
+        taxa = full_dataset.taxa_blocks[0]
+        while True:
+            current_taxon_mask = inp_trees[0].seed_node.edge.clade_mask
+            inds = [i for i in iter_split_indices(current_taxon_mask + 1)]
+            assert(len(inds) == 1)
+            curr_n_taxa = inds[0]
 
+            curr_n_taxa += 1
+            if curr_n_taxa > len(taxa):
+                return
+
+            _LOG.debug("Adding taxon %d" % curr_n_taxa)
+            
+            dirn = "t%d" % curr_n_taxa
+            if not os.path.exists(dirn):
+                os.makedirs(dirn)
+                if not os.path.exists(dirn):
+                    sys.exit("Could not make %s" % dirn)
+            if not os.path.isdir(dirn):
+                sys.exit("%s is not a directory" % dirn)
+
+            orig_dir = os.getcwd()
+            os.chdir(dirn)
+
+            try:
+                self._do_add_taxon_incremental_step(curr_n_taxa, full_dataset, inp_trees)
+            finally:
+                os.chdir(orig_dir)
+
+    def _do_add_taxon_incremental_step(self, curr_n_taxa, full_dataset, inp_trees):
+        assert len(full_dataset.taxa_blocks) == 1
+        taxa = full_dataset.taxa_blocks[0]
+
+        assert(len(full_dataset.char_blocks) == 1)
+        characters = full_dataset.char_blocks[0]
+        assert(len(characters) == len(taxa))
         
+        culled_taxa = TaxaBlock(taxa[:curr_n_taxa])
+        culled_chars = copy.copy(characters)
+        culled_chars.taxa_block = culled_taxa
+        culled_chars.matrix = copy.copy(characters.matrix)
+        culled_chars.matrix.clear()
+        #culled_chars = characters.__class__(taxa_block=culled_taxa)
+        #culled_chars.column_types = characters.column_types
+        #culled_chars.markup_as_sequences = characters.markup_as_sequences
+        template_matrix = characters.matrix
+        for taxon in culled_taxa:
+            culled_chars.matrix[taxon] = template_matrix[taxon]
+
+        culled = Dataset()
+        culled.taxa_blocks.append(culled_taxa)
+        culled.char_blocks.append(culled_chars)
+
+        o = open(self.datafname, "w")
+        nexusWriter = nexus.NexusWriter()
+        nexusWriter.write_dataset(culled, o);
+        o.close()
+
+        self.set_active_taxa(culled_taxa)
+        next_round_trees = [TreeModel(tree=i) for i in TreesBlock(taxa_block=culled_taxa)]
+
+        for tree_ind, tree in enumerate(inp_trees):
+            tree_model_list = self.add_to_tree(tree, culled, tree_ind)
+            to_save = []
+            for tm in tree_model_list:
+                print "Tree %d for %d taxa: %f" % (tree_ind, curr_n_taxa, tm.score)
+                step_add_tree = tm.tree
+                encode_splits(step_add_tree)
+                split = 1 << (curr_n_taxa - 1)
+                e = find_edge_from_split(step_add_tree.seed_node, split)
+                assert e is not None, "Could not find split %s.  Root mask is %s" % (bin(split)[2:], bin(step_add_tree.seed_node.edge.clade_mask)[2:])
+
+                self.topoweight = 1.0
+                self.stopgen = 1000
+
+                nt_list = self.check_neighborhood_after_addition(tm, e.head_node, 2, culled, tree_ind)
+                deeper_search_start = []
+                better_tm = tm
+                for nt in nt_list:
+                    encode_splits(nt.tree)
+                    if symmetric_difference(nt.tree, step_add_tree) != 0:
+                        deeper_search_start.append(nt)
+                    elif nt.score > better_tm.score:
+                        better_tm = nt
+
+
+                if deeper_search_start:
+                    entire_neighborhood = [better_tm] + deeper_search_start
+                    for alt_tm in deeper_search_start:
+                        e = find_edge_from_split(alt_tm.tree.seed_node, split)
+
+                        assert e is not None, "Could not find split %s.  Root mask is %s" % (bin(split)[2:], bin(alt_tm.tree.seed_node.edge.clade_mask)[2:])
+
+                        nt_list = self.check_neighborhood_after_addition(alt_tm, e.head_node, 3, culled, tree_ind)
+                        for nt in nt_list:
+                            encode_splits(nt.tree)
+                            entire_neighborhood.append(nt)
+                    entire_neighborhood.sort(reverse=True)
+                    to_add = []
+                    for nt in entire_neighborhood:
+                        found = False
+                        for x in to_add:
+                            if symmetric_difference(x.tree, nt.tree) == 0:
+                                found = True
+                                break
+                        if not found:
+                            to_add.append(nt)
+                    to_save.extend(to_add)
+                else:
+                    to_save.append(better_tm)
+
+            # this is where we should evaluate which trees need to be maintained for the next round.
+            next_round_trees.extend(to_save)
+        del full_dataset.trees_blocks[:]
+        inp_trees = [i.tree for i in next_round_trees]
+        full_dataset.trees_blocks.append(inp_trees)
+        o = open("incrgarli.tre", "w")
+        write_tree_file(o, [i.tree for i in next_round_trees], culled)
+        o.close()
+
+    def read_garli_conf(self, stream):
+        for line in stream:
+            s = line.split("=")
+            if len(s) > 1:
+                k = s[0].strip().lower()
+                v = "=".join(s[1:]).strip()
+                if not k in self.__dict__:
+                    raise RuntimeError("Key %s is not understood" % k)
+                setattr(self, k, v)
 
 def rev_trans_func(t):
     global TAXON_TO_TRANSLATE
@@ -491,7 +620,7 @@ def write_newick_file(outstream, trees_block, dataset, pref=''):
     tree = trees_block[0]
     assert(len(trees_block) == 1)
     outstream.write("%s%s;\n" % (pref, tree.compose_newick()))
-    
+
 
 
 
@@ -506,45 +635,31 @@ def read_garli_scores(inp):
     return sc
 
 
-    
-def read_garli_conf(f):
-    default_conf = GarliConf()
-    for line in f:
-        s = line.split("=")
-        if len(s) > 1:
-            k = s[0].strip().lower()
-            v = "=".join(s[1:]).strip()
-            if not k in default_conf.__dict__:
-                raise RuntimeError("Key %s is not understood" % k)
-            setattr(default_conf, k, v)
-    return default_conf
-
-
 def cmp_score(x, y):
     return cmp(x.score, y.score)
-    
+
 if __name__ == '__main__':
-    description =  '%s %s ' % (_program_name, _program_version)    
+    description =  '%s %s ' % (_program_name, _program_version)
     usage = "%prog --conf=template.conf --data=data.nex --tree=start.tre"
-    
+
     parser = OptionParser(usage=usage, add_help_option=True, version = _program_version, description=description)
-    parser.add_option('-d','--data',  
+    parser.add_option('-d','--data',
                   dest='data_filepath',
                   default=None,
-                  help="path to file containing the reference data (must be readable by GARLI and Dendropy)")  
-    parser.add_option('-t','--tree',  
+                  help="path to file containing the reference data (must be readable by GARLI and Dendropy)")
+    parser.add_option('-t','--tree',
                   dest='intree_filepath',
                   default=None,
-                  help="path to file containing the starting collection of trees (must be readable by GARLI and Dendropy)")  
-    parser.add_option('-c','--conf',  
+                  help="path to file containing the starting collection of trees (must be readable by GARLI and Dendropy)")
+    parser.add_option('-c','--conf',
                   dest='conf',
                   default=None,
-                  help="path to a garli conf file")  
-    parser.add_option('-v', '--verbose', 
-                      action='store_true', 
+                  help="path to a garli conf file")
+    parser.add_option('-v', '--verbose',
+                      action='store_true',
                       dest='verbose',
                       default=False,
-                      help="Verbose mode") 
+                      help="Verbose mode")
     (opts, args) = parser.parse_args()
     conf_file = opts.conf
     if conf_file is None:
@@ -562,157 +677,44 @@ if __name__ == '__main__':
         if not os.path.exists(f):
             sys.exit("%s does not exist" % f)
 
-    garli = read_garli_conf(open(conf_file, "rU"))
+    garli = GarliConf()
+    garli.read_garli_conf(open(conf_file, "rU"))
+
     full_dataset = Dataset()
     full_dataset.read(open(data_file, "rU"), format="NEXUS")
+    assert(len(full_dataset.taxa_blocks) == 1)
     taxa = full_dataset.taxa_blocks[0]
     full_taxa_mask = taxa.all_taxa_bitmask()
     for n, taxon in enumerate(taxa):
         TAXON_TO_TRANSLATE[taxon] = str(n + 1)
     _LOG.debug("%s = full_taxa_mask" % bin(full_taxa_mask))
-    assert(len(full_dataset.taxa_blocks) == 1)
-    characters = full_dataset.char_blocks[0]
-    assert(len(full_dataset.char_blocks) == 1)
-    assert(len(characters) == len(taxa))
 
 
-    datafname = "data.nex"
-    garli.datafname = os.path.join(datafname)
+    garli.datafname = os.path.join("data.nex")
+
+    inp_trees = full_dataset.read_trees(open(intree_file, "rU"), format="NEXUS")
+    assert(inp_trees)
+    current_taxon_mask = None
+
+    # read initial trees and verify that they have the correct set of taxa
+    for tree in inp_trees:
+        assert tree.taxa_block is taxa
+        encode_splits(tree)
+        if current_taxon_mask is None:
+            current_taxon_mask = tree.seed_node.edge.clade_mask
+            _LOG.debug("%s = current_taxon_mask" % bin(current_taxon_mask))
+            assert( (current_taxon_mask | full_taxa_mask) == full_taxa_mask)
+            toadd_taxon_mask = current_taxon_mask ^ full_taxa_mask
+        else:
+            assert(current_taxon_mask == tree.seed_node.edge.clade_mask)
+    next_toadd = lowest_bit_only(current_taxon_mask^full_taxa_mask)
+    if (next_toadd - 1) != current_taxon_mask:
+        _LOG.debug("%s = next_toadd" % format_split(next_toadd, taxa=taxa))
+        _LOG.debug("%s = current_taxon_mask\n(next_toadd - 1) != current_taxon_mask" % format_split(current_taxon_mask, taxa=taxa))
+        sys.exit("In this version, taxa must be added to the tree in the order that they appear in the matrix")
 
 
-    
-    nexusWriter = nexus.NexusWriter()
-    
-    while True:
-        if intree_file:
-            inp_trees = full_dataset.read_trees(open(intree_file, "rU"), format="NEXUS")
-            intree_file = ""
-            assert(inp_trees)
-            current_taxon_mask = None
+    garli.incrementally_build_trees(full_dataset, inp_trees)
 
-            for tree in inp_trees:
-                assert tree.taxa_block is taxa
-                encode_splits(tree)
-                if current_taxon_mask is None:
-                    current_taxon_mask = tree.seed_node.edge.clade_mask
-                    _LOG.debug("%s = current_taxon_mask" % bin(current_taxon_mask))
-                    assert( (current_taxon_mask | full_taxa_mask) == full_taxa_mask)
-                    toadd_taxon_mask = current_taxon_mask ^ full_taxa_mask
-                else:
-                    assert(current_taxon_mask == tree.seed_node.edge.clade_mask)
-            next_toadd = lowest_bit_only(current_taxon_mask^full_taxa_mask)
-            if (next_toadd - 1) != current_taxon_mask:
-                _LOG.debug("%s = next_toadd" % format_split(next_toadd, taxa=taxa))
-                _LOG.debug("%s = current_taxon_mask\n(next_toadd - 1) != current_taxon_mask" % format_split(current_taxon_mask, taxa=taxa))
-                sys.exit("In this version, taxa must be added to the tree in the order that they appear in the matrix")
-
-        current_taxon_mask = inp_trees[0].seed_node.edge.clade_mask
-        inds = [i for i in iter_split_indices(current_taxon_mask+1)]
-        assert(len(inds) == 1)
-        curr_n_taxa = inds[0]
-    
-        curr_n_taxa += 1
-        if curr_n_taxa > len(taxa):
-            break
-
-        _LOG.debug("Adding taxon %d" % curr_n_taxa)
-        dirn = "t%d" % curr_n_taxa
-        if not os.path.exists(dirn):
-            os.makedirs(dirn)
-            if not os.path.exists(dirn):
-                sys.exit("Could not make %s" % dirn)
-        if not os.path.isdir(dirn):
-            sys.exit("%s is not a directory" % dirn)
-        orig_dir = os.getcwd()
-        os.chdir(dirn)
-        
-
-        culled_taxa = TaxaBlock(taxa[:curr_n_taxa])
-        culled_chars = copy.copy(characters)
-        culled_chars.taxa_block = culled_taxa
-        culled_chars.matrix = copy.copy(characters.matrix)
-        culled_chars.matrix.clear()
-        #culled_chars = characters.__class__(taxa_block=culled_taxa)
-        #culled_chars.column_types = characters.column_types
-        #culled_chars.markup_as_sequences = characters.markup_as_sequences
-        template_matrix = characters.matrix
-        for taxon in culled_taxa:
-            culled_chars.matrix[taxon] = template_matrix[taxon]
-
-        culled = Dataset()
-        culled.taxa_blocks.append(culled_taxa)
-        culled.char_blocks.append(culled_chars)
-        
-        o = open(datafname, "w")
-        nexusWriter.write_dataset(culled, o);
-        o.close()
-
-        garli.set_active_taxa(culled_taxa)
-
-        try:
-            next_round_trees = [TreeModel(tree=i) for i in TreesBlock(taxa_block=culled_taxa)]
-            
-            for tree_ind, tree in enumerate(inp_trees):
-                tree_model_list = garli.add_to_tree(tree, culled, tree_ind)
-                to_save = []
-                for tm in tree_model_list:
-                    print tm.score
-                    step_add_tree = tm.tree
-                    encode_splits(step_add_tree)
-                    split = 1 << (curr_n_taxa - 1)
-                    e = find_edge_from_split(step_add_tree.seed_node, split)
-                    assert e is not None, "Could not find split %s.  Root mask is %s" % (bin(split)[2:], bin(step_add_tree.seed_node.edge.clade_mask)[2:])
-                    
-                    garli.topoweight = 1.0
-                    garli.stopgen = 1000
-
-                    nt_list = garli.check_neighborhood_after_addition(tm, e.head_node, 2, culled, tree_ind)
-                    deeper_search_start = []
-                    better_tm = tm
-                    for nt in nt_list:
-                        encode_splits(nt.tree)
-                        if symmetric_difference(nt.tree, step_add_tree) != 0:
-                            deeper_search_start.append(nt)
-                        elif nt.score > better_tm.score:
-                            better_tm = nt
-
-
-                    if deeper_search_start:
-                        entire_neighborhood = [better_tm] + deeper_search_start
-                        for alt_tm in deeper_search_start:
-                            e = find_edge_from_split(alt_tm.tree.seed_node, split)
-
-                            assert e is not None, "Could not find split %s.  Root mask is %s" % (bin(split)[2:], bin(alt_tm.tree.seed_node.edge.clade_mask)[2:])
-
-                            nt_list = garli.check_neighborhood_after_addition(alt_tm, e.head_node, 3, culled, tree_ind)
-                            for nt in nt_list:
-                                encode_splits(nt.tree)
-                                entire_neighborhood.append(nt)
-                        entire_neighborhood.sort(reverse=True)
-                        to_add = []
-                        for nt in entire_neighborhood:
-                            found = False
-                            for x in to_add:
-                                if symmetric_difference(x.tree, nt.tree) == 0:
-                                    found = True
-                                    break
-                            if not found:
-                                to_add.append(nt)
-                        to_save.extend(to_add)
-                    else:
-                        to_save.append(better_tm)
-                        
-                # this is where we should evaluate which trees need to be maintained for the next round.
-                next_round_trees.extend(to_save)
-            del full_dataset.trees_blocks[:]
-            inp_trees = [i.tree for i in next_round_trees]
-            full_dataset.trees_blocks.append(inp_trees)
-            o = open("incrgarli.tre", "w")
-            write_tree_file(o, [i.tree for i in next_round_trees], culled)
-            o.close()
-            
-        finally:
-            os.chdir(orig_dir)
-            
     sys.exit(0)
-    
+
