@@ -195,9 +195,9 @@ class DNAModel(object):
         self.shape = params[8]
         self.p_invar = params[9]
     def _normalize_r_mat(self):
-        assert(len(self.r_mat) == 6)
+        assert len(self.r_mat) == 6, "%s is an invalid r_mat" % str(self.r_mat)
         gt_rate = self.r_mat[-1]
-        nr = [i/gt_rate for i in self.r_mat[:6]]
+        nr = [i/gt_rate for i in self.r_mat[:5]]
         nr.append(1.0)
         self.r_mat = nr
 
@@ -231,6 +231,7 @@ def tree_has_structure(t):
 
 class GarliConf(object):
     def __init__(self):
+        self.incr_stopgen = 500
         self.line_pattern = garli_line_pattern = re.compile(r'\[iGarli (\d+) \] tree best = \[&U\]\[!GarliScore ([-.0-9]*)\]%s (\(.*\))' % garli_dna_model_pattern)
         self.model_class = DNAModel
         self.active_taxa = None
@@ -419,7 +420,7 @@ class GarliConf(object):
         ptw = self.topoweight
         psg = self.stopgen
         self.topoweight = 0.0
-        self.stopgen = 1000
+        self.stopgen = self.incr_stopgen
 
         self.run(["run"], terminate_run=True)
 
@@ -431,6 +432,39 @@ class GarliConf(object):
         r = self.parse_igarli_lines(err_lines, dataset)
         r.sort(reverse=True)
         return r
+
+
+    def score_tree(self, tree, dataset, tree_ind):
+        ofprefix = "from%d" % tree_ind
+
+        self.ofprefix = ofprefix
+        self.streefname = "incomplete"
+        self.constraintfile = "none"
+
+        tmp_tree_filename = ".tmp.tre"
+        f = open(tmp_tree_filename, "w")
+        write_tree_file(f, [tree], dataset)
+        f.close()
+
+        self.incompletetreefname = tmp_tree_filename
+        self.runmode = GARLI_ENUM.INCR_RUNMODE
+
+        # store the settings that we must override
+        ptw = self.topoweight
+        psg = self.stopgen
+        self.topoweight = 0.0
+        self.stopgen = self.incr_stopgen
+
+        self.run(["run"], terminate_run=True)
+
+        # restore the settings that we had to override
+        self.topoweight = ptw
+        self.stopgen = psg
+
+        err_lines = self.stderrThread.lines_between_prompt()
+        r = self.parse_igarli_lines(err_lines, dataset)
+        assert len(r) == 1
+        return r[0]
 
     def parse_igarli_lines(self, line_list, dataset):
         tm_list = []
@@ -471,26 +505,31 @@ class GarliConf(object):
         taxa = full_dataset.taxa_blocks[0]
         assert len(inp_trees) > 0
 
-        current_taxon_mask = inp_trees[0].seed_node.edge.clade_mask
+        current_taxon_mask = inp_trees[0].tree.seed_node.edge.clade_mask
         inds = [i for i in iter_split_indices(current_taxon_mask + 1)]
         assert(len(inds) == 1)
         curr_n_taxa = inds[0]
+
+        # Score the original trees
+        orig_dir = self._cd_for_work_dir(curr_n_taxa)
+        try:
+            culled = self._write_garli_input(curr_n_taxa, full_dataset)
+            culled_taxa = culled.taxa_blocks[0]
+            self.set_active_taxa(culled_taxa)
+            inp_trees = self.score_tree_list(curr_n_taxa, full_dataset, inp_trees)
+        finally:
+            os.chdir(orig_dir)
+        curr_n_taxa += 1
         
         
-        while True:
-
-            curr_n_taxa += 1
-            if curr_n_taxa > len(taxa):
-                return
-
-            _LOG.debug("Adding taxon %d" % curr_n_taxa)
-            
+        while curr_n_taxa <= len(taxa):
+            _LOG.debug("Adding taxon %d" % curr_n_taxa)            
             orig_dir = self._cd_for_work_dir(curr_n_taxa)
-
             try:
                 inp_trees = self._do_add_taxon_incremental_step(curr_n_taxa, full_dataset, inp_trees)
             finally:
                 os.chdir(orig_dir)
+            curr_n_taxa += 1
 
     def _cd_for_work_dir(self, curr_n_taxa):
         """changes the current directory to a working directory for the specified
@@ -537,6 +576,26 @@ class GarliConf(object):
         o.close()
         return culled
 
+    def select_trees_for_next_round(self, curr_n_taxa, culled, next_round_trees):
+        return next_round_trees
+
+    def score_tree_list(self, curr_n_taxa, full_dataset, inp_trees):
+        culled = self._write_garli_input(curr_n_taxa, full_dataset)
+        culled_taxa = culled.taxa_blocks[0]
+        self.set_active_taxa(culled_taxa)
+        rescored = []
+        for tree_ind, tree in enumerate(inp_trees):
+            tm = self.score_tree(tree, culled, tree_ind)
+            encode_splits(tm.tree)
+            rescored.append(tm)
+        rescored.sort(reverse=True)
+        del full_dataset.trees_blocks[:]
+        full_dataset.trees_blocks.append([i.tree for i in rescored])
+        o = open("incrgarli.tre", "w")
+        write_tree_file(o, rescored, culled)
+        o.close()
+        return rescored
+
     def _do_add_taxon_incremental_step(self, curr_n_taxa, full_dataset, inp_trees):
         culled = self._write_garli_input(curr_n_taxa, full_dataset)
         culled_taxa = culled.taxa_blocks[0]
@@ -555,7 +614,7 @@ class GarliConf(object):
                 assert e is not None, "Could not find split %s.  Root mask is %s" % (bin(split)[2:], bin(step_add_tree.seed_node.edge.clade_mask)[2:])
 
                 self.topoweight = 1.0
-                self.stopgen = 1000
+                self.stopgen = self.incr_stopgen
 
                 nt_list = self.check_neighborhood_after_addition(tm, e.head_node, 2, culled, tree_ind)
                 deeper_search_start = []
@@ -595,7 +654,9 @@ class GarliConf(object):
 
             # this is where we should evaluate which trees need to be maintained for the next round.
             next_round_trees.extend(to_save)
-            
+        
+        next_round_trees = self.select_trees_for_next_round(curr_n_taxa, culled, next_round_trees)
+        
         del full_dataset.trees_blocks[:]
         full_dataset.trees_blocks.append([i.tree for i in next_round_trees])
         o = open("incrgarli.tre", "w")
@@ -634,7 +695,10 @@ def write_tree_file(outstream, tree_model_list, dataset):
             msg = tree_template % newick
         else:
             newick = tree.compose_newick(reverse_translate=rev_trans_func)
-            msg = template % (tm.name, str(tm.score), str(tm.model), newick)
+            if tm.model:
+                msg = tm_template % (tm.name, tm.score, str(tm.model), newick)
+            else:
+                msg = tree_template % newick
         outstream.write(msg)
 
     outstream.write("End;\n")
@@ -718,12 +782,12 @@ if __name__ == '__main__':
 
     garli.datafname = os.path.join("data.nex")
 
-    inp_trees = full_dataset.read_trees(open(intree_file, "rU"), format="NEXUS")
-    assert(inp_trees)
+    raw_trees = full_dataset.read_trees(open(intree_file, "rU"), format="NEXUS")
+    assert(raw_trees)
     current_taxon_mask = None
 
     # read initial trees and verify that they have the correct set of taxa
-    for tree in inp_trees:
+    for tree in raw_trees:
         assert tree.taxa_block is taxa
         encode_splits(tree)
         if current_taxon_mask is None:
@@ -739,6 +803,7 @@ if __name__ == '__main__':
         _LOG.debug("%s = current_taxon_mask\n(next_toadd - 1) != current_taxon_mask" % format_split(current_taxon_mask, taxa=taxa))
         sys.exit("In this version, taxa must be added to the tree in the order that they appear in the matrix")
 
+    inp_trees = [TreeModel(tree=i) for i in raw_trees]
 
     garli.incrementally_build_trees(full_dataset, inp_trees)
 
