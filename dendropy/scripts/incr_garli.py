@@ -1,9 +1,9 @@
 #! /usr/bin/env python
 
 ############################################################################
-##  sumtrees.py
+##  incr_garli.py
 ##
-##  Copyright 2008 Jeet Sukumaran.
+##  Copyright 2009 Mark T. Holder
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -447,7 +447,7 @@ class GarliConf(object):
                 newick_stream = cStringIO.StringIO(tree_string)
                 tree_list = self.read_trees(dataset, newick_stream, format="newick")
                 assert(len(tree_list) == 1)
-                tm = TreeModel(name=result_number, score=score, model=model, tree=tree_list[0])
+                tm = TreeModel(name="tree" + result_number, score=score, model=model, tree=tree_list[0])
                 tm_list.append(tm)
         return tm_list
 
@@ -469,11 +469,15 @@ class GarliConf(object):
     def incrementally_build_trees(self, full_dataset, inp_trees):
         assert len(full_dataset.taxa_blocks) == 1
         taxa = full_dataset.taxa_blocks[0]
+        assert len(inp_trees) > 0
+
+        current_taxon_mask = inp_trees[0].seed_node.edge.clade_mask
+        inds = [i for i in iter_split_indices(current_taxon_mask + 1)]
+        assert(len(inds) == 1)
+        curr_n_taxa = inds[0]
+        
+        
         while True:
-            current_taxon_mask = inp_trees[0].seed_node.edge.clade_mask
-            inds = [i for i in iter_split_indices(current_taxon_mask + 1)]
-            assert(len(inds) == 1)
-            curr_n_taxa = inds[0]
 
             curr_n_taxa += 1
             if curr_n_taxa > len(taxa):
@@ -481,23 +485,29 @@ class GarliConf(object):
 
             _LOG.debug("Adding taxon %d" % curr_n_taxa)
             
-            dirn = "t%d" % curr_n_taxa
-            if not os.path.exists(dirn):
-                os.makedirs(dirn)
-                if not os.path.exists(dirn):
-                    sys.exit("Could not make %s" % dirn)
-            if not os.path.isdir(dirn):
-                sys.exit("%s is not a directory" % dirn)
-
-            orig_dir = os.getcwd()
-            os.chdir(dirn)
+            orig_dir = self._cd_for_work_dir(curr_n_taxa)
 
             try:
-                self._do_add_taxon_incremental_step(curr_n_taxa, full_dataset, inp_trees)
+                inp_trees = self._do_add_taxon_incremental_step(curr_n_taxa, full_dataset, inp_trees)
             finally:
                 os.chdir(orig_dir)
 
-    def _do_add_taxon_incremental_step(self, curr_n_taxa, full_dataset, inp_trees):
+    def _cd_for_work_dir(self, curr_n_taxa):
+        """changes the current directory to a working directory for the specified
+        number of taxa and returns the absolute path to the previous directory."""
+        dirn = "t%d" % curr_n_taxa
+        if not os.path.exists(dirn):
+            os.makedirs(dirn)
+            if not os.path.exists(dirn):
+                sys.exit("Could not make %s" % dirn)
+        if not os.path.isdir(dirn):
+            sys.exit("%s is not a directory" % dirn)
+
+        orig_dir = os.getcwd()
+        os.chdir(dirn)
+        return orig_dir
+
+    def _write_garli_input(self, curr_n_taxa, full_dataset):
         assert len(full_dataset.taxa_blocks) == 1
         taxa = full_dataset.taxa_blocks[0]
 
@@ -525,9 +535,13 @@ class GarliConf(object):
         nexusWriter = nexus.NexusWriter()
         nexusWriter.write_dataset(culled, o);
         o.close()
+        return culled
 
+    def _do_add_taxon_incremental_step(self, curr_n_taxa, full_dataset, inp_trees):
+        culled = self._write_garli_input(curr_n_taxa, full_dataset)
+        culled_taxa = culled.taxa_blocks[0]
         self.set_active_taxa(culled_taxa)
-        next_round_trees = [TreeModel(tree=i) for i in TreesBlock(taxa_block=culled_taxa)]
+        next_round_trees = []
 
         for tree_ind, tree in enumerate(inp_trees):
             tree_model_list = self.add_to_tree(tree, culled, tree_ind)
@@ -581,12 +595,13 @@ class GarliConf(object):
 
             # this is where we should evaluate which trees need to be maintained for the next round.
             next_round_trees.extend(to_save)
+            
         del full_dataset.trees_blocks[:]
-        inp_trees = [i.tree for i in next_round_trees]
-        full_dataset.trees_blocks.append(inp_trees)
+        full_dataset.trees_blocks.append([i.tree for i in next_round_trees])
         o = open("incrgarli.tre", "w")
-        write_tree_file(o, [i.tree for i in next_round_trees], culled)
+        write_tree_file(o, next_round_trees, culled)
         o.close()
+        return next_round_trees
 
     def read_garli_conf(self, stream):
         for line in stream:
@@ -602,15 +617,26 @@ def rev_trans_func(t):
     global TAXON_TO_TRANSLATE
     return TAXON_TO_TRANSLATE[t]
 
-def write_tree_file(outstream, trees_block, dataset):
+def write_tree_file(outstream, tree_model_list, dataset):
     outstream.write("#NEXUS\nBegin Trees;\n  Translate")
     sep = ""
     for n, taxon in enumerate(dataset.taxa_blocks[0]):
         outstream.write(sep)
         sep = ',\n '
         outstream.write(" %d %s " % ((n + 1), nexus.NexusWriter.escape_token(taxon.label)))
-    for tree in trees_block:
-        outstream.write(";\n Tree a = [&U] %s ;\n" % tree.compose_newick(reverse_translate=rev_trans_func))
+    tm_template = ";\n Tree %s = [&U][!GarliScore %f][!GarliModel %s ] %s ;\n"
+    tree_template = ";\n Tree a = [&U] %s ;\n"
+    for tm in tree_model_list:
+        try:
+            tree = tm.tree
+        except:
+            newick = tm.compose_newick(reverse_translate=rev_trans_func)
+            msg = tree_template % newick
+        else:
+            newick = tree.compose_newick(reverse_translate=rev_trans_func)
+            msg = template % (tm.name, str(tm.score), str(tm.model), newick)
+        outstream.write(msg)
+
     outstream.write("End;\n")
 
 def write_constraint_file(outstream, trees_block, dataset):
