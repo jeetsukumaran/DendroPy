@@ -1,6 +1,12 @@
 #!/bin/sh
 set -x
 
+ntaxa=$2
+if test -z $ntaxa
+then
+	echo "expecting 2 arguments the filepath to the trees from the previous round and the number of taxa."
+	exit 1
+fi 
 prevRound=$1
 if ! test -f "${prevRound}"
 then
@@ -8,12 +14,14 @@ then
 	exit 1
 fi 
 
-
 if test -z $DENDROPY_SCRIPTS_PAR
 then
 	DENDROPY_SCRIPTS_PAR="${HOME}/Documents/projects/dendropy/dendropy/scripts"
 fi
 
+
+if true
+then
 
 ################################################################################
 # add the taxa to the trees from the previous round
@@ -23,9 +31,11 @@ echo 'quit' >> add_taxon_commands.txt
 
 echo '#NEXUS' > added_taxa.tre
 echo 'begin trees;' >> added_taxa.tre
-iGarli ../add_garli.conf < add_taxon_commands.txt 2>&1 | grep '\[iGar' >>added_taxa.tre || exit
+iGarli ../add_garli.conf < add_taxon_commands.txt >igarli_add_err_out.txt 2>&1  || exit
+grep '\[iGar' igarli_add_err_out.txt >>added_taxa.tre
 echo 'end;' >> added_taxa.tre
 
+fi
 
 ################################################################################
 # augment the collection of trees
@@ -39,9 +49,9 @@ while test -s "${cmdFile}"
 do
 	if test $round -eq 0
 	then
-		("${DENDROPY_SCRIPTS_PAR}/igarli_neighborhood.py" 'added_taxa.tre' > "${cmdFile}") 2>time_igarli_neighborhood.txt || exit
+		("${DENDROPY_SCRIPTS_PAR}/igarli_neighborhood.py" "${ntaxa}" 'added_taxa.tre' > "${cmdFile}") 2>time_igarli_neighborhood.txt || exit
 	else
-		("${DENDROPY_SCRIPTS_PAR}/igarli_neighborhood.py" 'added_taxa.tre' "${lastTreeFile}" > "${cmdFile}") 2>>time_igarli_neighborhood.txt || exit
+		("${DENDROPY_SCRIPTS_PAR}/igarli_neighborhood.py" "${ntaxa}" 'added_taxa.tre' "${lastTreeFile}" > "${cmdFile}") 2>>time_igarli_neighborhood.txt || exit
 	fi
 	if test -s "${cmdFile}"
 	then
@@ -52,7 +62,8 @@ do
 		
 		echo '#NEXUS' > "${lastTreeFile}"
 		echo 'begin trees;' >> "${lastTreeFile}"
-		iGarli ../neighborhood_garli.conf < add_taxon_commands.txt 2>&1 | grep '\[iGar' >> "${lastTreeFile}"  || exit
+		iGarli ../neighborhood_garli.conf < add_taxon_commands.txt >igarli_nbhd_${round}_err_out.txt 2>&1  || exit
+		grep '\[iGar' igarli_nbhd_${round}_err_out.txt >> "${lastTreeFile}"  || exit
 		echo 'end;' >> "${lastTreeFile}"
 		allTreeFiles="${allTreeFiles} ${lastTreeFile}"
 	fi
@@ -75,5 +86,6 @@ echo 'sitelike = 1' > score_commands.txt
 echo 'quit' >> score_commands.txt
 echo '#NEXUS' > incrgarli.tre
 echo 'begin trees;' >> incrgarli.tre
-iGarli ../add_garli.conf < score_commands.txt 2>&1 | grep '\[iGar' >>incrgarli.tre  || exit
+iGarli ../score_garli.conf < score_commands.txt >igarli_score_err_out.txt 2>&1 || exit
+grep '\[iGar' igarli_score_err_out.txt >>incrgarli.tre  || exit
 echo 'end;' >> incrgarli.tre

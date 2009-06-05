@@ -44,7 +44,6 @@ from dendropy.characters import CharactersBlock
 from dendropy.taxa import TaxaBlock
 from dendropy.treedists import symmetric_difference
 from dendropy import treesum
-from dendropy import datasets
 from dendropy.trees import format_split, TreesBlock
 from dendropy import treegen
 from dendropy import get_logger

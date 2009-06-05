@@ -130,7 +130,7 @@ class TreeSummarizer(object):
         
         to_try_to_add = []
         for s, f in split_freqs.iteritems():
-            if (f > min_freq):
+            if (min_freq is None) or (f > min_freq):
                 m = s & taxa_mask
                 if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
                     if unrooted:

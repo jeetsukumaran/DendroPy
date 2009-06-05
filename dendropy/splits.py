@@ -224,7 +224,7 @@ def encode_splits(tree, create_dict=True, delete_degree_two=True):
 class SplitDistribution(object):
     "Collects information regarding splits over multiple trees."
     
-    def __init__(self, taxa_block=None):
+    def __init__(self, taxa_block=None, split_set=None):
         "What else?"
         self.total_trees_counted = 0
         self.taxa_block = taxa_block
@@ -237,8 +237,10 @@ class SplitDistribution(object):
         self.unrooted = True
         self._split_freqs = None
         self._trees_counted_for_freqs = 0
+        for split in split_set:
+            self.add_split_count(split, count=1)
         
-    def add_split_count(self, split, count):
+    def add_split_count(self, split, count=1):
         if split not in self.splits:
             self.splits.append(split)
             self.split_counts[split] = 0
@@ -271,11 +273,12 @@ class SplitDistribution(object):
         "Forces recalculation of frequencies."
         self._split_freqs = {}
         if self.total_trees_counted == 0:
-            total = 1
+            for split in self.split_counts.keys():
+                self._split_freqs[split] = 1.0
         else:
             total = self.total_trees_counted
-        for split in self.split_counts:
-            self._split_freqs[split] = float(self.split_counts[split]) / total
+            for split in self.split_counts:
+                self._split_freqs[split] = float(self.split_counts[split]) / total
         self._trees_counted_for_freqs = self.total_trees_counted            
         return self._split_freqs
         
@@ -319,34 +322,34 @@ class SplitDistribution(object):
                     sna.append(edge.head_node.distance_from_tip())
 
 def collapse_conflicting(subtree_root, split, clade_mask):
-	"""Takes a node that is the root of a subtree.  Collapses every edge in the
-	subtree that conflicts with split.  This can include the edge subtending 
-	subtree_root.
-	"""
-	
-	# we flip splits so that both the split and each edges split  have the
-	# lowest bit of the clade mask set to one
-	lb = lowest_bit_only(clade_mask)
+    """Takes a node that is the root of a subtree.  Collapses every edge in the
+    subtree that conflicts with split.  This can include the edge subtending 
+    subtree_root.
+    """
+    
+    # we flip splits so that both the split and each edges split  have the
+    # lowest bit of the clade mask set to one
+    lb = lowest_bit_only(clade_mask)
 
-	if lb & split:
-		cropped_split = split & clade_mask
-	else:
-		cropped_split = (~split) & clade_mask
+    if lb & split:
+        cropped_split = split & clade_mask
+    else:
+        cropped_split = (~split) & clade_mask
 
-	to_collapse_head_nodes = []
-	for nd in subtree_root.postorder_iter(subtree_root):
-		if not nd.is_leaf():
-			ncm = nd.edge.clade_mask
-			if lb & ncm:
-				nd_split = ncm & clade_mask
-			else:
-				nd_split = (~ncm) & clade_mask
+    to_collapse_head_nodes = []
+    for nd in subtree_root.postorder_iter(subtree_root):
+        if not nd.is_leaf():
+            ncm = nd.edge.clade_mask
+            if lb & ncm:
+                nd_split = ncm & clade_mask
+            else:
+                nd_split = (~ncm) & clade_mask
 
-			cm_union = nd_split | cropped_split
-			if (cm_union != nd_split) and (cm_union != cropped_split):
-				to_collapse_head_nodes.append(nd)
-		
-	for nd in to_collapse_head_nodes:
-		e = nd.edge
-		e.collapse()
-			
+            cm_union = nd_split | cropped_split
+            if (cm_union != nd_split) and (cm_union != cropped_split):
+                to_collapse_head_nodes.append(nd)
+        
+    for nd in to_collapse_head_nodes:
+        e = nd.edge
+        e.collapse()
+            

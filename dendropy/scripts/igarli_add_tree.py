@@ -30,8 +30,11 @@ f = open(fn, 'rU')
 
 #garli_dna_model_pattern = r'\[!GarliModel  r ([.0-9]*) ([.0-9]*) ([.0-9]*) ([.0-9]*) ([.0-9]*) e ([.0-9]*) ([.0-9]*) ([.0-9]*) [.0-9]* a ([.0-9]*) p ([.0-9]*) \]'
 garli_dna_model_pattern = r'\[!GarliModel\s*(r [.0-9]* [.0-9]* [.0-9]* [.0-9]* [.0-9]* e [.0-9]* [.0-9]* [.0-9]* [.0-9]* a [.0-9]* p [.0-9]*)\s*\]'
-garli_tree_model_pat = re.compile(r'\s*Tree\s*tree(\d+)\s*=\s*\[&U\]\[!GarliScore ([-.0-9]*)\]\s*%s\s*(\(.*\))\s*;' % garli_dna_model_pattern)
-garli_tree_pat = re.compile( r'\s*Tree\s*tree(\d+)\s*=\s*\[&U\]\[!GarliScore ([-.0-9]*)\]\s*(\(.*\))\s*;')
+garli_after_name_tm_pattern = r'\s*=\s*\[&U\]\[!GarliScore ([-.0-9]*)\]\s*%s\s*(\(.*\))\s*;' % garli_dna_model_pattern
+garli_after_name_tree_pattern = r'\s*=\s*\[&U\]\[!GarliScore ([-.0-9]*)\]\s*(\(.*\))\s*;'
+tree_prefix = r'\s*Tree\s*tree(\d+)'
+garli_tree_model_pat = re.compile(tree_prefix + garli_after_name_tm_pattern)
+garli_tree_pat = re.compile(tree_prefix + garli_after_name_tree_pattern)
 
 
 first = True
