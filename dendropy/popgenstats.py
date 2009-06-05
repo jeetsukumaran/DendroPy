@@ -258,7 +258,7 @@ def summarize(char_block, taxon_groups, ignore_uncertain=True):
     
     # Hickerson 2006: theta #
     a1 = sum([1.0/i for i in range(1, len(char_block))])
-    summary["theta"] = float(summary["S"]) / i
+    summary["theta"] = float(summary["S"]) / a1
     
     # Wakeley 1996 #
     summary["psi"] = (float(1)/(a)) * ( ax * (math.sqrt(s2_x)/d_x) + ay * (math.sqrt(s2_y)/d_y) + (2 * n_x * n_y * math.sqrt(s2_xy)/k))
@@ -270,7 +270,7 @@ def summarize(char_block, taxon_groups, ignore_uncertain=True):
     b1 = float(n+1)/(3*(n-1))
     b2 = float(2 * ( (n**2) + n + 3 )) / (9*n*(n-1))
     c1 = b1 - 1.0/a1
-    c2 = b2 - float(n+2)/(a1 * n) + float(a2)/a1
+    c2 = b2 - float(n+2)/(a1 * n) + float(a2)/(a1 ** 2)
     e1 = float(c1) / a1
     e2 = float(c2) / ( (a1**2) + a2 )
     S = summary["S"]
