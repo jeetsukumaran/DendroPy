@@ -234,6 +234,7 @@ def tree_has_structure(t):
 class GarliConf(object):
     def __init__(self):
         # the following are settings for the incremental behavior
+        self.last_model_read = None
         self.init_tree_scoring_stopgen = 200
         self.init_stopgen = 100
         
@@ -321,7 +322,8 @@ class GarliConf(object):
         self.garli_instance = None
         self.garli_stopped_event = None
         self._cached_settings = []
-        self.line_pattern = garli_line_pattern = re.compile(r'\[iGarli (\d+) \] tree best = \[&U\]\[!GarliScore ([-.0-9]*)\]%s (\(.*\))' % garli_dna_model_pattern)
+        self.line_pattern = re.compile(r'\[iGarli (\d+) \] tree best = \[&U\]\[!GarliScore ([-.0-9]*)\]%s (\(.*\))' % garli_dna_model_pattern)
+        self.no_model_line_pattern = re.compile(r'\[iGarli (\d+) \] tree best = \[&U\]\[!GarliScore ([-.0-9]*)\] (\(.*\))')
         self.model_class = DNAModel
 
     def get_max_trees_carried_over(self):
@@ -447,8 +449,11 @@ class GarliConf(object):
             self.topoweight = self.negcon_topoweight
             self.modweight = self.negcon_modweight
             self.stopgen = self.negcon_stopgen
-            self.run(["model = %s" % str(new_starting.model),
-                      "run"], terminate_run=True)
+            invoc = []
+            if new_starting.model:
+                invoc.append("model = %s" % str(new_starting.model))
+            invoc.append("run")
+            self.run(invoc, terminate_run=True)
         finally:
             self.restore_settings()
 
@@ -493,8 +498,16 @@ class GarliConf(object):
             self.topoweight = self.neighborhood_topoweight
             self.modweight = self.neighborhood_modweight
             self.stopgen = self.neighborhood_stopgen
-            self.run(["model = %s" % str(tree_model.model),
-                      "run"], terminate_run=True)
+            invoc = []
+            if tree_model.model:
+                invoc.append("model = %s" % str(tree_model.model))
+            elif self.modweight <= 0.0:
+                if self.last_model_read:
+                    invoc.append("model = %s" % str(self.last_model_read))
+                else:
+                    self.modweight = 0.01
+            invoc.append("run")
+            self.run(invoc, terminate_run=True)
         finally:
             self.restore_settings()
 
@@ -517,7 +530,7 @@ class GarliConf(object):
             self.stopgen = stop_gen
             self.incompletetreefname = tmp_tree_filename
             self.runmode = GARLI_ENUM.INCR_RUNMODE
-            invoc = []
+            invoc = ["keep = 5"]
             if tree_model.model:
                 invoc.append("model = %s" % str(tree_model.model))
             invoc.append("run")
@@ -559,13 +572,21 @@ class GarliConf(object):
         tm_list = []
         for line in line_list:
             if line.startswith('[iGarli '):
+                has_model = True
                 m = self.line_pattern.match(line)
-                assert(m)
+                if not m:
+                    m = self.no_model_line_pattern.match(line)
+                    has_model = False
+                    assert m, "%s doesn't fit the pattern" % line
                 g = m.groups()
                 result_number = g[0]
                 score = float(g[1])
-                model_params = [float(i) for i in g[2:-1]]
-                model = self.model_class(model_params)
+                if has_model:
+                    model_params = [float(i) for i in g[2:-1]]
+                    model = self.model_class(model_params)
+                    self.last_model_read = model
+                else:
+                    model = None
                 tree_string = g[-1]
                 newick_stream = cStringIO.StringIO(tree_string)
                 tree_list = self.read_trees(dataset, newick_stream, format="newick")
@@ -686,7 +707,7 @@ class GarliConf(object):
                 set_of_split_sets.add(tm.splits)
         curr_results = unique_topos
         set_of_split_sets.clear()
-        _LOG.debug('There were %d unique result topologiesfor ntax = %d ' % (len(curr_results), self.curr_n_taxa))
+        _LOG.info('There were %d unique result topologiesfor ntax = %d ' % (len(curr_results), self.curr_n_taxa))
 
         ########################################
         # the trees can be hefty, so lets eliminate unneeded references
@@ -737,7 +758,7 @@ class GarliConf(object):
         # We'll do this by starting from a version of the ML tree that has been
         #   collapsed so that it does not conflict with the split
         #####
-        _LOG.debug('There were %d unanimous splits in the curr_results for ntax = %d ' % (len(unanimous_splits), self.curr_n_taxa))
+        _LOG.info('There were %d unanimous splits in the curr_results for ntax = %d ' % (len(unanimous_splits), self.curr_n_taxa))
         for split in unanimous_splits:
             best_conflicting = self.find_best_conflicting(starting_tree=ml_est, split=split, dataset=culled)
             for b in best_conflicting:
@@ -797,7 +818,7 @@ class GarliConf(object):
                     n_added += 1
         except StopIteration:
             pass
-        _LOG.debug('Added %d trees that were not "required" to guarantee that no splits were unanimous for ntax = %d' % (n_added, self.curr_n_taxa))
+        _LOG.info('Added %d trees that were not "required" to guarantee that no splits were unanimous for ntax = %d' % (n_added, self.curr_n_taxa))
 
         ########################################
         # the trees can be hefty, so lets free unneeded memory
@@ -811,6 +832,8 @@ class GarliConf(object):
         #####
         for i in range(len(next_round_trees)):
             next_round_trees[i] = self.score_tree(next_round_trees[i], culled, n, self.tree_scoring_stop_gen) 
+
+        _LOG.info('A total of %d trees were retained for ntax = %d lnL range from %f to %f' % (len(next_round_trees), self.curr_n_taxa, next_round_trees[0].score, next_round_trees[-1].score))
 
         return next_round_trees
 
