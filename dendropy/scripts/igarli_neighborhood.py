@@ -153,8 +153,9 @@ def connected_at(dist_mat, max_dist):
 	return all_connected_inds
 	
 
-
+first_write = True
 def write_neighborhood_commands(stream, tree_list):
+	global first_write
 	dim = len(tree_list)
 	mat = [[0]*dim for i in range(dim)]
 	for row_n, i in enumerate(tree_list[:-1]):
@@ -173,7 +174,10 @@ def write_neighborhood_commands(stream, tree_list):
 		first_tree = trees[0]
 		stream.write("model = %s\n" % first_tree.model)
 		stream.write("tree = %s\n" % first_tree.tree_string)
-		stream.write("clearconstraints\n")
+		if first_write:
+			stream.write("treenum = 1\n")
+			first_write = False
+		stream.write("clearconstraints = 1\n")
 		
 		if len(trees) > 1:
 			trees.sort(reverse=True, cmp=lambda x,y: cmp(x.score,y.score))
@@ -192,6 +196,7 @@ def write_neighborhood_commands(stream, tree_list):
 			edge_dist = 3
 			e.head_node.collapse_neighborhood(edge_dist)
 			stream.write("posconstraint = %s\n" % c.compose_newick())
+		stream.write("run\n")
 	
 n_tax = int(sys.argv[1])
 mask = (1 << n_tax) - 1
