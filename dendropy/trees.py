@@ -871,18 +871,19 @@ class Node(taxa.TaxonLinked):
             out.write(')')
 
         out.write(self.get_node_str(**kwargs))
-        e = self.edge
-        if e:
-            sel = e.length
-            if sel is not None:
-                s = ""
-                try:
-                    s = float(sel)
-                    s = str(s)
-                except ValueError:
-                    s = str(sel)
-                if s:
-                    out.write(":%s" % s)
+        if edge_lengths:
+            e = self.edge
+            if e:
+                sel = e.length
+                if sel is not None:
+                    s = ""
+                    try:
+                        s = float(sel)
+                        s = str(s)
+                    except ValueError:
+                        s = str(sel)
+                    if s:
+                        out.write(":%s" % s)
 
     def get_indented_form(self, **kwargs):
         out = StringIO()
