@@ -29,6 +29,9 @@ from dendropy.taxa import TaxaBlock
 from dendropy.datasets import Dataset
 from dendropy.splits import encode_splits, is_trivial_split, find_edge_from_split, SplitDistribution
 from dendropy.treesum import TreeSummarizer
+from dendropy import get_logger
+_LOG = get_logger("incrGarl.py")
+
 
 # bail out if you are given multiple files, this means that you are in the second round
 #   of neighborhood searching
@@ -111,7 +114,7 @@ def get_norm_nontrivial_split_set(tree):
     return norm_non_triv
 
 def connected_at(dist_mat, max_dist):
-    sys.stderr.write("dist_mat =\n%s\n" % "\n".join([str(row) for row in dist_mat]))
+    _LOG.debug("dist_mat =\n%s\n" % "\n".join([str(row) for row in dist_mat]))
 
     dim = len(dist_mat)
     if dim == 0:
@@ -155,37 +158,73 @@ def connected_at(dist_mat, max_dist):
     return all_connected_inds
     
 
-first_write = True
+def write_unique_commands(stream, sc_tr_commands_list):
+    # here we suppress repeated searches over the same positive constraint (or
+    #   a more constrained search.
+    to_write = [] 
+    for n, stc_el in enumerate(sc_tr_commands_list):
+        needed = True
+        splits = stc_el.constr_splits
+        score = stc_el.score
+        if splits is not None:
+            for m, other in enumerate(sc_tr_commands_list):
+                _LOG.debug("n=%d, m=%d, splits = %s, other.constr_splits = %s" % (n, m, splits, other.constr_splits))
+                if m > n or ((m < n) and (to_write[m] is not None)):
+                    osplits = other.constr_splits
+                    #############################################################
+                    # the commented out conditional reduces the number of searches, but may not generate enough diverse sets of trees
+                    # if (osplits is None or len(osplits.difference(splits)) == 0) and (splits != osplits or score < other.score):
+                    #############################################################
+                    if osplits == splits and score < other.score:
+                        needed = False
+                        if score > other.score:
+                            other.score = score
+                            other.commands[0] = stc_el.commands[0]
+                        break
+        if needed or True:
+            to_write.append(stc_el.commands)
+        else:
+            to_write.append(None)
 
-def write_neighborhood_commands(stream, tree_list):
-    global first_write
+    # finally we write out everything that remains in the list
+    first = True
+    for cmds in to_write:
+        if cmds is not None:
+            if first:
+                cmds.insert(1, "treenum = 1\n")
+                first = False
+            stream.write("".join(cmds))
+
+class ScoreConstraintCommands(object):
+    def __init__(self, score, constr_splits, commands):
+        self.score, self.constr_splits, self.commands = score, constr_splits, commands
+
+def gather_neighborhood_commands(tree_list):
     dim = len(tree_list)
     mat = [[0]*dim for i in range(dim)]
-    sys.stderr.write("tree_list = %s\n" % str(tree_list))
+    _LOG.debug("tree_list = %s\n" % str(tree_list))
     for row_n, i in enumerate(tree_list[:-1]):
         offset = 1 + row_n
         row_splits = tree_list[row_n].splits
-        sys.stderr.write("row_splits = %s\n" % str(row_splits))
+        _LOG.debug("row_splits = %s\n" % str(row_splits))
         row = mat[row_n]
         for col_disp, j in enumerate(tree_list[offset:]):
             col_n = offset + col_disp
             col_splits = tree_list[col_n].splits
-            sys.stderr.write("col_splits = %s\n" % str(col_splits))
+            _LOG.debug("col_splits = %s\n" % str(col_splits))
             d = len(row_splits.symmetric_difference(col_splits))
-            sys.stderr.write("d = %s\n" % str(d))
+            _LOG.debug("d = %s\n" % str(d))
             row[col_n] = d
             mat[col_n][row_n] = d
     connected_indices = connected_at(mat, 4)
-    sys.stderr.write("connected_indices = %s\n" % str(connected_indices))
+    _LOG.debug("connected_indices = %s\n" % str(connected_indices))
+    sc_tr_commands_list = []
     for group_indices in connected_indices:
         trees = [tree_list[i] for i in group_indices]
         first_tree = trees[0]
-        stream.write("model = %s\n" % first_tree.model)
-        stream.write("tree = %s\n" % first_tree.tree_string)
-        if first_write:
-            stream.write("treenum = 1\n")
-            first_write = False
-        stream.write("clearconstraints = 1\n")
+        cmd_list = ["model = %s\ntree = %s\n" % (first_tree.model, first_tree.tree_string)]
+        sc_tr_commands = ScoreConstraintCommands(first_tree.score, None, cmd_list)
+        cmd_list.append("clearconstraints = 1\n")
 
         
         if len(trees) > 1:
@@ -203,15 +242,24 @@ def write_neighborhood_commands(stream, tree_list):
                 sd = SplitDistribution(taxa_block=taxa_block, split_set=si)
                 ts = TreeSummarizer()
                 sc = ts.tree_from_splits(sd, min_freq=None, include_edge_lengths=False)
-                stream.write("posconstraint = %s\n" % sc.compose_newick(edge_lengths=False))
+                encode_splits(sc)
+                sc.splits = si
+                sc_tr_commands.constr_splits = si
+                cmd_list.append("posconstraint = %s\n" % sc.compose_newick(edge_lengths=False))
         else:
             c = copy.deepcopy(first_tree.tree)
             e = find_edge_from_split(c.seed_node, last_split)
             edge_dist = 3
             e.head_node.collapse_neighborhood(edge_dist)
-            stream.write("posconstraint = %s\n" % c.compose_newick(edge_lengths=False))
-        stream.write("run\n")
-    
+            encode_splits(c)
+            sc_tr_commands.constr_splits = get_norm_nontrivial_split_set(c)
+            cmd_list.append("posconstraint = %s\n" % c.compose_newick(edge_lengths=False))
+        cmd_list.append("run\n")
+        sc_tr_commands_list.append(sc_tr_commands)
+    return sc_tr_commands_list
+
+
+
 n_tax = int(sys.argv[1])
 last_split = 1 << (n_tax - 1)
 mask = (1 << n_tax) - 1
@@ -227,7 +275,7 @@ dataset = Dataset(taxa_blocks=taxa_blocks)
 #setting this > 1.0 means that more trees are retained to the neighborhood search stage
 score_diff_multiplier = 1.0
     
-
+commands = []
 for g in all_tree_groups:
     for el in g:
         newick_string = el.tree_string
@@ -255,7 +303,9 @@ for g in all_tree_groups:
         for el in to_consider:
             if el.score > min_score:
                 to_preserve.append(el)
-    write_neighborhood_commands(sys.stdout, to_preserve)
+    stc = gather_neighborhood_commands(to_preserve)
+    commands.extend(stc)
+write_unique_commands(sys.stdout, commands)
 
 sys.exit(0)
 
@@ -266,6 +316,6 @@ sys.exit(0)
             first = False
         sys.stdout.write('run\n')
     elif False:
-        sys.stderr.write("nomatch: %s\n" %line)
+        _LOG.debug("nomatch: %s\n" %line)
 sys.exit(0)
 """

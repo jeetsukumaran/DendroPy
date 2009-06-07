@@ -26,7 +26,7 @@ then
 ################################################################################
 # add the taxa to the trees from the previous round
 echo 'keep = 5' > add_taxon_commands.txt 
-("${DENDROPY_SCRIPTS_PAR}/igarli_add_tree.py" ${prevRound} >> add_taxon_commands.txt) 2>time_igarli_add_tree.txt || exit
+(set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_add_tree.py" ${prevRound} >> add_taxon_commands.txt) 2>time_igarli_add_tree.txt || exit
 echo 'quit' >> add_taxon_commands.txt 
 
 echo '#NEXUS' > added_taxa.tre
@@ -47,11 +47,12 @@ cmdFile="neighborhood_command${round}.txt"
 echo 'tmp' > "${cmdFile}"
 while test -s "${cmdFile}"
 do
+	cmdFile="neighborhood_command${round}.txt"
 	if test $round -eq 0
 	then
-		("${DENDROPY_SCRIPTS_PAR}/igarli_neighborhood.py" "${ntaxa}" 'added_taxa.tre' > "${cmdFile}") 2>time_igarli_neighborhood.txt || exit
+		(set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_neighborhood.py" "${ntaxa}" 'added_taxa.tre' > "${cmdFile}") 2>time_igarli_neighborhood.txt || exit
 	else
-		("${DENDROPY_SCRIPTS_PAR}/igarli_neighborhood.py" "${ntaxa}" 'added_taxa.tre' "${lastTreeFile}" > "${cmdFile}") 2>>time_igarli_neighborhood.txt || exit
+		(set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_neighborhood.py" "${ntaxa}" 'added_taxa.tre' "${lastTreeFile}" > "${cmdFile}") 2>>time_igarli_neighborhood.txt || exit
 	fi
 	if test -s "${cmdFile}"
 	then
@@ -73,7 +74,7 @@ done
 ################################################################################
 # select the trees to carry to the next round.
 
-(time "${DENDROPY_SCRIPTS_PAR}/igarli_select_trees.py" "${allTreeFiles}" > selected.tre) 2>time_igarli_select_trees.txt
+(set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_select_trees.py" ${allTreeFiles} > selected.tre) 2>time_igarli_select_trees.txt
 
 
 
