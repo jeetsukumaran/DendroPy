@@ -37,9 +37,12 @@ for line in dataf:
 assert fmt_cmd
 
 data_lines = []
+taxa = []
 for line in dataf:
     if len(line) > n_char:
         data_lines.append(line)
+        taxon = line.split()[0]
+        taxa.append(taxon)
     if len(data_lines) == n_taxa:
         break
 
@@ -62,7 +65,7 @@ for nt in range(starting_n_tax, n_taxa + 1):
     os.chdir(subdir)
     try:
         if nt == 4:
-            shutil.copy(tree_file, '.tmp.tre')
+            shutil.copy(tree_file, 'incrgarli.tre')
         else:
             df = open('data.nex', 'w')
             df.write("""#NEXUS
@@ -74,5 +77,22 @@ Matrix
 ;
 end;
 """ % (nt, n_char, fmt_cmd, "".join(data_lines[:nt])))
+
+            df.close()
+            translate_content = ",\n  ".join(["%d %s" % (n + 1, s) for n, s in enumerate(taxa[:nt])])
+            star_tree_content = """#NEXUS
+begin trees;
+    translate %s;
+tree o = [&U] (%s);
+end;
+""" % (translate_content, ",".join([str(1+i) for i in range(nt)]))
+            tf = open('.tmp.tre', 'w')
+            tf.write(star_tree_content)
+            tf.close()
+            script = os.path.join(script_dir, 'igarli_one_round.sh')
+            cmd = '%s ../incrSubdir%d/incrgarli.tre %d' % (script, nt - 1, nt)
+            rc = os.system(cmd)
+            if not rc == 0:
+                sys.exit("Exiting because %s failed with an exit code of %d" % (cmd, rc))
     finally:
         os.chdir(orig_dir)
