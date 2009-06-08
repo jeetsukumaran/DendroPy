@@ -33,10 +33,6 @@ from dendropy import get_logger
 _LOG = get_logger("incrGarl.py")
 
 
-# bail out if you are given multiple files, this means that you are in the second round
-#   of neighborhood searching
-if len(sys.argv) > 3: 
-    sys.exit(0)
 
 #garli_dna_model_pattern = r'\[!GarliModel  r ([.0-9]*) ([.0-9]*) ([.0-9]*) ([.0-9]*) ([.0-9]*) e ([.0-9]*) ([.0-9]*) ([.0-9]*) [.0-9]* a ([.0-9]*) p ([.0-9]*) \]'
 garli_dna_model_pattern = r'\[!GarliModel\s*(r [.0-9]* [.0-9]* [.0-9]* [.0-9]* [.0-9]* e [.0-9]* [.0-9]* [.0-9]* [.0-9]* a [.0-9]* p [.0-9]*)\s*\]'
@@ -58,6 +54,22 @@ class ParsedTree(object):
         self.model = model
         self.tree_string = tree_string
         self.tree = tree
+    def __cmp__(self, x):
+        return cmp(self.score, x.score)
+
+def add_nontriv_splits_attr(tm, all_taxa_bitmask):
+    all_spl = tm.tree.split_edges.keys()
+    non_triv = []
+    for i in all_spl:
+        if not is_trivial_split(i, all_taxa_bitmask):
+            if i & 1:
+                non_triv.append(i)
+            else:
+                non_triv.append((~i)&all_taxa_bitmask)
+    non_triv.sort()
+    tm.splits = tuple(non_triv)
+    tm.splits_set = set(non_triv)
+
     
 def read_add_tree_groups(f):
     first = True
@@ -105,11 +117,11 @@ def read_add_tree_groups(f):
 def get_norm_nontrivial_split_set(tree):
     norm_non_triv = set()
     for split in tree.split_edges.keys():
-        if not is_trivial_split(split, mask):
+        if not is_trivial_split(split, all_taxa_bitmask):
             if split & 1:
                 norm_non_triv.add(split)
             else:
-                comp_split = (~split) & mask
+                comp_split = (~split) & all_taxa_bitmask
                 norm_non_triv.add(comp_split)
     return norm_non_triv
 
@@ -262,9 +274,17 @@ def gather_neighborhood_commands(tree_list):
 
 n_tax = int(sys.argv[1])
 last_split = 1 << (n_tax - 1)
-mask = (1 << n_tax) - 1
+all_taxa_bitmask = (1 << n_tax) - 1
 
 add_trees_fn = sys.argv[2]
+if len(sys.argv) > 3:
+    nbhd_tree_groups = []
+    for nbhd_tree_fn in sys.argv[3:]
+        nbhd_tree_f = open(nbhd_tree_fn, 'rU')
+        nbhd_tree_groups.extend(read_add_tree_groups(add_trees_f))
+else:
+    nbhd_tree_groups = None
+    
 add_trees_f = open(add_trees_fn, 'rU')
 all_tree_groups = read_add_tree_groups(add_trees_f)
 
@@ -276,37 +296,194 @@ dataset = Dataset(taxa_blocks=taxa_blocks)
 score_diff_multiplier = 1.0
     
 commands = []
-for g in all_tree_groups:
-    for el in g:
-        newick_string = el.tree_string
-        newick_stream = StringIO(newick_string)
-        t = dataset.read_trees(newick_stream, format="newick")[0]
-        encode_splits(t)
-        el.tree = t
-    opt_tree_el = g[0]
-    opt_tree = opt_tree_el.tree
-    opt_tree_el.splits = get_norm_nontrivial_split_set(opt_tree)
-    unopt_score = None
-    to_preserve = [opt_tree_el]
-    for el in g[1:]:
-        other_tree = el.tree
-        el.splits = get_norm_nontrivial_split_set(other_tree)
-        if unopt_score is None and el.splits == opt_tree_el.splits:
-            unopt_score = el.score
-        else:
-            to_preserve.append(el)
-
-    if unopt_score is not None:
-        to_consider = to_preserve[1:]
-        to_preserve = to_preserve[:1]
-        min_score = unopt_score - score_diff_multiplier*(opt_tree_el.score - unopt_score)
-        for el in to_consider:
-            if el.score > min_score:
+if nbhd_tree_groups is None:
+    for g in all_tree_groups:
+        for el in g:
+            newick_string = el.tree_string
+            newick_stream = StringIO(newick_string)
+            t = dataset.read_trees(newick_stream, format="newick")[0]
+            encode_splits(t)
+            el.tree = t
+        opt_tree_el = g[0]
+        opt_tree = opt_tree_el.tree
+        opt_tree_el.splits = get_norm_nontrivial_split_set(opt_tree)
+        unopt_score = None
+        to_preserve = [opt_tree_el]
+        for el in g[1:]:
+            other_tree = el.tree
+            el.splits = get_norm_nontrivial_split_set(other_tree)
+            if unopt_score is None and el.splits == opt_tree_el.splits:
+                unopt_score = el.score
+            else:
                 to_preserve.append(el)
-    stc = gather_neighborhood_commands(to_preserve)
-    commands.extend(stc)
-write_unique_commands(sys.stdout, commands)
+    
+        if unopt_score is not None:
+            to_consider = to_preserve[1:]
+            to_preserve = to_preserve[:1]
+            min_score = unopt_score - score_diff_multiplier*(opt_tree_el.score - unopt_score)
+            for el in to_consider:
+                if el.score > min_score:
+                    to_preserve.append(el)
+        stc = gather_neighborhood_commands(to_preserve)
+        commands.extend(stc)
+    write_unique_commands(sys.stdout, commands)
+else:
+    # first we collect all of the ParsedTree objects into all_parsed_trees and we
+    #   call encode_splits so that we can look up split info on each tree
+    all_tree_groups.extend(nbhd_tree_groups)
+    all_parsed_trees = []
+    for g in all_tree_groups:
+        for el in g:
+            newick_string = el.tree_string
+            newick_stream = StringIO(newick_string)
+            t = dataset.read_trees(newick_stream, format="newick")[0]
+            encode_splits(t)
+            el.tree = t
+            all_parsed_trees.append(el)
+    assert(all_taxa_bitmask == all_parsed_trees[0].tree.seed_node.edge.clade_mask)
 
+    ########################################
+    # First, we make sure that there are not duplicate topologies
+    # Because we reverse sort, we'll be retaining the tree with the
+    #   best score
+    #####
+    all_parsed_trees.sort(reverse=True)
+    set_of_split_sets = set()
+    unique_topos = []
+    for tm in all_parsed_trees:
+        add_nontriv_splits_attr(tm, all_taxa_bitmask)
+        if tm.splits not in set_of_split_sets:
+            unique_topos.append(tm)
+            set_of_split_sets.add(tm.splits)
+    curr_results = unique_topos
+    set_of_split_sets.clear()
+    _LOG.info('There were %d unique result topologiesfor ntax = %d ' % (len(curr_results), self.curr_n_taxa))
+
+    ########################################
+    # the trees can be hefty, so lets eliminate unneeded references
+    #####
+    del unique_topos
+
+
+    ########################################
+    # Make sure to keep the current ML estimate in the next_round_trees list
+    #####
+    ml_est = curr_results[0]
+    curr_results.pop(0)
+    next_round_trees = [ml_est]
+    
+    ########################################
+    # Now we identify best trees that LACK the splits in the ML tree
+    #####
+    ml_split_dict = ml_est.tree.split_edges
+    unanimous_splits = []
+    best_disagreeing_index_set = set()
+    for split in ml_est.splits:
+        found = False
+        for n, tm in enumerate(curr_results):
+            if split not in tm.splits_set:
+                best_disagreeing_index_set.add(n)
+                found = True
+                break
+        if not found:
+            unanimous_splits.append(split)
+
+    ########################################
+    # now we add the trees that "must" be included because they do NOT have
+    #   a split that is in the current ML tree.
+    # We do this with a reverse sorted list so that we can pop them off of
+    #   the curr_results list without invalidating the list of indices to move
+    #####
+    bdis_list = list(best_disagreeing_index_set)
+    bdis_list.sort(reverse=True)
+    for tree_ind in bdis_list:
+        tm = curr_results.pop(tree_ind)
+        next_round_trees.append(tm)
+    
+    ########################################
+    # Now we have to augment our list of trees such that we have exemplar trees
+    #   that conflict with every split in the ML tree
+    # We'll do this by starting from a version of the ML tree that has been
+    #   collapsed so that it does not conflict with the split
+    #####
+    _LOG.info('There were %d unanimous splits in the curr_results for ntax = %d ' % (len(unanimous_splits), self.curr_n_taxa))
+    for split in unanimous_splits:
+        best_conflicting = self.find_best_conflicting(starting_tree=ml_est, split=split, dataset=culled)
+        for b in best_conflicting:
+            add_nontriv_splits_attr(b, all_taxa_bitmask)
+
+        best_conflicting.sort(reverse=True)
+        tm = best_conflicting[0]
+        next_round_trees.append(tm)
+        curr_results.extend(best_conflicting[1:])
+    
+    
+    ########################################
+    # To keep the remaining trees in next_round_trees diverse we will
+    #   try to add trees that maximize a score which is:
+    #       lambda*tree_split_rarity + lnL
+    #   where lambda is a tuning parameter and tree_split_rarity is:
+    #       n_tree_times_splits = num_trees_in_next_round_trees * num_splits_per_tree
+    #       split_occurrence = num_trees_in_next_round_trees_that_have_split
+    #       tree_split_rarity = n_tree_times_splits - SUM split_occurrence
+    #   in which the summation is taken over all splits in the tree
+    #####
+    max_len = self.max_trees_carried_over
+    num_trees_to_add = max_len - len(next_round_trees)
+    if num_trees_to_add > len(curr_results):
+        split_count = {}
+        n_tree_times_splits = 0
+        for tm in next_round_trees:
+            for k in tm.splits:
+                split_count[k] = split_count.get(k, 0) + 1
+                n_tree_times_splits += 1
+        for tm in curr_results:
+            tm.tree_split_rarity = n_tree_times_splits
+            for split in tm.splits:
+                tm.tree_split_rarity -= split_count.get(split, 0)
+        def split_diversity_cmp(x, y, lambda_mult=self.split_diversity_multiplier):
+            x.retention_score = lambda_mult*x.tree_split_rarity + x.score
+            y.retention_score = lambda_mult*y.tree_split_rarity + y.score
+            return cmp(x.retention_score, y.retention_score)
+        curr_results.sort(cmp=split_diversity_cmp, reverse=True)
+
+    ########################################
+    # We are now going to try to add elements (in order) from curr_results
+    #   until we run out of trees to add or we reach max_len
+    #####
+    n_added = 0
+    try:
+        set_of_split_sets.clear()
+        for tm in next_round_trees:
+            set_of_split_sets.add(tm.splits)
+
+        cri = iter(curr_results)
+        while n_added < num_trees_to_add:
+            tm = cri.next()
+            if tm.splits not in set_of_split_sets:
+                set_of_split_sets.add(tm.splits)
+                next_round_trees.append(tm)
+                n_added += 1
+    except StopIteration:
+        pass
+    _LOG.info('Added %d trees that were not "required" to guarantee that no splits were unanimous for ntax = %d' % (n_added, self.curr_n_taxa))
+
+    ########################################
+    # the trees can be hefty, so lets free unneeded memory
+    #####
+    del curr_results[:]
+    
+    ########################################
+    # Finally, lets get a decent score for each tree before moving to the next round
+    #   because the trees are big, we'll replace each element rather
+    #   than allowing a duplicate list to be created.
+    #####
+    for i in range(len(next_round_trees)):
+        next_round_trees[i] = self.score_tree(next_round_trees[i], culled, n, self.tree_scoring_stop_gen) 
+
+    _LOG.info('A total of %d trees were retained for ntax = %d lnL range from %f to %f' % (len(next_round_trees), self.curr_n_taxa, next_round_trees[0].score, next_round_trees[-1].score))
+
+    return next_round_trees
 sys.exit(0)
 
 

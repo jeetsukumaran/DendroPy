@@ -63,7 +63,7 @@ do
 		
 		echo '#NEXUS' > "${lastTreeFile}"
 		echo 'begin trees;' >> "${lastTreeFile}"
-		iGarli ../neighborhood_garli.conf < add_taxon_commands.txt >igarli_nbhd_${round}_err_out.txt 2>&1  || exit
+		iGarli ../neighborhood_garli${round}.conf < "${cmdFile}" >igarli_nbhd_${round}_err_out.txt 2>&1  || exit
 		grep '\[iGar' igarli_nbhd_${round}_err_out.txt >> "${lastTreeFile}"  || exit
 		echo 'end;' >> "${lastTreeFile}"
 		allTreeFiles="${allTreeFiles} ${lastTreeFile}"
