@@ -270,6 +270,49 @@ def gather_neighborhood_commands(tree_list):
         sc_tr_commands_list.append(sc_tr_commands)
     return sc_tr_commands_list
 
+def find_best_conflicting(self, starting_tree, split, dataset):
+    new_starting = TreeModel(model=starting_tree.model)
+    new_starting.tree = copy.deepcopy(starting_tree.tree)
+    root = new_starting.tree.seed_node
+    e = find_edge_from_split(root, split, root.edge.clade_mask)
+    if e:
+        e.collapse()
+
+    tmp_tree_filename = ".tmp.tre"
+    write_trees_to_filepath([new_starting], dataset, tmp_tree_filename)
+
+    try:
+
+        tmp_constrain_filename = ".tmpconstrain.tre"
+        f = open(tmp_constrain_filename, "w")
+        f.write("-%s\n" % split_as_string_rev(split, self.curr_n_taxa, '.', '*'))
+        f.close()
+
+        self.ofprefix = "negconst%d" % (split)
+        
+        # it seems a little odd to call this incompletetreefname rather 
+        #   than streefname but we'd like to trigger the interactive mode, 
+        #   and this is one way of doing that.
+        self.incompletetreefname = tmp_tree_filename
+        self.runmode = GARLI_ENUM.INCR_RUNMODE # NORMAL_RUNMODE
+        self.topoweight = self.negcon_topoweight
+        self.modweight = self.negcon_modweight
+        self.stopgen = self.negcon_stopgen
+        invoc = []
+        if new_starting.model:
+            invoc.append("model = %s" % str(new_starting.model))
+        invoc.append("run")
+        self.run(invoc, terminate_run=True)
+    finally:
+        self.restore_settings()
+
+    err_lines = self.stderrThread.lines_between_prompt()
+    r = self.parse_igarli_lines(err_lines, dataset)
+    r.sort(reverse=True)
+    for tm in r:
+        encode_splits(tm.tree)
+        assert split not in tm.tree.split_edges
+    return r
 
 
 n_tax = int(sys.argv[1])
@@ -279,9 +322,9 @@ all_taxa_bitmask = (1 << n_tax) - 1
 add_trees_fn = sys.argv[2]
 if len(sys.argv) > 3:
     nbhd_tree_groups = []
-    for nbhd_tree_fn in sys.argv[3:]
+    for nbhd_tree_fn in sys.argv[3:]:
         nbhd_tree_f = open(nbhd_tree_fn, 'rU')
-        nbhd_tree_groups.extend(read_add_tree_groups(add_trees_f))
+        nbhd_tree_groups.extend(read_add_tree_groups(nbhd_tree_f))
 else:
     nbhd_tree_groups = None
     
@@ -357,7 +400,7 @@ else:
             set_of_split_sets.add(tm.splits)
     curr_results = unique_topos
     set_of_split_sets.clear()
-    _LOG.info('There were %d unique result topologiesfor ntax = %d ' % (len(curr_results), self.curr_n_taxa))
+    _LOG.info('There were %d unique result topologies for ntax = %d ' % (len(curr_results), n_tax))
 
     ########################################
     # the trees can be hefty, so lets eliminate unneeded references
@@ -388,18 +431,10 @@ else:
         if not found:
             unanimous_splits.append(split)
 
-    ########################################
-    # now we add the trees that "must" be included because they do NOT have
-    #   a split that is in the current ML tree.
-    # We do this with a reverse sorted list so that we can pop them off of
-    #   the curr_results list without invalidating the list of indices to move
-    #####
-    bdis_list = list(best_disagreeing_index_set)
-    bdis_list.sort(reverse=True)
-    for tree_ind in bdis_list:
-        tm = curr_results.pop(tree_ind)
-        next_round_trees.append(tm)
-    
+    if not unanimous_splits:
+        # no more neighborhood searches are needed - exit without writing anything
+        _LOG.debug("Every tree in the ML estimate is contradicted by at least one tree")
+        sys.exit(0)
     ########################################
     # Now we have to augment our list of trees such that we have exemplar trees
     #   that conflict with every split in the ML tree
@@ -416,83 +451,3 @@ else:
         tm = best_conflicting[0]
         next_round_trees.append(tm)
         curr_results.extend(best_conflicting[1:])
-    
-    
-    ########################################
-    # To keep the remaining trees in next_round_trees diverse we will
-    #   try to add trees that maximize a score which is:
-    #       lambda*tree_split_rarity + lnL
-    #   where lambda is a tuning parameter and tree_split_rarity is:
-    #       n_tree_times_splits = num_trees_in_next_round_trees * num_splits_per_tree
-    #       split_occurrence = num_trees_in_next_round_trees_that_have_split
-    #       tree_split_rarity = n_tree_times_splits - SUM split_occurrence
-    #   in which the summation is taken over all splits in the tree
-    #####
-    max_len = self.max_trees_carried_over
-    num_trees_to_add = max_len - len(next_round_trees)
-    if num_trees_to_add > len(curr_results):
-        split_count = {}
-        n_tree_times_splits = 0
-        for tm in next_round_trees:
-            for k in tm.splits:
-                split_count[k] = split_count.get(k, 0) + 1
-                n_tree_times_splits += 1
-        for tm in curr_results:
-            tm.tree_split_rarity = n_tree_times_splits
-            for split in tm.splits:
-                tm.tree_split_rarity -= split_count.get(split, 0)
-        def split_diversity_cmp(x, y, lambda_mult=self.split_diversity_multiplier):
-            x.retention_score = lambda_mult*x.tree_split_rarity + x.score
-            y.retention_score = lambda_mult*y.tree_split_rarity + y.score
-            return cmp(x.retention_score, y.retention_score)
-        curr_results.sort(cmp=split_diversity_cmp, reverse=True)
-
-    ########################################
-    # We are now going to try to add elements (in order) from curr_results
-    #   until we run out of trees to add or we reach max_len
-    #####
-    n_added = 0
-    try:
-        set_of_split_sets.clear()
-        for tm in next_round_trees:
-            set_of_split_sets.add(tm.splits)
-
-        cri = iter(curr_results)
-        while n_added < num_trees_to_add:
-            tm = cri.next()
-            if tm.splits not in set_of_split_sets:
-                set_of_split_sets.add(tm.splits)
-                next_round_trees.append(tm)
-                n_added += 1
-    except StopIteration:
-        pass
-    _LOG.info('Added %d trees that were not "required" to guarantee that no splits were unanimous for ntax = %d' % (n_added, self.curr_n_taxa))
-
-    ########################################
-    # the trees can be hefty, so lets free unneeded memory
-    #####
-    del curr_results[:]
-    
-    ########################################
-    # Finally, lets get a decent score for each tree before moving to the next round
-    #   because the trees are big, we'll replace each element rather
-    #   than allowing a duplicate list to be created.
-    #####
-    for i in range(len(next_round_trees)):
-        next_round_trees[i] = self.score_tree(next_round_trees[i], culled, n, self.tree_scoring_stop_gen) 
-
-    _LOG.info('A total of %d trees were retained for ntax = %d lnL range from %f to %f' % (len(next_round_trees), self.curr_n_taxa, next_round_trees[0].score, next_round_trees[-1].score))
-
-    return next_round_trees
-sys.exit(0)
-
-
-"""     sys.stdout.write('tree = %s\n' % i)
-        if first: # this is a way to make 
-            sys.stdout.write('treeNum = 1\n')
-            first = False
-        sys.stdout.write('run\n')
-    elif False:
-        _LOG.debug("nomatch: %s\n" %line)
-sys.exit(0)
-"""
