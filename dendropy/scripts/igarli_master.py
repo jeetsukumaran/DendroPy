@@ -3,6 +3,12 @@ import sys
 import shutil
 import os
 import re
+
+from dendropy import get_logger
+_LOG = get_logger("igarli_master.py")
+
+
+
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 if len(sys.argv) < 3:
     sys.exit("Expecting a data file (NEXUS) and a tree file as arguments")
@@ -63,6 +69,7 @@ for nt in range(starting_n_tax, n_taxa + 1):
         sys.exit("the directory %s does not exists. Exiting..." % prev_dir)
     os.mkdir(subdir)
     os.chdir(subdir)
+    _LOG.debug("Changing directory into %s" % subdir)
     try:
         if nt == 4:
             shutil.copy(tree_file, 'incrgarli.tre')
@@ -91,6 +98,7 @@ end;
             tf.close()
             script = os.path.join(script_dir, 'igarli_one_round.sh')
             cmd = '%s ../incrSubdir%d/incrgarli.tre %d' % (script, nt - 1, nt)
+            _LOG.debug("Invoking:\n  %s\nfrom %s" % (cmd, os.path.abspath(os.curdir)))
             rc = os.system(cmd)
             if not rc == 0:
                 sys.exit("Exiting because %s failed with an exit code of %d" % (cmd, rc))

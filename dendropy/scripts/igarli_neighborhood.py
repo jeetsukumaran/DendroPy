@@ -30,7 +30,7 @@ from dendropy.datasets import Dataset
 from dendropy.splits import encode_splits, is_trivial_split, find_edge_from_split, SplitDistribution
 from dendropy.treesum import TreeSummarizer
 from dendropy import get_logger
-_LOG = get_logger("incrGarl.py")
+_LOG = get_logger("igarli_neighborhood.py")
 
 
 

@@ -20,22 +20,34 @@ then
 fi
 
 
-if true
-then
-
 ################################################################################
 # add the taxa to the trees from the previous round
 echo 'keep = 5' > add_taxon_commands.txt 
-(set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_add_tree.py" ${prevRound} >> add_taxon_commands.txt) 2>time_igarli_add_tree.txt || exit
+(set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_add_tree.py" ${prevRound} >> add_taxon_commands.txt) 2>time_igarli_add_tree.txt 
+if ! test $? -eq 0
+then
+	cat time_igarli_add_tree.txt 
+	exit 1
+fi
 echo 'quit' >> add_taxon_commands.txt 
 
+iGarli ../add_garli.conf < add_taxon_commands.txt >igarli_add_err_out.txt 2>&1
+if ! test $? -eq 0
+then
+	cat igarli_add_err_out.txt 
+	exit 1
+fi
+
+grep '\[iGar' igarli_add_err_out.txt > newick_added_taxa.tre
+if ! test -s newick_added_taxa.tre
+then
+	echo 'No trees produced by iGarli ../add_garli.conf < add_taxon_commands.txt'
+	exit 1
+fi
 echo '#NEXUS' > added_taxa.tre
 echo 'begin trees;' >> added_taxa.tre
-iGarli ../add_garli.conf < add_taxon_commands.txt >igarli_add_err_out.txt 2>&1  || exit
-grep '\[iGar' igarli_add_err_out.txt >>added_taxa.tre
+cat newick_added_taxa.tre >> added_taxa.tre
 echo 'end;' >> added_taxa.tre
-
-fi
 
 ################################################################################
 # augment the collection of trees
@@ -50,10 +62,17 @@ do
 	cmdFile="neighborhood_command${round}.txt"
 	if test $round -eq 0
 	then
-		(set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_neighborhood.py" "${ntaxa}" 'added_taxa.tre' > "${cmdFile}") 2>time_igarli_neighborhood.txt || exit
+		(set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_neighborhood.py" "${ntaxa}" 'added_taxa.tre' > "${cmdFile}") 2>time_igarli_neighborhood.txt 
 	else
-		(set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_neighborhood.py" "${ntaxa}" 'added_taxa.tre' "${lastTreeFile}" > "${cmdFile}") 2>>time_igarli_neighborhood.txt || exit
+		(set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_neighborhood.py" "${ntaxa}" 'added_taxa.tre' "${lastTreeFile}" > "${cmdFile}") 2>>time_igarli_neighborhood.txt
 	fi
+	if ! test $? -eq 0
+	then
+		cat time_igarli_neighborhood.txt 
+		exit 1
+	fi
+	
+
 	if test -s "${cmdFile}"
 	then
 		echo 'quit' >> "${cmdFile}"
@@ -66,7 +85,13 @@ do
 		fi
 		echo '#NEXUS' > "${lastTreeFile}"
 		echo 'begin trees;' >> "${lastTreeFile}"
-		iGarli ../neighborhood_garli${round}.conf < "${cmdFile}" >igarli_nbhd_${round}_err_out.txt 2>&1  || exit
+		iGarli ../neighborhood_garli${round}.conf < "${cmdFile}" >igarli_nbhd_${round}_err_out.txt 2>&1
+		if ! test $? -eq 0
+		then
+			cat igarli_nbhd_${round}_err_out.txt
+			exit 1
+		fi
+	
 		grep '\[iGar' igarli_nbhd_${round}_err_out.txt >> "${lastTreeFile}"  || exit
 		echo 'end;' >> "${lastTreeFile}"
 		allTreeFiles="${allTreeFiles} ${lastTreeFile}"
@@ -77,7 +102,13 @@ done
 ################################################################################
 # select the trees to carry to the next round.
 
-(set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_select_trees.py" "${ntaxa}" ${allTreeFiles} > selected.tre) 2>time_igarli_select_trees.txt || exit
+(set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_select_trees.py" "${ntaxa}" ${allTreeFiles} > selected.tre) 2>time_igarli_select_trees.txt
+if ! test $? -eq 0
+then
+	cat time_igarli_select_trees.txt
+	exit 1
+fi
+
 
 
 
@@ -86,10 +117,16 @@ done
 #	lengths and gathers the site likeilhoods for the RELL
 ########
 echo 'sitelike = 1' > score_commands.txt
-("${DENDROPY_SCRIPTS_PAR}/igarli_add_tree.py" selected.tre >> score_commands.txt) 2>>time_igarli_score_final_tree.txt || exit
+("${DENDROPY_SCRIPTS_PAR}/igarli_add_tree.py" selected.tre >> score_commands.txt) 2>>time_igarli_score_final_tree.txt
 echo 'quit' >> score_commands.txt
 echo '#NEXUS' > incrgarli.tre
 echo 'begin trees;' >> incrgarli.tre
-iGarli ../score_garli.conf < score_commands.txt >igarli_score_err_out.txt 2>&1 || exit
+iGarli ../score_garli.conf < score_commands.txt >igarli_score_err_out.txt 2>&1
+if ! test $? -eq 0
+then
+	cat time_igarli_score_final_tree.txt
+	exit 1
+fi
+
 grep '\[iGar' igarli_score_err_out.txt >>incrgarli.tre  || exit
 echo 'end;' >> incrgarli.tre
