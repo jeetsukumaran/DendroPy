@@ -57,8 +57,8 @@ class ParsedTree(object):
     def __cmp__(self, x):
         return cmp(self.score, x.score)
 
-def add_nontriv_splits_attr(tm, all_taxa_bitmask):
-    all_spl = tm.tree.split_edges.keys()
+def add_nontriv_splits_attr(tree, all_taxa_bitmask):
+    all_spl = tree.split_edges.keys()
     non_triv = []
     for i in all_spl:
         if not is_trivial_split(i, all_taxa_bitmask):
@@ -67,8 +67,8 @@ def add_nontriv_splits_attr(tm, all_taxa_bitmask):
             else:
                 non_triv.append((~i)&all_taxa_bitmask)
     non_triv.sort()
-    tm.splits = tuple(non_triv)
-    tm.splits_set = set(non_triv)
+    tree.splits = tuple(non_triv)
+    tree.splits_set = set(non_triv)
 
     
 def read_add_tree_groups(f):
@@ -118,18 +118,11 @@ def read_add_tree_groups(f):
     return all_tree_groups
 
 def get_norm_nontrivial_split_set(tree):
-    norm_non_triv = set()
-    for split in tree.split_edges.keys():
-        if not is_trivial_split(split, all_taxa_bitmask):
-            if split & 1:
-                norm_non_triv.add(split)
-            else:
-                comp_split = (~split) & all_taxa_bitmask
-                norm_non_triv.add(comp_split)
-    return norm_non_triv
+    add_nontriv_splits_attr(tree, all_taxa_bitmask)
+    return tree.splits_set
 
 def connected_at(dist_mat, max_dist):
-    _LOG.debug("dist_mat =\n%s\n" % "\n".join([str(row) for row in dist_mat]))
+    _LOG.debug("dist_mat =%s\n" % "\n".join([str(row) for row in dist_mat]))
 
     dim = len(dist_mat)
     if dim == 0:
@@ -182,21 +175,24 @@ def write_unique_commands(stream, sc_tr_commands_list):
         splits = stc_el.constr_splits
         score = stc_el.score
         if splits is not None:
-            for m, other in enumerate(sc_tr_commands_list):
-                _LOG.debug("n=%d, m=%d, splits = %s, other.constr_splits = %s" % (n, m, splits, other.constr_splits))
-                if m > n or ((m < n) and (to_write[m] is not None)):
+            for other_ind, other in enumerate(sc_tr_commands_list):
+                if other_ind == n:
+                    continue
+                _LOG.debug("n=%d, other_ind=%d, stc_el(splits = %s, score=%f), other(constr_splits = %s, score=%f)" % (n, other_ind, splits, score, other.constr_splits, other.score))
+                if other_ind > n or ((other_ind < n) and (to_write[other_ind] is not None)):
                     osplits = other.constr_splits
                     #############################################################
                     # the commented out conditional reduces the number of searches, but may not generate enough diverse sets of trees
                     # if (osplits is None or len(osplits.difference(splits)) == 0) and (splits != osplits or score < other.score):
                     #############################################################
                     if osplits == splits and score < other.score:
+                        _LOG
                         needed = False
                         if score > other.score:
                             other.score = score
                             other.commands[0] = stc_el.commands[0]
                         break
-        if needed or True:
+        if needed:
             to_write.append(stc_el.commands)
         else:
             to_write.append(None)
@@ -268,7 +264,8 @@ def gather_neighborhood_commands(tree_list):
             e.head_node.collapse_neighborhood(edge_dist)
             encode_splits(c)
             sc_tr_commands.constr_splits = get_norm_nontrivial_split_set(c)
-            cmd_list.append("posconstraint = %s\n" % c.compose_newick(edge_lengths=False))
+            if len(sc_tr_commands.constr_splits) > 0:
+                cmd_list.append("posconstraint = %s\n" % c.compose_newick(edge_lengths=False))
         cmd_list.append("run\n")
         sc_tr_commands_list.append(sc_tr_commands)
     return sc_tr_commands_list
@@ -351,9 +348,11 @@ if nbhd_tree_groups is None:
             t = dataset.read_trees(newick_stream, format="newick")[0]
             encode_splits(t)
             el.tree = t
+        _LOG.debug("len(g) = %d" % len(g))
         opt_tree_el = g[0]
         opt_tree = opt_tree_el.tree
         opt_tree_el.splits = get_norm_nontrivial_split_set(opt_tree)
+        _LOG.debug("opt_tree_el.splits = %s" % str(opt_tree_el.splits))
         unopt_score = None
         to_preserve = [opt_tree_el]
         for el in g[1:]:
@@ -398,10 +397,11 @@ else:
     set_of_split_sets = set()
     unique_topos = []
     for tm in all_parsed_trees:
-        add_nontriv_splits_attr(tm, all_taxa_bitmask)
-        if tm.splits not in set_of_split_sets:
+        add_nontriv_splits_attr(tm.tree, all_taxa_bitmask)
+        tm.splits, tm.split_set = tm.tree.splits, tm.tree.split_set
+        if tm.tree.splits not in set_of_split_sets:
             unique_topos.append(tm)
-            set_of_split_sets.add(tm.splits)
+            set_of_split_sets.add(tm.tree.splits)
     curr_results = unique_topos
     set_of_split_sets.clear()
     _LOG.info('There were %d unique result topologies for ntax = %d ' % (len(curr_results), n_tax))
@@ -449,7 +449,8 @@ else:
     for split in unanimous_splits:
         best_conflicting = self.find_best_conflicting(starting_tree=ml_est, split=split, dataset=culled)
         for b in best_conflicting:
-            add_nontriv_splits_attr(b, all_taxa_bitmask)
+            add_nontriv_splits_attr(b.tree, all_taxa_bitmask)
+            b.splits, b.split_set = tm.tree.splits, tm.tree.split_set
 
         best_conflicting.sort(reverse=True)
         tm = best_conflicting[0]
