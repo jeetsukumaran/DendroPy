@@ -57,10 +57,13 @@ do
 	if test -s "${cmdFile}"
 	then
 		echo 'quit' >> "${cmdFile}"
-		
+		prevRound=${round}
 		round=`expr $round + 1`
 		lastTreeFile="neighborhood${round}.tre"
-		
+		if ! test -f ../neighborhood_garli${round}.conf
+		then
+			sed -e "s/neighbhood1/neighbhood${round}/" ../neighborhood_garli1.conf > ../neighborhood_garli${round}.conf
+		fi
 		echo '#NEXUS' > "${lastTreeFile}"
 		echo 'begin trees;' >> "${lastTreeFile}"
 		iGarli ../neighborhood_garli${round}.conf < "${cmdFile}" >igarli_nbhd_${round}_err_out.txt 2>&1  || exit

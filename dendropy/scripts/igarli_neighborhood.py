@@ -80,6 +80,7 @@ def read_add_tree_groups(f):
     #   the same incomplete tree (the other trees will come from the suboptimal
     #   trees that are spit out without any model info because the hook
     #   in the Finish...Stepwise...() function does not expose the model)
+    curr_model = None
     for line in f:
         m = garli_tree_model_pat.match(line)
         if m:
@@ -105,6 +106,8 @@ def read_add_tree_groups(f):
             if has_model:
                 curr_model =  g[2]
             curr_tree_group.append(ParsedTree(score=score, model=None, tree_string=g[-1]))
+        else:
+            _LOG.debug("No match: %s" % line)
     
     
     if curr_model:
@@ -340,6 +343,7 @@ score_diff_multiplier = 1.0
     
 commands = []
 if nbhd_tree_groups is None:
+    _LOG.debug("Invocation of igarli_neighborhood.py with only one tree file -- need to set up initial neighborhood searches") 
     for g in all_tree_groups:
         for el in g:
             newick_string = el.tree_string
