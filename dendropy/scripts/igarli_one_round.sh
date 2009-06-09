@@ -77,7 +77,7 @@ done
 ################################################################################
 # select the trees to carry to the next round.
 
-(set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_select_trees.py" ${allTreeFiles} > selected.tre) 2>time_igarli_select_trees.txt
+(set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_select_trees.py" "${ntaxa}" ${allTreeFiles} > selected.tre) 2>time_igarli_select_trees.txt || exit
 
 
 
@@ -86,7 +86,7 @@ done
 #	lengths and gathers the site likeilhoods for the RELL
 ########
 echo 'sitelike = 1' > score_commands.txt
-("${DENDROPY_SCRIPTS_PAR}/igarli_add_tree.py" ${prevRound} >> score_commands.txt) 2>>time_igarli_add_tree.txt || exit
+("${DENDROPY_SCRIPTS_PAR}/igarli_add_tree.py" selected.tre >> score_commands.txt) 2>>time_igarli_score_final_tree.txt || exit
 echo 'quit' >> score_commands.txt
 echo '#NEXUS' > incrgarli.tre
 echo 'begin trees;' >> incrgarli.tre

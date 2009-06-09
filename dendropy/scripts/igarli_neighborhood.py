@@ -186,7 +186,6 @@ def write_unique_commands(stream, sc_tr_commands_list):
                     # if (osplits is None or len(osplits.difference(splits)) == 0) and (splits != osplits or score < other.score):
                     #############################################################
                     if osplits == splits and score < other.score:
-                        _LOG
                         needed = False
                         if score > other.score:
                             other.score = score
