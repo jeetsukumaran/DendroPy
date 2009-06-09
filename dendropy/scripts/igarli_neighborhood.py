@@ -68,7 +68,7 @@ def add_nontriv_splits_attr(tree, all_taxa_bitmask):
                 non_triv.append((~i)&all_taxa_bitmask)
     non_triv.sort()
     tree.splits = tuple(non_triv)
-    tree.splits_set = set(non_triv)
+    tree.split_set = set(non_triv)
 
     
 def read_add_tree_groups(f):
@@ -119,7 +119,7 @@ def read_add_tree_groups(f):
 
 def get_norm_nontrivial_split_set(tree):
     add_nontriv_splits_attr(tree, all_taxa_bitmask)
-    return tree.splits_set
+    return tree.split_set
 
 def connected_at(dist_mat, max_dist):
     _LOG.debug("dist_mat =%s\n" % "\n".join([str(row) for row in dist_mat]))
@@ -428,7 +428,7 @@ else:
     for split in ml_est.splits:
         found = False
         for n, tm in enumerate(curr_results):
-            if split not in tm.splits_set:
+            if split not in tm.split_set:
                 best_disagreeing_index_set.add(n)
                 found = True
                 break
