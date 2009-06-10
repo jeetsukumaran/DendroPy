@@ -32,15 +32,16 @@ fi
 
 ################################################################################
 # add the taxa to the trees from the previous round
+echo "${DENDROPY_SCRIPTS_PAR}/igarli_boot_add_tree.py" "${prevRound}" "${wtsFile}"
 (set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_boot_add_tree.py" "${prevRound}" "${wtsFile}" >> boot_add_taxon_commands.txt) 2>time_igarli_boot_add_tree.txt 
 if ! test $? -eq 0
 then
 	cat time_igarli_add_tree.txt 
 	exit 1
 fi
-echo 'quit' >> add_taxon_commands.txt 
+echo 'quit' >> boot_add_taxon_commands.txt 
 
-iGarli ../boot_add_garli.conf < add_taxon_commands.txt >igarli_boot_add_err_out.txt 2>&1
+iGarli ../boot_add_garli.conf < boot_add_taxon_commands.txt >igarli_boot_add_err_out.txt 2>&1
 if ! test $? -eq 0
 then
 	cat igarli_boot_add_err_out.txt 

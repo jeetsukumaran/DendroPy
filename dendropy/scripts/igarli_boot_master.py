@@ -80,7 +80,7 @@ for nt in range(starting_n_tax, n_taxa + 1):
         
             tree_file = open('incrgarli.tre', 'w')
             for i in xrange(num_bootstrap_reps + 1):
-                tree_file.write("tree degenerate = (1,2,3) ;\n")
+                tree_file.write("tree degenerate = [&U] (1,2,3) ;\n")
             tree_file.close()
 
             wts_filename = "bootstrap_weights.txt"

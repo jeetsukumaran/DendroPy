@@ -37,7 +37,7 @@ garli_after_name_tree_pattern = r'\s*=\s*\[.*\]\s*(\(.*\))\s*;'
 tree_prefix = r''
 garli_tree_model_pat = re.compile(tree_prefix + garli_after_name_tm_pattern)
 garli_tree_pat = re.compile(tree_prefix + garli_after_name_tree_pattern)
-sys.stderr.write("garli_tree_pat = %s\n" % tree_prefix + garli_after_name_tree_pattern)
+#sys.stderr.write("garli_tree_pat = %s\n" % tree_prefix + garli_after_name_tree_pattern)
 
 first = True
 bootrep = -1
@@ -60,7 +60,8 @@ for line in f:
 		if bootrep >= 0:
 			sys.stdout.write('setcharintwts = %s' % wt_lines[bootrep])
 		sys.stdout.write('run\n')
-	elif False:
+		bootrep += 1
+	elif True:
 		sys.stderr.write("nomatch: %s\n" %line)
 sys.exit(0)
 
