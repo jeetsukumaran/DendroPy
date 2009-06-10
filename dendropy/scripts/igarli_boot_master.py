@@ -14,8 +14,8 @@ num_bootstrap_reps = 1000
 
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-if len(sys.argv) < 3:
-    sys.exit("Expecting a data file (NEXUS) and a tree file as arguments")
+if len(sys.argv) < 2:
+    sys.exit("Expecting a data file (NEXUS) as an argument")
 dataf = open(sys.argv[1], 'rU')
 
 dim_pat = re.compile(r'\s*dimensions\s*ntax\s*=\s*(\d+)\s*nchar\s*=\s*(\d+)', re.I)
@@ -56,16 +56,13 @@ for line in dataf:
     if len(data_lines) == n_taxa:
         break
 
-tree_file = os.path.abspath(sys.argv[2])
-
-n_char = 
 try:
-    starting_n_tax = int(sys.argv[3])
+    starting_n_tax = int(sys.argv[2])
 except IndexError:
     starting_n_tax = 3
 
-	
-	
+    
+    
 
 orig_dir = os.path.abspath(os.curdir)
 for nt in range(starting_n_tax, n_taxa + 1):
@@ -80,24 +77,24 @@ for nt in range(starting_n_tax, n_taxa + 1):
     _LOG.debug("Changing directory into %s" % subdir)
     try:
         if nt == 3:
-		
-            starting_trees = open('incrgarli.tre', 'w')
+        
+            tree_file = open('incrgarli.tre', 'w')
             for i in xrange(num_bootstrap_reps + 1):
-            	starting_trees.write("tree degenerate = (1,2,3) ;\n")
-            starting_trees.close()
+                tree_file.write("tree degenerate = (1,2,3) ;\n")
+            tree_file.close()
 
             wts_filename = "bootstrap_weights.txt"
-            
-			if not os.path.exists(wts_filename):
-				wts_file = open(wts_filename, 'w')
-				nc_minus_one = n_char - 1
-				for i in num_bootstrap_reps:
-					wts = [0]*n_char
-					for j in xrange(n_char):
-						ind = rng.randint(0, nc_minus_one)
-						wts[ind] += 1
-					wts_file.write("%s\n" % " ".join([str(k) for k in wts]))
-				wts_file.close()
+            rng = random.Random()
+            if not os.path.exists(wts_filename):
+                wts_file = open(wts_filename, 'w')
+                nc_minus_one = n_char - 1
+                for i in xrange(num_bootstrap_reps):
+                    wts = [0]*n_char
+                    for j in xrange(n_char):
+                        ind = rng.randint(0, nc_minus_one)
+                        wts[ind] += 1
+                    wts_file.write("%s\n" % " ".join([str(k) for k in wts]))
+                wts_file.close()
         else:
             df = open('data.nex', 'w')
             df.write("""#NEXUS
