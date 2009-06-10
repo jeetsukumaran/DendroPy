@@ -62,7 +62,7 @@ n_char =
 try:
     starting_n_tax = int(sys.argv[3])
 except IndexError:
-    starting_n_tax = 4
+    starting_n_tax = 3
 
 	
 	
@@ -79,8 +79,13 @@ for nt in range(starting_n_tax, n_taxa + 1):
     os.chdir(subdir)
     _LOG.debug("Changing directory into %s" % subdir)
     try:
-        if nt == 4:
-            shutil.copy(tree_file, 'incrgarli.tre')
+        if nt == 3:
+		
+            starting_trees = open('incrgarli.tre', 'w')
+            for i in xrange(num_bootstrap_reps + 1):
+            	starting_trees.write("tree degenerate = (1,2,3) ;\n")
+            starting_trees.close()
+
             wts_filename = "bootstrap_weights.txt"
             
 			if not os.path.exists(wts_filename):
@@ -117,7 +122,7 @@ end;
             tf.write(star_tree_content)
             tf.close()
             script = os.path.join(script_dir, 'igarli_boot_one_round.sh')
-            cmd = '%s ../incrBootSubdir%d/incrgarli.tre ../incrBootSubdir4/%s %d' % (script, nt - 1, wts_filename, nt)
+            cmd = '%s ../incrBootSubdir%d/incrgarli.tre ../incrBootSubdir3/%s %d' % (script, nt - 1, wts_filename, nt)
             _LOG.debug("Invoking:\n  %s\nfrom %s" % (cmd, os.path.abspath(os.curdir)))
             rc = os.system(cmd)
             if not rc == 0:
