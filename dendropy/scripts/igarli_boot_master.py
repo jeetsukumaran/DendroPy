@@ -10,7 +10,7 @@ _LOG = get_logger("igarli_master.py")
 
 
 
-num_bootstrap_reps = 1000
+num_bootstrap_reps = 100
 
 
 script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
