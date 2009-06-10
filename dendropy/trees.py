@@ -663,7 +663,6 @@ class Node(taxa.TaxonLinked):
         """
         self._edge.length = v
         
-
     edge = property(_get_edge, _set_edge)
     edge_length = property(_get_edge_length, _set_edge_length)
         

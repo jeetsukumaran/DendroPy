@@ -38,7 +38,6 @@ import subprocess
 script_names = ['cattrees.py',
                 'extract-coalescent-frames.py',
                 'coal-goodness-of-fit.py',
-                'incrGarl.py',
                 'long_branch_symmdiff.py',
                 'rtreeoutgroup.py', 
 		'strict_consensus_merge.py',

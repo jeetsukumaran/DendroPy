@@ -83,6 +83,34 @@ def _average_number_of_pairwise_differences(char_vectors, state_alphabet, ignore
     sum_diff, mean_diff, sq_diff = _count_differences(char_vectors, state_alphabet, ignore_uncertain)    
     return sum_diff / distributions.binomial_coefficient(len(char_vectors), 2)
     
+def _num_segregating_sites(char_vectors, state_alphabet, ignore_uncertain=True):
+    """
+    Returns the raw number of segregating sites (polymorphic sites).
+    """
+    s = 0
+    for vidx, i in enumerate(char_vectors[:-1]):
+        for j in char_vectors[vidx+1:]:
+            if len(i) != len(j):
+                raise Exception("sequences of unequal length")
+            for cidx, c in enumerate(i):
+                c1 = c
+                c2 = j[cidx]
+                if (not ignore_uncertain) \
+                    or (c1.value is not state_alphabet.gap \
+                        and c2.value is not state_alphabet.gap \
+                        and len(c1.value.fundamental_ids) == 1 \
+                        and len(c2.value.fundamental_ids) == 1):
+                    if c1.value is not c2.value:
+                        s += 1
+                        continue
+    return s
+    
+def num_segregating_sites(char_block, ignore_uncertain=True):
+    """
+    Returns the raw number of segregating sites (polymorphic sites).
+    """ 
+    return _num_segregating_sites(char_block.vectors(), char_block.default_state_alphabet, ignore_uncertain)
+        
 def average_number_of_pairwise_differences(char_block, ignore_uncertain=True):
     """
     Returns $k$, calculated for a character block.
@@ -146,7 +174,7 @@ def _variance_of_pairwise_differences_between_populations(char_x, char_y, mean_d
 
 def wakeleys_Psi(char_block, taxon_groups, ignore_uncertain=True):
     """         
-    Returns Wakeley's Sigma, as described in:
+    Returns Wakeley's psi, as described in:
     
     Wakeley, J. 1996. Distinguishing migration from isolation using the 
     variance of pairwise differences. Theoretical Population Biology 49: 
@@ -177,5 +205,78 @@ def wakeleys_Psi(char_block, taxon_groups, ignore_uncertain=True):
     ax = float(n_x * (n_x - 1))
     ay = float(n_y * (n_y - 1))
     k = average_number_of_pairwise_differences(char_block, ignore_uncertain)
-    sigma = (float(1)/(a)) * ( ax * (math.sqrt(s2_x)/d_x) + ay * (math.sqrt(s2_y)/d_y) + (2 * n_x * n_y * math.sqrt(s2_xy)/k))
-    return sigma
+    psi = (float(1)/(a)) * ( ax * (math.sqrt(s2_x)/d_x) + ay * (math.sqrt(s2_y)/d_y) + (2 * n_x * n_y * math.sqrt(s2_xy)/k))
+    return psi
+    
+def summarize(char_block, taxon_groups, ignore_uncertain=True):
+    """
+    Returns a summary of a set of sequences that can be partitioned into
+    the list of lists of taxa given by `taxon_groups`.
+    """
+    char_x = []
+    char_y = []
+    state_alphabet = char_block.default_state_alphabet
+    for t in char_block.taxa_block:
+        if t in taxon_groups[0]:
+            char_x.append(char_block[t])
+        else:
+            char_y.append(char_block[t])
+            
+    diffs_x, mean_diffs_x, sq_diff_x = _count_differences(char_x, state_alphabet, ignore_uncertain)            
+    diffs_y, mean_diffs_y, sq_diff_y = _count_differences(char_y, state_alphabet, ignore_uncertain)
+    d_x = diffs_x / distributions.binomial_coefficient(len(char_x), 2)
+    d_y = diffs_y / distributions.binomial_coefficient(len(char_y), 2)
+    d_xy = _average_number_of_pairwise_differences_between_populations(char_x, char_y, state_alphabet, ignore_uncertain)
+    s2_x = (float(sq_diff_x) / distributions.binomial_coefficient(len(char_x), 2) ) - (d_x ** 2)
+    s2_y = (float(sq_diff_y) / distributions.binomial_coefficient(len(char_y), 2) ) - (d_y ** 2)
+    s2_xy = _variance_of_pairwise_differences_between_populations(char_x, char_y, d_xy, state_alphabet, ignore_uncertain)
+    
+    n = len(char_block)
+    n_x = float(len(char_x))
+    n_y = float(len(char_y))
+    a = float(n * (n-1))
+    ax = float(n_x * (n_x - 1))
+    ay = float(n_y * (n_y - 1))
+    k = average_number_of_pairwise_differences(char_block, ignore_uncertain)
+    
+    summary = {}
+    
+    # Hickerson 2006: pi #
+    summary["k"] = k
+    
+    # Hickerson 2006: pi_b #
+    summary["k_b"] = d_xy
+      
+    # Hickerson 2006: pi_w #
+    summary["k_w"] = d_x + d_y
+    
+    # Hickerson 2006: pi_net #
+    summary["k_net"] = d_xy - (d_x + d_y)
+    
+    # Hickerson 2006: S #
+    summary["S"] = num_segregating_sites(char_block, ignore_uncertain)
+    
+    # Hickerson 2006: theta #
+    a1 = sum([1.0/i for i in range(1, len(char_block))])
+    summary["theta"] = float(summary["S"]) / a1
+    
+    # Wakeley 1996 #
+    summary["psi"] = (float(1)/(a)) * ( ax * (math.sqrt(s2_x)/d_x) + ay * (math.sqrt(s2_y)/d_y) + (2 * n_x * n_y * math.sqrt(s2_xy)/k))
+        
+    # Tajima's D #
+    n = len(char_block)
+    a1 = sum([1.0/i for i in range(1,n)])
+    a2 = sum([1.0/(i**2) for i in range(1,n)]) 
+    b1 = float(n+1)/(3*(n-1))
+    b2 = float(2 * ( (n**2) + n + 3 )) / (9*n*(n-1))
+    c1 = b1 - 1.0/a1
+    c2 = b2 - float(n+2)/(a1 * n) + float(a2)/(a1 ** 2)
+    e1 = float(c1) / a1
+    e2 = float(c2) / ( (a1**2) + a2 )
+    S = summary["S"]
+    D = float(k - S) / math.sqrt( (e1 * S ) + (e2 * S) * (S -1) )
+    summary["D"] = D
+    
+    return summary
+    
+    
