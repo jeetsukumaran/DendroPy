@@ -128,6 +128,28 @@ def split_taxa_list(split_mask, taxa_block, index=0):
         split_mask = split_mask >> 1
         index += 1
     return taxa
+    
+    
+def find_edge_from_split(root, split_to_find, mask=-1):
+    """Searches for a clade_mask (in the rooted context -- it does not flip the
+    bits) within the subtree descending from `root`.
+    
+    Returns None if no such node is found.
+    
+    Recursive impl, but should be an order(log(N)) operation."""
+    e = root.edge
+    cm = e.clade_mask
+    i = cm & split_to_find
+    if i != split_to_find:
+        return None
+    if (mask&cm) == split_to_find:
+        return e
+    for child in root.child_nodes():
+        r = find_edge_from_split(child, split_to_find, mask=mask)
+        if r is not None:
+            return r
+    return None
+    
 
 def encode_splits(tree, create_dict=True, delete_degree_two=True):
     """
@@ -202,7 +224,7 @@ def encode_splits(tree, create_dict=True, delete_degree_two=True):
 class SplitDistribution(object):
     "Collects information regarding splits over multiple trees."
     
-    def __init__(self, taxa_block=None):
+    def __init__(self, taxa_block=None, split_set=None):
         "What else?"
         self.total_trees_counted = 0
         self.taxa_block = taxa_block
@@ -213,10 +235,12 @@ class SplitDistribution(object):
         self.ignore_edge_lengths = False
         self.ignore_node_ages = True
         self.unrooted = True
-        self.__split_freqs = None
-        self.__trees_counted_for_freqs = 0
+        self._split_freqs = None
+        self._trees_counted_for_freqs = 0
+        for split in split_set:
+            self.add_split_count(split, count=1)
         
-    def add_split_count(self, split, count):
+    def add_split_count(self, split, count=1):
         if split not in self.splits:
             self.splits.append(split)
             self.split_counts[split] = 0
@@ -247,21 +271,22 @@ class SplitDistribution(object):
         
     def calc_freqs(self):
         "Forces recalculation of frequencies."
-        self.__split_freqs = {}
+        self._split_freqs = {}
         if self.total_trees_counted == 0:
-            total = 1
+            for split in self.split_counts.keys():
+                self._split_freqs[split] = 1.0
         else:
             total = self.total_trees_counted
-        for split in self.split_counts:
-            self.__split_freqs[split] = float(self.split_counts[split]) / total
-        self.__trees_counted_for_freqs = self.total_trees_counted            
-        return self.__split_freqs
+            for split in self.split_counts:
+                self._split_freqs[split] = float(self.split_counts[split]) / total
+        self._trees_counted_for_freqs = self.total_trees_counted            
+        return self._split_freqs
         
     def _get_split_frequencies(self):
         "Returns dictionary of splits : split frequencies."
-        if self.__split_freqs is None or self.__trees_counted_for_freqs != self.total_trees_counted:
+        if self._split_freqs is None or self._trees_counted_for_freqs != self.total_trees_counted:
             self.calc_freqs()
-        return self.__split_freqs   
+        return self._split_freqs   
         
     split_frequencies = property(_get_split_frequencies)         
 
@@ -295,3 +320,36 @@ class SplitDistribution(object):
                 sna = self.split_node_ages.setdefault(split, [])
                 if edge.head_node is not None:
                     sna.append(edge.head_node.distance_from_tip())
+
+def collapse_conflicting(subtree_root, split, clade_mask):
+    """Takes a node that is the root of a subtree.  Collapses every edge in the
+    subtree that conflicts with split.  This can include the edge subtending 
+    subtree_root.
+    """
+    
+    # we flip splits so that both the split and each edges split  have the
+    # lowest bit of the clade mask set to one
+    lb = lowest_bit_only(clade_mask)
+
+    if lb & split:
+        cropped_split = split & clade_mask
+    else:
+        cropped_split = (~split) & clade_mask
+
+    to_collapse_head_nodes = []
+    for nd in subtree_root.postorder_iter(subtree_root):
+        if not nd.is_leaf():
+            ncm = nd.edge.clade_mask
+            if lb & ncm:
+                nd_split = ncm & clade_mask
+            else:
+                nd_split = (~ncm) & clade_mask
+
+            cm_union = nd_split | cropped_split
+            if (cm_union != nd_split) and (cm_union != cropped_split):
+                to_collapse_head_nodes.append(nd)
+        
+    for nd in to_collapse_head_nodes:
+        e = nd.edge
+        e.collapse()
+            

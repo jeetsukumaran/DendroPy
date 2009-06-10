@@ -53,11 +53,11 @@ class TaxonLinked(base.IdTagged):
     def __init__(self, oid=None, label=None, taxon=None):
         "Initializes by calling base class."
         base.IdTagged.__init__(self, oid=oid, label=label)
-        self.__taxon = taxon
+        self._taxon = taxon
 
     def _get_taxon(self):
         "Returns taxon associated with this object."
-        return self.__taxon
+        return self._taxon
 
     def _set_taxon(self, taxon):
         """
@@ -69,12 +69,12 @@ class TaxonLinked(base.IdTagged):
         xs:NCName compliant for the id.
         """
         if taxon is None or isinstance(taxon, Taxon):
-            self.__taxon = taxon
+            self._taxon = taxon
         else:
             taxon_obj = Taxon()
             taxon_obj.label = taxon
             taxon_obj.oid = taxon
-            self.__taxon = taxon_obj
+            self._taxon = taxon_obj
 
     taxon = property(_get_taxon, _set_taxon)
 
@@ -87,20 +87,20 @@ class TaxaLinked(base.IdTagged):
     def __init__(self, oid=None, label=None, taxa_block=None):
         "Initializes by calling base class."
         base.IdTagged.__init__(self, oid=oid, label=label)
-        self.__taxa_block = taxa_block
+        self._taxa_block = taxa_block
 
     def _get_taxa_block(self):
         """
         Returns taxon block associated with this object. If none has been
         given, then it builds one.
         """
-        if self.__taxa_block is None:
+        if self._taxa_block is None:
             self.__taxa_block= TaxaBlock()
-        return self.__taxa_block
+        return self._taxa_block
 
     def _set_taxa_block(self, taxa_block):
         "Sets the taxon block for this object."
-        self.__taxa_block = taxa_block
+        self._taxa_block = taxa_block
 
     taxa_block = property(_get_taxa_block, _set_taxa_block)
             
@@ -125,6 +125,12 @@ class TaxaBlock(list, base.IdTagged):
             list.__init__(self)
         base.IdTagged.__init__(self, oid=kwargs.get('oid'), label=kwargs.get('label'))
         self._is_mutable = kwargs.get('is_mutable', True) # immutable constraints not fully implemented -- only enforced at the add_taxon stage)
+
+    def __deepcopy__(self, memo):
+        o = self.__class__(list(self), label=self.label, is_mutable=self._is_mutable)
+        memo[id(self)] = o
+        return o
+
     def lock(self):
         self._is_mutable = False
     def unlock(self):
@@ -224,7 +230,11 @@ class TaxaBlock(list, base.IdTagged):
                                 
 class Taxon(base.IdTagged):
     "A taxon associated with a sequence or a node on a tree."
-    
+    def __deepcopy__(self, memo):
+        "Should not be copied"
+        memo[id(self)] = self
+        return self
+
     def cmp(taxon1, taxon2):
         "Compares taxon1 and taxon2 based on label."
         return cmp(str(taxon1.label), str(taxon2.label))
