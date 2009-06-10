@@ -22,7 +22,7 @@ fi
 
 ################################################################################
 # add the taxa to the trees from the previous round
-echo 'keep = 5' > add_taxon_commands.txt 
+echo 'nbest = 5' > add_taxon_commands.txt 
 (set -x ; time "${DENDROPY_SCRIPTS_PAR}/igarli_add_tree.py" ${prevRound} >> add_taxon_commands.txt) 2>time_igarli_add_tree.txt 
 if ! test $? -eq 0
 then
@@ -116,7 +116,7 @@ fi
 # Score the trees for the next round (this makes sure that they have good branch
 #	lengths and gathers the site likeilhoods for the RELL
 ########
-echo 'sitelike = 1' > score_commands.txt
+echo 'sitelikes = 1' > score_commands.txt
 ("${DENDROPY_SCRIPTS_PAR}/igarli_add_tree.py" selected.tre >> score_commands.txt) 2>>time_igarli_score_final_tree.txt
 echo 'quit' >> score_commands.txt
 echo '#NEXUS' > incrgarli.tre

@@ -35,7 +35,7 @@ garli_after_name_tree_pattern = r'\s*=\s*\[.*\]\s*(\(.*\))\s*;'
 tree_prefix = r''
 garli_tree_model_pat = re.compile(tree_prefix + garli_after_name_tm_pattern)
 garli_tree_pat = re.compile(tree_prefix + garli_after_name_tree_pattern)
-
+sys.stderr.write("garli_tree_pat = %s\n" % tree_prefix + garli_after_name_tree_pattern)
 
 first = True
 for line in f:
@@ -43,7 +43,7 @@ for line in f:
 	if m:
 		has_model = True
 	else:
-		m = garli_tree_pat.match(line)
+		m = garli_tree_pat.search(line)
 		has_model = False
 	if m:
 		g = m.groups()

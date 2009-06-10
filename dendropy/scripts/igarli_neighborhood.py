@@ -41,7 +41,7 @@ garli_after_name_tree_pattern = r'\s*=\s*\[&U\]\[!GarliScore ([-.0-9]*)\]\s*(\(.
 
 
 
-tree_prefix = r'\[iGarli\s*(\d+)\s*\] tree best'
+tree_prefix = r'\[iGarli\s*(\d+)\s*\] tree [a-zA-Z0-9_]+'
 tm_pat_string = tree_prefix + garli_after_name_tm_pattern
 tree_pat_string = tree_prefix + garli_after_name_tree_pattern
 garli_tree_model_pat = re.compile(tm_pat_string)
