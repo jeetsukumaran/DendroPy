@@ -20,9 +20,7 @@ for line in inp:
 			f = float(i)
 			if f > curr_best:
 				curr_best = f
-				outp.write("%d\t%s\t%s\n" % (curr_iter, i, i))
-			else:
-				outp.write("%d\t%s\tNA\n" % (curr_iter, i))			
+			outp.write("%d\t%s\t%s\n" % (curr_iter, i, curr_best))
 			curr_iter += 1	
 			
 	elif next_pref and  line.startswith(next_pref):
