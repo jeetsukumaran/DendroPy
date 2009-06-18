@@ -67,18 +67,32 @@ def main():
     else:
         dest = sys.stdout
                                 
-    beast = minidom.parse(src)            
+    beast = minidom.parse(src)    
+        
     alignments = beast.getElementsByTagName("alignment")   
     if len(alignments) == 0:
         sys.stderr.write("ERROR: could not find 'alignment' element in file\n")
         sys.exit(1)
     elif len(alignments) > 1:
-        sys.stderr.write("ERROR: standard NEXUS cannot represent multiple alignments at this time\n")
-        sys.exit(1)
+        # we want to get the first alignment element that describes to
+        # the data, but BEAST has multiple alignment elements, so the DOM parser
+        # gets confused. Or maybe I don't know how to do it correctly.
+        # at any rate, the following is hacky, but it works ...
+        main_alignment = None
+        for a in alignments:
+            if a.parentNode in beast.childNodes and a.nodeType == a.ELEMENT_NODE:
+                main_alignment = a
+        if main_alignment is None:
+            sys.stderr.write("ERROR: could not find main aligment data in file\n")
+            sys.exit(1)            
+    else:
+        main_alignment = alignments[0]
+        
     whitespace = re.compile('( |\t|\r|\n)')
     tax_labels = []
     char_matrix = {}
-    for sidx, seq in enumerate(alignments[0].getElementsByTagName("sequence")):
+    
+    for sidx, seq in enumerate(main_alignment.getElementsByTagName("sequence")):
         tax_elements = seq.getElementsByTagName("taxon")
         if len(tax_elements) == 0:
             sys.stderr.write('ERROR: no taxon associated with sequence %d\n' % (sidx))
