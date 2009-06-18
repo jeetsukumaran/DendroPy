@@ -380,9 +380,9 @@ def estimate_char_model(tree_model,
         'datafile' : df.name,
         'treefile' : tf.name,
         'nst': num_states,
-        'basefreq' : 'estimate' if unequal_base_freqs else 'equal',
-        'rates' : 'gamma' if gamma_rates else 'equal',
-        'pinvar' : 'estimate' if prop_invar else '0',
+        'basefreq' : unequal_base_freqs and 'estimate' or 'equal',
+        'rates' : gamma_rates and 'gamma' or 'equal',
+        'pinvar' : prop_invar and 'estimate' or '0',
     }
     paup_template = """\
     set warnreset=no;
