@@ -50,18 +50,20 @@ def main():
         src = open(fpath, "rU")
         
     if len(args) >= 2:
-        fpath = open(os.path.expanduser(os.path.expandvars(args[1])))
+        fpath = os.path.expanduser(os.path.expandvars(args[1]))
         if os.path.exists(fpath):
             if opts.replace:
                 dest = open(fpath, "w")
             else:
-                sys.stderr.write('"%s" already exists: Overwrite (y/N)? ')
+                sys.stderr.write('"%s" already exists: Overwrite (y/N)? ' % fpath)
                 i = sys.stdin.read(1)
                 if i.upper() != "Y":
                     sys.stderr.write("Aborting.\n")
                     sys.exit(1)
                 else:
                     dest = open(fpath, "w")
+        else:
+            dest = open(fpath, "w")
     else:
         dest = sys.stdout
                                 
@@ -95,8 +97,6 @@ def main():
         if len(char_matrix[t]) != nchar:
             sys.stderr.write('ERROR: unequal sequence lengths in matrix\n')
             sys.exit(1)
-    if not opts.quiet:
-        sys.stderr.write("Parsed data: %d taxa and %d characters per taxon\n" % (len(char_matrix), nchar))
             
     dest.write("#NEXUS\n\n")
         
@@ -116,7 +116,10 @@ def main():
     for tax_label in tax_labels:
         dest.write("    %s      %s\n" % (tax_label.ljust(max_tax_label), char_matrix[tax_label]))
     dest.write("  ;\n")
-    dest.write("END;\n")            
+    dest.write("END;\n")
+    
+    if not opts.quiet:
+        sys.stderr.write("Converted to NEXUS: %d taxa and %d characters per taxon\n" % (len(char_matrix), nchar))    
     
 if __name__ == '__main__':
     main()
