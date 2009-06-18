@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<beast>
+	<taxa id="taxa1">
+		<taxon id="Brazi82"><date value="1982" units="years" direction="forwards" /></taxon>
+		<taxon id="ElSal83"><date value="1983" units="years" direction="forwards" /></taxon>
+		<taxon id="ElSal94"><date value="1994" units="years" direction="forwards" /></taxon>
+		<taxon id="Indon76"><date value="1976" units="years" direction="forwards" /></taxon>
+		<taxon id="Indon77"><date value="1977" units="years" direction="forwards" /></taxon>
+	</taxa>
+
+	<alignment id="alignment1">
+		<!-- Dimensions ntax=17 nchar=1485 -->
+		<sequence>
+			<taxon idref="Brazddsi82"/>
+	  		ATGCGATGCGTAGGAGTAGGAdACAGAGACTTTGTGGAAGGAGTCTCAGGTGGAGCAT
+		</sequence>
+		<sequence>
+			<taxon idref="ElSal83"/>
+			ATGCGATGCGTAGGAGTAGGAAACAGAGACTTTGTcGAAGGAGTCTCAGGTGGAGCAT
+		</sequence>
+		<sequence>
+			<taxon idref="ElSal94"/>
+			ATGCGATGCGTAGGAGTAGGAAACAGAGACTTTGTGGAAGGAGTCTCAGGTGGAGCAT
+		</sequence>
+		<sequence>
+			<taxon idref="Indon76"/>
+			ATGCGATGCGTAGGAGTAGGAAACAGAGACTTTGTGGAaGGAGTCTCAGGTGGAGCAT
+		</sequence>
+		<sequence>
+			<taxon idref="Indon77"/>
+			ATGCGATGCGTAGGAGTAGGAAACAGAGACTTTGTGGAAGGAGTCTCAGGTGGAGCAT
+		</sequence>
+	</alignment>
+</beast>

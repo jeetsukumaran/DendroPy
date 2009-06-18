@@ -36,6 +36,7 @@ import os
 import subprocess
 
 script_names = ['cattrees.py',
+                'beast-to-nexus.py',
                 'extract-coalescent-frames.py',
                 'coal-goodness-of-fit.py',
                 'incrGarl.py',
