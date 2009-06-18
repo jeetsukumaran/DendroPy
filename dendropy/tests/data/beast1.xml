@@ -11,12 +11,12 @@
 	<alignment id="alignment1">
 		<!-- Dimensions ntax=17 nchar=1485 -->
 		<sequence>
-			<taxon idref="Brazddsi82"/>
-	  		ATGCGATGCGTAGGAGTAGGAdACAGAGACTTTGTGGAAGGAGTCTCAGGTGGAGCAT
+			<taxon idref="Brazi82"/>
+	  		ATGCGATGCGTAGGAGTAGGAAACAGAGACTTTGTGGAAGGAGTCTCAGGTGGAGCAT
 		</sequence>
 		<sequence>
 			<taxon idref="ElSal83"/>
-			ATGCGATGCGTAGGAGTAGGAAACAGAGACTTTGTcGAAGGAGTCTCAGGTGGAGCAT
+			ATGCGATGCGTAGGAGTAGGAAACAGAGACTTTGTGGAAGGAGTCTCAGGTGGAGCAT
 		</sequence>
 		<sequence>
 			<taxon idref="ElSal94"/>
@@ -24,7 +24,7 @@
 		</sequence>
 		<sequence>
 			<taxon idref="Indon76"/>
-			ATGCGATGCGTAGGAGTAGGAAACAGAGACTTTGTGGAaGGAGTCTCAGGTGGAGCAT
+			ATGCGATGCGTAGGAGTAGGAAACAGAGACTTTGTGGAAGGAGTCTCAGGTGGAGCAT
 		</sequence>
 		<sequence>
 			<taxon idref="Indon77"/>
