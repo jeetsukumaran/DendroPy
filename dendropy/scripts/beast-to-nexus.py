@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 
-from dendropy import datasets
 import os
 import sys
 from optparse import OptionGroup
@@ -22,7 +21,21 @@ def main():
     parser = OptionParser(usage=_prog_usage, 
         add_help_option=True, 
         version=_prog_version, 
-        description=_prog_description)            
+        description=_prog_description)
+        
+    parser.add_option('-c', '--extract-calibrations',
+        action='store',
+        dest='calibration_filepath',
+        default=None,
+        metavar="FILEPATH",
+        help='extract calibrations in file to <FILEPATH>')
+        
+    parser.add_option('-s', '--separator',
+        action='store',
+        dest='separator',
+        default='\t',
+        metavar="SEPARATOR-TOKEN",
+        help='delimiter separating fields in calibrations file (default = tab)')         
         
     parser.add_option('-q', '--quiet',
         action='store_true',
@@ -67,8 +80,30 @@ def main():
     else:
         dest = sys.stdout
                                 
-    beast = minidom.parse(src)    
+    beast = minidom.parse(src)
+    
+    if opts.calibration_filepath is not None:
+        calibrations = beast.getElementsByTagName("logNormalPrior")
         
+        cfile = open(opts.calibration_filepath, "w")
+        cfile.write("%s\n" % (opts.separator.join(["group", "mean", "stdev", "offset"])))                
+        for ci, calib_node in enumerate(calibrations):
+            try:
+                tax = calib_node.getElementsByTagName("statistic")[0]
+            except:
+                sys.stderr.write('group not defined for calibration %d\n' % (ci+1))
+                sys.exit(1)
+            gname = re.match("tmrca\((.*)\)", tax.getAttribute("idref"))
+            if gname is None:
+                group_label = tax.getAttribute("idref")
+            else:
+                group_label = gname.groups(1)[0]
+            cfile.write("%s\n" % (opts.separator.join([group_label,
+                                                       calib_node.getAttribute("mean"),
+                                                       calib_node.getAttribute("stdev"),
+                                                       calib_node.getAttribute("offset")])))
+
+    sys.exit(0)        
     alignments = beast.getElementsByTagName("alignment")   
     if len(alignments) == 0:
         sys.stderr.write("ERROR: could not find 'alignment' element in file\n")
