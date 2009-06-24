@@ -108,7 +108,7 @@ def iterate_over_trees(file_obj=None, taxa_block=None, dataset=None, file_format
 ############################################################################
 ## Universal Nex-ish Readers
 
-def read_dataset(file_obj, dataset=None):
+def read_dataset(file_obj, dataset=None, **kwargs):
     """
     Note: due to usage of seek(), does not work on stream sources 
     (such as stdin). In this case, client must either buffer stream to string
@@ -121,7 +121,7 @@ def read_dataset(file_obj, dataset=None):
         reader = NexusReader()
     else: # assume NEWICK
         reader = NewickReader()
-    return reader.read_dataset(file_obj=file_obj, dataset=dataset)
+    return reader.read_dataset(file_obj=file_obj, dataset=dataset, **kwargs)
 
 def read_trees(file_obj, dataset=None, **kwargs):
     dataset = read_dataset(file_obj=file_obj, dataset=dataset, **kwargs)
@@ -228,7 +228,8 @@ def parse_newick_string(tree_statement,
                         translate_dict=None, 
                         encode_splits=False, 
                         rooted=RootingInterpretation.UNKNOWN_DEF_UNROOTED,
-                        finish_node_func=None):
+                        finish_node_func=None, 
+                        **kwargs):
     "Processes a (SINGLE) TREE statement string."
     stream_handle = StringIO(tree_statement)
     stream_tokenizer = PurePythonNexusStreamTokenizer(stream_handle)
@@ -237,7 +238,8 @@ def parse_newick_string(tree_statement,
                                      translate_dict=translate_dict, 
                                      encode_splits=encode_splits,
                                      rooted=rooted,
-                                     finish_node_func=finish_node_func)
+                                     finish_node_func=finish_node_func,
+                                     **kwargs)
     return tree    
 
 class StrToTaxon(object):
@@ -261,7 +263,8 @@ def parse_newick_tree_stream(stream_tokenizer,
                              encode_splits=False,
                              rooted=RootingInterpretation.UNKNOWN_DEF_UNROOTED,
                              finish_node_func=None,
-                             edge_len_type=float):
+                             edge_len_type=float,
+                             **kwargs):
     """
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
     located at the beginning of the statement (i.e., the first
@@ -457,12 +460,12 @@ class PurePythonNexusStreamTokenizer(object):
 
     def _get_current_file_char(self):
         "Returns the current character from the file stream."
-        if self.__current_file_char == None:
-            self.__current_file_char = self.read_next_char()
-        return self.__current_file_char
+        if self._current_file_char == None:
+            self._current_file_char = self.read_next_char()
+        return self._current_file_char
 
     def _set_current_file_char(self, new_char):
-        self.__current_file_char = new_char
+        self._current_file_char = new_char
 
     current_file_char = property(_get_current_file_char, _set_current_file_char)
 
@@ -490,10 +493,10 @@ class PurePythonNexusStreamTokenizer(object):
                 if self.previous_file_char == '\n':
                     self.current_line_number = self.current_line_number + 1
                     self.current_col_number = 0
-                self.previous_file_char = self.__current_file_char
+                self.previous_file_char = self._current_file_char
                 self.current_col_number += 1
             self.current_file_char = read_char
-            return self.__current_file_char
+            return self._current_file_char
         return None
 
     def _raw_read_next_char(self):
@@ -503,10 +506,10 @@ class PurePythonNexusStreamTokenizer(object):
             if self.previous_file_char == '\n':
                 self.current_line_number = self.current_line_number + 1
                 self.current_col_number = 0
-            self.previous_file_char = self.__current_file_char
+            self.previous_file_char = self._current_file_char
             self.current_col_number += 1
             self.current_file_char = read_char
-            return self.__current_file_char
+            return self._current_file_char
         
     def skip_comment(self):
         """
@@ -690,7 +693,7 @@ class PurePythonNexusReader(datasets.Reader):
         self.stream_tokenizer = PurePythonNexusStreamTokenizer()
         self.stream_tokenizer.stream_handle = file_obj
 
-    def read_dataset(self, file_obj, dataset=None):
+    def read_dataset(self, file_obj, dataset=None, **kwargs):
         """
         Instantiates and returns a DataSet object based on the
         NEXUS-formatted contents read from the file descriptor object
@@ -698,11 +701,11 @@ class PurePythonNexusReader(datasets.Reader):
         """
         #self._reset()
         self._prepare_to_read_file(file_obj)
-        return self._parse_nexus_file(dataset)
+        return self._parse_nexus_file(dataset, **kwargs)
 
     ## Class-specific ##
 
-    def _parse_nexus_file(self, dataset=None):
+    def _parse_nexus_file(self, dataset=None, **kwargs):
         "Main file parsing driver."
         finish_node_func = self.finish_node_func
         self._reset()
@@ -749,7 +752,7 @@ class PurePythonNexusReader(datasets.Reader):
                             self._parse_matrix_statement()
                     self.stream_tokenizer.skip_to_semicolon() # move past END command
                 elif token == 'TREES':
-                    self._parse_trees_block()
+                    self._parse_trees_block(**kwargs)
                 else:
                     # unknown block
                     token = self._consume_to_end_of_block(token)
@@ -842,7 +845,7 @@ class PurePythonNexusReader(datasets.Reader):
                     raise self.syntax_exception('Expecting "=" after MISSING keyword')
             token = self.stream_tokenizer.read_next_token_ucase()
          
-    def _parse_tree_statement(self, taxa_block):
+    def _parse_tree_statement(self, taxa_block, **kwargs):
         """
         Processes a TREE command. Assumes that the file reader is
         positioned right after the "TREE" token in a TREE command.
@@ -870,7 +873,8 @@ class PurePythonNexusReader(datasets.Reader):
                                         translate_dict=self.tree_translate_dict,
                                         encode_splits=self.encode_splits,
                                         rooted=rooted,
-                                        finish_node_func=self.finish_node_func)
+                                        finish_node_func=self.finish_node_func,
+                                        **kwargs)
         tree.label = tree_name
 
         if self.stream_tokenizer.current_token != ';':
@@ -997,7 +1001,7 @@ class PurePythonNexusReader(datasets.Reader):
                 ## TODO: NO LABELS/TRANSPOSED ##
                 pass
                 
-    def iterate_over_trees(self, file_obj=None, taxa_block=None, dataset=None):
+    def iterate_over_trees(self, file_obj=None, taxa_block=None, dataset=None, **kwargs):
         """
         Generator to iterate over trees in data file.
         Primary goal is to be memory efficient, storing no more than one tree
@@ -1019,7 +1023,7 @@ class PurePythonNexusReader(datasets.Reader):
             if token == 'TAXA':
                 self._parse_taxa_block(taxa_block)
             elif token == 'TREES':
-                self._prepare_to_parse_trees(taxa_block)
+                self._prepare_to_parse_trees(taxa_block, **kwargs)
                 self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
                 while not (token == 'END' or token == 'ENDBLOCK') \
                     and not self.stream_tokenizer.eof \
@@ -1028,7 +1032,7 @@ class PurePythonNexusReader(datasets.Reader):
                     if token == 'TRANSLATE':
                         self._parse_translate_statement(taxa_block)
                     if token == 'TREE':
-                        tree = self._parse_tree_statement(taxa_block)
+                        tree = self._parse_tree_statement(taxa_block, **kwargs)
                         yield tree
                 self.stream_tokenizer.skip_to_semicolon() # move past END command
             else:
@@ -1052,13 +1056,13 @@ class PurePythonNexusReader(datasets.Reader):
                 self._parse_taxlabels_statement(taxa_block)
         self.stream_tokenizer.skip_to_semicolon() # move past END statement
 
-    def _parse_trees_block(self):
+    def _parse_trees_block(self, **kwargs):
         token = 'TREES'
         if self.include_trees:
             trees_block = trees.TreesBlock()
             trees_block.taxa_block = self._get_default_taxa_block()
             self.dataset.add_trees_block(trees_block=trees_block)
-            self._prepare_to_parse_trees(trees_block.taxa_block)
+            self._prepare_to_parse_trees(trees_block.taxa_block, **kwargs)
             self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
             while not (token == 'END' or token == 'ENDBLOCK') \
                 and not self.stream_tokenizer.eof \
@@ -1073,7 +1077,7 @@ class PurePythonNexusReader(datasets.Reader):
         else:
             token = self.consume_to_end_of_block(token)
 
-    def _prepare_to_parse_trees(self, taxa_block):
+    def _prepare_to_parse_trees(self, taxa_block, **kwargs):
 
             self.tree_translate_dict = {}
             self.tax_label_lookup = {}
@@ -1226,7 +1230,7 @@ class NewickReader(datasets.Reader):
         self.finish_node_func = None
 
         
-    def read_dataset(self, file_obj, dataset=None):
+    def read_dataset(self, file_obj, dataset=None, **kwargs):
         """
         Instantiates and returns a DataSet object based on the
         NEWICK-formatted contents read from the file descriptor object
@@ -1241,7 +1245,7 @@ class NewickReader(datasets.Reader):
             need_to_add_taxa = False
         if taxa_block is None:
             taxa_block = taxa.TaxaBlock()
-        trees_block = self.read_trees(file_obj, taxa_block=taxa_block)
+        trees_block = self.read_trees(file_obj, taxa_block=taxa_block, **kwargs)
         if need_to_add_taxa:
             dataset.add_taxa_block(taxa_block=taxa_block)
         dataset.add_trees_block(trees_block=trees_block, taxa_block=taxa_block)
@@ -1257,16 +1261,26 @@ class NewickReader(datasets.Reader):
         if taxa_block is not None:
             trees_block.taxa_block = taxa_block
         stream_tokenizer = PurePythonNexusStreamTokenizer(file_obj)
-        tree = parse_newick_tree_stream(stream_tokenizer, taxa_block=taxa_block, encode_splits=self.encode_splits, rooted=self.default_rooting, finish_node_func=self.finish_node_func)
+        tree = parse_newick_tree_stream(stream_tokenizer, 
+                                        taxa_block=taxa_block, 
+                                        encode_splits=self.encode_splits,
+                                        rooted=self.default_rooting,
+                                        finish_node_func=self.finish_node_func,
+                                        **kwargs)
         if taxa_block is None:
             taxa_block = tree.taxa_block
             trees_block.taxa_block = taxa_block
         while tree is not None:
             trees_block.append(tree)
-            tree = parse_newick_tree_stream(stream_tokenizer, taxa_block=taxa_block, encode_splits=self.encode_splits, rooted=self.default_rooting, finish_node_func=self.finish_node_func)
+            tree = parse_newick_tree_stream(stream_tokenizer,
+                                            taxa_block=taxa_block,
+                                            encode_splits=self.encode_splits,
+                                            rooted=self.default_rooting,
+                                            finish_node_func=self.finish_node_func,
+                                            **kwargs)
         return trees_block
 
-    def iterate_over_trees(self, file_obj=None, taxa_block=None, dataset=None):
+    def iterate_over_trees(self, file_obj=None, taxa_block=None, dataset=None, **kwargs):
         """
         Generator to iterate over trees in data file.
         Primary goal is to be memory efficient, storing no more than one tree
@@ -1288,7 +1302,8 @@ class NewickReader(datasets.Reader):
                                                  translate_dict=None,
                                                  encode_splits=self.encode_splits,
                                                  rooted=self.default_rooting,
-                                                 finish_node_func=self.finish_node_func) 
+                                                 finish_node_func=self.finish_node_func,
+                                                 **kwargs) 
             if tree:
                 yield tree
 
@@ -1532,7 +1547,7 @@ else:
             except AttributeError:
                 return "", False
             
-        def read_dataset(self, file_obj, dataset=None):
+        def read_dataset(self, file_obj, dataset=None, **kwargs):
             """
             Instantiates and returns a DataSet object based on the
             NEXUS-formatted contents read from the file descriptor object
@@ -1543,8 +1558,8 @@ else:
                 self.purePythonReader.encode_splits = self.encode_splits
                 self.purePythonReader.default_rooting = self.default_rooting
                 self.purePythonReader.finish_node_func = self.finish_node_func
-                return self.purePythonReader.read_dataset(file_obj, dataset=dataset)
-            return self.read_filepath_into_dataset(n, dataset=dataset)
+                return self.purePythonReader.read_dataset(file_obj, dataset=dataset, **kwargs)
+            return self.read_filepath_into_dataset(n, dataset=dataset, **kwargs)
 
         def _ncl_characters_block_to_native(self, taxa_block, ncl_cb):
             """
@@ -1614,7 +1629,7 @@ else:
                     print "CharSets have the names " , str(cs)
             return char_block
 
-        def read_filepath_into_dataset(self, file_path, dataset=None):
+        def read_filepath_into_dataset(self, file_path, dataset=None, **kwargs):
             if dataset is None:
                 dataset = datasets.Dataset()
             self._taxa_to_fill = None

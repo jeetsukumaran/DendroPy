@@ -27,7 +27,7 @@ This module handles the core definition of tree data structure class,
 as well as all the structural classes that make up a tree.
 """
 from cStringIO import StringIO
-
+import copy
 from dendropy import base
 from dendropy import taxa
 import math
@@ -146,6 +146,19 @@ class Tree(base.IdTagged):
         else:
             self.seed_node = Node(oid='n0', edge=Edge())
         self.taxa_block = taxa
+
+    def __deepcopy__(self, memo):
+        o = self.__class__(label=self.label, taxa=self.taxa_block) # we treat the taxa as immutable and copy the reference even in a deepcopy
+        memo[id(self)] = o
+        if self.seed_node is not None:
+            new_v = copy.deepcopy(self.seed_node, memo)
+            o.seed_node = new_v
+        else:
+            o.seed_node = None
+        for k, v in self.__dict__.iteritems():
+            if not k in ['seed_node', 'taxa_block']:
+                o.__dict__[k] = copy.deepcopy(v, memo)
+        return o
     def __str__(self):
         "Dump Newick string."
         return self.compose_newick()
@@ -168,6 +181,15 @@ class Tree(base.IdTagged):
         "Returns list of internal node in the tree."
         return self.nodes(filter_fn=lambda x : not x.is_leaf())
     
+    def find_node_for_taxon(self, taxon):
+        for node in self.preorder_node_iter():
+            try:
+                if node.taxon is taxon:
+                    return node
+            except:
+                pass
+        return None
+
     def find_node(self, filter_fn):
         """
         Finds the first node for which filter_fn(node) = True.
@@ -574,56 +596,79 @@ class Node(taxa.TaxonLinked):
 
     def __init__(self, oid=None, label=None, taxon=None, edge=None):
         "Inits. Handles keyword arguments: `oid` and `label`."
-        taxa.TaxonLinked.__init__(self, oid=oid, label=label)
-        self.__edge = None        
-        self.__child_nodes = []        
-#         self.__parent_node = None        
+        taxa.TaxonLinked.__init__(self, oid=oid, label=label, taxon=taxon)
+        self._edge = None        
+        self._child_nodes = []        
+        self._parent_node = None        
         if edge is not None:
             self.edge = edge
         else:
             self.edge = Edge(head_node=self)
-        self.__edge.head_node = self            
+        self._edge.head_node = self            
+
+    def __deepcopy__(self, memo):
+        o = self.__class__(label=self.label, taxon=self.taxon)
+        memo[id(self)] = o
+        for k, v in self.__dict__.iteritems():
+            if not k in ['_child_nodes', '_taxon']:
+                o.__dict__[k] = copy.deepcopy(v, memo)
+        for c in self.child_nodes():
+            o.add_child(copy.deepcopy(c, memo))
+        return o
 
     def __str__(self):
         "String representation of the object: it's id."
         return str(self.oid)
 
+    def collapse_neighborhood(self, dist):
+        if dist < 1:
+            return
+        children = self.child_nodes()
+        for ch in children:
+            if not ch.is_leaf():
+                ch.edge.collapse()
+        if self.parent_node:
+            p = self.parent_node
+            self.edge.collapse()
+            p.collapse_neighborhood(dist -1)
+        else:
+            self.collapse_neighborhood(dist - 1)
     def is_leaf(self):
         "Returns True if the node has no child_nodes"
-        return bool(not self.__child_nodes)
+        return bool(not self._child_nodes)
                 
     ## Low-level methods for manipulating structure ##
 
     def _get_edge(self):
         "Returns the edge subtending this node."
-        return self.__edge
+        return self._edge
 
     def _set_edge(self, edge=None):
         """
         Sets the edge subtending this node, and sets head_node of
         `edge` to point to self.
         """
-        self.__edge = edge
+        self._edge = edge
         if edge:
             edge.head_node = self
 
     def _get_edge_length(self):
         "Returns the length of the edge  subtending this node."
-        return self.__edge.length
+        return self._edge.length
 
     def _set_edge_length(self, v=None):
         """
         Sets the edge subtending this node, and sets head_node of
         `edge` to point to self.
         """
-        self.__edge.length = v
+        self._edge.length = v
         
     edge = property(_get_edge, _set_edge)
     edge_length = property(_get_edge_length, _set_edge_length)
         
     def child_nodes(self):
         "Returns the a shallow-copy list of all child nodes."
-        return list(self.__child_nodes)
+        return list(self._child_nodes)
     
     def set_children(self, child_nodes):
         """
@@ -632,18 +677,18 @@ class Node(taxa.TaxonLinked):
             - sets the parent of each child node to this node
             - sets the tail node of each child to self
         """
-        self.__child_nodes = child_nodes
-        for nidx in range(len(self.__child_nodes)):
-            self.__child_nodes[nidx].parent_node = self
-            self.__child_nodes[nidx].edge.tail_node = self
+        self._child_nodes = child_nodes
+        for nidx in range(len(self._child_nodes)):
+            self._child_nodes[nidx].parent_node = self
+            self._child_nodes[nidx].edge.tail_node = self
 
     def _get_parent_node(self):
         """Returns the parent node of this node."""
-        return self.edge.tail_node
+        return self._parent_node
     
     def _set_parent_node(self, parent):
         """Sets the parent node of this node."""
-#         self.__parent_node = parent
+        self._parent_node = parent
         self.edge.tail_node = parent
         
     parent_node = property(_get_parent_node, _set_parent_node)
@@ -658,12 +703,12 @@ class Node(taxa.TaxonLinked):
         node.parent_node = self
         if edge_length != None:
             node.edge_length = edge_length
-#         if len(self.__child_nodes) > 0:
-#             self.__child_nodes[-1].next_sib = node
+#         if len(self._child_nodes) > 0:
+#             self._child_nodes[-1].next_sib = node
         if pos is None:
-            self.__child_nodes.append(node)
+            self._child_nodes.append(node)
         else:
-            self.__child_nodes.insert(pos, node)
+            self._child_nodes.insert(pos, node)
         return node
 
     def new_child(self, oid=None, edge_length=None, node_label=None, node_taxon=None):
@@ -685,13 +730,13 @@ class Node(taxa.TaxonLinked):
         """
         if not node:
             raise Exception("Tried to remove an non-existing or null node")
-        if node in self.__child_nodes:
+        if node in self._child_nodes:
             node.parent_node = None
             node.edge.tail_node = None
-            index = self.__child_nodes.index(node)
+            index = self._child_nodes.index(node)
 #             if index > 0:
-#                 self.__child_nodes[index-1].next_sib = None
-            self.__child_nodes.remove(node)
+#                 self._child_nodes[index-1].next_sib = None
+            self._child_nodes.remove(node)
         else:
             raise Exception("Tried to remove a node that is not listed as a child")
         return node
@@ -744,11 +789,11 @@ class Node(taxa.TaxonLinked):
         (i.e., descendent edges have different lengths), then count the
         maximum of edge lengths.
         """
-        if not self.__child_nodes:
+        if not self._child_nodes:
             return 0.0
         else:
             distance_from_tips = []
-            for ch in self.__child_nodes:
+            for ch in self._child_nodes:
                 if ch.edge.length is not None:
                     curr_edge_length = ch.edge_length
                 else:
@@ -772,7 +817,7 @@ class Node(taxa.TaxonLinked):
         labels show up in a newick string are the same ones used here:
             `include_internal_labels` is a Boolean
         """
-        is_leaf = (len(self.__child_nodes) == 0)
+        is_leaf = (len(self._child_nodes) == 0)
         include_internal_labels = kwargs.get("include_internal_labels")
         if (not is_leaf) and (not include_internal_labels):
             return ""
@@ -825,18 +870,19 @@ class Node(taxa.TaxonLinked):
             out.write(')')
 
         out.write(self.get_node_str(**kwargs))
-        e = self.edge
-        if e:
-            sel = e.length
-            if sel is not None:
-                s = ""
-                try:
-                    s = float(sel)
-                    s = str(s)
-                except ValueError:
-                    s = str(sel)
-                if s:
-                    out.write(":%s" % s)
+        if edge_lengths:
+            e = self.edge
+            if e:
+                sel = e.length
+                if sel is not None:
+                    s = ""
+                    try:
+                        s = float(sel)
+                        s = str(s)
+                    except ValueError:
+                        s = str(sel)
+                    if s:
+                        out.write(":%s" % s)
 
     def get_indented_form(self, **kwargs):
         out = StringIO()
@@ -897,6 +943,37 @@ class Edge(base.IdTagged):
         if tail_node is not None:
             self.tail_node = tail_node
         self.length = length
+
+    def __deepcopy__(self, memo):
+        o = self.__class__()
+        memo[id(self)] = o
+        o.tail_node = copy.deepcopy(self.tail_node, memo)
+        o.head_node = copy.deepcopy(self.head_node, memo)
+        o.length = copy.deepcopy(self.length, memo)
+        o.rootedge = copy.deepcopy(self.rootedge, memo)
+        for k, v in self.__dict__.iteritems():
+            if not k in ['tail_node', 'head_node', 'length', 'rootedge']:
+                o.__dict__[k] = copy.deepcopy(v, memo)
+        return o
+
+    def collapse(self):
+        h = self.head_node
+        if h.is_leaf():
+            return
+        t = self.tail_node
+        if t is None:
+            return
+        c = h.child_nodes()
+        pc = t.child_nodes()
+        pos = len(pc)
+        try:
+            pos = pc.index(h)
+        except:
+            pass
+        for i, ch in enumerate(c):
+            t.add_child(ch, pos=pos + i)
+        t.remove_child(h)
+        
 
     def new_edge(self, oid=None):
         "Returns a new edge object of the same class of this edge."
