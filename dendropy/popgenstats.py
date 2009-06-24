@@ -279,4 +279,45 @@ def summarize(char_block, taxon_groups, ignore_uncertain=True):
     
     return summary
     
+def derived_state_matrix(char_vectors, ancestral_seq=None):
+    """
+    Given a list of CharVector objects, and a reference ancestral sequence,
+    this returns a list of strings corresponding to the list of CharVector
+    objects, where a '0' indicates the ancestral state and '1' a derived state.
     
+    e.g.
+    
+        Given:
+                GGCTAATCTGA
+                GCTTTTTCTGA
+                GCTCTCTCTTC
+                
+        with ancestral sequence:
+                GGTTAATCTGA
+                
+        this returns:
+                0010000000
+                0000110000
+                0001110011
+    """
+    m = []
+    for cv in char_vectors:
+        m.append([])
+        for i, s in enumerate(cv):
+            if cv[i] == ancestral_seq[i]:
+                m[-1].append(0)
+            else:
+                m[-1].append(1)
+   return m
+   
+def site_frequency_spectrum(char_vectors, ancestral_seq=None):
+    """
+    Returns the site frequency spectrum of list of CharVector objects given by char_vectors,
+    with reference to the ancestral sequence given by ancestral_seq. If ancestral_seq
+    is None, then the first sequence in char_vectors is taken to be the ancestral
+    sequence.
+    """
+    if ancestral_seq is None:
+        ancestral_seq = char_vectors[0]
+    dsm = derived_state_matrix(char_vectors, ancestral_seq)
+    sites = zip(*dsm)    
