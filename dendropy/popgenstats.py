@@ -304,11 +304,11 @@ def derived_state_matrix(char_vectors, ancestral_seq=None):
     for cv in char_vectors:
         m.append([])
         for i, s in enumerate(cv):
-            if cv[i] == ancestral_seq[i]:
+            if cv[i].value is ancestral_seq[i].value:
                 m[-1].append(0)
             else:
                 m[-1].append(1)
-   return m
+    return m
    
 def site_frequency_spectrum(char_vectors, ancestral_seq=None):
     """
@@ -320,4 +320,14 @@ def site_frequency_spectrum(char_vectors, ancestral_seq=None):
     if ancestral_seq is None:
         ancestral_seq = char_vectors[0]
     dsm = derived_state_matrix(char_vectors, ancestral_seq)
-    sites = zip(*dsm)    
+    sites = zip(*dsm) # transpose   
+    freqs = {}
+    for s in sites:
+        p = sum(s)
+        if p not in freqs:
+            freqs[p] = 1
+        else:
+            freqs[p] += 1
+    return freqs
+    
+    
