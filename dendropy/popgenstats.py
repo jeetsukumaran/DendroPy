@@ -310,7 +310,7 @@ def derived_state_matrix(char_vectors, ancestral_seq=None):
                 m[-1].append(1)
     return m
    
-def site_frequency_spectrum(char_vectors, ancestral_seq=None):
+def site_frequency_spectrum(char_vectors, ancestral_seq=None, pad=True):
     """
     Returns the site frequency spectrum of list of CharVector objects given by char_vectors,
     with reference to the ancestral sequence given by ancestral_seq. If ancestral_seq
@@ -322,6 +322,9 @@ def site_frequency_spectrum(char_vectors, ancestral_seq=None):
     dsm = derived_state_matrix(char_vectors, ancestral_seq)
     sites = zip(*dsm) # transpose   
     freqs = {}
+    if pad:
+        for i in range(len(char_vectors)+1):
+            freqs[i] = 0    
     for s in sites:
         p = sum(s)
         if p not in freqs:
