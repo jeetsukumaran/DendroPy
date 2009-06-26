@@ -81,20 +81,38 @@ class TreeDistTest(unittest.TestCase):
     def test_pat_distance(self):
         d = datasets.Dataset()
         tree = d.trees_from_string("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", "newick")[0]
-        encode_splits(tree)
+        pdm = treedists.PatristicDistanceMatrix(tree)
 
-        def _chk_distance(t1, t2, exp_distance):
+        def _chk_distance(pdm, t1, t2, exp_distance):
             tax1 = tree.taxa_block.get_taxon(label=t1)
             tax2 = tree.taxa_block.get_taxon(label=t2)        
-            pd = treedists.patristic_distance(tree, tax1, tax2)
+            pd = pdm(tax1, tax2)
             assert pd == exp_distance, ("%s, %s: Expecting %d, but received %d" % (t1, t2, exp_distance, pd))
             
-        _chk_distance("a", "b", 2)
-        _chk_distance("a", "c", 4)
-        _chk_distance("b", "c", 4)
-        _chk_distance("a", "d", 6)
-        _chk_distance("f", "d", 4)
-        _chk_distance("c", "d", 6)
+        _chk_distance(pdm, "a", "b", 2)
+        _chk_distance(pdm, "a", "c", 4)
+        _chk_distance(pdm, "b", "c", 4)
+        _chk_distance(pdm, "a", "d", 6)
+        _chk_distance(pdm, "f", "d", 4)
+        _chk_distance(pdm, "c", "d", 6)     
+        
+#     def test_pat_distance(self):
+#         d = datasets.Dataset()
+#         tree = d.trees_from_string("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", "newick")[0]
+#         encode_splits(tree)
+# 
+#         def _chk_distance(t1, t2, exp_distance):
+#             tax1 = tree.taxa_block.get_taxon(label=t1)
+#             tax2 = tree.taxa_block.get_taxon(label=t2)        
+#             pd = treedists.patristic_distance(tree, tax1, tax2)
+#             assert pd == exp_distance, ("%s, %s: Expecting %d, but received %d" % (t1, t2, exp_distance, pd))
+#             
+#         _chk_distance("a", "b", 2)
+#         _chk_distance("a", "c", 4)
+#         _chk_distance("b", "c", 4)
+#         _chk_distance("a", "d", 6)
+#         _chk_distance("f", "d", 4)
+#         _chk_distance("c", "d", 6)
 
 if __name__ == "__main__":
     unittest.main()
