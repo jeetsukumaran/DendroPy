@@ -591,6 +591,10 @@ class Node(taxa.TaxonLinked):
     def is_leaf(self):
         "Returns True if the node has no child_nodes"
         return bool(not self.__child_nodes)
+
+    def is_internal(self):
+        "Returns True if the node has child_nodes"
+        return bool(self.__child_nodes)
                 
     ## Low-level methods for manipulating structure ##
 
@@ -678,21 +682,56 @@ class Node(taxa.TaxonLinked):
             node.taxon = node_taxon
         return self.add_child(node, edge_length)
 
-    def remove_child(self, node):
+    def remove_child(self, node, suppress_deg_two=False):
         """
         Removes a node from this nodes child set. Results in the
         parent of the node being removed set to None. Returns node
         that was just removed.
+        
+        `suppress_deg_two` should only be called on unrooted trees.
         """
         if not node:
             raise Exception("Tried to remove an non-existing or null node")
-        if node in self.__child_nodes:
+        children = self.__child_nodes
+        if node in children:
             node.parent_node = None
             node.edge.tail_node = None
-            index = self.__child_nodes.index(node)
+            index = children.index(node)
 #             if index > 0:
 #                 self.__child_nodes[index-1].next_sib = None
-            self.__child_nodes.remove(node)
+            children.remove(node)
+            if suppress_deg_two:
+                if self.parent_node:
+                    if len(children) == 1:
+                        child = children[0]
+                        pos = self.parent_node.__child_nodes.index(self)
+                        self.parent_node.add_child(child, pos=pos)
+                        self.parent_node.remove_child(self, suppress_deg_two=False)
+                        try:
+                            child.edge.length += self.edge.length
+                        except:
+                            pass
+                else:
+                    to_remove = None
+                    if len(children) == 2:
+                        if children[0].is_internal():
+                            to_remove = children[0]
+                            other = children[1]
+                        elif children[1].is_internal():
+                            to_remove = children[1]
+                            other = children[0]
+                    if to_remove is not None:
+                        try:
+                            other.edge.length += to_remove.edge.length
+                        except:
+                            pass
+                        pos = self.__child_nodes.index(to_remove)
+                        self.remove_child(to_remove, suppress_deg_two=False)
+                        tr_children = to_remove.__child_nodes
+                        tr_children.reverse()
+                        for c in tr_children:
+                            self.add_child(c, pos=pos)
+                            
         else:
             raise Exception("Tried to remove a node that is not listed as a child")
         return node
