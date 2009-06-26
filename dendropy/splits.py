@@ -237,8 +237,9 @@ class SplitDistribution(object):
         self.unrooted = True
         self._split_freqs = None
         self._trees_counted_for_freqs = 0
-        for split in split_set:
-            self.add_split_count(split, count=1)
+        if split_set:
+            for split in split_set:
+                self.add_split_count(split, count=1)
         
     def add_split_count(self, split, count=1):
         if split not in self.splits:

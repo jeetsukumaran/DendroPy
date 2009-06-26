@@ -635,11 +635,11 @@ class Node(taxa.TaxonLinked):
             self.collapse_neighborhood(dist - 1)
     def is_leaf(self):
         "Returns True if the node has no child_nodes"
-        return bool(not self.__child_nodes)
+        return bool(not self._child_nodes)
 
     def is_internal(self):
         "Returns True if the node has child_nodes"
-        return bool(self.__child_nodes)
+        return bool(self._child_nodes)
 
     ## Low-level methods for manipulating structure ##
 
@@ -736,19 +736,19 @@ class Node(taxa.TaxonLinked):
         """
         if not node:
             raise Exception("Tried to remove an non-existing or null node")
-        children = self.__child_nodes
+        children = self._child_nodes
         if node in children:
             node.parent_node = None
             node.edge.tail_node = None
             index = children.index(node)
 #             if index > 0:
-#                 self.__child_nodes[index-1].next_sib = None
+#                 self._child_nodes[index-1].next_sib = None
             children.remove(node)
             if suppress_deg_two:
                 if self.parent_node:
                     if len(children) == 1:
                         child = children[0]
-                        pos = self.parent_node.__child_nodes.index(self)
+                        pos = self.parent_node._child_nodes.index(self)
                         self.parent_node.add_child(child, pos=pos)
                         self.parent_node.remove_child(self, suppress_deg_two=False)
                         try:
@@ -769,9 +769,9 @@ class Node(taxa.TaxonLinked):
                             other.edge.length += to_remove.edge.length
                         except:
                             pass
-                        pos = self.__child_nodes.index(to_remove)
+                        pos = self._child_nodes.index(to_remove)
                         self.remove_child(to_remove, suppress_deg_two=False)
-                        tr_children = to_remove.__child_nodes
+                        tr_children = to_remove._child_nodes
                         tr_children.reverse()
                         for c in tr_children:
                             self.add_child(c, pos=pos)
