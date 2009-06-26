@@ -72,8 +72,24 @@ class PatristicDistanceMatrix(object):
                         for c2 in children[cidx1+1:]:
                             for desc2, desc2_plen in c2.desc_paths.items():
                                 self._pat_dists[desc1.taxon][desc2.taxon] = node.desc_paths[desc1] + desc2_plen + c2.edge.length
-                    del(c1.desc_paths)                                
-
+                    del(c1.desc_paths)
+                    
+    def distances(self):
+        """
+        Returns list of patristic distances.
+        """
+        dists = []
+        for dt in self._pat_dists.values():
+            for d in dt.values():
+                dists.append(d)
+        return dists
+        
+    def sum_of_distances(self):
+        """
+        Returns sum of patristic distances on tree.
+        """
+        return sum(self.distances())
+            
 def patristic_distance(tree, taxon1, taxon2): 
     """
     Given a tree with splits encoded, and two taxa on that tree, returns the 

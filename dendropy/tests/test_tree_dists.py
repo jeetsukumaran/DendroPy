@@ -94,25 +94,15 @@ class TreeDistTest(unittest.TestCase):
         _chk_distance(pdm, "b", "c", 4)
         _chk_distance(pdm, "a", "d", 6)
         _chk_distance(pdm, "f", "d", 4)
-        _chk_distance(pdm, "c", "d", 6)     
+        _chk_distance(pdm, "c", "d", 6)
         
-#     def test_pat_distance(self):
-#         d = datasets.Dataset()
-#         tree = d.trees_from_string("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", "newick")[0]
-#         encode_splits(tree)
-# 
-#         def _chk_distance(t1, t2, exp_distance):
-#             tax1 = tree.taxa_block.get_taxon(label=t1)
-#             tax2 = tree.taxa_block.get_taxon(label=t2)        
-#             pd = treedists.patristic_distance(tree, tax1, tax2)
-#             assert pd == exp_distance, ("%s, %s: Expecting %d, but received %d" % (t1, t2, exp_distance, pd))
-#             
-#         _chk_distance("a", "b", 2)
-#         _chk_distance("a", "c", 4)
-#         _chk_distance("b", "c", 4)
-#         _chk_distance("a", "d", 6)
-#         _chk_distance("f", "d", 4)
-#         _chk_distance("c", "d", 6)
+#         m = pdm._pat_dists
+#         labels1 = [t.label for t in m.keys()]
+#         labels1.sort()
+#         for label1 in labels1:
+#             tax1 = tree.taxa_block.get_taxon(label=label1)
+#             labels2 = [tax2.label for tax2 in m[tax1].keys()]
+#             print "%s: %s" % (label1, labels2)
 
 if __name__ == "__main__":
     unittest.main()
