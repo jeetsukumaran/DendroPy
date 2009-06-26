@@ -380,9 +380,9 @@ def estimate_char_model(tree_model,
         'datafile' : df.name,
         'treefile' : tf.name,
         'nst': num_states,
-        'basefreq' : 'estimate' if unequal_base_freqs else 'equal',
-        'rates' : 'gamma' if gamma_rates else 'equal',
-        'pinvar' : 'estimate' if prop_invar else '0',
+        'basefreq' : unequal_base_freqs and 'estimate' or 'equal',
+        'rates' : gamma_rates and 'gamma' or 'equal',
+        'pinvar' : prop_invar and 'estimate' or '0',
     }
     paup_template = """\
     set warnreset=no;
@@ -449,24 +449,24 @@ class PaupWrapperDumbTests(unittest.TestCase):
             self.num_trees = num_trees
             
         def _get_treefilepath(self):
-            return self.__tree_filepath                  
+            return self._tree_filepath                  
         def _set_treefilepath(self, f):
-            self.__tree_filepath = dendropy.tests.data_source_path(f)                 
+            self._tree_filepath = dendropy.tests.data_source_path(f)                 
         tree_filepath = property(_get_treefilepath, _set_treefilepath)            
             
         def _get_taxafilepath(self):
-            return self.__taxa_filepath                  
+            return self._taxa_filepath                  
         def _set_taxafilepath(self, f):
             if f is not None:
-                self.__taxa_filepath = dendropy.tests.data_source_path(f)                 
+                self._taxa_filepath = dendropy.tests.data_source_path(f)                 
             else:
-                self.__taxa_filepath = None
+                self._taxa_filepath = None
         taxa_filepath = property(_get_taxafilepath, _set_taxafilepath)        
         
         def _get_splitscsvfilepath(self):
-            return self.__splitscsv_filepath                  
+            return self._splitscsv_filepath                  
         def _set_splitscsvfilepath(self, f):
-            self.__splitscsv_filepath = dendropy.tests.data_source_path(f)                 
+            self._splitscsv_filepath = dendropy.tests.data_source_path(f)                 
         splitscsv_filepath = property(_get_splitscsvfilepath, _set_splitscsvfilepath)        
     
     def setUp(self):

@@ -301,19 +301,19 @@ class ColumnType(base.IdTagged):
   
     def __init__(self, oid=None,label=None, state_alphabet=None):
         base.IdTagged.__init__(self, oid=oid, label=label)
-        self.__state_alphabet = None
+        self._state_alphabet = None
         self.id_state_map = None
         self.state_alphabet = state_alphabet
         
     def _set_state_alphabet(self, value):
-        self.__state_alphabet = value
-        if self.__state_alphabet is not None:
+        self._state_alphabet = value
+        if self._state_alphabet is not None:
             self.id_state_map = self.__state_alphabet.id_state_map()
         else:
             self.id_state_map = None
             
     def _get_state_alphabet(self):
-        return self.__state_alphabet
+        return self._state_alphabet
         
     state_alphabet = property(_get_state_alphabet, _set_state_alphabet)
       
@@ -636,12 +636,12 @@ class DiscreteCharactersBlock(CharactersBlock):
         CharactersBlock.__init__(self, *args, **kwargs)
         self.state_alphabets = []
         self.default_state_alphabet = None
-        self.__default_symbol_state_map = None
+        self._default_symbol_state_map = None
         
     def _get_default_symbol_state_map(self):
-        if self.__default_symbol_state_map is None and self.default_state_alphabet is not None:
-            self.__default_symbol_state_map = self.default_state_alphabet.symbol_state_map()
-        return self.__default_symbol_state_map
+        if self._default_symbol_state_map is None and self.default_state_alphabet is not None:
+            self._default_symbol_state_map = self.default_state_alphabet.symbol_state_map()
+        return self._default_symbol_state_map
     
     default_symbol_state_map = property(_get_default_symbol_state_map)
                            

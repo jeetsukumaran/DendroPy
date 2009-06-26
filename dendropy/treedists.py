@@ -29,6 +29,67 @@ from math import sqrt
 from dendropy import treestruct
 from dendropy import treesum
 
+class PatristicDistanceMatrix(object):
+    """
+    Calculates and maintains patristic distance information of taxa on a tree.
+    """
+
+    def __init__(self, tree=None):
+        self.tree = None
+        self.taxa_block = None
+        self._pat_dists = {}
+        if tree is not None:
+            self.calc(tree)
+        
+    def __call__(self, taxon1, taxon2):
+        """
+        Returns patristic distance between two taxon objects.
+        """
+        try:
+            return self._pat_dists[taxon1][taxon2]
+        except KeyError, e:
+            return self._pat_dists[taxon2][taxon1]
+        
+    def calc(self, tree):
+        """
+        Calculates the distances.
+        """
+        self.tree = tree
+        self.taxa_block = tree.taxa_block
+        self._pat_dists = {}
+        for i1, t1 in enumerate(self.taxa_block):
+            self._pat_dists[t1] = {}
+            
+        for node in tree.postorder_node_iter():
+            children = node.child_nodes()
+            if len(children) == 0:
+                node.desc_paths = {node : 0}
+            else:
+                node.desc_paths = {}
+                for cidx1, c1 in enumerate(children):
+                    for desc1, desc1_plen in c1.desc_paths.items():       
+                        node.desc_paths[desc1] = desc1_plen + c1.edge.length
+                        for c2 in children[cidx1+1:]:
+                            for desc2, desc2_plen in c2.desc_paths.items():
+                                self._pat_dists[desc1.taxon][desc2.taxon] = node.desc_paths[desc1] + desc2_plen + c2.edge.length
+                    del(c1.desc_paths)
+                    
+    def distances(self):
+        """
+        Returns list of patristic distances.
+        """
+        dists = []
+        for dt in self._pat_dists.values():
+            for d in dt.values():
+                dists.append(d)
+        return dists
+        
+    def sum_of_distances(self):
+        """
+        Returns sum of patristic distances on tree.
+        """
+        return sum(self.distances())
+            
 def patristic_distance(tree, taxon1, taxon2): 
     """
     Given a tree with splits encoded, and two taxa on that tree, returns the 

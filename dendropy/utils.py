@@ -20,14 +20,180 @@
 ##  You should have received a copy of the GNU General Public License along
 ##  with this program. If not, see <http://www.gnu.org/licenses/>.
 ##
+##  Parts of this file (the threading code) were written by Mark T. Holder
+##      as a part of CIPRES (event_consumer.py in the PIPRes python lib).
+##
 ############################################################################
 
 """
 This module contains various utility functions and methods.
 """
-
+import sys
+import time
 import os
+import copy
 import fnmatch
+
+from threading import Event, Thread, Lock
+from dendropy import get_logger
+_LOG = get_logger('dendropy.utils')
+
+DEFAULT_SLEEP_INTERVAL=0.1
+class LineReadingThread(Thread):
+    """A thread that will read the input stream - designed to work with a file 
+    thas is being written. Note that if the file does not end with a newline
+    and the keep_going() method does not return False, then the thread will not
+    terminate
+    
+    self.keep_going()
+    is called with each line. (sub classes should override).
+    
+    LineReadingThread.__init__ must be called by subclasses.
+    """
+    def __init__(self, 
+                lineCallback=None, 
+                stream=None, 
+                filename="", 
+                stop_event=None, 
+                sleep_interval=DEFAULT_SLEEP_INTERVAL, 
+                store_lines=False, 
+                is_file=True, 
+                subproc=None, 
+                *args,
+                **kwargs):
+        """`lineCallback` is the callable that takes a string that is each line, and 
+        returns False to stop reading.  This is a way of using the class without
+        sub-classing and overriding keep_going
+        
+        `stream` is in input file-like object
+        `filename` can be sent instead of `stream`, it should be the path to the file to read.
+        `stop_event` is an Event, that will kill the thread if it is triggered.
+        `sleep_interval` is the interval to sleep while waiting for a new tree to appear.
+        other arguments are passed to the Thread.__init__()
+        """
+        self.stream = stream
+        self.filename = filename 
+        self.lineCallback = lineCallback
+        self.unfinished_line = None
+        self.stop_event = stop_event
+        self.sleep_interval = sleep_interval
+        self.store_lines = store_lines
+        if store_lines:
+            self.line_list_lock = Lock()
+        self.is_file = is_file
+        self.lines = []
+        self.subproc = subproc
+        self.stop_on_subproc_exit = kwargs.get('stop_on_subproc_exit', False)
+        Thread.__init__(self,group=None, target=None, name=None, 
+                        args=tuple(*args), kwargs=dict(**kwargs))
+
+    def wait_for_file_to_appear(self, filename):
+        """Blocks until the file `filename` appears or stop_event is triggered.
+        
+        Returns True if `filename` exists.
+        
+        Checks for the stop_event *before* checking for the file existence. 
+        (paup_wrap and raxml_wrap threads depend on this behavior).
+        """
+        while True:
+            if (self.stop_event is not None) and self.stop_event.isSet():
+                return False
+            if os.path.exists(filename):
+                return True
+            #_LOG.debug("Waiting for %s" %filename)
+            time.sleep(self.sleep_interval)
+
+    def open_file_when_exists(self, filename):
+        """Blocks until the file `filename` appears and then returns a file 
+        object opened in rU mode.
+        
+        Returns None if the stop event is triggered.
+        """
+        if self.wait_for_file_to_appear(filename):
+            return open(filename, "rU")
+        return None
+
+
+    def run(self):
+        if self.stream is None:
+            if not self.filename:
+                _LOG.debug('"stream" and "filename" both None when LineReadingThread.run called')
+                return
+            self.stream = self.open_file_when_exists(self.filename)
+            if self.stream is None:
+                return
+        self._read_stream()
+
+    def keep_going(self, line):
+        _LOG.debug("In keep_going: " + line)
+        if self.store_lines:
+            self.line_list_lock.acquire()
+            try:
+                self.lines.append(line)
+                _LOG.debug("self.lines = %s" % str(self.lines))
+            finally:
+                self.line_list_lock.release()
+        if self.lineCallback is None:
+            r = True
+            if self.subproc:
+                _LOG.debug("subproc is not None")
+                if self.subproc.returncode is None:
+                    _LOG.debug("subproc.returncode is None")
+                else:
+                    _LOG.debug("subproc.returncode is %d" % self.subproc.returncode)
+                    if self.store_lines:
+                        _LOG.debug("about to call readlines")
+                        line = line + "\n".join(self.stream.readlines())
+                    r = False
+            else:
+                _LOG.debug("subproc is None")
+            return r
+        return self.lineCallback(line)
+
+    def _read_stream(self):
+        self.unfinished_line = ""
+        while True:
+            if (self.stop_event is not None) and self.stop_event.isSet():
+                # when we terminate because of an event setting,
+                # we pass any unfinished_line line that we have to 
+                if not self.unfinished_line is None:
+                    self.keep_going(self.unfinished_line)
+                break
+            _LOG.debug("about to readline")
+            line = self.stream.readline()
+            if not line:
+                _LOG.debug("line is empty")
+                if self.stop_on_subproc_exit:
+                    self.subproc.poll()
+                    if self.subproc is not None:
+                        _LOG.debug("subproc is not None")
+                        if self.subproc.returncode is not None:
+                            _LOG.debug("subproc.returncode is %d" % self.subproc.returncode)
+                            _LOG.debug("%s" % repr(self.stream))
+                            l = "".join(self.stream.readlines())
+                            if l:
+                                self.keep_going(l)
+                            break
+                        else:
+                            _LOG.debug("subproc.returncode is None")
+                    else:
+                        _LOG.debug("subproc is None")
+            else:
+                _LOG.debug('line is "%s"' % line)
+            if not line.endswith("\n"):
+                if self.unfinished_line:
+                    self.unfinished_line = self.unfinished_line + line
+                else:
+                    self.unfinished_line = line
+                time.sleep(self.sleep_interval)
+            else:
+                if self.unfinished_line:
+                    line = self.unfinished_line + line
+                self.unfinished_line = ""
+                if not self.keep_going(line):
+                    break
+        _LOG.debug("LineReadingThread exiting")
+
 
 class RecastingIterator(object):
     """
@@ -86,7 +252,7 @@ class OrderedCaselessDict(dict):
         the ordered keys in sync.
         """
         super(OrderedCaselessDict, self).__init__()
-        self.__ordered_keys = []
+        self._ordered_keys = []
         if other is not None:
             if isinstance(other, dict):
                 for key, val in other.items():
@@ -154,7 +320,7 @@ class OrderedCaselessDict(dict):
 
     def __delitem__(self, key):
         "Remove item with specified key."
-        del(self.__ordered_keys[self.index(key)])
+        del(self._ordered_keys[self.index(key)])
         super(OrderedCaselessDict, \
               self).__delitem__(key.lower())                
 
@@ -173,7 +339,7 @@ class OrderedCaselessDict(dict):
         
     def popitem(self):
         "a.popitem()  remove and last (key, value) pair"
-        key = self.__ordered_keys[-1]
+        key = self._ordered_keys[-1]
         item = (key, self[key.lower()])
         self.__delitem__(key)
         return item
@@ -188,7 +354,7 @@ class OrderedCaselessDict(dict):
         Raise KeyError if not found.
         """
         count = 0
-        for k in self.__ordered_keys:
+        for k in self._ordered_keys:
             if k.lower() == key.lower():
                 return count
             count = count + 1
@@ -200,7 +366,7 @@ class OrderedCaselessDict(dict):
 
     def clear(self):
         "Deletes all items from the dictionary."
-        self.__ordered_keys = []
+        self._ordered_keys = []
         super(OrderedCaselessDict, self).clear()
 
     def has_key(self, key):
@@ -260,7 +426,14 @@ class NormalizedBitmaskDict(dict):
             if isinstance(other, dict):                
                 for key, val in other.items():
                     self[key] = val
-        
+    def __deepcopy__(self, memo):
+        o = NormalizedBitmaskDict()
+        memo[id(self)] = o
+        o.mask = self.mask
+        for key, val in self.items():
+            o[key] = copy.deepcopy(val, memo)
+        return o
+
     def normalize_key(self, key):
         return NormalizedBitmaskDict.normalize(key, self.mask)
             
