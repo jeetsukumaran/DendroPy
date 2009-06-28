@@ -310,7 +310,7 @@ def derived_state_matrix(char_vectors, ancestral_seq=None):
                 m[-1].append(1)
     return m
    
-def site_frequency_spectrum(char_vectors, ancestral_seq=None, pad=True):
+def unfolded_site_frequency_spectrum(char_vectors, ancestral_seq=None, pad=True):
     """
     Returns the site frequency spectrum of list of CharVector objects given by char_vectors,
     with reference to the ancestral sequence given by ancestral_seq. If ancestral_seq

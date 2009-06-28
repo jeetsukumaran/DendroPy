@@ -51,8 +51,8 @@ from dendropy.dataio import MultiFileTreeIterator
 
 _program_name = 'SumTrees'
 _program_subtitle = 'Phylogenetic Tree Split Support Summarization'
-_program_date = 'Mar 14 2009'
-_program_version = 'Version 1.2.0 (%s)' % _program_date
+_program_date = 'Jun 28 2009'
+_program_version = 'Version 1.3.0 (%s)' % _program_date
 _program_author = 'Jeet Sukumaran and Mark T. Holder'
 _program_contact = 'jeetsukumaran@gmail.com'
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
@@ -165,7 +165,12 @@ def main_cli():
                           + "branch lengths)")
 
     source_tree_optgroup = OptionGroup(parser, 'Source Tree Options')    
-    parser.add_option_group(source_tree_optgroup)          
+    parser.add_option_group(source_tree_optgroup)
+    source_tree_optgroup.add_option('--rooted',  
+                      action='store_true', 
+                      dest='rooted_trees',
+                      default=False,
+                      help="treat trees as rooted")     
     source_tree_optgroup.add_option('--from-newick-stream',  
                       action='store_true', 
                       dest='from_newick_stream',
@@ -175,7 +180,7 @@ def main_cli():
                       action='store_true', 
                       dest='from_nexus_stream',
                       default=False,
-                      help="support trees will be streamed in NEXUS format")                      
+                      help="support trees will be streamed in NEXUS format")                  
                             
     output_tree_optgroup = OptionGroup(parser, 'Output Tree Options')    
     parser.add_option_group(output_tree_optgroup)          
@@ -381,8 +386,9 @@ def main_cli():
                                         from_index=opts.burnin,
                                         progress_func=tsum.send_progress_message,
                                         encode_splits=True)
-
-    split_distribution = tsum.count_splits_on_trees(tree_source, trees_splits_encoded=True)
+    split_distribution = splits.SplitDistribution()
+    split_distribution.unrooted = not opts.rooted_trees
+    tsum.count_splits_on_trees(tree_source, split_distribution=split_distribution, trees_splits_encoded=True)
     if split_distribution.taxa_block is None:
         assert(tsum.total_trees_counted == 0)
         split_distribution.taxa_block = dendropy.taxa.TaxaBlock() # we just produce an empty block so we don't crash as we report nothing of interest
@@ -391,6 +397,10 @@ def main_cli():
     report.append("%d trees from each file requested to be ignored for burn-in." % (opts.burnin))
     report.append("%d trees ignored in total." % (tree_source.total_trees_ignored))    
     report.append("%d trees considered in total for split support assessment." % (tsum.total_trees_counted))
+    if opts.rooted_trees:
+        report.append("Trees treated as rooted.")
+    else:
+        report.append("Trees treated as unrooted.")
     n_taxa = len(split_distribution.taxa_block)
     report.append("%d unique taxa across all trees." % n_taxa)
     num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = split_distribution.splits_considered()
