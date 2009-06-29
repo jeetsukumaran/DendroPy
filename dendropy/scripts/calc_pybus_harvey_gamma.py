@@ -6,16 +6,9 @@ if __name__ == '__main__':
     from dendropy.treestats import pybus_harvey_gamma
 
     from optparse import OptionParser
-    usage = """Takes a tree (which will be treated as rooted), and reports the list of taxa
-    as the "outgroup" such that the largest clade in the tree is the "ingroup".
-This script can be useful when you are simulating rooted trees and need to do
-   a rooted inference procedure using software (such as PAUP*) that requires
-   you to specify an outgroup when you want to score under a clock model.
+    usage = """Calculates the Pybus-Harvey Gamma statistic for a tree specified as 
+    newick string.
 """
-    parser = OptionParser(usage=usage)
-    parser.add_option("-s", "--sep", dest="sep", default="\n", 
-        type="str",
-        help="The string that separates taxa listed in the outgroup")
     (options, args) = parser.parse_args()
     if len(args) > 1:
         sys.exit("At most one argument (a newick tree string with branch lengths) can be specified. Got: %s" % ' '.join(args))
