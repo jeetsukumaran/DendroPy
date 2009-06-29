@@ -475,6 +475,24 @@ class Tree(base.IdTagged):
                 assert(e in edges)
         return True
 
+    def get_edge_set(self, filter_fn=None):
+        """Returns the set of edges that are currently in the tree. 
+        
+        Note: the returned set acts like a shallow copy of the edge set (adding
+        or deleting elements from the set does not change the tree, but
+        modifying the elements does).
+        """
+        return set([i in self.preorder_edge_iter(filter_fn=filter_fn)])
+
+    def get_node_set(self, filter_fn=None):
+        """Returns the set of nodes that are currently in the tree
+        
+        Note: the returned set acts like a shallow copy of the edge set (adding
+        or deleting elements from the set does not change the tree, but
+        modifying the elements does).
+        """
+        return set([i in self.preorder_node_iter(filter_fn=filter_fn)])
+            
        
 ##############################################################################
 ## Node
@@ -740,8 +758,9 @@ class Node(taxa.TaxonLinked):
     def remove_child(self, node, suppress_deg_two=False):
         """
         Removes a node from this nodes child set. Results in the
-        parent of the node being removed set to None. Returns node
-        that was just removed.
+        parent of the node being removed set to None. 
+        
+        Returns the node removed
         
         `suppress_deg_two` should only be called on unrooted trees.
         """
@@ -766,6 +785,7 @@ class Node(taxa.TaxonLinked):
                             child.edge.length += self.edge.length
                         except:
                             pass
+                        self._child_nodes = []
                 else:
                     to_remove = None
                     if len(children) == 2:
@@ -786,11 +806,110 @@ class Node(taxa.TaxonLinked):
                         tr_children.reverse()
                         for c in tr_children:
                             self.add_child(c, pos=pos)
-                            
+                        to_remove._child_nodes = []
         else:
             raise Exception("Tried to remove a node that is not listed as a child")
         return node
+
+    def reversible_remove_child(self, node, suppress_deg_two=False):
+        """
+        This function is a (less-efficient) version of remove_child that also
+        returns the data needed by reinsert_nodes to "undo" the removal.
         
+        Returns a list of tuples.  The first element of each tuple is the 
+        node removed, the other elements are the information needed by 
+        `reinsert_nodes' in order to restore the tree to the same topology as
+        it was before the call to `remove_child.` If `suppress_deg_two` is False
+        then the returned list will contain only one item.
+        
+        
+        
+        `suppress_deg_two` should only be called on unrooted trees.
+        """
+        if not node:
+            raise Exception("Tried to remove an non-existing or null node")
+        children = self._child_nodes
+        try:
+            pos = children.index(node)
+        except:
+            raise Exception("Tried to remove a node that is not listed as a child")
+
+        removed = [(node, self, pos, [], None)]
+        node.parent_node = None
+        node.edge.tail_node = None
+#             if index > 0:
+#                 self._child_nodes[index-1].next_sib = None
+        children.remove(node)
+        if suppress_deg_two:
+            p = self.parent_node
+            if p:
+                if len(children) == 1:
+                    child = children[0]
+                    pos = p._child_nodes.index(self)
+                    p.add_child(child, pos=pos)
+                    self._child_nodes = [] 
+                    p.remove_child(self, suppress_deg_two=False)
+                    e = child.edge
+                    try:
+                        e.length += self.edge.length
+                    except:
+                        e = None
+                    t = (self, p, pos, [child], e)
+                    removed.append(t)
+            else:
+                to_remove = None
+                if len(children) == 2:
+                    if children[0].is_internal():
+                        to_remove = children[0]
+                        other = children[1]
+                    elif children[1].is_internal():
+                        to_remove = children[1]
+                        other = children[0]
+                if to_remove is not None:
+                    e = other.edge
+                    try:
+                        e.length += to_remove.edge.length
+                    except:
+                        e = None
+                    pos = self._child_nodes.index(to_remove)
+                    self.remove_child(to_remove, suppress_deg_two=False)
+                    tr_children = to_remove._child_nodes
+                    to_remove._child_nodes = [] 
+                    for n, c in enumerate(tr_children):
+                        new_pos = pos + n
+                        self.add_child(c, pos=new_pos)
+                    t = (to_remove, self, pos, tr_children, e)
+                    removed.append(t)
+
+                            
+        return removed
+    
+    def reinsert_nodes(self, nd_connection_list):
+        """This function should be used to "undo" the effects of Node.reversible_remove_child
+        NOTE: the behavior is only guaranteed if the tree has not been modified
+        between the remove_child and reinsert_nodes calls! (or the tree has 
+        been restored such that the node/edge identities are identical to 
+        the state before the remove_child call.
+
+        The order of info in each tuple is:
+            0 - node removed
+            1 - parent of node removed
+            2 - pos in parent array
+            3 - children of node removed that were "stolen"
+            4 - edge that was lengthened by "stealing" length from node's edge
+        """
+        # we unroll the stack of operations
+        for blob in nd_connection_list[-1::-1]:
+            #_LOG.debug(blob)
+            n, p, pos, children, e = blob
+            for c in children:
+                cp = c.parent_node
+                if cp:
+                    cp.remove_child(c)
+                n.add_child(c)
+            p.add_child(n, pos=pos)
+            if e is not None:
+                e.length -= n.edge.length
     ## Basic node metrics ##
 
     def distance_from_root(self):
@@ -925,14 +1044,18 @@ class Node(taxa.TaxonLinked):
             if e:
                 sel = e.length
                 if sel is not None:
-                    s = ""
-                    try:
-                        s = float(sel)
-                        s = str(s)
-                    except ValueError:
-                        s = str(sel)
-                    if s:
-                        out.write(":%s" % s)
+                    fmt = kwargs.get('edge_length_formatter', None)
+                    if fmt:
+                        out.write(":%s" % fmt(sel))
+                    else:
+                        s = ""
+                        try:
+                            s = float(sel)
+                            s = str(s)
+                        except ValueError:
+                            s = str(sel)
+                        if s:
+                            out.write(":%s" % s)
 
     def get_indented_form(self, **kwargs):
         out = StringIO()

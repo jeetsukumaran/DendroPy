@@ -42,12 +42,41 @@ from dendropy import trees
 from dendropy import treedists
 from dendropy import splits
 from dendropy.tests.util_for_testing import assert_approx_equal, assert_vec_approx_equal, assert_mat_approx_equal
+from dendropy.tests import data_source_path
 
 ### MODULE THAT WE ARE TESTING ###
 from dendropy.treestruct import *
 ### MODULE THAT WE ARE TESTING ###
 
+
+def edge_length_formatter(x):
+    return "%5.4f" % x
+
 class treestructTest(unittest.TestCase):
+    def testRemoveAndReinsert(self):
+        dataset = datasets.Dataset()
+        if True:
+            fp = data_source_path('rana.tre')
+            dataset.read(open(fp, 'rU'), format='NEXUS')
+            trees_block = dataset.trees_blocks[0]
+            tree = trees_block[0]
+        else:
+            tree = dataio.trees_from_newick(["((t5,t6),((t4,(t2,t1)),t3));"]).trees_blocks[0][0]
+
+        expected_newick = tree.compose_newick(edge_length_formatter=edge_length_formatter)
+        for n in tree.preorder_node_iter():
+            if n is not tree.seed_node:
+                p = n.parent_node
+                assert p
+                removed_history = p.reversible_remove_child(n)
+                p.reinsert_nodes(removed_history)
+                self.assertEqual(expected_newick, tree.compose_newick(edge_length_formatter=edge_length_formatter))
+
+                removed_history = p.reversible_remove_child(n, suppress_deg_two=True)
+                p.reinsert_nodes(removed_history)
+                self.assertEqual(expected_newick, tree.compose_newick(edge_length_formatter=edge_length_formatter))
+
+
 
     def testCollapseEdge(self):
         tree = dataio.trees_from_newick(["((t5,t6),((t4,(t2,t1)),t3));"]).trees_blocks[0][0]
