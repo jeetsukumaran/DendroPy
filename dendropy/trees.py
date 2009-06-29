@@ -697,6 +697,17 @@ class Node(taxa.TaxonLinked):
         
     parent_node = property(_get_parent_node, _set_parent_node)
 
+    def get_incident_edges(self):
+        e = [c.edge for c in self._child_nodes]
+        e.append(self.edge)
+        return e
+
+    def get_adjacent_nodes(self):
+        n = [c for c in self._child_nodes]
+        if self.parent_node:
+            n.append(self.parent_node)
+        return n
+
     def add_child(self, node, edge_length=None, pos=None):
         """
         Adds a child node to this node. Results in the parent_node and
@@ -1027,6 +1038,15 @@ class Edge(base.IdTagged):
     def is_internal(self):
         "Returns True if the head node has children"
         return bool(self.head_node and not self.head_node.is_leaf())
+
+    def get_adjacent_edges(self):
+        'Returns a list of all edges that "share" a node with `self`'
+        he = [i for i in self.head_node.get_incident_edges() if i is not self]
+        te = [i for i in self.tail_node.get_incident_edges() if i is not self]
+        he.extend(te)
+        return he
+    adjacent_edges = property(get_adjacent_edges)
+
 
 def _preorder_list_manip(n, siblings, ancestors):
     """Helper function for recursion free preorder traversal, that does not 
