@@ -91,7 +91,26 @@ class DatasetReadTest(unittest.TestCase):
             src = open(dendropy.tests.data_source_path(t[0]), "rU")
             expected = [ (s[0], s[1]) for s in csv.reader(open(dendropy.tests.data_source_path(t[2]), "rU"))]
             self.compare_chars(src, t[1], expected)        
+
+    def testReadAsStrRows(self):
+        d = datasets.Dataset()
+        d.read(open(dendropy.tests.data_source_path('canolis.fasta'), 'rU'), 'dnafasta', row_type='str')
+        expected = [ (s[0], s[1]) for s in csv.reader(open(dendropy.tests.data_source_path('canolis.chars.csv'), "rU"))]
+
+        taxa_block = d.taxa_blocks[0]
+        char_block = d.char_blocks[0]
+        
+        assert len(expected) == len(char_block)
+        assert len(expected) == len(taxa_block)
+
+        for tax_idx, (exp_taxa, exp_seq) in enumerate(expected):
+        
+            taxon = taxa_block[tax_idx]
+            label = taxon.label
             
+            self.assertEquals(label, exp_taxa)
+            self.assertEquals(exp_seq, char_block[taxon])
+                    
 if __name__ == "__main__":
     unittest.main()
         

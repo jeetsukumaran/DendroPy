@@ -136,7 +136,15 @@ class StateAlphabet(base.IdTagged, list):
         for state in self:
             map[state.symbol] = state
         return map
-    
+
+    def get_legal_symbols_as_str(self):
+        m = self.symbol_state_map()
+        keys = m.keys()
+        for k in keys:
+            if len(k) > 1:
+                raise ValueError('get_legal_symbols can only be called with alphabets in which all symbols are single characters')
+        return "".join(keys)
+
     def get_states(self, oids=None, symbols=None, tokens=None):
         """
         Returns list of states with ids/symbols/tokens equal to values

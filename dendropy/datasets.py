@@ -211,15 +211,17 @@ class Dataset(base.Element):
     ###########################################################################
     ## reader/writers
     
-    def read(self, src, format):
+    def read(self, src, format, **kwargs):
         """
         Populates this dataset from `src`, given in `format`. `src`
         is a file descriptor object, `format` is one of the supported file
         format identifiers: 'NEXUS' (incl. 'NEWICK'), 'NEXML' etc.
+        
+        kwargs are passed on to reader.read_dataset
         """
         from dendropy import dataio
         reader = dataio.get_reader(format)
-        reader.read_dataset(src, self)
+        reader.read_dataset(src, self, **kwargs)
         return self
         
     def from_string(self, string, format):

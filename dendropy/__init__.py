@@ -54,7 +54,7 @@ __all__ = ["base.py",
         "xmlparser.py",
         "high_level.py",
 ]
-__version__ = "2.5.5"
+__version__ = "2.5.6"
 PACKAGE_NAME = "DendroPy"
 PACKAGE_VERSION = __version__
 PACKAGE_AUTHOR = "Jeet Sukumaran and Mark T. Holder"
@@ -186,16 +186,17 @@ if not _user_ini_checked:
 class SyntaxException(Exception):
 
     def __init__(self, row=None, column=None, message=None):
+        Exception.__init__(self)
         self.row = row
         self.column = column
-        self.message = message
+        self.msg = message
 
     def __str__(self):
         if self.row is None:
             t = ""
         else:
             t =  " IN LINE %d" % self.row
-        return 'ERROR PARSING FILE%s: %s' % (t, self.message)
+        return 'ERROR PARSING FILE%s: %s' % (t, self.msg)
 
 
 if __name__ == "__main__":

@@ -60,9 +60,13 @@ class FastaReader(datasets.Reader):
         self.char_block_type = character_block_type
 
     def read_dataset(self, file_obj, dataset=None, **kwargs):
-        "Main file parsing driver."
+        """Main file parsing driver.
+        row_type kwarg can be RICH or STR
+        """
         if dataset is None:
             dataset = datasets.Dataset()
+
+        simple_rows = kwargs.get('row_type', 'rich').upper() == 'STR'
         
         ntb = len(dataset.taxa_blocks)
         if ntb > 1:
@@ -80,31 +84,52 @@ class FastaReader(datasets.Reader):
         symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
 
         curr_vec = None
+        curr_taxon = None
+        
+        if simple_rows:
+            legal_chars = char_block.default_state_alphabet.get_legal_symbols_as_str()
+
         for line_index, line in enumerate(file_obj):
             s = line.strip()
             if not s:
                 continue
             if s.startswith('>'):
+                if simple_rows and curr_taxon and curr_vec:
+                    char_block[curr_taxon] = "".join(curr_vec)
                 name = s[1:].strip()
-                taxon = taxa_block.get_taxon(label=name)
-                if taxon in char_block:
+                curr_taxon = taxa_block.get_taxon(label=name)
+                if curr_taxon in char_block:
                     raise SyntaxException(row=line_index + 1, message="Fasta error: Repeated sequence name (%s) found" % name)
                 if curr_vec is not None and len(curr_vec) == 0:
                     raise SyntaxException(row=line_index + 1, message="Fasta error: Expected sequence, but found another sequence name (%s)" % name)
-                curr_vec = characters.CharacterDataVector(taxon=taxon)
-                char_block[taxon] = curr_vec
+                if simple_rows:
+                    curr_vec = []
+                else:
+                    curr_vec = characters.CharacterDataVector(taxon=curr_taxon)
+                    char_block[curr_taxon] = curr_vec
             elif curr_vec is None:
                 raise SyntaxException(row=line_index + 1, message="Fasta error: Expecting a lines starting with > before sequences")
             else:
-                for col_ind, c in enumerate(s):
-                    c = c.strip()
-                    if not c:
-                        continue
-                    try:
-                        state = symbol_state_map[c]
-                        curr_vec.append(characters.CharacterDataCell(value=state))
-                    except:
-                        raise SyntaxException(row=line_index + 1, column=col_ind + 1, message='Unrecognized sequence symbol "%s"' % c)
+                if simple_rows:
+                    for col_ind, c in enumerate(s):
+                        c = c.strip()
+                        if not c:
+                            continue
+                        if c not in legal_chars:
+                            SyntaxException(row=line_index + 1, column=col_ind + 1, message='Unrecognized sequence symbol "%s"' % c)
+                        curr_vec.append(c)
+                else:
+                    for col_ind, c in enumerate(s):
+                        c = c.strip()
+                        if not c:
+                            continue
+                        try:
+                            state = symbol_state_map[c]
+                            curr_vec.append(characters.CharacterDataCell(value=state))
+                        except:
+                            raise SyntaxException(row=line_index + 1, column=col_ind + 1, message='Unrecognized sequence symbol "%s"' % c)
+        if simple_rows and curr_taxon and curr_vec:
+            char_block[curr_taxon] = "".join(curr_vec)
                 
 
 class DNAFastaReader(FastaReader):
