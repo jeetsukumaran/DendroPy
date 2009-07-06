@@ -179,6 +179,25 @@ if not _user_ini_checked:
         execfile(p)
     del p
 
+
+#######################################################################
+## NESTED CLASSES
+
+class SyntaxException(Exception):
+
+    def __init__(self, row=None, column=None, message=None):
+        self.row = row
+        self.column = column
+        self.message = message
+
+    def __str__(self):
+        if self.row is None:
+            t = ""
+        else:
+            t =  " IN LINE %d" % self.row
+        return 'ERROR PARSING FILE%s: %s' % (t, self.message)
+
+
 if __name__ == "__main__":
     sys.stdout.write("%s %s\n" % (PACKAGE_NAME, PACKAGE_VERSION))
 

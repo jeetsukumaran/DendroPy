@@ -42,26 +42,26 @@ garli_tree_pat = re.compile(tree_prefix + garli_after_name_tree_pattern)
 first = True
 bootrep = -1
 for line in f:
-	m = garli_tree_model_pat.search(line)
-	if m:
-		has_model = True
-	else:
-		m = garli_tree_pat.search(line)
-		has_model = False
-	if m:
-		g = m.groups()
-		if has_model:
-			score = float(g[0])
-			sys.stdout.write('model = %s\n' % g[1])
-		sys.stdout.write('tree = %s\n' % g[-1])
-		if first: # this is a way to make 
-			sys.stdout.write('treeNum = 1\n')
-			first = False
-		if bootrep >= 0:
-			sys.stdout.write('setcharintwts = %s' % wt_lines[bootrep])
-		sys.stdout.write('run\n')
-		bootrep += 1
-	elif True:
-		sys.stderr.write("nomatch: %s\n" %line)
+    m = garli_tree_model_pat.search(line)
+    if m:
+        has_model = True
+    else:
+        m = garli_tree_pat.search(line)
+        has_model = False
+    if m:
+        g = m.groups()
+        if has_model:
+            score = float(g[0])
+            sys.stdout.write('model = %s\n' % g[1])
+        sys.stdout.write('tree = %s\n' % g[-1])
+        if first: # this is a way to make 
+            sys.stdout.write('treeNum = 1\n')
+            first = False
+        if bootrep >= 0:
+            sys.stdout.write('setcharintwts = %s' % wt_lines[bootrep])
+        sys.stdout.write('run\n')
+        bootrep += 1
+    elif True:
+        sys.stderr.write("nomatch: %s\n" %line)
 sys.exit(0)
 

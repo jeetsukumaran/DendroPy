@@ -39,23 +39,23 @@ sys.stderr.write("garli_tree_pat = %s\n" % tree_prefix + garli_after_name_tree_p
 
 first = True
 for line in f:
-	m = garli_tree_model_pat.search(line)
-	if m:
-		has_model = True
-	else:
-		m = garli_tree_pat.search(line)
-		has_model = False
-	if m:
-		g = m.groups()
-		if has_model:
-			score = float(g[0])
-			sys.stdout.write('model = %s\n' % g[1])
-		sys.stdout.write('tree = %s\n' % g[-1])
-		if first: # this is a way to make 
-			sys.stdout.write('treeNum = 1\n')
-			first = False
-		sys.stdout.write('run\n')
-	elif False:
-		sys.stderr.write("nomatch: %s\n" %line)
+    m = garli_tree_model_pat.search(line)
+    if m:
+        has_model = True
+    else:
+        m = garli_tree_pat.search(line)
+        has_model = False
+    if m:
+        g = m.groups()
+        if has_model:
+            score = float(g[0])
+            sys.stdout.write('model = %s\n' % g[1])
+        sys.stdout.write('tree = %s\n' % g[-1])
+        if first: # this is a way to make 
+            sys.stdout.write('treeNum = 1\n')
+            first = False
+        sys.stdout.write('run\n')
+    elif False:
+        sys.stderr.write("nomatch: %s\n" %line)
 sys.exit(0)
 

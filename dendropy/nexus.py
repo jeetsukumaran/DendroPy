@@ -39,7 +39,7 @@ from dendropy import taxa
 from dendropy import trees
 from dendropy import utils
 from dendropy import characters   
-from dendropy import get_logger
+from dendropy import get_logger, SyntaxException
 _LOG = get_logger("dendropy.nexus")
 
 
@@ -62,22 +62,6 @@ def build_state_alphabet(char_block, symbols, missing):
     char_block.default_state_alphabet = char_block.state_alphabets[0]
     return char_block
 
-#######################################################################
-## NESTED CLASSES
-
-class SyntaxException(Exception):
-
-    def __init__(self, row=None, column=None, message=None):
-        self.row = row
-        self.column = column
-        self.message = message
-
-    def __str__(self):
-        if self.row is None:
-            t = ""
-        else:
-            t =  " IN LINE %d" % self.row
-        return 'ERROR PARSING FILE%s: %s' % (t, self.message)
 
 ############################################################################
 ## Standard Tree Iterator

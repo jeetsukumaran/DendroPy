@@ -442,7 +442,7 @@ class PaupWrapperDumbTests(unittest.TestCase):
     
     class SplitsTestCase(object):
     
-        def __init__(self, tree_filepath, taxa_filepath, splitscsv_filepath, num_trees):		
+        def __init__(self, tree_filepath, taxa_filepath, splitscsv_filepath, num_trees):
             self.tree_filepath = tree_filepath
             self.taxa_filepath = taxa_filepath
             self.splitscsv_filepath = splitscsv_filepath

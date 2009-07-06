@@ -73,11 +73,12 @@ class DatasetReadTest(unittest.TestCase):
                 else:
                     state_alpha = char_block.default_state_alphabet
                 exp_state = state_alpha.state_for_symbol(symbol1)
-                assert test_state == exp_state
+                self.assertEquals(test_state, exp_state)
                 
     def testBasicCharactersRead(self):
         test_cases = [
             ['anolis.chars.nexus', 'nexus', 'anolis.chars.csv'],
+            ['canolis.fasta', 'dnafasta', 'canolis.chars.csv'],
 #             ['anolis.chars.nexml', 'nexml', 'anolis.chars.csv'],
             ['primates.chars.nexus', 'nexus', 'primates.chars.csv'],
             ['primates.chars.interleaved.nexus', 'nexus', 'primates.chars.csv'],
@@ -90,7 +91,7 @@ class DatasetReadTest(unittest.TestCase):
             src = open(dendropy.tests.data_source_path(t[0]), "rU")
             expected = [ (s[0], s[1]) for s in csv.reader(open(dendropy.tests.data_source_path(t[2]), "rU"))]
             self.compare_chars(src, t[1], expected)        
-        
+            
 if __name__ == "__main__":
     unittest.main()
         
