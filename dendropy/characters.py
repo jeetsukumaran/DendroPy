@@ -104,6 +104,7 @@ class StateAlphabet(base.IdTagged, list):
     def __init__(self, oid=None, label=None):
         base.IdTagged.__init__(self, oid=oid, label=label)  
         list.__init__(self)
+        self.missing = None
         
     def get_state(self, attr_name, value):
         "Returns state in self in which attr_name equals value."
@@ -201,6 +202,7 @@ class DnaStateAlphabet(StateAlphabet):
               ("D", ('A', 'G', 'T')),
               ("B", ('C', 'G', 'T')),
              )
+    unknown_state_symbol = 'N'
 
     def __init__(self, oid=None, label=None):
         StateAlphabet.__init__(self, oid=oid, label=label)
@@ -209,9 +211,14 @@ class DnaStateAlphabet(StateAlphabet):
         self.gap = self[-1]            
         for a in DnaStateAlphabet._ambig:
             k, v = a[0], a[1]
-            self.append(StateAlphabetElement(symbol=k,
-                                           multistate=StateAlphabetElement.AMBIGUOUS_STATE,
-                                           member_states=self.get_states(symbols=v)))
+            sae = StateAlphabetElement(symbol=k,
+                                       multistate=StateAlphabetElement.AMBIGUOUS_STATE,
+                                       member_states=self.get_states(symbols=v))
+            self.append(sae)
+            if k == '?':
+                self.missing = sae
+            elif k == 'N':
+                self.any_residue = sae
         
 class RnaStateAlphabet(StateAlphabet):
     _states = "ACGU-"
@@ -228,7 +235,7 @@ class RnaStateAlphabet(StateAlphabet):
               ("D", ('A', 'G', 'U')),
               ("B", ('C', 'G', 'U')),
              )
-
+    unknown_state_symbol = 'N'
 
     def __init__(self, oid=None, label=None):
         StateAlphabet.__init__(self, oid=oid, label=label)
@@ -237,9 +244,15 @@ class RnaStateAlphabet(StateAlphabet):
         self.gap = self[-1]            
         for a in RnaStateAlphabet._ambig:
             k, v = a[0], a[1]
-            self.append(StateAlphabetElement(symbol=k,
-                                           multistate=StateAlphabetElement.AMBIGUOUS_STATE,
-                                           member_states=self.get_states(symbols=v)))
+            sae = StateAlphabetElement(symbol=k,
+                                       multistate=StateAlphabetElement.AMBIGUOUS_STATE,
+                                       member_states=self.get_states(symbols=v))
+            self.append(sae)
+            if k == '?':
+                self.missing = sae
+            elif k == 'N':
+                self.any_residue = sae
+
 class ProteinStateAlphabet(StateAlphabet):
     _states = "ACDEFGHIKLMNPQRSTUVWY-"
     _ambig = (('B', ('D', 'N')),
@@ -247,16 +260,22 @@ class ProteinStateAlphabet(StateAlphabet):
                ('X', ('A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y')),
                ("?", ('A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y', '-')),
               )
+    unknown_state_symbol = 'X'
     def __init__(self, oid=None, label=None):
         StateAlphabet.__init__(self, oid=oid, label=label)
         for sym in ProteinStateAlphabet._states:
             self.append(StateAlphabetElement(symbol=sym))
-        self.gap = self[-1]            
+        self.gap = self[-1]
         for a in ProteinStateAlphabet._ambig:
             k, v = a[0], a[1]
-            self.append(StateAlphabetElement(symbol=k,
+            sae = StateAlphabetElement(symbol=k,
                                            multistate=StateAlphabetElement.AMBIGUOUS_STATE,
-                                           member_states=self.get_states(symbols=v)))
+                                           member_states=self.get_states(symbols=v))
+            self.append(sae)
+            if k == '?':
+                self.missing = sae
+            elif k == 'X':
+                self.any_residue = sae
 class BinaryStateAlphabet(StateAlphabet):
 
     def __init__(self, oid=None, label=None, allow_gaps=True, allow_missing=True):
@@ -267,13 +286,16 @@ class BinaryStateAlphabet(StateAlphabet):
             self.append(StateAlphabetElement(symbol="-"))
             self.gap = self[-1]
             if allow_missing:
-                self.append(StateAlphabetElement(symbol="?", 
+                self.missing = StateAlphabetElement(symbol="?", 
                                                    multistate=StateAlphabetElement.AMBIGUOUS_STATE,
-                                                   member_states=self.get_states(symbols=['0', '1', '-'])))
+                                                   member_states=self.get_states(symbols=['0', '1', '-']))
+                self.append(self.missing)
         elif allow_missing:
-            self.append(StateAlphabetElement(symbol="?", 
+            self.missing = StateAlphabetElement(symbol="?", 
                                                multistate=StateAlphabetElement.AMBIGUOUS_STATE,
-                                               member_states=self.get_states(symbols=['0', '1'])))
+                                               member_states=self.get_states(symbols=['0', '1']))
+            self.append(self.missing)
+        
                         
 class RestrictionSitesStateAlphabet(BinaryStateAlphabet):
 
@@ -629,7 +651,11 @@ class ContinuousCharactersBlock(CharactersBlock):
         CharactersBlock.__init__(self, *args, **kwargs)
 
 class DiscreteCharactersBlock(CharactersBlock):
-    "Character data container/manager manager."
+    """Character data container/manager manager.
+    
+    That adds the attributes self.state_alphabets (a list of alphabets)
+    and self.default_state_alphabet
+    """
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxa_block`."
