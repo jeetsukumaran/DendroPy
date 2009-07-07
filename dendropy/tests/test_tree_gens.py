@@ -119,6 +119,14 @@ class TreeGenTest(unittest.TestCase):
             changing.debug_check_tree(logger_obj=_LOG, splits=True)
             if symmetric_difference(ref, changing) != 0:
                 self.fail("\n%s\n!=\n%s" % (str(ref), str(changing)))
+                
+    def testPureKingman(self):
+        """
+        Right now, just making sure we get no errors while running. TODO:
+        proper test!
+        """
+        t = pure_kingman(random_taxa_block(100))
+        assert t._debug_tree_is_valid()
 
 if __name__ == "__main__":
     unittest.main()
