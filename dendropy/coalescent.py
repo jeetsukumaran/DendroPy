@@ -258,7 +258,7 @@ def extract_coalescent_frames(tree):
         num_genes = num_genes - len(n[0].child_nodes()) + 1 
     return num_genes_wt
     
-def probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
+def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     """
     Under the classical neutral coalescent \citep{Kingman1982,
     Kingman1982b}, the waiting times between coalescent events in a
@@ -276,16 +276,16 @@ def probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     """
     lp = 0.0
     for k, t in coalescent_frames.items():
-        k2N = float(distributions.binomial_coefficient(k, 2)) / haploid_pop_size
+        k2N = (float(k * (k-1)) / 2) / haploid_pop_size
+#         k2N = float(distributions.binomial_coefficient(k, 2)) / haploid_pop_size
         lp =  lp + math.log(k2N) - (k2N * t)
-    p = math.exp(lp)
-    return p    
+    return lp  
 
-def probability_of_coalescent_tree(tree, haploid_pop_size):
+def log_probability_of_coalescent_tree(tree, haploid_pop_size):
     """
     Wraps up extraction of coalescent frames and reporting of probability.
     """
-    return probability_of_coalescent_frames(extract_coalescent_frames(tree), haploid_pop_size)
+    return log_probability_of_coalescent_frames(extract_coalescent_frames(tree), haploid_pop_size)
 
 def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
     """
