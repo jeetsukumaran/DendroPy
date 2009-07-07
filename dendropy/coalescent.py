@@ -435,7 +435,7 @@ if de_hoon_statistics:
         """
         `allele_branch_len_dist` is a dictionary with number of alleles as keys
         and a list of waiting times associated with that number of alleles as 
-        values. `haploid_pop_size` is the population size in terms of numbers 
+        values. `haploid_pop_size` is the population size in terms of total numbers 
         of genes. This returns a the KL-divergence between the distribution of 
         waiting times and the Kingman coalescent distribution.
         
@@ -448,7 +448,7 @@ if de_hoon_statistics:
             for t in wts:
                 q = de_hoon_lib.pdf(wts, [k], kernel = 'G')
                 if q == 0:
-                    q = 1e-100
+                    q = 1e-120
                 d_kl += p * math.log(p/q)
         return d_kl
         
