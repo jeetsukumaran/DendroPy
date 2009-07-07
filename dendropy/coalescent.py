@@ -33,6 +33,21 @@ from dendropy import taxa
 from dendropy import treestruct
 
 try:
+    ### Required for kernel density estimation:
+    ###     "Statistics" library 
+    ### By:
+    ###     Michiel de Hoon
+    ### From: 
+    ###     http://bonsai.ims.u-tokyo.ac.jp/~mdehoon/software/python/
+    ###
+    ### Statistics for Python is an extension module, written in ANSI-C, for 
+    ### the Python scripting language. Currently, this extension module 
+    ### contains some routines to estimate the probability density function 
+    ### from a set of random variables.
+    ### Statistics for Python was released under the Python License.
+    ### Michiel de Hoon
+    ### Center for Computational Biology and Bioinformatics, 
+    ### Columbia University.    
     import statistics as de_hoon_lib
     de_hoon_statistics = True
 except:
@@ -446,7 +461,29 @@ if de_hoon_statistics:
         for k, wts in allele_waiting_time_dist.items():
             p = float(distributions.binomial_coefficient(k, 2)) / haploid_pop_size
             for t in wts:
-                q = de_hoon_lib.pdf(wts, [k], kernel = 'G')
+                # Kernel types:
+                #
+                # 'E' or 'Epanechnikov'   
+                #     Epanechnikov kernel (default)   
+                #    
+                # 'U' or 'Uniform'   
+                #     Uniform kernel   
+                #    
+                # 'T' or 'Triangle'   
+                #     Triangle kernel   
+                #    
+                # 'G' or  'Gaussian'   
+                #     Gaussian kernel   
+                #    
+                # 'B' or 'Biweight'   
+                #     Quartic/biweight kernel   
+                #    
+                # '3' or 'Triweight'   
+                #     Triweight kernel   
+                #    
+                # 'C' or 'Cosine'   
+                #     Cosine kernel   
+                q = de_hoon_lib.pdf(wts, [k], kernel = 'Gaussian')
                 if q == 0:
                     q = 1e-120
                 d_kl += p * math.log(p/q)
