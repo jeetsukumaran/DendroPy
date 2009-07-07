@@ -240,7 +240,7 @@ def node_waiting_time_pairs(tree):
         intervals.append( (d[0], d[1] - depths[i][1]) )
     return intervals
 
-def coalescent_frames(tree):
+def extract_coalescent_frames(tree):
     """Returns list of tuples of (number of genes in the sample, waiting time
     till coalescent event / size of coalescent interval) for the given tree"""
     nwti = node_waiting_time_pairs(tree)
@@ -250,9 +250,9 @@ def coalescent_frames(tree):
     for n in nwti:
         num_genes_wt.append((num_genes, n[1]))
         num_genes = num_genes - len(n[0].child_nodes()) + 1 
-    return num_genes_wt      
-
-def probability_of_coalescent_tree(tree, haploid_pop_size):
+    return num_genes_wt
+    
+def probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     """
     Under the classical neutral coalescent \citep{Kingman1982,
     Kingman1982b}, the waiting times between coalescent events in a
@@ -268,24 +268,19 @@ def probability_of_coalescent_tree(tree, haploid_pop_size):
     $k$ alleles in the sample (i.e., for $k$ alleles to coalesce into
     $k-1$ alleles).
     """
-    kts = coalescent_frames(tree)  
-#     p = 1.0
-#     for kt in kts:
-#         print "****"
-#         print "p = %s" % p
-#         print "k = %s" % kt[0]
-#         print "t = %s" % kt[1]
-#         print "k2N = %s" % k2N
-#         print "e^(-k2N * t) = %s" % math.exp(-k2N * kt[1])
-#         k2N = float(distributions.binomial_coefficient(kt[0], 2)) / haploid_pop_size
-#         p *=  k2N * math.exp(-k2N * kt[1])
-#         print "p' = %s" %  p
+    kts = coalescent_frames
     lp = 0.0
     for kt in kts:
         k2N = float(distributions.binomial_coefficient(kt[0], 2)) / haploid_pop_size
         lp =  lp + math.log(k2N) - (k2N * kt[1])
     p = math.exp(lp)
-    return p
+    return p    
+
+def probability_of_coalescent_tree(tree, haploid_pop_size):
+    """
+    Wraps up extraction of coalescent frames and reporting of probability.
+    """
+    return probability_of_coalescent_frames(extract_coalescent_frames(tree), haploid_pop_size)
 
 def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
     """
