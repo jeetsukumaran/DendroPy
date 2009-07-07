@@ -485,7 +485,7 @@ if de_hoon_statistics:
                 #     Cosine kernel   
                 q = de_hoon_lib.pdf(wts, [k], kernel = 'Gaussian')
                 if q == 0:
-                    q = 1e-120
+                    q = 1e-100
                 d_kl += p * math.log(p/q)
         return d_kl
         
