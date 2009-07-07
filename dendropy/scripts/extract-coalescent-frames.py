@@ -93,7 +93,7 @@ def main():
             d = datasets.Dataset()
             ctrees = d.read_trees(open(fpath, "rU"), "NEXUS")
             for t in ctrees:
-                cf = coalescent.coalescent_frames(t)
+                cf = coalescent.extract_extract_coalescent_frames(t)
                 for k, wt in cf:
                     output.write("%d\t%s\n" % (k, wt))
                     if k not in coal_frames:

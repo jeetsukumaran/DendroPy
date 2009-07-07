@@ -206,7 +206,24 @@ def pop_gen_tree(tree=None,
             index = index + 1
             
     return tree
-            
+    
+def pure_kingman(taxa_block, pop_size=1, rng=None):
+    """
+    Generates a tree under the unconstrained Kingman's coalescent process.
+    """
+    
+    # get our random number generator
+    if rng is None:
+        rng = GLOBAL_RNG # use the global rng by default
+        
+    nodes = [trees.Node(taxon=t) for t in taxa_block]
+    seed_node = coalescent.coalesce(nodes=nodes,
+                                    pop_size=pop_size,
+                                    period=None,
+                                    rng=rng)[0]
+    tree = trees.Tree(taxa=taxa_block, seed_node=seed_node)
+    return tree
+                
 def constrained_kingman(pop_tree,
                         gene_trees_block=None,
                         node_factory=None,
