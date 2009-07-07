@@ -32,6 +32,12 @@ from dendropy import trees
 from dendropy import taxa
 from dendropy import treestruct
 
+try:
+    import statistics as de_hoon_lib
+    de_hoon_statistics = True
+except:
+    de_hoon_statistics = False
+
 def discrete_time_to_coalescence(n_genes, 
                                  pop_size=None, 
                                  haploid=True,
@@ -391,3 +397,58 @@ def num_deep_coalescences_with_grouping(tree, tax_sets):
                     nnd.add_child(cnd)
     dc_tree.seed_node = nnd
     return len(dc_tree.leaf_nodes()) - len(tax_sets)                    
+
+if de_hoon_statistics:
+
+    def kl_divergence_coalescent_trees(tree_list, haploid_pop_size):
+        """
+        Returns KL divergence for coalescent frames found in a collection of 
+        trees from the theoretical distribution given the specified haploid
+        population size.
+        """
+        allele_waiting_time_dist = {}
+        for t in tree_list:
+            cf = extract_coalescent_frames(t)
+            allele_waiting_time_dist = update_allele_waiting_time_dist(cf, allele_waiting_time_dist)
+        return kl_divergence_coalescent_waiting_times(allele_waiting_time_dist, haploid_pop_size)
+    
+    def update_allele_waiting_time_dist(coalescent_frames, allele_waiting_time_dist=None):
+        """
+        `coalescent_frames` is a dictionary with number of alleles as keys and 
+        a scalar representing the waiting time to a coalescence event given a 
+        particular number of alleles on a particular tree (as returned by
+        `extract_coalescent_frame`. `allele_branch_len_dist` is a dictionary 
+        with number of alleles as keys and a list of waiting times associated 
+        with that number of alleles as values. This is simply a convenience
+        function that adds the waiting times found in `coalescent_frames`
+        to the collection of values tracked in `allele_waiting_time_dist`.
+        """
+        if allele_waiting_time_dist is None:
+            allele_waiting_time_dist = {}
+        for k, t in coalescent_frames.items():
+            if k not in allele_waiting_time_dist:
+                allele_waiting_time_dist[k] = []
+            allele_waiting_time_dist[k].append(t)
+        return allele_waiting_time_dist            
+
+    def kl_divergence_coalescent_waiting_times(allele_waiting_time_dist, haploid_pop_size):
+        """
+        `allele_branch_len_dist` is a dictionary with number of alleles as keys
+        and a list of waiting times associated with that number of alleles as 
+        values. `haploid_pop_size` is the population size in terms of numbers 
+        of genes. This returns a the KL-divergence between the distribution of 
+        waiting times and the Kingman coalescent distribution.
+        
+        D_{\mathrm{KL}}(P\|Q) = \sum_i P(i) \log \frac{P(i)}{Q(i)}.
+        
+        """
+        d_kl = 0.0
+        for k, wts in allele_waiting_time_dist.items():
+            p = float(distributions.binomial_coefficient(k, 2)) / haploid_pop_size
+            for t in wts:
+                q = de_hoon_lib.pdf(wts, [k], kernel = 'G')
+                if q == 0:
+                    q = 1e-100
+                d_kl += p * math.log(p/q)
+        return d_kl
+        

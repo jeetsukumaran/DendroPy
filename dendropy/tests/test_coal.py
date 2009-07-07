@@ -129,7 +129,16 @@ class DeepCoalTest(unittest.TestCase):
             dc = coalescent.num_deep_coalescences_with_grouping(tree, groups)
             assert dc == expected, \
                 "deep coalescences by groups: expecting %d, but found %d" % (expected, dc)
-            
+
+    if coalescent.de_hoon_statistics:
+        def testKLDiv(self):
+            from dendropy import treegen
+            taxa_block = treegen.random_taxa_block(100)
+            ctrees = [treegen.pure_kingman(taxa_block, 20000) for i in range(10)]
+            _LOG.info("KL divergence from Kingman coalescent of trees generated under pure Kingman process: %s" % coalescent.kl_divergence_coalescent_trees(ctrees, 20000))
+            ytrees = [treegen.uniform_pure_birth(taxa_block) for i in range(10)] 
+            _LOG.info("KL divergence from Kingman coalescent of trees generated under Yule process: %s" % coalescent.kl_divergence_coalescent_trees(ytrees, 20000))
+                                   
 if __name__ == "__main__":
     unittest.main()
 
