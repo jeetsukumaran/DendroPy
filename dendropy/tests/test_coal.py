@@ -42,8 +42,8 @@ class CalcIntervalsTest(unittest.TestCase):
         t = d.trees_from_string("((((a:1, b:1):1, c:2):1, d:3, e:3):2, (f:4, g:4):1)", "newick")[0]
         i1 = coalescent.coalescence_intervals(t)
         assert i1 == [1.0, 1.0, 1.0, 1.0, 1.0], "intervals found = %s" % ", ".join(intervals)
-        i2 = coalescent.extract_extract_coalescent_frames(t)
-        assert i2 == [(7, 1.0), (6, 1.0), (5, 1.0), (3, 1.0), (2, 1.0)]
+        i2 = coalescent.extract_coalescent_frames(t)
+        assert i2 == {7: 1.0, 6:1.0, 5:1.0, 3:1.0, 2:1.0}
         check = coalescent.probability_of_coalescent_tree(t, 10)
 #         check2 = coalescent.debug_coal_prob(t, 10)
 #         print check, check2

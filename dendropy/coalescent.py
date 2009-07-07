@@ -241,14 +241,14 @@ def node_waiting_time_pairs(tree):
     return intervals
 
 def extract_coalescent_frames(tree):
-    """Returns list of tuples of (number of genes in the sample, waiting time
-    till coalescent event / size of coalescent interval) for the given tree"""
+    """Returns dictionary, with key = number of alleles, and values = waiting time for 
+    coalescent for the given tree"""
     nwti = node_waiting_time_pairs(tree)
 #     num_genes = len(tree.taxa_block)
     num_genes = len(tree.leaf_nodes())
-    num_genes_wt = []
+    num_genes_wt = {}
     for n in nwti:
-        num_genes_wt.append((num_genes, n[1]))
+        num_genes_wt[num_genes] = n[1]
         num_genes = num_genes - len(n[0].child_nodes()) + 1 
     return num_genes_wt
     
@@ -268,11 +268,10 @@ def probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     $k$ alleles in the sample (i.e., for $k$ alleles to coalesce into
     $k-1$ alleles).
     """
-    kts = coalescent_frames
     lp = 0.0
-    for kt in kts:
-        k2N = float(distributions.binomial_coefficient(kt[0], 2)) / haploid_pop_size
-        lp =  lp + math.log(k2N) - (k2N * kt[1])
+    for k, t in coalescent_frames.items():
+        k2N = float(distributions.binomial_coefficient(k, 2)) / haploid_pop_size
+        lp =  lp + math.log(k2N) - (k2N * t)
     p = math.exp(lp)
     return p    
 
