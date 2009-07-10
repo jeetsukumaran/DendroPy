@@ -36,7 +36,7 @@ from dendropy import coalescent
 
 _prog_usage = '%prog [options] <tree-files>'
 _prog_version = 'PROB-COAL-TREE Version 1.0'
-_prog_description = 'This program does something.'
+_prog_description = 'This program returns the log probability of a tree under a coalescent model.'
 _prog_author = 'Jeet Sukumaran and Mark T. Holder'
 _prog_copyright = 'Copyright (C) 2009 Jeet Sukumaran and Mark T. Holder.'
 
@@ -73,7 +73,7 @@ def main():
             d = datasets.Dataset()
             ctrees = d.read_trees(open(fpath, "rU"), "NEXUS")
             for t in ctrees:
-                p = coalescent.probability_of_coalescent_tree(t, opts.pop_size)
+                p = coalescent.log_probability_of_coalescent_tree(t, opts.pop_size)
                 sys.stdout.write("%s\n" % p)
 
 if __name__ == '__main__':

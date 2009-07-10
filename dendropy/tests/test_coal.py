@@ -44,7 +44,7 @@ class CalcIntervalsTest(unittest.TestCase):
         assert i1 == [1.0, 1.0, 1.0, 1.0, 1.0], "intervals found = %s" % ", ".join(intervals)
         i2 = coalescent.extract_coalescent_frames(t)
         assert i2 == {7: 1.0, 6:1.0, 5:1.0, 3:1.0, 2:1.0}
-        check = coalescent.probability_of_coalescent_tree(t, 10)
+        check = coalescent.log_probability_of_coalescent_tree(t, 10)
 #         check2 = coalescent.debug_coal_prob(t, 10)
 #         print check, check2
         ### TODO: Actually come up a with a decent coalescent tree, calculated the probability,

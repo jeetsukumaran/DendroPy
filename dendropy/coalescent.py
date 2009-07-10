@@ -33,6 +33,21 @@ from dendropy import taxa
 from dendropy import treestruct
 
 try:
+    ### Required for kernel density estimation:
+    ###     "Statistics" library 
+    ### By:
+    ###     Michiel de Hoon
+    ### From: 
+    ###     http://bonsai.ims.u-tokyo.ac.jp/~mdehoon/software/python/
+    ###
+    ### Statistics for Python is an extension module, written in ANSI-C, for 
+    ### the Python scripting language. Currently, this extension module 
+    ### contains some routines to estimate the probability density function 
+    ### from a set of random variables.
+    ### Statistics for Python was released under the Python License.
+    ### Michiel de Hoon
+    ### Center for Computational Biology and Bioinformatics, 
+    ### Columbia University.    
     import statistics as de_hoon_lib
     de_hoon_statistics = True
 except:
@@ -258,7 +273,7 @@ def extract_coalescent_frames(tree):
         num_genes = num_genes - len(n[0].child_nodes()) + 1 
     return num_genes_wt
     
-def probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
+def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     """
     Under the classical neutral coalescent \citep{Kingman1982,
     Kingman1982b}, the waiting times between coalescent events in a
@@ -276,16 +291,16 @@ def probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     """
     lp = 0.0
     for k, t in coalescent_frames.items():
-        k2N = float(distributions.binomial_coefficient(k, 2)) / haploid_pop_size
+        k2N = (float(k * (k-1)) / 2) / haploid_pop_size
+#         k2N = float(distributions.binomial_coefficient(k, 2)) / haploid_pop_size
         lp =  lp + math.log(k2N) - (k2N * t)
-    p = math.exp(lp)
-    return p    
+    return lp  
 
-def probability_of_coalescent_tree(tree, haploid_pop_size):
+def log_probability_of_coalescent_tree(tree, haploid_pop_size):
     """
     Wraps up extraction of coalescent frames and reporting of probability.
     """
-    return probability_of_coalescent_frames(extract_coalescent_frames(tree), haploid_pop_size)
+    return log_probability_of_coalescent_frames(extract_coalescent_frames(tree), haploid_pop_size)
 
 def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
     """
@@ -435,7 +450,7 @@ if de_hoon_statistics:
         """
         `allele_branch_len_dist` is a dictionary with number of alleles as keys
         and a list of waiting times associated with that number of alleles as 
-        values. `haploid_pop_size` is the population size in terms of numbers 
+        values. `haploid_pop_size` is the population size in terms of total numbers 
         of genes. This returns a the KL-divergence between the distribution of 
         waiting times and the Kingman coalescent distribution.
         
@@ -446,7 +461,29 @@ if de_hoon_statistics:
         for k, wts in allele_waiting_time_dist.items():
             p = float(distributions.binomial_coefficient(k, 2)) / haploid_pop_size
             for t in wts:
-                q = de_hoon_lib.pdf(wts, [k], kernel = 'G')
+                # Kernel types:
+                #
+                # 'E' or 'Epanechnikov'   
+                #     Epanechnikov kernel (default)   
+                #    
+                # 'U' or 'Uniform'   
+                #     Uniform kernel   
+                #    
+                # 'T' or 'Triangle'   
+                #     Triangle kernel   
+                #    
+                # 'G' or  'Gaussian'   
+                #     Gaussian kernel   
+                #    
+                # 'B' or 'Biweight'   
+                #     Quartic/biweight kernel   
+                #    
+                # '3' or 'Triweight'   
+                #     Triweight kernel   
+                #    
+                # 'C' or 'Cosine'   
+                #     Cosine kernel   
+                q = de_hoon_lib.pdf(wts, [k], kernel = 'Gaussian')
                 if q == 0:
                     q = 1e-100
                 d_kl += p * math.log(p/q)
