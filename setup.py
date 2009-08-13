@@ -50,7 +50,7 @@ setup(name='DendroPy',
       version=PACKAGE_VERSION,     
       author='Jeet Sukumaran and Mark T. Holder',
       author_email='jeet@ku.edu and mtholder@ku.edu',
-      url='http://sourceforge.net/projects/dendropy/',
+      url='http://pypi.python.org/pypi/DendroPy',
       description="""\
 Phylogenetic computing library""",
       license='GPL 3+',

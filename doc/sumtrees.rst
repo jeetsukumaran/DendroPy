@@ -14,14 +14,36 @@ In the latter case, you have the option of specifying the minimum posterior prob
 SumTrees is distributed and installed as part of the `DendroPy
 <http://sourceforge.net/projects/dendropy/>`_ phylogenetic computation library, which can be found on SourceForge: http://sourceforge.net/projects/dendropy/.
 
-How to Install the Program
+Where to Find the Package
+=========================
+
+DendroPy can be found at the `Python Package Index     <http://pypi.python.org/pypi/DendroPy>`_:
+
+    http://pypi.python.org/pypi/DendroPy
+    
+How to Install the Package
 ==========================
 
-1.  Download the latest release of DendroPy from `here     <http://sourceforge.net/project/platformdownload.php?group_id=240391>`_:
+The Easy Way
+------------
 
-    http://sourceforge.net/project/platformdownload.php?group_id=240391
+Simply type the following command in your shell/terminal::
 
-    If for some reason the previous link does not work, you could simply go to `DendroPy <http://sourceforge.net/projects/dendropy/>`_ site and from there navigate to the correct download page.
+    sudo easy_install -U dendropy
+    
+And that is all it takes!    
+
+This requires you have `setuptools <http://pypi.python.org/pypi/setuptools>`_ already installed. If you get an error message about "``easy_install``" not being found, then you do *not* have `setuptools <http://pypi.python.org/pypi/setuptools>`_ installed, and you need to `get it <http://pypi.python.org/pypi/setuptools>`_ and install it first.
+It is *highly recommended* that you use this method, even if it means that you have to pre-install `setuptools <http://pypi.python.org/pypi/setuptools>`_.
+
+The Not So Easy Way
+-------------------
+
+Alternatively, you can install DendroPy yourself, by following these steps.
+
+1.  Download the latest release of DendroPy from `here <http://pypi.python.org/pypi/DendroPy>`_:
+
+    http://pypi.python.org/pypi/DendroPy
 
     Note that you might end up downloading a newer version of DendroPy, in which case the version numbers in the file and directory names may not correspond exactly to those given in the examples. For instance, you may end up with "``DendroPy-2.2.1rc3.tar.gz``" rather than "``DendroPy-2.1.3.tar.gz``". However, as long as you substitute the correct archive and directory name in the examples and discussion below, everything else should remain the same. 
 
