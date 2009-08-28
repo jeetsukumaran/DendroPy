@@ -35,7 +35,8 @@ import sys
 import os
 import subprocess
 
-script_names = ['cattrees.py',
+script_names = ['coalign-muscle.py',
+                'cattrees.py',
                 'beast-to-nexus.py',
                 'extract-coalescent-frames.py',
                 'long_branch_symmdiff.py',
