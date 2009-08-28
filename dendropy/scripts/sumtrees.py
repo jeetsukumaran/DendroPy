@@ -307,7 +307,7 @@ def main_cli():
         if len(support_filepaths) == 0:
             messenger.send_formatted("No sources of support specified or could be found. "
             + "Please provide the path to at least one (valid and existing) file "
-            + "containing non-parametric or MCMC tree samples "
+            + "containing tree samples "
             + "to summarize.", force=True)
             sys.exit(1)
             
