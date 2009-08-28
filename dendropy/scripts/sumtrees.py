@@ -46,6 +46,7 @@ from dendropy import splits
 from dendropy import treesum
 from dendropy import datasets
 from dendropy import trees
+from dendropy.cli import confirm_overwrite, show_splash, Messenger
 from dendropy.dataio import MultiFileTreeIterator
 
 
@@ -60,69 +61,6 @@ _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
                  "There is NO WARRANTY,\nto the extent permitted by law."
                  
-def confirm_overwrite(filepath, 
-                      messenger, 
-                      replace_without_asking=False, 
-                      file_desc="Output"):
-    if os.path.exists(filepath):           
-        if replace_without_asking:
-            overwrite = 'y'
-        else:
-            messenger.send_error('%s file already exists: "%s"' % (file_desc, filepath))
-            overwrite = raw_input("Overwrite (y/N)? ")
-            messenger.send('')
-        if not overwrite.lower().startswith("y"):
-            return False
-        else:            
-            return True
-    else:
-        return True
-
-def show_splash(dest=sys.stderr, extended=False):
-    lines = []
-    lines.append("%s - %s" % (_program_name, _program_subtitle))
-    lines.append("%s" % _program_version)
-    lines.append("By %s" % _program_author)
-    lines.append("(using the DendroPy Phylogenetic Computing Library Version %s)" % (dendropy.PACKAGE_VERSION))
-    if extended:
-        lines.append('')
-        lines.extend(_program_copyright.split('\n'))
-    header_max = max([len(i) for i in lines]) + 1
-    sbars = '=' * header_max
-    dest.write("%s\n" % sbars)
-    dest.write("%s\n" % ('\n'.join(lines)))
-    dest.write("%s\n\n" % sbars)       
-        
-class Messenger(object):
-
-    def __init__(self, quiet=False, dest1=sys.stderr, dest2=None):
-        self.quiet = quiet
-        self.dest1 = dest1
-        self.dest2 = dest2
-
-    def send_multi(self, msg, wrap=0, newline=True, force=False):
-        for line in msg:
-            self.send(msg=line, wrap=wrap, newline=newline, force=force)
-            
-    def send(self, msg, wrap=0, newline=True, force=False):                
-        if wrap:
-            msg = textwrap.fill(msg, width=70)
-        if newline:
-            suffix = "\n"
-        else:
-            suffix = ""           
-        if force or not self.quiet:            
-            if self.dest1:
-                self.dest1.write(msg + suffix)
-        if self.dest2:
-            self.dest2.write(msg + suffix)
-            
-    def send_formatted(self, msg, force=False):
-        self.send(msg, wrap=True, force=force)
-        
-    def send_error(self, msg, wrap=False):
-        self.send(msg, wrap=wrap, force=True)  
-        
 def main_cli():
     
     description =  '%s %s %s' % (_program_name, _program_version, _program_subtitle)    
@@ -276,7 +214,13 @@ def main_cli():
     
     # splash 
     if not opts.quiet:
-        show_splash(dest=sys.stderr, extended=False)
+        show_splash(prog_name=_program_name, 
+        prog_subtitle=_program_subtitle, 
+        prog_version=_program_version, 
+        prog_author=_program_author, 
+        prog_copyright=_program_copyright, 
+        dest=sys.stderr, 
+        extended=False)
                                     
     ###################################################
     # Support file idiot checking
