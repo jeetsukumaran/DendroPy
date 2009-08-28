@@ -37,6 +37,7 @@ import subprocess
 
 script_names = ['coalign-muscle.py',
                 'cattrees.py',
+                'compare-splits.py',
                 'beast-to-nexus.py',
                 'extract-coalescent-frames.py',
                 'long_branch_symmdiff.py',
