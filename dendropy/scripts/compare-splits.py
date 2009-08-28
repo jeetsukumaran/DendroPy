@@ -34,6 +34,8 @@ from optparse import OptionParser
 
 from dendropy.cli import confirm_overwrite, show_splash, Messenger
 from dendropy import datasets
+from dendropy import treesum
+from dendropy import nexus
 
 _prog_usage = '%prog [options] <tree-files>'
 _prog_name = 'COMPARE-SPLITS'
@@ -102,12 +104,12 @@ def main():
     # splash 
     if not opts.quiet:
         show_splash(prog_name=_prog_name, 
-        prog_subtitle=_prog_subtitle, 
-        prog_version=_prog_version, 
-        prog_author=_prog_author, 
-        prog_copyright=_prog_copyright, 
-        dest=sys.stderr, 
-        extended=False)  
+            prog_subtitle=_prog_subtitle, 
+            prog_version=_prog_version, 
+            prog_author=_prog_author, 
+            prog_copyright=_prog_copyright, 
+            dest=sys.stderr, 
+            extended=False)  
     
     missing = False 
     tree_filepaths = []
@@ -142,7 +144,17 @@ def main():
         if confirm_overwrite(output_fpath, messenger, opts.replace):
             output_dest = open(output_fpath, "w")
         else:
-            sys.exit(1)    
+            sys.exit(1)
+        
+    dataset = datasets.Dataset()
+    taxa_block = dataset.add_taxa_block()
+    split_dists = {}
+    tsum = treesum.TreeSummarizer()
+    for tfile_idx, tfile in enumerate(tree_file_objs):
+        messenger.send("File %d of %d: %s" % (tfile_idx+1, len(tree_file_objs), tfile.name))
+        tree_iterator = nexus.iterate_over_trees(tfile, taxa_block=taxa_block, from_index=opts.burnin+1)
+        split_dists[tfile] = tsum.count_splits_on_trees(tree_iterator, split_distribution=None, trees_splits_encoded=False)
+        
     
 if __name__ == "__main__":
     main()

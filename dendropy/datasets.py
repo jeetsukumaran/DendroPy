@@ -271,7 +271,14 @@ class Dataset(base.Element):
         else:
             return []
 
-    def iterate_over_trees(self, src, format, taxa_block=None, encode_splits=False, rooted=None, finish_node_func=None):
+    def iterate_over_trees(self, 
+            src, 
+            format, 
+            taxa_block=None, 
+            encode_splits=False, 
+            rooted=None, 
+            finish_node_func=None,
+            from_index=0):
         from dendropy import dataio
         reader = dataio.get_reader(format)
         reader.include_characters = False
@@ -282,20 +289,19 @@ class Dataset(base.Element):
                  }
         cache = cache_reader_state(reader, **added)
 
-
         if taxa_block is None:
-            for tree in reader.iterate_over_trees(src, dataset=self):
-                yield tree
+            for tree_idx, tree in enumerate(reader.iterate_over_trees(src, dataset=self)):
+                if tree_idx >= from_index:
+                    yield tree
         else:
             if  not taxa_block in self.taxa_blocks:
                 self.taxa_blocks.append(taxa_block)
-            for tree in reader.iterate_over_trees(src, taxa_block=taxa_block):
-                yield tree
+            for tree_idx, tree in enumerate(reader.iterate_over_trees(src, taxa_block=taxa_block)):
+                if tree_idx >= from_index:
+                    yield tree
 
-        restore_reader_state(reader, cache)
-        
-        
- 
+        restore_reader_state(reader, cache)        
+         
     def trees_from_string(self, string, format, encode_splits=False, rooted=None, finish_node_func=None, **kwargs):
         """
         Populates this dataset from `string`, given in `format`. `src`

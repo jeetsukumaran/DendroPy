@@ -66,7 +66,7 @@ def build_state_alphabet(char_block, symbols, missing):
 ############################################################################
 ## Standard Tree Iterator
       
-def iterate_over_trees(file_obj=None, taxa_block=None, dataset=None, file_format=None, **kwargs):
+def iterate_over_trees(file_obj=None, taxa_block=None, dataset=None, file_format=None, from_index=0, **kwargs):
     """
     Generator to iterate over trees in data file.
     Primary goal is to be memory efficient, storing no more than one tree
@@ -74,7 +74,7 @@ def iterate_over_trees(file_obj=None, taxa_block=None, dataset=None, file_format
     """
     if dataset is None:
         dataset = datasets.Dataset()
-    stream_tokenizer = PurePythonNexusStreamTokenizer(file_obj)    
+    stream_tokenizer = PurePythonNexusStreamTokenizer(file_obj)
     if file_format is None:
         try:
             stream_tokenizer.stream_handle.seek(0)
@@ -86,7 +86,7 @@ def iterate_over_trees(file_obj=None, taxa_block=None, dataset=None, file_format
         else:
             stream_tokenizer.stream_handle.seek(0)
             file_format = "NEWICK"
-    for tree in dataset.iterate_over_trees(file_obj, taxa_block=taxa_block, format=file_format, **kwargs):
+    for tree in dataset.iterate_over_trees(file_obj, taxa_block=taxa_block, format=file_format, from_index=from_index, **kwargs):
         yield tree
 
 ############################################################################
