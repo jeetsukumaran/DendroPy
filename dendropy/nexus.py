@@ -118,7 +118,7 @@ def split_to_newick(split, taxa_block):
     """
     Represents a split as a newick string.
     """
-    taxlabels = taxa_block.labels()
+    taxlabels = [NexusWriter.escape_token(label) for label in taxa_block.labels()]
     
     # do not do the root
     if split == 0 or (split == taxa_block.all_taxa_bitmask()):
