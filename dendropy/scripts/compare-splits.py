@@ -39,11 +39,11 @@ from dendropy import nexus
 
 _prog_usage = '%prog [options] <tree-files>'
 _prog_name = 'COMPARE-SPLITS'
-_prog_subtitle = 'split frequencies comparison'
-_prog_date = 'Jun 28 2009'
+_prog_subtitle = 'Multiple Tree Distribution Split Frequency Comparison'
+_prog_date = 'Aug 28 2009'
 _prog_version = 'Version 1.0.0 (%s)' % _prog_date
-_prog_description = 'constructs table of frequencies of splits in different empirical distributions of trees'
-_prog_author = 'Jeet Sukumaran '
+_prog_author = 'Jeet Sukumaran'
+_prog_description =  '%s %s %s' % (_prog_name, _prog_version, _prog_subtitle)
 _prog_copyright = 'Copyright (C) 2009 Jeet Sukumaran.'
 
 def main():
