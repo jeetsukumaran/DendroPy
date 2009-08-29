@@ -74,11 +74,17 @@ def main():
         default=None,
         help="path to output file (if not given, will print to standard output)")
         
-    parser.add_option('--no-headers',  
-        dest='headers',
+    parser.add_option('--no-header-row',  
+        dest='show_header_row',
         action="store_false",
         default=True,
         help="skip output of column headers")
+        
+    parser.add_option('--no-split-string',   
+        dest='show_split_string',
+        action="store_false",
+        default=True,
+        help="do not output split representation")    
         
     parser.add_option('--ignore-missing-files', 
         action='store_true', 
@@ -135,7 +141,7 @@ def main():
             + "to summarize.", force=True)
             sys.exit(1)
              
-    tree_file_objs = [open(f, "r") for f in tree_filepaths]  
+    tree_file_objs = [open(f, "rU") for f in tree_filepaths]  
     
     if opts.output_filepath is None:
         output_dest = sys.stdout
@@ -150,12 +156,32 @@ def main():
     taxa_block = dataset.add_taxa_block()
     split_dists = {}
     tsum = treesum.TreeSummarizer()
+    splits_to_consider = set()
     for tfile_idx, tfile in enumerate(tree_file_objs):
         messenger.send("File %d of %d: %s" % (tfile_idx+1, len(tree_file_objs), tfile.name))
         tree_iterator = nexus.iterate_over_trees(tfile, taxa_block=taxa_block, from_index=opts.burnin+1)
         split_dists[tfile] = tsum.count_splits_on_trees(tree_iterator, split_distribution=None, trees_splits_encoded=False)
-        
+        split_dists[tfile].calc_freqs()
+        splits_to_consider.update(split_dists[tfile].splits)
     
+    if opts.show_header_row:
+        column_labels = [f.name for f in tree_file_objs]
+        if opts.show_split_string:
+            column_labels.insert(0, "Split")        
+        output_dest.write(opts.separator.join(column_labels) + "\n")                
+        
+    for split in splits_to_consider:
+        freqs = []
+        for tfile in tree_file_objs:
+            if split in split_dists[tfile].splits:
+                freqs.append(split_dists[tfile].split_frequencies[split])
+            else:
+                freqs.append(0.0)
+        row = [str(f) for f in freqs]
+        if opts.show_split_string:
+            row.insert(0, nexus.split_to_newick(split, taxa_block))
+        output_dest.write(opts.separator.join(row) + "\n")           
+                                    
 if __name__ == "__main__":
     main()
 
