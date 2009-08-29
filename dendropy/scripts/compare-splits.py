@@ -162,8 +162,14 @@ def main():
         tree_iterator = nexus.iterate_over_trees(tfile, taxa_block=taxa_block, from_index=opts.burnin+1)
         split_dists[tfile] = tsum.count_splits_on_trees(tree_iterator, split_distribution=None, trees_splits_encoded=False)
         split_dists[tfile].calc_freqs()
-        splits_to_consider.update(split_dists[tfile].splits)
-    
+        splits_to_consider.update(split_dists[tfile].splits)          
+        num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = split_dists[tfile].splits_considered()
+        messenger.send("  Trees counted: %s" % split_dists[tfile].total_trees_counted)      
+        messenger.send("  Total number of splits: %s" % num_splits)      
+        messenger.send("  Total number of unique splits: %s" % num_unique_splits)      
+        messenger.send("  Total number of non-trivial splits: %s" % num_nt_splits)
+        messenger.send("  Total number of unique non-trivial splits: %s\n" % num_nt_unique_splits)        
+        
     if opts.show_header_row:
         column_labels = [f.name for f in tree_file_objs]
         if opts.show_split_string:
