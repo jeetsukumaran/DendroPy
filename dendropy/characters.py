@@ -525,6 +525,7 @@ class CharactersBlock(taxa.TaxaLinked):
         Updates local taxa block by adding taxa not already managed.
         Mainly for use after matrix extension
         """
+        assert self.taxa_block is not None
         for taxon in self:
             if taxon not in self.taxa_block:
                 self.taxa_block.append(taxon)

@@ -180,6 +180,6 @@ class treestructTest(unittest.TestCase):
             splits.encode_splits(tree)
             splits.encode_splits(etree)
             assert treedists.symmetric_difference(tree, etree) == 0
-        
+
 if __name__ == "__main__":
     unittest.main()

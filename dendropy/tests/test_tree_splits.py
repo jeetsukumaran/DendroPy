@@ -43,6 +43,7 @@ from dendropy import nexus
 from dendropy import treesum
 from dendropy import taxa
 from dendropy import splits
+from dendropy import datasets
 
 large_cases = [ #('7180.tre', '7180.tre'),
                      #('terrarana.random.unrooted.100.tre', 'terrarana.random.unrooted.100.tre'),
@@ -62,6 +63,17 @@ if is_test_enabled(TestLevel.SLOW, _LOG, module_name=__name__, message="skipping
     test_cases.extend(large_cases)
 
 class SplitFreqsTest(unittest.TestCase):
+    def testCountSplits(self):
+        d = datasets.Dataset()
+        taxa_block = d.add_taxa_block()
+        tsum = treesum.TreeSummarizer()
+        filepaths = [dendropy.tests.data_source_path("primates.tre")]
+        for f in filepaths:
+                print(f)
+                ti = nexus.iterate_over_trees(open(f, "rU"), taxa_block=taxa_block, from_index=0)
+                sd = tsum.count_splits_on_trees(ti,
+                split_distribution=None,
+                trees_splits_encoded=False)
 
     def testFindSplits(self):
         unrooted = True
@@ -112,6 +124,7 @@ class SplitFreqsTest(unittest.TestCase):
             # if any splits remain here, they were not
             # in dp_sd
             assert len(paup_sd.splits) == 0
+
 
 
 if __name__ == "__main__":

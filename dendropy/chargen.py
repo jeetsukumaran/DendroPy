@@ -28,10 +28,11 @@ Evolves characters on tree.
 
 import copy
 
-from dendropy import GLOBAL_RNG
+from dendropy import GLOBAL_RNG, get_logger
 from dendropy import datasets
 from dendropy import characters
 from dendropy import charmodels
+_LOG = get_logger(__name__)
 
 ############################################################################
 ## Convenience wrappers
@@ -150,8 +151,11 @@ def generate_dataset(seq_len,
     """
     if dataset is None:
         dataset = datasets.Dataset()
-    if taxa_block is not None and taxa_block not in dataset.taxa_blocks:
-        taxa_block = dataset.add_taxa_block(taxa_block=taxa_block)
+    if taxa_block is not None:
+        if taxa_block not in dataset.taxa_blocks:
+            taxa_block = dataset.add_taxa_block(taxa_block=taxa_block)
+    else:
+        _LOG.warn("Hey Jeet, I think you need to be generating a taxa_block here")
     char_block = generate_characters(seq_len=seq_len,
         tree_model=tree_model,
         char_model=char_model,
