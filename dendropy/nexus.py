@@ -1701,6 +1701,7 @@ else:
                     tree_ready_event.wait()
                     tree_ready_event.clear()
                     ncl_taxa_block = ncl_streamer.ncl_taxa_block
+                    
                     self.curr_tree_tokens = ncl_streamer.tree_tokens
                     if self.curr_tree_tokens is None:
                         break
@@ -1764,7 +1765,7 @@ else:
             else:
                 taxa_block = self._taxa_to_fill
                 self._taxa_to_fill = None
-                taxa_block.extend(labels)
+                taxa_block.extend([taxa.Taxon(label=i) for i in labels])
             self.ncl_taxa_to_native[tbiid] = taxa_block
             return taxa_block
             
@@ -1785,7 +1786,6 @@ else:
                     if self.encode_splits:
                         t.clade_mask = (1 << n)
                 self._prev_taxa_block = taxa_block
-
             return parse_newick_tree_stream(lti, 
                                             taxa_block=taxa_block,
                                             translate_dict=self.tree_translate_dict,

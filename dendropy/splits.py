@@ -187,7 +187,6 @@ def encode_splits(tree, create_dict=True, delete_degree_two=True):
         c = tree.seed_node.child_nodes()
         if len(c) == 2:
             tree.deroot()
-
     for edge in tree.postorder_edge_iter():
         cm = 0
         h = edge.head_node

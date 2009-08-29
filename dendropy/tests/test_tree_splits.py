@@ -71,9 +71,7 @@ class SplitFreqsTest(unittest.TestCase):
         for f in filepaths:
                 print(f)
                 ti = nexus.iterate_over_trees(open(f, "rU"), taxa_block=taxa_block, from_index=0)
-                sd = tsum.count_splits_on_trees(ti,
-                split_distribution=None,
-                trees_splits_encoded=False)
+                sd = tsum.count_splits_on_trees(ti, split_distribution=None, trees_splits_encoded=False)
 
     def testFindSplits(self):
         unrooted = True
