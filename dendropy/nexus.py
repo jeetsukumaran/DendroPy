@@ -360,14 +360,7 @@ def parse_newick_tree_stream(stream_tokenizer,
                 try:
                     curr_node.edge.length = edge_len_type(edge_length_str)
                 except:
-                    if edge_len_are_numbers:
-                        try: 
-                            msg = 'Expecting the : in a tree string to be followed by type %s found "%s"' % (str(edge_len_type), edge_length_str)
-                        except:
-                            msg = 'Illegal "%s" after : in tree string' % (edge_length_str)
-                        raise TypeError(msg)
-                    else:
-                        curr_node.edge.length = edge_length_str
+                    curr_node.edge.length = edge_length_str
                 token = stream_tokenizer.read_next_token()
     return tree
      
