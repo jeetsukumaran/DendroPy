@@ -360,6 +360,7 @@ def parse_newick_tree_stream(stream_tokenizer,
                 try:
                     curr_node.edge.length = edge_len_type(edge_length_str)
                 except:
+#                     print "FAILED TO COERCE '%s'" % edge_length_str
                     curr_node.edge.length = edge_length_str
                 token = stream_tokenizer.read_next_token()
     return tree
