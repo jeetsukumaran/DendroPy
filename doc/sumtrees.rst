@@ -11,13 +11,11 @@ The support for the splits will be mapped onto one or more target trees either i
 The target trees can be supplied by yourself, or, if no target trees are given, then a majority-rule clade consensus tree will be constructed based on the samples given.
 In the latter case, you have the option of specifying the minimum posterior probability or proportional frequency threshold for a clade to be included on the consensus tree.
 
-SumTrees is distributed and installed as part of the `DendroPy
-<http://sourceforge.net/projects/dendropy/>`_ phylogenetic computation library, which can be found on SourceForge: http://sourceforge.net/projects/dendropy/.
-
 Where to Find the Package
 =========================
 
-DendroPy can be found at the `Python Package Index     <http://pypi.python.org/pypi/DendroPy>`_:
+SumTrees is distributed and installed as part of the `DendroPy
+<http://pypi.python.org/pypi/DendroPy>`_ phylogenetic computation library, which  can be found here: 
 
     http://pypi.python.org/pypi/DendroPy
     
