@@ -309,7 +309,7 @@ Repository Access
 =================
 The DendroPy public-access `Git <http://git-scm.com/>`_ repository can be cloned from:
     
-        git://dendropy.git.sourceforge.net/gitroot/dendropy
+        http://github.com/jeetsukumaran/DendroPy
 
 Bugs, Suggestions, Comments, etc.
 =================================
