@@ -1,3 +1,7 @@
+********************************************************
+SumTrees: Phylogenetic Tree Summarization and Annotation
+********************************************************
+
 Introduction
 ============
 
