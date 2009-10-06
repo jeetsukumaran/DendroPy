@@ -354,11 +354,11 @@ We would like to thank all the people who have contributed suggestions, bug repo
 Portions of `DendroPy
 <http://pypi.python.org/pypi/DendroPy>`_ were developed under `CIPRES <http://www.phylo.org>`_, a multi-site collaboration funded by the `NSF <http://www.nsf.gov/>`_ Information Technology Research (ITR) program grant entitled "`BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics <http://www.phylo.org/about/acknowledgements>`_".
 
-.. image:: http://www.jeetworks.org/files/images/page-art/logo_cipres.gif
+.. image:: logo_cipres.gif
     :height: 40   
     :target: http://www.phylo.org/
 
-.. image:: http://www.jeetworks.org/files/images/page-art/nsf.gif
+.. image:: nsf.gif
     :width: 40
     :target: http://www.nsf.gov/
 
