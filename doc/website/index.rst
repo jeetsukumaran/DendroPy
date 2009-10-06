@@ -6,7 +6,7 @@ Introduction
 ============
 
 `DendroPy <http://pypi.python.org/pypi/DendroPy>`_ is a `Python
-<http://www.python.org>`_ library for phylogenetic computation, scripting, simulation, data processing and manipulation by Jeet Sukumaran and Mark T. Holder.
+<http://www.python.org>`_ library for phylogenetic computation, scripting, simulation, data processing and manipulation by `Jeet Sukumaran <http://people.ku.edu/~jeet>`_ and `Mark T. Holder <http://people.ku.edu/~mtholder>`_.
 
 Installation
 ============
@@ -31,8 +31,8 @@ The DendroPy public-access `Git <http://git-scm.com/>`_ repository can be cloned
     
         http://github.com/jeetsukumaran/DendroPy    
         
-Library Scripts
-===============
+Included Scripts
+================
 * `SumTrees <sumtrees.html>`_ is a script that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
 
 Citation
