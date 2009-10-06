@@ -323,7 +323,7 @@ How to Cite this Program
 
 If you use this program in your analysis, please cite it as:
 
-    Sukumaran, J. and Mark T. Holder. 2008. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.2*. Part of the *DendroPy Phylogenetic Computation Library Version 2.1.3* (http://sourceforge.net/projects/dendropy).
+    Sukumaran, J. and Mark T. Holder. 2008. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.2*. Part of the *DendroPy Phylogenetic Computation Library Version 2.1.3* (http://pypi.python.org/pypi/DendroPy).
     
 Copyright, License and Warranty
 ===============================
@@ -348,8 +348,6 @@ Acknowledgments
 ================
 SumTrees is part of the `DendroPy
 <http://pypi.python.org/pypi/DendroPy>`_ library, which is authored by myself (`Jeet Sukumaran <http://people.ku.edu/~jeet>`_) and `Mark T. Holder <http://people.ku.edu/~mtholder>`_.
-
-We would like to thank all the people who have contributed suggestions, bug reports and critiqes, and especially our *de facto* beta testers who contributed valuable time and trusted our program with their valuable data: `Charles W. Linkem <http://people.ku.edu/~cwlinkem>`_ and `Jamie Oaks <http://people.ku.edu/~joaks1>`_.
 
 Portions of `DendroPy
 <http://pypi.python.org/pypi/DendroPy>`_ were developed under `CIPRES <http://www.phylo.org>`_, a multi-site collaboration funded by the `NSF <http://www.nsf.gov/>`_ Information Technology Research (ITR) program grant entitled "`BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics <http://www.phylo.org/about/acknowledgements>`_".
