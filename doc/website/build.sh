@@ -11,6 +11,7 @@ echo '- Copying images ...'
 cp *.gif html
 
 echo '- Generating HTML ...'
+rst2html.py index.rst > html/index.html
 rst2html.py sumtrees.rst > html/sumtrees.html
 
 echo '- Creating archive ...'
