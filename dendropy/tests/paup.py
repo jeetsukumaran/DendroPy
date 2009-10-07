@@ -416,9 +416,13 @@ def estimate_char_model(tree_model,
         'kappa': re.compile('  kappa\s+([\d\.]+)'),
         'prop_invar' : re.compile('P_inv\s+([\d\.]+)'),
         'alpha' : re.compile('Shape\s+([\S]+)'),
-    
+        'f(A)' : re.compile('  A\s+([\d\.]+)'),
+        'f(C)' : re.compile('  C\s+([\d\.]+)'),
+        'f(G)' : re.compile('  G\s+([\d\.]+)'),
+        'f(T)' : re.compile('  T\s+([\d\.]+)'),       
     }
 
+    print stdout
     results = {}
     for value_name in patterns:
         results[value_name] = None
