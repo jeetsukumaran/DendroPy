@@ -422,7 +422,6 @@ def estimate_char_model(tree_model,
         'f(T)' : re.compile('  T\s+([\d\.]+)'),       
     }
 
-    print stdout
     results = {}
     for value_name in patterns:
         results[value_name] = None
