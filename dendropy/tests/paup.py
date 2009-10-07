@@ -370,7 +370,7 @@ def estimate_char_model(tree_model,
     Returns likelihood score as well as estimates of rates, kappa, 
     base_frequencies, alpha, prop_invar, etc. (as dictionary).
     """
-    assert tree_model.taxa_block == char_block.taxa_block
+    assert tree_model.taxa_block is char_block.taxa_block
     ds = datasets.Dataset()
     taxab = ds.add_taxa_block(taxa_block=tree_model.taxa_block)
     treeb = ds.add_trees_block(taxa_block=taxab)
