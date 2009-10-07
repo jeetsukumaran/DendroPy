@@ -224,14 +224,14 @@ class Dataset(base.Element):
         reader.read_dataset(src, self, **kwargs)
         return self
         
-    def from_string(self, string, format):
+    def from_string(self, string, format, **kwargs):
         """
         Populates this dataset from `string`, given in `format`. `src`
         is a file descriptor object, `format` is one of the supported file
         format identifiers: 'NEXUS' (incl. 'NEWICK'), 'NEXML' etc.
         """
         src = StringIO(string)
-        return self.read(src, format)
+        return self.read(src, format, **kwargs)
         
     def read_trees(self, src, format, encode_splits=False, rooted=None, finish_node_func=None, **kwargs):
         """
