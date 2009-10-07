@@ -820,7 +820,7 @@ class NexmlWriter(datasets.Writer):
 
     ### datasets.Writer interface  ###
 
-    def write_dataset(self, dataset, dest):
+    def write_dataset(self, dataset, dest, store_chars=True, store_trees=True):
         """
         Writes a list of DendroPy Tree objects to a full NEXML
         document.
@@ -828,8 +828,10 @@ class NexmlWriter(datasets.Writer):
         self.write_to_nexml_open(dest, indent_level=0)
         self.write_extensions(dataset, dest)
         self.write_taxa_blocks(taxa_blocks=dataset.taxa_blocks, dest=dest)
-        self.write_char_blocks(char_blocks=dataset.char_blocks, dest=dest)
-        self.write_trees_blocks(trees_blocks=dataset.trees_blocks, dest=dest)
+        if store_chars:
+            self.write_char_blocks(char_blocks=dataset.char_blocks, dest=dest)
+        if store_trees:            
+            self.write_trees_blocks(trees_blocks=dataset.trees_blocks, dest=dest)
         self.write_to_nexml_close(dest, indent_level=0)
 
     ### class-specific  ###

@@ -38,8 +38,10 @@ class PhylipWriter(datasets.Writer):
         "Calls the base class constructor."
         datasets.Writer.__init__(self)
         
-    def write_dataset(self, dataset, dest):
+    def write_dataset(self, dataset, dest, store_chars=True, store_trees=True):
         "Writes dataset to a full PHYLIP document."
+        if not store_chars:
+            return
         char_block = dataset.char_blocks[0]
         n_seqs = len(char_block.matrix)
         n_sites = len(char_block.matrix.values()[0])

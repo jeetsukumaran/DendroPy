@@ -1095,7 +1095,7 @@ class NexusWriter(datasets.Writer):
         return label
     escape_token = staticmethod(escape_token)
 
-    def write_dataset(self, dataset, dest):
+    def write_dataset(self, dataset, dest, store_chars=True, store_trees=True):
         """
         Writes dataset to a full NEXUS
         document.
@@ -1112,11 +1112,12 @@ class NexusWriter(datasets.Writer):
                 dest.write("\n")
             else:
                 dest.write("[ %s ]\n\n" % self.comment)
-        if (dataset.char_blocks or dataset.trees_blocks) and not self.simple:
+        if ((store_chars and dataset.char_blocks) or (store_trees and dataset.trees_blocks)) \
+            and not self.simple:
             self.write_taxa_block(taxa_block=dataset.taxa_blocks[0], dest=dest)
-        if dataset.char_blocks:
+        if store_chars and dataset.char_blocks:
             self.write_char_block(char_block=dataset.char_blocks[0], dest=dest, simple_nexus=self.simple)
-        if dataset.trees_blocks:
+        if store_trees and dataset.trees_blocks:
             self.write_trees_block(trees_block=dataset.trees_blocks[0], dest=dest)
 
     def write_trees_block(self, trees_block, dest):
@@ -1304,15 +1305,16 @@ class NewickWriter(datasets.Writer):
         self.support_as_percentages = False
         self.support_decimals = None
 
-    def write_dataset(self, dataset, dest):
+    def write_dataset(self, dataset, dest, store_chars=True, store_trees=True):
         """
         Writes a DataSet object to a full document-level
         representation of the format being implemented by the
         deriving class. 
         """
-        for trees_block in dataset.trees_blocks:
-            for tree in trees_block:
-                dest.write(self.compose_node(tree.seed_node) + ';\n')                                
+        if store_trees:
+            for trees_block in dataset.trees_blocks:
+                for tree in trees_block:
+                    dest.write(self.compose_node(tree.seed_node) + ';\n')                                
                 
     def compose_taxlabel(self, label):
         if re.search('[' + PurePythonNexusStreamTokenizer.whitespace + PurePythonNexusStreamTokenizer.punctuation + ']', label) != None:

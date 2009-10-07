@@ -41,8 +41,10 @@ class FastaWriter(datasets.Writer):
         "Calls the base class constructor."
         datasets.Writer.__init__(self)
         
-    def write_dataset(self, dataset, dest):
+    def write_dataset(self, dataset, dest, store_chars=True, store_trees=True):
         "Writes dataset to a full PHYLIP document."
+        if not store_chars:
+            return
         for char_block in dataset.char_blocks:
             for taxon in char_block.matrix:
                 dest.write(">%s\n" % str(taxon))

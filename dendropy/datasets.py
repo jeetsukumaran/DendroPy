@@ -311,13 +311,13 @@ class Dataset(base.Element):
         src = StringIO(string)
         return self.read_trees(src, format, encode_splits=encode_splits, rooted=rooted, finish_node_func=finish_node_func, **kwargs)
             
-    def write(self, dest, format):
+    def write(self, dest, format, store_chars=True, store_trees=True):
         """
         Writes dataset to `dest`, a file descriptor object, in `format`.
         """
         from dendropy import dataio
         writer = dataio.get_writer(format)
-        writer.write_dataset(self, dest)              
+        writer.write_dataset(self, dest, store_chars=store_chars, store_trees=store_trees)              
 
 class Reader(object):
     """
@@ -380,7 +380,7 @@ class Writer(object):
     object in various formats, to be implemented by derived classes.
     """
 
-    def write_dataset(self, dataset, dest):
+    def write_dataset(self, dataset, dest, store_chars=True, store_trees=True):
         """
         Writes a Dataset object to a full document-level
         representation of the format being implemented by the deriving
