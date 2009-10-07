@@ -81,8 +81,8 @@ if is_test_enabled(TestLevel.SLOW, _LOG, __name__, "skipping all sequence genera
             self.tree_model.normalize_taxa(output_ds.char_blocks[0].taxa_block)
             
             mle = paup.estimate_char_model(
-                tree_model=self.tree_model,
                 char_block=output_ds.char_blocks[0],
+                tree_model=self.tree_model,                
                 num_states=2,
                 unequal_base_freqs=unequal_base_freqs,
                 gamma_rates=gamma_rates,

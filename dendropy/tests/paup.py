@@ -359,8 +359,8 @@ def bipartitions(data_filepath,
                     tax_labels.append(ti_match.group(2).strip())                
     return tax_labels, bipartitions, bipartition_counts, bipartition_freqs
 
-def estimate_char_model(tree_model,
-                        char_block,
+def estimate_char_model(char_block,
+                        tree_model=None,
                         num_states=6,
                         unequal_base_freqs=True,
                         gamma_rates=True,
@@ -370,33 +370,35 @@ def estimate_char_model(tree_model,
     Returns likelihood score as well as estimates of rates, kappa, 
     base_frequencies, alpha, prop_invar, etc. (as dictionary).
     """
-    assert tree_model.taxa_block is char_block.taxa_block
     ds = datasets.Dataset()
-    taxab = ds.add_taxa_block(taxa_block=tree_model.taxa_block)
-    treeb = ds.add_trees_block(taxa_block=taxab)
-    treeb.append(tree_model)
-    charb = ds.add_char_block(char_block=char_block, taxa_block=taxab)
-    tf = tempfile.NamedTemporaryFile()
-    ds.write(tf, format='nexus', store_chars=False, store_trees=True)
-#     dataio.store_trees([tree_model], format='nexus', dest=tf)
-    tf.flush()
-    cf = tempfile.NamedTemporaryFile()
-#     dataio.store_chars(char_block=char_block, format='nexus', dest=df)
-    ds.write(cf, format='nexus', store_chars=True, store_trees=False)
-    cf.flush()    
     paup_args = {
-        'datafile' : cf.name,
-        'treefile' : tf.name,
         'nst': num_states,
         'basefreq' : unequal_base_freqs and 'estimate' or 'equal',
         'rates' : gamma_rates and 'gamma' or 'equal',
         'pinvar' : prop_invar and 'estimate' or '0',
-    }
+    }    
+    taxab = ds.add_taxa_block(taxa_block=char_block.taxa_block)
+    if tree_model is not None:
+        assert tree_model.taxa_block is char_block.taxa_block
+        treeb = ds.add_trees_block(taxa_block=taxab)
+        treeb.append(tree_model)
+        tf = tempfile.NamedTemporaryFile()
+        ds.write(tf, format='nexus', store_chars=False, store_trees=True)
+        tf.flush()
+        paup_args['tree'] = "gettrees file=%s storebrlens=yes;" % tf.name        
+    else:
+        paup_args['tree'] = "hsearch;"        
+    charb = ds.add_char_block(char_block=char_block, taxa_block=taxab)
+    cf = tempfile.NamedTemporaryFile()
+    ds.write(cf, format='nexus', store_chars=True, store_trees=False)
+    cf.flush()
+    paup_args['datafile'] = cf.name
+
     paup_template = """\
     set warnreset=no;
     exe %(datafile)s;
-    gettrees file=%(treefile)s storebrlens=yes;
     lset tratio=estimate rmatrix=estimate nst=%(nst)s basefreq=%(basefreq)s rates=%(rates)s shape=estimate pinvar=%(pinvar)s userbrlens=yes;
+    %(tree)s;
     lscore 1 / userbrlens=yes;
 """ 
     paup_run = subprocess.Popen(['%s -n' % paup_path],
