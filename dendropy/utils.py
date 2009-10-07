@@ -615,13 +615,15 @@ def format_dict_table(rows, column_names=None, max_column_width=None, border_sty
             border_template = rule_junction.join(template_elements)
             full_line = left_table_edge_rule_junction + (border_template % rules) + right_table_edge_rule_junction 
             display = []
-            display.append(full_line)
+            if border_style > 0:
+                display.append(full_line)
             display.append(left_table_edge_rule + (row_template % dict(zip(column_list, column_list))) + right_table_edge_rule)
-            display.append(full_line)
+            if border_style > 0:
+                display.append(full_line)
             for row in rows:       
                 display.append(left_table_edge_rule + (row_template % row) + right_table_edge_rule)
-        
-            display.append(full_line)
+            if border_style > 0:        
+                display.append(full_line)
             return "\n".join(display)
         else:
             return ''
