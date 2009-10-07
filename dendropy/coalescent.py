@@ -112,7 +112,6 @@ def expected_tmrca(n_genes, pop_size=None, rng=None):
 def coalesce(nodes,
              pop_size=None,
              period=None,
-             node_factory=None,
              rng=None):
     """
     `nodes` is a list of DendroPy Nodes representing a sample of
@@ -163,10 +162,7 @@ def coalesce(nodes,
         rng = GLOBAL_RNG    
     
     # define the function needed to create new coalescence nodes
-    if node_factory is None:
-        new_node = nodes[0].__class__
-    else:
-        new_node = node_factory
+    new_node = nodes[0].__class__
 
     # make a shallow copy of the node list
     nodes = list(nodes)

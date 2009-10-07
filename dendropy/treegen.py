@@ -54,16 +54,11 @@ def star_tree(taxa_block):
 def uniform_pure_birth(taxa_block,
                        birth_rate=1.0,
                        ultrametricize=True,
-                       tree_factory=None,
                        rng=None):
     "Generates a uniform-rate pure-birth process tree. "
     if rng is None:
         rng = GLOBAL_RNG # use the global rng by default
-    if tree_factory is not None:
-        tree = tree_factory()
-        tree.taxa_block = taxa_block
-    else:
-        tree = trees.Tree(taxa=taxa_block)
+    tree = trees.Tree(taxa=taxa_block)
     
     leaf_nodes = tree.leaf_nodes()
     count = 0
@@ -94,7 +89,6 @@ def pop_gen_tree(tree=None,
                  ages=None,
                  num_genes=None,
                  pop_sizes=None,
-                 tree_factory=None,
                  num_genes_attr = 'num_genes',
                  pop_size_attr = 'pop_size',
                  rng=None):
@@ -150,7 +144,6 @@ def pop_gen_tree(tree=None,
     if not tree:
         if taxa_block:
             tree = uniform_pure_birth(taxa_block=taxa_block, 
-                                      tree_factory=tree_factory,
                                       rng=rng)
         else:
             raise Exception("Either tree or taxa block must be given")
@@ -226,8 +219,6 @@ def pure_kingman(taxa_block, pop_size=1, rng=None):
                 
 def constrained_kingman(pop_tree,
                         gene_trees_block=None,
-                        node_factory=None,
-                        tree_factory=None,
                         rng=None,
                         num_genes_attr='num_genes',
                         pop_size_attr='pop_size'):
@@ -265,10 +256,7 @@ def constrained_kingman(pop_tree,
     for leaf_count, leaf in enumerate(pop_tree.leaf_iter()):
         gene_nodes = []
         for gene_count in range(getattr(leaf, num_genes_attr)):
-            if node_factory is not None:
-                gene_node = node_factory()
-            else:
-                gene_node = trees.Node()
+            gene_node = trees.Node()
             gene_node.taxon = gtaxa.get_taxon(label=leaf.taxon.label + '_' + str(gene_count+1))
             gene_nodes.append(gene_node)
         leaf.gene_nodes = gene_nodes
@@ -286,10 +274,7 @@ def constrained_kingman(pop_tree,
     poptree_copy = copy.deepcopy(pop_tree)
 
     # start with a new tree
-    if tree_factory is not None:
-        gene_tree = tree_factory.new_tree()
-    else:
-        gene_tree = trees.Tree()
+    gene_tree = trees.Tree()
     for edge in poptree_copy.postorder_edge_iter():
         edge.head_node.gene_nodes = edge.head_node.gene_nodes
 
