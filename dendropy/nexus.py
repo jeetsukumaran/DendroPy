@@ -1178,9 +1178,7 @@ class NexusWriter(datasets.Writer):
         nexus.append('    DIMENSIONS %s NCHAR=%d;' % (ntaxstr, nchar))
         nexus.append('    FORMAT %s;' % self.compose_format_terms(char_block))
         nexus.append('    MATRIX')
-        taxa = char_block.keys()
-        taxa.sort()
-        for taxon in taxa:
+        for taxon in char_block.taxa_block:
             seq_vec = char_block[taxon]
             seq = ''.join([str(seq_sym) for seq_sym in seq_vec])
 #             seq.replace('~','-')
