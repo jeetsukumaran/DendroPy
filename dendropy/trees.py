@@ -86,18 +86,28 @@ class TreesBlock(list, taxa.TaxaLinked):
             tree.normalize_taxa(taxa_block)
         taxa_block.sort()
         self.taxa_block = taxa_block
-        return taxa_block        
+        return taxa_block
+        
+    def normalize_tree_taxa_block(self, tree):
+        if tree.taxa_block is not self.taxa_block:
+            tb_mutable = self.taxa_block._is_mutable
+            self.taxa_block._is_mutable = True
+            tree.normalize_taxa(self.taxa_block)
+            self.taxa_block._is_mutable = tb_mutable    
 
     def __setitem__(self, key, tree):
         """
         Makes sure tree.taxa_block = self.taxa_block.
         """
-        if tree.taxa_block is not self.taxa_block:
-            tb_mutable = self.taxa_block._is_mutable
-            self.taxa_block._is_mutable = True
-            tree.normalize_taxa(self.taxa_block)
-            self.taxa_block._is_mutable = tb_mutable
+        self.normalize_tree_taxa_block(tree)
         list.__setitem__(self, key, tree)
+        
+    def append(self, tree):
+        """
+        Again, ensure homogeneity of tree block.
+        """
+        self.normalize_tree_taxa_block(tree)
+        self[len(self):] = [tree]
         
 ##############################################################################
 ## Tree
