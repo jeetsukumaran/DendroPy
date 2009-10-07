@@ -32,7 +32,7 @@ import re
 import os
 import sys
 
-from dendropy import dataio
+from dendropy import datasets
 from dendropy import get_logger
 _LOG = get_logger("CharacterSimulationAndGeneration")
 
@@ -61,8 +61,10 @@ if is_test_enabled(TestLevel.SLOW, _LOG, __name__, "skipping all sequence genera
     class CharGenTest(unittest.TestCase):
     
         def setUp(self):
-            source_ds = dataio.from_nexus(string=tree_model_string)
+            source_ds = datasets.Dataset()
+            source_ds.from_string(tree_model_string, "NEXUS")
             self.tree_model = source_ds.trees_blocks[0][0]
+            assert self.tree_model.taxa_block is not None
        
         def estimate_params(self,
             seq_len=10000,
@@ -76,11 +78,10 @@ if is_test_enabled(TestLevel.SLOW, _LOG, __name__, "skipping all sequence genera
                 tree_model=self.tree_model,
                 kappa=kappa,
                 base_freqs=base_freqs)
-            source_ds = dataio.from_nexus(string=tree_model_string)
-            tree_model = source_ds.trees_blocks[0][0]
+            self.tree_model.normalize_taxa(output_ds.char_blocks[0].taxa_block)
             
             mle = paup.estimate_char_model(
-                tree_model=tree_model,
+                tree_model=self.tree_model,
                 char_block=output_ds.char_blocks[0],
                 num_states=2,
                 unequal_base_freqs=unequal_base_freqs,

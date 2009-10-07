@@ -44,7 +44,6 @@ def generate_hky_dataset(seq_len,
                          base_freqs=[0.25, 0.25, 0.25, 0.25],
                          root_states=None,    
                          dataset=None,
-                         taxa_block=None,
                          rng=None):
     """
     Convenience class to wrap generation of a dataset based on
@@ -60,8 +59,6 @@ def generate_hky_dataset(seq_len,
                       dendropy.characters.CharacterBlock object will be added to
                       this (along with a new taxa_block if required). Otherwise,
                       a new dendropy.datasets.Dataset object will be created.
-    `taxa_block`    : if given, this will be the taxa manager used; otherwise
-                      new default one will be created
     `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
                       used                      
     Returns: a dendropy.datasets.Dataset object object.
@@ -74,7 +71,6 @@ def generate_hky_dataset(seq_len,
         mutation_rate=mutation_rate,       
         root_states=root_states, 
         dataset=dataset,
-        taxa_block=taxa_block,
         rng=rng)  
         
 def generate_hky_characters(seq_len,
@@ -84,7 +80,6 @@ def generate_hky_characters(seq_len,
                             base_freqs=[0.25, 0.25, 0.25, 0.25],
                             root_states=None,    
                             char_block=None,
-                            taxa_block=None,
                             rng=None):
     """
     Convenience class to wrap generation of characters (as a CharacterBlock
@@ -99,8 +94,6 @@ def generate_hky_characters(seq_len,
                       will be appended to existing sequences of corresponding 
                       taxa in char_block; if not, a new 
                       dendropy.characters.CharacterBlock object will be created
-    `taxa_block`    : if given, this will be the taxa manager used; otherwise
-                      new default one will be created
     `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
                       used                      
     Returns: a dendropy.characters.CharacterBlock object.    
@@ -118,7 +111,6 @@ def generate_hky_characters(seq_len,
                                mutation_rate=mutation_rate,       
                                root_states=root_states, 
                                char_block=char_block,
-                               taxa_block=taxa_block,
                                rng=rng)    
                 
 def generate_dataset(seq_len,
@@ -127,7 +119,6 @@ def generate_dataset(seq_len,
                      mutation_rate=1.0,       
                      root_states=None, 
                      dataset=None,
-                     taxa_block=None,
                      rng=None):
     """
     Wrapper to conveniently generate a Dataset simulated under
@@ -143,17 +134,14 @@ def generate_dataset(seq_len,
                       dendropy.characters.CharacterBlock object will be added to
                       this (along with a new taxa_block if required). Otherwise,
                       a new dendropy.datasets.Dataset object will be created.
-    `taxa_block`    : if given, this will be the taxa manager used; otherwise
-                      new default one will be created
     `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
                       used                      
     Returns: a dendropy.datasets.Dataset object object.
     """
     if dataset is None:
         dataset = datasets.Dataset()
-    if taxa_block is not None:
-        if taxa_block not in dataset.taxa_blocks:
-            taxa_block = dataset.add_taxa_block(taxa_block=taxa_block)
+    if tree_model.taxa_block not in dataset.taxa_blocks:
+        taxa_block = dataset.add_taxa_block(tree_model.taxa_block)
     else:
         _LOG.warn("Hey Jeet, I think you need to be generating a taxa_block here")
     char_block = generate_characters(seq_len=seq_len,
@@ -162,7 +150,6 @@ def generate_dataset(seq_len,
         mutation_rate=mutation_rate,       
         root_states=root_states, 
         char_block=None,
-        taxa_block=taxa_block,
         rng=None)
     dataset.add_char_block(char_block=char_block)
     return dataset
@@ -173,7 +160,6 @@ def generate_characters(seq_len,
                         mutation_rate=1.0,       
                         root_states=None, 
                         char_block=None,
-                        taxa_block=None,
                         rng=None):
     """
     Wrapper to conveniently generate a characters simulated under
@@ -189,8 +175,6 @@ def generate_characters(seq_len,
                       will be appended to existing sequences of corresponding 
                       taxa in char_block; if not, a new 
                       dendropy.characters.CharacterBlock object will be created
-    `taxa_block`    : if given, this will be the taxa manager used; otherwise
-                      new default one will be created
     `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
                       used
                       
@@ -207,14 +191,12 @@ def generate_characters(seq_len,
         seq_len=seq_len,
         root_states=None,
         rng=rng)
-    char_matrix = char_evolver.compose_char_matrix(tree, taxa_block)
+    char_matrix = char_evolver.compose_char_matrix(tree, tree.taxa_block)
     if char_block is None:
         char_block = characters.DnaCharactersBlock()
-        if taxa_block is not None:
-            char_block.taxa_block = taxa_block            
+        char_block.taxa_block = tree_model.taxa_block            
     else:
-        if taxa_block is not None:
-            char_block.taxa_block = taxa_block  
+        assert char_block.taxa_block is tree_model.taxa_block, "conflicting taxa blocks"
     char_block.extend_matrix(other_matrix=char_matrix, 
         overwrite_existing=False, 
         append_existing=True)

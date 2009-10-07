@@ -39,11 +39,11 @@ from dendropy import get_logger
 _LOG = get_logger("PAUPWrapper")
 
 from dendropy import datasets
-from dendropy import dataio
+# from dendropy import dataio
 from dendropy import taxa
 from dendropy import splits
 from dendropy import utils
-
+from dendropy import nexus
 
 if "PAUP_PATH" in os.environ:
     PAUP_PATH = os.environ["PAUP_PATH"]
@@ -370,14 +370,22 @@ def estimate_char_model(tree_model,
     Returns likelihood score as well as estimates of rates, kappa, 
     base_frequencies, alpha, prop_invar, etc. (as dictionary).
     """
+    assert tree_model.taxa_block == char_block.taxa_block
+    ds = datasets.Dataset()
+    taxab = ds.add_taxa_block(taxa_block=tree_model.taxa_block)
+    treeb = ds.add_trees_block(taxa_block=taxab)
+    treeb.append(tree_model)
+    charb = ds.add_char_block(char_block=char_block, taxa_block=taxab)
     tf = tempfile.NamedTemporaryFile()
-    dataio.store_trees([tree_model], format='nexus', dest=tf)
+    ds.write(tf, format='nexus', store_chars=False, store_trees=True)
+#     dataio.store_trees([tree_model], format='nexus', dest=tf)
     tf.flush()
-    df = tempfile.NamedTemporaryFile()
-    dataio.store_chars(char_block=char_block, format='nexus', dest=df)
-    df.flush()    
+    cf = tempfile.NamedTemporaryFile()
+#     dataio.store_chars(char_block=char_block, format='nexus', dest=df)
+    ds.write(cf, format='nexus', store_chars=True, store_trees=False)
+    cf.flush()    
     paup_args = {
-        'datafile' : df.name,
+        'datafile' : cf.name,
         'treefile' : tf.name,
         'nst': num_states,
         'basefreq' : unequal_base_freqs and 'estimate' or 'equal',
