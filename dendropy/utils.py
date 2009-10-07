@@ -194,7 +194,6 @@ class LineReadingThread(Thread):
                     break
         _LOG.debug("LineReadingThread exiting")
 
-
 class RecastingIterator(object):
     """
     Given an iterator I_X that returns objects of type X {x1, x2, x3,
@@ -554,6 +553,81 @@ def find_files(top, recursive=True,
                                                      expand_vars=False))
     filepaths.sort()
     return filepaths
+    
+def format_dict_table(rows, column_names=None, max_column_width=None, border_style=2):
+    """
+    Returns a string representation of a tuple of dictionaries in a
+    table format. This method can read the column names directly off the
+    dictionary keys, but if a tuple of these keys is provided in the
+    'column_names' variable, then the order of column_names will follow
+    the order of the fields/keys in that variable.
+    """
+    if column_names or len(rows) > 0:
+        lengths = {}
+        rules = {}
+        if column_names:
+            column_list = column_names
+        else:
+            try:
+                column_list = rows[0].keys()
+            except:
+                column_list = None
+        if column_list:
+            # characters that make up the table rules
+            border_style = int(border_style)
+            #border_style = 0
+            if border_style >= 1:
+                vertical_rule = ' | '
+                horizontal_rule = '-'
+                rule_junction = '-+-'
+            else:
+                vertical_rule = '  '
+                horizontal_rule = ''
+                rule_junction = ''                
+            if border_style >= 2:
+                left_table_edge_rule = '| '
+                right_table_edge_rule = ' |'
+                left_table_edge_rule_junction = '+-'
+                right_table_edge_rule_junction = '-+'
+            else:
+                left_table_edge_rule = ''
+                right_table_edge_rule = ''
+                left_table_edge_rule_junction = ''
+                right_table_edge_rule_junction = ''
+            
+            if max_column_width:
+                column_list = [c[:max_column_width] for c in column_list]
+                trunc_rows = []
+                for row in rows:
+                    new_row = {}
+                    for k in row.keys():
+                        new_row[k[:max_column_width]] = str(row[k])[:max_column_width]
+                    trunc_rows.append(new_row)
+                rows = trunc_rows
+                
+            for col in column_list:
+                rls = [len(str(row[col])) for row in rows]
+                lengths[col] = max(rls+[len(col)])
+                rules[col] = horizontal_rule*lengths[col]
+                
+            template_elements = ["%%(%s)-%ss" % (col, lengths[col]) for col in column_list]
+            row_template = vertical_rule.join(template_elements)
+            border_template = rule_junction.join(template_elements)
+            full_line = left_table_edge_rule_junction + (border_template % rules) + right_table_edge_rule_junction 
+            display = []
+            display.append(full_line)
+            display.append(left_table_edge_rule + (row_template % dict(zip(column_list, column_list))) + right_table_edge_rule)
+            display.append(full_line)
+            for row in rows:       
+                display.append(left_table_edge_rule + (row_template % row) + right_table_edge_rule)
+        
+            display.append(full_line)
+            return "\n".join(display)
+        else:
+            return ''
+    else:
+        return ''
+    
 
 def sample_mean_var_ml(x):
     """Returns the sample mean and variance of x using the ML estimator of the 
