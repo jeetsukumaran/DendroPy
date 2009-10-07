@@ -359,17 +359,21 @@ def bipartitions(data_filepath,
                     tax_labels.append(ti_match.group(2).strip())                
     return tax_labels, bipartitions, bipartition_counts, bipartition_freqs
 
-def estimate_char_model(char_block,
-                        tree_model=None,
-                        num_states=6,
-                        unequal_base_freqs=True,
-                        gamma_rates=True,
-                        prop_invar=True,
-                        tree_est_criterion="likelihood",
-                        paup_path='paup'):
+def estimate_model(char_block,
+                   tree_model=None,
+                   num_states=6,
+                   unequal_base_freqs=True,
+                   gamma_rates=True,
+                   prop_invar=True,
+                   tree_est_criterion="likelihood",
+                   tree_user_brlens=True,
+                   paup_path='paup'):
     """
-    Returns likelihood score as well as estimates of rates, kappa, 
-    base_frequencies, alpha, prop_invar, etc. (as dictionary).
+    Given a dataset, `char_block`, uses client-supplied tree or estimates a
+    tree, and character substitution model for the data.
+    Returns a tuple, consisting of a trees block with the tree(s) used for the
+    estimated character model, and a dictionary with estimates of rates, kappa, 
+    base_frequencies, alpha, prop_invar, etc. as well as likelihood.
     """
     ds = datasets.Dataset()
     paup_args = {
@@ -389,11 +393,19 @@ def estimate_char_model(char_block,
         paup_args['tree'] = "gettrees file=%s storebrlens=yes;" % tf.name        
     else:
         paup_args['tree'] = "set crit=%s; hsearch; set crit=like;" % tree_est_criterion
+    if tree_user_brlens:
+        paup_args['userbrlens'] = 'yes'
+    else:
+        paup_args['userbrlens'] = 'no'
+        
     charb = ds.add_char_block(char_block=char_block, taxa_block=taxab)
     cf = tempfile.NamedTemporaryFile()
     ds.write(cf, format='nexus', store_chars=True, store_trees=False)
     cf.flush()
     paup_args['datafile'] = cf.name
+    
+    output_tree_file_handle, output_tree_filepath = tempfile.mkstemp(text=True)
+    paup_args['est_tree_file'] = output_tree_filepath
 
     paup_template = """\
     set warnreset=no;
@@ -401,14 +413,14 @@ def estimate_char_model(char_block,
     set crit=like;        
     lset tratio=estimate rmatrix=estimate nst=%(nst)s basefreq=%(basefreq)s rates=%(rates)s shape=estimate pinvar=%(pinvar)s userbrlens=yes;
     %(tree)s;
-    lscore 1 / userbrlens=yes;
+    lscore 1 / userbrlens=%(userbrlens)s;
+    savetrees file=%(est_tree_file)s format=nexus root=yes brlens=yes taxablk=yes maxdecimals=20;
 """ 
     paup_run = subprocess.Popen(['%s -n' % paup_path],
                                 shell=True,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE)
     stdout, stderr = paup_run.communicate(paup_template % paup_args)
-
     patterns = {
         'likelihood' : re.compile('-ln L\s+([\d\.]+)'),
         'rAC' : re.compile('  AC\s+([\d\.]+)'),
@@ -443,8 +455,21 @@ def estimate_char_model(char_block,
                 results[value_name] = float(results[value_name])
             except:
                 pass
-                
-    return results
+    est_ds = datasets.Dataset()
+    est_ds.read(open(output_tree_filepath, "rU"), format="NEXUS")
+
+#     if os.path.exists(cf.name):
+#         sys.stderr.write("*** deleting char file: %s\n" % cf.name)    
+#         os.remove(cf.name)
+#     if tree_model is not None:
+#         if os.path.exists(tf):
+#             sys.stderr.write("*** deleting input tree file: %s\n" % tf.name)
+#             os.remove(tf.name)
+#     if os.path.exists(output_tree_filepath):
+#         sys.stderr.write("*** deleting estimated tree file: %s\n" % output_tree_filepath)
+#         os.remove(output_tree_filepath)
+        
+    return est_ds.trees_blocks[0], results
 
 ###############################################################################
 ## TEST SUITE (for new stuff)

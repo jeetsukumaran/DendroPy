@@ -80,13 +80,15 @@ if is_test_enabled(TestLevel.SLOW, _LOG, __name__, "skipping all sequence genera
                 base_freqs=base_freqs)
             self.tree_model.normalize_taxa(output_ds.char_blocks[0].taxa_block)
             
-            mle = paup.estimate_char_model(
-                char_block=output_ds.char_blocks[0],
-                tree_model=self.tree_model,                
-                num_states=2,
-                unequal_base_freqs=unequal_base_freqs,
-                gamma_rates=gamma_rates,
-                prop_invar=prop_invar) 
+            est_tree, mle = paup.estimate_model(char_block=output_ds.char_blocks[0],
+                                                tree_model=self.tree_model,                
+                                                num_states=2,
+                                                unequal_base_freqs=unequal_base_freqs,
+                                                gamma_rates=gamma_rates,
+                                                prop_invar=prop_invar,
+                                                tree_est_criterion="likelihood",
+                                                tree_user_brlens=True,
+                                                paup_path='paup') 
                 
             return mle
                         
