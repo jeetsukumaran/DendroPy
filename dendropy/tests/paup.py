@@ -396,8 +396,8 @@ def estimate_char_model(char_block,
 
     paup_template = """\
     set warnreset=no;
-    set crit=like;
     exe %(datafile)s;
+    set crit=like;    
     lset tratio=estimate rmatrix=estimate nst=%(nst)s basefreq=%(basefreq)s rates=%(rates)s shape=estimate pinvar=%(pinvar)s userbrlens=yes;
     %(tree)s;
     lscore 1 / userbrlens=yes;
