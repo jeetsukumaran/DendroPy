@@ -35,7 +35,7 @@ from dendropy import characters
 from dendropy.taxa import TaxaBlock
 
 class FastaWriter(datasets.Writer):
-    "Implements the DataWriter interface for handling PHYLIP files."
+    "Implements the DataWriter interface for handling FASTA files."
     
     def __init__(self):
         "Calls the base class constructor."
@@ -50,10 +50,8 @@ class FastaWriter(datasets.Writer):
                 seqsf = textwrap.fill(seqs, width=79, break_long_words=True, break_on_hyphens=False)
                 dest.write("%s\n\n" % seqsf)
 
-
-
 class FastaReader(datasets.Reader):
-    "Encapsulates loading and parsing of a NEXUS format file."
+    "Encapsulates loading and parsing of a FASTA format file."
 
     def __init__(self, character_block_type):
         datasets.Reader.__init__(self)
