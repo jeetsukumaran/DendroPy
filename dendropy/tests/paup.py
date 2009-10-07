@@ -392,7 +392,10 @@ def estimate_model(char_block,
         tf.flush()
         paup_args['tree'] = "gettrees file=%s storebrlens=yes;" % tf.name        
     else:
-        paup_args['tree'] = "set crit=%s; hsearch; set crit=like;" % tree_est_criterion
+        if tree_est_criterion == 'nj':
+            paup_args['tree'] = 'nj;'
+        else:            
+            paup_args['tree'] = "set crit=%s; hsearch; set crit=like;" % tree_est_criterion
     if tree_user_brlens:
         paup_args['userbrlens'] = 'yes'
     else:
