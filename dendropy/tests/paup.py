@@ -365,6 +365,7 @@ def estimate_char_model(char_block,
                         unequal_base_freqs=True,
                         gamma_rates=True,
                         prop_invar=True,
+                        tree_est_criterion="likelihood",
                         paup_path='paup'):
     """
     Returns likelihood score as well as estimates of rates, kappa, 
@@ -387,7 +388,7 @@ def estimate_char_model(char_block,
         tf.flush()
         paup_args['tree'] = "gettrees file=%s storebrlens=yes;" % tf.name        
     else:
-        paup_args['tree'] = "hsearch;"        
+        paup_args['tree'] = "set crit=%s; hsearch; set crit=like;" % tree_est_criterion
     charb = ds.add_char_block(char_block=char_block, taxa_block=taxab)
     cf = tempfile.NamedTemporaryFile()
     ds.write(cf, format='nexus', store_chars=True, store_trees=False)
@@ -397,7 +398,7 @@ def estimate_char_model(char_block,
     paup_template = """\
     set warnreset=no;
     exe %(datafile)s;
-    set crit=like;    
+    set crit=like;        
     lset tratio=estimate rmatrix=estimate nst=%(nst)s basefreq=%(basefreq)s rates=%(rates)s shape=estimate pinvar=%(pinvar)s userbrlens=yes;
     %(tree)s;
     lscore 1 / userbrlens=yes;
