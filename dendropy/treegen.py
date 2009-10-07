@@ -220,6 +220,7 @@ def pure_kingman(taxa_block, pop_size=1, rng=None):
 def constrained_kingman(pop_tree,
                         gene_trees_block=None,
                         rng=None,
+                        gene_node_label_func=None,
                         num_genes_attr='num_genes',
                         pop_size_attr='pop_size'):
     """
@@ -239,6 +240,11 @@ def constrained_kingman(pop_tree,
     If `gene_trees_block` is given, then the gene tree is added to the 
     tree block, and the tree block's taxa block will be used to manage
     the gene tree's `taxa`.
+    
+    `gene_node_label_func` is a function that takes two arguments (a string
+    and an integer, respectively, where the string is the containing species
+    taxon label and the integer is the gene index) and returns a label for
+    the corresponding the gene node.
     """
 
     # get our random number generator
@@ -248,7 +254,10 @@ def constrained_kingman(pop_tree,
     if gene_trees_block is not None:
         gtaxa = gene_trees_block.taxa_block
     else:
-        gtaxa = taxa.TaxaBlock()        
+        gtaxa = taxa.TaxaBlock()
+        
+    if gene_node_label_func is None:
+        gene_node_label_func = lambda x, y: "%s_%02d" % (x, y)
 
     # we create a set of gene nodes for each leaf node on the population
     # tree, and associate those gene nodes to the leaf by assignment
@@ -257,7 +266,7 @@ def constrained_kingman(pop_tree,
         gene_nodes = []
         for gene_count in range(getattr(leaf, num_genes_attr)):
             gene_node = trees.Node()
-            gene_node.taxon = gtaxa.get_taxon(label=leaf.taxon.label + '_' + str(gene_count+1))
+            gene_node.taxon = gtaxa.get_taxon(label=gene_node_label_func(leaf.taxon.label, gene_count+1))
             gene_nodes.append(gene_node)
         leaf.gene_nodes = gene_nodes
 
