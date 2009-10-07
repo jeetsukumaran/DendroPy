@@ -82,6 +82,7 @@ def uniform_pure_birth(taxa_block,
         max_distance_from_root = max([node.distance_from_root() for node in leaf_nodes])
         for node in leaf_nodes:
             node.edge.length = node.edge.length + (max_distance_from_root - node.distance_from_root())
+    tree.is_rooted = True            
     return tree
 
 def pop_gen_tree(tree=None,     
@@ -312,7 +313,8 @@ def constrained_kingman(pop_tree,
             if not hasattr(edge.tail_node, 'gene_nodes'):
                 edge.tail_node.gene_nodes = []
             edge.tail_node.gene_nodes.extend(uncoal)
-            
+    
+    gene_tree.is_rooted = True
     if gene_trees_block is not None:
         gene_trees_block.append(gene_tree)
     
