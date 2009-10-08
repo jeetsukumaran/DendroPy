@@ -48,7 +48,8 @@ def rescale_edge_lengths_to_expected_substitutions(tree, mutrate_per_gene_per_ge
     so that the lengths are equal to the expected number of substitutions per
     nucleotide.
     """
-    mutation_rate_per_base_per_gen = float(mutrate_per_gene_per_generation) / seq_len
+    # numbers work out WITHOUT "/ seq_len", but why?
+    mutation_rate_per_base_per_gen = mutrate_per_gene_per_generation #float(mutrate_per_gene_per_generation) / seq_len
     for edge in tree.preorder_edge_iter():
         edge.length = edge.length * mutation_rate_per_base_per_gen
     return tree        
@@ -95,7 +96,9 @@ class FragmentedPopulations(object):
         tb.append(gt)
             
         if SEQGEN and use_seq_gen:
+                        
             gt = rescale_edge_lengths_to_expected_substitutions(gt, self.mutrate_per_gene_per_generation, seq_len)
+
             sg = seqgen.SeqGen()
             sg.seqgen_path = self.seqgen_path
             sg.num_replicates = 1
@@ -120,7 +123,7 @@ class FragmentedPopulations(object):
         else:
             return chargen.generate_hky_dataset(seq_len=seq_len,
                                                 tree_model=gt,                   
-                                                mutation_rate=float(self.mutrate_per_gene_per_generation) / seq_len, 
+                                                mutation_rate=float(self.mutrate_per_gene_per_generation), 
                                                 kappa=1.0,
                                                 base_freqs=[0.25, 0.25, 0.25, 0.25],
                                                 root_states=None,    
@@ -140,13 +143,13 @@ class FragmentedPopulations(object):
         for i in xrange(self.num_desc_pops+1):
             tree_data['id'] = i+1
             desc_lineages.append("%(sp)s%(id)d:%(divt)d" % tree_data)
-        tree_string = "(" + (",".join(desc_lineages)) + ")"
+        tree_string = "(" + (",".join(desc_lineages)) + ("):%d" % (self.num_desc_pops * self.num_desc_pops * 2 * 10))
         sp_tree = nexus.read_trees(StringIO.StringIO(tree_string))[0][0]
         for idx, leaf in enumerate(sp_tree.leaf_iter()):
             if idx == 1:
                 # ancestral population = num_desc_pops * desc population (* 2 for diploid genes)
                 leaf.parent_node.edge.pop_size = self.num_desc_pops * self.desc_pop_size * 2 
-            leaf.edge.pop_size = self.num_desc_pops * 2 # (* 2 for diploid genes)
+            leaf.edge.pop_size = self.desc_pop_size * 2 # (* 2 for diploid genes)
             leaf.num_genes = samples_per_pop      
         gene_tree, pop_tree = treegen.constrained_kingman(sp_tree, 
                                                           gene_node_label_func=lambda x,y: "%sX%d" % (x,y),
