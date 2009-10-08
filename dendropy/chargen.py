@@ -143,7 +143,7 @@ def generate_dataset(seq_len,
     if tree_model.taxa_block not in dataset.taxa_blocks:
         taxa_block = dataset.add_taxa_block(tree_model.taxa_block)
     else:
-        _LOG.warn("Hey Jeet, I think you need to be generating a taxa_block here")
+        taxa_block = tree_model.taxa_block
     char_block = generate_characters(seq_len=seq_len,
         tree_model=tree_model,
         char_model=char_model,
@@ -151,7 +151,7 @@ def generate_dataset(seq_len,
         root_states=root_states, 
         char_block=None,
         rng=None)
-    dataset.add_char_block(char_block=char_block)
+    dataset.add_char_block(char_block=char_block, taxa_block=taxa_block)
     return dataset
     
 def generate_characters(seq_len,
