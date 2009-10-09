@@ -41,37 +41,25 @@ try:
 except:
     from dendropy import chargen
     SEQGEN = False
-    
-def rescale_edge_lengths_to_expected_substitutions(tree, mutrate_per_gene_per_generation, seq_len):
-    """
-    Given a tree with edge lengths expressed in generations, rescales the edges
-    so that the lengths are equal to the expected number of substitutions per
-    nucleotide.
-    """
-    # numbers work out WITHOUT "/ seq_len", but why?
-    mutation_rate_per_base_per_gen = mutrate_per_gene_per_generation #float(mutrate_per_gene_per_generation) / seq_len
-    for edge in tree.preorder_edge_iter():
-        edge.length = edge.length * mutation_rate_per_base_per_gen
-    return tree        
 
 class FragmentedPopulations(object):
 
     def __init__(self, 
                  div_time_gens,
                  num_desc_pops = 2,
-                 mutrate_per_gene_per_generation=10e-5,                  
+                 mutrate_per_site_per_generation=10e-8,                  
                  desc_pop_size=10000,
                  rng=GLOBAL_RNG):
         """
         `div_time_gens` : generations since divergence,
         `num_desc_pops` : number of descendent populations,
-        `mutrate_per_gene_per_generation` : sequence mutation rate, per-gene per-generation
+        `mutrate_per_site_per_generation` : sequence mutation rate, per-site per-generation
         `desc_diploid_pop_size` : descendent lineage population size (=N; ancestral pop size = num_desc_pops * N)
         `rng` : random number generator
         """
         self.div_time_gens = div_time_gens
         self.num_desc_pops = num_desc_pops
-        self.mutrate_per_gene_per_generation = mutrate_per_gene_per_generation
+        self.mutrate_per_site_per_generation = mutrate_per_site_per_generation
         self.desc_pop_size = desc_pop_size
         self.rng = rng
         self.kappa = 1.0
@@ -86,9 +74,8 @@ class FragmentedPopulations(object):
                            samples_per_pop=10, 
                            seq_len=2000, 
                            use_seq_gen=True):
-        gt = self.generate_gene_tree(species_name=species_name, 
-                                     samples_per_pop=samples_per_pop,
-                                     seq_len=seq_len)
+                           
+        gt = self.generate_gene_tree(species_name=species_name, samples_per_pop=samples_per_pop)
                                 
         d = datasets.Dataset()
         d.add_taxa_block(taxa_block=gt.taxa_block)
@@ -97,7 +84,8 @@ class FragmentedPopulations(object):
             
         if SEQGEN and use_seq_gen:
                         
-            gt = rescale_edge_lengths_to_expected_substitutions(gt, self.mutrate_per_gene_per_generation, seq_len)
+            for edge in gt.preorder_edge_iter():
+                edge.length = edge.length * self.mutrate_per_site_per_generation
 
             sg = seqgen.SeqGen()
             sg.seqgen_path = self.seqgen_path
@@ -123,14 +111,14 @@ class FragmentedPopulations(object):
         else:
             return chargen.generate_hky_dataset(seq_len=seq_len,
                                                 tree_model=gt,                   
-                                                mutation_rate=float(self.mutrate_per_gene_per_generation), 
+                                                mutation_rate=float(self.mutrate_per_site_per_generation), 
                                                 kappa=1.0,
                                                 base_freqs=[0.25, 0.25, 0.25, 0.25],
                                                 root_states=None,    
                                                 dataset=d,
                                                 rng=self.rng)
-        
-    def generate_gene_tree(self, species_name, samples_per_pop=10, seq_len=2000):
+                                                
+    def generate_gene_tree(self, species_name, samples_per_pop=10):
         """
         Given:
             `species_name` : string identifying species/taxon       
