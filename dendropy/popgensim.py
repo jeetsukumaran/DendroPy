@@ -64,7 +64,7 @@ class FragmentedPopulations(object):
         self.rng = rng
         self.kappa = 1.0
         self.base_freqs=[0.25, 0.25, 0.25, 0.25]
-        self.seqgen_path = '/usr/local/bin/seq-gen'
+        self.seqgen_path = 'seq-gen'
         
     def _get_theta(self):
         return 4 * self.mutrate_per_gene_per_generation * self.desc_pop_size
