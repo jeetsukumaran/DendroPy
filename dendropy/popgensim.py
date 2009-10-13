@@ -128,7 +128,7 @@ class FragmentedPopulations(object):
         """
         tree_data = { 'sp': species_name, 'divt': self.div_time_gens }
         desc_lineages = []
-        for i in xrange(self.num_desc_pops+1):
+        for i in xrange(self.num_desc_pops):
             tree_data['id'] = i+1
             desc_lineages.append("%(sp)s%(id)d:%(divt)d" % tree_data)
         tree_string = "(" + (",".join(desc_lineages)) + ("):%d" % (self.num_desc_pops * self.num_desc_pops * 2 * 10))
