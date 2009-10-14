@@ -131,13 +131,13 @@ class FragmentedPopulations(object):
         for i in xrange(self.num_desc_pops):
             tree_data['id'] = i+1
             desc_lineages.append("%(sp)s%(id)d:%(divt)d" % tree_data)
-        tree_string = "(" + (",".join(desc_lineages)) + ("):%d" % (self.num_desc_pops * self.desc_pop_size * 2 * 10))
+        tree_string = "(" + (",".join(desc_lineages)) + ("):%d" % (self.num_desc_pops * self.desc_pop_size * 10))
         sp_tree = nexus.read_trees(StringIO.StringIO(tree_string))[0][0]
         for idx, leaf in enumerate(sp_tree.leaf_iter()):
             if idx == 1:
-                # ancestral population = num_desc_pops * desc population (* 2 for diploid genes)
-                leaf.parent_node.edge.pop_size = self.num_desc_pops * self.desc_pop_size * 2 
-            leaf.edge.pop_size = self.desc_pop_size * 2 # (* 2 for diploid genes)
+                # ancestral population = num_desc_pops * desc population
+                leaf.parent_node.edge.pop_size = self.num_desc_pops * self.desc_pop_size
+            leaf.edge.pop_size = self.desc_pop_size 
             leaf.num_genes = samples_per_pop      
         gene_tree, pop_tree = treegen.constrained_kingman(sp_tree, 
                                                           gene_node_label_func=lambda x,y: "%sX%d" % (x,y),
