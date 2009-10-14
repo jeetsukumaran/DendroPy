@@ -131,7 +131,7 @@ class FragmentedPopulations(object):
         for i in xrange(self.num_desc_pops):
             tree_data['id'] = i+1
             desc_lineages.append("%(sp)s%(id)d:%(divt)d" % tree_data)
-        tree_string = "(" + (",".join(desc_lineages)) + ("):%d" % (self.num_desc_pops * self.num_desc_pops * 2 * 10))
+        tree_string = "(" + (",".join(desc_lineages)) + ("):%d" % (self.num_desc_pops * self.desc_pop_size * 2 * 10))
         sp_tree = nexus.read_trees(StringIO.StringIO(tree_string))[0][0]
         for idx, leaf in enumerate(sp_tree.leaf_iter()):
             if idx == 1:
