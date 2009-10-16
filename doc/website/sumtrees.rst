@@ -19,7 +19,7 @@ Where to Find the Package
 =========================
 
 SumTrees is distributed and installed as part of the `DendroPy
-<http://pypi.python.org/pypi/DendroPy>`_ phylogenetic computation library, which  can be found here: 
+<http://pypi.python.org/pypi/DendroPy>`_ phylogenetic computing library, which  can be found here: 
 
     http://pypi.python.org/pypi/DendroPy
     
@@ -78,7 +78,7 @@ Alternatively, you can install DendroPy yourself, by following these steps.
         SumTrees - Phylogenetic Tree Split Support Summarization
         Version 1.1.1 (Mar 03 2009)
         By Jeet Sukumaran and Mark T. Holder
-        (using the DendroPy Phylogenetic Computation Library Version 2.1.3)
+        (using the DendroPy Phylogenetic Computing Library Version 2.1.3)
         ====================================================================
         
         No sources of support specified or could be found. Please provide the

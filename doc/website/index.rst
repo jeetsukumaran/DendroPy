@@ -1,12 +1,12 @@
-*****************************************
-DendroPy Phylogenetic Computation Library
-*****************************************
+***************************************
+DendroPy Phylogenetic Computing Library
+***************************************
 
 Introduction
 ============
 
 `DendroPy <http://pypi.python.org/pypi/DendroPy>`_ is a `Python
-<http://www.python.org>`_ library for phylogenetic computation, scripting, simulation, data processing and manipulation by `Jeet Sukumaran <http://people.ku.edu/~jeet>`_ and `Mark T. Holder <http://people.ku.edu/~mtholder>`_.
+<http://www.python.org>`_ library for phylogenetic scripting, simulation, data processing and manipulation by `Jeet Sukumaran <http://people.ku.edu/~jeet>`_ and `Mark T. Holder <http://people.ku.edu/~mtholder>`_.
 
 Installation
 ============
@@ -40,7 +40,7 @@ Citation
 
 If you use this library either in whole or in part in your analysis, or use any code derived from it, please cite it as:
 
-    Sukumaran, J. and Mark T. Holder. 2009. *DendroPy Phylogenetic Computation Library Version 2.5.1* (http://pypi.python.org/pypi/DendroPy).
+    Sukumaran, J. and Mark T. Holder. 2009. *DendroPy Phylogenetic Computing Library Version 2.5.1* (http://pypi.python.org/pypi/DendroPy).
     
 Bugs, Suggestions, Comments, etc.
 =================================

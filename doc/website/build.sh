@@ -15,6 +15,7 @@ cp *.gif $BUILD_DIR
 echo '- Generating HTML ...'
 rst2html.py --stylesheet-path=dendropy.css index.rst > $BUILD_DIR/index.html
 rst2html.py --stylesheet-path=dendropy.css sumtrees.rst > $BUILD_DIR/sumtrees.html
+rst2html.py --stylesheet-path=dendropy.css cookbook.rst > $BUILD_DIR/cookbook.html
 
 echo '- Creating archive ...'
 zip -j dendropy-html.zip $BUILD_DIR/*
