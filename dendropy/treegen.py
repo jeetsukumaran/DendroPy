@@ -293,6 +293,7 @@ def constrained_kingman(pop_tree,
 
     # start with a new tree
     gene_tree = trees.Tree()
+    gene_tree.taxa_block = gtaxa
     for edge in working_poptree.postorder_edge_iter():
         edge.head_node.gene_nodes = edge.head_node.gene_nodes
 
