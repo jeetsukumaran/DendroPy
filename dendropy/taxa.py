@@ -238,9 +238,9 @@ class Taxon(base.IdTagged):
     def cmp(taxon1, taxon2):
         "Compares taxon1 and taxon2 based on label."
         return cmp(str(taxon1.label), str(taxon2.label))
-    
-    cmp = staticmethod(cmp)
 
+    cmp = staticmethod(cmp)
+    
     def __init__(self, oid=None, label=None): 
         "Initializes by calling base class."
         base.IdTagged.__init__(self, oid=oid, label=label)
@@ -248,3 +248,6 @@ class Taxon(base.IdTagged):
     def __str__(self):
         "String representation of self = taxon name."
         return str(self.label)
+        
+    def __repr__(self):
+        return "<DendroPy Taxon: '%s'>" % (str(self.label))
