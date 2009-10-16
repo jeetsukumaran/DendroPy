@@ -65,6 +65,7 @@ class FragmentedPopulations(object):
         self.kappa = 1.0
         self.base_freqs=[0.25, 0.25, 0.25, 0.25]
         self.seqgen_path = 'seq-gen'
+        self.gene_tree = None
         
     def _get_theta(self):
         return 4 * self.mutrate_per_gene_per_generation * self.desc_pop_size
@@ -75,16 +76,16 @@ class FragmentedPopulations(object):
                            seq_len=2000, 
                            use_seq_gen=True):
                            
-        gt = self.generate_gene_tree(species_name=species_name, samples_per_pop=samples_per_pop)
+        self.gene_tree = self.generate_gene_tree(species_name=species_name, samples_per_pop=samples_per_pop)
                                 
         d = datasets.Dataset()
-        d.add_taxa_block(taxa_block=gt.taxa_block)
+        d.add_taxa_block(taxa_block=self.gene_tree.taxa_block)
         tb = d.add_trees_block(taxa_block=d.taxa_blocks[0])
-        tb.append(gt)
+        tb.append(self.gene_tree)
             
         if SEQGEN and use_seq_gen:
                         
-            for edge in gt.preorder_edge_iter():
+            for edge in self.gene_tree.preorder_edge_iter():
                 edge.length = edge.length * self.mutrate_per_site_per_generation
 
             sg = seqgen.SeqGen()
@@ -96,7 +97,7 @@ class FragmentedPopulations(object):
             sg.char_model = 'HKY'
             sg.ti_tv = float(self.kappa) / 2
             sg.state_freqs = self.base_freqs
-            sg.trees = [gt]    
+            sg.trees = [self.gene_tree]    
             d = sg.generate_dataset(dataset=d)
             d.taxa_blocks[0].sort()      
         
@@ -110,7 +111,7 @@ class FragmentedPopulations(object):
             return d
         else:
             return chargen.generate_hky_dataset(seq_len=seq_len,
-                                                tree_model=gt,                   
+                                                tree_model=self.gene_tree,                   
                                                 mutation_rate=float(self.mutrate_per_site_per_generation), 
                                                 kappa=1.0,
                                                 base_freqs=[0.25, 0.25, 0.25, 0.25],
