@@ -1,19 +1,24 @@
 #! /bin/sh
 
-if [[ -d html ]]
+BUILD_DIR=html
+
+if [[ -d $BUILD_DIR ]]
 then
-    echo '- Skipping creating directory "html": already exists.'
+    echo '- Skipping creating directory "'$BUILD_DIR'": already exists.'
 else
-    mkdir html
+    mkdir $BUILD_DIR
 fi
 
 echo '- Copying images ...'
-cp *.gif html
+cp *.gif $BUILD_DIR
 
 echo '- Generating HTML ...'
-rst2html.py index.rst > html/index.html
-rst2html.py sumtrees.rst > html/sumtrees.html
+rst2html.py --stylesheet-path="dendropy.css" index.rst > $BUILD_DIR/index.html
+rst2html.py --stylesheet-path="dendropy.css" sumtrees.rst > $BUILD_DIR/sumtrees.html
+
+echo '- Copying stylesheets ...'
+cp dendropy.css $BUILD_DIR/
 
 echo '- Creating archive ...'
-zip -j dendropy-html.zip html/*
+zip -j dendropy-html.zip $BUILD_DIR/*
 
