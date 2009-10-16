@@ -195,6 +195,8 @@ def generate_characters(seq_len,
     if char_block is None:
         char_block = characters.DnaCharactersBlock()
         char_block.taxa_block = tree_model.taxa_block            
+    if char_block.taxa_block is None:
+        char_block.taxa_block = tree_model.taxa_block
     else:
         assert char_block.taxa_block is tree_model.taxa_block, "conflicting taxa blocks"
     char_block.extend_matrix(other_matrix=char_matrix, 
