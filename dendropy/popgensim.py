@@ -79,9 +79,10 @@ class FragmentedPopulations(object):
                            seq_len=2000, 
                            use_seq_gen=True):
                            
+        self.generate_pop_tree(species_name=species_name, samples_per_pop=samples_per_pop)                           
         self.generate_gene_tree(species_name=species_name, samples_per_pop=samples_per_pop)                                
         d = datasets.Dataset()
-        d.add_taxa_block(taxa_block=self.gene_tree.taxa_block)
+        d.add_taxa_block(taxa_block=self.mutation_tree.taxa_block)
 
         if SEQGEN and use_seq_gen:
 
@@ -97,13 +98,6 @@ class FragmentedPopulations(object):
             sg.trees = [self.mutation_tree]    
             d = sg.generate_dataset(dataset=d)
             d.taxa_blocks[0].sort()      
-        
-            # some sanity checks #
-            assert len(d.taxa_blocks) == 1
-            assert len(d.trees_blocks) == 1
-            assert len(d.char_blocks) == 1
-            assert d.trees_blocks[0].taxa_block is d.taxa_blocks[0]
-            assert d.char_blocks[0].taxa_block is d.taxa_blocks[0]
               
             return d
         else:
@@ -116,6 +110,16 @@ class FragmentedPopulations(object):
                                                 dataset=d,
                                                 rng=self.rng)
                                                 
+    def generate_pop_tree(self, species_name, samples_per_pop=10):
+        tree_data = { 'sp': species_name, 'divt': self.div_time_gens }
+        desc_lineages = []
+        for i in xrange(self.num_desc_pops):
+            tree_data['id'] = i+1
+            desc_lineages.append("%(sp)s%(id)d:%(divt)d" % tree_data)
+        tree_string = "(" + (",".join(desc_lineages)) + ("):%d" % 0) #% (self.num_desc_pops * self.desc_pop_size * 10))
+        self.pop_tree = nexus.read_trees(StringIO.StringIO(tree_string))[0][0]
+        return self.pop_tree
+                                                
     def generate_gene_tree(self, species_name, samples_per_pop=10):
         """
         Given:
@@ -124,25 +128,20 @@ class FragmentedPopulations(object):
         Returns:
             DendroPy tree, with branch lengths in generations
         """
-        tree_data = { 'sp': species_name, 'divt': self.div_time_gens }
-        desc_lineages = []
-        for i in xrange(self.num_desc_pops):
-            tree_data['id'] = i+1
-            desc_lineages.append("%(sp)s%(id)d:%(divt)d" % tree_data)
-        tree_string = "(" + (",".join(desc_lineages)) + ("):%d" % 0) #% (self.num_desc_pops * self.desc_pop_size * 10))
-        self.species_tree = nexus.read_trees(StringIO.StringIO(tree_string))[0][0]
-        for idx, leaf in enumerate(self.species_tree.leaf_iter()):
+        if self.pop_tree is None:
+            self.generate_pop_tree(species_name, samples_per_pop=10)
+        for idx, leaf in enumerate(self.pop_tree.leaf_iter()):
             if idx == 1:
                 # ancestral population = num_desc_pops * desc population
                 leaf.parent_node.edge.pop_size = self.num_desc_pops * self.desc_pop_size
             leaf.edge.pop_size = self.desc_pop_size 
             leaf.num_genes = samples_per_pop      
-        self.gene_tree, self.pop_tree = treegen.constrained_kingman(self.species_tree, 
+        self.gene_tree, self.pop_tree = treegen.constrained_kingman(self.pop_tree, 
                                                           gene_node_label_func=lambda x,y: "%sX%d" % (x,y),
                                                           rng=self.rng)
                                                           
         self.mutation_tree = copy.deepcopy(self.gene_tree)
         for edge in self.mutation_tree.preorder_edge_iter():
             edge.length = edge.length * self.mutrate_per_site_per_generation                                                          
-        return self.gene_tree, self.pop_tree
+        return self.gene_tree
     

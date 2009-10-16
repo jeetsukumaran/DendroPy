@@ -223,7 +223,8 @@ def constrained_kingman(pop_tree,
                         rng=None,
                         gene_node_label_func=None,
                         num_genes_attr='num_genes',
-                        pop_size_attr='pop_size'):
+                        pop_size_attr='pop_size',
+                        decorate_original_tree=False):
     """
     Given a population tree, `pop_tree` this will return a *pair of
     trees*: a gene tree simulated on this population tree based on
@@ -246,6 +247,10 @@ def constrained_kingman(pop_tree,
     and an integer, respectively, where the string is the containing species
     taxon label and the integer is the gene index) and returns a label for
     the corresponding the gene node.
+    
+    if `decorate_original_tree` is True, then the list of uncoalesced nodes at
+    each node of the population tree is added to the original (input) population
+    tree instead of a copy.
     """
 
     # get our random number generator
@@ -279,13 +284,16 @@ def constrained_kingman(pop_tree,
     # this period are added to the genes of the tail (parent) node of
     # the edge.
 
-    # start with a new (deep) copy of the population tree so as to not
-    # to change the original tree
-    poptree_copy = copy.deepcopy(pop_tree)
+    if decorate_original_tree:
+        working_poptree = pop_tree
+    else:        
+        # start with a new (deep) copy of the population tree so as to not
+        # to change the original tree
+        working_poptree = copy.deepcopy(pop_tree)
 
     # start with a new tree
     gene_tree = trees.Tree()
-    for edge in poptree_copy.postorder_edge_iter():
+    for edge in working_poptree.postorder_edge_iter():
         edge.head_node.gene_nodes = edge.head_node.gene_nodes
 
         # if mrca root, run unconstrained coalescent
@@ -318,7 +326,7 @@ def constrained_kingman(pop_tree,
     if gene_trees_block is not None:
         gene_trees_block.append(gene_tree)
     
-    return gene_tree, poptree_copy
+    return gene_tree, working_poptree
 
 
 def randomly_reorient_tree(tree, rng=None, splits=False):
