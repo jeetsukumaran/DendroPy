@@ -28,6 +28,7 @@ Generate sequences under population genetic models.
 
 import StringIO
 import random
+import copy
 
 from dendropy import GLOBAL_RNG
 from dendropy import datasets
@@ -66,6 +67,8 @@ class FragmentedPopulations(object):
         self.base_freqs=[0.25, 0.25, 0.25, 0.25]
         self.seqgen_path = 'seq-gen'
         self.gene_tree = None
+        self.pop_tree = None
+        self.mutation_tree = None
         
     def _get_theta(self):
         return 4 * self.mutrate_per_gene_per_generation * self.desc_pop_size
@@ -76,17 +79,11 @@ class FragmentedPopulations(object):
                            seq_len=2000, 
                            use_seq_gen=True):
                            
-        self.gene_tree = self.generate_gene_tree(species_name=species_name, samples_per_pop=samples_per_pop)
-                                
+        self.generate_gene_tree(species_name=species_name, samples_per_pop=samples_per_pop)                                
         d = datasets.Dataset()
         d.add_taxa_block(taxa_block=self.gene_tree.taxa_block)
-        tb = d.add_trees_block(taxa_block=d.taxa_blocks[0])
-        tb.append(self.gene_tree)
-            
+
         if SEQGEN and use_seq_gen:
-                        
-            for edge in self.gene_tree.preorder_edge_iter():
-                edge.length = edge.length * self.mutrate_per_site_per_generation
 
             sg = seqgen.SeqGen()
             sg.seqgen_path = self.seqgen_path
@@ -97,7 +94,7 @@ class FragmentedPopulations(object):
             sg.char_model = 'HKY'
             sg.ti_tv = float(self.kappa) / 2
             sg.state_freqs = self.base_freqs
-            sg.trees = [self.gene_tree]    
+            sg.trees = [self.mutation_tree]    
             d = sg.generate_dataset(dataset=d)
             d.taxa_blocks[0].sort()      
         
@@ -111,8 +108,8 @@ class FragmentedPopulations(object):
             return d
         else:
             return chargen.generate_hky_dataset(seq_len=seq_len,
-                                                tree_model=self.gene_tree,                   
-                                                mutation_rate=float(self.mutrate_per_site_per_generation), 
+                                                tree_model=self.mutation_tree,                   
+                                                mutation_rate=1.0, 
                                                 kappa=1.0,
                                                 base_freqs=[0.25, 0.25, 0.25, 0.25],
                                                 root_states=None,    
@@ -133,15 +130,19 @@ class FragmentedPopulations(object):
             tree_data['id'] = i+1
             desc_lineages.append("%(sp)s%(id)d:%(divt)d" % tree_data)
         tree_string = "(" + (",".join(desc_lineages)) + ("):%d" % (self.num_desc_pops * self.desc_pop_size * 10))
-        sp_tree = nexus.read_trees(StringIO.StringIO(tree_string))[0][0]
-        for idx, leaf in enumerate(sp_tree.leaf_iter()):
+        self.species_tree = nexus.read_trees(StringIO.StringIO(tree_string))[0][0]
+        for idx, leaf in enumerate(self.species_tree.leaf_iter()):
             if idx == 1:
                 # ancestral population = num_desc_pops * desc population
                 leaf.parent_node.edge.pop_size = self.num_desc_pops * self.desc_pop_size
             leaf.edge.pop_size = self.desc_pop_size 
             leaf.num_genes = samples_per_pop      
-        gene_tree, pop_tree = treegen.constrained_kingman(sp_tree, 
+        self.gene_tree, self.pop_tree = treegen.constrained_kingman(self.species_tree, 
                                                           gene_node_label_func=lambda x,y: "%sX%d" % (x,y),
                                                           rng=self.rng)
-        return gene_tree        
+                                                          
+        self.mutation_tree = copy.deepcopy(self.gene_tree)
+        for edge in self.mutation_tree.preorder_edge_iter():
+            edge.length = edge.length * self.mutrate_per_site_per_generation                                                          
+        return self.gene_tree, self.pop_tree
     
