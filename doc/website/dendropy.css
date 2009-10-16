@@ -135,16 +135,6 @@ div.system-message p.system-message-title {
 div.topic {
   margin: 2em }
 
-h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
-h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
-  margin-top: 0.4em }
-
-h1.title {
-  text-align: center }
-
-h2.subtitle {
-  text-align: center }
-
 hr.docutils {
   width: 75% }
 
@@ -270,3 +260,68 @@ h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
 
 ul.auto-toc {
   list-style-type: none }
+
+
+/******************************************************************************
+ * CUSTOMIZATIONS
+ ******************************************************************************/
+
+body {
+    background: #404040;
+    font-family: helvetica, arial, sans-serif;
+    font-size: 90%;
+}
+
+div.document {
+    width: 640px;
+    margin: auto;
+    background: #eeeedd;
+    border: solid 2px black;
+    padding: 0;
+}
+
+div.section {
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+h1.title {
+  margin: 0;
+  text-align: center;
+  background: #000000;
+  color: #fffeee;
+  padding: 10px;
+  font-size: 150%;
+  border: none;
+}
+
+h1 {
+    font-size: 130%;
+    margin-top: 1.5em;
+    margin-bottom: 0.0em; 
+}
+
+h2 {
+    font-size: 110%;
+    margin-top: 1.5em;
+    margin-bottom: 0.0em; 
+}
+
+pre.literal-block {
+    white-space: pre-wrap; /* css-3 */
+    white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+    white-space: -pre-wrap; /* Opera 4-6 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+    border: dotted 1px;
+    background: #ffffff;
+    color: #000000;
+    padding: .5em;    
+    width: 580px; 
+    margin: auto;
+    font-size: 100%;
+}
+
+li pre.literal-block {
+    width: 540px;
+}

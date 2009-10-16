@@ -13,11 +13,8 @@ echo '- Copying images ...'
 cp *.gif $BUILD_DIR
 
 echo '- Generating HTML ...'
-rst2html.py --stylesheet-path="dendropy.css" index.rst > $BUILD_DIR/index.html
-rst2html.py --stylesheet-path="dendropy.css" sumtrees.rst > $BUILD_DIR/sumtrees.html
-
-echo '- Copying stylesheets ...'
-cp dendropy.css $BUILD_DIR/
+rst2html.py --stylesheet-path=dendropy.css index.rst > $BUILD_DIR/index.html
+rst2html.py --stylesheet-path=dendropy.css sumtrees.rst > $BUILD_DIR/sumtrees.html
 
 echo '- Creating archive ...'
 zip -j dendropy-html.zip $BUILD_DIR/*
