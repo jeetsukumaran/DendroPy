@@ -1,5 +1,4 @@
-.. |dendropylogo| image:: dendropy-logo.png
-                  :class: dendropylogo
+.. include:: common.rst
 
 ******************************************************
 |dendropylogo| DendroPy Phylogenetic Computing Library

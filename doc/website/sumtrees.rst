@@ -1,6 +1,4 @@
-.. |dendropylogo| image:: dendropy-logo.png
-                  :class: dendropylogo
-    
+.. include:: common.rst
 
 ************************************************************************
 |dendropylogo| SumTrees: Phylogenetic Tree Summarization and Annotation
