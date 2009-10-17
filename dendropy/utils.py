@@ -631,7 +631,7 @@ def format_dict_table(rows, column_names=None, max_column_width=None, border_sty
     else:
         return ''
 
-def get_git_tag(dirpath=os.path.curdir):
+def get_current_git_tag(dirpath=os.path.curdir):
     p = subprocess.Popen(['git describe --tag'], 
             shell=True,
         cwd=os.path.abspath(os.path.expandvars(dirpath)),            
@@ -646,7 +646,7 @@ def get_git_tag(dirpath=os.path.curdir):
     else:        
         return tags[-1]
         
-def get_git_commit(dirpath=os.path.curdir):
+def get_current_git_commit(dirpath=os.path.curdir):
     # git rev-parse HEAD
     # git show --quiet --pretty=format:%H
     # git log -1 --pretty=format:%H
@@ -663,7 +663,7 @@ def get_git_commit(dirpath=os.path.curdir):
     else:
         return stdout.replace("\n","")
         
-def get_git_branch(dirpath=os.path.curdir):
+def get_current_git_branch(dirpath=os.path.curdir):
     p = subprocess.Popen(['git branch'], 
         shell=True, 
         cwd=os.path.abspath(os.path.expandvars(dirpath)),
@@ -677,6 +677,15 @@ def get_git_branch(dirpath=os.path.curdir):
             if b.startswith('* '):
                 return b[2:]
         return "[UNIDENTIFIABLE]"
+        
+def dendropy_current_git_tag():
+    return get_current_git_tag(os.path.dirname(__file__))
+    
+def dendropy_current_git_commit():
+    return get_current_git_commit(os.path.dirname(__file__))
+    
+def dendropy_current_git_branch():
+    return get_current_git_branch(os.path.dirname(__file__))    
 
 def sample_mean_var_ml(x):
     """Returns the sample mean and variance of x using the ML estimator of the 
