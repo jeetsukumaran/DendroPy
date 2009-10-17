@@ -10,43 +10,6 @@
 Introduction
 ============
 
-The DendroPy Data Model
-=======================
-
-Dataset Objects
----------------
-
-The DendroPy class ``datasets.Dataset`` is the primary dataset class.
-All phylogenetic data, including taxa, trees, and characters, are managed by objects of this class.
-A ``Dataset`` object has three attributes:
-
-    * "``taxa_blocks``": a list of ``taxa.TaxaBlock`` objects
-    * "``trees_blocks``": a list of ``trees.TreeBlock`` objects
-    * "``char_blocks``": a list of ``characters.CharBlock`` objects
-    
-Each ``taxa.TaxaBlock`` object is a specialized list of ``taxa.Taxon`` objects, while each ``trees.TreeBlock`` is similarly a specialized list of ``trees.Tree`` objects.
-Each ``characters.CharBlock``, on the other hand, can be seen as a specialized dictionary which maps each ``taxa.Taxon`` to a vector of characters representing a character data sequence associated with that taxon.
-
-The DendroPy data model can be considered a taxon-driven data model, in that that all tree and character data are partitioned by taxa.
-That is, each and every ``TreeBlock`` and ``CharBlock`` are associated with one, and only one, ``TaxaBlock`` object, but each ``TaxaBlock`` object may be associated with more than one (or none) ``TreeBlock`` and ``CharBlock`` objects.
-
-This taxon-driven partition applies to the individual ``TreeBlock`` objects as well as ``CharBlock`` objects: every ``TreeBlock`` and ``CharBlock`` object is associated with a ``TaxaBlock`` object that determines the full set of taxa represented in the tree and character data respectively.
-
-Adding a ``Tree`` object to a ``TreeBlock`` list automatically normalizes the ``TaxaBlock`` associated with the ``Tree`` object: the ``TaxaBlock`` associated with the ``TreeBlock`` list will be assigned to the ``Tree`` object, and ``taxa.Taxon`` objects on the ``Tree`` object will be replaced with corresponding ``taxa.Taxon`` objects of the ``TreeBlock`` list, with identity established by the taxon label. If there are ``taxa.Taxon`` objects in the ``Tree`` object with labels that do not match with the labels of any ``Taxon`` objects in the ``TaxaBlock`` of the ``TreeBlock`` list, then a new ``Taxon`` object with the label will be created and added to the ``TaxaBlock`` of the ``TreeBlock`` list.
-
-Tree Objects
--------------
-
-DendroPy ``Tree`` objects are rich objects. 
-Every ``Tree`` object has a ``seed_node`` attribute, which points to the starting node of the tree.
-This is the rooted if the tree is rooted (``Tree.is_rooted=True``), but is an artifical node if it is not.
-Every node on the ``Tree`` object (including ``seed_node``) is an object of the ``Trees.Node`` class.
-Each ``Trees.Node`` has, among others, the following attributes:
-
-    * ``edge`` : a ``Trees.Edge`` object representing the edge subtending this node
-    * ``parent_node`` : a ``Node`` object that is the parent of the current node (``None`` for the root or ``seed_node``)
-    * ``label`` : a text label associated with this node
-    * ``taxon`` : a ``Taxon`` object representing the taxon associated with this node (typically, internal nodes will have this set to ``None``, but this is not always the case)
 
 Reading and Writing Data
 ========================
@@ -54,7 +17,7 @@ Reading and Writing Data
 Reading Data from a File
 ------------------------
 
-The ``read()`` method of the ``datasets.Dataset`` object is the primary way of loading data from a file to a dataset.
+The ``read()`` method of the ``datasets.Dataset`` object is the primary way of loading data from a file into |DendroPy|_.
 It takes two parameters, a file handle and a (case-insensitive) string specifying a format, which can be one of:
 
     * "NEXUS"
@@ -71,7 +34,35 @@ For example, to load the data in the NEXUS-format file, "primates.tre"::
     >>> d.read( open("primates.tre", "rU"), "NEXUS" )
     <dendropy.datasets.Dataset object at 0x2a26f0>
 
-The ``datasets.Dataset`` object "``d``" will now contain all the data in "primates.tre".
+The ``datasets.Dataset`` object "``d``" will now contain all the data in "primates.tre"---taxa, trees, and characters.
+If the data contains only trees or only characters, then the corresponding |DendroPy|_ ``Dataset`` will contain only trees or characters, respectively.
+If the data format does not specify an explicit taxon block (e.g., NEWICK, PHYLIP, FASTA, or a technically-invalid but often seen incomplete NEXUS variant), then one will be automatically created and associated with all taxon-linked elements (character blocks, trees blocks, and trees) of the data.
+
+Each ``Dataset`` object has three attributes:
+
+    * ``taxa_blocks`` : a list of ``TaxaBlock`` objects corresponding to the (one or more) taxa blocks in, or implied by, the data
+    * ``trees_blocks``: a list of ``TreesBlock`` objects corresponding to the (zero or more) sets of trees in the data
+    * ``char_blocks``: a list of ``CharactersBlock`` objects corresponding to the (zero or more) sets of character matrices in th data
+    
+Most file formats will only result in at most one ``TaxaBlock``, one ``TreesBlock`` and one ``CharactersBlock`` objects in each of the respective lists.
+For example, reading a FASTA or PHYLIP file will result in single-element ``taxa_blocks`` and ``char_blocks`` lists.
+Similarly, reading a NEWICK file will result in single-element ``taxa_blocks`` and ``trees_blocks`` lists.
+A standard NEXUS file will result in a single-element ``taxa_blocks`` list, and either empty or single-element ``char_blocks`` and ``trees_blocks`` lists.
+
+Each ``TaxaBlock`` and ``TreesBlock`` object is, in turn, a specialized list, with ``Taxon`` and ``Tree`` elements respectively.
+Each ``Tree`` object consists of nodes (``Node`` objects) and branches (``Edge`` objects), with a ``Taxon`` object from the associated ``TaxaBlock`` assigned to the ``taxon`` attribute of each leaf node.
+Internal typically have their ``taxon`` attribute set to ``None``, but this need not neccessarily be the case. Each ``CharactersBlock`` behaves like a dictionary that maps ``Taxon`` objects in its associated ``TaxaBlock`` to vectors of character data.
+
+Almost every object has a ``label`` attribute, which is a plain |Python|_ string. 
+It is important to distinguish between the string label of an object and the object itself. 
+For example, a NEXUS file may contain a tree which includes a taxon label "Agkistrodon".
+When this file is read by |DendroPy|_, a ``Taxon`` object will be created with its ``label`` attribute set to "Agkistrodon".
+However, the ``Tree`` object created will not have the ``label`` attribute of the corresponding node set to anything.
+Instead, the ``taxon`` attribute of the node will point to a ``Taxon`` object with the label "Agkistrodon" in its associated ``TaxaBlock``.
+Some file formats, such as NEXUS or NeXML, allow for labels to be associated with nodes independentally of taxa.
+For example, the NEXUS specification allows for internal node labels.
+*These* labels *will* result in the ``label`` attribute being set on the corresponding nodes of the DendroPy ``Tree`` object.
+
 
 Writing Data to a File
 -----------------------
@@ -106,7 +97,7 @@ PHYLIP to FASTA::
     >>> d.read(open("rana.dat", "rU"), "PHYLIP")
     >>> d.write(open("rana2.fasta", "w"), "DNAFASTA")
          
-The following script performs something I find *very* useful: it reads in a FASTA file and writes out the data in NEXUS format, transforming the labels to something that is meaningful and yet valid::
+The following script performs something I find *very* useful: it reads in a FASTA file downloaded from GenBank, and writes out the data in NEXUS format, transforming the highly-informative but also verbose GenBank labels to something that is meaningful and yet valid for direct use in most phylogenetic programs::
 
     #! /usr/bin/env python
     
@@ -127,7 +118,7 @@ The following script performs something I find *very* useful: it reads in a FAST
 Accessing and Querying Data
 ============================
 
-Once a ``Dataset`` object has been instantiated, by examining the lengths of the lists of ``taxa.TaxaBlock``, ``trees.TreeBlock`` and ``characters.CharBlock`` objects we can determined how many of each kind are there::
+Once a ``Dataset`` object has been instantiated, by examining the lengths of the lists of ``taxa.TaxaBlock``, ``trees.TreeBlock`` and ``characters.CharactersBlock`` objects we can determined how many of each kind are there::
 
     >>> from dendropy import datasets
     >>> d = datasets.Dataset()

@@ -3,6 +3,7 @@
 .. |dendropylogo| image:: dendropy-logo.png
     :class: dendropylogo
     :target: http://packages.python.org/DendroPy/
+    :alt: DendroPy Phylogenetic Computing Library logo
 
 .. ###### People ######
 

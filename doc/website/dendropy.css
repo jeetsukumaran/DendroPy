@@ -333,7 +333,7 @@ pre.literal-block {
 /* <tt class="docutils literal"><span class="pre"> xx </pre></tt> */
 tt.literal {
     font-size: 140%;
-    color: #000000;
+    color: #404040;
 }
 
 li pre.literal-block {
