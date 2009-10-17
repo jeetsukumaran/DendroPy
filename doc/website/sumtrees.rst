@@ -334,27 +334,6 @@ If you use this program in your analysis, please cite it as (replacing the versi
 
     |sumtrees_citation|
     
-Copyright, License and Warranty
-===============================
-
-|SumTrees| and |DendroPy|_ are: |dendropy_copyright|
-  
-|gpl3|
-
-Acknowledgments
-================
-SumTrees is part of the |DendroPy|_ library, which is authored by myself (|js|) and |mth|.
-
-Portions of |DendroPy|_ were developed under `CIPRES <http://www.phylo.org>`_, a multi-site collaboration funded by the `NSF <http://www.nsf.gov/>`_ Information Technology Research (ITR) program grant entitled "`BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics <http://www.phylo.org/about/acknowledgements>`_".
-
-.. image:: logo_cipres.gif
-    :height: 40   
-    :target: http://www.phylo.org/
-
-.. image:: nsf.gif
-    :width: 40
-    :target: http://www.nsf.gov/
-
-
-
+.. include:: license.rst
+.. include:: acknowledgements.rst
 
