@@ -265,7 +265,11 @@ ul.auto-toc {
 /******************************************************************************
  * CUSTOMIZATIONS
  ******************************************************************************/
-
+img.dendropylogo {
+    position: relative;
+    top: -4em;
+}
+   
 body {
     background: #404040;
     font-family: helvetica, arial, sans-serif;

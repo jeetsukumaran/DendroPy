@@ -11,6 +11,7 @@ fi
 
 echo '- Copying images ...'
 cp *.gif $BUILD_DIR
+cp *.png $BUILD_DIR
 
 echo '- Generating HTML ...'
 rst2html.py --stylesheet-path=dendropy.css index.rst > $BUILD_DIR/index.html
