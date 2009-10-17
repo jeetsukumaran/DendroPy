@@ -75,7 +75,7 @@ class FastaReader(datasets.Reader):
             taxa_block = TaxaBlock()
             dataset.taxa_blocks.append(taxa_block)
         else:
-            taxa_block = dataset.taxa_block[0]
+            taxa_block = dataset.taxa_blocks[0]
 
         char_block = self.char_block_type()
         char_block.taxa_block = taxa_block
