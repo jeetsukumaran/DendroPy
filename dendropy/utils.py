@@ -630,23 +630,8 @@ def format_dict_table(rows, column_names=None, max_column_width=None, border_sty
             return ''
     else:
         return ''
-
-def get_current_git_tag(dirpath=os.path.curdir):
-    p = subprocess.Popen(['git describe --tag'], 
-            shell=True,
-        cwd=os.path.abspath(os.path.expandvars(dirpath)),            
-            stdin=subprocess.PIPE, 
-            stdout=subprocess.PIPE, 
-            stderr=subprocess.PIPE)
-    if p.stderr.read() == 'fatal: Not a git repository\n':
-        return '[NOT A GIT REPOSITORY]'
-    tags = [t for t in p.stdout.read().split("\n") if t]
-    if len(tags) == 0:
-        return 'UNSPECIFIED'
-    else:        
-        return tags[-1]
         
-def get_current_git_commit(dirpath=os.path.curdir):
+def get_current_git_head(dirpath=os.path.curdir):
     # git rev-parse HEAD
     # git show --quiet --pretty=format:%H
     # git log -1 --pretty=format:%H
@@ -676,17 +661,23 @@ def get_current_git_branch(dirpath=os.path.curdir):
         for b in branches:
             if b.startswith('* '):
                 return b[2:]
-        return "[UNIDENTIFIABLE]"
-        
-def dendropy_current_git_tag():
-    return get_current_git_tag(os.path.dirname(__file__))
-    
-def dendropy_current_git_commit():
-    return get_current_git_commit(os.path.dirname(__file__))
-    
-def dendropy_current_git_branch():
-    return get_current_git_branch(os.path.dirname(__file__))    
+        return "[UNIDENTIFIABLE]"        
 
+def get_current_git_tag(dirpath=os.path.curdir):
+    p = subprocess.Popen(['git describe --tag'], 
+            shell=True,
+        cwd=os.path.abspath(os.path.expandvars(dirpath)),            
+            stdin=subprocess.PIPE, 
+            stdout=subprocess.PIPE, 
+            stderr=subprocess.PIPE)
+    if p.stderr.read() == 'fatal: Not a git repository\n':
+        return '[NOT A GIT REPOSITORY]'
+    tags = [t for t in p.stdout.read().split("\n") if t]
+    if len(tags) == 0:
+        return 'UNSPECIFIED'
+    else:        
+        return tags[-1]
+        
 def sample_mean_var_ml(x):
     """Returns the sample mean and variance of x using the ML estimator of the 
     sample variance.

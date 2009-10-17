@@ -74,6 +74,21 @@ You should have received a copy of the GNU General Public License along
 with this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
+def get_DENDROPY_PATH():
+    return os.path.dirname(os.path.abspath(__file__))
+    
+def get_DENDROPY_HEAD():
+    from dendropy import utils
+    return utils.get_current_git_head(os.path.dirname(__file__))
+    
+def get_DENDROPY_BRANCH():
+    from dendropy import utils
+    return utils.get_current_git_branch(os.path.dirname(__file__))
+    
+def get_DENDROPY_TAG():
+    from dendropy import utils
+    return utils.get_current_git_tag(os.path.dirname(__file__))
+    
 # Global random number generator
 GLOBAL_RNG = random.Random()
 
