@@ -7,7 +7,7 @@
 Introduction
 ============
 
-SumTrees is a program to summarize non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
+|SumTrees|_ is a program to summarize non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
 
 The basis of the support assessment is typically given by a set of non-parametric bootstrap replicate tree samples produced by programs such as GARLI or RAxML, or by a set of MCMC tree samples produced by programs such as Mr. Bayes or BEAST.
 The proportion of trees out of the samples in which a particular split is found is taken to be the degree of support for that split as indicated by the samples.
@@ -52,7 +52,7 @@ Alternatively, you can install |DendroPy|_ yourself, by following these steps.
 
     |dendropy_download_url|
 
-    Note that you might end up downloading a newer version of |DendroPy|_, i which case the version numbers in the file and directory names may not correspond exactly to those given in the examples. For instance, you may end up with "``DendroPy-2.2.1rc3.tar.gz``" rather than "``DendroPy-2.1.3.tar.gz``". However, as long as you substitute the correct archive and directory name in the examples and discussion below, everything else should remain the same. 
+    Note that you might end up downloading a newer version of |DendroPy|_, in which case the version numbers in the file and directory names may not correspond exactly to those given in the examples. For instance, you may end up with "``DendroPy-2.2.1rc3.tar.gz``" rather than "``DendroPy-2.1.3.tar.gz``". However, as long as you substitute the correct archive and directory name in the examples and discussion below, everything else should remain the same. 
 
 #.  Expand the downloaded archive
 
@@ -248,15 +248,15 @@ Prerequisites
 -------------   
 
 |DendroPy|_ is a |Python|_ library.
-It requires and presupposes not only the existence of a Python installation on your system, but also that this Python installation is available on the system path.
+It requires and presupposes not only the existence of a |Python|_ installation on your system, but also that this Python installation is available on the system path.
 
-The biggest problem faced by most users is not so much not having Python installed, but not having the correct version of Python installed. You can check which version of Python you have running by typing::
+The biggest problem faced by most users is not so much not having |Python|_ installed, but not having the correct version of Python installed. You can check which version of Python you have running by typing::
 
     $ python -V
     
 SumTrees, and the |DendroPy|_ library that it is part of, works out-of-the-box with Python version 2.4 or greater, up to and including Python 2.6. 
 
-SumTrees will not work with versions of Python prior to 2.4, such as Python 2.3. It can probably be made to work pretty easily, and if you have strong enough motiviation to use Python 2.3, it might be worth the effort for you.
+SumTrees will not work with versions of |Python|_ prior to 2.4, such as |Python|_ 2.3. It can probably be made to work pretty easily, and if you have strong enough motiviation to use Python 2.3, it might be worth the effort for you.
 It is not for me.
 
 SumTrees (and |DendroPy|_, and, for that matter, most existing |Python|_ code) is flat-out broken under Python 3.0.
@@ -286,7 +286,7 @@ If you get a message like::
     
 it is either because |Python|_  is not installed on your system, or is not found on the system path.
 
-SumTrees is a |Python|_  script, and, as such, you will need to have a |Python|_  interpreter installed on your system.
+SumTrees is a |Python|_ script, and, as such, you will need to have a |Python|_  interpreter installed on your system.
 
 Otherwise, you must download and install Python 2.6 from: http://www.python.org/download/releases/2.6/.
 For your convenience, the clicking on the following links should lead you directly to the appropriate pre-compiled download:
@@ -316,7 +316,7 @@ There are a couple of different things you could do:
 
 Repository Access
 =================
-The |DendroPy|_ public-access `Git <http://git-scm.com/>`_ repository can be cloned from:
+The |DendroPy|_ public-access |Git|_ repository can be cloned from:
     
         |dendropy_public_repo_url|
 
@@ -343,9 +343,9 @@ Copyright, License and Warranty
 
 Acknowledgments
 ================
-SumTrees is part of the DendroPy_ library, which is authored by myself (|js|) and |mth|.
+SumTrees is part of the |DendroPy|_ library, which is authored by myself (|js|) and |mth|.
 
-Portions of DendroPy_ were developed under `CIPRES <http://www.phylo.org>`_, a multi-site collaboration funded by the `NSF <http://www.nsf.gov/>`_ Information Technology Research (ITR) program grant entitled "`BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics <http://www.phylo.org/about/acknowledgements>`_".
+Portions of |DendroPy|_ were developed under `CIPRES <http://www.phylo.org>`_, a multi-site collaboration funded by the `NSF <http://www.nsf.gov/>`_ Information Technology Research (ITR) program grant entitled "`BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics <http://www.phylo.org/about/acknowledgements>`_".
 
 .. image:: logo_cipres.gif
     :height: 40   

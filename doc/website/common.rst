@@ -58,3 +58,6 @@
 
 .. |setuptools| replace:: setuptools
 .. _setuptools: http://pypi.python.org/pypi/setuptools
+
+.. |Git| replace:: Git
+.. _Git: http://git-scm.com/

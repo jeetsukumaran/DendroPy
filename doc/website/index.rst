@@ -28,7 +28,7 @@ Otherwise you will have to download the distribution archive from `the Python Pa
     
 Repository Access
 =================
-The DendroPy public-access `Git <http://git-scm.com/>`_ repository can be cloned from:
+The |DendroPy|_ public-access |Git|_ repository can be cloned from:
     
         |dendropy_public_repo_url|
         
@@ -40,7 +40,7 @@ The `DendroPy Cookbook <cookbook.html>`_, consisting of tutorials, walk-throughs
     
 Included Scripts
 ================
-* SumTrees_ is a script that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
+* |SumTrees|_ is a script that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
 
 Citation
 =========
@@ -67,7 +67,7 @@ Copyright, License and Warranty
 Acknowledgments
 ================
 
-Portions of DendroPy_ were developed under `CIPRES <http://www.phylo.org>`_, a multi-site collaboration funded by the `NSF <http://www.nsf.gov/>`_ Information Technology Research (ITR) program grant entitled "`BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics <http://www.phylo.org/about/acknowledgements>`_".
+Portions of |DendroPy|_ were developed under `CIPRES <http://www.phylo.org>`_, a multi-site collaboration funded by the `NSF <http://www.nsf.gov/>`_ Information Technology Research (ITR) program grant entitled "`BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics <http://www.phylo.org/about/acknowledgements>`_".
 
 .. image:: logo_cipres.gif
     :height: 40   
