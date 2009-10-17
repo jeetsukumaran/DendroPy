@@ -65,7 +65,7 @@ def main():
     parser.add_option('-f', '--fasta',
         action='store_const',
         dest='format',
-        const='DNAFASTA',
+        const='FASTA',
         help='output in FASTA format')     
 
     (opts, args) = parser.parse_args()
