@@ -7,15 +7,14 @@
 Introduction
 ============
 
-`DendroPy <http://packages.python.org/DendroPy/>`_ is a `Python
-<http://www.python.org>`_ library for phylogenetic scripting, simulation, data processing and manipulation by `Jeet Sukumaran <http://people.ku.edu/~jeet>`_ and `Mark T. Holder <http://people.ku.edu/~mtholder>`_.
+|DendroPy|_ is a |Python|_ library for phylogenetic scripting, simulation, data processing and manipulation by |js| and |mth|.
 
 Installation
 ============
 
 The current public release of DendroPy is available from the Python Package Index:
 
-    http://pypi.python.org/pypi/DendroPy
+    |dendropy_download_page|
     
 If you have `setuptools <http://pypi.python.org/pypi/setuptools>`_ installed on your system, then you can install DendroPy by simply running the following command::
 
@@ -31,15 +30,14 @@ Repository Access
 =================
 The DendroPy public-access `Git <http://git-scm.com/>`_ repository can be cloned from:
     
-        http://github.com/jeetsukumaran/DendroPy
+        |dendropy_public_repo|
         
 Documentation
 ==============
-The primary external documentation is in the form of a `cookbook <cookbook.html>`, consisting of tutorials, walk-throughs, and annotated examples, and can be found here:
+The `DendroPy Cookbook <cookbook.html>`_, consisting of tutorials, walk-throughs, and annotated examples, can be found here:
 
-        http://packages.python.org/DendroPy/cookbook.html
+        |dendropy_cookbook|
     
-
 Included Scripts
 ================
 * `SumTrees <sumtrees.html>`_ is a script that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
@@ -49,7 +47,7 @@ Citation
 
 If you use this library either in whole or in part in your analysis, or use any code derived from it, please cite it as:
 
-    Sukumaran, J. and Mark T. Holder. 2009. *DendroPy Phylogenetic Computing Library Version 2.5.1* (http://packages.python.org/DendroPy/).
+    Sukumaran, J. and Mark T. Holder. 2009. *DendroPy Phylogenetic Computing Library Version 2.5.1* (|dendropy_homepage|).
     
 Bugs, Suggestions, Comments, etc.
 =================================
