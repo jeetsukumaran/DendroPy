@@ -1,9 +1,9 @@
 .. ###### Page Elements ######
 
-.. |dendropylogo| image:: dendropy-logo.png
-    :class: dendropylogo
+.. |dendropymasthead| image:: dendropy-masthead.png
+    :class: dendropymasthead
     :target: http://packages.python.org/DendroPy/
-    :alt: DendroPy Phylogenetic Computing Library logo
+    :alt: DendroPy Phylogenetic Computing Library
 
 .. ###### People ######
 
@@ -19,7 +19,7 @@
 
 .. |dendropy_citation| replace:: Sukumaran, J. and Mark T. Holder. 2009. *DendroPy Phylogenetic Computing Library Version 2.6.1* (|dendropy_homepage_url|).
 
-.. |dendropy_copyright| replace:: Copyright 2009 Jeet Sukumaran and Mark T. Holder.
+.. |dendropy_copyright| replace:: **Copyright 2009 Jeet Sukumaran and Mark T. Holder**
 
 .. ###### DendroPy Locations ######
 

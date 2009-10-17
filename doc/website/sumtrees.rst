@@ -1,8 +1,8 @@
 .. include:: common.rst
 
-************************************************************************
-|dendropylogo| SumTrees: Phylogenetic Tree Summarization and Annotation
-************************************************************************
+***************************************************************************
+|dendropymasthead| SumTrees: Phylogenetic Tree Summarization and Annotation
+***************************************************************************
 
 Introduction
 ============

@@ -1,8 +1,8 @@
 .. include:: common.rst
 
-********************************
-|dendropylogo| DendroPy Cookbook
-********************************
+************************************
+|dendropymasthead| DendroPy Cookbook
+************************************
 
 .. contents:: Contents
 

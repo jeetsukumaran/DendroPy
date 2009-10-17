@@ -265,7 +265,7 @@ ul.auto-toc {
 /******************************************************************************
  * CUSTOMIZATIONS
  ******************************************************************************/
-img.dendropylogo {
+img.dendropymasthead {
     display: block;
     margin: 0;
     padding: 0;
@@ -338,4 +338,18 @@ tt.literal {
 
 li pre.literal-block {
     width: 540px;
+}
+
+.thefineprint {
+    font-size: 80%;
+}
+
+.aligncenter {
+    text-align: center;
+    display: block;
+}
+
+.alignright {
+    text-align: right;
+    display: block;
 }

@@ -1,8 +1,8 @@
 .. include:: common.rst
 
-******************************************************
-|dendropylogo| DendroPy Phylogenetic Computing Library
-******************************************************
+**********************************************************
+|dendropymasthead| DendroPy Phylogenetic Computing Library
+**********************************************************
 
 Introduction
 ============
