@@ -7,7 +7,7 @@
 Introduction
 ============
 
-`DendroPy <http://pypi.python.org/pypi/DendroPy>`_ is a `Python
+`DendroPy <http://packages.python.org/DendroPy/>`_ is a `Python
 <http://www.python.org>`_ library for phylogenetic scripting, simulation, data processing and manipulation by `Jeet Sukumaran <http://people.ku.edu/~jeet>`_ and `Mark T. Holder <http://people.ku.edu/~mtholder>`_.
 
 Installation
@@ -31,8 +31,15 @@ Repository Access
 =================
 The DendroPy public-access `Git <http://git-scm.com/>`_ repository can be cloned from:
     
-        http://github.com/jeetsukumaran/DendroPy    
+        http://github.com/jeetsukumaran/DendroPy
         
+Documentation
+==============
+The primary external documentation is in the form of a `cookbook <cookbook.html>`, consisting of tutorials, walk-throughs, and annotated examples, and can be found here:
+
+        http://packages.python.org/DendroPy/cookbook.html
+    
+
 Included Scripts
 ================
 * `SumTrees <sumtrees.html>`_ is a script that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
@@ -42,7 +49,7 @@ Citation
 
 If you use this library either in whole or in part in your analysis, or use any code derived from it, please cite it as:
 
-    Sukumaran, J. and Mark T. Holder. 2009. *DendroPy Phylogenetic Computing Library Version 2.5.1* (http://pypi.python.org/pypi/DendroPy).
+    Sukumaran, J. and Mark T. Holder. 2009. *DendroPy Phylogenetic Computing Library Version 2.5.1* (http://packages.python.org/DendroPy/).
     
 Bugs, Suggestions, Comments, etc.
 =================================
@@ -73,7 +80,7 @@ Acknowledgments
 ================
 
 Portions of `DendroPy
-<http://pypi.python.org/pypi/DendroPy>`_ were developed under `CIPRES <http://www.phylo.org>`_, a multi-site collaboration funded by the `NSF <http://www.nsf.gov/>`_ Information Technology Research (ITR) program grant entitled "`BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics <http://www.phylo.org/about/acknowledgements>`_".
+<http://packages.python.org/DendroPy/>`_ were developed under `CIPRES <http://www.phylo.org>`_, a multi-site collaboration funded by the `NSF <http://www.nsf.gov/>`_ Information Technology Research (ITR) program grant entitled "`BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics <http://www.phylo.org/about/acknowledgements>`_".
 
 .. image:: logo_cipres.gif
     :height: 40   

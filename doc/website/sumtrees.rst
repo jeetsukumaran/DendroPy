@@ -21,9 +21,13 @@ Where to Find the Package
 =========================
 
 SumTrees is distributed and installed as part of the `DendroPy
-<http://pypi.python.org/pypi/DendroPy>`_ phylogenetic computing library, which  can be found here: 
+<http://packages.python.org/DendroPy/>`_ phylogenetic computing library, which  has its homepage here: 
 
-    http://pypi.python.org/pypi/DendroPy
+        http://packages.python.org/DendroPy/
+    
+with the main download page here:
+
+        http://pypi.python.org/pypi/DendroPy
     
 How to Install the Package
 ==========================
@@ -329,7 +333,7 @@ How to Cite this Program
 
 If you use this program in your analysis, please cite it as:
 
-    Sukumaran, J. and Mark T. Holder. 2008. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.2*. Part of the *DendroPy Phylogenetic Computation Library Version 2.1.3* (http://pypi.python.org/pypi/DendroPy).
+    Sukumaran, J. and Mark T. Holder. 2008. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.2*. Part of the *DendroPy Phylogenetic Computation Library Version 2.1.3* (http://packages.python.org/DendroPy/).
     
 Copyright, License and Warranty
 ===============================
@@ -353,10 +357,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Acknowledgments
 ================
 SumTrees is part of the `DendroPy
-<http://pypi.python.org/pypi/DendroPy>`_ library, which is authored by myself (`Jeet Sukumaran <http://people.ku.edu/~jeet>`_) and `Mark T. Holder <http://people.ku.edu/~mtholder>`_.
+<http://packages.python.org/DendroPy/>`_ library, which is authored by myself (`Jeet Sukumaran <http://people.ku.edu/~jeet>`_) and `Mark T. Holder <http://people.ku.edu/~mtholder>`_.
 
 Portions of `DendroPy
-<http://pypi.python.org/pypi/DendroPy>`_ were developed under `CIPRES <http://www.phylo.org>`_, a multi-site collaboration funded by the `NSF <http://www.nsf.gov/>`_ Information Technology Research (ITR) program grant entitled "`BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics <http://www.phylo.org/about/acknowledgements>`_".
+<http://packages.python.org/DendroPy/>`_ were developed under `CIPRES <http://www.phylo.org>`_, a multi-site collaboration funded by the `NSF <http://www.nsf.gov/>`_ Information Technology Research (ITR) program grant entitled "`BUILDING THE TREE OF LIFE: A National Resource for Phyloinformatics and Computational Phylogenetics <http://www.phylo.org/about/acknowledgements>`_".
 
 .. image:: logo_cipres.gif
     :height: 40   
