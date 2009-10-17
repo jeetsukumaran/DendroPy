@@ -1,6 +1,10 @@
-********************************************************
-SumTrees: Phylogenetic Tree Summarization and Annotation
-********************************************************
+.. |dendropylogo| image:: dendropy-logo.png
+                  :class: dendropylogo
+    
+
+************************************************************************
+|dendropylogo| SumTrees: Phylogenetic Tree Summarization and Annotation
+************************************************************************
 
 Introduction
 ============

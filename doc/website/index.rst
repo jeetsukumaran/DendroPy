@@ -1,6 +1,9 @@
-***************************************
-DendroPy Phylogenetic Computing Library
-***************************************
+.. |dendropylogo| image:: dendropy-logo.png
+                  :class: dendropylogo
+
+******************************************************
+|dendropylogo| DendroPy Phylogenetic Computing Library
+******************************************************
 
 Introduction
 ============

@@ -266,8 +266,11 @@ ul.auto-toc {
  * CUSTOMIZATIONS
  ******************************************************************************/
 img.dendropylogo {
-    position: relative;
-    top: -4em;
+    display: block;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 10px;
+    border: none;
 }
    
 body {
@@ -280,8 +283,7 @@ div.document {
     width: 640px;
     margin: auto;
     background: #eeeedd;
-    border: solid 2px black;
-    padding: 0;
+    padding: 0;  
 }
 
 div.section {
@@ -292,11 +294,11 @@ div.section {
 h1.title {
   margin: 0;
   text-align: center;
-  background: #000000;
-  color: #fffeee;
-  padding: 10px;
+  background:  #CB9832;
+  color: #000000;
   font-size: 150%;
   border: none;
+  padding-bottom: 10px;
 }
 
 h1 {
