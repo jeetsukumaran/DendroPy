@@ -83,7 +83,7 @@ def main():
     pattern = re.compile("gi\|.+\|.+\|(.+)\|\S* ([\w\.]+) ([\w\.]+) (\w+).*")
     for t in fd.taxa_blocks[0]:
         m = pattern.match(t.label)
-        t.label = m.groups(1)[0] + "_" + m.groups(1)[1] + "_" + m.groups(1)[2]
+        t.label = m.groups(1)[1] + "_" + m.groups(1)[2] + "_" + m.groups(1)[0] 
 
     fd.write(output, opts.format)    
     
