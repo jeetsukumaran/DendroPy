@@ -7,10 +7,10 @@
 .. ###### People ######
 
 .. |js| replace:: Jeet Sukumaran
-.. _Jeet Sukumaran: http://www.jeetworks.org/about
+.. _js: http://www.jeetworks.org/about
 
 .. |mth| replace:: Mark T. Holder
-.. _Mark T. Holder: http://people.ku.edu/~mtholder
+.. _mth: http://people.ku.edu/~mtholder
 
 .. ###### Meta Info ######
 
