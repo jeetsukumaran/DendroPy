@@ -15,5 +15,4 @@ Public License <http://www.gnu.org/licenses/gpl.html>`_ for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-The `DendroPy logo <dendropy-masthead.png>`_, either in whole or in part, is restricted for use only by the authors of the |DendroPy|_ library, or by third parties exclusively in acknowledging usage of, and/or linking to, the |DendroPy|_ library.
-
+Usage of the `DendroPy logo <dendropy-masthead.png>`_, either in whole or in part, is restricted to the authors of the |DendroPy|_ library, with limited usage granted to third parties exclusively for the acknowledgement of, or for linking or referring to, the |DendroPy|_ library.

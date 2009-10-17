@@ -1,4 +1,4 @@
-.. include:: common.rst
+.. include:: common.inc
 
 **********************************************************
 |dendropymasthead| DendroPy Phylogenetic Computing Library
@@ -56,7 +56,7 @@ If you encounter any problems, errors, crashes etc. while using this program, pl
 Please feel free to contact me if you have any other questions, suggestions or comments as well.
 
 
-.. include:: license.rst
-.. include:: acknowledgements.rst
+.. include:: license.inc
+.. include:: acknowledgements.inc
 
 

@@ -1,4 +1,4 @@
-.. include:: common.rst
+.. include:: common.inc
 
 ************************************
 |dendropymasthead| DendroPy Cookbook
@@ -56,13 +56,11 @@ Internal typically have their ``taxon`` attribute set to ``None``, but this need
 Almost every object has a ``label`` attribute, which is a plain |Python|_ string. 
 It is important to distinguish between the string label of an object and the object itself. 
 For example, a NEXUS file may contain a tree which includes a taxon label "Agkistrodon".
-When this file is read by |DendroPy|_, a ``Taxon`` object will be created with its ``label`` attribute set to "Agkistrodon".
-However, the ``Tree`` object created will not have the ``label`` attribute of the corresponding node set to anything.
-Instead, the ``taxon`` attribute of the node will point to a ``Taxon`` object with the label "Agkistrodon" in its associated ``TaxaBlock``.
-Some file formats, such as NEXUS or NeXML, allow for labels to be associated with nodes independentally of taxa.
+When this file is read by |DendroPy|_, a ``Taxon`` object will be created with its ``label`` attribute set to "Agkistrodon", and this ``Taxon`` object will be assigned to the ``taxon`` attribute of the corresponding leaf node of the |DendroPy|_ ``Tree``, while the ``label`` attribute of the leaf node will be ``None``.
+Thus, to examine the taxon label associated with a particular node, you will need to use ``node.taxon.label`` rather than just ``node.label``.
+However, it is possible for node labels to be populated from some file formats.
 For example, the NEXUS specification allows for internal node labels.
-*These* labels *will* result in the ``label`` attribute being set on the corresponding nodes of the DendroPy ``Tree`` object.
-
+*These* labels *will* result in the ``label`` attribute being set on the corresponding nodes of the DendroPy ``Tree`` object, and you would use ``node.label`` to access these.
 
 Writing Data to a File
 -----------------------

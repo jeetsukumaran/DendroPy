@@ -1,4 +1,4 @@
-.. include:: common.rst
+.. include:: common.inc
 
 ***************************************************************************
 |dendropymasthead| SumTrees: Phylogenetic Tree Summarization and Annotation
@@ -334,6 +334,6 @@ If you use this program in your analysis, please cite it as (replacing the versi
 
     |sumtrees_citation|
     
-.. include:: license.rst
-.. include:: acknowledgements.rst
+.. include:: license.inc
+.. include:: acknowledgements.inc
 
