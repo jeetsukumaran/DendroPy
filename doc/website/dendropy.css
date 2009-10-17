@@ -327,14 +327,13 @@ pre.literal-block {
     padding: .5em;    
     width: 580px; 
     margin: auto;
-    font-size: 100%;
+    font-size: 110%;
 }
 
 /* <tt class="docutils literal"><span class="pre"> xx </pre></tt> */
 tt.literal {
     font-size: 140%;
-    color: #008888;
-    font-weight: bold;
+    color: #000000;
 }
 
 li pre.literal-block {
