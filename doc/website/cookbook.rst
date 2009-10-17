@@ -41,8 +41,8 @@ If the data format does not specify an explicit taxon block (e.g., NEWICK, PHYLI
 Each ``Dataset`` object has three attributes:
 
     * ``taxa_blocks`` : a list of ``TaxaBlock`` objects corresponding to the (one or more) taxa blocks in, or implied by, the data
-    * ``trees_blocks``: a list of ``TreesBlock`` objects corresponding to the (zero or more) sets of trees in the data
-    * ``char_blocks``: a list of ``CharactersBlock`` objects corresponding to the (zero or more) sets of character matrices in th data
+    * ``trees_blocks``: a list of ``TreesBlock`` objects corresponding to the (zero or more) collections of trees in the data
+    * ``char_blocks``: a list of ``CharactersBlock`` objects corresponding to the (zero or more) collections of character matrices in th data
     
 Most file formats will only result in at most one ``TaxaBlock``, one ``TreesBlock`` and one ``CharactersBlock`` objects in each of the respective lists.
 For example, reading a FASTA or PHYLIP file will result in single-element ``taxa_blocks`` and ``char_blocks`` lists.
