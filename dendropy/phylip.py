@@ -48,6 +48,6 @@ class PhylipWriter(datasets.Writer):
         dest.write("%d %d\n" % (n_seqs, n_sites))
         maxlen = max([len(str(taxon)) for taxon in char_block.matrix])
         for taxon in char_block.matrix:
-            dest.write("%s        %s\n" % ( str(taxon).ljust(maxlen), str(char_block.matrix[taxon]).replace(' ', '')))
+            dest.write("%s        %s\n" % ( str(taxon).ljust(maxlen), str(char_block.matrix[taxon].values_as_string()).replace(' ', '')))
                     
         
