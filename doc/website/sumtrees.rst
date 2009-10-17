@@ -7,7 +7,7 @@
 Introduction
 ============
 
-|SumTrees|_ is a program to summarize non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
+|SumTrees|_ is a program by |js|_ and |mth|_ to summarize non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
 
 The basis of the support assessment is typically given by a set of non-parametric bootstrap replicate tree samples produced by programs such as GARLI or RAxML, or by a set of MCMC tree samples produced by programs such as Mr. Bayes or BEAST.
 The proportion of trees out of the samples in which a particular split is found is taken to be the degree of support for that split as indicated by the samples.
@@ -323,7 +323,7 @@ The |DendroPy|_ public-access |Git|_ repository can be cloned from:
 Bugs, Suggestions, Comments, etc.
 =================================
 
-If you encounter any problems, errors, crashes etc. while using this program, please let me know at jeet@ku.edu. If you include the term "sumtrees" anywhere on the subject line (e.g. "Problem such-and-such with bootscore), it would help greatly with getting through the spam filter. Please include all the datafiles involved, as 
+If you encounter any problems, errors, crashes etc. while using this program, please let me (|js|) know at jeet@ku.edu. If you include the term "sumtrees" anywhere on the subject line (e.g. "Problem such-and-such with bootscore), it would help greatly with getting through the spam filter. Please include all the datafiles involved, as 
 well the complete command used (with all the options and parameters) and the complete error message returned (simply cutting-and-pasting the terminal text should work fine).
 Please feel free to contact me if you have any other questions, suggestions or comments as well.
 

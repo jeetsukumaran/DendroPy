@@ -7,7 +7,7 @@
 Introduction
 ============
 
-|DendroPy|_ is a |Python|_ library for phylogenetic scripting, simulation, data processing and manipulation by |js| and |mth|.
+|DendroPy|_ is a |Python|_ library for phylogenetic scripting, simulation, data processing and manipulation by |js|_ and |mth|_.
 
 Installation
 ============
