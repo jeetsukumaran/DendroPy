@@ -284,7 +284,6 @@ class Tree(base.IdTagged):
         `ultrametricity_prec` is negative or False, then this check will be 
         skipped.
         """
-        node = None    
         for node in self.postorder_node_iter():
             ch = node.child_nodes()
             if len(ch) == 0:
@@ -292,15 +291,11 @@ class Tree(base.IdTagged):
             else:
                 first_child = ch[0]
                 setattr(node, attr_name, getattr(first_child, attr_name) + first_child.edge.length)
-                last_child = ch[-1]
                 if not (ultrametricity_precision < 0 or ultrametricity_precision == False):
                     for nnd in ch[1:]:
                         ocnd = getattr(nnd, attr_name) + nnd.edge.length
                         if abs(getattr(node, attr_name) - ocnd) > ultrametricity_precision:
-                            print getattr(node, attr_name), ocnd
                             raise ValueError("Tree is not ultrametric")
-        if node is None:
-            raise ValueError("Empty tree encountered") 
         
     ###########################################################################
     ## Taxa Management
