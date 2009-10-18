@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 ############################################################################
-##  popgensim.py
+##  popgensims.py
 ##
 ##  Part of the DendroPy library for phylogenetic computing.
 ##
