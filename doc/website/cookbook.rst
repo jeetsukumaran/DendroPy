@@ -224,7 +224,7 @@ The same approach works for the trees:
         rep.1
         rep.1000
 
-We can also inspect the NEWICK string representations of the trees::
+We can also inspect the NEWICK string representations of the trees:
 
 .. topic:: Printing NEWICK Strings of Trees in a Trees Block
     :class: code-recipe
@@ -264,60 +264,72 @@ Tree Traversal
 
 Trees can be traversed in pre-order, post-order, or level-order, over nodes or edges.
 
-The following example demonstrates tree travesal. It calculates the ages of nodes (i.e., the node depths) and creates a n of each node to its age. We traverse the tree in postorder, visiting children first. This way, for every node that we visit we are guaranteed that the child nodes already have their ages calculated, and so to get the age of the current node we just need to add the age of one of its child nodes to the edge connecting the current node to the child node. For this to be fully valid, the tree needs to ultrametric, which would mean that it would not matter which child node we picked.
+The following example demonstrates tree traversal. It calculates the ages of nodes (i.e., the node depths) and assigns the value to an attribute, ``age``, on each node. We traverse the tree in postorder, visiting children first. This way, for every node that we visit we are guaranteed that the child nodes already have their ages calculated, and so to get the age of the current node we just need to add the age of one of its child nodes to the edge connecting the current node to the child node. For this to be fully valid, the tree needs to ultrametric, which would mean that it would not matter which child node we picked.
 
 
-.. topic:: Recipe: Decorating Nodes with Node Ages   
+.. topic:: Decorating Nodes with Node Ages   
     :class: code-recipe
     
     ::    
     
-        def add_depth_to_nodes(tree, prec=0.0000001):
-            """Takes an ultrametric `tree` and adds a `depth` attribute to each internal
-            node.  The `depth` is the sum of edge lengths from the node to the tips.
-            
-            If the lengths of different paths to the node differ by more than `prec`, 
-                then a ValueError exception will be raised indicating deviation from
-                ultrametricty.
+        def add_ages_to_nodes(tree, 
+                              attr_name='age',
+                              ultrametricity_precision=0.0000001):
             """
-            
+            Takes an ultrametric `tree` and adds a attribute `age` to
+            each node, with the value equal to the sum of edge lengths
+            from the node to the tips. If the lengths of different paths
+            to the node differ by more than `ultrametricity_prec`, then
+            a ValueError exception will be raised indicating deviation
+            from ultrametricity. If `ultrametricity_prec` is negative or
+            False, then this check will be skipped.
+            """
             node = None    
             for node in tree.postorder_node_iter():
                 ch = node.child_nodes()
                 if len(ch) == 0:
-                    node.depth = 0.0
+                    node.age = 0.0
                 else:
                     first_child = ch[0]
-                    node.depth = first_child.depth + first_child.edge.length
+                    node.age = first_child.age + first_child.edge.length)
                     last_child = ch[-1]
-                    for nnd in ch[1:]:
-                        ocnd = nnd.depth + nnd.edge.length
-                        if abs(node.depth - ocnd) > prec:
-                            raise ValueError("Tree is not ultrametric")
+                    if not (ultrametricity_precision < 0 \
+                            or ultrametricity_precision == False):
+                        for nnd in ch[1:]:
+                            ocnd = nnd.age + nnd.edge.length
+                            if abs(node.age - ocnd) > ultrametricity_precision:
+                                raise ValueError("Tree is not ultrametric")
             if node is None:
-                raise ValueError("Empty tree encountered")
+                raise ValueError("Empty tree encountered") 
+                
 
 
-The following shows how you might calculate the total length of trees by visiting every edge and summing their lengths::
 
-    #! /usr/bin/env python
+The following shows how you might calculate the total length of trees by visiting every edge and summing their lengths:
 
-    from dendropy import datasets
+.. topic:: Calculating Tree Length
+    :class: code-recipe
+    
+    ::
 
-    def tree_length(tree):
-        """Returns sum of branch lengths on tree."""
-        total_length = 0
-        for e in tree.postorder_edge_iter():
-            if e.length is not None:
-                total_length += e.length
-        return total_length
-
-    d = datasets.Dataset()
-    d.read( open("primates.tre", "ru"), "NEXUS" )
-    for tb in d.trees_blocks:
-        for t in tb:
-            print("Tree Block '%s', Tree '%s': Length = %f" 
-                    % (tb.label, t.label, tree_length(t)))
+        #! /usr/bin/env python
+        
+        from dendropy import datasets
+        
+        def tree_length(tree):
+            """Returns sum of branch lengths on tree."""
+            total_length = 0
+            for e in tree.postorder_edge_iter():
+                if e.length is not None:
+                    total_length += e.length
+            return total_length
+        
+        d = datasets.Dataset()
+        d.read( open("primates.tre", "ru"), "NEXUS" )
+        for tb in d.trees_blocks:
+            for t in tb:
+                print("Tree Block '%s', Tree '%s': Length = %f" 
+                        % (tb.label, t.label, tree_length(t)))
 
 Because the ``length`` attribute of the root edge (i.e., the ``edge`` attribute of ``Tree.seed_node``) of an unrooted tree will be ``None``, we explicitly verify that each ``Edge`` object's ``length`` attribute is not ``None`` before adding to the sum.
 

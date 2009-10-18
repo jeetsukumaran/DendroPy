@@ -316,6 +316,8 @@ h2 {
     margin-bottom: 0.0em; 
 }
 
+/************ SOURCE CODE ******************/
+
 pre.literal-block {
     white-space: pre-wrap; /* css-3 */
     white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
@@ -365,6 +367,31 @@ div.code-recipe pre.literal-block {
     color: #000000;   
 }
 
+
+tt.literal {
+    font-size: 140%;
+    color: darkgreen;
+}
+
+li pre.literal-block {
+    width: 540px;
+}
+
+/************ MISC ******************/
+
+.thefineprint {
+    font-size: 80%;
+}
+
+.aligncenter {
+    text-align: center;
+    display: block;
+}
+
+.alignright {
+    text-align: right;
+    display: block;
+}
 
 
 
