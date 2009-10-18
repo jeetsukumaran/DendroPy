@@ -5,7 +5,7 @@
 ************************************
 
 .. contents:: Contents
-
+.. sectnum::
 
 Introduction
 ============
@@ -69,6 +69,7 @@ PHYLIP to FASTA::
     >>> d.read(open("rana.dat", "rU"), "PHYLIP")
     >>> d.write(open("rana2.fasta", "w"), "DNAFASTA")
          
+                  
 The following script performs something I find *very* useful: it reads in a FASTA file downloaded from GenBank, and writes out the data in NEXUS format, transforming the highly-informative but also verbose GenBank labels to something that is meaningful and yet valid for direct use in most phylogenetic programs::
 
     #! /usr/bin/env python
@@ -206,7 +207,28 @@ Tree Traversal
 
 Trees can be traversed in pre-order, post-order, or level-order, over nodes or edges.
 
-For example, the following shows how you might calculate the total length of trees by visiting every edge and summing their lengths::
+The following example demonstrates tree travesal. It calculates the ages of nodes (i.e., the node depths) and assigns sets the label of each node to its age. We traverse the tree in postorder, visiting children first. This way, for every node that we visit we are guaranteed that the child nodes already have their ages calculated, and so to get the age of the current node we just need to add the age of one of its child nodes to the edge connecting the current node to the child node. For this to be fully valid, the tree needs to ultrametric, which would mean that it would not matter which child node we picked. ::
+
+    def distance_from_tip(self):
+        """
+        Sum of edge lengths from tip to node. If tree is not ultrametric
+        (i.e., descendent edges have different lengths), then count the
+        maximum of edge lengths.
+        """
+        if not self._child_nodes:
+            return 0.0
+        else:
+            distance_from_tips = []
+            for ch in self._child_nodes:
+                if ch.edge.length is not None:
+                    curr_edge_length = ch.edge_length
+                else:
+                    curr_edge_length = 0.0
+                distance_from_tips.append(ch.distance_from_tip() + curr_edge_length)                    
+            return float(max(distance_from_tips))
+
+
+The following shows how you might calculate the total length of trees by visiting every edge and summing their lengths::
 
     #! /usr/bin/env python
 
@@ -238,4 +260,3 @@ The ``tree_length()`` function above could also be implemented by visiting nodes
             if n.edge.length is not None:
                 total_length += n.edge.length
         return total_length
-
