@@ -37,18 +37,17 @@ from dendropy import utils
 from dendropy.tests import paup
 
 ### MODULE THAT WE ARE TESTING ###
-from dendropy import popgensim
+from dendropy import popgensims
 ### MODULE THAT WE ARE TESTING ### 
 
 class PopGenSimTest(unittest.TestCase):
 
     def testFragmentedPopulations(self):
-        fp = popgensim.FragmentedPopulations(div_time_gens=400,
+        fp = popgensims.FragmentedPopulations(div_time_gens=400,
                                              num_desc_pops = 2,
-                                             mutrate_per_gene_per_generation=10e-5,                  
+                                             mutrate_per_site_per_generation=10e-8,                  
                                              desc_pop_size=10000,
                                              rng=GLOBAL_RNG)
-        ds1 = fp.generate_sequences('A', 10, 4000)
         ds2 = fp.generate_sequences('A', 10, 4000, use_seq_gen=False)
         
 if __name__ == "__main__":
