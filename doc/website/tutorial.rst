@@ -1,7 +1,7 @@
 .. include:: common.inc
 
 ************************************
-|dendropymasthead| DendroPy Cookbook
+|dendropymasthead| DendroPy Tutorial
 ************************************
 
 .. contents:: Contents

@@ -34,7 +34,7 @@ The |DendroPy|_ public-access |Git|_ repository can be cloned from:
         
 Documentation
 ==============
-A "cookbook"-style `tutorial <|dendropy_tutorial_url|>`_, consisting of walk-throughs annotated practical examples of using |DendroPy|_ can be found here:
+A "cookbook"-style `tutorial <tutorial.html>`_, consisting of walk-throughs annotated practical examples of using |DendroPy|_ can be found here:
 
         |dendropy_tutorial_url|
     
