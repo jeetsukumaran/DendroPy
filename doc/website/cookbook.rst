@@ -273,7 +273,6 @@ The following example demonstrates tree traversal. It calculates the ages of nod
     ::    
     
         def add_ages_to_nodes(tree, 
-                              attr_name='age',
                               ultrametricity_precision=0.0000001):
             """
             Takes an ultrametric `tree` and adds a attribute `age` to
@@ -292,7 +291,6 @@ The following example demonstrates tree traversal. It calculates the ages of nod
                 else:
                     first_child = ch[0]
                     node.age = first_child.age + first_child.edge.length)
-                    last_child = ch[-1]
                     if not (ultrametricity_precision < 0 \
                             or ultrametricity_precision == False):
                         for nnd in ch[1:]:
@@ -301,10 +299,27 @@ The following example demonstrates tree traversal. It calculates the ages of nod
                                 raise ValueError("Tree is not ultrametric")
             if node is None:
                 raise ValueError("Empty tree encountered") 
+
+The above example is actually based on a built-in method of the ``Tree`` class, ``add_ages_to_nodes()``, so in actual practice, if you do want to annotate nodes with their ages, you will not need to write such a function yourself, as you would use ``Tree.add_ages_to_nodes()`` directly. The following example shows how you might use this method to annotate nodes with their ages, and then report the list of ages as well as the age of the root.   
+
+.. topic:: Decorating Nodes with Node Ages Using ``Tree.add_ages_to_nodes()`` 
+    :class: code-recipe
+    
+    ::
                 
+        #! /usr/bin/env python
+        
+        from dendropy import datasets
+        d = datasets.Dataset()
+        d.read(open("results.tre", "rU"), "newick")
+        for idx, tree in enumerate(d.trees_blocks[0]):
+            tree.add_ages_to_nodes()
+            node_ages = [node.age for node in tree.postorder_node_iter()]
+            print("\nTree %d" % idx)
+            print("    Node Ages: %s" % str(node_ages))
+            print("    Age of Root: %f" % tree.seed_node.age)
 
-
-
+                       
 The following shows how you might calculate the total length of trees by visiting every edge and summing their lengths:
 
 .. topic:: Calculating Tree Length
