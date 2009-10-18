@@ -297,6 +297,7 @@ class Tree(base.IdTagged):
                     for nnd in ch[1:]:
                         ocnd = getattr(nnd, attr_name) + nnd.edge.length
                         if abs(getattr(node, attr_name) - ocnd) > ultrametricity_precision:
+                            print getattr(node, attr_name), ocnd
                             raise ValueError("Tree is not ultrametric")
         if node is None:
             raise ValueError("Empty tree encountered") 

@@ -8,10 +8,7 @@ import StringIO
 
 def simple_test_tree():
     from dendropy import treegen
-    t = treegen.uniform_pure_birth(treegen.random_taxa_block(10),
-                       birth_rate=1.0,
-                       ultrametricize=True,
-                       rng=None)
+    t = treegen.pure_kingman(treegen.random_taxa_block(10))
     sys.stdout.write(t.compose_newick() + "\n")      
 
 if __name__ == '__main__':
