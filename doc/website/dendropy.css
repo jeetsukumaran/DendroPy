@@ -277,13 +277,14 @@ body {
     background: #404040;
     font-family: helvetica, arial, sans-serif;
     font-size: 90%;
+    margin-bottom: 2em;
 }
 
 div.document {
     width: 640px;
     margin: auto;
     background: #eeeedd;
-    padding: 0;  
+    padding-bottom: 2em;  
 }
 
 div.section {
@@ -322,7 +323,7 @@ pre.literal-block {
     white-space: -o-pre-wrap; /* Opera 7 */
     word-wrap: break-word; /* Internet Explorer 5.5+ */
     border: dotted 1px;
-    background: #ffffff;
+    background: #FFFFFF;
     color: #000000;
     padding: .5em;    
     width: 580px; 
@@ -333,7 +334,7 @@ pre.literal-block {
 /* <tt class="docutils literal"><span class="pre"> xx </pre></tt> */
 tt.literal {
     font-size: 140%;
-    color: #404040;
+    color: darkgreen;
 }
 
 li pre.literal-block {
@@ -353,3 +354,4 @@ li pre.literal-block {
     text-align: right;
     display: block;
 }
+

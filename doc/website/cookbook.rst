@@ -40,9 +40,9 @@ If the data format does not specify an explicit taxon block (e.g., NEWICK, PHYLI
 
 Each ``Dataset`` object has three attributes:
 
-    * ``taxa_blocks`` : a list of ``TaxaBlock`` objects corresponding to the (one or more) taxa blocks in, or implied by, the data
-    * ``trees_blocks``: a list of ``TreesBlock`` objects corresponding to the (zero or more) collections of trees in the data
-    * ``char_blocks``: a list of ``CharactersBlock`` objects corresponding to the (zero or more) collections of character matrices in th data
+    * ``taxa_blocks`` : a ``list`` of ``TaxaBlock`` objects corresponding to the (one or more) taxa blocks in, or implied by, the data
+    * ``trees_blocks``: a ``list`` of ``TreesBlock`` objects corresponding to the (zero or more) collections of trees in the data
+    * ``char_blocks``: a ``list`` of ``CharactersBlock`` objects corresponding to the (zero or more) collections of character matrices in th data
     
 Most file formats will only result in at most one ``TaxaBlock``, one ``TreesBlock`` and one ``CharactersBlock`` objects in each of the respective lists.
 For example, reading a FASTA or PHYLIP file will result in single-element ``taxa_blocks`` and ``char_blocks`` lists.
@@ -57,10 +57,10 @@ Almost every object has a ``label`` attribute, which is a plain |Python|_ string
 It is important to distinguish between the string label of an object and the object itself. 
 For example, a NEXUS file may contain a tree which includes a taxon label "Agkistrodon".
 When this file is read by |DendroPy|_, a ``Taxon`` object will be created with its ``label`` attribute set to "Agkistrodon", and this ``Taxon`` object will be assigned to the ``taxon`` attribute of the corresponding leaf node of the |DendroPy|_ ``Tree``, while the ``label`` attribute of the leaf node will be ``None``.
-Thus, to examine the taxon label associated with a particular node, you will need to use ``node.taxon.label`` rather than just ``node.label``.
+Thus, to examine the taxon label associated with a particular node, you will need to use ``<node>.taxon.label`` rather than just ``<node>.label``.
 However, it is possible for node labels to be populated from some file formats.
 For example, the NEXUS specification allows for internal node labels.
-*These* labels *will* result in the ``label`` attribute being set on the corresponding nodes of the DendroPy ``Tree`` object, and you would use ``node.label`` to access these.
+*These* labels *will* result in the ``label`` attribute being set on the corresponding nodes of the DendroPy ``Tree`` object, and you would use ``<node>.label`` to access these.
 
 Writing Data to a File
 -----------------------
@@ -113,8 +113,8 @@ The following script performs something I find *very* useful: it reads in a FAST
     fd.write(open("python_cytb.nexus", "w"), "NEXUS")
 
 
-Accessing and Querying Data
-============================
+Accessing Taxa and Trees
+========================
 
 Once a ``Dataset`` object has been instantiated, by examining the lengths of the lists of ``taxa.TaxaBlock``, ``trees.TreeBlock`` and ``characters.CharactersBlock`` objects we can determined how many of each kind are there::
 
@@ -139,7 +139,7 @@ And similarly for the ``trees_blocks`` attribute of the dataset::
     >>> d.trees_blocks[0]
     [<dendropy.trees.Tree object at 0x5a9690>, <dendropy.trees.Tree object at 0x5a9730>]
 
-Iterating Through Taxa
+Iterating Over Taxa
 ----------------------
 The following snippet loops over the taxa in the first taxa block, printing their labels::
 
@@ -159,7 +159,7 @@ The following snippet loops over the taxa in the first taxa block, printing thei
     Saimiri sciureus
     Tarsius syrichta
 
-Iterating Through Trees
+Iterating Over Trees
 -----------------------
 The same approach works for the trees::
 
@@ -176,12 +176,64 @@ We can also inspect the NEWICK string representations of the trees::
     ... 
     ((((('Macaca fascicularis':0.1,'Tarsius syrichta':0.1):0.1,'Saimiri sciureus':0.121635):0.089589,(('Macaca fuscata':0.1,Gorilla:0.1):0.1,(('Macaca sylvanus':0.1,Pan:0.1):0.1,Hylobates:0.1):0.1):0.100676):0.1,'Homo sapiens':0.1):0.1,('Macaca mulatta':0.1,Pongo:0.1):0.1,'Lemur catta':0.1)
     ('Tarsius syrichta':0.247169,(('Saimiri sciureus':0.325537,(('Macaca fascicularis':0.065018,('Macaca mulatta':0.022964,'Macaca fuscata':0.020959):0.02792):0.028642,'Macaca sylvanus':0.088559):0.246816):0.019503,((Pongo:0.093129,(('Homo sapiens':0.044705,Pan:0.082301):0.011332,Gorilla:0.061149):0.066643):0.068598,Hylobates:0.154276):0.090646):0.243449,'Lemur catta':0.258383)
+    
+Trees
+=====
+
+Trees in |DendroPy|_ are represented by the class ``Tree``. All trees (generally) belong to a particular ``TreesBlock``, which is derived from a Python ``list``. 
+
+Each ``Tree`` object has an attribute, ``taxa_block``, which is a ``TaxaBlock`` object, and manages all the ``Taxon`` objects associated with the tree.
+The ``TaxaBlock`` object referenced by a ``Tree`` object's ``taxa_block`` might be shared by many other elements of the dataset, including other ``Tree`` objects and ``CharactersBlock`` objects, so any modification of elements of a ``Tree`` object's ``taxa_block`` will probably have dataset-wide effects.
+That is, if you were to change the label of a ``Taxon`` object maintained by a particular ``Tree`` object's ``taxa_block``, all other ``Tree`` objects in the dataset referencing the same ``TaxaBlock`` will be effected.
+
+Every ``Tree`` object has a ``seed_node`` attribute. If the tree is rooted (``<tree>.is_rooted==True``), then this is the root node. If the tree is not rooted, however, then this is an artificial node that serves as the "starting point" for the tree. 
+
+The ``seed_node``, like every other node on the tree, is a ``Node`` object. 
+Every ``Node`` object maintains a list of its immediate child ``Node`` objects as well as a reference to its parent ``Node`` object. 
+You can request a shallow-copy ``list`` of child ``Node`` objects using the ``Node.child_nodes()`` method, and you can access the parent ``Node`` object directly through the ``Node.parent_node`` attribute.
+By definition, the ``seed_node`` has no parent node (``parent_node==None``), leaf nodes have no child nodes, and internal nodes have both parent nodes and child nodes.
+
+Every ``Node`` object also has an ``edge`` attribute, which points to an ``Edge`` object representing the branch subtending the node. ``Edge`` objects have a ``length`` attribute, which is typically either a ``float`` or ``int`` value, representing the weight or length of the branch.
+If branch lengths have not been specified, then the value of ``length`` is ``None``.
+Even if the source tree has had branch lengths specified, if the tree is unrooted, then the edge of the ``seed_node`` is usually ``None``.
+
+``Node`` objects also have a ``label`` and ``taxon`` attribute. These are, by default, set to ``None``, but leaf nodes almost always have their ``taxon`` attribute set, pointing to a ``Taxon`` object associated with that tip of the tree. The ``label`` attribute will be set if the source tree has internal node labels, though, of course, you can also assign a value to this programmatically.
 
 Tree Traversal
 --------------
 
 Trees can be traversed in pre-order, post-order, or level-order, over nodes or edges.
 
+For example, the following shows how you might calculate the total length of trees by visiting every edge and summing their lengths::
 
+    #! /usr/bin/env python
 
+    from dendropy import datasets
+
+    def tree_length(tree):
+        """Returns sum of branch lengths on tree."""
+        total_length = 0
+        for e in tree.postorder_edge_iter():
+            if e.length is not None:
+                total_length += e.length
+        return total_length
+
+    d = datasets.Dataset()
+    d.read( open("primates.tre", "ru"), "NEXUS" )
+    for tb in d.trees_blocks:
+        for t in tb:
+            print("Tree Block '%s', Tree '%s': Length = %f" 
+                    % (tb.label, t.label, tree_length(t)))
+
+Because the ``length`` attribute of the root edge (i.e., the ``edge`` attribute of ``Tree.seed_node``) of an unrooted tree will be ``None``, we explicitly verify that each ``Edge`` object's ``length`` attribute is not ``None`` before adding to the sum.
+
+The ``tree_length()`` function above could also be implemented by visiting nodes instead of edges::
+
+    def tree_length(tree):
+        """Returns sum of branch lengths on tree."""
+        total_length = 0
+        for n in tree.postorder_node_iter():
+            if n.edge.length is not None:
+                total_length += n.edge.length
+        return total_length
 
