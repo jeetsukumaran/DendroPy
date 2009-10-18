@@ -33,7 +33,7 @@
 
 .. |dendropy_public_repo_url| replace:: http://github.com/jeetsukumaran/DendroPy
 
-.. |dendropy_cookbook_url| replace:: http://packages.python.org/DendroPy/cookbook.html
+.. |dendropy_tutorial_url| replace:: http://packages.python.org/DendroPy/tutorial.html
 
 .. |SumTrees| replace:: SumTrees
 .. _SumTrees: http://packages.python.org/DendroPy/sumtrees.html

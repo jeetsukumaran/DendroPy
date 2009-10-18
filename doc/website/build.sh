@@ -1,29 +1,30 @@
 #! /bin/sh
 
-BUILD_DIR=html
+BUILD_DIR=build
+HTML_BUILD_DIR="$BUILD_DIR"/html
 
 if [[ -z $1 ]]
 then
     echo "Building full website ..."
     
-    if [[ -d $BUILD_DIR ]]
+    if [[ -d $HTML_BUILD_DIR ]]
     then
-        echo '- Skipping creating directory "'$BUILD_DIR'": already exists.'
+        echo '- Skipping creating directory "'$HTML_BUILD_DIR'": already exists.'
     else
-        mkdir $BUILD_DIR
+        mkdir -p $HTML_BUILD_DIR
     fi
     
     echo '- Copying images ...'
-    cp *.gif $BUILD_DIR
-    cp *.png $BUILD_DIR
+    cp *.gif $HTML_BUILD_DIR
+    cp *.png $HTML_BUILD_DIR
     
     echo '- Generating HTML ...'
-    rst2html.py --stylesheet-path=dendropy.css index.rst > $BUILD_DIR/index.html
-    rst2html.py --stylesheet-path=dendropy.css sumtrees.rst > $BUILD_DIR/sumtrees.html
-    rst2html.py --stylesheet-path=dendropy.css cookbook.rst > $BUILD_DIR/cookbook.html
+    rst2html.py --stylesheet-path=dendropy.css index.rst > $HTML_BUILD_DIR/index.html
+    rst2html.py --stylesheet-path=dendropy.css sumtrees.rst > $HTML_BUILD_DIR/sumtrees.html
+    rst2html.py --stylesheet-path=dendropy.css tutorial.rst > $HTML_BUILD_DIR/tutorial.html
     
     echo '- Creating archive ...'
-    zip -j dendropy-html.zip $BUILD_DIR/*
+    zip -j $BUILD_DIR/dendropy-html.zip $HTML_BUILD_DIR/*
 else
     rst2html.py --stylesheet-path=dendropy.css $1
 fi    
