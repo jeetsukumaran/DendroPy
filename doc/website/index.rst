@@ -34,10 +34,12 @@ The |DendroPy|_ public-access |Git|_ repository can be cloned from:
         
 Documentation
 ==============
-A "cookbook"-style `tutorial <tutorial.html>`_, consisting of walk-throughs annotated practical examples of using |DendroPy|_ can be found here:
+Most of the modules, classes and methods in the |DendroPy|_ library are richly documented, and this information is readily available from the |Python|_ interpreter by invoking ``help()`` on an object or name.
+
+A `"cookbook"-style tutorial <tutorial.html>`_, consisting of annotated practical examples and code walk-throughs can be found here:
 
         |dendropy_tutorial_url|
-    
+            
 Included Scripts
 ================
 * |SumTrees|_ is a script that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
