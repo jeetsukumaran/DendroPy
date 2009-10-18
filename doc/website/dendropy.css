@@ -322,53 +322,49 @@ pre.literal-block {
     white-space: -pre-wrap; /* Opera 4-6 */
     white-space: -o-pre-wrap; /* Opera 7 */
     word-wrap: break-word; /* Internet Explorer 5.5+ */
-    border: dotted 1px black;
-    background: #FFFFFF;
+
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 4px;
+    padding-bottom: 4px;   
+    border:  1px dotted black;
     color: #000000;
-    padding: .5em;    
-    width: 580px; 
-    margin: auto;
-    font-size: 110%;
-}
-
-/* <tt class="docutils literal"><span class="pre"> xx </pre></tt> */
-tt.literal {
-    font-size: 140%;
-    color: darkgreen;
-}
-
-li pre.literal-block {
-    width: 540px;
-}
-
-.thefineprint {
-    font-size: 80%;
-}
-
-.aligncenter {
-    text-align: center;
-    display: block;
-}
-
-.alignright {
-    text-align: right;
-    display: block;
+    font-size: 110%;    
 }
 
 div.code-recipe {
     margin: 0;
+    width: 580px;
+    padding: 0;
+    border: dotted 1px black;
 }
 
 div.code-recipe p.topic-title {
-    background: #cccccc;
-    color: #000000;
-    border: dotted 1px black;
-    margin: auto;
-    margin-bottom: 0;
+    display: block;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 4px;
+    padding-bottom: 4px;  
+    margin: 0;
+        
+/*    background: #E1BC71; */
+   background: #cccccc;
+ /*    color: #000000; 
+     border: solid 1px black;*/
+    font-weight: bold;
+    border-bottom: dotted 1px black;
+    
+   
 }
 
 div.code-recipe pre.literal-block {
-    margin-top: 0;
+    border: none;
+    font-weight: normal;
+    margin: 0;
+    background: #FFFFfe;
+    color: #000000;   
 }
+
+
 
 

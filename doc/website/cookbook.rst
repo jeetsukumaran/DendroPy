@@ -26,71 +26,94 @@ It takes two parameters, a file handle and a (case-insensitive) string specifyin
     * "PHYLIP"
     * "DNAFASTA"
     * "RNAFASTA"
-        
-For example, to load the data in the NEXUS-format file, "primates.tre", we can do the following:
 
-.. topic:: Recipe: Reading a Data   
+For example, to load the data in the NEXUS-format file, "primates.tre":
+
+.. topic:: Reading in a Data File
     :class: code-recipe
     
-    ::    
-    
+    :: 
+
         >>> from dendropy import datasets
         >>> d = datasets.Dataset()
         >>> d.read( open("primates.tre", "rU"), "NEXUS" )
-        <dendropy.datasets.Dataset object at 0x2a26f0> 
+        <dendropy.datasets.Dataset object at 0x2a26f0>
 
 The ``datasets.Dataset`` object "``d``" will now contain all the data in "primates.tre"---taxa, trees, and characters.
 
 Writing Data to a File
 -----------------------
 The ``write()`` method of the ``Dataset`` object writes the data to a file. As with ``read()``, it takes two arguments: a file handle and a case-insenstive string specifying the format.
-The following writes out the data we just read into a NEWICK format file::
+The following writes out the data we just read into a NEWICK format file:
 
-    >>> d.write(open("primates.newick.tre", "w"), "NEWICK")
+.. topic:: Writing to a Data File
+    :class: code-recipe
+    
+    :: 
+
+        >>> d.write(open("primates.newick.tre", "w"), "NEWICK")
 
 Translating Between Different Formats
 -------------------------------------
 Actual serialization formats are (largely) opaque to the DendroPy data model, with all deserialization/serialization handled by specialized dataset readers and writers respectively.
 So reading and writing in different formats is simply a matter of calling ``read()`` and ``write()`` with the appropriate format specifications, as the examples below demonstrate.
 
-FASTA to NEXUS::
-
-    >>> from dendropy import datasets
-    >>> d = datasets.Dataset()
-    >>> d.read(open("rana.fasta", "rU"), "DNAFASTA")
-    >>> d.write(open("rana.nex", "w"), "NEXUS")
+.. topic:: Converting Data from FASTA to NEXUS Format
+    :class: code-recipe
     
-NEXUS to PHYLIP::
+    :: 
 
-    >>> from dendropy import datasets
-    >>> d = datasets.Dataset()
-    >>> d.read(open("rana.nex", "rU"), "NEXUS")
-    >>> d.write(open("rana.dat", "w"), "PHYLIP")
+        >>> from dendropy import datasets
+        >>> d = datasets.Dataset()
+        >>> d.read(open("rana.fasta", "rU"), "DNAFASTA")
+        >>> d.write(open("rana.nex", "w"), "NEXUS")
     
-PHYLIP to FASTA::
+|    
+    
+.. topic:: Converting Data from NEXUS to PHYLIP Format
+    :class: code-recipe
+    
+    :: 
+    
+        >>> from dendropy import datasets
+        >>> d = datasets.Dataset()
+        >>> d.read(open("rana.nex", "rU"), "NEXUS")
+        >>> d.write(open("rana.dat", "w"), "PHYLIP")
+    
+|
 
-    >>> from dendropy import datasets
-    >>> d = datasets.Dataset()
-    >>> d.read(open("rana.dat", "rU"), "PHYLIP")
-    >>> d.write(open("rana2.fasta", "w"), "DNAFASTA")
-         
+.. topic:: Converting Data from PHYLIP to FASTA Format
+    :class: code-recipe
+    
+    ::
+    
+        >>> from dendropy import datasets
+        >>> d = datasets.Dataset()
+        >>> d.read(open("rana.dat", "rU"), "PHYLIP")
+        >>> d.write(open("rana2.fasta", "w"), "FASTA")
+             
                   
-The following script performs something I find *very* useful: it reads in a FASTA file downloaded from GenBank, and writes out the data in NEXUS format, transforming the highly-informative but also verbose GenBank labels to something that is meaningful and yet valid for direct use in most phylogenetic programs::
+The following script performs something I find *very* useful: it reads in a FASTA file downloaded from GenBank, and writes out the data in NEXUS format, transforming the highly-informative but also verbose GenBank labels to something that is meaningful and yet valid for direct use in most phylogenetic programs.
 
-    #! /usr/bin/env python
+.. topic:: Fixing Labels in a GenBank FASTA File
+    :class: code-recipe
     
-    import re
-    import sys
-    from dendropy import datasets
+    ::        
+
+        #! /usr/bin/env python
     
-    fd = datasets.Dataset()
-    fd.read(open("python_cytb.fasta", "rU"), "DNAFASTA")
-    pattern = re.compile("gi\|.+\|.+\|(.+)\|\S* ([\w\.]+) ([\w\.]+) (\w+).*")
-    for t in fd.taxa_blocks[0]:
-        m = pattern.match(t.label)
-        t.label = m.groups(1)[0] + "_" + m.groups(1)[1] + "_" + m.groups(1)[2]
-        sys.stderr.write(t.label + "\n")
-    fd.write(open("python_cytb.nexus", "w"), "NEXUS")
+        import re
+        import sys
+        from dendropy import datasets
+        
+        fd = datasets.Dataset()
+        fd.read(open("python_cytb.fasta", "rU"), "DNAFASTA")
+        pattern = re.compile("gi\|.+\|.+\|(.+)\|\S* ([\w\.]+) ([\w\.]+) (\w+).*")
+        for t in fd.taxa_blocks[0]:
+            m = pattern.match(t.label)
+            t.label = m.groups(1)[0] + "_" + m.groups(1)[1] + "_" + m.groups(1)[2]
+            sys.stderr.write(t.label + "\n")
+        fd.write(open("python_cytb.nexus", "w"), "NEXUS")
 
 
 Accessing the Data
