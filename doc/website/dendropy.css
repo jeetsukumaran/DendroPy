@@ -322,7 +322,7 @@ pre.literal-block {
     white-space: -pre-wrap; /* Opera 4-6 */
     white-space: -o-pre-wrap; /* Opera 7 */
     word-wrap: break-word; /* Internet Explorer 5.5+ */
-    border: dotted 1px;
+    border: dotted 1px black;
     background: #FFFFFF;
     color: #000000;
     padding: .5em;    
@@ -354,4 +354,21 @@ li pre.literal-block {
     text-align: right;
     display: block;
 }
+
+div.code-recipe {
+    margin: 0;
+}
+
+div.code-recipe p.topic-title {
+    background: #cccccc;
+    color: #000000;
+    border: dotted 1px black;
+    margin: auto;
+    margin-bottom: 0;
+}
+
+div.code-recipe pre.literal-block {
+    margin-top: 0;
+}
+
 

@@ -25,14 +25,19 @@ It takes two parameters, a file handle and a (case-insensitive) string specifyin
     * "NEXML"
     * "PHYLIP"
     * "DNAFASTA"
-    * "RNAFASTA"    
+    * "RNAFASTA"
+        
+For example, to load the data in the NEXUS-format file, "primates.tre", we can do the following:
 
-For example, to load the data in the NEXUS-format file, "primates.tre"::
-
-    >>> from dendropy import datasets
-    >>> d = datasets.Dataset()
-    >>> d.read( open("primates.tre", "rU"), "NEXUS" )
-    <dendropy.datasets.Dataset object at 0x2a26f0>
+.. topic:: Recipe: Reading a Data   
+    :class: code-recipe
+    
+    ::    
+    
+        >>> from dendropy import datasets
+        >>> d = datasets.Dataset()
+        >>> d.read( open("primates.tre", "rU"), "NEXUS" )
+        <dendropy.datasets.Dataset object at 0x2a26f0> 
 
 The ``datasets.Dataset`` object "``d``" will now contain all the data in "primates.tre"---taxa, trees, and characters.
 
@@ -210,9 +215,10 @@ Trees can be traversed in pre-order, post-order, or level-order, over nodes or e
 The following example demonstrates tree travesal. It calculates the ages of nodes (i.e., the node depths) and creates a n of each node to its age. We traverse the tree in postorder, visiting children first. This way, for every node that we visit we are guaranteed that the child nodes already have their ages calculated, and so to get the age of the current node we just need to add the age of one of its child nodes to the edge connecting the current node to the child node. For this to be fully valid, the tree needs to ultrametric, which would mean that it would not matter which child node we picked.
 
 
-.. topic:: Recipe: Decorating Nodes with Node Ages
+.. topic:: Recipe: Decorating Nodes with Node Ages   
+    :class: code-recipe
     
-    ::
+    ::    
     
         def add_depth_to_nodes(tree, prec=0.0000001):
             """Takes an ultrametric `tree` and adds a `depth` attribute to each internal

@@ -5,9 +5,6 @@
     :class: dendropymasthead
     :target: http://packages.python.org/DendroPy/
     :alt: DendroPy Phylogenetic Computing Library       
-    
-.. role:: recipe(topic)
-    :class: code-recipe    
 
 .. ###### People ######
 
