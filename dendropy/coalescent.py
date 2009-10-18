@@ -236,25 +236,25 @@ def coalesce(nodes,
 
 def coalescence_intervals(tree):
     """Returns list of coalescence intervals on `tree`."""
-    trees.add_depth_to_nodes(tree)
-    depths = [n.depth for n in tree.internal_nodes()]
-    depths.sort()
+    tree.add_ages_to_nodes(attr_name='age')
+    ages = [n.age for n in tree.internal_nodes()]
+    ages.sort()
     intervals = []
-    intervals.append(depths[0])
-    for i, d in enumerate(depths[1:]):
-        intervals.append(d - depths[i])
+    intervals.append(ages[0])
+    for i, d in enumerate(ages[1:]):
+        intervals.append(d - ages[i])
     return intervals
 
 def node_waiting_time_pairs(tree):
     """Returns list of tuples of (node, coalescent interval [= time between
     last coalescent event and current node age])"""
-    trees.add_depth_to_nodes(tree)
-    depths = [(n, n.depth) for n in tree.internal_nodes()]    
-    depths.sort(lambda x, y: int(x[1] - y[1]))            
+    tree.add_ages_to_nodes(attr_name='age')
+    ages = [(n, n.age) for n in tree.internal_nodes()]    
+    ages.sort(lambda x, y: int(x[1] - y[1]))            
     intervals = []
-    intervals.append(depths[0])
-    for i, d in enumerate(depths[1:]):
-        intervals.append( (d[0], d[1] - depths[i][1]) )
+    intervals.append(ages[0])
+    for i, d in enumerate(ages[1:]):
+        intervals.append( (d[0], d[1] - ages[i][1]) )
     return intervals
 
 def extract_coalescent_frames(tree):

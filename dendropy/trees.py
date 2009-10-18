@@ -34,32 +34,6 @@ import math
 from dendropy import get_logger
 _LOG = get_logger('dendropy.trees')
 
-##############################################################################
-## Utilities
-
-def add_depth_to_nodes(tree, prec=0.0000001, attr_name='depth'):
-    """
-    Takes an ultrametric `tree` and adds a attribute named `attr` to
-    each node, with the value equal to the sum of edge lengths from the
-    node to the tips. If the lengths of different paths to the node
-    differ by more than `prec`, then a ValueError exception will be
-    raised indicating deviation from ultrametricity.
-    """
-    node = None    
-    for node in tree.postorder_node_iter():
-        ch = node.child_nodes()
-        if len(ch) == 0:
-            setattr(node, attr_name, 0.0)
-        else:
-            first_child = ch[0]
-            setattr(node, attr_name, getattr(first_child, attr_name) + first_child.edge.length)
-            last_child = ch[-1]
-            for nnd in ch[1:]:
-                ocnd = getattr(nnd, attr_name) + nnd.edge.length
-                if abs(getattr(node, attr_name) - ocnd) > prec:
-                    raise ValueError("Tree is not ultrametric")
-    if node is None:
-        raise ValueError("Empty tree encountered")
 
 ##############################################################################
 ## TreesBlock
@@ -230,7 +204,25 @@ class Tree(base.IdTagged):
         for edge in self.preorder_edge_iter():
             if edge.oid == oid:
                 return edge
-        return None
+        return None        
+
+    def get_edge_set(self, filter_fn=None):
+        """Returns the set of edges that are currently in the tree. 
+        
+        Note: the returned set acts like a shallow copy of the edge set (adding
+        or deleting elements from the set does not change the tree, but
+        modifying the elements does).
+        """
+        return set([i in self.preorder_edge_iter(filter_fn=filter_fn)])
+
+    def get_node_set(self, filter_fn=None):
+        """Returns the set of nodes that are currently in the tree
+        
+        Note: the returned set acts like a shallow copy of the edge set (adding
+        or deleting elements from the set does not change the tree, but
+        modifying the elements does).
+        """
+        return set([i in self.preorder_node_iter(filter_fn=filter_fn)])        
 
     ###########################################################################
     ## Node iterators
@@ -278,9 +270,39 @@ class Tree(base.IdTagged):
         for node in self.seed_node.level_order_iter(self.seed_node):
             if node.edge and (filter_fn is None or filter_fn(node.edge)):
                 yield node.edge
-    
+                
     ###########################################################################
-    ## Taxa 
+    ## Information/Utilities
+    
+    def add_ages_to_nodes(self, attr_name='age', ultrametricity_precision=0.0000001):
+        """
+        Takes an ultrametric `tree` and adds a attribute named `attr` to
+        each node, with the value equal to the sum of edge lengths from the
+        node to the tips. If the lengths of different paths to the node
+        differ by more than `ultrametricity_prec`, then a ValueError exception 
+        will be raised indicating deviation from ultrametricity. If 
+        `ultrametricity_prec` is negative or False, then this check will be 
+        skipped.
+        """
+        node = None    
+        for node in self.postorder_node_iter():
+            ch = node.child_nodes()
+            if len(ch) == 0:
+                setattr(node, attr_name, 0.0)
+            else:
+                first_child = ch[0]
+                setattr(node, attr_name, getattr(first_child, attr_name) + first_child.edge.length)
+                last_child = ch[-1]
+                if not (ultrametricity_precision < 0 or ultrametricity_precision == False):
+                    for nnd in ch[1:]:
+                        ocnd = getattr(nnd, attr_name) + nnd.edge.length
+                        if abs(getattr(node, attr_name) - ocnd) > ultrametricity_precision:
+                            raise ValueError("Tree is not ultrametric")
+        if node is None:
+            raise ValueError("Empty tree encountered") 
+        
+    ###########################################################################
+    ## Taxa Management
     
     def infer_taxa_block(self):
         """
@@ -483,26 +505,7 @@ class Tree(base.IdTagged):
             for s, e in self.split_edges.iteritems():
                 assert(e in edges)
         return True
-
-    def get_edge_set(self, filter_fn=None):
-        """Returns the set of edges that are currently in the tree. 
-        
-        Note: the returned set acts like a shallow copy of the edge set (adding
-        or deleting elements from the set does not change the tree, but
-        modifying the elements does).
-        """
-        return set([i in self.preorder_edge_iter(filter_fn=filter_fn)])
-
-    def get_node_set(self, filter_fn=None):
-        """Returns the set of nodes that are currently in the tree
-        
-        Note: the returned set acts like a shallow copy of the edge set (adding
-        or deleting elements from the set does not change the tree, but
-        modifying the elements does).
-        """
-        return set([i in self.preorder_node_iter(filter_fn=filter_fn)])
-            
-       
+                   
 ##############################################################################
 ## Node
 
@@ -919,7 +922,31 @@ class Node(taxa.TaxonLinked):
             p.add_child(n, pos=pos)
             if e is not None:
                 e.length -= n.edge.length
+                
     ## Basic node metrics ##
+    
+    def distance_from_tip(self):
+        """
+        Sum of edge lengths from tip to node. If tree is not ultrametric
+        (i.e., descendent edges have different lengths), then count the
+        maximum of edge lengths. Note that the 'add_ages_to_nodes()' method
+        of dendropy.trees.Tree() is a more efficient way of doing this over
+        the whole tree.
+        """
+        if not self._child_nodes:
+            return 0.0
+        else:
+            distance_from_tips = []
+            for ch in self._child_nodes:
+                if ch.edge.length is not None:
+                    curr_edge_length = ch.edge_length
+                else:
+                    curr_edge_length = 0.0
+                if not hasattr(ch, "_distance_from_tip"):
+                    ch._distance_from_tip = ch.distance_from_tip()
+                distance_from_tips.append(ch._distance_from_tip + curr_edge_length)
+            self._distance_from_tip = float(max(distance_from_tips))
+            return self._distance_from_tip
 
     def distance_from_root(self):
         """
@@ -960,25 +987,7 @@ class Node(taxa.TaxonLinked):
             return self.parent_node.level + 1
         else:
             return 0
-    
-    def distance_from_tip(self):
-        """
-        Sum of edge lengths from tip to node. If tree is not ultrametric
-        (i.e., descendent edges have different lengths), then count the
-        maximum of edge lengths.
-        """
-        if not self._child_nodes:
-            return 0.0
-        else:
-            distance_from_tips = []
-            for ch in self._child_nodes:
-                if ch.edge.length is not None:
-                    curr_edge_length = ch.edge_length
-                else:
-                    curr_edge_length = 0.0
-                distance_from_tips.append(ch.distance_from_tip() + curr_edge_length)                    
-            return float(max(distance_from_tips))
-
+          
     def leaf_nodes(self):
         """
         Returns list of all leaf_nodes descended from this node (or just

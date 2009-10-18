@@ -45,8 +45,8 @@ if __name__ == '__main__':
     if len(d.trees_blocks) == 0:
         sys.exit("No trees found in file.")
     tree = d.trees_blocks[0][0]
-    dendropy.trees.add_depth_to_nodes(tree, options.prec)
+    tree.add_ages_to_nodes(attr_name='age', ultrametricity_precision=options.prec)
 
-    sys.stdout.write("%f\n" % tree.seed_node.depth)
+    sys.stdout.write("%f\n" % tree.seed_node.age)
 
 
