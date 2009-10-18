@@ -1,2 +1,3 @@
 dendropy-html.zip
-html/
+/build/html/
+/examples
