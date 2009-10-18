@@ -1,9 +1,13 @@
+
 .. ###### Page Elements ######
 
 .. |dendropymasthead| image:: dendropy-masthead.png
     :class: dendropymasthead
     :target: http://packages.python.org/DendroPy/
-    :alt: DendroPy Phylogenetic Computing Library
+    :alt: DendroPy Phylogenetic Computing Library       
+    
+.. role:: recipe(topic)
+    :class: code-recipe    
 
 .. ###### People ######
 

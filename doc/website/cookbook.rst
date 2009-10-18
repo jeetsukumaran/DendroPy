@@ -207,25 +207,37 @@ Tree Traversal
 
 Trees can be traversed in pre-order, post-order, or level-order, over nodes or edges.
 
-The following example demonstrates tree travesal. It calculates the ages of nodes (i.e., the node depths) and assigns sets the label of each node to its age. We traverse the tree in postorder, visiting children first. This way, for every node that we visit we are guaranteed that the child nodes already have their ages calculated, and so to get the age of the current node we just need to add the age of one of its child nodes to the edge connecting the current node to the child node. For this to be fully valid, the tree needs to ultrametric, which would mean that it would not matter which child node we picked. ::
+The following example demonstrates tree travesal. It calculates the ages of nodes (i.e., the node depths) and creates a n of each node to its age. We traverse the tree in postorder, visiting children first. This way, for every node that we visit we are guaranteed that the child nodes already have their ages calculated, and so to get the age of the current node we just need to add the age of one of its child nodes to the edge connecting the current node to the child node. For this to be fully valid, the tree needs to ultrametric, which would mean that it would not matter which child node we picked.
 
-    def distance_from_tip(self):
-        """
-        Sum of edge lengths from tip to node. If tree is not ultrametric
-        (i.e., descendent edges have different lengths), then count the
-        maximum of edge lengths.
-        """
-        if not self._child_nodes:
-            return 0.0
-        else:
-            distance_from_tips = []
-            for ch in self._child_nodes:
-                if ch.edge.length is not None:
-                    curr_edge_length = ch.edge_length
+
+.. topic:: Recipe: Decorating Nodes with Node Ages
+    
+    ::
+    
+        def add_depth_to_nodes(tree, prec=0.0000001):
+            """Takes an ultrametric `tree` and adds a `depth` attribute to each internal
+            node.  The `depth` is the sum of edge lengths from the node to the tips.
+            
+            If the lengths of different paths to the node differ by more than `prec`, 
+                then a ValueError exception will be raised indicating deviation from
+                ultrametricty.
+            """
+            
+            node = None    
+            for node in tree.postorder_node_iter():
+                ch = node.child_nodes()
+                if len(ch) == 0:
+                    node.depth = 0.0
                 else:
-                    curr_edge_length = 0.0
-                distance_from_tips.append(ch.distance_from_tip() + curr_edge_length)                    
-            return float(max(distance_from_tips))
+                    first_child = ch[0]
+                    node.depth = first_child.depth + first_child.edge.length
+                    last_child = ch[-1]
+                    for nnd in ch[1:]:
+                        ocnd = nnd.depth + nnd.edge.length
+                        if abs(node.depth - ocnd) > prec:
+                            raise ValueError("Tree is not ultrametric")
+            if node is None:
+                raise ValueError("Empty tree encountered")
 
 
 The following shows how you might calculate the total length of trees by visiting every edge and summing their lengths::

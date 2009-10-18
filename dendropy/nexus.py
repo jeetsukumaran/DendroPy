@@ -1238,10 +1238,11 @@ class NewickReader(datasets.Reader):
         if taxa_block is not None:
             trees_block.taxa_block = taxa_block
         stream_tokenizer = PurePythonNexusStreamTokenizer(file_obj)
+        if "rooted" not in kwargs:
+            kwargs["rooted"] = self.default_rooting,
         tree = parse_newick_tree_stream(stream_tokenizer, 
                                         taxa_block=taxa_block, 
                                         encode_splits=self.encode_splits,
-                                        rooted=self.default_rooting,
                                         finish_node_func=self.finish_node_func,
                                         **kwargs)
         if taxa_block is None:
@@ -1252,7 +1253,6 @@ class NewickReader(datasets.Reader):
             tree = parse_newick_tree_stream(stream_tokenizer,
                                             taxa_block=taxa_block,
                                             encode_splits=self.encode_splits,
-                                            rooted=self.default_rooting,
                                             finish_node_func=self.finish_node_func,
                                             **kwargs)
         return trees_block

@@ -37,27 +37,26 @@ _LOG = get_logger('dendropy.trees')
 ##############################################################################
 ## Utilities
 
-def add_depth_to_nodes(tree, prec=0.0000001):
-    """Takes an ultrametric `tree` and adds a `depth` attribute to each internal
-    node.  The `depth` is the sum of edge lengths from the node to the tips.
-    
-    If the lengths of different paths to the node differ by more than `prec`, 
-        then a ValueError exception will be raised indicating deviation from
-        ultrametricty.
+def add_depth_to_nodes(tree, prec=0.0000001, attr_name='depth'):
     """
-    
+    Takes an ultrametric `tree` and adds a attribute named `attr` to
+    each node, with the value equal to the sum of edge lengths from the
+    node to the tips. If the lengths of different paths to the node
+    differ by more than `prec`, then a ValueError exception will be
+    raised indicating deviation from ultrametricity.
+    """
     node = None    
     for node in tree.postorder_node_iter():
         ch = node.child_nodes()
         if len(ch) == 0:
-            node.depth = 0.0
+            setattr(node, attr_name, 0.0)
         else:
             first_child = ch[0]
-            node.depth = first_child.depth + first_child.edge.length
+            setattr(node, attr_name, getattr(first_child, attr_name) + first_child.edge.length)
             last_child = ch[-1]
             for nnd in ch[1:]:
-                ocnd = nnd.depth + nnd.edge.length
-                if abs(node.depth - ocnd) > prec:
+                ocnd = getattr(nnd, attr_name) + nnd.edge.length
+                if abs(getattr(node, attr_name) - ocnd) > prec:
                     raise ValueError("Tree is not ultrametric")
     if node is None:
         raise ValueError("Empty tree encountered")
