@@ -66,6 +66,8 @@ WRITERS = {
     NEWICK: nexus.NewickWriter,
     NEXML: nexml.NexmlWriter,
     FASTA: fasta.FastaWriter,
+    DNAFASTA: fasta.FastaWriter,
+    RNAFASTA: fasta.FastaWriter,    
     PHYLIP: phylip.PhylipWriter,
 }
 
