@@ -1,0 +1,359 @@
+.. include:: common.inc
+
+************************************
+|dendropymasthead| DendroPy Tutorial
+************************************
+
+.. contents:: Contents
+.. sectnum::
+
+Introduction
+============
+
+
+Reading and Writing Data
+========================
+
+Reading Data from a File
+------------------------
+
+The ``read()`` method of the ``datasets.Dataset`` object is the primary way of loading data from a file into |DendroPy|_.
+It takes two parameters, a file handle and a (case-insensitive) string specifying a format, which can be one of:
+
+    * "NEXUS"
+    * "NEWICK"
+    * "NEXML"
+    * "PHYLIP"
+    * "DNAFASTA"
+    * "RNAFASTA"
+
+For example, to load the data in the NEXUS-format file, "primates.tre":
+
+.. topic:: Reading in a Data File
+    :class: code-recipe
+    
+    :: 
+
+        >>> from dendropy import datasets
+        >>> d = datasets.Dataset()
+        >>> d.read( open("primates.tre", "rU"), "NEXUS" )
+        <dendropy.datasets.Dataset object at 0x2a26f0>
+
+The ``datasets.Dataset`` object "``d``" will now contain all the data in "primates.tre"---taxa, trees, and characters.
+
+Writing Data to a File
+-----------------------
+The ``write()`` method of the ``Dataset`` object writes the data to a file. As with ``read()``, it takes two arguments: a file handle and a case-insenstive string specifying the format.
+The following writes out the data we just read into a NEWICK format file:
+
+.. topic:: Writing to a Data File
+    :class: code-recipe
+    
+    :: 
+
+        >>> d.write(open("primates.newick.tre", "w"), "NEWICK")
+
+Translating Between Different Formats
+-------------------------------------
+Actual serialization formats are (largely) opaque to the DendroPy data model, with all deserialization/serialization handled by specialized dataset readers and writers respectively.
+So reading and writing in different formats is simply a matter of calling ``read()`` and ``write()`` with the appropriate format specifications, as the examples below demonstrate.
+
+.. topic:: Converting Data from FASTA to NEXUS Format
+    :class: code-recipe
+    
+    :: 
+
+        >>> from dendropy import datasets
+        >>> d = datasets.Dataset()
+        >>> d.read(open("rana.fasta", "rU"), "DNAFASTA")
+        >>> d.write(open("rana.nex", "w"), "NEXUS")
+    
+|    
+    
+.. topic:: Converting Data from NEXUS to PHYLIP Format
+    :class: code-recipe
+    
+    :: 
+    
+        >>> from dendropy import datasets
+        >>> d = datasets.Dataset()
+        >>> d.read(open("rana.nex", "rU"), "NEXUS")
+        >>> d.write(open("rana.dat", "w"), "PHYLIP")
+    
+|
+
+.. topic:: Converting Data from PHYLIP to FASTA Format
+    :class: code-recipe
+    
+    ::
+    
+        >>> from dendropy import datasets
+        >>> d = datasets.Dataset()
+        >>> d.read(open("rana.dat", "rU"), "PHYLIP")
+        >>> d.write(open("rana2.fasta", "w"), "FASTA")
+             
+                  
+The following script performs something I find *very* useful: it reads in a FASTA file downloaded from GenBank, and writes out the data in NEXUS format, transforming the highly-informative but also verbose GenBank labels to something that is meaningful and yet valid for direct use in most phylogenetic programs.
+
+.. topic:: Fixing Labels in a GenBank FASTA File
+    :class: code-recipe
+    
+    ::        
+
+        #! /usr/bin/env python
+    
+        import re
+        import sys
+        from dendropy import datasets
+        
+        fd = datasets.Dataset()
+        fd.read(open("python_cytb.fasta", "rU"), "DNAFASTA")
+        pattern = re.compile("gi\|.+\|.+\|(.+)\|\S* ([\w\.]+) ([\w\.]+) (\w+).*")
+        for t in fd.taxa_blocks[0]:
+            m = pattern.match(t.label)
+            t.label = m.groups(1)[0] + "_" + m.groups(1)[1] + "_" + m.groups(1)[2]
+            sys.stderr.write(t.label + "\n")
+        fd.write(open("python_cytb.nexus", "w"), "NEXUS")
+
+
+Accessing the Data
+==================
+
+Each ``Dataset`` object has three attributes:
+
+    * ``taxa_blocks`` : a ``list`` of ``TaxaBlock`` objects corresponding to the (one or more) taxa blocks in, or implied by, the data
+    * ``trees_blocks``: a ``list`` of ``TreesBlock`` objects corresponding to the (zero or more) collections of trees in the data
+    * ``char_blocks``: a ``list`` of ``CharactersBlock`` objects corresponding to the (zero or more) collections of character matrices in the data
+    
+By examining the lengths of the lists of ``taxa.TaxaBlock``, ``trees.TreeBlock`` and ``characters.CharactersBlock`` objects we can determined how many of each kind are there:
+
+.. topic:: How Many Taxa, Trees, and Characters Blocks?
+    :class: code-recipe
+    
+    ::
+    
+        >>> from dendropy import datasets
+        >>> d = datasets.Dataset()
+        >>> d.read( open("primates.tre", "rU"), "NEXUS" )
+        <dendropy.datasets.Dataset object at 0x2a26f0>
+        >>> len(d.taxa_blocks)
+        1
+        >>> len(d.trees_blocks)
+        1
+        >>> len(d.char_blocks)
+        0    
+        
+If the source data file contains only trees or only characters, then the corresponding |DendroPy|_ ``Dataset`` will contain only trees or characters, respectively.
+If the data format does not specify an explicit taxon block (e.g., NEWICK, PHYLIP, FASTA, or a technically-invalid but often seen incomplete NEXUS variant), then one will be automatically created and associated with all taxon-linked elements (character blocks, trees blocks, and trees) of the data.        
+        
+Most file formats will only result in at most one ``TaxaBlock``, one ``TreesBlock`` and one ``CharactersBlock`` objects in each of the respective lists.
+For example, reading a FASTA or PHYLIP file will result in single-element ``taxa_blocks`` and ``char_blocks`` lists.
+Similarly, reading a NEWICK file will result in single-element ``taxa_blocks`` and ``trees_blocks`` lists.
+A standard NEXUS file will result in a single-element ``taxa_blocks`` list, and either empty or single-element ``char_blocks`` and ``trees_blocks`` lists.
+
+Each ``TaxaBlock`` and ``TreesBlock`` object is, in turn, a specialized list, with ``Taxon`` and ``Tree`` elements respectively.
+Each ``Tree`` object consists of nodes (``Node`` objects) and branches (``Edge`` objects), with a ``Taxon`` object from the associated ``TaxaBlock`` assigned to the ``taxon`` attribute of each leaf node.
+Internal typically have their ``taxon`` attribute set to ``None``, but this need not neccessarily be the case. Each ``CharactersBlock`` behaves like a dictionary that maps ``Taxon`` objects in its associated ``TaxaBlock`` to vectors of character data.
+
+Almost every |DendroPy|_ object has a ``label`` attribute, which is a plain |Python|_ string. 
+It is important to distinguish between the string label of an object and the object itself. 
+For example, a NEXUS file may contain a tree which includes a taxon label "Agkistrodon".
+When this file is read by |DendroPy|_, a ``Taxon`` object will be created with its ``label`` attribute set to "Agkistrodon", and this ``Taxon`` object will be assigned to the ``taxon`` attribute of the corresponding leaf node of the |DendroPy|_ ``Tree``, while the ``label`` attribute of the leaf node will be ``None``.
+Thus, to examine the taxon label associated with a particular node, you will need to use ``<node>.taxon.label`` rather than just ``<node>.label``.
+However, it is possible for node labels to be populated from some file formats.
+For example, the NEXUS specification allows for internal node labels.
+*These* labels *will* result in the ``label`` attribute being set on the corresponding nodes of the DendroPy ``Tree`` object, and you would use ``<node>.label`` to access these.
+
+The first, and only, element in the list of taxa blocks is a ``TaxaBlock`` object, which is in turn a specialized list that contains all the taxa in the file:
+
+.. topic:: Accessing Taxa in a Taxa Block
+    :class: code-recipe
+    
+    ::
+
+        >>> d.taxa_blocks[0]
+        [<DendroPy Taxon: 'Lemur catta'>, <DendroPy Taxon: 'Homo sapiens'>, <DendroPy Taxon: 'Pan'>, <DendroPy Taxon: 'Gorilla'>, <DendroPy Taxon: 'Pongo'>, <DendroPy Taxon: 'Hylobates'>, <DendroPy Taxon: 'Macaca fuscata'>, <DendroPy Taxon: 'Macaca mulatta'>, <DendroPy Taxon: 'Macaca fascicularis'>, <DendroPy Taxon: 'Macaca sylvanus'>, <DendroPy Taxon: 'Saimiri sciureus'>, <DendroPy Taxon: 'Tarsius syrichta'>]
+    
+And similarly for the ``trees_blocks`` attribute of the dataset:
+
+.. topic:: Accessing Trees in a Tree Block
+    :class: code-recipe
+    
+    ::
+
+        >>> d.trees_blocks[0]
+        [<dendropy.trees.Tree object at 0x5a9690>, <dendropy.trees.Tree object at 0x5a9730>]
+
+Iterating Over Taxa
+----------------------
+The following snippet loops over the taxa in the first taxa block, printing their labels:
+
+.. topic:: Iterating Over Taxa in a Taxa Block
+    :class: code-recipe
+    
+    ::
+
+        >>> for t in d.taxa_blocks[0]:
+        ...     print(t.label)
+        ... 
+        Lemur catta
+        Homo sapiens
+        Pan
+        Gorilla
+        Pongo
+        Hylobates
+        Macaca fuscata
+        Macaca mulatta
+        Macaca fascicularis
+        Macaca sylvanus
+        Saimiri sciureus
+        Tarsius syrichta
+
+Iterating Over Trees
+-----------------------
+The same approach works for the trees:
+
+.. topic:: Iterating Over Trees in a Trees Block
+    :class: code-recipe
+    
+    ::
+
+        >>> for t in d.trees_blocks[0]:
+        ...     print(t.label)
+        ... 
+        rep.1
+        rep.1000
+
+We can also inspect the NEWICK string representations of the trees:
+
+.. topic:: Printing NEWICK Strings of Trees in a Trees Block
+    :class: code-recipe
+    
+    ::
+
+        >>> for t in d.trees_blocks[0]:
+        ...     print(t.compose_newick())
+        ... 
+        ((((('Macaca fascicularis':0.1,'Tarsius syrichta':0.1):0.1,'Saimiri sciureus':0.121635):0.089589,(('Macaca fuscata':0.1,Gorilla:0.1):0.1,(('Macaca sylvanus':0.1,Pan:0.1):0.1,Hylobates:0.1):0.1):0.100676):0.1,'Homo sapiens':0.1):0.1,('Macaca mulatta':0.1,Pongo:0.1):0.1,'Lemur catta':0.1)
+        ('Tarsius syrichta':0.247169,(('Saimiri sciureus':0.325537,(('Macaca fascicularis':0.065018,('Macaca mulatta':0.022964,'Macaca fuscata':0.020959):0.02792):0.028642,'Macaca sylvanus':0.088559):0.246816):0.019503,((Pongo:0.093129,(('Homo sapiens':0.044705,Pan:0.082301):0.011332,Gorilla:0.061149):0.066643):0.068598,Hylobates:0.154276):0.090646):0.243449,'Lemur catta':0.258383)
+        
+Trees
+=====
+
+Trees in |DendroPy|_ are represented by the class ``Tree``. All trees (generally) belong to a particular ``TreesBlock``, which is derived from a Python ``list``. 
+
+Each ``Tree`` object has an attribute, ``taxa_block``, which is a ``TaxaBlock`` object, and manages all the ``Taxon`` objects associated with the tree.
+The ``TaxaBlock`` object referenced by a ``Tree`` object's ``taxa_block`` might be shared by many other elements of the dataset, including other ``Tree`` objects and ``CharactersBlock`` objects, so any modification of elements of a ``Tree`` object's ``taxa_block`` will probably have dataset-wide effects.
+That is, if you were to change the label of a ``Taxon`` object maintained by a particular ``Tree`` object's ``taxa_block``, all other ``Tree`` objects in the dataset referencing the same ``TaxaBlock`` will be effected.
+
+Every ``Tree`` object has a ``seed_node`` attribute. If the tree is rooted (``<tree>.is_rooted==True``), then this is the root node. If the tree is not rooted, however, then this is an artificial node that serves as the "starting point" for the tree. 
+
+The ``seed_node``, like every other node on the tree, is a ``Node`` object. 
+Every ``Node`` object maintains a list of its immediate child ``Node`` objects as well as a reference to its parent ``Node`` object. 
+You can request a shallow-copy ``list`` of child ``Node`` objects using the ``Node.child_nodes()`` method, and you can access the parent ``Node`` object directly through the ``Node.parent_node`` attribute.
+By definition, the ``seed_node`` has no parent node (``parent_node==None``), leaf nodes have no child nodes, and internal nodes have both parent nodes and child nodes.
+
+Every ``Node`` object also has an ``edge`` attribute, which points to an ``Edge`` object representing the branch subtending the node. ``Edge`` objects have a ``length`` attribute, which is typically either a ``float`` or ``int`` value, representing the weight or length of the branch.
+If branch lengths have not been specified, then the value of ``length`` is ``None``.
+Even if the source tree has had branch lengths specified, if the tree is unrooted, then the edge of the ``seed_node`` is usually ``None``.
+
+``Node`` objects also have a ``label`` and ``taxon`` attribute. These are, by default, set to ``None``, but leaf nodes almost always have their ``taxon`` attribute set, pointing to a ``Taxon`` object associated with that tip of the tree. The ``label`` attribute will be set if the source tree has internal node labels, though, of course, you can also assign a value to this programmatically.
+
+Tree Traversal
+--------------
+
+Trees can be traversed in pre-order, post-order, or level-order, over nodes or edges.
+
+The following example demonstrates tree traversal. It calculates the ages of nodes (i.e., the node depths) and assigns the value to an attribute, ``age``, on each node. We traverse the tree in postorder, visiting children first. This way, for every node that we visit we are guaranteed that the child nodes already have their ages calculated, and so to get the age of the current node we just need to add the age of one of its child nodes to the edge connecting the current node to the child node. For this to be fully valid, the tree needs to ultrametric, which would mean that it would not matter which child node we picked.
+
+
+.. topic:: Decorating Nodes with Node Ages   
+    :class: code-recipe
+    
+    ::    
+    
+        def add_ages_to_nodes(tree, 
+                              ultrametricity_precision=0.0000001):
+            """
+            Takes an ultrametric `tree` and adds a attribute `age` to
+            each node, with the value equal to the sum of edge lengths
+            from the node to the tips. If the lengths of different paths
+            to the node differ by more than `ultrametricity_prec`, then
+            a ValueError exception will be raised indicating deviation
+            from ultrametricity. If `ultrametricity_prec` is negative or
+            False, then this check will be skipped.
+            """
+            node = None    
+            for node in tree.postorder_node_iter():
+                ch = node.child_nodes()
+                if len(ch) == 0:
+                    node.age = 0.0
+                else:
+                    first_child = ch[0]
+                    node.age = first_child.age + first_child.edge.length)
+                    if not (ultrametricity_precision < 0 \
+                            or ultrametricity_precision == False):
+                        for nnd in ch[1:]:
+                            ocnd = nnd.age + nnd.edge.length
+                            if abs(node.age - ocnd) > ultrametricity_precision:
+                                raise ValueError("Tree is not ultrametric")
+            if node is None:
+                raise ValueError("Empty tree encountered") 
+
+The above example is actually based on a built-in method of the ``Tree`` class, ``add_ages_to_nodes()``, so in actual practice, if you do want to annotate nodes with their ages, you will not need to write such a function yourself, as you would use ``Tree.add_ages_to_nodes()`` directly. The following example shows how you might use this method to annotate nodes with their ages, and then report the list of ages as well as the age of the root.   
+
+.. topic:: Decorating Nodes with Node Ages Using ``Tree.add_ages_to_nodes()`` 
+    :class: code-recipe
+    
+    ::
+                
+        #! /usr/bin/env python
+        
+        from dendropy import datasets
+        d = datasets.Dataset()
+        d.read(open("results.tre", "rU"), "newick")
+        for idx, tree in enumerate(d.trees_blocks[0]):
+            tree.add_ages_to_nodes()
+            node_ages = [node.age for node in tree.postorder_node_iter()]
+            print("\nTree %d" % idx)
+            print("    Node Ages: %s" % str(node_ages))
+            print("    Age of Root: %f" % tree.seed_node.age)
+
+                       
+The following shows how you might calculate the total length of trees by visiting every edge and summing their lengths:
+
+.. topic:: Calculating Tree Length
+    :class: code-recipe
+    
+    ::
+
+        #! /usr/bin/env python
+        
+        from dendropy import datasets
+        
+        def tree_length(tree):
+            """Returns sum of branch lengths on tree."""
+            total_length = 0
+            for e in tree.postorder_edge_iter():
+                if e.length is not None:
+                    total_length += e.length
+            return total_length
+        
+        d = datasets.Dataset()
+        d.read( open("primates.tre", "ru"), "NEXUS" )
+        for tb in d.trees_blocks:
+            for t in tb:
+                print("Tree Block '%s', Tree '%s': Length = %f" 
+                        % (tb.label, t.label, tree_length(t)))
+
+Because the ``length`` attribute of the root edge (i.e., the ``edge`` attribute of ``Tree.seed_node``) of an unrooted tree will be ``None``, we explicitly verify that each ``Edge`` object's ``length`` attribute is not ``None`` before adding to the sum.
+
+The ``tree_length()`` function above could also be implemented by visiting nodes instead of edges::
+
+    def tree_length(tree):
+        """Returns sum of branch lengths on tree."""
+        total_length = 0
+        for n in tree.postorder_node_iter():
+            if n.edge.length is not None:
+                total_length += n.edge.length
+        return total_length
