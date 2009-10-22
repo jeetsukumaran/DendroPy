@@ -54,12 +54,12 @@ A detailed reference for the modules, classes and methods of the |DendroPy|_ lib
 
 Much of this information is also readily available from the |Python|_ interpreter by invoking ``help()`` on an object or name.
 
-Indices and Tables
-------------------
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`  
+..  Indices and Tables
+    ------------------
+    
+    * :ref:`genindex`
+    * :ref:`modindex`
+    * :ref:`search`  
 
 Included Scripts
 ================

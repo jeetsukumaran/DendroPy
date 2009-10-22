@@ -7,7 +7,6 @@ DendroPy Tutorial
 #################
 
 .. contents:: Contents
-.. sectnum::
 
 Introduction
 ============
