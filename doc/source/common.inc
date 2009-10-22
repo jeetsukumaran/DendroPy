@@ -7,7 +7,6 @@
 .. |mth| replace:: Mark T. Holder
 .. _mth: http://people.ku.edu/~mtholder
 
-
 .. ###### Meta Info ######
 
 .. |sumtrees_citation| replace:: Sukumaran, J. and Mark T. Holder. 2009. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.2*. Part of the *DendroPy Phylogenetic Computation Library Version 2.6.1* (|dendropy_homepage_url|).

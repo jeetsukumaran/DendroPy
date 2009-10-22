@@ -40,14 +40,15 @@ Documentation
 ==============
 
 `DendroPy Tutorial`_
-----------------------------------------------------
+---------------------
 A "cookbook"-style tutorial, consisting of annotated practical examples and code walk-throughs can be found here:
 
 
-
-:doc:`DendroPy Library API Reference <\`|dendropy_library_doc|`>`
------------------------------------------------------------------
+:doc:`DendroPy Library API Reference </library/index>`
+------------------------------------------------------
 The primary library API documentation can be found here:
+
+    :doc:|dendropy_library_doc|
 
    
 Much of this information is also readily available from the |Python|_ interpreter by invoking ``help()`` on an object or name.
