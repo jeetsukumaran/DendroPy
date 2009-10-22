@@ -1,4 +1,11 @@
-.. include:: common.inc
+.. include:: ../common.inc
+
+.. |dendropy_library| replace:: :doc:`index`
+
+.. |dendropy_tutorial| replace:: :doc:`../tutorial/index`
+
+.. |sumtrees_doc| replace:: :doc:`../scripts/sumtrees`
+
 
 #################
 DendroPy Tutorial
@@ -357,3 +364,4 @@ The ``tree_length()`` function above could also be implemented by visiting nodes
             if n.edge.length is not None:
                 total_length += n.edge.length
         return total_length
+

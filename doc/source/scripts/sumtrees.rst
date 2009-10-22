@@ -1,4 +1,4 @@
-.. include:: common.inc
+.. include:: ../common.inc
 
 ########################################################
 SumTrees: Phylogenetic Tree Summarization and Annotation
@@ -7,7 +7,7 @@ SumTrees: Phylogenetic Tree Summarization and Annotation
 Introduction
 ============
 
-|SumTrees|_ is a program by |js|_ and |mth|_ to summarize non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
+`SumTrees <sumtrees.html>`_ is a program by |js|_ and |mth|_ to summarize non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
 
 The basis of the support assessment is typically given by a set of non-parametric bootstrap replicate tree samples produced by programs such as GARLI or RAxML, or by a set of MCMC tree samples produced by programs such as Mr. Bayes or BEAST.
 The proportion of trees out of the samples in which a particular split is found is taken to be the degree of support for that split as indicated by the samples.
@@ -334,6 +334,6 @@ If you use this program in your analysis, please cite it as (replacing the versi
 
     |sumtrees_citation|
     
-.. include:: license.inc
-.. include:: acknowledgements.inc
+.. include:: ../license.inc
+.. include:: ../acknowledgements.inc
 

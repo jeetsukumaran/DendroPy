@@ -1,5 +1,12 @@
 .. include:: common.inc
 
+.. |dendropy_library| replace:: :doc:`library/index`
+
+.. |dendropy_tutorial| replace:: :doc:`tutorial/index`
+
+.. |sumtrees_doc| replace:: :doc:`scripts/sumtrees`
+
+
 #######################################
 DendroPy Phylogenetic Computing Library
 #######################################
@@ -8,10 +15,10 @@ DendroPy Phylogenetic Computing Library
     :hidden:
     :maxdepth: 2
    
-    tutorial.rst
-    sumtrees.rst
-    library/index.rst
-
+    tutorial/index.rst
+    library/index.rst    
+    scripts/sumtrees.rst
+    
 Introduction
 ============
 
@@ -41,12 +48,16 @@ DendroPy Cookbook Tutorial
 --------------------------
 A `"cookbook"-style tutorial <tutorial.html>`_, consisting of annotated practical examples and code walk-throughs can be found here:
 
-        |dendropy_tutorial_url|
+    |dendropy_tutorial_url|
         
 
 Library Reference
 -----------------
-Most of the modules, classes and methods in the |DendroPy|_ library are richly documented, and this information is readily available from the |Python|_ interpreter by invoking ``help()`` on an object or name.
+The primary library documentation can be found here:
+
+    |dendropy_library|_
+
+Much of this information is also readily available from the |Python|_ interpreter by invoking ``help()`` on an object or name.
 
 Indices and Tables
 ------------------
@@ -57,7 +68,7 @@ Indices and Tables
 
 Included Scripts
 ================
-* |SumTrees|_ is a script that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
+* |sumtrees_doc|_ is a script that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
 
 Repository Access
 =================
