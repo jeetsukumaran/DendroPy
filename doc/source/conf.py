@@ -107,24 +107,31 @@ html_theme = 'default'
 # documentation.
 # orange =CB9832  green = 81916A,
 html_theme_options = {
-    'footerbgcolor': '#000000',
-    'footertextcolor': '#ffffff',
+
+    #'bodyfont': '#000000',
+    #'headfont': '#000000',
+    
+    'relbarbgcolor': '#323230', #'#',
+    'relbartextcolor': '#ffffff',
+    'relbarlinkcolor': '#fff000',    
+    
     'sidebarbgcolor': '#404040',
     'sidebartextcolor': '#ffffff',
     'sidebarlinkcolor': '#CB9832',
-    'relbarbgcolor': '#000000', #'#',
-    'relbartextcolor': '#ffffff',
-    'relbarlinkcolor': '#fff000',
+    
     'bgcolor': '#eeeedd',
-    #'textcolor': '#000000',
-    #'linkcolor': '#000000',
-    'headbgcolor': '#81916A',
-    'headtextcolor': '#ffffff',
-    'headlinkcolor': '#fff000',
+    'textcolor': '#000000',
+    'linkcolor': '#0000ff',
+    
+    'headbgcolor': '#ccccbb',
+    'headtextcolor': '#006600',
+    'headlinkcolor': '#fff000',    
+
     #'codebgcolor': '#ffffff',
     #'codetextcolor': '#000000',
-    #'bodyfont': '#000000',
-    #'headfont': '#000000',
+    
+    'footerbgcolor': '#444433',
+    'footertextcolor': '#ffffff',    
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
