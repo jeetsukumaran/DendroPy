@@ -1,7 +1,3 @@
-.. include:: ../external_links.inc
-.. include:: ../internal_links.inc
-.. include:: ../common.inc
-
 ########################################################
 SumTrees: Phylogenetic Tree Summarization and Annotation
 ########################################################
