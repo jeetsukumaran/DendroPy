@@ -1,8 +1,8 @@
 .. include:: common.inc
 
-************************************
-|dendropymasthead| DendroPy Tutorial
-************************************
+#################
+DendroPy Tutorial
+#################
 
 .. contents:: Contents
 .. sectnum::

@@ -1,8 +1,8 @@
 .. include:: common.inc
 
-***************************************************************************
-|dendropymasthead| SumTrees: Phylogenetic Tree Summarization and Annotation
-***************************************************************************
+########################################################
+SumTrees: Phylogenetic Tree Summarization and Annotation
+########################################################
 
 Introduction
 ============

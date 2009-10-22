@@ -1,11 +1,4 @@
 
-.. ###### Page Elements ######
-
-.. |dendropymasthead| image:: _static/dendropy-masthead.png
-    :class: dendropymasthead
-    :target: http://packages.python.org/DendroPy/
-    :alt: DendroPy Phylogenetic Computing Library       
-
 .. ###### People ######
 
 .. |js| replace:: Jeet Sukumaran

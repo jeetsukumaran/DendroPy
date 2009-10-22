@@ -1,16 +1,16 @@
 .. include:: common.inc
 
-**********************************************************
-|dendropymasthead| DendroPy Phylogenetic Computing Library
-**********************************************************
-
-Contents:
+#######################################
+DendroPy Phylogenetic Computing Library
+#######################################
 
 .. toctree::
-   :maxdepth: 2
+    :hidden:
+    :maxdepth: 2
    
-   tutorial.rst
-   sumtrees.rst
+    tutorial.rst
+    sumtrees.rst
+    library/index.rst
 
 Introduction
 ============
