@@ -42,12 +42,17 @@ Documentation
 :doc:`DendroPy Tutorial </tutorial/index>`
 ------------------------------------------
 
-A "cookbook"-style tutorial, consisting of annotated practical examples and code walk-throughs can be found here.
+A "cookbook"-style tutorial, consisting of annotated practical examples and code walk-throughs can be found here:
+
+    |dendropy_tutorial_url|
 
 :doc:`DendroPy Library Reference </library/index>`
 --------------------------------------------------
+A detailed reference for the modules, classes and methods of the |DendroPy|_ library can be found here:
 
-The primary library API documentation of the |DendroPy|_ library. Much of this information is also readily available from the |Python|_ interpreter by invoking ``help()`` on an object or name.
+    |dendropy_library_url|
+
+Much of this information is also readily available from the |Python|_ interpreter by invoking ``help()`` on an object or name.
 
 Indices and Tables
 ------------------
@@ -58,7 +63,7 @@ Indices and Tables
 
 Included Scripts
 ================
-* |sumtrees_doc| is a script that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
+* :doc:`SumTrees </scripts/sumtrees>` is a script that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
 
 Repository Access
 =================
