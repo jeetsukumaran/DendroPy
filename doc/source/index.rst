@@ -39,18 +39,18 @@ Otherwise you will have to download the distribution archive from `the Python Pa
 Documentation
 ==============
 
-:doc:`DendroPy Tutorial </tutorial/index>`
-------------------------------------------
+DendropPy Tutorial
+------------------
 
-A "cookbook"-style tutorial, consisting of annotated practical examples and code walk-throughs can be found here:
+The :doc:`DendroPy Tutorial </tutorial/index>` is a "cookbook"-style tutorial, consisting of annotated practical examples and code walk-throughs, and can be found here:
 
     |dendropy_tutorial_url|
 
-:doc:`DendroPy Library Reference </library/index>`
---------------------------------------------------
-A detailed reference for the modules, classes and methods of the |DendroPy|_ library can be found here:
+DendroPy Library Reference
+--------------------------
+The :doc:`DendroPy Library Reference </library/index>` documents the modules, classes and methods of the |DendroPy|_ library, and can be found here:
 
-    |dendropy_library_url|
+     |dendropy_library_url|
 
 Much of this information is also readily available from the |Python|_ interpreter by invoking ``help()`` on an object or name.
 

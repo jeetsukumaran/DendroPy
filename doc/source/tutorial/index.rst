@@ -6,11 +6,8 @@
 DendroPy Tutorial
 #################
 
-.. contents:: Contents
-
 Introduction
 ============
-
 
 Reading and Writing Data
 ========================

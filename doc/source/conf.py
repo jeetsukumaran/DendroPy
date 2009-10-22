@@ -100,39 +100,39 @@ rst_epilog = """
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
-html_theme = 'sphinxdoc'
+html_theme = 'default'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 # orange =CB9832  green = 81916A,
-# html_theme_options = {
-# 
-#     #'bodyfont': '#000000',
-#     #'headfont': '#000000',
-#     
-#     'relbarbgcolor': '#343430', #'#',
-#     'relbartextcolor': '#ffffff',
-#     'relbarlinkcolor': '#fff000',    
-#     
-#     'sidebarbgcolor': '#404040',
-#     'sidebartextcolor': '#ffffff',
-#     'sidebarlinkcolor': '#CB9832',
-#     
-#     'bgcolor': '#eeeedd',
-#     'textcolor': '#000000',
-#     'linkcolor': '#0000ff',
-#     
-#     'headbgcolor': '#ccccbb',
-#     'headtextcolor': '#006600',
-#     'headlinkcolor': '#fff000',    
-# 
-#     #'codebgcolor': '#ffffff',
-#     #'codetextcolor': '#000000',
-#     
-#     'footerbgcolor': '#000000',
-#     'footertextcolor': '#ffffff',    
-# }
+html_theme_options = {
+
+    #'bodyfont': '#000000',
+    #'headfont': '#000000',
+    
+    'relbarbgcolor': '#343430', #'#',
+    'relbartextcolor': '#ffffff',
+    'relbarlinkcolor': '#fff000',    
+    
+    'sidebarbgcolor': '#404040',
+    'sidebartextcolor': '#ffffff',
+    'sidebarlinkcolor': '#CB9832',
+    
+    'bgcolor': '#eeeedd',
+    'textcolor': '#000000',
+    'linkcolor': '#0000ff',
+    
+    'headbgcolor': '#ccccbb',
+    'headtextcolor': '#006600',
+    'headlinkcolor': '#fff000',    
+
+    'codebgcolor': '#ffffff',
+    'codetextcolor': '#000000',
+    
+    'footerbgcolor': '#000000',
+    'footertextcolor': '#ffffff',    
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
