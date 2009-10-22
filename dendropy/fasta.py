@@ -48,7 +48,9 @@ class FastaWriter(datasets.Writer):
         for char_block in dataset.char_blocks:
             for taxon in char_block.matrix:
                 dest.write(">%s\n" % str(taxon))
-                seqs = char_block.matrix[taxon].values_as_string()
+                seqs = char_block.matrix[taxon]
+                if isinstance(seqs, characters.CharacterDataVector):
+                    seqs = seqs.values_as_string()
                 seqsf = textwrap.fill(seqs, width=79, break_long_words=True)
                 dest.write("%s\n\n" % seqsf)
 
