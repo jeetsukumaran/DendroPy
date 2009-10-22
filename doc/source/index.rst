@@ -39,8 +39,8 @@ Otherwise you will have to download the distribution archive from `the Python Pa
 Documentation
 ==============
 
-DendropPy Tutorial
-------------------
+DendroPy Tutorial
+-----------------
 
 The :doc:`DendroPy Tutorial </tutorial/index>` is a "cookbook"-style tutorial, consisting of annotated practical examples and code walk-throughs, and can be found here:
 
