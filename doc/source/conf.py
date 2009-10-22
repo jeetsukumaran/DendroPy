@@ -105,17 +105,37 @@ html_theme = 'default'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+# orange =CB9832  green = 81916A,
+html_theme_options = {
+    'footerbgcolor': '#000000',
+    'footertextcolor': '#ffffff',
+    'sidebarbgcolor': '#404040',
+    'sidebartextcolor': '#ffffff',
+    'sidebarlinkcolor': '#CB9832',
+    'relbarbgcolor': '#000000', #'#',
+    'relbartextcolor': '#ffffff',
+    'relbarlinkcolor': '#fff000',
+    'bgcolor': '#eeeedd',
+    #'textcolor': '#000000',
+    #'linkcolor': '#000000',
+    'headbgcolor': '#81916A',
+    'headtextcolor': '#ffffff',
+    'headlinkcolor': '#fff000',
+    #'codebgcolor': '#ffffff',
+    #'codetextcolor': '#000000',
+    #'bodyfont': '#000000',
+    #'headfont': '#000000',
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = "DendroPy Phylogenetic Computing Library"
+html_title = project + " Phylogenetic Computing Library v" + version
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-html_short_title = "DendroPy"
+html_short_title = project +" v" + version
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
