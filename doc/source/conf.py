@@ -111,7 +111,7 @@ html_theme_options = {
     #'bodyfont': '#000000',
     #'headfont': '#000000',
     
-    'relbarbgcolor': '#323230', #'#',
+    'relbarbgcolor': '#343430', #'#',
     'relbartextcolor': '#ffffff',
     'relbarlinkcolor': '#fff000',    
     
@@ -130,7 +130,7 @@ html_theme_options = {
     #'codebgcolor': '#ffffff',
     #'codetextcolor': '#000000',
     
-    'footerbgcolor': '#444433',
+    'footerbgcolor': '#000000',
     'footertextcolor': '#ffffff',    
 }
 
