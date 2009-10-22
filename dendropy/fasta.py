@@ -50,9 +50,9 @@ class FastaWriter(datasets.Writer):
                 dest.write(">%s\n" % str(taxon))
                 seqs = char_block.matrix[taxon]
                 if isinstance(seqs, characters.CharacterDataVector):
-                    seqs = seqs.values_as_string()
-                seqsf = textwrap.fill(seqs, width=79, break_long_words=True)
-                dest.write("%s\n\n" % seqsf)
+                    seqs = seqs.values_as_string()                    
+                seqs = textwrap.fill(seqs, width=79, break_long_words=True)
+                dest.write("%s\n\n" % seqs)
 
 class FastaReader(datasets.Reader):
     "Encapsulates loading and parsing of a FASTA format file."
