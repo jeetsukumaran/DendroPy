@@ -44,16 +44,16 @@ Otherwise you will have to download the distribution archive from `the Python Pa
 Documentation
 ==============
 
-DendroPy Cookbook Tutorial
---------------------------
-A `"cookbook"-style tutorial <tutorial.html>`_, consisting of annotated practical examples and code walk-throughs can be found here:
+`DendroPy Tutorial <|dendropy_tutorial|>`_
+------------------------------------------
+A "cookbook"-style tutorial, consisting of annotated practical examples and code walk-throughs can be found here:
 
     |dendropy_tutorial_url|
         
 
-Library Reference
------------------
-The primary library documentation can be found here:
+`DendroPy Library API Reference <|dendropy_library|>`_
+-------------------------------------------------------
+The primary library API documentation can be found here:
 
     |dendropy_library|
 
