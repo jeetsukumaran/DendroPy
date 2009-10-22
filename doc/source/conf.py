@@ -134,7 +134,7 @@ rst_epilog += """
 
 # -- Options for HTML output ---------------------------------------------------
 
-if False:
+if True:
 
     # The theme to use for HTML and HTML Help pages.  Major themes that come with
     # Sphinx are currently 'default' and 'sphinxdoc'.
@@ -173,7 +173,10 @@ else:
         
         'footerbgcolor': '#000000',
         'footertextcolor': '#ffffff',    
+        
     }
+    
+html_style = "dendropy.css"    
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
