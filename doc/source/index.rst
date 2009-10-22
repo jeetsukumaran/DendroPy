@@ -1,3 +1,5 @@
+.. include:: external_links.inc
+.. include:: internal_links.inc
 .. include:: common.inc
 
 #######################################
@@ -37,19 +39,17 @@ Otherwise you will have to download the distribution archive from `the Python Pa
 Documentation
 ==============
 
-`DendroPy Tutorial <|dendropy_tutorial|>`_
-------------------------------------------
+`DendroPy Tutorial`_
+----------------------------------------------------
 A "cookbook"-style tutorial, consisting of annotated practical examples and code walk-throughs can be found here:
 
-    |dendropy_tutorial_url|
-        
 
-`DendroPy Library API Reference <|dendropy_library|>`_
--------------------------------------------------------
+
+:doc:`DendroPy Library API Reference <\`|dendropy_library_doc|`>`
+-----------------------------------------------------------------
 The primary library API documentation can be found here:
 
-    |dendropy_library|
-
+   
 Much of this information is also readily available from the |Python|_ interpreter by invoking ``help()`` on an object or name.
 
 Indices and Tables
