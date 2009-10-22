@@ -19,6 +19,11 @@
 
 .. |dendropy_logo| replace:: /_static/dendropy.png
 
+.. |dendropy_library| replace:: :doc:`/library/index`
+
+.. |dendropy_tutorial| replace:: :doc:`/tutorial/index`
+
+.. |sumtrees_doc| replace:: :doc:`/scripts/sumtrees`
 
 
 .. ###### DendroPy Locations ######

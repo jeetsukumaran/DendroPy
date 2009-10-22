@@ -1,12 +1,5 @@
 .. include:: common.inc
 
-.. |dendropy_library| replace:: :doc:`library/index`
-
-.. |dendropy_tutorial| replace:: :doc:`tutorial/index`
-
-.. |sumtrees_doc| replace:: :doc:`scripts/sumtrees`
-
-
 #######################################
 DendroPy Phylogenetic Computing Library
 #######################################
