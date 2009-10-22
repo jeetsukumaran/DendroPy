@@ -42,7 +42,7 @@ from dendropy import get_logging_level
 import dendropy.tests
 _LOG = get_logger("TreeParsingAndWriting")
 
-from dendropy.tests import data_source_path
+from dendropy.tests import data_source_path, data_target_path
 from dendropy.datasets import Dataset
 
 ### MODULES THAT WE ARE TESTING ###
@@ -50,6 +50,7 @@ from dendropy import nexus
 # from dendropy import nexml
 ### MODULES THAT WE ARE TESTING ###
 class TestFasta(unittest.TestCase):
+
     def testAsStrReading(self):
         fp = data_source_path("bad_names.fasta")
         fileobj = open(fp, 'rU')
@@ -66,6 +67,15 @@ class TestFasta(unittest.TestCase):
         dataset.read_trees(tree_stream, format="NEWICK")
         tree = dataset.trees_blocks[0][0]
         self.assertEquals(tree.compose_newick(), tree_str)
+        
+    def testAsStrReadingAndWriting(self):
+        fp = data_source_path("bad_names.fasta")
+        fileobj = open(fp, 'rU')
+        dataset = Dataset()
+        dataset.read(fileobj, format='DNAFasta', row_type='str')
+        fileobj.close()
+        op = tempfile.TemporaryFile()
+        dataset.write(op, format="FASTA")        
 
 if __name__ == "__main__":
     unittest.main()
