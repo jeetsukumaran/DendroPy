@@ -17,6 +17,8 @@
 
 .. |dendropy_copyright| replace:: **Copyright 2009 Jeet Sukumaran and Mark T. Holder**
 
+.. |dendropy_logo| replace:: /_static/dendropy.png
+
 
 
 .. ###### DendroPy Locations ######
@@ -32,8 +34,6 @@
 .. |dendropy_download_url| replace:: http://pypi.python.org/pypi/DendroPy
 
 .. |dendropy_public_repo_url| replace:: http://github.com/jeetsukumaran/DendroPy
-
-
 
 
 

@@ -55,7 +55,7 @@ Library Reference
 -----------------
 The primary library documentation can be found here:
 
-    |dendropy_library|_
+    |dendropy_library|
 
 Much of this information is also readily available from the |Python|_ interpreter by invoking ``help()`` on an object or name.
 
@@ -68,7 +68,7 @@ Indices and Tables
 
 Included Scripts
 ================
-* |sumtrees_doc|_ is a script that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
+* |sumtrees_doc| is a script that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
 
 Repository Access
 =================
