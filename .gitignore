@@ -9,3 +9,4 @@ build/*
 dist/*
 setuptools-*.egg
 dendropy/tests/data/heavy/*
+*.bbprojectd
