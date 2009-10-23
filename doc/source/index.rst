@@ -13,7 +13,13 @@ DendroPy Phylogenetic Computing Library
 Introduction
 ============
 
-|DendroPy|_ is a |Python|_ library for phylogenetic scripting, simulation, data processing and manipulation by |js|_ and |mth|_.
+DendroPy is a |Python|_ library for phylogenetic scripting, simulation, data processing and manipulation by |js|_ and |mth|_.
+
+Prerequisites
+=============
+
+DendroPy runs under any version of **Python 2.x greater than Python 2.4**.
+
 
 Installation
 ============
@@ -44,7 +50,7 @@ The :doc:`DendroPy Tutorial </tutorial/index>` is a "cookbook"-style tutorial, c
 
 DendroPy Library Reference
 --------------------------
-The :doc:`DendroPy Library Reference </library/index>` documents the modules, classes and methods of the |DendroPy|_ library, and can be found here:
+The :doc:`DendroPy Library Reference </library/index>` documents the modules, classes and methods of the DendroPy library, and can be found here:
 
      |dendropy_library_url|
 
@@ -63,7 +69,7 @@ Included Scripts
 
 Repository Access
 =================
-The |DendroPy|_ public-access |Git|_ repository can be cloned from:
+The DendroPy public-access |Git|_ repository can be cloned from:
     
         |dendropy_public_repo_url|
             

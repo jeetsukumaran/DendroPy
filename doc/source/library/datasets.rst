@@ -1,6 +1,8 @@
-***********************************
-:class:`~dendropy.datasets.Dataset`
-***********************************
+**************************
+The :class:`Dataset` Class
+**************************
+
+.. class:: dendropy.datasets.Dataset
 
 .. toctree::
     :maxdepth: 2

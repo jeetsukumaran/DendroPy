@@ -1,6 +1,8 @@
-******************************
-:class:`~dendropy.trees.Trees`
-******************************
+*****
+Trees 
+*****
+
+.. module:: dendropy.trees
 
 .. toctree::
     :maxdepth: 2
