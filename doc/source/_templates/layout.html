@@ -13,10 +13,11 @@
 {% endblock %} 
 
 {# relbar: extend to current #}
-{% block relbaritems %} 
+{% block relbaritems %}     
+  {{ super() }}
   {% if current_page_name != 'index' %} 
-    {{ super() }} {{ title }} 
-  {% endif %} 
+  <li><a href="">{{ title }}</a></li>
+  {% endif %}  
 {% endblock %} 
 
 {# remove logo from side bar #}
