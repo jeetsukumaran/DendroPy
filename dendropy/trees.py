@@ -274,14 +274,14 @@ class Tree(base.IdTagged):
     ###########################################################################
     ## Information/Utilities
     
-    def add_ages_to_nodes(self, attr_name='age', ultrametricity_precision=0.0000001):
+    def add_ages_to_nodes(self, attr_name='age', check_prec=0.0000001):
         """
         Takes an ultrametric `tree` and adds a attribute named `attr` to
         each node, with the value equal to the sum of edge lengths from the
         node to the tips. If the lengths of different paths to the node
-        differ by more than `ultrametricity_prec`, then a ValueError exception 
+        differ by more than `check_prec`, then a ValueError exception 
         will be raised indicating deviation from ultrametricity. If 
-        `ultrametricity_prec` is negative or False, then this check will be 
+        `check_prec` is negative or False, then this check will be 
         skipped.
         """
         for node in self.postorder_node_iter():
@@ -291,10 +291,10 @@ class Tree(base.IdTagged):
             else:
                 first_child = ch[0]
                 setattr(node, attr_name, getattr(first_child, attr_name) + first_child.edge.length)
-                if not (ultrametricity_precision < 0 or ultrametricity_precision == False):
+                if not (check_prec < 0 or check_prec == False):
                     for nnd in ch[1:]:
                         ocnd = getattr(nnd, attr_name) + nnd.edge.length
-                        if abs(getattr(node, attr_name) - ocnd) > ultrametricity_precision:
+                        if abs(getattr(node, attr_name) - ocnd) > check_prec:
                             raise ValueError("Tree is not ultrametric")
         
     ###########################################################################
@@ -900,6 +900,7 @@ class Node(taxa.TaxonLinked):
         the state before the remove_child call.
 
         The order of info in each tuple is:
+        
             0 - node removed
             1 - parent of node removed
             2 - pos in parent array
@@ -998,7 +999,7 @@ class Node(taxa.TaxonLinked):
         """returns a string that is an identifier for the node.  This is called
         by the newick-writing functions, so the kwargs that affect how node 
         labels show up in a newick string are the same ones used here:
-            `include_internal_labels` is a Boolean
+        `include_internal_labels` is a Boolean
         """
         is_leaf = (len(self._child_nodes) == 0)
         include_internal_labels = kwargs.get("include_internal_labels")

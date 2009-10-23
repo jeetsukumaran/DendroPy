@@ -6,7 +6,10 @@ Contents:
 
 .. toctree::
     :numbered:
-    :maxdepth: 2   
+    :maxdepth: 2
+    
+    datasets.rst
+    trees.rst
 
 Indices and Tables
 ==================

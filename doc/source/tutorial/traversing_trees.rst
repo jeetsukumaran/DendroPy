@@ -13,7 +13,7 @@ The following example demonstrates tree traversal. It calculates the ages of nod
     ::    
     
         def add_ages_to_nodes(tree, 
-                              ultrametricity_precision=0.0000001):
+                              check_prec=0.0000001):
             """
             Takes an ultrametric `tree` and adds a attribute `age` to
             each node, with the value equal to the sum of edge lengths
@@ -31,11 +31,11 @@ The following example demonstrates tree traversal. It calculates the ages of nod
                 else:
                     first_child = ch[0]
                     node.age = first_child.age + first_child.edge.length)
-                    if not (ultrametricity_precision < 0 \
-                            or ultrametricity_precision == False):
+                    if not (check_prec < 0 \
+                            or check_prec == False):
                         for nnd in ch[1:]:
                             ocnd = nnd.age + nnd.edge.length
-                            if abs(node.age - ocnd) > ultrametricity_precision:
+                            if abs(node.age - ocnd) > check_prec:
                                 raise ValueError("Tree is not ultrametric")
             if node is None:
                 raise ValueError("Empty tree encountered") 
