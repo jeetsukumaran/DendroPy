@@ -1,6 +1,41 @@
 @import url("default.css");
 @import url("sphinxdoc.css");
 
+/* Main body */
+
+body {
+    font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva',
+                 'Verdana', sans-serif;
+    font-size: 12px;
+    line-height: 150%;
+    text-align: center;
+    background-color: #BFD1D4;
+    color: black;
+    padding: 0;
+    border: 1px solid #aaa;
+    width: 840px;
+    margin: auto;
+    min-width: 740px;
+}
+
+div.document {
+    background-color: white;
+    text-align: left;
+    background-image: url(contents.png);
+    background-repeat: repeat-x;
+}
+
+div.bodywrapper {
+    margin: 0 240px 0 0;
+    border-right: 1px solid #ccc;
+}
+
+div.body {
+    margin: 0;
+    padding: 0.5em 20px 20px 20px;
+}
+
+
 /* Code Recipes */
 
 div.code-recipe {
