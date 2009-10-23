@@ -1,13 +1,13 @@
-**************************
-The :class:`Dataset` Class
-**************************
+***************************************
+:mod:`datasets` -- Primary Data Manager
+***************************************
 
-.. class:: dendropy.datasets.Dataset
+.. module:: datasets
 
 .. toctree::
     :maxdepth: 2
 
-.. autoclass:: dendropy.datasets.Dataset()
+.. autoclass:: dendropy.datasets.Dataset
     :members:
     
     The :class:`dendropy.datasets.Dataset` is composed of three basic list objects:

@@ -8,3 +8,4 @@ DendroPy Library Reference
     datasets.rst
     taxa.rst    
     trees.rst
+    characters.rst

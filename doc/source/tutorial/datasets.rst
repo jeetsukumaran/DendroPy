@@ -2,13 +2,15 @@
 Datasets
 ********
 
-The :class:`dendropy.datasets.Dataset` class is the primary data object in |DendroPy|. It has three main attributes:
+The :class:`dendropy.datasets.Dataset` class is the primary data management object in |DendroPy|. It has three main attributes:
 
     * :attr:`taxa_blocks`
     * :attr:`trees_blocks`
     * :attr:`char_blocks`
     
-which are lists of :attr:`dendropy.taxa.TaxaBlock`, :attr:`dendropy.trees.Tree` and :attr:`dendropy.characters.CharactersBlock` objects respectively.
+which are lists of :class:`dendropy.taxa.TaxaBlock`, :class:`dendropy.trees.Tree` and :class:`dendropy.characters.CharactersBlock` objects respectively.
+
+You will use objects of the :class:`Dataset` to read, access, manage and write phylogenetic data such as taxa, trees and characters.
 
 .. toctree::
     :maxdepth: 2

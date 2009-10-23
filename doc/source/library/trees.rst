@@ -1,8 +1,8 @@
-*****
-Trees 
-*****
+*************************
+:mod:`trees` -- Tree Data 
+*************************
 
-.. module:: dendropy.trees
+.. module:: trees
 
 .. toctree::
     :maxdepth: 2

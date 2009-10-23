@@ -29,6 +29,18 @@ For example, to load the data in the NEXUS-format file, "primates.tre":
 
 The ``datasets.Dataset`` object "``d``" will now contain all the data in "primates.tre"---taxa, trees, and characters.
 
+Reading Data from Strings
+=========================
+
+You can also create datasets directly from string, using the :meth:`from_string` method::
+
+    >>> from dendropy import datasets
+    >>> d = dataset.Dataset()
+    >>> d.from_string("(a,(b,c)); ((a,b),c);", format="newick")
+        <dendropy.datasets.Dataset object at 0x755250>
+
+:obj:`d.taxa_blocks` now will contain a single :class:`TaxaBlock` element, with three :class:`Taxon` object with labels "a", "b" and "c", while :obj:`d.trees_blocks` will have a single :class:`TreesBlock` element, which will have two :class:`Tree` objects.
+
 Writing Data to a File
 =======================
 The ``write()`` method of the ``Dataset`` object writes the data to a file. As with ``read()``, it takes two arguments: a file handle and a case-insenstive string specifying the format.

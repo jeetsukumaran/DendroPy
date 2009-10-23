@@ -1,8 +1,8 @@
-****
-Taxa
-****
+*************************
+:mod:`taxa` -- Taxon Data 
+*************************
 
-.. module:: dendropy.taxa
+.. module:: taxa
 
 .. toctree::
     :maxdepth: 2
