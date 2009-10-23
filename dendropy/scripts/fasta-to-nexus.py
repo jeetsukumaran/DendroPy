@@ -37,7 +37,6 @@ for i in lines:
             cur_seq.extend(i.replace(" ", ""))
        
 taxlabels = seqs.keys()
-taxlabels.sort()
 
 dest.write("#NEXUS\n\n")
 
