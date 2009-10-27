@@ -97,7 +97,6 @@ class FragmentedPopulations(object):
             sg.state_freqs = self.base_freqs
             sg.trees = [self.mutation_tree]    
             d = sg.generate_dataset(dataset=d)
-            d.taxa_blocks[0].sort()      
               
             return d
         else:

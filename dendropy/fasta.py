@@ -46,7 +46,7 @@ class FastaWriter(datasets.Writer):
         if not store_chars:
             return
         for char_block in dataset.char_blocks:
-            for taxon in char_block.matrix:
+            for taxon in char_block.taxa_block:
                 dest.write(">%s\n" % str(taxon))
                 seqs = char_block.matrix[taxon]
                 if isinstance(seqs, characters.CharacterDataVector):

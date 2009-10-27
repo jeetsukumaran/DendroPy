@@ -529,7 +529,6 @@ class CharactersBlock(taxa.TaxaLinked):
         for taxon in self:
             if taxon not in self.taxa_block:
                 self.taxa_block.append(taxon)
-        self.taxa_block.sort()
         
     def normalize_taxa(self, taxa_block=None, clear=True):
         """
@@ -544,7 +543,6 @@ class CharactersBlock(taxa.TaxaLinked):
         for taxon, seq in self.matrix.items():
             taxon = taxa_block.get_taxon(label=taxon.label)
             new_matrix[taxon] = seq
-        taxa_block.sort()
         self.taxa_block = taxa_block
         self.matrix = new_matrix
         return taxa_block         

@@ -57,7 +57,6 @@ class TreesBlock(list, taxa.TaxaLinked):
             taxa_block.clear()
         for tree in self:
             tree.normalize_taxa(taxa_block)
-        taxa_block.sort()
         self.taxa_block = taxa_block
         return taxa_block
         
@@ -309,7 +308,6 @@ class Tree(base.IdTagged):
         for node in self.postorder_node_iter():
             if node.taxon and (node.taxon not in taxa_block):
                 taxa_block.append(node.taxon)
-        taxa_block.sort()
         self.taxa_block = taxa_block
         return taxa_block
         
