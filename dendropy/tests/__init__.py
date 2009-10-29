@@ -1,9 +1,11 @@
 #! /usr/bin/env python
 
-###############################################################################
-##  DendroPy Phylogenetic Computing Library.
+############################################################################
+##  __init__.py
 ##
-##  Copyright 2009 Jeet Sukumaran and Mark T. Holder.
+##  Part of the DendroPy library for phylogenetic computing.
+##
+##  Copyright 2008 Jeet Sukumaran and Mark T. Holder.
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -18,10 +20,10 @@
 ##  You should have received a copy of the GNU General Public License along
 ##  with this program. If not, see <http://www.gnu.org/licenses/>.
 ##
-###############################################################################
+############################################################################
 
 """
-DendroPy testing suite.
+dendropy testing suite
 """
 
 import unittest
@@ -29,29 +31,10 @@ import os
 import re
 import sys
 
-from dendropy.utility import messaging
-_LOG = messaging.get_logger(__name__)
-
-from dendropy.utility import texttools
-
-###############################################################################
-## FILE PATH MAPPING
-
-try:
-    import pkg_resources
-    _LOG.info("Using local pkg_resources path mapping")
-    TESTS_DIR = pkg_resources.resource_filename("dendropy", "tests")
-    SCRIPTS_DIR = pkg_resources.resource_filename("dendropy", "scripts")
-except:
-    _LOG.info("Using local filesystem path mapping")
-    TESTS_DIR = os.path.dirname(__file__)
-    SCRIPTS_DIR = os.path.join(os.path.pardir, "scripts")
-
-TESTS_DATA_DIR = os.path.join(TESTS_DIR, "data")
-TESTS_OUTPUT_DIR = os.path.join(TESTS_DIR, "output")
-
-###############################################################################
-## TESTING LEVELS
+from dendropy import get_logger
+from dendropy.utils import find_files
+_LOG = get_logger("tests")
+    
 
 class TestLevel:
     FAST, NORMAL, SLOW, EXHAUSTIVE = 0, 10, 20, 30
@@ -80,15 +63,11 @@ class TestLevel:
             return TestLevel.EXHAUSTIVE
         raise ValueError("TestLevel %s unrecognized" % l)
     name_to_int = staticmethod(name_to_int)
-
+    
 def fast_testing_notification(logger, module_name, message=None, level=TestLevel.FAST):
     if message is None:
         message = "tests skipped"
-    logger.warning('\nRunning in %s Testing Level. Skipping %s tests in %s: %s' \
-        % (TestLevel.name(get_current_testing_level()),
-           TestLevel.name(level),
-           module_name,
-           message))
+    logger.warning('\nRunning in %s Testing Level. Skipping %s tests in %s: %s' % (TestLevel.name(get_current_testing_level()), TestLevel.name(level), module_name, message))
 
 def get_current_testing_level():
     l = os.environ.get("DENDROPY_TESTING_LEVEL")
@@ -110,53 +89,90 @@ def is_test_enabled(level, logger=None, module_name="", message=None):
         return False
     return True
 
-###############################################################################
-## FILE PATHS
-
 def data_source_path(filename=None):
     if filename is None:
         filename = ""
-    return os.path.join(TESTS_DATA_DIR, filename)
-
+    return os.path.join(os.path.join(os.path.dirname(__file__),'data'), filename)
+    
 def scripts_source_path(filename=None):
     if filename is None:
         filename = ""
-    return os.path.join(SCRIPTS_DIR, filename)
+    td = os.path.dirname(__file__)
+    dd = os.path.dirname(td)
+    return os.path.join(os.path.join(dd,'scripts'), filename)
+    
+def data_source_trees(format="*", heavy=False):
+    if heavy:
+        path = data_source_path(heavy)
+    else:
+        path = data_source_path()
+    filename_filter = "*.trees." + format
+    files = utils.find_files(top=path,
+                                recursive=False,
+                                filename_filter=filename_filter,
+                                dirname_filter=None,
+                                excludes=None,
+                                complement=False,
+                                respect_case=False,
+                                expand_vars=True,
+                                include_hidden=False)
+    return files                                
 
-def named_output_file_path(filename=None, suffix_timestamp=True):
+
+def data_target_path(filename=None):
     if filename is None:
         filename = ""
-    elif suffix_timestamp:
-        filename = "%s.%s" % (filename, texttools.pretty_timestamp())
-    if not os.path.exists(TESTS_OUTPUT_DIR):
-        os.makedirs(TESTS_OUTPUT_DIR)
-    return os.path.join(TESTS_OUTPUT_DIR, filename)
+    return os.path.join(os.path.join(os.path.dirname(__file__),'output'), filename)
+    
 
-###############################################################################
-## TEST SUITES
+###############################################################################    
+# this is/was a major PIA ...
+
+from decimal import Decimal, ROUND_HALF_UP
+
+def symmetric_arithmetic_round(n, digits=0):
+    """
+    Symmetric Arithmetic Rounding for decimal numbers
+    
+    Modified from:
+        http://pyxx.org/2007/10/28/how-to-round-decimal-numbers-in-python/
+    
+    d       - Decimal number to round
+    digits  - number of digits after the point to leave
+    """
+    d = Decimal("%s" % n)
+    dval = d.quantize(Decimal("1") / (Decimal('10') ** digits), \
+        ROUND_HALF_UP) 
+        
+def is_almost_equal(n1, n2, precision=2):
+    return symmetric_arithmetic_round(n1, precision) \
+        == symmetric_arithmetic_round(n2, precision)
+        
+###############################################################################        
+    
 
 def get_test_suite():
     """
     Creates a unittest.TestSuite from all of the modules in
     `dendropy.tests`. Right now, assumes (a) no subdirectories (though
-    this can easily be accommodated) and (b) every test to be run is
+    this can easily be accomodated) and (b) every test to be run is
     sitting in a module with a file name of 'test*.py', and, conversely,
     every file with a name of 'test*.py' has test(s) to be run.
     """
     # get list of test file names'
-    path = os.path.dirname(__file__)
-    files = os.listdir(path)
-    test_file_pattern = re.compile("test.*\.py$", re.IGNORECASE)
+    path = os.path.dirname(__file__)  
+    files = os.listdir(path)                               
+    test_file_pattern = re.compile("test.*\.py$", re.IGNORECASE)   
     test_files = []
     for f in files:
         if test_file_pattern.search(f):
             test_files.append("dendropy.tests." + os.path.splitext(f)[0])
-
-    # extract the tests
+            
+    # extract the tests            
     tests = unittest.defaultTestLoader.loadTestsFromNames(test_files)
-
+    
     # return the suite
-    return unittest.TestSuite(tests)
+    return unittest.TestSuite(tests) 
 
 def run():
     "Runs all of the unittests"

@@ -1,9 +1,11 @@
 #! /usr/bin/env python
 
-###############################################################################
-##  DendroPy Phylogenetic Computing Library.
+############################################################################
+##  coalecsent.py
 ##
-##  Copyright 2009 Jeet Sukumaran and Mark T. Holder.
+##  Part of the DendroPy library for phylogenetic computing.
+##
+##  Copyright 2008 Jeet Sukumaran and Mark T. Holder.
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -18,42 +20,41 @@
 ##  You should have received a copy of the GNU General Public License along
 ##  with this program. If not, see <http://www.gnu.org/licenses/>.
 ##
-###############################################################################
+############################################################################
 
 """
 Methods for working with Kingman's n-coalescent framework.
 """
-
 import math
-
-from dendropy.utility import GLOBAL_RNG
-from dendropy.utility import probability
-from dendropy import dataobject
-from dendropy import treecalc
+from dendropy import GLOBAL_RNG
+from dendropy import distributions
+from dendropy import trees
+from dendropy import taxa
+from dendropy import treestruct
 
 try:
     ### Required for kernel density estimation:
-    ###     "Statistics" library
+    ###     "Statistics" library 
     ### By:
     ###     Michiel de Hoon
-    ### From:
+    ### From: 
     ###     http://bonsai.ims.u-tokyo.ac.jp/~mdehoon/software/python/
     ###
-    ### Statistics for Python is an extension module, written in ANSI-C, for
-    ### the Python scripting language. Currently, this extension module
-    ### contains some routines to estimate the probability density function
+    ### Statistics for Python is an extension module, written in ANSI-C, for 
+    ### the Python scripting language. Currently, this extension module 
+    ### contains some routines to estimate the probability density function 
     ### from a set of random variables.
     ### Statistics for Python was released under the Python License.
     ### Michiel de Hoon
-    ### Center for Computational Biology and Bioinformatics,
-    ### Columbia University.
+    ### Center for Computational Biology and Bioinformatics, 
+    ### Columbia University.    
     import statistics as de_hoon_lib
     de_hoon_statistics = True
 except:
     de_hoon_statistics = False
 
-def discrete_time_to_coalescence(n_genes,
-                                 pop_size=None,
+def discrete_time_to_coalescence(n_genes, 
+                                 pop_size=None, 
                                  haploid=True,
                                  rng=None):
     """
@@ -69,14 +70,14 @@ def discrete_time_to_coalescence(n_genes,
     else:
         N = pop_size * 2
     if rng is None:
-        rng = GLOBAL_RNG
-    p = float(probability.binomial_coefficient(n_genes, 2)) / N
-    tmrca = probability.geometric_rv(p)
+        rng = GLOBAL_RNG    
+    p = float(distributions.binomial_coefficient(n_genes, 2)) / N
+    tmrca = distributions.geometric_rv(p)
     if pop_size is not None and pop_size >= 0:
         return tmrca * pop_size
     else:
         return tmrca
-
+            
 def time_to_coalescence(n_genes, pop_size=None, rng=None):
     """
     A random draw from the "Kingman distribution" (continuous time version):
@@ -86,9 +87,9 @@ def time_to_coalescence(n_genes, pop_size=None, rng=None):
     units unless population size is > 1.
     """
     if rng is None:
-        rng = GLOBAL_RNG
-    rate = probability.binomial_coefficient(n_genes, 2)
-    tmrca = rng.expovariate(rate)
+        rng = GLOBAL_RNG    
+    rate = distributions.binomial_coefficient(n_genes, 2)
+    tmrca = rng.expovariate(rate) 
     if pop_size is not None and pop_size >= 0:
         return tmrca * pop_size
     else:
@@ -100,8 +101,8 @@ def expected_tmrca(n_genes, pop_size=None, rng=None):
     population size > 1
     """
     if rng is None:
-        rng = GLOBAL_RNG
-    nc2 = probability.binomial_coefficient(n_genes, 2)
+        rng = GLOBAL_RNG        
+    nc2 = distributions.binomial_coefficient(n_genes, 2)
     tmrca = (float(1)/nc2)
     if pop_size and pop_size >= 0:
         return tmrca * pop_size
@@ -120,7 +121,7 @@ def coalesce(nodes,
     `pop_size` is the effective population size of a Wright-Fisher
     population in which thes genes are evolving, and must be given for
     correct behaviour if time is generations.
-
+    
     `period` is the time in generations (if pop_size is not None) or
     in populaton/coalescent units (if pop_size is given) that the
     genes have to coalesce. If not given, then the the method will
@@ -158,8 +159,8 @@ def coalesce(nodes,
 
     # set the random number generator
     if rng is None:
-        rng = GLOBAL_RNG
-
+        rng = GLOBAL_RNG    
+    
     # define the function needed to create new coalescence nodes
     new_node = nodes[0].__class__
 
@@ -212,7 +213,7 @@ def coalesce(nodes,
             nodes.remove(to_coalesce[1])
 
             # add the ancestor to the pool of nodes
-            nodes.append(new_ancestor)
+            nodes.append(new_ancestor)            
 
             # adjust the time_remaining left to coalesce
             if time_remaining is not None:
@@ -248,8 +249,8 @@ def node_waiting_time_pairs(tree):
     """Returns list of tuples of (node, coalescent interval [= time between
     last coalescent event and current node age])"""
     tree.add_ages_to_nodes(attr_name='age')
-    ages = [(n, n.age) for n in tree.internal_nodes()]
-    ages.sort(lambda x, y: int(x[1] - y[1]))
+    ages = [(n, n.age) for n in tree.internal_nodes()]    
+    ages.sort(lambda x, y: int(x[1] - y[1]))            
     intervals = []
     intervals.append(ages[0])
     for i, d in enumerate(ages[1:]):
@@ -257,17 +258,17 @@ def node_waiting_time_pairs(tree):
     return intervals
 
 def extract_coalescent_frames(tree):
-    """Returns dictionary, with key = number of alleles, and values = waiting time for
+    """Returns dictionary, with key = number of alleles, and values = waiting time for 
     coalescent for the given tree"""
     nwti = node_waiting_time_pairs(tree)
-#     num_genes = len(tree.taxon_set)
+#     num_genes = len(tree.taxa_block)
     num_genes = len(tree.leaf_nodes())
     num_genes_wt = {}
     for n in nwti:
         num_genes_wt[num_genes] = n[1]
-        num_genes = num_genes - len(n[0].child_nodes()) + 1
+        num_genes = num_genes - len(n[0].child_nodes()) + 1 
     return num_genes_wt
-
+    
 def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     """
     Under the classical neutral coalescent \citep{Kingman1982,
@@ -275,11 +276,11 @@ def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     sample of $k$ alleles segregating in a  population of (haploid) size
     $N_e$ is distributed exponentially with a rate parameter of
     $\frac{{k \choose 2}}{N_e}$:
-
+    
     \begin{align}
          \Pr(T) =  \frac{{k \choose 2}}{N_e} \e{-  \frac{{k \choose 2}}{N_e} T},
     \end{align}
-
+    
     where $T$ is the length of  (chronological) time in which there are
     $k$ alleles in the sample (i.e., for $k$ alleles to coalesce into
     $k-1$ alleles).
@@ -287,9 +288,9 @@ def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     lp = 0.0
     for k, t in coalescent_frames.items():
         k2N = (float(k * (k-1)) / 2) / haploid_pop_size
-#         k2N = float(probability.binomial_coefficient(k, 2)) / haploid_pop_size
+#         k2N = float(distributions.binomial_coefficient(k, 2)) / haploid_pop_size
         lp =  lp + math.log(k2N) - (k2N * t)
-    return lp
+    return lp  
 
 def log_probability_of_coalescent_tree(tree, haploid_pop_size):
     """
@@ -299,44 +300,44 @@ def log_probability_of_coalescent_tree(tree, haploid_pop_size):
 
 def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
     """
-    Given two trees (with splits encoded), this returns the number of gene
-    duplications implied by the gene tree reconciled on the species tree, based
+    Given two trees (with splits encoded), this returns the number of gene 
+    duplications implied by the gene tree reconciled on the species tree, based 
     on the algorithm described here:
-
-        Goodman, M. J. Czelnusiniak, G. W. Moore, A. E. Romero-Herrera, and
+    
+        Goodman, M. J. Czelnusiniak, G. W. Moore, A. E. Romero-Herrera, and 
         G. Matsuda. 1979. Fitting the gene lineage into its species lineage,
         a parsimony strategy illustrated bu cladograms constructed from globin
         sequences. Syst. Zool. 19: 99-113.
-
-        Maddison, W. P. 1997. Gene trees in species dataobject. Syst. Biol. 46:
+        
+        Maddison, W. P. 1997. Gene trees in species trees. Syst. Biol. 46: 
         523-536.
-
-    Note that for correct results,
-        (a) trees must be rooted (i.e., is_rooted = True)
-        (b) split masks must have been added as rooted (i.e., when
+        
+    Note that for correct results, 
+        (a) trees must be rooted (i.e., is_rooted = True)  
+        (b) split masks must have been added as rooted (i.e., when 
         encode_splits was called, is_rooted must have been set to True)
-
+      
     """
-    taxa_mask = species_tree.taxon_set.all_taxa_bitmask()
-
+    taxa_mask = species_tree.taxa_block.all_taxa_bitmask()
+    
     species_node_gene_nodes = {}
     gene_node_species_nodes = {}
-
+    
     for gnd in gene_tree.postorder_node_iter():
         gn_children = gnd.child_nodes()
         if len(gn_children) > 0:
             ssplit = 0
             for gn_child in gn_children:
                 ssplit = ssplit | gene_node_species_nodes[gn_child].edge.clade_mask
-            sanc = treecalc.mrca(species_tree.seed_node, ssplit, taxa_mask)
+            sanc = treestruct.mrca(species_tree.seed_node, ssplit, taxa_mask)     
             gene_node_species_nodes[gnd] = sanc
             if sanc not in species_node_gene_nodes:
                 species_node_gene_nodes[sanc] = []
-            species_node_gene_nodes[sanc].append(gnd)
-        else:
+            species_node_gene_nodes[sanc].append(gnd)                
+        else: 
             gene_node_species_nodes[gnd] = species_tree.find_node(lambda x : x.taxon == gnd.taxon)
-
-    contained_gene_lineages = {}
+            
+    contained_gene_lineages = {}            
     for snd in species_tree.postorder_node_iter():
         if snd in species_node_gene_nodes:
             for gnd in species_node_gene_nodes[snd]:
@@ -348,9 +349,9 @@ def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
                             contained_gene_lineages[p.edge] = 0
                         contained_gene_lineages[p.edge] += 1
                         p = p.parent_node
-
-    dc = 0
-    for v in contained_gene_lineages.values():
+                        
+    dc = 0                        
+    for v in contained_gene_lineages.values():                
         dc += v - 1
 
     return dc
@@ -360,24 +361,24 @@ def num_deep_coalescences_with_grouping(tree, tax_sets):
     Returns the number of deep coalescences on tree `tree` that would result
     if the taxa in `tax_sets` formed K mutually-exclusive monophyletic groups,
     where K = len(tax_sets)
-    `tax_sets` == partition of taxa: list of lists, with the inner lists
+    `tax_sets` == partition of taxa: list of lists, with the inner lists 
     consisting of taxon objects forming a monophyletic group.
     """
-    dc_tree = dataobject.Tree()
-    dc_tree.taxon_set = dataobject.TaxonSet()
-
+    dc_tree = trees.Tree()
+    dc_tree.taxa_block = taxa.TaxaBlock()
+    
     for t in range(len(tax_sets)):
-        dc_tree.taxon_set.append(dataobject.Taxon(label=str(t)))
-
+        dc_tree.taxa_block.append(taxa.Taxon(label=str(t)))
+    
     def _get_dc_taxon(nd):
         for idx, tax_set in enumerate(tax_sets):
             if nd.taxon in tax_set:
-                return dc_tree.taxon_set[idx]
-        assert "taxon not found in partition: '%s'" % nd.taxon.label
-
-    src_dc_map = {}
+                return dc_tree.taxa_block[idx]
+        assert "taxon not found in partition: '%s'" % nd.taxon.label                
+        
+    src_dc_map = {}        
     for snd in tree.postorder_node_iter():
-        nnd = dataobject.Node()
+        nnd = trees.Node()
         src_dc_map[snd] = nnd
         children = snd.child_nodes()
         if len(children) == 0:
@@ -392,27 +393,27 @@ def num_deep_coalescences_with_grouping(tree, tax_sets):
                     ctax = dc_node.taxon
                     if ctax is not None and ctax not in taxa_set:
                         taxa_set.append(ctax)
-                    del src_dc_map[cnd]
-            if len(taxa_set) > 1:
+                    del src_dc_map[cnd]  
+            if len(taxa_set) > 1:          
                 for t in taxa_set:
-                    cnd = dataobject.Node()
+                    cnd = trees.Node()
                     cnd.taxon = t
                     nnd.add_child(cnd)
             else:
                 if len(nnd.child_nodes()) == 0:
                     nnd.taxon = taxa_set[0]
                 elif len(taxa_set) == 1:
-                    cnd = dataobject.Node()
+                    cnd = trees.Node()
                     cnd.taxon = taxa_set[0]
                     nnd.add_child(cnd)
     dc_tree.seed_node = nnd
-    return len(dc_tree.leaf_nodes()) - len(tax_sets)
+    return len(dc_tree.leaf_nodes()) - len(tax_sets)                    
 
 if de_hoon_statistics:
 
     def kl_divergence_coalescent_trees(tree_list, haploid_pop_size):
         """
-        Returns KL divergence for coalescent frames found in a collection of
+        Returns KL divergence for coalescent frames found in a collection of 
         trees from the theoretical distribution given the specified haploid
         population size.
         """
@@ -421,14 +422,14 @@ if de_hoon_statistics:
             cf = extract_coalescent_frames(t)
             allele_waiting_time_dist = update_allele_waiting_time_dist(cf, allele_waiting_time_dist)
         return kl_divergence_coalescent_waiting_times(allele_waiting_time_dist, haploid_pop_size)
-
+    
     def update_allele_waiting_time_dist(coalescent_frames, allele_waiting_time_dist=None):
         """
-        `coalescent_frames` is a dictionary with number of alleles as keys and
-        a scalar representing the waiting time to a coalescence event given a
+        `coalescent_frames` is a dictionary with number of alleles as keys and 
+        a scalar representing the waiting time to a coalescence event given a 
         particular number of alleles on a particular tree (as returned by
-        `extract_coalescent_frame`. `allele_branch_len_dist` is a dictionary
-        with number of alleles as keys and a list of waiting times associated
+        `extract_coalescent_frame`. `allele_branch_len_dist` is a dictionary 
+        with number of alleles as keys and a list of waiting times associated 
         with that number of alleles as values. This is simply a convenience
         function that adds the waiting times found in `coalescent_frames`
         to the collection of values tracked in `allele_waiting_time_dist`.
@@ -439,48 +440,48 @@ if de_hoon_statistics:
             if k not in allele_waiting_time_dist:
                 allele_waiting_time_dist[k] = []
             allele_waiting_time_dist[k].append(t)
-        return allele_waiting_time_dist
+        return allele_waiting_time_dist            
 
     def kl_divergence_coalescent_waiting_times(allele_waiting_time_dist, haploid_pop_size):
         """
         `allele_branch_len_dist` is a dictionary with number of alleles as keys
-        and a list of waiting times associated with that number of alleles as
-        values. `haploid_pop_size` is the population size in terms of total numbers
-        of genes. This returns a the KL-divergence between the distribution of
+        and a list of waiting times associated with that number of alleles as 
+        values. `haploid_pop_size` is the population size in terms of total numbers 
+        of genes. This returns a the KL-divergence between the distribution of 
         waiting times and the Kingman coalescent distribution.
-
+        
         D_{\mathrm{KL}}(P\|Q) = \sum_i P(i) \log \frac{P(i)}{Q(i)}.
-
+        
         """
         d_kl = 0.0
         for k, wts in allele_waiting_time_dist.items():
-            p = float(probability.binomial_coefficient(k, 2)) / haploid_pop_size
+            p = float(distributions.binomial_coefficient(k, 2)) / haploid_pop_size
             for t in wts:
                 # Kernel types:
                 #
-                # 'E' or 'Epanechnikov'
-                #     Epanechnikov kernel (default)
-                #
-                # 'U' or 'Uniform'
-                #     Uniform kernel
-                #
-                # 'T' or 'Triangle'
-                #     Triangle kernel
-                #
-                # 'G' or  'Gaussian'
-                #     Gaussian kernel
-                #
-                # 'B' or 'Biweight'
-                #     Quartic/biweight kernel
-                #
-                # '3' or 'Triweight'
-                #     Triweight kernel
-                #
-                # 'C' or 'Cosine'
-                #     Cosine kernel
+                # 'E' or 'Epanechnikov'   
+                #     Epanechnikov kernel (default)   
+                #    
+                # 'U' or 'Uniform'   
+                #     Uniform kernel   
+                #    
+                # 'T' or 'Triangle'   
+                #     Triangle kernel   
+                #    
+                # 'G' or  'Gaussian'   
+                #     Gaussian kernel   
+                #    
+                # 'B' or 'Biweight'   
+                #     Quartic/biweight kernel   
+                #    
+                # '3' or 'Triweight'   
+                #     Triweight kernel   
+                #    
+                # 'C' or 'Cosine'   
+                #     Cosine kernel   
                 q = de_hoon_lib.pdf(wts, [k], kernel = 'Gaussian')
                 if q == 0:
                     q = 1e-100
                 d_kl += p * math.log(p/q)
         return d_kl
-
+        

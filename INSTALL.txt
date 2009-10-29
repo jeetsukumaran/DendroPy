@@ -1,6 +1,6 @@
-DendroPy installs and works out-of-the-box under all versions of Python 2.x higher than 2.4.
+DendroPy installs and works out-of-the-box under Python 2.5.x. It will work under Python 2.4.x if the `ElementTrees module <http://effbot.org/downloads/#elementtree>`_ is separately installed. The library itself functions perfectly fine under Python 2.6.x, but setuptools has not yet released an easyinstall egg for this version, so the automated installation of the library is not currently functioning (see below). DendroPy will not work under 2.3 without a lot of effort, and is broken under 3.0.
 
-To install the DendroPy library from the source distribution, end-users can run::
+To install the DendroPy library, end-users can run::
 
     $ python setup.py install
 
