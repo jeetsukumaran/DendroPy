@@ -54,7 +54,7 @@ __all__ = ["base.py",
         "xmlparser.py",
         "high_level.py",
 ]
-__version__ = "2.6.7"
+__version__ = "2.6.8"
 PACKAGE_NAME = "DendroPy"
 PACKAGE_VERSION = __version__
 PACKAGE_AUTHOR = "Jeet Sukumaran and Mark T. Holder"
@@ -76,19 +76,19 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 
 def get_DENDROPY_PATH():
     return os.path.dirname(os.path.abspath(__file__))
-    
+
 def get_DENDROPY_HEAD():
     from dendropy import utils
     return utils.get_current_git_head(os.path.dirname(__file__))
-    
+
 def get_DENDROPY_BRANCH():
     from dendropy import utils
     return utils.get_current_git_branch(os.path.dirname(__file__))
-    
+
 def get_DENDROPY_TAG():
     from dendropy import utils
     return utils.get_current_git_tag(os.path.dirname(__file__))
-    
+
 # Global random number generator
 GLOBAL_RNG = random.Random()
 
@@ -128,7 +128,7 @@ def get_logging_level():
         if os.environ[_LOGGING_LEVEL_ENVAR].upper() == "NOTSET":
             level = logging.NOTSET
         elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "DEBUG":
-            level = logging.DEBUG 
+            level = logging.DEBUG
         elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "INFO":
             level = logging.INFO
         elif os.environ[_LOGGING_LEVEL_ENVAR].upper() == "WARNING":
@@ -140,25 +140,25 @@ def get_logging_level():
         else:
             level = logging.NOTSET
     else:
-        level = logging.NOTSET  
-    return level        
+        level = logging.NOTSET
+    return level
 
 def get_logger(name="dendropy"):
     """
-    Returns a logger with name set as given, and configured 
+    Returns a logger with name set as given, and configured
     to the level given by the environment variable _LOGGING_LEVEL_ENVAR.
     """
-    logger_set = False    
+    logger_set = False
 #     package_dir = os.path.dirname(module_path)
-#     config_filepath = os.path.join(package_dir, _LOGGING_CONFIG_FILE)    
+#     config_filepath = os.path.join(package_dir, _LOGGING_CONFIG_FILE)
 #     if os.path.exists(config_filepath):
 #         try:
 #             logging.config.fileConfig(config_filepath)
 #             logger_set = True
 #         except:
 #             logger_set = False
-    logger = logging.getLogger(name)            
-    if not logger_set:    
+    logger = logging.getLogger(name)
+    if not logger_set:
         level = get_logging_level()
         rich_formatter = logging.Formatter("[%(asctime)s] %(filename)s (%(lineno)d): %(levelname) 8s: %(message)s")
         simple_formatter = logging.Formatter("%(levelname) 8s: %(message)s")
@@ -176,7 +176,7 @@ def get_logger(name="dendropy"):
                 logging_formatter = default_formatter
         else:
             logging_formatter = default_formatter
-        if logging_formatter is not None:            
+        if logging_formatter is not None:
             logging_formatter.datefmt='%H:%M:%S'
         logger.setLevel(level)
         ch = logging.StreamHandler()
@@ -224,4 +224,4 @@ def deprecation(message, logger_obj=None, stacklevel=3):
     except:
         if logger_obj:
             logger_obj.warning(message)
-    
+
