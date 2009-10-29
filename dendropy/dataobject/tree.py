@@ -191,7 +191,7 @@ class Tree(TaxonSetLinked):
 
     ###########################################################################
     ## Factory
-    def new(**kwargs):
+    def read(**kwargs):
         """
         Constructs a single tree from a source described by one of the following
         keyword arguments:
@@ -225,7 +225,7 @@ class Tree(TaxonSetLinked):
         Example usage::
 
             >>> from dendropy import dataobject
-            >>> tree1 = dataobject.Tree.new("(A:3, (B:1, C:1):2):1;"))
+            >>> tree1 = dataobject.Tree.read("(A:3, (B:1, C:1):2):1;"))
         """
         from dendropy.utility import ioservice
         from dendropy.dataio import tree_source_iter
@@ -242,7 +242,7 @@ class Tree(TaxonSetLinked):
             else:
                 count += 1
         return t
-    new = staticmethod(new)
+    read = staticmethod(read)
 
     ###########################################################################
     ## Static methods
