@@ -1,11 +1,9 @@
 #! /usr/bin/env python
 
-############################################################################
-##  treesum.py
+###############################################################################
+##  DendroPy Phylogenetic Computing Library.
 ##
-##  Part of the DendroPy library for phylogenetic computing.
-##
-##  Copyright 2008 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2009 Jeet Sukumaran and Mark T. Holder.
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -20,20 +18,22 @@
 ##  You should have received a copy of the GNU General Public License along
 ##  with this program. If not, see <http://www.gnu.org/licenses/>.
 ##
-############################################################################
+###############################################################################
 
 """
-Tree summarization.
+Tree summarization and consensus tree building.
 """
+
+from dendropy.utility import messaging
+_LOG = messaging.get_logger(__name__)
 
 import sys
-from dendropy import splits
-from dendropy import treestruct
-from dendropy import taxa
-from dendropy import trees
-from dendropy import treegen
-from dendropy import get_logger
-_LOG = get_logger("dendropy.treesum")
+from dendropy import splitcalc
+from dendropy import dataobject
+from dendropy import treecalc
+from dendropy import treesim
+from dendropy.utility import messaging
+_LOG = messaging.get_logger(__name__)
 
 class TreeSummarizer(object):
     "Summarizes a distribution of trees."
@@ -96,9 +96,9 @@ class TreeSummarizer(object):
     def map_split_support_to_tree(self, tree, split_distribution):
         "Maps splits support to the given tree."
         split_frequencies = split_distribution.split_frequencies
-        tree.normalize_taxa(taxa_block=split_distribution.taxa_block)
-        assert tree.taxa_block is split_distribution.taxa_block
-        splits.encode_splits(tree)
+        tree.reindex_taxa(taxon_set=split_distribution.taxon_set)
+        assert tree.taxon_set is split_distribution.taxon_set
+        splitcalc.encode_splits(tree)
         for split in tree.split_edges:
             if split in split_frequencies:
                 split_support = split_frequencies[split]
@@ -113,21 +113,21 @@ class TreeSummarizer(object):
                          include_edge_lengths=True):
         "Returns a consensus tree from splits in `split_distribution`."
         leaf_to_root_search = True
-        
-        taxa_block = split_distribution.taxa_block
-        con_tree = treegen.star_tree(taxa_block)
+
+        taxon_set = split_distribution.taxon_set
+        con_tree = treesim.star_tree(taxon_set)
         split_freqs = split_distribution.split_frequencies
-        taxa_mask = taxa_block.all_taxa_bitmask()
-        splits.encode_splits(con_tree)
+        taxa_mask = taxon_set.all_taxa_bitmask()
+        splitcalc.encode_splits(con_tree)
         leaves = con_tree.leaf_nodes()
-        
+
         if leaf_to_root_search:
             to_leaf_dict = {}
             for leaf in leaves:
                 to_leaf_dict[leaf.edge.clade_mask] = leaf
         include_edge_lengths = self.support_as_labels and include_edge_lengths
         unrooted = split_distribution.unrooted
-        
+
         to_try_to_add = []
         for s, f in split_freqs.iteritems():
             if (min_freq is None) or (f > min_freq):
@@ -152,15 +152,15 @@ class TreeSummarizer(object):
             if (split_to_add & root_edge.clade_mask) != split_to_add:
                 continue
             elif leaf_to_root_search:
-                lb = splits.lowest_bit_only(split_to_add)
+                lb = splitcalc.lowest_bit_only(split_to_add)
                 one_leaf = to_leaf_dict[lb]
                 parent_node = one_leaf
                 while (split_to_add & parent_node.edge.clade_mask) != split_to_add:
                     parent_node = parent_node.parent_node
             else:
-                parent_node = treestruct.mrca(start_node=con_tree.seed_node,
-                                                      split=split_to_add,
-                                                      taxa_mask=taxa_mask)
+                parent_node = treecalc.find_mrca(start_node=con_tree.seed_node,
+                                                    split=split_to_add,
+                                                    taxa_mask=taxa_mask)
             if parent_node is None or parent_node.edge.clade_mask == split_to_add:
                 continue # split is not in tree, or already in tree.
             new_node = trees.Node()
@@ -212,18 +212,18 @@ class TreeSummarizer(object):
         if passed as an argument) is returned collating the split data in the files.
         """
         if split_distribution is None:
-            split_distribution = splits.SplitDistribution()
-        taxa_block = split_distribution.taxa_block
+            split_distribution = splitcalc.SplitDistribution()
+        taxon_set = split_distribution.taxon_set
         for tree_idx, tree in enumerate(tree_iterator):
             self.total_trees_counted += 1
-            if taxa_block is None:
-                assert(split_distribution.taxa_block is None)
-                split_distribution.taxa_block = tree.taxa_block
-                taxa_block = tree.taxa_block
+            if taxon_set is None:
+                assert(split_distribution.taxon_set is None)
+                split_distribution.taxon_set = tree.taxon_set
+                taxon_set = tree.taxon_set
             else:
-                assert(taxa_block is tree.taxa_block)
+                assert(taxon_set is tree.taxon_set)
             if not trees_splits_encoded:
-                splits.encode_splits(tree)
+                splitcalc.encode_splits(tree)
             split_distribution.count_splits_on_tree(tree)
         return split_distribution
 

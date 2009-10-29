@@ -21,34 +21,25 @@
 ###############################################################################
 
 """
-Tests FASTA I/O.
+Exceptions and errors.
 """
 
-import sys
-import tempfile
-import unittest
-from cStringIO import StringIO
-from dendropy.tests import data_source_path
-import dendropy
+class DataFormatError(Exception):
 
-class TestFasta(unittest.TestCase):
+    def __init__(self, row=None, column=None, message=None):
+        Exception.__init__(self)
+        self.row = row
+        self.column = column
+        self.msg = message
 
-    def testAsStrReading(self):
+    def __str__(self):
+        if self.row is None:
+            t = ""
+        else:
+            t =  " IN LINE %d" % self.row
+        return 'ERROR PARSING FILE%s: %s' % (t, self.msg)
 
-        dataset = dendropy.Dataset(path=data_source_path("bad_names.fasta"),
-                format='DNAFasta',
-                row_type='str')
+class UnsupportedFormatError(NotImplementedError):
 
-        taxon_set = dataset.taxon_sets[0]
-        label = [i.label for i in taxon_set]
-        expected = ['a Bad name', 'another', 'a Badn,ame', 'a  nothe++-_=+r', 'an!@#$o^&*()}{_ther']
-        self.assertEquals(label, expected)
-
-    def testAsStrReadingAndWriting(self):
-        dataset = dendropy.Dataset(path=data_source_path("bad_names.fasta"), format="DNAFasta", row_type='str')
-        op = tempfile.TemporaryFile()
-        dataset.write(file=op, format="FASTA")
-
-if __name__ == "__main__":
-    unittest.main()
-
+    def __init__(self, *args, **kwargs):
+        NotImplementedError.__init__(self, *args, **kwargs)

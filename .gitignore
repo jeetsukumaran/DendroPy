@@ -8,6 +8,4 @@ dendropy/tests/output/
 build/*
 dist/*
 setuptools-*.egg
-dendropy/tests/data/heavy/*
 *.bbprojectd
-clean.sh
