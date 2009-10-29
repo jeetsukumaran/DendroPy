@@ -21,34 +21,35 @@
 ###############################################################################
 
 """
-Tests FASTA I/O.
+Tests creation, addition, and deletion of taxa.
 """
 
-import sys
-import tempfile
 import unittest
-from cStringIO import StringIO
-from dendropy.tests import data_source_path
-import dendropy
+from dendropy.utility import messaging
+from dendropy.dataobject import taxon
 
-class TestFasta(unittest.TestCase):
+_LOG = messaging.get_logger(__name__)
 
-    def testAsStrReading(self):
+class TaxaTest(unittest.TestCase):
 
-        dataset = dendropy.Dataset(path=data_source_path("bad_names.fasta"),
-                format='DNAFasta',
-                row_type='str')
-
-        taxon_set = dataset.taxon_sets[0]
-        label = [i.label for i in taxon_set]
-        expected = ['a Bad name', 'another', 'a Badn,ame', 'a  nothe++-_=+r', 'an!@#$o^&*()}{_ther']
-        self.assertEquals(label, expected)
-
-    def testAsStrReadingAndWriting(self):
-        dataset = dendropy.Dataset(path=data_source_path("bad_names.fasta"), format="DNAFasta", row_type='str')
-        op = tempfile.TemporaryFile()
-        dataset.write(file=op, format="FASTA")
+    def test_taxonobj(self):
+        _LOG.info("Testing TaxonSet")
+        ti = taxon.TaxonSet()
+        for idx in xrange(10):
+            ti.new_taxon("T%d" % (idx+1))
+        self.assertEquals(len(ti), 10)
+        _LOG.info(ti)
+        for idx, t in enumerate(ti):
+#             _LOG.info("'%s'=='T%d'?" % (t.label, idx+1))
+            self.assertEquals(t.label, "T%d" % (idx+1))
+        ti.lock()
+        self.assertRaises(Exception, ti.new_taxon, label="A1")
+        self.assertRaises(Exception, ti.get_taxon, label="A1", taxon_required=True, oid=None)
+        ti.unlock()
+        ti.new_taxon("X1")
+        self.assertEquals(ti.get_taxon("X2", taxon_required=False), None)
+        ti.get_taxon("X3")
+        self.assertEquals(len(ti), 12)
 
 if __name__ == "__main__":
     unittest.main()
-

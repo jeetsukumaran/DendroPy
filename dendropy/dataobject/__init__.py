@@ -21,34 +21,13 @@
 ###############################################################################
 
 """
-Tests FASTA I/O.
+Imports into the `dendropy.dataobject` namespace all fundamental
+classes and methods for instantiating objects in the
+`dendropy.dataobject` subpackage to for usage by the library.
 """
 
-import sys
-import tempfile
-import unittest
-from cStringIO import StringIO
-from dendropy.tests import data_source_path
-import dendropy
-
-class TestFasta(unittest.TestCase):
-
-    def testAsStrReading(self):
-
-        dataset = dendropy.Dataset(path=data_source_path("bad_names.fasta"),
-                format='DNAFasta',
-                row_type='str')
-
-        taxon_set = dataset.taxon_sets[0]
-        label = [i.label for i in taxon_set]
-        expected = ['a Bad name', 'another', 'a Badn,ame', 'a  nothe++-_=+r', 'an!@#$o^&*()}{_ther']
-        self.assertEquals(label, expected)
-
-    def testAsStrReadingAndWriting(self):
-        dataset = dendropy.Dataset(path=data_source_path("bad_names.fasta"), format="DNAFasta", row_type='str')
-        op = tempfile.TemporaryFile()
-        dataset.write(file=op, format="FASTA")
-
-if __name__ == "__main__":
-    unittest.main()
-
+from dendropy.dataobject.base import *
+from dendropy.dataobject.taxon import *
+from dendropy.dataobject.tree import *
+from dendropy.dataobject.char import *
+from dendropy.dataobject.dataset import *
