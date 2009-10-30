@@ -205,8 +205,7 @@ class NexmlReader(ioservice.DataReader):
         """
         Instantiates and returns a DataSet object based on the
         NEXML-formatted contents read from the file descriptor object
-        `fileobj`. If `dataset` is given, its factory methods will be
-        used to instantiate objects.
+        `fileobj`.
         """
         start = time.clock()
         xml_doc = xmlparser.xml_document(file_obj=ioservice.require_source_from_kwargs(kwargs))
@@ -352,7 +351,6 @@ class _NexmlTreesParser(_NexmlElementParser):
     "Parses an XmlElement representation of NEXML format tree blocks."
 
     def __init__(self):
-        "Must be given tree factory to create trees."
         super(_NexmlTreesParser, self).__init__()
 
     def parse_trees(self, nxtrees, dataset, trees_idx=None, add_to_tree_list=True):
@@ -384,7 +382,7 @@ class _NexmlTreesParser(_NexmlElementParser):
             tree_type_attr = tree_element.get('{http://www.w3.org/2001/XMLSchema-instance}type')
             treeobj.length_type = _from_nexml_tree_length_type(tree_type_attr)
             self.parse_annotations(annotated=treeobj, nxelement=tree_element)
-            nodes = self.parse_nodes(tree_element, taxon_set=treeobj.taxon_set, Node=self.Node)
+            nodes = self.parse_nodes(tree_element, taxon_set=treeobj.taxon_set)
             edges = self.parse_edges(tree_element, length_type=treeobj.length_type)
             for edge in edges.values():
                 # EDGE-ON-ROOT:
@@ -431,7 +429,7 @@ class _NexmlTreesParser(_NexmlElementParser):
             else:
                 raise Exception("Structural error: tree must be acyclic.")
 
-            rootedge = self.parse_root_edge(tree_element, length_type=treeobj.length_type, edge_factory=self.edge_factory)
+            rootedge = self.parse_root_edge(tree_element, length_type=treeobj.length_type)
             if rootedge:
                 if rootedge.head_node_id not in nodes:
                     msg = 'Edge "%s" specifies a non-defined ' \
@@ -448,7 +446,7 @@ class _NexmlTreesParser(_NexmlElementParser):
                tree_list.append(treeobj)
             yield treeobj
 
-    def parse_nodes(self, tree_element, taxon_set, Node):
+    def parse_nodes(self, tree_element, taxon_set):
         """
         Given an XmlElement representation of a NEXML tree element,
         (`nex:tree`) this will return a dictionary of DendroPy Node
@@ -457,7 +455,7 @@ class _NexmlTreesParser(_NexmlElementParser):
         nodes = {}
         for nxnode in tree_element.getiterator('node'):
             node_id = nxnode.get('id', None)
-            nodes[node_id] = Node()
+            nodes[node_id] = dendropy.Node()
             nodes[node_id].oid = node_id
             nodes[node_id].label = nxnode.get('label', None)
             taxon_id = nxnode.get('otu', None)
@@ -469,11 +467,11 @@ class _NexmlTreesParser(_NexmlElementParser):
             self.parse_annotations(annotated=nodes[node_id], nxelement=nxnode)
         return nodes
 
-    def parse_root_edge(self, tree_element, length_type, edge_factory):
+    def parse_root_edge(self, tree_element, length_type):
         "Returns the edge subtending the root node, or None if not defined."
         rootedge = tree_element.find('rootedge')
         if rootedge:
-            edge = edge_factory()
+            edge = dendropy.Edge()
             edge.head_node_id = rootedge.get('target', None)
             edge.oid = rootedge.get('id', 'e' + str(id(edge)))
             edge_length_str = length_type(rootedge.get('length', '0.0'))
@@ -491,19 +489,18 @@ class _NexmlTreesParser(_NexmlElementParser):
         else:
             return None
 
-    def parse_edges(self, tree_element, length_type, edge_factory):
+    def parse_edges(self, tree_element, length_type):
         """
         Given an XmlElement representation of a NEXML tree element
-        this will return a dictionary of DendroPy Edge objects created with
-        the edge factory method, self.new_edge, with the oid as
-        key. As at this stage, this method knows nothing about defined
+        this will return a dictionary of DendroPy Edge objects.
+        As at this stage, this method knows nothing about defined
         nodes, the Edge tail_node and head_node properties of the
         Edge are not set, but the tail_node_id and head_node_id are.
         """
         edges = {}
         edge_counter = 0
         for nxedge in tree_element.getiterator('edge'):
-            edge = edge_factory()
+            edge = dendropy.Edge()
             edge_counter = edge_counter + 1
             edge.tail_node_id = nxedge.get('source', None)
             edge.head_node_id = nxedge.get('target', None)
@@ -534,7 +531,7 @@ class _NexmlTreesParser(_NexmlElementParser):
 class _NexmlTaxaParser(_NexmlElementParser):
     "Parses an XmlElement representation of NEXML taxa blocks."
 
-    def __init__(self, taxon_set_factory=None, taxon_factory=None):
+    def __init__(self):
         "Does nothing too useful right now."
         super(_NexmlTaxaParser, self).__init__()
 
@@ -560,10 +557,6 @@ class _NexmlCharBlockParser(_NexmlElementParser):
     def __init__(self):
         "Does nothing too useful right now."
         super(_NexmlCharBlockParser, self).__init__()
-#         if char_array_factory is None:
-#             self.char_array_factory = dendropy.CharBlock()
-#         else:
-#             self.char_array_factory = char_array_factory
 
     def parse_ambiguous_state(self, nxambiguous, state_alphabet):
         """
