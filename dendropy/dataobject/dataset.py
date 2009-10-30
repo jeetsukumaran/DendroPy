@@ -126,6 +126,24 @@ class Dataset(DataObject):
     ###########################################################################
     ## DOMAIN DATA MANAGEMENT
 
+    def get_taxon_set(self, **kwargs):
+        """
+        Returns an existing `TaxonSet` object in this `DataSet`, selected
+        by keywords `oid` or `label`.
+        """
+        if 'oid' in kwargs:
+            attr = 'oid'
+            val = kwargs['oid']
+        elif 'label' in kwargs:
+            attr = 'label'
+            val = kwargs['label']
+        else:
+            raise Exception("'get_taxon_set' only requires keywords 'oid' or 'label'")
+        for t in self.taxon_sets:
+            if getattr(t, attr) == val:
+                return t
+        return None
+
     def add_taxon_set(self, taxon_set):
         """
         Adds an existing `TaxonSet` object to this `Dataset`.

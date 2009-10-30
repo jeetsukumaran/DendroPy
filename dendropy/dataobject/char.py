@@ -348,7 +348,7 @@ class ColumnType(IdTagged):
     def _set_state_alphabet(self, value):
         self._state_alphabet = value
         if self._state_alphabet is not None:
-            self.id_state_map = self.__state_alphabet.id_state_map()
+            self.id_state_map = self._state_alphabet.id_state_map()
         else:
             self.id_state_map = None
 
