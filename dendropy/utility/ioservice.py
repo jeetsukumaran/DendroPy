@@ -51,7 +51,7 @@ def require_format_from_kwargs(kwdict):
         raise Exception("Must specify `format`.")
     return format
 
-def get_ifile_from_kwargs(kwdict):
+def get_source_from_kwargs(kwdict):
     """
     Process source specification described in keyword arguments and return
     appropriate file handle, removing specification terms from keyword
@@ -73,16 +73,16 @@ def get_ifile_from_kwargs(kwdict):
         del(kwdict["str"])
     return src
 
-def require_ifile_from_kwargs(kwdict):
+def require_source_from_kwargs(kwdict):
     """
-    As with `get_ifile_arg`, but raises Exception if not specified.
+    As with `get_source_arg`, but raises Exception if not specified.
     """
-    src = get_ifile_from_kwargs(kwdict)
+    src = get_source_from_kwargs(kwdict)
     if src is None:
         raise Exception("Must specify one of the following: 'file', 'path' or 'str'.")
     return src
 
-def get_ofile_from_kwargs(kwdict):
+def get_dest_from_kwargs(kwdict):
     """
     Process destination specification described in keyword arguments and return
     appropriate file handle, removing specification terms from keyword
@@ -101,11 +101,11 @@ def get_ofile_from_kwargs(kwdict):
         raise Exception("'str' is not a valud output specification")
     return dest
 
-def require_ofile_from_kwargs(kwdict):
+def require_dest_from_kwargs(kwdict):
     """
-    As with `get_ofile_arg`, but raises Exception if not specified.
+    As with `get_dest_arg`, but raises Exception if not specified.
     """
-    dest = get_ofile_from_kwargs(kwdict)
+    dest = get_dest_from_kwargs(kwdict)
     if dest is None:
         raise Exception("Must specify 'file' or 'path'.")
     return dest
@@ -182,7 +182,7 @@ class DataReader(IOService):
         """
         Processes keyword arguments to return a file descriptor object source.
         """
-        return require_ifile_from_kwargs(kwdict)
+        return require_source_from_kwargs(kwdict)
 
 ###############################################################################
 ## DataReader
@@ -217,5 +217,5 @@ class DataWriter(IOService):
         Processes keyword arguments to return a file descriptor object
         destination.
         """
-        return require_ofile_from_kwargs(kwdict)
+        return require_dest_from_kwargs(kwdict)
 

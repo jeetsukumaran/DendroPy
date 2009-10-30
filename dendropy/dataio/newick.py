@@ -71,7 +71,7 @@ def tree_source_iter(**kwargs):
            after it has been constructed.
         - `edge_len_type` specifies the type of the edge lengths (int or float)
     """
-    src = ioservice.require_ifile_from_kwargs(kwargs)
+    src = ioservice.require_source_from_kwargs(kwargs)
     if "taxon_set" in kwargs:
         taxon_set = kwargs["taxon_set"]
         del(kwargs["taxon_set"])
@@ -98,7 +98,7 @@ def write_tree_list(tree_list, **kwargs):
         - `edge_lengths` : if False, edges will not write edge lengths [True]
         - `internal_labels` : if False, internal labels will not be written [True]
     """
-    dest = ioservice.require_ofile_from_kwargs(kwargs)
+    dest = ioservice.require_dest_from_kwargs(kwargs)
     newick_writer = NewickWriter(edge_lengths=kwargs.get("edge_lengths", True),
                                  internal_labels=kwargs.get("internal_labels", True))
     newick_writer.write_tree_list(tree_list, dest)
