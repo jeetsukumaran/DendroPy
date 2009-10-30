@@ -24,6 +24,7 @@
 Implementation of NeXML-format data reader and writer.
 """
 
+from xml.sax import saxutils
 from cStringIO import StringIO
 import time
 
@@ -36,7 +37,7 @@ import dendropy
 
 def _protect_attr(x):
 #     return cgi.escape(x)
-    return quoteattr(x)
+    return saxutils.quoteattr(x)
 
 def _to_nexml_indent_items(items, indent="", indent_level=0):
     """
@@ -781,20 +782,21 @@ class NexmlWriter(ioservice.DataWriter):
         ioservice.DataWriter.__init__(self, **kwargs)
         self.indent = "    "
 
-    ### datasets.Writer interface  ###
+    ### self.datasets.Writer interface  ###
 
     def write(self, **kwargs):
         """
         Writes a list of DendroPy Tree objects to a full NEXML
         document.
         """
+        dest = self.require_destination(kwargs)
         self.write_to_nexml_open(dest, indent_level=0)
-        self.write_extensions(dataset, dest)
-        self.write_taxon_sets(taxon_sets=dataset.taxon_sets, dest=dest)
+#         self.write_extensions(self.dataset, dest)
+        self.write_taxon_sets(taxon_sets=self.dataset.taxon_sets, dest=dest)
         if not self.exclude_chars:
-            self.write_char_arrays(char_arrays=dataset.char_arrays, dest=dest)
+            self.write_char_arrays(char_arrays=self.dataset.char_arrays, dest=dest)
         if not self.exclude_trees:
-            self.write_tree_lists(tree_lists=dataset.tree_lists, dest=dest)
+            self.write_tree_lists(tree_lists=self.dataset.tree_lists, dest=dest)
         self.write_to_nexml_close(dest, indent_level=0)
 
     ### class-specific  ###
@@ -814,9 +816,9 @@ class NexmlWriter(ioservice.DataWriter):
             dest.write("<%s>\n" % ' '.join(parts))
 
             # annotate
-            self.write_extensions(taxon_set, dest, indent_level=indent_level+1)
-            if isinstance(taxon_set, base.Annotated) and taxon_set.has_annotations():
-                self.write_annotations(taxon_set, dest, indent_level=indent_level+1)
+#             self.write_extensions(taxon_set, dest, indent_level=indent_level+1)
+#             if isinstance(taxon_set, base.Annotated) and taxon_set.has_annotations():
+#                 self.write_annotations(taxon_set, dest, indent_level=indent_level+1)
 
             for taxon in taxon_set:
                 dest.write(self.indent * (indent_level+1))
@@ -828,12 +830,12 @@ class NexmlWriter(ioservice.DataWriter):
                     raise Exception("Taxon without ID")
                 if taxon.label:
                     parts.append('label=%s' % _protect_attr(taxon.label))
-                if isinstance(taxon, base.Annotated) and taxon.has_annotations():
-                    dest.write("<%s>\n" % ' '.join(parts))
-                    self.write_extensions(taxon, dest, indent_level=indent_level+2)
-                    self.write_annotations(taxon, dest, indent_level=indent_level+2)
-                    dest.write(self.indent * (indent_level+1))
-                    dest.write("</otu>\n")
+#                 if isinstance(taxon, base.Annotated) and taxon.has_annotations():
+#                     dest.write("<%s>\n" % ' '.join(parts))
+#                     self.write_extensions(taxon, dest, indent_level=indent_level+2)
+#                     self.write_annotations(taxon, dest, indent_level=indent_level+2)
+#                     dest.write(self.indent * (indent_level+1))
+#                     dest.write("</otu>\n")
                 else:
                     dest.write("<%s />\n" % ' '.join(parts))
             dest.write(self.indent * indent_level)
@@ -855,9 +857,9 @@ class NexmlWriter(ioservice.DataWriter):
             dest.write("<%s>\n" % ' '.join(parts))
 
             # annotate
-            self.write_extensions(tree_list, dest, indent_level=indent_level+1)
-            if isinstance(tree_list, base.Annotated) and tree_list.has_annotations():
-                self.write_annotations(tree_list, dest, indent_level=indent_level+1)
+#             self.write_extensions(tree_list, dest, indent_level=indent_level+1)
+#             if isinstance(tree_list, base.Annotated) and tree_list.has_annotations():
+#                 self.write_annotations(tree_list, dest, indent_level=indent_level+1)
 
             for tree in tree_list:
                 self.write_tree(tree=tree, dest=dest, indent_level=2)
@@ -922,9 +924,9 @@ class NexmlWriter(ioservice.DataWriter):
             dest.write("<%s>\n" % ' '.join(parts))
 
             # annotate
-            self.write_extensions(char_array, dest, indent_level=indent_level+1)
-            if isinstance(char_array, base.Annotated) and char_array.has_annotations():
-                self.write_annotations(char_array, dest, indent_level=indent_level+1)
+#             self.write_extensions(char_array, dest, indent_level=indent_level+1)
+#             if isinstance(char_array, base.Annotated) and char_array.has_annotations():
+#                 self.write_annotations(char_array, dest, indent_level=indent_level+1)
             state_alphabet_parts = []
             if hasattr(char_array, "state_alphabets"): #isinstance(char_array, dendropy.StandardCharacterArray):
                 for state_alphabet in char_array.state_alphabets:
@@ -963,9 +965,9 @@ class NexmlWriter(ioservice.DataWriter):
 
             dest.write("%s<matrix>\n" % (self.indent * (indent_level+1)))
 
-            self.write_extensions(char_array.taxon_seq_map, dest, indent_level=indent_level+1)
-            if isinstance(char_array.taxon_seq_map, base.Annotated) and char_array.taxon_seq_map.has_annotations():
-                self.write_annotations(char_array.taxon_seq_map, dest, indent_level=indent_level+1)
+#             self.write_extensions(char_array.taxon_seq_map, dest, indent_level=indent_level+1)
+#             if isinstance(char_array.taxon_seq_map, base.Annotated) and char_array.taxon_seq_map.has_annotations():
+#                 self.write_annotations(char_array.taxon_seq_map, dest, indent_level=indent_level+1)
 
             for taxon, row in char_array.taxon_seq_map.items():
                 dest.write(self.indent*(indent_level+2))
@@ -979,9 +981,9 @@ class NexmlWriter(ioservice.DataWriter):
                     parts.append('otu="%s"' % taxon.oid)
                 dest.write("<%s>\n" % ' '.join(parts))
 
-                self.write_extensions(row, dest, indent_level=indent_level+3)
-                if isinstance(row, base.Annotated) and row.has_annotations():
-                    self.write_annotations(row, dest, indent_level=indent_level+3)
+#                 self.write_extensions(row, dest, indent_level=indent_level+3)
+#                 if isinstance(row, base.Annotated) and row.has_annotations():
+#                     self.write_annotations(row, dest, indent_level=indent_level+3)
 
 
                 if char_array.markup_as_sequences:
@@ -1016,13 +1018,13 @@ class NexmlWriter(ioservice.DataWriter):
                             v = str(cell.value)
                         parts.append('state="%s"' % v)
                         dest.write(' '.join(parts))
-                        if isinstance(cell, base.Annotated) and cell.has_annotations():
-                            dest.write('>\n')
-                            self.write_extensions(cell, dest, indent_level=indent_level+4)
-                            self.write_annotations(cell, dest, indent_level=indent_level+4)
-                            dest.write('%s</cell>' % (self.indent*(indent_level+3)))
-                        else:
-                            dest.write('/>\n')
+#                         if isinstance(cell, base.Annotated) and cell.has_annotations():
+#                             dest.write('>\n')
+#                             self.write_extensions(cell, dest, indent_level=indent_level+4)
+#                             self.write_annotations(cell, dest, indent_level=indent_level+4)
+#                             dest.write('%s</cell>' % (self.indent*(indent_level+3)))
+#                         else:
+                        dest.write('/>\n')
                 dest.write(self.indent * (indent_level+2))
                 dest.write('</row>\n')
             dest.write("%s</matrix>\n" % (self.indent * (indent_level+1)))
@@ -1050,9 +1052,9 @@ class NexmlWriter(ioservice.DataWriter):
         dest.write('%s<%s>\n'
                    % (self.indent * indent_level, parts))
         # annotate
-        self.write_extensions(tree, dest, indent_level=indent_level+1)
-        if isinstance(tree, base.Annotated) and tree.has_annotations():
-            self.write_annotations(tree, dest, indent_level=indent_level+1)
+#         self.write_extensions(tree, dest, indent_level=indent_level+1)
+#         if isinstance(tree, base.Annotated) and tree.has_annotations():
+#             self.write_annotations(tree, dest, indent_level=indent_level+1)
 
         for node in tree.preorder_node_iter():
             self.write_node(node=node, dest=dest, indent_level=indent_level+1)
@@ -1095,8 +1097,8 @@ class NexmlWriter(ioservice.DataWriter):
         dest.write('%s%s' % ((self.indent * indent_level), parts))
         if node.has_annotations():
             dest.write('>\n')
-            self.write_extensions(node, dest, indent_level=indent_level+1)
-            self.write_annotations(node, dest, indent_level=indent_level+1)
+#             self.write_extensions(node, dest, indent_level=indent_level+1)
+#             self.write_annotations(node, dest, indent_level=indent_level+1)
             dest.write('%s</node>\n' % (self.indent * indent_level))
         else:
             dest.write(' />\n')
@@ -1136,20 +1138,20 @@ class NexmlWriter(ioservice.DataWriter):
                 else:
                     dest.write(' />\n')
 
-    def write_annotations(self, annotated, dest, indent_level=0):
-        "Writes out annotations for an Annotable object."
-        pass
+#     def write_annotations(self, annotated, dest, indent_level=0):
+#         "Writes out annotations for an Annotable object."
+#         pass
 #         if hasattr(annotated, "annotations"):
 #             annotes_dict = annotated.annotations()
 #             if len(annotes_dict) > 0:
 #                 parts = _to_nexml_dict(annotes_dict, self.indent, indent_level)
 #                 parts = '\n'.join(parts)
 #                 dest.write(parts + '\n')
-
-    def write_extensions(self, element, dest, indent_level=0):
-        ### HACK TO SUPPORT RICH STRUCTURED METADATA ###
-        from xml.etree import ElementTree
-        for e in element.extensions:
-            dest.write(ElementTree.tostring(e))
-            dest.write("\n")
+#
+#     def write_extensions(self, element, dest, indent_level=0):
+#         ### HACK TO SUPPORT RICH STRUCTURED METADATA ###
+#         from xml.etree import ElementTree
+#         for e in element.extensions:
+#             dest.write(ElementTree.tostring(e))
+#             dest.write("\n")
 
