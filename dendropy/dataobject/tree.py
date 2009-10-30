@@ -301,7 +301,7 @@ class Tree(TaxonSetLinked):
 
     def __str__(self):
         "Dump Newick string."
-        return self.compose_newick()
+        return self.to_newick_str()
 
     ###########################################################################
     ## Getting/accessing methods
@@ -409,10 +409,10 @@ class Tree(TaxonSetLinked):
         tree_list.append(self)
         write_tree_list(format=require_format_from_kwargs(kwargs), tree_list=tree_list, **kwargs)
 
-    def compose(self, format, **kwargs):
+    def to_str(self, format, **kwargs):
         """
         As with `write()`, but destination need not be specified, as this
-        composes and returns a string.
+        composes and returns a string representation of the tree.
         """
         s = StringIO()
         kwargs["format"] = format
@@ -616,10 +616,10 @@ class Tree(TaxonSetLinked):
     ###########################################################################
     ## For debugging
 
-    def compose_newick(self, **kwargs):
+    def to_newick_str(self, **kwargs):
         """kwargs["reverse_translate"] can be function that takes a taxon and
            returns the label to appear in the tree."""
-        return self.seed_node.compose_newick(**kwargs)
+        return self.seed_node.to_newick_str(**kwargs)
 
     def get_indented_form(self, **kwargs):
         out = StringIO()
@@ -1190,9 +1190,10 @@ class Node(TaxonLinked):
     ###########################################################################
     ## For debugging we build-in a full-fledged NEWICK composition independent
     ## of the nexus/newick family of modules. Client code should prefer to
-    ## use Catalog.write(), Catalog.write_trees(), Catalog.compose(), etc.
+    ## use Newick/Nexus readers/writers, or Tree.write(), TreeList.write(),
+    ## Dataset.write() etc.
 
-    def compose_newick(self, **kwargs):
+    def to_newick_str(self, **kwargs):
         """
         This returns the Node as a NEWICK
         statement according to the given formatting rules.

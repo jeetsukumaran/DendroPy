@@ -180,9 +180,9 @@ def compare_individual_tree_lists(tree_list1, tree_list2, tester):
     tester.assertEqual(len(tree_list1), len(tree_list2))
     for tree_idx, tree1 in enumerate(tree_list1):
         tree2 = tree_list2[tree_idx]
-        tester.logger.debug(tree1.compose_newick())
+        tester.logger.debug(tree1.to_newick_str())
         tree1.debug_check_tree(logger=tester.logger)
-        tester.logger.debug(tree2.compose_newick())
+        tester.logger.debug(tree2.to_newick_str())
         tree2.debug_check_tree(logger=tester.logger)
         tree1_nodes = [nd for nd in tree1.postorder_node_iter()]
         tree2_nodes = [nd for nd in tree2.postorder_node_iter()]
