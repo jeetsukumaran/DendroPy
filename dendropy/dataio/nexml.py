@@ -214,7 +214,7 @@ class NexmlReader(ioservice.DataReader):
         start = time.clock()
         dataset = self.parse_dataset(xml_doc)
         self.parse_time = time.clock() - start
-        return dataset
+        return self.dataset
 
     ## Following methods are class-specific ###
 
@@ -225,12 +225,12 @@ class NexmlReader(ioservice.DataReader):
         """
         if self.dataset is None:
             dataset = dendropy.Dataset()
-        self.parse_taxon_sets(xml_doc, dataset)
+        self.parse_taxon_sets(xml_doc, self.dataset)
         if not self.exclude_chars:
-            self.parse_char_arrays(xml_doc, dataset)
+            self.parse_char_arrays(xml_doc, self.dataset)
         if not self.exclude_trees:
-            self.parse_tree_lists(xml_doc, dataset)
-        return dataset
+            self.parse_tree_lists(xml_doc, self.dataset)
+        return self.dataset
 
     def parse_taxon_sets(self, xml_doc, dataset):
         """

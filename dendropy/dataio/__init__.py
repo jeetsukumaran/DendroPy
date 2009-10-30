@@ -36,6 +36,7 @@ from dendropy.dataio import newick
 from dendropy.dataio import nexus
 from dendropy.dataio import fasta
 from dendropy.dataio import phylip
+from dendropy.dataio import nexml
 
 ###############################################################################
 ## Client code interface
@@ -234,3 +235,4 @@ ioregister.add("dnafasta", fasta.DNAFastaReader, fasta.FastaWriter, None, None)
 ioregister.add("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None, None)
 ioregister.add("proteinfasta", fasta.ProteinFastaReader, fasta.FastaWriter, None, None)
 ioregister.add("phylip", None, phylip.PhylipWriter, None, None)
+ioregister.add("nexml", nexml.NexmlReader, nexml.NexmlWriter, None, None)
