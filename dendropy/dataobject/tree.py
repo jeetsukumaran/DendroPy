@@ -234,10 +234,14 @@ class Tree(TaxonSetLinked, iosys.Readable):
             elif isinstance(args[0], Tree):
                 self.clone_from(args[0])
             elif hasattr(args[0], "read"):
-                if len(args) < 2:
+                if len(args) > 1:
+                    format = args[1]
+                elif "format" in kwargs:
+                    format = kwargs["format"]
+                else:
                     raise Exception("Need to specify format if passing a file-like" \
-                                  + "object from which to construct a Tree.")
-                self.read(args[0], args[1])
+                                  + " object from which to construct a Tree.")
+                self.read(args[0], format)
             else:
                 raise Exception("Invalid non-keyworded arguments passed: %s" % str(args))
         else:

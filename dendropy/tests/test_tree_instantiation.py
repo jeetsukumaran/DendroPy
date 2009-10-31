@@ -34,9 +34,32 @@ _LOG = messaging.get_logger(__name__)
 
 class TreeInstantiationTest(unittest.TestCase):
 
-    def test_tree_build(self):
-        # from file, w/keywords
+    def test_tree_init(self):
+
+        # from file, using keywords
         t1 = Tree(istream=StringIO("((A,B),(C,D));"), format="newick")
+
+        # test copying
+        t2 = Tree(t1)
+        self.assertTrue(t2 is not t1)
+        self.assertTrue(t2.taxon_set is t1.taxon_set)
+        self.assertTrue(t2.seed_node is not t1.seed_node)
+        t1_nodes = [nd for nd in t1.postorder_node_iter()]
+        t2_nodes = [nd for nd in t2.postorder_node_iter()]
+        for ndi, nd1 in enumerate(t1_nodes):
+            nd2 = t2_nodes[ndi]
+            self.assertTrue(nd1 is not nd2)
+            self.assertTrue(nd1.taxon is nd2.taxon, "%s vs. %s" % (repr(nd1.taxon), repr(nd2.taxon)))
+            self.assertTrue(nd1.label is nd2.label)
+
+        # from file, args
+        t3 = Tree(StringIO("((A,B),(C,D));"), "newick")
+
+        # from file, mixed
+        t4 = Tree(StringIO("((A,B),(C,D));"), format="newick")
+
+
+
 
 
 if __name__ == "__main__":

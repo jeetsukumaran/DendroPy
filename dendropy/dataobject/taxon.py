@@ -276,6 +276,3 @@ class Taxon(base.IdTagged):
     def __str__(self):
         "String representation of self = taxon name."
         return str(self.label)
-
-    def __repr__(self):
-        return "<DendroPy Taxon: '%s'>" % (str(self.label))

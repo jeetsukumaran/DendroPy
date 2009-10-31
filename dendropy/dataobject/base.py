@@ -49,6 +49,10 @@ class DataObject(object):
         self.attributes = []    ## extra attributes to be written during XML serialization
         self.extensions = []    ## DOM extensions to be written during XML serialization
 
+    def __repr__(self):
+        return "<%s object %d: '%s'>" % (self.__class__.__name__, id(self), str(self.label))
+
+
 class Annotated(DataObject):
     """
     Base class from which all classes that need to persist object attributes
