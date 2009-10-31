@@ -37,20 +37,36 @@ class TreeInstantiationTest(unittest.TestCase):
     def test_tree_init(self):
 
         # from file, using keywords
-        t1 = Tree(istream=StringIO("((A,B),(C,D));"), format="newick")
+        t1 = Tree(istream=StringIO("((A,B):i1,(C,D):i2);"), format="newick", oid="t1")
+        self.assertTrue(t1.oid == "t1", "'%s'" % t1.oid)
 
         # test copying
         t2 = Tree(t1)
         self.assertTrue(t2 is not t1)
         self.assertTrue(t2.taxon_set is t1.taxon_set)
         self.assertTrue(t2.seed_node is not t1.seed_node)
+        self.assertTrue(t1.oid != t2.oid)
+        self.assertTrue(t1.label == t2.label)
+        t2.oid = "t2"
+        self.assertTrue(t1.oid == "t1", "'%s'" % t1.oid)
+        self.assertTrue(t2.oid == "t2")
+        if t1.label is None:
+            self.assertTrue(t1.label is None)
+        else:
+            self.assertTrue(t1.label is not t2.label)
+            self.assertTrue(t1.label == t2.label)
         t1_nodes = [nd for nd in t1.postorder_node_iter()]
         t2_nodes = [nd for nd in t2.postorder_node_iter()]
         for ndi, nd1 in enumerate(t1_nodes):
             nd2 = t2_nodes[ndi]
             self.assertTrue(nd1 is not nd2)
+            self.assertTrue(nd1.oid != nd2.oid)
+            self.assertTrue(nd1.label == nd2.label)
+            if nd1.label is None:
+                self.assertTrue(nd1.label is None)
+            else:
+                self.assertTrue(nd1.label is not nd2.label)
             self.assertTrue(nd1.taxon is nd2.taxon, "%s vs. %s" % (repr(nd1.taxon), repr(nd2.taxon)))
-            self.assertTrue(nd1.label is nd2.label)
 
         # from file, args
         t3 = Tree(StringIO("((A,B),(C,D));"), "newick")

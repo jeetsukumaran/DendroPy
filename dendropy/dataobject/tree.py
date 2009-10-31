@@ -244,9 +244,11 @@ class Tree(TaxonSetLinked, iosys.Readable):
                 self.read(args[0], format)
             else:
                 raise Exception("Invalid non-keyworded arguments passed: %s" % str(args))
+            self.label = kwargs.get("label", None)
         else:
             self.seed_node = Node(oid='n0', edge=Edge())
             iosys.Readable.__init__(self, **kwargs)
+        self.oid = kwargs.get("oid", None)
 
     ###########################################################################
     ## I/O and Representation
@@ -269,7 +271,7 @@ class Tree(TaxonSetLinked, iosys.Readable):
         else:
             o.seed_node = None
         for k, v in self.__dict__.iteritems():
-            if not k in ['seed_node', 'taxon_set']:
+            if k not in ['seed_node', 'taxon_set', "_oid"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
 
@@ -837,7 +839,7 @@ class Node(TaxonLinked):
         o = self.__class__(label=self.label, taxon=self.taxon)
         memo[id(self)] = o
         for k, v in self.__dict__.iteritems():
-            if not k in ['_child_nodes', '_taxon']:
+            if not k in ['_child_nodes', '_taxon', "_oid"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
         for c in self.child_nodes():
             o.add_child(copy.deepcopy(c, memo))
@@ -1346,7 +1348,7 @@ class Edge(IdTagged):
         o.length = copy.deepcopy(self.length, memo)
         o.rootedge = copy.deepcopy(self.rootedge, memo)
         for k, v in self.__dict__.iteritems():
-            if not k in ['tail_node', 'head_node', 'length', 'rootedge']:
+            if not k in ['tail_node', 'head_node', 'length', 'rootedge', "_oid"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
 
