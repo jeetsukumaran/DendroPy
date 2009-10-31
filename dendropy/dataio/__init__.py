@@ -90,39 +90,19 @@ def get_writer(format, **kwargs):
     """
     return ioregister.get_writer(format, **kwargs)
 
-def tree_source_iter(format, **kwargs):
+def tree_source_iter(format, istream, **kwargs):
     """
-    Returns an iterator over trees in a file or string. This provides a
-    light-weight way of processing trees from a source, one at a time,
-    without the overhead of a `Dataset` meta-data manager. Both the format
-    and the source must be specified by keyword arguments, with format
-    specified by `format`.
-
-    `format` is a string that is name of one of the registered data
-    formats, such as `nexus`, `newick`, etc, for which a specialized
-    tree source iterator is available. If this is not implemented for the format
-    specified, then a `UnsupportedFormatError` is raised.
-
-    The source is specified by one of the following keyword arguments:
-
-            - `file`: A file- or file-like object.
-            - `path`: A string specifying the path to a file.
-            - `str`: A string represention of phylogenetic data.
-
-    Additionally, the keyword argument `taxon_set` specifies the `TaxonSet`
-    object to be attached to the trees parsed and manage their taxa.
-    If not specified, then a (single) new `TaxonSet` object will be created and
-    for all the `Tree` objects.
+    Returns an iterator over trees in `format`-formatted data
+    in from file-like object source `stream`. Keyword arguments
+    are passed to format-specialized implementation of the iterator
+    invoked.
     """
-    return ioregister.tree_source_iter(format, **kwargs)
+    return ioregister.tree_source_iter(format, istream ,**kwargs)
 
-def write_tree_list(format, tree_list, **kwargs):
+def write_tree_list(tree_list, format, stream, **kwargs):
     """
     Writes `tree_list`, a `TreeList` object in `format` format to
-    a destination described by one of: `file`, `path`:
-
-            - `file`: A file- or file-like object.
-            - `path`: A string specifying the path to a file.
+    a destination given by file-like object `ostream`.
 
     `format` is a string that is name of one of the registered data
     formats, such as `nexus`, `newick`, etc, for which a specialized
@@ -134,7 +114,7 @@ def write_tree_list(format, tree_list, **kwargs):
         - `edge_lengths` : if False, edges will not write edge lengths [True]
         - `internal_labels` : if False, internal labels will not be written [True]
     """
-    return ioregister.write_tree_list(format, tree_list, **kwargs)
+    return ioregister.write_tree_list(tree_list, format, **kwargs)
 
 
 ###############################################################################
@@ -176,15 +156,15 @@ class _DataFormat(object):
             raise errors.UnsupportedFormatError("Writing is not currently supported for data format '%s'" % self.name)
         return self.writer_type(**kwargs)
 
-    def get_tree_source_iter(self, **kwargs):
+    def get_tree_source_iter(self, istream, **kwargs):
         if self.tree_source_iter is None:
             raise errors.UnsupportedFormatError("Iteration over source trees not currently supported for data format '%s'" % self.name)
-        return self.tree_source_iter(**kwargs)
+        return self.tree_source_iter(istream, **kwargs)
 
-    def write_tree_list(self, tree_list, **kwargs):
+    def write_tree_list(self, tree_list, ostream, **kwargs):
         if self.tree_list_writer is None:
             raise errors.UnsupportedFormatError("Writing of stand-alone tree lists is not currently supported for data format '%s'" % self.name)
-        self.tree_list_writer(tree_list, **kwargs)
+        self.tree_list_writer(tree_list, ostream, **kwargs)
 
 class _DataFormatRegister(object):
 
@@ -217,15 +197,15 @@ class _DataFormatRegister(object):
             raise errors.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
         return self.formats[name].get_writer(**kwargs)
 
-    def tree_source_iter(self, name, **kwargs):
+    def tree_source_iter(self, name, istream, **kwargs):
         if name not in self.formats:
             raise errors.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
         return self.formats[name].get_tree_source_iter(**kwargs)
 
-    def write_tree_list(self, name, tree_list, **kwargs):
+    def write_tree_list(self, tree_list, name, ostream, **kwargs):
         if name not in self.formats:
             raise errors.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
-        return self.formats[name].write_tree_list(tree_list, **kwargs)
+        return self.formats[name].write_tree_list(tree_list, ostream, **kwargs)
 
 ioregister = _DataFormatRegister()
 ioregister.add("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter, newick.write_tree_list)

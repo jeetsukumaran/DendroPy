@@ -228,32 +228,37 @@ class Readable(object):
     """
 
     def __init__(self, *args, **kwargs):
-        pass
+        if "istream" in kwargs:
+            istream = require_source_kwargs(kwargs)
+            format = require_format_kwargs(kwargs)
+            self.read(format=format, istream=istream, **kwargs)
 
-    def read(self, format, stream):
+    def read(self, format, istream, **kwargs):
         """
-        Deriving classes should implement population/construction of objects
-        of their respective types given `format`-formatted data from the
-        file-like object source `stream`.
-        """
-        raise NotImplementedError
-
-###############################################################################
-## Readable
-
-class Readable(object):
-    """
-    Data object that can be instantiated using a `DataReader` service.
-    """
-
-    def __init__(self, *args, **kwargs):
-        pass
-
-    def read(self, format, stream):
-        """
-        Deriving classes should implement serialization of objects
-        of their respective types given `format`-formatted data to the
-        file-like object destintation `stream`.
+        Populates/constructs objects of this type from `format`-formatted
+        data in the file-like object source `istream`.
         """
         raise NotImplementedError
+
+    def read_file(self, format, fileobj, **kwargs):
+        """
+        Reads from file (exactly equivalent to just `read()`, provided
+        here as a separate method for completeness.
+        """
+        return self.read(format=format, istream=fileobj, **kwargs)
+
+    def read_filepath(self, format, filepath, **kwargs):
+        """
+        Reads from file specified by `filepath`.
+        """
+        f = os.expandvars(os.expanduser(filepath))
+        return self.read(format=format, istream=f, **kwargs)
+
+    def read_string(self, format, src_str, **kwargs):
+        """
+        Reads a string object.
+        """
+        s = StringIO(src_str)
+        return self.read(format=format, istream=s, **kwargs)
+
 
