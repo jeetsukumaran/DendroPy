@@ -108,9 +108,9 @@ class TreeList(list, TaxonSetLinked):
                after it has been constructed.
             - `edge_len_type` specifies the type of the edge lengths (int or float)
         """
-        from dendropy.utility import ioservice
+        from dendropy.utility import iosys
         from dendropy.dataio import tree_source_iter
-        format = ioservice.require_format_from_kwargs(kwargs)
+        format = iosys.require_format_from_kwargs(kwargs)
         kwargs["taxon_set"] = self.taxon_set
         for t in tree_source_iter(format=format, **kwargs):
             if t is not None:
@@ -134,7 +134,7 @@ class TreeList(list, TaxonSetLinked):
             - `edge_lengths` : if False, edges will not write edge lengths [True]
             - `internal_labels` : if False, internal labels will not be written [True]
         """
-        from dendropy.utility.ioservice import require_format_from_kwargs
+        from dendropy.utility.iosys import require_format_from_kwargs
         from dendropy.dataio import write_tree_list
         write_tree_list(format=require_format_from_kwargs(kwargs), tree_list=self, **kwargs)
 
@@ -351,7 +351,7 @@ class Tree(TaxonSetLinked):
             - `edge_lengths` : if False, edges will not write edge lengths [True]
             - `internal_labels` : if False, internal labels will not be written [True]
         """
-        from dendropy.utility.ioservice import require_format_from_kwargs
+        from dendropy.utility.iosys import require_format_from_kwargs
         from dendropy.dataio import write_tree_list
         tree_list = TreeList(taxon_set=self.taxon_set)
         tree_list.append(self)
@@ -388,9 +388,9 @@ class Tree(TaxonSetLinked):
         0-based index of the tree to be returned. If `index` >= number
         of trees, a KeyError is raised.
         """
-        from dendropy.utility import ioservice
+        from dendropy.utility import iosys
         from dendropy.dataio import tree_source_iter
-        format = ioservice.require_format_from_kwargs(kwargs)
+        format = iosys.require_format_from_kwargs(kwargs)
         index = kwargs.get("index", 0)
         if "taxon_set" not in kwargs:
             kwargs["taxon_set"] = self.taxon_set

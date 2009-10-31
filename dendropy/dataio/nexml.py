@@ -28,7 +28,7 @@ from xml.sax import saxutils
 from cStringIO import StringIO
 import time
 
-from dendropy.utility import ioservice
+from dendropy.utility import iosys
 from dendropy.dataio import xmlparser
 import dendropy
 
@@ -188,7 +188,7 @@ def _from_nexml_dict_value(value, value_type):
 ############################################################################
 ## NexmlReader
 
-class NexmlReader(ioservice.DataReader):
+class NexmlReader(iosys.DataReader):
     "Implements thinterface for handling NEXML files."
 
     def __init__(self, **kwargs):
@@ -196,7 +196,7 @@ class NexmlReader(ioservice.DataReader):
         `dendropy.Tree ` is a DendroPy TreeFactory class or derived
         object.
         """
-        ioservice.DataReader.__init__(self, **kwargs)
+        iosys.DataReader.__init__(self, **kwargs)
         self.load_time = None
         self.parse_time = None
 
@@ -209,7 +209,7 @@ class NexmlReader(ioservice.DataReader):
         `fileobj`.
         """
         start = time.clock()
-        xml_doc = xmlparser.xml_document(file_obj=ioservice.require_source_from_kwargs(kwargs))
+        xml_doc = xmlparser.xml_document(file_obj=iosys.require_source_from_kwargs(kwargs))
         self.load_time = time.clock() - start
         start = time.clock()
         dataset = self.parse_dataset(xml_doc)
@@ -774,12 +774,12 @@ class _NexmlCharBlockParser(_NexmlElementParser):
 
         dataset.char_arrays.append(char_array)
 
-class NexmlWriter(ioservice.DataWriter):
+class NexmlWriter(iosys.DataWriter):
     "Implements the DataWriter interface for handling NEXML files."
 
     def __init__(self, **kwargs):
         "Calls the base class constructor."
-        ioservice.DataWriter.__init__(self, **kwargs)
+        iosys.DataWriter.__init__(self, **kwargs)
         self.indent = "    "
 
     ### self.datasets.Writer interface  ###

@@ -89,9 +89,9 @@ class Dataset(DataObject):
         Additional keyword arguments may be handled by various readers
         specialized to handle specific data formats.
         """
-        from dendropy.utility import ioservice
+        from dendropy.utility import iosys
         from dendropy.dataio import get_reader
-        format = ioservice.require_format_from_kwargs(kwargs)
+        format = iosys.require_format_from_kwargs(kwargs)
         kwargs["dataset"] = self
         reader = get_reader(format=format, **kwargs)
         return reader.read(**kwargs)
@@ -118,7 +118,7 @@ class Dataset(DataObject):
         Additional keyword arguments may be handled by various writers
         specialized to handle specific data formats.
         """
-        from dendropy.utility.ioservice import require_format_from_kwargs
+        from dendropy.utility.iosys import require_format_from_kwargs
         from dendropy.dataio import get_writer
         writer = get_writer(format=require_format_from_kwargs(kwargs), dataset=self, **kwargs)
         writer.write(**kwargs)

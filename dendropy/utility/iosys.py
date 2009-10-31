@@ -111,7 +111,7 @@ def require_dest_from_kwargs(kwdict):
     return dest
 
 ###############################################################################
-## IOClient
+## IOService
 
 class IOService(object):
     """
@@ -218,4 +218,42 @@ class DataWriter(IOService):
         destination.
         """
         return require_dest_from_kwargs(kwdict)
+
+###############################################################################
+## Readable
+
+class Readable(object):
+    """
+    Data object that can be instantiated using a `DataReader` service.
+    """
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def read(self, format, stream):
+        """
+        Deriving classes should implement population/construction of objects
+        of their respective types given `format`-formatted data from the
+        file-like object source `stream`.
+        """
+        raise NotImplementedError
+
+###############################################################################
+## Readable
+
+class Readable(object):
+    """
+    Data object that can be instantiated using a `DataReader` service.
+    """
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def read(self, format, stream):
+        """
+        Deriving classes should implement serialization of objects
+        of their respective types given `format`-formatted data to the
+        file-like object destintation `stream`.
+        """
+        raise NotImplementedError
 

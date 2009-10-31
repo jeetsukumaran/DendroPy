@@ -24,14 +24,14 @@
 Implementation of PHYLIP-format i/o client(s).
 """
 
-from dendropy.utility import ioservice
+from dendropy.utility import iosys
 
-class PhylipWriter(ioservice.DataWriter):
+class PhylipWriter(iosys.DataWriter):
     "Implements the DataWriter interface for handling PHYLIP files."
 
     def __init__(self, **kwargs):
         "Calls the base class constructor."
-        ioservice.DataWriter.__init__(self, **kwargs)
+        iosys.DataWriter.__init__(self, **kwargs)
 
     def write(self, **kwargs):
         "Writes dataset to a full PHYLIP document."

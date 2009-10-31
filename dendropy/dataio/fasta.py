@@ -29,10 +29,10 @@ import re
 import textwrap
 
 from dendropy import dataobject
-from dendropy.utility import ioservice
+from dendropy.utility import iosys
 from dendropy.utility.errors import DataFormatError
 
-class FastaReader(ioservice.DataReader):
+class FastaReader(iosys.DataReader):
     "Encapsulates loading and parsing of a FASTA format file."
 
     def __init__(self, **kwargs):
@@ -40,7 +40,7 @@ class FastaReader(ioservice.DataReader):
         Keywords `row_type` kwarg can be RICH or STR, `char_array_type`
         is one of the `CharacterArray` types.
         """
-        ioservice.DataReader.__init__(self, **kwargs)
+        iosys.DataReader.__init__(self, **kwargs)
         self.char_array_type = kwargs.get("char_array_type", dataobject.DnaCharacterArray)
 
     def read(self, **kwargs):
@@ -125,7 +125,7 @@ class ProteinFastaReader(FastaReader):
     def __init__(self, **kwargs):
         FastaReader.__init__(self, char_array_type=dataobject.ProteinCharacterArray, **kwargs)
 
-class FastaWriter(ioservice.DataWriter):
+class FastaWriter(iosys.DataWriter):
     """
     Implements the DataWriter interface for handling FASTA files.
     Additional keyword arguments:
@@ -136,7 +136,7 @@ class FastaWriter(ioservice.DataWriter):
 
     def __init__(self, **kwargs):
         "Calls the base class constructor."
-        ioservice.DataWriter.__init__(self, **kwargs)
+        iosys.DataWriter.__init__(self, **kwargs)
         self.wrap = kwargs.get("wrap", 0)
 
     def write(self, **kwargs):

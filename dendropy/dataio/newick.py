@@ -28,7 +28,7 @@ import re
 
 from dendropy.utility import containers
 from dendropy.utility import texttools
-from dendropy.utility import ioservice
+from dendropy.utility import iosys
 from dendropy.dataio import nexustokenizer
 from dendropy import dataobject
 
@@ -71,7 +71,7 @@ def tree_source_iter(**kwargs):
            after it has been constructed.
         - `edge_len_type` specifies the type of the edge lengths (int or float)
     """
-    src = ioservice.require_source_from_kwargs(kwargs)
+    src = iosys.require_source_from_kwargs(kwargs)
     if "taxon_set" in kwargs:
         taxon_set = kwargs["taxon_set"]
         del(kwargs["taxon_set"])
@@ -98,7 +98,7 @@ def write_tree_list(tree_list, **kwargs):
         - `edge_lengths` : if False, edges will not write edge lengths [True]
         - `internal_labels` : if False, internal labels will not be written [True]
     """
-    dest = ioservice.require_dest_from_kwargs(kwargs)
+    dest = iosys.require_dest_from_kwargs(kwargs)
     newick_writer = NewickWriter(edge_lengths=kwargs.get("edge_lengths", True),
                                  internal_labels=kwargs.get("internal_labels", True))
     newick_writer.write_tree_list(tree_list, dest)
@@ -176,7 +176,7 @@ def split_to_newick_str(split, taxon_set):
 ############################################################################
 ## CLASS: NewickReader
 
-class NewickReader(ioservice.DataReader):
+class NewickReader(iosys.DataReader):
     "Implementation of DataReader for NEWICK files and strings."
 
     def __init__(self, **kwargs):
@@ -189,7 +189,7 @@ class NewickReader(ioservice.DataReader):
             - `allow_duplicate_taxon_labels` : if True, allow duplicate labels
                 on trees [False]
         """
-        ioservice.DataReader.__init__(self, **kwargs)
+        iosys.DataReader.__init__(self, **kwargs)
         self.stream_tokenizer = nexustokenizer.NexusTokenizer()
         self.default_rooting = kwargs.get("default_rooting", \
                 nexustokenizer.RootingInterpretation.UNKNOWN_DEF_ROOTED)
@@ -230,7 +230,7 @@ class NewickReader(ioservice.DataReader):
 ############################################################################
 ## CLASS: NewickWriter
 
-class NewickWriter(ioservice.DataWriter):
+class NewickWriter(iosys.DataWriter):
     "Implementation of DataWriter for NEWICK files and strings."
 
     def __init__(self, **kwargs):
@@ -240,7 +240,7 @@ class NewickWriter(ioservice.DataWriter):
             - `edge_lengths` : if False, edges will not write edge lengths [True]
             - `internal_labels` : if False, internal labels will not be written [True]
         """
-        ioservice.DataWriter.__init__(self, **kwargs)
+        iosys.DataWriter.__init__(self, **kwargs)
         self.edge_lengths = kwargs.get("edge_lengths", True)
         self.internal_labels = kwargs.get("internal_labels", True)
 

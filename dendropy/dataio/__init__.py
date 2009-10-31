@@ -30,7 +30,7 @@ import sys
 import os
 
 from dendropy.utility import errors
-from dendropy.utility import ioservice
+from dendropy.utility import iosys
 from dendropy.utility.containers import OrderedCaselessDict
 from dendropy.dataio import newick
 from dendropy.dataio import nexus

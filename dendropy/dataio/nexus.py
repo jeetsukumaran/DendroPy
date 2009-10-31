@@ -29,7 +29,7 @@ import re
 
 from dendropy import dataobject
 from dendropy.utility import texttools
-from dendropy.utility import ioservice
+from dendropy.utility import iosys
 from dendropy.dataio import nexustokenizer
 from dendropy.dataio import newick
 
@@ -77,7 +77,7 @@ def tree_source_iter(**kwargs):
 ###############################################################################
 ## NexusReader
 
-class NexusReader(ioservice.DataReader):
+class NexusReader(iosys.DataReader):
     "Encapsulates loading and parsing of a NEXUS format file."
 
     def __init__(self, **kwargs):
@@ -90,7 +90,7 @@ class NexusReader(ioservice.DataReader):
             - `allow_duplicate_taxon_labels` : if True, allow duplicate labels
               on trees [False]
         """
-        ioservice.DataReader.__init__(self, **kwargs)
+        iosys.DataReader.__init__(self, **kwargs)
         self.stream_tokenizer = nexustokenizer.NexusTokenizer()
         self.default_rooting = kwargs.get("default_rooting", nexustokenizer.RootingInterpretation.UNKNOWN_DEF_ROOTED)
         self.finish_node_func = kwargs.get("finish_node_func", None)
@@ -646,7 +646,7 @@ class NexusReader(ioservice.DataReader):
 ###############################################################################
 ## NexusWriter
 
-class NexusWriter(ioservice.DataWriter):
+class NexusWriter(iosys.DataWriter):
     "Implements the DataWriter interface for handling NEXML files."
 
     def __init__(self, **kwargs):
@@ -664,7 +664,7 @@ class NexusWriter(ioservice.DataWriter):
             - `comment` : list of lines of text to be added as comments to the
               file
         """
-        ioservice.DataWriter.__init__(self, **kwargs)
+        iosys.DataWriter.__init__(self, **kwargs)
         self.simple = kwargs.get("simple", False)
         self.is_write_taxa_block = kwargs.get("taxa_block", True)
         self.is_write_rooting = kwargs.get("write_rooting", True)
