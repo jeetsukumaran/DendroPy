@@ -229,36 +229,37 @@ class Readable(object):
 
     def __init__(self, *args, **kwargs):
         if "istream" in kwargs:
-            istream = require_source_kwargs(kwargs)
-            format = require_format_kwargs(kwargs)
-            self.read(format=format, istream=istream, **kwargs)
+            istream = kwargs["istream"]
+            del(kwargs["istream"])
+            format = require_format_from_kwargs(kwargs)
+            self.read(istream=istream, format=format, **kwargs)
 
-    def read(self, format, istream, **kwargs):
+    def read(self, istream, format, **kwargs):
         """
         Populates/constructs objects of this type from `format`-formatted
         data in the file-like object source `istream`.
         """
         raise NotImplementedError
 
-    def read_file(self, format, fileobj, **kwargs):
+    def read_file(self, fileobj, format, **kwargs):
         """
         Reads from file (exactly equivalent to just `read()`, provided
         here as a separate method for completeness.
         """
-        return self.read(format=format, istream=fileobj, **kwargs)
+        return self.read(istream=fileobj, format=format, **kwargs)
 
-    def read_filepath(self, format, filepath, **kwargs):
+    def read_filepath(self, filepath, format, **kwargs):
         """
         Reads from file specified by `filepath`.
         """
         f = os.expandvars(os.expanduser(filepath))
-        return self.read(format=format, istream=f, **kwargs)
+        return self.read(istream=f, format=format, **kwargs)
 
-    def read_string(self, format, src_str, **kwargs):
+    def read_string(self, src_str, format, **kwargs):
         """
         Reads a string object.
         """
         s = StringIO(src_str)
-        return self.read(format=format, istream=s, **kwargs)
+        return self.read(istream=s, format=format, **kwargs)
 
 

@@ -35,14 +35,10 @@ from dendropy import dataobject
 ###############################################################################
 ## lightweight trees from NEWICK sources
 
-def tree_source_iter(**kwargs):
+def tree_source_iter(istream, **kwargs):
     """
-    Iterates over a NEWICK-formatted source of trees specified by keyword
-    arguments:
-
-        - `file`: A file- or file-like object.
-        - `path`: A string specifying the path to a file.
-        - `str`: A string represention of phylogenetic data.
+    Iterates over a NEWICK-formatted source of trees given by file-like object
+    `istream`
 
     The following keyword arguments are recognized:
 
@@ -71,7 +67,6 @@ def tree_source_iter(**kwargs):
            after it has been constructed.
         - `edge_len_type` specifies the type of the edge lengths (int or float)
     """
-    src = iosys.require_source_from_kwargs(kwargs)
     if "taxon_set" in kwargs:
         taxon_set = kwargs["taxon_set"]
         del(kwargs["taxon_set"])
@@ -81,37 +76,28 @@ def tree_source_iter(**kwargs):
         raise Exception('When encoding splits on trees, a pre-populated TaxonSet instance ' \
             + "must be provided using the 'taxon_set' keyword to avoid taxon/split bitmask values "\
             + "changing as new Taxon objects are added to the set.")
-    newick_stream = nexustokenizer.NexusTokenizer(src)
+    newick_stream = nexustokenizer.NexusTokenizer(istream)
     while not newick_stream.eof:
         yield nexustokenizer.parse_tree_from_stream(newick_stream, taxon_set=taxon_set, **kwargs)
 
-def write_tree_list(tree_list, **kwargs):
+def write_tree_list(tree_list, ostream, **kwargs):
     """
-    Writes out a list of trees in NEWICK-format to a destination described by
-    one, and exactly one, of the following keyword arguments:
-
-        - `file`: A file- or file-like object.
-        - `path`: A string specifying the path to a file.
+    Writes out a list of trees in NEWICK-format to a destination given by
+    file-like object `ostream`.
 
     Additionally, the following keywords are recognized:
 
         - `edge_lengths` : if False, edges will not write edge lengths [True]
         - `internal_labels` : if False, internal labels will not be written [True]
     """
-    dest = iosys.require_dest_from_kwargs(kwargs)
     newick_writer = NewickWriter(edge_lengths=kwargs.get("edge_lengths", True),
                                  internal_labels=kwargs.get("internal_labels", True))
-    newick_writer.write_tree_list(tree_list, dest)
+    newick_writer.write_tree_list(tree_list, ostream)
 
-def read_tree_list(**kwargs):
+def read_tree_list(istream, **kwargs):
     """
     Parses a source describing a collection of trees in NEWICK format, and
-    returns corresponding `TreeList` object. The source is specified by one of
-    the following keyword arguments:
-
-        - `file`: A file- or file-like object.
-        - `path`: A string specifying the path to a file.
-        - `str`: A string represention of phylogenetic data.
+    returns corresponding `TreeList` object..
 
     Additionally, a `TreeList` object to which to add the trees may be passed
     by `tree_list`, or, alternatively, a `TaxonSet` object with which to manage
@@ -129,7 +115,7 @@ def read_tree_list(**kwargs):
         del(kwargs["taxon_set"])
     else:
         tree_list = dataobject.TreeList()
-    for t in tree_source_iter(taxon_set=tree_list.taxon_set, **kwargs):
+    for t in tree_source_iter(istream=istream, taxon_set=tree_list.taxon_set, **kwargs):
         if t is not None:
             tree_list.append(t)
     return tree_list
@@ -195,21 +181,12 @@ class NewickReader(iosys.DataReader):
                 nexustokenizer.RootingInterpretation.UNKNOWN_DEF_ROOTED)
         self.finish_node_func = kwargs.get("finish_node_func", None)
 
-    def read(self, **kwargs):
+    def read(self, istream, **kwargs):
         """
         Instantiates and returns a `Dataset` object based on the
-        NEWICK-formatted contents read from the source specified by keyword
-        arguments:
-
-            - `file` is an file- or file-like object to be used as a
-               source for initial population of the Dataset.
-            - `path` is an string or string-like object
-               specifying a path to a file to be used as a source for initial
-               population of the Dataset.
-            - `str` is an string represented of phylogenetic data
-               (e.g., "(A,(B,C)); ((A,B),C)".
+        NEWICK-formatted contents read from the file-like object source
+        `istream`.
         """
-        src = self.require_source(kwargs)
         if self.dataset is None:
             self.dataset = dataobject.Dataset()
         if self.bound_taxon_set is not None:
@@ -220,7 +197,7 @@ class NewickReader(iosys.DataReader):
         tree_list = self.dataset.new_tree_list(taxon_set=taxon_set)
         if "rooted" not in kwargs:
             kwargs["rooted"] = self.default_rooting
-        read_tree_list(file=src,
+        read_tree_list(istream=istream,
                        tree_list=tree_list,
                        encode_splits=self.encode_splits,
                        finish_node_func=self.finish_node_func,
@@ -244,29 +221,26 @@ class NewickWriter(iosys.DataWriter):
         self.edge_lengths = kwargs.get("edge_lengths", True)
         self.internal_labels = kwargs.get("internal_labels", True)
 
-    def write(self, **kwargs):
+    def write(self, ostream, **kwargs):
         """
         Writes bound `DataSource` or `TaxonDomain` to a destination given
-        by one, and only one, of the following keyword arguments:
-
-            - `file`: A file- or file-like object.
-            - `path`: A string specifying the path to a file.
+        by the file-like object `ostream`.
         """
         assert self.dataset is not None, \
             "NewickWriter instance is not bound to a Dataset: no source of data"
         dest = self.require_destination(kwargs)
         for tree_list in self.dataset.tree_lists:
             if self.bound_taxon_set is None or self.bound_taxon_set is tree_list.taxon_set:
-                self.write_tree_list(tree_list, dest)
+                self.write_tree_list(tree_list, ostream)
 
-    def write_tree_list(self, tree_list, dest):
+    def write_tree_list(self, tree_list, ostream):
         """
-        Writes a `TreeList` in NEWICK format to `dest`.
+        Writes a `TreeList` in NEWICK format to `ostream`.
         """
         if self.exclude_trees:
             return
         for tree in tree_list:
-            dest.write(self.compose_node(tree.seed_node) + ';\n')
+            ostream.write(self.compose_node(tree.seed_node) + ';\n')
 
     def compose_tree(self, tree):
         "Convienience method.        "

@@ -86,7 +86,7 @@ class TaxonSetLinked(base.IdTagged):
     Provides infrastructure for the maintenance of references to taxa.
     """
 
-    def __init__(self, taxon_set=None, label=None, oid=None, **kwargs):
+    def __init__(self, taxon_set=None, label=None, oid=None):
         "Initializes by calling base class."
         base.IdTagged.__init__(self, label=label, oid=oid)
         self.taxon_set = taxon_set if taxon_set is not None else TaxonSet()

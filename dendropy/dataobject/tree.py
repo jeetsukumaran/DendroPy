@@ -74,18 +74,20 @@ class TreeList(list, TaxonSetLinked, iosys.Readable):
         be compared.
 
         """
-        TaxonSetLinked.__init__(self, *args, **kwargs)
+        TaxonSetLinked.__init__(self,
+                                taxon_set=kwargs.get("taxon_set", None),
+                                label=kwargs.get("label", None),
+                                oid=kwargs.get("oid", None))
         list.__init__(self, *args)
         iosys.Readable.__init__(self, **kwargs)
 
-    def read(self, format, istream, **kwargs):
+    def read(self, istream, format, **kwargs):
         """
         Populates the `TreeList` from a `format`-formatted file-like
         source `istream`. `format` must be a recognized and tree file
         format, such as `nexus`, `newick`, etc, for which a specialized
         tree list writer is available. If this is not implemented for
         the format specified, then a `UnsupportedFormatError` is raised.
-
 
         The following optional keyword arguments are recognized:
 
@@ -104,8 +106,12 @@ class TreeList(list, TaxonSetLinked, iosys.Readable):
         """
         from dendropy.utility import iosys
         from dendropy.dataio import tree_source_iter
-        kwargs["taxon_set"] = self.taxon_set
-        for t in tree_source_iter(format=format, stream=istream, **kwargs):
+        if "taxon_set" in kwargs:
+            if kwargs["taxon_set"] is not self.taxon_set:
+                raise Exception("Cannot specify a different TaxonSet when reading into an existing TreeList.")
+        else:
+            kwargs["taxon_set"] = self.taxon_set
+        for t in tree_source_iter(stream=istream, format=format, **kwargs):
             if t is not None:
                 self.append(t)
 
@@ -202,30 +208,52 @@ class Tree(TaxonSetLinked, iosys.Readable):
     ###########################################################################
     ## Special/Lifecycle methods
 
-    def __init__(self, taxon_set=None, label=None, seed_node=None, oid=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         Initializes a Tree object by defining a base node which must
         be of type `Node` or derived from `Node`.
 
         In addition, if `istream` and `format` keyword arguments are
-        given, will populate this `TreeList` object from
-        `format`-formatted source given by file-like object `istream`.
-        `format` must be a recognized and tree file format, such as
-        `nexus`, `newick`, etc, for which a specialized tree list writer
-        is available. If this is not implemented for the format
-        specified, then a `UnsupportedFormatError` is raised.
+        given, will construct this `Tree` object from `format`-formatted
+        source given by file-like object `istream`. `format` must be a
+        recognized and tree file format, such as `nexus`, `newick`, etc,
+        for which a specialized tree list writer is available. If this
+        is not implemented for the format specified, then a
+        `UnsupportedFormatError` is raised.
         """
-        TaxonSetLinked.__init__(self, taxon_set=taxon_set, label=label, oid=oid)
+        TaxonSetLinked.__init__(self,
+                                taxon_set=kwargs.get("taxon_set", None),
+                                label=kwargs.get("label", None),
+                                oid=kwargs.get("oid", None))
         self.seed_node = None
         self.length_type = None
         self.is_rooted = False
-        if seed_node is not None:
-            self.seed_node = seed_node
+        if len(args) > 0:
+            if isinstance(args[0], Node):
+                self.seed_node = args[0]
+            elif isinstance(args[0], Tree):
+                self.clone_from(args[0])
+            elif hasattr(args[0], "read"):
+                if len(args) < 2:
+                    raise Exception("Need to specify format if passing a file-like" \
+                                  + "object from which to construct a Tree.")
+                self.read(args[0], args[1])
+            else:
+                raise Exception("Invalid non-keyworded arguments passed: %s" % str(args))
         else:
             self.seed_node = Node(oid='n0', edge=Edge())
+            iosys.Readable.__init__(self, **kwargs)
 
-        # process sourcing
-        iosys.Readable.__init__(self, **kwargs)
+    ###########################################################################
+    ## I/O and Representation
+
+    def clone_from(self, other):
+        """
+        Clones the structure and properties of `Tree` object `other`.
+        """
+        t = copy.deepcopy(other)
+        self.__dict__ = t.__dict__
+        return self
 
     def __deepcopy__(self, memo):
         # we treat the taxa as immutable and copy the reference even in a deepcopy
@@ -244,6 +272,80 @@ class Tree(TaxonSetLinked, iosys.Readable):
     def __str__(self):
         "Dump Newick string."
         return self.to_newick_str()
+
+    def read(self, istream, format, **kwargs):
+        """
+        Populates/constructs objects of this type from `format`-formatted
+        data in the file-like object source `istream`.
+
+        Recognized keywords arguments are:
+
+            - `taxon_set` specifies the `TaxonSet` object to be attached to the
+               trees parsed and manage their taxa. If not specified, then the
+               `TaxonSet` object currently associated with the tree will be used.
+            - `encode_splits` specifies whether or not split bitmasks will be
+               calculated and attached to the edges.
+            - `translate_dict` should provide a dictionary mapping taxon numbers (as
+               found in the source) to taxon labels (as defined in the source).
+            - `rooted` specifies the default rooting interpretation of the tree (see
+               `dendropy.dataio.nexustokenizer` for details).
+            - `finish_node_func` is a function that will be applied to each node
+               after it has been constructed.
+            - `edge_len_type` specifies the type of the edge lengths (int or float)
+
+        If the source defines multiple trees, only the first one will be
+        returned unless the keyword `index` is used to specify the
+        0-based index of the tree to be returned. If `index` >= number
+        of trees, a KeyError is raised.
+        """
+        from dendropy.utility import iosys
+        from dendropy.dataio import tree_source_iter
+        if "index" in kwargs:
+            index = kwargs.get("index")
+            del(kwargs["index"])
+        else:
+            index = 0
+        if "taxon_set" not in kwargs:
+            kwargs["taxon_set"] = self.taxon_set
+        else:
+            self.taxon_set = kwargs["taxon_set"]
+        titer = tree_source_iter(istream=istream, format=format, **kwargs)
+        count = 0
+        t = None
+        while count <= index:
+            try:
+                t = titer.next()
+            except StopIteration:
+                raise KeyError("0-based index out of bounds: %d (trees=%d, index=[0, %d])" % (index, count, count-1))
+            else:
+                count += 1
+        self.__dict__ = t.__dict__
+        return self
+
+    def write(self, **kwargs):
+        """
+        Writes out `Tree` in `format` to a destination described by
+        one of: `file` or `path`:
+
+            - `file`: A file- or file-like object.
+            - `path`: A string specifying the path to a file.
+
+        `format` must be a recognized and tree file format, such as `nexus`,
+        `newick`, etc, for which a specialized tree list writer is
+        available. If this is not implemented for the format specified, then
+        a `UnsupportedFormatError` is raised.
+
+        Additionally, for some formats, the following keywords are recognized:
+
+            - `edge_lengths` : if False, edges will not write edge lengths [True]
+            - `internal_labels` : if False, internal labels will not be written [True]
+        """
+        from dendropy.utility.iosys import require_format_from_kwargs
+        from dendropy.dataio import write_tree_list
+        tree_list = TreeList(taxon_set=self.taxon_set)
+        tree_list.append(self)
+        write_tree_list(format=require_format_from_kwargs(kwargs), tree_list=tree_list, **kwargs)
+
 
     ###########################################################################
     ## Getting/accessing methods
@@ -322,83 +424,6 @@ class Tree(TaxonSetLinked, iosys.Readable):
         modifying the elements does).
         """
         return set([i in self.preorder_node_iter(filter_fn=filter_fn)])
-
-    ###########################################################################
-    ## I/O and Representation
-
-    def read(self, format, istream, **kwargs):
-        """
-        Populates/constructs objects of this type from `format`-formatted
-        data in the file-like object source `istream`.
-
-        Recognized keywords arguments are:
-
-            - `taxon_set` specifies the `TaxonSet` object to be attached to the
-               trees parsed and manage their taxa. If not specified, then the
-               `TaxonSet` object currently associated with the tree will be used.
-            - `encode_splits` specifies whether or not split bitmasks will be
-               calculated and attached to the edges.
-            - `translate_dict` should provide a dictionary mapping taxon numbers (as
-               found in the source) to taxon labels (as defined in the source).
-            - `rooted` specifies the default rooting interpretation of the tree (see
-               `dendropy.dataio.nexustokenizer` for details).
-            - `finish_node_func` is a function that will be applied to each node
-               after it has been constructed.
-            - `edge_len_type` specifies the type of the edge lengths (int or float)
-
-        If the source defines multiple trees, only the first one will be
-        returned unless the keyword `index` is used to specify the
-        0-based index of the tree to be returned. If `index` >= number
-        of trees, a KeyError is raised.
-        """
-        from dendropy.utility import iosys
-        from dendropy.dataio import tree_source_iter
-        if "index" in kwargs:
-            index = kwargs.get("index")
-            del(kwargs["index"])
-        else:
-            index = 0
-        if "taxon_set" not in kwargs:
-            kwargs["taxon_set"] = self.taxon_set
-        else:
-            self.taxon_set = kwargs["taxon_set"]
-        titer = tree_source_iter(format=format, istream=istream, **kwargs)
-        count = 0
-        t = None
-        while count <= index:
-            try:
-                t = titer.next()
-            except StopIteration:
-                raise KeyError("0-based index out of bounds: %d (trees=%d, index=[0, %d])" % (index, count, count-1))
-            else:
-                count += 1
-        self.seed_node = t.seed_node
-        self.__dict__ = t.__dict__
-        return self
-
-    def write(self, **kwargs):
-        """
-        Writes out `Tree` in `format` to a destination described by
-        one of: `file` or `path`:
-
-            - `file`: A file- or file-like object.
-            - `path`: A string specifying the path to a file.
-
-        `format` must be a recognized and tree file format, such as `nexus`,
-        `newick`, etc, for which a specialized tree list writer is
-        available. If this is not implemented for the format specified, then
-        a `UnsupportedFormatError` is raised.
-
-        Additionally, for some formats, the following keywords are recognized:
-
-            - `edge_lengths` : if False, edges will not write edge lengths [True]
-            - `internal_labels` : if False, internal labels will not be written [True]
-        """
-        from dendropy.utility.iosys import require_format_from_kwargs
-        from dendropy.dataio import write_tree_list
-        tree_list = TreeList(taxon_set=self.taxon_set)
-        tree_list.append(self)
-        write_tree_list(format=require_format_from_kwargs(kwargs), tree_list=tree_list, **kwargs)
 
     ###########################################################################
     ## Node iterators

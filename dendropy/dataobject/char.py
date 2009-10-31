@@ -471,7 +471,10 @@ class CharacterArray(TaxonSetLinked):
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        TaxonSetLinked.__init__(self, *args, **kwargs)
+        TaxonSetLinked.__init__(self,
+                                taxon_set=kwargs.get("taxon_set", None),
+                                label=kwargs.get("label", None),
+                                oid=kwargs.get("oid", None))
         self.taxon_seq_map = CharacterDataMap()
         self.column_types = []
         self.markup_as_sequences = True
