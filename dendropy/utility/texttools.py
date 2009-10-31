@@ -47,8 +47,8 @@ def escape_nexus_token(label):
 
 class RichString(str):
 
-    def __new__(self, *args):
-        return str.__new__(self, *args)
+    def __new__(cls, *args):
+        return str.__new__(cls, *args)
 
 ###############################################################################
 ## Various formatters and pretty-printer

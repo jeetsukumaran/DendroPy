@@ -59,9 +59,9 @@ class StrToTaxon(object):
         return self.taxon_set.index(t)
 
 ###############################################################################
-## parse_tree_stream
+## parse_tree_from_stream
 
-def parse_tree_stream(stream_tokenizer, **kwargs):
+def parse_tree_from_stream(stream_tokenizer, **kwargs):
     """
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
     located at the beginning of the statement (i.e., the first

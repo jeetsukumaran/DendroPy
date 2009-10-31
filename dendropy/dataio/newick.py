@@ -83,7 +83,7 @@ def tree_source_iter(**kwargs):
             + "changing as new Taxon objects are added to the set.")
     newick_stream = nexustokenizer.NexusTokenizer(src)
     while not newick_stream.eof:
-        yield nexustokenizer.parse_tree_stream(newick_stream, taxon_set=taxon_set, **kwargs)
+        yield nexustokenizer.parse_tree_from_stream(newick_stream, taxon_set=taxon_set, **kwargs)
 
 def write_tree_list(tree_list, **kwargs):
     """
@@ -167,7 +167,7 @@ def split_to_newick_str(split, taxon_set):
 #     "Processes a (SINGLE) TREE statement string."
 #     stream_handle = StringIO(tree_statement)
 #     stream_tokenizer = NexusTokenizer(stream_handle)
-#     tree = nexustokenizer.parse_tree_stream(stream_tokenizer=stream_tokenizer,
+#     tree = nexustokenizer.parse_tree_from_stream(stream_tokenizer=stream_tokenizer,
 #                                      taxon_set=taxon_set,
 #                                      **kwargs)
 #     return tree

@@ -592,7 +592,7 @@ class NexusReader(ioservice.DataReader):
                 elif c == '&R' or c == '&r':
                     rooted = nexustokenizer.RootingInterpretation.ROOTED
                     break
-        tree = nexustokenizer.parse_tree_stream(stream_tokenizer=self.stream_tokenizer,
+        tree = nexustokenizer.parse_tree_from_stream(stream_tokenizer=self.stream_tokenizer,
                 taxon_set=self.current_taxon_set,
                 translate_dict=self.tree_translate_dict,
                 encode_splits=self.encode_splits,

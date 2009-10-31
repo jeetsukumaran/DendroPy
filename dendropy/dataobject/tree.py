@@ -190,61 +190,6 @@ class Tree(TaxonSetLinked):
     """
 
     ###########################################################################
-    ## Factory
-    def read(**kwargs):
-        """
-        Constructs a single tree from a source described by one of the following
-        keyword arguments:
-
-            - `file`: A file- or file-like object.
-            - `path`: A string specifying the path to a file.
-            - `str`: A string represention of phylogenetic data.
-
-        and a `format` keyword argument.
-
-        Other recognized keywords are:
-
-            - `taxon_set` specifies the `TaxonSet` object to be attached to the
-               trees parsed and manage their taxa. If not specified, then a
-               (single) new `TaxonSet` object will be created.
-            - `encode_splits` specifies whether or not split bitmasks will be
-               calculated and attached to the edges.
-            - `translate_dict` should provide a dictionary mapping taxon numbers (as
-               found in the source) to taxon labels (as defined in the source).
-            - `rooted` specifies the default rooting interpretation of the tree (see
-               `dendropy.dataio.nexustokenizer` for details).
-            - `finish_node_func` is a function that will be applied to each node
-               after it has been constructed.
-            - `edge_len_type` specifies the type of the edge lengths (int or float)
-
-        If the source defines multiple trees, only the first one will be
-        returned unless the keyword `index` is used to specify the
-        0-based index of the tree to be returned. If `index` >= number
-        of trees, a KeyError is raised.
-
-        Example usage::
-
-            >>> from dendropy import dataobject
-            >>> tree1 = dataobject.Tree.read("(A:3, (B:1, C:1):2):1;"))
-        """
-        from dendropy.utility import ioservice
-        from dendropy.dataio import tree_source_iter
-        format = ioservice.require_format_from_kwargs(kwargs)
-        titer = tree_source_iter(format=format, **kwargs)
-        index = kwargs.get("index", 0)
-        count = 0
-        t = None
-        while count <= index:
-            try:
-                t = titer.next()
-            except StopIteration:
-                raise KeyError("0-based index out of bounds: %d (trees=%d, index=[0, %d])" % (index, count, count-1))
-            else:
-                count += 1
-        return t
-    read = staticmethod(read)
-
-    ###########################################################################
     ## Static methods
 
     def ancestor(node1, node2):
@@ -264,7 +209,7 @@ class Tree(TaxonSetLinked):
     ###########################################################################
     ## Special/Lifecycle methods
 
-    def __init__(self, taxon_set=None, label=None, seed_node=None, oid=None):
+    def __init__(self, taxon_set=None, label=None, seed_node=None, oid=None, **kwargs):
         """
         Initializes a Tree object by defining a base node which must
         be of type `Node` or derived from `Node`.
@@ -284,6 +229,9 @@ class Tree(TaxonSetLinked):
             self.seed_node = seed_node
         else:
             self.seed_node = Node(oid='n0', edge=Edge())
+
+        if "file" in kwargs or "path" in kwargs or "str" in kwargs:
+            self.read(**kwargs)
 
     def __deepcopy__(self, memo):
         # we treat the taxa as immutable and copy the reference even in a deepcopy
@@ -408,6 +356,59 @@ class Tree(TaxonSetLinked):
         tree_list = TreeList(taxon_set=self.taxon_set)
         tree_list.append(self)
         write_tree_list(format=require_format_from_kwargs(kwargs), tree_list=tree_list, **kwargs)
+
+    def read(self, **kwargs):
+        """
+        Constructs a single tree from a source described by one of the following
+        keyword arguments:
+
+            - `file`: A file- or file-like object.
+            - `path`: A string specifying the path to a file.
+            - `str`: A string represention of phylogenetic data.
+
+        and a `format` keyword argument.
+
+        Other recognized keywords are:
+
+            - `taxon_set` specifies the `TaxonSet` object to be attached to the
+               trees parsed and manage their taxa. If not specified, then the
+               `TaxonSet` object currently associated with the tree will be used.
+            - `encode_splits` specifies whether or not split bitmasks will be
+               calculated and attached to the edges.
+            - `translate_dict` should provide a dictionary mapping taxon numbers (as
+               found in the source) to taxon labels (as defined in the source).
+            - `rooted` specifies the default rooting interpretation of the tree (see
+               `dendropy.dataio.nexustokenizer` for details).
+            - `finish_node_func` is a function that will be applied to each node
+               after it has been constructed.
+            - `edge_len_type` specifies the type of the edge lengths (int or float)
+
+        If the source defines multiple trees, only the first one will be
+        returned unless the keyword `index` is used to specify the
+        0-based index of the tree to be returned. If `index` >= number
+        of trees, a KeyError is raised.
+        """
+        from dendropy.utility import ioservice
+        from dendropy.dataio import tree_source_iter
+        format = ioservice.require_format_from_kwargs(kwargs)
+        index = kwargs.get("index", 0)
+        if "taxon_set" not in kwargs:
+            kwargs["taxon_set"] = self.taxon_set
+        else:
+            self.taxon_set = kwargs["taxon_set"]
+        titer = tree_source_iter(format=format, **kwargs)
+        count = 0
+        t = None
+        while count <= index:
+            try:
+                t = titer.next()
+            except StopIteration:
+                raise KeyError("0-based index out of bounds: %d (trees=%d, index=[0, %d])" % (index, count, count-1))
+            else:
+                count += 1
+        self.seed_node = t.seed_node
+        self.__dict__ = t.__dict__
+        return self
 
     def to_str(self, format, **kwargs):
         """

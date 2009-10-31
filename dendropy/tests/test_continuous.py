@@ -79,7 +79,7 @@ class KTBTest(unittest.TestCase):
     def testKTBEvolveCrop(self):
         rng = KnownRandom()
         newick = "((t5:1611.75,t6:1611.75):3922.93,((t4:1043.81,(t2:754.11,t1:754.11):2896.9):6584.0,t3:1702.21):3832.47);"
-        tree = dendropy.Tree.read(str=newick, format="newick")
+        tree = dendropy.Tree(str=newick, format="newick")
         root = tree.seed_node
         root.mutation_rate = 1e-5
         root.mean_edge_rate = root.mutation_rate
@@ -94,7 +94,7 @@ class KTBTest(unittest.TestCase):
     def testKTBEvolveLinearBounce(self):
         rng = KnownRandom()
         newick = "((t5:1611.75,t6:1611.75):3922.93,((t4:1043.81,(t2:754.11,t1:754.11):2896.9):6584.0,t3:1702.21):3832.47);"
-        tree = dendropy.Tree.read(str=newick, format="newick")
+        tree = dendropy.Tree(str=newick, format="newick")
         root = tree.seed_node
         root.mutation_rate = 1e-5
         root.mean_edge_rate = root.mutation_rate
