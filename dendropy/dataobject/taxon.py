@@ -53,43 +53,25 @@ class TaxonLinked(base.IdTagged):
     object.
     """
 
-    def __init__(self, taxon=None, label=None, oid=None, **kwargs):
-        "Initializes by calling base class."
-        base.IdTagged.__init__(self, oid=oid, label=label)
-        self._taxon = taxon
-
-    def _get_taxon(self):
-        "Returns taxon associated with this object."
-        return self._taxon
-
-    def _set_taxon(self, taxon):
-        """
-        If `taxon` is a Taxon object, then it is assigned directly. If
-        `taxon` is a string, then it is assumed to be a label, and a
-        new taxon object is constructed based on it and assigned (the
-        new taxon object will have the string given by `taxon` as id
-        and label, though it will be moTaxonSetdified as neccessary to make it
-        xs:NCName compliant for the id.
-        """
-        if taxon is None or isinstance(taxon, Taxon):
-            self._taxon = taxon
-        else:
-            taxon_obj = Taxon()
-            taxon_obj.label = taxon
-            taxon_obj.oid = taxon
-            self._taxon = taxon_obj
-
-    taxon = property(_get_taxon, _set_taxon)
+    def __init__(self, **kwargs):
+        base.IdTagged.__init__(self,
+                               label=kwargs.get("label", None),
+                               oid=kwargs.get("oid", None))
+        self.taxon = kwargs.get("taxon", None)
 
 class TaxonSetLinked(base.IdTagged):
     """
     Provides infrastructure for the maintenance of references to taxa.
     """
 
-    def __init__(self, taxon_set=None, label=None, oid=None):
-        "Initializes by calling base class."
-        base.IdTagged.__init__(self, label=label, oid=oid)
-        self.taxon_set = taxon_set if taxon_set is not None else TaxonSet()
+    def __init__(self, **kwargs):
+        base.IdTagged.__init__(self,
+                               label=kwargs.get("label", None),
+                               oid=kwargs.get("oid", None))
+        if "taxon_set" not in kwargs or kwargs["taxon_set"] is None:
+            self.taxon_set = TaxonSet()
+        else:
+            self.taxon_set = kwargs["taxon_set"]
 
     def reindex_taxa(self, taxon_set=None, clear=True):
         """
@@ -128,11 +110,12 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
 
     def __init__(self, *args, **kwargs):
         """
-        Handles keyword arguments: `oid` and `label`. If an iterable is passed
-        as the first argument, then for every string in the iterable a Taxon
-        object with the string is constructed and added to the set, while for
-        every Taxon object in the iterable a new (distinct) Taxon object with the
-        same label is constructed and added to the set.
+        Handles keyword arguments: `oid`, `label` or "is_mutable".
+        If an iterable is passed as the first argument, then for every
+        string in the iterable a Taxon object with the string is
+        constructed and added to the set, while for every Taxon object
+        in the iterable a new (distinct) Taxon object with the same
+        label is constructed and added to the set.
         """
         la = len(args)
         if la > 0:

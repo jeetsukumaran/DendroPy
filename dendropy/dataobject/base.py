@@ -164,17 +164,17 @@ class IdTagged(Labelled):
 
     normalize_id = staticmethod(normalize_id)
 
-    def __init__(self, label=None, oid=None):
+    def __init__(self, **kwargs):
         """
         Initializes by calling base classes, and assigns element id if
         given.
         """
-        Labelled.__init__(self, label=label)
+        Labelled.__init__(self, label=kwargs.get("label", None))
         IdTagged.instances += 1
-        if oid is None:
+        if "oid" not in kwargs or kwargs["oid"] is None:
             self._oid = self._default_oid()
         else:
-            self._oid = self.normalize_id(oid)
+            self._oid = self.normalize_id(kwargs["oid"])
 
     def _default_oid(self):
         "Returns default oid."

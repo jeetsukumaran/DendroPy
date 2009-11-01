@@ -823,16 +823,15 @@ class Node(TaxonLinked):
 
     ## INSTANCE METHODS########################################################
 
-    def __init__(self, label=None, taxon=None, edge=None, oid=None):
-        "Inits. Handles keyword arguments: `oid` and `label`."
-        TaxonLinked.__init__(self, taxon=taxon, label=label, oid=oid)
+    def __init__(self, **kwargs):
+        TaxonLinked.__init__(self,
+                             taxon=kwargs.get("taxon", None),
+                             label=kwargs.get("label", None),
+                             oid=kwargs.get("oid", None))
         self._edge = None
         self._child_nodes = []
         self._parent_node = None
-        if edge is not None:
-            self.edge = edge
-        else:
-            self.edge = Edge(head_node=self)
+        self.edge = kwargs.get("edge", Edge(head_node=self))
         self._edge.head_node = self
 
     def __deepcopy__(self, memo):
@@ -1321,24 +1320,16 @@ class Edge(IdTagged):
 
     ## CLASS METHODS  ########################################################
 
-    def __init__(self,
-                 oid=None,
-                 head_node=None,
-                 tail_node=None,
-                 length=None):
+    def __init__(self, **kwargs):
         """
         Creates an edge from tail_node to head_node.  Modified from
         arbol.
         """
-        IdTagged.__init__(self, oid=oid)
-        self.tail_node = None
-        self.head_node = None
-        self.rootedge = False
-        if head_node is not None:
-            self.head_node = head_node
-        if tail_node is not None:
-            self.tail_node = tail_node
-        self.length = length
+        IdTagged.__init__(self, oid=kwargs.get("oid", None), label=kwargs.get("label", None))
+        self.tail_node = kwargs.get("tail_node", None)
+        self.head_node = kwargs.get("head_node", None)
+        self.rootedge = kwargs.get("rootedge", False)
+        self.length = kwargs.get("length", None)
 
     def __deepcopy__(self, memo):
         o = self.__class__()
