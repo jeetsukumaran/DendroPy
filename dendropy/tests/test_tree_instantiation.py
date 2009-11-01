@@ -42,12 +42,23 @@ class TreeInstantiationTest(unittest.TestCase):
 
         # test copying
         t2 = Tree(t1)
+        self.compare_trees(t1, t2)
+
+        # from file, args
+        t3 = Tree(StringIO("((A,B),(C,D));"), "newick")
+
+        # from file, mixed
+        t4 = Tree(StringIO("((A,B),(C,D));"), format="newick")
+
+    def compare_trees(self, t1, t2):
         self.assertTrue(t2 is not t1)
         self.assertTrue(t2.taxon_set is t1.taxon_set)
         self.assertTrue(t2.seed_node is not t1.seed_node)
         self.assertTrue(t1.oid != t2.oid)
         self.assertTrue(t1.label == t2.label)
+        t1.oid = "t1"
         t2.oid = "t2"
+        self.assertTrue(t1.oid != t2.oid)
         self.assertTrue(t1.oid == "t1", "'%s'" % t1.oid)
         self.assertTrue(t2.oid == "t2")
         if t1.label is None:
@@ -55,6 +66,11 @@ class TreeInstantiationTest(unittest.TestCase):
         else:
             self.assertTrue(t1.label is not t2.label)
             self.assertTrue(t1.label == t2.label)
+        t1.label = "t1"
+        t2.label = "t2"
+        self.assertTrue(t1.label != t2.label)
+        self.assertTrue(t1.label == "t1", "'%s'" % t1.label)
+        self.assertTrue(t2.label == "t2")
         t1_nodes = [nd for nd in t1.postorder_node_iter()]
         t2_nodes = [nd for nd in t2.postorder_node_iter()]
         for ndi, nd1 in enumerate(t1_nodes):
@@ -67,15 +83,17 @@ class TreeInstantiationTest(unittest.TestCase):
             else:
                 self.assertTrue(nd1.label is not nd2.label)
             self.assertTrue(nd1.taxon is nd2.taxon, "%s vs. %s" % (repr(nd1.taxon), repr(nd2.taxon)))
-
-        # from file, args
-        t3 = Tree(StringIO("((A,B),(C,D));"), "newick")
-
-        # from file, mixed
-        t4 = Tree(StringIO("((A,B),(C,D));"), format="newick")
-
-
-
+        t1_edges = [e for e in t1.postorder_edge_iter()]
+        t2_edges = [e for e in t2.postorder_edge_iter()]
+        for ei, e1 in enumerate(t1_edges):
+            e2 = t2_nodes[ei]
+            self.assertTrue(e1 is not e2)
+            self.assertTrue(e1.oid != e2.oid)
+            self.assertTrue(e1.label == e2.label)
+            if e1.label is None:
+                self.assertTrue(e1.label is None)
+            else:
+                self.assertTrue(e1.label is not e2.label)
 
 
 if __name__ == "__main__":
