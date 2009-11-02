@@ -210,8 +210,8 @@ class Tree(TaxonSetLinked, iosys.Readable):
 
     def __init__(self, *args, **kwargs):
         """
-        Initializes a Tree object by defining a base node which must
-        be of type `Node` or derived from `Node`.
+        Initializes a new Tree object, optionally constructing it out
+        of a data source of if `istream` and `format` are passed.
 
         In addition, if `istream` and `format` keyword arguments are
         given, will construct this `Tree` object from `format`-formatted
@@ -219,7 +219,34 @@ class Tree(TaxonSetLinked, iosys.Readable):
         recognized and tree file format, such as `nexus`, `newick`, etc,
         for which a specialized tree list writer is available. If this
         is not implemented for the format specified, then a
-        `UnsupportedFormatError` is raised.
+        `UnsupportedFormatError` is raised. Other keywords will be passed
+        to the underlying tree parser.
+
+        Tree objects can thus be instantiated in the following ways::
+
+            # /usr/bin/env python
+
+            import StringIO
+            import dendropy
+
+            # empty tree
+            t1 = Tree()
+
+            # tree from data source
+            t2 = Tree(StringIO("((A,B),(C,D));"), "newick") # from newick string
+            t3 = Tree(StringIO("((A,B),(C,D));"), format="newick") # same
+            t4 = Tree(istream=StringIO("((A,B),(C,D));"), format="newick") # same
+
+            # passing keywords to underlying tree parser
+            t5 = Tree(StringIO("((A,B),(C,D));"), "newick", \
+                        taxon_set=t3.taxon_set,
+                        encode_splits=True)
+
+            # tree structure deep-copied from another tree
+            t6 = Tree(t5)
+            assert t6.taxon_set == t5.taxon_set # True: taxa are not deep-copied
+            assert t6.oid != t5.oid # True: oid's will be different
+
         """
         TaxonSetLinked.__init__(self,
                                 taxon_set=kwargs.get("taxon_set", None),
@@ -526,7 +553,7 @@ class Tree(TaxonSetLinked, iosys.Readable):
         for node in self.postorder_node_iter():
             t = node.taxon
             if t:
-                node.taxon = self.taxon_set.get_taxon(label=t.label)
+                node.taxon = self.taxon_set.require_taxon(label=t.label)
 
     ###########################################################################
     ## Structure
