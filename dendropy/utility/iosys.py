@@ -241,21 +241,21 @@ class Readable(object):
         """
         raise NotImplementedError
 
-    def read_file(self, fileobj, format, **kwargs):
+    def read_from_file(self, fileobj, format, **kwargs):
         """
         Reads from file (exactly equivalent to just `read()`, provided
         here as a separate method for completeness.
         """
         return self.read(istream=fileobj, format=format, **kwargs)
 
-    def read_filepath(self, filepath, format, **kwargs):
+    def read_from_path(self, filepath, format, **kwargs):
         """
         Reads from file specified by `filepath`.
         """
         f = os.expandvars(os.expanduser(filepath))
         return self.read(istream=f, format=format, **kwargs)
 
-    def read_string(self, src_str, format, **kwargs):
+    def read_from_string(self, src_str, format, **kwargs):
         """
         Reads a string object.
         """

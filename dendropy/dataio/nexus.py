@@ -314,11 +314,13 @@ class NexusReader(iosys.DataReader):
         token = self.stream_tokenizer.read_next_token()
         while token != ';':
             label = token
-            if len(self.current_taxon_set) >= self.file_specified_ntax:
+            if self.current_taxon_set.has_taxon(label=label):
+                pass
+            elif len(self.current_taxon_set) >= self.file_specified_ntax:
                 raise self.data_format_error("Cannot add '%s':" % label \
                                       + " Declared number of taxa (%d) already defined: %s" % (self.file_specified_ntax,
                                           str([("%s" % t.label) for t in self.current_taxon_set])))
-            self.current_taxon_set.new_taxon(label=label)
+                self.current_taxon_set.new_taxon(label=label)
             token = self.stream_tokenizer.read_next_token()
 
     ###########################################################################

@@ -48,30 +48,48 @@ class TreeList(list, TaxonSetLinked, iosys.Readable):
 
     def __init__(self, *args, **kwargs):
         """
-        Handles optional keyword arguments: `oid`, `label` and `taxon_set`,
-        which sets the internal object identifier, label and `TaxonSet` object
-        associatd with this `TreeList` respectively.
+        Initializes a new Tree object, optionally constructing it out
+        of a data source of if `istream` and `format` are passed.
 
         In addition, if `istream` and `format` keyword arguments are
-        given, will populate this `TreeList` object from
-        `format`-formatted source given by file-like object `istream`.
-        `format` must be a recognized and tree file format, such as
-        `nexus`, `newick`, etc, for which a specialized tree list writer
-        is available. If this is not implemented for the format
-        specified, then a `UnsupportedFormatError` is raised.
+        given, will construct this `Tree` object from `format`-formatted
+        source given by file-like object `istream`. `format` must be a
+        recognized and tree file format, such as `nexus`, `newick`, etc,
+        for which a specialized tree list writer is available. If this
+        is not implemented for the format specified, then a
+        `UnsupportedFormatError` is raised. Other keywords will be passed
+        to the underlying tree parser.
 
-        Example usage::
+        Tree objects can thus be instantiated in the following ways::
 
-            >>> from dendropy import dataobject as dobj
-            >>> tl1 = dobj.TreeList(newick='(A,(B,C));((A,B),C);((A,C),B);')
-            >>> tfile = open("abctrees.tre", "rU")
-            >>> tl2 = dobj.TreeList(newick=tfile, taxon_set=tl1.taxon_set)
+            # /usr/bin/env python
 
-        Now `tl1` and `tl2` are both `TreeList` objects, with the first
-        instantiated from a string and the second from an external file source.
-        As the `TaxonSet` object of the first list was passed to the constructor
-        of the second, the two lists share the same `Taxon` objects, and can
-        be compared.
+            import StringIO
+            import dendropy
+
+            # empty tree
+            t1 = Tree()
+
+            # tree from data source
+            t2 = Tree(StringIO("((A,B),(C,D));"), "newick") # from newick string
+            t3 = Tree(StringIO("((A,B),(C,D));"), format="newick") # same
+            t4 = Tree(istream=StringIO("((A,B),(C,D));"), format="newick") # same
+
+            # passing keywords to underlying tree parser
+            t5 = Tree(StringIO("((A,B),(C,D));"), "newick", \
+                        taxon_set=t3.taxon_set,
+                        encode_splits=True)
+
+            # tree structure deep-copied from another tree
+            t6 = Tree(t5)
+            assert t6.taxon_set == t5.taxon_set # True: taxa are not deep-copied
+            assert t6.oid != t5.oid # True: oid's will be different
+
+            # can also call `read()` on a Tree object
+            t7 = Tree()
+            t7.read(StringIO("((A,B),(C,D));"), "newick")
+            t7.read_from_string("((A,B),(C,D));", "newick")
+            t7.read_from_path("mle.tre", "newick")
 
         """
         TaxonSetLinked.__init__(self,
@@ -211,16 +229,17 @@ class Tree(TaxonSetLinked, iosys.Readable):
     def __init__(self, *args, **kwargs):
         """
         Initializes a new Tree object, optionally constructing it out
-        of a data source of if `istream` and `format` are passed.
+        of a data source of if `istream` and `format` are passed. Other
+        keyword arguments recognized: `oid`, `taxon_set`, and `label`.
 
-        In addition, if `istream` and `format` keyword arguments are
-        given, will construct this `Tree` object from `format`-formatted
-        source given by file-like object `istream`. `format` must be a
+        If `istream` and `format` keyword arguments are given, will
+        construct this `Tree` object from `format`-formatted source
+        given by file-like object `istream`. `format` must be a
         recognized and tree file format, such as `nexus`, `newick`, etc,
         for which a specialized tree list writer is available. If this
         is not implemented for the format specified, then a
-        `UnsupportedFormatError` is raised. Other keywords will be passed
-        to the underlying tree parser.
+        `UnsupportedFormatError` is raised. Other keywords will be
+        passed to the underlying tree parser.
 
         Tree objects can thus be instantiated in the following ways::
 
@@ -247,6 +266,12 @@ class Tree(TaxonSetLinked, iosys.Readable):
             assert t6.taxon_set == t5.taxon_set # True: taxa are not deep-copied
             assert t6.oid != t5.oid # True: oid's will be different
 
+            # can also call `read()` on a Tree object
+            t7 = Tree()
+            t7.read(StringIO("((A,B),(C,D));"), "newick")
+            t7.read_from_string("((A,B),(C,D));", "newick")
+            t7.read_from_path("mle.tre", "newick")
+
         """
         TaxonSetLinked.__init__(self,
                                 taxon_set=kwargs.get("taxon_set", None),
@@ -260,6 +285,10 @@ class Tree(TaxonSetLinked, iosys.Readable):
                 self.seed_node = args[0]
             elif isinstance(args[0], Tree):
                 self.clone_from(args[0])
+                if "oid" in kwargs:
+                    self.oid = kwargs["oid"]
+                if "label" in kwargs:
+                    self.label = kwargs["label"]
             elif hasattr(args[0], "read"):
                 if len(args) > 1:
                     format = args[1]
@@ -269,13 +298,19 @@ class Tree(TaxonSetLinked, iosys.Readable):
                     raise Exception("Need to specify format if passing a file-like" \
                                   + " object from which to construct a Tree.")
                 self.read(args[0], format)
+                if "oid" in kwargs:
+                    self.oid = kwargs["oid"]
+                if "label" in kwargs:
+                    self.label = kwargs["label"]
             else:
                 raise Exception("Invalid non-keyworded arguments passed: %s" % str(args))
-            self.label = kwargs.get("label", None)
         else:
             self.seed_node = Node(oid='n0', edge=Edge())
             iosys.Readable.__init__(self, **kwargs)
-        self.oid = kwargs.get("oid", None)
+            if "oid" in kwargs:
+                self.oid = kwargs["oid"]
+            if "label" in kwargs:
+                self.label = kwargs["label"]
 
     ###########################################################################
     ## I/O and Representation
@@ -290,7 +325,7 @@ class Tree(TaxonSetLinked, iosys.Readable):
 
     def __deepcopy__(self, memo):
         # we treat the taxa as immutable and copy the reference even in a deepcopy
-        o = self.__class__(label=self.label, taxon_set=self.taxon_set)
+        o = self.__class__(taxon_set=self.taxon_set)
         memo[id(self)] = o
         if self.seed_node is not None:
             new_v = copy.deepcopy(self.seed_node, memo)
@@ -862,7 +897,7 @@ class Node(TaxonLinked):
         self._edge.head_node = self
 
     def __deepcopy__(self, memo):
-        o = self.__class__(label=self.label, taxon=self.taxon)
+        o = self.__class__(taxon=self.taxon)
         memo[id(self)] = o
         for k, v in self.__dict__.iteritems():
             if not k in ['_child_nodes', '_taxon', "_oid"]:
