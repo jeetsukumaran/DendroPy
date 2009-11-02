@@ -82,7 +82,7 @@ end;
         t7 = Tree(StringIO(nexus_str), "nexus")
         for tx in (t5, t6, t7):
             tx.is_mutable = False
-            self.assertEqual(len(tx.taxon_set), 4)
+            self.assertEqual(len(tx.taxon_set), str([t.label for t in tx.taxon_set]))
             self.assertTrue(tx.taxon_set.has_taxa(labels=["A", "B", "C", "D"]))
             self.assertTrue(tx.taxon_set.has_taxon(label="A"))
             self.assertTrue(tx.taxon_set.has_taxa(taxa=self.taxon_set))

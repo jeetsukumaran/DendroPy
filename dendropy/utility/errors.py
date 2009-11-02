@@ -36,8 +36,8 @@ class DataFormatError(Exception):
         if self.row is None:
             t = ""
         else:
-            t =  " IN LINE %d" % self.row
-        return 'ERROR PARSING FILE%s: %s' % (t, self.msg)
+            t =  "Line %d in data source: " % self.row
+        return '%s%s' % (t, self.msg)
 
 class UnsupportedFormatError(NotImplementedError):
 

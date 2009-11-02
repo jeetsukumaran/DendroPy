@@ -36,16 +36,12 @@ from dendropy.dataio import newick
 ###############################################################################
 ## tree_source_iter
 
-def tree_source_iter(**kwargs):
+def tree_source_iter(istream, **kwargs):
     """
-    Iterates over a NEXUS-formatted source of trees specified by keyword
-    arguments:
+    Iterates over a NEXUS-formatted source of trees given by file-like object
+    `istream`
 
-        - `file`: A file- or file-like object.
-        - `path`: A string specifying the path to a file.
-        - `str`: A string represention of phylogenetic data.
-
-    Additionally, the following optional keyword arguments are recognized:
+    The following optional keyword arguments are recognized:
 
         - `taxon_set` specifies the `TaxonSet` object to be attached to the
            trees parsed and manage their taxa. If not specified, then a
@@ -71,7 +67,7 @@ def tree_source_iter(**kwargs):
     tree blocks are handled by a full NEXUS data file read.
     """
     reader = NexusReader()
-    for tree in reader.tree_source_iter(**kwargs):
+    for tree in reader.tree_source_iter(istream, **kwargs):
         yield tree
 
 ###############################################################################
@@ -117,16 +113,11 @@ class NexusReader(iosys.DataReader):
         self.reset()
         return self.dataset
 
-    def tree_source_iter(self, **kwargs):
+    def tree_source_iter(self, istream, **kwargs):
         """
-        Iterates over a NEXUS-formatted source of trees specified by keyword
-        arguments:
+        Iterates over a NEXUS-formatted source of trees.
 
-            - `file`: A file- or file-like object.
-            - `path`: A string specifying the path to a file.
-            - `str`: A string represention of phylogenetic data.
-
-        Additionally, the following optional keyword arguments are recognized:
+        The following optional keyword arguments are recognized:
 
             - `encode_splits` specifies whether or not split bitmasks will be
                calculated and attached to the edges.
@@ -152,8 +143,7 @@ class NexusReader(iosys.DataReader):
             self.dataset = dataobject.Dataset()
         if "taxon_set" in kwargs:
             self._current_taxon_set = kwargs["taxon_set"]
-        source = self.require_source(kwargs)
-        self.stream_tokenizer = nexustokenizer.NexusTokenizer(source)
+        self.stream_tokenizer = nexustokenizer.NexusTokenizer(istream)
         while not self.stream_tokenizer.eof:
             token = self.stream_tokenizer.read_next_token_ucase()
             while token != None and token != 'BEGIN' and not self.stream_tokenizer.eof:
@@ -194,12 +184,12 @@ class NexusReader(iosys.DataReader):
         self.tax_label_lookup = {}
         self._current_taxon_set = None
 
-    def syntax_exception(self, message):
+    def data_format_error(self, message):
         """
         Returns an exception object parameterized with line and
         column number values.
         """
-        return self.stream_tokenizer.syntax_exception(message)
+        return self.stream_tokenizer.data_format_error(message)
 
     ###########################################################################
     ## HELPERS
@@ -254,7 +244,7 @@ class NexusReader(iosys.DataReader):
         self.reset()
         token = self.stream_tokenizer.read_next_token_ucase()
         if token != "#NEXUS":
-            raise self.syntax_exception("Expecting '#NEXUS', but found '%s'" % token)
+            raise self.data_format_error("Expecting '#NEXUS', but found '%s'" % token)
         else:
             while not self.stream_tokenizer.eof:
                 token = self.stream_tokenizer.read_next_token_ucase()
@@ -324,7 +314,11 @@ class NexusReader(iosys.DataReader):
         token = self.stream_tokenizer.read_next_token()
         while token != ';':
             label = token
-            self.current_taxon_set.require_taxon(label=label)
+            if len(self.current_taxon_set) >= self.file_specified_ntax:
+                raise self.data_format_error("Cannot add '%s':" % label \
+                                      +" Number of taxa defined is more than number" \
+                                      +" of taxa declared (%d)" % self.file_specified_ntax)
+            self.current_taxon_set.new_taxon(label=label)
             token = self.stream_tokenizer.read_next_token()
 
     ###########################################################################
@@ -367,7 +361,7 @@ class NexusReader(iosys.DataReader):
                         self.char_block_type = dataobject.StandardCharacterArray
                         self.symbols = "12"
                 else:
-                    raise self.syntax_exception("Expecting '=' after DATATYPE keyword")
+                    raise self.data_format_error("Expecting '=' after DATATYPE keyword")
             elif token == 'SYMBOLS':
                 token = self.stream_tokenizer.read_next_token_ucase()
                 if token == '=':
@@ -380,16 +374,16 @@ class NexusReader(iosys.DataReader):
                                 self.symbols = self.symbols + token
                             token = self.stream_tokenizer.read_next_token_ucase()
                     else:
-                        raise self.syntax_exception("Expecting '\"' before beginning SYMBOLS list")
+                        raise self.data_format_error("Expecting '\"' before beginning SYMBOLS list")
                 else:
-                    raise self.syntax_exception("Expecting '=' after SYMBOLS keyword")
+                    raise self.data_format_error("Expecting '=' after SYMBOLS keyword")
             elif token == 'GAP':
                 token = self.stream_tokenizer.read_next_token_ucase()
                 if token == '=':
                     token = self.stream_tokenizer.read_next_token_ucase()
                     self.gap_char = token
                 else:
-                    raise self.syntax_exception("Expecting '=' after GAP keyword")
+                    raise self.data_format_error("Expecting '=' after GAP keyword")
             elif token == 'INTERLEAVE':
                 token = self.stream_tokenizer.read_next_token_ucase()
                 if token == '=':
@@ -406,14 +400,14 @@ class NexusReader(iosys.DataReader):
                     token = self.stream_tokenizer.read_next_token_ucase()
                     self.missing_char = token
                 else:
-                    raise self.syntax_exception("Expecting '=' after MISSING keyword")
+                    raise self.data_format_error("Expecting '=' after MISSING keyword")
             elif token == 'MATCHCHAR':
                 token = self.stream_tokenizer.read_next_token_ucase()
                 if token == '=':
                     token = self.stream_tokenizer.read_next_token_ucase()
                     self.match_char = token
                 else:
-                    raise self.syntax_exception("Expecting '=' after MISSING keyword")
+                    raise self.data_format_error("Expecting '=' after MISSING keyword")
             token = self.stream_tokenizer.read_next_token_ucase()
 
     def _parse_dimensions_statement(self):
@@ -430,9 +424,9 @@ class NexusReader(iosys.DataReader):
                     if token.isdigit():
                         self.file_specified_ntax = int(token)
                     else:
-                        raise self.syntax_exception('Expecting numeric value for NTAX')
+                        raise self.data_format_error('Expecting numeric value for NTAX')
                 else:
-                    raise self.syntax_exception("Expecting '=' after NTAX keyword")
+                    raise self.data_format_error("Expecting '=' after NTAX keyword")
             elif token == 'NCHAR':
                 token = self.stream_tokenizer.read_next_token_ucase()
                 if token == '=':
@@ -440,9 +434,9 @@ class NexusReader(iosys.DataReader):
                     if token.isdigit():
                         self.file_specified_nchar = int(token)
                     else:
-                        raise self.syntax_exception("Expecting numeric value for NCHAR")
+                        raise self.data_format_error("Expecting numeric value for NCHAR")
                 else:
-                    raise self.syntax_exception("Expecting '=' after NCHAR keyword")
+                    raise self.data_format_error("Expecting '=' after NCHAR keyword")
             token = self.stream_tokenizer.read_next_token_ucase()
 
     def _parse_matrix_statement(self):
@@ -452,9 +446,9 @@ class NexusReader(iosys.DataReader):
         and that NTAX and NCHAR have been specified accurately.
         """
         if not self.file_specified_ntax:
-            raise self.syntax_exception('NTAX must be defined by DIMENSIONS command to non-zero value before MATRIX command')
+            raise self.data_format_error('NTAX must be defined by DIMENSIONS command to non-zero value before MATRIX command')
         elif not self.file_specified_nchar:
-            raise self.syntax_exception('NCHAR must be defined by DIMENSIONS command to non-zero value before MATRIX command')
+            raise self.data_format_error('NCHAR must be defined by DIMENSIONS command to non-zero value before MATRIX command')
         else:
 
             char_block = self.dataset.new_char_array(char_array_type=self.char_block_type, \
@@ -467,7 +461,7 @@ class NexusReader(iosys.DataReader):
             if True: # future: trap and handle no labels, transpose etc.
                 token = self.stream_tokenizer.read_next_token()
                 while token != ';' and not self.stream_tokenizer.eof:
-                    taxon = self.current_taxon_set.get_taxon(label=token)
+                    taxon = self.current_taxon_set.require_taxon(label=token)
                     if taxon not in char_block:
                         if not self.exclude_chars:
                             char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
@@ -489,7 +483,7 @@ class NexusReader(iosys.DataReader):
                                         if hasattr(char, "open_tag"):
                                             state = self._get_state_for_multistate_char(char, char_block.default_state_alphabet)
                                     if state is None:
-                                        raise self.syntax_exception("Unrecognized state encountered:'%s'" % char)
+                                        raise self.data_format_error("Unrecognized state encountered:'%s'" % char)
                                     char_block[taxon].append(dataobject.CharacterDataCell(value=state))
                         token = self.stream_tokenizer.read_next_token()
 #                     print len(char_block[taxon])
@@ -580,7 +574,7 @@ class NexusReader(iosys.DataReader):
         tree_name = token
         token = self.stream_tokenizer.read_next_token()
         if token != '=':
-            raise self.syntax_exception("Expecting '=' in definition of Tree '%s' but found '%s'" % (tree_name, token))
+            raise self.data_format_error("Expecting '=' in definition of Tree '%s' but found '%s'" % (tree_name, token))
 
         rooted = self.default_rooting
         if rooted == nexustokenizer.RootingInterpretation.UNKNOWN_DEF_ROOTED \
@@ -615,14 +609,14 @@ class NexusReader(iosys.DataReader):
             translation_label = self.stream_tokenizer.read_next_token()
             t = self.tax_label_lookup.get(translation_label)
             if t is None:
-                t = self.current_taxon_set.get_taxon(label=translation_label)
+                t = self.current_taxon_set.require_taxon(label=translation_label)
             self.tree_translate_dict[translation_token] = t
 
             token = self.stream_tokenizer.read_next_token() # ","
             if (not token) or (token == ';'):
                 break
             if token != ',':
-                raise self.syntax_exception("Expecting ',' in TRANSLATE statement after definition for %s = '%s', but found '%s' instead." % (translation_token, translation_label, token))
+                raise self.data_format_error("Expecting ',' in TRANSLATE statement after definition for %s = '%s', but found '%s' instead." % (translation_token, translation_label, token))
 
     def _parse_trees_block(self):
         token = 'TREES'

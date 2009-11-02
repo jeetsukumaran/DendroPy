@@ -121,7 +121,7 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
     while True:
         if not token or token == ';':
             if curr_node is not tree.seed_node:
-                raise stream_tokenizer.syntax_exception("Unbalanced parentheses -- not enough ')' characters found in tree description")
+                raise stream_tokenizer.data_format_error("Unbalanced parentheses -- not enough ')' characters found in tree description")
             if encode_splits:
                 split_map[curr_node.edge.clade_mask] = curr_node.edge
             break
@@ -137,10 +137,10 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
             if curr_node.is_leaf() and not curr_node.taxon:
 #                 curr_node.taxon = taxon_set.Taxon(oid="UNAMED_" + str(id(curr_node)), label='')
 #                 taxon_set.add(curr_node.taxon)
-                raise stream_tokenizer.syntax_exception("Missing taxon specifier in a tree -- found either a '(,' or ',,' construct.")
+                raise stream_tokenizer.data_format_error("Missing taxon specifier in a tree -- found either a '(,' or ',,' construct.")
             p = curr_node.parent_node
             if not p:
-                raise stream_tokenizer.syntax_exception("Comma found one the 'outside' of a newick tree description")
+                raise stream_tokenizer.data_format_error("Comma found one the 'outside' of a newick tree description")
             if encode_splits:
                 tmp_node.edge.clade_mask = 0L
                 e = curr_node.edge
@@ -157,10 +157,10 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
                 if curr_node.is_leaf() and not curr_node.taxon:
 #                     curr_node.taxon = dataobject.Taxon(oid="UNAMED_" + str(id(curr_node)), label='')
 #                     taxon_set.add(curr_node.taxon)
-                    raise stream_tokenizer.syntax_exception("Missing taxon specifier in a tree -- found either a '(,' or ',,' construct.")
+                    raise stream_tokenizer.data_format_error("Missing taxon specifier in a tree -- found either a '(,' or ',,' construct.")
                 p = curr_node.parent_node
                 if not p:
-                    raise stream_tokenizer.syntax_exception("Unbalanced parentheses -- too many ')' characters found in tree description")
+                    raise stream_tokenizer.data_format_error("Unbalanced parentheses -- too many ')' characters found in tree description")
                 if encode_splits:
                     e = curr_node.edge
                     u = e.clade_mask
@@ -397,7 +397,7 @@ class NexusTokenizer(object):
                         c = fastfunc()
             except StopIteration:
                 self.eof = True
-                raise self.syntax_exception("Unexpected end of file inside quoted token")
+                raise self.data_format_error("Unexpected end of file inside quoted token")
             tokenstr = token.getvalue()
         else:
             quick_check = NexusTokenizer.is_punctuation
@@ -468,7 +468,7 @@ class NexusTokenizer(object):
             token = self.read_next_token()
             pass
 
-    def syntax_exception(self, message):
+    def data_format_error(self, message):
             """
             Returns an exception object parameterized with line and
             column number values.
