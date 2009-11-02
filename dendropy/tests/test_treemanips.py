@@ -24,7 +24,7 @@
 Tests of tree structural manipulations.
 """
 
-
+from cStringIO import StringIO
 import unittest
 
 import dendropy
@@ -35,10 +35,10 @@ from dendropy.tests import services
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
-class TreeDistTest(unittest.TestCase):
+class TreeManipTest(unittest.TestCase):
     def testRandomlyRotate(self):
         n = '(Basichlsac,(Lamprothma,Mougeotisp),(((Haplomitr2,Petalaphy),((Angiopteri,(((Azollacaro,((Dennstasam,(Oleandrapi,Polypodapp)),Dicksonant)),Vittarifle),Botrychbit)),(Isoetesmel,((((Agathismac,Agathisova),Pseudotsu),(((Libocedrus,Juniperusc),Callitris),Athrotaxi)),((Liriodchi,Nelumbo),Sagittari))))),Thuidium));'
-        trees = dendropy.TreeList(str=n+n, format="newick")
+        trees = dendropy.TreeList(StringIO(n+n), format="newick")
         ref = trees[0]
         changing = trees[1]
         rng = services.KnownRandom()
@@ -55,8 +55,8 @@ class TreeDistTest(unittest.TestCase):
 
     def testRandomlyReorient(self):
         n = '(Basichlsac,(Lamprothma,Mougeotisp),(((Haplomitr2,Petalaphy),((Angiopteri,(((Azollacaro,((Dennstasam,(Oleandrapi,Polypodapp)),Dicksonant)),Vittarifle),Botrychbit)),(Isoetesmel,((((Agathismac,Agathisova),Pseudotsu),(((Libocedrus,Juniperusc),Callitris),Athrotaxi)),((Liriodchi,Nelumbo),Sagittari))))),Thuidium));'
-        k = dendropy.TreeList(str=n, format="newick")[0]
-        trees = dendropy.TreeList(str=n+n, format="newick", encode_splits=True, taxon_set=k.taxon_set)
+        k = dendropy.TreeList(StringIO(n), format="newick")[0]
+        trees = dendropy.TreeList(StringIO(n+n), format="newick", encode_splits=True, taxon_set=k.taxon_set)
         ref = trees[0]
         changing = trees[1]
         rng = services.KnownRandom()
