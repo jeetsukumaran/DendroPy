@@ -79,7 +79,7 @@ class FastaReader(iosys.DataReader):
                 if simple_rows and curr_taxon and curr_vec:
                     char_array[curr_taxon] = "".join(curr_vec)
                 name = s[1:].strip()
-                curr_taxon = taxon_set.get_taxon(label=name)
+                curr_taxon = taxon_set.require_taxon(label=name)
                 if curr_taxon in char_array:
                     raise DataFormatError(row=line_index + 1, message="Fasta error: Repeated sequence name (%s) found" % name)
                 if curr_vec is not None and len(curr_vec) == 0:
@@ -112,6 +112,7 @@ class FastaReader(iosys.DataReader):
                             raise DataFormatError(row=line_index + 1, column=col_ind + 1, message='Unrecognized sequence symbol "%s"' % c)
         if simple_rows and curr_taxon and curr_vec:
             char_array[curr_taxon] = "".join(curr_vec)
+        return self.dataset
 
 class DNAFastaReader(FastaReader):
     def __init__(self, **kwargs):

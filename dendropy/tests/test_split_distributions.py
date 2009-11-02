@@ -25,6 +25,7 @@ Tests of split distribution counting.
 """
 
 import unittest
+from cStringIO import StringIO
 
 import dendropy.tests
 from dendropy.tests import is_test_enabled, TestLevel
@@ -52,14 +53,14 @@ class SplitFreqsTest(unittest.TestCase):
         tsum = treesum.TreeSummarizer()
         filepaths = [dendropy.tests.data_source_path("primates.tre")]
         for f in filepaths:
-                ti = nexus.tree_source_iter(file=open(f, "rU"), taxon_set=taxon_set, from_index=0)
+                ti = nexus.tree_source_iter(istream=open(f, "rU"), taxon_set=taxon_set, from_index=0)
                 sd = tsum.count_splits_on_trees(ti, split_distribution=None, trees_splits_encoded=False)
 #
     def testFindSplits(self):
         unrooted = True
         for tc in test_cases:
             for tree_filepath in [dendropy.tests.data_source_path(tc[0])]:
-                for tree in nexus.tree_source_iter(path=tree_filepath):
+                for tree in nexus.tree_source_iter(istream=open(tree_filepath, "rU")):
                     splitcalc.encode_splits(tree)
                     for edge in tree.preorder_edge_iter():
                         cm = edge.clade_mask
@@ -84,7 +85,7 @@ class SplitFreqsTest(unittest.TestCase):
             taxa_mask = taxon_set.all_taxa_bitmask()
             taxon_set.lock()
             for tree_filepath in tree_filepaths:
-                for tree in nexus.tree_source_iter(path=tree_filepath, taxon_set=taxon_set):
+                for tree in nexus.tree_source_iter(istream=open(tree_filepath, "rU"), taxon_set=taxon_set):
                     assert tree.taxon_set is dp_sd.taxon_set
                     assert tree.taxon_set is taxon_set
                     splitcalc.encode_splits(tree)

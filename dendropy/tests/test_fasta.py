@@ -38,7 +38,6 @@ class TestFasta(unittest.TestCase):
         dataset = dendropy.Dataset(path=data_source_path("bad_names.fasta"),
                 format='DNAFasta',
                 row_type='str')
-
         taxon_set = dataset.taxon_sets[0]
         label = [i.label for i in taxon_set]
         expected = ['a Bad name', 'another', 'a Badn,ame', 'a  nothe++-_=+r', 'an!@#$o^&*()}{_ther']

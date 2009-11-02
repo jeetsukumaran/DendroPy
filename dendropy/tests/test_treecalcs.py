@@ -27,6 +27,7 @@ Tests of tree metrics.
 import random
 import unittest
 import math
+from cStringIO import StringIO
 
 import dendropy
 from dendropy.splitcalc import encode_splits
@@ -37,13 +38,12 @@ class TreeDistTest(unittest.TestCase):
 
     def testEuclideanDist(self):
          tree_list = dendropy.TreeList(
-            format="newick",
-            str="""
-((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);
-((t5:2.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);
-((t5:0.161175,t6:0.161175):0.392293,((t2:0.075411,(t4:0.104381,t1:0.075411):1):0.065840,t3:0.170221):0.383247);
-((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);
-""")
+            StringIO("""((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);
+                        ((t5:2.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);
+                        ((t5:0.161175,t6:0.161175):0.392293,((t2:0.075411,(t4:0.104381,t1:0.075411):1):0.065840,t3:0.170221):0.383247);
+                        ((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);
+                        """),
+            format="newick")
          for i in tree_list:
              encode_splits(i)
          assert_approx_equal(treecalc.euclidean_distance(tree_list[0], tree_list[1]), 2.0)
@@ -54,15 +54,15 @@ class TreeDistTest(unittest.TestCase):
          assert_approx_equal(treecalc.euclidean_distance(tree_list[2], tree_list[3]), 1.000419513484718)
 
     def testSymmDiff(self):
-         ref = dendropy.Tree(str="((t5,t6),((t4,(t2,t1)),t3));", format="newick")
+         ref = dendropy.Tree(StringIO("((t5,t6),((t4,(t2,t1)),t3));"), format="newick")
          taxon_set = ref.taxon_set
          encode_splits(ref)
-         o_tree= dendropy.Tree(str="((t1,t2),((t4,(t5,t6)),t3));", taxon_set=taxon_set, format="newick")
+         o_tree= dendropy.Tree(StringIO("((t1,t2),((t4,(t5,t6)),t3));"), format="newick", taxon_set=taxon_set)
          encode_splits(o_tree)
          self.assertEqual(treecalc.symmetric_difference(o_tree, ref), 2)
 
     def test_pat_distance(self):
-        tree = dendropy.Tree(str="(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", format="newick")
+        tree = dendropy.Tree(StringIO("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;"), format="newick")
         pdm = treecalc.PatristicDistanceMatrix(tree)
         def _chk_distance(pdm, t1, t2, exp_distance):
             tax1 = tree.taxon_set.require_taxon(label=t1)
@@ -79,7 +79,7 @@ class TreeDistTest(unittest.TestCase):
 class PHGamm(unittest.TestCase):
     def testPHGamma(self):
         newick_str = "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);"
-        tree = dendropy.Tree(str=newick_str, format="newick")
+        tree = dendropy.Tree(StringIO(newick_str), format="newick")
         assert_approx_equal(treecalc.pybus_harvey_gamma(tree), 0.546276)
 
 if __name__ == "__main__":
