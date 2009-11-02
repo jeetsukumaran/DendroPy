@@ -48,19 +48,11 @@ class TreeList(list, TaxonSetLinked, iosys.Readable):
 
     def __init__(self, *args, **kwargs):
         """
-        Initializes a new Tree object, optionally constructing it out
-        of a data source of if `istream` and `format` are passed.
+        Initializes a new TreeList object, populating it with any Tree
+        objects passed as unnamed argument, and from a data source if
+        `istream` and `format` are passed.
 
-        In addition, if `istream` and `format` keyword arguments are
-        given, will construct this `Tree` object from `format`-formatted
-        source given by file-like object `istream`. `format` must be a
-        recognized and tree file format, such as `nexus`, `newick`, etc,
-        for which a specialized tree list writer is available. If this
-        is not implemented for the format specified, then a
-        `UnsupportedFormatError` is raised. Other keywords will be passed
-        to the underlying tree parser.
-
-        Tree objects can thus be instantiated in the following ways::
+        TreeList objects can thus be instantiated in the following ways::
 
             # /usr/bin/env python
 
@@ -68,28 +60,31 @@ class TreeList(list, TaxonSetLinked, iosys.Readable):
             import dendropy
 
             # empty tree
-            t1 = Tree()
+            tlst1 = TreeList()
+
+            # populated from list of Tree objects
+            t1 = Tree(StringIO("((A,B),(C,D))"), newick)
+            t2 = Tree(StringIO("((A,C),(B,D))"), newick)
+            tlist2 = TreeList([t1, t2])
 
             # tree from data source
-            t2 = Tree(StringIO("((A,B),(C,D));"), "newick") # from newick string
-            t3 = Tree(StringIO("((A,B),(C,D));"), format="newick") # same
-            t4 = Tree(istream=StringIO("((A,B),(C,D));"), format="newick") # same
+            tlst2 = TreeList(StringIO("((A,B),(C,D));((A,C),(B,D));"), "newick") # from newick string
+            tlst3 = TreeList(StringIO("((A,B),(C,D));((A,C),(B,D));"), format="newick") # same
+            tlst4 = TreeList(istream=StringIO("((A,B),(C,D));((A,C),(B,D));"), format="newick") # same
 
             # passing keywords to underlying tree parser
-            t5 = Tree(StringIO("((A,B),(C,D));"), "newick", \
-                        taxon_set=t3.taxon_set,
+            tlst5 = TreeList(StringIO("((A,B),(C,D));((A,C),(B,D));"), "newick", \
+                        taxon_set=tlst3.taxon_set,
                         encode_splits=True)
 
-            # tree structure deep-copied from another tree
-            t6 = Tree(t5)
-            assert t6.taxon_set == t5.taxon_set # True: taxa are not deep-copied
-            assert t6.oid != t5.oid # True: oid's will be different
+            # shallow-copied from another tree list
+            tlst6 = TreeList(t5)
 
-            # can also call `read()` on a Tree object
-            t7 = Tree()
-            t7.read(StringIO("((A,B),(C,D));"), "newick")
-            t7.read_from_string("((A,B),(C,D));", "newick")
-            t7.read_from_path("mle.tre", "newick")
+            # can also call `read()` on a TreeList object
+            tlst7 = TreeList()
+            tlst7.read(StringIO("((A,B),(C,D));((A,C),(B,D));"), "newick")
+            tlst7.read_from_string("((A,B),(C,D));((A,C),(B,D));", "newick")
+            tlst7.read_from_path("boot.tre", "newick")
 
         """
         TaxonSetLinked.__init__(self,
@@ -495,6 +490,9 @@ class Tree(TaxonSetLinked, iosys.Readable):
 
     ###########################################################################
     ## Node iterators
+
+    def __iter__(self):
+        return self.postorder_node_iter()
 
     def preorder_node_iter(self, filter_fn=None):
         "Returns preorder iterator over tree nodes."
