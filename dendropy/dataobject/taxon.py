@@ -181,8 +181,8 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         for every oid given in list of oid's by keyword arg `oids`, or
         every label in list of `labels` given by keyword arg `labels`.
         """
-        if "taxon" not in kwargs and "oid" not in kwargs and "label" not in kwargs:
-            raise Exception("Need to specify taxon, oid or label lists.")
+        if "taxa" not in kwargs and "oids" not in kwargs and "labels" not in kwargs:
+            raise Exception("Need to specify `taxa`, `oids` or `labels` list.")
         taxa = set(kwargs.get("taxa",  []))
         oids = set(kwargs.get("oids", []))
         labels = set(kwargs.get("labels", []))
