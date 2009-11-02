@@ -46,7 +46,7 @@ def uniform_pure_birth(taxon_set,
     "Generates a uniform-rate pure-birth process tree. "
     if rng is None:
         rng = GLOBAL_RNG # use the global rng by default
-    tree = dataobject.Tree(taxon_set)
+    tree = dataobject.Tree(taxon_set=taxon_set)
 
     leaf_nodes = tree.leaf_nodes()
     count = 0
@@ -203,7 +203,7 @@ def pure_kingman(taxon_set, pop_size=1, rng=None):
                                     pop_size=pop_size,
                                     period=None,
                                     rng=rng)[0]
-    tree = dataobject.Tree(taxon_set, seed_node=seed_node)
+    tree = dataobject.Tree(taxon_set=taxon_set, seed_node=seed_node)
     return tree
 
 def constrained_kingman(pop_tree,
