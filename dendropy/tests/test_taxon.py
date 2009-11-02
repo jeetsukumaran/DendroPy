@@ -53,7 +53,16 @@ class TaxaTest(unittest.TestCase):
         self.assertEquals(ti.get_taxon(label="X2"), None)
         ti.require_taxon(label="X3")
         self.assertEquals(len(ti), 12)
+
+        tj = taxon.TaxonSet()
+        tj1 = tj.new_taxon(label="Z")
+
         self.assertTrue(ti.has_taxa(labels=labels))
+        self.assertFalse(ti.has_taxa(labels=labels+["Z"]))
+        self.assertTrue(ti.has_taxa(taxa=ti))
+        self.assertFalse(ti.has_taxa(taxa=tj))
+        self.assertFalse(ti.has_taxon(label="Z"))
+        self.assertFalse(ti.has_taxon(taxon=tj1))
         for label in labels:
             self.assertTrue(ti.has_taxon(label=label))
 

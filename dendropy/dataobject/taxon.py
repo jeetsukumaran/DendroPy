@@ -162,7 +162,7 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         Returns True if taxon `taxon`, or with `oid` or `label`,
         exists (supplied by keywords; matches any)
         """
-        if "oid" not in kwargs and "label" not in kwargs:
+        if "taxon" not in kwargs and "oid" not in kwargs and "label" not in kwargs:
             raise Exception("Need to specify oid or Label.")
         req_taxon = kwargs.get("taxon", None)
         oid = kwargs.get("oid", None)
