@@ -69,19 +69,22 @@ end;
         self.compare_trees(t1, t2)
 
         # from file, args
-        t3 = Tree(StringIO(newick_str), "newick")
+        t3 = Tree(StringIO(newick_str), "newick", taxon_set=t1.taxon_set)
         t3.debug_check_tree(_LOG)
+        self.assertTrue(t3.taxon_set is t1.taxon_set)
 
         # from file, mixed
-        t4 = Tree(StringIO(newick_str), format="newick")
+        t4 = Tree(StringIO(newick_str), format="newick", taxon_set=t1.taxon_set)
         t4.debug_check_tree(_LOG)
+        self.assertTrue(t4.taxon_set is t1.taxon_set)
 
         # NEXUS
         t5 = Tree(istream=StringIO(nexus_str), format="nexus")
         t6 = Tree(StringIO(nexus_str), format="nexus")
         t7 = Tree(StringIO(nexus_str), "nexus")
         for tx in (t5, t6, t7):
-            tx.is_mutable = False
+            tx.debug_check_tree(_LOG)
+            tx.taxon_set.is_mutable = False
             self.assertEqual(len(tx.taxon_set), 4, str([t.label for t in tx.taxon_set]))
             self.assertTrue(tx.taxon_set.has_taxa(labels=["A", "B", "C", "D"]))
         t8 = Tree(t5)
