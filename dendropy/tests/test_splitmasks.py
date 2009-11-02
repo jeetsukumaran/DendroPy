@@ -28,6 +28,7 @@ import sys
 import os
 import unittest
 import tempfile
+from cStringIO import StringIO
 
 from dendropy.utility import messaging
 import dendropy
@@ -41,15 +42,15 @@ class SplitTest(unittest.TestCase):
     def testCollapseConflicting(self):
         taxon_set = dendropy.TaxonSet([str(i+1) for i in range(5)])
         tree_list = dendropy.TreeList(
-            format="newick",
-            str="""
+            istream=StringIO("""
             (5,((4,3),2),1);
             (5,(4,3,2),1);
             (5,((4,3),2),1);
             (5,(4,3),2,1);
             (5,((4,3),2),1);
             (5,4,3,2,1);
-            """,
+            """),
+            format="newick",
             taxon_set=taxon_set)
         tree = tree_list[0]
         expected_tree = tree_list[1]
@@ -84,10 +85,8 @@ class SplitTest(unittest.TestCase):
 
     def testCladeMasks(self):
         tree_list = dendropy.TreeList(
-            format="newick",
-            str="""
-((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);
-""")
+            istream=StringIO("""((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);"""),
+            format="newick")
         for i in tree_list:
             _LOG.debug(i.get_indented_form())
             splitcalc.encode_splits(i)
