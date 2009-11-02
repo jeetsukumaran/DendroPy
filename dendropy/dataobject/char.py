@@ -540,7 +540,7 @@ class CharacterArray(TaxonSetLinked):
         self.taxon_set._is_mutable = True
         new_map = CharacterDataMap()
         for taxon, seq in self.taxon_seq_map.items():
-            taxon = self.taxon_set.get_taxon(label=taxon.label)
+            taxon = self.taxon_set.require_taxon(label=taxon.label)
             new_map[taxon] = seq
         self.taxon_set._is_mutable = ti_mutable
         self.taxon_seq_map = new_map

@@ -44,17 +44,23 @@ class RootingInterpretation:
 ## StrToTaxon
 
 class StrToTaxon(object):
+
     def __init__(self, taxon_set, translate_dict=None):
         self.taxon_set = taxon_set
         self.translate = translate_dict or {}
-    def get_taxon(self, label, taxon_required=True):
-        v = self.translate.get(label)
+
+    def get_taxon(self, label):
+        return self.translate.get(label)
+
+    def require_taxon(self, label):
+        v = self.get_taxon(label)
         if v is not None:
             return v
-        t = self.taxon_set.get_taxon(label=label, taxon_required=taxon_required)
+        t = self.taxon_set.require_taxon(label=label)
         if t is not None:
             self.translate[label] = t #@this could lead to problems when we support multiple taxon blocks, but now it'll speed thing up
         return t
+
     def index(self, t):
         return self.taxon_set.index(t)
 
@@ -165,7 +171,10 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
                 curr_node = p
             else:
                 is_leaf = curr_node.is_leaf()
-                t = stt.get_taxon(label=token, taxon_required=is_leaf)
+                if is_leaf:
+                    t = stt.require_taxon(label=token)
+                else:
+                    t = stt.get_taxon(label=token)
                 if t is None:
                     curr_node.label = token
                 else:

@@ -36,19 +36,57 @@ class TreeInstantiationTest(unittest.TestCase):
 
     def test_tree_init(self):
 
+        newick_str = "((A,B),(C,D));"
+        nexus_str = """\
+#NEXUS
+begin taxa;
+    dimensions ntax=4;
+    taxlabels =
+        A
+        B
+        C
+        D
+    ;
+end;
+begin trees;
+    translate
+        1 A,
+        2 B,
+        3 C,
+        4 D;
+    tree 1 = ((A,B)i1, (C,D)i2)root;
+end;
+"""
+
         # from file, using keywords
-        t1 = Tree(istream=StringIO("((A,B):i1,(C,D):i2);"), format="newick", oid="t1")
+        t1 = Tree(istream=StringIO(newick_str), format="newick", oid="t1")
         self.assertTrue(t1.oid == "t1", "'%s'" % t1.oid)
+        t1.debug_check_tree(_LOG)
 
         # test copying
         t2 = Tree(t1)
+        t2.debug_check_tree(_LOG)
         self.compare_trees(t1, t2)
 
         # from file, args
-        t3 = Tree(StringIO("((A,B),(C,D));"), "newick")
+        t3 = Tree(StringIO(newick_str), "newick")
+        t3.debug_check_tree(_LOG)
 
         # from file, mixed
-        t4 = Tree(StringIO("((A,B),(C,D));"), format="newick")
+        t4 = Tree(StringIO(newick_str), format="newick")
+        t4.debug_check_tree(_LOG)
+
+        # NEXUS
+        t5 = Tree(istream=StringIO(nexus_str), format="nexus")
+        t6 = Tree(StringIO(nexus_str), format="nexus")
+        t7 = Tree(StringIO(nexus_str), "nexus")
+        for tx in (t5, t6, t7):
+            tx.is_mutable = False
+            self.assertEqual(len(tx.taxon_set), 4)
+            self.assertTrue(tx.taxon_set.has_taxa(labels=["A", "B", "C", "D"]))
+            self.assertTrue(tx.taxon_set.has_taxon(label="A"))
+            self.assertTrue(tx.taxon_set.has_taxa(taxa=self.taxon_set))
+        t8 = Tree(t5)
 
     def compare_trees(self, t1, t2):
         self.assertTrue(t2 is not t1)

@@ -297,7 +297,7 @@ class SeqEvolver(object):
                     for state in seq:
                         cvec.append(dendropy.CharacterDataCell(value=state))
             if taxon_set is not None:
-                taxon = taxon_set.get_taxon(label=leaf.taxon.label)
+                taxon = taxon_set.require_taxon(label=leaf.taxon.label)
             else:
                 taxon = leaf.taxon
             char_map[taxon] = cvec

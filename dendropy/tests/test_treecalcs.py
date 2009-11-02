@@ -65,8 +65,8 @@ class TreeDistTest(unittest.TestCase):
         tree = dendropy.Tree(str="(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", format="newick")
         pdm = treecalc.PatristicDistanceMatrix(tree)
         def _chk_distance(pdm, t1, t2, exp_distance):
-            tax1 = tree.taxon_set.get_taxon(label=t1)
-            tax2 = tree.taxon_set.get_taxon(label=t2)
+            tax1 = tree.taxon_set.require_taxon(label=t1)
+            tax2 = tree.taxon_set.require_taxon(label=t2)
             pd = pdm(tax1, tax2)
             assert pd == exp_distance, ("%s, %s: Expecting %d, but received %d" % (t1, t2, exp_distance, pd))
         _chk_distance(pdm, "a", "b", 2)

@@ -324,7 +324,7 @@ class NexusReader(iosys.DataReader):
         token = self.stream_tokenizer.read_next_token()
         while token != ';':
             label = token
-            self.current_taxon_set.get_taxon(label=label)
+            self.current_taxon_set.require_taxon(label=label)
             token = self.stream_tokenizer.read_next_token()
 
     ###########################################################################

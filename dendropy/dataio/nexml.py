@@ -461,8 +461,9 @@ class _NexmlTreesParser(_NexmlElementParser):
             nodes[node_id].label = nxnode.get('label', None)
             taxon_id = nxnode.get('otu', None)
             if taxon_id is not None:
-                taxon = taxon_set.get_taxon(oid=taxon_id)
-                if not taxon:
+                try:
+                    taxon = taxon_set.require_taxon(oid=taxon_id)
+                except KeyError:
                     raise Exception('Taxon with id "%s" not defined in taxa block "%s"' % (taxon_id, taxon_set.oid))
                 nodes[node_id].taxon = taxon
             self.parse_annotations(annotated=nodes[node_id], nxelement=nxnode)
@@ -713,8 +714,9 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             row_id = nxrow.get('id', None)
             label = nxrow.get('label', None)
             taxon_id = nxrow.get('otu', None)
-            taxon = taxon_set.get_taxon(oid=taxon_id)
-            if not taxon:
+            try:
+                taxon = taxon_set.require_taxon(oid=taxon_id)
+            except KeyError, e:
                 raise Exception('Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_array.oid, char_array.label, taxon_id, taxon_set.oid))
 
             character_vector = dendropy.CharacterDataVector(oid=row_id, label=label, taxon=taxon)

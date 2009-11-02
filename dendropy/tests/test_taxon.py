@@ -44,11 +44,11 @@ class TaxaTest(unittest.TestCase):
             self.assertEquals(t.label, "T%d" % (idx+1))
         ti.lock()
         self.assertRaises(Exception, ti.new_taxon, label="A1")
-        self.assertRaises(Exception, ti.get_taxon, label="A1", taxon_required=True, oid=None)
+        self.assertRaises(Exception, ti.require_taxon, label="A1", oid=None)
         ti.unlock()
         ti.new_taxon("X1")
-        self.assertEquals(ti.get_taxon("X2", taxon_required=False), None)
-        ti.get_taxon("X3")
+        self.assertEquals(ti.get_taxon("X2"), None)
+        ti.require_taxon("X3")
         self.assertEquals(len(ti), 12)
 
 if __name__ == "__main__":

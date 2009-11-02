@@ -157,40 +157,89 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
             taxlist.append(str(taxon))
         return ' '.join(header) + ' : [' + ', '.join(taxlist) + ']'
 
-    def get_taxon(self, label=None, taxon_required=True, oid=None):
+    def has_taxon(self, **kwargs):
+        """
+        Returns True if taxon `taxon`, or with `oid` or `label`,
+        exists (supplied by keywords; matches any)
+        """
+        if "oid" not in kwargs and "label" not in kwargs:
+            raise Exception("Need to specify oid or Label.")
+        req_taxon = kwargs.get("taxon", None)
+        oid = kwargs.get("oid", None)
+        label = kwargs.get("label", None)
+        for self_taxon in self:
+            if (req_taxon is not None and req_taxon is self_taxon) \
+                or (oid is not None and self_taxon.oid == oid) \
+                or (label is not None and self_taxon.label == label):
+                return True
+        return False
+
+    def has_taxa(self, **kwargs):
+        """
+        Returns True if all taxon given by keyword argument `taxa` in self,
+        or at least one Taxon object exists in self with oid or label
+        for every oid given in list of oid's by keyword arg `oids`, or
+        every label in list of `labels` given by keyword arg `labels`.
+        """
+        if "taxon" not in kwargs and "oid" not in kwargs and "label" not in kwargs:
+            raise Exception("Need to specify taxon, oid or label lists.")
+        taxa = set(kwargs.get("taxa",  []))
+        oids = set(kwargs.get("oids", []))
+        labels = set(kwargs.get("labels", []))
+        taxon_oids = set([t.oid for t in self])
+        taxon_labels = set([t.label for t in self])
+        return taxa.issubset(self) \
+            and oids.issubset(taxon_oids) \
+            and labels.issubset(taxon_labels)
+
+    def get_taxon(self, **kwargs):
         """
         Retrieves taxon object with given id OR label (if both are
         given, the first match found is returned). If taxon does not
-        exist and update is False, an exception is raised. If taxon
-        does not exist and update is True, then a new taxon is
-        created, added, and returned.
+        exist then None is returned.
         """
-        update = self._is_mutable
-        if not oid and not label:
-            raise Exception("Need to specify DataObject ID or Label.")
+        if "oid" not in kwargs and "label" not in kwargs:
+            raise Exception("Need to specify Taxon oid or Label.")
+        oid = kwargs.get("oid", None)
+        label = kwargs.get("label", None)
         for taxon in self:
-            if taxon.oid == oid or taxon.label == label:
+            if (oid is not None and taxon.oid == oid) \
+                or (label is not None and taxon.label == label):
                 return taxon
-        if taxon_required:
-            if not update:
-                raise Exception("Taxon not found: %s/%s" % (oid, label))
-            taxon = Taxon(label=label, oid=oid)
+        return None
+
+    def require_taxon(self, **kwargs):
+        """
+        Retrieves taxon object with given id OR label (if both are
+        given, the first match found is returned). If taxon does not
+        exist and the `TaxonSet` is not mutable, an exception is raised.
+        If taxon does not exist and the `TaxonSet` is mutable, then a
+        new taxon is created, added, and returned.
+        """
+        taxon = self.get_taxon(**kwargs)
+        if taxon is not None:
+            return taxon
+        elif self._is_mutable:
+            taxon = Taxon(label=kwargs.get("label", None), oid=kwargs.get("oid", None))
             self.add(taxon)
             return taxon
-        return None
+        else:
+            raise KeyError("Taxon not in TaxonSet, and cannot be created because TaxonSet is immutable.")
 
     def add_taxon(self, taxon):
         """
         Adds taxon to self.
         """
+        if not self._is_mutable:
+            raise KeyError("Taxon %s:'%s' cannot be added to an immutable TaxonSet." % (taxon.oid, taxon.label))
         self.add(taxon)
 
     def new_taxon(self, label=None, oid=None, error_if_label_exists=False):
         "Creates and add a new `Taxon` if not already in the taxon index."
         if not self._is_mutable:
-            raise Exception("Taxon %s:'%s' cannot be added to an immutable taxon index." % (oid, label))
+            raise KeyError("Taxon %s:'%s' cannot be added to an immutable TaxonSet." % (oid, label))
         if error_if_label_exists and self.get_taxon(label=label, taxon_required=False) is not None:
-            raise Exception("Taxon with label %s:'%s' already definied in the taxon index." % (oid, label))
+            raise KeyError("Taxon with label %s:'%s' already defined in the TaxonSet." % (oid, label))
         taxon = Taxon(label=label, oid=oid)
         self.add(taxon)
         return taxon

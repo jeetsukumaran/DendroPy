@@ -44,7 +44,7 @@ class TreeTaxonSetingTest(unittest.TestCase):
         tree = treeobj.Tree()
         leaf_nodes = []
         for tax_label in tax_labels[:4]:
-            t = tree.taxon_set.get_taxon(label=tax_label, taxon_required=True)
+            t = tree.taxon_set.require_taxon(label=tax_label)
             leaf_nodes.append(treeobj.Node(taxon=t))
         self.assertEquals(len(tree.taxon_set), 4)
         tree.seed_node.add_child(node=leaf_nodes[0])
