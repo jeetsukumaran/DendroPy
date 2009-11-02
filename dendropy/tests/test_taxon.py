@@ -35,21 +35,27 @@ class TaxaTest(unittest.TestCase):
     def test_taxonobj(self):
         _LOG.info("Testing TaxonSet")
         ti = taxon.TaxonSet()
+        labels = []
         for idx in xrange(10):
-            ti.new_taxon("T%d" % (idx+1))
+            labels.append("T%d" % (idx+1))
+        for label in labels:
+            ti.new_taxon(label=label)
         self.assertEquals(len(ti), 10)
         _LOG.info(ti)
         for idx, t in enumerate(ti):
 #             _LOG.info("'%s'=='T%d'?" % (t.label, idx+1))
-            self.assertEquals(t.label, "T%d" % (idx+1))
+            self.assertEquals(t.label, labels[idx])
         ti.lock()
         self.assertRaises(Exception, ti.new_taxon, label="A1")
         self.assertRaises(Exception, ti.require_taxon, label="A1", oid=None)
         ti.unlock()
         ti.new_taxon("X1")
-        self.assertEquals(ti.get_taxon("X2"), None)
-        ti.require_taxon("X3")
+        self.assertEquals(ti.get_taxon(label="X2"), None)
+        ti.require_taxon(label="X3")
         self.assertEquals(len(ti), 12)
+        self.assertTrue(ti.has_taxa(labels=labels))
+        for label in labels:
+            self.assertTrue(ti.has_taxon(label=label))
 
 if __name__ == "__main__":
     unittest.main()

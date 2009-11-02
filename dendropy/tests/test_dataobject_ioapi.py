@@ -84,8 +84,6 @@ end;
             tx.is_mutable = False
             self.assertEqual(len(tx.taxon_set), 4, str([t.label for t in tx.taxon_set]))
             self.assertTrue(tx.taxon_set.has_taxa(labels=["A", "B", "C", "D"]))
-            self.assertTrue(tx.taxon_set.has_taxon(label="A"))
-            self.assertTrue(tx.taxon_set.has_taxa(taxa=tx.taxon_set))
         t8 = Tree(t5)
 
     def compare_trees(self, t1, t2):
