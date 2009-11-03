@@ -161,20 +161,11 @@ class DataReader(IOService):
         IOService.__init__(self, **kwargs)
         self.encode_splits = kwargs.get("encode_splits", False)
 
-    def read(self, **kwargs):
+    def read(self, istream, **kwargs):
         """
-        Reads data and populates and returns the bound `Dataset` object
-        or a new `Dataset` object if none is bound.
-        Classes deriving from thisclass, specialized for different data
-        file formats, should implement this method appropriately, with
-        the following keywords:
-
-            - `file`: A file- or file-like object.
-            - `path`: A string specifying the path to a file.
-            - `str`: A string represention of phylogenetic data.
-
-        Only one of `file`, `path`, or `str` can be specified. All other
-        keywords are passed to the DataReader object for futher processing.
+        Reads data from the file-like object `istream`, and populates
+        and returns the bound `Dataset` object or a new `Dataset` object
+        if none is bound.
         """
         raise NotImplementedError
 
@@ -201,14 +192,10 @@ class DataWriter(IOService):
         """
         IOService.__init__(self, **kwargs)
 
-    def write(self, **kwargs):
+    def write(self, ostream, **kwargs):
         """
         Writes data in the bound `Dataset` object to a destination given
-        by one, and only one, of the following keyword arguments:
-
-            - `file`: A file- or file-like object.
-            - `path`: A string specifying the path to a file.
-            - `str`: A string represention of phylogenetic data.
+        by the file-like object `ostream`.
         """
         raise NotImplementedError
 
@@ -262,4 +249,42 @@ class Readable(object):
         s = StringIO(src_str)
         return self.read(istream=s, format=format, **kwargs)
 
+###############################################################################
+## Writeable
+
+class Writeable(object):
+    """
+    Data object that can be instantiated using a `DataReader` service.
+    """
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def write(self, ostream, format, **kwargs):
+        """
+        Writes the object to the file-like object `ostream` in `format`
+        format.
+        """
+        raise NotImplementedError
+
+    def write_to_file(self, fileobj, format, **kwargs):
+        """
+        Writes to file-like object `fileobj`.
+        """
+        return self.write(ostream=fileobj, format=format, **kwargs)
+
+    def write_to_path(self, filepath, format, **kwargs):
+        """
+        Writes to file specified by `filepath`.
+        """
+        f = os.expandvars(os.expanduser(filepath))
+        return self.write(ostream=f, format=format, **kwargs)
+
+    def as_string(self, format, **kwargs):
+        """
+        Composes and returns string representation of the data.
+        """
+        s = StringIO(src_str)
+        self.write(ostream=s, format=format, **kwargs)
+        return s.getvalue()
 

@@ -42,7 +42,7 @@ class NexusCharTest(unittest.TestCase):
     def check_char_io(self, data_filepath, reference_filepath, datatype):
         _LOG.info("Reading ...")
         reader = nexus.NexusReader()
-        data = reader.read(path=tests.data_source_path(data_filepath))
+        data = reader.read(istream=open(tests.data_source_path(data_filepath), "rU"))
         expected = rwtest.text_to_expected(
                 open(tests.data_source_path(reference_filepath), "rU").read())
         assert len(data.taxon_sets[0]) == len(expected), \
@@ -112,7 +112,7 @@ class NexusCharTest(unittest.TestCase):
             char_block.default_state_alphabet = char_block.state_alphabets[0]
 
         reader.build_state_alphabet = special_alphabet_builder
-        data = reader.read(path=tests.data_source_path("apternodus.nex"))
+        data = reader.read(istream=open(tests.data_source_path("apternodus.nex"), "rU"))
 
         expected = rwtest.text_to_expected(
                 open(tests.data_source_path("apternodus.hacked-for-tests.txt"), "rU").read())
@@ -138,12 +138,12 @@ class NexusTreeTest(unittest.TestCase):
     def testWriteTreeList(self):
         _LOG.info("Reading in trees for NEXUS writing test")
         reader = nexus.NexusReader()
-        ds1 = reader.read(path=tests.data_source_path("pythonidae_cytb.nexus.tre"))
+        ds1 = reader.read(istream=open(tests.data_source_path("pythonidae_cytb.nexus.tre"), "rU"))
 
         outfile = tempfile.NamedTemporaryFile()
         _LOG.info("Writing trees to temporary file '%s'" % outfile.name)
         writer = nexus.NexusWriter(dataset=ds1)
-        writer.write(file=outfile)
+        writer.write(ostream=outfile)
         outfile.flush()
 
         _LOG.info("Re-reading trees")

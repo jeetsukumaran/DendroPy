@@ -24,6 +24,7 @@
 Top-level phylogenetic data object: Dataset.
 """
 
+from dendropy.utility import iosys
 from dendropy.utility import containers
 from dendropy.dataobject.base import DataObject
 from dendropy.dataobject.taxon import TaxonSet
@@ -32,14 +33,14 @@ from dendropy.dataobject.tree import TreeList
 ###############################################################################
 ## Dataset
 
-class Dataset(DataObject):
+class Dataset(DataObject, iosys.Readable, iosys.Writeable):
     """
     The main data manager, consisting of a lists of taxa, trees, and character
     phylogenetic data objects, as well as methods to create, populate, access,
     and delete them.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         Initializes a new `Dataset` object. If keyword arguments `file`,
         `path` or `str` are given (and, if so, also requires
@@ -47,27 +48,35 @@ class Dataset(DataObject):
         create and populate the `Dataset` according to the keywords. See
         `Dataset.read()` for keyword details.
         """
+        DataObject.__init__(self)
+        iosys.Writeable.__init__(self)
+        iosys.Readable.__init__(self)
         self.taxon_sets = containers.OrderedSet()
         self.tree_lists = containers.OrderedSet()
         self.char_arrays = containers.OrderedSet()
-        if len(kwargs) > 0:
-            self.read(**kwargs)
+        if len(args) > 0:
+            if isinstance(args[0], Dataset):
+                pass
+                ## TODO ##
+            elif hasattr(args[0], "write"):
+                istream = args[0]
+                if len(args) < 2 and "format" not in kwargs:
+                    raise Exception("Need to specify format if passing data source to Dataset()")
+                elif len(args) == 2 and "format" in kwargs:
+                    raise Exception("Cannot specify format both as unnamed argument ('%s') and keyworded argument" % args[1])
+                elif len(args) == 2:
+                    format = args[1]
+                elif "format" in kwargs:
+                    format = kwargs["format"]
+                self.read(istream, format, **kwargs)
 
     ###########################################################################
     ## I/O
 
-    def read(self, **kwargs):
+    def read(self, istream, format, **kwargs):
         """
-        Populates this `Dataset` object from a data source specified by keyword
-        arguments `file`, `path`, or `str`, with the source format
-        specified by the keyword argument `format`.
-
-        One, and only one, of the following must be specified
-        as a keyword argument to describe the source:
-
-            - `file`: A file- or file-like object.
-            - `path`: A string specifying the path to a file.
-            - `str`: A string represention of phylogenetic data.
+        Populates this `Dataset` object from a file-like object data source
+        `istream`, formatted in `format`.
 
         `format` must be a recognized and supported phylogenetic data
         file format. If reading is not implemented for the format
@@ -91,25 +100,17 @@ class Dataset(DataObject):
         """
         from dendropy.utility import iosys
         from dendropy.dataio import get_reader
-        format = iosys.require_format_from_kwargs(kwargs)
         kwargs["dataset"] = self
         reader = get_reader(format=format, **kwargs)
-        return reader.read(**kwargs)
+        return reader.read(istream, **kwargs)
 
-    def write(self, **kwargs):
+    def write(self, ostream, format, **kwargs):
         """
-        Writes this `Dataset` object formatted according to keyword
-        argument `format` to the destination described by `file` or
-        `path` keyword arguments. `format` must be a recognized and
+        Writes this `Dataset` object formatted according to the file-like
+        object `ostream` in `format`. `format` must be a recognized and
         supported phylogenetic data file format. If writing is not
         implemented for the format specified, then a
         `UnsupportedFormatError` is raised.
-
-        One, and only one, of the following must be specified
-        as a keyword argument to describe the source:
-
-            - `file`: A file- or file-like object.
-            - `path`: A string specifying the path to a file.
 
         The following optional keyword arguments are also recognized:
             - `exclude_trees` if True skips over tree data
@@ -120,8 +121,9 @@ class Dataset(DataObject):
         """
         from dendropy.utility.iosys import require_format_from_kwargs
         from dendropy.dataio import get_writer
-        writer = get_writer(format=require_format_from_kwargs(kwargs), dataset=self, **kwargs)
-        writer.write(**kwargs)
+        kwargs["dataset"] = self
+        writer = get_writer(format=format, **kwargs)
+        writer.write(ostream, **kwargs)
 
     ###########################################################################
     ## DOMAIN DATA MANAGEMENT

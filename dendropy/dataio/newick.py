@@ -228,7 +228,6 @@ class NewickWriter(iosys.DataWriter):
         """
         assert self.dataset is not None, \
             "NewickWriter instance is not bound to a Dataset: no source of data"
-        dest = self.require_destination(kwargs)
         for tree_list in self.dataset.tree_lists:
             if self.bound_taxon_set is None or self.bound_taxon_set is tree_list.taxon_set:
                 self.write_tree_list(tree_list, ostream)

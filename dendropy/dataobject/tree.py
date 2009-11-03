@@ -40,7 +40,7 @@ from dendropy.dataobject.taxon import TaxonSetLinked, TaxonLinked
 ##############################################################################
 ## TreeList
 
-class TreeList(list, TaxonSetLinked, iosys.Readable):
+class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
     """
     Collects and coordinates a list of trees with the associated with the
     same set of taxa.
@@ -91,6 +91,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable):
                                 taxon_set=kwargs.get("taxon_set", None),
                                 label=kwargs.get("label", None),
                                 oid=kwargs.get("oid", None))
+        iosys.Writeable.__init__(self)
         if len(args) > 2:
             raise TypeError("TreeList() takes at most 2 unnamed arguments (%d given)" % len(args))
         if len(args) > 0 and hasattr(args[0], "read"):
@@ -217,7 +218,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable):
 ##############################################################################
 ## Tree
 
-class Tree(TaxonSetLinked, iosys.Readable):
+class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     """
     Fundamental class that encapsulates functionality and
     attributes need for working with trees.  A `Tree` contains a
@@ -298,6 +299,7 @@ class Tree(TaxonSetLinked, iosys.Readable):
                                 taxon_set=kwargs.get("taxon_set", None),
                                 label=kwargs.get("label", None),
                                 oid=kwargs.get("oid", None))
+        iosys.Writeable.__init__(self)
         self.seed_node = None
         self.length_type = None
         self.is_rooted = False

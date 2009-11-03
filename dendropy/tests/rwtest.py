@@ -103,7 +103,7 @@ def check_char_array_parse_against_expected(char_array,
 
 def check_canonical_Pythonidae_cytb_tree_parse(reader, srcpath, logger, underscore_substitution=False):
     logger.info("Reading trees from '%s' using '%s' ..." % (srcpath, reader.__class__.__name__))
-    dataset = reader.read(file=open(srcpath, "rU"))
+    dataset = reader.read(istream=open(srcpath, "rU"))
     expected_taxa = [
         "Aspidites_ramsayi",
         "Bothrochilus_boa",
@@ -252,19 +252,19 @@ class DatasetReadWriteTest(unittest.TestCase):
         reader = self.reader_type()
         self.logger.info("Reading '%s' using '%s' ..." \
             % (src_name, reader.__class__.__name__))
-        ds1 = reader.read(file=src)
+        ds1 = reader.read(istream=src)
 
         writer = self.writer_type(dataset=ds1)
         outfile = open(tests.named_output_file_path(filename="%s.rwtest" % os.path.basename(src_name)), "w")
         assert outfile is not None
         self.logger.info("Writing to '%s' using '%s' ..." % (outfile.name, writer.__class__.__name__))
-        writer.write(file=outfile)
+        writer.write(ostream=outfile)
         outfile.flush()
 
         reader = self.reader_type()
         infile = open(outfile.name, "r")
         self.logger.info("Re-reading '%s' using '%s' ..." \
             % (infile.name, reader.__class__.__name__))
-        ds2 = reader.read(file=infile)
+        ds2 = reader.read(istream=infile)
 
         compare_datasets(ds1, ds2, self)

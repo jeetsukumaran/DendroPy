@@ -93,22 +93,16 @@ class NexusReader(iosys.DataReader):
         self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", False)
         self.reset()
 
-    def read(self, **kwargs):
+    def read(self, istream, **kwargs):
         """
         Instantiates and returns a DataSet object based on the
-        NEXUS-formatted contents read from a source specified by keyword
-        arguments:
-
-            - `file`: A file- or file-like object.
-            - `path`: A string specifying the path to a file.
-            - `str`: A string represention of phylogenetic data.
+        NEXUS-formatted contents given in the file-like object `istream`.
 
         """
         self.reset()
-        src = self.require_source(kwargs)
         if self.dataset is None:
             self.dataset = dataobject.Dataset()
-        self._prepare_to_read_file(src)
+        self._prepare_to_read_file(istream)
         self._parse_nexus_file()
         self.reset()
         return self.dataset
@@ -668,46 +662,41 @@ class NexusWriter(iosys.DataWriter):
         self.is_write_internal_labels = kwargs.get("internal_labels", True)
         self.comment = kwargs.get("comment", [])
 
-    def write(self, **kwargs):
+    def write(self, ostream, **kwargs):
         """
-        Writes bound `DataSource` or `TaxonDomain` to a destination given
-        by one, and only one, of the following keyword arguments:
-
-            - `file`: A file- or file-like object.
-            - `path`: A string specifying the path to a file.
-            - `str`: A string represention of phylogenetic data.
+        Writes bound `DataSource` or `TaxonDomain` to the file-like object
+        `ostream`.
         """
         assert self.dataset is not None, \
             "NexusWriter instance is not bound to a Dataset: no source of data"
-        dest = self.require_destination(kwargs)
-        dest.write('#NEXUS\n\n')
+        ostream.write('#NEXUS\n\n')
         if self.comment is not None:
             if isinstance(self.comment, list):
                 for line in self.comment:
                     if line.strip().replace("\n", "").replace("\r", ""):
-                        dest.write("[ %s ]\n" % line)
+                        ostream.write("[ %s ]\n" % line)
                     else:
-                        dest.write("\n")
-                dest.write("\n")
+                        ostream.write("\n")
+                ostream.write("\n")
             else:
-                dest.write("[ %s ]\n\n" % self.comment)
+                ostream.write("[ %s ]\n\n" % self.comment)
         if (( (not self.exclude_chars) and self.dataset.char_arrays) \
                 or ( (not self.exclude_trees) and self.dataset.tree_lists)) \
                 and (not self.simple) \
                 and (self.is_write_taxa_block):
             for taxon_set in self.dataset.taxon_sets:
                 if self.bound_taxon_set is None or taxon_set is self.bound_taxon_set:
-                    self.write_taxa_block(taxon_set, dest=dest)
+                    self.write_taxa_block(taxon_set, ostream=ostream)
         if not self.exclude_chars:
             for char_array in self.dataset.char_arrays:
                 if self.bound_taxon_set is None or char_array.taxon_set is self.bound_taxon_set:
-                    self.write_char_block(char_array=char_array, dest=dest)
+                    self.write_char_block(char_array=char_array, ostream=ostream)
         if not self.exclude_trees:
             for tree_list in self.dataset.tree_lists:
                 if self.bound_taxon_set is None or tree_list.taxon_set is self.bound_taxon_set:
-                    self.write_trees_block(tree_list=tree_list, dest=dest)
+                    self.write_trees_block(tree_list=tree_list, ostream=ostream)
 
-    def write_taxa_block(self, taxon_set, dest):
+    def write_taxa_block(self, taxon_set, ostream):
         block = []
         block.append('begin taxa;')
         block.append('    dimensions ntax=%d;' % len(taxon_set))
@@ -716,9 +705,9 @@ class NexusWriter(iosys.DataWriter):
             block.append('        %s' % texttools.escape_nexus_token(taxon.label))
         block.append('  ;')
         block.append('end;\n\n')
-        dest.write('\n'.join(block))
+        ostream.write('\n'.join(block))
 
-    def write_trees_block(self, tree_list, dest):
+    def write_trees_block(self, tree_list, ostream):
         block = []
         newick_writer = newick.NewickWriter(edge_lengths=self.is_write_edge_lengths,
             internal_labels=self.is_write_internal_labels)
@@ -739,9 +728,9 @@ class NexusWriter(iosys.DataWriter):
                 rooting,
                 newick_str))
         block.append('end;\n\n')
-        dest.write('\n'.join(block))
+        ostream.write('\n'.join(block))
 
-    def write_char_block(self, char_array, dest, simple_nexus=False):
+    def write_char_block(self, char_array, ostream, simple_nexus=False):
         nexus = []
         taxlabels = [texttools.escape_nexus_token(taxon.label) for taxon in char_array.taxon_set]
         max_label_len = max([len(label) for label in taxlabels])
@@ -777,7 +766,7 @@ class NexusWriter(iosys.DataWriter):
             nexus.append('%s    %s' % (texttools.escape_nexus_token(taxon.label).ljust(max_label_len), seq.getvalue()))
         nexus.append('    ;')
         nexus.append('end;\n\n')
-        dest.write('\n'.join(nexus))
+        ostream.write('\n'.join(nexus))
 
     def compose_format_terms(self, char_array):
         format = []

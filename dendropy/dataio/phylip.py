@@ -33,17 +33,16 @@ class PhylipWriter(iosys.DataWriter):
         "Calls the base class constructor."
         iosys.DataWriter.__init__(self, **kwargs)
 
-    def write(self, **kwargs):
+    def write(self, ostream, **kwargs):
         "Writes dataset to a full PHYLIP document."
         if self.exclude_chars:
             return
         assert self.dataset is not None, \
             "NexusWriter instance is not bound to a Dataset: no source of data"
-        dest = self.require_destination(kwargs)
         char_array = self.dataset.char_arrays[0]
         n_seqs = len(char_array)
         n_sites = len(char_array.values()[0])
-        dest.write("%d %d\n" % (n_seqs, n_sites))
+        ostream.write("%d %d\n" % (n_seqs, n_sites))
         maxlen = max([len(str(taxon)) for taxon in char_array])
         for taxon in char_array.taxon_set:
-            dest.write("%s        %s\n" % ( str(taxon).ljust(maxlen), str(char_array[taxon].values_as_string()).replace(' ', '')))
+            ostream.write("%s        %s\n" % ( str(taxon).ljust(maxlen), str(char_array[taxon].values_as_string()).replace(' ', '')))
