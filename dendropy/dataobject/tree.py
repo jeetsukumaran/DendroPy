@@ -101,7 +101,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if len(args) > 1:
                 raise Exception("Invalid number of unnamed arguments passed to Tree(): only accepts one when passed an iterable as the first argument.")
             if isinstance(args[0], TreeList):
-                list.__init__(self)
+                list.__init__(self, args[0])
                 for k,v in args[0].__dict__.items():
                     if k not in ["_oid"]:
                         self.__dict__[k] = v
