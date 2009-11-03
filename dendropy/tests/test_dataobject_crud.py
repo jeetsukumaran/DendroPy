@@ -93,6 +93,9 @@ class CharArrayInstantiationTest(unittest.TestCase):
 
         ca2 = dendropy.DnaCharacterArray(ca1)
         self.assertTrue(ca1.taxon_set is ca2.taxon_set)
+        self.assertTrue(ca1.state_alphabets is not ca2.state_alphabets)
+        self.assertEqual(ca1.state_alphabets, ca2.state_alphabets)
+        self.assertTrue(ca1.default_state_alphabet is ca2.default_state_alphabet)
         self.assertEqual(len(ca2.column_types), 1)
         self.assertTrue(ca2.column_types[0] is not ca1.column_types[0])
         self.assertTrue(ca2.column_types[0].state_alphabet is ca1.column_types[0].state_alphabet)
@@ -144,22 +147,24 @@ class CharArrayInstantiationTest(unittest.TestCase):
                     self.assertTrue(c.column_type is col3, [c.column_type, col3])
                     self.assertTrue(c.value in col3.state_alphabet)
 
-#         ca2 = dendropy.DnaCharacterArray(ca1)
-#         self.assertTrue(ca1.taxon_set is ca2.taxon_set)
-#         self.assertEqual(len(ca2.column_types), 1)
-#         self.assertTrue(ca2.column_types[0] is not ca1.column_types[0])
-#         self.assertTrue(ca2.column_types[0].state_alphabet is ca1.column_types[0].state_alphabet)
-#         for t, v1 in ca1.items():
-#             v2 = ca2[t]
-#             self.assertTrue(v1 is not v2)
-#             for i, c1 in enumerate(v1):
-#                 c2 = v2[i]
-#                 self.assertTrue(c1 is not c2)
-#                 self.assertTrue(c1.column_type is not c2.column_type)
-#                 self.assertTrue(c1.column_type.state_alphabet is c2.column_type.state_alphabet)
-#                 self.assertTrue(c1.value is c2.value, [id(c1.value), id(c2.value)])
-#                 self.assertTrue(c1.value in dendropy.DNA_STATE_ALPHABET)
-#                 self.assertTrue(c2.value in dendropy.DNA_STATE_ALPHABET)
+        ca2 = dendropy.StandardCharacterArray(ca1)
+        self.assertTrue(ca1.taxon_set is ca2.taxon_set)
+        self.assertTrue(ca1.state_alphabets is not ca2.state_alphabets)
+        self.assertEqual(len(ca1.state_alphabets), len(ca2.state_alphabets))
+        self.assertEqual(len(ca1.state_alphabets), 3)
+        self.assertEqual(len(ca2.column_types), 3)
+        for ci, col1 in ca1.column_types:
+            col2 = ca1.column_types[ci]
+            self.assertTrue(col2 is not col1)
+            self.assertTrue(col2.state_alphabet is not col1.state_alphabet)
+        for t, v1 in ca1.items():
+            v2 = ca2[t]
+            self.assertTrue(v1 is not v2)
+            for i, c1 in enumerate(v1):
+                c2 = v2[i]
+                self.assertTrue(c1 is not c2)
+                self.assertTrue(c1.column_type is not c2.column_type)
+                self.assertTrue(c1.column_type.state_alphabet is not c2.column_type.state_alphabet)
 
     def get_standard_cells(self, col_type, symbols):
         cells = [dendropy.CharacterDataCell(value=s, column_type=col_type) for s in col_type.state_alphabet.get_states(symbols=symbols)]
