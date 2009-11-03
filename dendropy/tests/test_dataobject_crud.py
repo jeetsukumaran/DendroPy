@@ -24,6 +24,7 @@
 Tests create, read, update, and delete methods of phylogenetic data objects.
 """
 
+import random
 import unittest
 from cStringIO import StringIO
 from dendropy.utility import messaging
@@ -80,10 +81,10 @@ class CharArrayInstantiationTest(unittest.TestCase):
 
         dna_col = dendropy.ColumnType(state_alphabet=dendropy.DNA_STATE_ALPHABET)
         ca1.column_types.append(dna_col)
-        ca1[taxon_set[0]] = dendropy.CharacterDataVector(get_dna_cells())
-        ca1[taxon_set[1]] = dendropy.CharacterDataVector(get_dna_cells())
-        ca1[taxon_set[2]] = dendropy.CharacterDataVector(get_dna_cells())
-        ca1[taxon_set[3]] = dendropy.CharacterDataVector(get_dna_cells())
+        ca1[taxon_set[0]] = dendropy.CharacterDataVector(self.get_dna_cells())
+        ca1[taxon_set[1]] = dendropy.CharacterDataVector(self.get_dna_cells())
+        ca1[taxon_set[2]] = dendropy.CharacterDataVector(self.get_dna_cells())
+        ca1[taxon_set[3]] = dendropy.CharacterDataVector(self.get_dna_cells())
 
         for t, v in ca1.items():
             for c in v:
@@ -106,45 +107,76 @@ class CharArrayInstantiationTest(unittest.TestCase):
                 self.assertTrue(c1.value is c2.value, [id(c1.value), id(c2.value)])
                 self.assertTrue(c1.value in dendropy.DNA_STATE_ALPHABET)
                 self.assertTrue(c2.value in dendropy.DNA_STATE_ALPHABET)
+
+    def get_dna_cells(self):
+        cells = [dendropy.CharacterDataCell(value=s) for s in dendropy.DNA_STATE_ALPHABET.get_states(symbols="ACGTACGT")]
+        return cells
 
     def test_standard(self):
 
         taxon_set = dendropy.TaxonSet(['A','B','C','D'])
-        ca1 = dendropy.DnaCharacterArray(taxon_set=taxon_set)
+        ca1 = dendropy.StandardCharacterArray(taxon_set=taxon_set)
         self.assertTrue(ca1.taxon_set is taxon_set)
 
-        def get_dna_cells():
-            cells = [dendropy.CharacterDataCell(value=s) for s in dendropy.DNA_STATE_ALPHABET.get_states(symbols="ACGTACGT")]
-            return cells
+        sa1 = self.get_standard_state_alphabet("012")
+        sa2 = self.get_standard_state_alphabet("XYZ")
+        sa3 = self.get_standard_state_alphabet("JKL")
+        ca1.state_alphabets = [sa1, sa2, sa3]
+        col1 = dendropy.ColumnType(state_alphabet=sa1, label="COL_012")
+        col2 = dendropy.ColumnType(state_alphabet=sa2, label="COL_XYZ")
+        col3 = dendropy.ColumnType(state_alphabet=sa3, label="COL_JKL")
 
-        dna_col = dendropy.ColumnType(state_alphabet=dendropy.DNA_STATE_ALPHABET)
-        ca1.column_types.append(dna_col)
-        ca1[taxon_set[0]] = dendropy.CharacterDataVector(get_dna_cells())
-        ca1[taxon_set[1]] = dendropy.CharacterDataVector(get_dna_cells())
-        ca1[taxon_set[2]] = dendropy.CharacterDataVector(get_dna_cells())
-        ca1[taxon_set[3]] = dendropy.CharacterDataVector(get_dna_cells())
+        for t in taxon_set:
+            ca1[t] = dendropy.CharacterDataVector(self.get_standard_cells(col1, "001122-??")) \
+                   + dendropy.CharacterDataVector(self.get_standard_cells(col2, "XYZXYZ??-")) \
+                   + dendropy.CharacterDataVector(self.get_standard_cells(col3, "JKJLKL-??")) \
 
         for t, v in ca1.items():
-            for c in v:
-                c.column_type = dna_col
-                self.assertTrue(c.value in dendropy.DNA_STATE_ALPHABET, c.value)
+            self.assertEqual(len(v), 27)
+            for i, c in enumerate(v):
+                if i >= 0 and i <= 8:
+                    self.assertTrue(c.column_type is col1, [c.column_type, col1])
+                    self.assertTrue(c.value in col1.state_alphabet)
+                elif i >= 9 and i <= 17:
+                    self.assertTrue(c.column_type is col2, [c.column_type, col2])
+                    self.assertTrue(c.value in col2.state_alphabet)
+                elif i >= 18 and i <= 26:
+                    self.assertTrue(c.column_type is col3, [c.column_type, col3])
+                    self.assertTrue(c.value in col3.state_alphabet)
 
-        ca2 = dendropy.DnaCharacterArray(ca1)
-        self.assertTrue(ca1.taxon_set is ca2.taxon_set)
-        self.assertEqual(len(ca2.column_types), 1)
-        self.assertTrue(ca2.column_types[0] is not ca1.column_types[0])
-        self.assertTrue(ca2.column_types[0].state_alphabet is ca1.column_types[0].state_alphabet)
-        for t, v1 in ca1.items():
-            v2 = ca2[t]
-            self.assertTrue(v1 is not v2)
-            for i, c1 in enumerate(v1):
-                c2 = v2[i]
-                self.assertTrue(c1 is not c2)
-                self.assertTrue(c1.column_type is not c2.column_type)
-                self.assertTrue(c1.column_type.state_alphabet is c2.column_type.state_alphabet)
-                self.assertTrue(c1.value is c2.value, [id(c1.value), id(c2.value)])
-                self.assertTrue(c1.value in dendropy.DNA_STATE_ALPHABET)
-                self.assertTrue(c2.value in dendropy.DNA_STATE_ALPHABET)
+#         ca2 = dendropy.DnaCharacterArray(ca1)
+#         self.assertTrue(ca1.taxon_set is ca2.taxon_set)
+#         self.assertEqual(len(ca2.column_types), 1)
+#         self.assertTrue(ca2.column_types[0] is not ca1.column_types[0])
+#         self.assertTrue(ca2.column_types[0].state_alphabet is ca1.column_types[0].state_alphabet)
+#         for t, v1 in ca1.items():
+#             v2 = ca2[t]
+#             self.assertTrue(v1 is not v2)
+#             for i, c1 in enumerate(v1):
+#                 c2 = v2[i]
+#                 self.assertTrue(c1 is not c2)
+#                 self.assertTrue(c1.column_type is not c2.column_type)
+#                 self.assertTrue(c1.column_type.state_alphabet is c2.column_type.state_alphabet)
+#                 self.assertTrue(c1.value is c2.value, [id(c1.value), id(c2.value)])
+#                 self.assertTrue(c1.value in dendropy.DNA_STATE_ALPHABET)
+#                 self.assertTrue(c2.value in dendropy.DNA_STATE_ALPHABET)
+
+    def get_standard_cells(self, col_type, symbols):
+        cells = [dendropy.CharacterDataCell(value=s, column_type=col_type) for s in col_type.state_alphabet.get_states(symbols=symbols)]
+        return cells
+
+    def get_standard_state_alphabet(self, symbols):
+        sa = dendropy.StateAlphabet()
+        for symbol in symbols:
+            sa.append(dendropy.StateAlphabetElement(symbol=symbol))
+        sa.append(dendropy.StateAlphabetElement(symbol="?",
+                                           multistate=dendropy.StateAlphabetElement.AMBIGUOUS_STATE,
+                                           member_states=sa.get_states(symbols=symbols)))
+        sa.append(dendropy.StateAlphabetElement(symbol="-",
+                                           multistate=dendropy.StateAlphabetElement.AMBIGUOUS_STATE,
+                                           member_states=sa.get_states(symbols=symbols)))
+        return sa
+
 
 class TreeInstantiationTest(unittest.TestCase):
 
