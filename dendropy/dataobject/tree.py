@@ -957,12 +957,14 @@ class Node(TaxonLinked):
         o = self.__class__(taxon=self.taxon)
         memo[id(self)] = o
         if self.taxon is not None:
-            memo[self.taxon] = o.taxon
+            memo[id(self.taxon)] = o.taxon
         for k, v in self.__dict__.iteritems():
             if not k in ['_child_nodes', '_taxon', "_oid"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
         for c in self.child_nodes():
             o.add_child(copy.deepcopy(c, memo))
+        memo[id(self._child_nodes)] = o._child_nodes
+        memo[id(self._oid)] = o._oid
         return o
 
     def __str__(self):
@@ -1459,6 +1461,10 @@ class Edge(IdTagged):
         o.head_node = copy.deepcopy(self.head_node, memo)
         o.length = copy.deepcopy(self.length, memo)
         o.rootedge = copy.deepcopy(self.rootedge, memo)
+        memo[id(self.tail_node)] = o.tail_node
+        memo[id(self.head_node)] = o.head_node
+        memo[id(self.length)] = o.length
+        memo[id(self.rootedge)] = o.rootedge
         for k, v in self.__dict__.iteritems():
             if not k in ['tail_node', 'head_node', 'length', 'rootedge', "_oid"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)

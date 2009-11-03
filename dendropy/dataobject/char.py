@@ -727,6 +727,38 @@ class StandardCharacterArray(DiscreteCharacterArray):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
         DiscreteCharacterArray.__init__(self, *args, **kwargs)
 
+    def __deepcopy__(self, memo):
+        o = self.__class__(taxon_set=self.taxon_set, oid=self.oid)
+        memo[id(self)] = o
+        memo[id(self.taxon_set)] = o.taxon_set
+        o.state_alphabets = self.state_alphabets
+        memo[id(self.state_alphabets)] = o.state_alphabets
+        o.default_state_alphabet = self.default_state_alphabet
+        memo[id(self.default_state_alphabet)] = o.default_state_alphabet
+        o._default_symbol_state_map = self._default_symbol_state_map
+        memo[id(self._default_symbol_state_map)] = o._default_symbol_state_map
+        o.column_types = copy.deepcopy(self.column_types, memo)
+        for taxon, cdv in self.taxon_seq_map.items():
+            ocdv = CharacterDataVector(oid=cdv.oid, label=cdv.label, taxon=taxon)
+            for cell in cdv:
+                if cell.column_type is not None:
+                    column_type = memo[id(cell.column_type)]
+                else:
+                    column_type = None
+                ocdv.append(CharacterDataCell(value=cell.value, column_type=column_type))
+            o.taxon_seq_map[taxon] = ocdv
+        memo[id(self.taxon_seq_map[taxon])] = o.taxon_seq_map[taxon]
+        for k, v in self.__dict__.iteritems():
+            if k not in ["taxon_set",
+                         "_oid",
+                         "state_alphabets",
+                         "default_state_alphabet",
+                         "_default_symbol_state_map",
+                         "taxon_seq_map",
+                         "column_types"]:
+                o.__dict__[k] = copy.deepcopy(v, memo)
+        return o
+
 class FixedAlphabetCharacterArray(DiscreteCharacterArray):
 
     def __init__(self, *args, **kwargs):
