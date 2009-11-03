@@ -155,7 +155,7 @@ class CharArrayInstantiationTest(unittest.TestCase):
         self.assertEqual(len(ca1.state_alphabets), 3)
         self.assertEqual(len(ca2.column_types), 3)
         for ci, col1 in enumerate(ca1.column_types):
-            col2 = ca1.column_types[ci]
+            col2 = ca2.column_types[ci]
             self.assertTrue(col2 is not col1)
             self.assertTrue(col2.state_alphabet is not col1.state_alphabet)
         for t, v1 in ca1.items():
