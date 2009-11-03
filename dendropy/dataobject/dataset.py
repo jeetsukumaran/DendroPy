@@ -117,6 +117,7 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
         for cai, ca1 in enumerate(self.char_arrays):
             ca2 = deepcopy(ca1, memo)
             ca2.oid = ca1.oid
+            o.char_arrays.add(ca2)
             memo[id(ca1)] = ca2
 
         return o

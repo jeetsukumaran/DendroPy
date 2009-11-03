@@ -105,7 +105,17 @@ def compare_individual_tree_lists(tree_list1, tree_list2, tester, distinct_taxa=
             node2 = tree2_nodes[nd_idx]
             if node1.taxon is not None:
                 tester.assert_(node2.taxon is not None)
+                if distinct_taxa:
+                    tester.assertTrue(node1.taxon is not node2.taxon)
+                else:
+                    tester.assertTrue(node1.taxon is node2.taxon)
+                if equal_oids:
+                    tester.assertEqual(node1.oid, node2.oid)
+                else:
+                    tester.assertNotEqual(node1.oid, node2.oid)
                 tester.assertEqual(node1.taxon.label, node2.taxon.label)
+                tester.assertTrue(node1.taxon in tree1.taxon_set)
+                tester.assertTrue(node2.taxon in tree2.taxon_set)
             else:
                 tester.assert_(node2.taxon is None)
             if node1.edge.length is not None:
