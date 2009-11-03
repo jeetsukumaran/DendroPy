@@ -59,6 +59,8 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
                 pass
                 ## TODO ##
             elif hasattr(args[0], "write"):
+                if "istream" in kwargs:
+                    raise Exception("Cannot specify both unnamed file object source ('%s') and named 'istream' source to Dataset" % (args[0]))
                 istream = args[0]
                 if len(args) < 2 and "format" not in kwargs:
                     raise Exception("Need to specify format if passing data source to Dataset()")
@@ -68,7 +70,17 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
                     format = args[1]
                 elif "format" in kwargs:
                     format = kwargs["format"]
+                    del(kwargs["format"])
                 self.read(istream, format, **kwargs)
+        elif "istream" in kwargs:
+            istream = kwargs["istream"]
+            if "format" in kwargs:
+                format = kwargs["format"]
+                del(kwargs["istream"])
+                del(kwargs["format"])
+            else:
+                raise Exception("Need to specify format if passing data source to Dataset()")
+            self.read(istream, format, **kwargs)
 
     ###########################################################################
     ## I/O

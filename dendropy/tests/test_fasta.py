@@ -34,7 +34,6 @@ import dendropy
 class TestFasta(unittest.TestCase):
 
     def testAsStrReading(self):
-
         dataset = dendropy.Dataset(
                 istream=open(data_source_path("bad_names.fasta"), "rU"),
                 format='DNAFasta',
