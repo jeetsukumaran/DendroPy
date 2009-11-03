@@ -93,7 +93,7 @@ class CharArrayInstantiationTest(unittest.TestCase):
 
         ca2 = dendropy.DnaCharacterArray(ca1)
         self.assertTrue(ca1.taxon_set is ca2.taxon_set)
-        self.assertTrue(ca1.state_alphabets is not ca2.state_alphabets)
+        self.assertTrue(ca1.state_alphabets is ca2.state_alphabets)
         self.assertEqual(ca1.state_alphabets, ca2.state_alphabets)
         self.assertTrue(ca1.default_state_alphabet is ca2.default_state_alphabet)
         self.assertEqual(len(ca2.column_types), 1)

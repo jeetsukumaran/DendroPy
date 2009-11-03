@@ -489,14 +489,19 @@ class CharacterArray(TaxonSetLinked):
         self.taxon_seq_map = CharacterDataMap()
         self.column_types = []
         self.markup_as_sequences = True
+        if len(args) > 0:
+            self.clone_from(*args)
+
+    def clone_from(self, *args):
         if len(args) > 1:
-            raise TypeError("CharacterArray() takes a maximum of 1 non-keyword argument, but %d given: %s"\
+            raise TypeError("Only 1 argument accepted, but %d given: %s"\
                 % (len(args), str(args)))
-        elif len(args) > 0 and isinstance(args[0], CharacterArray):
+        elif len(args) > 0 and (args[0].__class__ is self.__class__):
             ca = copy.deepcopy(args[0])
             self.__dict__ = ca.__dict__
         elif len(args) > 0:
-            raise TypeError("Invalid non-keyword argument passed to CharacterArray(): %s" % arg[0])
+            raise TypeError("Invalid non-keyword argument passed: %s" % (args[0]))
+        return self
 
     def extend_characters(self, other_array):
         """
@@ -698,10 +703,12 @@ class DiscreteCharacterArray(CharacterArray):
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        CharacterArray.__init__(self, *args, **kwargs)
+        CharacterArray.__init__(self, **kwargs)
         self.state_alphabets = []
         self.default_state_alphabet = None
         self._default_symbol_state_map = None
+        if len(args) > 0:
+            self.clone_from(*args)
 
     def _get_default_symbol_state_map(self):
         if self._default_symbol_state_map is None and self.default_state_alphabet is not None:
@@ -725,7 +732,9 @@ class StandardCharacterArray(DiscreteCharacterArray):
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        DiscreteCharacterArray.__init__(self, *args, **kwargs)
+        DiscreteCharacterArray.__init__(self, **kwargs)
+        if len(args) > 0:
+            self.clone_from(*args)
 
     def __deepcopy__(self, memo):
         o = self.__class__(taxon_set=self.taxon_set)
@@ -737,7 +746,6 @@ class StandardCharacterArray(DiscreteCharacterArray):
         for k, v in self.__dict__.iteritems():
             if k not in ["taxon_set",
                          "_oid"]:
-                print k
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
 
@@ -745,7 +753,9 @@ class FixedAlphabetCharacterArray(DiscreteCharacterArray):
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        DiscreteCharacterArray.__init__(self, *args, **kwargs)
+        DiscreteCharacterArray.__init__(self, **kwargs)
+        if len(args) > 0:
+            self.clone_from(*args)
 
     def __deepcopy__(self, memo):
         o = self.__class__(taxon_set=self.taxon_set)
@@ -786,18 +796,22 @@ class DnaCharacterArray(FixedAlphabetCharacterArray):
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        FixedAlphabetCharacterArray.__init__(self, *args, **kwargs)
+        FixedAlphabetCharacterArray.__init__(self, **kwargs)
         self.default_state_alphabet = DNA_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
+        if len(args) > 0:
+            self.clone_from(*args)
 
 class RnaCharacterArray(FixedAlphabetCharacterArray):
     "RNA nucleotide data."
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        FixedAlphabetCharacterArray.__init__(self, *args, **kwargs)
+        FixedAlphabetCharacterArray.__init__(self, **kwargs)
         self.default_state_alphabet = RNA_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
+        if len(args) > 0:
+            self.clone_from(*args)
 
 class ProteinCharacterArray(FixedAlphabetCharacterArray):
     "Protein / amino acid data."
@@ -806,24 +820,30 @@ class ProteinCharacterArray(FixedAlphabetCharacterArray):
         """
         Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`.
         """
-        FixedAlphabetCharacterArray.__init__(self, *args, **kwargs)
+        FixedAlphabetCharacterArray.__init__(self, **kwargs)
         self.default_state_alphabet = PROTEIN_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
+        if len(args) > 0:
+            self.clone_from(*args)
 
 class RestrictionSitesCharacterArray(FixedAlphabetCharacterArray):
     "Restriction sites data."
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        FixedAlphabetCharacterArray.__init__(self, *args, **kwargs)
+        FixedAlphabetCharacterArray.__init__(self, **kwargs)
         self.default_state_alphabet = RESTRICTION_SITES_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
+        if len(args) > 0:
+            self.clone_from(*args)
 
 class InfiniteSitesCharacterArray(FixedAlphabetCharacterArray):
     "Infinite sites data."
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        FixedAlphabetCharacterArray.__init__(self, *args, **kwargs)
+        FixedAlphabetCharacterArray.__init__(self, **kwargs)
         self.default_state_alphabet = INFINITE_SITES_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
+        if len(args) > 0:
+            self.clone_from(*args)
