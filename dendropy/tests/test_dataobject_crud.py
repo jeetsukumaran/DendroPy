@@ -36,6 +36,9 @@ _LOG = messaging.get_logger(__name__)
 
 class DatasetInstantiationTest(unittest.TestCase):
 
+    def setUp(self):
+        self.logger = _LOG
+
     def test_dataset_nexus_dna(self):
         nexus_str = """\
 #NEXUS
@@ -69,35 +72,7 @@ End;
         self.assertEqual(len(d1.tree_lists), 1)
 
         d2 = dendropy.Dataset(d1)
-
-        self.assertTrue(d2.taxon_sets is not d1.taxon_sets)
-        self.assertEqual(len(d2.taxon_sets), len(d1.taxon_sets))
-        for tsi, ts1 in enumerate(d1.taxon_sets):
-            ts2 = d2.taxon_sets[tsi]
-            self.assertTrue(ts2 is not ts1)
-            self.assertEqual(len(ts1), len(ts2))
-            for i, t1 in enumerate(ts1):
-                t2 = ts2[i]
-                self.assertTrue(t2 is not t1)
-                self.assertEqual(t2.label, t1.label)
-                self.assertEqual(t2.oid, t1.oid)
-
-        self.assertTrue(d2.tree_lists is not d1.tree_lists)
-        self.assertEqual(len(d2.tree_lists), len(d1.tree_lists))
-        for tli, tl1 in enumerate(d1.tree_lists):
-            tl2 = d2.tree_lists[tli]
-            self.assertTrue(tl2 is not tl1)
-            self.assertEqual(len(tl2), len(tl1))
-            self.assertTrue(tl2.taxon_set is not tl1.taxon_set)
-            self.assertTrue(tl2.taxon_set in d2.taxon_sets)
-            self.assertTrue
-            for ti, t1 in enumerate(tl1):
-                t2 = tl2[ti]
-                self.assertTrue(t2 is not t1)
-                self.assertEqual(t2.oid, t1.oid)
-                self.assertEqual(t2.label, t1.label)
-                self.assertTrue(t2.taxon_set is not t1.taxon_set)
-                self.assertTrue(t2.taxon_set is tl2.taxon_set)
+        datacompare.compare_datasets(d1, d2, self, distinct_taxa=True, equal_oids=True)
 
 
 # class CharArrayInstantiationTest(unittest.TestCase):

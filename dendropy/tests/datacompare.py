@@ -49,28 +49,55 @@ def compare_individual_taxon_sets(ts1, ts2, tester, distinct_taxa=True, equal_oi
     tester.assertEqual(len(ts1), len(ts2))
     if equal_oids:
         tester.assertEqual(ts1.oid, ts2.oid)
+    tester.assertEqual(ts1.label, ts2.label)
     for taxon_idx, taxon1 in enumerate(ts1):
         tester.logger.debug("Taxon %d: '%s' == '%s'" % (taxon_idx, taxon1.label, ts2[taxon_idx].label))
+        taxon2 = ts2[taxon_idx]
         if distinct_taxa:
             tester.assertTrue(taxon1 is not taxon2)
-        tester.assertEqual(taxon1.label, ts2[taxon_idx].label)
+        tester.assertEqual(taxon1.label, taxon2.label)
         if equal_oids:
             tester.assertEqual(taxon1.oid, taxon2.oid)
+        else:
+            tester.assertNotEqual(taxon1.oid, taxon2.oid)
 
 def compare_dataset_tree_lists(ds1, ds2, tester, distinct_taxa=True, equal_oids=False):
+    tester.assertTrue(ds1.tree_lists is not ds2.tree_lists)
     tester.assertEqual(len(ds1.tree_lists), len(ds2.tree_lists))
     for tree_list_idx, tree_list1 in enumerate(ds1.tree_lists):
         tree_list2 = ds2.tree_lists[tree_list_idx]
+        if distinct_taxa:
+            tester.assertTrue(tree_list1.taxon_set is not tree_list2.taxon_set)
+            tester.assertTrue(tree_list1.taxon_set in ds1.taxon_sets)
+            tester.assertTrue(tree_list2.taxon_set in ds2.taxon_sets)
+            tester.assertTrue(tree_list1.taxon_set not in ds2.taxon_sets)
+            tester.assertTrue(tree_list2.taxon_set not in ds1.taxon_sets)
         compare_individual_tree_lists(tree_list1, tree_list2, tester, distinct_taxa, equal_oids)
 
 def compare_individual_tree_lists(tree_list1, tree_list2, tester, distinct_taxa=True, equal_oids=False):
+    tester.assertTrue(tree_list1 is not tree_list2)
     tester.assertEqual(len(tree_list1), len(tree_list2))
+    if distinct_taxa:
+        tester.assertTrue(tree_list1.taxon_set is not tree_list2.taxon_set)
+    compare_individual_taxon_sets(tree_list1.taxon_set, tree_list2.taxon_set, tester, distinct_taxa, equal_oids)
+    tester.assertEqual(tree_list1.label, tree_list2.label)
+    if equal_oids:
+        tester.assertEqual(tree_list1.oid, tree_list2.oid)
+    else:
+        tester.assertNotEqual(tree_list1.oid, tree_list2.oid)
     for tree_idx, tree1 in enumerate(tree_list1):
         tree2 = tree_list2[tree_idx]
         tester.logger.debug(tree1.to_newick_str())
         tree1.debug_check_tree(logger=tester.logger)
         tester.logger.debug(tree2.to_newick_str())
         tree2.debug_check_tree(logger=tester.logger)
+
+        tester.assertTrue(tree1 is not tree2)
+        if distinct_taxa:
+            tester.assertTrue(tree1.taxon_set is not tree2.taxon_set)
+        tester.assertTrue(tree1.taxon_set is tree_list1.taxon_set)
+        tester.assertTrue(tree2.taxon_set is tree_list2.taxon_set)
+
         tree1_nodes = [nd for nd in tree1.postorder_node_iter()]
         tree2_nodes = [nd for nd in tree2.postorder_node_iter()]
         tester.assertEqual(len(tree1_nodes), len(tree2_nodes))
