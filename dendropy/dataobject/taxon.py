@@ -130,6 +130,7 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
     def __deepcopy__(self, memo):
         o = self.__class__(list(self), label=self.label, is_mutable=self._is_mutable)
         memo[id(self)] = o
+        memo[id(self._oid)] = o._oid
         return o
 
     def lock(self):

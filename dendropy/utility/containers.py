@@ -165,6 +165,7 @@ class NormalizedBitmaskDict(dict):
             if isinstance(other, dict):
                 for key, val in other.items():
                     self[key] = val
+
     def __deepcopy__(self, memo):
         o = NormalizedBitmaskDict()
         memo[id(self)] = o

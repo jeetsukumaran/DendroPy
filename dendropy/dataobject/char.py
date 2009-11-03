@@ -728,19 +728,15 @@ class StandardCharacterArray(DiscreteCharacterArray):
         DiscreteCharacterArray.__init__(self, *args, **kwargs)
 
     def __deepcopy__(self, memo):
-        o = self.__class__(taxon_set=self.taxon_set, oid=self.oid)
+        o = self.__class__(taxon_set=self.taxon_set)
         memo[id(self)] = o
+        memo[id(self._oid)] = o._oid
         memo[id(self.taxon_set)] = o.taxon_set
         for i, t in enumerate(self.taxon_set):
             memo[id(t)] = o.taxon_set[i]
         for k, v in self.__dict__.iteritems():
             if k not in ["taxon_set",
-                         "_oid",
-                         "state_alphabets",
-                         "default_state_alphabet",
-                         "_default_symbol_state_map",
-                         "taxon_seq_map",
-                         "column_types"]:
+                         "_oid"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
 
@@ -751,7 +747,7 @@ class FixedAlphabetCharacterArray(DiscreteCharacterArray):
         DiscreteCharacterArray.__init__(self, *args, **kwargs)
 
     def __deepcopy__(self, memo):
-        o = self.__class__(taxon_set=self.taxon_set, oid=self.oid)
+        o = self.__class__(taxon_set=self.taxon_set)
         memo[id(self)] = o
         memo[id(self.taxon_set)] = o.taxon_set
         for i, t in enumerate(self.taxon_set):

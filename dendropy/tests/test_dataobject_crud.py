@@ -107,6 +107,45 @@ class CharArrayInstantiationTest(unittest.TestCase):
                 self.assertTrue(c1.value in dendropy.DNA_STATE_ALPHABET)
                 self.assertTrue(c2.value in dendropy.DNA_STATE_ALPHABET)
 
+    def test_standard(self):
+
+        taxon_set = dendropy.TaxonSet(['A','B','C','D'])
+        ca1 = dendropy.DnaCharacterArray(taxon_set=taxon_set)
+        self.assertTrue(ca1.taxon_set is taxon_set)
+
+        def get_dna_cells():
+            cells = [dendropy.CharacterDataCell(value=s) for s in dendropy.DNA_STATE_ALPHABET.get_states(symbols="ACGTACGT")]
+            return cells
+
+        dna_col = dendropy.ColumnType(state_alphabet=dendropy.DNA_STATE_ALPHABET)
+        ca1.column_types.append(dna_col)
+        ca1[taxon_set[0]] = dendropy.CharacterDataVector(get_dna_cells())
+        ca1[taxon_set[1]] = dendropy.CharacterDataVector(get_dna_cells())
+        ca1[taxon_set[2]] = dendropy.CharacterDataVector(get_dna_cells())
+        ca1[taxon_set[3]] = dendropy.CharacterDataVector(get_dna_cells())
+
+        for t, v in ca1.items():
+            for c in v:
+                c.column_type = dna_col
+                self.assertTrue(c.value in dendropy.DNA_STATE_ALPHABET, c.value)
+
+        ca2 = dendropy.DnaCharacterArray(ca1)
+        self.assertTrue(ca1.taxon_set is ca2.taxon_set)
+        self.assertEqual(len(ca2.column_types), 1)
+        self.assertTrue(ca2.column_types[0] is not ca1.column_types[0])
+        self.assertTrue(ca2.column_types[0].state_alphabet is ca1.column_types[0].state_alphabet)
+        for t, v1 in ca1.items():
+            v2 = ca2[t]
+            self.assertTrue(v1 is not v2)
+            for i, c1 in enumerate(v1):
+                c2 = v2[i]
+                self.assertTrue(c1 is not c2)
+                self.assertTrue(c1.column_type is not c2.column_type)
+                self.assertTrue(c1.column_type.state_alphabet is c2.column_type.state_alphabet)
+                self.assertTrue(c1.value is c2.value, [id(c1.value), id(c2.value)])
+                self.assertTrue(c1.value in dendropy.DNA_STATE_ALPHABET)
+                self.assertTrue(c2.value in dendropy.DNA_STATE_ALPHABET)
+
 class TreeInstantiationTest(unittest.TestCase):
 
     def test_tree_init_from_newick(self):
@@ -120,7 +159,7 @@ class TreeInstantiationTest(unittest.TestCase):
         # test copying
         t2 = dendropy.Tree(t1)
         t2.debug_check_tree(_LOG)
-        self.compare_trees(t1, t2)
+        self.compare_tree_copies(t1, t2)
 
         # from file, args
         t3 = dendropy.Tree(StringIO(newick_str), "newick", taxon_set=t1.taxon_set)
@@ -177,9 +216,9 @@ end;
             self.assertEqual(len(tx.taxon_set), 4, str([t.label for t in tx.taxon_set]))
             self.assertTrue(tx.taxon_set.has_taxa(labels=["A", "B", "C", "D"]))
         t8 = dendropy.Tree(t1)
-        self.compare_trees(t1, t8)
+        self.compare_tree_copies(t1, t8)
 
-    def compare_trees(self, t1, t2):
+    def compare_tree_copies(self, t1, t2):
         self.assertTrue(t2 is not t1)
         self.assertTrue(t2.taxon_set is t1.taxon_set)
         self.assertTrue(t2.seed_node is not t1.seed_node)
