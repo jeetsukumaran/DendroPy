@@ -91,31 +91,49 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                                 taxon_set=kwargs.get("taxon_set", None),
                                 label=kwargs.get("label", None),
                                 oid=kwargs.get("oid", None))
+        iosys.Readable.__init__(self)
         iosys.Writeable.__init__(self)
         if len(args) > 2:
             raise TypeError("TreeList() takes at most 2 unnamed arguments (%d given)" % len(args))
-        if len(args) > 0 and hasattr(args[0], "read"):
+        elif len(args) > 0 \
+            and (isinstance(args[0], TreeList) \
+                 or (hasattr(args[0], "__iter__") and not hasattr(args[0], "read"))):
+            if len(args) > 1:
+                raise Exception("Invalid number of unnamed arguments passed to Tree(): only accepts one when passed an iterable as the first argument.")
+            list.__init__(self, args[0])
             if isinstance(args[0], TreeList):
-                list.__init__(self, args[0])
                 for k,v in args[0].__dict__.items():
                     if k not in ["_oid"]:
                         self.__dict__[k] = v
-            elif hasattr(args[0], "read"):
-                list.__init__(self)
+        else:
+            list.__init__(self)
+            if len(args) > 0 and hasattr(args[0], "read"):
+                if len(args) > 2:
+                    raise Exception("Invalid number of unnamed arguments passed to Tree(): maximum of two when passed an file source as the first argument.")
                 if "istream" in kwargs:
                     raise TypeError("Cannot specify more than one data source to TreeList()")
-                kwargs["istream"] = args[0]
+                istream = args[0]
                 if len(args) >= 2 and "format" not in kwargs:
-                    kwargs["format"] = args[1]
+                    format = args[1]
                 elif "format" not in kwargs:
                     raise TypeError("Need to specify format if passing a file-like" \
                                   + " object from which to construct a TreeList")
-        elif len(args) > 0 and hasattr(args[0].__iter__):
-            list.__init__(self, args[0])
-        elif len(args) > 0:
-            raise TypeError("Invalid arguments to Tree()")
+                else:
+                    format = kwargs["format"]
+                    del(kwargs["format"])
+                self.read(istream, format, **kwargs)
+            elif len(args) > 0:
+                raise TypeError("Invalid arguments to Tree()")
+            elif "istream" in kwargs:
+                if "format" not in kwargs:
+                    raise TypeError("Need to specify format if passing a file-like" \
+                                  + " object from which to construct a TreeList")
+                istream = kwargs["istream"]
+                del(kwargs["istream"])
+                format = kwargs["format"]
+                del(kwargs["format"])
+                self.read(istream, format, **kwargs)
 
-        iosys.Readable.__init__(self, **kwargs)
         if "oid" in kwargs:
             self.oid = kwargs["oid"]
         if "label" in kwargs:

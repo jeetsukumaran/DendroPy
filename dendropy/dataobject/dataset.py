@@ -42,11 +42,12 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
 
     def __init__(self, *args, **kwargs):
         """
-        Initializes a new `Dataset` object. If keyword arguments `file`,
-        `path` or `str` are given (and, if so, also requires
-        `format` keyword argument), then `Dataset.read()` is called to
-        create and populate the `Dataset` according to the keywords. See
-        `Dataset.read()` for keyword details.
+        Initializes a new `Dataset` object. Arguments accepted include
+        another Dataset object (which will result in a deep copy of all
+        taxa, trees and characters), or a file-like object opened for reading
+        and a string specifying the format of the data in the file-like object,
+        in which case the Dataset will be populated from data in the given
+        file. Also accepts keywords `istream` and `format`.
         """
         DataObject.__init__(self)
         iosys.Writeable.__init__(self)
@@ -62,16 +63,20 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
                 if "istream" in kwargs:
                     raise Exception("Cannot specify both unnamed file object source ('%s') and named 'istream' source to Dataset" % (args[0]))
                 istream = args[0]
+                if len(args) > 2:
+                    raise Exception("Dataset() accepts at most two non-keyword arguments")
                 if len(args) < 2 and "format" not in kwargs:
                     raise Exception("Need to specify format if passing data source to Dataset()")
                 elif len(args) == 2 and "format" in kwargs:
-                    raise Exception("Cannot specify format both as unnamed argument ('%s') and keyworded argument" % args[1])
+                    raise Exception("Cannot specify format both as non-keyworded argument ('%s') and keyworded argument" % args[1])
                 elif len(args) == 2:
                     format = args[1]
                 elif "format" in kwargs:
                     format = kwargs["format"]
                     del(kwargs["format"])
                 self.read(istream, format, **kwargs)
+            else:
+                raise Exception("Invalid arguments passed to Dataset(): %s" % str(args))
         elif "istream" in kwargs:
             istream = kwargs["istream"]
             if "format" in kwargs:
@@ -83,24 +88,24 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
             self.read(istream, format, **kwargs)
 
     ###########################################################################
+    ## CLONING
+
+    ###########################################################################
     ## I/O
 
     def read(self, istream, format, **kwargs):
         """
-        Populates this `Dataset` object from a file-like object data source
-        `istream`, formatted in `format`.
-
-        `format` must be a recognized and supported phylogenetic data
-        file format. If reading is not implemented for the format
-        specified, then a `UnsupportedFormatError` is raised.
+        Populates this `Dataset` object from a file-like object data
+        source `istream`, formatted in `format`. `format` must be a
+        recognized and supported phylogenetic data file format. If
+        reading is not implemented for the format specified, then a
+        `UnsupportedFormatError` is raised.
 
         The following optional keyword arguments are also recognized:
             - `exclude_trees` if True skips over tree data
             - `exclude_chars` if True skips over character data
             - `encode_splits` specifies whether or not split bitmasks will be
                calculated and attached to the edges.
-            - `translate_dict` should provide a dictionary mapping taxon numbers
-               (as found in the source) to taxon labels (as defined in the source).
             - `rooted` specifies the default rooting interpretation of the tree
                (see `dendropy.dataio.nexustokenizer` for details).
             - `finish_node_func` is a function that will be applied to each node
@@ -118,11 +123,10 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
 
     def write(self, ostream, format, **kwargs):
         """
-        Writes this `Dataset` object formatted according to the file-like
-        object `ostream` in `format`. `format` must be a recognized and
-        supported phylogenetic data file format. If writing is not
-        implemented for the format specified, then a
-        `UnsupportedFormatError` is raised.
+        Writes this `Dataset` object to the file-like object `ostream`
+        in `format`. `format` must be a recognized and supported
+        phylogenetic data file format. If writing is not implemented for
+        the format specified, then a `UnsupportedFormatError` is raised.
 
         The following optional keyword arguments are also recognized:
             - `exclude_trees` if True skips over tree data
@@ -165,12 +169,12 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
         self.taxon_sets.add(taxon_set)
         return taxon_set
 
-    def new_taxon_set(self, **kwargs):
+    def new_taxon_set(self, *args, **kwargs):
         """
         Creates a new `TaxonSet` object, according to the arguments given
         (passed to `TaxonSet()`), and adds it to this `DataSet`.
         """
-        t = TaxonSet(**kwargs)
+        t = TaxonSet(*args, **kwargs)
         self.add_taxon_set(t)
         return t
 
@@ -181,9 +185,9 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
         self.tree_lists.add(tree_list)
         return tree_list
 
-    def new_tree_list(self, **kwargs):
+    def new_tree_list(self, *args, **kwargs):
         "Creation and accession of new `TreeList` into `trees` of self."
-        tree_list = TreeList(**kwargs)
+        tree_list = TreeList(*args, **kwargs)
         return self.add_tree_list(tree_list)
 
     def add_char_array(self, char_array):
@@ -193,15 +197,10 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
         self.char_arrays.add(char_array)
         return char_array
 
-    def new_char_array(self, char_array_type, **kwargs):
+    def new_char_array(self, char_array_type, *args, **kwargs):
         """
         Creation and accession of new `CharacterArray` (of class
         `char_array_type`) into `chars` of self."
         """
-        char_array = char_array_type(**kwargs)
+        char_array = char_array_type(*args, **kwargs)
         return self.add_char_array(char_array)
-
-    def del_char_array(self, a):
-        """Deletes a `CharacterArray` from this `TaxonDomain`."""
-        raise NotImplementedError ### TODO! ###
-
