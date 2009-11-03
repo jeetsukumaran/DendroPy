@@ -268,32 +268,32 @@ T4:4.4e+8)'this is an internal node called "i2"':4.0e+1)i3:4.0E-4,
             label = nd.taxon.label if nd.taxon is not None else nd.label
             self.assertAlmostEquals(nd.edge.length, expected[label])
 
-# class NewickWriterTest(unittest.TestCase):
-#
-#     def testReadTreeList(self):
-#         check_canonical_Pythonidae_cytb_tree_parse(
-#                 reader = newick.NewickReader(),
-#                 srcpath=tests.data_source_path("pythonidae_cytb.newick.tre"),
-#                 logger=_LOG,
-#                 underscore_substitution=True)
-#
-#     def testWriteTreeList(self):
-#         _LOG.info("Reading in trees for NEWICK writing test")
-#         reader = newick.NewickReader()
-#         ds1 = reader.read(file=open(tests.data_source_path("pythonidae_cytb.newick.tre"), "rU"))
-#
-#         outfile = tempfile.NamedTemporaryFile()
-#         _LOG.info("Writing trees to temporary file '%s'" % outfile.name)
-#         writer = newick.NewickWriter(dataset=ds1)
-#         writer.write(file=outfile)
-#         outfile.flush()
-#
-#         _LOG.info("Re-reading trees")
-#         check_canonical_Pythonidae_cytb_tree_parse(
-#                 reader = newick.NewickReader(),
-#                 srcpath=outfile.name,
-#                 logger=_LOG,
-#                 underscore_substitution=True)
+class NewickWriterTest(unittest.TestCase):
+
+    def testReadTreeList(self):
+        check_canonical_Pythonidae_cytb_tree_parse(
+                reader = newick.NewickReader(),
+                srcpath=tests.data_source_path("pythonidae_cytb.newick.tre"),
+                logger=_LOG,
+                underscore_substitution=True)
+
+    def testWriteTreeList(self):
+        _LOG.info("Reading in trees for NEWICK writing test")
+        reader = newick.NewickReader()
+        ds1 = reader.read(istream=open(tests.data_source_path("pythonidae_cytb.newick.tre"), "rU"))
+
+        outfile = tempfile.NamedTemporaryFile()
+        _LOG.info("Writing trees to temporary file '%s'" % outfile.name)
+        writer = newick.NewickWriter(dataset=ds1)
+        writer.write(ostream=outfile)
+        outfile.flush()
+
+        _LOG.info("Re-reading trees")
+        check_canonical_Pythonidae_cytb_tree_parse(
+                reader = newick.NewickReader(),
+                srcpath=outfile.name,
+                logger=_LOG,
+                underscore_substitution=True)
 
 if __name__ == "__main__":
     unittest.main()
