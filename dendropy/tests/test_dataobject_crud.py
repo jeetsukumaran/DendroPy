@@ -78,6 +78,8 @@ class CharArrayInstantiationTest(unittest.TestCase):
             cells = [dendropy.CharacterDataCell(value=s) for s in dendropy.DNA_STATE_ALPHABET.get_states(symbols="ACGTACGT")]
             return cells
 
+        dna_col = dendropy.ColumnType(state_alphabet=dendropy.DNA_STATE_ALPHABET)
+        ca1.column_types.append(dna_col)
         ca1[taxon_set[0]] = dendropy.CharacterDataVector(get_dna_cells())
         ca1[taxon_set[1]] = dendropy.CharacterDataVector(get_dna_cells())
         ca1[taxon_set[2]] = dendropy.CharacterDataVector(get_dna_cells())
@@ -85,15 +87,22 @@ class CharArrayInstantiationTest(unittest.TestCase):
 
         for t, v in ca1.items():
             for c in v:
+                c.column_type = dna_col
                 self.assertTrue(c.value in dendropy.DNA_STATE_ALPHABET, c.value)
 
         ca2 = dendropy.DnaCharacterArray(ca1)
         self.assertTrue(ca1.taxon_set is ca2.taxon_set)
+        self.assertEqual(len(ca2.column_types), 1)
+        self.assertTrue(ca2.column_types[0] is not ca1.column_types[0])
+        self.assertTrue(ca2.column_types[0].state_alphabet is ca1.column_types[0].state_alphabet)
         for t, v1 in ca1.items():
             v2 = ca2[t]
+            self.assertTrue(v1 is not v2)
             for i, c1 in enumerate(v1):
                 c2 = v2[i]
                 self.assertTrue(c1 is not c2)
+                self.assertTrue(c1.column_type is not c2.column_type)
+                self.assertTrue(c1.column_type.state_alphabet is c2.column_type.state_alphabet)
                 self.assertTrue(c1.value is c2.value, [id(c1.value), id(c2.value)])
                 self.assertTrue(c1.value in dendropy.DNA_STATE_ALPHABET)
                 self.assertTrue(c2.value in dendropy.DNA_STATE_ALPHABET)
