@@ -234,19 +234,21 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         tree.reindex_tree_taxa(tree)
         list.__setitem__(self, key, tree)
 
-    def extend(self, tree_list):
+    def extend(self, tree_list, reindex_taxa=True):
         """
         Homogeneity of taxon domain specified by `self.taxon_set`.
         """
         for t in tree_list:
-            self.reindex_tree_taxa(t)
+            if reindex_taxa:
+                self.reindex_tree_taxa(t)
             self.append(t)
 
-    def append(self, tree):
+    def append(self, tree, reindex_taxa=True):
         """
         Homogeneity of taxon domain specified by `self.taxon_set`.
         """
-        self.reindex_tree_taxa(tree)
+        if reindex_taxa:
+            self.reindex_tree_taxa(tree)
         self[len(self):] = [tree]
 
 ##############################################################################

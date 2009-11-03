@@ -628,7 +628,7 @@ class NexusReader(iosys.DataReader):
                     self._parse_translate_statement()
                 if token == 'TREE':
                     tree = self._parse_tree_statement()
-                    trees_block.append(tree)
+                    trees_block.append(tree, reindex_taxa=False)
             self.stream_tokenizer.skip_to_semicolon() # move past END command
         else:
             token = self.consume_to_end_of_block(token)

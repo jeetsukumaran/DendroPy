@@ -117,7 +117,7 @@ def read_tree_list(istream, **kwargs):
         tree_list = dataobject.TreeList()
     for t in tree_source_iter(istream=istream, taxon_set=tree_list.taxon_set, **kwargs):
         if t is not None:
-            tree_list.append(t)
+            tree_list.append(t, reindex_taxa=False)
     return tree_list
 
 ###############################################################################
