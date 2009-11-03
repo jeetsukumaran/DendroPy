@@ -125,27 +125,28 @@ class CharArrayInstantiationTest(unittest.TestCase):
         sa2 = self.get_standard_state_alphabet("XYZ")
         sa3 = self.get_standard_state_alphabet("JKL")
         ca1.state_alphabets = [sa1, sa2, sa3]
-        col1 = dendropy.ColumnType(state_alphabet=sa1, label="COL_012")
-        col2 = dendropy.ColumnType(state_alphabet=sa2, label="COL_XYZ")
-        col3 = dendropy.ColumnType(state_alphabet=sa3, label="COL_JKL")
+        col_012 = dendropy.ColumnType(state_alphabet=sa1, label="COL_012")
+        col_xyz = dendropy.ColumnType(state_alphabet=sa2, label="COL_XYZ")
+        col_jkl = dendropy.ColumnType(state_alphabet=sa3, label="COL_JKL")
+        ca1.column_types = [col_012, col_xyz, col_jkl]
 
         for t in taxon_set:
-            ca1[t] = dendropy.CharacterDataVector(self.get_standard_cells(col1, "001122-??")) \
-                   + dendropy.CharacterDataVector(self.get_standard_cells(col2, "XYZXYZ??-")) \
-                   + dendropy.CharacterDataVector(self.get_standard_cells(col3, "JKJLKL-??")) \
+            ca1[t] = dendropy.CharacterDataVector(self.get_standard_cells(col_012, "001122-??")) \
+                   + dendropy.CharacterDataVector(self.get_standard_cells(col_xyz, "XYZXYZ??-")) \
+                   + dendropy.CharacterDataVector(self.get_standard_cells(col_jkl, "JKJLKL-??")) \
 
         for t, v in ca1.items():
             self.assertEqual(len(v), 27)
             for i, c in enumerate(v):
                 if i >= 0 and i <= 8:
-                    self.assertTrue(c.column_type is col1, [c.column_type, col1])
-                    self.assertTrue(c.value in col1.state_alphabet)
+                    self.assertTrue(c.column_type is col_012, [c.column_type, col_012])
+                    self.assertTrue(c.value in col_012.state_alphabet)
                 elif i >= 9 and i <= 17:
-                    self.assertTrue(c.column_type is col2, [c.column_type, col2])
-                    self.assertTrue(c.value in col2.state_alphabet)
+                    self.assertTrue(c.column_type is col_xyz, [c.column_type, col_xyz])
+                    self.assertTrue(c.value in col_xyz.state_alphabet)
                 elif i >= 18 and i <= 26:
-                    self.assertTrue(c.column_type is col3, [c.column_type, col3])
-                    self.assertTrue(c.value in col3.state_alphabet)
+                    self.assertTrue(c.column_type is col_jkl, [c.column_type, col_jkl])
+                    self.assertTrue(c.value in col_jkl.state_alphabet)
 
         ca2 = dendropy.StandardCharacterArray(ca1)
         self.assertTrue(ca1.taxon_set is ca2.taxon_set)
@@ -153,7 +154,7 @@ class CharArrayInstantiationTest(unittest.TestCase):
         self.assertEqual(len(ca1.state_alphabets), len(ca2.state_alphabets))
         self.assertEqual(len(ca1.state_alphabets), 3)
         self.assertEqual(len(ca2.column_types), 3)
-        for ci, col1 in ca1.column_types:
+        for ci, col1 in enumerate(ca1.column_types):
             col2 = ca1.column_types[ci]
             self.assertTrue(col2 is not col1)
             self.assertTrue(col2.state_alphabet is not col1.state_alphabet)

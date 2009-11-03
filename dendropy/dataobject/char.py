@@ -743,9 +743,12 @@ class StandardCharacterArray(DiscreteCharacterArray):
         memo[id(self.taxon_set)] = o.taxon_set
         for i, t in enumerate(self.taxon_set):
             memo[id(t)] = o.taxon_set[i]
+        o.column_types = copy.deepcopy(self.column_types, memo)
+        memo[id(self.column_types)] = o.column_types
         for k, v in self.__dict__.iteritems():
             if k not in ["taxon_set",
-                         "_oid"]:
+                         "_oid",
+                         "column_types"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
 
