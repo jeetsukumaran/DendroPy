@@ -759,7 +759,7 @@ class FixedAlphabetCharacterArray(DiscreteCharacterArray):
                          "state_alphabets",
                          "default_state_alphabet",
                          "_default_symbol_state_map",
-                         "taxon_seq_map"
+                         "taxon_seq_map",
                          "column_types"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
