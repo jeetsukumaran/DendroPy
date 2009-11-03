@@ -120,7 +120,7 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         la = len(args)
         if la > 0:
             if la > 1:
-                raise TypeError("TaxonSet() takes at most 1 non-keyword argument %d were given" % la)
+                raise TypeError("TaxonSet() takes at most 1 non-keyword argument (%d given)" % la)
             containers.OrderedSet.__init__(self, [TaxonSet._to_taxon(i) for i in args[0]])
         else:
             containers.OrderedSet.__init__(self)

@@ -24,6 +24,7 @@
 This module handles the core definition of phylogenetic character data.
 """
 
+import copy
 from dendropy.dataobject.base import IdTagged, Annotated
 from dendropy.dataobject.taxon import TaxonLinked, TaxonSetLinked
 
@@ -205,7 +206,17 @@ class StateAlphabet(IdTagged, list):
         "Returns list of ambiguous states of this alphabet"
         return [s for s in self if s.multistate == StateAlphabetElement.POLYMORPHIC_STATE]
 
-class DnaStateAlphabet(StateAlphabet):
+class FixedStateAlphabet(StateAlphabet):
+
+    def __init__(self, oid=None, label=None):
+        StateAlphabet.__init__(self, oid=oid, label=label)
+
+    def __deepcopy__(self, memo):
+        o = self
+        memo[id(self)] = o
+        return o
+
+class DnaStateAlphabet(FixedStateAlphabet):
     _states = "ACGT-"
     _ambig = (("?",('A', 'C', 'G', 'T', '-')),
               ("N",('A', 'C', 'G', 'T')),
@@ -223,7 +234,7 @@ class DnaStateAlphabet(StateAlphabet):
     unknown_state_symbol = 'N'
 
     def __init__(self, oid=None, label=None):
-        StateAlphabet.__init__(self, oid=oid, label=label)
+        FixedStateAlphabet.__init__(self, oid=oid, label=label)
         for sym in DnaStateAlphabet._states:
             self.append(StateAlphabetElement(symbol=sym))
         self.gap = self[-1]
@@ -238,7 +249,7 @@ class DnaStateAlphabet(StateAlphabet):
             elif k == 'N':
                 self.any_residue = sae
 
-class RnaStateAlphabet(StateAlphabet):
+class RnaStateAlphabet(FixedStateAlphabet):
     _states = "ACGU-"
     _ambig = (("?",('A', 'C', 'G', 'U', '-')),
               ("N",('A', 'C', 'G', 'U')),
@@ -256,7 +267,7 @@ class RnaStateAlphabet(StateAlphabet):
     unknown_state_symbol = 'N'
 
     def __init__(self, oid=None, label=None):
-        StateAlphabet.__init__(self, oid=oid, label=label)
+        FixedStateAlphabet.__init__(self, oid=oid, label=label)
         for sym in RnaStateAlphabet._states:
             self.append(StateAlphabetElement(symbol=sym))
         self.gap = self[-1]
@@ -271,7 +282,7 @@ class RnaStateAlphabet(StateAlphabet):
             elif k == 'N':
                 self.any_residue = sae
 
-class ProteinStateAlphabet(StateAlphabet):
+class ProteinStateAlphabet(FixedStateAlphabet):
     _states = "ACDEFGHIKLMNPQRSTUVWY-"
     _ambig = (('B', ('D', 'N')),
                ('Z', ('E', 'Q')),
@@ -280,7 +291,7 @@ class ProteinStateAlphabet(StateAlphabet):
               )
     unknown_state_symbol = 'X'
     def __init__(self, oid=None, label=None):
-        StateAlphabet.__init__(self, oid=oid, label=label)
+        FixedStateAlphabet.__init__(self, oid=oid, label=label)
         for sym in ProteinStateAlphabet._states:
             self.append(StateAlphabetElement(symbol=sym))
         self.gap = self[-1]
@@ -294,10 +305,11 @@ class ProteinStateAlphabet(StateAlphabet):
                 self.missing = sae
             elif k == 'X':
                 self.any_residue = sae
-class BinaryStateAlphabet(StateAlphabet):
+
+class BinaryStateAlphabet(FixedStateAlphabet):
 
     def __init__(self, oid=None, label=None, allow_gaps=True, allow_missing=True):
-        StateAlphabet.__init__(self, oid=oid, label=label)
+        FixedStateAlphabet.__init__(self, oid=oid, label=label)
         self.append(StateAlphabetElement(symbol="0"))
         self.append(StateAlphabetElement(symbol="1"))
         if allow_gaps:
@@ -313,7 +325,6 @@ class BinaryStateAlphabet(StateAlphabet):
                                                multistate=StateAlphabetElement.AMBIGUOUS_STATE,
                                                member_states=self.get_states(symbols=['0', '1']))
             self.append(self.missing)
-
 
 class RestrictionSitesStateAlphabet(BinaryStateAlphabet):
 
@@ -373,8 +384,6 @@ class CharacterDataCell(Annotated):
     def __eq__(self, other):
         if isinstance(other, CharacterDataCell):
             return self.value == other.value
-#         elif isinstance(other, self.value):
-#
         else:
             return NotImplemented
 
@@ -708,49 +717,86 @@ class StandardCharacterArray(DiscreteCharacterArray):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
         DiscreteCharacterArray.__init__(self, *args, **kwargs)
 
-class DnaCharacterArray(DiscreteCharacterArray):
+class FixedAlphabetCharacterArray(DiscreteCharacterArray):
+
+    def __init__(self, *args, **kwargs):
+        "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
+        DiscreteCharacterArray.__init__(self, *args, **kwargs)
+
+    def __deepcopy__(self, memo):
+        o = self.__class__(taxon_set=self.taxon_set, oid=self.oid)
+        memo[id(self)] = o
+        o.state_alphabets = self.state_alphabets
+        memo[id(self.state_alphabets)] = o.state_alphabets
+        o.default_state_alphabet = self.default_state_alphabet
+        memo[id(self.default_state_alphabet)] = o.default_state_alphabet
+        o._default_symbol_state_map = self._default_symbol_state_map
+        memo[id(self._default_symbol_state_map)] = o._default_symbol_state_map
+        o.column_types = copy.deepcopy(self.column_types, memo)
+        for taxon, cdv in self.taxon_seq_map.items():
+            ocdv = CharacterDataVector()
+            for cell in cdv:
+                if cell.column_type is not None:
+                    column_type = memo[id(cell.column_type)]
+                else:
+                    column_type = None
+                ocdv.append(CharacterDataCell(value=cell.value, column_type=column_type))
+            o.taxon_seq_map[taxon] = ocdv
+        memo[id(self.taxon_seq_map[taxon])] = o.taxon_seq_map[taxon]
+        for k, v in self.__dict__.iteritems():
+            if k not in ["taxon_set",
+                         "_oid",
+                         "state_alphabets",
+                         "default_state_alphabet",
+                         "_default_symbol_state_map",
+                         "taxon_seq_map"
+                         "column_types"]:
+                o.__dict__[k] = copy.deepcopy(v, memo)
+        return o
+
+class DnaCharacterArray(FixedAlphabetCharacterArray):
     "DNA nucleotide data."
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        DiscreteCharacterArray.__init__(self, *args, **kwargs)
+        FixedAlphabetCharacterArray.__init__(self, *args, **kwargs)
         self.default_state_alphabet = DNA_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
 
-class RnaCharacterArray(DiscreteCharacterArray):
+class RnaCharacterArray(FixedAlphabetCharacterArray):
     "RNA nucleotide data."
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        DiscreteCharacterArray.__init__(self, *args, **kwargs)
+        FixedAlphabetCharacterArray.__init__(self, *args, **kwargs)
         self.default_state_alphabet = RNA_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
 
-class ProteinCharacterArray(DiscreteCharacterArray):
+class ProteinCharacterArray(FixedAlphabetCharacterArray):
     "Protein / amino acid data."
 
     def __init__(self, *args, **kwargs):
         """
         Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`.
         """
-        DiscreteCharacterArray.__init__(self, *args, **kwargs)
+        FixedAlphabetCharacterArray.__init__(self, *args, **kwargs)
         self.default_state_alphabet = PROTEIN_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
 
-class RestrictionSitesCharacterArray(DiscreteCharacterArray):
+class RestrictionSitesCharacterArray(FixedAlphabetCharacterArray):
     "Restriction sites data."
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        DiscreteCharacterArray.__init__(self, *args, **kwargs)
+        FixedAlphabetCharacterArray.__init__(self, *args, **kwargs)
         self.default_state_alphabet = RESTRICTION_SITES_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
 
-class InfiniteSitesCharacterArray(DiscreteCharacterArray):
+class InfiniteSitesCharacterArray(FixedAlphabetCharacterArray):
     "Infinite sites data."
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        DiscreteCharacterArray.__init__(self, *args, **kwargs)
+        FixedAlphabetCharacterArray.__init__(self, *args, **kwargs)
         self.default_state_alphabet = INFINITE_SITES_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)

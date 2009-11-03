@@ -24,6 +24,7 @@
 Top-level phylogenetic data object: Dataset.
 """
 
+from copy import deepcopy
 from dendropy.utility import iosys
 from dendropy.utility import containers
 from dendropy.dataobject.base import DataObject
@@ -89,6 +90,42 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
 
     ###########################################################################
     ## CLONING
+
+    def __deepcopy__(self, memo):
+        """
+        Rebuilds Dataset from scratch.
+        """
+        o = self.__class__()
+        memo[id(self)] = o
+        for ts0 in self.taxon_sets:
+            ts1 = deepcopy(ts0, memo)
+            ts1.oid = ts0.oid
+            o.add_taxon_set(ts1)
+            memo[id(ts0)] = ts[1]
+        memo[id(self.taxon_sets)] = o.taxon_sets
+        for tl0 in self.tree_lists:
+            ts = self.get_taxon_set(oid=tl0.taxon_set.oid)
+            if ts is None:
+                ts = o.new_taxon_set(tl0.taxon_set, oid=ts0.oid)
+            tl1 = deepcopy(ts0, memo)
+            tl1.oid = ts.oid
+            tl1.taxon_set = ts
+            tl1.reindex_taxa()
+            o.add_tree_list(tl1)
+            memo[id(tl0)] = tl1
+        memo[id(self.tree_lists)] = o.tree_lists
+        for ca0 in self.char_arrays:
+            ts = self.get_taxon_set(oid=ca0.taxon_set.oid)
+            if ts is None:
+                ts = o.new_taxon_set(ca0.taxon_set, oid=ts0.oid)
+            ca1 = deepcopy(ca0, memo)
+            ca1.oid = ca0.oid
+            ca1.taxon_set = ts
+            ca1.reindex_taxa(ts)
+            o.add_char_array(ca1)
+            memo[id(ca0)] = ca1
+        memo[id(self.char_arrays)] = o.char_arrays
+        return o
 
     ###########################################################################
     ## I/O

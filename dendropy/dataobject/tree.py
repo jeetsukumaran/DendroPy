@@ -379,11 +379,13 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         # we treat the taxa as immutable and copy the reference even in a deepcopy
         o = self.__class__(taxon_set=self.taxon_set)
         memo[id(self)] = o
+        memo[id(self.taxon_set)] = o.taxon_set
         if self.seed_node is not None:
             new_v = copy.deepcopy(self.seed_node, memo)
             o.seed_node = new_v
         else:
             o.seed_node = None
+        memo[id(self.seed_node)] = o.seed_node
         for k, v in self.__dict__.iteritems():
             if k not in ['seed_node', 'taxon_set', "_oid"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
@@ -954,6 +956,8 @@ class Node(TaxonLinked):
     def __deepcopy__(self, memo):
         o = self.__class__(taxon=self.taxon)
         memo[id(self)] = o
+        if self.taxon is not None:
+            memo[self.taxon] = o.taxon
         for k, v in self.__dict__.iteritems():
             if not k in ['_child_nodes', '_taxon', "_oid"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
