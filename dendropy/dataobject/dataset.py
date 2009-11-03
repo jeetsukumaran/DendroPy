@@ -110,7 +110,7 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
             memo[id(tl1)] = tl2
             for ti, t1 in enumerate(tl1):
                 t2 = deepcopy(t1, memo)
-                t2.oid = t2.oid
+                t2.oid = t1.oid
                 tl2.append(t2)
                 memo[id(t1)] = t2
 

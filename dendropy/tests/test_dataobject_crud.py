@@ -28,6 +28,7 @@ import random
 import unittest
 from cStringIO import StringIO
 from dendropy.utility import messaging
+from dendropy.tests import datacompare
 import dendropy.tests
 import dendropy
 
@@ -87,8 +88,16 @@ End;
             tl2 = d2.tree_lists[tli]
             self.assertTrue(tl2 is not tl1)
             self.assertEqual(len(tl2), len(tl1))
+            self.assertTrue(tl2.taxon_set is not tl1.taxon_set)
+            self.assertTrue(tl2.taxon_set in d2.taxon_sets)
+            self.assertTrue
             for ti, t1 in enumerate(tl1):
-                pass
+                t2 = tl2[ti]
+                self.assertTrue(t2 is not t1)
+                self.assertEqual(t2.oid, t1.oid)
+                self.assertEqual(t2.label, t1.label)
+                self.assertTrue(t2.taxon_set is not t1.taxon_set)
+                self.assertTrue(t2.taxon_set is tl2.taxon_set)
 
 
 # class CharArrayInstantiationTest(unittest.TestCase):
