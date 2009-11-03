@@ -731,23 +731,8 @@ class StandardCharacterArray(DiscreteCharacterArray):
         o = self.__class__(taxon_set=self.taxon_set, oid=self.oid)
         memo[id(self)] = o
         memo[id(self.taxon_set)] = o.taxon_set
-        o.state_alphabets = self.state_alphabets
-        memo[id(self.state_alphabets)] = o.state_alphabets
-        o.default_state_alphabet = self.default_state_alphabet
-        memo[id(self.default_state_alphabet)] = o.default_state_alphabet
-        o._default_symbol_state_map = self._default_symbol_state_map
-        memo[id(self._default_symbol_state_map)] = o._default_symbol_state_map
-        o.column_types = copy.deepcopy(self.column_types, memo)
-        for taxon, cdv in self.taxon_seq_map.items():
-            ocdv = CharacterDataVector(oid=cdv.oid, label=cdv.label, taxon=taxon)
-            for cell in cdv:
-                if cell.column_type is not None:
-                    column_type = memo[id(cell.column_type)]
-                else:
-                    column_type = None
-                ocdv.append(CharacterDataCell(value=cell.value, column_type=column_type))
-            o.taxon_seq_map[taxon] = ocdv
-        memo[id(self.taxon_seq_map[taxon])] = o.taxon_seq_map[taxon]
+        for i, t in enumerate(self.taxon_set):
+            memo[id(t)] = o.taxon_set[i]
         for k, v in self.__dict__.iteritems():
             if k not in ["taxon_set",
                          "_oid",
@@ -768,6 +753,9 @@ class FixedAlphabetCharacterArray(DiscreteCharacterArray):
     def __deepcopy__(self, memo):
         o = self.__class__(taxon_set=self.taxon_set, oid=self.oid)
         memo[id(self)] = o
+        memo[id(self.taxon_set)] = o.taxon_set
+        for i, t in enumerate(self.taxon_set):
+            memo[id(t)] = o.taxon_set[i]
         o.state_alphabets = self.state_alphabets
         memo[id(self.state_alphabets)] = o.state_alphabets
         o.default_state_alphabet = self.default_state_alphabet

@@ -380,6 +380,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         o = self.__class__(taxon_set=self.taxon_set)
         memo[id(self)] = o
         memo[id(self.taxon_set)] = o.taxon_set
+        for i, t in enumerate(self.taxon_set):
+            memo[id(t)] = o.taxon_set[i]
         if self.seed_node is not None:
             new_v = copy.deepcopy(self.seed_node, memo)
             o.seed_node = new_v
