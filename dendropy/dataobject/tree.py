@@ -96,15 +96,19 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if len(args) > 2:
             raise TypeError("TreeList() takes at most 2 unnamed arguments (%d given)" % len(args))
         elif len(args) > 0 \
-            and (isinstance(args[0], TreeList) \
-                 or (hasattr(args[0], "__iter__") and not hasattr(args[0], "read"))):
+                and (isinstance(args[0], TreeList) \
+                     or (hasattr(args[0], "__iter__") and not hasattr(args[0], "read"))):
             if len(args) > 1:
                 raise Exception("Invalid number of unnamed arguments passed to Tree(): only accepts one when passed an iterable as the first argument.")
-            list.__init__(self, args[0])
             if isinstance(args[0], TreeList):
+                list.__init__(self)
                 for k,v in args[0].__dict__.items():
                     if k not in ["_oid"]:
                         self.__dict__[k] = v
+            elif hasattr(args[0], "__iter__"):
+                list.__init__(self, args[0])
+            else:
+                raise Exception("Invalid argument passed to TreeList()")
         else:
             list.__init__(self)
             if len(args) > 0 and hasattr(args[0], "read"):
@@ -138,6 +142,18 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             self.oid = kwargs["oid"]
         if "label" in kwargs:
             self.label = kwargs["label"]
+
+    def __deepcopy__(self, memo):
+        # we treat the taxa as immutable and copy the reference even in a deepcopy
+        o = self.__class__(taxon_set=self.taxon_set, label=self.label)
+        memo[id(self)] = o
+        memo[id(self.taxon_set)] = o.taxon_set
+        for i, t in enumerate(self.taxon_set):
+            memo[id(t)] = o.taxon_set[i]
+        for k, v in self.__dict__.iteritems():
+            if k not in ['taxon_set', "_oid"]:
+                o.__dict__[k] = copy.deepcopy(v, memo)
+        return o
 
     def read(self, istream, format, **kwargs):
         """
