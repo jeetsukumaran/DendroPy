@@ -97,9 +97,9 @@ class StateAlphabetElement(IdTagged):
 class StateAlphabet(IdTagged, list):
     "A set of states available for a particular character type/format."
 
-    def __init__(self, oid=None, label=None):
-        IdTagged.__init__(self, oid=oid, label=label)
-        list.__init__(self)
+    def __init__(self, *args, **kwargs):
+        IdTagged.__init__(self, *args, **kwargs)
+        list.__init__(self, *args)
         self.missing = None
 
     def get_state(self, attr_name, value):
@@ -208,8 +208,8 @@ class StateAlphabet(IdTagged, list):
 
 class FixedStateAlphabet(StateAlphabet):
 
-    def __init__(self, oid=None, label=None):
-        StateAlphabet.__init__(self, oid=oid, label=label)
+    def __init__(self, *args, **kwargs):
+        StateAlphabet.__init__(self, *args, **kwargs)
 
     def __deepcopy__(self, memo):
         o = self
@@ -233,8 +233,8 @@ class DnaStateAlphabet(FixedStateAlphabet):
              )
     unknown_state_symbol = 'N'
 
-    def __init__(self, oid=None, label=None):
-        FixedStateAlphabet.__init__(self, oid=oid, label=label)
+    def __init__(self, *args, **kwargs):
+        FixedStateAlphabet.__init__(self, *args, **kwargs)
         for sym in DnaStateAlphabet._states:
             self.append(StateAlphabetElement(symbol=sym))
         self.gap = self[-1]
@@ -266,8 +266,8 @@ class RnaStateAlphabet(FixedStateAlphabet):
              )
     unknown_state_symbol = 'N'
 
-    def __init__(self, oid=None, label=None):
-        FixedStateAlphabet.__init__(self, oid=oid, label=label)
+    def __init__(self, *args, **kwargs):
+        FixedStateAlphabet.__init__(self, *args, **kwargs)
         for sym in RnaStateAlphabet._states:
             self.append(StateAlphabetElement(symbol=sym))
         self.gap = self[-1]
@@ -290,8 +290,8 @@ class ProteinStateAlphabet(FixedStateAlphabet):
                ("?", ('A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y', '-')),
               )
     unknown_state_symbol = 'X'
-    def __init__(self, oid=None, label=None):
-        FixedStateAlphabet.__init__(self, oid=oid, label=label)
+    def __init__(self, *args, **kwargs):
+        FixedStateAlphabet.__init__(self, *args, **kwargs)
         for sym in ProteinStateAlphabet._states:
             self.append(StateAlphabetElement(symbol=sym))
         self.gap = self[-1]
@@ -308,19 +308,19 @@ class ProteinStateAlphabet(FixedStateAlphabet):
 
 class BinaryStateAlphabet(FixedStateAlphabet):
 
-    def __init__(self, oid=None, label=None, allow_gaps=True, allow_missing=True):
-        FixedStateAlphabet.__init__(self, oid=oid, label=label)
+    def __init__(self, *args, **kwargs):
+        FixedStateAlphabet.__init__(self, *args, **kwargs)
         self.append(StateAlphabetElement(symbol="0"))
         self.append(StateAlphabetElement(symbol="1"))
-        if allow_gaps:
+        if kwargs.get("allow_gaps", False):
             self.append(StateAlphabetElement(symbol="-"))
             self.gap = self[-1]
-            if allow_missing:
+            if kwargs.get("allow_missing", False):
                 self.missing = StateAlphabetElement(symbol="?",
                                                    multistate=StateAlphabetElement.AMBIGUOUS_STATE,
                                                    member_states=self.get_states(symbols=['0', '1', '-']))
                 self.append(self.missing)
-        elif allow_missing:
+        elif kwargs.get("allow_missing", False):
             self.missing = StateAlphabetElement(symbol="?",
                                                multistate=StateAlphabetElement.AMBIGUOUS_STATE,
                                                member_states=self.get_states(symbols=['0', '1']))
@@ -328,13 +328,13 @@ class BinaryStateAlphabet(FixedStateAlphabet):
 
 class RestrictionSitesStateAlphabet(BinaryStateAlphabet):
 
-    def __init__(self, oid=None, label=None):
-        BinaryStateAlphabet.__init__(self, oid=oid, label=label, allow_gaps=False, allow_missing=False)
+    def __init__(self, *args, **kwargs):
+        BinaryStateAlphabet.__init__(self, *args, **kwargs)
 
 class InfiniteSitesStateAlphabet(BinaryStateAlphabet):
 
-    def __init__(self, oid=None, label=None):
-        BinaryStateAlphabet.__init__(self, oid=oid, label=label, allow_gaps=False, allow_missing=False)
+    def __init__(self, *args, **kwargs):
+        BinaryStateAlphabet.__init__(self, *args, **kwargs)
 
 ### GLOBAL STATE ALPHABETS ###
 
@@ -350,11 +350,11 @@ class ColumnType(IdTagged):
     a particular set of character state definitions to a column in a character array.
     """
 
-    def __init__(self, oid=None,label=None, state_alphabet=None):
-        IdTagged.__init__(self, oid=oid, label=label)
+    def __init__(self, *args, **kwargs):
+        IdTagged.__init__(self, *args, **kwargs)
         self._state_alphabet = None
         self.id_state_map = None
-        self.state_alphabet = state_alphabet
+        self.state_alphabet = kwargs.get("state_alphabet", None)
 
     def _set_state_alphabet(self, value):
         self._state_alphabet = value
@@ -396,9 +396,11 @@ class CharacterDataCell(Annotated):
 class CharacterDataVector(list, TaxonLinked):
     "A list of character data values."
 
-    def __init__(self, oid=None, label=None, taxon=None):
-        list.__init__(self)
-        TaxonLinked.__init__(self, oid=oid, label=label, taxon=taxon)
+    def __init__(self, *args, **kwargs):
+        if len(args) > 2:
+            raise Exception("CharacterDataVector takes at most 1 non-keyword argument, but %d given" % len(args))
+        list.__init__(self, *args)
+        TaxonLinked.__init__(self, **kwargs)
         self.string_sep = ''
 
     def set_cell_by_index(self, column_index, cell):
@@ -487,6 +489,14 @@ class CharacterArray(TaxonSetLinked):
         self.taxon_seq_map = CharacterDataMap()
         self.column_types = []
         self.markup_as_sequences = True
+        if len(args) > 1:
+            raise TypeError("CharacterArray() takes a maximum of 1 non-keyword argument, but %d given: %s"\
+                % (len(args), str(args)))
+        elif len(args) > 0 and isinstance(args[0], CharacterArray):
+            ca = copy.deepcopy(args[0])
+            self.__dict__ = ca.__dict__
+        elif len(args) > 0:
+            raise TypeError("Invalid non-keyword argument passed to CharacterArray(): %s" % arg[0])
 
     def extend_characters(self, other_array):
         """
@@ -734,7 +744,7 @@ class FixedAlphabetCharacterArray(DiscreteCharacterArray):
         memo[id(self._default_symbol_state_map)] = o._default_symbol_state_map
         o.column_types = copy.deepcopy(self.column_types, memo)
         for taxon, cdv in self.taxon_seq_map.items():
-            ocdv = CharacterDataVector()
+            ocdv = CharacterDataVector(oid=cdv.oid, label=cdv.label, taxon=taxon)
             for cell in cdv:
                 if cell.column_type is not None:
                     column_type = memo[id(cell.column_type)]

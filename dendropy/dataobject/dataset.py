@@ -60,7 +60,7 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
             if isinstance(args[0], Dataset):
                 pass
                 ## TODO ##
-            elif hasattr(args[0], "write"):
+            elif hasattr(args[0], "read"):
                 if "istream" in kwargs:
                     raise Exception("Cannot specify both unnamed file object source ('%s') and named 'istream' source to Dataset" % (args[0]))
                 istream = args[0]
