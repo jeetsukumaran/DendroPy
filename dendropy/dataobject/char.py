@@ -737,6 +737,7 @@ class StandardCharacterArray(DiscreteCharacterArray):
         for k, v in self.__dict__.iteritems():
             if k not in ["taxon_set",
                          "_oid"]:
+                print k
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
 
