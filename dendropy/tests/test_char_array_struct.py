@@ -26,10 +26,11 @@ Tests composition and taxon indexing of CharacterArray.
 
 import unittest
 import dendropy
+from dendropy.tests import services
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
-class TestCharStruct(unittest.TestCase):
+class TestCharStruct(services.DendropyTestCase):
 
     def setUp(self):
         self.tb1 = dendropy.TaxonSet(label="TI1")
@@ -53,64 +54,44 @@ class TestExtendCharacters(TestCharStruct):
         self.cb1.extend_characters(self.cb2)
         self.assertEqual(len(self.cb1), ntax_pre)
         for t in self.cb1:
-            self.assertEqual(len(self.cb1[t]), 20, \
-                "Data vector is incorrect length (%d): %s: %s" \
-                % (len(self.cb1[t]), str(t), self.cb1[t].values_as_string()))
-            self.assertEqual(self.cb1[t].values_as_string(), "AAAAAAAAAACCCCCCCCCC", \
-                "Incorrect sequence: %s: %s" % (str(t), self.cb1[t].values_as_string()))
+            self.assertEqual(len(self.cb1[t]), 20)
+            self.assertEqual(self.cb1[t].values_as_string(), "AAAAAAAAAACCCCCCCCCC")
 
 class TestExtendSequencesOverwrite(TestCharStruct):
 
     def runTest(self):
         self.cb1.extend(self.cb2, overwrite_existing=True)
         target_ntax = 20
-        self.assertEqual(len(self.cb1), target_ntax,  \
-                    "Number of rows in character block have not changed to %d (%d)" % (target_ntax, len(self.cb1)))
-        self.assertEqual(len(self.cb1.taxon_set), target_ntax, \
-                    "Number of taxa in taxon set have not changed to %d (%d)" % (target_ntax, len(self.cb1)))
+        self.assertEqual(len(self.cb1), target_ntax)
+        self.assertEqual(len(self.cb1.taxon_set), target_ntax)
         for t in self.tb2:
             cb_tb_labels = self.cb1.taxon_set.labels()
-            self.assertTrue(t.label in cb_tb_labels, \
-                "Taxon '%s' not found in taxon set: %s" % (str(t), str(cb_tb_labels)))
+            self.assertIsContainedIn(t.label, cb_tb_labels)
             cb_labels = [t.label for t in self.cb1]
-            self.assertTrue(t.label in cb_labels, \
-                "Taxon '%s' not found in character array: %s" % (str(t), str(cb_labels)))
+            self.assertIsContainedIn(t.label, cb_labels)
         for t in self.cb1:
-            self.assertEqual(len(self.cb1[t]), 10, \
-                "Data vector is incorrect length (%d): %s: %s" \
-                % (len(self.cb1[t]), str(t), self.cb1[t].values_as_string()))
-            self.assertEqual(self.cb1[t].values_as_string(), "CCCCCCCCCC", \
-                "Incorrect sequence: %s: %s" % (str(t), self.cb1[t].values_as_string()))
+            self.assertEqual(len(self.cb1[t]), 10)
+            self.assertEqual(self.cb1[t].values_as_string(), "CCCCCCCCCC",)
 
 class TestExtendSequencesAppend(TestCharStruct):
 
     def runTest(self):
         self.cb1.extend(self.cb2, append_existing=True)
         target_ntax = 20
-        self.assertEqual(len(self.cb1), target_ntax, \
-                    "Number of rows in character block have not changed to %d (%d)" % (target_ntax, len(self.cb1)))
-        self.assertEqual(len(self.cb1.taxon_set), target_ntax, \
-                    "Number of taxa in taxon set have not changed to %d (%d)" % (target_ntax, len(self.cb1)))
+        self.assertEqual(len(self.cb1), target_ntax)
+        self.assertEqual(len(self.cb1.taxon_set), target_ntax)
         for t in self.tb2:
             cb_tb_labels = self.cb1.taxon_set.labels()
-            self.assertTrue(t.label in cb_tb_labels, \
-                "Taxon '%s' not found in taxon set: %s" % (str(t), str(cb_tb_labels)))
+            self.assertIsContainedIn(t.label, cb_tb_labels)
             cb_labels = [t.label for t in self.cb1]
-            self.assertTrue(t.label in cb_labels, \
-                "Taxon '%s' not found in character array: %s" % (str(t), str(cb_labels)))
+            self.assertIsContainedIn(t.label, cb_labels)
         for t in self.cb1:
             if int(t.label[-2:]) > 10:
-                self.assertEqual(len(self.cb1[t]), 10, \
-                    "Data vector is incorrect length (%d): %s: %s" \
-                    % (len(self.cb1[t]), str(t), self.cb1[t].values_as_string()))
-                self.assertEqual(self.cb1[t].values_as_string(), "CCCCCCCCCC", \
-                    "Incorrect sequence: %s: %s" % (str(t), self.cb1[t].values_as_string()))
+                self.assertEqual(len(self.cb1[t]), 10)
+                self.assertEqual(self.cb1[t].values_as_string(), "CCCCCCCCCC")
             else:
-                self.assertEqual(len(self.cb1[t]), 20, \
-                    "Data vector is incorrect length (%d): %s: %s" \
-                    % (len(self.cb1[t]), str(t), self.cb1[t].values_as_string()))
-                self.assertEqual(self.cb1[t].values_as_string(), "AAAAAAAAAACCCCCCCCCC", \
-                    "Incorrect sequence: %s: %s" % (str(t), self.cb1[t].values_as_string()))
+                self.assertEqual(len(self.cb1[t]), 20)
+                self.assertEqual(self.cb1[t].values_as_string(), "AAAAAAAAAACCCCCCCCCC")
 
 if __name__ == "__main__":
     unittest.main()

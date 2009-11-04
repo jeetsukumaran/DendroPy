@@ -24,10 +24,30 @@
 Functions and classes in support of tests.
 """
 
-import itertools
 import unittest
-import inspect
 from random import Random
+
+class DendropyTestCase(unittest.TestCase):
+
+    def assertObjectIs(self, obj1, obj2, message=None):
+        if message is None:
+            message = "%s (%d) is not %s (%d)" % (obj1, id(obj1), obj2, id(obj2))
+        self.assertTrue(obj1 is obj2, message)
+
+    def assertObjectIsNot(self, obj1, obj2, message=None):
+        if message is None:
+            message = "%s (%d) is %s (%d)" % (obj1, id(obj1), obj2, id(obj2))
+        self.assertTrue(obj1 is not obj2, message)
+
+    def assertIsContainedIn(self, obj1, obj2, message=None):
+        if message is None:
+            message = "%s is not in: %s" % (obj1, obj2)
+        self.assertTrue(obj1 in obj2, message)
+
+    def assertIsNotContainedIn(self, obj1, obj2, message=None):
+        if message is None:
+            message = "%s is in: %s" % (obj1, obj2)
+        self.assertTrue(obj1 not in obj2, message)
 
 class KnownRandom(Random):
     """
