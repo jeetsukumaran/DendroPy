@@ -26,8 +26,9 @@ Test of data collection classes.
 
 import unittest
 from dendropy.utility import containers
+from dendropy.tests import services
 
-class TestNormalizedBitmaskDict(unittest.TestCase):
+class TestNormalizedBitmaskDict(services.DendropyTestCase):
 
     def runTest(self):
         """Testing NormalizedBitmaskDict"""
@@ -44,19 +45,19 @@ class TestNormalizedBitmaskDict(unittest.TestCase):
             d[s[0][0]] = s[0][1]
 
         for s in splits:
-            assert s[0][0] in d
-            assert s[1][0] in d
-            assert d[s[0][0]] == d[s[1][0]]
+            self.assertIsContainedIn(s[0][0], d)
+            self.assertIsContainedIn(s[1][0], d)
+            self.assertEqual(d[s[0][0]], d[s[1][0]])
 
         for k, v in d.items():
             pass
 
         del d[splits[0][0][0]]
         del d[splits[1][1][0]]
-        assert splits[0][0][0] not in d
-        assert splits[0][1][0] not in d
-        assert splits[1][0][0] not in d
-        assert splits[1][1][0] not in d
+        self.assertIsNotContainedIn(splits[0][0][0], d)
+        self.assertIsNotContainedIn(splits[0][1][0], d)
+        self.assertIsNotContainedIn(splits[1][0][0], d)
+        self.assertIsNotContainedIn(splits[1][1][0], d)
 
 class TestOrderedSet(unittest.TestCase):
 
