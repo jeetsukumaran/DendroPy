@@ -116,6 +116,11 @@ def is_test_enabled(level, logger=None, module_name="", message=None):
 def data_source_stream(filename):
     return open(data_source_path(filename), "r")
 
+def tree_source_path(filename=None):
+    if filename is None:
+        filename = ""
+    return os.path.join(TESTS_DATA_DIR, "trees", filename)
+
 def data_source_path(filename=None):
     if filename is None:
         filename = ""
