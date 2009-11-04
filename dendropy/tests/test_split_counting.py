@@ -88,8 +88,8 @@ class SplitCountTest(unittest.TestCase):
             taxon_set.lock()
             for tree_filepath in tree_filepaths:
                 for tree in nexus.tree_source_iter(istream=open(tree_filepath, "rU"), taxon_set=taxon_set):
-                    assert tree.taxon_set is dp_sd.taxon_set
-                    assert tree.taxon_set is taxon_set
+                    self.assertTrue(tree.taxon_set is dp_sd.taxon_set)
+                    self.assertTrue(tree.taxon_set is taxon_set)
                     splitcalc.encode_splits(tree)
                     dp_sd.count_splits_on_tree(tree)
 
@@ -109,7 +109,7 @@ class SplitCountTest(unittest.TestCase):
 
             # if any splits remain here, they were not
             # in dp_sd
-            assert len(paup_sd.splits) == 0
+            self.assertEqual(len(paup_sd.splits), 0)
 
 if __name__ == "__main__":
     unittest.main()
