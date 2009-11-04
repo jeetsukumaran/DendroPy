@@ -63,9 +63,7 @@ class TruncatedCoalescentTreeTest(unittest.TestCase):
         return species_tree
 
     def runTest(self, ntax=10):
-        """
-        TruncatedCoalescentTreeTest -- tree generation without checking [TODO: checks]
-        """
+        """TruncatedCoalescentTreeTest -- tree generation without checking [TODO: checks]"""
         species_tree = self.get_species_tree(ntax)
         gene_trees = []
         while len(gene_trees) < 20:
@@ -74,9 +72,7 @@ class TruncatedCoalescentTreeTest(unittest.TestCase):
 class PureCoalescentTreeTest(unittest.TestCase):
 
     def runTest(self):
-        """
-        PureCoalescentTreeTest -- tree generation without checking [TODO: checks]
-        """
+        """PureCoalescentTreeTest -- tree generation without checking [TODO: checks]"""
         t = treesim.pure_kingman(dendropy.new_taxon_set(100))
         assert t._debug_tree_is_valid()
 

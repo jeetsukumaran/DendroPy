@@ -81,13 +81,15 @@ class TestLevel:
         raise ValueError("TestLevel %s unrecognized" % l)
     name_to_int = staticmethod(name_to_int)
 
-def fast_testing_notification(logger, module_name, message=None, level=TestLevel.FAST):
+def fast_testing_notification(logger, name, message=None, level=TestLevel.FAST):
     if message is None:
-        message = "tests skipped"
-    logger.warning('\nRunning in %s Testing Level. Skipping %s tests in %s: %s' \
+        message = ""
+    else:
+        message = ": %s" % message
+    logger.warning('%s Testing Level: skipping %s tests in %s%s' \
         % (TestLevel.name(get_current_testing_level()),
            TestLevel.name(level),
-           module_name,
+           name,
            message))
 
 def get_current_testing_level():
