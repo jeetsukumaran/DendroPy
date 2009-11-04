@@ -177,11 +177,7 @@ class IdTagged(Labelled):
 
     def _default_oid(self):
         "Returns default oid."
-        if self.label is None:
-            prefix = self.__class__.__name__
-            return "_" + prefix + str(IdTagged.instances)
-        else:
-            return self.normalize_id(self.label)
+        return self.__class__.__name__ + str(IdTagged.instances)
 
     def _get_oid(self):
         "Returns id."

@@ -72,7 +72,7 @@ End;
         self.assertEqual(len(d1.tree_lists), 1)
 
         d2 = dendropy.Dataset(d1)
-        datacompare.compare_datasets(d1, d2, self, distinct_taxa=True, equal_oids=True)
+        datacompare.compare_datasets(d1, d2, self, distinct_taxa=True, equal_oids=False)
 
 
 class CharArrayInstantiationTest(unittest.TestCase):

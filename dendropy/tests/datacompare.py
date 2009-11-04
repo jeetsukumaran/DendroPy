@@ -25,7 +25,7 @@ Comparison between two phylogenetic data objects that have been instantiated
 separately but from the same data source
 """
 
-def compare_datasets(ds1, ds2, tester, distinct_taxa=True, equal_oids=True):
+def compare_datasets(ds1, ds2, tester, distinct_taxa=True, equal_oids=False):
     tester.logger.info("Comparing dataset taxon sets ...")
     compare_dataset_taxon_sets(ds1, ds2, tester, distinct_taxa, equal_oids)
     tester.logger.info("Comparing dataset tree lists ...")

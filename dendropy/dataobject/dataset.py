@@ -98,25 +98,23 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
         memo[id(self)] = o
 
         for ts0 in self.taxon_sets:
-            ts1 = o.new_taxon_set(label=ts0.label, oid=ts0.oid)
+            ts1 = o.new_taxon_set(label=ts0.label)
             memo[id(ts0)] = ts1
             for t in ts0:
-                ts1.new_taxon(oid=t.oid, label=t.label)
+                ts1.new_taxon(label=t.label)
                 memo[id(t)] = ts1[-1]
         memo[id(self.taxon_sets)] = o.taxon_sets
 
         for tli, tl1 in enumerate(self.tree_lists):
-            tl2 = o.new_tree_list(oid=tl1.oid, label=tl1.label, taxon_set=memo[id(tl1.taxon_set)])
+            tl2 = o.new_tree_list(label=tl1.label, taxon_set=memo[id(tl1.taxon_set)])
             memo[id(tl1)] = tl2
             for ti, t1 in enumerate(tl1):
                 t2 = deepcopy(t1, memo)
-                t2.oid = t1.oid
                 tl2.append(t2)
                 memo[id(t1)] = t2
 
         for cai, ca1 in enumerate(self.char_arrays):
             ca2 = deepcopy(ca1, memo)
-            ca2.oid = ca1.oid
             o.char_arrays.add(ca2)
             memo[id(ca1)] = ca2
 
