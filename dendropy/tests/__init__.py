@@ -113,24 +113,35 @@ def is_test_enabled(level, logger=None, module_name="", message=None):
 ###############################################################################
 ## FILE PATHS
 
+def data_source_stream(filename):
+    return open(data_source_path(filename), "r")
+
 def data_source_path(filename=None):
     if filename is None:
         filename = ""
+    elif isinstance(filename, list):
+        filename = os.path.sep.join(filename)
     return os.path.join(TESTS_DATA_DIR, filename)
+
+def named_output_stream(filename=None, suffix_timestamp=True):
+    return open(named_output_path(filename=filename, suffix_timestamp=suffix_timestamp), "w")
+
+def named_output_path(filename=None, suffix_timestamp=True):
+    if filename is None:
+        filename = ""
+    else:
+        if isinstance(filename, list):
+            filename = os.path.sep.join(filename)
+        if suffix_timestamp:
+            filename = "%s.%s" % (filename, texttools.pretty_timestamp())
+    if not os.path.exists(TESTS_OUTPUT_DIR):
+        os.makedirs(TESTS_OUTPUT_DIR)
+    return os.path.join(TESTS_OUTPUT_DIR, filename)
 
 def scripts_source_path(filename=None):
     if filename is None:
         filename = ""
     return os.path.join(SCRIPTS_DIR, filename)
-
-def named_output_file_path(filename=None, suffix_timestamp=True):
-    if filename is None:
-        filename = ""
-    elif suffix_timestamp:
-        filename = "%s.%s" % (filename, texttools.pretty_timestamp())
-    if not os.path.exists(TESTS_OUTPUT_DIR):
-        os.makedirs(TESTS_OUTPUT_DIR)
-    return os.path.join(TESTS_OUTPUT_DIR, filename)
 
 ###############################################################################
 ## TEST SUITES
