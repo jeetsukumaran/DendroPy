@@ -30,6 +30,7 @@ import csv
 
 import unittest
 import dendropy.tests
+from dendropy.tests import services
 from dendropy.utility import containers
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
@@ -41,74 +42,6 @@ if "PAUP_PATH" in os.environ:
     PAUP_PATH = os.environ["PAUP_PATH"]
 else:
     PAUP_PATH = "paup"
-
-class PaupWrapperSplitsParse(object):
-
-    def __init__(self):
-        self.tree_filepath = None
-        self.taxa_filepath = None
-        self.splitscsv_filepath = None
-        self.expected_num_trees = None
-        self.expected_split_freqs = None
-
-    def setUp(self):
-        raise NotImplementedError
-
-    def populate_test_refs(self, tree_filepath, splitscsv_filepath, expected_num_trees):
-        self.tree_filepath = dendropy.tests.data_source_path(tree_filepath)
-        self.taxa_filepath = self.tree_filepath
-        self.splitscsv_filepath = dendropy.tests.data_source_path(splitscsv_filepath)
-        self.expected_num_trees = expected_num_trees
-        self.expected_split_freqs = dict([ (s[0], int(s[1])) for s in csv.reader(open(self.splitscsv_filepath, "rU"))])
-
-    def runTest(self, unrooted=True):
-        p = paup.PaupRunner()
-        p.stage_execute_file(self.taxa_filepath, clear_trees=True)
-        p.stage_list_taxa()
-        p.stage_load_trees(tree_filepaths=[self.tree_filepath], unrooted=unrooted)
-        p.stage_count_splits()
-        p.run()
-        taxon_set = p.parse_taxon_set()
-        tree_count, bipartition_counts = p.parse_group_freqs()
-
-        self.assertEqual(self.expected_num_trees, tree_count)
-        self.assertEqual(len(self.expected_split_freqs), len(bipartition_counts))
-        for g in self.expected_split_freqs:
-            self.assertTrue(g in bipartition_counts)
-            self.assertEqual(self.expected_split_freqs[g], bipartition_counts[g])
-
-        sd = paup.build_split_distribution(bipartition_counts,
-                                           tree_count,
-                                           taxon_set,
-                                           unrooted=unrooted)
-
-        sf = sd.split_frequencies
-        for g in bipartition_counts:
-            s = paup.paup_group_to_mask(g, normalized=unrooted)
-            self.assertTrue(s in sd.splits)
-            self.assertTrue(s in sd.split_counts)
-            self.assertEqual(sd.split_counts[s], bipartition_counts[g])
-            self.assertEqual(sd.total_trees_counted, self.expected_num_trees)
-            self.assertAlmostEqual(sf[s], float(bipartition_counts[g]) / self.expected_num_trees)
-
-class PaupWrapperTaxaParse(object):
-
-    def __init__(self):
-        self.taxa_filepath = None
-        self.expected_taxlabels = None
-
-    def setUp(self):
-        raise NotImplementedError
-
-    def runTest(self):
-        p = paup.PaupRunner()
-        p.stage_execute_file(self.taxa_filepath)
-        p.stage_list_taxa()
-        p.run()
-        taxon_set = p.parse_taxon_set()
-        self.assertEqual(len(taxon_set), len(self.expected_taxlabels))
-        for i, t in enumerate(taxon_set):
-            self.assertEqual(t.label, self.expected_taxlabels[i])
 
 class PaupWrapperRepToSplitMaskTest(unittest.TestCase):
 
@@ -135,14 +68,81 @@ class PaupWrapperRepToSplitMaskTest(unittest.TestCase):
             self.assertEqual(r, normalized, "%s  =>  %s  =>  %s" \
                 % (splitcalc.split_as_string(i, 8), s, splitcalc.split_as_string(normalized, 8)))
 
-class PaupWrapperSplitsParseTest1(unittest.TestCase, PaupWrapperSplitsParse):
+class PaupWrapperSplitsParse(services.DendropyTestCase):
 
     def setUp(self):
-        self.populate_test_refs(["trees","feb032009.tre"],
+        self.tree_filepath = None
+        self.taxa_filepath = None
+        self.splitscsv_filepath = None
+        self.expected_num_trees = None
+        self.expected_split_freqs = None
+
+    def populate_test(self, tree_filepath, splitscsv_filepath, expected_num_trees):
+        self.tree_filepath = dendropy.tests.data_source_path(tree_filepath)
+        self.taxa_filepath = self.tree_filepath
+        self.splitscsv_filepath = dendropy.tests.data_source_path(splitscsv_filepath)
+        self.expected_num_trees = expected_num_trees
+        self.expected_split_freqs = dict([ (s[0], int(s[1])) for s in csv.reader(open(self.splitscsv_filepath, "rU"))])
+
+    def count_splits(self, unrooted=True):
+        if self.tree_filepath is None:
+            _LOG.warning("Null Test Case")
+            return
+        p = paup.PaupRunner()
+        p.stage_execute_file(self.taxa_filepath, clear_trees=True)
+        p.stage_list_taxa()
+        p.stage_load_trees(tree_filepaths=[self.tree_filepath], unrooted=unrooted)
+        p.stage_count_splits()
+        p.run()
+        taxon_set = p.parse_taxon_set()
+        tree_count, bipartition_counts = p.parse_group_freqs()
+
+        self.assertEqual(self.expected_num_trees, tree_count)
+        self.assertEqual(len(self.expected_split_freqs), len(bipartition_counts))
+        for g in self.expected_split_freqs:
+            self.assertIsContainedIn(g, bipartition_counts)
+            self.assertEqual(self.expected_split_freqs[g], bipartition_counts[g])
+
+        sd = paup.build_split_distribution(bipartition_counts,
+                                           tree_count,
+                                           taxon_set,
+                                           unrooted=unrooted)
+        sf = sd.split_frequencies
+        for g in bipartition_counts:
+            s = paup.paup_group_to_mask(g, normalized=unrooted)
+            self.assertIsContainedIn(s, sd.splits)
+            self.assertIsContainedIn(s, sd.split_counts)
+            self.assertEqual(sd.split_counts[s], bipartition_counts[g])
+            self.assertEqual(sd.total_trees_counted, self.expected_num_trees)
+            self.assertAlmostEqual(sf[s], float(bipartition_counts[g]) / self.expected_num_trees)
+
+class PaupWrapperSplitsParseTest1(PaupWrapperSplitsParse):
+
+    def setUp(self):
+        self.populate_test(["trees","feb032009.tre"],
                                 ["trees", "feb032009.splits.csv"],
                                 100)
 
-class PaupWrapperTaxaParseTest1(unittest.TestCase, PaupWrapperTaxaParse):
+    def runTest(self):
+        self.count_splits()
+
+class PaupWrapperTaxaParse(services.DendropyTestCase):
+
+    def setUp(self):
+        self.taxa_filepath = None
+        self.expected_taxlabels = None
+
+    def check_labels(self):
+        p = paup.PaupRunner()
+        p.stage_execute_file(self.taxa_filepath)
+        p.stage_list_taxa()
+        p.run()
+        taxon_set = p.parse_taxon_set()
+        self.assertEqual(len(taxon_set), len(self.expected_taxlabels))
+        for i, t in enumerate(taxon_set):
+            self.assertEqual(t.label, self.expected_taxlabels[i])
+
+class PaupWrapperTaxaParseTest1(PaupWrapperTaxaParse):
 
     def setUp(self):
         self.taxa_filepath = dendropy.tests.data_source_path(["trees", "feb032009.tre"])
@@ -155,7 +155,10 @@ class PaupWrapperTaxaParseTest1(unittest.TestCase, PaupWrapperTaxaParse):
                                    "T47", "T48", "T49", "T50", "T51", "T52", "T53", "T54",
                                    "T55", "T56", "T57", "T58", "T59")
 
-class PaupWrapperTaxaParseTest2(unittest.TestCase, PaupWrapperTaxaParse):
+    def runTest(self):
+        self.check_labels
+
+class PaupWrapperTaxaParseTest2(PaupWrapperTaxaParse):
 
     def setUp(self):
         self.taxa_filepath = dendropy.tests.data_source_path(["chars", "primates.chars.nexus"])
@@ -163,6 +166,9 @@ class PaupWrapperTaxaParseTest2(unittest.TestCase, PaupWrapperTaxaParse):
                 "Pan", "Gorilla", "Pongo", "Hylobates", "Macaca fuscata",
                 "Macaca mulatta", "Macaca fascicularis", "Macaca sylvanus",
                 "Saimiri sciureus", "Tarsius syrichta", )
+
+    def runTest(self):
+        self.check_labels
 
 if __name__ == "__main__":
     unittest.main()
