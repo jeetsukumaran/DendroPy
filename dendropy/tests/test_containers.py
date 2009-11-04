@@ -30,7 +30,7 @@ from dendropy.utility import containers
 class TestNormalizedBitmaskDict(unittest.TestCase):
 
     def runTest(self):
-
+        """Testing NormalizedBitmaskDict"""
         mask = 0xFF # 1111 1111
         splits = [
             ((0x03, '0000 0011'), (0x03, '0000 0011')),
@@ -69,6 +69,7 @@ class TestOrderedSet(unittest.TestCase):
             return "<%s: '%s'>" % (id(self), self.label)
 
     def runTest(self):
+        """Testing OrderedSet [DUMMY TEST -- TODO!]"""
         d = containers.OrderedSet()
         for i in xrange(10):
             d.add(TestOrderedSet.DummyObject(i))

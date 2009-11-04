@@ -42,31 +42,6 @@ if "PAUP_PATH" in os.environ:
 else:
     PAUP_PATH = "paup"
 
-class PaupWrapperRepToSplitMaskTest(unittest.TestCase):
-
-    def testUnnormalized(self):
-        for i in xrange(0xFF):
-            s = splitcalc.split_as_string(i, 8, ".", "*")[::-1]
-            r = paup.paup_group_to_mask(s, normalized=False)
-            self.assertEqual(r, i, "%s  =>  %s  =>  %s" \
-                % (splitcalc.split_as_string(i, 8), s, splitcalc.split_as_string(r, 8)))
-
-    def testNormalized0(self):
-        for i in xrange(0xFF):
-            s = splitcalc.split_as_string(i, 8, "*", ".")[::-1]
-            r = paup.paup_group_to_mask(s, normalized=True)
-            normalized = containers.NormalizedBitmaskDict.normalize(i, 0xFF)
-            self.assertEqual(r, normalized, "%s  =>  %s  =>  %s" \
-                % (splitcalc.split_as_string(i, 8), s, splitcalc.split_as_string(normalized, 8)))
-
-    def testNormalized1(self):
-        for i in xrange(0xFF):
-            s = splitcalc.split_as_string(i, 8, ".", "*")[::-1]
-            r = paup.paup_group_to_mask(s, normalized=True)
-            normalized = containers.NormalizedBitmaskDict.normalize(i, 0xFF)
-            self.assertEqual(r, normalized, "%s  =>  %s  =>  %s" \
-                % (splitcalc.split_as_string(i, 8), s, splitcalc.split_as_string(normalized, 8)))
-
 class PaupWrapperSplitsParse(object):
 
     def __init__(self):
@@ -87,9 +62,6 @@ class PaupWrapperSplitsParse(object):
         self.expected_split_freqs = dict([ (s[0], int(s[1])) for s in csv.reader(open(self.splitscsv_filepath, "rU"))])
 
     def runTest(self, unrooted=True):
-        """Calculates group frequencies from `filename`, make sure that
-        frequencies match `self.expected_split_freqs` (given as dictionary of PAUP* group
-        strings and their counts for the file)."""
         p = paup.PaupRunner()
         p.stage_execute_file(self.taxa_filepath, clear_trees=True)
         p.stage_list_taxa()
@@ -119,13 +91,6 @@ class PaupWrapperSplitsParse(object):
             self.assertEqual(sd.total_trees_counted, self.expected_num_trees)
             self.assertAlmostEqual(sf[s], float(bipartition_counts[g]) / self.expected_num_trees)
 
-class PaupWrapperSplitsParseTest1(unittest.TestCase, PaupWrapperSplitsParse):
-
-    def setUp(self):
-        self.populate_test_refs(["trees","feb032009.tre"],
-                                ["trees", "feb032009.splits.csv"],
-                                100)
-
 class PaupWrapperTaxaParse(object):
 
     def __init__(self):
@@ -136,8 +101,6 @@ class PaupWrapperTaxaParse(object):
         raise NotImplementedError
 
     def runTest(self):
-        """Loads a taxa block from `filename`, make sure taxa returned match
-        `taxlabels`"""
         p = paup.PaupRunner()
         p.stage_execute_file(self.taxa_filepath)
         p.stage_list_taxa()
@@ -146,6 +109,38 @@ class PaupWrapperTaxaParse(object):
         self.assertEqual(len(taxon_set), len(self.expected_taxlabels))
         for i, t in enumerate(taxon_set):
             self.assertEqual(t.label, self.expected_taxlabels[i])
+
+class PaupWrapperRepToSplitMaskTest(unittest.TestCase):
+
+    def testUnnormalized(self):
+        for i in xrange(0xFF):
+            s = splitcalc.split_as_string(i, 8, ".", "*")[::-1]
+            r = paup.paup_group_to_mask(s, normalized=False)
+            self.assertEqual(r, i, "%s  =>  %s  =>  %s" \
+                % (splitcalc.split_as_string(i, 8), s, splitcalc.split_as_string(r, 8)))
+
+    def testNormalized0(self):
+        for i in xrange(0xFF):
+            s = splitcalc.split_as_string(i, 8, "*", ".")[::-1]
+            r = paup.paup_group_to_mask(s, normalized=True)
+            normalized = containers.NormalizedBitmaskDict.normalize(i, 0xFF)
+            self.assertEqual(r, normalized, "%s  =>  %s  =>  %s" \
+                % (splitcalc.split_as_string(i, 8), s, splitcalc.split_as_string(normalized, 8)))
+
+    def testNormalized1(self):
+        for i in xrange(0xFF):
+            s = splitcalc.split_as_string(i, 8, ".", "*")[::-1]
+            r = paup.paup_group_to_mask(s, normalized=True)
+            normalized = containers.NormalizedBitmaskDict.normalize(i, 0xFF)
+            self.assertEqual(r, normalized, "%s  =>  %s  =>  %s" \
+                % (splitcalc.split_as_string(i, 8), s, splitcalc.split_as_string(normalized, 8)))
+
+class PaupWrapperSplitsParseTest1(unittest.TestCase, PaupWrapperSplitsParse):
+
+    def setUp(self):
+        self.populate_test_refs(["trees","feb032009.tre"],
+                                ["trees", "feb032009.splits.csv"],
+                                100)
 
 class PaupWrapperTaxaParseTest1(unittest.TestCase, PaupWrapperTaxaParse):
 
