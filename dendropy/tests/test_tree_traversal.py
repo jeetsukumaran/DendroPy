@@ -67,28 +67,28 @@ class TreeTraversalChecker(unittest.TestCase):
 
 class TestLeafIter(TreeTraversalChecker):
 
-    def testLeafIter(self):
+    def runTest(self):
         result = [node.oid for node in self.tree.leaf_iter()]
         expected = ["T1", "T2", "T3", "T4", "T5", "T6", "T13", "T7", "T8", "T9", "T10", "T14", "T11", "T12"]
         self.assertEqual(result, expected)
 
 class TestPreorderIter(TreeTraversalChecker):
 
-    def testPreorderIter(self):
+    def runTest(self):
         result = [node.oid for node in self.tree.preorder_node_iter()]
         expected = ["i0", "i1", "i2", "i3", "T1", "i4", "i5", "T2", "T3", "T4", "i6", "T5", "T6", "T13", "i7", "i8", "T7", "i9", "T8", "T9", "T10", "T14", "i10", "T11", "T12"]
         self.assertEqual(result, expected)
 
 class TestPostorderIter(TreeTraversalChecker):
 
-    def testPostorderIter(self):
+    def runTest(self):
         result = [node.oid for node in self.tree.postorder_node_iter()]
         expected = ["T1", "T2", "T3", "i5", "T4", "i4", "i3", "T5", "T6", "T13", "i6", "i2", "T7", "T8", "T9", "i9", "i8", "T10", "i7", "i1", "T14", "T11", "T12", "i10", "i0"]
         self.assertEqual(result, expected)
 
 class TestLevelorderIter(TreeTraversalChecker):
 
-    def testLevelOrderIter(self):
+    def runTest(self):
         result = [node.oid for node in self.tree.level_order_node_iter()]
         expected = ["i0", "i1", "T14", "i10", "i2", "i7", "T11", "T12", "i3", "i6", "i8", "T10", "T1", "i4", "T5", "T6", "T13", "T7", "i9", "i5", "T4", "T8", "T9", "T2", "T3"]
         self.assertEqual(result, expected)
