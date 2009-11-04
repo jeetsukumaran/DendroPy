@@ -73,22 +73,22 @@ class PaupWrapperSplitsParse(object):
         self.tree_filepath = None
         self.taxa_filepath = None
         self.splitscsv_filepath = None
-        self.num_trees = None
-        self.split_freqs = None
+        self.expected_num_trees = None
+        self.expected_split_freqs = None
 
     def setUp(self):
         raise NotImplementedError
 
-    def populate_test_refs(self, tree_filepath, splitscsv_filepath, num_trees):
+    def populate_test_refs(self, tree_filepath, splitscsv_filepath, expected_num_trees):
         self.tree_filepath = dendropy.tests.data_source_path(tree_filepath)
         self.taxa_filepath = self.tree_filepath
         self.splitscsv_filepath = dendropy.tests.data_source_path(splitscsv_filepath)
-        self.num_trees = num_trees
-        self.split_freqs = dict([ (s[0], int(s[1])) for s in csv.reader(open(self.splitscsv_filepath, "rU"))])
+        self.expected_num_trees = expected_num_trees
+        self.expected_split_freqs = dict([ (s[0], int(s[1])) for s in csv.reader(open(self.splitscsv_filepath, "rU"))])
 
     def runTest(self, unrooted=True):
         """Calculates group frequencies from `filename`, make sure that
-        frequencies match `self.split_freqs` (given as dictionary of PAUP* group
+        frequencies match `self.expected_split_freqs` (given as dictionary of PAUP* group
         strings and their counts for the file)."""
         p = paup.PaupRunner()
         p.stage_execute_file(self.taxa_filepath, clear_trees=True)
@@ -99,12 +99,11 @@ class PaupWrapperSplitsParse(object):
         taxon_set = p.parse_taxon_set()
         tree_count, bipartition_counts = p.parse_group_freqs()
 
-        assert self.num_trees == tree_count, "%s != %s" % (self.num_trees, tree_count)
-        assert len(self.split_freqs) == len(bipartition_counts), "%d != %d" % (len(self.split_freqs), len(bipartition_counts))
-        for g in self.split_freqs:
-            assert g in bipartition_counts
-            assert self.split_freqs[g] == bipartition_counts[g], \
-                "%s != %s" % (self.split_freqs[g], bipartition_counts[g])
+        self.assertEqual(self.expected_num_trees, tree_count)
+        self.assertEqual(len(self.expected_split_freqs), len(bipartition_counts))
+        for g in self.expected_split_freqs:
+            self.assertTrue(g in bipartition_counts)
+            self.assertEqual(self.expected_split_freqs[g], bipartition_counts[g])
 
         sd = paup.build_split_distribution(bipartition_counts,
                                            tree_count,
@@ -114,11 +113,11 @@ class PaupWrapperSplitsParse(object):
         sf = sd.split_frequencies
         for g in bipartition_counts:
             s = paup.paup_group_to_mask(g, normalized=unrooted)
-            assert s in sd.splits
-            assert s in sd.split_counts
-            assert sd.split_counts[s] == bipartition_counts[g]
-            assert sd.total_trees_counted == self.num_trees
-            self.assertAlmostEqual(sf[s], float(bipartition_counts[g]) / self.num_trees)
+            self.assertTrue(s in sd.splits)
+            self.assertTrue(s in sd.split_counts)
+            self.assertEqual(sd.split_counts[s], bipartition_counts[g])
+            self.assertEqual(sd.total_trees_counted, self.expected_num_trees)
+            self.assertAlmostEqual(sf[s], float(bipartition_counts[g]) / self.expected_num_trees)
 
 class PaupWrapperSplitsParseTest1(unittest.TestCase, PaupWrapperSplitsParse):
 
@@ -144,9 +143,9 @@ class PaupWrapperTaxaParse(object):
         p.stage_list_taxa()
         p.run()
         taxon_set = p.parse_taxon_set()
-        assert len(taxon_set) == len(self.expected_taxlabels)
+        self.assertEqual(len(taxon_set), len(self.expected_taxlabels))
         for i, t in enumerate(taxon_set):
-            assert t.label == self.expected_taxlabels[i]
+            self.assertEqual(t.label, self.expected_taxlabels[i])
 
 class PaupWrapperTaxaParseTest1(unittest.TestCase, PaupWrapperTaxaParse):
 
