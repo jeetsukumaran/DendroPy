@@ -28,6 +28,7 @@ import unittest
 from cStringIO import StringIO
 
 import dendropy.tests
+from dendropy.tests import services
 from dendropy.utility import messaging
 from dendropy.utility import paup
 from dendropy.dataio import nexus
@@ -56,13 +57,11 @@ _LOG = messaging.get_logger(__name__)
 #                        e = splitcalc.find_edge_from_split(tree.seed_node, cm)
 #                        self.assertTrue(e is edge)
 
-class SplitCountTest(unittest.TestCase):
+class SplitCountTest(services.DendropyTestCase):
 
     def setUp(self):
         self.test_cases = [('pythonidae_cytb.con.tre', 'pythonidae_cytb.con.tre')]
-
-        if dendropy.tests.is_test_enabled(dendropy.tests.TestLevel.SLOW,
-                                          _LOG, self.__class__.__name__):
+        if dendropy.tests.is_test_enabled(dendropy.tests.TestLevel.SLOW, _LOG, self.__class__.__name__):
             self.test_cases.extend([
                 ('feb032009.tre', 'feb032009.tre'),
                 ('maj-rule-bug1.tre', 'maj-rule-bug1.tre'),
@@ -88,8 +87,8 @@ class SplitCountTest(unittest.TestCase):
             taxon_set.lock()
             for tree_filepath in tree_filepaths:
                 for tree in nexus.tree_source_iter(istream=open(tree_filepath, "rU"), taxon_set=taxon_set):
-                    self.assertTrue(tree.taxon_set is dp_sd.taxon_set)
-                    self.assertTrue(tree.taxon_set is taxon_set)
+                    self.assertIsSame(tree.taxon_set, dp_sd.taxon_set)
+                    self.assertIsSame(tree.taxon_set, taxon_set)
                     splitcalc.encode_splits(tree)
                     dp_sd.count_splits_on_tree(tree)
 
@@ -103,7 +102,7 @@ class SplitCountTest(unittest.TestCase):
             taxa_mask = taxon_set.all_taxa_bitmask()
             for split in dp_sd.splits:
                 if not splitcalc.is_trivial_split(split, taxa_mask):
-                    self.assertTrue(split in paup_sd.splits)
+                    self.assertIsContainedIn(split, paup_sd.splits)
                     self.assertEqual(dp_sd.split_counts[split], paup_sd.split_counts[split])
                     paup_sd.splits.remove(split)
 

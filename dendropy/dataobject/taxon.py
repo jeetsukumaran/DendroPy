@@ -148,15 +148,11 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
 
     def __str__(self):
         "String representation of self."
-        header = []
-        if self.oid:
-            header.append("%s" % str(self.oid))
-        if self.label:
-            header.append("('%s')" % self.label)
         taxlist = []
         for taxon in self:
-            taxlist.append(str(taxon))
-        return ' '.join(header) + ' : [' + ', '.join(taxlist) + ']'
+            taxlist.append("'" + str(taxon) + "'")
+        return '<TaxonSet object %d: [' % id(self) \
+                + ', '.join(taxlist) + ']>'
 
     def has_taxon(self, **kwargs):
         """
