@@ -45,7 +45,6 @@ class TestCharStruct(unittest.TestCase):
         for t in self.tb2:
             self.cb2.append_taxon_sequence(t, state_symbols="CCCCCCCCCC")
 
-
 class TestExtendCharacters(TestCharStruct):
 
     def runTest(self):
