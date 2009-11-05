@@ -22,7 +22,7 @@
 
 """
 Infrastructure for phylogenetic data object serialization and deserialization.
-Provides services for reading/parsing and formatting/writing phylogenetic data
+Provides support for reading/parsing and formatting/writing phylogenetic data
 in various formats.
 """
 

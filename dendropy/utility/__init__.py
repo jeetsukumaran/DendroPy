@@ -21,7 +21,7 @@
 ###############################################################################
 
 """
-Low-level data structures, classes, constants, and services that are used
+Low-level data structures, classes, constants, etc. that are used
 by the DendroPy library but generally not directly by client code.
 """
 
