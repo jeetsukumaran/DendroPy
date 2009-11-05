@@ -29,7 +29,7 @@ import sys
 import csv
 
 import unittest
-import dendropy.tests
+from dendropy.tests import paths
 from dendropy.tests import support
 from dendropy.utility import containers
 from dendropy.utility import messaging
@@ -78,9 +78,9 @@ class PaupWrapperSplitsParse(support.DendropyTestCase):
         self.expected_split_freqs = None
 
     def populate_test(self, tree_filepath, splitscsv_filepath, expected_num_trees):
-        self.tree_filepath = dendropy.tests.data_source_path(tree_filepath)
+        self.tree_filepath = paths.data_source_path(tree_filepath)
         self.taxa_filepath = self.tree_filepath
-        self.splitscsv_filepath = dendropy.tests.data_source_path(splitscsv_filepath)
+        self.splitscsv_filepath = paths.data_source_path(splitscsv_filepath)
         self.expected_num_trees = expected_num_trees
         self.expected_split_freqs = dict([ (s[0], int(s[1])) for s in csv.reader(open(self.splitscsv_filepath, "rU"))])
 
@@ -145,7 +145,7 @@ class PaupWrapperTaxaParse(support.DendropyTestCase):
 class PaupWrapperTaxaParseTest1(PaupWrapperTaxaParse):
 
     def setUp(self):
-        self.taxa_filepath = dendropy.tests.data_source_path(["trees", "feb032009.tre"])
+        self.taxa_filepath = paths.data_source_path(["trees", "feb032009.tre"])
         self.expected_taxlabels = ("T01", "T02", "T03", "T04", "T05", "T06",
                                    "T07", "T08", "T09", "T10", "T11", "T12", "T13", "T14",
                                    "T15", "T16", "T17", "T18", "T19", "T20", "T21", "T22",
@@ -161,7 +161,7 @@ class PaupWrapperTaxaParseTest1(PaupWrapperTaxaParse):
 class PaupWrapperTaxaParseTest2(PaupWrapperTaxaParse):
 
     def setUp(self):
-        self.taxa_filepath = dendropy.tests.data_source_path(["chars", "primates.chars.nexus"])
+        self.taxa_filepath = paths.data_source_path(["chars", "primates.chars.nexus"])
         self.expected_taxlabels = ("Lemur catta", "Homo sapiens",
                 "Pan", "Gorilla", "Pongo", "Hylobates", "Macaca fuscata",
                 "Macaca mulatta", "Macaca fascicularis", "Macaca sylvanus",

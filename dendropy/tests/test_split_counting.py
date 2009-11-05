@@ -27,7 +27,7 @@ Tests of split distribution counting.
 import unittest
 from cStringIO import StringIO
 
-import dendropy.tests
+from dendropy.tests import paths
 from dendropy.tests import support
 from dendropy.utility import messaging
 from dendropy.utility import paup
@@ -61,7 +61,7 @@ class SplitCountTest(support.DendropyTestCase):
 
     def setUp(self):
         self.test_cases = [('pythonidae_cytb.con.tre', 'pythonidae_cytb.con.tre')]
-        if dendropy.tests.is_test_enabled(dendropy.tests.TestLevel.SLOW, _LOG, self.__class__.__name__):
+        if support.is_test_enabled(support.TestLevel.SLOW, _LOG, self.__class__.__name__):
             self.test_cases.extend([
                 ('feb032009.tre', 'feb032009.tre'),
                 ('maj-rule-bug1.tre', 'maj-rule-bug1.tre'),
@@ -72,8 +72,8 @@ class SplitCountTest(support.DendropyTestCase):
         unrooted = True
         for tc in self.test_cases:
             _LOG.info(tc[0] + "; " + tc[1])
-            tree_filepaths = [dendropy.tests.tree_source_path(tc[0])]
-            taxa_filepath = dendropy.tests.tree_source_path(tc[1])
+            tree_filepaths = [paths.tree_source_path(tc[0])]
+            taxa_filepath = paths.tree_source_path(tc[1])
             paup_sd = paup.get_split_distribution(tree_filepaths, taxa_filepath,
                         unrooted=unrooted, burnin=0)
             taxon_set = paup_sd.taxon_set

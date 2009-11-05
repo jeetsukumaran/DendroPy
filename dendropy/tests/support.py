@@ -26,7 +26,73 @@ Functions and classes in support of tests.
 
 import unittest
 import inspect
+import os
 from random import Random
+
+###############################################################################
+## TESTING LEVELS
+
+class TestLevel:
+    FAST, NORMAL, SLOW, EXHAUSTIVE = 0, 10, 20, 30
+    def name(i):
+        if i <= TestLevel.FAST:
+            return "FAST"
+        if i <= TestLevel.NORMAL:
+            return "NORMAL"
+        if i <= TestLevel.SLOW:
+            return "SLOW"
+        return "EXHAUSTIVE"
+    name = staticmethod(name)
+    def name_to_int(l):
+        try:
+            return int(l)
+        except:
+            pass
+        l = l.upper()
+        if l == "FAST":
+            return TestLevel.FAST
+        if l == "NORMAL":
+            return TestLevel.NORMAL
+        if l == "SLOW":
+            return TestLevel.SLOW
+        if l == "EXHAUSTIVE":
+            return TestLevel.EXHAUSTIVE
+        raise ValueError("TestLevel %s unrecognized" % l)
+    name_to_int = staticmethod(name_to_int)
+
+def fast_testing_notification(logger, name, message=None, level=TestLevel.FAST):
+    if message is None:
+        message = ""
+    else:
+        message = ": %s" % message
+    logger.warning('%s Testing Level: skipping %s tests in %s%s' \
+        % (TestLevel.name(get_current_testing_level()),
+           TestLevel.name(level),
+           name,
+           message))
+
+def get_current_testing_level():
+    l = os.environ.get("DENDROPY_TESTING_LEVEL")
+    if l is None:
+        if "DENDROPY_FAST_TESTS" in os.environ:
+            return TestLevel.FAST
+        return TestLevel.NORMAL
+    try:
+        return TestLevel.name_to_int(l)
+    except:
+        _LOG.warn("the value %s for DENDROPY_TESTING_LEVEL is not recognized.  Using NORMAL level" % l)
+    return TestLevel.NORMAL
+
+def is_test_enabled(level, logger=None, module_name="", message=None):
+    tl = get_current_testing_level()
+    if level > tl:
+        if logger:
+            fast_testing_notification(logger, module_name, message, level)
+        return False
+    return True
+
+###############################################################################
+## DendropyTestCase
 
 class DendropyTestCase(unittest.TestCase):
 
@@ -59,6 +125,9 @@ class DendropyTestCase(unittest.TestCase):
             message = "%s is in: %s" % (obj1, obj2)
         if obj1 in obj2:
             self._failure(message)
+
+###############################################################################
+## KnownRandom
 
 class KnownRandom(Random):
     """
@@ -446,127 +515,3 @@ class KnownRandom(Random):
         if self.index >= self.period:
             self.index = 0
         return r
-
-def compare_datasets(ds1, ds2, tester, distinct_taxa=True, equal_oids=False):
-    tester.logger.info("Comparing dataset taxon sets ...")
-    compare_dataset_taxon_sets(ds1, ds2, tester, distinct_taxa, equal_oids)
-    tester.logger.info("Comparing dataset tree lists ...")
-    compare_dataset_tree_lists(ds1, ds2, tester, distinct_taxa, equal_oids)
-    tester.logger.info("Comparing dataset character arrays ...")
-    compare_dataset_char_arrays(ds1, ds2, tester, distinct_taxa, equal_oids)
-
-def compare_dataset_taxon_sets(ds1, ds2, tester, distinct_taxa=True, equal_oids=False):
-    tester.assertEqual(len(ds1.taxon_sets), len(ds2.taxon_sets))
-    if distinct_taxa:
-        tester.assertTrue(ds1.taxon_sets is not ds2.taxon_sets)
-    for ts_idx, ts1 in enumerate(ds1.taxon_sets):
-        ts2 = ds2.taxon_sets[ts_idx]
-        tester.logger.info("Comparing taxa of taxon set %d: %d taxa vs. %d taxa" \
-            % (ts_idx, len(ts1), len(ts2)))
-        compare_individual_taxon_sets(ts1, ts2, tester, distinct_taxa, equal_oids)
-
-def compare_individual_taxon_sets(ts1, ts2, tester, distinct_taxa=True, equal_oids=False):
-    if distinct_taxa:
-        tester.assertTrue(ts1 is not ts2)
-    tester.assertEqual(len(ts1), len(ts2))
-    if equal_oids:
-        tester.assertEqual(ts1.oid, ts2.oid)
-    tester.assertEqual(ts1.label, ts2.label)
-    for taxon_idx, taxon1 in enumerate(ts1):
-        tester.logger.debug("Taxon %d: '%s' == '%s'" % (taxon_idx, taxon1.label, ts2[taxon_idx].label))
-        taxon2 = ts2[taxon_idx]
-        if distinct_taxa:
-            tester.assertTrue(taxon1 is not taxon2)
-        tester.assertEqual(taxon1.label, taxon2.label)
-        if equal_oids:
-            tester.assertEqual(taxon1.oid, taxon2.oid)
-        else:
-            tester.assertNotEqual(taxon1.oid, taxon2.oid)
-
-def compare_dataset_tree_lists(ds1, ds2, tester, distinct_taxa=True, equal_oids=False):
-    tester.assertTrue(ds1.tree_lists is not ds2.tree_lists)
-    tester.assertEqual(len(ds1.tree_lists), len(ds2.tree_lists))
-    for tree_list_idx, tree_list1 in enumerate(ds1.tree_lists):
-        tree_list2 = ds2.tree_lists[tree_list_idx]
-        if distinct_taxa:
-            tester.assertTrue(tree_list1.taxon_set is not tree_list2.taxon_set)
-            tester.assertTrue(tree_list1.taxon_set in ds1.taxon_sets)
-            tester.assertTrue(tree_list2.taxon_set in ds2.taxon_sets)
-            tester.assertTrue(tree_list1.taxon_set not in ds2.taxon_sets)
-            tester.assertTrue(tree_list2.taxon_set not in ds1.taxon_sets)
-        compare_individual_tree_lists(tree_list1, tree_list2, tester, distinct_taxa, equal_oids)
-
-def compare_individual_tree_lists(tree_list1, tree_list2, tester, distinct_taxa=True, equal_oids=False):
-    tester.assertTrue(tree_list1 is not tree_list2)
-    tester.assertEqual(len(tree_list1), len(tree_list2))
-    if distinct_taxa:
-        tester.assertTrue(tree_list1.taxon_set is not tree_list2.taxon_set)
-    compare_individual_taxon_sets(tree_list1.taxon_set, tree_list2.taxon_set, tester, distinct_taxa, equal_oids)
-    tester.assertEqual(tree_list1.label, tree_list2.label)
-    if equal_oids:
-        tester.assertEqual(tree_list1.oid, tree_list2.oid)
-    else:
-        tester.assertNotEqual(tree_list1.oid, tree_list2.oid)
-    for tree_idx, tree1 in enumerate(tree_list1):
-        tree2 = tree_list2[tree_idx]
-        tester.logger.debug(tree1.to_newick_str())
-        tree1.debug_check_tree(logger=tester.logger)
-        tester.logger.debug(tree2.to_newick_str())
-        tree2.debug_check_tree(logger=tester.logger)
-
-        tester.assertTrue(tree1 is not tree2)
-        if distinct_taxa:
-            tester.assertTrue(tree1.taxon_set is not tree2.taxon_set)
-        tester.assertTrue(tree1.taxon_set is tree_list1.taxon_set)
-        tester.assertTrue(tree2.taxon_set is tree_list2.taxon_set)
-
-        tree1_nodes = [nd for nd in tree1.postorder_node_iter()]
-        tree2_nodes = [nd for nd in tree2.postorder_node_iter()]
-        tester.assertEqual(len(tree1_nodes), len(tree2_nodes))
-        for nd_idx, node1 in enumerate(tree1_nodes):
-            node2 = tree2_nodes[nd_idx]
-            if node1.taxon is not None:
-                tester.assert_(node2.taxon is not None)
-                if distinct_taxa:
-                    tester.assertTrue(node1.taxon is not node2.taxon)
-                else:
-                    tester.assertTrue(node1.taxon is node2.taxon)
-                if equal_oids:
-                    tester.assertEqual(node1.oid, node2.oid)
-                else:
-                    tester.assertNotEqual(node1.oid, node2.oid)
-                tester.assertEqual(node1.taxon.label, node2.taxon.label)
-                tester.assertTrue(node1.taxon in tree1.taxon_set)
-                tester.assertTrue(node2.taxon in tree2.taxon_set)
-            else:
-                tester.assert_(node2.taxon is None)
-            if node1.edge.length is not None:
-                tester.assert_(node2.edge.length is not None)
-                tester.assertAlmostEqual(node1.edge.length, node2.edge.length, 3)
-            else:
-                tester.assert_(node2.edge.length is None)
-            tester.assertEqual(len(node1.child_nodes()), len(node2.child_nodes()))
-
-def compare_dataset_char_arrays(ds1, ds2, tester, distinct_taxa=True, equal_oids=False):
-    tester.assertEqual(len(ds1.char_arrays), len(ds2.char_arrays))
-    for char_array_idx, char_array1 in enumerate(ds1.char_arrays):
-        char_array2 = ds2.char_arrays[char_array_idx]
-        compare_individual_char_arrays(char_array1, char_array2, tester, distinct_taxa, equal_oids)
-
-def compare_individual_char_arrays(char_array1, char_array2, tester, distinct_taxa=True, equal_oids=False):
-    tester.assertEqual(len(char_array1), len(char_array2))
-    tester.assertEqual(len(char_array1.taxon_set), len(char_array2.taxon_set))
-    for taxon_idx, taxon1 in enumerate(char_array1.taxon_set):
-        tester.assertEqual(char_array1.taxon_set[taxon_idx].label,
-                char_array2.taxon_set[taxon_idx].label)
-        seq1 = char_array1[taxon_idx]
-        seq2 = char_array2[taxon_idx]
-        tester.assertEqual(len(seq1), len(seq2))
-        for cell_idx, cell1 in enumerate(seq1):
-            cell2 = seq2[cell_idx]
-            state1 = cell1.value
-            state2 = cell2.value
-            tester.assertEqual(state1.symbol, state2.symbol)
-            tester.assertEqual(state1.token, state2.token)
-            tester.assertEqual(state1.multistate, state2.multistate)
-            tester.assertEqual(state1.fundamental_symbols, state2.fundamental_symbols)
