@@ -70,5 +70,50 @@ class RandomlyReorientTest(unittest.TestCase):
             if treecalc.symmetric_difference(ref, changing) != 0:
                 self.fail("\n%s\n!=\n%s" % (str(ref), str(changing)))
 
+class CollapseConflictingTest(unittest.TestCase):
+
+    def runTest(self):
+        taxon_set = dendropy.TaxonSet([str(i+1) for i in range(5)])
+        tree_list = dendropy.TreeList(
+            istream=StringIO("""
+            (5,((4,3),2),1);
+            (5,(4,3,2),1);
+            (5,((4,3),2),1);
+            (5,(4,3),2,1);
+            (5,((4,3),2),1);
+            (5,4,3,2,1);
+            """),
+            format="newick",
+            taxon_set=taxon_set)
+        tree = tree_list[0]
+        expected_tree = tree_list[1]
+        splitcalc.encode_splits(tree)
+        all_cm = tree.seed_node.edge.clade_mask
+        split_to_target = 0xA
+        treemanip.collapse_conflicting(tree.seed_node, split_to_target, all_cm)
+        splitcalc.encode_splits(tree)
+        splitcalc.encode_splits(expected_tree)
+        self.assertEqual(treecalc.symmetric_difference(tree, expected_tree), 0)
+
+        tree = tree_list[2]
+        expected_tree = tree_list[3]
+        splitcalc.encode_splits(tree)
+        all_cm = tree.seed_node.edge.clade_mask
+        split_to_target = 0x3
+        treemanip.collapse_conflicting(tree.seed_node, split_to_target, all_cm)
+        splitcalc.encode_splits(tree)
+        splitcalc.encode_splits(expected_tree)
+        self.assertEqual(treecalc.symmetric_difference(tree, expected_tree), 0)
+
+        tree = tree_list[4]
+        expected_tree = tree_list[5]
+        splitcalc.encode_splits(tree)
+        all_cm = tree.seed_node.edge.clade_mask
+        split_to_target = 0x5
+        treemanip.collapse_conflicting(tree.seed_node, split_to_target, all_cm)
+        splitcalc.encode_splits(tree)
+        splitcalc.encode_splits(expected_tree)
+        self.assertEqual(treecalc.symmetric_difference(tree, expected_tree), 0)
+
 if __name__ == "__main__":
     unittest.main()
