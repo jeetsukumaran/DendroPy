@@ -39,8 +39,8 @@ except ImportError, e:
     from distutils.core import setup
     PACKAGES = ['dendropy',
                 'dendropy.dataio',
-                'dendropy.dataobjects',
-                'dendropy.tests',
+                'dendropy.dataobject',
+                'dendropy.test',
                 'dendropy.utility']
     EXTRA_KWARGS = {}
 else:
@@ -48,7 +48,7 @@ else:
     EXTRA_KWARGS = dict(
         install_requires = ['setuptools'],
         include_package_data=True,
-        test_suite = "dendropy.tests",
+        test_suite = "dendropy.test",
         zip_safe=True,
     )
 sys.stderr.write("packages identified:\n    %s\n" % ("\n    ".join(PACKAGES)))
@@ -64,7 +64,7 @@ setup(name='DendroPy',
       packages=PACKAGES,
       package_data={
         "" : ['doc/*'],
-        "dendropy" : ["tests/data/*"]
+        "dendropy" : ["test/data/*"]
       },
       scripts = [('scripts/%s' % i) for i in SCRIPT_NAMES],
       long_description="""\

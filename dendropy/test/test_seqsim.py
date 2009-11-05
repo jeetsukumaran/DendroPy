@@ -27,7 +27,7 @@ Molecular character evolution tests.
 import unittest
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
-from dendropy.tests.support import is_test_enabled, TestLevel
+from dendropy.test.support import is_test_enabled, TestLevel
 from dendropy.utility import paup
 from dendropy import seqsim
 import dendropy

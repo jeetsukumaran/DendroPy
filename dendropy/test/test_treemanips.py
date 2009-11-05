@@ -31,7 +31,7 @@ import dendropy
 from dendropy import treecalc
 from dendropy import treemanip
 from dendropy import splitcalc
-from dendropy.tests import support
+from dendropy.test import support
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 

@@ -27,8 +27,8 @@ Tests of split distribution counting.
 import unittest
 from cStringIO import StringIO
 
-from dendropy.tests import paths
-from dendropy.tests import support
+from dendropy.test import paths
+from dendropy.test import support
 from dendropy.utility import messaging
 from dendropy.utility import paup
 from dendropy.dataio import nexus
@@ -41,7 +41,7 @@ _LOG = messaging.get_logger(__name__)
 #    def runTest(self):
 #        taxon_set = dendropy.TaxonSet()
 #        tsum = treesum.TreeSummarizer()
-#        filepaths = [dendropy.tests.data_source_path("primates.tre")]
+#        filepaths = [dendropy.test.data_source_path("primates.tre")]
 #        for f in filepaths:
 #                ti = nexus.tree_source_iter(istream=open(f, "rU"), taxon_set=taxon_set, from_index=0)
 #                sd = tsum.count_splits_on_trees(ti, split_distribution=None, trees_splits_encoded=False)
@@ -49,7 +49,7 @@ _LOG = messaging.get_logger(__name__)
 #    def testFindSplits(self):
 #        unrooted = True
 #        for tc in test_cases:
-#            for tree_filepath in [dendropy.tests.data_source_path(tc[0])]:
+#            for tree_filepath in [dendropy.test.data_source_path(tc[0])]:
 #                for tree in nexus.tree_source_iter(istream=open(tree_filepath, "rU")):
 #                    splitcalc.encode_splits(tree)
 #                    for edge in tree.preorder_edge_iter():

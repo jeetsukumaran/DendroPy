@@ -21,7 +21,7 @@
 ###############################################################################
 
 """
-Path mapping for various test.
+Path mapping for various tests.
 """
 
 import os
@@ -32,7 +32,7 @@ _LOG = messaging.get_logger(__name__)
 try:
     import pkg_resources
     _LOG.info("Using local pkg_resources path mapping")
-    TESTS_DIR = pkg_resources.resource_filename("dendropy", "tests")
+    TESTS_DIR = pkg_resources.resource_filename("dendropy", "test")
     SCRIPTS_DIR = pkg_resources.resource_filename("dendropy", "scripts")
 except:
     _LOG.info("Using local filesystem path mapping")

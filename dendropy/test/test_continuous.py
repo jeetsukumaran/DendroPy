@@ -28,7 +28,7 @@ import unittest
 import inspect
 import dendropy
 import itertools
-from dendropy.tests import support
+from dendropy.test import support
 from dendropy import continuous
 
 class BounceConstrainTest(unittest.TestCase):

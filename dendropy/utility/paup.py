@@ -32,7 +32,7 @@ import re
 import csv
 
 import unittest
-import dendropy.tests
+import dendropy.test
 from dendropy.utility import containers
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)

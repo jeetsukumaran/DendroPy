@@ -28,7 +28,7 @@ import unittest
 import sys
 
 from dendropy.utility import messaging
-from dendropy.tests import support
+from dendropy.test import support
 from dendropy.dataobject import tree as treeobj
 from dendropy.dataobject import taxon as taxonobj
 
