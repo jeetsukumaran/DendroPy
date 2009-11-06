@@ -56,7 +56,7 @@ class DendropyTestCase(unittest.TestCase):
     def assertIsNotContainedIn(self, obj1, obj2, message=None):
         if message is None:
             message = "%s is in: %s" % (obj1, obj2)
-        self.assertTrue(obj1 in obj2, message)
+        self.assertTrue(obj1 not in obj2, message)
 
 class DataVerificationTestCase(unittest.TestCase):
     """
