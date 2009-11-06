@@ -366,12 +366,13 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                     format = args[1]
                 elif len(args) == 1 and "format" in kwargs:
                     format = kwargs["format"]
+                    del(kwargs["format"])
                 elif len(args) > 1 and "format" in kwargs:
                     raise TypeError("Cannot specify format as both named and unnamed arguments")
                 elif len(args) == 1 and "format" not in kwargs:
                     raise TypeError("Need to specify format if passing a file-like" \
                                   + " object from which to construct a Tree.")
-                self.read(args[0], format)
+                self.read(args[0], format, **kwargs)
                 if "oid" in kwargs:
                     self.oid = kwargs["oid"]
                 if "label" in kwargs:
@@ -404,14 +405,14 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         memo[id(self.taxon_set)] = o.taxon_set
         for i, t in enumerate(self.taxon_set):
             memo[id(t)] = o.taxon_set[i]
-        if self.seed_node is not None:
-            new_v = copy.deepcopy(self.seed_node, memo)
-            o.seed_node = new_v
-        else:
-            o.seed_node = None
-        memo[id(self.seed_node)] = o.seed_node
+#        if self.seed_node is not None:
+#            new_v = copy.deepcopy(self.seed_node, memo)
+#            o.seed_node = new_v
+#        else:
+#            o.seed_node = None
+#        memo[id(self.seed_node)] = o.seed_node
         for k, v in self.__dict__.iteritems():
-            if k not in ['seed_node', 'taxon_set', "_oid"]:
+            if k not in ['taxon_set', "_oid"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
 
