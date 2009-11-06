@@ -92,6 +92,14 @@ class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
     def testTreeFromFilePosArgsWithNoFormat(self):
         self.assertRaises(errors.UnspecifiedFormatError, dendropy.Tree, istream=StringIO(self.tree1_newick_str), taxon_set=self.tree1.taxon_set)
 
+    def testTreeFromMultipleSource(self):
+        self.assertRaises(TypeError,
+                dendropy.Tree, \
+                StringIO(self.tree1_newick_str),
+                istream=StringIO(self.tree1_newick_str),
+                format="newick",
+                taxon_set=self.tree1.taxon_set)
+
     def testTreeFromReadDistinctTaxa(self):
         tree2 = dendropy.Tree()
         tree2.read_from_string(self.tree1_newick_str, "newick")
