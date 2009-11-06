@@ -493,7 +493,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         tree_list.append(self)
         write_tree_list(format=require_format_from_kwargs(kwargs), tree_list=tree_list, **kwargs)
 
-    def as_python_source(self, tree_obj_name=None, **kwargs):
+    def as_python_source(self, tree_obj_name=None, tree_args=None, **kwargs):
         """
         Returns string that will rebuild this tree in Python
         """
@@ -502,25 +502,23 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             tree_obj_name = "tree_%s" % id(self)
         node_obj_namer = lambda x: "nd_%s" % id(x)
         taxon_obj_namer = lambda x: "tax_%s" % id(x)
-        p.append("%s = dendropy.Tree(oid=%s, label=%s)" \
+        p.append("%s = dendropy.Tree(label=%s%s)" \
             % (tree_obj_name,
-               ('"' + self.oid +'"') if self.oid is not None else "None",
-               ('"' + self.label +'"') if self.label is not None else "None"))
+               ('"' + self.label +'"') if self.label is not None else "None",
+               (", " + tree_args) if tree_args is not None else ""))
 
         for taxon in self.taxon_set:
             tobj = taxon_obj_namer(taxon)
-            p.append("%s = %s.taxon_set.new_taxon(oid=%s, label=%s)" \
+            p.append("%s = %s.taxon_set.require_taxon(label=%s)" \
                 % (tobj,
                    tree_obj_name,
-                   ('"' + taxon.oid +'"') if taxon.oid is not None else "None",
                    ('"' + taxon.label +'"') if taxon.label is not None else "None"))
 
         for node in self.preorder_node_iter():
             for child in node.child_nodes():
-                p.append("%s = %s.new_child(oid=%s, label=%s, taxon=%s, edge_length=%s)" %
+                p.append("%s = %s.new_child(label=%s, taxon=%s, edge_length=%s)" %
                         (node_obj_namer(child),
                         ("%s.seed_node" % tree_obj_name) if node is self.seed_node else node_obj_namer(node),
-                        ('"' + node.oid +'"') if child.oid is not None else "None",
                         ('"' + node.label +'"') if child.label is not None else "None",
                         taxon_obj_namer(child.taxon) if child.taxon is not None else "None",
                         child.edge.length))
