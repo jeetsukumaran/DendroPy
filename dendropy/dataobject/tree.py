@@ -1090,24 +1090,21 @@ class Node(TaxonLinked):
         node.parent_node = self
         if edge_length != None:
             node.edge_length = edge_length
-#         if len(self._child_nodes) > 0:
-#             self._child_nodes[-1].next_sib = node
         if pos is None:
             self._child_nodes.append(node)
         else:
             self._child_nodes.insert(pos, node)
         return node
 
-    def new_child(self, edge_length=None, node_label=None, node_taxon=None, oid=None):
-        "Convenience class to create and add a new child to this node."
-        node = self.__class__()
-        if oid is not None:
-            node.oid = oid
-        if node_label is not None:
-            node.label = node_label
-        if node_taxon is not None:
-            node.taxon = node_taxon
-        return self.add_child(node, edge_length)
+    def new_child(self, **kwargs):
+        """
+        Convenience class to create and add a new child to this node. Keyword
+        arguments `label`, `oid` and `taxon` will be passed to Node().
+        `edge_length`, if given, will specify the length of the subtending
+        edge of this child.
+        """
+        node = self.__class__(**kwargs)
+        return self.add_child(node, edge_length=kwargs.get("edge_length", None))
 
     def remove_child(self, node, suppress_deg_two=False):
         """
