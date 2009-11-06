@@ -32,7 +32,7 @@ _LOG = messaging.get_logger(__name__)
 
 import dendropy
 
-class TreeInstantiationTest(framework.ExtendedTestCase):
+class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
 
     def testTreeFromStandard(self):
         tree = datagen.get_standard_four_taxon_tree()
@@ -44,6 +44,8 @@ class TreeInstantiationTest(framework.ExtendedTestCase):
     def testTreeFromTree(self):
         tree1 = datagen.get_standard_four_taxon_tree()
         tree2 = dendropy.Tree(tree1)
+        self.assertDistinctButEqualTrees(tree1, tree2, distinct_taxa=False, equal_oids=False)
+
 #        datacheck.compare_individual_trees(tree1, tree2, tester=self, distinct_taxa=True, distinct_oids=False)
 
 #    def test_tree_init_from_newick(self):
