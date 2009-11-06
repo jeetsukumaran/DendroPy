@@ -29,15 +29,23 @@ import dendropy
 
 def get_standard_four_taxon_tree():
     taxa = dendropy.TaxonSet(['A', 'B', 'C', 'D'])
-    taxa.is_mutable = False
     tree = dendropy.Tree(taxon_set=taxa)
+    assert tree.taxon_set == taxa
     tree.seed_node.oid = 'root'
-    i1 = tree.seed_node.new_child(oid='i1')
+    tree.seed_node.label = 'root'
+    tree.seed_node.edge.length = 2.0
+    i1 = tree.seed_node.new_child(oid='i1', label='i1')
+    i1.edge.length = 2.5
     a = i1.new_child(oid='a', taxon=taxa.require_taxon(label='A'))
+    a.edge.length = 3.5
     b = i1.new_child(oid='b', taxon=taxa.require_taxon(label='B'))
-    i2 = tree.seed_node.new_child(oid='i2')
-    a = i2.new_child(oid='c', taxon=taxa.require_taxon(label='C'))
-    b = i2.new_child(oid='d', taxon=taxa.require_taxon(label='D'))
+    b.edge.length = 3.5
+    i2 = tree.seed_node.new_child(oid='i2', label='i2')
+    i2.edge.length = 4.0
+    c = i2.new_child(oid='c', taxon=taxa.require_taxon(label='C'))
+    c.edge.length = 2.0
+    d = i2.new_child(oid='d', taxon=taxa.require_taxon(label='D'))
+    d.edge.length = 2.0
     return tree
 
 class RepeatedRandom(Random):

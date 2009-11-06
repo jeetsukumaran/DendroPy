@@ -43,3 +43,8 @@ class UnsupportedFormatError(NotImplementedError):
 
     def __init__(self, *args, **kwargs):
         NotImplementedError.__init__(self, *args, **kwargs)
+
+class UnspecifiedFormatError(Exception):
+
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)

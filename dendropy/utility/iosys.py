@@ -26,6 +26,7 @@ Base classes for all readers/parsers and formatters/writers.
 
 import os
 from cStringIO import StringIO
+from dendropy.utility import errors
 
 ###############################################################################
 ## KEYWORD ARGUMENT PROCESSING
@@ -48,67 +49,9 @@ def require_format_from_kwargs(kwdict):
     """
     format = get_format_from_kwargs(kwdict)
     if format is None:
-        raise Exception("Must specify `format`.")
+        raise errors.UnspecifiedFormatError("Must specify `format`.")
     return format
 
-def get_source_from_kwargs(kwdict):
-    """
-    Process source specification described in keyword arguments and return
-    appropriate file handle, removing specification terms from keyword
-    dictionary as encountered.
-    """
-    src = None
-    if "file" in kwdict:
-        src = kwdict["file"]
-        del(kwdict["file"])
-    if "path" in kwdict:
-        if src is not None:
-            raise Exception("Multiple data sources specified.")
-        src = open(os.path.expanduser(os.path.expandvars(kwdict["path"])))
-        del(kwdict["path"])
-    if "str" in kwdict:
-        if src is not None:
-            raise Exception("Multiple data sources specified.")
-        src = StringIO(kwdict["str"])
-        del(kwdict["str"])
-    return src
-
-def require_source_from_kwargs(kwdict):
-    """
-    As with `get_source_arg`, but raises Exception if not specified.
-    """
-    src = get_source_from_kwargs(kwdict)
-    if src is None:
-        raise Exception("Must specify one of the following: 'file', 'path' or 'str'.")
-    return src
-
-def get_dest_from_kwargs(kwdict):
-    """
-    Process destination specification described in keyword arguments and return
-    appropriate file handle, removing specification terms from keyword
-    dictionary as encountered.
-    """
-    dest = None
-    if "file" in kwdict:
-        dest = kwdict["file"]
-        del(kwdict["file"])
-    if "path" in kwdict:
-        if dest is not None:
-            raise Exception("Multiple destinations specified.")
-        dest = open(os.path.expanduser(os.path.expandvars(kwdict["path"])))
-        del(kwdict["path"])
-    if "str" in kwdict:
-        raise Exception("'str' is not a valud output specification")
-    return dest
-
-def require_dest_from_kwargs(kwdict):
-    """
-    As with `get_dest_arg`, but raises Exception if not specified.
-    """
-    dest = get_dest_from_kwargs(kwdict)
-    if dest is None:
-        raise Exception("Must specify 'file' or 'path'.")
-    return dest
 
 ###############################################################################
 ## IOService
@@ -169,12 +112,6 @@ class DataReader(IOService):
         """
         raise NotImplementedError
 
-    def require_source(self, kwdict):
-        """
-        Processes keyword arguments to return a file descriptor object source.
-        """
-        return require_source_from_kwargs(kwdict)
-
 ###############################################################################
 ## DataReader
 
@@ -198,13 +135,6 @@ class DataWriter(IOService):
         by the file-like object `ostream`.
         """
         raise NotImplementedError
-
-    def require_destination(self, kwdict):
-        """
-        Processes keyword arguments to return a file descriptor object
-        destination.
-        """
-        return require_dest_from_kwargs(kwdict)
 
 ###############################################################################
 ## Readable

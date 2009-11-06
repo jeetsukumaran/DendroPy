@@ -25,26 +25,27 @@ Tests creation, reading, update, deletion of Tree and TreeList objects.
 """
 
 import unittest
-from dendropy.utility import messaging
+from cStringIO import StringIO
+from dendropy.utility import errors
 from dendropy.test.support import framework
 from dendropy.test.support import datagen
-_LOG = messaging.get_logger(__name__)
-
 import dendropy
 
 class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
 
+    def setUp(self):
+        self.tree1 = datagen.get_standard_four_taxon_tree()
+        self.tree1_newick_str = self.tree1.to_newick_str(include_internal_labels=True)
+
     def testTreeFromStandard(self):
-        tree = datagen.get_standard_four_taxon_tree()
-        node_oids = [nd.oid for nd in tree.postorder_node_iter()]
+        node_oids = [nd.oid for nd in self.tree1.postorder_node_iter()]
         self.assertEqual(node_oids, ['a', 'b', 'i1', 'c', 'd', 'i2', 'root'])
-        tax_labels = [nd.taxon.label for nd in tree.postorder_node_iter() if nd.taxon is not None]
+        tax_labels = [nd.taxon.label for nd in self.tree1.postorder_node_iter() if nd.taxon is not None]
         self.assertEqual(tax_labels, ['A', 'B', 'C', 'D'])
 
     def testTreeFromTree(self):
-        tree1 = datagen.get_standard_four_taxon_tree()
-        tree2 = dendropy.Tree(tree1)
-        self.assertDistinctButEqual(tree1, tree2, distinct_taxa=False, equal_oids=False)
+        tree2 = dendropy.Tree(self.tree1)
+        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
     def testTreeFromTreeWithExtraKeywordArgs(self):
         tree1 = datagen.get_standard_four_taxon_tree()
@@ -53,6 +54,20 @@ class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
     def testTreeFromTreeWithExtraPosArgs(self):
         tree1 = datagen.get_standard_four_taxon_tree()
         self.assertRaises(TypeError, dendropy.Tree, tree1, "dummy")
+
+    def testTreeFromInvalidObject(self):
+        self.assertRaises(TypeError, dendropy.Tree, object())
+
+    def testTreeFromFileWithKeywordsDistinctTaxa(self):
+        tree2 = dendropy.Tree(istream=StringIO(self.tree1_newick_str), format="newick")
+        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=True, equal_oids=False)
+
+    def testTreeFromFileWithKeywordsSameTaxa(self):
+        tree2 = dendropy.Tree(istream=StringIO(self.tree1_newick_str), format="newick", taxon_set=self.tree1.taxon_set)
+        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
+
+    def testTreeFromFileWithNoFormat(self):
+        self.assertRaises(errors.UnspecifiedFormatError, dendropy.Tree, istream=StringIO(self.tree1_newick_str), taxon_set=self.tree1.taxon_set)
 
 #        datacheck.compare_individual_trees(tree1, tree2, tester=self, distinct_taxa=True, distinct_oids=False)
 
