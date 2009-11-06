@@ -24,15 +24,15 @@
 Functions and classes in support of comparing data.
 """
 
-def compare_datasets(ds1, ds2, tester, distinct_taxa=True, equal_oids=False):
+def compare_datasets(ds1, ds2, tester, distinct_taxa=True, distinct_oids=False):
     tester.logger.info("Comparing dataset taxon sets ...")
-    compare_dataset_taxon_sets(ds1, ds2, tester, distinct_taxa, equal_oids)
+    compare_dataset_taxon_sets(ds1, ds2, tester, distinct_taxa, distinct_oids)
     tester.logger.info("Comparing dataset tree lists ...")
-    compare_dataset_tree_lists(ds1, ds2, tester, distinct_taxa, equal_oids)
+    compare_dataset_tree_lists(ds1, ds2, tester, distinct_taxa, distinct_oids)
     tester.logger.info("Comparing dataset character arrays ...")
-    compare_dataset_char_arrays(ds1, ds2, tester, distinct_taxa, equal_oids)
+    compare_dataset_char_arrays(ds1, ds2, tester, distinct_taxa, distinct_oids)
 
-def compare_dataset_taxon_sets(ds1, ds2, tester, distinct_taxa=True, equal_oids=False):
+def compare_dataset_taxon_sets(ds1, ds2, tester, distinct_taxa=True, distinct_oids=False):
     tester.assertEqual(len(ds1.taxon_sets), len(ds2.taxon_sets))
     if distinct_taxa:
         tester.assertTrue(ds1.taxon_sets is not ds2.taxon_sets)
@@ -40,14 +40,14 @@ def compare_dataset_taxon_sets(ds1, ds2, tester, distinct_taxa=True, equal_oids=
         ts2 = ds2.taxon_sets[ts_idx]
         tester.logger.info("Comparing taxa of taxon set %d: %d taxa vs. %d taxa" \
             % (ts_idx, len(ts1), len(ts2)))
-        compare_individual_taxon_sets(ts1, ts2, tester, distinct_taxa, equal_oids)
+        compare_individual_taxon_sets(ts1, ts2, tester, distinct_taxa, distinct_oids)
 
-def compare_individual_taxon_sets(ts1, ts2, tester, distinct_taxa=True, equal_oids=False):
+def compare_individual_taxon_sets(ts1, ts2, tester, distinct_taxa=True, distinct_oids=False):
     if distinct_taxa:
         tester.assertTrue(ts1 is not ts2)
     tester.assertEqual(len(ts1), len(ts2))
-    if equal_oids:
-        tester.assertEqual(ts1.oid, ts2.oid)
+    if distinct_oids:
+        tester.assertNotEqual(ts1.oid, ts2.oid)
     tester.assertEqual(ts1.label, ts2.label)
     for taxon_idx, taxon1 in enumerate(ts1):
         tester.logger.debug("Taxon %d: '%s' == '%s'" % (taxon_idx, taxon1.label, ts2[taxon_idx].label))
@@ -55,12 +55,10 @@ def compare_individual_taxon_sets(ts1, ts2, tester, distinct_taxa=True, equal_oi
         if distinct_taxa:
             tester.assertTrue(taxon1 is not taxon2)
         tester.assertEqual(taxon1.label, taxon2.label)
-        if equal_oids:
-            tester.assertEqual(taxon1.oid, taxon2.oid)
-        else:
+        if distinct_oids:
             tester.assertNotEqual(taxon1.oid, taxon2.oid)
 
-def compare_dataset_tree_lists(ds1, ds2, tester, distinct_taxa=True, equal_oids=False):
+def compare_dataset_tree_lists(ds1, ds2, tester, distinct_taxa=True, distinct_oids=False):
     tester.assertTrue(ds1.tree_lists is not ds2.tree_lists)
     tester.assertEqual(len(ds1.tree_lists), len(ds2.tree_lists))
     for tree_list_idx, tree_list1 in enumerate(ds1.tree_lists):
@@ -71,21 +69,22 @@ def compare_dataset_tree_lists(ds1, ds2, tester, distinct_taxa=True, equal_oids=
             tester.assertTrue(tree_list2.taxon_set in ds2.taxon_sets)
             tester.assertTrue(tree_list1.taxon_set not in ds2.taxon_sets)
             tester.assertTrue(tree_list2.taxon_set not in ds1.taxon_sets)
-        compare_individual_tree_lists(tree_list1, tree_list2, tester, distinct_taxa, equal_oids)
+        compare_individual_tree_lists(tree_list1, tree_list2, tester, distinct_taxa, distinct_oids)
 
-def compare_individual_tree_lists(tree_list1, tree_list2, tester, distinct_taxa=True, equal_oids=False):
+def compare_individual_tree_lists(tree_list1, tree_list2, tester, distinct_taxa=True, distinct_oids=False):
     tester.assertTrue(tree_list1 is not tree_list2)
     tester.assertEqual(len(tree_list1), len(tree_list2))
     if distinct_taxa:
         tester.assertTrue(tree_list1.taxon_set is not tree_list2.taxon_set)
-    compare_individual_taxon_sets(tree_list1.taxon_set, tree_list2.taxon_set, tester, distinct_taxa, equal_oids)
+    compare_individual_taxon_sets(tree_list1.taxon_set, tree_list2.taxon_set, tester, distinct_taxa, distinct_oids)
     tester.assertEqual(tree_list1.label, tree_list2.label)
-    if equal_oids:
-        tester.assertEqual(tree_list1.oid, tree_list2.oid)
-    else:
+    if distinct_oids:
         tester.assertNotEqual(tree_list1.oid, tree_list2.oid)
     for tree_idx, tree1 in enumerate(tree_list1):
         tree2 = tree_list2[tree_idx]
+        compare_individual_trees(tree1, tree2, tester, distinct_taxa, distinct_oids)
+
+def compare_individual_trees(tree1, tree2, tester, distinct_taxa=True, distinct_oids=False):
         tester.logger.debug(tree1.to_newick_str())
         tree1.debug_check_tree(logger=tester.logger)
         tester.logger.debug(tree2.to_newick_str())
@@ -108,9 +107,7 @@ def compare_individual_tree_lists(tree_list1, tree_list2, tester, distinct_taxa=
                     tester.assertTrue(node1.taxon is not node2.taxon)
                 else:
                     tester.assertTrue(node1.taxon is node2.taxon)
-                if equal_oids:
-                    tester.assertEqual(node1.oid, node2.oid)
-                else:
+                if distinct_oids:
                     tester.assertNotEqual(node1.oid, node2.oid)
                 tester.assertEqual(node1.taxon.label, node2.taxon.label)
                 tester.assertTrue(node1.taxon in tree1.taxon_set)
@@ -124,13 +121,13 @@ def compare_individual_tree_lists(tree_list1, tree_list2, tester, distinct_taxa=
                 tester.assert_(node2.edge.length is None)
             tester.assertEqual(len(node1.child_nodes()), len(node2.child_nodes()))
 
-def compare_dataset_char_arrays(ds1, ds2, tester, distinct_taxa=True, equal_oids=False):
+def compare_dataset_char_arrays(ds1, ds2, tester, distinct_taxa=True, distinct_oids=False):
     tester.assertEqual(len(ds1.char_arrays), len(ds2.char_arrays))
     for char_array_idx, char_array1 in enumerate(ds1.char_arrays):
         char_array2 = ds2.char_arrays[char_array_idx]
-        compare_individual_char_arrays(char_array1, char_array2, tester, distinct_taxa, equal_oids)
+        compare_individual_char_arrays(char_array1, char_array2, tester, distinct_taxa, distinct_oids)
 
-def compare_individual_char_arrays(char_array1, char_array2, tester, distinct_taxa=True, equal_oids=False):
+def compare_individual_char_arrays(char_array1, char_array2, tester, distinct_taxa=True, distinct_oids=False):
     tester.assertEqual(len(char_array1), len(char_array2))
     tester.assertEqual(len(char_array1.taxon_set), len(char_array2.taxon_set))
     for taxon_idx, taxon1 in enumerate(char_array1.taxon_set):

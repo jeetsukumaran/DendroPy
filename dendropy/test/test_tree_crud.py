@@ -27,6 +27,7 @@ Tests creation, reading, update, deletion of Tree and TreeList objects.
 import unittest
 from dendropy.utility import messaging
 from dendropy.test.support.framework import DendropyTestCase
+from dendropy.test.support import datacheck
 _LOG = messaging.get_logger(__name__)
 
 import dendropy
@@ -53,6 +54,11 @@ class TreeInstantiationTest(DendropyTestCase):
         self.assertEqual(node_oids, ['a', 'b', 'i1', 'c', 'd', 'i2', 'root'])
         tax_labels = [nd.taxon.label for nd in tree.postorder_node_iter() if nd.taxon is not None]
         self.assertEqual(tax_labels, ['A', 'B', 'C', 'D'])
+
+    def testTreeFromTree(self):
+        tree1 = get_standard_tree()
+        tree2 = dendropy.Tree(tree1)
+        datacheck.compare_individual_trees(tree1, tree2, tester=self, distinct_taxa=True, distinct_oids=False)
 
 #    def test_tree_init_from_newick(self):
 #        newick_str = "((A,B),(C,D));"
