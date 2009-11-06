@@ -115,9 +115,9 @@ class DataObjectVerificationTestCase(ExtendedTestCase):
         self.logger.debug(tree2.to_newick_str())
         tree2.debug_check_tree(logger=self.logger)
 
-        self.assertTrue(tree1 is not tree2)
+        self.assertIsNotSame(tree1, tree2)
         if distinct_taxa:
-            self.assertTrue(tree1.taxon_set is not tree2.taxon_set)
+            self.assertIsNotSame(tree1.taxon_set, tree2.taxon_set)
         if equal_oids is True:
             self.assertEqual(tree1.oid, tree2.oid)
         elif equal_oids is False:
@@ -131,24 +131,38 @@ class DataObjectVerificationTestCase(ExtendedTestCase):
             if node1.taxon is not None:
                 self.assert_(node2.taxon is not None)
                 if distinct_taxa:
-                    self.assertTrue(node1.taxon is not node2.taxon)
+                    self.assertIsNotSame(node1.taxon, node2.taxon)
                 else:
-                    self.assertTrue(node1.taxon is node2.taxon)
+                    self.assertIsSame(node1.taxon, node2.taxon)
                 if equal_oids is True:
                     self.assertEqual(node1.oid, node2.oid)
                 elif equal_oids is False:
                     self.assertNotEqual(node1.oid, node2.oid)
                 self.assertEqual(node1.taxon.label, node2.taxon.label)
-                self.assertTrue(node1.taxon in tree1.taxon_set)
-                self.assertTrue(node2.taxon in tree2.taxon_set)
+                self.assertIsContainedIn(node1.taxon, tree1.taxon_set)
+                self.assertIsContainedIn(node2.taxon, tree2.taxon_set)
             else:
-                self.assert_(node2.taxon is None)
+                self.assertIsSame(node2.taxon, None)
             if node1.edge.length is not None:
-                self.assert_(node2.edge.length is not None)
+                self.assertIsNotSame(node2.edge.length, None)
                 self.assertAlmostEqual(node1.edge.length, node2.edge.length, 3)
             else:
-                self.assert_(node2.edge.length is None)
+                self.assertIsSame(node2.edge.length, None)
             self.assertEqual(len(node1.child_nodes()), len(node2.child_nodes()))
+        tree1_edges = [edge for edge in tree1.postorder_edge_iter()]
+        tree2_edges = [edge for edge in tree2.postorder_edge_iter()]
+        self.assertEqual(len(tree1_edges), len(tree2_edges))
+        for edge_idx, edge1 in enumerate(tree1_edges):
+            edge2 = tree2_edges[edge_idx]
+            self.assertIsNotSame(edge1, edge2)
+            if edge1.length is None:
+                self.assertIsSame(edge1.length, None)
+            else:
+                self.assertEqual(edge1.length, edge2.length)
+            if equal_oids is True:
+                self.assertEqual(edge1.oid, edge2.oid)
+            elif equal_oids is False:
+                self.assertNotEqual(edge1.oid, edge2.oid)
 
 #    def compare_datasets(ds1, ds2, tester, distinct_taxa=True, equal_oids=False):
 #        self.logger.info("Comparing dataset taxon sets ...")
