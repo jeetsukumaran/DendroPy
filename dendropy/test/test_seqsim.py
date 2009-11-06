@@ -27,7 +27,7 @@ Molecular character evolution tests.
 import unittest
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
-from dendropy.test.support import is_test_enabled, TestLevel
+from dendropy.test.support import runlevel
 from dendropy.utility import paup
 from dendropy import seqsim
 import dendropy
@@ -49,7 +49,7 @@ begin trees;
 end;
 """
 
-if is_test_enabled(TestLevel.SLOW, _LOG, __name__, "skipping all sequence generation frequency checking"):
+if runlevel.is_test_enabled(runlevel.SLOW, _LOG, __name__, "skipping all sequence generation frequency checking"):
 
     class SeqSimTest(unittest.TestCase):
 

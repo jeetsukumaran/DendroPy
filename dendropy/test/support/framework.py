@@ -21,115 +21,14 @@
 ###############################################################################
 
 """
-Functions and classes in support of tests.
+Extensions of the unittest framework.
 """
 
 import unittest
 import inspect
-import os
 from random import Random
 
-###############################################################################
-## TESTING LEVELS
-
-class TestLevel:
-    FAST, NORMAL, SLOW, EXHAUSTIVE = 0, 10, 20, 30
-    def name(i):
-        if i <= TestLevel.FAST:
-            return "FAST"
-        if i <= TestLevel.NORMAL:
-            return "NORMAL"
-        if i <= TestLevel.SLOW:
-            return "SLOW"
-        return "EXHAUSTIVE"
-    name = staticmethod(name)
-    def name_to_int(l):
-        try:
-            return int(l)
-        except:
-            pass
-        l = l.upper()
-        if l == "FAST":
-            return TestLevel.FAST
-        if l == "NORMAL":
-            return TestLevel.NORMAL
-        if l == "SLOW":
-            return TestLevel.SLOW
-        if l == "EXHAUSTIVE":
-            return TestLevel.EXHAUSTIVE
-        raise ValueError("TestLevel %s unrecognized" % l)
-    name_to_int = staticmethod(name_to_int)
-
-def fast_testing_notification(logger, name, message=None, level=TestLevel.FAST):
-    if message is None:
-        message = ""
-    else:
-        message = ": %s" % message
-    logger.warning('%s Testing Level: skipping %s tests in %s%s' \
-        % (TestLevel.name(get_current_testing_level()),
-           TestLevel.name(level),
-           name,
-           message))
-
-def get_current_testing_level():
-    l = os.environ.get("DENDROPY_TESTING_LEVEL")
-    if l is None:
-        if "DENDROPY_FAST_TESTS" in os.environ:
-            return TestLevel.FAST
-        return TestLevel.NORMAL
-    try:
-        return TestLevel.name_to_int(l)
-    except:
-        _LOG.warn("the value %s for DENDROPY_TESTING_LEVEL is not recognized.  Using NORMAL level" % l)
-    return TestLevel.NORMAL
-
-def is_test_enabled(level, logger=None, module_name="", message=None):
-    tl = get_current_testing_level()
-    if level > tl:
-        if logger:
-            fast_testing_notification(logger, module_name, message, level)
-        return False
-    return True
-
-###############################################################################
-## DendropyTestCase
-
-class DendropyTestCase(unittest.TestCase):
-
-    def _failure(self, msg):
-        calling_frame = inspect.currentframe().f_back.f_back
-        co = calling_frame.f_code
-        emsg = "%s\nCalled from file %s, line %d, in %s" % (msg, co.co_filename, calling_frame.f_lineno, co.co_name)
-        self.assertTrue(False, emsg)
-
-    def assertIsSame(self, obj1, obj2, message=None):
-        if message is None:
-            message = "%s (%d) is not %s (%d)" % (obj1, id(obj1), obj2, id(obj2))
-        if obj1 is not obj2:
-            self._failure(message)
-
-    def assertIsNotSame(self, obj1, obj2, message=None):
-        if message is None:
-            message = "%s (%d) is %s (%d)" % (obj1, id(obj1), obj2, id(obj2))
-        if obj1 is obj2:
-            self._failure(message)
-
-    def assertIsContainedIn(self, obj1, obj2, message=None):
-        if message is None:
-            message = "%s is not in: %s" % (obj1, obj2)
-        if obj1 not in obj2:
-            self._failure(message)
-
-    def assertIsNotContainedIn(self, obj1, obj2, message=None):
-        if message is None:
-            message = "%s is in: %s" % (obj1, obj2)
-        if obj1 in obj2:
-            self._failure(message)
-
-###############################################################################
-## KnownRandom
-
-class KnownRandom(Random):
+class RepeatedRandom(Random):
     """
     An overload of Random that returns numbers from a circular list of 1000
     numbers. This is useful for testing.
@@ -515,3 +414,35 @@ class KnownRandom(Random):
         if self.index >= self.period:
             self.index = 0
         return r
+
+class DendropyTestCase(unittest.TestCase):
+
+    def _failure(self, msg):
+        calling_frame = inspect.currentframe().f_back.f_back
+        co = calling_frame.f_code
+        emsg = "%s\nCalled from file %s, line %d, in %s" % (msg, co.co_filename, calling_frame.f_lineno, co.co_name)
+        self.assertTrue(False, emsg)
+
+    def assertIsSame(self, obj1, obj2, message=None):
+        if message is None:
+            message = "%s (%d) is not %s (%d)" % (obj1, id(obj1), obj2, id(obj2))
+        if obj1 is not obj2:
+            self._failure(message)
+
+    def assertIsNotSame(self, obj1, obj2, message=None):
+        if message is None:
+            message = "%s (%d) is %s (%d)" % (obj1, id(obj1), obj2, id(obj2))
+        if obj1 is obj2:
+            self._failure(message)
+
+    def assertIsContainedIn(self, obj1, obj2, message=None):
+        if message is None:
+            message = "%s is not in: %s" % (obj1, obj2)
+        if obj1 not in obj2:
+            self._failure(message)
+
+    def assertIsNotContainedIn(self, obj1, obj2, message=None):
+        if message is None:
+            message = "%s is in: %s" % (obj1, obj2)
+        if obj1 in obj2:
+            self._failure(message)

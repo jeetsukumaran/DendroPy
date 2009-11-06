@@ -31,7 +31,7 @@ import dendropy
 from dendropy import treecalc
 from dendropy import treemanip
 from dendropy import splitcalc
-from dendropy.test import support
+from dendropy.test.support.framework import RepeatedRandom
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
@@ -42,7 +42,7 @@ class RandomlyRotateTest(unittest.TestCase):
         trees = dendropy.TreeList(StringIO(n+n), format="newick")
         ref = trees[0]
         changing = trees[1]
-        rng = support.KnownRandom()
+        rng = RepeatedRandom()
         splitcalc.encode_splits(ref)
         splitcalc.encode_splits(changing)
         orig_root = changing.seed_node
@@ -62,7 +62,7 @@ class RandomlyReorientTest(unittest.TestCase):
         trees = dendropy.TreeList(StringIO(n+n), format="newick", encode_splits=True, taxon_set=k.taxon_set)
         ref = trees[0]
         changing = trees[1]
-        rng = support.KnownRandom()
+        rng = RepeatedRandom()
         for i in xrange(50):
             treemanip.randomly_reorient_tree(changing, rng=rng, splits=True)
             self.assertNotEqual(str(changing), n)

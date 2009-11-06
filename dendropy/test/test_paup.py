@@ -29,8 +29,8 @@ import sys
 import csv
 
 import unittest
-from dendropy.test import paths
-from dendropy.test import support
+from dendropy.test.support import pathmap
+from dendropy.test.support.framework import DendropyTestCase
 from dendropy.utility import containers
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
@@ -68,7 +68,7 @@ class PaupWrapperRepToSplitMaskTest(unittest.TestCase):
             self.assertEqual(r, normalized, "%s  =>  %s  =>  %s" \
                 % (splitcalc.split_as_string(i, 8), s, splitcalc.split_as_string(normalized, 8)))
 
-class PaupWrapperSplitsParse(support.DendropyTestCase):
+class PaupWrapperSplitsParse(DendropyTestCase):
 
     def setUp(self):
         self.tree_filepath = None
@@ -78,9 +78,9 @@ class PaupWrapperSplitsParse(support.DendropyTestCase):
         self.expected_split_freqs = None
 
     def populate_test(self, tree_filepath, splitscsv_filepath, expected_num_trees):
-        self.tree_filepath = paths.data_source_path(tree_filepath)
+        self.tree_filepath = pathmap.data_source_path(tree_filepath)
         self.taxa_filepath = self.tree_filepath
-        self.splitscsv_filepath = paths.data_source_path(splitscsv_filepath)
+        self.splitscsv_filepath = pathmap.data_source_path(splitscsv_filepath)
         self.expected_num_trees = expected_num_trees
         self.expected_split_freqs = dict([ (s[0], int(s[1])) for s in csv.reader(open(self.splitscsv_filepath, "rU"))])
 
@@ -126,7 +126,7 @@ class PaupWrapperSplitsParseTest1(PaupWrapperSplitsParse):
     def runTest(self):
         self.count_splits()
 
-class PaupWrapperTaxaParse(support.DendropyTestCase):
+class PaupWrapperTaxaParse(DendropyTestCase):
 
     def setUp(self):
         self.taxa_filepath = None
@@ -145,7 +145,7 @@ class PaupWrapperTaxaParse(support.DendropyTestCase):
 class PaupWrapperTaxaParseTest1(PaupWrapperTaxaParse):
 
     def setUp(self):
-        self.taxa_filepath = paths.data_source_path(["trees", "feb032009.tre"])
+        self.taxa_filepath = pathmap.data_source_path(["trees", "feb032009.tre"])
         self.expected_taxlabels = ("T01", "T02", "T03", "T04", "T05", "T06",
                                    "T07", "T08", "T09", "T10", "T11", "T12", "T13", "T14",
                                    "T15", "T16", "T17", "T18", "T19", "T20", "T21", "T22",
@@ -161,7 +161,7 @@ class PaupWrapperTaxaParseTest1(PaupWrapperTaxaParse):
 class PaupWrapperTaxaParseTest2(PaupWrapperTaxaParse):
 
     def setUp(self):
-        self.taxa_filepath = paths.data_source_path(["chars", "primates.chars.nexus"])
+        self.taxa_filepath = pathmap.data_source_path(["chars", "primates.chars.nexus"])
         self.expected_taxlabels = ("Lemur catta", "Homo sapiens",
                 "Pan", "Gorilla", "Pongo", "Hylobates", "Macaca fuscata",
                 "Macaca mulatta", "Macaca fascicularis", "Macaca sylvanus",

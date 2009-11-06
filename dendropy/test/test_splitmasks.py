@@ -38,8 +38,6 @@ from dendropy import treemanip
 
 _LOG = messaging.get_logger(__name__)
 
-
-
 class CladeMaskTest(unittest.TestCase):
 
     def runTest(self):

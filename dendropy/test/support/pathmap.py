@@ -21,7 +21,7 @@
 ###############################################################################
 
 """
-Path mapping for various tests.
+Path mapping for various test resources.
 """
 
 import os

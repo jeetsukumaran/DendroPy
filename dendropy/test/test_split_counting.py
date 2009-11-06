@@ -27,8 +27,9 @@ Tests of split distribution counting.
 import unittest
 from cStringIO import StringIO
 
-from dendropy.test import paths
-from dendropy.test import support
+from dendropy.test.support import pathmap
+from dendropy.test.support import runlevel
+from dendropy.test.support.framework import DendropyTestCase
 from dendropy.utility import messaging
 from dendropy.utility import paup
 from dendropy.dataio import nexus
@@ -57,11 +58,11 @@ _LOG = messaging.get_logger(__name__)
 #                        e = splitcalc.find_edge_from_split(tree.seed_node, cm)
 #                        self.assertTrue(e is edge)
 
-class SplitCountTest(support.DendropyTestCase):
+class SplitCountTest(DendropyTestCase):
 
     def setUp(self):
         self.test_cases = [('pythonidae_cytb.con.tre', 'pythonidae_cytb.con.tre')]
-        if support.is_test_enabled(support.TestLevel.SLOW, _LOG, self.__class__.__name__):
+        if runlevel.is_test_enabled(runlevel.SLOW, _LOG, self.__class__.__name__):
             self.test_cases.extend([
                 ('feb032009.tre', 'feb032009.tre'),
                 ('maj-rule-bug1.tre', 'maj-rule-bug1.tre'),
@@ -72,8 +73,8 @@ class SplitCountTest(support.DendropyTestCase):
         unrooted = True
         for tc in self.test_cases:
             _LOG.info(tc[0] + "; " + tc[1])
-            tree_filepaths = [paths.tree_source_path(tc[0])]
-            taxa_filepath = paths.tree_source_path(tc[1])
+            tree_filepaths = [pathmap.tree_source_path(tc[0])]
+            taxa_filepath = pathmap.tree_source_path(tc[1])
             paup_sd = paup.get_split_distribution(tree_filepaths, taxa_filepath,
                         unrooted=unrooted, burnin=0)
             taxon_set = paup_sd.taxon_set
