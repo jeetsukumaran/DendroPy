@@ -31,7 +31,7 @@ import dendropy
 from dendropy import treecalc
 from dendropy import treemanip
 from dendropy import splitcalc
-from dendropy.test.support.framework import RepeatedRandom
+from dendropy.test.support.datagen import RepeatedRandom
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
