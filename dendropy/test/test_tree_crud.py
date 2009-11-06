@@ -35,7 +35,7 @@ class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
 
     def setUp(self):
         self.tree1 = datagen.get_standard_four_taxon_tree()
-        self.tree1_newick_str = self.tree1.to_newick_str(include_internal_labels=True)
+        self.tree1_newick_str = self.tree1.as_newick_str(include_internal_labels=True)
 
     def testTreeFromStandard(self):
         node_oids = [nd.oid for nd in self.tree1.postorder_node_iter()]

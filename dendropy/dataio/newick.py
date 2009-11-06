@@ -121,9 +121,9 @@ def read_tree_list(istream, **kwargs):
     return tree_list
 
 ###############################################################################
-## split_to_newick_str
+## split_as_newick_str
 
-def split_to_newick_str(split, taxon_set):
+def split_as_newick_str(split, taxon_set):
     """
     Represents a split as a newick string.
     """

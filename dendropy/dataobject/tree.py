@@ -418,7 +418,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def __str__(self):
         "Dump Newick string."
-        return self.to_newick_str()
+        return self.as_newick_str()
 
     def read(self, istream, format, **kwargs):
         """
@@ -493,6 +493,11 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         tree_list.append(self)
         write_tree_list(format=require_format_from_kwargs(kwargs), tree_list=tree_list, **kwargs)
 
+    def as_python(self, **kwargs):
+        """
+        Returns string that will rebuild this tree in Python
+        """
+        pass
 
     ###########################################################################
     ## Getting/accessing methods
@@ -771,10 +776,10 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     ###########################################################################
     ## For debugging
 
-    def to_newick_str(self, **kwargs):
+    def as_newick_str(self, **kwargs):
         """kwargs["reverse_translate"] can be function that takes a taxon and
            returns the label to appear in the tree."""
-        return self.seed_node.to_newick_str(**kwargs)
+        return self.seed_node.as_newick_str(**kwargs)
 
     def get_indented_form(self, **kwargs):
         out = StringIO()
@@ -1348,7 +1353,7 @@ class Node(TaxonLinked):
     ## use Newick/Nexus readers/writers, or Tree.write(), TreeList.write(),
     ## Dataset.write() etc.
 
-    def to_newick_str(self, **kwargs):
+    def as_newick_str(self, **kwargs):
         """
         This returns the Node as a NEWICK
         statement according to the given formatting rules.

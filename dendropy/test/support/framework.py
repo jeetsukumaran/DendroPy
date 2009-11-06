@@ -110,9 +110,9 @@ class DataObjectVerificationTestCase(ExtendedTestCase):
         labels of the `Taxon` objects must be the same even though the objects
         themselves are different.
         """
-        self.logger.debug(tree1.to_newick_str())
+        self.logger.debug(tree1.as_newick_str())
         tree1.debug_check_tree(logger=self.logger)
-        self.logger.debug(tree2.to_newick_str())
+        self.logger.debug(tree2.as_newick_str())
         tree2.debug_check_tree(logger=self.logger)
 
         self.assertIsNotSame(tree1, tree2)
@@ -225,9 +225,9 @@ class DataObjectVerificationTestCase(ExtendedTestCase):
 #            compare_individual_trees(tree1, tree2, tester, distinct_taxa, equal_oids)
 #
 #    def compare_individual_trees(tree1, tree2, tester, distinct_taxa=True, equal_oids=False):
-#            self.logger.debug(tree1.to_newick_str())
+#            self.logger.debug(tree1.as_newick_str())
 #            tree1.debug_check_tree(logger=self.logger)
-#            self.logger.debug(tree2.to_newick_str())
+#            self.logger.debug(tree2.as_newick_str())
 #            tree2.debug_check_tree(logger=self.logger)
 #
 #            self.assertTrue(tree1 is not tree2)
