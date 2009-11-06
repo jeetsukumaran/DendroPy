@@ -37,12 +37,6 @@ class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
         self.tree1 = datagen.get_standard_four_taxon_tree()
         self.tree1_newick_str = self.tree1.as_newick_str(include_internal_labels=True)
 
-    def testTreeFromStandard(self):
-        node_oids = [nd.oid for nd in self.tree1.postorder_node_iter()]
-        self.assertEqual(node_oids, ['a', 'b', 'i1', 'c', 'd', 'i2', 'root'])
-        tax_labels = [nd.taxon.label for nd in self.tree1.postorder_node_iter() if nd.taxon is not None]
-        self.assertEqual(tax_labels, ['A', 'B', 'C', 'D'])
-
     def testTreeFromTreeSameTaxa(self):
         tree2 = dendropy.Tree(self.tree1)
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
