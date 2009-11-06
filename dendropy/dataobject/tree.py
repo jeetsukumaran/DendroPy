@@ -99,7 +99,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 and (isinstance(args[0], TreeList) \
                      or (hasattr(args[0], "__iter__") and not hasattr(args[0], "read"))):
             if len(args) > 1:
-                raise Exception("Invalid number of unnamed arguments passed to Tree(): only accepts one when passed an iterable as the first argument.")
+                raise TypeError("Invalid number of unnamed arguments passed to Tree(): only accepts one when passed an iterable as the first argument.")
             if isinstance(args[0], TreeList):
                 list.__init__(self, args[0])
                 for k,v in args[0].__dict__.items():
@@ -108,12 +108,12 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             elif hasattr(args[0], "__iter__"):
                 list.__init__(self, args[0])
             else:
-                raise Exception("Invalid argument passed to TreeList()")
+                raise TypeError("Invalid argument passed to TreeList()")
         else:
             list.__init__(self)
             if len(args) > 0 and hasattr(args[0], "read"):
                 if len(args) > 2:
-                    raise Exception("Invalid number of unnamed arguments passed to Tree(): maximum of two when passed an file source as the first argument.")
+                    raise TypeError("Invalid number of unnamed arguments passed to Tree(): maximum of two when passed an file source as the first argument.")
                 if "istream" in kwargs:
                     raise TypeError("Cannot specify more than one data source to TreeList()")
                 istream = args[0]
@@ -340,32 +340,34 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         self.length_type = None
         self.is_rooted = False
 
+        if len(args) > 2:
+            raise TypeError("Tree() takes at most 2 arguments (%d given)" % len(args))
         if len(args) > 0:
             if isinstance(args[0], Node):
                 if "istream" in kwargs:
-                    raise Exception("Cannot specify data source for Tree() if specifing seed Node")
+                    raise TypeError("Cannot specify data source for Tree() if specifying seed Node")
                 iosys.Readable.__init__(self)
                 self.seed_node = args[0]
             elif isinstance(args[0], Tree):
-                if "istream" in kwargs:
-                    raise Exception("Cannot specify data source for Tree() when cloning another Tree")
+                if "istream" in kwargs or "format" in kwargs:
+                    raise TypeError("Cannot specify data source or format for Tree() when cloning another Tree")
                 iosys.Readable.__init__(self)
                 self.clone_from(args[0])
                 if "oid" in kwargs:
                     self.oid = kwargs["oid"]
                 if "label" in kwargs:
                     self.label = kwargs["label"]
-            elif hasattr(args[0], "read"):
+            elif hasattr(args[0], "read"): # file-like object assed as first arg
                 if "istream" in kwargs:
-                    raise Exception("Cannot specify more than one data source for Tree()")
+                    raise TypeError("Cannot specify more than one data source for Tree()")
                 if len(args) > 1 and "format" not in kwargs:
                     format = args[1]
                 elif len(args) == 1 and "format" in kwargs:
                     format = kwargs["format"]
                 elif len(args) > 1 and "format" in kwargs:
-                    raise Exception("Cannot specify format as both named and unnamed arguments")
+                    raise TypeError("Cannot specify format as both named and unnamed arguments")
                 elif len(args) == 1 and "format" not in kwargs:
-                    raise Exception("Need to specify format if passing a file-like" \
+                    raise TypeError("Need to specify format if passing a file-like" \
                                   + " object from which to construct a Tree.")
                 self.read(args[0], format)
                 if "oid" in kwargs:
@@ -373,9 +375,9 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 if "label" in kwargs:
                     self.label = kwargs["label"]
             else:
-                raise Exception("Invalid non-keyworded arguments passed: %s" % str(args))
+                raise TypeError("Invalid non-keyworded arguments passed: %s" % str(args))
         else:
-            self.seed_node = Node(oid='n0', edge=Edge())
+            self.seed_node = Node(edge=Edge())
             iosys.Readable.__init__(self, **kwargs)
             if "oid" in kwargs:
                 self.oid = kwargs["oid"]
