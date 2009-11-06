@@ -349,6 +349,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 iosys.Readable.__init__(self)
                 self.seed_node = args[0]
             elif isinstance(args[0], Tree):
+                if len(args) > 1:
+                    raise TypeError("Tree() only accepts one unnamed argument when given a Tree object as the first argument")
                 if "istream" in kwargs or "format" in kwargs:
                     raise TypeError("Cannot specify data source or format for Tree() when cloning another Tree")
                 iosys.Readable.__init__(self)
