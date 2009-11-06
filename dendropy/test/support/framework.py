@@ -33,7 +33,7 @@ import unittest
 # the assertion as false
 __unittest = True
 
-class DendropyTestCase(unittest.TestCase):
+class ExtendedTestCase(unittest.TestCase):
     """
     Extends unittest.TestCase with various new assertion tests.
     """
@@ -58,7 +58,7 @@ class DendropyTestCase(unittest.TestCase):
             message = "%s is in: %s" % (obj1, obj2)
         self.assertTrue(obj1 not in obj2, message)
 
-class DataVerificationTestCase(unittest.TestCase):
+class DataObjectVerificationTestCase(unittest.TestCase):
     """
     Extends unittest.TestCase with various new assertion tests.
     """

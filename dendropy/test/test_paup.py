@@ -30,7 +30,7 @@ import csv
 
 import unittest
 from dendropy.test.support import pathmap
-from dendropy.test.support.framework import DendropyTestCase
+from dendropy.test.support.framework import ExtendedTestCase
 from dendropy.utility import containers
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
@@ -68,7 +68,7 @@ class PaupWrapperRepToSplitMaskTest(unittest.TestCase):
             self.assertEqual(r, normalized, "%s  =>  %s  =>  %s" \
                 % (splitcalc.split_as_string(i, 8), s, splitcalc.split_as_string(normalized, 8)))
 
-class PaupWrapperSplitsParse(DendropyTestCase):
+class PaupWrapperSplitsParse(ExtendedTestCase):
 
     def setUp(self):
         self.tree_filepath = None
@@ -126,7 +126,7 @@ class PaupWrapperSplitsParseTest1(PaupWrapperSplitsParse):
     def runTest(self):
         self.count_splits()
 
-class PaupWrapperTaxaParse(DendropyTestCase):
+class PaupWrapperTaxaParse(ExtendedTestCase):
 
     def setUp(self):
         self.taxa_filepath = None

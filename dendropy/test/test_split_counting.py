@@ -29,7 +29,7 @@ from cStringIO import StringIO
 
 from dendropy.test.support import pathmap
 from dendropy.test.support import runlevel
-from dendropy.test.support.framework import DendropyTestCase
+from dendropy.test.support.framework import ExtendedTestCase
 from dendropy.utility import messaging
 from dendropy.utility import paup
 from dendropy.dataio import nexus
@@ -58,7 +58,7 @@ _LOG = messaging.get_logger(__name__)
 #                        e = splitcalc.find_edge_from_split(tree.seed_node, cm)
 #                        self.assertTrue(e is edge)
 
-class SplitCountTest(DendropyTestCase):
+class SplitCountTest(ExtendedTestCase):
 
     def setUp(self):
         self.test_cases = [('pythonidae_cytb.con.tre', 'pythonidae_cytb.con.tre')]

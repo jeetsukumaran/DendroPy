@@ -25,6 +25,20 @@ Data and value generation
 """
 
 from random import Random
+import dendropy
+
+def get_standard_four_taxon_tree():
+    taxa = dendropy.TaxonSet(['A', 'B', 'C', 'D'])
+    taxa.is_mutable = False
+    tree = dendropy.Tree(taxon_set=taxa)
+    tree.seed_node.oid = 'root'
+    i1 = tree.seed_node.new_child(oid='i1')
+    a = i1.new_child(oid='a', taxon=taxa.require_taxon(label='A'))
+    b = i1.new_child(oid='b', taxon=taxa.require_taxon(label='B'))
+    i2 = tree.seed_node.new_child(oid='i2')
+    a = i2.new_child(oid='c', taxon=taxa.require_taxon(label='C'))
+    b = i2.new_child(oid='d', taxon=taxa.require_taxon(label='D'))
+    return tree
 
 class RepeatedRandom(Random):
     """

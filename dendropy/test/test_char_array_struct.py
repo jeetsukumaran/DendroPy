@@ -26,11 +26,11 @@ Tests composition and taxon indexing of CharacterArray.
 
 import unittest
 import dendropy
-from dendropy.test.support.framework import DendropyTestCase
+from dendropy.test.support.framework import ExtendedTestCase
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
-class TestCharStruct(DendropyTestCase):
+class TestCharStruct(ExtendedTestCase):
 
     def setUp(self):
         self.tb1 = dendropy.TaxonSet(label="TI1")
