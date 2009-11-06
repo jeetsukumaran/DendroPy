@@ -48,26 +48,53 @@ class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
     def testTreeFromTreeWithExtraKeywordArgs(self):
-        tree1 = datagen.get_standard_four_taxon_tree()
-        self.assertRaises(TypeError, dendropy.Tree, tree1, format="newick")
+        self.assertRaises(TypeError, dendropy.Tree, self.tree1, format="newick")
 
     def testTreeFromTreeWithExtraPosArgs(self):
-        tree1 = datagen.get_standard_four_taxon_tree()
-        self.assertRaises(TypeError, dendropy.Tree, tree1, "dummy")
+        self.assertRaises(TypeError, dendropy.Tree, self.tree1, "dummy")
 
-    def testTreeFromInvalidObject(self):
+    def testTreeFromInvalidObjectPosArgs(self):
         self.assertRaises(TypeError, dendropy.Tree, object())
 
-    def testTreeFromFileWithKeywordsDistinctTaxa(self):
+    def testTreeFromInvalidObjectPosArgsWithKeywords(self):
+        self.assertRaises(TypeError, dendropy.Tree, "xx", stream=StringIO(self.tree1_newick_str), format="newick")
+
+    def testTreeFromFileKeywordArgsDistinctTaxa(self):
         tree2 = dendropy.Tree(istream=StringIO(self.tree1_newick_str), format="newick")
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=True, equal_oids=False)
 
-    def testTreeFromFileWithKeywordsSameTaxa(self):
+    def testTreeFromFileKeywordArgsSameTaxa(self):
         tree2 = dendropy.Tree(istream=StringIO(self.tree1_newick_str), format="newick", taxon_set=self.tree1.taxon_set)
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
-    def testTreeFromFileWithNoFormat(self):
+    def testTreeFromFilePosArgsDistinctTaxa(self):
+        tree2 = dendropy.Tree(StringIO(self.tree1_newick_str), "newick")
+        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=True, equal_oids=False)
+
+    def testTreeFromFilePosArgsSameTaxa(self):
+        tree2 = dendropy.Tree(StringIO(self.tree1_newick_str), "newick", taxon_set=self.tree1.taxon_set)
+        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
+
+    def testTreeFromFileMixedPosAndKeywordArgsDistinctTaxa(self):
+        tree2 = dendropy.Tree(StringIO(self.tree1_newick_str), format="newick")
+        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=True, equal_oids=False)
+
+    def testTreeFromFileMixedPosAndKeywordArgsSameTaxa(self):
+        tree2 = dendropy.Tree(StringIO(self.tree1_newick_str), format="newick", taxon_set=self.tree1.taxon_set)
+        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
+
+    def testTreeFromFilePosArgsWithNoFormat(self):
         self.assertRaises(errors.UnspecifiedFormatError, dendropy.Tree, istream=StringIO(self.tree1_newick_str), taxon_set=self.tree1.taxon_set)
+
+    def testTreeFromReadDistinctTaxa(self):
+        tree2 = dendropy.Tree()
+        tree2.read_from_string(self.tree1_newick_str, "newick")
+        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=True, equal_oids=False)
+
+    def testTreeFromReadSameTaxa(self):
+        tree2 = dendropy.Tree()
+        tree2.read_from_string(self.tree1_newick_str, "newick", taxon_set=self.tree1.taxon_set)
+        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
 #        datacheck.compare_individual_trees(tree1, tree2, tester=self, distinct_taxa=True, distinct_oids=False)
 
