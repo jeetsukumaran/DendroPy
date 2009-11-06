@@ -91,12 +91,12 @@ class DataObjectVerificationTestCase(ExtendedTestCase):
         objects in domain space.
         """
         if type(data_object1) != type(data_object2):
-            raise TypeError("Objects to be compared must be of the same type, but was given '%s' and '%s' objects" \
+            raise TypeError("Objects to be compared must be of the same type, but was given %s and %s objects" \
                 % (type(data_object1), type(data_object2)))
         if isinstance(data_object1, dendropy.Tree):
             self.assertDistinctButEqualTrees(data_object1, data_object2, distinct_taxa=distinct_taxa, equal_oids=equal_oids)
         else:
-            raise TypeError("Unsupported type for comparison: '%s'" % type(data_object1))
+            raise TypeError("Unsupported type for comparison: %s" % type(data_object1))
 
     def assertDistinctButEqualTrees(self, tree1, tree2, distinct_taxa=True, equal_oids=None):
         """
@@ -118,6 +118,10 @@ class DataObjectVerificationTestCase(ExtendedTestCase):
         self.assertTrue(tree1 is not tree2)
         if distinct_taxa:
             self.assertTrue(tree1.taxon_set is not tree2.taxon_set)
+        if equal_oids is True:
+            self.assertEqual(tree1.oid, tree2.oid)
+        elif equal_oids is False:
+            self.assertNotEqual(tree1.oid, tree2.oid)
 
         tree1_nodes = [nd for nd in tree1.postorder_node_iter()]
         tree2_nodes = [nd for nd in tree2.postorder_node_iter()]

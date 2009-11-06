@@ -44,7 +44,7 @@ class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
     def testTreeFromTree(self):
         tree1 = datagen.get_standard_four_taxon_tree()
         tree2 = dendropy.Tree(tree1)
-        self.assertDistinctButEqualTrees(tree1, tree2, distinct_taxa=False, equal_oids=False)
+        self.assertDistinctButEqual(tree1, tree2, distinct_taxa=False, equal_oids=False)
 
 #        datacheck.compare_individual_trees(tree1, tree2, tester=self, distinct_taxa=True, distinct_oids=False)
 
