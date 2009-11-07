@@ -24,83 +24,62 @@ import sys
 import dendropy
 from dendropy.test.support import pathmap
 
-tlist = dendropy.TreeList(pathmap.tree_source_stream("pythonidae_cytb.nexus.tre"), "nexus")
-for idx, t in enumerate(tlist):
-    t.label = "Tree%02d" % (idx+1)
-    t.assign_node_labels_from_taxon_or_oid()
-
-result = []
-
-result.append("def reference_tree_list_postorder_node_labels():")
-result.append("    return [")
-for t in tlist:
-    nodes = [("'" + nd.label + "'") for nd in t.postorder_node_iter()]
-    result.append("        [%s]," % (",".join(nodes)))
-result.append("    ]")
-result.append("")
-
-result.append("def reference_tree_list_newick_string():")
-result.append('    return """\\')
-for t in tlist:
-    result.append('        %s;' % t.as_newick_str(include_internal_labels=True))
-result.append('    """')
-result.append("")
-
-result.append("def reference_tree_list_node_relationships():")
-result.append("    treelist_node_references = [")
-for t in tlist:
-    result.append("        {")
-    for nd in t:
-        result.append("            '%s' : NodeRelationship(parent_label=%s, child_labels=[%s], edge_length=%s, taxon_label=%s)," % \
-            (nd.label,
-             ("'"+nd.parent_node.label+"'") if nd.parent_node is not None else 'None',
-             ",".join(["'"+c.label+"'" for c in nd.child_nodes()]),
-             nd.edge.length,
-             ("'"+nd.taxon.label+"'") if nd.taxon is not None else 'None'))
-    result.append("        },")
-result.append("    ]")
-result.append("    return treelist_node_references")
-result.append("")
-
-tree_list_name = 'reference_tree_list'
-src_lines = tlist.as_python_source(tree_list_name=tree_list_name, oids=True).split("\n")
-result.append("def reference_tree_list():")
-for s in src_lines:
-    result.append("    %s" % s)
-result.append("""\
-
-    # set labels of nodes with taxa to taxon label, else oid (for consistent
-    # identification in debugging)
-    for t in %s:
+def main():
+    tlist = dendropy.TreeList(pathmap.tree_source_stream("pythonidae_cytb.nexus.tre"), "nexus")
+    for idx, t in enumerate(tlist):
+        t.label = "Tree%02d" % (idx+1)
         t.assign_node_labels_from_taxon_or_oid()
 
-    return %s
-""" % (tree_list_name, tree_list_name))
-result.append("")
+    result = []
 
-sys.stdout.write("\n".join(result))
+    result.append("def reference_tree_list_postorder_node_labels():")
+    result.append("    return [")
+    for t in tlist:
+        nodes = [("'" + nd.label + "'") for nd in t.postorder_node_iter()]
+        result.append("        [%s]," % (",".join(nodes)))
+    result.append("    ]")
+    result.append("")
 
+    result.append("def reference_tree_list_newick_string():")
+    result.append('    return """\\')
+    for t in tlist:
+        result.append('        %s;' % t.as_newick_str(include_internal_labels=True))
+    result.append('    """')
+    result.append("")
 
-#for t in tlist:
-#    for n in t:
-#        n.label = n.oid
-#    print t.as_newick_str(include_internal_labels=True)
-#
-#tlist = datagen.reference_tree_list()
-#for t in tlist:
-#    nodes = [("'" + nd.label + "'") for nd in t]
-#    print "[%s]" % (",".join(nodes))
+    result.append("def reference_tree_list_node_relationships():")
+    result.append("    treelist_node_references = [")
+    for t in tlist:
+        result.append("        {")
+        for nd in t:
+            result.append("            '%s' : NodeRelationship(parent_label=%s, child_labels=[%s], edge_length=%s, taxon_label=%s)," % \
+                (nd.label,
+                 ("'"+nd.parent_node.label+"'") if nd.parent_node is not None else 'None',
+                 ",".join(["'"+c.label+"'" for c in nd.child_nodes()]),
+                 nd.edge.length,
+                 ("'"+nd.taxon.label+"'") if nd.taxon is not None else 'None'))
+        result.append("        },")
+    result.append("    ]")
+    result.append("    return treelist_node_references")
+    result.append("")
 
-#print "    treelist_node_references = ["
-#for t in tlist:
-#    print "        {"
-#    for nd in t:
-#        print "            '%s' : NodeReference(parent_label=%s, child_labels=[%s], edge_length=%s, taxon_label=%s)," % \
-#            (nd.label,
-#             ("'"+nd.parent_node.label+"'") if nd.parent_node is not None else 'None',
-#             ",".join(["'"+c.label+"'" for c in nd.child_nodes()]),
-#             nd.edge.length,
-#             ("'"+nd.taxon.label+"'") if nd.taxon is not None else 'None')
-#    print "        },"
-#print "    ]"
-#print "    return treelist_node_references"
+    tree_list_name = 'reference_tree_list'
+    src_lines = tlist.as_python_source(tree_list_name=tree_list_name, oids=True).split("\n")
+    result.append("def reference_tree_list():")
+    for s in src_lines:
+        result.append("    %s" % s)
+    result.append("""\
+
+        # set labels of nodes with taxa to taxon label, else oid (for consistent
+        # identification in debugging)
+        for t in %s:
+            t.assign_node_labels_from_taxon_or_oid()
+
+        return %s
+    """ % (tree_list_name, tree_list_name))
+    result.append("")
+
+    sys.stdout.write("\n".join(result))
+
+if __name__ == "__main__":
+    main()
