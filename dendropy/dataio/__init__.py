@@ -29,7 +29,7 @@ in various formats.
 import sys
 import os
 
-from dendropy.utility import errors
+from dendropy.utility import error
 from dendropy.utility import iosys
 from dendropy.utility.containers import OrderedCaselessDict
 from dendropy.dataio import newick
@@ -148,22 +148,22 @@ class _DataFormat(object):
 
     def get_reader(self, **kwargs):
         if self.reader_type is None:
-            raise errors.UnsupportedFormatError("Reading is not currently supported for data format '%s'" % self.name)
+            raise error.UnsupportedFormatError("Reading is not currently supported for data format '%s'" % self.name)
         return self.reader_type(**kwargs)
 
     def get_writer(self, **kwargs):
         if self.writer_type is None:
-            raise errors.UnsupportedFormatError("Writing is not currently supported for data format '%s'" % self.name)
+            raise error.UnsupportedFormatError("Writing is not currently supported for data format '%s'" % self.name)
         return self.writer_type(**kwargs)
 
     def get_tree_source_iter(self, stream, **kwargs):
         if self.tree_source_iter is None:
-            raise errors.UnsupportedFormatError("Iteration over source trees not currently supported for data format '%s'" % self.name)
+            raise error.UnsupportedFormatError("Iteration over source trees not currently supported for data format '%s'" % self.name)
         return self.tree_source_iter(stream, **kwargs)
 
     def write_tree_list(self, tree_list, stream, **kwargs):
         if self.tree_list_writer is None:
-            raise errors.UnsupportedFormatError("Writing of stand-alone tree lists is not currently supported for data format '%s'" % self.name)
+            raise error.UnsupportedFormatError("Writing of stand-alone tree lists is not currently supported for data format '%s'" % self.name)
         self.tree_list_writer(tree_list, stream, **kwargs)
 
 class _DataFormatRegister(object):
@@ -189,22 +189,22 @@ class _DataFormatRegister(object):
 
     def get_reader(self, name, **kwargs):
         if name not in self.formats:
-            raise errors.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
+            raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
         return self.formats[name].get_reader(**kwargs)
 
     def get_writer(self, name, **kwargs):
         if name not in self.formats:
-            raise errors.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
+            raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
         return self.formats[name].get_writer(**kwargs)
 
     def tree_source_iter(self, stream, name, **kwargs):
         if name not in self.formats:
-            raise errors.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
+            raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
         return self.formats[name].get_tree_source_iter(stream, **kwargs)
 
     def write_tree_list(self, tree_list, name, stream, **kwargs):
         if name not in self.formats:
-            raise errors.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
+            raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
         return self.formats[name].write_tree_list(tree_list, stream, **kwargs)
 
 ioregister = _DataFormatRegister()

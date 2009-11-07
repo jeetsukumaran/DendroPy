@@ -26,7 +26,7 @@ Base classes for all readers/parsers and formatters/writers.
 
 import os
 from cStringIO import StringIO
-from dendropy.utility import errors
+from dendropy.utility import error
 
 ###############################################################################
 ## KEYWORD ARGUMENT PROCESSING
@@ -49,7 +49,7 @@ def require_format_from_kwargs(kwdict):
     """
     format = get_format_from_kwargs(kwdict)
     if format is None:
-        raise errors.UnspecifiedFormatError("Must specify `format`.")
+        raise error.UnspecifiedFormatError("Must specify `format`.")
     return format
 
 

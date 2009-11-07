@@ -28,7 +28,7 @@ by both `dendropy.newick` and `dendropy.nexus` modules.
 import re
 from cStringIO import StringIO
 from dendropy.utility import containers
-from dendropy.utility.errors import DataFormatError
+from dendropy.utility.error import DataFormatError
 from dendropy import dataobject
 
 ###############################################################################

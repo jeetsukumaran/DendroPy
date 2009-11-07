@@ -30,7 +30,7 @@ import textwrap
 
 from dendropy import dataobject
 from dendropy.utility import iosys
-from dendropy.utility.errors import DataFormatError
+from dendropy.utility.error import DataFormatError
 
 class FastaReader(iosys.DataReader):
     "Encapsulates loading and parsing of a FASTA format file."

@@ -21,7 +21,7 @@
 ###############################################################################
 
 """
-Exceptions and errors.
+Exceptions and error.
 """
 
 class DataFormatError(Exception):
