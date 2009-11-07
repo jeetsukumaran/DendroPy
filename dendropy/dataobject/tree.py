@@ -255,8 +255,8 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                              taxon_obj_namer(child.taxon) if child.taxon is not None else "None",
                              child.edge.length,
                          (', oid="%s"' % child.oid) if oids else ""))
-                if oids:
-                    p.append('%s.edge.oid = "%s"' % (node_obj_namer(child), child.edge.oid))
+                    if oids:
+                        p.append('%s.edge.oid = "%s"' % (node_obj_namer(child), child.edge.oid))
 
         return "\n".join(p)
 

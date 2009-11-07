@@ -48,6 +48,513 @@ def get_standard_four_taxon_tree():
     d.edge.length = 2.0
     return tree
 
+def get_canonical_tree_list():
+    tree_list_4286432 = dendropy.TreeList(label=None, oid="TreeList70")
+    tax_4787280 = tree_list_4286432.taxon_set.require_taxon(label="Aspidites ramsayi", oid="Taxon80")
+    tax_4825840 = tree_list_4286432.taxon_set.require_taxon(label="Bothrochilus boa", oid="Taxon99")
+    tax_4788144 = tree_list_4286432.taxon_set.require_taxon(label="Liasis fuscus", oid="Taxon104")
+    tax_4826576 = tree_list_4286432.taxon_set.require_taxon(label="Morelia boeleni", oid="Taxon107")
+    tax_4826768 = tree_list_4286432.taxon_set.require_taxon(label="Morelia viridis", oid="Taxon110")
+    tax_4826896 = tree_list_4286432.taxon_set.require_taxon(label="Antaresia maculosa", oid="Taxon113")
+    tax_4827056 = tree_list_4286432.taxon_set.require_taxon(label="Antaresia stimsoni", oid="Taxon116")
+    tax_4827312 = tree_list_4286432.taxon_set.require_taxon(label="Python timoriensis", oid="Taxon119")
+    tax_4827248 = tree_list_4286432.taxon_set.require_taxon(label="Morelia oenpelliensis", oid="Taxon122")
+    tax_4827664 = tree_list_4286432.taxon_set.require_taxon(label="Morelia bredli", oid="Taxon125")
+    tax_4827952 = tree_list_4286432.taxon_set.require_taxon(label="Antaresia perthensis", oid="Taxon130")
+    tax_4828240 = tree_list_4286432.taxon_set.require_taxon(label="Python brongersmai", oid="Taxon133")
+    tax_4828432 = tree_list_4286432.taxon_set.require_taxon(label="Morelia carinata", oid="Taxon136")
+    tree_4787568 = dendropy.Tree(label="PAUP 1", taxon_set=tree_list_4286432.taxon_set, oid="Tree72")
+    tree_list_4286432.append(tree_4787568, reindex_taxa=False)
+    nd_4787856 = tree_4787568.seed_node.new_child(label=None, taxon=tax_4787280, edge_length=0.056823, oid="Node78")
+    nd_4787984 = tree_4787568.seed_node.new_child(label=None, taxon=None, edge_length=0.011159, oid="Node81")
+    nd_4828464 = tree_4787568.seed_node.new_child(label=None, taxon=tax_4828432, edge_length=0.079321, oid="Node134")
+    nd_4828464.edge.oid = "Edge135"
+    nd_4828464.edge.oid = "Edge135"
+    nd_4788112 = nd_4787984.new_child(label=None, taxon=None, edge_length=0.003495, oid="Node83")
+    nd_4827440 = nd_4787984.new_child(label=None, taxon=None, edge_length=0.018613, oid="Node126")
+    nd_4827440.edge.oid = "Edge127"
+    nd_4788048 = nd_4788112.new_child(label=None, taxon=None, edge_length=0.007655, oid="Node85")
+    nd_4827568 = nd_4788112.new_child(label=None, taxon=tax_4827664, edge_length=0.065046, oid="Node123")
+    nd_4827568.edge.oid = "Edge124"
+    nd_4788176 = nd_4788048.new_child(label=None, taxon=None, edge_length=0.002264, oid="Node87")
+    nd_4827408 = nd_4788048.new_child(label=None, taxon=tax_4827248, edge_length=0.074047, oid="Node120")
+    nd_4827408.edge.oid = "Edge121"
+    nd_4825200 = nd_4788176.new_child(label=None, taxon=None, edge_length=0.0, oid="Node89")
+    nd_4826864 = nd_4788176.new_child(label=None, taxon=tax_4827312, edge_length=0.113605, oid="Node117")
+    nd_4826864.edge.oid = "Edge118"
+    nd_4825328 = nd_4825200.new_child(label=None, taxon=None, edge_length=0.007681, oid="Node91")
+    nd_4826608 = nd_4825200.new_child(label=None, taxon=tax_4827056, edge_length=0.061996, oid="Node114")
+    nd_4826608.edge.oid = "Edge115"
+    nd_4825456 = nd_4825328.new_child(label=None, taxon=None, edge_length=0.010103, oid="Node93")
+    nd_4826672 = nd_4825328.new_child(label=None, taxon=tax_4826896, edge_length=0.080749, oid="Node111")
+    nd_4826672.edge.oid = "Edge112"
+    nd_4825584 = nd_4825456.new_child(label=None, taxon=None, edge_length=0.011155, oid="Node95")
+    nd_4826800 = nd_4825456.new_child(label=None, taxon=tax_4826768, edge_length=0.066566, oid="Node108")
+    nd_4826800.edge.oid = "Edge109"
+    nd_4825712 = nd_4825584.new_child(label=None, taxon=tax_4825840, edge_length=0.073578, oid="Node97")
+    nd_4826192 = nd_4825584.new_child(label=None, taxon=None, edge_length=0.003063, oid="Node100")
+    nd_4826192.edge.oid = "Edge101"
+    nd_4826192.edge.oid = "Edge101"
+    nd_4826256 = nd_4826192.new_child(label=None, taxon=tax_4788144, edge_length=0.074347, oid="Node102")
+    nd_4826480 = nd_4826192.new_child(label=None, taxon=tax_4826576, edge_length=0.07628, oid="Node105")
+    nd_4826480.edge.oid = "Edge106"
+    nd_4826480.edge.oid = "Edge106"
+    nd_4826480.edge.oid = "Edge106"
+    nd_4826480.edge.oid = "Edge106"
+    nd_4826480.edge.oid = "Edge106"
+    nd_4826480.edge.oid = "Edge106"
+    nd_4826480.edge.oid = "Edge106"
+    nd_4826480.edge.oid = "Edge106"
+    nd_4826480.edge.oid = "Edge106"
+    nd_4827824 = nd_4827440.new_child(label=None, taxon=tax_4827952, edge_length=0.065004, oid="Node128")
+    nd_4828176 = nd_4827440.new_child(label=None, taxon=tax_4828240, edge_length=0.107706, oid="Node131")
+    nd_4828176.edge.oid = "Edge132"
+    nd_4828176.edge.oid = "Edge132"
+    nd_4828176.edge.oid = "Edge132"
+    nd_4828176.edge.oid = "Edge132"
+    tree_4828592 = dendropy.Tree(label="PAUP 2", taxon_set=tree_list_4286432.taxon_set, oid="Tree137")
+    tree_list_4286432.append(tree_4828592, reindex_taxa=False)
+    nd_4828880 = tree_4828592.seed_node.new_child(label=None, taxon=tax_4787280, edge_length=0.065297, oid="Node143")
+    nd_4829008 = tree_4828592.seed_node.new_child(label=None, taxon=None, edge_length=0.001444, oid="Node145")
+    nd_4858832 = tree_4828592.seed_node.new_child(label=None, taxon=None, edge_length=0.004077, oid="Node163")
+    nd_4858832.edge.oid = "Edge164"
+    nd_4858832.edge.oid = "Edge164"
+    nd_4828624 = nd_4829008.new_child(label=None, taxon=None, edge_length=0.010946, oid="Node147")
+    nd_4829104 = nd_4829008.new_child(label=None, taxon=tax_4827952, edge_length=0.079424, oid="Node161")
+    nd_4829104.edge.oid = "Edge162"
+    nd_4787376 = nd_4828624.new_child(label=None, taxon=None, edge_length=0.016022, oid="Node149")
+    nd_4858736 = nd_4828624.new_child(label=None, taxon=tax_4826768, edge_length=0.066015, oid="Node159")
+    nd_4858736.edge.oid = "Edge160"
+    nd_4829136 = nd_4787376.new_child(label=None, taxon=tax_4825840, edge_length=0.073565, oid="Node151")
+    nd_4858320 = nd_4787376.new_child(label=None, taxon=None, edge_length=0.007879, oid="Node153")
+    nd_4858320.edge.oid = "Edge154"
+    nd_4858320.edge.oid = "Edge154"
+    nd_4858096 = nd_4858320.new_child(label=None, taxon=tax_4826576, edge_length=0.069885, oid="Node155")
+    nd_4858544 = nd_4858320.new_child(label=None, taxon=tax_4827248, edge_length=0.06247, oid="Node157")
+    nd_4858544.edge.oid = "Edge158"
+    nd_4858544.edge.oid = "Edge158"
+    nd_4858544.edge.oid = "Edge158"
+    nd_4858544.edge.oid = "Edge158"
+    nd_4858544.edge.oid = "Edge158"
+    nd_4858928 = nd_4858832.new_child(label=None, taxon=None, edge_length=0.008007, oid="Node165")
+    nd_4860080 = nd_4858832.new_child(label=None, taxon=tax_4827664, edge_length=0.063725, oid="Node187")
+    nd_4860080.edge.oid = "Edge188"
+    nd_4858992 = nd_4858928.new_child(label=None, taxon=tax_4788144, edge_length=0.082049, oid="Node167")
+    nd_4859312 = nd_4858928.new_child(label=None, taxon=None, edge_length=0.006907, oid="Node169")
+    nd_4859312.edge.oid = "Edge170"
+    nd_4859312.edge.oid = "Edge170"
+    nd_4859120 = nd_4859312.new_child(label=None, taxon=tax_4827056, edge_length=0.056894, oid="Node171")
+    nd_4859600 = nd_4859312.new_child(label=None, taxon=None, edge_length=0.004552, oid="Node173")
+    nd_4859600.edge.oid = "Edge174"
+    nd_4859600.edge.oid = "Edge174"
+    nd_4858960 = nd_4859600.new_child(label=None, taxon=None, edge_length=0.010752, oid="Node175")
+    nd_4859952 = nd_4859600.new_child(label=None, taxon=tax_4826896, edge_length=0.079792, oid="Node185")
+    nd_4859952.edge.oid = "Edge186"
+    nd_4828272 = nd_4858960.new_child(label=None, taxon=None, edge_length=0.015909, oid="Node177")
+    nd_4787664 = nd_4858960.new_child(label=None, taxon=tax_4828240, edge_length=0.114385, oid="Node183")
+    nd_4787664.edge.oid = "Edge184"
+    nd_4787728 = nd_4828272.new_child(label=None, taxon=tax_4827312, edge_length=0.092077, oid="Node179")
+    nd_4828688 = nd_4828272.new_child(label=None, taxon=tax_4828432, edge_length=0.0579, oid="Node181")
+    nd_4828688.edge.oid = "Edge182"
+    nd_4828688.edge.oid = "Edge182"
+    nd_4828688.edge.oid = "Edge182"
+    nd_4828688.edge.oid = "Edge182"
+    nd_4828688.edge.oid = "Edge182"
+    nd_4828688.edge.oid = "Edge182"
+    tree_4860272 = dendropy.Tree(label="PAUP 3", taxon_set=tree_list_4286432.taxon_set, oid="Tree189")
+    tree_list_4286432.append(tree_4860272, reindex_taxa=False)
+    nd_4860624 = tree_4860272.seed_node.new_child(label=None, taxon=tax_4787280, edge_length=0.06111, oid="Node195")
+    nd_4860752 = tree_4860272.seed_node.new_child(label=None, taxon=None, edge_length=0.005408, oid="Node197")
+    nd_4883568 = tree_4860272.seed_node.new_child(label=None, taxon=None, edge_length=0.012121, oid="Node235")
+    nd_4883568.edge.oid = "Edge236"
+    nd_4883568.edge.oid = "Edge236"
+    nd_4860336 = nd_4860752.new_child(label=None, taxon=None, edge_length=0.006988, oid="Node199")
+    nd_4882800 = nd_4860752.new_child(label=None, taxon=tax_4827056, edge_length=0.063808, oid="Node233")
+    nd_4882800.edge.oid = "Edge234"
+    nd_4787696 = nd_4860336.new_child(label=None, taxon=None, edge_length=0.005167, oid="Node201")
+    nd_4883056 = nd_4860336.new_child(label=None, taxon=None, edge_length=0.00574, oid="Node223")
+    nd_4883056.edge.oid = "Edge224"
+    nd_4860880 = nd_4787696.new_child(label=None, taxon=None, edge_length=0.010367, oid="Node203")
+    nd_4861392 = nd_4787696.new_child(label=None, taxon=None, edge_length=0.007731, oid="Node213")
+    nd_4861392.edge.oid = "Edge214"
+    nd_4861008 = nd_4860880.new_child(label=None, taxon=None, edge_length=0.008688, oid="Node205")
+    nd_4861648 = nd_4860880.new_child(label=None, taxon=tax_4828240, edge_length=0.1069, oid="Node211")
+    nd_4861648.edge.oid = "Edge212"
+    nd_4861136 = nd_4861008.new_child(label=None, taxon=tax_4825840, edge_length=0.067908, oid="Node207")
+    nd_4861616 = nd_4861008.new_child(label=None, taxon=tax_4827952, edge_length=0.077196, oid="Node209")
+    nd_4861616.edge.oid = "Edge210"
+    nd_4861616.edge.oid = "Edge210"
+    nd_4861616.edge.oid = "Edge210"
+    nd_4861616.edge.oid = "Edge210"
+    nd_4861840 = nd_4861392.new_child(label=None, taxon=None, edge_length=0.004129, oid="Node215")
+    nd_4861712 = nd_4861392.new_child(label=None, taxon=tax_4827248, edge_length=0.068424, oid="Node221")
+    nd_4861712.edge.oid = "Edge222"
+    nd_4861904 = nd_4861840.new_child(label=None, taxon=tax_4827312, edge_length=0.109318, oid="Node217")
+    nd_4861872 = nd_4861840.new_child(label=None, taxon=tax_4826896, edge_length=0.081382, oid="Node219")
+    nd_4861872.edge.oid = "Edge220"
+    nd_4861872.edge.oid = "Edge220"
+    nd_4861872.edge.oid = "Edge220"
+    nd_4861872.edge.oid = "Edge220"
+    nd_4882928 = nd_4883056.new_child(label=None, taxon=tax_4788144, edge_length=0.079478, oid="Node225")
+    nd_4883248 = nd_4883056.new_child(label=None, taxon=None, edge_length=0.013155, oid="Node227")
+    nd_4883248.edge.oid = "Edge228"
+    nd_4883248.edge.oid = "Edge228"
+    nd_4882864 = nd_4883248.new_child(label=None, taxon=tax_4826768, edge_length=0.062239, oid="Node229")
+    nd_4883504 = nd_4883248.new_child(label=None, taxon=tax_4827664, edge_length=0.060484, oid="Node231")
+    nd_4883504.edge.oid = "Edge232"
+    nd_4883504.edge.oid = "Edge232"
+    nd_4883504.edge.oid = "Edge232"
+    nd_4883504.edge.oid = "Edge232"
+    nd_4883760 = nd_4883568.new_child(label=None, taxon=tax_4828432, edge_length=0.069501, oid="Node237")
+    nd_4884048 = nd_4883568.new_child(label=None, taxon=tax_4826576, edge_length=0.073602, oid="Node239")
+    nd_4884048.edge.oid = "Edge240"
+    nd_4884048.edge.oid = "Edge240"
+    nd_4884048.edge.oid = "Edge240"
+    tree_4883824 = dendropy.Tree(label="PAUP 4", taxon_set=tree_list_4286432.taxon_set, oid="Tree241")
+    tree_list_4286432.append(tree_4883824, reindex_taxa=False)
+    nd_4884432 = tree_4883824.seed_node.new_child(label=None, taxon=tax_4787280, edge_length=0.053028, oid="Node247")
+    nd_4884560 = tree_4883824.seed_node.new_child(label=None, taxon=None, edge_length=0.014376, oid="Node249")
+    nd_5030768 = tree_4883824.seed_node.new_child(label=None, taxon=tax_4826576, edge_length=0.076894, oid="Node291")
+    nd_5030768.edge.oid = "Edge292"
+    nd_5030768.edge.oid = "Edge292"
+    nd_4884176 = nd_4884560.new_child(label=None, taxon=None, edge_length=0.002567, oid="Node251")
+    nd_4884944 = nd_4884560.new_child(label=None, taxon=None, edge_length=0.005969, oid="Node261")
+    nd_4884944.edge.oid = "Edge262"
+    nd_4828720 = nd_4884176.new_child(label=None, taxon=None, edge_length=0.012413, oid="Node253")
+    nd_4885200 = nd_4884176.new_child(label=None, taxon=tax_4827664, edge_length=0.069933, oid="Node259")
+    nd_4885200.edge.oid = "Edge260"
+    nd_4884688 = nd_4828720.new_child(label=None, taxon=tax_4825840, edge_length=0.072831, oid="Node255")
+    nd_4885168 = nd_4828720.new_child(label=None, taxon=tax_4827952, edge_length=0.073004, oid="Node257")
+    nd_4885168.edge.oid = "Edge258"
+    nd_4885168.edge.oid = "Edge258"
+    nd_4885168.edge.oid = "Edge258"
+    nd_4885168.edge.oid = "Edge258"
+    nd_4885392 = nd_4884944.new_child(label=None, taxon=None, edge_length=0.004803, oid="Node263")
+    nd_5030544 = nd_4884944.new_child(label=None, taxon=tax_4827056, edge_length=0.064721, oid="Node289")
+    nd_5030544.edge.oid = "Edge290"
+    nd_4885456 = nd_4885392.new_child(label=None, taxon=None, edge_length=5.134e-05, oid="Node265")
+    nd_5030512 = nd_4885392.new_child(label=None, taxon=tax_4828240, edge_length=0.118976, oid="Node287")
+    nd_5030512.edge.oid = "Edge288"
+    nd_4885424 = nd_4885456.new_child(label=None, taxon=None, edge_length=0.011519, oid="Node267")
+    nd_4885968 = nd_4885456.new_child(label=None, taxon=None, edge_length=0.007647, oid="Node277")
+    nd_4885968.edge.oid = "Edge278"
+    nd_4885584 = nd_4885424.new_child(label=None, taxon=None, edge_length=0.011723, oid="Node269")
+    nd_4886224 = nd_4885424.new_child(label=None, taxon=tax_4826768, edge_length=0.065297, oid="Node275")
+    nd_4886224.edge.oid = "Edge276"
+    nd_4885712 = nd_4885584.new_child(label=None, taxon=tax_4788144, edge_length=0.072339, oid="Node271")
+    nd_4886160 = nd_4885584.new_child(label=None, taxon=tax_4827248, edge_length=0.062058, oid="Node273")
+    nd_4886160.edge.oid = "Edge274"
+    nd_4886160.edge.oid = "Edge274"
+    nd_4886160.edge.oid = "Edge274"
+    nd_4886160.edge.oid = "Edge274"
+    nd_4886448 = nd_4885968.new_child(label=None, taxon=None, edge_length=0.022912, oid="Node279")
+    nd_4886320 = nd_4885968.new_child(label=None, taxon=tax_4826896, edge_length=0.079945, oid="Node285")
+    nd_4886320.edge.oid = "Edge286"
+    nd_4886480 = nd_4886448.new_child(label=None, taxon=tax_4827312, edge_length=0.093762, oid="Node281")
+    nd_4886416 = nd_4886448.new_child(label=None, taxon=tax_4828432, edge_length=0.055992, oid="Node283")
+    nd_4886416.edge.oid = "Edge284"
+    nd_4886416.edge.oid = "Edge284"
+    nd_4886416.edge.oid = "Edge284"
+    nd_4886416.edge.oid = "Edge284"
+    nd_4886416.edge.oid = "Edge284"
+    nd_4886416.edge.oid = "Edge284"
+    nd_4886416.edge.oid = "Edge284"
+    tree_5030640 = dendropy.Tree(label="PAUP 5", taxon_set=tree_list_4286432.taxon_set, oid="Tree293")
+    tree_list_4286432.append(tree_5030640, reindex_taxa=False)
+    nd_5031120 = tree_5030640.seed_node.new_child(label=None, taxon=tax_4787280, edge_length=0.06391, oid="Node299")
+    nd_5031248 = tree_5030640.seed_node.new_child(label=None, taxon=None, edge_length=0.00451, oid="Node301")
+    nd_4884208 = tree_5030640.seed_node.new_child(label=None, taxon=None, edge_length=0.005404, oid="Node311")
+    nd_4884208.edge.oid = "Edge312"
+    nd_4884208.edge.oid = "Edge312"
+    nd_5030352 = nd_5031248.new_child(label=None, taxon=tax_4825840, edge_length=0.071835, oid="Node303")
+    nd_5031600 = nd_5031248.new_child(label=None, taxon=None, edge_length=0.010888, oid="Node305")
+    nd_5031600.edge.oid = "Edge306"
+    nd_5031600.edge.oid = "Edge306"
+    nd_5031376 = nd_5031600.new_child(label=None, taxon=tax_4788144, edge_length=0.075788, oid="Node307")
+    nd_5031824 = nd_5031600.new_child(label=None, taxon=tax_4828432, edge_length=0.07116, oid="Node309")
+    nd_5031824.edge.oid = "Edge310"
+    nd_5031824.edge.oid = "Edge310"
+    nd_5031824.edge.oid = "Edge310"
+    nd_4860464 = nd_4884208.new_child(label=None, taxon=None, edge_length=0.011944, oid="Node313")
+    nd_5033424 = nd_4884208.new_child(label=None, taxon=None, edge_length=0.00612, oid="Node339")
+    nd_5033424.edge.oid = "Edge340"
+    nd_4884240 = nd_4860464.new_child(label=None, taxon=None, edge_length=0.013817, oid="Node315")
+    nd_5032336 = nd_4860464.new_child(label=None, taxon=None, edge_length=0.012897, oid="Node325")
+    nd_5032336.edge.oid = "Edge326"
+    nd_4860368 = nd_4884240.new_child(label=None, taxon=None, edge_length=0.012356, oid="Node317")
+    nd_4860432 = nd_4884240.new_child(label=None, taxon=tax_4826896, edge_length=0.077058, oid="Node323")
+    nd_4860432.edge.oid = "Edge324"
+    nd_5031568 = nd_4860368.new_child(label=None, taxon=tax_4827056, edge_length=0.048754, oid="Node319")
+    nd_5032240 = nd_4860368.new_child(label=None, taxon=tax_4827952, edge_length=0.069682, oid="Node321")
+    nd_5032240.edge.oid = "Edge322"
+    nd_5032240.edge.oid = "Edge322"
+    nd_5032240.edge.oid = "Edge322"
+    nd_5032240.edge.oid = "Edge322"
+    nd_5032464 = nd_5032336.new_child(label=None, taxon=None, edge_length=0.003147, oid="Node327")
+    nd_5033296 = nd_5032336.new_child(label=None, taxon=tax_4827312, edge_length=0.108243, oid="Node337")
+    nd_5033296.edge.oid = "Edge338"
+    nd_5032528 = nd_5032464.new_child(label=None, taxon=tax_4826768, edge_length=0.07026, oid="Node329")
+    nd_5032848 = nd_5032464.new_child(label=None, taxon=None, edge_length=0.001443, oid="Node331")
+    nd_5032848.edge.oid = "Edge332"
+    nd_5032848.edge.oid = "Edge332"
+    nd_5032656 = nd_5032848.new_child(label=None, taxon=tax_4827664, edge_length=0.066182, oid="Node333")
+    nd_5033136 = nd_5032848.new_child(label=None, taxon=tax_4827248, edge_length=0.068166, oid="Node335")
+    nd_5033136.edge.oid = "Edge336"
+    nd_5033136.edge.oid = "Edge336"
+    nd_5033136.edge.oid = "Edge336"
+    nd_5033136.edge.oid = "Edge336"
+    nd_5032496 = nd_5033424.new_child(label=None, taxon=tax_4828240, edge_length=0.108072, oid="Node341")
+    nd_5033648 = nd_5033424.new_child(label=None, taxon=tax_4826576, edge_length=0.073251, oid="Node343")
+    nd_5033648.edge.oid = "Edge344"
+    nd_5033648.edge.oid = "Edge344"
+    nd_5033648.edge.oid = "Edge344"
+    tree_5032912 = dendropy.Tree(label="PAUP 6", taxon_set=tree_list_4286432.taxon_set, oid="Tree345")
+    tree_list_4286432.append(tree_5032912, reindex_taxa=False)
+    nd_5058640 = tree_5032912.seed_node.new_child(label=None, taxon=tax_4787280, edge_length=0.06501, oid="Node351")
+    nd_5033232 = tree_5032912.seed_node.new_child(label=None, taxon=None, edge_length=0.003644, oid="Node353")
+    nd_5060048 = tree_5032912.seed_node.new_child(label=None, taxon=None, edge_length=0.008523, oid="Node371")
+    nd_5060048.edge.oid = "Edge372"
+    nd_5060048.edge.oid = "Edge372"
+    nd_5058832 = nd_5033232.new_child(label=None, taxon=None, edge_length=0.011722, oid="Node355")
+    nd_5059152 = nd_5033232.new_child(label=None, taxon=None, edge_length=0.014836, oid="Node365")
+    nd_5059152.edge.oid = "Edge366"
+    nd_5030960 = nd_5058832.new_child(label=None, taxon=None, edge_length=0.017824, oid="Node357")
+    nd_5059408 = nd_5058832.new_child(label=None, taxon=tax_4827312, edge_length=0.102639, oid="Node363")
+    nd_5059408.edge.oid = "Edge364"
+    nd_5058896 = nd_5030960.new_child(label=None, taxon=tax_4825840, edge_length=0.059984, oid="Node359")
+    nd_5059376 = nd_5030960.new_child(label=None, taxon=tax_4828240, edge_length=0.100555, oid="Node361")
+    nd_5059376.edge.oid = "Edge362"
+    nd_5059376.edge.oid = "Edge362"
+    nd_5059376.edge.oid = "Edge362"
+    nd_5059376.edge.oid = "Edge362"
+    nd_5059600 = nd_5059152.new_child(label=None, taxon=tax_4827664, edge_length=0.0538, oid="Node367")
+    nd_5059888 = nd_5059152.new_child(label=None, taxon=tax_4826896, edge_length=0.07843, oid="Node369")
+    nd_5059888.edge.oid = "Edge370"
+    nd_5059888.edge.oid = "Edge370"
+    nd_5059888.edge.oid = "Edge370"
+    nd_5059472 = nd_5060048.new_child(label=None, taxon=None, edge_length=0.0, oid="Node373")
+    nd_5061584 = nd_5060048.new_child(label=None, taxon=tax_4826768, edge_length=0.072091, oid="Node395")
+    nd_5061584.edge.oid = "Edge396"
+    nd_5059632 = nd_5059472.new_child(label=None, taxon=None, edge_length=0.015326, oid="Node375")
+    nd_5060560 = nd_5059472.new_child(label=None, taxon=None, edge_length=0.005897, oid="Node381")
+    nd_5060560.edge.oid = "Edge382"
+    nd_5059920 = nd_5059632.new_child(label=None, taxon=tax_4788144, edge_length=0.068438, oid="Node377")
+    nd_5060496 = nd_5059632.new_child(label=None, taxon=tax_4827248, edge_length=0.066815, oid="Node379")
+    nd_5060496.edge.oid = "Edge380"
+    nd_5060496.edge.oid = "Edge380"
+    nd_5060496.edge.oid = "Edge380"
+    nd_5060656 = nd_5060560.new_child(label=None, taxon=None, edge_length=0.010508, oid="Node383")
+    nd_5061456 = nd_5060560.new_child(label=None, taxon=tax_4827952, edge_length=0.083409, oid="Node393")
+    nd_5061456.edge.oid = "Edge394"
+    nd_5060688 = nd_5060656.new_child(label=None, taxon=tax_4827056, edge_length=0.057007, oid="Node385")
+    nd_5061040 = nd_5060656.new_child(label=None, taxon=None, edge_length=0.013392, oid="Node387")
+    nd_5061040.edge.oid = "Edge388"
+    nd_5061040.edge.oid = "Edge388"
+    nd_5060816 = nd_5061040.new_child(label=None, taxon=tax_4828432, edge_length=0.062766, oid="Node389")
+    nd_5061296 = nd_5061040.new_child(label=None, taxon=tax_4826576, edge_length=0.079145, oid="Node391")
+    nd_5061296.edge.oid = "Edge392"
+    nd_5061296.edge.oid = "Edge392"
+    nd_5061296.edge.oid = "Edge392"
+    nd_5061296.edge.oid = "Edge392"
+    nd_5061296.edge.oid = "Edge392"
+    tree_5060624 = dendropy.Tree(label="PAUP 7", taxon_set=tree_list_4286432.taxon_set, oid="Tree397")
+    tree_list_4286432.append(tree_5060624, reindex_taxa=False)
+    nd_5061936 = tree_5060624.seed_node.new_child(label=None, taxon=tax_4787280, edge_length=0.062297, oid="Node403")
+    nd_5062064 = tree_5060624.seed_node.new_child(label=None, taxon=None, edge_length=0.009899, oid="Node405")
+    nd_4787440 = tree_5060624.seed_node.new_child(label=None, taxon=None, edge_length=0.003212, oid="Node411")
+    nd_4787440.edge.oid = "Edge412"
+    nd_4787440.edge.oid = "Edge412"
+    nd_5061328 = nd_5062064.new_child(label=None, taxon=tax_4825840, edge_length=0.069165, oid="Node407")
+    nd_5062416 = nd_5062064.new_child(label=None, taxon=tax_4788144, edge_length=0.073495, oid="Node409")
+    nd_5062416.edge.oid = "Edge410"
+    nd_5062416.edge.oid = "Edge410"
+    nd_5062416.edge.oid = "Edge410"
+    nd_5062448 = nd_4787440.new_child(label=None, taxon=None, edge_length=0.003672, oid="Node413")
+    nd_5033840 = nd_4787440.new_child(label=None, taxon=tax_4827952, edge_length=0.080896, oid="Node447")
+    nd_5033840.edge.oid = "Edge448"
+    nd_5062576 = nd_5062448.new_child(label=None, taxon=None, edge_length=0.010249, oid="Node415")
+    nd_5088592 = nd_5062448.new_child(label=None, taxon=tax_4828240, edge_length=0.114381, oid="Node445")
+    nd_5088592.edge.oid = "Edge446"
+    nd_5062512 = nd_5062576.new_child(label=None, taxon=None, edge_length=0.00713, oid="Node417")
+    nd_5089040 = nd_5062576.new_child(label=None, taxon=tax_4828432, edge_length=0.079534, oid="Node443")
+    nd_5089040.edge.oid = "Edge444"
+    nd_5087312 = nd_5062512.new_child(label=None, taxon=None, edge_length=0.000386, oid="Node419")
+    nd_5089104 = nd_5062512.new_child(label=None, taxon=tax_4827664, edge_length=0.070614, oid="Node441")
+    nd_5089104.edge.oid = "Edge442"
+    nd_5087440 = nd_5087312.new_child(label=None, taxon=None, edge_length=0.003603, oid="Node421")
+    nd_5062544 = nd_5087312.new_child(label=None, taxon=None, edge_length=0.017571, oid="Node435")
+    nd_5062544.edge.oid = "Edge436"
+    nd_5087568 = nd_5087440.new_child(label=None, taxon=tax_4827056, edge_length=0.061022, oid="Node423")
+    nd_5088048 = nd_5087440.new_child(label=None, taxon=None, edge_length=0.004698, oid="Node425")
+    nd_5088048.edge.oid = "Edge426"
+    nd_5088048.edge.oid = "Edge426"
+    nd_5087824 = nd_5088048.new_child(label=None, taxon=tax_4826768, edge_length=0.071291, oid="Node427")
+    nd_5088272 = nd_5088048.new_child(label=None, taxon=None, edge_length=0.017245, oid="Node429")
+    nd_5088272.edge.oid = "Edge430"
+    nd_5088272.edge.oid = "Edge430"
+    nd_5087696 = nd_5088272.new_child(label=None, taxon=tax_4827312, edge_length=0.098776, oid="Node431")
+    nd_5088560 = nd_5088272.new_child(label=None, taxon=tax_4826576, edge_length=0.075069, oid="Node433")
+    nd_5088560.edge.oid = "Edge434"
+    nd_5088560.edge.oid = "Edge434"
+    nd_5088560.edge.oid = "Edge434"
+    nd_5088688 = nd_5062544.new_child(label=None, taxon=tax_4826896, edge_length=0.075494, oid="Node437")
+    nd_5088944 = nd_5062544.new_child(label=None, taxon=tax_4827248, edge_length=0.063757, oid="Node439")
+    nd_5088944.edge.oid = "Edge440"
+    nd_5088944.edge.oid = "Edge440"
+    nd_5088944.edge.oid = "Edge440"
+    nd_5088944.edge.oid = "Edge440"
+    nd_5088944.edge.oid = "Edge440"
+    nd_5088944.edge.oid = "Edge440"
+    nd_5088944.edge.oid = "Edge440"
+    tree_5033392 = dendropy.Tree(label="PAUP 8", taxon_set=tree_list_4286432.taxon_set, oid="Tree449")
+    tree_list_4286432.append(tree_5033392, reindex_taxa=False)
+    nd_5089584 = tree_5033392.seed_node.new_child(label=None, taxon=tax_4787280, edge_length=0.05678, oid="Node455")
+    nd_5033872 = tree_5033392.seed_node.new_child(label=None, taxon=None, edge_length=0.014479, oid="Node457")
+    nd_5116976 = tree_5033392.seed_node.new_child(label=None, taxon=tax_4827664, edge_length=0.060374, oid="Node499")
+    nd_5116976.edge.oid = "Edge500"
+    nd_5116976.edge.oid = "Edge500"
+    nd_5089168 = nd_5033872.new_child(label=None, taxon=None, edge_length=0.00182, oid="Node459")
+    nd_5117008 = nd_5033872.new_child(label=None, taxon=tax_4788144, edge_length=0.079156, oid="Node497")
+    nd_5117008.edge.oid = "Edge498"
+    nd_4884272 = nd_5089168.new_child(label=None, taxon=None, edge_length=0.002833, oid="Node461")
+    nd_5116176 = nd_5089168.new_child(label=None, taxon=None, edge_length=0.010734, oid="Node491")
+    nd_5116176.edge.oid = "Edge492"
+    nd_5089840 = nd_4884272.new_child(label=None, taxon=None, edge_length=0.012314, oid="Node463")
+    nd_5116304 = nd_4884272.new_child(label=None, taxon=tax_4826576, edge_length=0.081982, oid="Node489")
+    nd_5116304.edge.oid = "Edge490"
+    nd_5089968 = nd_5089840.new_child(label=None, taxon=None, edge_length=0.001866, oid="Node465")
+    nd_5091056 = nd_5089840.new_child(label=None, taxon=tax_4827056, edge_length=0.06129, oid="Node487")
+    nd_5091056.edge.oid = "Edge488"
+    nd_5090096 = nd_5089968.new_child(label=None, taxon=None, edge_length=0.005104, oid="Node467")
+    nd_5116240 = nd_5089968.new_child(label=None, taxon=tax_4828432, edge_length=0.07646, oid="Node485")
+    nd_5116240.edge.oid = "Edge486"
+    nd_5090224 = nd_5090096.new_child(label=None, taxon=None, edge_length=0.004377, oid="Node469")
+    nd_5090736 = nd_5090096.new_child(label=None, taxon=None, edge_length=0.016433, oid="Node479")
+    nd_5090736.edge.oid = "Edge480"
+    nd_5090352 = nd_5090224.new_child(label=None, taxon=None, edge_length=0.013813, oid="Node471")
+    nd_5090992 = nd_5090224.new_child(label=None, taxon=tax_4827952, edge_length=0.083335, oid="Node477")
+    nd_5090992.edge.oid = "Edge478"
+    nd_5090480 = nd_5090352.new_child(label=None, taxon=tax_4825840, edge_length=0.065928, oid="Node473")
+    nd_5090960 = nd_5090352.new_child(label=None, taxon=tax_4827312, edge_length=0.10077, oid="Node475")
+    nd_5090960.edge.oid = "Edge476"
+    nd_5090960.edge.oid = "Edge476"
+    nd_5090960.edge.oid = "Edge476"
+    nd_5090960.edge.oid = "Edge476"
+    nd_5091184 = nd_5090736.new_child(label=None, taxon=tax_4826896, edge_length=0.073392, oid="Node481")
+    nd_5091216 = nd_5090736.new_child(label=None, taxon=tax_4827248, edge_length=0.065748, oid="Node483")
+    nd_5091216.edge.oid = "Edge484"
+    nd_5091216.edge.oid = "Edge484"
+    nd_5091216.edge.oid = "Edge484"
+    nd_5091216.edge.oid = "Edge484"
+    nd_5091216.edge.oid = "Edge484"
+    nd_5091216.edge.oid = "Edge484"
+    nd_5116592 = nd_5116176.new_child(label=None, taxon=tax_4826768, edge_length=0.064242, oid="Node493")
+    nd_5116816 = nd_5116176.new_child(label=None, taxon=tax_4828240, edge_length=0.109434, oid="Node495")
+    nd_5116816.edge.oid = "Edge496"
+    nd_5116816.edge.oid = "Edge496"
+    nd_5116816.edge.oid = "Edge496"
+    nd_5116816.edge.oid = "Edge496"
+    nd_5116816.edge.oid = "Edge496"
+    tree_5117072 = dendropy.Tree(label="PAUP 9", taxon_set=tree_list_4286432.taxon_set, oid="Tree501")
+    tree_list_4286432.append(tree_5117072, reindex_taxa=False)
+    nd_5117488 = tree_5117072.seed_node.new_child(label=None, taxon=tax_4787280, edge_length=0.063004, oid="Node507")
+    nd_5117616 = tree_5117072.seed_node.new_child(label=None, taxon=None, edge_length=0.018059, oid="Node509")
+    nd_5061808 = tree_5117072.seed_node.new_child(label=None, taxon=None, edge_length=0.00238, oid="Node515")
+    nd_5061808.edge.oid = "Edge516"
+    nd_5061808.edge.oid = "Edge516"
+    nd_5117136 = nd_5117616.new_child(label=None, taxon=tax_4825840, edge_length=0.061413, oid="Node511")
+    nd_5117968 = nd_5117616.new_child(label=None, taxon=tax_4828240, edge_length=0.099507, oid="Node513")
+    nd_5117968.edge.oid = "Edge514"
+    nd_5117968.edge.oid = "Edge514"
+    nd_5117968.edge.oid = "Edge514"
+    nd_5118000 = nd_5061808.new_child(label=None, taxon=None, edge_length=0.003714, oid="Node517")
+    nd_5119888 = nd_5061808.new_child(label=None, taxon=None, edge_length=0.010478, oid="Node547")
+    nd_5119888.edge.oid = "Edge548"
+    nd_5118128 = nd_5118000.new_child(label=None, taxon=None, edge_length=0.016533, oid="Node519")
+    nd_5119792 = nd_5118000.new_child(label=None, taxon=tax_4827248, edge_length=0.068818, oid="Node545")
+    nd_5119792.edge.oid = "Edge546"
+    nd_5118096 = nd_5118128.new_child(label=None, taxon=None, edge_length=0.010763, oid="Node521")
+    nd_5119280 = nd_5118128.new_child(label=None, taxon=tax_4828432, edge_length=0.070762, oid="Node543")
+    nd_5119280.edge.oid = "Edge544"
+    nd_5118256 = nd_5118096.new_child(label=None, taxon=None, edge_length=0.002182, oid="Node523")
+    nd_5118768 = nd_5118096.new_child(label=None, taxon=None, edge_length=0.011197, oid="Node533")
+    nd_5118768.edge.oid = "Edge534"
+    nd_5118384 = nd_5118256.new_child(label=None, taxon=None, edge_length=0.014459, oid="Node525")
+    nd_5119024 = nd_5118256.new_child(label=None, taxon=tax_4827056, edge_length=0.054698, oid="Node531")
+    nd_5119024.edge.oid = "Edge532"
+    nd_5118512 = nd_5118384.new_child(label=None, taxon=tax_4788144, edge_length=0.075877, oid="Node527")
+    nd_5118960 = nd_5118384.new_child(label=None, taxon=tax_4826896, edge_length=0.071375, oid="Node529")
+    nd_5118960.edge.oid = "Edge530"
+    nd_5118960.edge.oid = "Edge530"
+    nd_5118960.edge.oid = "Edge530"
+    nd_5118960.edge.oid = "Edge530"
+    nd_5119216 = nd_5118768.new_child(label=None, taxon=tax_4827664, edge_length=0.062291, oid="Node535")
+    nd_5119504 = nd_5118768.new_child(label=None, taxon=None, edge_length=0.00521, oid="Node537")
+    nd_5119504.edge.oid = "Edge538"
+    nd_5119504.edge.oid = "Edge538"
+    nd_5119248 = nd_5119504.new_child(label=None, taxon=tax_4827952, edge_length=0.074463, oid="Node539")
+    nd_5119760 = nd_5119504.new_child(label=None, taxon=tax_4827312, edge_length=0.103887, oid="Node541")
+    nd_5119760.edge.oid = "Edge542"
+    nd_5119760.edge.oid = "Edge542"
+    nd_5119760.edge.oid = "Edge542"
+    nd_5119760.edge.oid = "Edge542"
+    nd_5119760.edge.oid = "Edge542"
+    nd_5144752 = nd_5119888.new_child(label=None, taxon=tax_4826768, edge_length=0.071307, oid="Node549")
+    nd_5144976 = nd_5119888.new_child(label=None, taxon=tax_4826576, edge_length=0.073392, oid="Node551")
+    nd_5144976.edge.oid = "Edge552"
+    nd_5144976.edge.oid = "Edge552"
+    nd_5144976.edge.oid = "Edge552"
+    tree_5144656 = dendropy.Tree(label="PAUP 10", taxon_set=tree_list_4286432.taxon_set, oid="Tree553")
+    tree_list_4286432.append(tree_5144656, reindex_taxa=False)
+    nd_5145392 = tree_5144656.seed_node.new_child(label=None, taxon=tax_4787280, edge_length=0.053901, oid="Node559")
+    nd_5089424 = tree_5144656.seed_node.new_child(label=None, taxon=None, edge_length=0.013947, oid="Node561")
+    nd_5147312 = tree_5144656.seed_node.new_child(label=None, taxon=tax_4828240, edge_length=0.107868, oid="Node603")
+    nd_5147312.edge.oid = "Edge604"
+    nd_5147312.edge.oid = "Edge604"
+    nd_5145104 = nd_5089424.new_child(label=None, taxon=None, edge_length=0.002034, oid="Node563")
+    nd_5147664 = nd_5089424.new_child(label=None, taxon=tax_4827056, edge_length=0.064652, oid="Node601")
+    nd_5147664.edge.oid = "Edge602"
+    nd_5061776 = nd_5145104.new_child(label=None, taxon=None, edge_length=0.00777, oid="Node565")
+    nd_5146928 = nd_5145104.new_child(label=None, taxon=None, edge_length=0.00373, oid="Node587")
+    nd_5146928.edge.oid = "Edge588"
+    nd_5145648 = nd_5061776.new_child(label=None, taxon=None, edge_length=0.003041, oid="Node567")
+    nd_5146672 = nd_5061776.new_child(label=None, taxon=None, edge_length=0.008083, oid="Node577")
+    nd_5146672.edge.oid = "Edge578"
+    nd_5145776 = nd_5145648.new_child(label=None, taxon=tax_4825840, edge_length=0.07927, oid="Node569")
+    nd_5146256 = nd_5145648.new_child(label=None, taxon=None, edge_length=0.016769, oid="Node571")
+    nd_5146256.edge.oid = "Edge572"
+    nd_5146256.edge.oid = "Edge572"
+    nd_5146032 = nd_5146256.new_child(label=None, taxon=tax_4827664, edge_length=0.053956, oid="Node573")
+    nd_5146512 = nd_5146256.new_child(label=None, taxon=tax_4827312, edge_length=0.098874, oid="Node575")
+    nd_5146512.edge.oid = "Edge576"
+    nd_5146512.edge.oid = "Edge576"
+    nd_5146512.edge.oid = "Edge576"
+    nd_5146288 = nd_5146672.new_child(label=None, taxon=None, edge_length=0.010712, oid="Node579")
+    nd_5117360 = nd_5146672.new_child(label=None, taxon=tax_4828432, edge_length=0.075934, oid="Node585")
+    nd_5117360.edge.oid = "Edge586"
+    nd_5089392 = nd_5146288.new_child(label=None, taxon=tax_4788144, edge_length=0.075223, oid="Node581")
+    nd_5089232 = nd_5146288.new_child(label=None, taxon=tax_4826768, edge_length=0.065805, oid="Node583")
+    nd_5089232.edge.oid = "Edge584"
+    nd_5089232.edge.oid = "Edge584"
+    nd_5089232.edge.oid = "Edge584"
+    nd_5089232.edge.oid = "Edge584"
+    nd_5146800 = nd_5146928.new_child(label=None, taxon=tax_4827952, edge_length=0.082425, oid="Node589")
+    nd_5147152 = nd_5146928.new_child(label=None, taxon=None, edge_length=0.008508, oid="Node591")
+    nd_5147152.edge.oid = "Edge592"
+    nd_5147152.edge.oid = "Edge592"
+    nd_5146768 = nd_5147152.new_child(label=None, taxon=None, edge_length=0.010583, oid="Node593")
+    nd_5147568 = nd_5147152.new_child(label=None, taxon=tax_4827248, edge_length=0.070289, oid="Node599")
+    nd_5147568.edge.oid = "Edge600"
+    nd_5146896 = nd_5146768.new_child(label=None, taxon=tax_4826896, edge_length=0.075429, oid="Node595")
+    nd_5147536 = nd_5146768.new_child(label=None, taxon=tax_4826576, edge_length=0.0787, oid="Node597")
+    nd_5147536.edge.oid = "Edge598"
+    nd_5147536.edge.oid = "Edge598"
+    nd_5147536.edge.oid = "Edge598"
+    nd_5147536.edge.oid = "Edge598"
+    nd_5147536.edge.oid = "Edge598"
+    nd_5147536.edge.oid = "Edge598"
+    return tree_list_4286432
+
 class RepeatedRandom(Random):
     """
     An overload of Random that returns numbers from a circular list of 1000
