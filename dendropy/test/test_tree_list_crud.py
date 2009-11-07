@@ -35,6 +35,7 @@ class TreeListCreateTest(framework.DataObjectVerificationTestCase):
 
     def setUp(self):
         self.tree_list1 = datagen.reference_tree_list()
+        self.tree_list1_stream = StringIO(self.tree_list1.as_string("newick"))
 
     def testDeepCopyTreeListFromTreeListSameTaxa(self):
         tree_list2 = dendropy.TreeList(self.tree_list1, taxon_set=self.tree_list1.taxon_set)
@@ -58,11 +59,24 @@ class TreeListCreateTest(framework.DataObjectVerificationTestCase):
         self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=True, equal_oids=False, distinct_trees=True)
 
     def testTooManyPosArgs(self):
-     self.assertRaises(error.TooManyArgumentsError, dendropy.TreeList, self.tree_list1, dendropy.TreeList())
+        self.assertRaises(error.TooManyArgumentsError, dendropy.TreeList, self.tree_list1, dendropy.TreeList())
 
     def testMultipleSources(self):
-     self.assertRaises(error.MultipleInitializationSourceError, dendropy.TreeList, self.tree_list1, stream=StringIO(self.tree_list1.as_string("newick")), format="newick")
+        self.assertRaises(error.MultipleInitializationSourceError, dendropy.TreeList, self.tree_list1, stream=self.tree_list1_stream, format="newick")
 
+    def testTreeListFromTreeFileSameTaxa(self):
+        tree_list2 = dendropy.TreeList(stream=self.tree_list1_stream, format="newick", taxon_set=self.tree_list1.taxon_set)
+        self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=False, equal_oids=False, distinct_trees=True)
+
+    def testTreeListFromTreeFileDifferentTaxa(self):
+        tree_list2 = dendropy.TreeList([dendropy.Tree(t) for t in self.tree_list1])
+        self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=False, equal_oids=False, distinct_trees=True)
+
+    def testTreeListFromTreeFileNoFormatSpecification(self):
+        self.assertRaises(error.UnspecifiedFormatError, dendropy.TreeList, stream=self.tree_list1_stream)
+
+    def testTreeListFromTreeFileNoKeywords(self):
+        self.assertRaises(error.InvalidArgumentTypeError, dendropy.TreeList, stream=self.tree_list1_stream, format="newick")
 
 #    def testTreeFromTreeSetOidAndLabelSameTaxa(self):
 #        tree2 = dendropy.Tree(self.tree1, oid="TREE2", label="TREE2")
