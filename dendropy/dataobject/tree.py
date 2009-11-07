@@ -862,6 +862,13 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
            returns the label to appear in the tree."""
         return self.seed_node.as_newick_str(**kwargs)
 
+    def assign_node_labels_from_taxon_or_oid(self):
+        for nd in self.postorder_node_iter():
+            if nd.taxon is not None:
+                nd.label = nd.taxon.label
+            else:
+                nd.label = nd.oid
+
     def get_indented_form(self, **kwargs):
         out = StringIO()
         self.write_indented_form(out, **kwargs)

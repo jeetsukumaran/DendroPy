@@ -850,12 +850,7 @@ def reference_tree_list():
     # set labels of nodes with taxa to taxon label, else oid (for consistent
     # identification in debugging)
     for t in tree_list_4286432:
-        for nd in t:
-            if nd.taxon is not None:
-                nd.label = nd.taxon.label
-            else:
-                nd.label = nd.oid
-
+        t.assign_node_labels_from_taxon_or_oid()
     return tree_list_4286432
 
 class RepeatedRandom(Random):
