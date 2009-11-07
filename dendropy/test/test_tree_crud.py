@@ -67,21 +67,11 @@ class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
         tree2 = dendropy.Tree(stream=StringIO(self.tree1_newick_str), format="newick", taxon_set=self.tree1.taxon_set)
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
-    def testTreeFromFilePosArgsDistinctTaxa(self):
-        tree2 = dendropy.Tree(StringIO(self.tree1_newick_str), "newick")
-        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=True, equal_oids=False)
+    def testTreeFromFilePosArgs(self):
+        self.assertRaises(TypeError, dendropy.Tree, StringIO(self.tree1_newick_str), "newick")
 
-    def testTreeFromFilePosArgsSameTaxa(self):
-        tree2 = dendropy.Tree(StringIO(self.tree1_newick_str), "newick", taxon_set=self.tree1.taxon_set)
-        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
-
-    def testTreeFromFileMixedPosAndKeywordArgsDistinctTaxa(self):
-        tree2 = dendropy.Tree(StringIO(self.tree1_newick_str), format="newick")
-        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=True, equal_oids=False)
-
-    def testTreeFromFileMixedPosAndKeywordArgsSameTaxa(self):
-        tree2 = dendropy.Tree(StringIO(self.tree1_newick_str), format="newick", taxon_set=self.tree1.taxon_set)
-        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
+    def testTreeFromFileMixedPosAndKeywordArgs(self):
+        self.assertRaises(TypeError, dendropy.Tree, StringIO(self.tree1_newick_str), format="newick")
 
     def testTreeFromFilePosArgsWithNoFormat(self):
         self.assertRaises(errors.UnspecifiedFormatError, dendropy.Tree, stream=StringIO(self.tree1_newick_str), taxon_set=self.tree1.taxon_set)
@@ -112,7 +102,7 @@ class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
 
     def testTreeFromNewickFileIndexed(self):
         nstr = "(A,(B,(C,D))); ((A,C),(B,D)); %s; (A,(C,(B,D))); ((A,D),(B,C));" % self.tree1_newick_str
-        tree2 = dendropy.Tree(StringIO(nstr), "newick", index=2, taxon_set=self.tree1.taxon_set)
+        tree2 = dendropy.Tree(stream=StringIO(nstr), format="newick", index=2, taxon_set=self.tree1.taxon_set)
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
 if __name__ == "__main__":

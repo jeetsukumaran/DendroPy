@@ -145,6 +145,9 @@ class Readable(object):
     """
 
     def __init__(self, *args, **kwargs):
+        pass
+
+    def process_source_kwargs(self, **kwargs):
         if "stream" in kwargs:
             stream = kwargs["stream"]
             del(kwargs["stream"])

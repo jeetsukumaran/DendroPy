@@ -48,9 +48,9 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def __init__(self, *args, **kwargs):
         """
-        Initializes a new TreeList object, populating it with any Tree
-        objects passed as unnamed argument, and from a data source if
-        `stream` and `format` are passed.
+        Initializes a new TreeList object, populating it with any iterable
+        container with Tree object members passed as unnamed argument, or
+        from a data source if `stream` and `format` are passed.
 
         TreeList objects can thus be instantiated in the following ways::
 
@@ -63,22 +63,24 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             tlst1 = TreeList()
 
             # populated from list of Tree objects
-            t1 = Tree(StringIO("((A,B),(C,D))"), newick)
-            t2 = Tree(StringIO("((A,C),(B,D))"), newick)
+            t1 = Tree(stream=StringIO("((A,B),(C,D))"), format="newick")
+            t2 = Tree(stream=StringIO("((A,C),(B,D))"), format="newick")
             tlist2 = TreeList([t1, t2])
 
             # tree from data source
-            tlst2 = TreeList(StringIO("((A,B),(C,D));((A,C),(B,D));"), "newick") # from newick string
-            tlst3 = TreeList(StringIO("((A,B),(C,D));((A,C),(B,D));"), format="newick") # same
-            tlst4 = TreeList(stream=StringIO("((A,B),(C,D));((A,C),(B,D));"), format="newick") # same
+            tlst3 = TreeList(stream=StringIO("((A,B),(C,D));((A,C),(B,D));"), format="newick") # same
 
             # passing keywords to underlying tree parser
-            tlst5 = TreeList(StringIO("((A,B),(C,D));((A,C),(B,D));"), "newick", \
-                        taxon_set=tlst3.taxon_set,
-                        encode_splits=True)
+            tlst4 = TreeList(stream=StringIO("((A,B),(C,D));((A,C),(B,D));"),
+                             format="newick",
+                             taxon_set=tlst3.taxon_set,
+                             encode_splits=True)
 
             # shallow-copied from another tree list
-            tlst6 = TreeList(t5)
+            tlst5 = TreeList(t4)
+
+            # deep-copied (but shallow-copy taxa) from another tree list
+            tls6 = TreeList([Tree(t) for t in tlst5])
 
             # can also call `read()` on a TreeList object
             tlst7 = TreeList()
@@ -93,50 +95,16 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                                 oid=kwargs.get("oid", None))
         iosys.Readable.__init__(self)
         iosys.Writeable.__init__(self)
-        if len(args) > 2:
-            raise TypeError("TreeList() takes at most 2 unnamed arguments (%d given)" % len(args))
-        elif len(args) > 0 \
-                and (isinstance(args[0], TreeList) \
-                     or (hasattr(args[0], "__iter__") and not hasattr(args[0], "read"))):
-            if len(args) > 1:
-                raise TypeError("Invalid number of unnamed arguments passed to Tree(): only accepts one when passed an iterable as the first argument.")
-            if isinstance(args[0], TreeList):
-                list.__init__(self, args[0])
-                for k,v in args[0].__dict__.items():
-                    if k not in ["_oid"]:
-                        self.__dict__[k] = v
-            elif hasattr(args[0], "__iter__"):
-                list.__init__(self, args[0])
+        list.__init__(self)
+        if len(args) > 1:
+            raise TypeError("TreeList() takes at most 1 positional argument (%d given)" % len(args))
+        elif len(args) == 1:
+            for t in args[0]:
+                self.append(t)
             else:
                 raise TypeError("Invalid argument passed to TreeList()")
         else:
-            list.__init__(self)
-            if len(args) > 0 and hasattr(args[0], "read"):
-                if len(args) > 2:
-                    raise TypeError("Invalid number of unnamed arguments passed to Tree(): maximum of two when passed an file source as the first argument.")
-                if "stream" in kwargs:
-                    raise TypeError("Cannot specify more than one data source to TreeList()")
-                stream = args[0]
-                if len(args) >= 2 and "format" not in kwargs:
-                    format = args[1]
-                elif "format" not in kwargs:
-                    raise TypeError("Need to specify format if passing a file-like" \
-                                  + " object from which to construct a TreeList")
-                else:
-                    format = kwargs["format"]
-                    del(kwargs["format"])
-                self.read(stream, format, **kwargs)
-            elif len(args) > 0:
-                raise TypeError("Invalid arguments to Tree()")
-            elif "stream" in kwargs:
-                if "format" not in kwargs:
-                    raise TypeError("Need to specify format if passing a file-like" \
-                                  + " object from which to construct a TreeList")
-                stream = kwargs["stream"]
-                del(kwargs["stream"])
-                format = kwargs["format"]
-                del(kwargs["format"])
-                self.read(stream, format, **kwargs)
+            self.process_read_kwargs(**kwargs)
 
         if "oid" in kwargs:
             self.oid = kwargs["oid"]
@@ -337,9 +305,11 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def __init__(self, *args, **kwargs):
         """
-        Initializes a new Tree object, optionally constructing it out
-        of a data source of if `stream` and `format` are passed. Other
-        keyword arguments recognized: `oid`, `taxon_set`, and `label`.
+        Initializes a new Tree object, optionally constructing it by cloning
+        another Tree object if this is passed as the first argument, or
+        out of a data source if `stream` and `format` are keyword arguments are
+        passed with a file-like object and a format-specification string object
+        values respectively.
 
         If `stream` and `format` keyword arguments are given, will
         construct this `Tree` object from `format`-formatted source
@@ -361,25 +331,24 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             t1 = Tree()
 
             # tree from data source
-            t2 = Tree(StringIO("((A,B),(C,D));"), "newick") # from newick string
-            t3 = Tree(StringIO("((A,B),(C,D));"), format="newick") # same
-            t4 = Tree(stream=StringIO("((A,B),(C,D));"), format="newick") # same
+            t2 = Tree(stream=StringIO("((A,B),(C,D));"), format="newick")
 
             # passing keywords to underlying tree parser
-            t5 = Tree(StringIO("((A,B),(C,D));"), "newick", \
-                        taxon_set=t3.taxon_set,
-                        encode_splits=True)
+            t3 = Tree(stream=StringIO("((A,B),(C,D));"),
+                      format="newick",
+                      taxon_set=t3.taxon_set,
+                      encode_splits=True)
 
             # tree structure deep-copied from another tree
-            t6 = Tree(t5)
-            assert t6.taxon_set == t5.taxon_set # True: taxa are not deep-copied
-            assert t6.oid != t5.oid # True: oid's will be different
+            t4 = Tree(t3)
+            assert t4.taxon_set == t3.taxon_set # True: taxa are not deep-copied
+            assert t4.oid != t3.oid # True: oid's will be different
 
             # can also call `read()` on a Tree object
-            t7 = Tree()
-            t7.read(StringIO("((A,B),(C,D));"), "newick")
-            t7.read_from_string("((A,B),(C,D));", "newick")
-            t7.read_from_path("mle.tre", "newick")
+            t5 = Tree()
+            t5.read(StringIO("((A,B),(C,D));"), "newick")
+            t5.read_from_string("((A,B),(C,D));", "newick")
+            t5.read_from_path("mle.tre", "newick")
 
         """
         TaxonSetLinked.__init__(self,
@@ -387,56 +356,30 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                                 label=kwargs.get("label", None),
                                 oid=kwargs.get("oid", None))
         iosys.Writeable.__init__(self)
-        self.seed_node = None
+        iosys.Readable.__init__(self)
+        self.seed_node = Node(edge=Edge())
         self.length_type = None
         self.is_rooted = False
 
-        if len(args) > 2:
-            raise TypeError("Tree() takes at most 2 arguments (%d given)" % len(args))
-        if len(args) > 0:
+        if len(args) > 1:
+            raise TypeError("Tree() takes at most 1 positional argument (%d given: %s)" % (len(args), str(args)))
+        if len(args) == 1:
             if isinstance(args[0], Node):
-                if "stream" in kwargs:
+                if "stream" or "format" in kwargs:
                     raise TypeError("Cannot specify data source for Tree() if specifying seed Node")
-                iosys.Readable.__init__(self)
                 self.seed_node = args[0]
             elif isinstance(args[0], Tree):
-                if len(args) > 1:
-                    raise TypeError("Tree() only accepts one unnamed argument when given a Tree object as the first argument")
                 if "stream" in kwargs or "format" in kwargs:
                     raise TypeError("Cannot specify data source or format for Tree() when cloning another Tree")
-                iosys.Readable.__init__(self)
                 self.clone_from(args[0])
-                if "oid" in kwargs:
-                    self.oid = kwargs["oid"]
-                if "label" in kwargs:
-                    self.label = kwargs["label"]
-            elif hasattr(args[0], "read"): # file-like object assed as first arg
-                if "stream" in kwargs:
-                    raise TypeError("Cannot specify more than one data source for Tree()")
-                if len(args) > 1 and "format" not in kwargs:
-                    format = args[1]
-                elif len(args) == 1 and "format" in kwargs:
-                    format = kwargs["format"]
-                    del(kwargs["format"])
-                elif len(args) > 1 and "format" in kwargs:
-                    raise TypeError("Cannot specify format as both named and unnamed arguments")
-                elif len(args) == 1 and "format" not in kwargs:
-                    raise TypeError("Need to specify format if passing a file-like" \
-                                  + " object from which to construct a Tree.")
-                self.read(args[0], format, **kwargs)
-                if "oid" in kwargs:
-                    self.oid = kwargs["oid"]
-                if "label" in kwargs:
-                    self.label = kwargs["label"]
             else:
-                raise TypeError("Invalid non-keyworded arguments passed: %s" % str(args))
+                raise TypeError("Invalid positional argument passed: %s" % str(args))
         else:
-            self.seed_node = Node(edge=Edge())
-            iosys.Readable.__init__(self, **kwargs)
-            if "oid" in kwargs:
-                self.oid = kwargs["oid"]
-            if "label" in kwargs:
-                self.label = kwargs["label"]
+            self.process_source_kwargs(**kwargs)
+        if "oid" in kwargs:
+            self.oid = kwargs["oid"]
+        if "label" in kwargs:
+            self.label = kwargs["label"]
 
     ###########################################################################
     ## I/O and Representation
