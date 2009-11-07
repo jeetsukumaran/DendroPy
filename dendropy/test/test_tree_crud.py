@@ -34,7 +34,7 @@ import dendropy
 class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
 
     def setUp(self):
-        self.tree1 = datagen.get_standard_four_taxon_tree()
+        self.tree1 = datagen.four_taxon_tree1()
         self.tree1_newick_str = self.tree1.as_newick_str(include_internal_labels=True)
 
     def testTreeFromTreeSameTaxa(self):

@@ -32,11 +32,14 @@ import dendropy
 class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
 
     def testTreeFromStandard(self):
-        tree1 = datagen.get_standard_four_taxon_tree()
+        tree1 = datagen.four_taxon_tree1()
         node_oids = [nd.oid for nd in tree1.postorder_node_iter()]
         self.assertEqual(node_oids, ['a', 'b', 'i1', 'c', 'd', 'i2', 'root'])
         tax_labels = [nd.taxon.label for nd in tree1.postorder_node_iter() if nd.taxon is not None]
         self.assertEqual(tax_labels, ['A', 'B', 'C', 'D'])
+
+    def testReferenceTreeList(self):
+        tlist = datagen.reference_tree_list()
 
 if __name__ == "__main__":
     unittest.main()
