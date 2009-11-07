@@ -56,6 +56,9 @@ class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
     def testTreeFromInvalidObjectPosArgs(self):
         self.assertRaises(TypeError, dendropy.Tree, object())
 
+    def testTreeFromInvalidIterablePosArgs(self):
+        self.assertRaises(TypeError, dendropy.Tree, "abcde")
+
     def testTreeFromInvalidObjectPosArgsWithKeywords(self):
         self.assertRaises(TypeError, dendropy.Tree, "xx", stream=StringIO(self.tree1_newick_str), format="newick")
 

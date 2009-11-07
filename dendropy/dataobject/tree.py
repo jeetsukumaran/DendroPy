@@ -99,12 +99,16 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if len(args) > 1:
             raise TypeError("TreeList() takes at most 1 positional argument (%d given)" % len(args))
         elif len(args) == 1:
+            if "stream" or "format" in kwargs:
+                raise TypeError("Cannot specify data source for Tree() if passing positional argument %s" % args[0])
             for t in args[0]:
+                if not isinstance(t, Tree):
+                    raiseTypeError("TreeList() only accepts Tree objects")
                 self.append(t)
             else:
                 raise TypeError("Invalid argument passed to TreeList()")
         else:
-            self.process_read_kwargs(**kwargs)
+            self.process_source_kwargs(**kwargs)
 
         if "oid" in kwargs:
             self.oid = kwargs["oid"]
