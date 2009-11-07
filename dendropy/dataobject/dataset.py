@@ -59,15 +59,15 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         self.tree_lists = containers.OrderedSet()
         self.char_arrays = containers.OrderedSet()
         if len(args) > 1:
-            raise TypeError("DataSet() takes at most 1 positional argument (%d given)" % len(args))
+            raise errors.TooManyArgumentsError(self.__class__.__name__, 1, args)
         elif len(args) == 1:
             if "stream" in kwargs or "format" in kwargs:
-                raise errors.ConflictingInitializationArgumentError(self, args[0])
+                raise errors.MultipleInitializationSourceError(self.__class__.__name__, args[0])
             elif isinstance(args[0], DataSet):
                 d = deepcopy(args[0])
                 self.__dict__ = d.__dict__
             else:
-                raise errors.InvalidArgumentTypeError(self, args[0])
+                raise errors.InvalidArgumentTypeError(self.__class__.__name__, args[0])
         elif "stream" in kwargs:
             self.process_source_kwargs(**kwargs)
 

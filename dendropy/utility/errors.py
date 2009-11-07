@@ -54,15 +54,22 @@ class UnspecifiedSourceError(Exception):
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
 
+class TooManyArgumentsError(TypeError):
+
+    def __init__(self, func_name, max_args, args):
+        TypeError.__init__(self,
+            "%s() takes a maximum of %d arguments (%d given)" \
+                % (func_name, max_args, len(args)))
+
 class InvalidArgumentTypeError(TypeError):
 
-    def __init__(self, obj, arg):
+    def __init__(self, func_name, arg):
         TypeError.__init__(self,
             "%s() does not accept objects of type '%s' as an argument" \
-                % (obj.__class__.__name__, arg.__class__.__name__))
+                % (func_name, arg.__class__.__name__))
 
-class ConflictingInitializationArgumentError(TypeError):
-    def __init__(self, obj, arg):
+class MultipleInitializationSourceError(TypeError):
+    def __init__(self, class_name, arg):
         TypeError.__init__(self,
             "%s() does not accept data 'stream' or 'format' arguments when initializing with a '%s' object" \
-                % (obj.__class__.__name__, arg.__class__.__name__))
+                % (class_name, arg.__class__.__name__))

@@ -48,19 +48,19 @@ class TreeCreateTest(framework.DataObjectVerificationTestCase):
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
     def testTreeFromTreeWithExtraKeywordArgs(self):
-        self.assertRaises(TypeError, dendropy.Tree, self.tree1, format="newick")
+        self.assertRaises(errors.MultipleInitializationSourceError, dendropy.Tree, self.tree1, format="newick")
 
     def testTreeFromTreeWithExtraPosArgs(self):
         self.assertRaises(TypeError, dendropy.Tree, self.tree1, "dummy")
 
     def testTreeFromInvalidObjectPosArgs(self):
-        self.assertRaises(TypeError, dendropy.Tree, object())
+        self.assertRaises(errors.InvalidArgumentTypeError, dendropy.Tree, object())
 
     def testTreeFromInvalidIterablePosArgs(self):
-        self.assertRaises(TypeError, dendropy.Tree, "abcde")
+        self.assertRaises(errors.InvalidArgumentTypeError, dendropy.Tree, "abcde")
 
-    def testTreeFromInvalidObjectPosArgsWithKeywords(self):
-        self.assertRaises(TypeError, dendropy.Tree, "xx", stream=StringIO(self.tree1_newick_str), format="newick")
+    def testTreeFromFileTooManyPosArgs(self):
+        self.assertRaises(errors.TooManyArgumentsError, dendropy.Tree, StringIO(self.tree1_newick_str), "newick")
 
     def testTreeFromFileKeywordArgsDistinctTaxa(self):
         tree2 = dendropy.Tree(stream=StringIO(self.tree1_newick_str), format="newick")
@@ -70,11 +70,8 @@ class TreeCreateTest(framework.DataObjectVerificationTestCase):
         tree2 = dendropy.Tree(stream=StringIO(self.tree1_newick_str), format="newick", taxon_set=self.tree1.taxon_set)
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
-    def testTreeFromFilePosArgs(self):
-        self.assertRaises(TypeError, dendropy.Tree, StringIO(self.tree1_newick_str), "newick")
-
     def testTreeFromFileMixedPosAndKeywordArgs(self):
-        self.assertRaises(TypeError, dendropy.Tree, StringIO(self.tree1_newick_str), format="newick")
+        self.assertRaises(errors.MultipleInitializationSourceError, dendropy.Tree, StringIO(self.tree1_newick_str), format="newick")
 
     def testTreeFromFilePosArgsWithNoFormat(self):
         self.assertRaises(errors.UnspecifiedFormatError, dendropy.Tree, stream=StringIO(self.tree1_newick_str), taxon_set=self.tree1.taxon_set)

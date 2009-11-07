@@ -98,17 +98,17 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         iosys.Writeable.__init__(self)
         list.__init__(self)
         if len(args) > 1:
-            raise TypeError("TreeList() takes at most 1 positional argument (%d given)" % len(args))
+            raise errors.TooManyArgumentsError(self.__class__.__name__, 1, args)
         elif len(args) == 1:
             if "stream" in kwargs or "format" in kwargs:
-                raise errors.ConflictingInitializationArgumentError(self, args[0])
+                raise errors.MultipleInitializationSourceError(self.__class__.__name__, args[0])
             if hasattr(args[0], "__iter__") and not isinstance(args[0], str):
                 for t in args[0]:
                     if not isinstance(t, Tree):
                         raiseTypeError("TreeList() only accepts Tree objects as members")
                     self.append(t)
             else:
-                raise errors.InvalidArgumentTypeError(self, args[0])
+                raise errors.InvalidArgumentTypeError(self.__class__.__name__, args[0])
         else:
             self.process_source_kwargs(**kwargs)
 
@@ -371,16 +371,16 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         self.is_rooted = False
 
         if len(args) > 1:
-            raise TypeError("Tree() takes at most 1 positional argument (%d given)" % len(args))
+            raise errors.TooManyArgumentsError(self.__class__.__name__, 1, args)
         if len(args) == 1:
             if "stream" in kwargs or "format" in kwargs:
-                raise errors.ConflictingInitializationArgumentError(self, args[0])
+                raise errors.MultipleInitializationSourceError(self.__class__.__name__, args[0])
             if isinstance(args[0], Node):
                 self.seed_node = args[0]
             elif isinstance(args[0], Tree):
                 self.clone_from(args[0])
             else:
-                raise errors.InvalidArgumentTypeError(self, args[0])
+                raise errors.InvalidArgumentTypeError(self.__class__.__name__, args[0])
         else:
             self.process_source_kwargs(**kwargs)
         if "oid" in kwargs:
