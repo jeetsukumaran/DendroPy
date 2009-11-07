@@ -27,6 +27,7 @@ Top-level phylogenetic data object: DataSet.
 from copy import deepcopy
 from dendropy.utility import iosys
 from dendropy.utility import containers
+from dendropy.utility import errors
 from dendropy.dataobject.base import DataObject
 from dendropy.dataobject.taxon import TaxonSet
 from dendropy.dataobject.tree import TreeList
@@ -61,12 +62,12 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
             raise TypeError("DataSet() takes at most 1 positional argument (%d given)" % len(args))
         elif len(args) == 1:
             if "stream" in kwargs or "format" in kwargs:
-                raise TypeError("%s() does not accept data 'stream' or 'format' arguments when initializing with a '%s' object" % (self.__class__.__name__, args[0].__class__.__name__))
+                raise errors.ConflictingInitializationArgumentError(self, args[0])
             elif isinstance(args[0], DataSet):
                 d = deepcopy(args[0])
                 self.__dict__ = d.__dict__
             else:
-                raise TypeError("%s() does not accept initialization with objects of type '%s'" % (self.__class__.__name__, args[0].__class__.__name__))
+                raise errors.InvalidArgumentTypeError(self, args[0])
         elif "stream" in kwargs:
             self.process_source_kwargs(**kwargs)
 

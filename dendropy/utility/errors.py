@@ -53,3 +53,16 @@ class UnspecifiedSourceError(Exception):
 
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
+
+class InvalidArgumentTypeError(TypeError):
+
+    def __init__(self, obj, arg):
+        TypeError.__init__(self,
+            "%s() does not accept objects of type '%s' as an argument" \
+                % (obj.__class__.__name__, arg.__class__.__name__))
+
+class ConflictingInitializationArgumentError(TypeError):
+    def __init__(self, obj, arg):
+        TypeError.__init__(self,
+            "%s() does not accept data 'stream' or 'format' arguments when initializing with a '%s' object" \
+                % (obj.__class__.__name__, arg.__class__.__name__))
