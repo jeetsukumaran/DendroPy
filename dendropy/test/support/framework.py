@@ -153,8 +153,8 @@ class DataObjectVerificationTestCase(ExtendedTestCase):
         self.assertTrue(tree_list1 is not tree_list2)
         self.assertEqual(len(tree_list1), len(tree_list2))
         if distinct_taxa:
-            self.assertIsNotSame(tree_list1.taxon_set, tree_list1.taxon_set)
-            self.assertDistinctButEqualTaxonSets(tree_list1.taxon_set, tree_list1.taxon_set)
+            self.assertIsNotSame(tree_list1.taxon_set, tree_list2.taxon_set)
+            self.assertDistinctButEqualTaxonSets(tree_list1.taxon_set, tree_list2.taxon_set)
         else:
             self.assertIsSame(tree_list1.taxon_set, tree_list2.taxon_set)
         self.assertDistinctButEqualTaxonSets(tree_list1.taxon_set, tree_list2.taxon_set, **kwargs)
