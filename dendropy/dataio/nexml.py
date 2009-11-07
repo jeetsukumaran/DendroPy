@@ -224,7 +224,7 @@ class NexmlReader(iosys.DataReader):
         taxon sets, character matrices, and trees into a DataSet object.
         """
         if self.dataset is None:
-            dataset = dendropy.Dataset()
+            dataset = dendropy.DataSet()
         self.parse_taxon_sets(xml_doc, self.dataset)
         if not self.exclude_chars:
             self.parse_char_arrays(xml_doc, self.dataset)
@@ -265,7 +265,7 @@ class NexmlReader(iosys.DataReader):
         "Generator to iterate over trees in file without retaining any in memory."
         xml_doc = xmlparser.xml_document(file_obj=file_obj)
         if dataset is None:
-            dataset = datasets.Dataset() or dataset
+            dataset = datasets.DataSet() or dataset
         if taxon_set is None:
             taxon_set = taxa.TaxonSet()
         if not (taxon_set in dataset.taxon_sets):

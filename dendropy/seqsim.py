@@ -54,14 +54,14 @@ def generate_hky_dataset(seq_len,
     `mutation_rate` : mutation *modifier* rate (should be 1.0 if branch lengths
                       on tree reflect true expected number of changes
     `root_states`   : vector of root states (length must equal `seq_len`)
-    `dataset`       : a dendropy.dendropy.Dataset object.
+    `dataset`       : a dendropy.dendropy.DataSet object.
                       if given, the new
                       dendropy.CharacterArray object will be added to
                       this (along with a new taxon_set if required). Otherwise,
-                      a new dendropy.dendropy.Dataset object will be created.
+                      a new dendropy.dendropy.DataSet object will be created.
     `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
                       used
-    Returns: a dendropy.dendropy.Dataset object object.
+    Returns: a dendropy.dendropy.DataSet object object.
     """
     seq_model = seqmodel.Hky85SeqModel(kappa=kappa, base_freqs=base_freqs)
     return generate_dataset(seq_len=seq_len,
@@ -119,7 +119,7 @@ def generate_dataset(seq_len,
                      dataset=None,
                      rng=None):
     """
-    Wrapper to conveniently generate a Dataset simulated under
+    Wrapper to conveniently generate a DataSet simulated under
     the given tree and character model.
     `seq_len`       : length of sequence (number of characters)
     `tree_model`    : dendropy.trees.Tree object
@@ -127,17 +127,17 @@ def generate_dataset(seq_len,
     `mutation_rate` : mutation *modifier* rate (should be 1.0 if branch lengths
                       on tree reflect true expected number of changes
     `root_states`   : vector of root states (length must equal `seq_len`)
-    `dataset`       : a dendropy.dendropy.Dataset object.
+    `dataset`       : a dendropy.dendropy.DataSet object.
                       if given, the new
                       dendropy.CharacterArray object will be added to
                       this (along with a new taxon_set if required). Otherwise,
-                      a new dendropy.dendropy.Dataset object will be created.
+                      a new dendropy.dendropy.DataSet object will be created.
     `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
                       used
-    Returns: a dendropy.dendropy.Dataset object object.
+    Returns: a dendropy.dendropy.DataSet object object.
     """
     if dataset is None:
-        dataset = dendropy.Dataset()
+        dataset = dendropy.DataSet()
     if tree_model.taxon_set not in dataset.taxon_sets:
         taxon_set = dataset.add_taxon_set(tree_model.taxon_set)
     else:

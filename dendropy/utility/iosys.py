@@ -65,9 +65,9 @@ class IOService(object):
         """
         The following keyword arguments are recognized:
 
-        - `dataset`:  A `Dataset` object. For input clients, all data read
+        - `dataset`:  A `DataSet` object. For input clients, all data read
                 from the source will be instantiated as objects within
-                this `Dataset` object. For output clients, the `Dataset`
+                this `DataSet` object. For output clients, the `DataSet`
                 object will be the source of the data to be written.
         - `taxon_set`: A`TaxonSet` object. For input clients, results in all the
                 taxa being accessioned into a single `TaxonSet` (and all
@@ -107,7 +107,7 @@ class DataReader(IOService):
     def read(self, stream, **kwargs):
         """
         Reads data from the file-like object `stream`, and populates
-        and returns the bound `Dataset` object or a new `Dataset` object
+        and returns the bound `DataSet` object or a new `DataSet` object
         if none is bound.
         """
         raise NotImplementedError
@@ -131,7 +131,7 @@ class DataWriter(IOService):
 
     def write(self, stream, **kwargs):
         """
-        Writes data in the bound `Dataset` object to a destination given
+        Writes data in the bound `DataSet` object to a destination given
         by the file-like object `stream`.
         """
         raise NotImplementedError

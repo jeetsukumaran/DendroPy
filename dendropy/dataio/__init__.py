@@ -54,7 +54,7 @@ def get_reader(format, **kwargs):
     The following keyword arguments are recognized:
 
         - `dataset`: All data read from the source will be instantiated
-                as objects within this `Dataset` object.
+                as objects within this `DataSet` object.
         - `taxon_set`: A`TaxonSet` object. If given, results in all the
                 taxa being accessioned into a single `TaxonSet` (and all
                 TaxonSetLinked objects instantiated being associated with that
@@ -81,11 +81,11 @@ def get_writer(format, **kwargs):
 
     The following keyword arguments are recognized:
 
-        - `dataset`: A `Dataset` object that will be the default source of the
+        - `dataset`: A `DataSet` object that will be the default source of the
                 data to be written.
-        - `exclude_trees`: Trees in the `Dataset` or `TaxonDomain` will not be
+        - `exclude_trees`: Trees in the `DataSet` or `TaxonDomain` will not be
                 written.
-        - `exclude_chars`: Characters in the `Dataset` or `TaxonDomain` will
+        - `exclude_chars`: Characters in the `DataSet` or `TaxonDomain` will
                 not written.
     """
     return ioregister.get_writer(format, **kwargs)

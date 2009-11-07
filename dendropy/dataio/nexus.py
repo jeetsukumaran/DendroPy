@@ -101,7 +101,7 @@ class NexusReader(iosys.DataReader):
         """
         self.reset()
         if self.dataset is None:
-            self.dataset = dataobject.Dataset()
+            self.dataset = dataobject.DataSet()
         self._prepare_to_read_file(stream)
         self._parse_nexus_file()
         self.reset()
@@ -134,7 +134,7 @@ class NexusReader(iosys.DataReader):
         """
         self.reset()
         if self.dataset is None:
-            self.dataset = dataobject.Dataset()
+            self.dataset = dataobject.DataSet()
         if "taxon_set" in kwargs:
             self._current_taxon_set = kwargs["taxon_set"]
         self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream)
@@ -668,7 +668,7 @@ class NexusWriter(iosys.DataWriter):
         `stream`.
         """
         assert self.dataset is not None, \
-            "NexusWriter instance is not bound to a Dataset: no source of data"
+            "NexusWriter instance is not bound to a DataSet: no source of data"
         stream.write('#NEXUS\n\n')
         if self.comment is not None:
             if isinstance(self.comment, list):

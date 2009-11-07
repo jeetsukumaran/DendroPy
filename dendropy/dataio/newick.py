@@ -183,12 +183,12 @@ class NewickReader(iosys.DataReader):
 
     def read(self, stream, **kwargs):
         """
-        Instantiates and returns a `Dataset` object based on the
+        Instantiates and returns a `DataSet` object based on the
         NEWICK-formatted contents read from the file-like object source
         `stream`.
         """
         if self.dataset is None:
-            self.dataset = dataobject.Dataset()
+            self.dataset = dataobject.DataSet()
         if self.bound_taxon_set is not None:
             if taxon_set not in self.dataset.taxon_sets:
                 taxon_set = self.dataset.add_taxon_set(taxon_set)
@@ -227,7 +227,7 @@ class NewickWriter(iosys.DataWriter):
         by the file-like object `stream`.
         """
         assert self.dataset is not None, \
-            "NewickWriter instance is not bound to a Dataset: no source of data"
+            "NewickWriter instance is not bound to a DataSet: no source of data"
         for tree_list in self.dataset.tree_lists:
             if self.bound_taxon_set is None or self.bound_taxon_set is tree_list.taxon_set:
                 self.write_tree_list(tree_list, stream)

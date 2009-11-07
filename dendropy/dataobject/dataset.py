@@ -21,7 +21,7 @@
 ###############################################################################
 
 """
-Top-level phylogenetic data object: Dataset.
+Top-level phylogenetic data object: DataSet.
 """
 
 from copy import deepcopy
@@ -32,9 +32,9 @@ from dendropy.dataobject.taxon import TaxonSet
 from dendropy.dataobject.tree import TreeList
 
 ###############################################################################
-## Dataset
+## DataSet
 
-class Dataset(DataObject, iosys.Readable, iosys.Writeable):
+class DataSet(DataObject, iosys.Readable, iosys.Writeable):
     """
     The main data manager, consisting of a lists of taxa, trees, and character
     phylogenetic data objects, as well as methods to create, populate, access,
@@ -43,11 +43,11 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
 
     def __init__(self, *args, **kwargs):
         """
-        Initializes a new `Dataset` object. Arguments accepted include
-        another Dataset object (which will result in a deep copy of all
+        Initializes a new `DataSet` object. Arguments accepted include
+        another DataSet object (which will result in a deep copy of all
         taxa, trees and characters), or a file-like object opened for reading
         and a string specifying the format of the data in the file-like object,
-        in which case the Dataset will be populated from data in the given
+        in which case the DataSet will be populated from data in the given
         file. Also accepts keywords `stream` and `formae populated from data in the given
         file. Also accepts keywords `stream` and `format`.
         """
@@ -58,15 +58,15 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
         self.tree_lists = containers.OrderedSet()
         self.char_arrays = containers.OrderedSet()
         if len(args) > 1:
-            raise TypeError("Dataset() takes at most 1 positional argument (%d given)" % len(args))
+            raise TypeError("DataSet() takes at most 1 positional argument (%d given)" % len(args))
         elif len(args) == 1:
             if "stream" in kwargs or "format" in kwargs:
-                raise TypeError("Dataset() does not accept data 'stream' or 'format' arguments when initializing from a '%s' object" % args[0].__class__.__name__)
-            elif isinstance(args[0], Dataset):
+                raise TypeError("DataSet() does not accept data 'stream' or 'format' arguments when initializing from a '%s' object" % args[0].__class__.__name__)
+            elif isinstance(args[0], DataSet):
                 d = deepcopy(args[0])
                 self.__dict__ = d.__dict__
             else:
-                raise TypeError("Dataset() does not accept initialization from objects of type '%s'" % args[0].__class__.__name__)
+                raise TypeError("DataSet() does not accept initialization from objects of type '%s'" % args[0].__class__.__name__)
         elif "stream" in kwargs:
             self.process_source_kwargs(**kwargs)
 
@@ -105,7 +105,7 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
 
     def read(self, stream, format, **kwargs):
         """
-        Populates this `Dataset` object from a file-like object data
+        Populates this `DataSet` object from a file-like object data
         source `stream`, formatted in `format`. `format` must be a
         recognized and supported phylogenetic data file format. If
         reading is not implemented for the format specified, then a
@@ -133,7 +133,7 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
 
     def write(self, stream, format, **kwargs):
         """
-        Writes this `Dataset` object to the file-like object `stream`
+        Writes this `DataSet` object to the file-like object `stream`
         in `format`. `format` must be a recognized and supported
         phylogenetic data file format. If writing is not implemented for
         the format specified, then a `UnsupportedFormatError` is raised.
@@ -174,7 +174,7 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
 
     def add_taxon_set(self, taxon_set):
         """
-        Adds an existing `TaxonSet` object to this `Dataset`.
+        Adds an existing `TaxonSet` object to this `DataSet`.
         """
         self.taxon_sets.add(taxon_set)
         return taxon_set

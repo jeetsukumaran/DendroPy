@@ -369,7 +369,7 @@ def estimate_model(char_array,
     estimated character model, and a dictionary with estimates of rates, kappa,
     base_frequencies, alpha, prop_invar, etc. as well as likelihood.
     """
-    ds = dendropy.Dataset()
+    ds = dendropy.DataSet()
     paup_args = {
         'nst': num_states,
         'basefreq' : unequal_base_freqs and 'estimate' or 'equal',
@@ -454,6 +454,6 @@ def estimate_model(char_array,
             except:
                 pass
 
-    est_ds = dendropy.Dataset(file=open(output_tree_filepath, "rU"), format="NEXUS")
+    est_ds = dendropy.DataSet(file=open(output_tree_filepath, "rU"), format="NEXUS")
     return est_ds.tree_lists[0], results
 

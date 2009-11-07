@@ -117,7 +117,7 @@ class DataObjectVerificationTestCase(ExtendedTestCase):
     def assertDistinctButEqual(self, data_object1, data_object2, distinct_taxa=True, equal_oids=None):
         """
         Verifies that two DendroPy phylogenetic data objects (Tree, TreeList,
-        CharArray, Dataset etc.) are independent objects, but equal. That is,
+        CharArray, DataSet etc.) are independent objects, but equal. That is,
         if `data_object1` and `data_object` are the same object, then the
         distinction criterion is failed. If `distinct_taxa` is False, then the
         distinct/independence is criterion is enforced down to Taxon and

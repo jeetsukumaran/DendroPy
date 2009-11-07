@@ -48,7 +48,7 @@ class FastaReader(iosys.DataReader):
         Main file parsing driver.
         """
         if self.dataset is None:
-            self.dataset = dataobject.Dataset()
+            self.dataset = dataobject.DataSet()
 
         simple_rows = kwargs.get('row_type', 'rich').upper() == 'STR'
 
@@ -146,7 +146,7 @@ class FastaWriter(iosys.DataWriter):
         """
 
         assert self.dataset is not None, \
-            "FastaWriter instance is not bound to a Dataset: no source of data"
+            "FastaWriter instance is not bound to a DataSet: no source of data"
         if self.exclude_chars:
             return
 

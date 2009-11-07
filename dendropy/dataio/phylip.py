@@ -38,7 +38,7 @@ class PhylipWriter(iosys.DataWriter):
         if self.exclude_chars:
             return
         assert self.dataset is not None, \
-            "NexusWriter instance is not bound to a Dataset: no source of data"
+            "NexusWriter instance is not bound to a DataSet: no source of data"
         char_array = self.dataset.char_arrays[0]
         n_seqs = len(char_array)
         n_sites = len(char_array.values()[0])

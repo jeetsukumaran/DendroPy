@@ -1390,7 +1390,7 @@ class Node(TaxonLinked):
     ## For debugging we build-in a full-fledged NEWICK composition independent
     ## of the nexus/newick family of modules. Client code should prefer to
     ## use Newick/Nexus readers/writers, or Tree.write(), TreeList.write(),
-    ## Dataset.write() etc.
+    ## DataSet.write() etc.
 
     def as_newick_str(self, **kwargs):
         """
