@@ -26,6 +26,7 @@ Data and value generation
 
 from random import Random
 from dendropy.test.support import pathmap
+from dendropy.test.support.framework import NodeRelationship
 import dendropy
 
 def four_taxon_tree1():
@@ -49,9 +50,6 @@ def four_taxon_tree1():
     d.edge.length = 2.0
     return tree
 
-def reference_tree_list_newick_source_path():
-    return pathmap.tree_source_path("pythonidae_cytb.nexus.tre")
-
 def reference_tree_list_newick_string():
     return """\
 ('Aspidites ramsayi':0.056823,(((((((('Bothrochilus boa':0.073578,('Liasis fuscus':0.074347,'Morelia boeleni':0.07628)Node100:0.003063)Node95:0.011155,'Morelia viridis':0.066566)Node93:0.010103,'Antaresia maculosa':0.080749)Node91:0.007681,'Antaresia stimsoni':0.061996)Node89:0.0,'Python timoriensis':0.113605)Node87:0.002264,'Morelia oenpelliensis':0.074047)Node85:0.007655,'Morelia bredli':0.065046)Node83:0.003495,('Antaresia perthensis':0.065004,'Python brongersmai':0.107706)Node126:0.018613)Node81:0.011159,'Morelia carinata':0.079321)Node87;
@@ -67,289 +65,283 @@ def reference_tree_list_newick_string():
 """
 
 def reference_tree_list_postorder_node_labels():
-    return """\
-['Aspidites ramsayi','Bothrochilus boa','Liasis fuscus','Morelia boeleni','Node100','Node95','Morelia viridis','Node93','Antaresia maculosa','Node91','Antaresia stimsoni','Node89','Python timoriensis','Node87','Morelia oenpelliensis','Node85','Morelia bredli','Node83','Antaresia perthensis','Python brongersmai','Node126','Node81','Morelia carinata','Node87']
-['Aspidites ramsayi','Bothrochilus boa','Morelia boeleni','Morelia oenpelliensis','Node153','Node149','Morelia viridis','Node147','Antaresia perthensis','Node145','Liasis fuscus','Antaresia stimsoni','Python timoriensis','Morelia carinata','Node177','Python brongersmai','Node175','Antaresia maculosa','Node173','Node169','Node165','Morelia bredli','Node163','Node137']
-['Aspidites ramsayi','Bothrochilus boa','Antaresia perthensis','Node205','Python brongersmai','Node203','Python timoriensis','Antaresia maculosa','Node215','Morelia oenpelliensis','Node213','Node201','Liasis fuscus','Morelia viridis','Morelia bredli','Node227','Node223','Node199','Antaresia stimsoni','Node197','Morelia carinata','Morelia boeleni','Node235','Node187']
-['Aspidites ramsayi','Bothrochilus boa','Antaresia perthensis','Node253','Morelia bredli','Node251','Liasis fuscus','Morelia oenpelliensis','Node269','Morelia viridis','Node267','Python timoriensis','Morelia carinata','Node279','Antaresia maculosa','Node277','Node265','Python brongersmai','Node263','Antaresia stimsoni','Node261','Node249','Morelia boeleni','Node237']
-['Aspidites ramsayi','Bothrochilus boa','Liasis fuscus','Morelia carinata','Node305','Node301','Antaresia stimsoni','Antaresia perthensis','Node317','Antaresia maculosa','Node315','Morelia viridis','Morelia bredli','Morelia oenpelliensis','Node331','Node327','Python timoriensis','Node325','Node313','Python brongersmai','Morelia boeleni','Node339','Node311','Node287']
-['Aspidites ramsayi','Bothrochilus boa','Python brongersmai','Node357','Python timoriensis','Node355','Morelia bredli','Antaresia maculosa','Node365','Node353','Liasis fuscus','Morelia oenpelliensis','Node375','Antaresia stimsoni','Morelia carinata','Morelia boeleni','Node387','Node383','Antaresia perthensis','Node381','Node373','Morelia viridis','Node371','Node337']
-['Aspidites ramsayi','Bothrochilus boa','Liasis fuscus','Node405','Antaresia stimsoni','Morelia viridis','Python timoriensis','Morelia boeleni','Node429','Node425','Node421','Antaresia maculosa','Morelia oenpelliensis','Node435','Node419','Morelia bredli','Node417','Morelia carinata','Node415','Python brongersmai','Node413','Antaresia perthensis','Node411','Node387']
-['Aspidites ramsayi','Bothrochilus boa','Python timoriensis','Node471','Antaresia perthensis','Node469','Antaresia maculosa','Morelia oenpelliensis','Node479','Node467','Morelia carinata','Node465','Antaresia stimsoni','Node463','Morelia boeleni','Node461','Morelia viridis','Python brongersmai','Node491','Node459','Liasis fuscus','Node457','Morelia bredli','Node437']
-['Aspidites ramsayi','Bothrochilus boa','Python brongersmai','Node509','Liasis fuscus','Antaresia maculosa','Node525','Antaresia stimsoni','Node523','Morelia bredli','Antaresia perthensis','Python timoriensis','Node537','Node533','Node521','Morelia carinata','Node519','Morelia oenpelliensis','Node517','Morelia viridis','Morelia boeleni','Node547','Node515','Node487']
-['Aspidites ramsayi','Bothrochilus boa','Morelia bredli','Python timoriensis','Node571','Node567','Liasis fuscus','Morelia viridis','Node579','Morelia carinata','Node577','Node565','Antaresia perthensis','Antaresia maculosa','Morelia boeleni','Node593','Morelia oenpelliensis','Node591','Node587','Node563','Antaresia stimsoni','Node561','Python brongersmai','Node537']
-"""
+    return [
+        ['Aspidites ramsayi','Bothrochilus boa','Liasis fuscus','Morelia boeleni','Node100','Node95','Morelia viridis','Node93','Antaresia maculosa','Node91','Antaresia stimsoni','Node89','Python timoriensis','Node87','Morelia oenpelliensis','Node85','Morelia bredli','Node83','Antaresia perthensis','Python brongersmai','Node126','Node81','Morelia carinata','Node87'],
+        ['Aspidites ramsayi','Bothrochilus boa','Morelia boeleni','Morelia oenpelliensis','Node153','Node149','Morelia viridis','Node147','Antaresia perthensis','Node145','Liasis fuscus','Antaresia stimsoni','Python timoriensis','Morelia carinata','Node177','Python brongersmai','Node175','Antaresia maculosa','Node173','Node169','Node165','Morelia bredli','Node163','Node137'],
+        ['Aspidites ramsayi','Bothrochilus boa','Antaresia perthensis','Node205','Python brongersmai','Node203','Python timoriensis','Antaresia maculosa','Node215','Morelia oenpelliensis','Node213','Node201','Liasis fuscus','Morelia viridis','Morelia bredli','Node227','Node223','Node199','Antaresia stimsoni','Node197','Morelia carinata','Morelia boeleni','Node235','Node187'],
+        ['Aspidites ramsayi','Bothrochilus boa','Antaresia perthensis','Node253','Morelia bredli','Node251','Liasis fuscus','Morelia oenpelliensis','Node269','Morelia viridis','Node267','Python timoriensis','Morelia carinata','Node279','Antaresia maculosa','Node277','Node265','Python brongersmai','Node263','Antaresia stimsoni','Node261','Node249','Morelia boeleni','Node237'],
+        ['Aspidites ramsayi','Bothrochilus boa','Liasis fuscus','Morelia carinata','Node305','Node301','Antaresia stimsoni','Antaresia perthensis','Node317','Antaresia maculosa','Node315','Morelia viridis','Morelia bredli','Morelia oenpelliensis','Node331','Node327','Python timoriensis','Node325','Node313','Python brongersmai','Morelia boeleni','Node339','Node311','Node287'],
+        ['Aspidites ramsayi','Bothrochilus boa','Python brongersmai','Node357','Python timoriensis','Node355','Morelia bredli','Antaresia maculosa','Node365','Node353','Liasis fuscus','Morelia oenpelliensis','Node375','Antaresia stimsoni','Morelia carinata','Morelia boeleni','Node387','Node383','Antaresia perthensis','Node381','Node373','Morelia viridis','Node371','Node337'],
+        ['Aspidites ramsayi','Bothrochilus boa','Liasis fuscus','Node405','Antaresia stimsoni','Morelia viridis','Python timoriensis','Morelia boeleni','Node429','Node425','Node421','Antaresia maculosa','Morelia oenpelliensis','Node435','Node419','Morelia bredli','Node417','Morelia carinata','Node415','Python brongersmai','Node413','Antaresia perthensis','Node411','Node387'],
+        ['Aspidites ramsayi','Bothrochilus boa','Python timoriensis','Node471','Antaresia perthensis','Node469','Antaresia maculosa','Morelia oenpelliensis','Node479','Node467','Morelia carinata','Node465','Antaresia stimsoni','Node463','Morelia boeleni','Node461','Morelia viridis','Python brongersmai','Node491','Node459','Liasis fuscus','Node457','Morelia bredli','Node437'],
+        ['Aspidites ramsayi','Bothrochilus boa','Python brongersmai','Node509','Liasis fuscus','Antaresia maculosa','Node525','Antaresia stimsoni','Node523','Morelia bredli','Antaresia perthensis','Python timoriensis','Node537','Node533','Node521','Morelia carinata','Node519','Morelia oenpelliensis','Node517','Morelia viridis','Morelia boeleni','Node547','Node515','Node487'],
+        ['Aspidites ramsayi','Bothrochilus boa','Morelia bredli','Python timoriensis','Node571','Node567','Liasis fuscus','Morelia viridis','Node579','Morelia carinata','Node577','Node565','Antaresia perthensis','Antaresia maculosa','Morelia boeleni','Node593','Morelia oenpelliensis','Node591','Node587','Node563','Antaresia stimsoni','Node561','Python brongersmai','Node537'],
+    ]
 
 def reference_tree_list_relationships():
-    """
-    Returns list, with each element a dictionary describing the node
-    relationships for the corresponding tree in the reference tree list.
-    The keys for the dictionary are the node labels, and the values are a tuple
-    consisting of: (<PARENT NODE LABEL>, [<CHILD NODE LABELS>], <EDGE LENGTH>).
-    """
-
-    return [
-            {
-                'Aspidites ramsayi' : ['Node87', [], 0.056823],
-                'Bothrochilus boa' : ['Node95', [], 0.073578],
-                'Liasis fuscus' : ['Node100', [], 0.074347],
-                'Morelia boeleni' : ['Node100', [], 0.07628],
-                'Node100' : ['Node95', ['Liasis fuscus','Morelia boeleni'], 0.003063],
-                'Node95' : ['Node93', ['Bothrochilus boa','Node100'], 0.011155],
-                'Morelia viridis' : ['Node93', [], 0.066566],
-                'Node93' : ['Node91', ['Node95','Morelia viridis'], 0.010103],
-                'Antaresia maculosa' : ['Node91', [], 0.080749],
-                'Node91' : ['Node89', ['Node93','Antaresia maculosa'], 0.007681],
-                'Antaresia stimsoni' : ['Node89', [], 0.061996],
-                'Node89' : ['Node87', ['Node91','Antaresia stimsoni'], 0.0],
-                'Python timoriensis' : ['Node87', [], 0.113605],
-                'Node87' : ['Node85', ['Node89','Python timoriensis'], 0.002264],
-                'Morelia oenpelliensis' : ['Node85', [], 0.074047],
-                'Node85' : ['Node83', ['Node87','Morelia oenpelliensis'], 0.007655],
-                'Morelia bredli' : ['Node83', [], 0.065046],
-                'Node83' : ['Node81', ['Node85','Morelia bredli'], 0.003495],
-                'Antaresia perthensis' : ['Node126', [], 0.065004],
-                'Python brongersmai' : ['Node126', [], 0.107706],
-                'Node126' : ['Node81', ['Antaresia perthensis','Python brongersmai'], 0.018613],
-                'Node81' : ['Node87', ['Node83','Node126'], 0.011159],
-                'Morelia carinata' : ['Node87', [], 0.079321],
-                'Node87' : [None, ['Aspidites ramsayi','Node81','Morelia carinata'], None],
-            },
-            {
-                'Aspidites ramsayi' : ['Node137', [], 0.065297],
-                'Bothrochilus boa' : ['Node149', [], 0.073565],
-                'Morelia boeleni' : ['Node153', [], 0.069885],
-                'Morelia oenpelliensis' : ['Node153', [], 0.06247],
-                'Node153' : ['Node149', ['Morelia boeleni','Morelia oenpelliensis'], 0.007879],
-                'Node149' : ['Node147', ['Bothrochilus boa','Node153'], 0.016022],
-                'Morelia viridis' : ['Node147', [], 0.066015],
-                'Node147' : ['Node145', ['Node149','Morelia viridis'], 0.010946],
-                'Antaresia perthensis' : ['Node145', [], 0.079424],
-                'Node145' : ['Node137', ['Node147','Antaresia perthensis'], 0.001444],
-                'Liasis fuscus' : ['Node165', [], 0.082049],
-                'Antaresia stimsoni' : ['Node169', [], 0.056894],
-                'Python timoriensis' : ['Node177', [], 0.092077],
-                'Morelia carinata' : ['Node177', [], 0.0579],
-                'Node177' : ['Node175', ['Python timoriensis','Morelia carinata'], 0.015909],
-                'Python brongersmai' : ['Node175', [], 0.114385],
-                'Node175' : ['Node173', ['Node177','Python brongersmai'], 0.010752],
-                'Antaresia maculosa' : ['Node173', [], 0.079792],
-                'Node173' : ['Node169', ['Node175','Antaresia maculosa'], 0.004552],
-                'Node169' : ['Node165', ['Antaresia stimsoni','Node173'], 0.006907],
-                'Node165' : ['Node163', ['Liasis fuscus','Node169'], 0.008007],
-                'Morelia bredli' : ['Node163', [], 0.063725],
-                'Node163' : ['Node137', ['Node165','Morelia bredli'], 0.004077],
-                'Node137' : [None, ['Aspidites ramsayi','Node145','Node163'], None],
-            },
-            {
-                'Aspidites ramsayi' : ['Node187', [], 0.06111],
-                'Bothrochilus boa' : ['Node205', [], 0.067908],
-                'Antaresia perthensis' : ['Node205', [], 0.077196],
-                'Node205' : ['Node203', ['Bothrochilus boa','Antaresia perthensis'], 0.008688],
-                'Python brongersmai' : ['Node203', [], 0.1069],
-                'Node203' : ['Node201', ['Node205','Python brongersmai'], 0.010367],
-                'Python timoriensis' : ['Node215', [], 0.109318],
-                'Antaresia maculosa' : ['Node215', [], 0.081382],
-                'Node215' : ['Node213', ['Python timoriensis','Antaresia maculosa'], 0.004129],
-                'Morelia oenpelliensis' : ['Node213', [], 0.068424],
-                'Node213' : ['Node201', ['Node215','Morelia oenpelliensis'], 0.007731],
-                'Node201' : ['Node199', ['Node203','Node213'], 0.005167],
-                'Liasis fuscus' : ['Node223', [], 0.079478],
-                'Morelia viridis' : ['Node227', [], 0.062239],
-                'Morelia bredli' : ['Node227', [], 0.060484],
-                'Node227' : ['Node223', ['Morelia viridis','Morelia bredli'], 0.013155],
-                'Node223' : ['Node199', ['Liasis fuscus','Node227'], 0.00574],
-                'Node199' : ['Node197', ['Node201','Node223'], 0.006988],
-                'Antaresia stimsoni' : ['Node197', [], 0.063808],
-                'Node197' : ['Node187', ['Node199','Antaresia stimsoni'], 0.005408],
-                'Morelia carinata' : ['Node235', [], 0.069501],
-                'Morelia boeleni' : ['Node235', [], 0.073602],
-                'Node235' : ['Node187', ['Morelia carinata','Morelia boeleni'], 0.012121],
-                'Node187' : [None, ['Aspidites ramsayi','Node197','Node235'], None],
-            },
-            {
-                'Aspidites ramsayi' : ['Node237', [], 0.053028],
-                'Bothrochilus boa' : ['Node253', [], 0.072831],
-                'Antaresia perthensis' : ['Node253', [], 0.073004],
-                'Node253' : ['Node251', ['Bothrochilus boa','Antaresia perthensis'], 0.012413],
-                'Morelia bredli' : ['Node251', [], 0.069933],
-                'Node251' : ['Node249', ['Node253','Morelia bredli'], 0.002567],
-                'Liasis fuscus' : ['Node269', [], 0.072339],
-                'Morelia oenpelliensis' : ['Node269', [], 0.062058],
-                'Node269' : ['Node267', ['Liasis fuscus','Morelia oenpelliensis'], 0.011723],
-                'Morelia viridis' : ['Node267', [], 0.065297],
-                'Node267' : ['Node265', ['Node269','Morelia viridis'], 0.011519],
-                'Python timoriensis' : ['Node279', [], 0.093762],
-                'Morelia carinata' : ['Node279', [], 0.055992],
-                'Node279' : ['Node277', ['Python timoriensis','Morelia carinata'], 0.022912],
-                'Antaresia maculosa' : ['Node277', [], 0.079945],
-                'Node277' : ['Node265', ['Node279','Antaresia maculosa'], 0.007647],
-                'Node265' : ['Node263', ['Node267','Node277'], 5.134e-05],
-                'Python brongersmai' : ['Node263', [], 0.118976],
-                'Node263' : ['Node261', ['Node265','Python brongersmai'], 0.004803],
-                'Antaresia stimsoni' : ['Node261', [], 0.064721],
-                'Node261' : ['Node249', ['Node263','Antaresia stimsoni'], 0.005969],
-                'Node249' : ['Node237', ['Node251','Node261'], 0.014376],
-                'Morelia boeleni' : ['Node237', [], 0.076894],
-                'Node237' : [None, ['Aspidites ramsayi','Node249','Morelia boeleni'], None],
-            },
-            {
-                'Aspidites ramsayi' : ['Node287', [], 0.06391],
-                'Bothrochilus boa' : ['Node301', [], 0.071835],
-                'Liasis fuscus' : ['Node305', [], 0.075788],
-                'Morelia carinata' : ['Node305', [], 0.07116],
-                'Node305' : ['Node301', ['Liasis fuscus','Morelia carinata'], 0.010888],
-                'Node301' : ['Node287', ['Bothrochilus boa','Node305'], 0.00451],
-                'Antaresia stimsoni' : ['Node317', [], 0.048754],
-                'Antaresia perthensis' : ['Node317', [], 0.069682],
-                'Node317' : ['Node315', ['Antaresia stimsoni','Antaresia perthensis'], 0.012356],
-                'Antaresia maculosa' : ['Node315', [], 0.077058],
-                'Node315' : ['Node313', ['Node317','Antaresia maculosa'], 0.013817],
-                'Morelia viridis' : ['Node327', [], 0.07026],
-                'Morelia bredli' : ['Node331', [], 0.066182],
-                'Morelia oenpelliensis' : ['Node331', [], 0.068166],
-                'Node331' : ['Node327', ['Morelia bredli','Morelia oenpelliensis'], 0.001443],
-                'Node327' : ['Node325', ['Morelia viridis','Node331'], 0.003147],
-                'Python timoriensis' : ['Node325', [], 0.108243],
-                'Node325' : ['Node313', ['Node327','Python timoriensis'], 0.012897],
-                'Node313' : ['Node311', ['Node315','Node325'], 0.011944],
-                'Python brongersmai' : ['Node339', [], 0.108072],
-                'Morelia boeleni' : ['Node339', [], 0.073251],
-                'Node339' : ['Node311', ['Python brongersmai','Morelia boeleni'], 0.00612],
-                'Node311' : ['Node287', ['Node313','Node339'], 0.005404],
-                'Node287' : [None, ['Aspidites ramsayi','Node301','Node311'], None],
-            },
-            {
-                'Aspidites ramsayi' : ['Node337', [], 0.06501],
-                'Bothrochilus boa' : ['Node357', [], 0.059984],
-                'Python brongersmai' : ['Node357', [], 0.100555],
-                'Node357' : ['Node355', ['Bothrochilus boa','Python brongersmai'], 0.017824],
-                'Python timoriensis' : ['Node355', [], 0.102639],
-                'Node355' : ['Node353', ['Node357','Python timoriensis'], 0.011722],
-                'Morelia bredli' : ['Node365', [], 0.0538],
-                'Antaresia maculosa' : ['Node365', [], 0.07843],
-                'Node365' : ['Node353', ['Morelia bredli','Antaresia maculosa'], 0.014836],
-                'Node353' : ['Node337', ['Node355','Node365'], 0.003644],
-                'Liasis fuscus' : ['Node375', [], 0.068438],
-                'Morelia oenpelliensis' : ['Node375', [], 0.066815],
-                'Node375' : ['Node373', ['Liasis fuscus','Morelia oenpelliensis'], 0.015326],
-                'Antaresia stimsoni' : ['Node383', [], 0.057007],
-                'Morelia carinata' : ['Node387', [], 0.062766],
-                'Morelia boeleni' : ['Node387', [], 0.079145],
-                'Node387' : ['Node383', ['Morelia carinata','Morelia boeleni'], 0.013392],
-                'Node383' : ['Node381', ['Antaresia stimsoni','Node387'], 0.010508],
-                'Antaresia perthensis' : ['Node381', [], 0.083409],
-                'Node381' : ['Node373', ['Node383','Antaresia perthensis'], 0.005897],
-                'Node373' : ['Node371', ['Node375','Node381'], 0.0],
-                'Morelia viridis' : ['Node371', [], 0.072091],
-                'Node371' : ['Node337', ['Node373','Morelia viridis'], 0.008523],
-                'Node337' : [None, ['Aspidites ramsayi','Node353','Node371'], None],
-            },
-            {
-                'Aspidites ramsayi' : ['Node387', [], 0.062297],
-                'Bothrochilus boa' : ['Node405', [], 0.069165],
-                'Liasis fuscus' : ['Node405', [], 0.073495],
-                'Node405' : ['Node387', ['Bothrochilus boa','Liasis fuscus'], 0.009899],
-                'Antaresia stimsoni' : ['Node421', [], 0.061022],
-                'Morelia viridis' : ['Node425', [], 0.071291],
-                'Python timoriensis' : ['Node429', [], 0.098776],
-                'Morelia boeleni' : ['Node429', [], 0.075069],
-                'Node429' : ['Node425', ['Python timoriensis','Morelia boeleni'], 0.017245],
-                'Node425' : ['Node421', ['Morelia viridis','Node429'], 0.004698],
-                'Node421' : ['Node419', ['Antaresia stimsoni','Node425'], 0.003603],
-                'Antaresia maculosa' : ['Node435', [], 0.075494],
-                'Morelia oenpelliensis' : ['Node435', [], 0.063757],
-                'Node435' : ['Node419', ['Antaresia maculosa','Morelia oenpelliensis'], 0.017571],
-                'Node419' : ['Node417', ['Node421','Node435'], 0.000386],
-                'Morelia bredli' : ['Node417', [], 0.070614],
-                'Node417' : ['Node415', ['Node419','Morelia bredli'], 0.00713],
-                'Morelia carinata' : ['Node415', [], 0.079534],
-                'Node415' : ['Node413', ['Node417','Morelia carinata'], 0.010249],
-                'Python brongersmai' : ['Node413', [], 0.114381],
-                'Node413' : ['Node411', ['Node415','Python brongersmai'], 0.003672],
-                'Antaresia perthensis' : ['Node411', [], 0.080896],
-                'Node411' : ['Node387', ['Node413','Antaresia perthensis'], 0.003212],
-                'Node387' : [None, ['Aspidites ramsayi','Node405','Node411'], None],
-            },
-            {
-                'Aspidites ramsayi' : ['Node437', [], 0.05678],
-                'Bothrochilus boa' : ['Node471', [], 0.065928],
-                'Python timoriensis' : ['Node471', [], 0.10077],
-                'Node471' : ['Node469', ['Bothrochilus boa','Python timoriensis'], 0.013813],
-                'Antaresia perthensis' : ['Node469', [], 0.083335],
-                'Node469' : ['Node467', ['Node471','Antaresia perthensis'], 0.004377],
-                'Antaresia maculosa' : ['Node479', [], 0.073392],
-                'Morelia oenpelliensis' : ['Node479', [], 0.065748],
-                'Node479' : ['Node467', ['Antaresia maculosa','Morelia oenpelliensis'], 0.016433],
-                'Node467' : ['Node465', ['Node469','Node479'], 0.005104],
-                'Morelia carinata' : ['Node465', [], 0.07646],
-                'Node465' : ['Node463', ['Node467','Morelia carinata'], 0.001866],
-                'Antaresia stimsoni' : ['Node463', [], 0.06129],
-                'Node463' : ['Node461', ['Node465','Antaresia stimsoni'], 0.012314],
-                'Morelia boeleni' : ['Node461', [], 0.081982],
-                'Node461' : ['Node459', ['Node463','Morelia boeleni'], 0.002833],
-                'Morelia viridis' : ['Node491', [], 0.064242],
-                'Python brongersmai' : ['Node491', [], 0.109434],
-                'Node491' : ['Node459', ['Morelia viridis','Python brongersmai'], 0.010734],
-                'Node459' : ['Node457', ['Node461','Node491'], 0.00182],
-                'Liasis fuscus' : ['Node457', [], 0.079156],
-                'Node457' : ['Node437', ['Node459','Liasis fuscus'], 0.014479],
-                'Morelia bredli' : ['Node437', [], 0.060374],
-                'Node437' : [None, ['Aspidites ramsayi','Node457','Morelia bredli'], None],
-            },
-            {
-                'Aspidites ramsayi' : ['Node487', [], 0.063004],
-                'Bothrochilus boa' : ['Node509', [], 0.061413],
-                'Python brongersmai' : ['Node509', [], 0.099507],
-                'Node509' : ['Node487', ['Bothrochilus boa','Python brongersmai'], 0.018059],
-                'Liasis fuscus' : ['Node525', [], 0.075877],
-                'Antaresia maculosa' : ['Node525', [], 0.071375],
-                'Node525' : ['Node523', ['Liasis fuscus','Antaresia maculosa'], 0.014459],
-                'Antaresia stimsoni' : ['Node523', [], 0.054698],
-                'Node523' : ['Node521', ['Node525','Antaresia stimsoni'], 0.002182],
-                'Morelia bredli' : ['Node533', [], 0.062291],
-                'Antaresia perthensis' : ['Node537', [], 0.074463],
-                'Python timoriensis' : ['Node537', [], 0.103887],
-                'Node537' : ['Node533', ['Antaresia perthensis','Python timoriensis'], 0.00521],
-                'Node533' : ['Node521', ['Morelia bredli','Node537'], 0.011197],
-                'Node521' : ['Node519', ['Node523','Node533'], 0.010763],
-                'Morelia carinata' : ['Node519', [], 0.070762],
-                'Node519' : ['Node517', ['Node521','Morelia carinata'], 0.016533],
-                'Morelia oenpelliensis' : ['Node517', [], 0.068818],
-                'Node517' : ['Node515', ['Node519','Morelia oenpelliensis'], 0.003714],
-                'Morelia viridis' : ['Node547', [], 0.071307],
-                'Morelia boeleni' : ['Node547', [], 0.073392],
-                'Node547' : ['Node515', ['Morelia viridis','Morelia boeleni'], 0.010478],
-                'Node515' : ['Node487', ['Node517','Node547'], 0.00238],
-                'Node487' : [None, ['Aspidites ramsayi','Node509','Node515'], None],
-            },
-            {
-                'Aspidites ramsayi' : ['Node537', [], 0.053901],
-                'Bothrochilus boa' : ['Node567', [], 0.07927],
-                'Morelia bredli' : ['Node571', [], 0.053956],
-                'Python timoriensis' : ['Node571', [], 0.098874],
-                'Node571' : ['Node567', ['Morelia bredli','Python timoriensis'], 0.016769],
-                'Node567' : ['Node565', ['Bothrochilus boa','Node571'], 0.003041],
-                'Liasis fuscus' : ['Node579', [], 0.075223],
-                'Morelia viridis' : ['Node579', [], 0.065805],
-                'Node579' : ['Node577', ['Liasis fuscus','Morelia viridis'], 0.010712],
-                'Morelia carinata' : ['Node577', [], 0.075934],
-                'Node577' : ['Node565', ['Node579','Morelia carinata'], 0.008083],
-                'Node565' : ['Node563', ['Node567','Node577'], 0.00777],
-                'Antaresia perthensis' : ['Node587', [], 0.082425],
-                'Antaresia maculosa' : ['Node593', [], 0.075429],
-                'Morelia boeleni' : ['Node593', [], 0.0787],
-                'Node593' : ['Node591', ['Antaresia maculosa','Morelia boeleni'], 0.010583],
-                'Morelia oenpelliensis' : ['Node591', [], 0.070289],
-                'Node591' : ['Node587', ['Node593','Morelia oenpelliensis'], 0.008508],
-                'Node587' : ['Node563', ['Antaresia perthensis','Node591'], 0.00373],
-                'Node563' : ['Node561', ['Node565','Node587'], 0.002034],
-                'Antaresia stimsoni' : ['Node561', [], 0.064652],
-                'Node561' : ['Node537', ['Node563','Antaresia stimsoni'], 0.013947],
-                'Python brongersmai' : ['Node537', [], 0.107868],
-                'Node537' : [None, ['Aspidites ramsayi','Node561','Python brongersmai'], None],
-            },
-        ]
+    treelist_node_relationships = [
+        {
+            'Aspidites ramsayi' : NodeRelationship(parent_label='Node87', child_labels=[], edge_length=0.056823, taxon_label='Aspidites ramsayi'),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node95', child_labels=[], edge_length=0.073578, taxon_label='Bothrochilus boa'),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node100', child_labels=[], edge_length=0.074347, taxon_label='Liasis fuscus'),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node100', child_labels=[], edge_length=0.07628, taxon_label='Morelia boeleni'),
+            'Node100' : NodeRelationship(parent_label='Node95', child_labels=['Liasis fuscus','Morelia boeleni'], edge_length=0.003063, taxon_label=None),
+            'Node95' : NodeRelationship(parent_label='Node93', child_labels=['Bothrochilus boa','Node100'], edge_length=0.011155, taxon_label=None),
+            'Morelia viridis' : NodeRelationship(parent_label='Node93', child_labels=[], edge_length=0.066566, taxon_label='Morelia viridis'),
+            'Node93' : NodeRelationship(parent_label='Node91', child_labels=['Node95','Morelia viridis'], edge_length=0.010103, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node91', child_labels=[], edge_length=0.080749, taxon_label='Antaresia maculosa'),
+            'Node91' : NodeRelationship(parent_label='Node89', child_labels=['Node93','Antaresia maculosa'], edge_length=0.007681, taxon_label=None),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node89', child_labels=[], edge_length=0.061996, taxon_label='Antaresia stimsoni'),
+            'Node89' : NodeRelationship(parent_label='Node87', child_labels=['Node91','Antaresia stimsoni'], edge_length=0.0, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node87', child_labels=[], edge_length=0.113605, taxon_label='Python timoriensis'),
+            'Node87' : NodeRelationship(parent_label='Node85', child_labels=['Node89','Python timoriensis'], edge_length=0.002264, taxon_label=None),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node85', child_labels=[], edge_length=0.074047, taxon_label='Morelia oenpelliensis'),
+            'Node85' : NodeRelationship(parent_label='Node83', child_labels=['Node87','Morelia oenpelliensis'], edge_length=0.007655, taxon_label=None),
+            'Morelia bredli' : NodeRelationship(parent_label='Node83', child_labels=[], edge_length=0.065046, taxon_label='Morelia bredli'),
+            'Node83' : NodeRelationship(parent_label='Node81', child_labels=['Node85','Morelia bredli'], edge_length=0.003495, taxon_label=None),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node126', child_labels=[], edge_length=0.065004, taxon_label='Antaresia perthensis'),
+            'Python brongersmai' : NodeRelationship(parent_label='Node126', child_labels=[], edge_length=0.107706, taxon_label='Python brongersmai'),
+            'Node126' : NodeRelationship(parent_label='Node81', child_labels=['Antaresia perthensis','Python brongersmai'], edge_length=0.018613, taxon_label=None),
+            'Node81' : NodeRelationship(parent_label='Node87', child_labels=['Node83','Node126'], edge_length=0.011159, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node87', child_labels=[], edge_length=0.079321, taxon_label='Morelia carinata'),
+            'Node87' : NodeRelationship(parent_label=None, child_labels=['Aspidites ramsayi','Node81','Morelia carinata'], edge_length=None, taxon_label=None),
+        },
+        {
+            'Aspidites ramsayi' : NodeRelationship(parent_label='Node137', child_labels=[], edge_length=0.065297, taxon_label='Aspidites ramsayi'),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node149', child_labels=[], edge_length=0.073565, taxon_label='Bothrochilus boa'),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node153', child_labels=[], edge_length=0.069885, taxon_label='Morelia boeleni'),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node153', child_labels=[], edge_length=0.06247, taxon_label='Morelia oenpelliensis'),
+            'Node153' : NodeRelationship(parent_label='Node149', child_labels=['Morelia boeleni','Morelia oenpelliensis'], edge_length=0.007879, taxon_label=None),
+            'Node149' : NodeRelationship(parent_label='Node147', child_labels=['Bothrochilus boa','Node153'], edge_length=0.016022, taxon_label=None),
+            'Morelia viridis' : NodeRelationship(parent_label='Node147', child_labels=[], edge_length=0.066015, taxon_label='Morelia viridis'),
+            'Node147' : NodeRelationship(parent_label='Node145', child_labels=['Node149','Morelia viridis'], edge_length=0.010946, taxon_label=None),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node145', child_labels=[], edge_length=0.079424, taxon_label='Antaresia perthensis'),
+            'Node145' : NodeRelationship(parent_label='Node137', child_labels=['Node147','Antaresia perthensis'], edge_length=0.001444, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node165', child_labels=[], edge_length=0.082049, taxon_label='Liasis fuscus'),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node169', child_labels=[], edge_length=0.056894, taxon_label='Antaresia stimsoni'),
+            'Python timoriensis' : NodeRelationship(parent_label='Node177', child_labels=[], edge_length=0.092077, taxon_label='Python timoriensis'),
+            'Morelia carinata' : NodeRelationship(parent_label='Node177', child_labels=[], edge_length=0.0579, taxon_label='Morelia carinata'),
+            'Node177' : NodeRelationship(parent_label='Node175', child_labels=['Python timoriensis','Morelia carinata'], edge_length=0.015909, taxon_label=None),
+            'Python brongersmai' : NodeRelationship(parent_label='Node175', child_labels=[], edge_length=0.114385, taxon_label='Python brongersmai'),
+            'Node175' : NodeRelationship(parent_label='Node173', child_labels=['Node177','Python brongersmai'], edge_length=0.010752, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node173', child_labels=[], edge_length=0.079792, taxon_label='Antaresia maculosa'),
+            'Node173' : NodeRelationship(parent_label='Node169', child_labels=['Node175','Antaresia maculosa'], edge_length=0.004552, taxon_label=None),
+            'Node169' : NodeRelationship(parent_label='Node165', child_labels=['Antaresia stimsoni','Node173'], edge_length=0.006907, taxon_label=None),
+            'Node165' : NodeRelationship(parent_label='Node163', child_labels=['Liasis fuscus','Node169'], edge_length=0.008007, taxon_label=None),
+            'Morelia bredli' : NodeRelationship(parent_label='Node163', child_labels=[], edge_length=0.063725, taxon_label='Morelia bredli'),
+            'Node163' : NodeRelationship(parent_label='Node137', child_labels=['Node165','Morelia bredli'], edge_length=0.004077, taxon_label=None),
+            'Node137' : NodeRelationship(parent_label=None, child_labels=['Aspidites ramsayi','Node145','Node163'], edge_length=None, taxon_label=None),
+        },
+        {
+            'Aspidites ramsayi' : NodeRelationship(parent_label='Node187', child_labels=[], edge_length=0.06111, taxon_label='Aspidites ramsayi'),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node205', child_labels=[], edge_length=0.067908, taxon_label='Bothrochilus boa'),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node205', child_labels=[], edge_length=0.077196, taxon_label='Antaresia perthensis'),
+            'Node205' : NodeRelationship(parent_label='Node203', child_labels=['Bothrochilus boa','Antaresia perthensis'], edge_length=0.008688, taxon_label=None),
+            'Python brongersmai' : NodeRelationship(parent_label='Node203', child_labels=[], edge_length=0.1069, taxon_label='Python brongersmai'),
+            'Node203' : NodeRelationship(parent_label='Node201', child_labels=['Node205','Python brongersmai'], edge_length=0.010367, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node215', child_labels=[], edge_length=0.109318, taxon_label='Python timoriensis'),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node215', child_labels=[], edge_length=0.081382, taxon_label='Antaresia maculosa'),
+            'Node215' : NodeRelationship(parent_label='Node213', child_labels=['Python timoriensis','Antaresia maculosa'], edge_length=0.004129, taxon_label=None),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node213', child_labels=[], edge_length=0.068424, taxon_label='Morelia oenpelliensis'),
+            'Node213' : NodeRelationship(parent_label='Node201', child_labels=['Node215','Morelia oenpelliensis'], edge_length=0.007731, taxon_label=None),
+            'Node201' : NodeRelationship(parent_label='Node199', child_labels=['Node203','Node213'], edge_length=0.005167, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node223', child_labels=[], edge_length=0.079478, taxon_label='Liasis fuscus'),
+            'Morelia viridis' : NodeRelationship(parent_label='Node227', child_labels=[], edge_length=0.062239, taxon_label='Morelia viridis'),
+            'Morelia bredli' : NodeRelationship(parent_label='Node227', child_labels=[], edge_length=0.060484, taxon_label='Morelia bredli'),
+            'Node227' : NodeRelationship(parent_label='Node223', child_labels=['Morelia viridis','Morelia bredli'], edge_length=0.013155, taxon_label=None),
+            'Node223' : NodeRelationship(parent_label='Node199', child_labels=['Liasis fuscus','Node227'], edge_length=0.00574, taxon_label=None),
+            'Node199' : NodeRelationship(parent_label='Node197', child_labels=['Node201','Node223'], edge_length=0.006988, taxon_label=None),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node197', child_labels=[], edge_length=0.063808, taxon_label='Antaresia stimsoni'),
+            'Node197' : NodeRelationship(parent_label='Node187', child_labels=['Node199','Antaresia stimsoni'], edge_length=0.005408, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node235', child_labels=[], edge_length=0.069501, taxon_label='Morelia carinata'),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node235', child_labels=[], edge_length=0.073602, taxon_label='Morelia boeleni'),
+            'Node235' : NodeRelationship(parent_label='Node187', child_labels=['Morelia carinata','Morelia boeleni'], edge_length=0.012121, taxon_label=None),
+            'Node187' : NodeRelationship(parent_label=None, child_labels=['Aspidites ramsayi','Node197','Node235'], edge_length=None, taxon_label=None),
+        },
+        {
+            'Aspidites ramsayi' : NodeRelationship(parent_label='Node237', child_labels=[], edge_length=0.053028, taxon_label='Aspidites ramsayi'),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node253', child_labels=[], edge_length=0.072831, taxon_label='Bothrochilus boa'),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node253', child_labels=[], edge_length=0.073004, taxon_label='Antaresia perthensis'),
+            'Node253' : NodeRelationship(parent_label='Node251', child_labels=['Bothrochilus boa','Antaresia perthensis'], edge_length=0.012413, taxon_label=None),
+            'Morelia bredli' : NodeRelationship(parent_label='Node251', child_labels=[], edge_length=0.069933, taxon_label='Morelia bredli'),
+            'Node251' : NodeRelationship(parent_label='Node249', child_labels=['Node253','Morelia bredli'], edge_length=0.002567, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node269', child_labels=[], edge_length=0.072339, taxon_label='Liasis fuscus'),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node269', child_labels=[], edge_length=0.062058, taxon_label='Morelia oenpelliensis'),
+            'Node269' : NodeRelationship(parent_label='Node267', child_labels=['Liasis fuscus','Morelia oenpelliensis'], edge_length=0.011723, taxon_label=None),
+            'Morelia viridis' : NodeRelationship(parent_label='Node267', child_labels=[], edge_length=0.065297, taxon_label='Morelia viridis'),
+            'Node267' : NodeRelationship(parent_label='Node265', child_labels=['Node269','Morelia viridis'], edge_length=0.011519, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node279', child_labels=[], edge_length=0.093762, taxon_label='Python timoriensis'),
+            'Morelia carinata' : NodeRelationship(parent_label='Node279', child_labels=[], edge_length=0.055992, taxon_label='Morelia carinata'),
+            'Node279' : NodeRelationship(parent_label='Node277', child_labels=['Python timoriensis','Morelia carinata'], edge_length=0.022912, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node277', child_labels=[], edge_length=0.079945, taxon_label='Antaresia maculosa'),
+            'Node277' : NodeRelationship(parent_label='Node265', child_labels=['Node279','Antaresia maculosa'], edge_length=0.007647, taxon_label=None),
+            'Node265' : NodeRelationship(parent_label='Node263', child_labels=['Node267','Node277'], edge_length=5.134e-05, taxon_label=None),
+            'Python brongersmai' : NodeRelationship(parent_label='Node263', child_labels=[], edge_length=0.118976, taxon_label='Python brongersmai'),
+            'Node263' : NodeRelationship(parent_label='Node261', child_labels=['Node265','Python brongersmai'], edge_length=0.004803, taxon_label=None),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node261', child_labels=[], edge_length=0.064721, taxon_label='Antaresia stimsoni'),
+            'Node261' : NodeRelationship(parent_label='Node249', child_labels=['Node263','Antaresia stimsoni'], edge_length=0.005969, taxon_label=None),
+            'Node249' : NodeRelationship(parent_label='Node237', child_labels=['Node251','Node261'], edge_length=0.014376, taxon_label=None),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node237', child_labels=[], edge_length=0.076894, taxon_label='Morelia boeleni'),
+            'Node237' : NodeRelationship(parent_label=None, child_labels=['Aspidites ramsayi','Node249','Morelia boeleni'], edge_length=None, taxon_label=None),
+        },
+        {
+            'Aspidites ramsayi' : NodeRelationship(parent_label='Node287', child_labels=[], edge_length=0.06391, taxon_label='Aspidites ramsayi'),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node301', child_labels=[], edge_length=0.071835, taxon_label='Bothrochilus boa'),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node305', child_labels=[], edge_length=0.075788, taxon_label='Liasis fuscus'),
+            'Morelia carinata' : NodeRelationship(parent_label='Node305', child_labels=[], edge_length=0.07116, taxon_label='Morelia carinata'),
+            'Node305' : NodeRelationship(parent_label='Node301', child_labels=['Liasis fuscus','Morelia carinata'], edge_length=0.010888, taxon_label=None),
+            'Node301' : NodeRelationship(parent_label='Node287', child_labels=['Bothrochilus boa','Node305'], edge_length=0.00451, taxon_label=None),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node317', child_labels=[], edge_length=0.048754, taxon_label='Antaresia stimsoni'),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node317', child_labels=[], edge_length=0.069682, taxon_label='Antaresia perthensis'),
+            'Node317' : NodeRelationship(parent_label='Node315', child_labels=['Antaresia stimsoni','Antaresia perthensis'], edge_length=0.012356, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node315', child_labels=[], edge_length=0.077058, taxon_label='Antaresia maculosa'),
+            'Node315' : NodeRelationship(parent_label='Node313', child_labels=['Node317','Antaresia maculosa'], edge_length=0.013817, taxon_label=None),
+            'Morelia viridis' : NodeRelationship(parent_label='Node327', child_labels=[], edge_length=0.07026, taxon_label='Morelia viridis'),
+            'Morelia bredli' : NodeRelationship(parent_label='Node331', child_labels=[], edge_length=0.066182, taxon_label='Morelia bredli'),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node331', child_labels=[], edge_length=0.068166, taxon_label='Morelia oenpelliensis'),
+            'Node331' : NodeRelationship(parent_label='Node327', child_labels=['Morelia bredli','Morelia oenpelliensis'], edge_length=0.001443, taxon_label=None),
+            'Node327' : NodeRelationship(parent_label='Node325', child_labels=['Morelia viridis','Node331'], edge_length=0.003147, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node325', child_labels=[], edge_length=0.108243, taxon_label='Python timoriensis'),
+            'Node325' : NodeRelationship(parent_label='Node313', child_labels=['Node327','Python timoriensis'], edge_length=0.012897, taxon_label=None),
+            'Node313' : NodeRelationship(parent_label='Node311', child_labels=['Node315','Node325'], edge_length=0.011944, taxon_label=None),
+            'Python brongersmai' : NodeRelationship(parent_label='Node339', child_labels=[], edge_length=0.108072, taxon_label='Python brongersmai'),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node339', child_labels=[], edge_length=0.073251, taxon_label='Morelia boeleni'),
+            'Node339' : NodeRelationship(parent_label='Node311', child_labels=['Python brongersmai','Morelia boeleni'], edge_length=0.00612, taxon_label=None),
+            'Node311' : NodeRelationship(parent_label='Node287', child_labels=['Node313','Node339'], edge_length=0.005404, taxon_label=None),
+            'Node287' : NodeRelationship(parent_label=None, child_labels=['Aspidites ramsayi','Node301','Node311'], edge_length=None, taxon_label=None),
+        },
+        {
+            'Aspidites ramsayi' : NodeRelationship(parent_label='Node337', child_labels=[], edge_length=0.06501, taxon_label='Aspidites ramsayi'),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node357', child_labels=[], edge_length=0.059984, taxon_label='Bothrochilus boa'),
+            'Python brongersmai' : NodeRelationship(parent_label='Node357', child_labels=[], edge_length=0.100555, taxon_label='Python brongersmai'),
+            'Node357' : NodeRelationship(parent_label='Node355', child_labels=['Bothrochilus boa','Python brongersmai'], edge_length=0.017824, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node355', child_labels=[], edge_length=0.102639, taxon_label='Python timoriensis'),
+            'Node355' : NodeRelationship(parent_label='Node353', child_labels=['Node357','Python timoriensis'], edge_length=0.011722, taxon_label=None),
+            'Morelia bredli' : NodeRelationship(parent_label='Node365', child_labels=[], edge_length=0.0538, taxon_label='Morelia bredli'),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node365', child_labels=[], edge_length=0.07843, taxon_label='Antaresia maculosa'),
+            'Node365' : NodeRelationship(parent_label='Node353', child_labels=['Morelia bredli','Antaresia maculosa'], edge_length=0.014836, taxon_label=None),
+            'Node353' : NodeRelationship(parent_label='Node337', child_labels=['Node355','Node365'], edge_length=0.003644, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node375', child_labels=[], edge_length=0.068438, taxon_label='Liasis fuscus'),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node375', child_labels=[], edge_length=0.066815, taxon_label='Morelia oenpelliensis'),
+            'Node375' : NodeRelationship(parent_label='Node373', child_labels=['Liasis fuscus','Morelia oenpelliensis'], edge_length=0.015326, taxon_label=None),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node383', child_labels=[], edge_length=0.057007, taxon_label='Antaresia stimsoni'),
+            'Morelia carinata' : NodeRelationship(parent_label='Node387', child_labels=[], edge_length=0.062766, taxon_label='Morelia carinata'),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node387', child_labels=[], edge_length=0.079145, taxon_label='Morelia boeleni'),
+            'Node387' : NodeRelationship(parent_label='Node383', child_labels=['Morelia carinata','Morelia boeleni'], edge_length=0.013392, taxon_label=None),
+            'Node383' : NodeRelationship(parent_label='Node381', child_labels=['Antaresia stimsoni','Node387'], edge_length=0.010508, taxon_label=None),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node381', child_labels=[], edge_length=0.083409, taxon_label='Antaresia perthensis'),
+            'Node381' : NodeRelationship(parent_label='Node373', child_labels=['Node383','Antaresia perthensis'], edge_length=0.005897, taxon_label=None),
+            'Node373' : NodeRelationship(parent_label='Node371', child_labels=['Node375','Node381'], edge_length=0.0, taxon_label=None),
+            'Morelia viridis' : NodeRelationship(parent_label='Node371', child_labels=[], edge_length=0.072091, taxon_label='Morelia viridis'),
+            'Node371' : NodeRelationship(parent_label='Node337', child_labels=['Node373','Morelia viridis'], edge_length=0.008523, taxon_label=None),
+            'Node337' : NodeRelationship(parent_label=None, child_labels=['Aspidites ramsayi','Node353','Node371'], edge_length=None, taxon_label=None),
+        },
+        {
+            'Aspidites ramsayi' : NodeRelationship(parent_label='Node387', child_labels=[], edge_length=0.062297, taxon_label='Aspidites ramsayi'),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node405', child_labels=[], edge_length=0.069165, taxon_label='Bothrochilus boa'),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node405', child_labels=[], edge_length=0.073495, taxon_label='Liasis fuscus'),
+            'Node405' : NodeRelationship(parent_label='Node387', child_labels=['Bothrochilus boa','Liasis fuscus'], edge_length=0.009899, taxon_label=None),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node421', child_labels=[], edge_length=0.061022, taxon_label='Antaresia stimsoni'),
+            'Morelia viridis' : NodeRelationship(parent_label='Node425', child_labels=[], edge_length=0.071291, taxon_label='Morelia viridis'),
+            'Python timoriensis' : NodeRelationship(parent_label='Node429', child_labels=[], edge_length=0.098776, taxon_label='Python timoriensis'),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node429', child_labels=[], edge_length=0.075069, taxon_label='Morelia boeleni'),
+            'Node429' : NodeRelationship(parent_label='Node425', child_labels=['Python timoriensis','Morelia boeleni'], edge_length=0.017245, taxon_label=None),
+            'Node425' : NodeRelationship(parent_label='Node421', child_labels=['Morelia viridis','Node429'], edge_length=0.004698, taxon_label=None),
+            'Node421' : NodeRelationship(parent_label='Node419', child_labels=['Antaresia stimsoni','Node425'], edge_length=0.003603, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node435', child_labels=[], edge_length=0.075494, taxon_label='Antaresia maculosa'),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node435', child_labels=[], edge_length=0.063757, taxon_label='Morelia oenpelliensis'),
+            'Node435' : NodeRelationship(parent_label='Node419', child_labels=['Antaresia maculosa','Morelia oenpelliensis'], edge_length=0.017571, taxon_label=None),
+            'Node419' : NodeRelationship(parent_label='Node417', child_labels=['Node421','Node435'], edge_length=0.000386, taxon_label=None),
+            'Morelia bredli' : NodeRelationship(parent_label='Node417', child_labels=[], edge_length=0.070614, taxon_label='Morelia bredli'),
+            'Node417' : NodeRelationship(parent_label='Node415', child_labels=['Node419','Morelia bredli'], edge_length=0.00713, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node415', child_labels=[], edge_length=0.079534, taxon_label='Morelia carinata'),
+            'Node415' : NodeRelationship(parent_label='Node413', child_labels=['Node417','Morelia carinata'], edge_length=0.010249, taxon_label=None),
+            'Python brongersmai' : NodeRelationship(parent_label='Node413', child_labels=[], edge_length=0.114381, taxon_label='Python brongersmai'),
+            'Node413' : NodeRelationship(parent_label='Node411', child_labels=['Node415','Python brongersmai'], edge_length=0.003672, taxon_label=None),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node411', child_labels=[], edge_length=0.080896, taxon_label='Antaresia perthensis'),
+            'Node411' : NodeRelationship(parent_label='Node387', child_labels=['Node413','Antaresia perthensis'], edge_length=0.003212, taxon_label=None),
+            'Node387' : NodeRelationship(parent_label=None, child_labels=['Aspidites ramsayi','Node405','Node411'], edge_length=None, taxon_label=None),
+        },
+        {
+            'Aspidites ramsayi' : NodeRelationship(parent_label='Node437', child_labels=[], edge_length=0.05678, taxon_label='Aspidites ramsayi'),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node471', child_labels=[], edge_length=0.065928, taxon_label='Bothrochilus boa'),
+            'Python timoriensis' : NodeRelationship(parent_label='Node471', child_labels=[], edge_length=0.10077, taxon_label='Python timoriensis'),
+            'Node471' : NodeRelationship(parent_label='Node469', child_labels=['Bothrochilus boa','Python timoriensis'], edge_length=0.013813, taxon_label=None),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node469', child_labels=[], edge_length=0.083335, taxon_label='Antaresia perthensis'),
+            'Node469' : NodeRelationship(parent_label='Node467', child_labels=['Node471','Antaresia perthensis'], edge_length=0.004377, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node479', child_labels=[], edge_length=0.073392, taxon_label='Antaresia maculosa'),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node479', child_labels=[], edge_length=0.065748, taxon_label='Morelia oenpelliensis'),
+            'Node479' : NodeRelationship(parent_label='Node467', child_labels=['Antaresia maculosa','Morelia oenpelliensis'], edge_length=0.016433, taxon_label=None),
+            'Node467' : NodeRelationship(parent_label='Node465', child_labels=['Node469','Node479'], edge_length=0.005104, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node465', child_labels=[], edge_length=0.07646, taxon_label='Morelia carinata'),
+            'Node465' : NodeRelationship(parent_label='Node463', child_labels=['Node467','Morelia carinata'], edge_length=0.001866, taxon_label=None),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node463', child_labels=[], edge_length=0.06129, taxon_label='Antaresia stimsoni'),
+            'Node463' : NodeRelationship(parent_label='Node461', child_labels=['Node465','Antaresia stimsoni'], edge_length=0.012314, taxon_label=None),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node461', child_labels=[], edge_length=0.081982, taxon_label='Morelia boeleni'),
+            'Node461' : NodeRelationship(parent_label='Node459', child_labels=['Node463','Morelia boeleni'], edge_length=0.002833, taxon_label=None),
+            'Morelia viridis' : NodeRelationship(parent_label='Node491', child_labels=[], edge_length=0.064242, taxon_label='Morelia viridis'),
+            'Python brongersmai' : NodeRelationship(parent_label='Node491', child_labels=[], edge_length=0.109434, taxon_label='Python brongersmai'),
+            'Node491' : NodeRelationship(parent_label='Node459', child_labels=['Morelia viridis','Python brongersmai'], edge_length=0.010734, taxon_label=None),
+            'Node459' : NodeRelationship(parent_label='Node457', child_labels=['Node461','Node491'], edge_length=0.00182, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node457', child_labels=[], edge_length=0.079156, taxon_label='Liasis fuscus'),
+            'Node457' : NodeRelationship(parent_label='Node437', child_labels=['Node459','Liasis fuscus'], edge_length=0.014479, taxon_label=None),
+            'Morelia bredli' : NodeRelationship(parent_label='Node437', child_labels=[], edge_length=0.060374, taxon_label='Morelia bredli'),
+            'Node437' : NodeRelationship(parent_label=None, child_labels=['Aspidites ramsayi','Node457','Morelia bredli'], edge_length=None, taxon_label=None),
+        },
+        {
+            'Aspidites ramsayi' : NodeRelationship(parent_label='Node487', child_labels=[], edge_length=0.063004, taxon_label='Aspidites ramsayi'),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node509', child_labels=[], edge_length=0.061413, taxon_label='Bothrochilus boa'),
+            'Python brongersmai' : NodeRelationship(parent_label='Node509', child_labels=[], edge_length=0.099507, taxon_label='Python brongersmai'),
+            'Node509' : NodeRelationship(parent_label='Node487', child_labels=['Bothrochilus boa','Python brongersmai'], edge_length=0.018059, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node525', child_labels=[], edge_length=0.075877, taxon_label='Liasis fuscus'),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node525', child_labels=[], edge_length=0.071375, taxon_label='Antaresia maculosa'),
+            'Node525' : NodeRelationship(parent_label='Node523', child_labels=['Liasis fuscus','Antaresia maculosa'], edge_length=0.014459, taxon_label=None),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node523', child_labels=[], edge_length=0.054698, taxon_label='Antaresia stimsoni'),
+            'Node523' : NodeRelationship(parent_label='Node521', child_labels=['Node525','Antaresia stimsoni'], edge_length=0.002182, taxon_label=None),
+            'Morelia bredli' : NodeRelationship(parent_label='Node533', child_labels=[], edge_length=0.062291, taxon_label='Morelia bredli'),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node537', child_labels=[], edge_length=0.074463, taxon_label='Antaresia perthensis'),
+            'Python timoriensis' : NodeRelationship(parent_label='Node537', child_labels=[], edge_length=0.103887, taxon_label='Python timoriensis'),
+            'Node537' : NodeRelationship(parent_label='Node533', child_labels=['Antaresia perthensis','Python timoriensis'], edge_length=0.00521, taxon_label=None),
+            'Node533' : NodeRelationship(parent_label='Node521', child_labels=['Morelia bredli','Node537'], edge_length=0.011197, taxon_label=None),
+            'Node521' : NodeRelationship(parent_label='Node519', child_labels=['Node523','Node533'], edge_length=0.010763, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node519', child_labels=[], edge_length=0.070762, taxon_label='Morelia carinata'),
+            'Node519' : NodeRelationship(parent_label='Node517', child_labels=['Node521','Morelia carinata'], edge_length=0.016533, taxon_label=None),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node517', child_labels=[], edge_length=0.068818, taxon_label='Morelia oenpelliensis'),
+            'Node517' : NodeRelationship(parent_label='Node515', child_labels=['Node519','Morelia oenpelliensis'], edge_length=0.003714, taxon_label=None),
+            'Morelia viridis' : NodeRelationship(parent_label='Node547', child_labels=[], edge_length=0.071307, taxon_label='Morelia viridis'),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node547', child_labels=[], edge_length=0.073392, taxon_label='Morelia boeleni'),
+            'Node547' : NodeRelationship(parent_label='Node515', child_labels=['Morelia viridis','Morelia boeleni'], edge_length=0.010478, taxon_label=None),
+            'Node515' : NodeRelationship(parent_label='Node487', child_labels=['Node517','Node547'], edge_length=0.00238, taxon_label=None),
+            'Node487' : NodeRelationship(parent_label=None, child_labels=['Aspidites ramsayi','Node509','Node515'], edge_length=None, taxon_label=None),
+        },
+        {
+            'Aspidites ramsayi' : NodeRelationship(parent_label='Node537', child_labels=[], edge_length=0.053901, taxon_label='Aspidites ramsayi'),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node567', child_labels=[], edge_length=0.07927, taxon_label='Bothrochilus boa'),
+            'Morelia bredli' : NodeRelationship(parent_label='Node571', child_labels=[], edge_length=0.053956, taxon_label='Morelia bredli'),
+            'Python timoriensis' : NodeRelationship(parent_label='Node571', child_labels=[], edge_length=0.098874, taxon_label='Python timoriensis'),
+            'Node571' : NodeRelationship(parent_label='Node567', child_labels=['Morelia bredli','Python timoriensis'], edge_length=0.016769, taxon_label=None),
+            'Node567' : NodeRelationship(parent_label='Node565', child_labels=['Bothrochilus boa','Node571'], edge_length=0.003041, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node579', child_labels=[], edge_length=0.075223, taxon_label='Liasis fuscus'),
+            'Morelia viridis' : NodeRelationship(parent_label='Node579', child_labels=[], edge_length=0.065805, taxon_label='Morelia viridis'),
+            'Node579' : NodeRelationship(parent_label='Node577', child_labels=['Liasis fuscus','Morelia viridis'], edge_length=0.010712, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node577', child_labels=[], edge_length=0.075934, taxon_label='Morelia carinata'),
+            'Node577' : NodeRelationship(parent_label='Node565', child_labels=['Node579','Morelia carinata'], edge_length=0.008083, taxon_label=None),
+            'Node565' : NodeRelationship(parent_label='Node563', child_labels=['Node567','Node577'], edge_length=0.00777, taxon_label=None),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node587', child_labels=[], edge_length=0.082425, taxon_label='Antaresia perthensis'),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node593', child_labels=[], edge_length=0.075429, taxon_label='Antaresia maculosa'),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node593', child_labels=[], edge_length=0.0787, taxon_label='Morelia boeleni'),
+            'Node593' : NodeRelationship(parent_label='Node591', child_labels=['Antaresia maculosa','Morelia boeleni'], edge_length=0.010583, taxon_label=None),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node591', child_labels=[], edge_length=0.070289, taxon_label='Morelia oenpelliensis'),
+            'Node591' : NodeRelationship(parent_label='Node587', child_labels=['Node593','Morelia oenpelliensis'], edge_length=0.008508, taxon_label=None),
+            'Node587' : NodeRelationship(parent_label='Node563', child_labels=['Antaresia perthensis','Node591'], edge_length=0.00373, taxon_label=None),
+            'Node563' : NodeRelationship(parent_label='Node561', child_labels=['Node565','Node587'], edge_length=0.002034, taxon_label=None),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node561', child_labels=[], edge_length=0.064652, taxon_label='Antaresia stimsoni'),
+            'Node561' : NodeRelationship(parent_label='Node537', child_labels=['Node563','Antaresia stimsoni'], edge_length=0.013947, taxon_label=None),
+            'Python brongersmai' : NodeRelationship(parent_label='Node537', child_labels=[], edge_length=0.107868, taxon_label='Python brongersmai'),
+            'Node537' : NodeRelationship(parent_label=None, child_labels=['Aspidites ramsayi','Node561','Python brongersmai'], edge_length=None, taxon_label=None),
+        },
+    ]
+    return treelist_node_relationships
 
 def reference_tree_list():
     tree_list_4286432 = dendropy.TreeList(label=None, oid="DendroPy Reference Tree")
@@ -366,7 +358,7 @@ def reference_tree_list():
     tax_4827920 = tree_list_4286432.taxon_set.require_taxon(label="Antaresia perthensis", oid="Taxon130")
     tax_4828208 = tree_list_4286432.taxon_set.require_taxon(label="Python brongersmai", oid="Taxon133")
     tax_4828400 = tree_list_4286432.taxon_set.require_taxon(label="Morelia carinata", oid="Taxon136")
-    tree_4787536 = dendropy.Tree(label="PAUP 1", taxon_set=tree_list_4286432.taxon_set, oid="Tree72")
+    tree_4787536 = dendropy.Tree(label="Tree01", taxon_set=tree_list_4286432.taxon_set, oid="Tree72")
     tree_list_4286432.append(tree_4787536, reindex_taxa=False)
     nd_4787824 = tree_4787536.seed_node.new_child(label=None, taxon=tax_4787248, edge_length=0.056823, oid="Node78")
     nd_4787824.edge.oid = "Edge79"
@@ -414,7 +406,7 @@ def reference_tree_list():
     nd_4827792.edge.oid = "Edge129"
     nd_4828144 = nd_4827408.new_child(label=None, taxon=tax_4828208, edge_length=0.107706, oid="Node131")
     nd_4828144.edge.oid = "Edge132"
-    tree_4828560 = dendropy.Tree(label="PAUP 2", taxon_set=tree_list_4286432.taxon_set, oid="Tree137")
+    tree_4828560 = dendropy.Tree(label="Tree02", taxon_set=tree_list_4286432.taxon_set, oid="Tree137")
     tree_list_4286432.append(tree_4828560, reindex_taxa=False)
     nd_4828848 = tree_4828560.seed_node.new_child(label=None, taxon=tax_4787248, edge_length=0.065297, oid="Node143")
     nd_4828848.edge.oid = "Edge144"
@@ -462,7 +454,7 @@ def reference_tree_list():
     nd_4787696.edge.oid = "Edge180"
     nd_4828656 = nd_4828240.new_child(label=None, taxon=tax_4828400, edge_length=0.0579, oid="Node181")
     nd_4828656.edge.oid = "Edge182"
-    tree_4860240 = dendropy.Tree(label="PAUP 3", taxon_set=tree_list_4286432.taxon_set, oid="Tree189")
+    tree_4860240 = dendropy.Tree(label="Tree03", taxon_set=tree_list_4286432.taxon_set, oid="Tree189")
     tree_list_4286432.append(tree_4860240, reindex_taxa=False)
     nd_4860592 = tree_4860240.seed_node.new_child(label=None, taxon=tax_4787248, edge_length=0.06111, oid="Node195")
     nd_4860592.edge.oid = "Edge196"
@@ -510,7 +502,7 @@ def reference_tree_list():
     nd_4883728.edge.oid = "Edge238"
     nd_4884016 = nd_4883536.new_child(label=None, taxon=tax_4826544, edge_length=0.073602, oid="Node239")
     nd_4884016.edge.oid = "Edge240"
-    tree_4883792 = dendropy.Tree(label="PAUP 4", taxon_set=tree_list_4286432.taxon_set, oid="Tree241")
+    tree_4883792 = dendropy.Tree(label="Tree04", taxon_set=tree_list_4286432.taxon_set, oid="Tree241")
     tree_list_4286432.append(tree_4883792, reindex_taxa=False)
     nd_4884400 = tree_4883792.seed_node.new_child(label=None, taxon=tax_4787248, edge_length=0.053028, oid="Node247")
     nd_4884400.edge.oid = "Edge248"
@@ -558,7 +550,7 @@ def reference_tree_list():
     nd_4886448.edge.oid = "Edge282"
     nd_4886384 = nd_4886416.new_child(label=None, taxon=tax_4828400, edge_length=0.055992, oid="Node283")
     nd_4886384.edge.oid = "Edge284"
-    tree_5030608 = dendropy.Tree(label="PAUP 5", taxon_set=tree_list_4286432.taxon_set, oid="Tree293")
+    tree_5030608 = dendropy.Tree(label="Tree05", taxon_set=tree_list_4286432.taxon_set, oid="Tree293")
     tree_list_4286432.append(tree_5030608, reindex_taxa=False)
     nd_5031088 = tree_5030608.seed_node.new_child(label=None, taxon=tax_4787248, edge_length=0.06391, oid="Node299")
     nd_5031088.edge.oid = "Edge300"
@@ -606,7 +598,7 @@ def reference_tree_list():
     nd_5032464.edge.oid = "Edge342"
     nd_5033616 = nd_5033392.new_child(label=None, taxon=tax_4826544, edge_length=0.073251, oid="Node343")
     nd_5033616.edge.oid = "Edge344"
-    tree_5032880 = dendropy.Tree(label="PAUP 6", taxon_set=tree_list_4286432.taxon_set, oid="Tree345")
+    tree_5032880 = dendropy.Tree(label="Tree06", taxon_set=tree_list_4286432.taxon_set, oid="Tree345")
     tree_list_4286432.append(tree_5032880, reindex_taxa=False)
     nd_5058608 = tree_5032880.seed_node.new_child(label=None, taxon=tax_4787248, edge_length=0.06501, oid="Node351")
     nd_5058608.edge.oid = "Edge352"
@@ -654,7 +646,7 @@ def reference_tree_list():
     nd_5060784.edge.oid = "Edge390"
     nd_5061264 = nd_5061008.new_child(label=None, taxon=tax_4826544, edge_length=0.079145, oid="Node391")
     nd_5061264.edge.oid = "Edge392"
-    tree_5060592 = dendropy.Tree(label="PAUP 7", taxon_set=tree_list_4286432.taxon_set, oid="Tree397")
+    tree_5060592 = dendropy.Tree(label="Tree07", taxon_set=tree_list_4286432.taxon_set, oid="Tree397")
     tree_list_4286432.append(tree_5060592, reindex_taxa=False)
     nd_5061904 = tree_5060592.seed_node.new_child(label=None, taxon=tax_4787248, edge_length=0.062297, oid="Node403")
     nd_5061904.edge.oid = "Edge404"
@@ -702,7 +694,7 @@ def reference_tree_list():
     nd_5088656.edge.oid = "Edge438"
     nd_5088912 = nd_5062512.new_child(label=None, taxon=tax_4827216, edge_length=0.063757, oid="Node439")
     nd_5088912.edge.oid = "Edge440"
-    tree_5033360 = dendropy.Tree(label="PAUP 8", taxon_set=tree_list_4286432.taxon_set, oid="Tree449")
+    tree_5033360 = dendropy.Tree(label="Tree08", taxon_set=tree_list_4286432.taxon_set, oid="Tree449")
     tree_list_4286432.append(tree_5033360, reindex_taxa=False)
     nd_5089552 = tree_5033360.seed_node.new_child(label=None, taxon=tax_4787248, edge_length=0.05678, oid="Node455")
     nd_5089552.edge.oid = "Edge456"
@@ -750,7 +742,7 @@ def reference_tree_list():
     nd_5116560.edge.oid = "Edge494"
     nd_5116784 = nd_5116144.new_child(label=None, taxon=tax_4828208, edge_length=0.109434, oid="Node495")
     nd_5116784.edge.oid = "Edge496"
-    tree_5117040 = dendropy.Tree(label="PAUP 9", taxon_set=tree_list_4286432.taxon_set, oid="Tree501")
+    tree_5117040 = dendropy.Tree(label="Tree09", taxon_set=tree_list_4286432.taxon_set, oid="Tree501")
     tree_list_4286432.append(tree_5117040, reindex_taxa=False)
     nd_5117456 = tree_5117040.seed_node.new_child(label=None, taxon=tax_4787248, edge_length=0.063004, oid="Node507")
     nd_5117456.edge.oid = "Edge508"
@@ -798,7 +790,7 @@ def reference_tree_list():
     nd_5144688.edge.oid = "Edge550"
     nd_5144944 = nd_5119824.new_child(label=None, taxon=tax_4826544, edge_length=0.073392, oid="Node551")
     nd_5144944.edge.oid = "Edge552"
-    tree_5144752 = dendropy.Tree(label="PAUP 10", taxon_set=tree_list_4286432.taxon_set, oid="Tree553")
+    tree_5144752 = dendropy.Tree(label="Tree10", taxon_set=tree_list_4286432.taxon_set, oid="Tree553")
     tree_list_4286432.append(tree_5144752, reindex_taxa=False)
     nd_5145360 = tree_5144752.seed_node.new_child(label=None, taxon=tax_4787248, edge_length=0.053901, oid="Node559")
     nd_5145360.edge.oid = "Edge560"

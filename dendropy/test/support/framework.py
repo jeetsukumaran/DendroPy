@@ -70,6 +70,46 @@ class ExtendedTestCase(unittest.TestCase):
             message = "%s is in: %s" % (obj1, obj2)
         self.assertTrue(obj1 not in obj2, message)
 
+class NodeRelationship(object):
+
+    def from_tree(tree):
+        return [NodeRelationship(node) for node in tree]
+    from_tree = staticmethod(from_tree)
+
+    def from_node(node):
+        ndr = NodeRelationship(None, None, None, None)
+        ndr.parent_label = node.parent_node.label if node.parent_node is not None else 'None'
+        ndr.child_labels = [cnd.label for cnd in node.child_nodes()]
+        ndr.edge_length = node.edge.length
+        ndr.taxon_label = node.taxon.label if node.taxon is not None else None
+        return ndr
+    from_node = staticmethod(from_node)
+
+    def __init__(self, parent_label, child_labels, edge_length, taxon_label):
+        self.parent_label = parent_label
+        self.child_labels = child_labels
+        self.edge_length = edge_length
+        self.taxon_label = taxon_label
+
+    def test_node(self, testcase, node):
+        if self.parent_label is not None:
+            testcase.assertTrue(node.parent_node is not None)
+            testcase.assertEqual(self.parent_label, node.parent_node.label)
+        else:
+            testcase.assertTrue(node.parent_node is None or node.parent_node.label is None, \
+                node.parent_node.label)
+        testcase.assertEqual(self.child_labels, [cnd.label for cnd in node.child_nodes()])
+        if self.edge_length is not None:
+            testcase.assertTrue(node.edge.length is not None)
+            testcase.assertAlmostEqual(self.edge_length, node.edge.length)
+        else:
+            testcase.assertTrue(node.edge is None)
+        if self.taxon_label is not None:
+            testcase.assertTrue(node.taxon is not None)
+            testcase.assertEqual(self.taxon_label, node.taxon.label)
+        else:
+            testcase.assertTrue(node.taxon is None or node.taxon.label is None)
+
 class DataObjectVerificationTestCase(ExtendedTestCase):
     """
     Extends ExtendedTestCase with tests for data object comparisons.
