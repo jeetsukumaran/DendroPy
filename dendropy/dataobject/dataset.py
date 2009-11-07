@@ -61,12 +61,12 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
             raise TypeError("DataSet() takes at most 1 positional argument (%d given)" % len(args))
         elif len(args) == 1:
             if "stream" in kwargs or "format" in kwargs:
-                raise TypeError("DataSet() does not accept data 'stream' or 'format' arguments when initializing from a '%s' object" % args[0].__class__.__name__)
+                raise TypeError("%s() does not accept data 'stream' or 'format' arguments when initializing with a '%s' object" % (self.__class__.__name__, args[0].__class__.__name__))
             elif isinstance(args[0], DataSet):
                 d = deepcopy(args[0])
                 self.__dict__ = d.__dict__
             else:
-                raise TypeError("DataSet() does not accept initialization from objects of type '%s'" % args[0].__class__.__name__)
+                raise TypeError("%s() does not accept initialization with objects of type '%s'" % (self.__class__.__name__, args[0].__class__.__name__))
         elif "stream" in kwargs:
             self.process_source_kwargs(**kwargs)
 
