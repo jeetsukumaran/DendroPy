@@ -146,14 +146,6 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         self._is_mutable = bool(v)
     is_locked = property(get_is_locked, set_is_locked)
 
-    def __str__(self):
-        "String representation of self."
-        taxlist = []
-        for taxon in self:
-            taxlist.append("'" + str(taxon) + "'")
-        return '<TaxonSet object %d: [' % id(self) \
-                + ', '.join(taxlist) + ']>'
-
     def has_taxon(self, **kwargs):
         """
         Returns True if taxon `taxon`, or with `oid` or `label`,
@@ -304,4 +296,4 @@ class Taxon(base.IdTagged):
 
     def __str__(self):
         "String representation of self = taxon name."
-        return str(self.label)
+        return "<%s>" % str(self.label)

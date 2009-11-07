@@ -21,7 +21,7 @@
 ###############################################################################
 
 """
-Tests creation, reading, update, deletion of Tree and TreeList objects.
+Tests creation, reading, update, deletion of Tree objects.
 """
 
 import unittest
@@ -31,7 +31,7 @@ from dendropy.test.support import framework
 from dendropy.test.support import datagen
 import dendropy
 
-class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
+class TreeCreateTest(framework.DataObjectVerificationTestCase):
 
     def setUp(self):
         self.tree1 = datagen.four_taxon_tree1()

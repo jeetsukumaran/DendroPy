@@ -134,9 +134,6 @@ class Labelled(Annotated):
         Annotated.__init__(self)
         self.label = label
 
-    def __repr__(self):
-        return "<%s object %d: '%s'>" % (self.__class__.__name__, id(self), str(self.label))
-
 class IdTagged(Labelled):
     """
     Provides infrastructure for the maintenance of a unique object id,
@@ -195,3 +192,7 @@ class IdTagged(Labelled):
             self._oid = self._default_oid()
 
     oid = property(_get_oid, _set_oid)
+
+    def __str__(self):
+        "String representation of the object: it's id."
+        return str(self.oid)

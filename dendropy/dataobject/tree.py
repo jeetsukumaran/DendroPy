@@ -99,14 +99,15 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if len(args) > 1:
             raise TypeError("TreeList() takes at most 1 positional argument (%d given)" % len(args))
         elif len(args) == 1:
-            if "stream" or "format" in kwargs:
-                raise TypeError("Cannot specify data source for Tree() if passing positional argument %s" % args[0])
-            for t in args[0]:
-                if not isinstance(t, Tree):
-                    raiseTypeError("TreeList() only accepts Tree objects")
-                self.append(t)
+            if "stream" in kwargs or "format" in kwargs:
+                raise TypeError("TreeList() does not accept data 'stream' or 'format' arguments when initializing from a '%s' object" % args[0].__class__.__name__)
+            if hasattr(args[0], "__iter__") and not isinstance(args[0], str):
+                for t in args[0]:
+                    if not isinstance(t, Tree):
+                        raiseTypeError("TreeList() only accepts Tree objects as members")
+                    self.append(t)
             else:
-                raise TypeError("Invalid argument passed to TreeList()")
+                raise TypeError("TreeList() does not accept initialization from objects of type '%s'" % args[0].__class__.__name__)
         else:
             self.process_source_kwargs(**kwargs)
 
@@ -126,6 +127,9 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if k not in ['taxon_set', "_oid"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
+
+    def __str__(self):
+        return "[%s]" % " ".join([(str(t)+";") for t in self])
 
     def read(self, stream, format, **kwargs):
         """
@@ -366,18 +370,16 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         self.is_rooted = False
 
         if len(args) > 1:
-            raise TypeError("Tree() takes at most 1 positional argument (%d given: %s)" % (len(args), str(args)))
+            raise TypeError("Tree() takes at most 1 positional argument (%d given)" % len(args))
         if len(args) == 1:
+            if "stream" in kwargs or "format" in kwargs:
+                raise TypeError("Tree() does not accept data 'stream' or 'format' arguments when initializing from a '%s' object" % args[0].__class__.__name__)
             if isinstance(args[0], Node):
-                if "stream" or "format" in kwargs:
-                    raise TypeError("Cannot specify data source for Tree() if specifying seed Node")
                 self.seed_node = args[0]
             elif isinstance(args[0], Tree):
-                if "stream" in kwargs or "format" in kwargs:
-                    raise TypeError("Cannot specify data source or format for Tree() when cloning another Tree")
                 self.clone_from(args[0])
             else:
-                raise TypeError("Invalid positional argument passed: %s" % str(args))
+                raise TypeError("Tree() does not accept initialization from objects of type '%s'" % args[0].__class__.__name__)
         else:
             self.process_source_kwargs(**kwargs)
         if "oid" in kwargs:
@@ -1037,10 +1039,6 @@ class Node(TaxonLinked):
         memo[id(self._child_nodes)] = o._child_nodes
         memo[id(self._oid)] = o._oid
         return o
-
-    def __str__(self):
-        "String representation of the object: it's id."
-        return str(self.oid)
 
     def collapse_neighborhood(self, dist):
         if dist < 1:

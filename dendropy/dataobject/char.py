@@ -56,11 +56,6 @@ class StateAlphabetElement(IdTagged):
     def __str__(self):
         return str(self.symbol)
 
-    def __repr__(self):
-        return str([self.oid,
-                    self.symbol,
-                    '[' + (', '.join(self._get_fundamental_symbols())) + ']'])
-
     def _get_fundamental_states(self):
         """
         Returns value of self in terms of a set of _get_fundamental states (i.e.,

@@ -81,10 +81,7 @@ class ItemSublistProxyList(list):
         list.__init__(self, *args)
 
     def __str__(self):
-        return str([i for i in self])
-
-    def __repr__(self):
-        return "<%s %s>" % (self.__class__.__name__, str([i for i in self]))
+        return str([str(i) for i in self])
 
     def __getitem__(self, *args):
         req_idx = int(args[0])
@@ -126,6 +123,9 @@ class OrderedSet(list):
 
     def __setitem__(self, *args):
         raise Exception("'OrderedSet' object does not support item assignment\n")
+
+    def __str__(self):
+        return "[%s]" % ", ".join([str(i) for i in self])
 
     def add(self, x):
         if x not in self:
@@ -293,17 +293,6 @@ class OrderedCaselessDict(dict):
     def __iter__(self):
         "Returns an iterator over self's ordered keys."
         return self.iterkeys()
-
-    def __repr__(self):
-        "Returns a representation of self's ordered keys."
-        return "%s([%s])" \
-               % (self.__class__.__name__, ', \
-               '.join(["(%r, %r)" % item for item in self.iteritems()]))
-
-    def __str__(self):
-        "Returns a string representation of self."
-        return "{%s}" \
-               % (', '.join(["(%r, %r)" % item for item in self.iteritems()]),)
 
     def __getitem__(self, key):
         "Gets an item using a case-insensitive key."

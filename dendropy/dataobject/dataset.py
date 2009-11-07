@@ -48,6 +48,7 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
         taxa, trees and characters), or a file-like object opened for reading
         and a string specifying the format of the data in the file-like object,
         in which case the Dataset will be populated from data in the given
+        file. Also accepts keywords `stream` and `formae populated from data in the given
         file. Also accepts keywords `stream` and `format`.
         """
         DataObject.__init__(self)
@@ -56,39 +57,18 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
         self.taxon_sets = containers.OrderedSet()
         self.tree_lists = containers.OrderedSet()
         self.char_arrays = containers.OrderedSet()
-        if len(args) > 0:
-            if isinstance(args[0], Dataset):
-                if len(args) > 1:
-                    raise Exception("Only one argument accepted by Dataset() when instantiating from another Dataset")
+        if len(args) > 1:
+            raise TypeError("Dataset() takes at most 1 positional argument (%d given)" % len(args))
+        elif len(args) == 1:
+            if "stream" in kwargs or "format" in kwargs:
+                raise TypeError("Dataset() does not accept data 'stream' or 'format' arguments when initializing from a '%s' object" % args[0].__class__.__name__)
+            elif isinstance(args[0], Dataset):
                 d = deepcopy(args[0])
                 self.__dict__ = d.__dict__
-            elif hasattr(args[0], "read"):
-                if "stream" in kwargs:
-                    raise Exception("Cannot specify both unnamed file object source ('%s') and named 'stream' source to Dataset" % (args[0]))
-                stream = args[0]
-                if len(args) > 2:
-                    raise Exception("Dataset() accepts at most two non-keyword arguments")
-                if len(args) < 2 and "format" not in kwargs:
-                    raise Exception("Need to specify format if passing data source to Dataset()")
-                elif len(args) == 2 and "format" in kwargs:
-                    raise Exception("Cannot specify format both as non-keyworded argument ('%s') and keyworded argument" % args[1])
-                elif len(args) == 2:
-                    format = args[1]
-                elif "format" in kwargs:
-                    format = kwargs["format"]
-                    del(kwargs["format"])
-                self.read(stream, format, **kwargs)
             else:
-                raise Exception("Invalid arguments passed to Dataset(): %s" % str(args))
+                raise TypeError("Dataset() does not accept initialization from objects of type '%s'" % args[0].__class__.__name__)
         elif "stream" in kwargs:
-            stream = kwargs["stream"]
-            if "format" in kwargs:
-                format = kwargs["format"]
-                del(kwargs["stream"])
-                del(kwargs["format"])
-            else:
-                raise Exception("Need to specify format if passing data source to Dataset()")
-            self.read(stream, format, **kwargs)
+            self.process_source_kwargs(**kwargs)
 
     ###########################################################################
     ## CLONING
