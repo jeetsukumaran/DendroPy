@@ -53,6 +53,10 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         container with Tree object members passed as unnamed argument, or
         from a data source if `stream` and `format` are passed.
 
+        If passed an iterable container, the objects in that container must
+        be of type `Tree` (or derived), and will be **deep**-copied (except
+        for associated TaxonSet and Taxon objects, which will be shallow-copied.
+
         TreeList objects can thus be instantiated in the following ways::
 
             # /usr/bin/env python
@@ -77,10 +81,10 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                              taxon_set=tlst3.taxon_set,
                              encode_splits=True)
 
-            # shallow-copied from another tree list
+            # deep-copied (but shallow-copy taxa) from another tree list
             tlst5 = TreeList(t4)
 
-            # deep-copied (but shallow-copy taxa) from another tree list
+            # same
             tls6 = TreeList([Tree(t) for t in tlst5])
 
             # can also call `read()` on a TreeList object
@@ -106,7 +110,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 for t in args[0]:
                     if not isinstance(t, Tree):
                         raiseTypeError("TreeList() only accepts Tree objects as members")
-                    self.append(t)
+                    self.append(Tree(t))
             else:
                 raise error.InvalidArgumentTypeError(self.__class__.__name__, args[0])
         else:
