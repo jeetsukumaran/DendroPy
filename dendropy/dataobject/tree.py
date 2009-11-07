@@ -182,27 +182,18 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if t is not None:
                 self.append(t)
 
-    def write(self, **kwargs):
+    def write(self, stream, format, **kwargs):
         """
         Writes out `TreeList` in `format` to a destination described by
-        one of: `file` or `path`:
-
-            - `file`: A file- or file-like object.
-            - `path`: A string specifying the path to a file.
-
-        `format` must be a recognized and tree file format, such as `nexus`,
-        `newick`, etc, for which a specialized tree list writer is
-        available. If this is not implemented for the format specified, then
-        a `UnsupportedFormatError` is raised.
+        given by `stream`.
 
         Additionally, for some formats, the following keywords are recognized:
 
             - `edge_lengths` : if False, edges will not write edge lengths [True]
             - `internal_labels` : if False, internal labels will not be written [True]
         """
-        from dendropy.utility.iosys import require_format_from_kwargs
         from dendropy.dataio import write_tree_list
-        write_tree_list(format=require_format_from_kwargs(kwargs), tree_list=self, **kwargs)
+        write_tree_list(tree_list=self, stream=stream, format=format, **kwargs)
 
     def reindex_subcomponent_taxa(self):
         """

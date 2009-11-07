@@ -99,7 +99,7 @@ def tree_source_iter(stream, format, **kwargs):
     """
     return ioregister.tree_source_iter(stream, format, **kwargs)
 
-def write_tree_list(tree_list, format, stream, **kwargs):
+def write_tree_list(tree_list, stream, format, **kwargs):
     """
     Writes `tree_list`, a `TreeList` object in `format` format to
     a destination given by file-like object `stream`.
@@ -114,7 +114,7 @@ def write_tree_list(tree_list, format, stream, **kwargs):
         - `edge_lengths` : if False, edges will not write edge lengths [True]
         - `internal_labels` : if False, internal labels will not be written [True]
     """
-    return ioregister.write_tree_list(tree_list, stream, format, **kwargs)
+    return ioregister.write_tree_list(tree_list, stream=stream, name=format, **kwargs)
 
 
 ###############################################################################
@@ -202,7 +202,7 @@ class _DataFormatRegister(object):
             raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
         return self.formats[name].get_tree_source_iter(stream, **kwargs)
 
-    def write_tree_list(self, tree_list, name, stream, **kwargs):
+    def write_tree_list(self, tree_list, stream, name, **kwargs):
         if name not in self.formats:
             raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
         return self.formats[name].write_tree_list(tree_list, stream, **kwargs)
