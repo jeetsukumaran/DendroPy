@@ -57,6 +57,12 @@ class TreeListCreateTest(framework.DataObjectVerificationTestCase):
         tree_list2 = dendropy.TreeList([dendropy.Tree(t) for t in self.tree_list1])
         self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=True, equal_oids=False, distinct_trees=True)
 
+    def testTooManyPosArgs(self):
+     self.assertRaises(error.TooManyArgumentsError, dendropy.TreeList, self.tree_list1, dendropy.TreeList())
+
+    def testMultipleSources(self):
+     self.assertRaises(error.MultipleInitializationSourceError, dendropy.TreeList, self.tree_list1, stream=StringIO(self.tree_list1.as_string("newick")), format="newick")
+
 
 #    def testTreeFromTreeSetOidAndLabelSameTaxa(self):
 #        tree2 = dendropy.Tree(self.tree1, oid="TREE2", label="TREE2")

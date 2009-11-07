@@ -217,7 +217,7 @@ class Writeable(object):
         """
         Composes and returns string representation of the data.
         """
-        s = StringIO(src_str)
+        s = StringIO()
         self.write(stream=s, format=format, **kwargs)
         return s.getvalue()
 

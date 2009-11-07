@@ -109,7 +109,8 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if len(args) > 1:
             raise error.TooManyArgumentsError(self.__class__.__name__, 1, args)
         elif len(args) == 1:
-            if "stream" in kwargs or "format" in kwargs:
+            if ("stream" in kwargs and kwargs["stream"] is not None) \
+                    or ("format" in kwargs and kwargs["format"] is not None):
                 raise error.MultipleInitializationSourceError(self.__class__.__name__, args[0])
             if hasattr(args[0], "__iter__") and not isinstance(args[0], str):
                 if isinstance(args[0], TreeList):
@@ -388,7 +389,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if len(args) > 1:
             raise error.TooManyArgumentsError(self.__class__.__name__, 1, args)
         if len(args) == 1:
-            if "stream" in kwargs or "format" in kwargs:
+            if ("stream" in kwargs and kwargs["stream"] is not None) \
+                    or ("format" in kwargs and kwargs["format"] is not None):
                 raise error.MultipleInitializationSourceError(self.__class__.__name__, args[0])
             if isinstance(args[0], Node):
                 self.seed_node = args[0]

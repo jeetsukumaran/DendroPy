@@ -47,9 +47,6 @@ class TreeCreateTest(framework.DataObjectVerificationTestCase):
         self.assertEqual(tree2.label, "TREE2")
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
-    def testTreeFromTreeWithExtraKeywordArgs(self):
-        self.assertRaises(error.MultipleInitializationSourceError, dendropy.Tree, self.tree1, format="newick")
-
     def testTreeFromTreeWithExtraPosArgs(self):
         self.assertRaises(TypeError, dendropy.Tree, self.tree1, "dummy")
 
@@ -71,7 +68,11 @@ class TreeCreateTest(framework.DataObjectVerificationTestCase):
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
     def testTreeFromFileMixedPosAndKeywordArgs(self):
-        self.assertRaises(error.MultipleInitializationSourceError, dendropy.Tree, StringIO(self.tree1_newick_str), format="newick")
+        self.assertRaises(error.MultipleInitializationSourceError, dendropy.Tree, stream=StringIO(self.tree1_newick_str), format="newick")
+
+    def testTreeFromTreeWithExtraKeywordArgsOK(self):
+        tree2 = dendropy.Tree(self.tree1, stream=None format=None)
+        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=True, equal_oids=False)
 
     def testTreeFromFilePosArgsWithNoFormat(self):
         self.assertRaises(error.UnspecifiedFormatError, dendropy.Tree, stream=StringIO(self.tree1_newick_str), taxon_set=self.tree1.taxon_set)
