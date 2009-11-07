@@ -43,7 +43,7 @@ class DataForTestingTest(framework.DataObjectVerificationTestCase):
         tlist1 = datagen.reference_tree_list()
         ref_trees_newick = datagen.reference_tree_list_newick_string().split(";")
         ref_node_labels = datagen.reference_tree_list_postorder_node_labels()
-        ref_node_rels = datagen.reference_tree_list_relationships()
+        ref_node_rels = datagen.reference_tree_list_node_relationships()
         for ti, t1 in enumerate(tlist1):
             t1.assign_node_labels_from_taxon_or_oid()
 

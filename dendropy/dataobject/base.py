@@ -177,7 +177,7 @@ class IdTagged(Labelled):
 
     def _default_oid(self):
         "Returns default oid."
-        return self.__class__.__name__ + str(IdTagged.instances)
+        return self.__class__.__name__ + str(id(self))
 
     def _get_oid(self):
         "Returns id."
