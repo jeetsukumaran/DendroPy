@@ -163,12 +163,15 @@ class DataObjectVerificationTestCase(ExtendedTestCase):
             self.assertEqual(tree_list1.oid, tree_list1.oid)
         elif equal_oids is False:
             self.assertNotEqual(tree_list1.oid, tree_list2.oid)
-        if kwargs.get("distinct_trees", True):
-            for tree_idx, tree1 in enumerate(tree_list1):
-                tree2 = tree_list2[tree_idx]
+        distinct_trees = kwargs.get("distinct_trees", True)
+        for tree_idx, tree1 in enumerate(tree_list1):
+            tree2 = tree_list2[tree_idx]
+            if distinct_trees:
                 self.assertIsSame(tree1.taxon_set, tree_list1.taxon_set)
                 self.assertIsSame(tree2.taxon_set, tree_list2.taxon_set)
                 self.assertDistinctButEqualTrees(tree1, tree2, **kwargs)
+            else:
+                self.assertIsSame(tree1, tree2)
 
     def assertDistinctButEqualTrees(self, tree1, tree2, **kwargs):
         """

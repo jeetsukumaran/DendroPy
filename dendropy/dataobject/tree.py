@@ -53,9 +53,14 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         container with Tree object members passed as unnamed argument, or
         from a data source if `stream` and `format` are passed.
 
-        If passed an iterable container, the objects in that container must
-        be of type `Tree` (or derived), and will be **deep**-copied (except
-        for associated TaxonSet and Taxon objects, which will be shallow-copied.
+        If passed an iterable container, the objects in that container must be
+        of type `Tree` (or derived). If the container is of type `TreeList`,
+        then, because each `Tree` object must have the same `TaxonSet`
+        reference as the containing `TreeList`, the trees in the container
+        passed as an initialization argument will be **deep**-copied (except
+        for associated TaxonSet and Taxon objects, which will be
+        shallow-copied). If the container is any other type of iterable, then
+        the `Tree` objects will be **shallow**-copied.
 
         TreeList objects can thus be instantiated in the following ways::
 
@@ -107,10 +112,16 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if "stream" in kwargs or "format" in kwargs:
                 raise error.MultipleInitializationSourceError(self.__class__.__name__, args[0])
             if hasattr(args[0], "__iter__") and not isinstance(args[0], str):
-                for t in args[0]:
-                    if not isinstance(t, Tree):
-                        raiseTypeError("TreeList() only accepts Tree objects as members")
-                    self.append(Tree(t))
+                if isinstance(args[0], TreeList):
+                    for t in args[0]:
+                        if not isinstance(t, Tree):
+                            raiseTypeError("TreeList() only accepts Tree objects as members")
+                        self.append(Tree(t))
+                else:
+                    for t in args[0]:
+                        if not isinstance(t, Tree):
+                            raiseTypeError("TreeList() only accepts Tree objects as members")
+                        self.append(t)
             else:
                 raise error.InvalidArgumentTypeError(self.__class__.__name__, args[0])
         else:

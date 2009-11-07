@@ -36,13 +36,18 @@ class TreeListCreateTest(framework.DataObjectVerificationTestCase):
     def setUp(self):
         self.tree_list1 = datagen.reference_tree_list()
 
-    def testShallowTreeListFromTreeListSameTaxa(self):
+    def testDeepCopyTreeListFromTreeListSameTaxa(self):
         tree_list2 = dendropy.TreeList(self.tree_list1, taxon_set=self.tree_list1.taxon_set)
         self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=False, equal_oids=False, distinct_trees=True)
 
-    def testDeepTreeListFromTreeListSameTaxa(self):
+    def testDeepCopyTreeListFromTreeListSameTaxa(self):
         tree_list2 = dendropy.TreeList([dendropy.Tree(t) for t in self.tree_list1], taxon_set=self.tree_list1.taxon_set)
         self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=False, equal_oids=False, distinct_trees=True)
+
+    def testShallowCopyTreeListFromListSameTaxa(self):
+        src_trees = [t for t in self.tree_list1]
+        tree_list2 = dendropy.TreeList(src_trees, taxon_set=self.tree_list1.taxon_set)
+        self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=False, equal_oids=False, distinct_trees=False)
 
 #    def testTreeFromTreeSetOidAndLabelSameTaxa(self):
 #        tree2 = dendropy.Tree(self.tree1, oid="TREE2", label="TREE2")
