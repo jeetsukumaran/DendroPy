@@ -211,55 +211,6 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         from dendropy.dataio import write_tree_list
         write_tree_list(format=require_format_from_kwargs(kwargs), tree_list=self, **kwargs)
 
-    def as_python_source(self, tree_list_name=None, tree_list_args=None, oids=False):
-        """
-        Returns string that will rebuild this tree list in Python.
-        """
-        p = []
-
-        if tree_list_name is None:
-            tree_list_name = "tree_list_%s" % id(self)
-
-        p.append("%s = dendropy.TreeList(label=%s%s%s)" \
-            % (tree_list_name,
-               ('"' + self.label +'"') if self.label is not None else "None",
-               (', oid="%s"' % self.oid) if oids else "",
-               (", " + tree_list_args) if tree_list_args is not None else ""))
-
-        taxon_obj_namer = lambda x: "tax_%s" % id(x)
-        taxon_map = {}
-        for taxon in self.taxon_set:
-            tobj_name = taxon_obj_namer(taxon)
-            p.append("%s = %s.taxon_set.require_taxon(label=%s%s)" \
-                % (tobj_name,
-                   tree_list_name,
-                   ('"' + taxon.label +'"') if taxon.label is not None else "None",
-                   (', oid="%s"' % taxon.oid) if oids else ""))
-            taxon_map[taxon] = tobj_name
-
-        node_obj_namer = lambda x: "nd_%s" % id(x)
-        for tree in self:
-            tree_obj_name = "tree_%s" % id(tree)
-            p.append("%s = dendropy.Tree(label=%s, taxon_set=%s.taxon_set%s)" \
-                % (tree_obj_name,
-                   ('"' + tree.label +'"') if tree.label is not None else "None",
-                   tree_list_name,
-                   (', oid="%s"' % tree.oid) if oids else ""))
-            p.append("%s.append(%s, reindex_taxa=False)" % (tree_list_name, tree_obj_name))
-            for node in tree.preorder_node_iter():
-                for child in node.child_nodes():
-                    p.append("%s = %s.new_child(label=%s, taxon=%s, edge_length=%s%s)" %
-                            (node_obj_namer(child),
-                             ("%s.seed_node" % tree_obj_name) if node is tree.seed_node else node_obj_namer(node),
-                             ('"' + node.label +'"') if child.label is not None else "None",
-                             taxon_obj_namer(child.taxon) if child.taxon is not None else "None",
-                             child.edge.length,
-                         (', oid="%s"' % child.oid) if oids else ""))
-                    if oids:
-                        p.append('%s.edge.oid = "%s"' % (node_obj_namer(child), child.edge.oid))
-
-        return "\n".join(p)
-
     def reindex_subcomponent_taxa(self):
         """
         Synchronizes `TaxonSet` of member trees to `taxon_set` of self.
@@ -299,6 +250,57 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if reindex_taxa:
             self.reindex_tree_taxa(tree)
         self[len(self):] = [tree]
+
+    def as_python_source(self, tree_list_name=None, tree_list_args=None, oids=False):
+        """
+        Returns string that will rebuild this tree list in Python.
+        """
+        p = []
+
+        if tree_list_name is None:
+            tree_list_name = "tree_list_%s" % id(self)
+
+        p.append("%s = dendropy.TreeList(label=%s%s%s)" \
+            % (tree_list_name,
+               ('"' + self.label +'"') if self.label is not None else "None",
+               (', oid="%s"' % self.oid) if oids else "",
+               (", " + tree_list_args) if tree_list_args is not None else ""))
+
+        taxon_obj_namer = lambda x: "tax_%s" % id(x)
+        taxon_map = {}
+        for taxon in self.taxon_set:
+            tobj_name = taxon_obj_namer(taxon)
+            p.append("%s = %s.taxon_set.require_taxon(label=%s%s)" \
+                % (tobj_name,
+                   tree_list_name,
+                   ('"' + taxon.label +'"') if taxon.label is not None else "None",
+                   (', oid="%s"' % taxon.oid) if oids else ""))
+            taxon_map[taxon] = tobj_name
+
+        node_obj_namer = lambda x: "nd_%s" % id(x)
+        for tree in self:
+            tree_obj_name = "tree_%s" % id(tree)
+            p.append("%s = dendropy.Tree(label=%s, taxon_set=%s.taxon_set%s)" \
+                % (tree_obj_name,
+                   ('"' + tree.label +'"') if tree.label is not None else "None",
+                   tree_list_name,
+                   (', oid="%s"' % tree.oid) if oids else ""))
+            p.append("%s.append(%s, reindex_taxa=False)" % (tree_list_name, tree_obj_name))
+            if oids:
+                p.append("%s.seed_node.oid = '%s'" % (tree_obj_name, tree.seed_node.oid))
+            for node in tree.preorder_node_iter():
+                for child in node.child_nodes():
+                    p.append("%s = %s.new_child(label=%s, taxon=%s, edge_length=%s%s)" %
+                            (node_obj_namer(child),
+                             ("%s.seed_node" % tree_obj_name) if node is tree.seed_node else node_obj_namer(node),
+                             ('"' + child.label +'"') if child.label is not None else "None",
+                             taxon_obj_namer(child.taxon) if child.taxon is not None else "None",
+                             child.edge.length,
+                         (', oid="%s"' % child.oid) if oids else ""))
+                    if oids:
+                        p.append('%s.edge.oid = "%s"' % (node_obj_namer(child), child.edge.oid))
+
+        return "\n".join(p)
 
 ##############################################################################
 ## Tree
@@ -541,44 +543,6 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         tree_list = TreeList(taxon_set=self.taxon_set)
         tree_list.append(self)
         write_tree_list(format=require_format_from_kwargs(kwargs), tree_list=tree_list, **kwargs)
-
-    def as_python_source(self, tree_obj_name=None, tree_args=None, oids=False):
-        """
-        Returns string that will rebuild this tree in Python.
-        """
-        p = []
-
-        if tree_obj_name is None:
-            tree_obj_name = "tree_%s" % id(self)
-        p.append("%s = dendropy.Tree(label=%s%s%s)" \
-            % (tree_obj_name,
-               ('"' + self.label +'"') if self.label is not None else "None",
-               (', oid="%s"' % self.oid) if oids else "",
-               (", " + tree_args) if tree_args is not None else ""))
-
-        taxon_obj_namer = lambda x: "tax_%s" % id(x)
-        for taxon in self.taxon_set:
-            tobj_name = taxon_obj_namer(taxon)
-            p.append("%s = %s.taxon_set.require_taxon(label=%s%s)" \
-                % (tobj_name,
-                   tree_obj_name,
-                   ('"' + taxon.label +'"') if taxon.label is not None else "None",
-                   (', oid="%s"' % taxon.oid) if oids else ""))
-
-        node_obj_namer = lambda x: "nd_%s" % id(x)
-        for node in self.preorder_node_iter():
-            for child in node.child_nodes():
-                p.append("%s = %s.new_child(label=%s, taxon=%s, edge_length=%s%s)" %
-                        (node_obj_namer(child),
-                         ("%s.seed_node" % tree_obj_name) if node is self.seed_node else node_obj_namer(node),
-                         ('"' + node.label +'"') if child.label is not None else "None",
-                         taxon_obj_namer(child.taxon) if child.taxon is not None else "None",
-                         child.edge.length,
-                         (', oid="%s"' % child.oid) if oids else ""))
-                if oids:
-                    p.append('%s.edge.oid = "%s"' % (node_obj_namer(child), child.edge.oid))
-
-        return "\n".join(p)
 
     ###########################################################################
     ## Getting/accessing methods
@@ -864,10 +828,52 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def assign_node_labels_from_taxon_or_oid(self):
         for nd in self.postorder_node_iter():
+            if nd.label is not None:
+                continue
             if nd.taxon is not None:
                 nd.label = nd.taxon.label
             else:
                 nd.label = nd.oid
+
+    def as_python_source(self, tree_obj_name=None, tree_args=None, oids=False):
+        """
+        Returns string that will rebuild this tree in Python.
+        """
+        p = []
+
+        if tree_obj_name is None:
+            tree_obj_name = "tree_%s" % id(self)
+        p.append("%s = dendropy.Tree(label=%s%s)" \
+            % (tree_obj_name,
+               ('"' + self.label +'"') if self.label is not None else "None",
+               (', oid="%s"' % self.oid) if oids else "",
+               (", " + tree_args) if tree_args is not None else ""))
+        if oids:
+            p.append("%s.seed_node.oid = '%s'" % (tree_obj_name, self.seed_node.oid))
+
+        taxon_obj_namer = lambda x: "tax_%s" % id(x)
+        for taxon in self.taxon_set:
+            tobj_name = taxon_obj_namer(taxon)
+            p.append("%s = %s.taxon_set.require_taxon(label=%s%s)" \
+                % (tobj_name,
+                   tree_obj_name,
+                   ('"' + taxon.label +'"') if taxon.label is not None else "None",
+                   (', oid="%s"' % taxon.oid) if oids else ""))
+
+        node_obj_namer = lambda x: "nd_%s" % id(x)
+        for node in self.preorder_node_iter():
+            for child in node.child_nodes():
+                p.append("%s = %s.new_child(label=%s, taxon=%s, edge_length=%s%s)" %
+                        (node_obj_namer(child),
+                         ("%s.seed_node" % tree_obj_name) if node is self.seed_node else node_obj_namer(node),
+                         ('"' + node.label +'"') if child.label is not None else "None",
+                         taxon_obj_namer(child.taxon) if child.taxon is not None else "None",
+                         child.edge.length,
+                         (', oid="%s"' % child.oid) if oids else ""))
+                if oids:
+                    p.append('%s.edge.oid = "%s"' % (node_obj_namer(child), child.edge.oid))
+
+        return "\n".join(p)
 
     def get_indented_form(self, **kwargs):
         out = StringIO()

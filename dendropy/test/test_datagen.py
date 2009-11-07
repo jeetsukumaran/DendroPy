@@ -41,7 +41,7 @@ class DataForTestingTest(framework.DataObjectVerificationTestCase):
 
     def testReferenceTreeList(self):
         tlist1 = datagen.reference_tree_list()
-        ref_trees_newick = datagen.reference_tree_list_newick_string().split(";")
+        ref_trees_newick = [n.strip() for n in datagen.reference_tree_list_newick_string().split(";")]
         ref_node_labels = datagen.reference_tree_list_postorder_node_labels()
         ref_node_rels = datagen.reference_tree_list_node_relationships()
         for ti, t1 in enumerate(tlist1):
@@ -55,7 +55,6 @@ class DataForTestingTest(framework.DataObjectVerificationTestCase):
 
             nodes1 = [nd for nd in t1.postorder_node_iter()]
             for ndi, nd1 in enumerate(nodes1):
-                print nd1.label
                 ndrel = ref_node_rels[ti][nd1.label]
                 ndrel.test_node(self, nd1)
 
