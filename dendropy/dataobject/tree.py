@@ -240,7 +240,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         node_obj_namer = lambda x: "nd_%s" % id(x)
         for tree in self:
             tree_obj_name = "tree_%s" % id(tree)
-            p.append("%s = dendropy.Tree(label=%s, taxon_set=%s.taxon_set, %s)" \
+            p.append("%s = dendropy.Tree(label=%s, taxon_set=%s.taxon_set%s)" \
                 % (tree_obj_name,
                    ('"' + tree.label +'"') if tree.label is not None else "None",
                    tree_list_name,
