@@ -60,11 +60,11 @@ class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
         self.assertRaises(TypeError, dendropy.Tree, "xx", stream=StringIO(self.tree1_newick_str), format="newick")
 
     def testTreeFromFileKeywordArgsDistinctTaxa(self):
-        tree2 = dendropy.Tree(istream=StringIO(self.tree1_newick_str), format="newick")
+        tree2 = dendropy.Tree(stream=StringIO(self.tree1_newick_str), format="newick")
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=True, equal_oids=False)
 
     def testTreeFromFileKeywordArgsSameTaxa(self):
-        tree2 = dendropy.Tree(istream=StringIO(self.tree1_newick_str), format="newick", taxon_set=self.tree1.taxon_set)
+        tree2 = dendropy.Tree(stream=StringIO(self.tree1_newick_str), format="newick", taxon_set=self.tree1.taxon_set)
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
     def testTreeFromFilePosArgsDistinctTaxa(self):
@@ -84,13 +84,13 @@ class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
     def testTreeFromFilePosArgsWithNoFormat(self):
-        self.assertRaises(errors.UnspecifiedFormatError, dendropy.Tree, istream=StringIO(self.tree1_newick_str), taxon_set=self.tree1.taxon_set)
+        self.assertRaises(errors.UnspecifiedFormatError, dendropy.Tree, stream=StringIO(self.tree1_newick_str), taxon_set=self.tree1.taxon_set)
 
     def testTreeFromMultipleSource(self):
         self.assertRaises(TypeError,
                 dendropy.Tree, \
                 StringIO(self.tree1_newick_str),
-                istream=StringIO(self.tree1_newick_str),
+                stream=StringIO(self.tree1_newick_str),
                 format="newick",
                 taxon_set=self.tree1.taxon_set)
 
@@ -114,43 +114,6 @@ class TreeInstantiationTest(framework.DataObjectVerificationTestCase):
         nstr = "(A,(B,(C,D))); ((A,C),(B,D)); %s; (A,(C,(B,D))); ((A,D),(B,C));" % self.tree1_newick_str
         tree2 = dendropy.Tree(StringIO(nstr), "newick", index=2, taxon_set=self.tree1.taxon_set)
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
-
-#    def test_treelist_init_from_newick(self):
-#
-#        newick_str = "((A,B),(C,D)); ((A,C),(B,D)); (A,(B,(C,D))); (A,(C,(B,D)));"
-#
-#        # from file, using keywords
-#        tl1 = dendropy.TreeList(istream=StringIO(newick_str), format="newick", oid="t1")
-#        self.assertTrue(tl1.oid == "t1", "'%s'" % tl1.oid)
-#        self.assertEqual(len(tl1), 4)
-#        self.assertEqual(len(tl1.taxon_set), 4)
-#        for t in tl1:
-#            t.debug_check_tree(_LOG)
-#            self.assertTrue(tl1.taxon_set is t.taxon_set)
-#
-#        # test copying
-#        tl2 = dendropy.TreeList(tl1)
-#        self.assertTrue(tl2.taxon_set is tl1.taxon_set)
-#        self.assertTrue(tl2.oid != tl1.oid)
-#        self.assertTrue(tl2.label == tl1.label)
-#        self.assertEqual(len(tl2.taxon_set), 4)
-#        self.assertTrue(tl2.taxon_set.has_taxa(labels=["A", "B", "C", "D"]))
-#        self.assertEqual(len(tl1), len(tl2))
-#        for ti, t1 in enumerate(tl1):
-#            t2 = tl2[ti]
-#            self.assertTrue(t2 is t1)
-#
-#        # from file, args
-#        tl3 = dendropy.TreeList(StringIO(newick_str), "newick", taxon_set=tl1.taxon_set)
-#        self.assertTrue(tl3.taxon_set is tl1.taxon_set)
-#
-#        # from file, mixed
-#        tl4 = dendropy.TreeList(StringIO(newick_str), format="newick", taxon_set=tl1.taxon_set)
-#        self.assertTrue(tl4.taxon_set is tl1.taxon_set)
-#
-#        # read from string
-#        tl5 = dendropy.TreeList()
-#        tl5.read_from_string(newick_str, format="newick")
 
 if __name__ == "__main__":
     unittest.main()

@@ -42,7 +42,7 @@ class CladeMaskTest(unittest.TestCase):
 
     def runTest(self):
         tree_list = dendropy.TreeList(
-            istream=StringIO("""((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);"""),
+            stream=StringIO("""((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247);"""),
             format="newick")
         for i in tree_list:
             _LOG.debug(i.get_indented_form())

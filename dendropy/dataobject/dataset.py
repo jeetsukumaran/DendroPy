@@ -48,7 +48,7 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
         taxa, trees and characters), or a file-like object opened for reading
         and a string specifying the format of the data in the file-like object,
         in which case the Dataset will be populated from data in the given
-        file. Also accepts keywords `istream` and `format`.
+        file. Also accepts keywords `stream` and `format`.
         """
         DataObject.__init__(self)
         iosys.Writeable.__init__(self)
@@ -63,9 +63,9 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
                 d = deepcopy(args[0])
                 self.__dict__ = d.__dict__
             elif hasattr(args[0], "read"):
-                if "istream" in kwargs:
-                    raise Exception("Cannot specify both unnamed file object source ('%s') and named 'istream' source to Dataset" % (args[0]))
-                istream = args[0]
+                if "stream" in kwargs:
+                    raise Exception("Cannot specify both unnamed file object source ('%s') and named 'stream' source to Dataset" % (args[0]))
+                stream = args[0]
                 if len(args) > 2:
                     raise Exception("Dataset() accepts at most two non-keyword arguments")
                 if len(args) < 2 and "format" not in kwargs:
@@ -77,18 +77,18 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
                 elif "format" in kwargs:
                     format = kwargs["format"]
                     del(kwargs["format"])
-                self.read(istream, format, **kwargs)
+                self.read(stream, format, **kwargs)
             else:
                 raise Exception("Invalid arguments passed to Dataset(): %s" % str(args))
-        elif "istream" in kwargs:
-            istream = kwargs["istream"]
+        elif "stream" in kwargs:
+            stream = kwargs["stream"]
             if "format" in kwargs:
                 format = kwargs["format"]
-                del(kwargs["istream"])
+                del(kwargs["stream"])
                 del(kwargs["format"])
             else:
                 raise Exception("Need to specify format if passing data source to Dataset()")
-            self.read(istream, format, **kwargs)
+            self.read(stream, format, **kwargs)
 
     ###########################################################################
     ## CLONING
@@ -123,10 +123,10 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
     ###########################################################################
     ## I/O
 
-    def read(self, istream, format, **kwargs):
+    def read(self, stream, format, **kwargs):
         """
         Populates this `Dataset` object from a file-like object data
-        source `istream`, formatted in `format`. `format` must be a
+        source `stream`, formatted in `format`. `format` must be a
         recognized and supported phylogenetic data file format. If
         reading is not implemented for the format specified, then a
         `UnsupportedFormatError` is raised.
@@ -149,11 +149,11 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
         from dendropy.dataio import get_reader
         kwargs["dataset"] = self
         reader = get_reader(format=format, **kwargs)
-        return reader.read(istream, **kwargs)
+        return reader.read(stream, **kwargs)
 
-    def write(self, ostream, format, **kwargs):
+    def write(self, stream, format, **kwargs):
         """
-        Writes this `Dataset` object to the file-like object `ostream`
+        Writes this `Dataset` object to the file-like object `stream`
         in `format`. `format` must be a recognized and supported
         phylogenetic data file format. If writing is not implemented for
         the format specified, then a `UnsupportedFormatError` is raised.
@@ -169,7 +169,7 @@ class Dataset(DataObject, iosys.Readable, iosys.Writeable):
         from dendropy.dataio import get_writer
         kwargs["dataset"] = self
         writer = get_writer(format=format, **kwargs)
-        writer.write(ostream, **kwargs)
+        writer.write(stream, **kwargs)
 
     ###########################################################################
     ## DOMAIN DATA MANAGEMENT

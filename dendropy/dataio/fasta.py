@@ -43,7 +43,7 @@ class FastaReader(iosys.DataReader):
         iosys.DataReader.__init__(self, **kwargs)
         self.char_array_type = kwargs.get("char_array_type", dataobject.DnaCharacterArray)
 
-    def read(self, istream, **kwargs):
+    def read(self, stream, **kwargs):
         """
         Main file parsing driver.
         """
@@ -70,7 +70,7 @@ class FastaReader(iosys.DataReader):
         if simple_rows:
             legal_chars = char_array.default_state_alphabet.get_legal_symbols_as_str()
 
-        for line_index, line in enumerate(istream):
+        for line_index, line in enumerate(stream):
             s = line.strip()
             if not s:
                 continue
@@ -139,10 +139,10 @@ class FastaWriter(iosys.DataWriter):
         iosys.DataWriter.__init__(self, **kwargs)
         self.wrap = kwargs.get("wrap", 0)
 
-    def write(self, ostream, **kwargs):
+    def write(self, stream, **kwargs):
         """
         Writes bound `DataSource` or `TaxonDomain` in FASTA format to a
-        file-like object `ostream`.
+        file-like object `stream`.
         """
 
         assert self.dataset is not None, \
@@ -152,12 +152,12 @@ class FastaWriter(iosys.DataWriter):
 
         for char_array in self.dataset.char_arrays:
             for taxon in char_array.taxon_set:
-                ostream.write(">%s\n" % str(taxon))
+                stream.write(">%s\n" % str(taxon))
                 seqs = char_array[taxon]
                 if isinstance(seqs, dataobject.CharacterDataVector):
                     seqs = seqs.values_as_string()
                 if self.wrap > 0:
                     seqs = textwrap.fill(seqs, width=self.wrap, break_long_words=True)
-                ostream.write("%s\n\n" % seqs)
+                stream.write("%s\n\n" % seqs)
 
 

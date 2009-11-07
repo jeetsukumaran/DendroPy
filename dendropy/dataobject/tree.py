@@ -50,7 +50,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         Initializes a new TreeList object, populating it with any Tree
         objects passed as unnamed argument, and from a data source if
-        `istream` and `format` are passed.
+        `stream` and `format` are passed.
 
         TreeList objects can thus be instantiated in the following ways::
 
@@ -70,7 +70,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             # tree from data source
             tlst2 = TreeList(StringIO("((A,B),(C,D));((A,C),(B,D));"), "newick") # from newick string
             tlst3 = TreeList(StringIO("((A,B),(C,D));((A,C),(B,D));"), format="newick") # same
-            tlst4 = TreeList(istream=StringIO("((A,B),(C,D));((A,C),(B,D));"), format="newick") # same
+            tlst4 = TreeList(stream=StringIO("((A,B),(C,D));((A,C),(B,D));"), format="newick") # same
 
             # passing keywords to underlying tree parser
             tlst5 = TreeList(StringIO("((A,B),(C,D));((A,C),(B,D));"), "newick", \
@@ -114,9 +114,9 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if len(args) > 0 and hasattr(args[0], "read"):
                 if len(args) > 2:
                     raise TypeError("Invalid number of unnamed arguments passed to Tree(): maximum of two when passed an file source as the first argument.")
-                if "istream" in kwargs:
+                if "stream" in kwargs:
                     raise TypeError("Cannot specify more than one data source to TreeList()")
-                istream = args[0]
+                stream = args[0]
                 if len(args) >= 2 and "format" not in kwargs:
                     format = args[1]
                 elif "format" not in kwargs:
@@ -125,18 +125,18 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 else:
                     format = kwargs["format"]
                     del(kwargs["format"])
-                self.read(istream, format, **kwargs)
+                self.read(stream, format, **kwargs)
             elif len(args) > 0:
                 raise TypeError("Invalid arguments to Tree()")
-            elif "istream" in kwargs:
+            elif "stream" in kwargs:
                 if "format" not in kwargs:
                     raise TypeError("Need to specify format if passing a file-like" \
                                   + " object from which to construct a TreeList")
-                istream = kwargs["istream"]
-                del(kwargs["istream"])
+                stream = kwargs["stream"]
+                del(kwargs["stream"])
                 format = kwargs["format"]
                 del(kwargs["format"])
-                self.read(istream, format, **kwargs)
+                self.read(stream, format, **kwargs)
 
         if "oid" in kwargs:
             self.oid = kwargs["oid"]
@@ -155,10 +155,10 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
 
-    def read(self, istream, format, **kwargs):
+    def read(self, stream, format, **kwargs):
         """
         Populates the `TreeList` from a `format`-formatted file-like
-        source `istream`. `format` must be a recognized and tree file
+        source `stream`. `format` must be a recognized and tree file
         format, such as `nexus`, `newick`, etc, for which a specialized
         tree list writer is available. If this is not implemented for
         the format specified, then a `UnsupportedFormatError` is raised.
@@ -185,7 +185,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 raise Exception("Cannot specify a different TaxonSet when reading into an existing TreeList.")
         else:
             kwargs["taxon_set"] = self.taxon_set
-        for t in tree_source_iter(istream=istream, format=format, **kwargs):
+        for t in tree_source_iter(stream=stream, format=format, **kwargs):
             if t is not None:
                 self.append(t)
 
@@ -338,12 +338,12 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     def __init__(self, *args, **kwargs):
         """
         Initializes a new Tree object, optionally constructing it out
-        of a data source of if `istream` and `format` are passed. Other
+        of a data source of if `stream` and `format` are passed. Other
         keyword arguments recognized: `oid`, `taxon_set`, and `label`.
 
-        If `istream` and `format` keyword arguments are given, will
+        If `stream` and `format` keyword arguments are given, will
         construct this `Tree` object from `format`-formatted source
-        given by file-like object `istream`. `format` must be a
+        given by file-like object `stream`. `format` must be a
         recognized and tree file format, such as `nexus`, `newick`, etc,
         for which a specialized tree list writer is available. If this
         is not implemented for the format specified, then a
@@ -363,7 +363,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             # tree from data source
             t2 = Tree(StringIO("((A,B),(C,D));"), "newick") # from newick string
             t3 = Tree(StringIO("((A,B),(C,D));"), format="newick") # same
-            t4 = Tree(istream=StringIO("((A,B),(C,D));"), format="newick") # same
+            t4 = Tree(stream=StringIO("((A,B),(C,D));"), format="newick") # same
 
             # passing keywords to underlying tree parser
             t5 = Tree(StringIO("((A,B),(C,D));"), "newick", \
@@ -395,14 +395,14 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             raise TypeError("Tree() takes at most 2 arguments (%d given)" % len(args))
         if len(args) > 0:
             if isinstance(args[0], Node):
-                if "istream" in kwargs:
+                if "stream" in kwargs:
                     raise TypeError("Cannot specify data source for Tree() if specifying seed Node")
                 iosys.Readable.__init__(self)
                 self.seed_node = args[0]
             elif isinstance(args[0], Tree):
                 if len(args) > 1:
                     raise TypeError("Tree() only accepts one unnamed argument when given a Tree object as the first argument")
-                if "istream" in kwargs or "format" in kwargs:
+                if "stream" in kwargs or "format" in kwargs:
                     raise TypeError("Cannot specify data source or format for Tree() when cloning another Tree")
                 iosys.Readable.__init__(self)
                 self.clone_from(args[0])
@@ -411,7 +411,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 if "label" in kwargs:
                     self.label = kwargs["label"]
             elif hasattr(args[0], "read"): # file-like object assed as first arg
-                if "istream" in kwargs:
+                if "stream" in kwargs:
                     raise TypeError("Cannot specify more than one data source for Tree()")
                 if len(args) > 1 and "format" not in kwargs:
                     format = args[1]
@@ -471,10 +471,10 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         "Dump Newick string."
         return self.as_newick_str()
 
-    def read(self, istream, format, **kwargs):
+    def read(self, stream, format, **kwargs):
         """
         Populates/constructs objects of this type from `format`-formatted
-        data in the file-like object source `istream`.
+        data in the file-like object source `stream`.
 
         Recognized keywords arguments are:
 
@@ -507,7 +507,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             kwargs["taxon_set"] = self.taxon_set
         else:
             self.taxon_set = kwargs["taxon_set"]
-        titer = tree_source_iter(istream=istream, format=format, **kwargs)
+        titer = tree_source_iter(stream=stream, format=format, **kwargs)
         count = 0
         t = None
         while count <= index:

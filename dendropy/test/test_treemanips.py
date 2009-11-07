@@ -76,7 +76,7 @@ class CollapseConflictingTest(unittest.TestCase):
 
         taxon_set = dendropy.TaxonSet([str(i+1) for i in range(5)])
         tree_list = dendropy.TreeList(
-            istream=StringIO("""
+            stream=StringIO("""
             (5,((4,3),2),1);
             (5,(4,3,2),1);
             (5,((4,3),2),1);

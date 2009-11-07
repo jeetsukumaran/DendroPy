@@ -202,14 +202,14 @@ class NexmlReader(iosys.DataReader):
 
     ## Implementation of the datasets.Reader interface ##
 
-    def read(self, istream, **kwargs):
+    def read(self, stream, **kwargs):
         """
         Instantiates and returns a DataSet object based on the
         NEXML-formatted contents read from the file descriptor object
-        `istream`.
+        `stream`.
         """
         start = time.clock()
-        xml_doc = xmlparser.xml_document(file_obj=istream)
+        xml_doc = xmlparser.xml_document(file_obj=stream)
         self.load_time = time.clock() - start
         start = time.clock()
         dataset = self.parse_dataset(xml_doc)
@@ -786,19 +786,19 @@ class NexmlWriter(iosys.DataWriter):
 
     ### self.datasets.Writer interface  ###
 
-    def write(self, ostream, **kwargs):
+    def write(self, stream, **kwargs):
         """
         Writes a list of DendroPy Tree objects to a full NEXML
         document.
         """
-        self.write_to_nexml_open(ostream, indent_level=0)
+        self.write_to_nexml_open(stream, indent_level=0)
 #         self.write_extensions(self.dataset, dest)
-        self.write_taxon_sets(taxon_sets=self.dataset.taxon_sets, dest=ostream)
+        self.write_taxon_sets(taxon_sets=self.dataset.taxon_sets, dest=stream)
         if not self.exclude_chars:
-            self.write_char_arrays(char_arrays=self.dataset.char_arrays, dest=ostream)
+            self.write_char_arrays(char_arrays=self.dataset.char_arrays, dest=stream)
         if not self.exclude_trees:
-            self.write_tree_lists(tree_lists=self.dataset.tree_lists, dest=ostream)
-        self.write_to_nexml_close(ostream, indent_level=0)
+            self.write_tree_lists(tree_lists=self.dataset.tree_lists, dest=stream)
+        self.write_to_nexml_close(stream, indent_level=0)
 
     ### class-specific  ###
 

@@ -104,9 +104,9 @@ class DataReader(IOService):
         IOService.__init__(self, **kwargs)
         self.encode_splits = kwargs.get("encode_splits", False)
 
-    def read(self, istream, **kwargs):
+    def read(self, stream, **kwargs):
         """
-        Reads data from the file-like object `istream`, and populates
+        Reads data from the file-like object `stream`, and populates
         and returns the bound `Dataset` object or a new `Dataset` object
         if none is bound.
         """
@@ -129,10 +129,10 @@ class DataWriter(IOService):
         """
         IOService.__init__(self, **kwargs)
 
-    def write(self, ostream, **kwargs):
+    def write(self, stream, **kwargs):
         """
         Writes data in the bound `Dataset` object to a destination given
-        by the file-like object `ostream`.
+        by the file-like object `stream`.
         """
         raise NotImplementedError
 
@@ -145,16 +145,16 @@ class Readable(object):
     """
 
     def __init__(self, *args, **kwargs):
-        if "istream" in kwargs:
-            istream = kwargs["istream"]
-            del(kwargs["istream"])
+        if "stream" in kwargs:
+            stream = kwargs["stream"]
+            del(kwargs["stream"])
             format = require_format_from_kwargs(kwargs)
-            self.read(istream=istream, format=format, **kwargs)
+            self.read(stream=stream, format=format, **kwargs)
 
-    def read(self, istream, format, **kwargs):
+    def read(self, stream, format, **kwargs):
         """
         Populates/constructs objects of this type from `format`-formatted
-        data in the file-like object source `istream`.
+        data in the file-like object source `stream`.
         """
         raise NotImplementedError
 
@@ -163,21 +163,21 @@ class Readable(object):
         Reads from file (exactly equivalent to just `read()`, provided
         here as a separate method for completeness.
         """
-        return self.read(istream=fileobj, format=format, **kwargs)
+        return self.read(stream=fileobj, format=format, **kwargs)
 
     def read_from_path(self, filepath, format, **kwargs):
         """
         Reads from file specified by `filepath`.
         """
         f = os.expandvars(os.expanduser(filepath))
-        return self.read(istream=f, format=format, **kwargs)
+        return self.read(stream=f, format=format, **kwargs)
 
     def read_from_string(self, src_str, format, **kwargs):
         """
         Reads a string object.
         """
         s = StringIO(src_str)
-        return self.read(istream=s, format=format, **kwargs)
+        return self.read(stream=s, format=format, **kwargs)
 
 ###############################################################################
 ## Writeable
@@ -190,9 +190,9 @@ class Writeable(object):
     def __init__(self, *args, **kwargs):
         pass
 
-    def write(self, ostream, format, **kwargs):
+    def write(self, stream, format, **kwargs):
         """
-        Writes the object to the file-like object `ostream` in `format`
+        Writes the object to the file-like object `stream` in `format`
         format.
         """
         raise NotImplementedError
@@ -201,20 +201,20 @@ class Writeable(object):
         """
         Writes to file-like object `fileobj`.
         """
-        return self.write(ostream=fileobj, format=format, **kwargs)
+        return self.write(stream=fileobj, format=format, **kwargs)
 
     def write_to_path(self, filepath, format, **kwargs):
         """
         Writes to file specified by `filepath`.
         """
         f = os.expandvars(os.expanduser(filepath))
-        return self.write(ostream=f, format=format, **kwargs)
+        return self.write(stream=f, format=format, **kwargs)
 
     def as_string(self, format, **kwargs):
         """
         Composes and returns string representation of the data.
         """
         s = StringIO(src_str)
-        self.write(ostream=s, format=format, **kwargs)
+        self.write(stream=s, format=format, **kwargs)
         return s.getvalue()
 
