@@ -52,12 +52,12 @@ class ExtendedTestCase(unittest.TestCase):
 
     def assertIsSame(self, obj1, obj2, message=None):
         if message is None:
-            message = "Object %s is not object %s: %s vs. %s" % (id(obj2), id(obj2), obj1, obj2)
+            message = "Object %s is not same as object %s: %s vs. %s" % (id(obj2), id(obj2), obj1, obj2)
         self.assertTrue(obj1 is obj2, message)
 
     def assertIsNotSame(self, obj1, obj2, message=None):
         if message is None:
-            message = "Object %s is not object %s: %s vs. %s" % (id(obj2), id(obj2), obj1, obj2)
+            message = "Object %s is same as object %s: %s vs. %s" % (id(obj2), id(obj2), obj1, obj2)
         self.assertTrue(obj1 is not obj2, message)
 
     def assertIsContainedIn(self, obj1, obj2, message=None):
