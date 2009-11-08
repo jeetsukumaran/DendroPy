@@ -146,7 +146,12 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         return o
 
     def __str__(self):
-        return "[%s]" % " ".join([(str(t)+";") for t in self])
+#        return "TreeList(%s)" % " ".join([(str(t)+";") for t in self])
+        return " ".join([ (str(tree) + ";") for tree in self ])
+
+    def __repr__(self):
+#        return "<TreeList object at %s: (%s)>" % (hex(id(self)), (", ".join([repr(tree) for tree in self])))
+        return "<TreeList object at %s>" % (hex(id(self)))
 
     def read(self, stream, format, **kwargs):
         """
@@ -427,7 +432,10 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def __str__(self):
         "Dump Newick string."
-        return self.as_newick_str()
+        return "%s" % self.as_newick_str()
+
+    def __repr__(self):
+        return "<Tree object at %s>" % (hex(id(self)))
 
     def read(self, stream, format, **kwargs):
         """

@@ -274,6 +274,12 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         "Returns bitstring representation of split_bitmask."
         return "%s" % texttools.int_to_bitstring(split_bitmask).rjust(len(self), "0")
 
+    def __str__(self):
+        return "TaxonSet(%s)" % (", ".join([str(taxon) for taxon in self]))
+
+    def __repr__(self):
+        return "<TaxonSet object at %s>" % (hex(id(self)))
+
 class Taxon(base.IdTagged):
     """
     A taxon associated with a sequence or a node on a tree.
@@ -296,4 +302,7 @@ class Taxon(base.IdTagged):
 
     def __str__(self):
         "String representation of self = taxon name."
-        return "<%s>" % str(self.label)
+        return "'%s'" % str(self.label)
+
+    def __repr__(self):
+        return "<Taxon object at %s>" % (hex(id(self)))
