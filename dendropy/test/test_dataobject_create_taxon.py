@@ -40,7 +40,33 @@ class TaxaTest(framework.DataObjectVerificationTestCase):
         for label in self.labels:
             self.taxon_set.new_taxon(label=label)
 
-    def testLocking(self):
+    def testCompositionFromStrings(self):
+        ts = dendropy.TaxonSet(self.labels)
+        self.assertDistinctButEqual(ts, self.taxon_set)
+
+    def testCompositionFromTaxa(self):
+        ts = dendropy.TaxonSet(self.taxon_set)
+        self.assertDistinctButEqual(ts, self.taxon_set)
+
+    def testTaxaQuerying(self):
+        ts = dendropy.TaxonSet(self.labels)
+        self.assertTrue(ts.has_taxa(labels=self.labels))
+        self.assertTrue(ts.has_taxa(taxa=ts))
+        self.assertFalse(ts.has_taxa(labels=self.labels+["k"]))
+        k = ts.new_taxon(label="k")
+        self.assertTrue(ts.has_taxa(taxa=[k]))
+        self.assertTrue(ts.has_taxon(label="k"))
+        self.assertTrue(ts.has_taxa(labels=self.labels+["k"]))
+        j = dendropy.Taxon(label="j")
+        ts.add_taxon(j)
+        self.assertTrue(ts.has_taxa(taxa=[j]))
+        self.assertTrue(ts.has_taxon(label="j"))
+        self.assertTrue(ts.has_taxa(labels=self.labels+["j"]))
+        self.assertFalse(ts.has_taxon(taxon=dendropy.Taxon()))
+        for label in self.labels:
+            self.assertTrue(ts.has_taxon(label=label))
+
+    def testLockedVsUnlocked(self):
         self.taxon_set.lock()
         self.assertEquals(len(self.taxon_set), 10)
         for idx, t in enumerate(self.taxon_set):
@@ -54,22 +80,10 @@ class TaxaTest(framework.DataObjectVerificationTestCase):
         self.taxon_set.require_taxon(label="X3")
         self.assertEquals(len(self.taxon_set), 12)
 
-    def testCompositionFromStrings(self):
+    def testTaxonQuerying(self):
         ts = dendropy.TaxonSet(self.labels)
-        self.assertDistinctButEqual(ts, self.taxon_set)
-
-    def x(self):
-        self.assertTrue(ts.has_taxa(labels=self.labels))
-        self.assertFalse(ts.has_taxa(labels=labels+["Z"]))
-        self.assertTrue(ts.has_taxa(taxa=ts))
-        self.assertFalse(ts.has_taxa(taxa=tj))
-        self.assertFalse(ts.has_taxon(label="Z"))
-        self.assertFalse(ts.has_taxon(taxon=Taxon()))
-        for label in labels:
-            self.assertTrue(ts.has_taxon(label=label))
-
-    def testFromListOfStrings(self):
-        pass
+        self.assertIsSame(ts.get_taxon(label="Q"), None)
+        self.assertIsSame(ts.get_taxon(label="T1"), ts[0])
 
 if __name__ == "__main__":
     unittest.main()
