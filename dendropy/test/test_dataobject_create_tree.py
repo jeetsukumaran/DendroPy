@@ -27,11 +27,11 @@ Tests creation, reading, update, deletion of Tree objects.
 import unittest
 from cStringIO import StringIO
 from dendropy.utility import error
-from dendropy.test.support import framework
+from dendropy.test.support import datatest
 from dendropy.test.support import datagen
 import dendropy
 
-class TreeCreateTest(framework.DataObjectVerificationTestCase):
+class TreeCreateTest(datatest.DataObjectVerificationTestCase):
 
     def setUp(self):
         self.tree1 = datagen.four_taxon_tree1()

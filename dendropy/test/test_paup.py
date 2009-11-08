@@ -30,7 +30,7 @@ import csv
 
 import unittest
 from dendropy.test.support import pathmap
-from dendropy.test.support.framework import ExtendedTestCase
+from dendropy.test.support.extendedtest import ExtendedTestCase
 from dendropy.utility import containers
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
