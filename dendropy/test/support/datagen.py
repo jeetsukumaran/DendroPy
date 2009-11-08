@@ -26,7 +26,7 @@ Data and value generation
 
 from random import Random
 from dendropy.test.support import pathmap
-from dendropy.test.support.framework import NodeRelationship
+from dendropy.dataobject.tree import NodeRelationship
 import dendropy
 
 def four_taxon_tree1():

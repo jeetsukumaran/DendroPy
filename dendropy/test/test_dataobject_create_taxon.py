@@ -27,10 +27,10 @@ Tests creation, reading, update, deletion of Taxon and TaxonSet objects.
 import unittest
 from cStringIO import StringIO
 from dendropy.utility import error
-from dendropy.test.support import framework
+from dendropy.test.support import datatest
 import dendropy
 
-class TaxaTest(framework.DataObjectVerificationTestCase):
+class TaxaTest(datatest.DataObjectVerificationTestCase):
 
     def setUp(self):
         self.labels = []

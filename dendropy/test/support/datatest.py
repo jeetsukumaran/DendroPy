@@ -21,95 +21,14 @@
 ###############################################################################
 
 """
-Extensions of the unittest framework.
+Extensions of the unittest framework for data comparison and testing.
 """
 
 import unittest
 import dendropy
-from dendropy.utility import messaging
+from dendropy.test.support import extendedtest
 
-# defining this here means that unittest will exclude all lines from this
-# module in the traceback report when an assertion is raised, allowing
-# for the point of failure to be the point where the assertion statement
-# was made, rather than the point where an exception was raised because
-# the assertion as false
-#__unittest = True
-
-class NodeRelationship(object):
-
-    def from_tree(tree):
-        return [NodeRelationship(node) for node in tree]
-    from_tree = staticmethod(from_tree)
-
-    def from_node(node):
-        ndr = NodeRelationship(None, None, None, None)
-        ndr.parent_label = node.parent_node.label if node.parent_node is not None else 'None'
-        ndr.child_labels = [cnd.label for cnd in node.child_nodes()]
-        ndr.edge_length = node.edge.length
-        ndr.taxon_label = node.taxon.label if node.taxon is not None else None
-        return ndr
-    from_node = staticmethod(from_node)
-
-    def __init__(self, parent_label, child_labels, edge_length, taxon_label):
-        self.parent_label = parent_label
-        self.child_labels = child_labels
-        self.edge_length = edge_length
-        self.taxon_label = taxon_label
-
-    def test_node(self, testcase, node):
-        if self.parent_label is not None:
-            testcase.assertTrue(node.parent_node is not None)
-            testcase.assertEqual(self.parent_label, node.parent_node.label)
-        else:
-            testcase.assertTrue(node.parent_node is None or node.parent_node.label is None)
-        testcase.assertEqual(self.child_labels, [cnd.label for cnd in node.child_nodes()])
-        if self.edge_length is not None:
-            testcase.assertTrue(node.edge.length is not None)
-            testcase.assertAlmostEqual(self.edge_length, node.edge.length)
-        else:
-            testcase.assertTrue(node.edge.length is None)
-        if self.taxon_label is not None:
-            testcase.assertTrue(node.taxon is not None)
-            testcase.assertEqual(self.taxon_label, node.taxon.label)
-        else:
-            testcase.assertTrue(node.taxon is None or node.taxon.label is None)
-
-class ExtendedTestCase(unittest.TestCase):
-    """
-    Extends unittest.TestCase with various new assertion tests.
-    """
-
-    def _get_logger(self):
-        if not hasattr(self, "_logger") or self._logger is None:
-            self._logger = messaging.get_logger(self.__class__.__name__)
-        return self._logger
-
-    def _set_logger(self, logger):
-        self._logger = logger
-
-    logger = property(_get_logger, _set_logger)
-
-    def assertIsSame(self, obj1, obj2, message=None):
-        if message is None:
-            message = "Object %s is not same as object %s: %s vs. %s" % (id(obj2), id(obj2), obj1, obj2)
-        self.assertTrue(obj1 is obj2, message)
-
-    def assertIsNotSame(self, obj1, obj2, message=None):
-        if message is None:
-            message = "Object %s is same as object %s: %s vs. %s" % (id(obj2), id(obj2), obj1, obj2)
-        self.assertTrue(obj1 is not obj2, message)
-
-    def assertIsContainedIn(self, obj1, obj2, message=None):
-        if message is None:
-            message = "%s is not in: %s" % (obj1, obj2)
-        self.assertTrue(obj1 in obj2, message)
-
-    def assertIsNotContainedIn(self, obj1, obj2, message=None):
-        if message is None:
-            message = "%s is in: %s" % (obj1, obj2)
-        self.assertTrue(obj1 not in obj2, message)
-
-class DataObjectVerificationTestCase(ExtendedTestCase):
+class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
     """
     Extends ExtendedTestCase with tests for data object comparisons.
     """

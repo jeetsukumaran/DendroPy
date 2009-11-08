@@ -27,10 +27,10 @@ Verifies that data objects generated for use in testing are correct.
 import unittest
 from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
-from dendropy.test.support import framework
+from dendropy.test.support import datatest
 import dendropy
 
-class DataForTestingTest(framework.DataObjectVerificationTestCase):
+class DataForTestingTest(datatest.DataObjectVerificationTestCase):
 
     def testTreeFromStandard(self):
         tree1 = datagen.four_taxon_tree1()

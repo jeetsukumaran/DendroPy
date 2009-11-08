@@ -27,11 +27,11 @@ Tests creation, reading, update, deletion of TreeList objects.
 import unittest
 from cStringIO import StringIO
 from dendropy.utility import error
-from dendropy.test.support import framework
+from dendropy.test.support import datatest
 from dendropy.test.support import datagen
 import dendropy
 
-class TreeListCreateTest(framework.DataObjectVerificationTestCase):
+class TreeListCreateTest(datatest.DataObjectVerificationTestCase):
 
     def setUp(self):
         self.tree_list1 = datagen.reference_tree_list()

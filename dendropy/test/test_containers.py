@@ -26,7 +26,7 @@ Test of data collection classes.
 
 import unittest
 from dendropy.utility import containers
-from dendropy.test.support.framework import ExtendedTestCase
+from dendropy.test.support.extendedtest import ExtendedTestCase
 
 class TestNormalizedBitmaskDict(ExtendedTestCase):
 
