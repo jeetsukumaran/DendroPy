@@ -51,10 +51,10 @@ class TreeCreateTest(framework.DataObjectVerificationTestCase):
         self.assertRaises(TypeError, dendropy.Tree, self.tree1, "dummy")
 
     def testTreeFromInvalidObjectPosArgs(self):
-        self.assertRaises(error.InvalidArgumentTypeError, dendropy.Tree, object())
+        self.assertRaises(error.InvalidArgumentValueError, dendropy.Tree, object())
 
     def testTreeFromInvalidIterablePosArgs(self):
-        self.assertRaises(error.InvalidArgumentTypeError, dendropy.Tree, "abcde")
+        self.assertRaises(error.InvalidArgumentValueError, dendropy.Tree, "abcde")
 
     def testTreeFromFileTooManyPosArgs(self):
         self.assertRaises(error.TooManyArgumentsError, dendropy.Tree, StringIO(self.tree1_newick_str), "newick")
@@ -78,7 +78,7 @@ class TreeCreateTest(framework.DataObjectVerificationTestCase):
         self.assertRaises(error.UnspecifiedFormatError, dendropy.Tree, stream=StringIO(self.tree1_newick_str), taxon_set=self.tree1.taxon_set)
 
     def testTreeFromMultipleSource(self):
-        self.assertRaises(TypeError,
+        self.assertRaises(error.MultipleInitializationSourceError,
                 dendropy.Tree, \
                 StringIO(self.tree1_newick_str),
                 stream=StringIO(self.tree1_newick_str),

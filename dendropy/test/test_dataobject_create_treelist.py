@@ -64,19 +64,19 @@ class TreeListCreateTest(framework.DataObjectVerificationTestCase):
     def testMultipleSources(self):
         self.assertRaises(error.MultipleInitializationSourceError, dendropy.TreeList, self.tree_list1, stream=self.tree_list1_stream, format="newick")
 
-    def testTreeListFromTreeFileSameTaxa(self):
+    def testTreeListFromFileSameTaxa(self):
         tree_list2 = dendropy.TreeList(stream=self.tree_list1_stream, format="newick", taxon_set=self.tree_list1.taxon_set)
         self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=False, equal_oids=False, distinct_trees=True)
 
-    def testTreeListFromTreeFileDifferentTaxa(self):
+    def testTreeListFromFileDifferentTaxa(self):
         tree_list2 = dendropy.TreeList([dendropy.Tree(t) for t in self.tree_list1])
         self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=True, equal_oids=False, distinct_trees=True)
 
-    def testTreeListFromTreeFileNoFormatSpecification(self):
+    def testTreeListFromFileNoFormatSpecification(self):
         self.assertRaises(error.UnspecifiedFormatError, dendropy.TreeList, stream=self.tree_list1_stream)
 
-    def testTreeListFromTreeFileNoKeywords(self):
-        self.assertRaises(TypeError, dendropy.TreeList, self.tree_list1_stream)
+    def testTreeListFromFileNoKeywords(self):
+        self.assertRaises(ValueError, dendropy.TreeList, self.tree_list1_stream)
 
 if __name__ == "__main__":
     unittest.main()

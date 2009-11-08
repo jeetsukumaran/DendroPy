@@ -106,7 +106,7 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
             return Taxon(label=s.label)
         if isinstance(s, str):
             return Taxon(label=s)
-        raise error.InvalidArgumentTypeError("Cannot convert %s to Taxon" % str(s))
+        raise ValueError("Cannot convert %s to Taxon" % str(s))
     _to_taxon = staticmethod(_to_taxon)
 
     def __init__(self, *args, **kwargs):
@@ -152,7 +152,7 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         exists (supplied by keywords; matches any)
         """
         if "taxon" not in kwargs and "oid" not in kwargs and "label" not in kwargs:
-            raise Exception("Need to specify oid or Label.")
+            raise TypeError("Need to specify oid or Label.")
         req_taxon = kwargs.get("taxon", None)
         oid = kwargs.get("oid", None)
         label = kwargs.get("label", None)
@@ -171,7 +171,7 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         every label in list of `labels` given by keyword arg `labels`.
         """
         if "taxa" not in kwargs and "oids" not in kwargs and "labels" not in kwargs:
-            raise Exception("Need to specify `taxa`, `oids` or `labels` list.")
+            raise TypeError("Need to specify `taxa`, `oids` or `labels` list.")
         taxa = set(kwargs.get("taxa",  []))
         oids = set(kwargs.get("oids", []))
         labels = set(kwargs.get("labels", []))
@@ -188,7 +188,7 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         exist then None is returned.
         """
         if "oid" not in kwargs and "label" not in kwargs:
-            raise Exception("Need to specify Taxon oid or Label.")
+            raise TypeError("Need to specify Taxon oid or Label.")
         oid = kwargs.get("oid", None)
         label = kwargs.get("label", None)
         for taxon in self:

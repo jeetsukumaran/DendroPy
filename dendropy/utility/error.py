@@ -62,10 +62,10 @@ class TooManyArgumentsError(TypeError):
             "%s() takes a maximum of %d arguments (%d given)" \
                 % (func_name, max_args, len(args)))
 
-class InvalidArgumentTypeError(TypeError):
+class InvalidArgumentValueError(ValueError):
 
     def __init__(self, func_name, arg):
-        TypeError.__init__(self,
+        ValueError.__init__(self,
             "%s() does not accept objects of type '%s' as an argument" \
                 % (func_name, arg.__class__.__name__))
 

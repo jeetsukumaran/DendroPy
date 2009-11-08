@@ -35,41 +35,6 @@ from dendropy.utility import messaging
 # the assertion as false
 #__unittest = True
 
-class ExtendedTestCase(unittest.TestCase):
-    """
-    Extends unittest.TestCase with various new assertion tests.
-    """
-
-    def _get_logger(self):
-        if not hasattr(self, "_logger") or self._logger is None:
-            self._logger = messaging.get_logger(self.__class__.__name__)
-        return self._logger
-
-    def _set_logger(self, logger):
-        self._logger = logger
-
-    logger = property(_get_logger, _set_logger)
-
-    def assertIsSame(self, obj1, obj2, message=None):
-        if message is None:
-            message = "Object %s is not same as object %s: %s vs. %s" % (id(obj2), id(obj2), obj1, obj2)
-        self.assertTrue(obj1 is obj2, message)
-
-    def assertIsNotSame(self, obj1, obj2, message=None):
-        if message is None:
-            message = "Object %s is same as object %s: %s vs. %s" % (id(obj2), id(obj2), obj1, obj2)
-        self.assertTrue(obj1 is not obj2, message)
-
-    def assertIsContainedIn(self, obj1, obj2, message=None):
-        if message is None:
-            message = "%s is not in: %s" % (obj1, obj2)
-        self.assertTrue(obj1 in obj2, message)
-
-    def assertIsNotContainedIn(self, obj1, obj2, message=None):
-        if message is None:
-            message = "%s is in: %s" % (obj1, obj2)
-        self.assertTrue(obj1 not in obj2, message)
-
 class NodeRelationship(object):
 
     def from_tree(tree):
@@ -109,6 +74,41 @@ class NodeRelationship(object):
         else:
             testcase.assertTrue(node.taxon is None or node.taxon.label is None)
 
+class ExtendedTestCase(unittest.TestCase):
+    """
+    Extends unittest.TestCase with various new assertion tests.
+    """
+
+    def _get_logger(self):
+        if not hasattr(self, "_logger") or self._logger is None:
+            self._logger = messaging.get_logger(self.__class__.__name__)
+        return self._logger
+
+    def _set_logger(self, logger):
+        self._logger = logger
+
+    logger = property(_get_logger, _set_logger)
+
+    def assertIsSame(self, obj1, obj2, message=None):
+        if message is None:
+            message = "Object %s is not same as object %s: %s vs. %s" % (id(obj2), id(obj2), obj1, obj2)
+        self.assertTrue(obj1 is obj2, message)
+
+    def assertIsNotSame(self, obj1, obj2, message=None):
+        if message is None:
+            message = "Object %s is same as object %s: %s vs. %s" % (id(obj2), id(obj2), obj1, obj2)
+        self.assertTrue(obj1 is not obj2, message)
+
+    def assertIsContainedIn(self, obj1, obj2, message=None):
+        if message is None:
+            message = "%s is not in: %s" % (obj1, obj2)
+        self.assertTrue(obj1 in obj2, message)
+
+    def assertIsNotContainedIn(self, obj1, obj2, message=None):
+        if message is None:
+            message = "%s is in: %s" % (obj1, obj2)
+        self.assertTrue(obj1 not in obj2, message)
+
 class DataObjectVerificationTestCase(ExtendedTestCase):
     """
     Extends ExtendedTestCase with tests for data object comparisons.
@@ -119,9 +119,9 @@ class DataObjectVerificationTestCase(ExtendedTestCase):
         Verifies that two DendroPy phylogenetic data objects (Tree, TreeList,
         CharArray, DataSet etc.) are independent objects, but equal. That is,
         if `data_object1` and `data_object` are the same object, then the
-        distinction criterion is failed. If `distinct_taxa` is False, then the
+        distinction criterion is failed. If `distinct_taxa` is True, then the
         distinct/independence is criterion is enforced down to Taxon and
-        TaxonSet objects. If `distinct_taxa` is True, then the test fails if
+        TaxonSet objects. If `distinct_taxa` is False, then the test fails if
         the Taxon and TaxonSet objects are NOT distinct. Same holds for
         `equal_oids`, except if `equal_oids` is None then oid's are not
         checked.
@@ -130,11 +130,13 @@ class DataObjectVerificationTestCase(ExtendedTestCase):
         objects in domain space.
         """
         distinct_taxa = kwargs.get("distinct_taxa", True)
-        equal_oids = kwargs.get("equal_oids", True)
+        equal_oids = kwargs.get("equal_oids", None)
         if type(data_object1) != type(data_object2):
-            raise TypeError("Objects to be compared must be of the same type, but was given %s and %s objects" \
+            raise ValueError("Objects to be compared must be of the same type, but was given %s and %s objects" \
                 % (type(data_object1), type(data_object2)))
-        if isinstance(data_object1, dendropy.Tree):
+        if isinstance(data_object1, dendropy.TaxonSet):
+            self.assertDistinctButEqualTaxonSets(data_object1, data_object2, **kwargs)
+        elif isinstance(data_object1, dendropy.Tree):
             self.assertDistinctButEqualTrees(data_object1, data_object2, **kwargs)
         elif isinstance(data_object1, dendropy.TreeList):
             self.assertDistinctButEqualTreeLists(data_object1, data_object2, **kwargs)
@@ -142,14 +144,30 @@ class DataObjectVerificationTestCase(ExtendedTestCase):
             raise TypeError("Unsupported type for comparison: %s" % type(data_object1))
 
     def assertDistinctButEqualTaxonSets(self, taxon_set1, taxon_set2, **kwargs):
-        pass
+        equal_oids = kwargs.get("equal_oids", None)
+        ignore_underscore_substitution = kwargs.get("ignore_underscore_substitution", False)
+        self.assertIsNotSame(taxon_set1, taxon_set2)
+        self.assertEqual(len(taxon_set1), len(taxon_set2))
+        for tidx, taxon1 in enumerate(taxon_set1):
+            taxon2 = taxon_set2[tidx]
+            self.assertIsNotSame(taxon1, taxon2)
+            if taxon1.label is None:
+                self.assertIsSame(taxon2.label, None)
+            elif ignore_underscore_substitution:
+                self.assertEqual(taxon1.label.replace(" ", "_"), taxon2.label.replace(" ", "_"))
+            else:
+                self.assertEqual(taxon1.label, taxon2.label)
+            if equal_oids is True:
+                self.assertEqual(taxon1.oid, taxon2.oid)
+            elif equal_oids is False:
+                self.assertNotEqual(taxon1.oid, taxon2.oid)
 
     def assertDistinctButEqualTreeLists(self, tree_list1, tree_list2, **kwargs):
         """
         `tree_list1` and `tree_list2` must be distinct but equivalent objects.
         """
         distinct_taxa = kwargs.get("distinct_taxa", True)
-        equal_oids = kwargs.get("equal_oids", True)
+        equal_oids = kwargs.get("equal_oids", None)
         self.assertTrue(tree_list1 is not tree_list2)
         self.assertEqual(len(tree_list1), len(tree_list2))
         if distinct_taxa:
@@ -157,7 +175,10 @@ class DataObjectVerificationTestCase(ExtendedTestCase):
             self.assertDistinctButEqualTaxonSets(tree_list1.taxon_set, tree_list2.taxon_set)
         else:
             self.assertIsSame(tree_list1.taxon_set, tree_list2.taxon_set)
-        self.assertDistinctButEqualTaxonSets(tree_list1.taxon_set, tree_list2.taxon_set, **kwargs)
+        if distinct_taxa:
+            self.assertDistinctButEqualTaxonSets(tree_list1.taxon_set, tree_list2.taxon_set, **kwargs)
+        else:
+            self.assertIsSame(tree_list1.taxon_set, tree_list2.taxon_set)
         self.assertEqual(tree_list1.label, tree_list2.label)
         if equal_oids is True:
             self.assertEqual(tree_list1.oid, tree_list1.oid)
@@ -186,7 +207,7 @@ class DataObjectVerificationTestCase(ExtendedTestCase):
         themselves are different.
         """
         distinct_taxa = kwargs.get("distinct_taxa", True)
-        equal_oids = kwargs.get("equal_oids", True)
+        equal_oids = kwargs.get("equal_oids", None)
         self.logger.debug(tree1.as_newick_str())
         tree1.debug_check_tree(logger=self.logger)
         self.logger.debug(tree2.as_newick_str())

@@ -116,15 +116,15 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 if isinstance(args[0], TreeList):
                     for t in args[0]:
                         if not isinstance(t, Tree):
-                            raise TypeError("TreeList() only accepts Tree objects as members")
+                            raise ValueError("TreeList() only accepts Tree objects as members")
                         self.append(Tree(t))
                 else:
                     for t in args[0]:
                         if not isinstance(t, Tree):
-                            raise TypeError("TreeList() only accepts Tree objects as members")
+                            raise ValueError("TreeList() only accepts Tree objects as members")
                         self.append(t)
             else:
-                raise error.InvalidArgumentTypeError(self.__class__.__name__, args[0])
+                raise error.InvalidArgumentValueError(self.__class__.__name__, args[0])
         else:
             self.process_source_kwargs(**kwargs)
 
@@ -393,7 +393,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             elif isinstance(args[0], Tree):
                 self.clone_from(args[0])
             else:
-                raise error.InvalidArgumentTypeError(self.__class__.__name__, args[0])
+                raise error.InvalidArgumentValueError(self.__class__.__name__, args[0])
         else:
             self.process_source_kwargs(**kwargs)
         if "oid" in kwargs:

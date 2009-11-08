@@ -68,7 +68,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
                 d = deepcopy(args[0])
                 self.__dict__ = d.__dict__
             else:
-                raise error.InvalidArgumentTypeError(self.__class__.__name__, args[0])
+                raise error.InvalidArgumentValueError(self.__class__.__name__, args[0])
         elif "stream" in kwargs:
             self.process_source_kwargs(**kwargs)
 
