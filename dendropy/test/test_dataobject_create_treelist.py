@@ -72,7 +72,7 @@ class TreeCreateTest(framework.DataObjectVerificationTestCase):
 
     def testTreeFromTreeWithExtraKeywordArgsOK(self):
         tree2 = dendropy.Tree(self.tree1, stream=None, format=None)
-        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=True, equal_oids=False)
+        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
     def testTreeFromFilePosArgsWithNoFormat(self):
         self.assertRaises(error.UnspecifiedFormatError, dendropy.Tree, stream=StringIO(self.tree1_newick_str), taxon_set=self.tree1.taxon_set)
