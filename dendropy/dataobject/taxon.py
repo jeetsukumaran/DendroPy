@@ -29,6 +29,7 @@ import math
 from dendropy.dataobject import base
 from dendropy.utility import texttools
 from dendropy.utility import containers
+from dendropy.utility import error
 
 def new_taxon_set(ntax=10, label_func=None):
     """
@@ -102,10 +103,10 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
 
     def _to_taxon(s):
         if isinstance(s, Taxon):
-            return s
+            return Taxon(label=s.label)
         if isinstance(s, str):
             return Taxon(label=s)
-        raise ValueError("Cannot convert %s to Taxon" % str(s))
+        raise error.InvalidArgumentTypeError("Cannot convert %s to Taxon" % str(s))
     _to_taxon = staticmethod(_to_taxon)
 
     def __init__(self, *args, **kwargs):
@@ -117,14 +118,13 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         in the iterable a new (distinct) Taxon object with the same
         label is constructed and added to the set.
         """
-        la = len(args)
-        if la > 0:
-            if la > 1:
-                raise TypeError("TaxonSet() takes at most 1 non-keyword argument (%d given)" % la)
-            containers.OrderedSet.__init__(self, [TaxonSet._to_taxon(i) for i in args[0]])
-        else:
-            containers.OrderedSet.__init__(self)
+        containers.OrderedSet.__init__(self)
         base.IdTagged.__init__(self, oid=kwargs.get('oid'), label=kwargs.get('label'))
+        if len(args) > 1:
+            raise TypeError("TaxonSet() takes at most 1 non-keyword argument (%d given)" % len(args))
+        elif len(args) == 1:
+            for i in args[0]:
+                self.add(TaxonSet._to_taxon(i))
         self._is_mutable = kwargs.get('is_mutable', True) # immutable constraints not fully implemented -- only enforced at the add_taxon stage)
 
     def __deepcopy__(self, memo):
