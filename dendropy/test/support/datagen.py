@@ -384,6 +384,7 @@ def reference_tree_list():
     tax_5595120 = taxon_set.require_taxon(label="Antaresia perthensis", oid="Taxon5595120")
     tax_5595024 = taxon_set.require_taxon(label="Python brongersmai", oid="Taxon5595024")
     tax_7352592 = taxon_set.require_taxon(label="Morelia carinata", oid="Taxon7352592")
+    assert len(reference_tree_list.taxon_set) == 13
     tree_5593360 = dendropy.Tree(label="Tree01", taxon_set=reference_tree_list.taxon_set, oid="Tree5593360")
     reference_tree_list.append(tree_5593360, reindex_taxa=False)
     tree_5593360.seed_node.oid = 'Node5593456'
