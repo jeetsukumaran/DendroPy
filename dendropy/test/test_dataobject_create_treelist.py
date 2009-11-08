@@ -70,13 +70,13 @@ class TreeListCreateTest(framework.DataObjectVerificationTestCase):
 
     def testTreeListFromTreeFileDifferentTaxa(self):
         tree_list2 = dendropy.TreeList([dendropy.Tree(t) for t in self.tree_list1])
-        self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=False, equal_oids=False, distinct_trees=True)
+        self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=True, equal_oids=False, distinct_trees=True)
 
     def testTreeListFromTreeFileNoFormatSpecification(self):
         self.assertRaises(error.UnspecifiedFormatError, dendropy.TreeList, stream=self.tree_list1_stream)
 
     def testTreeListFromTreeFileNoKeywords(self):
-        self.assertRaises(error.InvalidArgumentTypeError, dendropy.TreeList, stream=self.tree_list1_stream, format="newick")
+        self.assertRaises(TypeError, dendropy.TreeList, self.tree_list1_stream)
 
 #    def testTreeFromTreeSetOidAndLabelSameTaxa(self):
 #        tree2 = dendropy.Tree(self.tree1, oid="TREE2", label="TREE2")

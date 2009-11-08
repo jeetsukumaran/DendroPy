@@ -238,7 +238,7 @@ class DataObjectVerificationTestCase(ExtendedTestCase):
             if edge1.length is None:
                 self.assertIsSame(edge1.length, None)
             else:
-                self.assertEqual(edge1.length, edge2.length)
+                self.assertAlmostEqual(edge1.length, edge2.length, 2)
             if equal_oids is True:
                 self.assertEqual(edge1.oid, edge2.oid)
             elif equal_oids is False:

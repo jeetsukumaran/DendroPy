@@ -23,6 +23,7 @@
 """
 Exceptions and error.
 """
+import sys
 
 class DataFormatError(Exception):
 
@@ -71,5 +72,6 @@ class InvalidArgumentTypeError(TypeError):
 class MultipleInitializationSourceError(TypeError):
     def __init__(self, class_name, arg):
         TypeError.__init__(self,
-            "%s() does not accept data 'stream' or 'format' arguments when initializing with a '%s' object" \
-                % (class_name, arg.__class__.__name__))
+            "%s() does not accept data 'stream' or 'format' arguments when initializing from another object" \
+                % (class_name))
+
