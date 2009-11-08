@@ -451,7 +451,11 @@ class CharacterDataMap(dict, Annotated):
         """
         Synchronizes taxon association.
         """
-        value.taxon = key
+        if not isinstance(value, str):
+            if not isinstance(value, CharacterDataVector):
+                value = CharacterDataVector(value, taxon=key)
+            else:
+                value.taxon = key
         dict.__setitem__(self, key, value)
 
     def extend_characters(self, other_map):
