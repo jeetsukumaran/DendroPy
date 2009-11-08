@@ -25,6 +25,7 @@ This module handles the core definition of phylogenetic character data.
 """
 
 import copy
+from dendropy.utility import error
 from dendropy.dataobject.base import IdTagged, Annotated
 from dendropy.dataobject.taxon import TaxonLinked, TaxonSetLinked
 
@@ -90,6 +91,7 @@ class StateAlphabetElement(IdTagged):
     fundamental_tokens = property(_get_fundamental_tokens)
 
 class StateAlphabet(IdTagged, list):
+
     "A set of states available for a particular character type/format."
 
     def __init__(self, *args, **kwargs):
@@ -200,6 +202,23 @@ class StateAlphabet(IdTagged, list):
     def polymorphic_states(self):
         "Returns list of ambiguous states of this alphabet"
         return [s for s in self if s.multistate == StateAlphabetElement.POLYMORPHIC_STATE]
+
+    def get_states_as_cells(self, oids=None, symbols=None, tokens=None):
+        """
+        Returns (plain) list of CharacterDataCell objects with values set to
+        states corresponding to symbols given by `symbols`.
+        """
+        return [CharacterDataCell(value=s) for \
+            s in self.get_states(oids=oids, symbols=symbols, tokens=tokens)]
+
+    def get_states_as_vector(self, oids=None, symbols=None, tokens=None, **kwargs):
+        """
+        Returns CharacterDataVector object, with member CharacterDataCell objects
+        with values set to states corresponding to symbols given by `symbols`.
+        If `taxon` is given in keyword arguments, its value will be assigned
+        to the `taxon` property of the CharacterDataVector.
+        """
+        return CharacterDataVector(self.get_states_as_cells(oids=oids, symbols=symbols, tokens=tokens), **kwargs)
 
 class FixedStateAlphabet(StateAlphabet):
 
@@ -428,6 +447,13 @@ class CharacterDataMap(dict, Annotated):
         dict.__init__(self)
         Annotated.__init__(self)
 
+    def __setitem__(self, key, value):
+        """
+        Synchronizes taxon association.
+        """
+        value.taxon = key
+        dict.__setitem__(self, key, value)
+
     def extend_characters(self, other_map):
         """
         Extends this array by adding characters from sequences of taxa
@@ -489,13 +515,12 @@ class CharacterArray(TaxonSetLinked):
 
     def clone_from(self, *args):
         if len(args) > 1:
-            raise TypeError("Only 1 argument accepted, but %d given: %s"\
-                % (len(args), str(args)))
+            raise error.TooManyArgumentsError(self.__class__.__name__, 1, args)
         elif len(args) > 0 and (args[0].__class__ is self.__class__):
             ca = copy.deepcopy(args[0])
             self.__dict__ = ca.__dict__
         elif len(args) > 0:
-            raise TypeError("Invalid non-keyword argument passed: %s" % (args[0]))
+            raise error.InvalidArgumentValueError(self.__class__.__name__, args)
         return self
 
     def extend_characters(self, other_array):
