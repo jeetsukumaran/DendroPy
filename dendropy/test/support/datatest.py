@@ -53,14 +53,39 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         if type(data_object1) != type(data_object2):
             raise ValueError("Objects to be compared must be of the same type, but was given %s and %s objects" \
                 % (type(data_object1), type(data_object2)))
-        if isinstance(data_object1, dendropy.TaxonSet):
+        if isinstance(data_object1, dendropy.Taxon):
+            self.assertDistinctButEqualTaxons(data_object1, data_object2, **kwargs)
+        elif isinstance(data_object1, dendropy.TaxonSet):
             self.assertDistinctButEqualTaxonSets(data_object1, data_object2, **kwargs)
         elif isinstance(data_object1, dendropy.Tree):
             self.assertDistinctButEqualTrees(data_object1, data_object2, **kwargs)
         elif isinstance(data_object1, dendropy.TreeList):
             self.assertDistinctButEqualTreeLists(data_object1, data_object2, **kwargs)
+        elif isinstance(data_object1, dendropy.CharacterArray):
+            char_type = kwargs.get("char_type", None)
+            if char_type == "dna":
+                self.assertDistinctButEqualFixedStateAlphabetCharArrays(data_object1, data_object2, **kwargs)
+            elif char_type is None:
+                raise TypeError("Need to specify character type using 'char_type' keyword for character array comparison")
+            else:
+                raise ValueError("Unsupported character type for comparison: '%s'" % char_type)
         else:
-            raise TypeError("Unsupported type for comparison: %s" % type(data_object1))
+            raise ValueError("Unsupported type for comparison: %s" % type(data_object1))
+
+    def assertDistinctButEqualTaxons(self, taxon1, taxon2, **kwargs):
+        equal_oids = kwargs.get("equal_oids", None)
+        ignore_underscore_substitution = kwargs.get("ignore_underscore_substitution", False)
+        self.assertIsNotSame(taxon1, taxon2)
+        if taxon1.label is None:
+            self.assertIsSame(taxon2.label, None)
+        elif ignore_underscore_substitution:
+            self.assertEqual(taxon1.label.replace(" ", "_"), taxon2.label.replace(" ", "_"))
+        else:
+            self.assertEqual(taxon1.label, taxon2.label)
+        if equal_oids is True:
+            self.assertEqual(taxon1.oid, taxon2.oid)
+        elif equal_oids is False:
+            self.assertNotEqual(taxon1.oid, taxon2.oid)
 
     def assertDistinctButEqualTaxonSets(self, taxon_set1, taxon_set2, **kwargs):
         equal_oids = kwargs.get("equal_oids", None)
@@ -69,17 +94,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         self.assertEqual(len(taxon_set1), len(taxon_set2))
         for tidx, taxon1 in enumerate(taxon_set1):
             taxon2 = taxon_set2[tidx]
-            self.assertIsNotSame(taxon1, taxon2)
-            if taxon1.label is None:
-                self.assertIsSame(taxon2.label, None)
-            elif ignore_underscore_substitution:
-                self.assertEqual(taxon1.label.replace(" ", "_"), taxon2.label.replace(" ", "_"))
-            else:
-                self.assertEqual(taxon1.label, taxon2.label)
-            if equal_oids is True:
-                self.assertEqual(taxon1.oid, taxon2.oid)
-            elif equal_oids is False:
-                self.assertNotEqual(taxon1.oid, taxon2.oid)
+            self.assertDistinctButEqualTaxons(taxon1, taxon2, **kwargs)
 
     def assertDistinctButEqualTreeLists(self, tree_list1, tree_list2, **kwargs):
         """
@@ -183,6 +198,32 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 self.assertEqual(edge1.oid, edge2.oid)
             elif equal_oids is False:
                 self.assertNotEqual(edge1.oid, edge2.oid)
+
+    def assertDistinctButEqualFixedStateAlphabetCharArrays(self, char_array1, char_array2, **kwargs):
+        """
+        `char_array1` and `char_array2` must be distinct but equivalent objects
+         (for fixed state alphabets, e.g. DNA or protein or RNA).
+        """
+        distinct_taxa = kwargs.get("distinct_taxa", True)
+        equal_oids = kwargs.get("equal_oids", None)
+        self.assertTrue(char_array1.taxon_set is char_array2.taxon_set)
+        self.assertTrue(char_array1.state_alphabets is char_array2.state_alphabets)
+        self.assertEqual(char_array1.state_alphabets, char_array2.state_alphabets)
+        self.assertTrue(char_array1.default_state_alphabet is char_array2.default_state_alphabet)
+        self.assertEqual(len(char_array2.column_types), len(char_array2.column_types))
+        for t, v1 in char_array1.items():
+            v2 = char_array2[t]
+            for i, c1 in enumerate(v1):
+                c2 = v2[i]
+                self.assertIsNotSame(c1, c2)
+                if c1.column_type is not None:
+                    self.assertIsNotSame(c1.column_type, c2.column_type)
+                    self.assertIsSame(c1.column_type.state_alphabet is c2.column_type.state_alphabet)
+                else:
+                    self.assertIsSame(c2.column_type, None)
+                self.assertIsSame(c1.value, c2.value, [id(c1.value), id(c2.value)])
+                self.assertIsContainedIn(c1.value, char_array1.default_state_alphabet)
+                self.assertIsContainedIn(c2.value, char_array1.default_state_alphabet)
 
 #    def compare_datasets(ds1, ds2, tester, distinct_taxa=True, equal_oids=False):
 #        self.logger.info("Comparing dataset taxon sets ...")

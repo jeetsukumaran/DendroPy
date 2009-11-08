@@ -46,13 +46,10 @@ class DataForTestingTest(datatest.DataObjectVerificationTestCase):
         ref_node_rels = datagen.reference_tree_list_node_relationships()
         for ti, t1 in enumerate(tlist1):
             t1.assign_node_labels_from_taxon_or_oid()
-
             t1_newick = t1.as_newick_str(include_internal_labels=True)
             self.assertEqual(t1_newick, ref_trees_newick[ti])
-
             node_labels1 = [nd.label for nd in t1.postorder_node_iter()]
             self.assertEqual(node_labels1, ref_node_labels[ti])
-
             nodes1 = [nd for nd in t1.postorder_node_iter()]
             for ndi, nd1 in enumerate(nodes1):
                 ndrel = ref_node_rels[ti][nd1.label]
