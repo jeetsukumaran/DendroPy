@@ -53,7 +53,9 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         if type(data_object1) != type(data_object2):
             raise ValueError("Objects to be compared must be of the same type, but was given %s and %s objects" \
                 % (type(data_object1), type(data_object2)))
-        if isinstance(data_object1, dendropy.Taxon):
+        if isinstance(data_object1, dendropy.DataSet):
+            self.assertDistinctButEqualDataSet(data_object1, data_object2, **kwargs)
+        elif isinstance(data_object1, dendropy.Taxon):
             self.assertDistinctButEqualTaxon(data_object1, data_object2, **kwargs)
         elif isinstance(data_object1, dendropy.TaxonSet):
             self.assertDistinctButEqualTaxonSet(data_object1, data_object2, **kwargs)
@@ -61,10 +63,26 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             self.assertDistinctButEqualTree(data_object1, data_object2, **kwargs)
         elif isinstance(data_object1, dendropy.TreeList):
             self.assertDistinctButEqualTreeList(data_object1, data_object2, **kwargs)
-        elif isinstance(data_object1, dendropy.DiscreteCharacterArray):
-            self.assertDistinctButEqualDiscreteCharArray(data_object1, data_object2, **kwargs)
+        elif isinstance(data_object1, dendropy.CharacterArray):
+            self.assertDistinctButEqualCharArray(data_object1, data_object2, **kwargs)
         else:
             raise ValueError("Unsupported type for comparison: %s" % type(data_object1))
+
+    def assertDistinctButEqualDataSet(self, dataset1, dataset2, **kwargs):
+        if "distinct_taxa" in kwargs and not kwargs["distinct_taxa"]:
+            raise Exception("Distinct TaxonSet objects criterion must be enforced when comparing DataSet objects")
+        self.assertEqual(len(dataset1.taxon_sets), len(dataset2.taxon_sets))
+        for idx, taxon_set1 in enumerate(dataset1.taxon_sets):
+            taxon_set2 = dataset2.taxon_sets[idx]
+            self.assertDistinctButEqualTaxonSet(taxon_set1, taxon_set2, **kwargs)
+        self.assertEqual(len(dataset1.tree_lists), len(dataset2.tree_lists))
+        for tsi, tree_list1 in enumerate(dataset1.tree_lists):
+            tree_list2 = dataset2.tree_lists[tsi]
+            self.assertDistinctButEqualTreeList(tree_list1, tree_list2, **kwargs)
+        self.assertEqual(len(dataset1.char_arrays), len(dataset2.char_arrays))
+        for tsi, char_array1 in enumerate(dataset1.char_arrays):
+            char_array2 = dataset2.char_arrays[tsi]
+            self.assertDistinctButEqualCharArray(char_array1, char_array2, **kwargs)
 
     def assertDistinctButEqualTaxon(self, taxon1, taxon2, **kwargs):
         equal_oids = kwargs.get("equal_oids", None)
@@ -292,6 +310,13 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                     self.assertNotSame(c1.value, c2.value)
                 elif distinct_state_alphabets is False:
                     self.assertSame(c1.value, c2.value)
+
+
+    def assertDistinctButEqualCharArray(self, char_array1, char_array2, **kwargs):
+        if isinstance(char_array1, dendropy.DiscreteCharacterArray):
+            self.assertDistinctButEqualDiscreteCharArray(char_array1, char_array2, **kwargs)
+        else:
+            raise NotImplementedError()
 
     def text_to_label_symbol_tuples(self, text):
         """
