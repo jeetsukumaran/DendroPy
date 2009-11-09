@@ -122,6 +122,18 @@ class NexusTreeListReaderTest(datatest.DataObjectVerificationTestCase):
                 distinct_taxa=False,
                 equal_oids=None)
 
+class NexusTreeDocumentReaderTest(datatest.DataObjectVerificationTestCase):
+
+    def testReferenceTreeFileDistinctTaxa(self):
+        ref_tree_list = datagen.reference_tree_list()
+        reader = nexus.NexusReader()
+        dataset = reader.read(stream=pathmap.tree_source_stream("reference.trees.nexus"))
+        self.assertEqual(len(dataset.tree_lists), 1)
+        self.assertDistinctButEqualTreeList(
+                ref_tree_list,
+                dataset.tree_lists[0],
+                distinct_taxa=True,
+                equal_oids=None)
 
 #class NexusDocumentTest(rwtest.DatasetReadWriteTest):
 #
