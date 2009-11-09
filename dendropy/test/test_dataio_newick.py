@@ -177,5 +177,16 @@ class NewickTreeListWriterTest(datatest.DataObjectVerificationTestCase):
                 distinct_taxa=False,
                 equal_oids=None)
 
+class NewickDocumentReaderTest(datatest.DataObjectVerificationTestCase):
+
+    def setUp(self):
+        reference_tree_list = datagen.reference_tree_list()
+        self.reference_dataset = dendropy.DataSet(reference_tree_list)
+
+    def testBasicDocumentParse(self):
+        reader = newick.NewickReader()
+        test_dataset = reader.read(stream=pathmap.tree_source_stream("reference.trees.newick"))
+        self.assertDistinctButEqual(self.reference_dataset, test_dataset)
+
 if __name__ == "__main__":
     unittest.main()
