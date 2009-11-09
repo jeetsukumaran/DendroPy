@@ -135,23 +135,5 @@ class NexusTreeDocumentReaderTest(datatest.DataObjectVerificationTestCase):
                 distinct_taxa=True,
                 equal_oids=None)
 
-#class NexusDocumentTest(rwtest.DatasetReadWriteTest):
-#
-#    def setUp(self):
-#        rwtest.DatasetReadWriteTest.setUp(self,
-#            reader_type=nexus.NexusReader,
-#            writer_type=nexus.NexusWriter)
-#
-#    def testReadWriteStandardAndTrees(self):
-#        datafiles = [
-#            "angiosperms.char_and_trees.nex",
-#            "apternodus.nex",
-#            "pythonidae_cytb.nex",
-#            "caenophidia_mos.nex",
-#            "pythonidae_cytb.nexus.tre"
-#        ]
-#        for datafile in datafiles:
-#            self.dataset_read_write_test(open(tests.data_source_path(datafile)))
-
 if __name__ == "__main__":
     unittest.main()
