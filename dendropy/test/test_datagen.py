@@ -69,7 +69,7 @@ class DataForTestingTest(datatest.DataObjectVerificationTestCase):
             for si, s1 in enumerate(tax_seq_symbols):
                 state = seq_vec[si].value
                 self.assertEqual(state.symbol, s1)
-            self.assertEqual(seq_vec.as_symbols(), tax_seq_symbols)
+            self.assertEqual(seq_vec.as_symbol_string(), tax_seq_symbols)
 
 if __name__ == "__main__":
     unittest.main()

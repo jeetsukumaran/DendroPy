@@ -55,7 +55,7 @@ class TestExtendCharacters(TestCharStruct):
         self.assertEqual(len(self.cb1), ntax_pre)
         for t in self.cb1:
             self.assertEqual(len(self.cb1[t]), 20)
-            self.assertEqual(self.cb1[t].as_symbols(), "AAAAAAAAAACCCCCCCCCC")
+            self.assertEqual(self.cb1[t].as_symbol_string(), "AAAAAAAAAACCCCCCCCCC")
 
 class TestExtendSequencesOverwrite(TestCharStruct):
 
@@ -71,7 +71,7 @@ class TestExtendSequencesOverwrite(TestCharStruct):
             self.assertContained(t.label, cb_labels)
         for t in self.cb1:
             self.assertEqual(len(self.cb1[t]), 10)
-            self.assertEqual(self.cb1[t].as_symbols(), "CCCCCCCCCC",)
+            self.assertEqual(self.cb1[t].as_symbol_string(), "CCCCCCCCCC",)
 
 class TestExtendSequencesAppend(TestCharStruct):
 
@@ -88,10 +88,10 @@ class TestExtendSequencesAppend(TestCharStruct):
         for t in self.cb1:
             if int(t.label[-2:]) > 10:
                 self.assertEqual(len(self.cb1[t]), 10)
-                self.assertEqual(self.cb1[t].as_symbols(), "CCCCCCCCCC")
+                self.assertEqual(self.cb1[t].as_symbol_string(), "CCCCCCCCCC")
             else:
                 self.assertEqual(len(self.cb1[t]), 20)
-                self.assertEqual(self.cb1[t].as_symbols(), "AAAAAAAAAACCCCCCCCCC")
+                self.assertEqual(self.cb1[t].as_symbol_string(), "AAAAAAAAAACCCCCCCCCC")
 
 if __name__ == "__main__":
     unittest.main()

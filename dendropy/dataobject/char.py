@@ -431,11 +431,11 @@ class CharacterDataVector(list, TaxonLinked):
     def as_symbol_list(self):
         return [str(cell.value) for cell in self]
 
-    def as_symbols(self, sep=""):
+    def as_symbol_string(self, sep=""):
         return sep.join(self.as_symbol_list())
 
     def __str__(self):
-        return str(self.as_symbols())
+        return str(self.as_symbol_string())
 
 class CharacterDataMap(dict, Annotated):
     """
@@ -614,7 +614,6 @@ class CharacterArray(TaxonSetLinked):
     # following allows a CharacterArray object to simulate a dictionary
     # by `passing-through` calls to the underlying character map
 
-
     def __len__(self):
         "Dictionary interface implementation for direct access to character map."
         return len(self.taxon_seq_map)
@@ -639,12 +638,6 @@ class CharacterArray(TaxonSetLinked):
             self.taxon_set.add(key)
         self.taxon_seq_map[key] = value
 
-#     def __contains__(self, key):
-#         """
-#         Dictionary interface implementation for direct access to character map.
-#         """
-#         return key in self.taxon_seq_map
-#
     def iterkeys(self):
         "Dictionary interface implementation for direct access to character map."
         for t in self.taxon_set:
