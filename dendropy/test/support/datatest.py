@@ -208,7 +208,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             self.assertSame(state_alphabet2.missing, None)
         self.assertEqual(len(state_alphabet1), len(state_alphabet2))
         for state_idx, state1 in enumerate(state_alphabet1):
-            state_state2 = state_alphabet2[state_idx]
+            state2 = state_alphabet2[state_idx]
             self.assertDistinctButEqualStateAlphabetElement(state1, state2)
 
     def assertDistinctButEqualDiscreteCharArray(self, char_array1, char_array2, **kwargs):
@@ -230,7 +230,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         elif equal_oids is False:
             self.assertNotEqual(char_array1.oid, char_array2.oid)
         if distinct_state_alphabets is True:
-            self.assertEqual(len(char_array1.state_alphabets), len(char_array2.state_alphabets), **kwargs)
+            self.assertEqual(len(char_array1.state_alphabets), len(char_array2.state_alphabets))
             for sai, sa1 in enumerate(char_array1.state_alphabets):
                 sa2 = char_array2.state_alphabets[sai]
                 self.assertDistinctButEqualStateAlphabet(sa1, sa2)
@@ -241,20 +241,27 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         self.assertEqual(len(char_array1.column_types), len(char_array2.column_types))
         for coli, col1 in enumerate(char_array1.column_types):
             if distinct_state_alphabets is True:
-                self.assertSame(c1.column_type.state_alphabet, c2.column_type.state_alphabet)
+                col2 = char_array2.column_types[coli]
+                self.assertDistinctButEqualStateAlphabet(col1.state_alphabet, col2.state_alphabet)
             elif distinct_state_alphabets is False:
-                self.assertNotSame(c1.column_type.state_alphabet, c2.column_type.state_alphabet)
-        for t, v1 in char_array1.items():
-            v2 = char_array2[t]
-            for i, c1 in enumerate(v1):
-                c2 = v2[i]
+                self.assertSame(col1.state_alphabet, col2.state_alphabet)
+        for vi, vec1 in enumerate(char_array1):
+            vec2 = char_array2[vi]
+            taxon1 = vec1.taxon
+            taxon2 = vec2.taxon
+            if distinct_taxa:
+                self.assertDistinctButEqualTaxon(taxon1, taxon2, **kwargs)
+            else:
+                self.assertSame(taxon1, taxon2)
+            for i, c1 in enumerate(vec1):
+                c2 = vec2[i]
                 self.assertNotSame(c1, c2)
                 if c1.column_type is not None:
                     self.assertNotSame(c1.column_type, c2.column_type)
                     if distinct_state_alphabets is True:
-                        self.assertSame(c1.column_type.state_alphabet, c2.column_type.state_alphabet)
+                        self.assertDistinctButEqualStateAlphabet(c1.column_type.state_alphabet, c2.column_type.state_alphabet)
                     elif distinct_state_alphabets is False:
-                        self.assertNotSame(c1.column_type.state_alphabet, c2.column_type.state_alphabet)
+                        self.assertSame(c1.column_type.state_alphabet, c2.column_type.state_alphabet)
                     self.assertContained(c1.column_type.state_alphabet, char_array1.state_alphabets)
                     self.assertContained(c2.column_type.state_alphabet, char_array2.state_alphabets)
                     self.assertContained(c1.value, c1.column_type.state_alphabet)

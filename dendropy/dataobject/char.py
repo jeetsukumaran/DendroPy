@@ -663,7 +663,8 @@ class CharacterArray(TaxonSetLinked):
 
     def __iter__(self):
         "Returns an iterator over character map's ordered keys."
-        return self.taxon_seq_map.iterkeys()
+        for t in self.taxon_set:
+            yield self.taxon_seq_map[t]
 
     def __delitem__(self, key):
         "Remove item from character map with specified key."

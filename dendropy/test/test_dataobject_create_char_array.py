@@ -36,13 +36,28 @@ class DnaArrayTest(datatest.DataObjectVerificationTestCase):
     def setUp(self):
         self.char_array1 = datagen.reference_dna_array()
 
-    def testFromCharArray(self):
+    def testFromDnaCharArray(self):
         ca2 = dendropy.DnaCharacterArray(self.char_array1)
         self.assertDistinctButEqual(
             self.char_array1,
             ca2,
-            char_type='dna',
+            char_type=dendropy.DnaCharacterArray,
             distinct_state_alphabets=False,
+            distinct_taxa=False,
+            equal_oids=False)
+
+class StandardArrayTest(datatest.DataObjectVerificationTestCase):
+
+    def setUp(self):
+        self.char_array1 = datagen.reference_standard_array()
+
+    def testFromStandardCharArray(self):
+        ca2 = dendropy.StandardCharacterArray(self.char_array1)
+        self.assertDistinctButEqual(
+            self.char_array1,
+            ca2,
+            char_type=dendropy.StandardCharacterArray,
+            distinct_state_alphabets=True,
             distinct_taxa=False,
             equal_oids=False)
 

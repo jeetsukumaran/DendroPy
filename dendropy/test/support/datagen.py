@@ -1210,6 +1210,40 @@ def reference_dna_array():
         dna[t] = sa.get_states_as_cells(symbols=dna_dict[t.label])
     return dna
 
+def _get_standard_state_alphabet(symbols):
+    sa = dendropy.StateAlphabet()
+    for symbol in symbols:
+        sa.append(dendropy.StateAlphabetElement(symbol=symbol))
+    sa.append(dendropy.StateAlphabetElement(symbol="?",
+                                       multistate=dendropy.StateAlphabetElement.AMBIGUOUS_STATE,
+                                       member_states=sa.get_states(symbols=symbols)))
+    sa.append(dendropy.StateAlphabetElement(symbol="-",
+                                       multistate=dendropy.StateAlphabetElement.AMBIGUOUS_STATE,
+                                       member_states=sa.get_states(symbols=symbols)))
+    return sa
+
+def _get_standard_cells(col_type, symbols):
+    cells = [dendropy.CharacterDataCell(value=s, column_type=col_type) for s in col_type.state_alphabet.get_states(symbols=symbols)]
+    return cells
+
+def reference_standard_array():
+    taxon_set = reference_taxon_set()
+    ca1 = dendropy.StandardCharacterArray(taxon_set=taxon_set)
+    assert len(ca1.taxon_set) == 13
+    sa1 = _get_standard_state_alphabet("012")
+    sa2 = _get_standard_state_alphabet("XYZ")
+    sa3 = _get_standard_state_alphabet("JKL")
+    ca1.state_alphabets = [sa1, sa2, sa3]
+    col_012 = dendropy.ColumnType(state_alphabet=sa1, label="COL_012")
+    col_xyz = dendropy.ColumnType(state_alphabet=sa2, label="COL_XYZ")
+    col_jkl = dendropy.ColumnType(state_alphabet=sa3, label="COL_JKL")
+    ca1.column_types = [col_012, col_xyz, col_jkl]
+    for t in taxon_set:
+        ca1[t] = dendropy.CharacterDataVector(_get_standard_cells(col_012, "001122-??012")) \
+               + dendropy.CharacterDataVector(_get_standard_cells(col_xyz, "XYZXYZ??-XXZ")) \
+               + dendropy.CharacterDataVector(_get_standard_cells(col_jkl, "JKJLKL-??KJJ"))
+    return ca1
+
 class RepeatedRandom(Random):
     """
     An overload of Random that returns numbers from a circular list of 1000
