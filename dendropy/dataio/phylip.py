@@ -45,4 +45,4 @@ class PhylipWriter(iosys.DataWriter):
         stream.write("%d %d\n" % (n_seqs, n_sites))
         maxlen = max([len(str(taxon)) for taxon in char_array])
         for taxon in char_array.taxon_set:
-            stream.write("%s        %s\n" % ( str(taxon).ljust(maxlen), str(char_array[taxon].as_string()).replace(' ', '')))
+            stream.write("%s        %s\n" % ( str(taxon).ljust(maxlen), str(char_array[taxon].as_symbols()).replace(' ', '')))

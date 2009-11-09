@@ -428,14 +428,14 @@ class CharacterDataVector(list, TaxonLinked):
     def values(self):
         return [cell.value for cell in self]
 
-    def as_string_list(self):
+    def as_symbol_list(self):
         return [str(cell.value) for cell in self]
 
-    def as_string(self, sep=""):
-        return sep.join(self.as_string_list())
+    def as_symbols(self, sep=""):
+        return sep.join(self.as_symbol_list())
 
     def __str__(self):
-        return str(self.as_string_list())
+        return str(self.as_symbols())
 
 class CharacterDataMap(dict, Annotated):
     """
@@ -668,7 +668,7 @@ class CharacterArray(TaxonSetLinked):
         return [(t, self.taxon_seq_map[t]) for t in self.taxon_set if t in self.taxon_seq_map]
 
     def values(self):
-        "Returns list of character map key, value pairs."
+        "Returns list of values."
         return [self.taxon_seq_map[t] for t in self.taxon_set if t in self.taxon_seq_map]
 
     def __iter__(self):

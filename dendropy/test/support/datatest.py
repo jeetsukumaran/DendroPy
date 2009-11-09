@@ -300,7 +300,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         """
         data = []
         for t, s in char_array.items():
-            data.append((t.label, s.as_string()))
+            data.append((t.label, s.as_symbols()))
         return data
 
     def assertEqualCharArrayLabelSymbols(self, char_array, **kwargs):

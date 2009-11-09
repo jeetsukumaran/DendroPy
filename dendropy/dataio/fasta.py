@@ -155,7 +155,7 @@ class FastaWriter(iosys.DataWriter):
                 stream.write(">%s\n" % str(taxon))
                 seqs = char_array[taxon]
                 if isinstance(seqs, dataobject.CharacterDataVector):
-                    seqs = seqs.as_string()
+                    seqs = seqs.as_symbols()
                 if self.wrap > 0:
                     seqs = textwrap.fill(seqs, width=self.wrap, break_long_words=True)
                 stream.write("%s\n\n" % seqs)
