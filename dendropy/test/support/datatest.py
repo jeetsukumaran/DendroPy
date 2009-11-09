@@ -275,3 +275,75 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 elif distinct_state_alphabets is False:
                     self.assertSame(c1.value, c2.value)
 
+    def text_to_label_symbol_tuples(self, text):
+        """
+        Takes a tab-delimited string in the form of:
+            <TAXON_NAME>\t<CHARACTERS>
+        and returns a list of pairs with first element the
+        taxon label and the second a string of state symbols.
+        """
+        data = []
+        for i in text.split("\n"):
+            if i:
+                j = i.split("\t")
+                assert len(j) == 2
+                if j:
+                    if j[0] and j[1]:
+                        values = [j[0], j[1]]
+                        data.append(values)
+        return data
+
+    def char_array_to_label_symbol_tuples(self, char_array):
+        """
+        Takes a `char_array` and returns a list of pairs with first element the
+        taxon label and the second a string of state symbols.
+        """
+        data = []
+        for t in char_array.taxon_set:
+            data.append((t.label, char_array[t]))
+        return data
+
+    def assertEqualCharArrayLabelSymbols(self, char_array, **kwargs):
+        """
+        Takes a CharacterArray object, extracts tuples in the form of
+        (<Taxon label string>, <sequence symbols string>), and compares it with
+        *one* of the following passed as keyword arguments:
+
+            - `expected_label_symbol_tuples`, a list of tuples of strings
+               corresponding to the tuples expected from the CharacterArray object.
+
+            - `expected_label_symbol_text`, a tab-delimited string with rows
+               describing the tuples expected from the CharacterArray object
+               in the form of::
+
+                    <Taxon label string>\t<sequence symbols string>
+
+            - `expected_label_symbol_stream`, a file-like object with the file
+               containing rows describing the tuples expected from the
+               CharacterArray object in the form of::
+
+                    <Taxon label string>\t<sequence symbols string>
+
+        """
+        ignore_underscore_substitution = kwargs.get("ignore_underscore_substitution", False)
+        if "expected_label_symbol_tuples" in kwargs:
+            expected_label_symbol_tuples = kwargs["expected_label_symbol_tuples"]
+        elif "expected_label_symbol_text" in kwargs:
+            expected_label_symbol_tuples = self.text_to_label_symbol_tuples(kwargs["expected_label_symbol_text"])
+        elif "expected_label_symbol_stream" in kwargs:
+            expected_label_symbol_text = kwargs["expected_label_symbol_stream"].read()
+            expected_label_symbol_tuples = self.text_to_label_symbol_tuples(expected_label_symbol_text)
+
+        obs_label_symbol_tuples = self.char_array_to_label_symbol_tuples(char_array)
+
+        self.assertEqual(len(obs_label_symbol_tuples), len(expected_label_symbol_tuples))
+        for i, x1 in enumerate(expected_label_symbol_tuples):
+            tax_label1 = x1[0]
+            seq_symbols1 = x1[0]
+            tax_label2 = obs_label_symbol_tuples[i][0]
+            seq_symbols2 = obs_label_symbol_tuples[i][1]
+            if ignore_underscore_substitution:
+                tax_label1 = tax_label1.replace("_", " ")
+                tax_label2 = tax_label2.replace("_", " ")
+            self.assertEqual(tax_label1, tax_label2)
+            self.assertEqual(seq_symbols1, seq_symbols2)

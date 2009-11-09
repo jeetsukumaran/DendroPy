@@ -42,16 +42,24 @@ except:
 TESTS_DATA_DIR = os.path.join(TESTS_DIR, "data")
 TESTS_OUTPUT_DIR = os.path.join(TESTS_DIR, "output")
 
-def data_source_stream(filename):
-    return open(data_source_path(filename), "r")
-
 def tree_source_stream(filename):
-    return open(tree_source_path(filename), "r")
+    return open(tree_source_path(filename), "rU")
 
 def tree_source_path(filename=None):
     if filename is None:
         filename = ""
     return os.path.join(TESTS_DATA_DIR, "trees", filename)
+
+def char_source_stream(filename):
+    return open(char_source_path(filename), "rU")
+
+def char_source_path(filename=None):
+    if filename is None:
+        filename = ""
+    return os.path.join(TESTS_DATA_DIR, "chars", filename)
+
+def data_source_stream(filename):
+    return open(data_source_path(filename), "rU")
 
 def data_source_path(filename=None):
     if filename is None:
