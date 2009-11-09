@@ -647,26 +647,29 @@ class CharacterArray(TaxonSetLinked):
 #
     def iterkeys(self):
         "Dictionary interface implementation for direct access to character map."
-        for key in self.taxon_seq_map:
-            yield(key)
+        for t in self.taxon_set:
+            if t in self.taxon_seq_map:
+                yield t
 
     def itervalues(self):
         "Dictionary interface implementation for direct access to character map."
-        for value in self.taxon_seq_map.values():
-            yield(value)
+        for t in self.taxon_set:
+            if t in self.taxon_seq_map:
+                yield self.taxon_seq_map[t]
 
     def iteritems(self):
         "Returns an iterator over character map's values."
-        for key, value in self.taxon_seq_map.iteritems():
-            yield (key, value)
+        for t in self.taxon_set:
+            if t in self.taxon_seq_map:
+                yield t, self.taxon_seq_map[t]
 
     def items(self):
         "Returns character map key, value pairs in key-order."
-        return [(key, self.taxon_seq_map[key]) for key in self.taxon_seq_map.iterkeys()]
+        return [(key, self.taxon_seq_map[t]) for t in self.taxon_set in t in self.taxon_seq_map]
 
     def values(self):
         "Returns list of character map key, value pairs."
-        return [v for v in self.taxon_seq_map.itervalues()]
+        return [self.taxon_seq_map[t] for t in self.taxon_set if t in self.taxon_seq_map]
 
     def __iter__(self):
         "Returns an iterator over character map's ordered keys."
