@@ -31,6 +31,7 @@ from dendropy.utility import error
 from dendropy.dataobject.base import DataObject
 from dendropy.dataobject.taxon import TaxonSet
 from dendropy.dataobject.tree import TreeList
+from dendropy.dataobject.char import CharacterArray
 
 ###############################################################################
 ## DataSet
@@ -58,17 +59,19 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         self.taxon_sets = containers.OrderedSet()
         self.tree_lists = containers.OrderedSet()
         self.char_arrays = containers.OrderedSet()
-        if len(args) > 1:
-            raise error.TooManyArgumentsError(self.__class__.__name__, 1, args)
-        elif len(args) == 1:
+        if len(args) > 0:
             if ("stream" in kwargs and kwargs["stream"] is not None) \
                     or ("format" in kwargs and kwargs["format"] is not None):
                 raise error.MultipleInitializationSourceError(self.__class__.__name__, args[0])
-            elif isinstance(args[0], DataSet):
+            if len(args) == 1 and isinstance(args[0], DataSet):
                 d = deepcopy(args[0])
                 self.__dict__ = d.__dict__
             else:
-                raise error.InvalidArgumentValueError(self.__class__.__name__, args[0])
+                for arg in args:
+                    if isinstance(arg, DataSet):
+                        raise error.MultipleInitializationSourceError("Cannot initialize DataSet from another DataSetobject when multiple other initialization objects are given")
+                    else:
+                        self.add(arg)
         elif "stream" in kwargs:
             self.process_source_kwargs(**kwargs)
 
@@ -155,6 +158,19 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
 
     ###########################################################################
     ## DOMAIN DATA MANAGEMENT
+
+    def add(self, data_object, **kwargs):
+        """
+        Generic add for TaxonSet, TreeList or CharacterArray objects.
+        """
+        if isinstance(data_object, TaxonSet):
+            self.add_taxon_set(data_object)
+        elif isinstance(data_object, TreeList):
+            self.add_tree_list(data_object)
+        elif isinstance(data_object, CharacterArray):
+            self.add_char_array(data_object)
+        else:
+            raise error.InvalidArgumentValueError("Cannot add object of type '%s' to DataSet" % type(arg))
 
     def get_taxon_set(self, **kwargs):
         """

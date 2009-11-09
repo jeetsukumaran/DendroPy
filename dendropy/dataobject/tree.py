@@ -107,12 +107,12 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         iosys.Writeable.__init__(self)
         list.__init__(self)
         if len(args) > 1:
-            raise error.TooManyArgumentsError(self.__class__.__name__, 1, args)
+            raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
         elif len(args) == 1:
             if hasattr(args[0], "__iter__") and not isinstance(args[0], str):
                 if ("stream" in kwargs and kwargs["stream"] is not None) \
                         or ("format" in kwargs and kwargs["format"] is not None):
-                    raise error.MultipleInitializationSourceError(self.__class__.__name__, args[0])
+                    raise error.MultipleInitializationSourceError(class_name=self.__class__.__name__, arg=args[0])
                 if isinstance(args[0], TreeList):
                     for t in args[0]:
                         if not isinstance(t, Tree):
@@ -124,7 +124,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                             raise ValueError("TreeList() only accepts Tree objects as members")
                         self.append(t)
             else:
-                raise error.InvalidArgumentValueError(self.__class__.__name__, args[0])
+                raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         else:
             self.process_source_kwargs(**kwargs)
 
@@ -383,17 +383,17 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         self.is_rooted = False
 
         if len(args) > 1:
-            raise error.TooManyArgumentsError(self.__class__.__name__, 1, args)
+            raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
         if len(args) == 1:
             if ("stream" in kwargs and kwargs["stream"] is not None) \
                     or ("format" in kwargs and kwargs["format"] is not None):
-                raise error.MultipleInitializationSourceError(self.__class__.__name__, args[0])
+                raise error.MultipleInitializationSourceError(class_name=self.__class__.__name__, arg=args[0])
             if isinstance(args[0], Node):
                 self.seed_node = args[0]
             elif isinstance(args[0], Tree):
                 self.clone_from(args[0])
             else:
-                raise error.InvalidArgumentValueError(self.__class__.__name__, args[0])
+                raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         else:
             self.process_source_kwargs(**kwargs)
         if "oid" in kwargs:

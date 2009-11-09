@@ -57,21 +57,22 @@ class UnspecifiedSourceError(Exception):
 
 class TooManyArgumentsError(TypeError):
 
-    def __init__(self, func_name, max_args, args):
-        TypeError.__init__(self,
-            "%s() takes a maximum of %d arguments (%d given)" \
-                % (func_name, max_args, len(args)))
+    def __init__(self, message=None, func_name=None, max_args=None, args=None):
+        if message is None and (func_name is not None and max_args):
+            message = "%s() takes a maximum of %d arguments (%d given)" % (func_name, max_args, len(args))
+        TypeError.__init__(self, message)
 
 class InvalidArgumentValueError(ValueError):
 
-    def __init__(self, func_name, arg):
-        ValueError.__init__(self,
-            "%s() does not accept objects of type '%s' as an argument" \
-                % (func_name, arg.__class__.__name__))
+    def __init__(self, message=None, func_name=None, arg=None):
+        if message is None and (func_name is not None and arg is not None):
+            message = "%s() does not accept objects of type '%s' as an argument" % (func_name, arg.__class__.__name__)
+        ValueError.__init__(self, message)
 
 class MultipleInitializationSourceError(TypeError):
-    def __init__(self, class_name, arg):
-        TypeError.__init__(self,
-            "%s() does not accept data 'stream' or 'format' arguments when initializing from another object" \
-                % (class_name))
+    def __init__(self, message=None, class_name=None, arg=None):
+        if message is None and (class_name is not None and arg is not None):
+            message = "%s() does not accept data 'stream' or 'format' arguments when initializing with another object" % (class_name)
+        TypeError.__init__(self, message)
+
 

@@ -360,8 +360,9 @@ def reference_taxon_set():
     taxon_set.new_taxon(label="Morelia carinata", oid="Taxon7352592")
     return taxon_set
 
-def reference_tree_list():
-    taxon_set = reference_taxon_set()
+def reference_tree_list(taxon_set=None):
+    if taxon_set is None:
+        taxon_set = reference_taxon_set()
     tree_list = dendropy.TreeList(label=None, oid="TreeList4398560", taxon_set=taxon_set)
     assert tree_list.taxon_set is taxon_set
     assert len(tree_list.taxon_set) == 13
@@ -1193,8 +1194,9 @@ def reference_dna_dict():
     dna_dict['Morelia oenpelliensis'] = "------------------------TTCGGCTCAATACTATTAACATGCCTAGCCCTACAAGTACTAACCGGCTTCTTCCTAGCCGTCCACTACACAGCAAATATCAACCTAGCATTTTCATCCATTATCCACATCACCCGTGACGTCCCATACGGTTGAATAATACAAAACCTACACGCCATCGGAGCATCCATATTCTTCATTTGCATTTATATTCACATCGCTCGAGGACTATACTATGGGTCATACCTTAACAAAGAAACCTGAATATCCGGTATCACCCTACTCATTACACTAATAGCAACCGCCTTCTTCGGATATGTTCTTCCATGAGGACAGATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTTACCGCCGTACCATACCTAGGCACATCACTAACAACATGACTATGAGGCGGATTCGCAATCAATGACCCAACCCTAACCCGATTCTTTGCATTACACTTCATCCTACCATTTGCAATTATCTCTTTATCCTCACTACATATCATCCTACTCCATGAAGAAGGTTCCAGCAATCCATTAGGAACCAATCCTGACATTGACAAAATCCCATTCCACCCATACCACTCCCACAAAGACCTACTCCTATTAACACTAATAACCCTACTCCTATTCATTATTGTCTCATTCTTCCCAGATATTTTCAACGACCCAGACAACTTCTCAAAAGCCAATCCCATAGTAACACCACAACACATCAAACCAGAATGGTACTTCCTATTTGCCTACGGCATCCTACGATCCATCCCAAACAAACTAGGAGGCGCATTAGCCCTAGTAATATCAATTATAATTCTATTCACCGCCCCATTCACACATACAGCCTACCTACGCCCTATAACCTTTCGCCCACTTTCACAACTAATATTCTGAGCACTAGTATCAACATTCATCACCATTACATGAGCCGCCACAAAACCAGTAGAACCACCATTTATCATCATCAGCCAAACAACTGCAACACTATACTTCACATTCTTCTTATCCATCCCCATCACAGGATGAATTGAAAACAAAATAATAAACACCCACT"
     return dna_dict
 
-def reference_dna_array():
-    taxon_set = reference_taxon_set()
+def reference_dna_array(taxon_set=None):
+    if taxon_set is None:
+        taxon_set = reference_taxon_set()
     dna = dendropy.DnaCharacterArray(taxon_set=taxon_set)
     sa = dna.default_state_alphabet
     assert len(dna.taxon_set) == 13
@@ -1226,8 +1228,9 @@ def _get_standard_cells(col_type, symbols):
     cells = [dendropy.CharacterDataCell(value=s, column_type=col_type) for s in col_type.state_alphabet.get_states(symbols=symbols)]
     return cells
 
-def reference_standard_array():
-    taxon_set = reference_taxon_set()
+def reference_standard_array(taxon_set=None):
+    if taxon_set is None:
+        taxon_set = reference_taxon_set()
     ca1 = dendropy.StandardCharacterArray(taxon_set=taxon_set)
     assert len(ca1.taxon_set) == 13
     sa1 = _get_standard_state_alphabet("012")
@@ -1243,6 +1246,13 @@ def reference_standard_array():
                + dendropy.CharacterDataVector(_get_standard_cells(col_xyz, "XYZXYZ??-XXZ")) \
                + dendropy.CharacterDataVector(_get_standard_cells(col_jkl, "JKJLKL-??KJJ"))
     return ca1
+
+def reference_single_taxonset_dataset():
+    taxon_set = datagen.reference_taxon_set()
+    d = dendropy.DataSet(datagen.reference_tree_list(taxon_set=taxon_set),
+                         datagen.reference_dna_array(taxon_set=taxon_set),
+                         datagen.reference_standard_array(taxon_set=taxon_set))
+    return d
 
 class RepeatedRandom(Random):
     """

@@ -519,12 +519,12 @@ class CharacterArray(TaxonSetLinked):
 
     def clone_from(self, *args):
         if len(args) > 1:
-            raise error.TooManyArgumentsError(self.__class__.__name__, 1, args)
-        elif len(args) > 0 and (args[0].__class__ is self.__class__):
+            raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
+        elif len(args) == 1 and (args[0].__class__ is self.__class__):
             ca = copy.deepcopy(args[0])
             self.__dict__ = ca.__dict__
-        elif len(args) > 0:
-            raise error.InvalidArgumentValueError(self.__class__.__name__, args)
+        elif len(args) == 1:
+            raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         return self
 
     def extend_characters(self, other_array):
