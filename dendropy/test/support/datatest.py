@@ -299,8 +299,8 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         taxon label and the second a string of state symbols.
         """
         data = []
-        for t in char_array.taxon_set:
-            data.append((t.label, char_array[t]))
+        for t, s in char_array.items():
+            data.append((t.label, s.as_string()))
         return data
 
     def assertEqualCharArrayLabelSymbols(self, char_array, **kwargs):
@@ -339,7 +339,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         self.assertEqual(len(obs_label_symbol_tuples), len(expected_label_symbol_tuples))
         for i, x1 in enumerate(expected_label_symbol_tuples):
             tax_label1 = x1[0]
-            seq_symbols1 = x1[0]
+            seq_symbols1 = x1[1]
             tax_label2 = obs_label_symbol_tuples[i][0]
             seq_symbols2 = obs_label_symbol_tuples[i][1]
             if ignore_underscore_substitution:
