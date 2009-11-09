@@ -35,7 +35,7 @@ from dendropy.test.support import datatest
 import dendropy
 from dendropy.dataio import nexus
 
-class NexusGeneralParseTest(datatest.DataObjectVerificationTestCase):
+class NexusGeneralParseCharsTest(datatest.DataObjectVerificationTestCase):
 
     def check_chars_against_expected(self, data_filename, expected_filename, datatype):
         reader = nexus.NexusReader()
@@ -55,7 +55,7 @@ class NexusGeneralParseTest(datatest.DataObjectVerificationTestCase):
             self.logger.info("Checking '%s' => %s" % (t[0], t[2].__name__))
             self.check_chars_against_expected(t[0], t[1], t[2])
 
-class NexusParseStandardWithMultistateTest(datatest.DataObjectVerificationTestCase):
+class NexusParseStandardCharsWithMultistateTest(datatest.DataObjectVerificationTestCase):
     """
     This tests the capability of the NEXUS parser in handling "{}" and
     "()" constructs in the data. Two files are used, one in which the
@@ -102,39 +102,26 @@ class NexusParseStandardWithMultistateTest(datatest.DataObjectVerificationTestCa
         self.assertEqualCharArrayLabelSymbols(dataset.char_arrays[0], \
             expected_label_symbol_stream = expected_label_symbol_stream)
 
-#class NexusTreeTest(unittest.TestCase):
-#
-#    def testReadTreeList(self):
-#        rwtest.check_canonical_Pythonidae_cytb_tree_parse(reader = nexus.NexusReader(),
-#            srcpath=tests.data_source_path("pythonidae_cytb.nexus.tre"),
-#            logger=_LOG,
-#            underscore_substitution=True)
-#
-#    def testWriteTreeList(self):
-#        _LOG.info("Reading in trees for NEXUS writing test")
-#        reader = nexus.NexusReader()
-#        ds1 = reader.read(istream=open(tests.data_source_path("pythonidae_cytb.nexus.tre"), "rU"))
-#
-#        outfile = tempfile.NamedTemporaryFile()
-#        _LOG.info("Writing trees to temporary file '%s'" % outfile.name)
-#        writer = nexus.NexusWriter(dataset=ds1)
-#        writer.write(ostream=outfile)
-#        outfile.flush()
-#
-#        _LOG.info("Re-reading trees")
-#        rwtest.check_canonical_Pythonidae_cytb_tree_parse(
-#            reader = nexus.NexusReader(),
-#            srcpath=outfile.name,
-#            logger=_LOG,
-#            underscore_substitution=True)
-#
-#    def read_write_test(self, filename):
-#        _LOG.info("NEXUS Read/Write Tests: '%s'" % os.path.basename(filename))
-#        dataset_read_write_test(
-#            reader_type=nexus.NexusReader,
-#            writer_type=nexus.NexusWriter,
-#            file=open(tests.data_source_path(filename), "rU"),
-#            logger=_LOG)
+class NexusTreeListReaderTest(datatest.DataObjectVerificationTestCase):
+
+    def testReferenceTreeFileDistinctTaxa(self):
+        ref_tree_list = datagen.reference_tree_list()
+        t_tree_list = nexus.read_tree_list(stream=pathmap.tree_source_stream("reference.trees.nexus"))
+        self.assertDistinctButEqualTreeList(
+                ref_tree_list,
+                t_tree_list,
+                distinct_taxa=True,
+                equal_oids=None)
+
+    def testReferenceTreeFileSameTaxa(self):
+        ref_tree_list = datagen.reference_tree_list()
+        t_tree_list = nexus.read_tree_list(stream=pathmap.tree_source_stream("reference.trees.nexus"), taxon_set=ref_tree_list.taxon_set)
+        self.assertDistinctButEqualTreeList(
+                ref_tree_list,
+                t_tree_list,
+                distinct_taxa=False,
+                equal_oids=None)
+
 
 #class NexusDocumentTest(rwtest.DatasetReadWriteTest):
 #
