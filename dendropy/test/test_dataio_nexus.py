@@ -55,73 +55,49 @@ class NexusGeneralParseTest(datatest.DataObjectVerificationTestCase):
             self.logger.info("Checking '%s' => %s" % (t[0], t[2].__name__))
             self.check_chars_against_expected(t[0], t[1], t[2])
 
-#class NexusParseStandardWithMultistateTest(datatest.DataObjectVerificationTestCase):
-#    """
-#    This tests the capability of the NEXUS parser in handling "{}" and
-#    "()" constructs in the data. Two files are used, one in which the
-#    data are marked up using "{}" and "()" constructs, and the other
-#    in which these are substituted by symbols representing the
-#    appropriate multistate.
-#    """
-#
-#    def testStandardWithMultistateInBraces(self):
-#        reader = nexus.NexusReader()
-#
-#        def special_alphabet_builder(char_block, symbols):
-#            sa = dendropy.StateAlphabet()
-#            sa.append(dendropy.StateAlphabetElement(symbol='0'))
-#            sa.append(dendropy.StateAlphabetElement(symbol='1'))
-#            sa.append(dendropy.StateAlphabetElement(symbol='2'))
-#            sa.append(dendropy.StateAlphabetElement(symbol='3'))
-#            sa.append(dendropy.StateAlphabetElement(symbol='4'))
-#            sa.append(dendropy.StateAlphabetElement(symbol='-',
-#                    multistate=dendropy.StateAlphabetElement.AMBIGUOUS_STATE,
-#                    member_states=sa.get_states(symbols='01234')))
-#            sa.append(dendropy.StateAlphabetElement(symbol='?',
-#                    multistate=dendropy.StateAlphabetElement.AMBIGUOUS_STATE,
-#                    member_states=sa.get_states(symbols='01234')))
-#            sa.append(dendropy.StateAlphabetElement(symbol='J',
-#                    multistate=dendropy.StateAlphabetElement.AMBIGUOUS_STATE,
-#                    member_states=sa.get_states(symbols='01')))
-#            sa.append(dendropy.StateAlphabetElement(symbol='K',
-#                    multistate=dendropy.StateAlphabetElement.AMBIGUOUS_STATE,
-#                    member_states=sa.get_states(symbols='023')))
-#            sa.append(dendropy.StateAlphabetElement(symbol='L',
-#                    multistate=dendropy.StateAlphabetElement.AMBIGUOUS_STATE,
-#                    member_states=sa.get_states(symbols='12')))
-#            sa.append(dendropy.StateAlphabetElement(symbol='M',
-#                    multistate=dendropy.StateAlphabetElement.AMBIGUOUS_STATE,
-#                    member_states=sa.get_states(symbols='23')))
-#            sa.append(dendropy.StateAlphabetElement(symbol='N',
-#                    multistate=dendropy.StateAlphabetElement.AMBIGUOUS_STATE,
-#                    member_states=sa.get_states(symbols='13')))
-#            sa.append(dendropy.StateAlphabetElement(symbol='P',
-#                    multistate=dendropy.StateAlphabetElement.AMBIGUOUS_STATE,
-#                    member_states=sa.get_states(symbols='02')))
-#            sa.append(dendropy.StateAlphabetElement(symbol='Q',
-#                    multistate=dendropy.StateAlphabetElement.AMBIGUOUS_STATE,
-#                    member_states=sa.get_states(symbols='03')))
-#            sa.append(dendropy.StateAlphabetElement(symbol='R',
-#                    multistate=dendropy.StateAlphabetElement.AMBIGUOUS_STATE,
-#                    member_states=sa.get_states(symbols='012')))
-#            char_block.state_alphabets = [sa]
-#            char_block.default_state_alphabet = char_block.state_alphabets[0]
-#
-#        reader.build_state_alphabet = special_alphabet_builder
-#        data = reader.read(istream=open(tests.data_source_path("apternodus.nex"), "rU"))
-#
-#        expected = rwtest.text_to_expected(
-#                open(tests.data_source_path("apternodus.hacked-for-tests.txt"), "rU").read())
-#        assert len(data.taxon_sets) == 1
-#        assert len(data.taxon_sets[0]) == len(expected), \
-#                "%d != %d" % (len(data.taxon_sets), len(expected))
-#        assert len(data.char_arrays) == 1,  \
-#            "Expecting 1 CharacterArray but found %d.\n" % (len(data.char_arrays))
-#        rwtest.check_char_array_parse_against_expected(data.char_arrays[0],
-#                expected, \
-#                dendropy.StandardCharacterArray,
-#                underscore_substitution=True,
-#                logger=_LOG)
+class NexusParseStandardWithMultistateTest(datatest.DataObjectVerificationTestCase):
+    """
+    This tests the capability of the NEXUS parser in handling "{}" and
+    "()" constructs in the data. Two files are used, one in which the
+    ambiguous data are marked up using "{}" and "()" constructs, and the other
+    in which these are substituted by symbols representing the appropriate
+    multistate. The first file is parsed, and the result character array's
+    state alphabet is hacked to map the ambiguous states to the symbols used
+    in the second file. The resulting label-symbol lists are then compared.
+    """
+
+    def map_multistate_to_symbols(self, char_array):
+        self.assertEqual(len(char_array.state_alphabets), 1)
+        sa = char_array.state_alphabets[0]
+        for sae in sa:
+            if sae.multistate != dendropy.StateAlphabetElement.SINGLE_STATE \
+                    and sae.symbol is None:
+                member_symbols = sae.fundamental_symbols
+                if member_symbols == set('01'):
+                    sae.symbol = 'J'
+                elif member_symbols == set('023'):
+                    sae.symbol = 'K'
+                elif member_symbols == set('12'):
+                    sae.symbol = 'L'
+                elif member_symbols == set('23'):
+                    sae.symbol = 'M'
+                elif member_symbols == set('13'):
+                    sae.symbol = 'N'
+                elif member_symbols == set('02'):
+                    sae.symbol = 'P'
+                elif member_symbols == set('03'):
+                    sae.symbol = 'Q'
+                elif member_symbols == set('012'):
+                    sae.symbol = 'R'
+                else:
+                    raise self.failureException("Unexpected multistate: %s" % member_symbols)
+        return sae
+
+    def testStandardWithMultistateInBraces(self):
+        reader = nexus.NexusReader()
+        dataset = reader.read(stream=char_source_stream("apternodus.nex"))
+        self.assertEqual(len(dataset.char_arrays), 1)
+        self.map_multistate_to_symbols(dataset.char_arrays[0])
 
 #class NexusTreeTest(unittest.TestCase):
 #

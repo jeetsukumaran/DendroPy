@@ -80,13 +80,13 @@ class StateAlphabetElement(IdTagged):
 
     def _get_fundamental_symbols(self):
         "Returns set of symbols of all _get_fundamental states to which this state maps."
-        return set([state.symbol for state in self._get_fundamental_states() if state.symbol])
+        return set([state.symbol for state in self._get_fundamental_states()])
 
     fundamental_symbols = property(_get_fundamental_symbols)
 
     def _get_fundamental_tokens(self):
         "Returns set of tokens of all _get_fundamental states to which this state maps."
-        return set([state.token for state in self._get_fundamental_states() if state.token])
+        return set([state.token for state in self._get_fundamental_states()])
 
     fundamental_tokens = property(_get_fundamental_tokens)
 
