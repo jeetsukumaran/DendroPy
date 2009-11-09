@@ -152,22 +152,30 @@ T4:4.4e+8)'this is an internal node called "i2"':4.0e+1)i3:4.0E-4,
             label = nd.taxon.label if nd.taxon is not None else nd.label
             self.assertAlmostEquals(nd.edge.length, expected[label])
 
-#class NewickWriterTest(datatest.DataObjectVerificationTestCase):
-#
-#    def testWriteTreeList(self):
-#        reader = newick.NewickReader()
-#        ds1 = reader.read(stream=open(tests.data_source_path("pythonidae_cytb.newick.tre"), "rU"))
-#
-#        outfile = tempfile.NamedTemporaryFile()
-#        writer = newick.NewickWriter(dataset=ds1)
-#        writer.write(ostream=outfile)
-#        outfile.flush()
-#
-#        check_canonical_Pythonidae_cytb_tree_parse(
-#                reader = newick.NewickReader(),
-#                srcpath=outfile.name,
-#                logger=_LOG,
-#                underscore_substitution=True)
+class NewickTreeListWriterTest(datatest.DataObjectVerificationTestCase):
+
+    def setUp(self):
+        self.ref_tree_list = datagen.reference_tree_list()
+
+    def testWriteTreeListSameTaxa(self):
+        output_path = pathmap.named_output_path(filename="reference.trees.newick", suffix_timestamp=True)
+        newick.write_tree_list(self.ref_tree_list, stream=open(output_path, "w"))
+        t_tree_list = newick.read_tree_list(stream=open(output_path, "rU"))
+        self.assertDistinctButEqualTreeList(
+                self.ref_tree_list,
+                t_tree_list,
+                distinct_taxa=True,
+                equal_oids=None)
+
+    def testWriteTreeListSameTaxa(self):
+        output_path = pathmap.named_output_path(filename="reference.trees.newick", suffix_timestamp=True)
+        newick.write_tree_list(self.ref_tree_list, stream=open(output_path, "w"))
+        t_tree_list = newick.read_tree_list(stream=open(output_path, "rU"), taxon_set=self.ref_tree_list.taxon_set)
+        self.assertDistinctButEqualTreeList(
+                self.ref_tree_list,
+                t_tree_list,
+                distinct_taxa=False,
+                equal_oids=None)
 
 if __name__ == "__main__":
     unittest.main()
