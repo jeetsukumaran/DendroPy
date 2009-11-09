@@ -194,10 +194,27 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 self.assertNotEqual(edge1.oid, edge2.oid)
 
     def assertDistinctButEqualStateAlphabetElement(self, sae1, sae2, **kwargs):
-        pass
+        equal_oids = kwargs.get("equal_oids", None)
+        equal_symbols = kwargs.get("equal_symbols", True)
+        self.assertNotSame(sae1, sae2)
+        if equal_oids is True:
+            self.assertEqual(sae1.oid, sae2.oid)
+        elif equal_oids is False:
+            self.assertNotEqual(sae1.oid, sae2.oid)
+        if equal_symbols:
+            self.assertEqual(sae1.symbol, sae2.symbol)
+        self.assertEqual(sae1.multistate, sae2.multistate)
+        if sae1.member_states is not None:
+            self.assertNotSame(sae2.member_states, None)
+            for mi, ms1 in enumerate(sae1.member_states):
+                ms2 = sae2.member_states[mi]
+                self.assertDistinctButEqualStateAlphabetElement(ms1, ms2, **kwargs)
+        else:
+            self.assertSame(sae2.member_states, None)
 
     def assertDistinctButEqualStateAlphabet(self, state_alphabet1, state_alphabet2, **kwargs):
         equal_oids = kwargs.get("equal_oids", None)
+        self.assertNotSame(state_alphabet1, state_alphabet2)
         if equal_oids is True:
             self.assertEqual(state_alphabet1.oid, state_alphabet2.oid)
         elif equal_oids is False:
@@ -220,6 +237,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         distinct_state_alphabets = kwargs.get("distinct_state_alphabets", None)
         distinct_taxa = kwargs.get("distinct_taxa", True)
         equal_oids = kwargs.get("equal_oids", None)
+        self.assertNotSame(char_array1, char_array2)
         if distinct_taxa:
             self.assertNotSame(char_array1.taxon_set, char_array2.taxon_set)
             self.assertDistinctButEqualTaxonSet(char_array1.taxon_set, tree2.taxon_set, **kwargs)

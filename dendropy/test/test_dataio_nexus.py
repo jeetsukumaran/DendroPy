@@ -35,7 +35,7 @@ from dendropy.test.support import datatest
 import dendropy
 from dendropy.dataio import nexus
 
-class NexusBasicParseTest(datatest.DataObjectVerificationTestCase):
+class NexusGeneralParseTest(datatest.DataObjectVerificationTestCase):
 
     def check_chars_against_expected(self, data_filename, expected_filename, datatype):
         reader = nexus.NexusReader()
@@ -56,6 +56,13 @@ class NexusBasicParseTest(datatest.DataObjectVerificationTestCase):
             self.check_chars_against_expected(t[0], t[1], t[2])
 
 #class NexusParseStandardWithMultistateTest(datatest.DataObjectVerificationTestCase):
+#    """
+#    This tests the capability of the NEXUS parser in handling "{}" and
+#    "()" constructs in the data. Two files are used, one in which the
+#    data are marked up using "{}" and "()" constructs, and the other
+#    in which these are substituted by symbols representing the
+#    appropriate multistate.
+#    """
 #
 #    def testStandardWithMultistateInBraces(self):
 #        reader = nexus.NexusReader()
