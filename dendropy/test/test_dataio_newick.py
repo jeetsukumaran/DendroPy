@@ -30,6 +30,7 @@ import tempfile
 from cStringIO import StringIO
 
 from dendropy.utility import messaging
+from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
 from dendropy.test.support import datatest
 import dendropy
@@ -45,6 +46,34 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
                 ref_tree_list,
                 t_tree_list,
                 distinct_taxa=True,
+                equal_oids=None)
+
+    def testTreeListReaderSameTaxa(self):
+        ref_tree_list = datagen.reference_tree_list()
+        newick_str = datagen.reference_tree_list_newick_string()
+        t_tree_list = newick.read_tree_list(stream=StringIO(newick_str), taxon_set=ref_tree_list.taxon_set)
+        self.assertDistinctButEqualTreeList(
+                ref_tree_list,
+                t_tree_list,
+                distinct_taxa=False,
+                equal_oids=None)
+
+    def testReferenceTreeFileDistinctTaxa(self):
+        ref_tree_list = datagen.reference_tree_list()
+        t_tree_list = newick.read_tree_list(stream=pathmap.tree_source_stream("reference.newick.tre"))
+        self.assertDistinctButEqualTreeList(
+                ref_tree_list,
+                t_tree_list,
+                distinct_taxa=True,
+                equal_oids=None)
+
+    def testReferenceTreeFileSameTaxa(self):
+        ref_tree_list = datagen.reference_tree_list()
+        t_tree_list = newick.read_tree_list(stream=pathmap.tree_source_stream("reference.newick.tre"), taxon_set=ref_tree_list.taxon_set)
+        self.assertDistinctButEqualTreeList(
+                ref_tree_list,
+                t_tree_list,
+                distinct_taxa=False,
                 equal_oids=None)
 
 class NewickEdgeLengthParsing(datatest.DataObjectVerificationTestCase):

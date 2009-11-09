@@ -245,10 +245,10 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 self.assertDistinctButEqualStateAlphabet(col1.state_alphabet, col2.state_alphabet)
             elif distinct_state_alphabets is False:
                 self.assertSame(col1.state_alphabet, col2.state_alphabet)
-        for vi, vec1 in enumerate(char_array1):
-            vec2 = char_array2[vi]
-            taxon1 = vec1.taxon
-            taxon2 = vec2.taxon
+        for ti, taxon1 in enumerate(char_array1):
+            vec1 = char_array1[taxon1]
+            vec2 = char_array2[ti]
+            taxon2 = char_array2.taxon_set[ti]
             if distinct_taxa:
                 self.assertDistinctButEqualTaxon(taxon1, taxon2, **kwargs)
             else:

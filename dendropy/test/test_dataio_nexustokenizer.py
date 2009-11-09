@@ -30,7 +30,6 @@ import unittest
 from cStringIO import StringIO
 
 from dendropy.utility import messaging
-from dendropy import tests
 from dendropy.dataio import nexustokenizer
 
 _LOG = messaging.get_logger(__name__)

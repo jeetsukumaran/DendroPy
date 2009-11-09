@@ -599,7 +599,7 @@ class CharacterArray(TaxonSetLinked):
         Mainly for use after map extension
         """
         assert self.taxon_set is not None
-        for taxon in self:
+        for taxon in self.taxon_seq_map:
             if taxon not in self.taxon_set:
                 self.taxon_set.add(taxon)
 
@@ -630,6 +630,13 @@ class CharacterArray(TaxonSetLinked):
 
     def __setitem__(self, key, value):
         "Dictionary interface implementation for direct access to character map."
+        if isinstance(key, int):
+            if key >= 0 and key < len(self.taxon_set):
+                key = self.taxon_set[key]
+            else:
+                raise KeyError(key)
+        if key not in self.taxon_set:
+            self.taxon_set.add(key)
         self.taxon_seq_map[key] = value
 
 #     def __contains__(self, key):
@@ -664,7 +671,8 @@ class CharacterArray(TaxonSetLinked):
     def __iter__(self):
         "Returns an iterator over character map's ordered keys."
         for t in self.taxon_set:
-            yield self.taxon_seq_map[t]
+            if t in self.taxon_seq_map:
+                yield t
 
     def __delitem__(self, key):
         "Remove item from character map with specified key."
