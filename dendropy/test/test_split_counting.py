@@ -61,12 +61,12 @@ _LOG = messaging.get_logger(__name__)
 class SplitCountTest(ExtendedTestCase):
 
     def setUp(self):
-        self.test_cases = [('pythonidae_cytb.con.tre', 'pythonidae_cytb.con.tre')]
+        self.test_cases = [('pythonidae_cytb.con.trees.nexus', 'pythonidae_cytb.con.trees.nexus')]
         if runlevel.is_test_enabled(runlevel.SLOW, _LOG, self.__class__.__name__):
             self.test_cases.extend([
-                ('feb032009.tre', 'feb032009.tre'),
-                ('maj-rule-bug1.tre', 'maj-rule-bug1.tre'),
-                ('maj-rule-bug2.tre', 'maj-rule-bug2.tre'),
+                ('feb032009.trees.nexus', 'feb032009.trees.nexus'),
+                ('maj-rule-bug1.trees.nexus', 'maj-rule-bug1.trees.nexus'),
+                ('maj-rule-bug2.trees.nexus', 'maj-rule-bug2.trees.nexus'),
             ])
 
     def runTest(self):

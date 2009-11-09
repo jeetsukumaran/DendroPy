@@ -29,7 +29,6 @@ import unittest
 import tempfile
 from cStringIO import StringIO
 
-from dendropy.utility import messaging
 from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
 from dendropy.test.support import datatest
@@ -60,7 +59,7 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        t_tree_list = newick.read_tree_list(stream=pathmap.tree_source_stream("reference.newick.tre"))
+        t_tree_list = newick.read_tree_list(stream=pathmap.tree_source_stream("reference.trees.newick"))
         self.assertDistinctButEqualTreeList(
                 ref_tree_list,
                 t_tree_list,
@@ -69,7 +68,7 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileSameTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        t_tree_list = newick.read_tree_list(stream=pathmap.tree_source_stream("reference.newick.tre"), taxon_set=ref_tree_list.taxon_set)
+        t_tree_list = newick.read_tree_list(stream=pathmap.tree_source_stream("reference.trees.newick"), taxon_set=ref_tree_list.taxon_set)
         self.assertDistinctButEqualTreeList(
                 ref_tree_list,
                 t_tree_list,
@@ -152,28 +151,18 @@ T4:4.4e+8)'this is an internal node called "i2"':4.0e+1)i3:4.0E-4,
         for nd in trees[0].postorder_node_iter():
             label = nd.taxon.label if nd.taxon is not None else nd.label
             self.assertAlmostEquals(nd.edge.length, expected[label])
-#
-#class NewickWriterTest(unittest.TestCase):
-#
-#    def testReadTreeList(self):
-#        check_canonical_Pythonidae_cytb_tree_parse(
-#                reader = newick.NewickReader(),
-#                srcpath=tests.data_source_path("pythonidae_cytb.newick.tre"),
-#                logger=_LOG,
-#                underscore_substitution=True)
+
+#class NewickWriterTest(datatest.DataObjectVerificationTestCase):
 #
 #    def testWriteTreeList(self):
-#        _LOG.info("Reading in trees for NEWICK writing test")
 #        reader = newick.NewickReader()
 #        ds1 = reader.read(stream=open(tests.data_source_path("pythonidae_cytb.newick.tre"), "rU"))
 #
 #        outfile = tempfile.NamedTemporaryFile()
-#        _LOG.info("Writing trees to temporary file '%s'" % outfile.name)
 #        writer = newick.NewickWriter(dataset=ds1)
 #        writer.write(ostream=outfile)
 #        outfile.flush()
 #
-#        _LOG.info("Re-reading trees")
 #        check_canonical_Pythonidae_cytb_tree_parse(
 #                reader = newick.NewickReader(),
 #                srcpath=outfile.name,

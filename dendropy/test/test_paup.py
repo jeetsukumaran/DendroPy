@@ -119,7 +119,7 @@ class PaupWrapperSplitsParse(ExtendedTestCase):
 class PaupWrapperSplitsParseTest1(PaupWrapperSplitsParse):
 
     def setUp(self):
-        self.populate_test(["trees","feb032009.tre"],
+        self.populate_test(["trees","feb032009.trees.nexus"],
                                 ["trees", "feb032009.splits.csv"],
                                 100)
 
