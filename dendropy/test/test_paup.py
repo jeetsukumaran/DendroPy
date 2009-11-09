@@ -100,7 +100,7 @@ class PaupWrapperSplitsParse(ExtendedTestCase):
         self.assertEqual(self.expected_num_trees, tree_count)
         self.assertEqual(len(self.expected_split_freqs), len(bipartition_counts))
         for g in self.expected_split_freqs:
-            self.assertIsContainedIn(g, bipartition_counts)
+            self.assertContained(g, bipartition_counts)
             self.assertEqual(self.expected_split_freqs[g], bipartition_counts[g])
 
         sd = paup.build_split_distribution(bipartition_counts,
@@ -110,8 +110,8 @@ class PaupWrapperSplitsParse(ExtendedTestCase):
         sf = sd.split_frequencies
         for g in bipartition_counts:
             s = paup.paup_group_to_mask(g, normalized=unrooted)
-            self.assertIsContainedIn(s, sd.splits)
-            self.assertIsContainedIn(s, sd.split_counts)
+            self.assertContained(s, sd.splits)
+            self.assertContained(s, sd.split_counts)
             self.assertEqual(sd.split_counts[s], bipartition_counts[g])
             self.assertEqual(sd.total_trees_counted, self.expected_num_trees)
             self.assertAlmostEqual(sf[s], float(bipartition_counts[g]) / self.expected_num_trees)

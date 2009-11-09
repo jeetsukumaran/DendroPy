@@ -38,7 +38,13 @@ class DnaArrayTest(datatest.DataObjectVerificationTestCase):
 
     def testFromCharArray(self):
         ca2 = dendropy.DnaCharacterArray(self.char_array1)
-        self.assertDistinctButEqual(self.char_array1, ca2, char_type='dna', distinct_taxa=False, equal_oids=False)
+        self.assertDistinctButEqual(
+            self.char_array1,
+            ca2,
+            char_type='dna',
+            distinct_state_alphabets=False,
+            distinct_taxa=False,
+            equal_oids=False)
 
 if __name__ == "__main__":
     unittest.main()

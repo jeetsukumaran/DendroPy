@@ -45,8 +45,8 @@ class TestNormalizedBitmaskDict(ExtendedTestCase):
             d[s[0][0]] = s[0][1]
 
         for s in splits:
-            self.assertIsContainedIn(s[0][0], d)
-            self.assertIsContainedIn(s[1][0], d)
+            self.assertContained(s[0][0], d)
+            self.assertContained(s[1][0], d)
             self.assertEqual(d[s[0][0]], d[s[1][0]])
 
         for k, v in d.items():
@@ -54,10 +54,10 @@ class TestNormalizedBitmaskDict(ExtendedTestCase):
 
         del d[splits[0][0][0]]
         del d[splits[1][1][0]]
-        self.assertIsNotContainedIn(splits[0][0][0], d)
-        self.assertIsNotContainedIn(splits[0][1][0], d)
-        self.assertIsNotContainedIn(splits[1][0][0], d)
-        self.assertIsNotContainedIn(splits[1][1][0], d)
+        self.assertNotContained(splits[0][0][0], d)
+        self.assertNotContained(splits[0][1][0], d)
+        self.assertNotContained(splits[1][0][0], d)
+        self.assertNotContained(splits[1][1][0], d)
 
 class TestOrderedSet(unittest.TestCase):
 

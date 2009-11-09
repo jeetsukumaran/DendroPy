@@ -66,9 +66,9 @@ class TestExtendSequencesOverwrite(TestCharStruct):
         self.assertEqual(len(self.cb1.taxon_set), target_ntax)
         for t in self.tb2:
             cb_tb_labels = self.cb1.taxon_set.labels()
-            self.assertIsContainedIn(t.label, cb_tb_labels)
+            self.assertContained(t.label, cb_tb_labels)
             cb_labels = [t.label for t in self.cb1]
-            self.assertIsContainedIn(t.label, cb_labels)
+            self.assertContained(t.label, cb_labels)
         for t in self.cb1:
             self.assertEqual(len(self.cb1[t]), 10)
             self.assertEqual(self.cb1[t].values_as_string(), "CCCCCCCCCC",)
@@ -82,9 +82,9 @@ class TestExtendSequencesAppend(TestCharStruct):
         self.assertEqual(len(self.cb1.taxon_set), target_ntax)
         for t in self.tb2:
             cb_tb_labels = self.cb1.taxon_set.labels()
-            self.assertIsContainedIn(t.label, cb_tb_labels)
+            self.assertContained(t.label, cb_tb_labels)
             cb_labels = [t.label for t in self.cb1]
-            self.assertIsContainedIn(t.label, cb_labels)
+            self.assertContained(t.label, cb_labels)
         for t in self.cb1:
             if int(t.label[-2:]) > 10:
                 self.assertEqual(len(self.cb1[t]), 10)

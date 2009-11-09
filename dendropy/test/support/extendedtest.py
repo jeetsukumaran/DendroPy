@@ -49,22 +49,22 @@ class ExtendedTestCase(unittest.TestCase):
 
     logger = property(_get_logger, _set_logger)
 
-    def assertIsSame(self, obj1, obj2, message=None):
+    def assertSame(self, obj1, obj2, message=None):
         if message is None:
             message = "Object %s is not same as object %s: %s vs. %s" % (id(obj2), id(obj2), obj1, obj2)
         self.assertTrue(obj1 is obj2, message)
 
-    def assertIsNotSame(self, obj1, obj2, message=None):
+    def assertNotSame(self, obj1, obj2, message=None):
         if message is None:
             message = "Object %s is same as object %s: %s vs. %s" % (id(obj2), id(obj2), obj1, obj2)
         self.assertTrue(obj1 is not obj2, message)
 
-    def assertIsContainedIn(self, obj1, obj2, message=None):
+    def assertContained(self, obj1, obj2, message=None):
         if message is None:
             message = "%s is not in: %s" % (obj1, obj2)
         self.assertTrue(obj1 in obj2, message)
 
-    def assertIsNotContainedIn(self, obj1, obj2, message=None):
+    def assertNotContained(self, obj1, obj2, message=None):
         if message is None:
             message = "%s is in: %s" % (obj1, obj2)
         self.assertTrue(obj1 not in obj2, message)

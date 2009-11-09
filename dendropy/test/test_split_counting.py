@@ -88,8 +88,8 @@ class SplitCountTest(ExtendedTestCase):
             taxon_set.lock()
             for tree_filepath in tree_filepaths:
                 for tree in nexus.tree_source_iter(stream=open(tree_filepath, "rU"), taxon_set=taxon_set):
-                    self.assertIsSame(tree.taxon_set, dp_sd.taxon_set)
-                    self.assertIsSame(tree.taxon_set, taxon_set)
+                    self.assertSame(tree.taxon_set, dp_sd.taxon_set)
+                    self.assertSame(tree.taxon_set, taxon_set)
                     splitcalc.encode_splits(tree)
                     dp_sd.count_splits_on_tree(tree)
 
@@ -103,7 +103,7 @@ class SplitCountTest(ExtendedTestCase):
             taxa_mask = taxon_set.all_taxa_bitmask()
             for split in dp_sd.splits:
                 if not splitcalc.is_trivial_split(split, taxa_mask):
-                    self.assertIsContainedIn(split, paup_sd.splits)
+                    self.assertContained(split, paup_sd.splits)
                     self.assertEqual(dp_sd.split_counts[split], paup_sd.split_counts[split])
                     paup_sd.splits.remove(split)
 

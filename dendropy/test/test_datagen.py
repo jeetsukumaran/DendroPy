@@ -60,10 +60,10 @@ class DataForTestingTest(datatest.DataObjectVerificationTestCase):
         taxon_set = char_array.taxon_set
         dna_dict = datagen.reference_dna_dict()
         self.assertEqual(len(char_array), 13)
-        self.assertIsSame(char_array.default_state_alphabet, dendropy.DNA_STATE_ALPHABET)
+        self.assertSame(char_array.default_state_alphabet, dendropy.DNA_STATE_ALPHABET)
         for tax_label, tax_seq_symbols in dna_dict.items():
             taxon = taxon_set.require_taxon(label=tax_label)
-            self.assertIsContainedIn(taxon, char_array)
+            self.assertContained(taxon, char_array)
             seq_vec = char_array[taxon]
             self.assertEqual(len(seq_vec), len(tax_seq_symbols))
             for si, s1 in enumerate(tax_seq_symbols):
