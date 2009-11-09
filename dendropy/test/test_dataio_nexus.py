@@ -95,9 +95,12 @@ class NexusParseStandardWithMultistateTest(datatest.DataObjectVerificationTestCa
 
     def testStandardWithMultistateInBraces(self):
         reader = nexus.NexusReader()
-        dataset = reader.read(stream=char_source_stream("apternodus.nex"))
+        dataset = reader.read(stream=pathmap.char_source_stream("apternodus.chars.nexus"))
         self.assertEqual(len(dataset.char_arrays), 1)
         self.map_multistate_to_symbols(dataset.char_arrays[0])
+        expected_label_symbol_stream = pathmap.char_source_stream("apternodus.chars.hacked-for-tests.txt")
+        self.assertEqualCharArrayLabelSymbols(dataset.char_arrays[0], \
+            expected_label_symbol_stream = expected_label_symbol_stream)
 
 #class NexusTreeTest(unittest.TestCase):
 #
