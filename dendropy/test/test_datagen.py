@@ -71,5 +71,12 @@ class DataForTestingTest(datatest.DataObjectVerificationTestCase):
                 self.assertEqual(state.symbol, s1)
             self.assertEqual(seq_vec.as_symbol_string(), tax_seq_symbols)
 
+    def testReferenceDataSet(self):
+        dataset = datagen.reference_single_taxonset_dataset()
+        self.assertEqual(len(dataset.taxon_sets), 1)
+        self.assertEqual(len(dataset.taxon_sets[0]), 13)
+        self.assertEqual(len(dataset.tree_lists), 1)
+        self.assertEqual(len(dataset.char_arrays), 2)
+
 if __name__ == "__main__":
     unittest.main()
