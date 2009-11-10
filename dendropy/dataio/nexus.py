@@ -70,6 +70,32 @@ def tree_source_iter(stream, **kwargs):
     for tree in reader.tree_source_iter(stream, **kwargs):
         yield tree
 
+def generalized_tree_source_iter(stream, **kwargs):
+    """
+    Diagnoses and handles both NEXUS and NEWICK files.
+    """
+    format = None
+    if "format" in kwargs:
+        format = kwargs["format"]
+    else:
+        stream_tokenizer = nexustokenizer.NexusTokenizer(stream)
+        token = stream_tokenizer.read_next_token_ucase()
+        if token == "#NEXUS":
+            format = "nexus"
+        else:
+            try:
+                stream_tokenizer.stream_handle.seek(0)
+            except IOError:
+                raise TypeError("File format of non-random access source (such as stdin) must be specified in advance.")
+            if token == "(":
+                format = "newick"
+    if format == "nexus":
+        return tree_source_iter(stream, **kwargs)
+    elif format == "newick":
+        return newick.tree_source_iter(stream, **kwargs)
+    else:
+        raise TypeError("Cannot diagnose file format based on first token found: '%s' (looking for '#NEXUS' or '(')")
+
 def read_tree_list(stream, **kwargs):
     """
     Parses a source describing a collection of trees in NEXUS format, and

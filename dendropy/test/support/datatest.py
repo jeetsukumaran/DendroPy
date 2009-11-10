@@ -120,12 +120,29 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
     def assertDistinctButEqualTaxonSet(self, taxon_set1, taxon_set2, **kwargs):
         equal_oids = kwargs.get("equal_oids", None)
         ignore_underscore_substitution = kwargs.get("ignore_underscore_substitution", False)
+        ignore_taxon_order = kwargs.get("ignore_taxon_order", False)
         self.logger.info("Comparing TaxonSet objects %d and %d" % (id(taxon_set1), id(taxon_set2)))
         self.assertNotSame(taxon_set1, taxon_set2)
         self.assertEqual(len(taxon_set1), len(taxon_set2))
-        for tidx, taxon1 in enumerate(taxon_set1):
-            taxon2 = taxon_set2[tidx]
-            self.assertDistinctButEqualTaxon(taxon1, taxon2, **kwargs)
+        if not ignore_taxon_order:
+            for tidx, taxon1 in enumerate(taxon_set1):
+                taxon2 = taxon_set2[tidx]
+                self.assertDistinctButEqualTaxon(taxon1, taxon2, **kwargs)
+        else:
+            if ignore_underscore_substitution:
+                get_label = lambda t: str(t.label).replace("_", " ")
+            else:
+                get_label = lambda t: str(t.label)
+            labels1 = set([get_label(t) for t in taxon_set1])
+            labels2 = set([get_label(t) for t in taxon_set2])
+            self.assertEqual(labels1, labels2)
+            if equal_oids is not None:
+                oids1 = set([t.oid for t in taxon_set1])
+                oids2 = set([t.oid for t in taxon_set2])
+                if equal_oids:
+                    self.assertEqual(oids1, oids2)
+                else:
+                    self.assertNotEqual(oids1, oids2)
 
     def assertDistinctButEqualTreeList(self, tree_list1, tree_list2, **kwargs):
         """
@@ -199,15 +216,15 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 self.assert_(node2.taxon is not None)
                 if distinct_taxa:
                     self.assertNotSame(node1.taxon, node2.taxon)
+                    if equal_oids is True:
+                        self.assertEqual(node1.oid, node2.oid)
+                    elif equal_oids is False:
+                        self.assertNotEqual(node1.oid, node2.oid)
+                    self.assertEqual(node1.taxon.label, node2.taxon.label)
+                    self.assertContained(node1.taxon, tree1.taxon_set)
+                    self.assertContained(node2.taxon, tree2.taxon_set)
                 else:
                     self.assertSame(node1.taxon, node2.taxon)
-                if equal_oids is True:
-                    self.assertEqual(node1.oid, node2.oid)
-                elif equal_oids is False:
-                    self.assertNotEqual(node1.oid, node2.oid)
-                self.assertEqual(node1.taxon.label, node2.taxon.label)
-                self.assertContained(node1.taxon, tree1.taxon_set)
-                self.assertContained(node2.taxon, tree2.taxon_set)
             else:
                 self.assertSame(node2.taxon, None)
             if node1.edge.length is not None:

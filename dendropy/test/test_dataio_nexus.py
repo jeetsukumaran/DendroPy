@@ -160,6 +160,43 @@ class NexusTreeListWriterTest(datatest.DataObjectVerificationTestCase):
                 distinct_taxa=True,
                 equal_oids=None)
 
+class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
+
+    def setUp(self):
+        self.ref_tree_list = datagen.reference_tree_list()
+        self.ref_idx = -1
+
+    def next_ref_tree(self):
+        self.ref_idx += 1
+        if self.ref_idx >= len(self.ref_tree_list):
+            self.ref_idx = 0
+        return self.ref_tree_list[ref_idx]
+
+class NexusOrNewickTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
+
+    def setUp(self):
+        self.ref_tree_list = datagen.reference_tree_list()
+
+    def testNexusDistinctTaxa(self):
+        stream = pathmap.tree_source_stream('reference.trees.nexus')
+        for idx, test_tree in enumerate(nexus.generalized_tree_source_iter(stream=stream)):
+            self.assertDistinctButEqualTree(self.ref_tree_list[idx], test_tree, distinct_taxa=True)
+
+    def testNexusSameTaxa(self):
+        stream = pathmap.tree_source_stream('reference.trees.nexus')
+        for idx, test_tree in enumerate(nexus.generalized_tree_source_iter(stream=stream, taxon_set=self.ref_tree_list.taxon_set)):
+            self.assertDistinctButEqualTree(self.ref_tree_list[idx], test_tree, distinct_taxa=False)
+
+    def testNewickDistinctTaxa(self):
+        stream = pathmap.tree_source_stream('reference.trees.newick')
+        for idx, test_tree in enumerate(nexus.generalized_tree_source_iter(stream=stream)):
+            self.assertDistinctButEqualTree(self.ref_tree_list[idx], test_tree, distinct_taxa=True, ignore_taxon_order=True)
+
+    def testNewickSameTaxa(self):
+        stream = pathmap.tree_source_stream('reference.trees.newick')
+        for idx, test_tree in enumerate(nexus.generalized_tree_source_iter(stream=stream, taxon_set=self.ref_tree_list.taxon_set)):
+            self.assertDistinctButEqualTree(self.ref_tree_list[idx], test_tree, distinct_taxa=False)
+
 class NexusTreeDocumentReaderTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileDistinctTaxa(self):
