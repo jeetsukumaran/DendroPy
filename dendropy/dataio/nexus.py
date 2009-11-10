@@ -284,7 +284,7 @@ class NexusReader(iosys.DataReader):
         "Main file parsing driver."
         finish_node_func = self.finish_node_func
         self.reset()
-        token = self.stream_tokenizer.read_next_token_ucase()
+        token = self.stream_tokenizer.read_next_token()
         if token != "#NEXUS":
             raise self.data_format_error("Expecting '#NEXUS', but found '%s'" % token)
         else:
@@ -299,8 +299,8 @@ class NexusReader(iosys.DataReader):
                     if not self.exclude_chars:
                         self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
                         while not (token == 'END' or token == 'ENDBLOCK') \
-                            and not self.stream_tokenizer.eof \
-                            and not token==None:
+                                and not self.stream_tokenizer.eof \
+                                and not token==None:
                             token = self.stream_tokenizer.read_next_token_ucase()
                             if token == 'DIMENSIONS':
                                 self._parse_dimensions_statement()
@@ -314,8 +314,8 @@ class NexusReader(iosys.DataReader):
                 elif token == 'DATA':
                     self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
                     while not (token == 'END' or token == 'ENDBLOCK') \
-                        and not self.stream_tokenizer.eof \
-                        and not token==None:
+                            and not self.stream_tokenizer.eof \
+                            and not token==None:
                         token = self.stream_tokenizer.read_next_token_ucase()
                         if token == 'DIMENSIONS':
                             self._parse_dimensions_statement()
@@ -406,6 +406,7 @@ class NexusReader(iosys.DataReader):
                         self.symbols = "12"
                 else:
                     raise self.data_format_error("Expecting '=' after DATATYPE keyword")
+                token = self.stream_tokenizer.read_next_token_ucase()
             elif token == 'SYMBOLS':
                 token = self.stream_tokenizer.read_next_token_ucase()
                 if token == '=':
@@ -421,6 +422,7 @@ class NexusReader(iosys.DataReader):
                         raise self.data_format_error("Expecting '\"' before beginning SYMBOLS list")
                 else:
                     raise self.data_format_error("Expecting '=' after SYMBOLS keyword")
+                token = self.stream_tokenizer.read_next_token_ucase()
             elif token == 'GAP':
                 token = self.stream_tokenizer.read_next_token_ucase()
                 if token == '=':
@@ -428,14 +430,16 @@ class NexusReader(iosys.DataReader):
                     self.gap_char = token
                 else:
                     raise self.data_format_error("Expecting '=' after GAP keyword")
+                token = self.stream_tokenizer.read_next_token_ucase()
             elif token == 'INTERLEAVE':
                 token = self.stream_tokenizer.read_next_token_ucase()
                 if token == '=':
                     token = self.stream_tokenizer.read_next_token_ucase()
-                    if token.upper().startswith("N"):
+                    if token.startswith("N"):
                         self.interleave = False
                     else:
                         self.interleave = True
+                    token = self.stream_tokenizer.read_next_token_ucase()
                 else:
                     self.interleave = True
             elif token == 'MISSING':
@@ -445,6 +449,7 @@ class NexusReader(iosys.DataReader):
                     self.missing_char = token
                 else:
                     raise self.data_format_error("Expecting '=' after MISSING keyword")
+                token = self.stream_tokenizer.read_next_token_ucase()
             elif token == 'MATCHCHAR':
                 token = self.stream_tokenizer.read_next_token_ucase()
                 if token == '=':
@@ -452,7 +457,7 @@ class NexusReader(iosys.DataReader):
                     self.match_char = token
                 else:
                     raise self.data_format_error("Expecting '=' after MISSING keyword")
-            token = self.stream_tokenizer.read_next_token_ucase()
+                token = self.stream_tokenizer.read_next_token_ucase()
 
     def _parse_dimensions_statement(self):
         """
@@ -493,40 +498,40 @@ class NexusReader(iosys.DataReader):
             raise self.data_format_error('NTAX must be defined by DIMENSIONS command to non-zero value before MATRIX command')
         elif not self.file_specified_nchar:
             raise self.data_format_error('NCHAR must be defined by DIMENSIONS command to non-zero value before MATRIX command')
-        else:
 
-            char_block = self.dataset.new_char_array(char_array_type=self.char_block_type, \
-                taxon_set=self.current_taxon_set)
+        char_block = self.dataset.new_char_array(char_array_type=self.char_block_type, \
+            taxon_set=self.current_taxon_set)
 
-            if isinstance(char_block, dataobject.StandardCharacterArray):
-                self._build_state_alphabet(char_block, self.symbols)
+        if isinstance(char_block, dataobject.StandardCharacterArray):
+            self._build_state_alphabet(char_block, self.symbols)
 
-            symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
-            if True: # future: trap and handle no labels, transpose etc.
-                token = self.stream_tokenizer.read_next_token()
-                while token != ';' and not self.stream_tokenizer.eof:
-                    taxon = self.current_taxon_set.require_taxon(label=token)
-                    if taxon not in char_block:
-                        if not self.exclude_chars:
-                            char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
-                    if self.interleave:
-                        char_group = StringIO()
-                        while self.stream_tokenizer.current_file_char != '\n' \
-                                and self.stream_tokenizer.current_file_char != '\r' \
-                                and not self.stream_tokenizer.eof:
-                            token = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
-                            char_group.write(token)
-                        char_group = char_group.getvalue()
-                        self._process_chars(char_group, char_block, symbol_state_map, taxon)
-                        token = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
-                    else:
-                        while len(char_block[taxon]) < self.file_specified_nchar and not self.stream_tokenizer.eof:
-                            char_group = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
-                            self._process_chars(char_group, char_block, symbol_state_map, taxon)
-                        token = self.stream_tokenizer.read_next_token()
+        symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
+
+        token = self.stream_tokenizer.read_next_token()
+        while token != ';' and not self.stream_tokenizer.eof:
+            taxon = self.current_taxon_set.require_taxon(label=token)
+            if taxon not in char_block:
+                if not self.exclude_chars:
+                    char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
+            if self.interleave:
+                char_group = StringIO()
+                while self.stream_tokenizer.current_file_char != '\n' \
+                        and self.stream_tokenizer.current_file_char != '\r' \
+                        and not self.stream_tokenizer.eof \
+                        and token != ";":
+                    token = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
+                    char_group.write(token)
+                char_group = char_group.getvalue()
+                self._process_chars(char_group, char_block, symbol_state_map, taxon)
+                token = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
             else:
-                ## TODO: NO LABELS/TRANSPOSED ##
-                pass
+                while len(char_block[taxon]) < self.file_specified_nchar and not self.stream_tokenizer.eof:
+                    char_group = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
+                    self._process_chars(char_group, char_block, symbol_state_map, taxon)
+                if len(char_block[taxon]) < self.file_specified_nchar:
+                    raise self.data_format_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
+                        % (taxon.label, self.file_specified_nchar, len(char_block[taxon]), char_block[taxon].as_symbol_string()))
+                token = self.stream_tokenizer.read_next_token()
 
     def _process_chars(self, char_group, char_block, symbol_state_map, taxon):
         if self.exclude_chars:
@@ -536,7 +541,10 @@ class NexusReader(iosys.DataReader):
         char_group = self._parse_nexus_multistate(char_group)
         for char in char_group:
             if len(char) == 1:
-                state = symbol_state_map[char]
+                try:
+                    state = symbol_state_map[char]
+                except KeyError:
+                    raise self.data_format_error("Unrecognized (single) state encountered:'%s' is not defined in %s" % (char, symbol_state_map.keys()))
             else:
                 if hasattr(char, "open_tag"):
                     state = self._get_state_for_multistate_char(char, char_block.default_state_alphabet)

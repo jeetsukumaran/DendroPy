@@ -112,14 +112,20 @@ class NexusParseStandardCharsWithMultistateTest(datatest.DataObjectVerificationT
                     raise self.failureException("Unexpected multistate: %s" % member_symbols)
         return sae
 
-    def testStandardWithMultistateInBraces(self):
+    def check_parse_with_ambiguities(self, data_filename, expected_filename):
         reader = nexus.NexusReader()
-        dataset = reader.read(stream=pathmap.char_source_stream("apternodus.chars.nexus"))
+        dataset = reader.read(stream=pathmap.char_source_stream(data_filename))
         self.assertEqual(len(dataset.char_arrays), 1)
         self.map_multistate_to_symbols(dataset.char_arrays[0])
-        expected_label_symbol_stream = pathmap.char_source_stream("apternodus.chars.hacked-for-tests.txt")
+        expected_label_symbol_stream = pathmap.char_source_stream(expected_filename)
         self.assertEqualCharArrayLabelSymbols(dataset.char_arrays[0], \
             expected_label_symbol_stream = expected_label_symbol_stream)
+
+    def testStandardWithMultistateInBraces(self):
+        self.check_parse_with_ambiguities("apternodus.chars.nexus", "apternodus.chars.hacked-for-tests.txt")
+
+    def testStandardWithMultistateInBracesInterleaved(self):
+        self.check_parse_with_ambiguities("apternodus.chars.interleaved.nexus", "apternodus.chars.hacked-for-tests.txt")
 
 class NexusTreeListReaderTest(datatest.DataObjectVerificationTestCase):
 
