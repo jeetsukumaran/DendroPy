@@ -26,12 +26,22 @@ Extensions of the unittest framework for data comparison and testing.
 
 import unittest
 import dendropy
+from dendropy.test.support import pathmap
 from dendropy.test.support import extendedtest
 
 class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
     """
     Extends ExtendedTestCase with tests for data object comparisons.
     """
+
+    def roundTripDataSetTest(self,
+                      dataset,
+                      format,
+                      **kwargs):
+        output_path = pathmap.named_output_path(filename="roundtrip_test.%s" % format, suffix_timestamp=True)
+        dataset.write(stream=open(output_path, "w"), format=format)
+        rt_dataset = dendropy.DataSet(stream=open(output_path, "rU"), format=format)
+        self.assertDistinctButEqual(dataset, rt_dataset)
 
     def assertDistinctButEqual(self, data_object1, data_object2, **kwargs):
         """
@@ -310,7 +320,6 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                     self.assertNotSame(c1.value, c2.value)
                 elif distinct_state_alphabets is False:
                     self.assertSame(c1.value, c2.value)
-
 
     def assertDistinctButEqualCharArray(self, char_array1, char_array2, **kwargs):
         if isinstance(char_array1, dendropy.DiscreteCharacterArray):

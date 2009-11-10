@@ -206,5 +206,37 @@ class NewickDocumentReaderTest(datatest.DataObjectVerificationTestCase):
         self.assertDistinctButEqual(test_dataset.taxon_sets[0], test_dataset.taxon_sets[1])
         self.assertDistinctButEqual(test_dataset.tree_lists[0], test_dataset.tree_lists[1], distinct_taxa=True)
 
+    def testRoundTrip(self):
+        self.roundTripDataSetTest(self.reference_dataset, "newick")
+
+class NewickDocumentWriterTest(datatest.DataObjectVerificationTestCase):
+
+    def setUp(self):
+        reference_tree_list = datagen.reference_tree_list()
+        self.reference_dataset = dendropy.DataSet(reference_tree_list)
+
+    def testBasicDocumentParseFromReader(self):
+        reader = newick.NewickReader()
+        test_dataset = reader.read(stream=pathmap.tree_source_stream("reference.trees.newick"))
+        self.assertDistinctButEqual(self.reference_dataset, test_dataset)
+
+    def testBasicDocumentParseFromRead(self):
+        test_dataset = dendropy.DataSet()
+        test_dataset.read(stream=pathmap.tree_source_stream("reference.trees.newick"), format="newick")
+        self.assertDistinctButEqual(self.reference_dataset, test_dataset)
+
+    def testBasicDocumentFromInit(self):
+        test_dataset = dendropy.DataSet(stream=pathmap.tree_source_stream("reference.trees.newick"), format="newick")
+        self.assertDistinctButEqual(self.reference_dataset, test_dataset)
+
+    def testMultiDocumentParse(self):
+        test_dataset = dendropy.DataSet()
+        test_dataset.read(stream=pathmap.tree_source_stream("reference.trees.newick"), format="newick")
+        test_dataset.read(stream=pathmap.tree_source_stream("reference.trees.newick"), format="newick")
+        self.assertEqual(len(test_dataset.taxon_sets), 2)
+        self.assertEqual(len(test_dataset.tree_lists), 2)
+        self.assertDistinctButEqual(test_dataset.taxon_sets[0], test_dataset.taxon_sets[1])
+        self.assertDistinctButEqual(test_dataset.tree_lists[0], test_dataset.tree_lists[1], distinct_taxa=True)
+
 if __name__ == "__main__":
     unittest.main()
