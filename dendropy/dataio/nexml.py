@@ -943,15 +943,46 @@ class NexmlWriter(iosys.DataWriter):
                             state_alphabet_parts.extend(self.compose_state_definition(state, indent_level+3))
                     state_alphabet_parts.append('%s</states>' % (self.indent * (indent_level+2)))
 
+            columns_to_add = []
+            cell_indexes = set()
+            if hasattr(char_array, "state_alphabets"):
+                for taxon, row in char_array.taxon_seq_map.items():
+                    for cell_idx, cell in enumerate(row):
+                        if cell_idx in cell_indexes:
+                            continue
+                        if not hasattr(cell, 'column_type') or cell.column_type is None:
+                            if char_array.default_state_alphabet is not None:
+                                col_type = dendropy.ColumnType(state_alphabet=char_array.default_state_alphabet)
+                            elif len(char_array.state_alphabets) == 1:
+                                col_type = dendropy.ColumnType(state_alphabet=char_array.state_alphabets[0])
+                            elif len(char_array.state_alphabets) > 1:
+                                raise TypeError("Character cell %d for taxon %s ('%s') does not have a state alphabet mapping given by the" % (cell_idx, taxon.oid, taxon.label)\
+                                        + " 'column_type' property, and multiple state alphabets are defined for the containing" \
+                                        + " character array ('%s')" % char_array.oid)
+                            elif len(char_array.state_alphabets) == 0:
+                                raise TypeError("Character cell %d for taxon %s ('%s') does not have a state alphabet mapping given by the" % (cell_idx, taxon.oid, taxon.label)\
+                                        + " 'column_type' property, and no state alphabets are defined for the containing" \
+                                        + " character array" % char_array.oid)
+                            columns_to_add.append(col_type)
+                            cell_indexes.add(cell_idx)
+                        else:
+                            columns_to_add.append(dendropy.ColumnType(state_alphabet=cell.column_type.state_alphabet))
+            else:
+                for taxon, row in char_array.taxon_seq_map.items():
+                    for cell_idx, cell in enumerate(row):
+                        if cell_idx in cell_indexes:
+                            continue
+                        columns_to_add.append(dendropy.ColumnType())
+                        cell_indexes.add(cell_idx)
+
             column_types_parts = []
-            if char_array.column_types:
-                for column in char_array.column_types:
-                    if column.state_alphabet:
-                        column_state = ' states="%s" ' % column.state_alphabet.oid
-                    else:
-                        column_state = ' '
-                    column_types_parts.append('%s<char id="%s"%s/>'
-                        % ((self.indent*(indent_level+1)), column.oid, column_state))
+            for column in columns_to_add:
+                if column.state_alphabet:
+                    column_state = ' states="%s" ' % column.state_alphabet.oid
+                else:
+                    column_state = ' '
+                column_types_parts.append('%s<char id="%s"%s/>'
+                    % ((self.indent*(indent_level+1)), column.oid, column_state))
 
             if state_alphabet_parts or column_types_parts:
                 dest.write("%s<format>\n" % (self.indent*(indent_level+1)))

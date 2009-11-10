@@ -1245,6 +1245,9 @@ def reference_standard_array(taxon_set=None):
         ca1[t] = dendropy.CharacterDataVector(_get_standard_cells(col_012, "001122-??012")) \
                + dendropy.CharacterDataVector(_get_standard_cells(col_xyz, "XYZXYZ??-XXZ")) \
                + dendropy.CharacterDataVector(_get_standard_cells(col_jkl, "JKJLKL-??KJJ"))
+        for c in ca1[t]:
+            assert c.column_type is not None
+            assert c.column_type in [col_012, col_xyz, col_jkl]
     return ca1
 
 def reference_single_taxonset_dataset():
