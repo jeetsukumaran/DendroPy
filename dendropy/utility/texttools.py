@@ -69,10 +69,13 @@ else:
             m <<= 1
         return "".join(sl)
 
-def pretty_timestamp(t=None):
+def pretty_timestamp(t=None, style=0):
     if t is None:
         t = time.localtime()
-    return time.strftime("%Y-%m-%d", t)
+    if style == 0:
+        return time.strftime("%Y-%m-%d", t)
+    else:
+        return time.strftime("%Y%m%d%H%M%S", t)
 
 def pretty_timedelta(timedelta):
     hours, mins, secs = str(timedelta).split(":")
