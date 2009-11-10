@@ -38,6 +38,7 @@ from dendropy.dataio import nexus
 class NexusGeneralParseCharsTest(datatest.DataObjectVerificationTestCase):
 
     def check_chars_against_expected(self, data_filename, expected_filename, datatype):
+        self.logger.info("Checking '%s' => %s" % (data_filename, datatype.__name__))
         reader = nexus.NexusReader()
         dataset = reader.read(stream=pathmap.char_source_stream(data_filename))
         expected_label_symbol_stream = pathmap.char_source_stream(expected_filename)
@@ -45,15 +46,26 @@ class NexusGeneralParseCharsTest(datatest.DataObjectVerificationTestCase):
         self.assertEqualCharArrayLabelSymbols(dataset.char_arrays[0], \
             expected_label_symbol_stream=expected_label_symbol_stream)
 
-    def testCharParse(self):
-        test_sets = [
-            ["pythonidae_cytb.chars.nexus", "pythonidae_cytb.chars.txt", dendropy.DnaCharacterArray],
-            ["caenophidia_mos.chars.nexus", "caenophidia_mos.chars.txt", dendropy.ProteinCharacterArray],
-            ["angiosperms.chars.nexus", "angiosperms.chars.txt", dendropy.StandardCharacterArray],
-        ]
-        for t in test_sets:
-            self.logger.info("Checking '%s' => %s" % (t[0], t[2].__name__))
-            self.check_chars_against_expected(t[0], t[1], t[2])
+class NexusParseDnaCharsTest(NexusGeneralParseCharsTest):
+
+    def runTest(self):
+        self.check_chars_against_expected("pythonidae_cytb.chars.nexus",
+                "pythonidae_cytb.chars.txt",
+                dendropy.DnaCharacterArray)
+
+class NexusParseProteinCharsTest(NexusGeneralParseCharsTest):
+
+    def runTest(self):
+        self.check_chars_against_expected("caenophidia_mos.chars.nexus",
+                "caenophidia_mos.chars.txt",
+                dendropy.ProteinCharacterArray)
+
+class NexusParseStandardCharsTest(NexusGeneralParseCharsTest):
+
+    def runTest(self):
+        self.check_chars_against_expected("angiosperms.chars.nexus",
+                "angiosperms.chars.txt",
+                dendropy.ProteinCharacterArray)
 
 class NexusParseStandardCharsWithMultistateTest(datatest.DataObjectVerificationTestCase):
     """
