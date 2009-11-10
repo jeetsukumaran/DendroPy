@@ -972,10 +972,11 @@ class NexmlWriter(iosys.DataWriter):
                         if cell_idx in cell_indexes:
                             continue
                         if not hasattr(cell, 'column_type') or cell.column_type is None:
+                            col_oid = "c%d" % cell_idx
                             if char_array.default_state_alphabet is not None:
-                                col_type = dendropy.ColumnType(state_alphabet=char_array.default_state_alphabet)
+                                col_type = dendropy.ColumnType(state_alphabet=char_array.default_state_alphabet, oid=col_oid)
                             elif len(char_array.state_alphabets) == 1:
-                                col_type = dendropy.ColumnType(state_alphabet=char_array.state_alphabets[0])
+                                col_type = dendropy.ColumnType(state_alphabet=char_array.state_alphabets[0], oid=col_oid)
                             elif len(char_array.state_alphabets) > 1:
                                 raise TypeError("Character cell %d for taxon %s ('%s') does not have a state alphabet mapping given by the" % (cell_idx, taxon.oid, taxon.label)\
                                         + " 'column_type' property, and multiple state alphabets are defined for the containing" \
@@ -986,14 +987,16 @@ class NexmlWriter(iosys.DataWriter):
                                         + " character array" % char_array.oid)
                             columns_to_add.append(col_type)
                             cell_indexes.add(cell_idx)
-                        else:
-                            columns_to_add.append(dendropy.ColumnType(state_alphabet=cell.column_type.state_alphabet))
+                        elif cell.column_type is None:
+                            col_oid = "c%d" % cell_idx
+                            columns_to_add.append(dendropy.ColumnType(state_alphabet=cell.column_type.state_alphabet, oid=col_oid))
             else:
                 for taxon, row in char_array.taxon_seq_map.items():
                     for cell_idx, cell in enumerate(row):
                         if cell_idx in cell_indexes:
                             continue
-                        columns_to_add.append(dendropy.ColumnType())
+                        col_oid = "c%d" % cell_idx
+                        columns_to_add.append(dendropy.ColumnType(), oid=col_oid)
                         cell_indexes.add(cell_idx)
 
             column_types_parts = []
