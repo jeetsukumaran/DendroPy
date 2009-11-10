@@ -304,8 +304,12 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             for i, c1 in enumerate(vec1):
                 c2 = vec2[i]
                 self.assertNotSame(c1, c2)
-#                self.assertContained(c1.value, char_array1.default_state_alphabet)
-#                self.assertContained(c2.value, char_array2.default_state_alphabet)
+                if len(char_array1.state_alphabets) == 1:
+                    self.assertContained(c1.value, char_array1.state_alphabets[0])
+                    self.assertContained(c2.value, char_array2.state_alphabets[0])
+                else:
+                    # assume mapped by columns, and will be checked there
+                    pass
                 if distinct_state_alphabets is True:
                     self.assertDistinctButEqualStateAlphabetElement(c1.value, c2.value)
                 elif distinct_state_alphabets is False:
