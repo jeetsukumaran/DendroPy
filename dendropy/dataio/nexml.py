@@ -707,9 +707,11 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         if char_array.column_types:
             id_column_map = char_array.id_column_map()
             column_ids = [char.oid for char in char_array.column_types]
+            col_pos_to_column_ids = {}
         else:
             id_column_map = {}
             column_ids = []
+            col_pos_to_column_ids = {}
 
         for nxrow in matrix.getiterator('row'):
             row_id = nxrow.get('id', None)
@@ -729,14 +731,25 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                     seq = nxrow.findtext('seq')
                     if seq is not None:
                         seq = seq.replace('\n\r', ' ').replace('\r\n', ' ').replace('\n', ' ').replace('\r',' ')
+                        col_idx = 0
                         for char in seq.split(' '):
                             char = char.strip()
                             if char:
-                                character_vector.append(dendropy.CharacterDataCell(value=float(char)))
+                                col_idx += 1
+                                if len(column_ids) <= col_idx:
+                                    col_oid = "c%d" % col_idx
+                                    id_column_map[col_oid] = dendropy.ColumnType(oid=col_oid)
+                                    column_ids.append(col_oid)
+                                else:
+                                    col_oid = column_ids[col_idx]
+                                cell = dendropy.CharacterDataCell(value=float(char), column_type=id_column_map[col_oid])
+                                character_vector.append(cell)
                 else:
                     char_array.markup_as_sequences = False
                     for nxcell in nxrow.getiterator('cell'):
                         column_id = nxcell.get('char', None)
+                        if column_id is None:
+                            raise error.DataFormatError("'char' attribute missing for cell: cell markup must indicate character column type")
                         pos_idx = column_ids.index(column_id)
 #                         column = id_column_map[column_id]
 #                         state = column.state_id_map[cell.get('state', None)]
@@ -755,16 +768,24 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                             symbol_state_map = char_array.column_types[col_idx].state_alphabet.symbol_state_map()
                             if char in symbol_state_map:
                                 col_idx += 1
+                                if len(column_ids) <= col_idx:
+                                    col_oid = "c%d" % col_idx
+                                    id_column_map[col_oid] = dendropy.ColumnType(oid=col_oid)
+                                    column_ids.append(col_oid)
+                                else:
+                                    col_oid = column_ids[col_idx]
                                 state = symbol_state_map[char]
                             else:
                                 raise NameError('Character Block %s (\"%s\"): State with symbol "%s" in sequence "%s" not defined' % (char_array.oid, char_array.label, char, seq))
-                            character_vector.append(dendropy.CharacterDataCell(value=state))
+                            character_vector.append(dendropy.CharacterDataCell(value=state, column_type=id_column_map[col_oid]))
                 else:
                     char_array.markup_as_sequences = False
                     id_state_maps = {}
                     for nxcell in nxrow.getiterator('cell'):
                         column_id = nxcell.get('char', None)
                         column = id_column_map[column_id]
+                        if column_id is None:
+                            raise error.DataFormatError("'char' attribute missing for cell: cell markup must indicate character column type")
                         pos_idx = column_ids.index(column_id)
                         if column_id not in id_state_maps:
                             id_state_maps[column_id] = column.state_alphabet.id_state_map()
