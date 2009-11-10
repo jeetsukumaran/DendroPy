@@ -137,11 +137,24 @@ class NexusTreeDocumentReaderTest(datatest.DataObjectVerificationTestCase):
 
 class NexusDocumentReadWriteTest(datatest.DataObjectVerificationTestCase):
 
-    def setUp(self):
-        self.reference_dataset = datagen.reference_single_taxonset_dataset()
+    def testRoundTripReference(self):
+        reference_dataset = datagen.reference_single_taxonset_dataset()
+        self.roundTripDataSetTest(reference_dataset, "nexus", ignore_columns=True)
 
-    def testRoundTrip(self):
-        self.roundTripDataSetTest(self.reference_dataset, "nexus", ignore_columns=True)
+    def testRoundTripProtein(self):
+        s = pathmap.char_source_stream("caenophidia_mos.chars.nexus")
+        d1 = dendropy.DataSet(stream=s, format="nexus")
+        self.roundTripDataSetTest(d1, "nexus", ignore_columns=True)
+
+    def testRoundTripStandard1(self):
+        s = pathmap.char_source_stream("angiosperms.chars.nexus")
+        d1 = dendropy.DataSet(stream=s, format="nexus")
+        self.roundTripDataSetTest(d1, "nexus", ignore_columns=True)
+
+    def testRoundTripStandard2(self):
+        s = pathmap.char_source_stream("apternodus.chars.nexus")
+        d1 = dendropy.DataSet(stream=s, format="nexus")
+        self.roundTripDataSetTest(d1, "nexus", ignore_columns=True)
 
 if __name__ == "__main__":
     unittest.main()
