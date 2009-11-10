@@ -45,7 +45,8 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
                 ref_tree_list,
                 t_tree_list,
                 distinct_taxa=True,
-                equal_oids=None)
+                equal_oids=None,
+                ignore_taxon_order=True)
 
     def testTreeListReaderSameTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
@@ -64,7 +65,8 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
                 ref_tree_list,
                 t_tree_list,
                 distinct_taxa=True,
-                equal_oids=None)
+                equal_oids=None,
+                ignore_taxon_order=True)
 
     def testReferenceTreeFileSameTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
@@ -165,7 +167,8 @@ class NewickTreeListWriterTest(datatest.DataObjectVerificationTestCase):
                 self.ref_tree_list,
                 t_tree_list,
                 distinct_taxa=True,
-                equal_oids=None)
+                equal_oids=None,
+                ignore_taxon_order=True)
 
     def testWriteTreeListSameTaxa(self):
         output_path = pathmap.named_output_path(filename="reference.trees.out.newick", suffix_timestamp=True)
