@@ -987,7 +987,7 @@ class NexmlWriter(iosys.DataWriter):
                                         + " character array" % char_array.oid)
                             columns_to_add.append(col_type)
                             cell_indexes.add(cell_idx)
-                        elif cell.column_type is None:
+                        else:
                             col_oid = "c%d" % cell_idx
                             columns_to_add.append(dendropy.ColumnType(state_alphabet=cell.column_type.state_alphabet, oid=col_oid))
             else:
