@@ -60,6 +60,21 @@ class TaxonLinked(base.IdTagged):
                                oid=kwargs.get("oid", None))
         self.taxon = kwargs.get("taxon", None)
 
+    def __deepcopy__(self, memo):
+        """
+        By default, deep copies of non-DataSet data objects do *not* deep-copy
+        the taxa, and id's of all taxon set objects are mapped to self. This
+        can be overridden by pre-populating memo with appropriate clones.
+        """
+        if id(self.taxon) in memo:
+            o = self.__class__(taxon=memo[id(self.taxon)], label=self.label)
+        else:
+            o = self.__class__(taxon=self.taxon, label=self.label)
+            memo[id(self.taxon)] = o.taxon
+        memo[id(self)] = o
+        memo[id(self._oid)] = o._oid
+        return o
+
 class TaxonSetLinked(base.IdTagged):
     """
     Provides infrastructure for the maintenance of references to taxa.
@@ -95,6 +110,24 @@ class TaxonSetLinked(base.IdTagged):
         the `Taxon` objects in the various members.
         """
         pass
+
+    def __deepcopy__(self, memo):
+        """
+        By default, deep copies of non-DataSet data objects do *not* deep-copy
+        the taxa, and id's of all taxon set objects are mapped to self. This
+        can be overridden by pre-populating memo with appropriate clones.
+        """
+        if id(self.taxon_set) in memo:
+            o = self.__class__(taxon_set=memo[id(self.taxon_set)], label=self.label)
+        else:
+            o = self.__class__(taxon_set=self.taxon_set, label=self.label)
+            memo[id(self.taxon_set)] = o.taxon_set
+        memo[id(self)] = o
+        memo[id(self._oid)] = o._oid
+        for i, t in enumerate(self.taxon_set):
+            if id(t) not in memo:
+                memo[id(t)] = o.taxon_set[i]
+        return o
 
 class TaxonSet(containers.OrderedSet, base.IdTagged):
     """

@@ -85,6 +85,8 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         for ts0 in self.taxon_sets:
             ts1 = o.new_taxon_set(label=ts0.label)
             memo[id(ts0)] = ts1
+#            print "HERE:",
+#            print id(ts0), id(ts1), id(memo[id(ts0)])
             for t in ts0:
                 ts1.new_taxon(label=t.label)
                 memo[id(t)] = ts1[-1]
@@ -97,11 +99,13 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
                 t2 = deepcopy(t1, memo)
                 tl2.append(t2)
                 memo[id(t1)] = t2
+        memo[id(self.tree_lists)] = o.tree_lists
 
         for cai, ca1 in enumerate(self.char_arrays):
             ca2 = deepcopy(ca1, memo)
             o.char_arrays.add(ca2)
             memo[id(ca1)] = ca2
+        memo[id(self.char_arrays)] = o.char_arrays
 
         return o
 

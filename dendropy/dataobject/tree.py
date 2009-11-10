@@ -135,11 +135,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def __deepcopy__(self, memo):
         # we treat the taxa as immutable and copy the reference even in a deepcopy
-        o = self.__class__(taxon_set=self.taxon_set, label=self.label)
-        memo[id(self)] = o
-        memo[id(self.taxon_set)] = o.taxon_set
-        for i, t in enumerate(self.taxon_set):
-            memo[id(t)] = o.taxon_set[i]
+        o = TaxonSetLinked.__deepcopy__(self, memo)
         for k, v in self.__dict__.iteritems():
             if k not in ['taxon_set', "_oid"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
@@ -414,17 +410,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def __deepcopy__(self, memo):
         # we treat the taxa as immutable and copy the reference even in a deepcopy
-        o = self.__class__(taxon_set=self.taxon_set)
-        memo[id(self)] = o
-        memo[id(self.taxon_set)] = o.taxon_set
-        for i, t in enumerate(self.taxon_set):
-            memo[id(t)] = o.taxon_set[i]
-#        if self.seed_node is not None:
-#            new_v = copy.deepcopy(self.seed_node, memo)
-#            o.seed_node = new_v
-#        else:
-#            o.seed_node = None
-#        memo[id(self.seed_node)] = o.seed_node
+        o = TaxonSetLinked.__deepcopy__(self, memo)
         for k, v in self.__dict__.iteritems():
             if k not in ['taxon_set', "_oid"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
@@ -1044,10 +1030,7 @@ class Node(TaxonLinked):
         self._edge.head_node = self
 
     def __deepcopy__(self, memo):
-        o = self.__class__(taxon=self.taxon)
-        memo[id(self)] = o
-        if self.taxon is not None:
-            memo[id(self.taxon)] = o.taxon
+        o = TaxonLinked.__deepcopy__(self, memo)
         for k, v in self.__dict__.iteritems():
             if not k in ['_child_nodes', '_taxon', "_oid"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)

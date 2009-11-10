@@ -85,18 +85,21 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         if "distinct_taxa" in kwargs and not kwargs["distinct_taxa"]:
             raise Exception("Distinct TaxonSet objects criterion must be enforced when comparing DataSet objects")
         self.logger.debug("Comparing DataSet objects %d and %d" % (id(dataset1), id(dataset2)))
+
         self.assertEqual(len(dataset1.taxon_sets), len(dataset2.taxon_sets))
         for idx, taxon_set1 in enumerate(dataset1.taxon_sets):
             taxon_set2 = dataset2.taxon_sets[idx]
             self.assertDistinctButEqualTaxonSet(taxon_set1, taxon_set2, **kwargs)
-        self.assertEqual(len(dataset1.tree_lists), len(dataset2.tree_lists))
-        for tsi, tree_list1 in enumerate(dataset1.tree_lists):
-            tree_list2 = dataset2.tree_lists[tsi]
-            self.assertDistinctButEqualTreeList(tree_list1, tree_list2, **kwargs)
+
         self.assertEqual(len(dataset1.char_arrays), len(dataset2.char_arrays))
         for tsi, char_array1 in enumerate(dataset1.char_arrays):
             char_array2 = dataset2.char_arrays[tsi]
             self.assertDistinctButEqualCharArray(char_array1, char_array2, **kwargs)
+
+        self.assertEqual(len(dataset1.tree_lists), len(dataset2.tree_lists))
+        for tsi, tree_list1 in enumerate(dataset1.tree_lists):
+            tree_list2 = dataset2.tree_lists[tsi]
+            self.assertDistinctButEqualTreeList(tree_list1, tree_list2, **kwargs)
 
     def assertDistinctButEqualTaxon(self, taxon1, taxon2, **kwargs):
         equal_oids = kwargs.get("equal_oids", None)
@@ -302,14 +305,18 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 self.assertDistinctButEqualStateAlphabet(col1.state_alphabet, col2.state_alphabet)
             elif distinct_state_alphabets is False:
                 self.assertSame(col1.state_alphabet, col2.state_alphabet)
+        self.assertEqual(len(char_array1), len(char_array2))
+
         for ti, taxon1 in enumerate(char_array1):
             vec1 = char_array1[taxon1]
-            vec2 = char_array2[ti]
             taxon2 = char_array2.taxon_set[ti]
+            vec2 = char_array2[taxon2]
+            self.logger.debug("Comparing CharacterDataVector objects %d and %d" % (id(vec2), id(vec2)))
             if distinct_taxa:
                 self.assertDistinctButEqualTaxon(taxon1, taxon2, **kwargs)
             else:
                 self.assertSame(taxon1, taxon2)
+            self.assertEqual(len(vec1), len(vec2))
             for i, c1 in enumerate(vec1):
                 c2 = vec2[i]
                 self.assertNotSame(c1, c2)
