@@ -111,12 +111,12 @@ def write_tree_list(tree_list, stream, **kwargs):
         - `comment` : list of lines of text to be added as comments to the file
 
     """
-    raise NotImplementedError()
-    d = dataobject.DataSet(tree_list)
+    dataset = dataobject.DataSet(tree_list)
+    kwargs["dataset"] = dataset
     nexus_writer = NexusWriter(**kwargs)
     nexus_writer.exclude_chars = True
     nexus_writer.exclude_trees = False
-    nexus_writer.write(dataset, stream)
+    nexus_writer.write(stream)
 
 ###############################################################################
 ## NexusReader

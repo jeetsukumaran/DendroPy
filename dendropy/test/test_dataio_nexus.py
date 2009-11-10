@@ -147,6 +147,19 @@ class NexusTreeListReaderTest(datatest.DataObjectVerificationTestCase):
                 distinct_taxa=False,
                 equal_oids=None)
 
+class NexusTreeListWriterTest(datatest.DataObjectVerificationTestCase):
+
+    def testWriteTreeListDistinctTaxa(self):
+        ref_tree_list = datagen.reference_tree_list()
+        output_path = pathmap.named_output_path(filename="reference.trees.out.nexus", suffix_timestamp=True)
+        nexus.write_tree_list(ref_tree_list, stream=open(output_path, "w"))
+        t_tree_list = nexus.read_tree_list(stream=open(output_path, "rU"))
+        self.assertDistinctButEqualTreeList(
+                ref_tree_list,
+                t_tree_list,
+                distinct_taxa=True,
+                equal_oids=None)
+
 class NexusTreeDocumentReaderTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileDistinctTaxa(self):

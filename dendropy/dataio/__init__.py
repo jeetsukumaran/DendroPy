@@ -209,7 +209,7 @@ class _DataFormatRegister(object):
 
 ioregister = _DataFormatRegister()
 ioregister.add("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter, newick.write_tree_list)
-ioregister.add("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter, None)
+ioregister.add("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter, nexus.write_tree_list)
 ioregister.add("fasta", None, fasta.FastaWriter, None, None)
 ioregister.add("dnafasta", fasta.DNAFastaReader, fasta.FastaWriter, None, None)
 ioregister.add("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None, None)

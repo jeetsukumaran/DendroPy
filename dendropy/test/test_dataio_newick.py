@@ -157,8 +157,8 @@ class NewickTreeListWriterTest(datatest.DataObjectVerificationTestCase):
     def setUp(self):
         self.ref_tree_list = datagen.reference_tree_list()
 
-    def testWriteTreeListSameTaxa(self):
-        output_path = pathmap.named_output_path(filename="reference.trees.newick", suffix_timestamp=True)
+    def testWriteTreeListDistinctTaxa(self):
+        output_path = pathmap.named_output_path(filename="reference.trees.out.newick", suffix_timestamp=True)
         newick.write_tree_list(self.ref_tree_list, stream=open(output_path, "w"))
         t_tree_list = newick.read_tree_list(stream=open(output_path, "rU"))
         self.assertDistinctButEqualTreeList(
@@ -168,7 +168,7 @@ class NewickTreeListWriterTest(datatest.DataObjectVerificationTestCase):
                 equal_oids=None)
 
     def testWriteTreeListSameTaxa(self):
-        output_path = pathmap.named_output_path(filename="reference.trees.newick", suffix_timestamp=True)
+        output_path = pathmap.named_output_path(filename="reference.trees.out.newick", suffix_timestamp=True)
         newick.write_tree_list(self.ref_tree_list, stream=open(output_path, "w"))
         t_tree_list = newick.read_tree_list(stream=open(output_path, "rU"), taxon_set=self.ref_tree_list.taxon_set)
         self.assertDistinctButEqualTreeList(
