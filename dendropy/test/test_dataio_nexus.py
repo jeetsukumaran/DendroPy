@@ -53,6 +53,13 @@ class NexusParseDnaCharsTest(NexusGeneralParseCharsTest):
                 "pythonidae_cytb.chars.txt",
                 dendropy.DnaCharacterArray)
 
+#class NexusParseDnaCharsInterleavedTest(NexusGeneralParseCharsTest):
+#
+#    def runTest(self):
+#        self.check_chars_against_expected("pythonidae_cytb.chars.interleaved.nexus",
+#                "pythonidae_cytb.chars.txt",
+#                dendropy.DnaCharacterArray)
+
 class NexusParseProteinCharsTest(NexusGeneralParseCharsTest):
 
     def runTest(self):

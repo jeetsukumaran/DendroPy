@@ -510,31 +510,32 @@ class NexusReader(iosys.DataReader):
                         if not self.exclude_chars:
                             char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
                     if self.interleave:
-                        raise NotImplementedError("interleaved: TODO!")
-#                        while self.stream_tokenizer.current_file_char != '\n' and self.stream_tokenizer.current_file_char != '\r':
-#                            if self.stream_tokenizer.current_file_char not in [' ', '\t'] and not self.exclude_chars:
-#                                state = symbol_state_map[self.stream_tokenizer.current_file_char]
-#                                char_block[taxon].append(dataobject.CharacterDataCell(value=state))
-#                            self.stream_tokenizer.read_next_char()
+                        while self.stream_tokenizer.current_file_char != '\n' and self.stream_tokenizer.current_file_char != '\r':
+                            if self.stream_tokenizer.current_file_char not in [' ', '\t'] and not self.exclude_chars:
+                                state = symbol_state_map[self.stream_tokenizer.current_file_char]
+                                char_block[taxon].append(dataobject.CharacterDataCell(value=state))
+                            self.stream_tokenizer.read_next_char()
                     else:
                         while len(char_block[taxon]) < self.file_specified_nchar and not self.stream_tokenizer.eof:
-                            char_group = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
-                            if not self.exclude_chars:
-                                char_group = self._parse_nexus_multistate(char_group)
-                                for char in char_group:
-                                    if len(char) == 1:
-                                        state = symbol_state_map[char]
-                                    else:
-                                        if hasattr(char, "open_tag"):
-                                            state = self._get_state_for_multistate_char(char, char_block.default_state_alphabet)
-                                    if state is None:
-                                        raise self.data_format_error("Unrecognized state encountered:'%s'" % char)
-                                    char_block[taxon].append(dataobject.CharacterDataCell(value=state))
+                            self._process_char_group(char_block, symbol_state_map, taxon)
                         token = self.stream_tokenizer.read_next_token()
-#                     print len(char_block[taxon])
             else:
                 ## TODO: NO LABELS/TRANSPOSED ##
                 pass
+
+    def _process_char_group(self, char_block, symbol_state_map, taxon):
+        char_group = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
+        if not self.exclude_chars:
+            char_group = self._parse_nexus_multistate(char_group)
+            for char in char_group:
+                if len(char) == 1:
+                    state = symbol_state_map[char]
+                else:
+                    if hasattr(char, "open_tag"):
+                        state = self._get_state_for_multistate_char(char, char_block.default_state_alphabet)
+                if state is None:
+                    raise self.data_format_error("Unrecognized state encountered:'%s'" % char)
+                char_block[taxon].append(dataobject.CharacterDataCell(value=state))
 
     def _parse_nexus_multistate(self, seq):
         """
