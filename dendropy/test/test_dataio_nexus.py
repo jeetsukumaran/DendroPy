@@ -34,6 +34,7 @@ from dendropy.test.support import datagen
 from dendropy.test.support import datatest
 import dendropy
 from dendropy.dataio import nexus
+from dendropy.dataio import multi_tree_source_iter
 
 class NexusGeneralParseCharsTest(datatest.DataObjectVerificationTestCase):
 
@@ -170,7 +171,17 @@ class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
         self.ref_idx += 1
         if self.ref_idx >= len(self.ref_tree_list):
             self.ref_idx = 0
-        return self.ref_tree_list[ref_idx]
+        return self.ref_tree_list[self.ref_idx]
+
+    def testMixedNexusAndNewickDistinctTaxa(self):
+        filenames = ["reference.trees.newick",
+                     "reference.trees.nexus",
+                     "reference.trees.newick",
+                     "reference.trees.nexus"]
+        filepaths = [pathmap.tree_source_path(f) for f in filenames]
+        taxon_set = dendropy.TaxonSet()
+        for test_tree in multi_tree_source_iter(filepaths, format="nexus/newick", taxon_set=taxon_set):
+            self.assertDistinctButEqualTree(self.next_ref_tree(), test_tree, distinct_taxa=True, ignore_taxon_order=True)
 
 class NexusOrNewickTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
 

@@ -74,21 +74,18 @@ def generalized_tree_source_iter(stream, **kwargs):
     """
     Diagnoses and handles both NEXUS and NEWICK files.
     """
+    stream_tokenizer = nexustokenizer.NexusTokenizer(stream)
+    token = stream_tokenizer.read_next_token_ucase()
     format = None
-    if "format" in kwargs:
-        format = kwargs["format"]
+    if token == "#NEXUS":
+        format = "nexus"
     else:
-        stream_tokenizer = nexustokenizer.NexusTokenizer(stream)
-        token = stream_tokenizer.read_next_token_ucase()
-        if token == "#NEXUS":
-            format = "nexus"
-        else:
-            try:
-                stream_tokenizer.stream_handle.seek(0)
-            except IOError:
-                raise TypeError("File format of non-random access source (such as stdin) must be specified in advance.")
-            if token == "(":
-                format = "newick"
+        try:
+            stream_tokenizer.stream_handle.seek(0)
+        except IOError:
+            raise TypeError("File format of non-random access source (such as stdin) must be specified in advance.")
+        if token == "(":
+            format = "newick"
     if format == "nexus":
         return tree_source_iter(stream, **kwargs)
     elif format == "newick":

@@ -26,6 +26,8 @@ Provides support for reading/parsing and formatting/writing phylogenetic data
 in various formats.
 """
 
+from dendropy.utility import error
+#from dendropy.dataobject.taxon import TaxonSet
 from dendropy.dataio import dataformat
 from dendropy.dataio import newick
 from dendropy.dataio import nexus
@@ -37,6 +39,7 @@ from dendropy.dataio import nexml
 #   dataformat.register(<FORMAT NAME>, <READER TYPE>, <WRITER TYPE>, <TREE ITERATOR>, <TREE (LIST) WRITER>)
 dataformat.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter, newick.write_tree_list)
 dataformat.register("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter, nexus.write_tree_list)
+dataformat.register("nexus/newick", None, None, nexus.generalized_tree_source_iter, None)
 dataformat.register("fasta", None, fasta.FastaWriter, None, None)
 dataformat.register("dnafasta", fasta.DNAFastaReader, fasta.FastaWriter, None, None)
 dataformat.register("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None, None)
@@ -45,3 +48,22 @@ dataformat.register("phylip", None, phylip.PhylipWriter, None, None)
 dataformat.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None, None)
 
 from dendropy.dataio.dataformat import get_reader, get_writer, tree_source_iter, write_tree_list
+
+def multi_tree_source_iter(sources, format, **kwargs):
+    """
+    Diagnoses and handles multiple files in either NEXUS or NEWICK formats, as
+    given by `sources` which should be a list of file-like objects or strings
+    specifying file paths. Not that unless a TaxonSet object is explicitly
+    passed using the 'taxon_set' keyword argument, the trees in each file will
+    be associated with their own distinct, independent taxon sets: almost
+    certainly not the desired behavior.
+    """
+#    if "taxon_set" not in kwargs:
+#        kwargs["taxon_set"] = TaxonSet()
+    for s in sources:
+        if isinstance(s, str):
+            src = open(s, "rU")
+        else:
+            src = s
+        for t in tree_source_iter(src, format, **kwargs):
+            yield t
