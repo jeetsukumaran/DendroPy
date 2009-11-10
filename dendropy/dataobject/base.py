@@ -83,7 +83,7 @@ class Annotated(DataObject):
         Remove an attribute from the list of attributes to be
         persisted as an annotation.
         """
-        self.__annotations.pop(attr_name, None)
+        self._annotations.pop(attr_name, None)
 
     def annotations(self):
         """
@@ -93,7 +93,7 @@ class Annotated(DataObject):
         value.
         """
         annote_dict = AnnotesDict()
-        for key, value in self.__annotations.items():
+        for key, value in self._annotations.items():
             if hasattr(self, value.attr_name):
                 attr_value = getattr(self, value.attr_name)
                 if isinstance(attr_value, Annotated):
@@ -121,7 +121,7 @@ class Annotated(DataObject):
         Returns True if there are attributes to be persisted as
         annotations.
         """
-        return bool(len(self.__annotations) > 0)
+        return bool(len(self._annotations) > 0)
 
 class Labelled(Annotated):
     "Provides for getting and setting of an object label."

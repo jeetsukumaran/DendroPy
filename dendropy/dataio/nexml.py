@@ -27,6 +27,7 @@ Implementation of NeXML-format data reader and writer.
 from xml.sax import saxutils
 from cStringIO import StringIO
 import time
+import textwrap
 
 from dendropy.utility import iosys
 from dendropy.dataio import xmlparser
@@ -820,7 +821,6 @@ class NexmlWriter(iosys.DataWriter):
 #             self.write_extensions(taxon_set, dest, indent_level=indent_level+1)
 #             if isinstance(taxon_set, base.Annotated) and taxon_set.has_annotations():
 #                 self.write_annotations(taxon_set, dest, indent_level=indent_level+1)
-
             for taxon in taxon_set:
                 dest.write(self.indent * (indent_level+1))
                 parts = []
@@ -837,8 +837,7 @@ class NexmlWriter(iosys.DataWriter):
 #                     self.write_annotations(taxon, dest, indent_level=indent_level+2)
 #                     dest.write(self.indent * (indent_level+1))
 #                     dest.write("</otu>\n")
-                else:
-                    dest.write("<%s />\n" % ' '.join(parts))
+                dest.write("<%s />\n" % ' '.join(parts))
             dest.write(self.indent * indent_level)
             dest.write('</otus>\n')
 
