@@ -26,193 +26,26 @@ Provides support for reading/parsing and formatting/writing phylogenetic data
 in various formats.
 """
 
-import sys
-import os
-
-from dendropy.utility import error
-from dendropy.utility import iosys
-from dendropy.utility.containers import OrderedCaselessDict
+from dendropy.dataio import dataformat
 from dendropy.dataio import newick
 from dendropy.dataio import nexus
 from dendropy.dataio import fasta
 from dendropy.dataio import phylip
 from dendropy.dataio import nexml
 
-###############################################################################
-## Client code interface
 
-def get_reader(format, **kwargs):
-    """
-    Returns a reader object of the appropriate format-handler as specified by
-    `format`.
+# syntax is:
+#   dataformat.register(<FORMAT NAME>, <READER TYPE>, <WRITER TYPE>, <TREE ITERATOR>, <TREE (LIST) WRITER>)
+dataformat.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter, newick.write_tree_list)
+dataformat.register("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter, nexus.write_tree_list)
+dataformat.register("fasta", None, fasta.FastaWriter, None, None)
+dataformat.register("dnafasta", fasta.DNAFastaReader, fasta.FastaWriter, None, None)
+dataformat.register("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None, None)
+dataformat.register("proteinfasta", fasta.ProteinFastaReader, fasta.FastaWriter, None, None)
+dataformat.register("phylip", None, phylip.PhylipWriter, None, None)
+dataformat.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None, None)
 
-    `format` is a string that is name of one of the registered data
-    formats, such as `nexus`, `newick`, etc, for which a specialized
-    reader is available. If this is not implemented for the format
-    specified, then a `UnsupportedFormatError` is raised.
-
-    The following keyword arguments are recognized:
-
-        - `dataset`: All data read from the source will be instantiated
-                as objects within this `DataSet` object.
-        - `taxon_set`: A`TaxonSet` object. If given, results in all the
-                taxa being accessioned into a single `TaxonSet` (and all
-                TaxonSetLinked objects instantiated being associated with that
-                `TaxonSet` object), even if multiple taxon collection
-                definitions are encountered in the source.
-        - `exclude_trees`: Trees in the source will be skipped.
-        - `exclude_chars`: Characters in the source will be skipped.
-        - `encode_splits`: Specifies whether or not splits will be
-                automatically-encoded upon a tree being read.
-
-    Other keywords may be implemented by specific readers (e.g. NexusReader,
-    NewickReader). Refer to their documentation for details.
-    """
-    return ioregister.get_reader(format, **kwargs)
-
-def get_writer(format, **kwargs):
-    """
-    Returns a writer object of the appropriate format as specified by `format`.
-
-    `format` is a string that is name of one of the registered data
-    formats, such as `nexus`, `newick`, etc, for which a specialized
-    writer is available. If this is not implemented for the format
-    specified, then a `UnsupportedFormatError` is raised.
-
-    The following keyword arguments are recognized:
-
-        - `dataset`: A `DataSet` object that will be the default source of the
-                data to be written.
-        - `exclude_trees`: Trees in the `DataSet` or `TaxonDomain` will not be
-                written.
-        - `exclude_chars`: Characters in the `DataSet` or `TaxonDomain` will
-                not written.
-    """
-    return ioregister.get_writer(format, **kwargs)
-
-def tree_source_iter(stream, format, **kwargs):
-    """
-    Returns an iterator over trees in `format`-formatted data
-    in from file-like object source `stream`. Keyword arguments
-    are passed to format-specialized implementation of the iterator
-    invoked.
-    """
-    return ioregister.tree_source_iter(stream, format, **kwargs)
-
-def write_tree_list(tree_list, stream, format, **kwargs):
-    """
-    Writes `tree_list`, a `TreeList` object in `format` format to
-    a destination given by file-like object `stream`.
-
-    `format` is a string that is name of one of the registered data
-    formats, such as `nexus`, `newick`, etc, for which a specialized
-    tree list writer is available. If this is not implemented for the format
-    specified, then a `UnsupportedFormatError` is raised.
-
-    Additionally, for some formats, the following keywords are recognized:
-
-        - `edge_lengths` : if False, edges will not write edge lengths [True]
-        - `internal_labels` : if False, internal labels will not be written [True]
-    """
-    return ioregister.write_tree_list(tree_list, stream=stream, name=format, **kwargs)
+from dendropy.dataio.dataformat import get_reader, get_writer, tree_source_iter, write_tree_list
 
 
-###############################################################################
-## Under the hood ...
 
-class _DataFormat(object):
-
-    def __init__(self,
-                 name,
-                 reader_type=None,
-                 writer_type=None,
-                 tree_source_iter=None,
-                 tree_list_writer=None):
-        self.name = name
-        self.reader_type = reader_type
-        self.writer_type = writer_type
-        self.tree_source_iter = tree_source_iter
-        self.tree_list_writer = tree_list_writer
-
-    def has_reader(self):
-        return self.reader_type is not None
-
-    def has_writer(self):
-        return self.writer_type is not None
-
-    def has_tree_source_iter(self):
-        return self.tree_source_iter is not None
-
-    def has_tree_list_writer(self):
-        return self.tree_list_writer is not None
-
-    def get_reader(self, **kwargs):
-        if self.reader_type is None:
-            raise error.UnsupportedFormatError("Reading is not currently supported for data format '%s'" % self.name)
-        return self.reader_type(**kwargs)
-
-    def get_writer(self, **kwargs):
-        if self.writer_type is None:
-            raise error.UnsupportedFormatError("Writing is not currently supported for data format '%s'" % self.name)
-        return self.writer_type(**kwargs)
-
-    def get_tree_source_iter(self, stream, **kwargs):
-        if self.tree_source_iter is None:
-            raise error.UnsupportedFormatError("Iteration over source trees not currently supported for data format '%s'" % self.name)
-        return self.tree_source_iter(stream, **kwargs)
-
-    def write_tree_list(self, tree_list, stream, **kwargs):
-        if self.tree_list_writer is None:
-            raise error.UnsupportedFormatError("Writing of stand-alone tree lists is not currently supported for data format '%s'" % self.name)
-        self.tree_list_writer(tree_list, stream, **kwargs)
-
-class _DataFormatRegister(object):
-
-    def __init__(self):
-        self.formats = OrderedCaselessDict()
-
-    def add_format(self, data_format):
-        self.formats[data_format.name] = data_format
-
-    def remove_format(self, data_format):
-        del(self.formats[data_format.name])
-
-    def add(self, name, reader_type=None, writer_type=None, tree_source_iter=None, tree_list_writer=None):
-        self.formats[name] = _DataFormat(name,
-                reader_type=reader_type,
-                writer_type=writer_type,
-                tree_source_iter=tree_source_iter,
-                tree_list_writer=tree_list_writer)
-
-    def remove(self, name):
-        del(self.formats[name])
-
-    def get_reader(self, name, **kwargs):
-        if name not in self.formats:
-            raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
-        return self.formats[name].get_reader(**kwargs)
-
-    def get_writer(self, name, **kwargs):
-        if name not in self.formats:
-            raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
-        return self.formats[name].get_writer(**kwargs)
-
-    def tree_source_iter(self, stream, name, **kwargs):
-        if name not in self.formats:
-            raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
-        return self.formats[name].get_tree_source_iter(stream, **kwargs)
-
-    def write_tree_list(self, tree_list, stream, name, **kwargs):
-        if name not in self.formats:
-            raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
-        return self.formats[name].write_tree_list(tree_list, stream, **kwargs)
-
-ioregister = _DataFormatRegister()
-ioregister.add("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter, newick.write_tree_list)
-ioregister.add("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter, nexus.write_tree_list)
-ioregister.add("fasta", None, fasta.FastaWriter, None, None)
-ioregister.add("dnafasta", fasta.DNAFastaReader, fasta.FastaWriter, None, None)
-ioregister.add("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None, None)
-ioregister.add("proteinfasta", fasta.ProteinFastaReader, fasta.FastaWriter, None, None)
-ioregister.add("phylip", None, phylip.PhylipWriter, None, None)
-ioregister.add("nexml", nexml.NexmlReader, nexml.NexmlWriter, None, None)
