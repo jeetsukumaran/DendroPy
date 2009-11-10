@@ -33,7 +33,6 @@ from dendropy.dataio import fasta
 from dendropy.dataio import phylip
 from dendropy.dataio import nexml
 
-
 # syntax is:
 #   dataformat.register(<FORMAT NAME>, <READER TYPE>, <WRITER TYPE>, <TREE ITERATOR>, <TREE (LIST) WRITER>)
 dataformat.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter, newick.write_tree_list)
@@ -46,6 +45,3 @@ dataformat.register("phylip", None, phylip.PhylipWriter, None, None)
 dataformat.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None, None)
 
 from dendropy.dataio.dataformat import get_reader, get_writer, tree_source_iter, write_tree_list
-
-
-
