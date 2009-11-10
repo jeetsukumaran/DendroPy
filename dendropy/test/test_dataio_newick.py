@@ -206,9 +206,6 @@ class NewickDocumentReaderTest(datatest.DataObjectVerificationTestCase):
         self.assertDistinctButEqual(test_dataset.taxon_sets[0], test_dataset.taxon_sets[1])
         self.assertDistinctButEqual(test_dataset.tree_lists[0], test_dataset.tree_lists[1], distinct_taxa=True)
 
-    def testRoundTrip(self):
-        self.roundTripDataSetTest(self.reference_dataset, "newick")
-
 class NewickDocumentWriterTest(datatest.DataObjectVerificationTestCase):
 
     def setUp(self):
@@ -237,6 +234,9 @@ class NewickDocumentWriterTest(datatest.DataObjectVerificationTestCase):
         self.assertEqual(len(test_dataset.tree_lists), 2)
         self.assertDistinctButEqual(test_dataset.taxon_sets[0], test_dataset.taxon_sets[1])
         self.assertDistinctButEqual(test_dataset.tree_lists[0], test_dataset.tree_lists[1], distinct_taxa=True)
+
+    def testRoundTrip(self):
+        self.roundTripDataSetTest(self.reference_dataset, "newick")
 
 if __name__ == "__main__":
     unittest.main()

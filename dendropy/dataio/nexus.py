@@ -830,25 +830,32 @@ class NexusWriter(iosys.DataWriter):
             format.append("gap=- missing=? matchchar=.")
         else:
             format.append("datatype=standard")
-            fundamental_symbols = []
-            for s in char_array.default_state_alphabet.fundamental_states():
-                if s.symbol is not None:
-                    fundamental_symbols.append(s.symbol)
-                else:
-                    raise Exception("Could not match character state to symbol: '%s'." % s)
+
+            fundamental_symbols = set()
+            for state_alphabet in char_array.state_alphabets:
+                for s in state_alphabet.fundamental_states():
+                    if s.symbol is not None:
+                        fundamental_symbols.add(s.symbol)
+                    else:
+                        raise Exception("Could not match character state to symbol: '%s'." % s)
             format.append('symbols="%s"' % "".join(fundamental_symbols))
-            equates = []
-            for a in char_array.default_state_alphabet.ambiguous_states():
-                if a.symbol == "?":
-                    format.append("missing=?")
-                elif a.symbol == "-":
-                    format.append("gap=-")
-                else:
-                    if a.symbol is not None:
-                        equates.append("%s={%s}" % (a.symbol, "".join(a.fundamental_symbols())))
-            for p in char_array.default_state_alphabet.polymorphic_states():
-                if p.symbol is not None:
-                    equates.append("%s=(%s)" % (p.symbol, "".join(p.fundamental_symbols())))
+
+            equates = set()
+            for state_alphabet in char_array.state_alphabets:
+                for a in state_alphabet.ambiguous_states():
+                    if a.symbol == "?":
+                        format.append("missing=?")
+                    elif a.symbol == "-":
+                        format.append("gap=-")
+                    else:
+                        if a.symbol is not None:
+                            equates.append("%s={%s}" % (a.symbol, "".join(a.fundamental_symbols())))
+
+            for state_alphabet in char_array.state_alphabets:
+                for p in state_alphabet.polymorphic_states():
+                    if p.symbol is not None:
+                        equates.append("%s=(%s)" % (p.symbol, "".join(p.fundamental_symbols())))
+
             if equates:
                 format.append('equate="%s"' % equates)
 

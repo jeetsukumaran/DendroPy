@@ -135,5 +135,13 @@ class NexusTreeDocumentReaderTest(datatest.DataObjectVerificationTestCase):
                 distinct_taxa=True,
                 equal_oids=None)
 
+class NexusDocumentReadWriteTest(datatest.DataObjectVerificationTestCase):
+
+    def setUp(self):
+        self.reference_dataset = datagen.reference_single_taxonset_dataset()
+
+    def testRoundTrip(self):
+        self.roundTripDataSetTest(self.reference_dataset, "nexus", ignore_columns=True)
+
 if __name__ == "__main__":
     unittest.main()
