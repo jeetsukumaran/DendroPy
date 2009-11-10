@@ -86,7 +86,7 @@ class FastaReader(iosys.DataReader):
                 if simple_rows:
                     curr_vec = []
                 else:
-                    curr_vec = characters.CharacterDataVector(taxon=curr_taxon)
+                    curr_vec = dataobject.CharacterDataVector(taxon=curr_taxon)
                     char_array[curr_taxon] = curr_vec
             elif curr_vec is None:
                 raise DataFormatError(row=line_index + 1, message="Fasta error: Expecting a lines starting with > before sequences")
@@ -106,7 +106,7 @@ class FastaReader(iosys.DataReader):
                             continue
                         try:
                             state = symbol_state_map[c]
-                            curr_vec.append(characters.CharacterDataCell(value=state))
+                            curr_vec.append(dataobject.CharacterDataCell(value=state))
                         except:
                             raise DataFormatError(row=line_index + 1, column=col_ind + 1, message='Unrecognized sequence symbol "%s"' % c)
         if simple_rows and curr_taxon and curr_vec:
@@ -152,7 +152,7 @@ class FastaWriter(iosys.DataWriter):
 
         for char_array in self.dataset.char_arrays:
             for taxon in char_array.taxon_set:
-                stream.write(">%s\n" % str(taxon))
+                stream.write(">%s\n" % taxon.label)
                 seqs = char_array[taxon]
                 if isinstance(seqs, dataobject.CharacterDataVector):
                     seqs = seqs.as_symbol_string()
