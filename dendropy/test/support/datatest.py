@@ -39,11 +39,11 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                       format,
                       **kwargs):
         output_path = pathmap.named_output_path(filename="roundtrip_test.%s" % format, suffix_timestamp=True)
-        self.logger.debug("Writing DataSet object to file '%s' and back" % output_path)
+        self.logger.info("Writing DataSet object to file '%s' and back" % output_path)
         dataset.write(stream=open(output_path, "w"), format=format)
-        self.logger.debug("Reading file '%s'" % output_path)
+        self.logger.info("Reading file '%s'" % output_path)
         rt_dataset = dendropy.DataSet(stream=open(output_path, "rU"), format=format)
-        self.logger.debug("Comparing original and round-tripped DataSet objects")
+        self.logger.info("Comparing original and round-tripped DataSet objects")
         self.assertDistinctButEqual(dataset, rt_dataset, **kwargs)
 
     def assertDistinctButEqual(self, data_object1, data_object2, **kwargs):
@@ -84,7 +84,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
     def assertDistinctButEqualDataSet(self, dataset1, dataset2, **kwargs):
         if "distinct_taxa" in kwargs and not kwargs["distinct_taxa"]:
             raise Exception("Distinct TaxonSet objects criterion must be enforced when comparing DataSet objects")
-        self.logger.debug("Comparing DataSet objects %d and %d" % (id(dataset1), id(dataset2)))
+        self.logger.info("Comparing DataSet objects %d and %d" % (id(dataset1), id(dataset2)))
 
         self.assertEqual(len(dataset1.taxon_sets), len(dataset2.taxon_sets))
         for idx, taxon_set1 in enumerate(dataset1.taxon_sets):
@@ -104,7 +104,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
     def assertDistinctButEqualTaxon(self, taxon1, taxon2, **kwargs):
         equal_oids = kwargs.get("equal_oids", None)
         ignore_underscore_substitution = kwargs.get("ignore_underscore_substitution", False)
-        self.logger.debug("Comparing Taxon objects %d ('%s') and %d ('%s')" % (id(taxon1), taxon1.label, id(taxon2), taxon2.label))
+        self.logger.info("Comparing Taxon objects %d ('%s') and %d ('%s')" % (id(taxon1), taxon1.label, id(taxon2), taxon2.label))
         self.assertNotSame(taxon1, taxon2)
         if taxon1.label is None:
             self.assertSame(taxon2.label, None)
@@ -120,7 +120,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
     def assertDistinctButEqualTaxonSet(self, taxon_set1, taxon_set2, **kwargs):
         equal_oids = kwargs.get("equal_oids", None)
         ignore_underscore_substitution = kwargs.get("ignore_underscore_substitution", False)
-        self.logger.debug("Comparing TaxonSet objects %d and %d" % (id(taxon_set1), id(taxon_set2)))
+        self.logger.info("Comparing TaxonSet objects %d and %d" % (id(taxon_set1), id(taxon_set2)))
         self.assertNotSame(taxon_set1, taxon_set2)
         self.assertEqual(len(taxon_set1), len(taxon_set2))
         for tidx, taxon1 in enumerate(taxon_set1):
@@ -133,7 +133,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         """
         distinct_taxa = kwargs.get("distinct_taxa", True)
         equal_oids = kwargs.get("equal_oids", None)
-        self.logger.debug("Comparing TreeList objects %d and %d" % (id(tree_list1), id(tree_list2)))
+        self.logger.info("Comparing TreeList objects %d and %d" % (id(tree_list1), id(tree_list2)))
         self.assertTrue(tree_list1 is not tree_list2)
         self.assertEqual(len(tree_list1), len(tree_list2))
         if distinct_taxa:
@@ -174,10 +174,10 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         """
         distinct_taxa = kwargs.get("distinct_taxa", True)
         equal_oids = kwargs.get("equal_oids", None)
-        self.logger.debug("Comparing Tree objects %d and %d" % (id(tree1), id(tree2)))
-        self.logger.debug(tree1.as_newick_str())
+        self.logger.info("Comparing Tree objects %d and %d" % (id(tree1), id(tree2)))
+        self.logger.info(tree1.as_newick_str())
         tree1.debug_check_tree(logger=self.logger)
-        self.logger.debug(tree2.as_newick_str())
+        self.logger.info(tree2.as_newick_str())
         tree2.debug_check_tree(logger=self.logger)
         self.assertNotSame(tree1, tree2)
         if distinct_taxa:
@@ -253,7 +253,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
     def assertDistinctButEqualStateAlphabet(self, state_alphabet1, state_alphabet2, **kwargs):
         equal_oids = kwargs.get("equal_oids", None)
         self.assertNotSame(state_alphabet1, state_alphabet2)
-        self.logger.debug("Comparing StateAlphabet objects %d and %d" % (id(state_alphabet1), id(state_alphabet2)))
+        self.logger.info("Comparing StateAlphabet objects %d and %d" % (id(state_alphabet1), id(state_alphabet2)))
         if equal_oids is True:
             self.assertEqual(state_alphabet1.oid, state_alphabet2.oid)
         elif equal_oids is False:
@@ -277,7 +277,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         distinct_taxa = kwargs.get("distinct_taxa", True)
         equal_oids = kwargs.get("equal_oids", None)
         ignore_columns = kwargs.get("ignore_columns", False)
-        self.logger.debug("Comparing DiscreteCharacterArray objects %d and %d" % (id(char_array1), id(char_array2)))
+        self.logger.info("Comparing DiscreteCharacterArray objects %d and %d" % (id(char_array1), id(char_array2)))
         self.assertNotSame(char_array1, char_array2)
         if distinct_taxa:
             self.assertNotSame(char_array1.taxon_set, char_array2.taxon_set)
@@ -311,11 +311,13 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             vec1 = char_array1[taxon1]
             taxon2 = char_array2.taxon_set[ti]
             vec2 = char_array2[taxon2]
-            self.logger.debug("Comparing CharacterDataVector objects %d and %d" % (id(vec2), id(vec2)))
+            self.logger.info("Comparing CharacterDataVector objects %d and %d" % (id(vec2), id(vec2)))
             if distinct_taxa:
                 self.assertDistinctButEqualTaxon(taxon1, taxon2, **kwargs)
             else:
                 self.assertSame(taxon1, taxon2)
+            self.logger.info("%s: %s" % (taxon1.label, vec1.as_symbol_string()))
+            self.logger.info("%s: %s" % (taxon2.label, vec2.as_symbol_string()))
             self.assertEqual(len(vec1), len(vec2))
             for i, c1 in enumerate(vec1):
                 c2 = vec2[i]
