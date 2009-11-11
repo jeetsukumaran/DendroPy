@@ -293,7 +293,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         distinct_state_alphabets = kwargs.get("distinct_state_alphabets", None)
         distinct_taxa = kwargs.get("distinct_taxa", True)
         equal_oids = kwargs.get("equal_oids", None)
-        ignore_chartypes = kwargs.get("ignore_chartypes", False)
+        ignore_chartypes = kwargs.get("ignore_chartypes", True)
         self.logger.info("Comparing DiscreteCharacterArray objects %d and %d" % (id(char_array1), id(char_array2)))
         self.assertNotSame(char_array1, char_array2)
         if distinct_taxa:

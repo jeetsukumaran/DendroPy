@@ -39,7 +39,7 @@ class DataSetCreateTest(datatest.DataObjectVerificationTestCase):
     def testFromReadNexus(self):
         ds_str = self.dataset.as_string(format="nexus")
         ds2 = dendropy.DataSet(stream=StringIO(ds_str), format="nexus")
-        self.assertDistinctButEqual(self.dataset, ds2, ignore_chartypes=True)
+        self.assertDistinctButEqual(self.dataset, ds2)
 
     def testFromCopy(self):
         ds2 = dendropy.DataSet(self.dataset)
