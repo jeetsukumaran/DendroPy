@@ -363,7 +363,6 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                     else:
                         self.assertSame(c2.character_type, None)
 
-
     def assertDistinctButEqualCharArray(self, char_array1, char_array2, **kwargs):
         if isinstance(char_array1, dendropy.DiscreteCharacterArray):
             self.assertDistinctButEqualDiscreteCharArray(char_array1, char_array2, **kwargs)

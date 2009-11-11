@@ -1063,7 +1063,16 @@ class NexmlWriter(iosys.DataWriter):
                         separator = ' '
                         break_long_words = False
 
-                    seqlines = textwrap.fill(separator.join([str(c) for c in row]),
+                    if isinstance(char_array, dendropy.DiscreteCharacterArray):
+                        seq_symbols = []
+                        for cidx, c in enumerate(row):
+                            if c.value.symbol is None:
+                                raise TypeError("Character %d in row '%d' does not have a symbol defined for its character state:" % (cidx, row.oid) \
+                                            + " this array cannot be written in sequence format (set 'markup_as_sequences' to False)'")
+                            seq_symbols.append(c.value.symbol)
+                    else:
+                        seq_symbols = [str(c) for c in row]
+                    seqlines = textwrap.fill(separator.join(seq_symbols),
                                            width=70,
                                            initial_indent=self.indent*(indent_level+3) + "<seq>",
                                            subsequent_indent=self.indent*(indent_level+4),

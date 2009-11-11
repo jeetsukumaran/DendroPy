@@ -38,6 +38,7 @@ from dendropy.dataio import multi_tree_source_iter
 
 class NexmlRoundTripTest(datatest.DataObjectVerificationTestCase):
 
+## Trees need special attention
 #    def testRoundTreeJustTrees(self):
 #        ds = dendropy.DataSet(datagen.reference_tree_list())
 #        self.roundTripDataSetTest(ds, "nexml", ignore_taxon_order=True)
