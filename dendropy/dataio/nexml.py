@@ -732,7 +732,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                     seq = nxrow.findtext('seq')
                     if seq is not None:
                         seq = seq.replace('\n\r', ' ').replace('\r\n', ' ').replace('\n', ' ').replace('\r',' ')
-                        col_idx = 0
+                        col_idx = -1
                         for char in seq.split(' '):
                             char = char.strip()
                             if char:
@@ -766,11 +766,11 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                     seq = nxrow.findtext('seq')
                     if seq is not None:
                         seq = seq.replace(' ', '').replace('\n', '').replace('\r', '')
-                        col_idx = 0
+                        col_idx = -1
                         for char in seq:
-                            symbol_state_map = char_array.character_types[chartype_idx].state_alphabet.symbol_state_map()
+                            symbol_state_map = char_array.character_types[col_idx].state_alphabet.symbol_state_map()
                             if char in symbol_state_map:
-                                chartype_idx += 1
+                                col_idx += 1
                                 if len(chartypes) <= col_idx:
                                     raise error.DataFormatError(message="Character column/type ('<char>') not defined for character in position"\
                                         + " %d (array = '%s' row='%s', taxon='%s')" % (col_idx+1, char_array.oid, row_id, taxon.label))
@@ -996,7 +996,7 @@ class NexmlWriter(iosys.DataWriter):
                             chartype = dendropy.CharacterType(state_alphabet=cell.character_type.state_alphabet, oid="c%d" % col_idx)
                     else:
                         if col_idx not in chartype_indexes:
-                            chartype = dendropy.CharacterType(oid="c%d" % chartype_idx)
+                            chartype = dendropy.CharacterType(oid="c%d" % col_idx)
                         else:
                             chartype = column_chartype_map[col_idx]
 

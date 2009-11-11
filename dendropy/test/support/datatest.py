@@ -333,8 +333,8 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 self.assertDistinctButEqualTaxon(taxon1, taxon2, **kwargs)
             else:
                 self.assertSame(taxon1, taxon2)
-            self.logger.info("%s: %s" % (taxon1.label, vec1.as_symbol_string()))
-            self.logger.info("%s: %s" % (taxon2.label, vec2.as_symbol_string()))
+            self.logger.info("%s: %s" % (taxon1.label, vec1.symbols_as_string()))
+            self.logger.info("%s: %s" % (taxon2.label, vec2.symbols_as_string()))
             self.assertEqual(len(vec1), len(vec2))
             for i, c1 in enumerate(vec1):
                 c2 = vec2[i]
@@ -395,7 +395,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         """
         data = []
         for t, s in char_array.items():
-            data.append((t.label, s.as_symbol_string()))
+            data.append((t.label, s.symbols_as_string()))
         return data
 
     def assertEqualCharArrayLabelSymbols(self, char_array, **kwargs):

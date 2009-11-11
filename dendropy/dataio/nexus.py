@@ -553,7 +553,7 @@ class NexusReader(iosys.DataReader):
                     self._process_chars(char_group, char_block, symbol_state_map, taxon)
                 if len(char_block[taxon]) < self.file_specified_nchar:
                     raise self.data_format_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
-                        % (taxon.label, self.file_specified_nchar, len(char_block[taxon]), char_block[taxon].as_symbol_string()))
+                        % (taxon.label, self.file_specified_nchar, len(char_block[taxon]), char_block[taxon].symbols_as_string()))
                 token = self.stream_tokenizer.read_next_token()
 
     def _process_chars(self, char_group, char_block, symbol_state_map, taxon):

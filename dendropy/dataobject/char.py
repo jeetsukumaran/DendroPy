@@ -428,14 +428,14 @@ class CharacterDataVector(list, TaxonLinked):
     def values(self):
         return [cell.value for cell in self]
 
-    def as_symbol_list(self):
+    def symbols_as_list(self):
         return [str(cell.value) for cell in self]
 
-    def as_symbol_string(self, sep=""):
-        return sep.join(self.as_symbol_list())
+    def symbols_as_string(self, sep=""):
+        return sep.join(self.symbols_as_list())
 
     def __str__(self):
-        return str(self.as_symbol_string())
+        return str(self.symbols_as_string())
 
 class CharacterDataMap(dict, Annotated):
     """
