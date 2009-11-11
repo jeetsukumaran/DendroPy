@@ -293,7 +293,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         distinct_state_alphabets = kwargs.get("distinct_state_alphabets", None)
         distinct_taxa = kwargs.get("distinct_taxa", True)
         equal_oids = kwargs.get("equal_oids", None)
-        ignore_columns = kwargs.get("ignore_columns", False)
+        ignore_chartypes = kwargs.get("ignore_chartypes", False)
         self.logger.info("Comparing DiscreteCharacterArray objects %d and %d" % (id(char_array1), id(char_array2)))
         self.assertNotSame(char_array1, char_array2)
         if distinct_taxa:
@@ -314,7 +314,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             self.assertSame(char_array1.state_alphabets, char_array2.state_alphabets)
             self.assertEqual(char_array1.state_alphabets, char_array2.state_alphabets)
             self.assertSame(char_array1.default_state_alphabet, char_array2.default_state_alphabet)
-        if not ignore_columns:
+        if not ignore_chartypes:
             self.assertEqual(len(char_array1.character_types), len(char_array2.character_types))
         for coli, col1 in enumerate(char_array1.character_types):
             if distinct_state_alphabets is True:
@@ -349,7 +349,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                     self.assertDistinctButEqualStateAlphabetElement(c1.value, c2.value)
                 elif distinct_state_alphabets is False:
                     self.assertSame(c1.value, c2.value)
-                if not ignore_columns:
+                if not ignore_chartypes:
                     if c1.character_type is not None:
                         self.assertNotSame(c1.character_type, c2.character_type)
                         if distinct_state_alphabets is True:
