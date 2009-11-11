@@ -50,23 +50,6 @@ class TestFasta(datatest.DataObjectVerificationTestCase):
         ds1 = dendropy.DataSet(datagen.reference_dna_array())
         dataset = self.roundTripDataSetTest(ds1, "DNAFASTA")
 
-    def testRoundTripProtein(self):
-        s = pathmap.char_source_stream("caenophidia_mos.chars.nexus")
-        d1 = dendropy.DataSet(stream=s, format="fasta")
-        self.roundTripDataSetTest(d1, "nexml")
-
-    def testRoundTripStandard1(self):
-        s = pathmap.char_source_stream("angiosperms.chars.nexus")
-        d1 = dendropy.DataSet(stream=s, format="fasta")
-        self.roundTripDataSetTest(d1, "nexml")
-
-    def testRoundTripStandard2(self):
-        s = pathmap.char_source_stream("apternodus.chars.nexus")
-        d1 = dendropy.DataSet(stream=s, format="fasta")
-        for ca in d1.char_arrays:
-            ca.markup_as_sequences = False
-        self.roundTripDataSetTest(d1, "nexml")
-
 if __name__ == "__main__":
     unittest.main()
 
