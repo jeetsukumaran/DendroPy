@@ -709,10 +709,10 @@ class _NexmlCharBlockParser(_NexmlElementParser):
 
         if char_array.character_types:
             id_chartype_map = char_array.id_chartype_map()
-            chartype_ids = [char.oid for char in char_array.character_types]
+            chartypes = [char for char in char_array.character_types]
         else:
             id_chartype_map = {}
-            chartype_ids = []
+            chartypes = []
 
         for nxrow in matrix.getiterator('row'):
             row_id = nxrow.get('id', None)
@@ -721,7 +721,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             try:
                 taxon = taxon_set.require_taxon(oid=taxon_id)
             except KeyError, e:
-                raise Exception('Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_array.oid, char_array.label, taxon_id, taxon_set.oid))
+                raise error.DataFormatError(message='Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_array.oid, char_array.label, taxon_id, taxon_set.oid))
 
             character_vector = dendropy.CharacterDataVector(oid=row_id, label=label, taxon=taxon)
             self.parse_annotations(annotated=character_vector, nxelement=nxrow)
@@ -732,29 +732,31 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                     seq = nxrow.findtext('seq')
                     if seq is not None:
                         seq = seq.replace('\n\r', ' ').replace('\r\n', ' ').replace('\n', ' ').replace('\r',' ')
-                        chartype_idx = 0
+                        col_idx = 0
                         for char in seq.split(' '):
                             char = char.strip()
                             if char:
-                                chartype_idx += 1
-                                if len(chartype_ids) <= chartype_idx:
-                                    chartype_oid = "c%d" % chartype_idx
-                                    id_chartype_map[chartype_oid] = dendropy.CharacterType(oid=chartype_oid)
-                                    chartype_ids.append(chartype_oid)
-                                else:
-                                    chartype_oid = chartype_ids[chartype_idx]
-                                cell = dendropy.CharacterDataCell(value=float(char), character_type=id_chartype_map[chartype_oid])
+                                col_idx += 1
+                                if len(chartypes) <= col_idx:
+                                    raise error.DataFormatError(message="Character column/type ('<char>') not defined for character in position"\
+                                        + " %d (array = '%s' row='%s', taxon='%s')" % (col_idx+1, char_array.oid, row_id, taxon.label))
+                                cell = dendropy.CharacterDataCell(value=float(char), character_type=chartypes[col_idx])
                                 character_vector.append(cell)
                 else:
                     char_array.markup_as_sequences = False
                     for nxcell in nxrow.getiterator('cell'):
                         chartype_id = nxcell.get('char', None)
                         if chartype_id is None:
-                            raise error.DataFormatError("'char' attribute missing for cell: cell markup must indicate character column type")
-                        pos_idx = chartype_ids.index(chartype_id)
+                            raise error.DataFormatError(message="'char' attribute missing for cell: cell markup must indicate character column type for character"\
+                                        + " (array = '%s' row='%s', taxon='%s')" % (char_array.oid, row_id, taxon.label))
+                        if chartype_id not in id_chartype_map:
+                            raise error.DataFormatError(message="Character type ('<char>') with id '%s' referenced but not found for character" % chartype_id \
+                                        + " (array = '%s' row='%s', taxon='%s')" % (char_array.oid, row_id, taxon.label))
+                        chartype = id_chartype_map[chartype_id]
+                        pos_idx = chartypes.index(chartype)
 #                         column = id_chartype_map[chartype_id]
 #                         state = column.state_id_map[cell.get('state', None)]
-                        cell = dendropy.CharacterDataCell(value=float(nxcell.get('state')), character_type=id_chartype_map[chartype_id])
+                        cell = dendropy.CharacterDataCell(value=float(nxcell.get('state')), character_type=chartype)
                         self.parse_annotations(annotated=cell, nxelement=nxcell)
                         character_vector.set_cell_by_index(pos_idx, cell)
             else:
@@ -764,35 +766,36 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                     seq = nxrow.findtext('seq')
                     if seq is not None:
                         seq = seq.replace(' ', '').replace('\n', '').replace('\r', '')
-                        chartype_idx = 0
+                        col_idx = 0
                         for char in seq:
                             symbol_state_map = char_array.character_types[chartype_idx].state_alphabet.symbol_state_map()
                             if char in symbol_state_map:
                                 chartype_idx += 1
-                                if len(chartype_ids) <= chartype_idx:
-                                    chartype_oid = "c%d" % chartype_idx
-                                    id_chartype_map[chartype_oid] = dendropy.CharacterType(oid=chartype_oid)
-                                    chartype_ids.append(chartype_oid)
-                                else:
-                                    chartype_oid = chartype_ids[chartype_idx]
+                                if len(chartypes) <= col_idx:
+                                    raise error.DataFormatError(message="Character column/type ('<char>') not defined for character in position"\
+                                        + " %d (array = '%s' row='%s', taxon='%s')" % (col_idx+1, char_array.oid, row_id, taxon.label))
                                 state = symbol_state_map[char]
+                                character_type = chartypes[col_idx]
+                                character_vector.append(dendropy.CharacterDataCell(value=state, character_type=character_type))
                             else:
-                                raise NameError('Character Block %s (\"%s\"): State with symbol "%s" in sequence "%s" not defined' % (char_array.oid, char_array.label, char, seq))
-                            character_vector.append(dendropy.CharacterDataCell(value=state, character_type=id_chartype_map[chartype_oid]))
+                                raise error.DataFormatError(message='Character Block %s (\"%s\"): State with symbol "%s" in sequence "%s" not defined' % (char_array.oid, char_array.label, char, seq))
                 else:
                     char_array.markup_as_sequences = False
                     id_state_maps = {}
                     for nxcell in nxrow.getiterator('cell'):
                         chartype_id = nxcell.get('char', None)
                         if chartype_id is None:
-                            raise error.DataFormatError(message="'char' attribute missing for cell: cell markup must indicate character type")
-                        column = id_chartype_map[chartype_id]
-                        pos_idx = chartype_ids.index(chartype_id)
+                            raise error.DataFormatError(message="'char' attribute missing for cell: cell markup must indicate character column type for character"\
+                                        + " (array = '%s' row='%s', taxon='%s')" % (char_array.oid, row_id, taxon.label))
+                        if chartype_id not in id_chartype_map:
+                            raise error.DataFormatError(message="Character type ('<char>') with id '%s' referenced but not found for character" % chartype_id \
+                                        + " (array = '%s' row='%s', taxon='%s')" % (char_array.oid, row_id, taxon.label))
+                        chartype = id_chartype_map[chartype_id]
+                        pos_idx = chartypes.index(chartype)
                         if chartype_id not in id_state_maps:
-                            id_state_maps[chartype_id] = column.state_alphabet.id_state_map()
+                            id_state_maps[chartype_id] = chartype.state_alphabet.id_state_map()
                         state = id_state_maps[chartype_id][nxcell.get('state')]
-                        cell = dendropy.CharacterDataCell(value=state, character_type=column)
-                        self.parse_annotations(annotated=cell, nxelement=nxcell)
+                        cell = dendropy.CharacterDataCell(value=state, character_type=chartype)
                         character_vector.set_cell_by_index(pos_idx, cell)
 
             char_array[taxon] = character_vector

@@ -38,23 +38,23 @@ from dendropy.dataio import multi_tree_source_iter
 
 class NexmlRoundTripTest(datatest.DataObjectVerificationTestCase):
 
-#    def testRoundTreeJustTrees(self):
-#        ds = dendropy.DataSet(datagen.reference_tree_list())
-#        self.roundTripDataSetTest(ds, "nexml", ignore_taxon_order=True, ignore_chartypes=True)
-#
-#    def testRoundTripReference(self):
-#        reference_dataset = datagen.reference_single_taxonset_dataset()
-#        self.roundTripDataSetTest(reference_dataset, "nexml", ignore_taxon_order=True, ignore_chartypes=True)
-#
-#    def testRoundTripProtein(self):
-#        s = pathmap.char_source_stream("caenophidia_mos.chars.nexus")
-#        d1 = dendropy.DataSet(stream=s, format="nexus")
-#        self.roundTripDataSetTest(d1, "nexml", ignore_chartypes=True)
-#
-#    def testRoundTripStandard1(self):
-#        s = pathmap.char_source_stream("angiosperms.chars.nexus")
-#        d1 = dendropy.DataSet(stream=s, format="nexus")
-#        self.roundTripDataSetTest(d1, "nexml", ignore_chartypes=True)
+    def testRoundTreeJustTrees(self):
+        ds = dendropy.DataSet(datagen.reference_tree_list())
+        self.roundTripDataSetTest(ds, "nexml", ignore_taxon_order=True, ignore_chartypes=True)
+
+    def testRoundTripReference(self):
+        reference_dataset = datagen.reference_single_taxonset_dataset()
+        self.roundTripDataSetTest(reference_dataset, "nexml", ignore_taxon_order=True, ignore_chartypes=True)
+
+    def testRoundTripProtein(self):
+        s = pathmap.char_source_stream("caenophidia_mos.chars.nexus")
+        d1 = dendropy.DataSet(stream=s, format="nexus")
+        self.roundTripDataSetTest(d1, "nexml", ignore_chartypes=True)
+
+    def testRoundTripStandard1(self):
+        s = pathmap.char_source_stream("angiosperms.chars.nexus")
+        d1 = dendropy.DataSet(stream=s, format="nexus")
+        self.roundTripDataSetTest(d1, "nexml", ignore_chartypes=True)
 
     def testRoundTripStandard2(self):
         s = pathmap.char_source_stream("apternodus.chars.nexus")
