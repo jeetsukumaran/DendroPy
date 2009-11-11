@@ -315,10 +315,10 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             self.assertEqual(char_array1.state_alphabets, char_array2.state_alphabets)
             self.assertSame(char_array1.default_state_alphabet, char_array2.default_state_alphabet)
         if not ignore_columns:
-            self.assertEqual(len(char_array1.column_types), len(char_array2.column_types))
-        for coli, col1 in enumerate(char_array1.column_types):
+            self.assertEqual(len(char_array1.character_types), len(char_array2.character_types))
+        for coli, col1 in enumerate(char_array1.character_types):
             if distinct_state_alphabets is True:
-                col2 = char_array2.column_types[coli]
+                col2 = char_array2.character_types[coli]
                 self.assertDistinctButEqualStateAlphabet(col1.state_alphabet, col2.state_alphabet)
             elif distinct_state_alphabets is False:
                 self.assertSame(col1.state_alphabet, col2.state_alphabet)
@@ -350,18 +350,18 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 elif distinct_state_alphabets is False:
                     self.assertSame(c1.value, c2.value)
                 if not ignore_columns:
-                    if c1.column_type is not None:
-                        self.assertNotSame(c1.column_type, c2.column_type)
+                    if c1.character_type is not None:
+                        self.assertNotSame(c1.character_type, c2.character_type)
                         if distinct_state_alphabets is True:
-                            self.assertDistinctButEqualStateAlphabet(c1.column_type.state_alphabet, c2.column_type.state_alphabet)
+                            self.assertDistinctButEqualStateAlphabet(c1.character_type.state_alphabet, c2.character_type.state_alphabet)
                         elif distinct_state_alphabets is False:
-                            self.assertSame(c1.column_type.state_alphabet, c2.column_type.state_alphabet)
-                        self.assertContained(c1.column_type.state_alphabet, char_array1.state_alphabets)
-                        self.assertContained(c2.column_type.state_alphabet, char_array2.state_alphabets)
-                        self.assertContained(c1.value, c1.column_type.state_alphabet)
-                        self.assertContained(c2.value, c2.column_type.state_alphabet)
+                            self.assertSame(c1.character_type.state_alphabet, c2.character_type.state_alphabet)
+                        self.assertContained(c1.character_type.state_alphabet, char_array1.state_alphabets)
+                        self.assertContained(c2.character_type.state_alphabet, char_array2.state_alphabets)
+                        self.assertContained(c1.value, c1.character_type.state_alphabet)
+                        self.assertContained(c2.value, c2.character_type.state_alphabet)
                     else:
-                        self.assertSame(c2.column_type, None)
+                        self.assertSame(c2.character_type, None)
 
 
     def assertDistinctButEqualCharArray(self, char_array1, char_array2, **kwargs):

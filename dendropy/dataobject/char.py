@@ -358,7 +358,7 @@ PROTEIN_STATE_ALPHABET = ProteinStateAlphabet()
 RESTRICTION_SITES_STATE_ALPHABET = RestrictionSitesStateAlphabet()
 INFINITE_SITES_STATE_ALPHABET = InfiniteSitesStateAlphabet()
 
-class ColumnType(IdTagged):
+class CharacterType(IdTagged):
     """
     A character format or type of a particular column: i.e., maps
     a particular set of character state definitions to a column in a character array.
@@ -387,10 +387,10 @@ class CharacterDataCell(Annotated):
     A container for the state / state value for a particular cell in a array.
     """
 
-    def __init__(self, value=None, column_type=None):
+    def __init__(self, value=None, character_type=None):
         Annotated.__init__(self)
         self.value = value
-        self.column_type = column_type
+        self.character_type = character_type
 
     def __str__(self):
         return str(self.value)
@@ -512,7 +512,7 @@ class CharacterArray(TaxonSetLinked):
                                 label=kwargs.get("label", None),
                                 oid=kwargs.get("oid", None))
         self.taxon_seq_map = CharacterDataMap()
-        self.column_types = []
+        self.character_types = []
         self.markup_as_sequences = True
         if len(args) > 0:
             self.clone_from(*args)
@@ -706,13 +706,13 @@ class CharacterArray(TaxonSetLinked):
         "Sets the default value to return if key not present."
         return self.taxon_seq_map.setdefault(key, def_val)
 
-    def id_column_map(self):
+    def id_chartype_map(self):
         """
         Returns dictionary of element id to corresponding
         character definition.
         """
         map = {}
-        for char in self.column_types:
+        for char in self.character_types:
             map[char.oid] = char
         return map
 
@@ -777,11 +777,11 @@ class StandardCharacterArray(DiscreteCharacterArray):
             otaxon = memo[id(taxon)]
             ocdv = CharacterDataVector(oid=cdv.oid, label=cdv.label, taxon=otaxon)
             for cell in cdv:
-                if cell.column_type is not None:
-                    column_type = memo[id(cell.column_type)]
+                if cell.character_type is not None:
+                    character_type = memo[id(cell.character_type)]
                 else:
-                    column_type = None
-                ocdv.append(CharacterDataCell(value=memo[id(cell.value)], column_type=column_type))
+                    character_type = None
+                ocdv.append(CharacterDataCell(value=memo[id(cell.value)], character_type=character_type))
             o.taxon_seq_map[otaxon] = ocdv
             memo[id(self.taxon_seq_map[taxon])] = o.taxon_seq_map[otaxon]
 
@@ -803,16 +803,16 @@ class FixedAlphabetCharacterArray(DiscreteCharacterArray):
         memo[id(self.default_state_alphabet)] = o.default_state_alphabet
         o._default_symbol_state_map = self._default_symbol_state_map
         memo[id(self._default_symbol_state_map)] = o._default_symbol_state_map
-        o.column_types = copy.deepcopy(self.column_types, memo)
+        o.character_types = copy.deepcopy(self.character_types, memo)
         for taxon, cdv in self.taxon_seq_map.items():
             otaxon = memo[id(taxon)]
             ocdv = CharacterDataVector(oid=cdv.oid, label=cdv.label, taxon=otaxon)
             for cell in cdv:
-                if cell.column_type is not None:
-                    column_type = memo[id(cell.column_type)]
+                if cell.character_type is not None:
+                    character_type = memo[id(cell.character_type)]
                 else:
-                    column_type = None
-                ocdv.append(CharacterDataCell(value=cell.value, column_type=column_type))
+                    character_type = None
+                ocdv.append(CharacterDataCell(value=cell.value, character_type=character_type))
             o.taxon_seq_map[otaxon] = ocdv
             memo[id(self.taxon_seq_map[taxon])] = o.taxon_seq_map[otaxon]
         for k, v in self.__dict__.iteritems():
@@ -822,7 +822,7 @@ class FixedAlphabetCharacterArray(DiscreteCharacterArray):
                          "default_state_alphabet",
                          "_default_symbol_state_map",
                          "taxon_seq_map",
-                         "column_types"]:
+                         "character_types"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
 

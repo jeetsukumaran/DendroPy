@@ -632,7 +632,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             for nxstates in nxformat.getiterator('states'):
                 char_array.state_alphabets.append(self.parse_state_alphabet(nxstates))
             for nxchars in nxformat.getiterator('char'):
-                col = dendropy.ColumnType(oid=nxchars.get('id', None))
+                col = dendropy.CharacterType(oid=nxchars.get('id', None))
                 char_state_set_id = nxchars.get('states')
                 if char_state_set_id is not None:
                     state_alphabet = None
@@ -646,7 +646,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                 elif hasattr(char_array, "default_state_alphabet") \
                     and char_array.default_state_alphabet is not None:
                     col.state_alphabet = char_array.default_state_alphabet
-                char_array.column_types.append(col)
+                char_array.character_types.append(col)
 
     def create_standard_character_alphabet(self, char_array, symbol_list=None):
         """
@@ -707,12 +707,12 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         matrix = nxchars.find('matrix')
         self.parse_annotations(annotated=char_array.taxon_seq_map, nxelement=matrix)
 
-        if char_array.column_types:
-            id_column_map = char_array.id_column_map()
-            column_ids = [char.oid for char in char_array.column_types]
+        if char_array.character_types:
+            id_chartype_map = char_array.id_chartype_map()
+            chartype_ids = [char.oid for char in char_array.character_types]
         else:
-            id_column_map = {}
-            column_ids = []
+            id_chartype_map = {}
+            chartype_ids = []
 
         for nxrow in matrix.getiterator('row'):
             row_id = nxrow.get('id', None)
@@ -737,24 +737,24 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                             char = char.strip()
                             if char:
                                 col_idx += 1
-                                if len(column_ids) <= col_idx:
+                                if len(chartype_ids) <= col_idx:
                                     col_oid = "c%d" % col_idx
-                                    id_column_map[col_oid] = dendropy.ColumnType(oid=col_oid)
-                                    column_ids.append(col_oid)
+                                    id_chartype_map[col_oid] = dendropy.CharacterType(oid=col_oid)
+                                    chartype_ids.append(col_oid)
                                 else:
-                                    col_oid = column_ids[col_idx]
-                                cell = dendropy.CharacterDataCell(value=float(char), column_type=id_column_map[col_oid])
+                                    col_oid = chartype_ids[col_idx]
+                                cell = dendropy.CharacterDataCell(value=float(char), character_type=id_chartype_map[col_oid])
                                 character_vector.append(cell)
                 else:
                     char_array.markup_as_sequences = False
                     for nxcell in nxrow.getiterator('cell'):
-                        column_id = nxcell.get('char', None)
-                        if column_id is None:
+                        chartype_id = nxcell.get('char', None)
+                        if chartype_id is None:
                             raise error.DataFormatError("'char' attribute missing for cell: cell markup must indicate character column type")
-                        pos_idx = column_ids.index(column_id)
-#                         column = id_column_map[column_id]
+                        pos_idx = chartype_ids.index(chartype_id)
+#                         column = id_chartype_map[chartype_id]
 #                         state = column.state_id_map[cell.get('state', None)]
-                        cell = dendropy.CharacterDataCell(value=float(nxcell.get('state')), column_type=id_column_map[column_id])
+                        cell = dendropy.CharacterDataCell(value=float(nxcell.get('state')), character_type=id_chartype_map[chartype_id])
                         self.parse_annotations(annotated=cell, nxelement=nxcell)
                         character_vector.set_cell_by_index(pos_idx, cell)
             else:
@@ -766,32 +766,32 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                         seq = seq.replace(' ', '').replace('\n', '').replace('\r', '')
                         col_idx = 0
                         for char in seq:
-                            symbol_state_map = char_array.column_types[col_idx].state_alphabet.symbol_state_map()
+                            symbol_state_map = char_array.character_types[col_idx].state_alphabet.symbol_state_map()
                             if char in symbol_state_map:
                                 col_idx += 1
-                                if len(column_ids) <= col_idx:
+                                if len(chartype_ids) <= col_idx:
                                     col_oid = "c%d" % col_idx
-                                    id_column_map[col_oid] = dendropy.ColumnType(oid=col_oid)
-                                    column_ids.append(col_oid)
+                                    id_chartype_map[col_oid] = dendropy.CharacterType(oid=col_oid)
+                                    chartype_ids.append(col_oid)
                                 else:
-                                    col_oid = column_ids[col_idx]
+                                    col_oid = chartype_ids[col_idx]
                                 state = symbol_state_map[char]
                             else:
                                 raise NameError('Character Block %s (\"%s\"): State with symbol "%s" in sequence "%s" not defined' % (char_array.oid, char_array.label, char, seq))
-                            character_vector.append(dendropy.CharacterDataCell(value=state, column_type=id_column_map[col_oid]))
+                            character_vector.append(dendropy.CharacterDataCell(value=state, character_type=id_chartype_map[col_oid]))
                 else:
                     char_array.markup_as_sequences = False
                     id_state_maps = {}
                     for nxcell in nxrow.getiterator('cell'):
-                        column_id = nxcell.get('char', None)
-                        if column_id is None:
+                        chartype_id = nxcell.get('char', None)
+                        if chartype_id is None:
                             raise error.DataFormatError(message="'char' attribute missing for cell: cell markup must indicate character column type")
-                        column = id_column_map[column_id]
-                        pos_idx = column_ids.index(column_id)
-                        if column_id not in id_state_maps:
-                            id_state_maps[column_id] = column.state_alphabet.id_state_map()
-                        state = id_state_maps[column_id][nxcell.get('state')]
-                        cell = dendropy.CharacterDataCell(value=state, column_type=column)
+                        column = id_chartype_map[chartype_id]
+                        pos_idx = chartype_ids.index(chartype_id)
+                        if chartype_id not in id_state_maps:
+                            id_state_maps[chartype_id] = column.state_alphabet.id_state_map()
+                        state = id_state_maps[chartype_id][nxcell.get('state')]
+                        cell = dendropy.CharacterDataCell(value=state, character_type=column)
                         self.parse_annotations(annotated=cell, nxelement=nxcell)
                         character_vector.set_cell_by_index(pos_idx, cell)
 
@@ -966,59 +966,59 @@ class NexmlWriter(iosys.DataWriter):
                     state_alphabet_parts.append('%s</states>' % (self.indent * (indent_level+2)))
 
             columns_to_add = []
-            cell_column_map = {}
-            column_indexes = {}
+            cell_chartype_map = {}
+            chartype_indexes = {}
             if hasattr(char_array, "state_alphabets"):
                 for taxon, row in char_array.taxon_seq_map.items():
-                    for column_idx, cell in enumerate(row):
-                        if column_idx in column_indexes:
-                            cell_column_map[cell] = column_indexes[column_idx]
-                        if not hasattr(cell, 'column_type') or cell.column_type is None:
-                            col_oid = "c%d" % column_idx
+                    for chartype_idx, cell in enumerate(row):
+                        if chartype_idx in chartype_indexes:
+                            cell_chartype_map[cell] = chartype_indexes[chartype_idx]
+                        if not hasattr(cell, 'character_type') or cell.character_type is None:
+                            col_oid = "c%d" % chartype_idx
                             if char_array.default_state_alphabet is not None:
-                                col_type = dendropy.ColumnType(state_alphabet=char_array.default_state_alphabet, oid=col_oid)
+                                col_type = dendropy.CharacterType(state_alphabet=char_array.default_state_alphabet, oid=col_oid)
                             elif len(char_array.state_alphabets) == 1:
-                                col_type = dendropy.ColumnType(state_alphabet=char_array.state_alphabets[0], oid=col_oid)
+                                col_type = dendropy.CharacterType(state_alphabet=char_array.state_alphabets[0], oid=col_oid)
                             elif len(char_array.state_alphabets) > 1:
-                                raise TypeError("Character cell %d for taxon %s ('%s') does not have a state alphabet mapping given by the" % (column_idx, taxon.oid, taxon.label)\
-                                        + " 'column_type' property, and multiple state alphabets are defined for the containing" \
+                                raise TypeError("Character cell %d for taxon %s ('%s') does not have a state alphabet mapping given by the" % (chartype_idx, taxon.oid, taxon.label)\
+                                        + " 'character_type' property, and multiple state alphabets are defined for the containing" \
                                         + " character array ('%s')" % char_array.oid)
                             elif len(char_array.state_alphabets) == 0:
-                                raise TypeError("Character cell %d for taxon %s ('%s') does not have a state alphabet mapping given by the" % (column_idx, taxon.oid, taxon.label)\
-                                        + " 'column_type' property, and no state alphabets are defined for the containing" \
+                                raise TypeError("Character cell %d for taxon %s ('%s') does not have a state alphabet mapping given by the" % (chartype_idx, taxon.oid, taxon.label)\
+                                        + " 'character_type' property, and no state alphabets are defined for the containing" \
                                         + " character array" % char_array.oid)
                             columns_to_add.append(col_type)
-                            column_indexes[cell] = col_type
-                            cell_column_map[cell] = col_type
+                            chartype_indexes[cell] = col_type
+                            cell_chartype_map[cell] = col_type
                         else:
-                            col_oid = "c%d" % column_idx
-                            col_type = dendropy.ColumnType(state_alphabet=cell.column_type.state_alphabet, oid=col_oid)
+                            col_oid = "c%d" % chartype_idx
+                            col_type = dendropy.CharacterType(state_alphabet=cell.character_type.state_alphabet, oid=col_oid)
                             columns_to_add.append(col_type)
-                            cell_column_map[cell] = col_type
+                            cell_chartype_map[cell] = col_type
             else:
                 for taxon, row in char_array.taxon_seq_map.items():
-                    for column_idx, cell in enumerate(row):
-                        if column_idx in column_indexes:
+                    for chartype_idx, cell in enumerate(row):
+                        if chartype_idx in chartype_indexes:
                             continue
-                        col_oid = "c%d" % column_idx
-                        columns_to_add.append(dendropy.ColumnType(), oid=col_oid)
-                        column_indexes.add(column_idx)
+                        col_oid = "c%d" % chartype_idx
+                        columns_to_add.append(dendropy.CharacterType(), oid=col_oid)
+                        chartype_indexes.add(chartype_idx)
 
-            column_types_parts = []
+            character_types_parts = []
             for column in columns_to_add:
                 if column.state_alphabet:
-                    column_state = ' states="%s" ' % column.state_alphabet.oid
+                    chartype_state = ' states="%s" ' % column.state_alphabet.oid
                 else:
-                    column_state = ' '
-                column_types_parts.append('%s<char id="%s"%s/>'
-                    % ((self.indent*(indent_level+1)), column.oid, column_state))
+                    chartype_state = ' '
+                character_types_parts.append('%s<char id="%s"%s/>'
+                    % ((self.indent*(indent_level+1)), column.oid, chartype_state))
 
-            if state_alphabet_parts or column_types_parts:
+            if state_alphabet_parts or character_types_parts:
                 dest.write("%s<format>\n" % (self.indent*(indent_level+1)))
                 if state_alphabet_parts:
                     dest.write(('\n'.join(state_alphabet_parts)) + '\n')
-                if column_types_parts:
-                    dest.write(('\n'.join(column_types_parts)) + '\n')
+                if character_types_parts:
+                    dest.write(('\n'.join(character_types_parts)) + '\n')
                     pass
                 dest.write("%s</format>\n" % (self.indent*(indent_level+1)))
 
@@ -1070,7 +1070,7 @@ class NexmlWriter(iosys.DataWriter):
                     for cell in row:
                         parts = []
                         parts.append('%s<cell' % (self.indent*(indent_level+3)))
-                        parts.append('char="%s"' % cell_column_map[cell])
+                        parts.append('char="%s"' % cell_chartype_map[cell])
                         if hasattr(cell, "value") and hasattr(cell.value, "oid"):
                             v = cell.value.oid
                         else:
