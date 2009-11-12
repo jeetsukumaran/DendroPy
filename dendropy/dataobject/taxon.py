@@ -89,7 +89,7 @@ class TaxonSetLinked(base.IdTagged):
         else:
             self.taxon_set = kwargs["taxon_set"]
 
-    def reindex_taxa(self, taxon_set=None, clear=True):
+    def reindex_taxa(self, taxon_set=None, clear=False):
         """
         Rebuilds `taxon_set` from scratch, or assigns `Taxon` objects from
         given `TaxonSet` object `taxon_set` based on label values. Calls
@@ -300,7 +300,7 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
             taxon.clade_mask = m
             return m
         except ValueError:
-            raise ValueError("Taxon with ID '%s' and label '%s' not found"
+            raise IndexError("Taxon with ID '%s' and label '%s' not found"
                              % (str(taxon.oid), str(taxon.label)))
 
     def split_bitmask_string(self, split_bitmask):

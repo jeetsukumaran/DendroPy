@@ -341,31 +341,35 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
             # /usr/bin/env python
 
-            import StringIO
+            from cStringIO import StringIO
             import dendropy
 
             # empty tree
             t1 = Tree()
 
             # tree from data source
-            t2 = Tree(stream=StringIO("((A,B),(C,D));"), format="newick")
+            t2 = dendropy.Tree(stream=StringIO("((A,B),(C,D));"), format="newick")
 
             # passing keywords to underlying tree parser
-            t3 = Tree(stream=StringIO("((A,B),(C,D));"),
+            t3 = dendropy.Tree(stream=StringIO("((A,B),(C,D));"),
                       format="newick",
                       taxon_set=t3.taxon_set,
                       encode_splits=True)
 
             # tree structure deep-copied from another tree
-            t4 = Tree(t3)
+            t4 = dendropy.Tree(t3)
             assert t4.taxon_set == t3.taxon_set # True: taxa are not deep-copied
             assert t4.oid != t3.oid # True: oid's will be different
 
+            # to create deep copy of a tree with an independent taxon set
+            t5 = dendropy.Tree(t3)
+            t5.reindex_taxa(taxon_set=dendropy.TaxonSet())
+
             # can also call `read()` on a Tree object
-            t5 = Tree()
-            t5.read(StringIO("((A,B),(C,D));"), "newick")
-            t5.read_from_string("((A,B),(C,D));", "newick")
-            t5.read_from_path("mle.tre", "newick")
+            t6 = dendropy.Tree()
+            t6.read(StringIO("((A,B),(C,D));"), "newick")
+            t6.read_from_string("((A,B),(C,D));", "newick")
+            t6.read_from_path("mle.tre", "newick")
 
         """
         TaxonSetLinked.__init__(self,
