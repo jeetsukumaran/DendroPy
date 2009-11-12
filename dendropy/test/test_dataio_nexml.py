@@ -43,7 +43,6 @@ class NexmlRoundTripTest(datatest.DataObjectVerificationTestCase):
     ## Trees need special attention
     def assertDistinctButEqualTree(self, tree1, tree2, **kwargs):
         otaxa = tree1.taxon_set
-#        tlist = dendropy.TreeList([tree1, tree2])
         ts = dendropy.TaxonSet()
         tree1.reindex_taxa(ts, clear=True)
         tree2.reindex_taxa(ts)
@@ -61,9 +60,6 @@ class NexmlRoundTripTest(datatest.DataObjectVerificationTestCase):
 
     def testRoundTripReference(self):
         reference_dataset = datagen.reference_single_taxonset_dataset()
-        for ca in reference_dataset.char_arrays:
-            if isinstance(ca, dendropy.StandardCharacterArray):
-                ca.markup_as_sequences = False
         self.roundTripDataSetTest(reference_dataset, "nexml", ignore_taxon_order=True)
 
     def testRoundTripProtein(self):

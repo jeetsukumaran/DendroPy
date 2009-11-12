@@ -768,9 +768,9 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                         seq = seq.replace(' ', '').replace('\n', '').replace('\r', '')
                         col_idx = -1
                         for char in seq:
+                            col_idx += 1
                             symbol_state_map = char_array.character_types[col_idx].state_alphabet.symbol_state_map()
                             if char in symbol_state_map:
-                                col_idx += 1
                                 if len(chartypes) <= col_idx:
                                     raise error.DataFormatError(message="Character column/type ('<char>') not defined for character in position"\
                                         + " %d (array = '%s' row='%s', taxon='%s')" % (col_idx+1, char_array.oid, row_id, taxon.label))
@@ -778,7 +778,9 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                                 character_type = chartypes[col_idx]
                                 character_vector.append(dendropy.CharacterDataCell(value=state, character_type=character_type))
                             else:
-                                raise error.DataFormatError(message='Character Block %s (\"%s\"): State with symbol "%s" in sequence "%s" not defined' % (char_array.oid, char_array.label, char, seq))
+                                print symbol_state_map
+                                raise error.DataFormatError(message="Character Block '%s', row '%s', character position %s: State with symbol '%s' in sequence '%s' not defined" \
+                                        % (char_array.oid, row_id, col_idx, char, seq))
                 else:
                     char_array.markup_as_sequences = False
                     id_state_maps = {}
