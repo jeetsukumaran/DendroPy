@@ -34,7 +34,7 @@ from dendropy.utility import messaging
 from dendropy.utility import paup
 from dendropy.dataio import nexus
 from dendropy import treesum
-from dendropy import splitcalc
+from dendropy import splitmask
 import dendropy
 
 _LOG = messaging.get_logger(__name__)
@@ -52,10 +52,10 @@ _LOG = messaging.get_logger(__name__)
 #        for tc in test_cases:
 #            for tree_filepath in [dendropy.test.data_source_path(tc[0])]:
 #                for tree in nexus.tree_source_iter(stream=open(tree_filepath, "rU")):
-#                    splitcalc.encode_splits(tree)
+#                    splitmask.encode_splits(tree)
 #                    for edge in tree.preorder_edge_iter():
 #                        cm = edge.clade_mask
-#                        e = splitcalc.find_edge_from_split(tree.seed_node, cm)
+#                        e = splitmask.find_edge_from_split(tree.seed_node, cm)
 #                        self.assertTrue(e is edge)
 
 class SplitCountTest(ExtendedTestCase):
@@ -78,7 +78,7 @@ class SplitCountTest(ExtendedTestCase):
             paup_sd = paup.get_split_distribution(tree_filepaths, taxa_filepath,
                         unrooted=unrooted, burnin=0)
             taxon_set = paup_sd.taxon_set
-            dp_sd = splitcalc.SplitDistribution(taxon_set=taxon_set)
+            dp_sd = splitmask.SplitDistribution(taxon_set=taxon_set)
             dp_sd.ignore_edge_lengths = True
             dp_sd.ignore_node_ages = True
             dp_sd.unrooted = unrooted
@@ -90,7 +90,7 @@ class SplitCountTest(ExtendedTestCase):
                 for tree in nexus.tree_source_iter(stream=open(tree_filepath, "rU"), taxon_set=taxon_set):
                     self.assertSame(tree.taxon_set, dp_sd.taxon_set)
                     self.assertSame(tree.taxon_set, taxon_set)
-                    splitcalc.encode_splits(tree)
+                    splitmask.encode_splits(tree)
                     dp_sd.count_splits_on_tree(tree)
 
             self.assertEqual(dp_sd.total_trees_counted, paup_sd.total_trees_counted)
@@ -102,7 +102,7 @@ class SplitCountTest(ExtendedTestCase):
 
             taxa_mask = taxon_set.all_taxa_bitmask()
             for split in dp_sd.splits:
-                if not splitcalc.is_trivial_split(split, taxa_mask):
+                if not splitmask.is_trivial_split(split, taxa_mask):
                     self.assertContained(split, paup_sd.splits)
                     self.assertEqual(dp_sd.split_counts[split], paup_sd.split_counts[split])
                     paup_sd.splits.remove(split)

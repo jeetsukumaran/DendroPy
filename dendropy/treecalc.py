@@ -31,7 +31,7 @@ def get_mrca(start_node, split, taxa_mask):
     `start_node`) that has all of the taxa that are specified in `split` or
     None if no appropriate node is found.
 
-    Assumes that edges on tree have been decorated with splitcalc.
+    Assumes that edges on tree have been decorated with splitmask.
 
     It is possible that split is not compatible with the subtree that is
         returned! (compatibility tests are not fully performed).

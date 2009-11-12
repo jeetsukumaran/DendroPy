@@ -38,7 +38,7 @@ from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
 import dendropy
-from dendropy import splitcalc
+from dendropy import splitmask
 
 if "PAUP_PATH" in os.environ:
     PAUP_PATH = os.environ["PAUP_PATH"]
@@ -258,7 +258,7 @@ def build_split_distribution(bipartition_counts,
     Returns a populated SplitDistribution object based on the given
     bipartition info.
     """
-    sd = splitcalc.SplitDistribution(taxon_set=taxon_set)
+    sd = splitmask.SplitDistribution(taxon_set=taxon_set)
     sd.unrooted = unrooted
     sd.total_trees_counted = tree_count
     for g in bipartition_counts:

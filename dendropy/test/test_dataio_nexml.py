@@ -34,7 +34,7 @@ from dendropy.test.support import datagen
 from dendropy.test.support import datatest
 import dendropy
 from dendropy.dataio import nexml
-from dendropy import splitcalc
+from dendropy import splitmask
 from dendropy import treecalc
 
 
@@ -49,8 +49,8 @@ class NexmlRoundTripTest(datatest.DataObjectVerificationTestCase):
         self.assertSame(tree1.taxon_set, tree2.taxon_set)
         self.assertNotSame(tree1.taxon_set, otaxa)
         self.assertDistinctButEqual(tree1.taxon_set, otaxa, **kwargs)
-        splitcalc.encode_splits(tree1)
-        splitcalc.encode_splits(tree2)
+        splitmask.encode_splits(tree1)
+        splitmask.encode_splits(tree2)
         rfdist = treecalc.robinson_foulds_distance(tree1, tree2)
         self.assertAlmostEqual(rfdist, 0)
 
