@@ -443,8 +443,8 @@ class _NexmlTreesParser(_NexmlElementParser):
                 else:
                     nodes[rootedge.head_node_id].edge = rootedge
                     ### should we make this node the seed node by rerooting the tree here? ###
-#            else:
-#                treeobj.seed_node.edge = None
+            else:
+                treeobj.seed_node.edge = None
 
             if add_to_tree_list:
                tree_list.append(treeobj)

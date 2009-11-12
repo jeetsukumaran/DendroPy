@@ -34,18 +34,37 @@ from dendropy.test.support import datagen
 from dendropy.test.support import datatest
 import dendropy
 from dendropy.dataio import nexml
-from dendropy.dataio import multi_tree_source_iter
+from dendropy import splitcalc
+from dendropy import treecalc
+
 
 class NexmlRoundTripTest(datatest.DataObjectVerificationTestCase):
 
-## Trees need special attention
-#    def testRoundTreeJustTrees(self):
-#        ds = dendropy.DataSet(datagen.reference_tree_list())
-#        self.roundTripDataSetTest(ds, "nexml", ignore_taxon_order=True)
-#
-#    def testRoundTripReference(self):
-#        reference_dataset = datagen.reference_single_taxonset_dataset()
-#        self.roundTripDataSetTest(reference_dataset, "nexml", ignore_taxon_order=True)
+    ## Trees need special attention
+    def assertDistinctButEqualTree(self, tree1, tree2, **kwargs):
+        otaxa = tree1.taxon_set
+#        tlist = dendropy.TreeList([tree1, tree2])
+        ts = dendropy.TaxonSet()
+        tree1.reindex_taxa(ts, clear=True)
+        tree2.reindex_taxa(ts)
+        self.assertSame(tree1.taxon_set, tree2.taxon_set)
+        self.assertNotSame(tree1.taxon_set, otaxa)
+        self.assertDistinctButEqual(tree1.taxon_set, otaxa, **kwargs)
+        splitcalc.encode_splits(tree1)
+        splitcalc.encode_splits(tree2)
+        rfdist = treecalc.robinson_foulds_distance(tree1, tree2)
+        self.assertAlmostEqual(rfdist, 0)
+
+    def testRoundTreeJustTrees(self):
+        ds = dendropy.DataSet(datagen.reference_tree_list())
+        self.roundTripDataSetTest(ds, "nexml", ignore_taxon_order=True)
+
+    def testRoundTripReference(self):
+        reference_dataset = datagen.reference_single_taxonset_dataset()
+        for ca in reference_dataset.char_arrays:
+            if isinstance(ca, dendropy.StandardCharacterArray):
+                ca.markup_as_sequences = False
+        self.roundTripDataSetTest(reference_dataset, "nexml", ignore_taxon_order=True)
 
     def testRoundTripProtein(self):
         s = pathmap.char_source_stream("caenophidia_mos.chars.nexus")
