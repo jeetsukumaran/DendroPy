@@ -41,6 +41,7 @@ except ImportError, e:
                 'dendropy.dataio',
                 'dendropy.dataobject',
                 'dendropy.test',
+                'dendropy.test.support',
                 'dendropy.utility']
     EXTRA_KWARGS = {}
 else:
@@ -63,8 +64,12 @@ setup(name='DendroPy',
       license='GPL 3+',
       packages=PACKAGES,
       package_data={
-        "" : ['doc/*'],
-        "dendropy" : ["test/data/*"]
+        "" : ['scripts',
+              'doc/Makefile',
+              '/doc/source',
+              'extras'
+             ],
+        "dendropy" : ["dendropy/test/data/*"],
       },
       scripts = [('scripts/%s' % i) for i in SCRIPT_NAMES],
       long_description="""\

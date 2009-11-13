@@ -1,0 +1,14 @@
+include ez_setup.py
+include README.txt
+include INSTALL.txt
+include AUTHORS.txt
+include CHANGES.txt
+include ANNOUNCE.txt
+include LICENSE.txt
+include COPYING.txt
+include FAQ.txt
+include TODO.txt
+include THANKS.txt
+global-exclude .DS_Store
+global-exclude *.pyc
+global-exclude .gitignore
