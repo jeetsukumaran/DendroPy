@@ -27,6 +27,7 @@ Tests creation, reading, update, deletion of DataSet objects.
 import unittest
 from cStringIO import StringIO
 from dendropy.utility import error
+from dendropy.test.support import pathmap
 from dendropy.test.support import datatest
 from dendropy.test.support import datagen
 import dendropy
@@ -36,9 +37,23 @@ class DataSetCreateTest(datatest.DataObjectVerificationTestCase):
     def setUp(self):
         self.dataset = datagen.reference_single_taxonset_dataset()
 
-    def testFromReadNexus(self):
+    def testReadNexus(self):
         ds_str = self.dataset.as_string(format="nexus")
         ds2 = dendropy.DataSet(stream=StringIO(ds_str), format="nexus")
+        self.assertDistinctButEqual(self.dataset, ds2)
+
+    def testFromFileFactory(self):
+        ds_str = self.dataset.as_string(format="nexus")
+        ds2 = dendropy.DataSet.from_file(StringIO(ds_str), "nexus")
+        self.assertDistinctButEqual(self.dataset, ds2)
+
+    def testFromPathFactory(self):
+        ds2 = dendropy.DataSet.from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
+        self.assertDistinctButEqual(self.dataset, ds2)
+
+    def testFromStringFactory(self):
+        ds_str = self.dataset.as_string(format="nexus")
+        ds2 = dendropy.DataSet.from_string(ds_str, "nexus")
         self.assertDistinctButEqual(self.dataset, ds2)
 
     def testFromCopy(self):

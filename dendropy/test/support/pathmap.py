@@ -58,6 +58,14 @@ def char_source_path(filename=None):
         filename = ""
     return os.path.join(TESTS_DATA_DIR, "chars", filename)
 
+def mixed_source_stream(filename):
+    return open(mixed_source_path(filename), "rU")
+
+def mixed_source_path(filename=None):
+    if filename is None:
+        filename = ""
+    return os.path.join(TESTS_DATA_DIR, "mixed", filename)
+
 def data_source_stream(filename):
     return open(data_source_path(filename), "rU")
 
