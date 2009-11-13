@@ -190,7 +190,7 @@ class Readable(object):
         """
         Reads from file specified by `filepath`.
         """
-        f = os.expandvars(os.expanduser(filepath))
+        f = open(os.path.expandvars(os.path.expanduser(filepath)), "rU")
         return self.read(stream=f, format=format, **kwargs)
 
     def read_from_string(self, src_str, format, **kwargs):
