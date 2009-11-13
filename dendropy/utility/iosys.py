@@ -145,20 +145,31 @@ class Readable(object):
     """
 
     def from_file(cls, src, format, *args, **kwargs):
+        """
+        Factory method to return new object of this class from file-like
+        object `src`.
+        """
         readable = cls()
-        readable.read_from_file(src, format, *args, **kwargs)
+        readable.read_file(src, format, *args, **kwargs)
         return readable
     from_file = classmethod(from_file)
 
     def from_path(cls, src, format, *args, **kwargs):
+        """
+        Factory method to return new object of this class from file
+        specified by string `src`.
+        """
         readable = cls()
-        readable.read_from_path(src, format, *args, **kwargs)
+        readable.read_path(src, format, *args, **kwargs)
         return readable
     from_path = classmethod(from_path)
 
-    def from_string(cls, src, format, *args, **kwargs):
+    def from_string(cls, src, format, *args, **kwargs)
+        """
+        Factory method to return new object of this class from string `src`.
+        """    :
         readable = cls()
-        readable.read_from_string(src, format, *args, **kwargs)
+        readable.read_string(src, format, *args, **kwargs)
         return readable
     from_string = classmethod(from_string)
 
@@ -179,21 +190,21 @@ class Readable(object):
         """
         raise NotImplementedError
 
-    def read_from_file(self, fileobj, format, **kwargs):
+    def read_file(self, fileobj, format, **kwargs):
         """
         Reads from file (exactly equivalent to just `read()`, provided
         here as a separate method for completeness.
         """
         return self.read(stream=fileobj, format=format, **kwargs)
 
-    def read_from_path(self, filepath, format, **kwargs):
+    def read_path(self, filepath, format, **kwargs):
         """
         Reads from file specified by `filepath`.
         """
         f = open(os.path.expandvars(os.path.expanduser(filepath)), "rU")
         return self.read(stream=f, format=format, **kwargs)
 
-    def read_from_string(self, src_str, format, **kwargs):
+    def read_string(self, src_str, format, **kwargs):
         """
         Reads a string object.
         """
@@ -218,13 +229,13 @@ class Writeable(object):
         """
         raise NotImplementedError
 
-    def write_to_file(self, fileobj, format, **kwargs):
+    def write_file(self, fileobj, format, **kwargs):
         """
         Writes to file-like object `fileobj`.
         """
         return self.write(stream=fileobj, format=format, **kwargs)
 
-    def write_to_path(self, filepath, format, **kwargs):
+    def write_path(self, filepath, format, **kwargs):
         """
         Writes to file specified by `filepath`.
         """
