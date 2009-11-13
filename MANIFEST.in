@@ -9,6 +9,11 @@ include COPYING.txt
 include FAQ.txt
 include TODO.txt
 include THANKS.txt
+include doc/Makefile
+recursive-include doc/source *
+recursive-include extras *
+recursive-include scripts *
+recursive-include dendropy/test/data *
 global-exclude .DS_Store
 global-exclude *.pyc
 global-exclude .gitignore

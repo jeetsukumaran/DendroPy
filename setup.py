@@ -52,7 +52,10 @@ else:
         test_suite = "dendropy.test",
         zip_safe=True,
     )
-sys.stderr.write("packages identified:\n    %s\n" % ("\n    ".join(PACKAGES)))
+PACKAGE_DIRS = [p.replace(".", os.path.sep) for p in PACKAGES]
+PACKAGE_INFO = [("% 40s : %s" % p) for p in zip(PACKAGES, PACKAGE_DIRS)]
+sys.stderr.write("packages identified:\n%s\n" % ("\n".join(PACKAGE_INFO)))
+
 from dendropy import PACKAGE_VERSION
 SCRIPT_NAMES = []
 setup(name='DendroPy',
@@ -63,14 +66,16 @@ setup(name='DendroPy',
       description="Phylogenetic computing library.",
       license='GPL 3+',
       packages=PACKAGES,
-      package_data={
-        "" : ['scripts',
-              'doc/Makefile',
-              '/doc/source',
-              'extras'
-             ],
-        "dendropy" : ["dendropy/test/data/*"],
-      },
+      package_dir=dict(zip(PACKAGES, PACKAGE_DIRS)),
+      # For some reason, following does not work in 2.5 (not tried in 2.6),
+      # so this packaging is now implemented through processing of MANIFEST.in
+#      package_data={
+#        "" : ['doc/Makefile',
+#              '/doc/source',
+#              'extras'
+#             ],
+#        "dendropy.test" : ["data/trees"],
+#      },
       scripts = [('scripts/%s' % i) for i in SCRIPT_NAMES],
       long_description="""\
 A Python library for phylogenetic scripting, simulation,
