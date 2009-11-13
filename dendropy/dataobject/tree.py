@@ -395,6 +395,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             else:
                 raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         else:
+            if "seed_node" in kwargs:
+                self.seed_node = kwargs['seed_node']
             self.process_source_kwargs(**kwargs)
         if "oid" in kwargs:
             self.oid = kwargs["oid"]

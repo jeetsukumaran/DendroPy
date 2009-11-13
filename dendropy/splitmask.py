@@ -153,7 +153,6 @@ def encode_splits(tree, create_dict=True, delete_degree_two=True):
     taxon_set = tree.taxon_set
     if taxon_set is None:
         taxon_set = tree.infer_taxa()
-
     if create_dict:
         if tree.is_rooted:
             tree.split_edges = {}
