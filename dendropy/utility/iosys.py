@@ -228,7 +228,7 @@ class Writeable(object):
         """
         Writes to file specified by `filepath`.
         """
-        f = os.expandvars(os.expanduser(filepath))
+        f = open(os.path.expandvars(os.path.expanduser(filepath)), "w")
         return self.write(stream=f, format=format, **kwargs)
 
     def as_string(self, format, **kwargs):
