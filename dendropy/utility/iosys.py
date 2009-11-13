@@ -144,6 +144,24 @@ class Readable(object):
     Data object that can be instantiated using a `DataReader` service.
     """
 
+    def from_file(cls, src, format, *args, **kwargs):
+        readable = cls()
+        readable.read_from_file(src, format, *args, **kwargs)
+        return readable
+    from_file = classmethod(from_file)
+
+    def from_path(cls, src, format, *args, **kwargs):
+        readable = cls()
+        readable.read_from_path(src, format, *args, **kwargs)
+        return readable
+    from_path = classmethod(from_path)
+
+    def from_string(cls, src, format, *args, **kwargs):
+        readable = cls()
+        readable.read_from_string(src, format, *args, **kwargs)
+        return readable
+    from_string = classmethod(from_string)
+
     def __init__(self, *args, **kwargs):
         pass
 
