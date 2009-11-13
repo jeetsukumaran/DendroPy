@@ -107,22 +107,40 @@ class TreeCreateTest(datatest.DataObjectVerificationTestCase):
         tree2 = dendropy.Tree(stream=StringIO(nstr), format="newick", index=2, taxon_set=self.tree1.taxon_set)
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
-    def testFromFileFactory(self):
+    def testFromFileFactoryDistinctTaxa(self):
         tree_list = datagen.reference_tree_list()
         s = pathmap.tree_source_path('reference.trees.nexus')
         tree = dendropy.Tree.from_file(open(s, "rU"), "nexus", index=2)
-        self.assertDistinctButEqual(tree_list[2], tree)
+        self.assertDistinctButEqual(tree_list[2], tree, distinct_taxa=True)
 
-    def testFromPathFactory(self):
+    def testFromPathFactoryDistinctTaxa(self):
         tree_list = datagen.reference_tree_list()
         s = pathmap.tree_source_path('reference.trees.nexus')
         tree = dendropy.Tree.from_path(s, "nexus", index=2)
-        self.assertDistinctButEqual(tree_list[2], tree)
+        self.assertDistinctButEqual(tree_list[2], tree, distinct_taxa=True)
 
-    def testFromStringFactory(self):
+    def testFromStringFactoryDistinctTaxa(self):
         tree_list = datagen.reference_tree_list()
         tree = dendropy.Tree.from_string(tree_list.as_string('nexus'), "nexus", index=2)
-        self.assertDistinctButEqual(tree_list[2], tree)
+        self.assertDistinctButEqual(tree_list[2], tree, distinct_taxa=True)
+
+    def testFromFileFactorySameTaxa(self):
+        tree_list = datagen.reference_tree_list()
+        s = pathmap.tree_source_path('reference.trees.nexus')
+        tree = dendropy.Tree.from_file(open(s, "rU"), "nexus", index=2, taxon_set=tree_list.taxon_set)
+        self.assertDistinctButEqual(tree_list[2], tree, distinct_taxa=False)
+
+    def testFromPathFactorySameTaxa(self):
+        tree_list = datagen.reference_tree_list()
+        s = pathmap.tree_source_path('reference.trees.nexus')
+        tree = dendropy.Tree.from_path(s, "nexus", index=2, taxon_set=tree_list.taxon_set)
+        self.assertDistinctButEqual(tree_list[2], tree, distinct_taxa=False)
+
+    def testFromStringFactorySameTaxa(self):
+        tree_list = datagen.reference_tree_list()
+        tree = dendropy.Tree.from_string(tree_list.as_string('nexus'), "nexus", index=2, taxon_set=tree_list.taxon_set)
+        self.assertDistinctButEqual(tree_list[2], tree, distinct_taxa=False)
+
 
 if __name__ == "__main__":
     unittest.main()
