@@ -34,7 +34,7 @@ from dendropy import popgenstat
 
 class PopGenStatsTests(unittest.TestCase):
 
-    def test_nuc_differences(self):
+    def testNucDifferences(self):
 
         s3 = StringIO.StringIO("""
     #NEXUS
@@ -77,11 +77,10 @@ class PopGenStatsTests(unittest.TestCase):
     END;
     """)
         d = dendropy.DataSet(stream=s3, format="nexus")
-        assert abs(popgenstat.average_number_of_pairwise_differences(d.char_arrays[0], ignore_uncertain=True) - 111.0606) < 0.001
-        assert abs(popgenstat.nucleotide_diversity(d.char_arrays[0], ignore_uncertain=True) - 0.2343) < 0.001
+        self.assertAlmostEqual(popgenstat.average_number_of_pairwise_differences(d.char_arrays[0], ignore_uncertain=True),  111.0606, 4)
+        self.assertAlmostEqual(popgenstat.nucleotide_diversity(d.char_arrays[0], ignore_uncertain=True), 0.2343, 4)
 
-
-    def test_wakeleys_sigma(self):
+    def testWakeleysSigma(self):
         s3 = StringIO.StringIO("""
     #NEXUS
 
@@ -126,7 +125,7 @@ class PopGenStatsTests(unittest.TestCase):
             else:
                 groups[1].append(t)
         sigma = popgenstat.wakeleys_Psi(d.char_arrays[0], groups)
-        assert (sigma - 0.82) ** 2 <= 0.02 ** 2
+        self.assertTrue((sigma - 0.82) ** 2 <= 0.02 ** 2)
 
 if __name__ == "__main__":
     unittest.main()

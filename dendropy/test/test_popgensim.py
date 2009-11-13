@@ -33,6 +33,7 @@ from dendropy import popgensim
 class PopGenSimTest(unittest.TestCase):
 
     def testFragmentedPopulations(self):
+        """Generates data only: no verification [TODO: Verification!]"""
         fp = popgensim.FragmentedPopulations(div_time_gens=400,
                                              num_desc_pops = 2,
                                              mutrate_per_site_per_generation=10e-8,
