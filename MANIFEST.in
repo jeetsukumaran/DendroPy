@@ -9,6 +9,7 @@ include COPYING.txt
 include FAQ.txt
 include TODO.txt
 include THANKS.txt
+include clean.sh
 include doc/Makefile
 recursive-include doc/source *
 recursive-include extras *
