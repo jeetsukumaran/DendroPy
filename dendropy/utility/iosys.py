@@ -164,10 +164,10 @@ class Readable(object):
         return readable
     from_path = classmethod(from_path)
 
-    def from_string(cls, src, format, *args, **kwargs)
+    def from_string(cls, src, format, *args, **kwargs):
         """
         Factory method to return new object of this class from string `src`.
-        """    :
+        """
         readable = cls()
         readable.read_string(src, format, *args, **kwargs)
         return readable

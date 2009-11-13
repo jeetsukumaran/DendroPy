@@ -37,7 +37,7 @@ from dendropy.dataobject.dataset import *
 ###############################################################################
 ## PACKAGE METADATA
 
-__version__ = "3.0.0a"
+__version__ = "3.0.0b"
 PACKAGE_NAME = "DendroPy"
 PACKAGE_VERSION = __version__
 PACKAGE_AUTHOR = "Jeet Sukumaran and Mark T. Holder"
