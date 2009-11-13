@@ -23,7 +23,7 @@
 ############################################################################
 
 """
-Tests input/output of trees from files.
+Tests population genetic statistic calculation.
 """
 
 import unittest

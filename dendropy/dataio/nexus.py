@@ -209,6 +209,9 @@ class NexusReader(iosys.DataReader):
         if "taxon_set" in kwargs:
             self._current_taxon_set = kwargs["taxon_set"]
         self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream)
+        token = self.stream_tokenizer.read_next_token_ucase()
+        if token != "#NEXUS":
+            raise self.data_format_error("Expecting '#NEXUS', but found '%s'" % token)
         while not self.stream_tokenizer.eof:
             token = self.stream_tokenizer.read_next_token_ucase()
             while token != None and token != 'BEGIN' and not self.stream_tokenizer.eof:
