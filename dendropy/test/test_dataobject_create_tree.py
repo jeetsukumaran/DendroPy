@@ -28,6 +28,7 @@ import unittest
 from cStringIO import StringIO
 from dendropy.utility import error
 from dendropy.test.support import datatest
+from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
 import dendropy
 
@@ -105,6 +106,23 @@ class TreeCreateTest(datatest.DataObjectVerificationTestCase):
         nstr = "(A,(B,(C,D))); ((A,C),(B,D)); %s; (A,(C,(B,D))); ((A,D),(B,C));" % self.tree1_newick_str
         tree2 = dendropy.Tree(stream=StringIO(nstr), format="newick", index=2, taxon_set=self.tree1.taxon_set)
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
+
+    def testFromFileFactory(self):
+        tree_list = datagen.reference_tree_list()
+        s = pathmap.tree_source_path('reference.trees.nexus')
+        tree = dendropy.Tree.from_file(open(s, "rU"), "nexus", index=2)
+        self.assertDistinctButEqual(tree_list[2], tree)
+
+    def testFromPathFactory(self):
+        tree_list = datagen.reference_tree_list()
+        s = pathmap.tree_source_path('reference.trees.nexus')
+        tree = dendropy.Tree.from_path(s, "nexus", index=2)
+        self.assertDistinctButEqual(tree_list[2], tree)
+
+    def testFromStringFactory(self):
+        tree_list = datagen.reference_tree_list()
+        tree = dendropy.Tree.from_string(tree_list.as_string('nexus'), "nexus", index=2)
+        self.assertDistinctButEqual(tree_list[2], tree)
 
 if __name__ == "__main__":
     unittest.main()
