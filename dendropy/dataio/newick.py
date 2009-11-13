@@ -203,9 +203,7 @@ class NewickReader(iosys.DataReader):
             kwargs["rooted"] = self.default_rooting
         read_tree_list(stream=stream,
                        tree_list=tree_list,
-                       encode_splits=self.encode_splits,
-                       finish_node_func=self.finish_node_func,
-                        **kwargs)
+                       **kwargs)
         return self.dataset
 
 ############################################################################
