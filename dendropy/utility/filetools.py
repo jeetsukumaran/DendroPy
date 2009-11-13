@@ -26,6 +26,7 @@ Various utilities in support of filesystem interaction.
 
 import fnmatch
 import time
+import os
 from threading import Event, Thread, Lock
 
 from dendropy.utility import messaging
