@@ -29,6 +29,7 @@ from cStringIO import StringIO
 from dendropy.utility import error
 from dendropy.test.support import datatest
 from dendropy.test.support import datagen
+from dendropy.test.support import pathmap
 import dendropy
 
 class TreeListCreateTest(datatest.DataObjectVerificationTestCase):
@@ -77,6 +78,23 @@ class TreeListCreateTest(datatest.DataObjectVerificationTestCase):
 
     def testTreeListFromFileNoKeywords(self):
         self.assertRaises(ValueError, dendropy.TreeList, self.tree_list1_stream)
+
+    def testFromFileFactoryDistinctTaxa(self):
+        tree_list1 = datagen.reference_tree_list()
+        s = pathmap.tree_source_path('reference.trees.nexus')
+        tree_list2 = dendropy.TreeList.from_file(open(s, "rU"), "nexus")
+        self.assertDistinctButEqual(tree_list1, tree_list2, distinct_taxa=True)
+
+    def testFromPathFactoryDistinctTaxa(self):
+        tree_list1 = datagen.reference_tree_list()
+        s = pathmap.tree_source_path('reference.trees.nexus')
+        tree_list2 = dendropy.TreeList.from_path(s, "nexus")
+        self.assertDistinctButEqual(tree_list1, tree_list2, distinct_taxa=True)
+
+    def testFromStringFactoryDistinctTaxa(self):
+        tree_list1 = datagen.reference_tree_list()
+        tree_list2 = dendropy.TreeList.from_string(tree_list1.as_string('nexus'), "nexus")
+        self.assertDistinctButEqual(tree_list1, tree_list2, distinct_taxa=True)
 
 if __name__ == "__main__":
     unittest.main()
