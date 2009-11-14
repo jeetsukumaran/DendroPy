@@ -194,8 +194,6 @@ class NewickReader(iosys.DataReader):
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
         if self.bound_taxon_set is not None:
-            if "taxon_set" in kwargs:
-                del(kwargs["taxon_set"])
             if self.bound_taxon_set not in self.dataset.taxon_sets:
                 self.dataset.add_taxon_set(self.bound_taxon_set)
             taxon_set = self.bound_taxon_set

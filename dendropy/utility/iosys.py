@@ -52,6 +52,13 @@ def require_format_from_kwargs(kwdict):
         raise error.UnspecifiedFormatError("Must specify `format`.")
     return format
 
+def extract_kwarg(kwdict, kw, default=None):
+    if kw in kwdict:
+        kwarg = kwdict[kw]
+        del(kwdict)
+        return kwarg
+    else:
+        return default
 
 ###############################################################################
 ## IOService
@@ -79,10 +86,10 @@ class IOService(object):
         - `exclude_trees`: Trees in the source will be skipped.
         - `exclude_chars`: Characters in the source will be skipped.
         """
-        self.dataset = kwargs.get("dataset", None)
-        self.bound_taxon_set = kwargs.get("taxon_set", None)
-        self.exclude_trees = kwargs.get("exclude_trees", False)
-        self.exclude_chars = kwargs.get("exclude_chars", False)
+        self.dataset = extract_kwarg(kwargs, "dataset", None)
+        self.bound_taxon_set = extract_kwarg(kwargs, "taxon_set", None)
+        self.exclude_trees = extract_kwarg(kwargs, "exclude_trees", False)
+        self.exclude_chars = extract_kwarg(kwargs, "exclude_chars", False)
 
 ###############################################################################
 ## DataReader
