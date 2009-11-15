@@ -161,19 +161,19 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         writer = get_writer(format=format, **kwargs)
         writer.write(stream, **kwargs)
 
-    def _subdescribe(self, name, objs, depth, indent, itemize, output, **kwargs):
+    def _subdescription(self, name, objs, depth, indent, itemize, output, **kwargs):
         if len(objs) == 0:
             return
         output.write('\n%s[%s]' % (indent*' ', name))
         for i, obj in enumerate(objs):
             output.write('\n')
-            obj.describe(depth=depth-1,
+            obj.description(depth=depth-1,
                        indent=indent+4,
                        itemize="[%d/%d] " % ((i+1, len(objs))),
                        output=output,
                        **kwargs)
 
-    def describe(self, depth=1, indent=0, itemize="", output=None):
+    def description(self, depth=1, indent=0, itemize="", output=None):
         """
         Returns description of object, up to level `depth`.
         """
@@ -186,9 +186,9 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
                     (len(self.taxon_sets), len(self.tree_lists), len(self.char_arrays)))
         if depth >= 2:
             indent += 4
-            self._subdescribe('Taxon Sets', self.taxon_sets, depth, indent, itemize, output_strio)
-            self._subdescribe('Tree Lists', self.tree_lists, depth, indent, itemize, output_strio)
-            self._subdescribe('Character Arrays', self.char_arrays, depth, indent, itemize, output_strio)
+            self._subdescription('Taxon Sets', self.taxon_sets, depth, indent, itemize, output_strio)
+            self._subdescription('Tree Lists', self.tree_lists, depth, indent, itemize, output_strio)
+            self._subdescription('Character Arrays', self.char_arrays, depth, indent, itemize, output_strio)
         s =  output_strio.getvalue()
         if output is not None:
             output.write(s)

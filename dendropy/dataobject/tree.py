@@ -149,7 +149,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
 #        return "<TreeList object at %s: (%s)>" % (hex(id(self)), (", ".join([repr(tree) for tree in self])))
         return "<TreeList object at %s>" % (hex(id(self)))
 
-    def describe(self, depth=1, indent=0, itemize="", output=None):
+    def description(self, depth=1, indent=0, itemize="", output=None):
         """
         Returns description of object, up to level `depth`.
         """
@@ -170,12 +170,12 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if depth >= 2 and self.taxon_set is not None:
                 tlead = "\n%s[Taxon Set]\n" % (" " * (indent+4))
                 output_strio.write(tlead)
-                self.taxon_set.describe(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
+                self.taxon_set.description(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
             if depth >= 2:
                 tlead = "\n%s[Trees]\n" % (" " * (indent+4))
                 output_strio.write(tlead)
                 for i, t in enumerate(self):
-                    t.describe(depth=depth-1, indent=indent+8, itemize="[%d/%d] " % (i+1, len(self)), output=output_strio)
+                    t.description(depth=depth-1, indent=indent+8, itemize="[%d/%d] " % (i+1, len(self)), output=output_strio)
                     output_strio.write('\n')
         s = output_strio.getvalue()
         if output is not None:
@@ -462,7 +462,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     def __repr__(self):
         return "<Tree object at %s>" % (hex(id(self)))
 
-    def describe(self, depth=1, indent=0, itemize="", output=None):
+    def description(self, depth=1, indent=0, itemize="", output=None):
         """
         Returns description of object, up to level `depth`.
         """
@@ -482,7 +482,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if depth >= 2 and self.taxon_set is not None:
                 tlead = "\n%s[Taxon Set]\n" % (" " * (indent+4))
                 output_strio.write(tlead)
-                self.taxon_set.describe(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
+                self.taxon_set.description(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
             if depth >= 2:
                 output_strio.write('\n%s[Tree]' % (" " * (indent+4)))
                 output_strio.write('\n%s%s' % (" " * (indent+8), self.as_newick_str()))

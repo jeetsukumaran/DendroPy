@@ -717,7 +717,7 @@ class CharacterArray(TaxonSetLinked):
             map[char.oid] = char
         return map
 
-    def describe(self, depth=1, indent=0, itemize="", output=None):
+    def description(self, depth=1, indent=0, itemize="", output=None):
         """
         Returns description of object, up to level `depth`.
         """
@@ -739,7 +739,7 @@ class CharacterArray(TaxonSetLinked):
             if depth >= 2 and self.taxon_set is not None:
                 tlead = "\n%s[Taxon Set]\n" % (" " * (indent+4))
                 output_strio.write(tlead)
-                self.taxon_set.describe(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
+                self.taxon_set.description(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
             if depth >= 2:
                 tlead = "\n%s[Characters]\n" % (" " * (indent+4))
                 output_strio.write(tlead)
