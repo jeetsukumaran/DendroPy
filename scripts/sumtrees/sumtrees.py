@@ -423,31 +423,30 @@ def main_cli():
     else:
         nexus_writer = nexus.NexusWriter(dataset=output_dataset)
         if opts.include_taxa_block:
-            nexus_writer.simple = False
+            simple = False
         else:
-            nexus_writer.simple = True
+            simple = True
         if opts.include_meta_comments:
-            nexus_writer.comment = []
+            comment = []
             try:
                 username = getpass.getuser()
             except:
                 username = "a user"
-            nexus_writer.comment.append("%s %s by %s." % (_program_name, _program_version, _program_author))
-            nexus_writer.comment.append("Using DendroPy Version %s by Jeet Sukumaran and Mark T. Holder."
+            comment.append("%s %s by %s." % (_program_name, _program_version, _program_author))
+            comment.append("Using DendroPy Version %s by Jeet Sukumaran and Mark T. Holder."
                 % dendropy.PACKAGE_VERSION)
             python_version = sys.version.replace("\n", "").replace("[", "(").replace("]",")")
-            nexus_writer.comment.append("Running under Python %s on %s." % (python_version, sys.platform))
-            nexus_writer.comment.append("Executed on %s by %s@%s." % (platform.node(),  username, socket.gethostname()))
-            nexus_writer.comment.append("Basis of split support:")
+            comment.append("Running under Python %s on %s." % (python_version, sys.platform))
+            comment.append("Executed on %s by %s@%s." % (platform.node(),  username, socket.gethostname()))
+            comment.append("Basis of split support:")
             for support_file in support_filepaths:
-                nexus_writer.comment.append('  - "%s"' % os.path.abspath(support_file))
-            nexus_writer.comment.extend(final_run_report)
-            nexus_writer.comment.extend(comments)
+                comment.append('  - "%s"' % os.path.abspath(support_file))
+            comment.extend(final_run_report)
+            comment.extend(comments)
         if opts.additional_comments:
-            nexus_writer.comment.append("\n")
-            nexus_writer.comment.append(opts.additional_comments)
-
-        nexus_writer.write_file(output_dest)
+            comment.append("\n")
+            comment.append(opts.additional_comments)
+        output_dataset.write(output_dest, "nexus", simple=simple, comment=comment)
 
     if split_edges_dest:
         for split in split_distribution.splits:
