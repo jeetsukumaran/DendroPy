@@ -56,6 +56,7 @@ def tree_source_iter(stream, **kwargs):
         - `finish_node_func` is a function that will be applied to each node
            after it has been constructed.
         - `edge_len_type` specifies the type of the edge lengths (int or float)
+        - `from_index` 0-based index specifying first tree to actually return
 
     Only trees will be returned, and any and all character data will
     be skipped. The iterator will span over multiple tree blocks,
@@ -67,8 +68,14 @@ def tree_source_iter(stream, **kwargs):
     tree blocks are handled by a full NEXUS data file read.
     """
     reader = NexusReader(**kwargs)
-    for tree in reader.tree_source_iter(stream, **kwargs):
-        yield tree
+    if "from_index" in kwargs:
+        from_index = kwargs.get("from_index")
+        del(kwargs["from_index"])
+    else:
+        from_index = 0
+    for i, tree in enumerate(reader.tree_source_iter(stream, **kwargs)):
+        if i >= from_index:
+            yield tree
 
 def generalized_tree_source_iter(stream, **kwargs):
     """

@@ -171,8 +171,13 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 raise Exception("Cannot specify a different TaxonSet when reading into an existing TreeList.")
         else:
             kwargs["taxon_set"] = self.taxon_set
-        for t in tree_source_iter(stream=stream, format=format, **kwargs):
-            if t is not None:
+        if "from_index" in kwargs:
+            from_index = kwargs.get("from_index")
+            del(kwargs["from_index"])
+        else:
+            from_index = 0
+        for i, t in enumerate(tree_source_iter(stream=stream, format=format, **kwargs)):
+            if t is not None and i >= from_index:
                 self.append(t)
 
     def write(self, stream, format, **kwargs):
@@ -474,17 +479,17 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             - `edge_len_type` specifies the type of the edge lengths (int or float)
 
         If the source defines multiple trees, only the first one will be
-        returned unless the keyword `index` is used to specify the
-        0-based index of the tree to be returned. If `index` >= number
+        returned unless the keyword `from_index` is used to specify the
+        0-based index of the tree to be returned. If `from_index` >= number
         of trees, a KeyError is raised.
         """
         from dendropy.utility import iosys
         from dendropy.dataio import tree_source_iter
-        if "index" in kwargs:
-            index = kwargs.get("index")
-            del(kwargs["index"])
+        if "from_index" in kwargs:
+            from_index = kwargs.get("from_index")
+            del(kwargs["from_index"])
         else:
-            index = 0
+            from_index = 0
         if "taxon_set" not in kwargs:
             kwargs["taxon_set"] = self.taxon_set
         else:
@@ -492,11 +497,11 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         titer = tree_source_iter(stream=stream, format=format, **kwargs)
         count = 0
         t = None
-        while count <= index:
+        while count <= from_index:
             try:
                 t = titer.next()
             except StopIteration:
-                raise KeyError("0-based index out of bounds: %d (trees=%d, index=[0, %d])" % (index, count, count-1))
+                raise KeyError("0-based index out of bounds: %d (trees=%d, from_index=[0, %d])" % (from_index, count, count-1))
             else:
                 count += 1
         self.__dict__ = t.__dict__

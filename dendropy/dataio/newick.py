@@ -48,6 +48,7 @@ def tree_source_iter(stream, **kwargs):
            `Tree` objects.
         - `encode_splits` specifies whether or not split bitmasks will be
            calculated and attached to the edges.
+        - `from_index` 0-based index specifying first tree to actually return
 
     Note that if `encode_splits` is True, then a `taxon_set` has to be given.
     This is because adding Taxon objects to a taxon set may invalidate split
@@ -72,15 +73,23 @@ def tree_source_iter(stream, **kwargs):
         del(kwargs["taxon_set"])
     else:
         taxon_set = None
+    if "from_index" in kwargs:
+        from_index = kwargs.get("from_index")
+        del(kwargs["from_index"])
+    else:
+        from_index = 0
     if "encode_splits" in kwargs and taxon_set is None:
         raise Exception('When encoding splits on trees, a pre-populated TaxonSet instance ' \
             + "must be provided using the 'taxon_set' keyword to avoid taxon/split bitmask values "\
             + "changing as new Taxon objects are added to the set.")
     newick_stream = nexustokenizer.NexusTokenizer(stream)
+    i = 0
     while not newick_stream.eof:
         t = nexustokenizer.parse_tree_from_stream(newick_stream, taxon_set=taxon_set, **kwargs)
         if t is not None:
-            yield t
+            if i >= from_index:
+                yield t
+            i += 1
         else:
             raise StopIteration()
 

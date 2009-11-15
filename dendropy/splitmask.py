@@ -98,7 +98,7 @@ def split_as_string_rev(split_mask, width, symbol1='.', symbol2='*'):
                            symbol1=symbol1,
                            symbol2=symbol2)[::-1]
 
-def split_taxa_list(split_mask, taxa, index=0):
+def split_taxa_list(split_mask, taxa, from_index=0):
     "Returns list of taxa represented by split."
     taxa = []
     while split_mask:
