@@ -57,7 +57,14 @@ PACKAGE_INFO = [("% 40s : %s" % p) for p in zip(PACKAGES, PACKAGE_DIRS)]
 sys.stderr.write("packages identified:\n%s\n" % ("\n".join(PACKAGE_INFO)))
 
 from dendropy import PACKAGE_VERSION
-SCRIPT_NAMES = []
+
+SCRIPT_SUBPATHS = [
+    ['scripts', 'sumtrees', 'sumtrees.py'],
+    ['scripts', 'sumtrees', 'cattrees.py']
+]
+SCRIPTS = [os.path.join(*i) for i in SCRIPT_SUBPATHS]
+sys.stderr.write("\nscripts: %s\n" % ", ".join(SCRIPTS))
+
 setup(name='DendroPy',
       version=PACKAGE_VERSION,
       author='Jeet Sukumaran and Mark T. Holder',
@@ -76,7 +83,7 @@ setup(name='DendroPy',
 #             ],
 #        "dendropy.test" : ["data/trees"],
 #      },
-      scripts = [('scripts/%s' % i) for i in SCRIPT_NAMES],
+      scripts = SCRIPTS,
       long_description="""\
 A Python library for phylogenetic scripting, simulation,
 data processing and manipulation.""",
