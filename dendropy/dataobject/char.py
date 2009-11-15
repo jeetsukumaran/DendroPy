@@ -25,6 +25,7 @@ This module handles the core definition of phylogenetic character data.
 """
 
 import copy
+from cStringIO import StringIO
 from dendropy.utility import error
 from dendropy.dataobject.base import IdTagged, Annotated
 from dendropy.dataobject.taxon import TaxonLinked, TaxonSetLinked
@@ -716,11 +717,46 @@ class CharacterArray(TaxonSetLinked):
             map[char.oid] = char
         return map
 
-    def describe(self, depth=1, indent=0, itemize="", output=None, describe_taxa=True):
+    def describe(self, depth=1, indent=0, itemize="", output=None, taxa_describe_depth=2):
         """
         Returns description of object, up to level `depth`.
         """
-        pass
+        if depth is None or depth < 0:
+            return
+        output_strio = StringIO()
+        if self.label is None:
+            label = " (%s)" % self.oid
+        else:
+            label = " (%s: '%s')" % (self.oid, self.label)
+        output_strio.write('%s%s%s object at %s%s'
+                % (indent*' ',
+                   itemize,
+                   self.__class__.__name__,
+                   hex(id(self)),
+                   label))
+        if depth >= 1:
+            output_strio.write(':  %d Sequences\n' % len(self))
+            if depth >= 2 and self.taxon_set is not None and taxa_describe_depth > 0:
+                tlead = "%s[Taxon Set]\n" % (" " * (indent+4))
+                output_strio.write(tlead)
+                self.taxon_set.describe(depth=taxa_describe_depth, indent=indent+8, itemize="", output=output_strio)
+            if depth >= 2:
+                tlead = "%s[Sequences]\n" % (" " * (indent+4))
+                output_strio.write(tlead)
+                indent += 8
+                maxlabel = max([len(str(t.label)) for t in self.taxon_set])
+                for i, t in enumerate(self.taxon_seq_map):
+                    output_strio.write('%s%s%s : %s characters\n' \
+                        % (" " * indent,
+                           "[%d/%d] " % (i+1, len(self.taxon_seq_map)),
+                           str(t.label),
+                           len(self.taxon_seq_map[t])))
+        else:
+            output_strio.write('\n')
+        s = output_strio.getvalue()
+        if output is not None:
+            output.write(s)
+        return s
 
 class ContinuousCharacterArray(CharacterArray):
     "Character data container/manager manager."

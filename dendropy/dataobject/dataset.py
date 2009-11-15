@@ -167,7 +167,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         output.write('%s[%s]\n' % (indent*' ', name))
         for i, obj in enumerate(objs):
             obj.describe(depth=depth-1,
-                       indent=indent+len(itemize),
+                       indent=indent+4,
                        itemize="[%d/%d] " % ((i+1, len(objs))),
                        output=output,
                        **kwargs)
@@ -188,8 +188,8 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         if depth >= 2:
             indent += 4
             self._subdescribe('Taxon Sets', self.taxon_sets, depth, indent, itemize, output_strio)
-            self._subdescribe('Tree Lists', self.tree_lists, depth, indent, itemize, output_strio)
-            self._subdescribe('Character Arrays', self.char_arrays, depth, indent, itemize, output_strio)
+            self._subdescribe('Tree Lists', self.tree_lists, depth, indent, itemize, output_strio, taxa_describe_depth=2)
+            self._subdescribe('Character Arrays', self.char_arrays, depth, indent, itemize, output_strio, taxa_describe_depth=2)
         s =  output_strio.getvalue()
         if output is not None:
             output.write(s)

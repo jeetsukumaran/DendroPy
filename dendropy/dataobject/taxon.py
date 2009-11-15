@@ -334,7 +334,7 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
             output_strio.write(': %d Taxa\n' % len(self))
             if depth >= 2:
                 for i, t in enumerate(self):
-                    t.describe(depth=depth-1, indent=indent+len(itemize), itemize="[%d/%d]" % ((i+1, len(self))), output=output_strio, **kwargs)
+                    t.describe(depth=depth-1, indent=indent+4, itemize="[%d/%d]" % ((i+1, len(self))), output=output_strio, **kwargs)
         else:
             output_strio.write('\n')
         s = output_strio.getvalue()
