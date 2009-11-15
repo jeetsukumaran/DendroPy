@@ -95,8 +95,8 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             # can also call `read()` on a TreeList object
             tlst7 = TreeList()
             tlst7.read(StringIO("((A,B),(C,D));((A,C),(B,D));"), "newick")
-            tlst7.read_string("((A,B),(C,D));((A,C),(B,D));", "newick")
-            tlst7.read_path("boot.tre", "newick")
+            tlst7.read_from_string("((A,B),(C,D));((A,C),(B,D));", "newick")
+            tlst7.read_from_path("boot.tre", "newick")
 
         """
         TaxonSetLinked.__init__(self,
@@ -399,8 +399,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             # can also call `read()` on a Tree object
             t6 = dendropy.Tree()
             t6.read(StringIO("((A,B),(C,D));"), "newick")
-            t6.read_string("((A,B),(C,D));", "newick")
-            t6.read_path("mle.tre", "newick")
+            t6.read_from_string("((A,B),(C,D));", "newick")
+            t6.read_from_path("mle.tre", "newick")
 
         """
         TaxonSetLinked.__init__(self,

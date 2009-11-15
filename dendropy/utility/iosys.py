@@ -157,7 +157,7 @@ class Readable(object):
         object `src`.
         """
         readable = cls()
-        readable.read_file(src, format, **kwargs)
+        readable.read_from_file(src, format, **kwargs)
         return readable
     from_file = classmethod(from_file)
 
@@ -167,7 +167,7 @@ class Readable(object):
         specified by string `src`.
         """
         readable = cls()
-        readable.read_path(src, format, **kwargs)
+        readable.read_from_path(src, format, **kwargs)
         return readable
     from_path = classmethod(from_path)
 
@@ -176,7 +176,7 @@ class Readable(object):
         Factory method to return new object of this class from string `src`.
         """
         readable = cls()
-        readable.read_string(src, format, **kwargs)
+        readable.read_from_string(src, format, **kwargs)
         return readable
     from_string = classmethod(from_string)
 
@@ -197,21 +197,21 @@ class Readable(object):
         """
         raise NotImplementedError
 
-    def read_file(self, fileobj, format, **kwargs):
+    def read_from_file(self, fileobj, format, **kwargs):
         """
         Reads from file (exactly equivalent to just `read()`, provided
         here as a separate method for completeness.
         """
         return self.read(stream=fileobj, format=format, **kwargs)
 
-    def read_path(self, filepath, format, **kwargs):
+    def read_from_path(self, filepath, format, **kwargs):
         """
         Reads from file specified by `filepath`.
         """
         f = open(os.path.expandvars(os.path.expanduser(filepath)), "rU")
         return self.read(stream=f, format=format, **kwargs)
 
-    def read_string(self, src_str, format, **kwargs):
+    def read_from_string(self, src_str, format, **kwargs):
         """
         Reads a string object.
         """

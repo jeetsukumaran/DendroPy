@@ -88,18 +88,18 @@ class TreeCreateTest(datatest.DataObjectVerificationTestCase):
 
     def testTreeFromReadDistinctTaxa(self):
         tree2 = dendropy.Tree()
-        tree2.read_string(self.tree1_newick_str, "newick")
+        tree2.read_from_string(self.tree1_newick_str, "newick")
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=True, equal_oids=False)
 
     def testTreeFromReadSameTaxa(self):
         tree2 = dendropy.Tree()
-        tree2.read_string(self.tree1_newick_str, "newick", taxon_set=self.tree1.taxon_set)
+        tree2.read_from_string(self.tree1_newick_str, "newick", taxon_set=self.tree1.taxon_set)
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
     def testTreeFromNewickReadIndexed(self):
         nstr = "(A,(B,(C,D))); ((A,C),(B,D)); %s; (A,(C,(B,D))); ((A,D),(B,C));" % self.tree1_newick_str
         tree2 = dendropy.Tree()
-        tree2.read_string(nstr, "newick", index=2, taxon_set=self.tree1.taxon_set)
+        tree2.read_from_string(nstr, "newick", index=2, taxon_set=self.tree1.taxon_set)
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
     def testTreeFromNewickFileIndexed(self):
