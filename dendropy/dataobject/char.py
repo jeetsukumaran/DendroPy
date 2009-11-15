@@ -735,13 +735,13 @@ class CharacterArray(TaxonSetLinked):
                    hex(id(self)),
                    label))
         if depth >= 1:
-            output_strio.write(':  %d Sequences\n' % len(self))
+            output_strio.write(':  %d Sequences' % len(self))
             if depth >= 2 and self.taxon_set is not None:
-                tlead = "%s[Taxon Set]\n" % (" " * (indent+4))
+                tlead = "\n%s[Taxon Set]\n" % (" " * (indent+4))
                 output_strio.write(tlead)
                 self.taxon_set.describe(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
             if depth >= 2:
-                tlead = "%s[Sequences]\n" % (" " * (indent+4))
+                tlead = "\n%s[Characters]\n" % (" " * (indent+4))
                 output_strio.write(tlead)
                 indent += 8
                 maxlabel = max([len(str(t.label)) for t in self.taxon_set])
@@ -751,8 +751,7 @@ class CharacterArray(TaxonSetLinked):
                            "[%d/%d] " % (i+1, len(self.taxon_seq_map)),
                            str(t.label),
                            len(self.taxon_seq_map[t])))
-        else:
-            output_strio.write('\n')
+
         s = output_strio.getvalue()
         if output is not None:
             output.write(s)

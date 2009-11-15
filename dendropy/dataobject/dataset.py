@@ -164,8 +164,9 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
     def _subdescribe(self, name, objs, depth, indent, itemize, output, **kwargs):
         if len(objs) == 0:
             return
-        output.write('\n%s[%s]\n' % (indent*' ', name))
+        output.write('\n%s[%s]' % (indent*' ', name))
         for i, obj in enumerate(objs):
+            output.write('\n')
             obj.describe(depth=depth-1,
                        indent=indent+4,
                        itemize="[%d/%d] " % ((i+1, len(objs))),
