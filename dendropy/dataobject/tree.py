@@ -826,15 +826,19 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                    itemize,
                    hex(id(self)),
                    label))
-        if depth == 1:
-            output_strio.write(': %s' % self.as_newick_str())
-        elif depth >= 2:
-            if self.taxon_set is not None:
-                tlead = "\n%s[Taxon Set]\n" % (" " * (indent+4))
-                output_strio.write(tlead)
-                self.taxon_set.description(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
-            output_strio.write('\n%s[Tree]' % (" " * (indent+4)))
-            output_strio.write('\n%s%s' % (" " * (indent+8), self.as_newick_str()))
+        if depth >= 1:
+            newick_str = self.as_newick_str()
+            if not newick_str:
+                newick_str = "()"
+            if depth == 1:
+                output_strio.write(': %s' % newick_str)
+            elif depth >= 2:
+                if self.taxon_set is not None:
+                    tlead = "\n%s[Taxon Set]\n" % (" " * (indent+4))
+                    output_strio.write(tlead)
+                    self.taxon_set.description(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
+                output_strio.write('\n%s[Tree]' % (" " * (indent+4)))
+                output_strio.write('\n%s%s' % (" " * (indent+8), newick_str))
         s = output_strio.getvalue()
         if output is not None:
             output.write(s)
