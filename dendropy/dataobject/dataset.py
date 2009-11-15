@@ -25,6 +25,7 @@ Top-level phylogenetic data object: DataSet.
 """
 
 from copy import deepcopy
+from cStringIO import StringIO
 from dendropy.utility import iosys
 from dendropy.utility import containers
 from dendropy.utility import error
@@ -110,7 +111,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         return o
 
     ###########################################################################
-    ## I/O
+    ## I/O and Representation
 
     def read(self, stream, format, **kwargs):
         """
@@ -159,6 +160,40 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         kwargs["dataset"] = self
         writer = get_writer(format=format, **kwargs)
         writer.write(stream, **kwargs)
+
+    def _subdescribe(self, name, objs, depth, indent, itemize, output, **kwargs):
+        if len(objs) == 0:
+            return
+        output.write('%s[%s]\n' % (indent*' ', name))
+        for i, obj in enumerate(objs):
+            obj.describe(depth=depth-1,
+                       indent=indent+len(itemize),
+                       itemize="[%d/%d] " % ((i+1, len(objs))),
+                       output=output,
+                       **kwargs)
+
+    def describe(self, depth=1, indent=0, itemize="", output=None):
+        """
+        Returns description of object, up to level `depth`.
+        """
+        if depth is None or depth < 0:
+            return ""
+        output_strio = StringIO()
+        output_strio.write('DataSet object at %s' % hex(id(self)))
+        if depth >= 1:
+            output_strio.write(': %d Taxon Sets, %d Tree Lists, %d Character Arrays\n' %
+                    (len(self.taxon_sets), len(self.tree_lists), len(self.char_arrays)))
+        else:
+            output_strio.write('\n')
+        if depth >= 2:
+            indent += 4
+            self._subdescribe('Taxon Sets', self.taxon_sets, depth, indent, itemize, output_strio)
+            self._subdescribe('Tree Lists', self.tree_lists, depth, indent, itemize, output_strio)
+            self._subdescribe('Character Arrays', self.char_arrays, depth, indent, itemize, output_strio)
+        s =  output_strio.getvalue()
+        if output is not None:
+            output.write(s)
+        return s
 
     ###########################################################################
     ## DOMAIN DATA MANAGEMENT

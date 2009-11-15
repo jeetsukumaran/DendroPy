@@ -149,6 +149,40 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
 #        return "<TreeList object at %s: (%s)>" % (hex(id(self)), (", ".join([repr(tree) for tree in self])))
         return "<TreeList object at %s>" % (hex(id(self)))
 
+    def describe(self, depth=1, indent=0, itemize="", output=None, taxa_describe_depth=2):
+        """
+        Returns description of object, up to level `depth`.
+        """
+        """
+        Returns description of object, up to level `depth`.
+        """
+        if depth is None or depth < 0:
+            return
+        output_strio = StringIO()
+        if self.label is None:
+            label = " (%s)" % self.oid
+        else:
+            label = " (%s: '%s')" % (self.oid, self.label)
+        output_strio.write('%s%sTreeList object at %s%s'
+                % (indent*' ',
+                   itemize,
+                   hex(id(self)),
+                   label))
+        if depth >= 1:
+            output_strio.write(':  %d Trees (%d Taxa)\n' %
+                    (len(self),
+                     len(self.taxon_set) if self.taxon_set is not None else 0))
+            if depth >= 2 and self.taxon_set is not None and taxa_describe_depth > 0:
+                tlead = "%sUsing:\n" % (" " * (indent+len(itemize)))
+                output_strio.write(tlead)
+                self.taxon_set.describe(taxa_describe_depth, indent=len(tlead), itemize="", output_strio=output_strio)
+        else:
+            output_strio.write('\n')
+        s = output_strio.getvalue()
+        if output is not None:
+            output.write(s)
+        return s
+
     def read(self, stream, format, **kwargs):
         """
         Populates the `TreeList` from a `format`-formatted file-like
@@ -428,6 +462,12 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def __repr__(self):
         return "<Tree object at %s>" % (hex(id(self)))
+
+    def describe(self, depth=1, indent=0, itemize="", output=None, describe_taxa=True):
+        """
+        Returns description of object, up to level `depth`.
+        """
+        pass
 
     def read(self, stream, format, **kwargs):
         """

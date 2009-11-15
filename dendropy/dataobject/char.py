@@ -716,6 +716,12 @@ class CharacterArray(TaxonSetLinked):
             map[char.oid] = char
         return map
 
+    def describe(self, depth=1, indent=0, itemize="", output=None, describe_taxa=True):
+        """
+        Returns description of object, up to level `depth`.
+        """
+        pass
+
 class ContinuousCharacterArray(CharacterArray):
     "Character data container/manager manager."
 
