@@ -60,6 +60,11 @@ def multi_tree_source_iter(sources, format, **kwargs):
     """
 #    if "taxon_set" not in kwargs:
 #        kwargs["taxon_set"] = TaxonSet()
+    if "progress_writer" in kwargs:
+        progress_writer = kwargs["progress_writer"]
+        del(kwargs["progress_writer"])
+    else:
+        progress_writer = None
     for s in sources:
         if isinstance(s, str):
             src = open(s, "rU")

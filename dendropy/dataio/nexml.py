@@ -778,7 +778,6 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                                 character_type = chartypes[col_idx]
                                 character_vector.append(dendropy.CharacterDataCell(value=state, character_type=character_type))
                             else:
-                                print symbol_state_map
                                 raise error.DataFormatError(message="Character Block '%s', row '%s', character position %s: State with symbol '%s' in sequence '%s' not defined" \
                                         % (char_array.oid, row_id, col_idx, char, seq))
                 else:

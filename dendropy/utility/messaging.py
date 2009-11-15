@@ -24,8 +24,10 @@
 Messaging, logging and support.
 """
 
+import sys
 import os
 import logging
+import textwrap
 
 ###############################################################################
 ## LOGGING
@@ -102,3 +104,33 @@ def deprecation(message, logger_obj=None, stacklevel=3):
     except:
         if logger_obj:
             logger_obj.warning(message)
+
+class ProgressLogger(object):
+
+    def __init__(self, quiet=False, dest1=sys.stderr, dest2=None):
+        self.quiet = quiet
+        self.dest1 = dest1
+        self.dest2 = dest2
+
+    def send_multi(self, msg, wrap=0, newline=True, force=False):
+        for line in msg:
+            self.send(msg=line, wrap=wrap, newline=newline, force=force)
+
+    def send(self, msg, wrap=0, newline=True, force=False):
+        if wrap:
+            msg = textwrap.fill(msg, width=70)
+        if newline:
+            suffix = "\n"
+        else:
+            suffix = ""
+        if force or not self.quiet:
+            if self.dest1:
+                self.dest1.write(msg + suffix)
+        if self.dest2:
+            self.dest2.write(msg + suffix)
+
+    def send_formatted(self, msg, force=False):
+        self.send(msg, wrap=True, force=force)
+
+    def send_error(self, msg, wrap=False):
+        self.send(msg, wrap=wrap, force=True)

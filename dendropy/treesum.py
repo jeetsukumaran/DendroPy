@@ -28,6 +28,8 @@ from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
 import sys
+
+import dendropy
 from dendropy import splitmask
 from dendropy import dataobject
 from dendropy import treecalc
@@ -43,25 +45,8 @@ class TreeSummarizer(object):
         self.support_as_labels = True
         self.support_as_percentages = False
         self.support_label_decimals = 2
-        self.verbose=False
-        self.write_message = None# sys.stderr.write
-        self.progress_message_prefix = None
-        self.progress_message_suffix = None
         self.ignore_node_ages = True
         self.total_trees_counted = 0
-
-    def send_progress_message(self, msg):
-        "Writes progress message."
-        if self.verbose and self.write_message:
-            if self.progress_message_prefix:
-                prefix = self.progress_message_prefix
-            else:
-                prefix = ""
-            if self.progress_message_suffix:
-                suffix = self.progress_message_suffix
-            else:
-                suffix = ""
-            self.write_message("%s%s%s" % (prefix, msg, suffix))
 
     def compose_support_label(self, split_support_freq):
         "Returns an appropriately composed and formatted support label."
@@ -163,7 +148,7 @@ class TreeSummarizer(object):
                                                     taxa_mask=taxa_mask)
             if parent_node is None or parent_node.edge.clade_mask == split_to_add:
                 continue # split is not in tree, or already in tree.
-            new_node = trees.Node()
+            new_node = dendropy.Node()
             self.map_split_support_to_node(node=new_node, split_support=freq)
             new_node_children = []
             new_edge = new_node.edge

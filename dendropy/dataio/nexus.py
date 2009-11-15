@@ -66,7 +66,7 @@ def tree_source_iter(stream, **kwargs):
     `taxon_set` argument). This behavior is similar to how multiple
     tree blocks are handled by a full NEXUS data file read.
     """
-    reader = NexusReader()
+    reader = NexusReader(**kwargs)
     for tree in reader.tree_source_iter(stream, **kwargs):
         yield tree
 

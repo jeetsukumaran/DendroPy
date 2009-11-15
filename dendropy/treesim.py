@@ -34,7 +34,7 @@ from dendropy import dataobject
 
 def star_tree(taxon_set):
     "Builds and returns a star tree from the given taxa block."
-    star_tree = dataobject.Tree(taxon_set)
+    star_tree = dataobject.Tree(taxon_set=taxon_set)
     for taxon in taxon_set:
         star_tree.seed_node.new_child(taxon=taxon)
     return star_tree
