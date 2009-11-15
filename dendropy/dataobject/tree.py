@@ -141,47 +141,6 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
 
-    def __str__(self):
-#        return "TreeList(%s)" % " ".join([(str(t)+";") for t in self])
-        return " ".join([ (str(tree) + ";") for tree in self ])
-
-    def __repr__(self):
-#        return "<TreeList object at %s: (%s)>" % (hex(id(self)), (", ".join([repr(tree) for tree in self])))
-        return "<TreeList object at %s>" % (hex(id(self)))
-
-    def description(self, depth=1, indent=0, itemize="", output=None):
-        """
-        Returns description of object, up to level `depth`.
-        """
-        if depth is None or depth < 0:
-            return
-        output_strio = StringIO()
-        if self.label is None:
-            label = " (%s)" % self.oid
-        else:
-            label = " (%s: '%s')" % (self.oid, self.label)
-        output_strio.write('%s%sTreeList object at %s%s'
-                % (indent*' ',
-                   itemize,
-                   hex(id(self)),
-                   label))
-        if depth >= 1:
-            output_strio.write(':  %d Trees' % len(self))
-            if depth >= 2 and self.taxon_set is not None:
-                tlead = "\n%s[Taxon Set]\n" % (" " * (indent+4))
-                output_strio.write(tlead)
-                self.taxon_set.description(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
-            if depth >= 2:
-                tlead = "\n%s[Trees]\n" % (" " * (indent+4))
-                output_strio.write(tlead)
-                for i, t in enumerate(self):
-                    t.description(depth=depth-1, indent=indent+8, itemize="[%d/%d] " % (i+1, len(self)), output=output_strio)
-                    output_strio.write('\n')
-        s = output_strio.getvalue()
-        if output is not None:
-            output.write(s)
-        return s
-
     def read(self, stream, format, **kwargs):
         """
         Populates the `TreeList` from a `format`-formatted file-like
@@ -268,6 +227,45 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if reindex_taxa:
             self.reindex_tree_taxa(tree)
         self[len(self):] = [tree]
+
+    def __str__(self):
+        return " ".join([ (str(tree) + ";") for tree in self ])
+
+    def __repr__(self):
+        return "<TreeList object at %s>" % (hex(id(self)))
+
+    def description(self, depth=1, indent=0, itemize="", output=None):
+        """
+        Returns description of object, up to level `depth`.
+        """
+        if depth is None or depth < 0:
+            return
+        output_strio = StringIO()
+        if self.label is None:
+            label = " (%s)" % self.oid
+        else:
+            label = " (%s: '%s')" % (self.oid, self.label)
+        output_strio.write('%s%sTreeList object at %s%s'
+                % (indent*' ',
+                   itemize,
+                   hex(id(self)),
+                   label))
+        if depth >= 1:
+            output_strio.write(':  %d Trees' % len(self))
+            if depth >= 2:
+                if self.taxon_set is not None:
+                    tlead = "\n%s[Taxon Set]\n" % (" " * (indent+4))
+                    output_strio.write(tlead)
+                    self.taxon_set.description(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
+                tlead = "\n%s[Trees]\n" % (" " * (indent+4))
+                output_strio.write(tlead)
+                for i, t in enumerate(self):
+                    t.description(depth=depth-1, indent=indent+8, itemize="[%d/%d] " % (i+1, len(self)), output=output_strio)
+                    output_strio.write('\n')
+        s = output_strio.getvalue()
+        if output is not None:
+            output.write(s)
+        return s
 
     def as_python_source(self, tree_list_name=None, tree_list_args=None, oids=False):
         """
@@ -437,7 +435,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             self.label = kwargs["label"]
 
     ###########################################################################
-    ## I/O and Representation
+    ## I/O
 
     def clone_from(self, other):
         """
@@ -454,42 +452,6 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if k not in ['taxon_set', "_oid"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
-
-    def __str__(self):
-        "Dump Newick string."
-        return "%s" % self.as_newick_str()
-
-    def __repr__(self):
-        return "<Tree object at %s>" % (hex(id(self)))
-
-    def description(self, depth=1, indent=0, itemize="", output=None):
-        """
-        Returns description of object, up to level `depth`.
-        """
-        if depth is None or depth < 0:
-            return
-        output_strio = StringIO()
-        if self.label is None:
-            label = " (%s)" % self.oid
-        else:
-            label = " (%s: '%s')" % (self.oid, self.label)
-        output_strio.write('%s%sTree object at %s%s'
-                % (indent*' ',
-                   itemize,
-                   hex(id(self)),
-                   label))
-        if depth >= 1:
-            if depth >= 2 and self.taxon_set is not None:
-                tlead = "\n%s[Taxon Set]\n" % (" " * (indent+4))
-                output_strio.write(tlead)
-                self.taxon_set.description(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
-            if depth >= 2:
-                output_strio.write('\n%s[Tree]' % (" " * (indent+4)))
-                output_strio.write('\n%s%s' % (" " * (indent+8), self.as_newick_str()))
-        s = output_strio.getvalue()
-        if output is not None:
-            output.write(s)
-        return s
 
     def read(self, stream, format, **kwargs):
         """
@@ -839,21 +801,44 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         p.add_child(nd, edge_length=nd.edge.length, pos=0)
 
     ###########################################################################
-    ## For debugging
+    ## Representation
 
-    def as_newick_str(self, **kwargs):
-        """kwargs["reverse_translate"] can be function that takes a taxon and
-           returns the label to appear in the tree."""
-        return self.seed_node.as_newick_str(**kwargs)
+    def __str__(self):
+        "Dump Newick string."
+        return "%s" % self.as_newick_str()
 
-    def assign_node_labels_from_taxon_or_oid(self):
-        for nd in self.postorder_node_iter():
-            if nd.label is not None:
-                continue
-            if nd.taxon is not None:
-                nd.label = nd.taxon.label
-            else:
-                nd.label = nd.oid
+    def __repr__(self):
+        return "<Tree object at %s>" % (hex(id(self)))
+
+    def description(self, depth=1, indent=0, itemize="", output=None):
+        """
+        Returns description of object, up to level `depth`.
+        """
+        if depth is None or depth < 0:
+            return
+        output_strio = StringIO()
+        if self.label is None:
+            label = " (%s)" % self.oid
+        else:
+            label = " (%s: '%s')" % (self.oid, self.label)
+        output_strio.write('%s%sTree object at %s%s'
+                % (indent*' ',
+                   itemize,
+                   hex(id(self)),
+                   label))
+        if depth == 1:
+            output_strio.write(': %s' % self.as_newick_str())
+        elif depth >= 2:
+            if self.taxon_set is not None:
+                tlead = "\n%s[Taxon Set]\n" % (" " * (indent+4))
+                output_strio.write(tlead)
+                self.taxon_set.description(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
+            output_strio.write('\n%s[Tree]' % (" " * (indent+4)))
+            output_strio.write('\n%s%s' % (" " * (indent+8), self.as_newick_str()))
+        s = output_strio.getvalue()
+        if output is not None:
+            output.write(s)
+        return s
 
     def as_python_source(self, tree_obj_name=None, tree_args=None, oids=False):
         """
@@ -894,6 +879,23 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                     p.append('%s.edge.oid = "%s"' % (node_obj_namer(child), child.edge.oid))
 
         return "\n".join(p)
+
+    def as_newick_str(self, **kwargs):
+        """kwargs["reverse_translate"] can be function that takes a taxon and
+           returns the label to appear in the tree."""
+        return self.seed_node.as_newick_str(**kwargs)
+
+    ###########################################################################
+    ## Debugging/Testing
+
+    def assign_node_labels_from_taxon_or_oid(self):
+        for nd in self.postorder_node_iter():
+            if nd.label is not None:
+                continue
+            if nd.taxon is not None:
+                nd.label = nd.taxon.label
+            else:
+                nd.label = nd.oid
 
     def get_indented_form(self, **kwargs):
         out = StringIO()

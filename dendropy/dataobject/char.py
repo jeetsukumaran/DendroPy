@@ -736,11 +736,11 @@ class CharacterArray(TaxonSetLinked):
                    label))
         if depth >= 1:
             output_strio.write(':  %d Sequences' % len(self))
-            if depth >= 2 and self.taxon_set is not None:
-                tlead = "\n%s[Taxon Set]\n" % (" " * (indent+4))
-                output_strio.write(tlead)
-                self.taxon_set.description(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
             if depth >= 2:
+                if self.taxon_set is not None:
+                    tlead = "\n%s[Taxon Set]\n" % (" " * (indent+4))
+                    output_strio.write(tlead)
+                    self.taxon_set.description(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
                 tlead = "\n%s[Characters]\n" % (" " * (indent+4))
                 output_strio.write(tlead)
                 indent += 8
