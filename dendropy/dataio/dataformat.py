@@ -107,6 +107,9 @@ class _DataFormatRegistry(object):
         del(self.formats[name])
 
     def get_reader(self, name, **kwargs):
+        ## hack to avoid confusing users ##
+        if name.lower() == "fasta":
+            raise error.UnsupportedFormatError("FASTA format needs to be specified as 'dnafasta', 'rnafasta', or 'proteinfasta'")
         if name not in self.formats:
             raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
         return self.formats[name].get_reader(**kwargs)
