@@ -164,7 +164,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
     def _subdescribe(self, name, objs, depth, indent, itemize, output, **kwargs):
         if len(objs) == 0:
             return
-        output.write('%s[%s]\n' % (indent*' ', name))
+        output.write('\n%s[%s]\n' % (indent*' ', name))
         for i, obj in enumerate(objs):
             obj.describe(depth=depth-1,
                        indent=indent+4,
@@ -181,15 +181,13 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         output_strio = StringIO()
         output_strio.write('DataSet object at %s' % hex(id(self)))
         if depth >= 1:
-            output_strio.write(': %d Taxon Sets, %d Tree Lists, %d Character Arrays\n' %
+            output_strio.write(': %d Taxon Sets, %d Tree Lists, %d Character Arrays' %
                     (len(self.taxon_sets), len(self.tree_lists), len(self.char_arrays)))
-        else:
-            output_strio.write('\n')
         if depth >= 2:
             indent += 4
             self._subdescribe('Taxon Sets', self.taxon_sets, depth, indent, itemize, output_strio)
-            self._subdescribe('Tree Lists', self.tree_lists, depth, indent, itemize, output_strio, taxa_describe_depth=2)
-            self._subdescribe('Character Arrays', self.char_arrays, depth, indent, itemize, output_strio, taxa_describe_depth=2)
+            self._subdescribe('Tree Lists', self.tree_lists, depth, indent, itemize, output_strio)
+            self._subdescribe('Character Arrays', self.char_arrays, depth, indent, itemize, output_strio)
         s =  output_strio.getvalue()
         if output is not None:
             output.write(s)

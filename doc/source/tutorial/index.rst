@@ -3,7 +3,6 @@ DendroPy Tutorial
 #################
 
 .. toctree::
-    :maxdepth: 2
-    
-    datasets.rst
-    trees.rst
+    :maxdepth: 3
+
+    datarw.rst

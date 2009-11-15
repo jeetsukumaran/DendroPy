@@ -331,12 +331,11 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
                    hex(id(self)),
                    label))
         if depth >= 1:
-            output_strio.write(': %d Taxa\n' % len(self))
-            if depth >= 2:
+            output_strio.write(': %d Taxa' % len(self))
+            if depth >= 2 and len(self) > 0:
                 for i, t in enumerate(self):
+                    output_strio.write('\n')
                     t.describe(depth=depth-1, indent=indent+4, itemize="[%d/%d]" % ((i+1, len(self))), output=output_strio, **kwargs)
-        else:
-            output_strio.write('\n')
         s = output_strio.getvalue()
         if output is not None:
             output.write(s)
@@ -380,10 +379,7 @@ class Taxon(base.IdTagged):
             label = "<Unnamed Taxon>"
         else:
             label = "'%s'" % self.label
-        output_strio.write('%s%s Taxon object at %s (%s): %s\n' % (indent*' ', itemize, hex(id(self)), self.oid, label))
-        s = output_strio.getvalue()
-        if output is not None:
-            output.write(s)
+        output_strio.write('%s%s Taxon object at %s (%s): %s' % (indent*' ', itemize, hex(id(self)), self.oid, label))
         s = output_strio.getvalue()
         if output is not None:
             output.write(s)

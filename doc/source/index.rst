@@ -5,11 +5,11 @@ DendroPy Phylogenetic Computing Library
 .. toctree::
     :hidden:
     :maxdepth: 2
-   
+
     tutorial/index.rst
-    library/index.rst    
+    library/index.rst
     scripts/sumtrees.rst
-    
+
 Introduction
 ============
 
@@ -27,17 +27,17 @@ Installation
 The current public release of DendroPy is available from the Python Package Index:
 
     |dendropy_download_url|
-    
+
 If you have `setuptools <http://pypi.python.org/pypi/setuptools>`_ installed on your system, then you can install DendroPy by simply running the following command::
 
     $ sudo easy_install -U dendropy
-    
+
 Otherwise you will have to download the distribution archive from `the Python Package Index <http://pypi.python.org/pypi/DendroPy>`_, unpack it, and run the setup yourself::
 
     $ tar -xvzf DendroPy-2.5.1.tar.gz
     $ cd DendroPy-2.5.1
     $ sudo python setup.py install
-            
+
 Documentation
 ==============
 
@@ -58,10 +58,10 @@ Much of this information is also readily available from the |Python|_ interprete
 
 ..  Indices and Tables
     ------------------
-    
+
     * :ref:`genindex`
     * :ref:`modindex`
-    * :ref:`search`  
+    * :ref:`search`
 
 Included Scripts
 ================
@@ -70,16 +70,16 @@ Included Scripts
 Repository Access
 =================
 The DendroPy public-access |Git|_ repository can be cloned from:
-    
+
         |dendropy_public_repo_url|
-            
+
 Citation
 =========
 
 If you use this library either in whole or in part in your analysis, or use any code derived from it, please cite it as (replacing the version numbers with ones corresponding to the version that you used):
 
     |dendropy_citation|
-    
+
 Bugs, Suggestions, Comments, etc.
 =================================
 
