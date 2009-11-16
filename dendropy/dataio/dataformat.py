@@ -42,13 +42,11 @@ class _DataFormat(object):
                  name,
                  reader_type=None,
                  writer_type=None,
-                 tree_source_iter=None,
-                 tree_list_writer=None):
+                 tree_source_iter=None):
         self.name = name
         self.reader_type = reader_type
         self.writer_type = writer_type
         self.tree_source_iter = tree_source_iter
-        self.tree_list_writer = tree_list_writer
 
     def has_reader(self):
         return self.reader_type is not None
@@ -58,9 +56,6 @@ class _DataFormat(object):
 
     def has_tree_source_iter(self):
         return self.tree_source_iter is not None
-
-    def has_tree_list_writer(self):
-        return self.tree_list_writer is not None
 
     def get_reader(self, **kwargs):
         if self.reader_type is None:
@@ -77,11 +72,6 @@ class _DataFormat(object):
             raise error.UnsupportedFormatError("Iteration over source trees not currently supported for data format '%s'" % self.name)
         return self.tree_source_iter(stream, **kwargs)
 
-    def write_tree_list(self, tree_list, stream, **kwargs):
-        if self.tree_list_writer is None:
-            raise error.UnsupportedFormatError("Writing of stand-alone tree lists is not currently supported for data format '%s'" % self.name)
-        self.tree_list_writer(tree_list, stream, **kwargs)
-
 ###############################################################################
 ## _DataFormatRegistry
 
@@ -96,12 +86,11 @@ class _DataFormatRegistry(object):
     def remove_format(self, data_format):
         del(self.formats[data_format.name])
 
-    def add(self, name, reader_type=None, writer_type=None, tree_source_iter=None, tree_list_writer=None):
+    def add(self, name, reader_type=None, writer_type=None, tree_source_iter=None):
         self.formats[name] = _DataFormat(name,
                 reader_type=reader_type,
                 writer_type=writer_type,
-                tree_source_iter=tree_source_iter,
-                tree_list_writer=tree_list_writer)
+                tree_source_iter=tree_source_iter)
 
     def remove(self, name):
         del(self.formats[name])
@@ -124,18 +113,13 @@ class _DataFormatRegistry(object):
             raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
         return self.formats[name].get_tree_source_iter(stream, **kwargs)
 
-    def write_tree_list(self, tree_list, stream, name, **kwargs):
-        if name not in self.formats:
-            raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
-        return self.formats[name].write_tree_list(tree_list, stream, **kwargs)
-
 ###############################################################################
 ## Client Code Interface
 
 _GLOBAL_DATA_FORMAT_REGISTRY = _DataFormatRegistry()
 
-def register(format, reader, writer, tree_source_iter, write_tree_list):
-    _GLOBAL_DATA_FORMAT_REGISTRY.add(format, reader, writer, tree_source_iter, write_tree_list)
+def register(format, reader, writer, tree_source_iter):
+    _GLOBAL_DATA_FORMAT_REGISTRY.add(format, reader, writer, tree_source_iter)
 
 def get_reader(format, **kwargs):
     """
@@ -192,22 +176,56 @@ def tree_source_iter(stream, format, **kwargs):
     in from file-like object source `stream`. Keyword arguments
     are passed to format-specialized implementation of the iterator
     invoked.
+
+    Keyword arguments accepted (handled here):
+
+        - `from_index` 0-based index specifying first tree to actually return
+           (raises KeyError if >= #trees)
+
+    Keyword arguments that should be handled by implementing Readers:
+
+        - `taxon_set` specifies the `TaxonSet` object to be attached to the
+           trees parsed and manage their taxa. If not specified, then a
+           (single) new `TaxonSet` object will be created and for all the
+           `Tree` objects.
+        - `encode_splits` specifies whether or not split bitmasks will be
+           calculated and attached to the edges.
+        - `finish_node_func` is a function that will be applied to each node
+           after it has been constructed.
+        - `edge_len_type` specifies the type of the edge lengths (int or float)
+
     """
-    return _GLOBAL_DATA_FORMAT_REGISTRY.tree_source_iter(stream, format, **kwargs)
+    if "from_index" in kwargs:
+        from_index = kwargs["from_index"]
+        del(kwargs["from_index"])
+    else:
+        from_index = 0
+    tree_iter = _GLOBAL_DATA_FORMAT_REGISTRY.tree_source_iter(stream, format, **kwargs)
+    for count, t in enumerate(tree_iter):
+        if count >= from_index and t is not None:
+            count += 1
+            yield t
+    if count < from_index:
+        raise KeyError("0-based index out of bounds: %d (trees=%d, from_index=[0, %d])" % (from_index, count, count-1))
 
-def write_tree_list(tree_list, stream, format, **kwargs):
+def multi_tree_source_iter(sources, format, **kwargs):
     """
-    Writes `tree_list`, a `TreeList` object in `format` format to
-    a destination given by file-like object `stream`.
-
-    `format` is a string that is name of one of the registered data
-    formats, such as `nexus`, `newick`, etc, for which a specialized
-    tree list writer is available. If this is not implemented for the format
-    specified, then a `UnsupportedFormatError` is raised.
-
-    Additionally, for some formats, the following keywords are recognized:
-
-        - `edge_lengths` : if False, edges will not write edge lengths [True]
-        - `internal_labels` : if False, internal labels will not be written [True]
+    Iterates over trees from multiple sources, which may be given as file-like
+    objects or filepaths (strings). Note that unless a TaxonSet object is
+    explicitly passed using the 'taxon_set' keyword argument, the trees in each
+    file will be associated with their own distinct, independent taxon set.
     """
-    return _GLOBAL_DATA_FORMAT_REGISTRY.write_tree_list(tree_list, stream=stream, name=format, **kwargs)
+#    if "taxon_set" not in kwargs:
+#        kwargs["taxon_set"] = TaxonSet()
+    if "progress_writer" in kwargs:
+        progress_writer = kwargs["progress_writer"]
+        del(kwargs["progress_writer"])
+    else:
+        progress_writer = None
+    for s in sources:
+        if isinstance(s, str):
+            src = open(s, "rU")
+        else:
+            src = s
+        for t in tree_source_iter(src, format, **kwargs):
+            yield t

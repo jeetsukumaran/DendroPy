@@ -167,18 +167,15 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         from dendropy.utility import iosys
         from dendropy.dataio import tree_source_iter
         if "taxon_set" in kwargs:
-            if kwargs["taxon_set"] is not self.taxon_set:
-                raise Exception("Cannot specify a different TaxonSet when reading into an existing TreeList.")
+            if kwargs["taxon_set"] is not self.taxon_set and len(self) > 1:
+                raise Exception("Cannot specify a different TaxonSet when reading into a populated TreeList.")
+            else:
+                self.taxon_set = kwargs["taxon_set"]
         else:
             kwargs["taxon_set"] = self.taxon_set
-        if "from_index" in kwargs:
-            from_index = kwargs.get("from_index")
-            del(kwargs["from_index"])
-        else:
-            from_index = 0
-        for i, t in enumerate(tree_source_iter(stream=stream, format=format, **kwargs)):
-            if t is not None and i >= from_index:
-                self.append(t)
+        for t in tree_source_iter(stream=stream, format=format, **kwargs):
+            if t is not None:
+                self.append(t, reindex_taxa=False)
 
     def write(self, stream, format, **kwargs):
         """
@@ -190,8 +187,10 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             - `edge_lengths` : if False, edges will not write edge lengths [True]
             - `internal_labels` : if False, internal labels will not be written [True]
         """
-        from dendropy.dataio import write_tree_list
-        write_tree_list(tree_list=self, stream=stream, format=format, **kwargs)
+        from dendropy.dataobject.dataset import DataSet
+        d = DataSet()
+        d.add(self)
+        d.write(stream=stream, format=format, **kwargs)
 
     def reindex_subcomponent_taxa(self):
         """
@@ -485,25 +484,11 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         from dendropy.utility import iosys
         from dendropy.dataio import tree_source_iter
-        if "from_index" in kwargs:
-            from_index = kwargs.get("from_index")
-            del(kwargs["from_index"])
-        else:
-            from_index = 0
         if "taxon_set" not in kwargs:
             kwargs["taxon_set"] = self.taxon_set
         else:
             self.taxon_set = kwargs["taxon_set"]
-        titer = tree_source_iter(stream=stream, format=format, **kwargs)
-        count = 0
-        t = None
-        while count <= from_index:
-            try:
-                t = titer.next()
-            except StopIteration:
-                raise KeyError("0-based index out of bounds: %d (trees=%d, from_index=[0, %d])" % (from_index, count, count-1))
-            else:
-                count += 1
+        t = tree_source_iter(stream=stream, format=format, **kwargs).next()
         self.__dict__ = t.__dict__
         return self
 

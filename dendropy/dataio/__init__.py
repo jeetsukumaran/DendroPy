@@ -37,38 +37,15 @@ from dendropy.dataio import nexml
 
 # syntax is:
 #   dataformat.register(<FORMAT NAME>, <READER TYPE>, <WRITER TYPE>, <TREE ITERATOR>, <TREE (LIST) WRITER>)
-dataformat.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter, newick.write_tree_list)
-dataformat.register("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter, nexus.write_tree_list)
-dataformat.register("nexus/newick", None, None, nexus.generalized_tree_source_iter, None)
-dataformat.register("fasta", None, fasta.FastaWriter, None, None)
-dataformat.register("dnafasta", fasta.DNAFastaReader, fasta.FastaWriter, None, None)
-dataformat.register("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None, None)
-dataformat.register("proteinfasta", fasta.ProteinFastaReader, fasta.FastaWriter, None, None)
-dataformat.register("phylip", None, phylip.PhylipWriter, None, None)
-dataformat.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None, None)
+dataformat.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter)
+dataformat.register("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
+dataformat.register("nexus/newick", None, None, nexus.generalized_tree_source_iter)
+dataformat.register("fasta", None, fasta.FastaWriter, None)
+dataformat.register("dnafasta", fasta.DNAFastaReader, fasta.FastaWriter, None)
+dataformat.register("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None)
+dataformat.register("proteinfasta", fasta.ProteinFastaReader, fasta.FastaWriter, None)
+dataformat.register("phylip", None, phylip.PhylipWriter, None)
+dataformat.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None)
 
-from dendropy.dataio.dataformat import get_reader, get_writer, tree_source_iter, write_tree_list
+from dendropy.dataio.dataformat import get_reader, get_writer, tree_source_iter, multi_tree_source_iter
 
-def multi_tree_source_iter(sources, format, **kwargs):
-    """
-    Diagnoses and handles multiple files in either NEXUS or NEWICK formats, as
-    given by `sources` which should be a list of file-like objects or strings
-    specifying file paths. Not that unless a TaxonSet object is explicitly
-    passed using the 'taxon_set' keyword argument, the trees in each file will
-    be associated with their own distinct, independent taxon sets: almost
-    certainly not the desired behavior.
-    """
-#    if "taxon_set" not in kwargs:
-#        kwargs["taxon_set"] = TaxonSet()
-    if "progress_writer" in kwargs:
-        progress_writer = kwargs["progress_writer"]
-        del(kwargs["progress_writer"])
-    else:
-        progress_writer = None
-    for s in sources:
-        if isinstance(s, str):
-            src = open(s, "rU")
-        else:
-            src = s
-        for t in tree_source_iter(src, format, **kwargs):
-            yield t

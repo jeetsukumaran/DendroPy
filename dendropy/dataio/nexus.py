@@ -68,14 +68,8 @@ def tree_source_iter(stream, **kwargs):
     tree blocks are handled by a full NEXUS data file read.
     """
     reader = NexusReader(**kwargs)
-    if "from_index" in kwargs:
-        from_index = kwargs.get("from_index")
-        del(kwargs["from_index"])
-    else:
-        from_index = 0
     for i, tree in enumerate(reader.tree_source_iter(stream, **kwargs)):
-        if i >= from_index:
-            yield tree
+        yield tree
 
 def generalized_tree_source_iter(stream, **kwargs):
     """
@@ -99,54 +93,6 @@ def generalized_tree_source_iter(stream, **kwargs):
         return newick.tree_source_iter(stream, **kwargs)
     else:
         raise TypeError("Cannot diagnose file format based on first token found: '%s' (looking for '#NEXUS' or '(')")
-
-def read_tree_list(stream, **kwargs):
-    """
-    Parses a source describing a collection of trees in NEXUS format, and
-    returns corresponding `TreeList` object.
-
-    Additionally, a `TreeList` object to which to add the trees may be passed
-    by `tree_list`, or, alternatively, a `TaxonSet` object with which to manage
-    the taxa by `taxon_set`. Only one of `tree_list` or `taxon_set` may be
-    specified. If neither is specified, then a new `TreeList` object, with its
-    own associated new `TaxonSet` object will be created.
-    """
-    if "tree_list" in kwargs:
-        assert "taxon_set" not in kwargs, \
-            "Cannot specify both 'tree_list' and 'taxon_set'."
-        tree_list = kwargs["tree_list"]
-        del(kwargs["tree_list"])
-    elif "taxon_set" in kwargs:
-        tree_list = dataobject.TreeList(taxon_set=kwargs["taxon_set"])
-        del(kwargs["taxon_set"])
-    else:
-        tree_list = dataobject.TreeList()
-    for t in tree_source_iter(stream=stream, taxon_set=tree_list.taxon_set, **kwargs):
-        if t is not None:
-            tree_list.append(t, reindex_taxa=False)
-    return tree_list
-
-def write_tree_list(tree_list, stream, **kwargs):
-    """
-    Writes out a list of trees in NEXUS-format to a destination given by
-    file-like object `stream`.
-
-    The following keywords are recognized:
-
-        - `taxa_block` : if False, do not write a "TAXA" block [True]
-        - `write_rooting` : if False, do not write a comment before each
-          tree indicating its rooting state [True]
-        - `edge_lengths` : if False, edges will not write edge lengths [True]
-        - `internal_labels` : if False, internal labels will not be written [True]
-        - `comment` : list of lines of text to be added as comments to the file
-
-    """
-    dataset = dataobject.DataSet(tree_list)
-    kwargs["dataset"] = dataset
-    nexus_writer = NexusWriter(**kwargs)
-    nexus_writer.exclude_chars = True
-    nexus_writer.exclude_trees = False
-    nexus_writer.write(stream)
 
 ###############################################################################
 ## NexusReader

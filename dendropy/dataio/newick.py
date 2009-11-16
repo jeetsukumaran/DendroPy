@@ -40,15 +40,8 @@ def tree_source_iter(stream, **kwargs):
     Iterates over a NEWICK-formatted source of trees given by file-like object
     `stream`
 
-    The following keyword arguments are recognized:
-
-        - `taxon_set` specifies the `TaxonSet` object to be attached to the
-           trees parsed and manage their taxa. If not specified, then a
-           (single) new `TaxonSet` object will be created and for all the
-           `Tree` objects.
-        - `encode_splits` specifies whether or not split bitmasks will be
-           calculated and attached to the edges.
-        - `from_index` 0-based index specifying first tree to actually return
+    All keywords defined in `dendropy.dataio.dataformat.tree_source_iter` are
+    accepted.
 
     Note that if `encode_splits` is True, then a `taxon_set` has to be given.
     This is because adding Taxon objects to a taxon set may invalidate split
@@ -73,11 +66,6 @@ def tree_source_iter(stream, **kwargs):
         del(kwargs["taxon_set"])
     else:
         taxon_set = None
-    if "from_index" in kwargs:
-        from_index = kwargs.get("from_index")
-        del(kwargs["from_index"])
-    else:
-        from_index = 0
     if "encode_splits" in kwargs and taxon_set is None:
         raise Exception('When encoding splits on trees, a pre-populated TaxonSet instance ' \
             + "must be provided using the 'taxon_set' keyword to avoid taxon/split bitmask values "\
@@ -87,51 +75,9 @@ def tree_source_iter(stream, **kwargs):
     while not newick_stream.eof:
         t = nexustokenizer.parse_tree_from_stream(newick_stream, taxon_set=taxon_set, **kwargs)
         if t is not None:
-            if i >= from_index:
-                yield t
-            i += 1
+            yield t
         else:
             raise StopIteration()
-
-def write_tree_list(tree_list, stream, **kwargs):
-    """
-    Writes out a list of trees in NEWICK-format to a destination given by
-    file-like object `stream`.
-
-    Additionally, the following keywords are recognized:
-
-        - `edge_lengths` : if False, edges will not write edge lengths [True]
-        - `internal_labels` : if False, internal labels will not be written [True]
-    """
-    newick_writer = NewickWriter(edge_lengths=kwargs.get("edge_lengths", True),
-                                 internal_labels=kwargs.get("internal_labels", True))
-    newick_writer.write_tree_list(tree_list, stream)
-
-def read_tree_list(stream, **kwargs):
-    """
-    Parses a source describing a collection of trees in NEWICK format, and
-    returns corresponding `TreeList` object..
-
-    Additionally, a `TreeList` object to which to add the trees may be passed
-    by `tree_list`, or, alternatively, a `TaxonSet` object with which to manage
-    the taxa by `taxon_set`. Only one of `tree_list` or `taxon_set` may be
-    specified. If neither is specified, then a new `TreeList` object, with its
-    own associated new `TaxonSet` object will be created.
-    """
-    if "tree_list" in kwargs:
-        assert "taxon_set" not in kwargs, \
-            "Cannot specify both 'tree_list' and 'taxon_set'."
-        tree_list = kwargs["tree_list"]
-        del(kwargs["tree_list"])
-    elif "taxon_set" in kwargs:
-        tree_list = dataobject.TreeList(taxon_set=kwargs["taxon_set"])
-        del(kwargs["taxon_set"])
-    else:
-        tree_list = dataobject.TreeList()
-    for t in tree_source_iter(stream=stream, taxon_set=tree_list.taxon_set, **kwargs):
-        if t is not None:
-            tree_list.append(t, reindex_taxa=False)
-    return tree_list
 
 ###############################################################################
 ## split_as_newick_str
@@ -202,18 +148,23 @@ class NewickReader(iosys.DataReader):
         """
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
-        if self.bound_taxon_set is not None:
+        if "taxon_set" in kwargs:
+            if self.bound_taxon_set is not None:
+                raise TypeError("Cannot specify 'taxon_set' to read() of a Reader with a bound TaxonSet")
+            else:
+                taxon_set = kwargs["taxon_set"]
+        elif self.bound_taxon_set is not None:
             if self.bound_taxon_set not in self.dataset.taxon_sets:
                 self.dataset.add_taxon_set(self.bound_taxon_set)
             taxon_set = self.bound_taxon_set
         else:
             taxon_set = self.dataset.new_taxon_set()
         tree_list = self.dataset.new_tree_list(taxon_set=taxon_set)
+        kwargs["taxon_set"] = taxon_set
         if "rooted" not in kwargs:
             kwargs["rooted"] = self.default_rooting
-        read_tree_list(stream=stream,
-                       tree_list=tree_list,
-                       **kwargs)
+        for t in tree_source_iter(stream=stream, **kwargs):
+            tree_list.append(t, reindex_taxa=False)
         return self.dataset
 
 ############################################################################
