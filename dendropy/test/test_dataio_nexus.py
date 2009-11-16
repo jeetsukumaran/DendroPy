@@ -165,13 +165,14 @@ class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
 
     def setUp(self):
         self.ref_tree_list = datagen.reference_tree_list()
-        self.ref_idx = -1
+        self.ref_index = 0
 
-    def next_ref_tree(self):
-        self.ref_idx += 1
-        if self.ref_idx >= len(self.ref_tree_list):
-            self.ref_idx = 0
-        return self.ref_tree_list[self.ref_idx]
+    def next_ref_tree(self, restart_index=0):
+        t = self.ref_tree_list[self.ref_index]
+        self.ref_index += 1
+        if self.ref_index >= len(self.ref_tree_list):
+            self.ref_index = restart_index
+        return t
 
     def testMixedNexusAndNewickDistinctTaxa(self):
         filenames = ["reference.trees.newick",
@@ -194,6 +195,22 @@ class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
         for idx, test_tree in enumerate(multi_tree_source_iter(filepaths, format="nexus/newick", taxon_set=taxon_set)):
             self.assertDistinctButEqualTree(self.next_ref_tree(), test_tree, distinct_taxa=False)
         self.assertEqual(idx, 39)
+
+    def testBurnIn(self):
+        filenames = ["reference.trees.newick",
+                     "reference.trees.nexus",
+                     "reference.trees.newick",
+                     "reference.trees.nexus"]
+        filepaths = [pathmap.tree_source_path(f) for f in filenames]
+        taxon_set = self.ref_tree_list.taxon_set
+        self.ref_index = 5
+        for idx, test_tree in enumerate(multi_tree_source_iter(filepaths,
+                format="nexus/newick",
+                taxon_set=taxon_set,
+                from_index=5)):
+            check_tree = self.next_ref_tree(restart_index=5)
+            self.assertDistinctButEqualTree(check_tree, test_tree, distinct_taxa=False)
+        self.assertEqual(idx, 19)
 
 class NexusOrNewickTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
 
