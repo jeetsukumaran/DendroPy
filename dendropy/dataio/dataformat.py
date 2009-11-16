@@ -204,7 +204,7 @@ def tree_source_iter(stream, format, **kwargs):
         write_progress = kwargs["write_progress"]
         del(kwargs["write_progress"])
     else:
-        progress_writer = None
+        write_progress = None
     tree_iter = _GLOBAL_DATA_FORMAT_REGISTRY.tree_source_iter(stream, format, **kwargs)
     for count, t in enumerate(tree_iter):
         if count >= from_index and t is not None:

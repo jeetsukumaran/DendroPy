@@ -492,13 +492,10 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         self.__dict__ = t.__dict__
         return self
 
-    def write(self, **kwargs):
+    def write(self, stream, format, **kwargs):
         """
-        Writes out `Tree` in `format` to a destination described by
-        one of: `file` or `path`:
-
-            - `file`: A file- or file-like object.
-            - `path`: A string specifying the path to a file.
+        Writes out `Tree` in `format` to a destination given by file-like object
+        `stream`.
 
         `format` must be a recognized and tree file format, such as `nexus`,
         `newick`, etc, for which a specialized tree list writer is
@@ -510,11 +507,10 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             - `edge_lengths` : if False, edges will not write edge lengths [True]
             - `internal_labels` : if False, internal labels will not be written [True]
         """
-        from dendropy.utility.iosys import require_format_from_kwargs
-        from dendropy.dataio import write_tree_list
-        tree_list = TreeList(taxon_set=self.taxon_set)
-        tree_list.append(self)
-        write_tree_list(format=require_format_from_kwargs(kwargs), tree_list=tree_list, **kwargs)
+        from dendropy.dataobject.dataset import DataSet
+        d = DataSet()
+        d.add(TreeList([self]))
+        d.write(stream=stream, format=format, **kwargs)
 
     ###########################################################################
     ## Getting/accessing methods

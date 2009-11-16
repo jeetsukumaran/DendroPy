@@ -46,7 +46,7 @@ import platform
 #from dendropy import treesum
 #from dendropy import datasets
 #from dendropy import trees
-#from dendropy.cli import confirm_overwrite, show_splash, ProgressLogger
+#from dendropy.cli import confirm_overwrite, show_splash, ConsoleMessenger
 #from dendropy.dataio import MultiFileTreeIterator
 
 import dendropy
@@ -55,7 +55,7 @@ from dendropy import treesum
 from dendropy.dataio import tree_source_iter
 from dendropy.dataio import multi_tree_source_iter
 from dendropy.dataio import nexus
-from dendropy.utility.messaging import ProgressLogger
+from dendropy.utility.messaging import ConsoleMessenger
 from dendropy.utility.cli import confirm_overwrite, show_splash
 
 _program_name = 'SumTrees'
@@ -218,7 +218,7 @@ def main_cli():
                       help="ignore missing target tree file (will construct majority rule consensus tree if missing)")
 
     (opts, args) = parser.parse_args()
-    messenger = ProgressLogger(quiet=opts.quiet)
+    messenger = ConsoleMessenger(quiet=opts.quiet)
 
     # splash
     if not opts.quiet:

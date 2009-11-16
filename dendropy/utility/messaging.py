@@ -105,7 +105,7 @@ def deprecation(message, logger_obj=None, stacklevel=3):
         if logger_obj:
             logger_obj.warning(message)
 
-class ProgressLogger(object):
+class ConsoleMessenger(object):
 
     def __init__(self, quiet=False, dest1=sys.stderr, dest2=None):
         self.quiet = quiet
