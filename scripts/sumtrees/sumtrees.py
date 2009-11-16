@@ -326,17 +326,21 @@ def main_cli():
         file_format = 'nexus/newick'
 
     taxon_set = dendropy.TaxonSet()
+    if file_format == "nexus":
+        encode_splits = True
+    else:
+        encode_splits = False # cannot encode while parsing newick
     tree_source = multi_tree_source_iter(sources=support_file_objs,
                                          format=file_format,
                                          from_index=opts.burnin,
                                          progress_writer=messenger.send,
                                          taxon_set=taxon_set,
-                                         encode_splits=True)
+                                         encode_splits=encode_splits)
     split_distribution = splitmask.SplitDistribution()
     split_distribution.unrooted = not opts.rooted_trees
     tsum.count_splits_on_trees(tree_source,
         split_distribution=split_distribution,
-        trees_splits_encoded=True)
+        trees_splits_encoded=encode_splits)
     if split_distribution.taxon_set is None:
         assert(tsum.total_trees_counted == 0)
         split_distribution.taxon_set = dendropy.TaxonSet() # we just produce an empty block so we don't crash as we report nothing of interest
@@ -413,9 +417,6 @@ def main_cli():
     run_time = "Run time: %s hour(s), %s minute(s), %s second(s)." % (hours, mins, secs)
     final_run_report.append(run_time)
 
-#     if not opts.output_filepath:
-#         messenger.send('\n\n>>>>>>>>>>')
-
     output_dataset = dendropy.DataSet(dendropy.TreeList(tt_trees, taxon_set=taxon_set))
 
     if opts.to_newick_format:
@@ -457,7 +458,6 @@ def main_cli():
             split_edges_dest.write("%s\n" % ("\t".join(row)))
 
     if not opts.output_filepath:
-        #messenger.send('<<<<<<<<<')
         pass
     else:
         messenger.send('Results written to: "%s".' % (output_fpath))
