@@ -36,7 +36,7 @@ from dendropy.dataio import phylip
 from dendropy.dataio import nexml
 
 # syntax is:
-#   dataformat.register(<FORMAT NAME>, <READER TYPE>, <WRITER TYPE>, <TREE ITERATOR>, <TREE (LIST) WRITER>)
+#   dataformat.register(<FORMAT NAME>, <READER TYPE>, <WRITER TYPE>, <TREE ITERATOR>)
 ioclient.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter)
 ioclient.register("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
 ioclient.register("nexus/newick", None, None, nexus.generalized_tree_source_iter)
