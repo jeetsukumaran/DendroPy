@@ -35,21 +35,21 @@ import datetime
 from dendropy import nexus
 
 
-def main():   
+def main():
     usage = "%prog [options] <TREES FILE> [<TREES FILE> [<TREES FILE> [...]]"
     parser = OptionParser(usage=usage, add_help_option=True)
-    parser.add_option('-v', '--verbose', 
-                      action='store_true', 
+    parser.add_option('-v', '--verbose',
+                      action='store_true',
                       dest='verbose',
                       default=False,
-                      help="suppress progress messages")     
+                      help="suppress progress messages")
 
     (opts, args) = parser.parse_args()
-    
-    support_filepaths = []        
-    missing = False 
+
+    support_filepaths = []
+    missing = False
     for fpath in args:
-        fpath = os.path.expanduser(os.path.expandvars(fpath))        
+        fpath = os.path.expanduser(os.path.expandvars(fpath))
         if not os.path.exists(fpath):
             sys.stderr.write('File not found: "%s".\n' % fpath)
             missing = True
@@ -58,11 +58,11 @@ def main():
 
     if len(support_filepaths) == 0:
         sys.stderr.write("No valid tree files specified or found.")
-        sys.exit(1)            
+        sys.exit(1)
 
-        
+
 #     tree_source = MultiFileTreeIterator(sources=support_filepaths,
-#                                         core_iterator=nexus.iterate_over_trees, 
+#                                         core_iterator=nexus.iterate_over_trees,
 #                                         progress_func=progress_func)
 
     start_time = datetime.datetime.now()
@@ -71,26 +71,26 @@ def main():
         f = open(tree_file, "rU")
         for idx, tree in enumerate(nexus.iterate_over_trees(f)):
             pass
-        total_trees_read += idx            
-        
+        total_trees_read += idx
+
     end_time = datetime.datetime.now()
     parse_time = end_time-start_time
-    
+
     hours, mins, secs = str(end_time-start_time).split(":")
     parse_seconds = float(hours * 3600) + float(mins * 60) + float(secs)
-    
+
     if not not opts.verbose:
         sys.stderr.write("---\n\n")
-    
+
     sys.stdout.write("%s\t%s\n" % ((", ".join(support_filepaths)), parse_seconds))
-    
+
     if not not opts.verbose:
-        sys.stderr.write("\nTotal trees parsed: %d\n" % tree_source.total_trees_read)
+        sys.stderr.write("\nTotal trees parsed: %d\n" % total_trees_read)
         sys.stderr.write("          Began at: %s.\n" % (start_time.isoformat(' ')))
         sys.stderr.write("          Ended at: %s.\n" % (end_time.isoformat(' ')))
         sys.stderr.write("        Parse time: %s hour(s), %s minute(s), %s second(s).\n" % (hours, mins, secs))
         sys.stderr.write("                   [= %s seconds]\n" % parse_seconds)
-        
+
 if __name__ == "__main__":
     main()
 
