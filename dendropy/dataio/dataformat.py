@@ -21,22 +21,17 @@
 ###############################################################################
 
 """
-Infrastructure for phylogenetic data object serialization and deserialization.
-Provides support for reading/parsing and formatting/writing phylogenetic data
-in various formats.
+Maps data formats to their specific parsers/writers.
 """
-
-import sys
-import os
 
 from dendropy.utility import error
 from dendropy.utility import iosys
 from dendropy.utility.containers import OrderedCaselessDict
 
 ###############################################################################
-## _DataFormat
+## DataFormat
 
-class _DataFormat(object):
+class DataFormat(object):
 
     def __init__(self,
                  name,
@@ -73,9 +68,9 @@ class _DataFormat(object):
         return self.tree_source_iter(stream, **kwargs)
 
 ###############################################################################
-## _DataFormatRegistry
+## DataFormatRegistry
 
-class _DataFormatRegistry(object):
+class DataFormatRegistry(object):
 
     def __init__(self):
         self.formats = OrderedCaselessDict()
@@ -87,7 +82,7 @@ class _DataFormatRegistry(object):
         del(self.formats[data_format.name])
 
     def add(self, name, reader_type=None, writer_type=None, tree_source_iter=None):
-        self.formats[name] = _DataFormat(name,
+        self.formats[name] = DataFormat(name,
                 reader_type=reader_type,
                 writer_type=writer_type,
                 tree_source_iter=tree_source_iter)
@@ -113,135 +108,4 @@ class _DataFormatRegistry(object):
             raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
         return self.formats[name].get_tree_source_iter(stream, **kwargs)
 
-###############################################################################
-## Client Code Interface
 
-_GLOBAL_DATA_FORMAT_REGISTRY = _DataFormatRegistry()
-
-def register(format, reader, writer, tree_source_iter):
-    _GLOBAL_DATA_FORMAT_REGISTRY.add(format, reader, writer, tree_source_iter)
-
-def get_reader(format, **kwargs):
-    """
-    Returns a reader object of the appropriate format-handler as specified by
-    `format`.
-
-    `format` is a string that is name of one of the registered data
-    formats, such as `nexus`, `newick`, etc, for which a specialized
-    reader is available. If this is not implemented for the format
-    specified, then a `UnsupportedFormatError` is raised.
-
-    The following keyword arguments are recognized:
-
-        - `dataset`: All data read from the source will be instantiated
-                as objects within this `DataSet` object.
-        - `taxon_set`: A`TaxonSet` object. If given, results in all the
-                taxa being accessioned into a single `TaxonSet` (and all
-                TaxonSetLinked objects instantiated being associated with that
-                `TaxonSet` object), even if multiple taxon collection
-                definitions are encountered in the source.
-        - `exclude_trees`: Trees in the source will be skipped.
-        - `exclude_chars`: Characters in the source will be skipped.
-        - `encode_splits`: Specifies whether or not splits will be
-                automatically-encoded upon a tree being read.
-
-    Other keywords may be implemented by specific readers (e.g. NexusReader,
-    NewickReader). Refer to their documentation for details.
-    """
-    return _GLOBAL_DATA_FORMAT_REGISTRY.get_reader(format, **kwargs)
-
-def get_writer(format, **kwargs):
-    """
-    Returns a writer object of the appropriate format as specified by `format`.
-
-    `format` is a string that is name of one of the registered data
-    formats, such as `nexus`, `newick`, etc, for which a specialized
-    writer is available. If this is not implemented for the format
-    specified, then a `UnsupportedFormatError` is raised.
-
-    The following keyword arguments are recognized:
-
-        - `dataset`: A `DataSet` object that will be the default source of the
-                data to be written.
-        - `exclude_trees`: Trees in the `DataSet` or `TaxonDomain` will not be
-                written.
-        - `exclude_chars`: Characters in the `DataSet` or `TaxonDomain` will
-                not written.
-    """
-    return _GLOBAL_DATA_FORMAT_REGISTRY.get_writer(format, **kwargs)
-
-def tree_source_iter(stream, format, **kwargs):
-    """
-    Returns an iterator over trees in `format`-formatted data
-    in from file-like object source `stream`. Keyword arguments
-    are passed to format-specialized implementation of the iterator
-    invoked.
-
-    Keyword arguments accepted (handled here):
-
-        - `from_index` 0-based index specifying first tree to actually return
-           (raises KeyError if >= #trees)
-
-    Keyword arguments that should be handled by implementing Readers:
-
-        - `taxon_set` specifies the `TaxonSet` object to be attached to the
-           trees parsed and manage their taxa. If not specified, then a
-           (single) new `TaxonSet` object will be created and for all the
-           `Tree` objects.
-        - `encode_splits` specifies whether or not split bitmasks will be
-           calculated and attached to the edges.
-        - `finish_node_func` is a function that will be applied to each node
-           after it has been constructed.
-        - `edge_len_type` specifies the type of the edge lengths (int or float)
-
-    """
-    if "from_index" in kwargs:
-        from_index = kwargs["from_index"]
-        del(kwargs["from_index"])
-    else:
-        from_index = 0
-    if "write_progress" in kwargs:
-        write_progress = kwargs["write_progress"]
-        del(kwargs["write_progress"])
-    else:
-        write_progress = None
-    tree_iter = _GLOBAL_DATA_FORMAT_REGISTRY.tree_source_iter(stream, format, **kwargs)
-    for count, t in enumerate(tree_iter):
-        if count >= from_index and t is not None:
-            if write_progress is not None:
-                write_progress("Processing tree at index %d" % count)
-            count += 1
-            yield t
-        else:
-            if write_progress is not None:
-                write_progress("Skipping tree at index %d" % count)
-    if count < from_index:
-        raise KeyError("0-based index out of bounds: %d (trees=%d, from_index=[0, %d])" % (from_index, count, count-1))
-
-def multi_tree_source_iter(sources, format, **kwargs):
-    """
-    Iterates over trees from multiple sources, which may be given as file-like
-    objects or filepaths (strings). Note that unless a TaxonSet object is
-    explicitly passed using the 'taxon_set' keyword argument, the trees in each
-    file will be associated with their own distinct, independent taxon set.
-    """
-#    if "taxon_set" not in kwargs:
-#        kwargs["taxon_set"] = TaxonSet()
-    if "write_progress" in kwargs:
-        write_progress = kwargs["write_progress"]
-        del(kwargs["write_progress"])
-    else:
-        write_progress = None
-    num_sources = len(sources)
-    for i, s in enumerate(sources):
-        if isinstance(s, str):
-            src = open(s, "rU")
-        else:
-            src = s
-        if write_progress is not None:
-            write_subprogress = lambda x: write_progress("Tree source %d of %d: %s\n"
-                    % (i+1, num_sources, str(x)))
-        else:
-            write_subprogress = None
-        for t in tree_source_iter(src, format, write_progress=write_subprogress, **kwargs):
-            yield t

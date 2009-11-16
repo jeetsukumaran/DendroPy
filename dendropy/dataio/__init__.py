@@ -28,7 +28,7 @@ in various formats.
 
 from dendropy.utility import error
 #from dendropy.dataobject.taxon import TaxonSet
-from dendropy.dataio import dataformat
+from dendropy.dataio import ioclient
 from dendropy.dataio import newick
 from dendropy.dataio import nexus
 from dendropy.dataio import fasta
@@ -37,15 +37,15 @@ from dendropy.dataio import nexml
 
 # syntax is:
 #   dataformat.register(<FORMAT NAME>, <READER TYPE>, <WRITER TYPE>, <TREE ITERATOR>, <TREE (LIST) WRITER>)
-dataformat.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter)
-dataformat.register("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
-dataformat.register("nexus/newick", None, None, nexus.generalized_tree_source_iter)
-dataformat.register("fasta", None, fasta.FastaWriter, None)
-dataformat.register("dnafasta", fasta.DNAFastaReader, fasta.FastaWriter, None)
-dataformat.register("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None)
-dataformat.register("proteinfasta", fasta.ProteinFastaReader, fasta.FastaWriter, None)
-dataformat.register("phylip", None, phylip.PhylipWriter, None)
-dataformat.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None)
+ioclient.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter)
+ioclient.register("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
+ioclient.register("nexus/newick", None, None, nexus.generalized_tree_source_iter)
+ioclient.register("fasta", None, fasta.FastaWriter, None)
+ioclient.register("dnafasta", fasta.DNAFastaReader, fasta.FastaWriter, None)
+ioclient.register("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None)
+ioclient.register("proteinfasta", fasta.ProteinFastaReader, fasta.FastaWriter, None)
+ioclient.register("phylip", None, phylip.PhylipWriter, None)
+ioclient.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None)
 
-from dendropy.dataio.dataformat import get_reader, get_writer, tree_source_iter, multi_tree_source_iter
+from dendropy.dataio.ioclient import get_reader, get_writer, tree_source_iter, multi_tree_source_iter
 
