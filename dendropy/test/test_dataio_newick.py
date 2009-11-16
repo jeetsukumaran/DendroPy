@@ -40,7 +40,7 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
     def testTreeListReaderDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
         newick_str = datagen.reference_tree_list_newick_string()
-        t_tree_list = dendropy.TreeList.from_string(newick_str, 'newick')
+        t_tree_list = dendropy.TreeList.get_from_string(newick_str, 'newick')
         self.assertDistinctButEqualTreeList(
                 ref_tree_list,
                 t_tree_list,
@@ -51,7 +51,7 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
     def testTreeListReaderSameTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
         newick_str = datagen.reference_tree_list_newick_string()
-        t_tree_list = dendropy.TreeList.from_string(newick_str, 'newick', taxon_set=ref_tree_list.taxon_set)
+        t_tree_list = dendropy.TreeList.get_from_string(newick_str, 'newick', taxon_set=ref_tree_list.taxon_set)
         self.assertDistinctButEqualTreeList(
                 ref_tree_list,
                 t_tree_list,
@@ -60,7 +60,7 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        t_tree_list = dendropy.TreeList.from_path(pathmap.tree_source_path("reference.trees.newick"), 'newick')
+        t_tree_list = dendropy.TreeList.get_from_path(pathmap.tree_source_path("reference.trees.newick"), 'newick')
         self.assertDistinctButEqualTreeList(
                 ref_tree_list,
                 t_tree_list,
@@ -70,7 +70,7 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileSameTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        t_tree_list = dendropy.TreeList.from_path(pathmap.tree_source_path("reference.trees.newick"),
+        t_tree_list = dendropy.TreeList.get_from_path(pathmap.tree_source_path("reference.trees.newick"),
                 'newick',
                 taxon_set=ref_tree_list.taxon_set)
         self.assertDistinctButEqualTreeList(
@@ -82,7 +82,7 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
 class NewickEdgeLengthParsing(datatest.DataObjectVerificationTestCase):
 
     def testEdgeLengths1(self):
-        trees = dendropy.TreeList.from_string(
+        trees = dendropy.TreeList.get_from_string(
                 """(((T1:1.1, T2:2.2)i1:4.0,(T3:3.3, T4:4.4)i2:4.0)i3:4.0,(T5:6.7, T6:7.2)i4:4.0)root:7.0;""",
                 "newick"
                 )
@@ -106,7 +106,7 @@ class NewickEdgeLengthParsing(datatest.DataObjectVerificationTestCase):
             self.assertAlmostEquals(nd.edge.length, expected[label])
 
     def testEdgeLengths2(self):
-        trees = dendropy.TreeList.from_string("""
+        trees = dendropy.TreeList.get_from_string("""
 (((T1:1.242e-10, T2:213.31e-4)i1:3.44e-3,(T3:3.3e7, T4:4.4e+8)i2:4.0e+1)i3:4.0E-4,
 (T5:6.7E+2, T6:7.2E-9)i4:4.0E8)root:7.0;
 """, "newick")
@@ -130,7 +130,7 @@ class NewickEdgeLengthParsing(datatest.DataObjectVerificationTestCase):
             self.assertAlmostEquals(nd.edge.length, expected[label])
 
     def testQuotedLabels(self):
-        trees = dendropy.TreeList.from_string("""
+        trees = dendropy.TreeList.get_from_string("""
 ((('T1 = 1.242e-10':1.242e-10,
 'T2 is 213.31e-4':213.31e-4)i1:3.44e-3,
 ('T3 is a (nice) taxon':3.3e7,
@@ -165,7 +165,7 @@ class NewickTreeListWriterTest(datatest.DataObjectVerificationTestCase):
     def testWriteTreeListDistinctTaxa(self):
         output_path = pathmap.named_output_path(filename="reference.trees.out.newick", suffix_timestamp=True)
         self.ref_tree_list.write_to_path(output_path, format="newick")
-        t_tree_list = dendropy.TreeList.from_path(output_path, "newick")
+        t_tree_list = dendropy.TreeList.get_from_path(output_path, "newick")
         self.assertDistinctButEqualTreeList(
                 self.ref_tree_list,
                 t_tree_list,
@@ -176,7 +176,7 @@ class NewickTreeListWriterTest(datatest.DataObjectVerificationTestCase):
     def testWriteTreeListSameTaxa(self):
         output_path = pathmap.named_output_path(filename="reference.trees.out.newick", suffix_timestamp=True)
         self.ref_tree_list.write_to_path(output_path, format="newick")
-        t_tree_list = dendropy.TreeList.from_path(output_path, "newick", taxon_set=self.ref_tree_list.taxon_set)
+        t_tree_list = dendropy.TreeList.get_from_path(output_path, "newick", taxon_set=self.ref_tree_list.taxon_set)
         self.assertDistinctButEqualTreeList(
                 self.ref_tree_list,
                 t_tree_list,

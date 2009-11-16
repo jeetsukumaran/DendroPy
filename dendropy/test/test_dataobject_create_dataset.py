@@ -44,16 +44,16 @@ class DataSetCreateTest(datatest.DataObjectVerificationTestCase):
 
     def testFromFileFactory(self):
         ds_str = self.dataset.as_string(format="nexus")
-        ds2 = dendropy.DataSet.from_file(StringIO(ds_str), "nexus")
+        ds2 = dendropy.DataSet.get_from_file(StringIO(ds_str), "nexus")
         self.assertDistinctButEqual(self.dataset, ds2)
 
     def testFromPathFactory(self):
-        ds2 = dendropy.DataSet.from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
+        ds2 = dendropy.DataSet.get_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
         self.assertDistinctButEqual(self.dataset, ds2)
 
     def testFromStringFactory(self):
         ds_str = self.dataset.as_string(format="nexus")
-        ds2 = dendropy.DataSet.from_string(ds_str, "nexus")
+        ds2 = dendropy.DataSet.get_from_string(ds_str, "nexus")
         self.assertDistinctButEqual(self.dataset, ds2)
 
     def testFromCopy(self):
