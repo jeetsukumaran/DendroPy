@@ -112,6 +112,9 @@ class ProgressLogger(object):
         self.dest1 = dest1
         self.dest2 = dest2
 
+    def write(self, msg):
+        self.send(msg, newline=False)
+
     def send_multi(self, msg, wrap=0, newline=True, force=False):
         for line in msg:
             self.send(msg=line, wrap=wrap, newline=newline, force=force)

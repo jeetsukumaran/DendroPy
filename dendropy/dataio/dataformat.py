@@ -200,11 +200,21 @@ def tree_source_iter(stream, format, **kwargs):
         del(kwargs["from_index"])
     else:
         from_index = 0
+    if "write_progress" in kwargs:
+        write_progress = kwargs["write_progress"]
+        del(kwargs["write_progress"])
+    else:
+        progress_writer = None
     tree_iter = _GLOBAL_DATA_FORMAT_REGISTRY.tree_source_iter(stream, format, **kwargs)
     for count, t in enumerate(tree_iter):
         if count >= from_index and t is not None:
+            if write_progress is not None:
+                write_progress("Processing tree at index %d" % count)
             count += 1
             yield t
+        else:
+            if write_progress is not None:
+                write_progress("Skipping tree at index %d" % count)
     if count < from_index:
         raise KeyError("0-based index out of bounds: %d (trees=%d, from_index=[0, %d])" % (from_index, count, count-1))
 
@@ -217,15 +227,21 @@ def multi_tree_source_iter(sources, format, **kwargs):
     """
 #    if "taxon_set" not in kwargs:
 #        kwargs["taxon_set"] = TaxonSet()
-    if "progress_writer" in kwargs:
-        progress_writer = kwargs["progress_writer"]
-        del(kwargs["progress_writer"])
+    if "write_progress" in kwargs:
+        write_progress = kwargs["write_progress"]
+        del(kwargs["write_progress"])
     else:
-        progress_writer = None
-    for s in sources:
+        write_progress = None
+    num_sources = len(sources)
+    for i, s in enumerate(sources):
         if isinstance(s, str):
             src = open(s, "rU")
         else:
             src = s
-        for t in tree_source_iter(src, format, **kwargs):
+        if write_progress is not None:
+            write_subprogress = lambda x: write_progress("Tree source %d of %d: %s\n"
+                    % (i+1, num_sources, str(x)))
+        else:
+            write_subprogress = None
+        for t in tree_source_iter(src, format, write_progress=write_subprogress, **kwargs):
             yield t

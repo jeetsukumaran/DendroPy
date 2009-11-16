@@ -333,7 +333,7 @@ def main_cli():
     tree_source = multi_tree_source_iter(sources=support_file_objs,
                                          format=file_format,
                                          from_index=opts.burnin,
-                                         progress_writer=messenger.send,
+                                         write_progress=messenger.write,
                                          taxon_set=taxon_set,
                                          encode_splits=encode_splits)
     split_distribution = splitmask.SplitDistribution()
