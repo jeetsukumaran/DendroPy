@@ -8,6 +8,9 @@ Trees
 Creating and Reading Trees
 --------------------------
 
+Creating a New Tree
+^^^^^^^^^^^^^^^^^^^
+
 Phylogenetic trees in DendroPy are represented by the :class:`~dendropy.dataobject.Tree` class.
 As with all other DendroPy phylogenetic data objects, this name is imported into the :mod:`dendropy` namespace, so, to create an empty :class:`~dendropy.dataobject.Tree`, you would::
 
@@ -59,6 +62,9 @@ For convenience, you can use one of the special factory class methods of :class:
     >>> tree3 = Tree.get_from_file(open('pythonidae.mcmc.nex', 'ru'), 'nexus')
     >>> tree4 = Tree.get_from_path('pythonidae.mcmc.nex', 'nexus', from_index=201)
 
+(Re)defining an Existing Tree
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 If you already have an existing :class:`~dendropy.dataobject.Tree` object, and you want to redefine it or repopulate with new data, you would call one of its "read" methods:
 
     - :meth:`~dendropy.dataobject.Tree.read_from_file()`
@@ -84,10 +90,46 @@ Or a file object::
     >>> f = open('pythonidae.mcmc.nex', 'rU')
     >>> tree.read_from_file(f, 'nexus')
 
+Cloning an Existing Tree
+^^^^^^^^^^^^^^^^^^^^^^^^
+
 Finally, it is also possible to clone a :class:`~dendropy.dataobject.Tree` by passing it as an argument to the constructor
 
     >>> from dendropy import Tree
     >>> tree1 = Tree.get_from_string('((A,B),(C,D))', 'newick')
     >>> tree2 = Tree(tree1)
+    >>> print(tree1.description())
+    Tree object at 0x5e8550 (Tree6339408): ((A,B),(C,D))
+    >>> print(tree2.description())
+    Tree object at 0x60bbd0 (Tree6339824): ((A,B),(C,D))
 
-This creates a *deep-copy* of the `tree1` and assigns it to `tree2`.
+This creates a *deep-copy* of the `tree1` and assigns it to `tree2`. Note that while the tree structural elements (i.e., the :class:`~dendropy.dataobject.Node` and :class:`~dendropy.dataobject.Edge` objects that make up a :class:`~dendropy.dataobject.Tree` object) are copied fully, the :class:`~dendropy.dataobject.TaxonSet` and :class:`~dendropy.dataobject.Taxon` objects are not.
+This is evident when viewing more in-depth descriptions of the two :class:`~dendropy.dataobject.Tree` objects::
+
+    >>> print(tree1.description(3))
+    Tree object at 0x5e8550 (Tree6339408)
+        [Taxon Set]
+            TaxonSet object at 0x5508d0 (TaxonSet5572816): 4 Taxa
+                [1/4] Taxon object at 0x60bf90 (Taxon6340496): 'A'
+                [2/4] Taxon object at 0x60be30 (Taxon6340144): 'B'
+                [3/4] Taxon object at 0x60bfb0 (Taxon6340528): 'C'
+                [4/4] Taxon object at 0x60bcd0 (Taxon6339792): 'D'
+        [Tree]
+            ((A,B),(C,D))
+    >>> print(tree2.description(3))
+    Tree object at 0x60bbd0 (Tree6339824)
+        [Taxon Set]
+            TaxonSet object at 0x5508d0 (TaxonSet5572816): 4 Taxa
+                [1/4] Taxon object at 0x60bf90 (Taxon6340496): 'A'
+                [2/4] Taxon object at 0x60be30 (Taxon6340144): 'B'
+                [3/4] Taxon object at 0x60bfb0 (Taxon6340528): 'C'
+                [4/4] Taxon object at 0x60bcd0 (Taxon6339792): 'D'
+        [Tree]
+            ((A,B),(C,D))
+
+
+
+
+This is behavior is by design, based on the logic that while you wanted a copy of the tree, you still mean them to refer to the same taxa.
+So, for example, if you were to prune or move an edge, change the edge lengths, etc. on `tree2`, or even reassign a particular :class:`~dendropy.dataobject.Taxon` object to a different node, it would not in any way affect `tree1`.
+But if you were to assign a different label to a :class:`~dendropy.dataobject.Taxon` object on `tree2`, this *would* affect `tree11`.

@@ -594,7 +594,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     ## Node iterators
 
     def __iter__(self):
-        return self.postorder_node_iter()
+        return self.preorder_node_iter()
 
     def preorder_node_iter(self, filter_fn=None):
         "Returns preorder iterator over tree nodes."
