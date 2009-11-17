@@ -28,3 +28,4 @@ Phylogenetic data in DendroPy is represented by one or more objects of the follo
     :maxdepth: 3
 
     createtrees.rst
+    createtreelists.rst
