@@ -107,29 +107,59 @@ This creates a *deep-copy* of the `tree1` and assigns it to `tree2`. Note that w
 This is evident when viewing more in-depth descriptions of the two :class:`~dendropy.dataobject.Tree` objects::
 
     >>> print(tree1.description(3))
-    Tree object at 0x5e8550 (Tree6339408)
+    Tree object at 0x79bd0 (Tree6679376): 7 Nodes, 7 Edges
         [Taxon Set]
-            TaxonSet object at 0x5508d0 (TaxonSet5572816): 4 Taxa
-                [1/4] Taxon object at 0x60bf90 (Taxon6340496): 'A'
-                [2/4] Taxon object at 0x60be30 (Taxon6340144): 'B'
-                [3/4] Taxon object at 0x60bfb0 (Taxon6340528): 'C'
-                [4/4] Taxon object at 0x60bcd0 (Taxon6339792): 'D'
+            TaxonSet object at 0x7c7b0 (TaxonSet509872): 4 Taxa
+                [1/4] Taxon object at 0x65ec90 (Taxon6679696): 'A'
+                [2/4] Taxon object at 0x65ecf0 (Taxon6679792): 'B'
+                [3/4] Taxon object at 0x65ed90 (Taxon6679952): 'C'
+                [4/4] Taxon object at 0x65edf0 (Taxon6680048): 'D'
         [Tree]
             ((A,B),(C,D))
+        [Nodes]
+            [1/7] Node object at 0x65ebd0 (Node6679504)
+            [2/7] Node object at 0x65ec10 (Node6679568)
+            [3/7] Node object at 0x65ec50 (Node6679632)
+            [4/7] Node object at 0x65ecb0 (Node6679728)
+            [5/7] Node object at 0x65ed10 (Node6679824)
+            [6/7] Node object at 0x65ed50 (Node6679888)
+            [7/7] Node object at 0x65edb0 (Node6679984)
+        [Edges]
+            [1/7] Edge object at 0x65ebf0 (Edge6679536, Length=None)
+            [2/7] Edge object at 0x65ec30 (Edge6679600, Length=None)
+            [3/7] Edge object at 0x65ec70 (Edge6679664, Length=None)
+            [4/7] Edge object at 0x65ecd0 (Edge6679760, Length=None)
+            [5/7] Edge object at 0x65ed30 (Edge6679856, Length=None)
+            [6/7] Edge object at 0x65ed70 (Edge6679920, Length=None)
+            [7/7] Edge object at 0x65edd0 (Edge6680016, Length=None)
     >>> print(tree2.description(3))
-    Tree object at 0x60bbd0 (Tree6339824)
+    Tree object at 0x65eb50 (Tree6680080): 7 Nodes, 7 Edges
         [Taxon Set]
-            TaxonSet object at 0x5508d0 (TaxonSet5572816): 4 Taxa
-                [1/4] Taxon object at 0x60bf90 (Taxon6340496): 'A'
-                [2/4] Taxon object at 0x60be30 (Taxon6340144): 'B'
-                [3/4] Taxon object at 0x60bfb0 (Taxon6340528): 'C'
-                [4/4] Taxon object at 0x60bcd0 (Taxon6339792): 'D'
+            TaxonSet object at 0x7c7b0 (TaxonSet509872): 4 Taxa
+                [1/4] Taxon object at 0x65ec90 (Taxon6679696): 'A'
+                [2/4] Taxon object at 0x65ecf0 (Taxon6679792): 'B'
+                [3/4] Taxon object at 0x65ed90 (Taxon6679952): 'C'
+                [4/4] Taxon object at 0x65edf0 (Taxon6680048): 'D'
         [Tree]
             ((A,B),(C,D))
+        [Nodes]
+            [1/7] Node object at 0x65ee90 (Node6680208)
+            [2/7] Node object at 0x65eeb0 (Node6680240)
+            [3/7] Node object at 0x65ef10 (Node6680336)
+            [4/7] Node object at 0x65ef90 (Node6680464)
+            [5/7] Node object at 0x65ef30 (Node6680368)
+            [6/7] Node object at 0x65efd0 (Node6680528)
+            [7/7] Node object at 0x64b070 (Node6598768)
+        [Edges]
+            [1/7] Edge object at 0x65eef0 (Edge6680304, Length=None)
+            [2/7] Edge object at 0x65ef50 (Edge6680400, Length=None)
+            [3/7] Edge object at 0x65efb0 (Edge6680496, Length=None)
+            [4/7] Edge object at 0x65eff0 (Edge6680560, Length=None)
+            [5/7] Edge object at 0x64b030 (Edge6598704, Length=None)
+            [6/7] Edge object at 0x64b090 (Edge6598800, Length=None)
+            [7/7] Edge object at 0x64b0d0 (Edge6598864, Length=None)
 
-
-
-
-This is behavior is by design, based on the logic that while you wanted a copy of the tree, you still mean them to refer to the same taxa.
+As you can see, the :class:`~dendropy.dataobject.Node` and :class:`~dendropy.dataobject.Edge` objects are distinct between the trees, but the associated taxa and taxon references are the same.
+This is based on the logic that while you want an independent copy of the tree, you still dealing with the same taxa.
 So, for example, if you were to prune or move an edge, change the edge lengths, etc. on `tree2`, or even reassign a particular :class:`~dendropy.dataobject.Taxon` object to a different node, it would not in any way affect `tree1`.
-But if you were to assign a different label to a :class:`~dendropy.dataobject.Taxon` object on `tree2`, this *would* affect `tree11`.
+But if you were to assign a different label to a :class:`~dendropy.dataobject.Taxon` object on `tree2`, this *would* affect the same :class:`~dendropy.dataobject.Taxon` object on `tree11`.
