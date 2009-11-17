@@ -25,6 +25,7 @@ Tree metrics/statistics calculations.
 """
 
 from math import sqrt
+from dendropy import splitmask
 
 def get_mrca(start_node, split, taxa_mask):
     """Returns the shallowest node in the tree (the node furthest from
@@ -94,6 +95,8 @@ class PatristicDistanceMatrix(object):
         Calculates the distances.
         """
         self.tree = tree
+        if not hasattr(self.tree, "split_edges"):
+            splitmask.encode_splits(self.tree)
         self.taxon_set = tree.taxon_set
         self._pat_dists = {}
         for i1, t1 in enumerate(self.taxon_set):
@@ -135,6 +138,8 @@ def patristic_distance(tree, taxon1, taxon2):
     Given a tree with splits encoded, and two taxa on that tree, returns the
     patristic distance between the two.
     """
+    if not hasattr(tree, "split_edges"):
+        splitmask.encode_splits(tree)
     split = tree.taxon_set.taxon_bitmask(taxon1) | tree.taxon_set.taxon_bitmask(taxon2)
     mrca = get_mrca(tree.seed_node, split, tree.taxon_set.all_taxa_bitmask())
     dist = 0
@@ -190,6 +195,10 @@ def splits_distance(tree1,
     lengths of a given split on tree1 and tree2 respectively.
     """
     length_diffs = []
+    if not hasattr(tree1, "split_edges"):
+        splitmask.encode_splits(tree1)
+    if not hasattr(tree2, "split_edges"):
+        splitmask.encode_splits(tree2)
     split_edges2_copy = dict(tree2.split_edges) # O(n*(2*bind + dict_item_cost))
     split_edges1_ref = tree1.split_edges
     for split, edge in split_edges1_ref.iteritems(): # O n : 2*bind
@@ -276,7 +285,8 @@ def false_positives_and_negatives(reference_tree, test_tree):
     sym_diff = 0
     false_positives = 0
     false_negatives = 0
-
+    if not hasattr(reference_tree, "split_edges"):
+        splitmask.encode_splits(reference_tree)
     for split in reference_tree.split_edges:
         if split in test_tree.split_edges:
             pass
