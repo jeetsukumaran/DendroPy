@@ -748,7 +748,7 @@ class CharacterArray(TaxonSetLinked):
                 for i, t in enumerate(self.taxon_seq_map):
                     output_strio.write('%s%s%s : %s characters\n' \
                         % (" " * indent,
-                           "[%d/%d] " % (i+1, len(self.taxon_seq_map)),
+                           "[%d] " % i,
                            str(t.label),
                            len(self.taxon_seq_map[t])))
 

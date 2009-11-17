@@ -167,7 +167,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
             output.write('\n')
             obj.description(depth=depth-1,
                        indent=indent+4,
-                       itemize="[%d/%d] " % ((i+1, len(objs))),
+                       itemize="[%d] " % (i),
                        output=output,
                        **kwargs)
 

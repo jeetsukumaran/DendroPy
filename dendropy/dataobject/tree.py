@@ -264,7 +264,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 tlead = "\n%s[Trees]\n" % (" " * (indent+4))
                 output_strio.write(tlead)
                 for i, t in enumerate(self):
-                    t.description(depth=depth-1, indent=indent+8, itemize="[%d/%d] " % (i+1, len(self)), output=output_strio)
+                    t.description(depth=depth-1, indent=indent+8, itemize="[%d] " % (i), output=output_strio)
                     output_strio.write('\n')
         s = output_strio.getvalue()
         if output is not None:
@@ -831,11 +831,11 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                     output_strio.write("\n%s[Nodes]" % (" " * (indent+4)))
                     for i, nd in enumerate(self.preorder_node_iter()):
                         output_strio.write('\n')
-                        nd.description(depth=depth-3, indent=indent+8, itemize="[%d/%d] " % (i+1, num_nodes), output=output_strio, taxon_set=self.taxon_set)
+                        nd.description(depth=depth-3, indent=indent+8, itemize="[%d] " % i, output=output_strio, taxon_set=self.taxon_set)
                     output_strio.write("\n%s[Edges]" % (" " * (indent+4)))
                     for i, ed in enumerate(self.preorder_edge_iter()):
                         output_strio.write('\n')
-                        ed.description(depth=depth-3, indent=indent+8, itemize="[%d/%d] " % (i+1, num_edges), output=output_strio, taxon_set=self.taxon_set)
+                        ed.description(depth=depth-3, indent=indent+8, itemize="[%d] " % i, output=output_strio, taxon_set=self.taxon_set)
 
         s = output_strio.getvalue()
         if output is not None:
@@ -1500,7 +1500,7 @@ class Node(TaxonLinked):
                 output_strio.write('\n%sNone' % leader2)
             else:
                 for i, cnd in enumerate(self._child_nodes):
-                    output_strio.write('\n%s[%d/%d] %s' % (leader2, i+1, len(self._child_nodes), cnd.description(0)))
+                    output_strio.write('\n%s[%d] %s' % (leader2, i, cnd.description(0)))
         s = output_strio.getvalue()
         if output is not None:
             output.write(s)
