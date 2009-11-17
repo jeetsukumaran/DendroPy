@@ -287,6 +287,8 @@ def false_positives_and_negatives(reference_tree, test_tree):
     false_negatives = 0
     if not hasattr(reference_tree, "split_edges"):
         splitmask.encode_splits(reference_tree)
+    if not hasattr(test_tree, "split_edges"):
+        splitmask.encode_splits(test_tree)
     for split in reference_tree.split_edges:
         if split in test_tree.split_edges:
             pass
