@@ -195,6 +195,9 @@ def splits_distance(tree1,
     lengths of a given split on tree1 and tree2 respectively.
     """
     length_diffs = []
+    if tree1.taxon_set is not tree2.taxon_set:
+        raise TypeError("Trees have different TaxonSet objects: %s vs. %s" \
+                % (hex(id(tree1.taxon_set)), hex(id(tree2.taxon_set))))
     if not hasattr(tree1, "split_edges"):
         splitmask.encode_splits(tree1)
     if not hasattr(tree2, "split_edges"):
@@ -285,6 +288,9 @@ def false_positives_and_negatives(reference_tree, test_tree):
     sym_diff = 0
     false_positives = 0
     false_negatives = 0
+    if reference_tree.taxon_set is not test_tree.taxon_set:
+        raise TypeError("Trees have different TaxonSet objects: %s vs. %s" \
+                % (hex(id(reference_tree.taxon_set)), hex(id(test_tree.taxon_set))))
     if not hasattr(reference_tree, "split_edges"):
         splitmask.encode_splits(reference_tree)
     if not hasattr(test_tree, "split_edges"):
