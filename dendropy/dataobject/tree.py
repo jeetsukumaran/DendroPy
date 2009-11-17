@@ -831,11 +831,11 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                     output_strio.write("\n%s[Nodes]" % (" " * (indent+4)))
                     for i, nd in enumerate(self.preorder_node_iter()):
                         output_strio.write('\n')
-                        nd.description(depth=depth-3, indent=indent+8, itemize="[%d/%d] " % (i+1, num_nodes), output=output_strio)
+                        nd.description(depth=depth-3, indent=indent+8, itemize="[%d/%d] " % (i+1, num_nodes), output=output_strio, taxon_set=self.taxon_set)
                     output_strio.write("\n%s[Edges]" % (" " * (indent+4)))
                     for i, ed in enumerate(self.preorder_edge_iter()):
                         output_strio.write('\n')
-                        ed.description(depth=depth-3, indent=indent+8, itemize="[%d/%d] " % (i+1, num_edges), output=output_strio)
+                        ed.description(depth=depth-3, indent=indent+8, itemize="[%d/%d] " % (i+1, num_edges), output=output_strio, taxon_set=self.taxon_set)
 
         s = output_strio.getvalue()
         if output is not None:
@@ -1461,7 +1461,7 @@ class Node(TaxonLinked):
     ###########################################################################
     ## Representation
 
-    def description(self, depth=1, indent=0, itemize="", output=None):
+    def description(self, depth=1, indent=0, itemize="", output=None, taxon_set=None):
         """
         Returns description of object, up to level `depth`.
         """
@@ -1489,6 +1489,12 @@ class Node(TaxonLinked):
             output_strio.write('\n%s[Parent]' % leader1)
             output_strio.write('\n%s%s' % (leader2,
                     self.parent_node.description(0) if self.parent_node is not None else 'None'))
+            if hasattr(self.edge, 'clade_mask'):
+                output_strio.write('\n%s[Clade Mask]' % leader1)
+                if taxon_set is None:
+                    output_strio.write('\n%s%s' % (leader2, self.edge.clade_mask))
+                else:
+                    output_strio.write('\n%s%s' % (leader2, taxon_set.split_bitmask_string(self.edge.clade_mask)))
             output_strio.write('\n%s[Children]' % leader1)
             if len(self._child_nodes) == 0:
                 output_strio.write('\n%sNone' % leader2)
@@ -1697,7 +1703,7 @@ class Edge(IdTagged):
     ###########################################################################
     ## Representation
 
-    def description(self, depth=1, indent=0, itemize="", output=None):
+    def description(self, depth=1, indent=0, itemize="", output=None, taxon_set=None):
         """
         Returns description of object, up to level `depth`.
         """
@@ -1725,6 +1731,12 @@ class Edge(IdTagged):
             output_strio.write('\n%s[Head Node]' % leader1)
             output_strio.write('\n%s%s' % (leader2,
                     self.head_node.description(0) if self.head_node is not None else 'None'))
+            if hasattr(self, 'clade_mask'):
+                output_strio.write('\n%s[Clade Mask]' % leader1)
+                if taxon_set is None:
+                    output_strio.write('\n%s%s' % (leader2, self.clade_mask))
+                else:
+                    output_strio.write('\n%s%s' % (leader2, taxon_set.split_bitmask_string(self.clade_mask)))
         s = output_strio.getvalue()
         if output is not None:
             output.write(s)
