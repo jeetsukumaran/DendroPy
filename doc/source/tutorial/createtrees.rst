@@ -1,12 +1,9 @@
-*****
-Trees
-*****
-
+**************************
 Creating and Reading Trees
-==========================
+**************************
 
 Creating a New Tree
--------------------
+===================
 
 Phylogenetic trees in DendroPy are represented by the :class:`~dendropy.dataobject.Tree` class.
 As with all other DendroPy phylogenetic data objects, this name is imported into the :mod:`dendropy` namespace, so, to create an empty :class:`~dendropy.dataobject.Tree`, you would::
@@ -59,8 +56,8 @@ For convenience, you can use one of the special factory class methods of :class:
     >>> tree3 = Tree.get_from_file(open('pythonidae.mcmc.nex', 'ru'), 'nexus')
     >>> tree4 = Tree.get_from_path('pythonidae.mcmc.nex', 'nexus', from_index=201)
 
-(Re)defining an Existing Tree
------------------------------
+Reading into an Existing Tree
+=============================
 
 If you already have an existing :class:`~dendropy.dataobject.Tree` object, and you want to redefine it or repopulate with new data, you would call one of its "read" methods:
 
@@ -88,7 +85,7 @@ Or a file object::
     >>> tree.read_from_file(f, 'nexus')
 
 Cloning an Existing Tree
--------------------------
+========================
 
 Finally, it is also possible to clone a :class:`~dendropy.dataobject.Tree` by passing it as an argument to the constructor
 
