@@ -1,5 +1,5 @@
 ***********************************
-:mod:`characters` -- Character Data 
+:mod:`characters` -- Character Data
 ***********************************
 
 .. module:: characters
