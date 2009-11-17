@@ -151,15 +151,15 @@ class Readable(object):
     Data object that can be instantiated using a `DataReader` service.
     """
 
-    def get_from_file(cls, src, format, **kwargs):
+    def get_from_stream(cls, src, format, **kwargs):
         """
         Factory method to return new object of this class from file-like
         object `src`.
         """
         readable = cls()
-        readable.read_from_file(src, format, **kwargs)
+        readable.read_from_stream(src, format, **kwargs)
         return readable
-    get_from_file = classmethod(get_from_file)
+    get_from_stream = classmethod(get_from_stream)
 
     def get_from_path(cls, src, format, **kwargs):
         """
@@ -197,7 +197,7 @@ class Readable(object):
         """
         raise NotImplementedError
 
-    def read_from_file(self, fileobj, format, **kwargs):
+    def read_from_stream(self, fileobj, format, **kwargs):
         """
         Reads from file (exactly equivalent to just `read()`, provided
         here as a separate method for completeness.

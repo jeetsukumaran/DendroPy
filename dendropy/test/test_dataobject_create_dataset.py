@@ -44,7 +44,7 @@ class DataSetCreateTest(datatest.DataObjectVerificationTestCase):
 
     def testFromFileFactory(self):
         ds_str = self.dataset.as_string(format="nexus")
-        ds2 = dendropy.DataSet.get_from_file(StringIO(ds_str), "nexus")
+        ds2 = dendropy.DataSet.get_from_stream(StringIO(ds_str), "nexus")
         self.assertDistinctButEqual(self.dataset, ds2)
 
     def testFromPathFactory(self):

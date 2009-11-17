@@ -82,7 +82,7 @@ class TreeListCreateTest(datatest.DataObjectVerificationTestCase):
     def testFromFileFactoryDistinctTaxa(self):
         tree_list1 = datagen.reference_tree_list()
         s = pathmap.tree_source_path('reference.trees.nexus')
-        tree_list2 = dendropy.TreeList.get_from_file(open(s, "rU"), "nexus")
+        tree_list2 = dendropy.TreeList.get_from_stream(open(s, "rU"), "nexus")
         self.assertDistinctButEqual(tree_list1, tree_list2, distinct_taxa=True)
 
     def testFromPathFactoryDistinctTaxa(self):

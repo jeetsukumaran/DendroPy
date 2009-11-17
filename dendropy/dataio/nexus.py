@@ -126,7 +126,7 @@ class NexusReader(iosys.DataReader):
         self.reset()
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
-        self._prepare_to_read_from_file(stream)
+        self._prepare_to_read_from_stream(stream)
         self._parse_nexus_file()
         self.reset()
         return self.dataset
@@ -215,7 +215,7 @@ class NexusReader(iosys.DataReader):
     ###########################################################################
     ## HELPERS
 
-    def _prepare_to_read_from_file(self, file_obj):
+    def _prepare_to_read_from_stream(self, file_obj):
         self.stream_tokenizer = nexustokenizer.NexusTokenizer()
         self.stream_tokenizer.stream_handle = file_obj
 

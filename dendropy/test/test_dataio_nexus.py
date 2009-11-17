@@ -132,7 +132,7 @@ class NexusTreeListReaderTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        t_tree_list = dendropy.TreeList.get_from_file(pathmap.tree_source_stream("reference.trees.nexus"), "nexus")
+        t_tree_list = dendropy.TreeList.get_from_stream(pathmap.tree_source_stream("reference.trees.nexus"), "nexus")
         self.assertDistinctButEqualTreeList(
                 ref_tree_list,
                 t_tree_list,
@@ -141,7 +141,7 @@ class NexusTreeListReaderTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileSameTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        t_tree_list = dendropy.TreeList.get_from_file(pathmap.tree_source_stream("reference.trees.nexus"), "nexus", taxon_set=ref_tree_list.taxon_set)
+        t_tree_list = dendropy.TreeList.get_from_stream(pathmap.tree_source_stream("reference.trees.nexus"), "nexus", taxon_set=ref_tree_list.taxon_set)
         self.assertDistinctButEqualTreeList(
                 ref_tree_list,
                 t_tree_list,
