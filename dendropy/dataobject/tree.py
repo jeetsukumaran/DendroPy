@@ -819,12 +819,24 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if depth == 1:
                 output_strio.write(': %s' % newick_str)
             elif depth >= 2:
+                num_nodes = len([nd for nd in self.preorder_node_iter()])
+                num_edges = len([ed for ed in self.preorder_edge_iter()])
+                output_strio.write(': %d Nodes, %d Edges' % (num_nodes, num_edges))
                 if self.taxon_set is not None:
-                    tlead = "\n%s[Taxon Set]\n" % (" " * (indent+4))
-                    output_strio.write(tlead)
+                    output_strio.write("\n%s[Taxon Set]\n" % (" " * (indent+4)))
                     self.taxon_set.description(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
                 output_strio.write('\n%s[Tree]' % (" " * (indent+4)))
                 output_strio.write('\n%s%s' % (" " * (indent+8), newick_str))
+                if depth >= 3:
+                    output_strio.write("\n%s[Nodes]" % (" " * (indent+4)))
+                    for i, nd in enumerate(self.preorder_node_iter()):
+                        output_strio.write('\n')
+                        nd.description(depth=depth-3, indent=indent+8, itemize="[%d/%d] " % (i+1, num_nodes), output=output_strio)
+                    output_strio.write("\n%s[Edges]" % (" " * (indent+4)))
+                    for i, ed in enumerate(self.preorder_edge_iter()):
+                        output_strio.write('\n')
+                        ed.description(depth=depth-3, indent=indent+8, itemize="[%d/%d] " % (i+1, num_edges), output=output_strio)
+
         s = output_strio.getvalue()
         if output is not None:
             output.write(s)
@@ -1447,6 +1459,48 @@ class Node(TaxonLinked):
                                     lambda x: bool(len(node.child_nodes)==0))]
 
     ###########################################################################
+    ## Representation
+
+    def description(self, depth=1, indent=0, itemize="", output=None):
+        """
+        Returns description of object, up to level `depth`.
+        """
+        if depth is None or depth < 0:
+            return
+        output_strio = StringIO()
+        if self.label is None:
+            label = " (%s)" % self.oid
+        else:
+            label = " (%s: '%s')" % (self.oid, self.label)
+        output_strio.write('%s%sNode object at %s%s'
+                % (indent*' ',
+                   itemize,
+                   hex(id(self)),
+                   label))
+        if depth >= 1:
+            leader1 = ' ' * (indent + 4)
+            leader2 = ' ' * (indent + 8)
+            output_strio.write('\n%s[Edge]' % leader1)
+            output_strio.write('\n%s%s' % (leader2,
+                    self.edge.description(0) if self.edge is not None else 'None'))
+            output_strio.write('\n%s[Taxon]' % leader1)
+            output_strio.write('\n%s%s' % (leader2,
+                    self.taxon.description(0) if self.taxon is not None else 'None'))
+            output_strio.write('\n%s[Parent]' % leader1)
+            output_strio.write('\n%s%s' % (leader2,
+                    self.parent_node.description(0) if self.parent_node is not None else 'None'))
+            output_strio.write('\n%s[Children]' % leader1)
+            if len(self._child_nodes) == 0:
+                output_strio.write('\n%sNone' % leader2)
+            else:
+                for i, cnd in enumerate(self._child_nodes):
+                    output_strio.write('\n%s[%d/%d] %s' % (leader2, i+1, len(self._child_nodes), cnd.description(0)))
+        s = output_strio.getvalue()
+        if output is not None:
+            output.write(s)
+        return s
+
+    ###########################################################################
     ## For debugging we build-in a full-fledged NEWICK composition independent
     ## of the nexus/newick family of modules. Client code should prefer to
     ## use Newick/Nexus readers/writers, or Tree.write(), TreeList.write(),
@@ -1639,6 +1693,42 @@ class Edge(IdTagged):
         he.extend(te)
         return he
     adjacent_edges = property(get_adjacent_edges)
+
+    ###########################################################################
+    ## Representation
+
+    def description(self, depth=1, indent=0, itemize="", output=None):
+        """
+        Returns description of object, up to level `depth`.
+        """
+        if depth is None or depth < 0:
+            return
+        output_strio = StringIO()
+        if self.label is None:
+            label = " (%s, Length=%s)" % (self.oid, str(self.length))
+        else:
+            label = " (%s: '%s', Length=%s)" % (self.oid, self.label, str(self.length))
+        output_strio.write('%s%sEdge object at %s%s'
+                % (indent*' ',
+                   itemize,
+                   hex(id(self)),
+                   label))
+        if depth >= 1:
+            leader1 = ' ' * (indent + 4)
+            leader2 = ' ' * (indent + 8)
+            output_strio.write('\n%s[Length]' % leader1)
+            output_strio.write('\n%s%s' % (leader2,
+                    self.length if self.length is not None else 'None'))
+            output_strio.write('\n%s[Tail Node]' % leader1)
+            output_strio.write('\n%s%s' % (leader2,
+                    self.tail_node.description(0) if self.tail_node is not None else 'None'))
+            output_strio.write('\n%s[Head Node]' % leader1)
+            output_strio.write('\n%s%s' % (leader2,
+                    self.head_node.description(0) if self.head_node is not None else 'None'))
+        s = output_strio.getvalue()
+        if output is not None:
+            output.write(s)
+        return s
 
 ###############################################################################
 ## NodeRelationship
