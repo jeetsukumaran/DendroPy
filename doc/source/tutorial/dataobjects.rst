@@ -25,7 +25,8 @@ Phylogenetic data in DendroPy is represented by one or more objects of the follo
         A meta-collection of phylogenetic data, consisting of lists of multiple :class:`~dendropy.dataobject.taxon.TaxonSet` objects (:attr:`~dendropy.dataobject.DataSet.taxon_sets`), :class:`~dendropy.dataobject.tree.TreeList` objects (:attr:`~dendropy.dataobject.DataSet.tree_lists`), and :class:`~dendropy.dataobject.CharacterArray` objects (:attr:`~dendropy.dataobject.DataSet.char_arrays`).
 
 .. toctree::
-    :maxdepth: 3
+    :hidden:
 
+    createtaxa.rst
     createtrees.rst
     createtreelists.rst
