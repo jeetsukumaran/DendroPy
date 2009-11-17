@@ -5,4 +5,4 @@ DendroPy Tutorial
 .. toctree::
     :maxdepth: 3
 
-    datarw.rst
+    dataobjects.rst
