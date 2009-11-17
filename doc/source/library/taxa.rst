@@ -1,18 +1,18 @@
-*************************
-:mod:`taxa` -- Taxon Data 
-*************************
+**********************************************
+:mod:`dendropy.dataobject.taxon` -- Taxon Data
+**********************************************
 
 .. module:: taxa
 
 .. toctree::
     :maxdepth: 2
 
-The :class:`TaxaBlock` Class
+The :class:`TaxonSet` Class
 =============================
-.. autoclass:: dendropy.taxa.TaxaBlock
+.. autoclass:: dendropy.dataobject.taxon.TaxonSet
     :members:
 
 The :class:`Taxon` Class
 ========================
-.. autoclass:: dendropy.taxa.Taxon
+.. autoclass:: dendropy.dataobject.taxon.Taxon
     :members:

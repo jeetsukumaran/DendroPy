@@ -1,11 +1,11 @@
 ***********************************
-:mod:`characters` -- Character Data
+:mod:`char` -- Character Data
 ***********************************
 
-.. module:: characters
+.. module:: char
 
 .. toctree::
     :maxdepth: 2
 
-.. automodule:: characters
+.. automodule:: dendropy.dataobject.char
     :members:

@@ -1,26 +1,11 @@
-***************************************
-:mod:`datasets` -- Primary Data Manager
-***************************************
+**********************************************************
+:mod:`dendropy.dataobject.dataset` -- Primary Data Manager
+**********************************************************
 
-.. module:: datasets
+.. module:: dendropy.dataobject.dataset
 
 .. toctree::
     :maxdepth: 2
 
-.. autoclass:: dendropy.datasets.Dataset
+.. autoclass:: dendropy.dataobject.dataset.DataSet
     :members:
-    
-    The :class:`dendropy.datasets.Dataset` is composed of three basic list objects:
-    
-        * .. attribute:: taxa_blocks
-        
-                A list of :class:`TaxaBlock` objects.
-        
-        * .. attribute:: trees_blocks
-        
-                A list of :class:`TreesBlock` objects.    
-            
-        * .. attribute:: chars_blocks
-        
-                A list of :class:`CharactersBlock` objects.    
-    

@@ -1,23 +1,13 @@
-*************************
-:mod:`trees` -- Tree Data 
-*************************
+********************************************
+:mod:`dendropy.dataobject.tree` -- Tree Data
+********************************************
 
-.. module:: trees
+.. module:: tree
 
 .. toctree::
     :maxdepth: 2
 
 The :class:`Tree` Class
 =======================
-.. autoclass:: dendropy.trees.Tree
-    :members:
-
-The :class:`Node` Class
-=======================
-.. autoclass:: dendropy.trees.Node
-    :members:
-    
-The :class:`Edge` Class
-=======================    
-.. autoclass:: dendropy.trees.Edge
+.. autoclass:: dendropy.dataobject.tree.Tree
     :members:
