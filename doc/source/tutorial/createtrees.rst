@@ -160,7 +160,7 @@ But if you were to assign a different label to a :class:`~dendropy.dataobject.ta
 
 Taxon Management
 ================
-Every time an independent :class:`~dendropy.dataobject.tree.Tree` object is created, by default a new :class:`~dendropy.dataobject.taxon.TaxonSet` object is created and associated with the :class:`~dendropy.dataobject.tree.Tree. 
+Every time an independent :class:`~dendropy.dataobject.tree.Tree` object is created, by default a new :class:`~dendropy.dataobject.taxon.TaxonSet` object is created and associated with the :class:`~dendropy.dataobject.tree.Tree`. 
 This means that if two :class:`~dendropy.dataobject.tree.Tree` objects are independentally created, even if from the same data source, they will reference distinct sets of :class:`~dendropy.dataobject.taxon.Taxon` objects (though the labels might be the same).
 Consider the following::
 
@@ -168,7 +168,7 @@ Consider the following::
     >>> t2 = dendropy.Tree.get_from_path('pythonidae.mcmc.nex', 'nexus', from_index=200)
     
 Here, two tree objects are created from the 200th and 201st trees defined in the :download:`the example file </examples/pythonidae.mcmc.nex>`. 
-Even though they were sourced from the same data file, and, indeed, "TREE" block within the same data file, as a result of their independent default instantiation, they refer to distinct (though similar) :class:`~dendropy.dataobject.taxon.TaxonSet` and :class:`~dendropy.dataobject.taxon.Taxon` objects::
+Even though they were sourced from the same data file, and, indeed, the same "TREE" block within the same data file, as a result of their independent default instantiation, they refer to distinct (though similar) :class:`~dendropy.dataobject.taxon.TaxonSet` and :class:`~dendropy.dataobject.taxon.Taxon` objects::
 
     >>> print(t1.taxon_set.description(2))
     TaxonSet object at 0x101f630 (TaxonSet16905776): 13 Taxa
@@ -217,14 +217,16 @@ This would mean that any comparisons between the two trees would be invalid::
     
     TypeError: Trees have different TaxonSet objects: 0x101f630 vs. 0x1243a80
     
-The correct way to instantiate two :class:`~dendropy.dataobject.tree.Tree` objects so that they refer to the same taxa objects is to explictly pass a :class:`~dendropy.dataobject.taxon.TaxonSet` for them to use::
+At this stage, short of r    
+    
+The correct way to instantiate two :class:`~dendropy.dataobject.tree.Tree` objects so that they refer to the same taxa objects is to pass a :class:`~dendropy.dataobject.taxon.TaxonSet` for them to use::
 
     >>> t1 = dendropy.Tree.get_from_path('pythonidae.mcmc.nex', 'nexus', from_index=199)
     >>> t2 = dendropy.Tree.get_from_path('pythonidae.mcmc.nex', 'nexus', from_index=200, taxon_set=t1.taxon_set)
     >>> treecalc.symmetric_difference(t1, t2)
     8    
 
-The same applies even if they are sourced from different files: specifying a :class:`~dendropy.dataobject.taxon.TaxonSet` object correctly maps the taxa to the same reference::
+The same applies even if they are sourced from different files: specifying a :class:`~dendropy.dataobject.taxon.TaxonSet` object ensures that the different :class:`~dendropy.dataobject.tree.Tree` objects reference the same taxa::
 
     >>> t1 = dendropy.Tree.get_from_path('pythonidae.mle.nex', 'nexus')
     >>> t2 = dendropy.Tree.get_from_path('pythonidae.pars.newick', 'newick', taxon_set=t1.taxon_set)
@@ -236,6 +238,8 @@ It probably would lead to more maintainable code if you were to explicitly creat
     >>> taxa = dendropy.TaxonSet()
     >>> t1 = dendropy.Tree.get_from_path('pythonidae.mle.nex', 'nexus', taxon_set=taxa) 
     >>> t2 = dendropy.Tree.get_from_path('pythonidae.pars.newick', 'newick', taxon_set=taxa) 
-    >>> t4 = dendropy.Tree.get_from_path('pythonidae.mcmc.nexus', 'nexus', from_index=199, taxon_set=taxa)
+    >>> t3 = dendropy.Tree.get_from_path('pythonidae.mcmc.nexus', 'nexus', from_index=199, taxon_set=taxa)
     
-    
+There is no doubt that, while this approach is acceptable for a small number of specific trees, it can be tedious and error-prone as things scale up.
+The preferred way of dealing with multiple trees referencing the same taxa is to use a :class:`~dendropy.dataobject.tree.TreeList` object to collect and manage them, as this automatically enforces the homogeneity of :class:`~dendropy.dataobject.taxon.TaxonSet` references amongst all its members.
+This is covered in the :doc:`next section <createtreelists>`
