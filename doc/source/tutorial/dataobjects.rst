@@ -2,6 +2,9 @@
 Phylogenetic Data in DendroPy
 #############################
 
+Introduction
+============
+
 Phylogenetic data in DendroPy is represented by one or more objects of the following classes:
 
     :class:`~dendropy.dataobject.taxon.Taxon`
@@ -23,6 +26,76 @@ Phylogenetic data in DendroPy is represented by one or more objects of the follo
 
     :class:`~dendropy.dataobject.dataset.DataSet`
         A meta-collection of phylogenetic data, consisting of lists of multiple :class:`~dendropy.dataobject.taxon.TaxonSet` objects (:attr:`~dendropy.dataobject.DataSet.taxon_sets`), :class:`~dendropy.dataobject.tree.TreeList` objects (:attr:`~dendropy.dataobject.DataSet.tree_lists`), and :class:`~dendropy.dataobject.CharacterArray` objects (:attr:`~dendropy.dataobject.DataSet.char_arrays`).
+
+
+General Data Object API
+=======================
+
+Creating New (Empty) Objects
+----------------------------
+
+All of the above names are imported into the the the :mod:`dendropy` namespace, and so to instantiate new, empty objects of these classes, you would need to import :mod:`dendropy`::
+
+    >>> import dendropy
+    >>> tree1 = dendropy.Tree()
+    >>> tree_list11 = dendropy.TreeList()
+    >>> dataset1 = dendropy.DataSet()
+
+Or import the names directly::
+
+    >>> from dendropy import Tree, TreeList, DataSet
+    >>> tree1 = Tree()
+    >>> tree_list1 = TreeList()
+    >>> dataset1 = DataSet()
+
+Creating and Populating New Objects
+-----------------------------------
+
+The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support ":meth:`get_from_*()`" factory methods that allow for the simultaneous instantiation and population of the objects from a data source:
+
+    - :meth:`get_from_stream`
+        Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the format as the second.
+
+    - :meth:`get_from_path`
+        Takes a string specifying the path to the the data source file as the first argument, and a string specifying the format as the second.
+
+    - :meth:`get_from_string`
+        Takes a string specifying containing the source data as the first argument, and a string specifying the format as the second.
+
+All these methods minimally take a source and format reference as arguments and return a new object of the given type populated from the given sourcee::
+
+    >>> import dendropy
+    >>> tree1 = dendropy.Tree.get_from_string("((A,B),(C,D))", format="newick")
+    >>> tree_list1 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus")
+    >>> dataset1 = dendropy.TreeList.get_from_file(open("pythonidae.fasta", format="fasta")
+
+The format specification can be one of: "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc. Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.tree.TreeList` object from a FASTA-formatted data source).
+
+All these methods take a `taxon_set` keyword that specifies the :class:`~dendropy.dataobject.taxon.TaxonSet` to use to manage the operational taxonomic units defined or referenced in the data source. If not given, a new :class:`~dendropy.dataobject.taxon.TaxonSet` will be created and used.
+
+Depending on the particular type being created and data source, these factory methods may take additional keyword arguments.
+For example, if a data source contains multiple trees, you may specify a particular tree to be parsed by passing the 0-based index of the tree to the ":meth:`get_from_*()`" of :class:`~dendropy.dataobject.tree.Tree`::
+
+    >>> tree2 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus", from_index=199)
+
+The object `tree2` is now a DendroPy representation of the 200th tree found in the specified :download:`file </examples/pythonidae.mcmc.nex>`. :class:`~dendropy.dataobject.tree.TreeList`, also takes a `from_index` keyword argument, and specifying this will result in all trees starting from the given index being parsed and added to the collection.
+
+With a :class:`~dendropy.dataobject.dataset.DataSet`, you can request that only trees or only characters are parsed::
+
+    >>> ds1 = dendropy.DataSet.get_from_path('data1.nex', 'nexus', exclude_chars=True)
+    >>> ds2 = dendropy.DataSet.get_from_path('data1.nex', 'nexus', exclude_trees=True)
+
+In addition to the factory methods, you can specify a data source to the constructor of the objects directly using the `stream` and `format` keywords::
+
+    >>> tree2 = dendropy.Tree(stream="primates.tre", format="newick", from_index=2)
+    >>> tree_list2 = dendropy.TreeList(stream="primates.tre", format="newick")
+
+You can also clone existing objects (i.e., create a deep-copy of everything but the taxon references)::
+
+    >>> tree3 = dendropy.Tree(tree2)
+    >>> tree_list3 = dendropy.TreeList(tree3)
+
+
 
 .. toctree::
 
