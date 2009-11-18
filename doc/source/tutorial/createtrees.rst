@@ -48,12 +48,12 @@ To build a new :class:`~dendropy.dataobject.tree.Tree` object from a string::
     Tree object at 0x660e50 (Tree6339376): ((A,B),(C,D))
 
 For convenience, you can use one of the special factory class methods of :class:`~dendropy.dataobject.tree.Tree` to wrap up the construction. All these methods take two arguments --- an object specifying or representing the source data, and a format specification string ("nexus", "newick", "nexml", etc) specifying the format of the data --- and return a :class:`~dendropy.dataobject.tree.Tree` object corresponding to the specified data source. They each take different types of source objects, though.
-:meth:`~dendropy.dataobject.tree.Tree.get_from_string()`, takes a string containing the data to be read as its source, :meth:`~dendropy.dataobject.tree.Tree.get_from_path()` takes a string specifying the path to a file on the filesystem as its source, while :meth:`~dendropy.dataobject.tree.Tree.get_from_file()` takes a file or file-like object as its source. For example::
+:meth:`~dendropy.dataobject.tree.Tree.get_from_string()`, takes a string containing the data to be read as its source, :meth:`~dendropy.dataobject.tree.Tree.get_from_path()` takes a string specifying the path to a file on the filesystem as its source, while :meth:`~dendropy.dataobject.tree.Tree.get_from_stream()` takes a file or file-like object as its source. For example::
 
     >>> from dendropy import Tree
     >>> tree1 = Tree.get_from_string('((A,B),(C,D))', 'newick')
     >>> tree2 = Tree.get_from_path('pythonidae.mcmc.nex', 'nexus')
-    >>> tree3 = Tree.get_from_file(open('pythonidae.mcmc.nex', 'ru'), 'nexus')
+    >>> tree3 = Tree.get_from_stream(open('pythonidae.mcmc.nex', 'ru'), 'nexus')
     >>> tree4 = Tree.get_from_path('pythonidae.mcmc.nex', 'nexus', from_index=201)
 
 Reading into an Existing Tree
@@ -61,7 +61,7 @@ Reading into an Existing Tree
 
 If you already have an existing :class:`~dendropy.dataobject.tree.Tree` object, and you want to redefine it or repopulate with new data, you would call one of its "read" methods:
 
-    - :meth:`~dendropy.dataobject.tree.Tree.read_from_file()`
+    - :meth:`~dendropy.dataobject.tree.Tree.read_from_stream()`
     - :meth:`~dendropy.dataobject.tree.Tree.read_from_path()`
     - :meth:`~dendropy.dataobject.tree.Tree.read_from_string()`
 
@@ -82,7 +82,7 @@ Or a file object::
     >>> from dendropy import Tree
     >>> tree = Tree()
     >>> f = open('pythonidae.mcmc.nex', 'rU')
-    >>> tree.read_from_file(f, 'nexus')
+    >>> tree.read_from_stream(f, 'nexus')
 
 Cloning an Existing Tree
 ========================
@@ -157,3 +157,85 @@ As you can see, the :class:`~dendropy.dataobject.tree.Node` and :class:`~dendrop
 This is based on the logic that while you want an independent copy of the tree, you still dealing with the same taxa.
 So, for example, if you were to prune or move an edge, change the edge lengths, etc. on `tree2`, or even reassign a particular :class:`~dendropy.dataobject.taxon.Taxon` object to a different node, it would not in any way affect `tree1`.
 But if you were to assign a different label to a :class:`~dendropy.dataobject.taxon.Taxon` object on `tree2`, this *would* affect the same :class:`~dendropy.dataobject.taxon.Taxon` object on `tree11`.
+
+Taxon Management
+================
+Every time an independent :class:`~dendropy.dataobject.tree.Tree` object is created, by default a new :class:`~dendropy.dataobject.taxon.TaxonSet` object is created and associated with the :class:`~dendropy.dataobject.tree.Tree. 
+This means that if two :class:`~dendropy.dataobject.tree.Tree` objects are independentally created, even if from the same data source, they will reference distinct sets of :class:`~dendropy.dataobject.taxon.Taxon` objects (though the labels might be the same).
+Consider the following::
+
+    >>> t1 = dendropy.Tree.get_from_path('pythonidae.mcmc.nex', 'nexus', from_index=199)
+    >>> t2 = dendropy.Tree.get_from_path('pythonidae.mcmc.nex', 'nexus', from_index=200)
+    
+Here, two tree objects are created from the 200th and 201st trees defined in the :download:`the example file </examples/pythonidae.mcmc.nex>`. 
+Even though they were sourced from the same data file, and, indeed, "TREE" block within the same data file, as a result of their independent default instantiation, they refer to distinct (though similar) :class:`~dendropy.dataobject.taxon.TaxonSet` and :class:`~dendropy.dataobject.taxon.Taxon` objects::
+
+    >>> print(t1.taxon_set.description(2))
+    TaxonSet object at 0x101f630 (TaxonSet16905776): 13 Taxa
+        [0] Taxon object at 0x124e690 (Taxon19195536): 'Aspidites ramsayi'
+        [1] Taxon object at 0x124e630 (Taxon19195440): 'Bothrochilus boa'
+        [2] Taxon object at 0x124e090 (Taxon19194000): 'Liasis fuscus'
+        [3] Taxon object at 0x124e670 (Taxon19195504): 'Antaresia stimsoni'
+        [4] Taxon object at 0x124e330 (Taxon19194672): 'Morelia viridis'
+        [5] Taxon object at 0x124e6d0 (Taxon19195600): 'Morelia bredli'
+        [6] Taxon object at 0x124e6b0 (Taxon19195568): 'Antaresia perthensis'
+        [7] Taxon object at 0x124e3d0 (Taxon19194832): 'Python timoriensis'
+        [8] Taxon object at 0x124e6f0 (Taxon19195632): 'Antaresia maculosa'
+        [9] Taxon object at 0x124e350 (Taxon19194704): 'Morelia carinata'
+        [10] Taxon object at 0x124e710 (Taxon19195664): 'Python brongersmai'
+        [11] Taxon object at 0x124e650 (Taxon19195472): 'Morelia boeleni'
+        [12] Taxon object at 0x124e770 (Taxon19195760): 'Morelia oenpelliensis'
+    >>> print(t2.taxon_set.description(2))
+    TaxonSet object at 0x1243a80 (TaxonSet19151488): 13 Taxa
+        [0] Taxon object at 0x129e610 (Taxon19523088): 'Aspidites ramsayi'
+        [1] Taxon object at 0x129e930 (Taxon19523888): 'Bothrochilus boa'
+        [2] Taxon object at 0x129e7b0 (Taxon19523504): 'Liasis fuscus'
+        [3] Taxon object at 0x129e850 (Taxon19523664): 'Antaresia stimsoni'
+        [4] Taxon object at 0x129e950 (Taxon19523920): 'Morelia viridis'
+        [5] Taxon object at 0x129e770 (Taxon19523440): 'Morelia bredli'
+        [6] Taxon object at 0x129e4b0 (Taxon19522736): 'Antaresia perthensis'
+        [7] Taxon object at 0x129ec70 (Taxon19524720): 'Python timoriensis'
+        [8] Taxon object at 0x129eb90 (Taxon19524496): 'Antaresia maculosa'
+        [9] Taxon object at 0x129e7d0 (Taxon19523536): 'Morelia carinata'
+        [10] Taxon object at 0x129e550 (Taxon19522896): 'Python brongersmai'
+        [11] Taxon object at 0x129e730 (Taxon19523376): 'Morelia boeleni'
+        [12] Taxon object at 0x129e830 (Taxon19523632): 'Morelia oenpelliensis'
+        
+This would mean that any comparisons between the two trees would be invalid::
+
+    >>> from dendropy import treecalc
+    >>> treecalc.symmetric_difference(t1, t2)
+    ------------------------------------------------------------
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+    
+      File "/Users/jeet/Documents/Projects/dendropy/dendropy/treecalc.py", line 280, in symmetric_difference
+        t = false_positives_and_negatives(tree1, tree2)
+    
+      File "/Users/jeet/Documents/Projects/dendropy/dendropy/treecalc.py", line 293, in false_positives_and_negatives
+        % (hex(id(reference_tree.taxon_set)), hex(id(test_tree.taxon_set))))
+    
+    TypeError: Trees have different TaxonSet objects: 0x101f630 vs. 0x1243a80
+    
+The correct way to instantiate two :class:`~dendropy.dataobject.tree.Tree` objects so that they refer to the same taxa objects is to explictly pass a :class:`~dendropy.dataobject.taxon.TaxonSet` for them to use::
+
+    >>> t1 = dendropy.Tree.get_from_path('pythonidae.mcmc.nex', 'nexus', from_index=199)
+    >>> t2 = dendropy.Tree.get_from_path('pythonidae.mcmc.nex', 'nexus', from_index=200, taxon_set=t1.taxon_set)
+    >>> treecalc.symmetric_difference(t1, t2)
+    8    
+
+The same applies even if they are sourced from different files: specifying a :class:`~dendropy.dataobject.taxon.TaxonSet` object correctly maps the taxa to the same reference::
+
+    >>> t1 = dendropy.Tree.get_from_path('pythonidae.mle.nex', 'nexus')
+    >>> t2 = dendropy.Tree.get_from_path('pythonidae.pars.newick', 'newick', taxon_set=t1.taxon_set)
+    >>> treecalc.symmetric_difference(t1, t2)
+    4
+    
+It probably would lead to more maintainable code if you were to explicitly create a :class:`~dendropy.dataobject.taxon.TaxonSet` object, and pass that to all :class:`~dendropy.dataobject.tree.Tree` objects that you create (assuming, of course, that they all do indeed refer to the same taxa)::
+
+    >>> taxa = dendropy.TaxonSet()
+    >>> t1 = dendropy.Tree.get_from_path('pythonidae.mle.nex', 'nexus', taxon_set=taxa) 
+    >>> t2 = dendropy.Tree.get_from_path('pythonidae.pars.newick', 'newick', taxon_set=taxa) 
+    >>> t4 = dendropy.Tree.get_from_path('pythonidae.mcmc.nexus', 'nexus', from_index=199, taxon_set=taxa)
+    
+    
