@@ -27,12 +27,8 @@ Phylogenetic data in DendroPy is represented by one or more objects of the follo
     :class:`~dendropy.dataobject.dataset.DataSet`
         A meta-collection of phylogenetic data, consisting of lists of multiple :class:`~dendropy.dataobject.taxon.TaxonSet` objects (:attr:`~dendropy.dataobject.DataSet.taxon_sets`), :class:`~dendropy.dataobject.tree.TreeList` objects (:attr:`~dendropy.dataobject.DataSet.tree_lists`), and :class:`~dendropy.dataobject.CharacterArray` objects (:attr:`~dendropy.dataobject.DataSet.char_arrays`).
 
-
-General Data Object API
-=======================
-
 Creating New (Empty) Objects
-----------------------------
+============================
 
 All of the above names are imported into the the the :mod:`dendropy` namespace, and so to instantiate new, empty objects of these classes, you would need to import :mod:`dendropy`::
 
@@ -49,7 +45,7 @@ Or import the names directly::
     >>> dataset1 = DataSet()
 
 Creating and Populating New Objects
------------------------------------
+===================================
 
 The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support ":meth:`get_from_*()`" factory methods that allow for the simultaneous instantiation and population of the objects from a data source:
 
