@@ -34,8 +34,50 @@ We now have two distinct :class:`~dendropy.dataobject.tree.Tree` objects, each a
     >>> t1.leaf_nodes()[0].taxon.label == t2.leaf_nodes()[0].taxon.label
     True
 
-This means that even though the tree shape and structure is identical between the two trees, they exist in different universes as far as DendroPy is concerned::
+This means that even though the tree shape and structure is identical between the two trees, they exist in different universes as far as DendroPy is concerned, and many operations that involving comparing trees will fail::
 
-.. Most phylogenetic data objects that reference taxa (such as :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterArray`, etc.) have an attribute named `taxon_set` that points to a :class:`~dendropy.dataobject.taxon.TaxonSet` object.
+    >>> from dendropy import treecalc
+    >>> treecalc.robinson_foulds_distance(t1, t2)
+    ------------------------------------------------------------
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+    
+      File "/Users/jeet/Documents/Projects/dendropy/dendropy/treecalc.py", line 263, in robinson_foulds_distance
+        value_type=float)
+    
+      File "/Users/jeet/Documents/Projects/dendropy/dendropy/treecalc.py", line 200, in splits_distance
+        % (hex(id(tree1.taxon_set)), hex(id(tree2.taxon_set))))
+    
+    TypeError: Trees have different TaxonSet objects: 0x101f630 vs. 0x103bf30
 
+The solution is to explicitly specify the same `taxon_set` when creating the trees. In DendroPy all phylogenetic data classes that are associated with :class:`~dendropy.dataobject.taxon.TaxonSet` objects have constructors, factory methods, and `read_from_*` methods take a specific :class:`TaxonSet` object as an argument using the `taxon_set` a keyword. For example::
+
+    >>> taxa = dendropy.TaxonSet()
+    >>> t1 = dendropy.Tree.get_from_string('((A,B),(C,D))', format='newick', taxon_set=taxa)
+    >>> t2 = dendropy.Tree.get_from_string('((A,B),(C,D))', format='newick', taxon_set=taxa)
+    >>> treecalc.robinson_foulds_distance(t1, t2)
+    0.0
+
+The :class:`~dendropy.dataobject.tree.TreeList` class is designed to manage collections of :class:`~dendropy.dataobject.tree.Tree` objects that share the same :class:`~dendropy.dataobject.taxon.TaxonSet`. 
+As :class:`~dendropy.dataobject.tree.Tree` objects are appended to a :class:`~dendropy.dataobject.tree.TreeList` object, the :class:`~dendropy.dataobject.tree.TreeList` object will automatically take care of remapping the :class:`~dendropy.dataobject.taxon.TaxonSet` and associated :class:`~dendropy.dataobject.taxon.Taxon` objects::
+
+    >>> t1 = dendropy.Tree.get_from_string('((A,B),(C,D))', format='newick')
+    >>> t2 = dendropy.Tree.get_from_string('((A,B),(C,D))', format='newick')
+    >>> print(repr(t1.taxon_set))
+    <TaxonSet object at 0x1243a20>
+    >>> repr(t1.taxon_set) 
+    '<TaxonSet object at 0x1243a20>'
+    >>> repr(t2.taxon_set)
+    '<TaxonSet object at 0x12439f0>'
+    >>> trees = dendropy.TreeList()
+    >>> trees.append(t1)
+    >>> trees.append(t2)
+    >>> repr(t1.taxon_set)
+    '<TaxonSet object at 0x1243870>'
+    >>> repr(t2.taxon_set)
+    '<TaxonSet object at 0x1243870>'
+    >>> treecalc.robinson_foulds_distance(t1, t2)
+    0.0
+
+More details on taxa management with the :class:`~dendropy.dataobject.tree.TreeList` class, and similar approaches with the :class:`~dendropy.dataobject.dataset.DataSet` class can be found in the ":doc:`createtreelists`" and XXXX articles.
 
