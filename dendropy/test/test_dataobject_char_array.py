@@ -108,8 +108,7 @@ class DnaArrayTest(datatest.DataObjectVerificationTestCase):
             ca2,
             char_type=dendropy.DnaCharacterArray,
             distinct_state_alphabets=False,
-            distinct_taxa=False,
-            equal_oids=False)
+            distinct_taxa=False)
 
 class StandardArrayTest(datatest.DataObjectVerificationTestCase):
 
@@ -123,8 +122,7 @@ class StandardArrayTest(datatest.DataObjectVerificationTestCase):
             ca2,
             char_type=dendropy.StandardCharacterArray,
             distinct_state_alphabets=True,
-            distinct_taxa=False,
-            equal_oids=False)
+            distinct_taxa=False)
 
 class CharArrayReadTest(datatest.DataObjectVerificationTestCase):
 
@@ -141,8 +139,7 @@ class CharArrayReadTest(datatest.DataObjectVerificationTestCase):
             c,
             char_type=dendropy.DnaCharacterArray,
             distinct_state_alphabets=False,
-            distinct_taxa=True,
-            equal_oids=False)
+            distinct_taxa=True)
 
     def testIndexedRead(self):
         c = dendropy.StandardCharacterArray()
@@ -152,8 +149,7 @@ class CharArrayReadTest(datatest.DataObjectVerificationTestCase):
             c,
             char_type=dendropy.StandardCharacterArray,
             distinct_state_alphabets=None,
-            distinct_taxa=True,
-            equal_oids=False)
+            distinct_taxa=True)
 
     def testIncompatibleRead(self):
         c = dendropy.DnaCharacterArray()
@@ -167,8 +163,7 @@ class CharArrayReadTest(datatest.DataObjectVerificationTestCase):
             c,
             char_type=dendropy.DnaCharacterArray,
             distinct_state_alphabets=False,
-            distinct_taxa=True,
-            equal_oids=False)
+            distinct_taxa=True)
 
     def testSameTaxaRead(self):
         c = dendropy.DnaCharacterArray()
@@ -180,8 +175,7 @@ class CharArrayReadTest(datatest.DataObjectVerificationTestCase):
             c,
             char_type=dendropy.DnaCharacterArray,
             distinct_state_alphabets=False,
-            distinct_taxa=False,
-            equal_oids=False)
+            distinct_taxa=False)
 
     def testSameTaxaInit(self):
         c = dendropy.DnaCharacterArray(stream=open(self.data_path, "rU"),
@@ -192,8 +186,57 @@ class CharArrayReadTest(datatest.DataObjectVerificationTestCase):
             c,
             char_type=dendropy.DnaCharacterArray,
             distinct_state_alphabets=False,
-            distinct_taxa=False,
-            equal_oids=False)
+            distinct_taxa=False)
+
+class CharArrayWriteTest(datatest.DataObjectVerificationTestCase):
+
+    def testDnaRountTripDistinctTaxa(self):
+        c1 = datagen.reference_dna_array()
+        path = pathmap.named_output_path("char_rw_dna.nex")
+        c1.write_to_path(path, "nexus")
+        c2 = dendropy.DnaCharacterArray.get_from_path(path, "nexus")
+        self.assertDistinctButEqual(
+            c1,
+            c2,
+            char_type=dendropy.DnaCharacterArray,
+            distinct_state_alphabets=False,
+            distinct_taxa=True)
+
+    def testDnaRountTripSameTaxa(self):
+        c1 = datagen.reference_dna_array()
+        path = pathmap.named_output_path("char_rw_dna.nex")
+        c1.write_to_path(path, "nexus")
+        c2 = dendropy.DnaCharacterArray.get_from_path(path, "nexus", taxon_set=c1.taxon_set)
+        self.assertDistinctButEqual(
+            c1,
+            c2,
+            char_type=dendropy.DnaCharacterArray,
+            distinct_state_alphabets=False,
+            distinct_taxa=False)
+
+    def testStandardRountTripDistinctTaxa(self):
+        c1 = datagen.reference_standard_array()
+        path = pathmap.named_output_path("char_rw_dna.nex")
+        c1.write_to_path(path, "nexus")
+        c2 = dendropy.StandardCharacterArray.get_from_path(path, "nexus")
+        self.assertDistinctButEqual(
+            c1,
+            c2,
+            char_type=dendropy.StandardCharacterArray,
+            distinct_state_alphabets=None,
+            distinct_taxa=True)
+
+    def testStandardRountTripSameTaxa(self):
+        c1 = datagen.reference_standard_array()
+        path = pathmap.named_output_path("char_rw_dna.nex")
+        c1.write_to_path(path, "nexus")
+        c2 = dendropy.StandardCharacterArray.get_from_path(path, "nexus", taxon_set=c1.taxon_set)
+        self.assertDistinctButEqual(
+            c1,
+            c2,
+            char_type=dendropy.StandardCharacterArray,
+            distinct_state_alphabets=None,
+            distinct_taxa=False)
 
 
 if __name__ == "__main__":
