@@ -80,5 +80,21 @@ class CharArrayReadTest(datatest.DataObjectVerificationTestCase):
             distinct_taxa=True,
             equal_oids=False)
 
+    def testIndexedRead(self):
+        c = dendropy.StandardCharacterArray()
+        c.read_from_path(self.data_path, "nexus", index=1)
+        self.assertDistinctButEqual(
+            self.reference_dataset.char_arrays[1],
+            c,
+            char_type=dendropy.StandardCharacterArray,
+            distinct_state_alphabets=True,
+            distinct_taxa=True,
+            equal_oids=False)
+
+    def testIncompatibleRead(self):
+        c = dendropy.DnaCharacterArray()
+        self.assertRaises(ValueError, c.read_from_path, self.data_path, "nexus", index=1)
+
+
 if __name__ == "__main__":
     unittest.main()

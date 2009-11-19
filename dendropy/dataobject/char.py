@@ -558,6 +558,9 @@ class CharacterArray(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if index >= len(d.char_arrays):
             raise IndexError("Character array of index %d specified, but data source only has %d arrays defined (max. index=%d)" \
                 % (index, len(d.char_arrays), len(d.char_arrays)-1))
+        if not isinstance(self, d.char_arrays[index].__class__):
+            raise ValueError("Character data found was of type '%s' (object is of type '%s')" %
+                    (d.char_arrays[index].__class__.__name__, self.__class__.__name__))
         self.__dict__ = d.char_arrays[index].__dict__
         return self
 
