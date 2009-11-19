@@ -29,6 +29,7 @@ from cStringIO import StringIO
 from dendropy.utility import error
 from dendropy.test.support import datatest
 from dendropy.test.support import datagen
+from dendropy.test.support import pathmap
 import dendropy
 
 class DnaArrayTest(datatest.DataObjectVerificationTestCase):
@@ -59,6 +60,24 @@ class StandardArrayTest(datatest.DataObjectVerificationTestCase):
             char_type=dendropy.StandardCharacterArray,
             distinct_state_alphabets=True,
             distinct_taxa=False,
+            equal_oids=False)
+
+class CharArrayReadTest(datatest.DataObjectVerificationTestCase):
+
+    def setUp(self):
+        self.reference_dataset = datagen.reference_single_taxonset_dataset()
+        self.data_path = pathmap.named_output_path("char_read.nex")
+        self.reference_dataset.write_to_path(self.data_path, "nexus")
+
+    def testNonIndexedRead(self):
+        c = dendropy.DnaCharacterArray()
+        c.read_from_path(self.data_path, "nexus")
+        self.assertDistinctButEqual(
+            self.reference_dataset.char_arrays[0],
+            c,
+            char_type=dendropy.DnaCharacterArray,
+            distinct_state_alphabets=False,
+            distinct_taxa=True,
             equal_oids=False)
 
 if __name__ == "__main__":

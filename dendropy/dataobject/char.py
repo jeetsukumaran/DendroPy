@@ -555,7 +555,7 @@ class CharacterArray(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         d = DataSet(stream=stream, format=format)
         if len(d.char_arrays) == 0:
             raise ValueError("No character data in data source")
-        if len(index) >= len(d.char_arrays):
+        if index >= len(d.char_arrays):
             raise IndexError("Character array of index %d specified, but data source only has %d arrays defined (max. index=%d)" \
                 % (index, len(d.char_arrays), len(d.char_arrays)-1))
         self.__dict__ = d.char_arrays[index].__dict__

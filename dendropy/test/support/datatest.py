@@ -314,9 +314,10 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 sa2 = char_array2.state_alphabets[sai]
                 self.assertDistinctButEqualStateAlphabet(sa1, sa2)
         elif distinct_state_alphabets is False:
-            self.assertSame(char_array1.state_alphabets, char_array2.state_alphabets)
-            self.assertEqual(char_array1.state_alphabets, char_array2.state_alphabets)
-            self.assertSame(char_array1.default_state_alphabet, char_array2.default_state_alphabet)
+            for sai, sa1 in enumerate(char_array1.state_alphabets):
+                sa2 = char_array2.state_alphabets[sai]
+                self.assertSame(sa1, sa2)
+                self.assertSame(char_array1.default_state_alphabet, char_array2.default_state_alphabet)
         if not ignore_chartypes:
             self.assertEqual(len(char_array1.character_types), len(char_array2.character_types))
         for coli, col1 in enumerate(char_array1.character_types):

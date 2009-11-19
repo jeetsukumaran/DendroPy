@@ -63,7 +63,7 @@ All these methods minimally take a source and format reference as arguments and 
     >>> import dendropy
     >>> tree1 = dendropy.Tree.get_from_string("((A,B),(C,D))", format="newick")
     >>> tree_list1 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus")
-    >>> dataset1 = dendropy.TreeList.get_from_file(open("pythonidae.fasta", format="fasta")
+    >>> dataset1 = dendropy.TreeList.get_from_stream(open("pythonidae.fasta", format="fasta")
 
 The format specification can be one of: "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc. Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.tree.TreeList` object from a FASTA-formatted data source).
 
@@ -85,15 +85,58 @@ In addition to the factory methods, you can specify a data source to the constru
 
     >>> tree2 = dendropy.Tree(stream="primates.tre", format="newick", from_index=2)
     >>> tree_list2 = dendropy.TreeList(stream="primates.tre", format="newick")
+    >>> dataset2 = dendropy.DataSet(stream="primates.nex", format="nexus")
 
 You can also clone existing objects (i.e., create a deep-copy of everything but the taxon references)::
 
     >>> tree3 = dendropy.Tree(tree2)
-    >>> tree_list3 = dendropy.TreeList(tree3)
+    >>> tree_list3 = dendropy.TreeList(tree_list2)
+    >>> dataset3 = dendropy.DataSet(dataset2)
+
+Reading and Populating (or Repopulating) Existing Objects
+=========================================================
+
+The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support a suite of ":meth:`read_from_*()`" instance methods that parallels the ":meth:`get_from_*()`" factory methods described above:
+
+    - :meth:`read_from_stream`
+        Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the format as the second.
+
+    - :meth:`read_from_path`
+        Takes a string specifying the path to the the data source file as the first argument, and a string specifying the format as the second.
+
+    - :meth:`read_from_string`
+        Takes a string specifying containing the source data as the first argument, and a string specifying the format as the second.
+
+When called on an existing :class:`~dendropy.dataobject.tree.TreeList`, or :class:`~dendropy.dataobject.dataset.DataSet` object, these methods *add* the data from the data source to the object, whereas when called on an existing :class:`~dendropy.dataobject.tree.Tree` object, they *replace* the :class:`~dendropy.dataobject.tree.Tree` with the tree specified in the data source.
+As with the ":meth:`get_from_*()`" methods, the format specification can be any supported and type-apppropriate format, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc.
+
+For example, the following accumulates post-burn-in trees from a several different files into a single :class:`~dendropy.dataobject.tree.TreeList` object::
+
+    >>> import dendropy
+    >>> post_trees = dendropy.TreeList()
+    >>> post_trees.read_from_path("pythonidae.nex.run1.t", "nexus", from_index=200)
+    >>> post_trees.read_from_path("pythonidae.nex.run2.t", "nexus", from_index=200)
+    >>> post_trees.read_from_path("pythonidae.nex.run3.t", "nexus", from_index=200)
+    >>> post_trees.read_from_path("pythonidae.nex.run4.t", "nexus", from_index=200)
+    >>> print(post_trees.description())
+    TreeList object at 0x5508a0 (TreeList5572768):  3204 Trees
+
+The :class:`~dendropy.dataobject.tree.TreeList` objects automatically handles taxon management, and esnures that all appended :class:`~dendropy.dataobject.tree.Tree` objects share the same :class:`~dendropy.dataobject.taxon.TaxonSet` reference. Thus all the :class:`~dendropy.dataobject.tree.Tree` o
+
+    >>> t = dendropy.Tree()
+    >>> t.read_from_path('pythonidae.mcmc.nex', 'nexus', from_index=200)
+    <Tree object at 0x6e71470>
+    >>> print(t.description())
+    Tree object at 0x6e71470 (Tree150000016: 'rep.200000'): ('Morelia boeleni':0.106115,((('Bothrochilus boa':0.092919,'Python timoriensis':0.180712):0.020687,(((('Antaresia perthensis':0.167512,'Antaresia stimsoni':0.059787):0.033053,'Antaresia maculosa':0.146173):0.016954,(('Morelia carinata':0.100305,'Morelia bredli':0.114501):0.015794,'Morelia viridis':0.130131):0.004453):0.033047,'Liasis fuscus':0.166956):0.026128):0.004973,('Morelia oenpelliensis':0.084937,'Python brongersmai':0.245248):0.017803):0.030474,'Aspidites ramsayi':0.121686)
+    >>> t.read_from_path('pythonidae.mcmc.nex', 'nexus', from_index=201)
+    <Tree object at 0x6e71470>
+    >>> print(t.description())
+    Tree object at 0x6e71470 (Tree148637488: 'rep.201000'): (((('Morelia oenpelliensis':0.097643,'Python brongersmai':0.296685):0.041638,(((('Morelia carinata':0.124252,'Morelia bredli':0.11777):0.013171,'Morelia viridis':0.134126):0.016724,('Antaresia maculosa':0.141482,('Antaresia perthensis':0.150992,'Antaresia stimsoni':0.072758):0.026511):0.027869):0.025264,'Liasis fuscus':0.215957):0.007182):0.001742,('Python timoriensis':0.257266,'Bothrochilus boa':0.165363):0.028538):0.027447,'Morelia boeleni':0.163616,'Aspidites ramsayi':0.071978)
 
 
 
 .. toctree::
+    :hidden:
 
     createtaxa.rst
     createtrees.rst
