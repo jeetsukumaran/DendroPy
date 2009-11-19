@@ -87,13 +87,49 @@ class CharArrayReadTest(datatest.DataObjectVerificationTestCase):
             self.reference_dataset.char_arrays[1],
             c,
             char_type=dendropy.StandardCharacterArray,
-            distinct_state_alphabets=True,
+            distinct_state_alphabets=None,
             distinct_taxa=True,
             equal_oids=False)
 
     def testIncompatibleRead(self):
         c = dendropy.DnaCharacterArray()
         self.assertRaises(ValueError, c.read_from_path, self.data_path, "nexus", index=1)
+
+    def testInitRead(self):
+        c = dendropy.DnaCharacterArray(stream=open(self.data_path, "rU"),
+                format="nexus")
+        self.assertDistinctButEqual(
+            self.reference_dataset.char_arrays[0],
+            c,
+            char_type=dendropy.DnaCharacterArray,
+            distinct_state_alphabets=False,
+            distinct_taxa=True,
+            equal_oids=False)
+
+    def testSameTaxaRead(self):
+        c = dendropy.DnaCharacterArray()
+        c.read_from_path(self.data_path,
+                format="nexus",
+                taxon_set=self.reference_dataset.char_arrays[0].taxon_set)
+        self.assertDistinctButEqual(
+            self.reference_dataset.char_arrays[0],
+            c,
+            char_type=dendropy.DnaCharacterArray,
+            distinct_state_alphabets=False,
+            distinct_taxa=False,
+            equal_oids=False)
+
+    def testSameTaxaInit(self):
+        c = dendropy.DnaCharacterArray(stream=open(self.data_path, "rU"),
+                format="nexus",
+                taxon_set=self.reference_dataset.char_arrays[0].taxon_set)
+        self.assertDistinctButEqual(
+            self.reference_dataset.char_arrays[0],
+            c,
+            char_type=dendropy.DnaCharacterArray,
+            distinct_state_alphabets=False,
+            distinct_taxa=False,
+            equal_oids=False)
 
 
 if __name__ == "__main__":

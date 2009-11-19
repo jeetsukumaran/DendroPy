@@ -526,6 +526,8 @@ class CharacterArray(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 self.clone_from(args[0])
             else:
                 raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
+        else:
+            self.process_source_kwargs(**kwargs)
         if "oid" in kwargs:
             self.oid = kwargs["oid"]
         if "label" in kwargs:
@@ -552,7 +554,7 @@ class CharacterArray(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         index = kwargs.get("index", 0)
         from dendropy.dataobject.dataset import DataSet
-        d = DataSet(stream=stream, format=format)
+        d = DataSet(stream=stream, format=format, **kwargs)
         if len(d.char_arrays) == 0:
             raise ValueError("No character data in data source")
         if index >= len(d.char_arrays):
@@ -561,8 +563,7 @@ class CharacterArray(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if not isinstance(self, d.char_arrays[index].__class__):
             raise ValueError("Character data found was of type '%s' (object is of type '%s')" %
                     (d.char_arrays[index].__class__.__name__, self.__class__.__name__))
-        self.__dict__ = d.char_arrays[index].__dict__
-        return self
+        return self.clone_from(d.char_arrays[index])
 
     def write(self, stream, format, **kwargs):
         """
