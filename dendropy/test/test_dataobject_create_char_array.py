@@ -27,10 +27,74 @@ Tests creation, reading, update, deletion of CharArray objects.
 import unittest
 from cStringIO import StringIO
 from dendropy.utility import error
+from dendropy.test.support.extendedtest import ExtendedTestCase
 from dendropy.test.support import datatest
 from dendropy.test.support import datagen
 from dendropy.test.support import pathmap
 import dendropy
+
+class TestCharStruct(ExtendedTestCase):
+
+    def setUp(self):
+        self.tb1 = dendropy.TaxonSet(label="TI1")
+        for i in range(1,11):
+            self.tb1.new_taxon(label="T%02d" % i)
+        self.cb1 = dendropy.DnaCharacterArray(taxon_set=self.tb1, label="TI1, CA1")
+        for t in self.tb1:
+            self.cb1.append_taxon_sequence(t, state_symbols="AAAAAAAAAA")
+        self.tb2 = dendropy.TaxonSet(label="TI2")
+        for i in range(1,21):
+            self.tb2.new_taxon(label="T%02d" % i)
+        self.cb2 = dendropy.DnaCharacterArray(taxon_set=self.tb2, label="TI2, CA2")
+        for t in self.tb2:
+            self.cb2.append_taxon_sequence(t, state_symbols="CCCCCCCCCC")
+
+class TestExtendCharacters(TestCharStruct):
+
+    def runTest(self):
+        ntax_pre = len(self.cb1)
+        nchars_pre = len(self.cb1.values()[0])
+        self.cb1.extend_characters(self.cb2)
+        self.assertEqual(len(self.cb1), ntax_pre)
+        for t in self.cb1:
+            self.assertEqual(len(self.cb1[t]), 20)
+            self.assertEqual(self.cb1[t].symbols_as_string(), "AAAAAAAAAACCCCCCCCCC")
+
+class TestExtendSequencesOverwrite(TestCharStruct):
+
+    def runTest(self):
+        self.cb1.extend(self.cb2, overwrite_existing=True)
+        target_ntax = 20
+        self.assertEqual(len(self.cb1), target_ntax)
+        self.assertEqual(len(self.cb1.taxon_set), target_ntax)
+        for t in self.tb2:
+            cb_tb_labels = self.cb1.taxon_set.labels()
+            self.assertContained(t.label, cb_tb_labels)
+            cb_labels = [t.label for t in self.cb1]
+            self.assertContained(t.label, cb_labels)
+        for t in self.cb1:
+            self.assertEqual(len(self.cb1[t]), 10)
+            self.assertEqual(self.cb1[t].symbols_as_string(), "CCCCCCCCCC",)
+
+class TestExtendSequencesAppend(TestCharStruct):
+
+    def runTest(self):
+        self.cb1.extend(self.cb2, extend_existing=True)
+        target_ntax = 20
+        self.assertEqual(len(self.cb1), target_ntax)
+        self.assertEqual(len(self.cb1.taxon_set), target_ntax)
+        for t in self.tb2:
+            cb_tb_labels = self.cb1.taxon_set.labels()
+            self.assertContained(t.label, cb_tb_labels)
+            cb_labels = [t.label for t in self.cb1]
+            self.assertContained(t.label, cb_labels)
+        for t in self.cb1:
+            if int(t.label[-2:]) > 10:
+                self.assertEqual(len(self.cb1[t]), 10)
+                self.assertEqual(self.cb1[t].symbols_as_string(), "CCCCCCCCCC")
+            else:
+                self.assertEqual(len(self.cb1[t]), 20)
+                self.assertEqual(self.cb1[t].symbols_as_string(), "AAAAAAAAAACCCCCCCCCC")
 
 class DnaArrayTest(datatest.DataObjectVerificationTestCase):
 
