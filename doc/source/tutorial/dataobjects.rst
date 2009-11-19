@@ -40,7 +40,7 @@ All of the above names are imported into the the the :mod:`dendropy` namespace, 
 
 Or import the names directly::
 
-    >>> from dendropy import Tree, TreeList, DataSet
+    >>> from dendropy import Tree, TreeList, DnaCharacterArray, DataSet
     >>> tree1 = Tree()
     >>> tree_list1 = TreeList()
     >>> dna1 = = DnaCharacterArray()
@@ -65,7 +65,7 @@ All these methods minimally take a source and format reference as arguments and 
     >>> import dendropy
     >>> tree1 = dendropy.Tree.get_from_string("((A,B),(C,D))", format="newick")
     >>> tree_list1 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus")
-    >>> dna1 = dendropy.DnaCharacterArray.get_from_stream(open("pythonidae.fasta", format="dnafasta")
+    >>> dna1 = dendropy.DnaCharacterArray.get_from_stream(open("pythonidae.fasta"), format="dnafasta")
     >>> dataset1 = dendropy.DataSet.get_from_path('pythonidae.nex', format='nexus')
 
 The format specification can be one of: "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc. Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.tree.TreeList` object from a FASTA-formatted data source).
@@ -75,9 +75,16 @@ All these methods take a `taxon_set` keyword that specifies the :class:`~dendrop
 Depending on the particular type being created and data source, these factory methods may take additional keyword arguments.
 For example, if a data source contains multiple trees, you may specify a particular tree to be parsed by passing the 0-based index of the tree to the ":meth:`get_from_*()`" of :class:`~dendropy.dataobject.tree.Tree`::
 
-    >>> tree2 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus", from_index=199)
+    >>> tree2 = dendropy.Tree.get_from_path("pythonidae.mcmc.nex", format="nexus", from_index=200)
 
-The object `tree2` is now a DendroPy representation of the 200th tree found in the specified :download:`file </examples/pythonidae.mcmc.nex>`. :class:`~dendropy.dataobject.tree.TreeList`, also takes a `from_index` keyword argument, and specifying this will result in all trees starting from the given index being parsed and added to the collection.
+The object `tree2` is now a DendroPy representation of the 201st tree found in the specified :download:`file </examples/pythonidae.mcmc.nex>`. :class:`~dendropy.dataobject.tree.TreeList` also takes a `from_index` keyword argument, and specifying this will result in all trees starting from the given index being parsed and added to the collection.
+
+    >>> tree_list1 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus")
+    >>> print(tree_list1.description())
+    TreeList object at 0x64a510 (TreeList6595856):  1001 Trees
+    >>> tree_list2 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus", from_index=200)
+    >> print(tree_list2.description())
+    TreeList object at 0x551a80 (TreeList5577344):  801 Trees
 
 With a :class:`~dendropy.dataobject.dataset.DataSet`, you can request that only trees or only characters are parsed::
 
@@ -112,7 +119,7 @@ The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.T
     - :meth:`read_from_string`
         Takes a string specifying containing the source data as the first argument, and a string specifying the format as the second.
 
-When called on an existing :class:`~dendropy.dataobject.tree.TreeList`, or :class:`~dendropy.dataobject.dataset.DataSet` object, these methods *add* the data from the data source to the object, whereas when called on an existing :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.char.CharacterArray object,  they *replace* the object's data with data from the data source.
+When called on an existing :class:`~dendropy.dataobject.tree.TreeList`, or :class:`~dendropy.dataobject.dataset.DataSet` object, these methods *add* the data from the data source to the object, whereas when called on an existing :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.char.CharacterArray` object,  they *replace* the object's data with data from the data source.
 As with the ":meth:`get_from_*()`" methods, the format specification can be any supported and type-apppropriate format, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc.
 
 For example, the following accumulates post-burn-in trees from a several different files into a single :class:`~dendropy.dataobject.tree.TreeList` object::
@@ -132,7 +139,9 @@ For example, the following accumulates post-burn-in trees from a several differe
     >>> print(post_trees.description())
     TreeList object at 0x5508a0 (TreeList5572768): 3204 Trees
 
-While the following changes the contents of a :class:`~dendropy.dataobject.tree.Tree` by re-reading it::
+The :class:`~dendropy.dataobject.tree.TreeList` objects automatically handles taxon management, and ensures that all appended :class:`~dendropy.dataobject.tree.Tree` objects share the same :class:`~dendropy.dataobject.taxon.TaxonSet` reference. Thus all the :class:`~dendropy.dataobject.tree.Tree` objects created and aggregated from the data sources in the example will all share the same :class:`~dendropy.dataobject.taxon.TaxonSet` and :class:`~dendropy.dataobject.taxon.Taxon` objects, which is important if you are going to be carrying comparisons or operations between multiple :class:`~dendropy.dataobject.tree.Tree` objects.
+
+In contrast to the aggregating behavior of :meth:`read_from_*` of :class:`~dendropy.dataobject.tree.TreeList` and :class:`~dendropy.dataobject.dataset.DataSet` objects, the :meth:`read_from_*` methods of :class:`~dendropy.dataobject.tree.Tree` and :class:`~dendropy.dataobject.char.CharacterArray`-derived objects show replacement behavior. For example, the following changes the contents of a :class:`~dendropy.dataobject.tree.Tree` by re-reading it::
 
     >>> t = dendropy.Tree()
     >>> t.read_from_path('pythonidae.mle.nex', 'nexus')
@@ -144,7 +153,7 @@ While the following changes the contents of a :class:`~dendropy.dataobject.tree.
     >>> print(t.description())
     Tree object at 0x79db0 (Tree6612560: 'mb 50 majrule'): ('Aspidites ramsayi':0.096507,'Bothrochilus boa':0.142761,'Liasis fuscus':0.158747,'Python timoriensis':0.214838,'Python brongersmai':0.276612,'Morelia boeleni':0.139709,'Morelia oenpelliensis':0.10482,((('Antaresia stimsoni':0.074305,'Antaresia perthensis':0.146934):0.029441,'Antaresia maculosa':0.136347):0.016492,('Morelia viridis':0.1111,('Morelia bredli':0.102316,'Morelia carinata':0.1242):0.018918):0.009631):0.026255)
 
-The :class:`~dendropy.dataobject.tree.TreeList` objects automatically handles taxon management, and ensures that all appended :class:`~dendropy.dataobject.tree.Tree` objects share the same :class:`~dendropy.dataobject.taxon.TaxonSet` reference. Thus all the :class:`~dendropy.dataobject.tree.Tree` o
+
 
 
 
