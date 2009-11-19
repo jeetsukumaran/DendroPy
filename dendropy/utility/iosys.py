@@ -236,17 +236,17 @@ class Writeable(object):
         """
         raise NotImplementedError
 
-    def write_to_file(self, fileobj, format, **kwargs):
+    def write_to_file(self, dest, format, **kwargs):
         """
-        Writes to file-like object `fileobj`.
+        Writes to file-like object `dest`.
         """
-        return self.write(stream=fileobj, format=format, **kwargs)
+        return self.write(stream=dest, format=format, **kwargs)
 
-    def write_to_path(self, filepath, format, **kwargs):
+    def write_to_path(self, dest, format, **kwargs):
         """
-        Writes to file specified by `filepath`.
+        Writes to file specified by `dest`.
         """
-        f = open(os.path.expandvars(os.path.expanduser(filepath)), "w")
+        f = open(os.path.expandvars(os.path.expanduser(dest)), "w")
         return self.write(stream=f, format=format, **kwargs)
 
     def as_string(self, format, **kwargs):

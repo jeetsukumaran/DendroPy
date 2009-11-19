@@ -51,13 +51,13 @@ Creating and Populating New Objects
 
 The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterArray`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support ":meth:`get_from_*()`" factory methods that allow for the simultaneous instantiation and population of the objects from a data source:
 
-    - :meth:`get_from_stream`
+    - :meth:`get_from_stream(src, format, **kwargs)`
         Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the format as the second.
 
-    - :meth:`get_from_path`
+    - :meth:`get_from_path(src, format, **kwargs)`
         Takes a string specifying the path to the the data source file as the first argument, and a string specifying the format as the second.
 
-    - :meth:`get_from_string`
+    - :meth:`get_from_string(src, format, **kwargs)`
         Takes a string specifying containing the source data as the first argument, and a string specifying the format as the second.
 
 All these methods minimally take a source and format reference as arguments and return a new object of the given type populated from the given sourcee::
@@ -83,7 +83,7 @@ The object `tree2` is now a DendroPy representation of the 201st tree found in t
     >>> print(tree_list1.description())
     TreeList object at 0x64a510 (TreeList6595856):  1001 Trees
     >>> tree_list2 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus", from_index=200)
-    >> print(tree_list2.description())
+    >>> print(tree_list2.description())
     TreeList object at 0x551a80 (TreeList5577344):  801 Trees
 
 With a :class:`~dendropy.dataobject.dataset.DataSet`, you can request that only trees or only characters are parsed::
@@ -110,13 +110,13 @@ Reading and Populating (or Repopulating) Existing Objects
 
 The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterArray`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support a suite of ":meth:`read_from_*()`" instance methods that parallels the ":meth:`get_from_*()`" factory methods described above:
 
-    - :meth:`read_from_stream`
+    - :meth:`read_from_stream(src, format, **kwargs)`
         Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the format as the second.
 
-    - :meth:`read_from_path`
+    - :meth:`read_from_path(src, format, **kwargs)`
         Takes a string specifying the path to the the data source file as the first argument, and a string specifying the format as the second.
 
-    - :meth:`read_from_string`
+    - :meth:`read_from_string(src, format, **kwargs)`
         Takes a string specifying containing the source data as the first argument, and a string specifying the format as the second.
 
 When called on an existing :class:`~dendropy.dataobject.tree.TreeList`, or :class:`~dendropy.dataobject.dataset.DataSet` object, these methods *add* the data from the data source to the object, whereas when called on an existing :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.char.CharacterArray` object,  they *replace* the object's data with data from the data source.
@@ -141,7 +141,7 @@ For example, the following accumulates post-burn-in trees from a several differe
 
 The :class:`~dendropy.dataobject.tree.TreeList` objects automatically handles taxon management, and ensures that all appended :class:`~dendropy.dataobject.tree.Tree` objects share the same :class:`~dendropy.dataobject.taxon.TaxonSet` reference. Thus all the :class:`~dendropy.dataobject.tree.Tree` objects created and aggregated from the data sources in the example will all share the same :class:`~dendropy.dataobject.taxon.TaxonSet` and :class:`~dendropy.dataobject.taxon.Taxon` objects, which is important if you are going to be carrying comparisons or operations between multiple :class:`~dendropy.dataobject.tree.Tree` objects.
 
-In contrast to the aggregating behavior of :meth:`read_from_*` of :class:`~dendropy.dataobject.tree.TreeList` and :class:`~dendropy.dataobject.dataset.DataSet` objects, the :meth:`read_from_*` methods of :class:`~dendropy.dataobject.tree.Tree` and :class:`~dendropy.dataobject.char.CharacterArray`-derived objects show replacement behavior. For example, the following changes the contents of a :class:`~dendropy.dataobject.tree.Tree` by re-reading it::
+In contrast to the aggregating behavior of :meth:`read_from_*()` of :class:`~dendropy.dataobject.tree.TreeList` and :class:`~dendropy.dataobject.dataset.DataSet` objects, the :meth:`read_from_*()` methods of :class:`~dendropy.dataobject.tree.Tree` and :class:`~dendropy.dataobject.char.CharacterArray`-derived objects show replacement behavior. For example, the following changes the contents of a :class:`~dendropy.dataobject.tree.Tree` by re-reading it::
 
     >>> t = dendropy.Tree()
     >>> t.read_from_path('pythonidae.mle.nex', 'nexus')
@@ -153,8 +153,20 @@ In contrast to the aggregating behavior of :meth:`read_from_*` of :class:`~dendr
     >>> print(t.description())
     Tree object at 0x79db0 (Tree6612560: 'mb 50 majrule'): ('Aspidites ramsayi':0.096507,'Bothrochilus boa':0.142761,'Liasis fuscus':0.158747,'Python timoriensis':0.214838,'Python brongersmai':0.276612,'Morelia boeleni':0.139709,'Morelia oenpelliensis':0.10482,((('Antaresia stimsoni':0.074305,'Antaresia perthensis':0.146934):0.029441,'Antaresia maculosa':0.136347):0.016492,('Morelia viridis':0.1111,('Morelia bredli':0.102316,'Morelia carinata':0.1242):0.018918):0.009631):0.026255)
 
+Writing or Saving Data
+======================
+
+The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterArray`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support the following instance methods for writing data:
 
 
+    - :meth:`write_to_stream(dest, format, **kwargs)`
+        Takes a file or file-like object opened for writing the data as the first argument, and a string specifying the format as the second.
+
+    - :meth:`write_to_path(dest, format, **kwargs)`
+        Takes a string specifying the path to the file as the first argument, and a string specifying the format as the second.
+
+    - :meth:`as_string(format, **kwargs)`
+        Takes a string specifying the format as the first argument, and returns a string containing the formatted-represented of the data.
 
 
 .. toctree::
