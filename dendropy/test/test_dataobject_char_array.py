@@ -143,7 +143,7 @@ class CharArrayReadTest(datatest.DataObjectVerificationTestCase):
 
     def testIndexedRead(self):
         c = dendropy.StandardCharacterArray()
-        c.read_from_path(self.data_path, "nexus", index=1)
+        c.read_from_stream(open(self.data_path, "rU"), "nexus", index=1)
         self.assertDistinctButEqual(
             self.reference_dataset.char_arrays[1],
             c,
@@ -202,6 +202,17 @@ class CharArrayWriteTest(datatest.DataObjectVerificationTestCase):
             distinct_state_alphabets=False,
             distinct_taxa=True)
 
+    def testDnaRountTripToStringDistinctTaxa(self):
+        c1 = datagen.reference_dna_array()
+        s1 = c1.as_string(format="nexus")
+        c2 = dendropy.DnaCharacterArray.get_from_string(s1, "nexus")
+        self.assertDistinctButEqual(
+            c1,
+            c2,
+            char_type=dendropy.DnaCharacterArray,
+            distinct_state_alphabets=False,
+            distinct_taxa=True)
+
     def testDnaRountTripSameTaxa(self):
         c1 = datagen.reference_dna_array()
         path = pathmap.named_output_path("char_rw_dna.nex")
@@ -218,7 +229,7 @@ class CharArrayWriteTest(datatest.DataObjectVerificationTestCase):
         c1 = datagen.reference_standard_array()
         path = pathmap.named_output_path("char_rw_dna.nex")
         c1.write_to_path(path, "nexus")
-        c2 = dendropy.StandardCharacterArray.get_from_path(path, "nexus")
+        c2 = dendropy.StandardCharacterArray.get_from_stream(open(path, "rU"), "nexus")
         self.assertDistinctButEqual(
             c1,
             c2,
