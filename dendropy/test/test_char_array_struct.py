@@ -76,7 +76,7 @@ class TestExtendSequencesOverwrite(TestCharStruct):
 class TestExtendSequencesAppend(TestCharStruct):
 
     def runTest(self):
-        self.cb1.extend(self.cb2, append_existing=True)
+        self.cb1.extend(self.cb2, extend_existing=True)
         target_ntax = 20
         self.assertEqual(len(self.cb1), target_ntax)
         self.assertEqual(len(self.cb1.taxon_set), target_ntax)

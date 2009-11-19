@@ -27,6 +27,7 @@ This module handles the core definition of phylogenetic character data.
 import copy
 from cStringIO import StringIO
 from dendropy.utility import error
+from dendropy.utility import iosys
 from dendropy.dataobject.base import IdTagged, Annotated
 from dendropy.dataobject.taxon import TaxonLinked, TaxonSetLinked
 
@@ -474,13 +475,13 @@ class CharacterDataMap(dict, Annotated):
     def extend(self,
         other_map,
         overwrite_existing=False,
-        append_existing=False):
+        extend_existing=False):
         """
         Extends this array by adding taxa and characters from the given
         array to this one.  If `overwrite_existing` is True and a taxon
         in the other array is already present in the current one, then
         the sequence associated with the taxon in the second array
-        replaces the sequence in the current one. If `append_existing`
+        replaces the sequence in the current one. If `extend_existing`
         is True and a taxon in the other array is already present in
         the current one, then the squence associated with the taxon in
         the second array will be added to the sequence in the current
@@ -490,7 +491,7 @@ class CharacterDataMap(dict, Annotated):
         Note that the containing CharacterArray taxa has to be normalized
         after this operation.
         """
-        if overwrite_existing and append_existing:
+        if overwrite_existing and extend_existing:
             raise Exception("Can only specify to overwrite or append, not both")
         label_taxon_map = dict([(taxon.label, taxon) for taxon in self])
         for other_taxon in other_map:
@@ -498,12 +499,12 @@ class CharacterDataMap(dict, Annotated):
                 this_taxon = label_taxon_map[other_taxon.label]
                 if overwrite_existing:
                     self[this_taxon] = other_map[other_taxon]
-                elif append_existing:
+                elif extend_existing:
                     self[this_taxon].extend(other_map[other_taxon])
             else:
                 self[other_taxon] = other_map[other_taxon]
 
-class CharacterArray(TaxonSetLinked):
+class CharacterArray(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     "Character data container/manager manager."
 
     def __init__(self, *args, **kwargs):
@@ -515,8 +516,20 @@ class CharacterArray(TaxonSetLinked):
         self.taxon_seq_map = CharacterDataMap()
         self.character_types = []
         self.markup_as_sequences = True
-        if len(args) > 0:
-            self.clone_from(*args)
+        if len(args) > 1:
+            raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
+        if len(args) == 1:
+            if ("stream" in kwargs and kwargs["stream"] is not None) \
+                    or ("format" in kwargs and kwargs["format"] is not None):
+                raise error.MultipleInitializationSourceError(class_name=self.__class__.__name__, arg=args[0])
+            if isinstance(args[0], self.__class__):
+                self.clone_from(args[0])
+            else:
+                raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
+        if "oid" in kwargs:
+            self.oid = kwargs["oid"]
+        if "label" in kwargs:
+            self.label = kwargs["label"]
 
     def clone_from(self, *args):
         if len(args) > 1:
@@ -527,6 +540,36 @@ class CharacterArray(TaxonSetLinked):
         elif len(args) == 1:
             raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         return self
+
+    def read(self, stream, format, **kwargs):
+        """
+        Populates objects of this type from `format`-formatted
+        data in the file-like object source `stream`, *replacing*
+        all current data. If multiple character arrays are in the data
+        source, a 0-based index of the character array to use can
+        be specified using the `index` keyword (defaults to 0, i.e., first
+        character array).
+        """
+        index = kwargs.get("index", 0)
+        from dendropy.dataobject.dataset import DataSet
+        d = DataSet(stream=stream, format=format)
+        if len(d.char_arrays) == 0:
+            raise ValueError("No character data in data source")
+        if len(index) >= len(d.char_arrays):
+            raise IndexError("Character array of index %d specified, but data source only has %d arrays defined (max. index=%d)" \
+                % (index, len(d.char_arrays), len(d.char_arrays)-1))
+        self.__dict__ = d.char_arrays[index].__dict__
+        return self
+
+    def write(self, stream, format, **kwargs):
+        """
+        Writes out this object's data to a file-like object opened for writing
+        `stream`.
+        """
+        from dendropy.dataobject.dataset import DataSet
+        d = DataSet()
+        d.add(self)
+        d.write(stream=stream, format=format, **kwargs)
 
     def extend_characters(self, other_array):
         """
@@ -540,13 +583,13 @@ class CharacterArray(TaxonSetLinked):
     def extend_map(self,
                       other_map,
                       overwrite_existing=False,
-                      append_existing=False):
+                      extend_existing=False):
         """
         Extends this array by adding taxa and characters from the given
         map to this one.  If `overwrite_existing` is True and a taxon
         in the other map is already present in the current one, then
         the sequence associated with the taxon in the second map
-        replaces the sequence in the current one. If `append_existing`
+        replaces the sequence in the current one. If `extend_existing`
         is True and a taxon in the other array is already present in
         the current one, then the squence map with the taxon in
         the second map will be added to the sequence in the current
@@ -556,19 +599,19 @@ class CharacterArray(TaxonSetLinked):
         """
         self.taxon_seq_map.extend(other_map,
             overwrite_existing=overwrite_existing,
-            append_existing=append_existing)
+            extend_existing=extend_existing)
         self.update_taxon_set()
 
     def extend(self,
                other_array,
                overwrite_existing=False,
-               append_existing=False):
+               extend_existing=False):
         """
         Extends this array by adding taxa and characters from the given
         array to this one.  If `overwrite_existing` is True and a taxon
         in the other array is already present in the current one, then
         the sequence associated with the taxon in the second array
-        replaces the sequence in the current one. If `append_existing`
+        replaces the sequence in the current one. If `extend_existing`
         is True and a taxon in the other array is already present in
         the current one, then the sequence associated with the taxon in
         the second array will be added to the sequence in the current
@@ -578,7 +621,7 @@ class CharacterArray(TaxonSetLinked):
         """
         self.taxon_seq_map.extend(other_array.taxon_seq_map,
             overwrite_existing=overwrite_existing,
-            append_existing=append_existing)
+            extend_existing=extend_existing)
         self.update_taxon_set()
 
     def reindex_subcomponent_taxa(self):
@@ -827,6 +870,31 @@ class StandardCharacterArray(DiscreteCharacterArray):
             memo[id(self.taxon_seq_map[taxon])] = o.taxon_seq_map[otaxon]
 
         return o
+
+    def extend(self,
+               other_array,
+               overwrite_existing=False,
+               extend_existing=False):
+        """
+        Extends this array by adding taxa and characters from the given
+        array to this one.  If `overwrite_existing` is True and a taxon
+        in the other array is already present in the current one, then
+        the sequence associated with the taxon in the second array
+        replaces the sequence in the current one. If `extend_existing`
+        is True and a taxon in the other array is already present in
+        the current one, then the sequence associated with the taxon in
+        the second array will be added to the sequence in the current
+        one. If both are True, then an exception is raised. If neither
+        are True, and a taxon in the other array is already present in
+        the current one, then the sequence is ignored.
+        """
+        CharacterArray.extend(self,
+                other_array=other_array,
+                overwrite_existing=overwrite_existing,
+                extend_existing=extend_existing)
+        for s in other_array.state_alphabets:
+            if s not in self.state_alphabets:
+                self.state_alphabets.append(s)
 
 class FixedAlphabetCharacterArray(DiscreteCharacterArray):
 

@@ -199,7 +199,7 @@ def generate_char_array(seq_len,
         assert char_array.taxon_set is tree_model.taxon_set, "conflicting taxon sets"
     char_array.extend_map(other_map=char_map,
         overwrite_existing=False,
-        append_existing=True)
+        extend_existing=True)
     return char_array
 
 ############################################################################
