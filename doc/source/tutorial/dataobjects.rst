@@ -60,7 +60,7 @@ The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.T
     - :meth:`get_from_string(src, format, **kwargs)`
         Takes a string specifying containing the source data as the first argument, and a string specifying the format as the second.
 
-All these methods minimally take a source and format reference as arguments and return a new object of the given type populated from the given sourcee::
+All these methods minimally take a source and format reference as arguments and return a new object of the given type populated from the given source::
 
     >>> import dendropy
     >>> tree1 = dendropy.Tree.get_from_string("((A,B),(C,D))", format="newick")
@@ -91,6 +91,8 @@ With a :class:`~dendropy.dataobject.dataset.DataSet`, you can request that only 
     >>> ds1 = dendropy.DataSet.get_from_path('data1.nex', 'nexus', exclude_chars=True)
     >>> ds2 = dendropy.DataSet.get_from_path('data1.nex', 'nexus', exclude_trees=True)
 
+Depending on the format and type of object, there might be other keyword arguments that accepted.
+
 In addition to the factory methods, you can specify a data source to the constructor of the objects directly using the `stream` and `format` keywords::
 
     >>> tree2 = dendropy.Tree(stream=open("pythonidae.mcmc.nex"), format="nexus", from_index=200)
@@ -119,7 +121,7 @@ The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.T
     - :meth:`read_from_string(src, format, **kwargs)`
         Takes a string specifying containing the source data as the first argument, and a string specifying the format as the second.
 
-When called on an existing :class:`~dendropy.dataobject.tree.TreeList`, or :class:`~dendropy.dataobject.dataset.DataSet` object, these methods *add* the data from the data source to the object, whereas when called on an existing :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.char.CharacterArray` object,  they *replace* the object's data with data from the data source.
+When called on an existing :class:`~dendropy.dataobject.tree.TreeList` or :class:`~dendropy.dataobject.dataset.DataSet` object, these methods *add* the data from the data source to the object, whereas when called on an existing :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.char.CharacterArray` object,  they *replace* the object's data with data from the data source.
 As with the ":meth:`get_from_*()`" methods, the format specification can be any supported and type-apppropriate format, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc.
 
 For example, the following accumulates post-burn-in trees from a several different files into a single :class:`~dendropy.dataobject.tree.TreeList` object::
@@ -158,7 +160,6 @@ Writing or Saving Data
 
 The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterArray`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support the following instance methods for writing data:
 
-
     - :meth:`write_to_stream(dest, format, **kwargs)`
         Takes a file or file-like object opened for writing the data as the first argument, and a string specifying the format as the second.
 
@@ -166,7 +167,34 @@ The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.T
         Takes a string specifying the path to the file as the first argument, and a string specifying the format as the second.
 
     - :meth:`as_string(format, **kwargs)`
-        Takes a string specifying the format as the first argument, and returns a string containing the formatted-represented of the data.
+        Takes a string specifying the format as the first argument, and returns a string containing the formatted-representation of the data.
+
+As above, the format specification can be any supported and type-apppropriate format, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc., and, as above, depending on the object and format, additional keyword arguments may be specified.
+
+For example, print a :class:`~dendropy.dataobject.tree.Tree` object without branch lengths or internal labels (default is to write both, if present)::
+
+    >>> import dendropy
+    >>> mle_tree = dendropy.Tree.get_from_path("pythonidae.mle.nex", "nexus")
+    >>> print(mle_tree.as_string("newick", edge_lengths=False, internal_labels=False))
+    ('Python brongersmai',((('Antaresia maculosa',('Antaresia stimsoni','Antaresia perthensis')),('Morelia viridis',('Morelia carinata','Morelia bredli'))),(('Python timoriensis','Morelia oenpelliensis'),(('Morelia boeleni','Bothrochilus boa'),'Liasis fuscus'))),'Aspidites ramsayi');
+
+Converting from FASTA format to NEXUS::
+
+    >>> import dendropy
+    >>> cytb = dendropy.DnaCharacterArray.get_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> cytb.write_to_path("pythonidae_cytb.nexus", "nexus")
+
+Collecting data from multiple sources and writing to a NEXUS-formatted file::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet()
+    >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> ds.read_from_path("pythonidae_aa.nex", "nexus", taxon_set=ds.taxon_sets[0])
+    >>> ds.read_from_path("pythonidae_morphological.nex", "nexus", taxon_set=ds.taxon_sets[0])
+    >>> ds.read_from_path("pythonidae.mle.tre", "nexus", taxon_set=ds.taxon_sets[0])
+    >>> ds.write_to_path("pythonidae_combined.nex", "nexus")
+
+Note how, after the first data source has been loaded, the resulting :class:`~dendropy.dataobject.taxon.TaxonSet` (i.e., the first one) is passed to the subsequent :meth:`read_from_path()` statements, to ensure that the same taxa are referenced as objects corresponding to the additional data sources are created. Otherwise, as each data source is read, a new :class:`~dendropy.dataobject.taxon.TaxonSet` will be created, and this will result in multiple :class:`~dendropy.dataobject.taxon.TaxonSet` objects in the :class:`~dendropy.dataobject.dataset.DataSet`, with the data from each data source associated with their own, distinct :class:`~dendropy.dataobject.taxon.TaxonSet`.
 
 
 .. toctree::
