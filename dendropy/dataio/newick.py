@@ -243,8 +243,7 @@ class NewickWriter(iosys.DataWriter):
                                 % (statement, node.edge.length)
             return statement
         else:
-            if self.internal_labels:
-                statement = self.choose_display_tag(node)
+            statement = self.choose_display_tag(node)
             if node.edge and node.edge.length != None and self.edge_lengths:
                 try:
                     statement =  "%s:%0.10f" \
