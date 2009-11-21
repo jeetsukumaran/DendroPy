@@ -268,15 +268,3 @@ This method optionally takes a numeric value as its first argument that determin
                     [10] Python brongersmai : 1066 characters
                     [11] Morelia boeleni : 1066 characters
                     [12] Morelia oenpelliensis : 1066 characters
-
-
-
-
-
-
-.. toctree::
-    :hidden:
-
-    createtaxa.rst
-    createtrees.rst
-    createtreelists.rst
