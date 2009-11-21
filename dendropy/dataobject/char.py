@@ -792,7 +792,7 @@ class CharacterArray(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 output_strio.write(tlead)
                 indent += 8
                 maxlabel = max([len(str(t.label)) for t in self.taxon_set])
-                for i, t in enumerate(self.taxon_seq_map):
+                for i, t in enumerate(self.taxon_set):
                     output_strio.write('%s%s%s : %s characters\n' \
                         % (" " * indent,
                            "[%d] " % i,

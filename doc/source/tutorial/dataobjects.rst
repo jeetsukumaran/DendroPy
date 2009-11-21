@@ -15,7 +15,7 @@ Phylogenetic data in DendroPy is represented by one or more objects of the follo
 
     :class:`~dendropy.dataobject.tree.Tree`
         A collection of :class:`~dendropy.dataobject.tree.Node` and :class:`~dendropy.dataobject.tree.Edge` objects representing a phylogenetic tree.
-        Each :class:`~dendropy.dataobject.tree.Tree` object maintains a reference to a :class:`~dendropy.dataobject.taxon.TaxonSet` object in its attribute, :attr:`~dendropy.dataobject.tree.Tree.taxon_set`, which specifies the set of taxa that are referenced by the tree and its nodes. Each :class:`~dendropy.dataobject.tree.Node` object has a :attr:`~dendropy.dataobject.tree.Node.taxon` attribute, which points to a particular :class:`~dendropy.dataobject.taxon.Taxon` object if there is an operational taxonomic unit associated with this node, or is :keyword:`None` if not.
+        Each :class:`~dendropy.dataobject.tree.Tree` object maintains a reference to a :class:`~dendropy.dataobject.taxon.TaxonSet` object in its attribute, :attr:`~dendropy.dataobject.tree.Tree.taxon_set`, which specifies the set of taxa that are referenced by the tree and its nodes. Each :class:`~dendropy.dataobject.tree.Node` object has a :attr:`~dendropy.dataobject.tree.Node.taxon` attribute (which points to a particular :class:`~dendropy.dataobject.taxon.Taxon` object if there is an operational taxonomic unit associated with this node, or is :keyword:`None` if not), a :attr:`~dendropy.dataobject.tree.Node.parent_node` attribute (which will be :keyword:`None` if the :class:`~dendropy.dataobject.tree.Node` has no parent, e.g., a root node), a :class:`~dendropy.dataobject.tree.Edge` attribute, as well as a list of references to child nodes, a copy of which can be obtained by calling :meth:`~dendropy.dataobject.tree.Node.child_nodes()`.
 
     :class:`~dendropy.dataobject.tree.TreeList`
         A :class:`list` of :class:`~dendropy.dataobject.tree.Tree` objects. A :class:`~dendropy.dataobject.tree.TreeList` object has an attribute, :attr:`~dendropy.dataobject.tree.TreeList.taxon_set`, which specifies the set of taxa that are referenced by all member :class:`~dendropy.dataobject.tree.Tree` elements. This is enforced when a :class:`~dendropy.dataobject.tree.Tree` object is added to a :class:`~dendropy.dataobject.tree.TreeList`, with the :class:`~dendropy.dataobject.taxon.TaxonSet` of the :class:`~dendropy.dataobject.tree.Tree` object and all :class:`~dendropy.dataobject.taxon.Taxon` references of the :class:`~dendropy.dataobject.tree.Node` objects in the :class:`~dendropy.dataobject.tree.Tree` mapped to the :class:`~dendropy.dataobject.taxon.TaxonSet` of the :class:`~dendropy.dataobject.tree.TreeList`.
@@ -184,6 +184,18 @@ Converting from FASTA format to NEXUS::
     >>> cytb = dendropy.DnaCharacterArray.get_from_path("pythonidae_cytb.fasta", "dnafasta")
     >>> cytb.write_to_path("pythonidae_cytb.nexus", "nexus")
 
+Converting from NEXUS format to NEWICK::
+
+    >>> import dendropy
+    >>> mcmc = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", "nexus")
+    >>> mcmc.write_to_path("pythonidae.mcmc.newick", "newick")
+
+Converting from NEWICK format to NEXUS::
+
+    >>> import dendropy
+    >>> mle = dendropy.Tree.get_from_path("pythonidae.mle.newick", "newick")
+    >>> mle.write_to_path("pythonidae.mle.nex", "nexus")
+
 Collecting data from multiple sources and writing to a NEXUS-formatted file::
 
     >>> import dendropy
@@ -195,6 +207,71 @@ Collecting data from multiple sources and writing to a NEXUS-formatted file::
     >>> ds.write_to_path("pythonidae_combined.nex", "nexus")
 
 Note how, after the first data source has been loaded, the resulting :class:`~dendropy.dataobject.taxon.TaxonSet` (i.e., the first one) is passed to the subsequent :meth:`read_from_path()` statements, to ensure that the same taxa are referenced as objects corresponding to the additional data sources are created. Otherwise, as each data source is read, a new :class:`~dendropy.dataobject.taxon.TaxonSet` will be created, and this will result in multiple :class:`~dendropy.dataobject.taxon.TaxonSet` objects in the :class:`~dendropy.dataobject.dataset.DataSet`, with the data from each data source associated with their own, distinct :class:`~dendropy.dataobject.taxon.TaxonSet`.
+
+Examining Data Objects
+======================
+
+High-level summaries of the contents of DendroPy phylogenetic data objects are given by the :meth:`description()` instance method of the :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterArray`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes.
+This method optionally takes a numeric value as its first argument that determines the level of detail (or depth) of the summary::
+
+    >>> import dendropy
+    >>> d = dendropy.DataSet.get_from_path('pythonidae.nex', 'nexus')
+    >>> print(d.description())
+    DataSet object at 0x79d50: 1 Taxon Sets, 1 Tree Lists, 1 Character Arrays
+    >>> print(d.description(2))
+    DataSet object at 0x79d50: 1 Taxon Sets, 1 Tree Lists, 1 Character Arrays
+        [Taxon Sets]
+            [0] TaxonSet object at 0x64b210 (TaxonSet6599184): 13 Taxa
+        [Tree Lists]
+            [0] TreeList object at 0x64b600 (TreeList6600192):  1 Trees
+        [Character Arrays]
+            [0] DnaCharacterArray object at 0x641770 (DnaCharacterArray6559600):  13 Sequences
+    >>> print(d.description(3))
+    DataSet object at 0x79d50: 1 Taxon Sets, 1 Tree Lists, 1 Character Arrays
+        [Taxon Sets]
+            [0] TaxonSet object at 0x64b1e0 (TaxonSet6599136): 13 Taxa
+                [0] Taxon object at 0x6416b0 (Taxon6559408): 'Aspidites ramsayi'
+                [1] Taxon object at 0x6419f0 (Taxon6560240): 'Bothrochilus boa'
+                [2] Taxon object at 0x6419d0 (Taxon6560208): 'Liasis fuscus'
+                [3] Taxon object at 0x579070 (Taxon5738608): 'Antaresia stimsoni'
+                [4] Taxon object at 0x69d3b0 (Taxon6935472): 'Morelia viridis'
+                [5] Taxon object at 0x702d10 (Taxon7351568): 'Morelia bredli'
+                [6] Taxon object at 0x7733b0 (Taxon7812016): 'Antaresia perthensis'
+                [7] Taxon object at 0x103dd50 (Taxon17030480): 'Python timoriensis'
+                [8] Taxon object at 0x1049070 (Taxon17076336): 'Antaresia maculosa'
+                [9] Taxon object at 0x10ae6d0 (Taxon17491664): 'Morelia carinata'
+                [10] Taxon object at 0x1113d50 (Taxon17907024): 'Python brongersmai'
+                [11] Taxon object at 0x11843b0 (Taxon18367408): 'Morelia boeleni'
+                [12] Taxon object at 0x124ed50 (Taxon19197264): 'Morelia oenpelliensis'
+        [Tree Lists]
+            [0] TreeList object at 0x64b5d0 (TreeList6600144):  1 Trees
+                [Taxon Set]
+                    TaxonSet object at 0x64b1e0 (TaxonSet6599136): 13 Taxa
+                [Trees]
+                    [0] Tree object at 0x1324a50 (Tree20073040: 'MLE'): ('Python brongersmai':0.194351089393,((('Antaresia maculosa':0.109099293954,('Antaresia stimsoni':0.0602487311076,'Antaresia perthensis':0.103243143758):0.0179343676839):0.00824964546739,('Morelia viridis':0.0900605954734,('Morelia carinata':0.099000642532,'Morelia bredli':0.0762805233034):0.0100895762174):0.00532489577077):0.0169831787421,(('Python timoriensis':0.164594494686,'Morelia oenpelliensis':0.0845040654358):0.01077026635,(('Morelia boeleni':0.108513275703,'Bothrochilus boa':0.102695794094):0.0038585904059,'Liasis fuscus':0.116512710724):0.00431514301361):0.00384869899099):0.0126515429931,'Aspidites ramsayi':0.0700307228917):0.0
+
+        [Character Arrays]
+            [0] DnaCharacterArray object at 0x641630 (DnaCharacterArray6559280):  13 Sequences
+                [Taxon Set]
+                    TaxonSet object at 0x64b1e0 (TaxonSet6599136): 13 Taxa
+                [Characters]
+                    [0] Aspidites ramsayi : 1066 characters
+                    [1] Bothrochilus boa : 1066 characters
+                    [2] Liasis fuscus : 1066 characters
+                    [3] Antaresia stimsoni : 1066 characters
+                    [4] Morelia viridis : 1066 characters
+                    [5] Morelia bredli : 1066 characters
+                    [6] Antaresia perthensis : 1066 characters
+                    [7] Python timoriensis : 1066 characters
+                    [8] Antaresia maculosa : 1066 characters
+                    [9] Morelia carinata : 1066 characters
+                    [10] Python brongersmai : 1066 characters
+                    [11] Morelia boeleni : 1066 characters
+                    [12] Morelia oenpelliensis : 1066 characters
+
+
+
+
 
 
 .. toctree::
