@@ -40,7 +40,7 @@ def as_ape_tree(t):
     kwargs = {}
     if isinstance(t, list):
         kwargs['keep.multi'] = True
-        if isinstance(t, TreeList):
+        if isinstance(t, dendropy.TreeList):
             text = t.as_string("newick", spaces_to_underscore=True)
         else:
             text = ";\n".join([i.as_string("newick", spaces_to_underscore=True) for i in t])
