@@ -183,6 +183,7 @@ class NewickWriter(iosys.DataWriter):
         iosys.DataWriter.__init__(self, **kwargs)
         self.edge_lengths = kwargs.get("edge_lengths", True)
         self.internal_labels = kwargs.get("internal_labels", True)
+        self.spaces_to_underscore = kwargs.get("spaces_to_underscore", False)
 
     def write(self, stream, **kwargs):
         """
@@ -214,14 +215,19 @@ class NewickWriter(iosys.DataWriter):
         whether or not the node is a leaf, returns an appropriate tag.
         """
         if hasattr(node, 'taxon') and node.taxon:
-            return texttools.escape_nexus_token(node.taxon.label)
+            tag = node.taxon.label
         elif hasattr(node, 'label') and node.label:
-            return texttools.escape_nexus_token(node.label)
+            tag = node.label
         elif len(node.child_nodes()) == 0:
             # force label if a leaf node
-            return texttools.escape_nexus_token(node.oid)
+            tag = node.oid
         else:
-            return ""
+            tag = ""
+        if tag:
+            if self.spaces_to_underscore:
+                tag = tag.replace(' ', '_')
+            tag = texttools.escape_nexus_token(tag)
+        return tag
 
     def compose_node(self, node):
         """
