@@ -350,6 +350,7 @@ class NexusReader(iosys.DataReader):
     def _build_state_alphabet(self, char_block, symbols):
         sa = dataobject.StateAlphabet()
         for symbol in symbols:
+            symbol = symbol.upper()
             sa.append(dataobject.StateAlphabetElement(symbol=symbol))
         if self.missing_char:
             sa.append(dataobject.StateAlphabetElement(symbol=self.missing_char,
@@ -519,6 +520,7 @@ class NexusReader(iosys.DataReader):
             return
         char_group = self._parse_nexus_multistate(char_group)
         for char in char_group:
+            char = char.upper()
             if len(char) == 1:
                 try:
                     state = symbol_state_map[char]
@@ -700,7 +702,7 @@ class NexusWriter(iosys.DataWriter):
         """
         iosys.DataWriter.__init__(self, **kwargs)
         self.simple = kwargs.get("simple", False)
-        self.exclude_taxa = kwargs.get("exclude_taxa", True)
+        self.exclude_taxa = kwargs.get("exclude_taxa", False)
         self.is_write_rooting = kwargs.get("write_rooting", True)
         self.is_write_edge_lengths = kwargs.get("edge_lengths", True)
         self.is_write_internal_labels = kwargs.get("internal_labels", True)
@@ -775,13 +777,13 @@ class NexusWriter(iosys.DataWriter):
         block.append('end;\n\n')
         stream.write('\n'.join(block))
 
-    def write_char_block(self, char_array, stream, simple_nexus=False):
+    def write_char_block(self, char_array, stream):
         nexus = []
         taxlabels = [texttools.escape_nexus_token(taxon.label, spaces_to_underscore=self.spaces_to_underscore) \
                 for taxon in char_array.taxon_set]
         max_label_len = max([len(label) for label in taxlabels])
         nchar = max([len(seq) for seq in char_array.values()])
-        if simple_nexus:
+        if self.simple:
             nexus.append('begin data;')
             ntaxstr = "ntax=%d" % len(taxlabels)
         else:
