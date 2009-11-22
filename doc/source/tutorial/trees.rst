@@ -50,7 +50,7 @@ Iterating Over Edges
 
 The :class:`~dendropy.dataobject.tree.Edge` objects associated with each :class:`~dendropy.dataobject.tree.Node` can be accessed through the :attr:`~dendropy.dataobject.tree.Node.edge` attribute of the :class:`~dendropy.dataobject.tree.Node` object.
 So it is possible to iterate over every edge on a tree by iterating over the nodes and referencing the :attr:`~dendropy.dataobject.tree.Node.edge` attribute of the node when processing the node.
-But it clearer and probably more convenient to use one of the :class:`~dendropy.dataobject.tree.Edge` iterators:
+But it is clearer and probably more convenient to use one of the :class:`~dendropy.dataobject.tree.Edge` iterators:
 
     :meth:`~dendropy.dataobject.tree.Tree.preorder_edge_iter()`
         Iterates over edges in a :class:`~dendropy.dataobject.tree.Tree` object in a `depth-first <http://en.wikipedia.org/wiki/Depth-first_traversal>`_ search pattern, i.e., "visiting" an edge before visiting the edges descending from that edge. This is the same traversal order as the previous example. This traversal order is useful if you require ancestral edges to be processed before descendent edges, as, for example, when calculating the sum of edge lengths from the root.
@@ -68,6 +68,21 @@ The following example sets the edge lengths of a tree to the proportions of the 
 
 Like the node iterators, the edge iterators also optionally take a filter function as a second argument, except here the filter function should take an :class:`~dendropy.dataobject.tree.Edge` object as an argument.
 The following examples shows how you might iterate over all edges with lengths less than some value:
+
+.. literalinclude:: /examples/preorder_filtered_edge_iteration.py
+    :linenos:
+
+Tree Metrics
+============
+
+Node Ages
+---------
+
+Pybus-Harvey Gamma
+-------------------
+
+Patristic Distances
+-------------------
 
 
 .. SCRATCH
