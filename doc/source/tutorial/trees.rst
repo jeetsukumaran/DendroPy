@@ -43,6 +43,7 @@ The nodes returned by each of these iterators can be filtered if a filter functi
 This filter function should take a :class:`~dendropy.dataobject.tree.Node` object as an argument, and return :keyword:`True` if the node is to be returned or :keyword:`False` if it is not. For example, the following iterates over all nodes that have more than two children:
 
 .. literalinclude:: /examples/preorder_filtered_node_iteration.py
+    :linenos:
 
 Iterating Over Edges
 --------------------
@@ -59,6 +60,14 @@ But it clearer and probably more convenient to use one of the :class:`~dendropy.
 
     :meth:`~dendropy.dataobject.tree.Tree.level_order_edge_iter()`
         Iterates over edges in a :class:`~dendropy.dataobject.tree.Tree` object in a  `breadth-first <http://en.wikipedia.org/wiki/Breadth-first_traversal>`_  search pattern, i.e., every edge at a particular level is visited before proceeding to the next level.
+
+The following example sets the edge lengths of a tree to the proportions of the total tree length that they represent:
+
+.. literalinclude:: /examples/rescale_tree_length.py
+    :linenos:
+
+Like the node iterators, the edge iterators also optionally take a filter function as a second argument, except here the filter function should take an :class:`~dendropy.dataobject.tree.Edge` object as an argument.
+The following examples shows how you might iterate over all edges with lengths less than some value:
 
 
 .. SCRATCH

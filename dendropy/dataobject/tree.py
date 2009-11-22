@@ -888,6 +888,21 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         return self.seed_node.as_newick_str(**kwargs)
 
     ###########################################################################
+    ## Metrics
+
+    def length(self):
+        """
+        Returns sum of edge lengths of self. Edges with no lengths defined
+        (None) will be considered to have a length of 0.
+        Note that we do not overrride `__len__` as this requires an integer
+        return value.
+        """
+        total = 0
+        for edge in self.postorder_edge_iter():
+            total += (edge.length if edge.length is not None else 0)
+        return total
+
+    ###########################################################################
     ## Debugging/Testing
 
     def assign_node_labels_from_taxon_or_oid(self):
