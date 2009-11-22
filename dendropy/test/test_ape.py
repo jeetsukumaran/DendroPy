@@ -35,6 +35,8 @@ class TreesRoundTrip(datatest.DataObjectVerificationTestCase):
 
     def setUp(self):
         self.trees = datagen.reference_tree_list()
+        self.dna_chars = datagen.reference_dna_array()
+        self.std_chars = datagen.reference_standard_array()
 
     def testTreeRoundTrip(self):
         for i, t1 in enumerate(self.trees):
@@ -48,6 +50,11 @@ class TreesRoundTrip(datatest.DataObjectVerificationTestCase):
         rt = ape.as_dendropy_object(ape_t, taxon_set=self.trees.taxon_set)
         self.assertTrue(isinstance(rt, dendropy.TreeList), type(rt))
         self.assertDistinctButEqual(self.trees, rt, distinct_taxa=False)
+
+    def testDnaRoundTrip(self):
+        ape_c = ape.as_ape_object(self.dna_chars)
+        dp_c = ape.as_dendropy_object(ape_c, taxon_set=self.dna_chars.taxon_set)
+        self.assertDistinctButEqual(self.dna_chars, dp_c, distinct_taxa=False)
 
 if __name__ == "__main__":
     unittest.main()

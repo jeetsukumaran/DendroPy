@@ -45,8 +45,10 @@ def as_ape_object(o):
         text = o.as_string("newick", spaces_to_underscore=True)
         return _R['read.tree'](text=text, **kwargs)
     elif isinstance(o, dendropy.CharacterArray):
-        text = o.as_string("nexus", spaces_to_underscore=True)
-        return _R['read.nexus.data'](text=text)
+        f = tempfile.NamedTemporaryFile()
+        o.write_to_stream(f, "nexus", simple=True, spaces_to_underscore=True)
+        f.flush()
+        return _R['read.nexus.data'](f.name)
     else:
         return robjects.default_py2ri(o)
 
@@ -65,5 +67,17 @@ def as_dendropy_object(o, taxon_set=None):
         f = tempfile.NamedTemporaryFile()
         _R['write.nexus'](o, file=f.name)
         return dendropy.Tree.get_from_path(f.name, "nexus", taxon_set=taxon_set)
+    elif o.rclass[0] == "list":
+        f = tempfile.NamedTemporaryFile()
+        _R['write.nexus.data'](o, file=f.name)
+#        k = open(f.name, "r")
+#        print k.read()
+        d = dendropy.DataSet.get_from_path(f.name, "nexus", taxon_set=taxon_set)
+        if len(d.char_arrays) == 0:
+            raise ValueError("No character data found")
+        elif len(d.char_arrays) == 1:
+            return d.char_arrays[0]
+        else:
+            raise ValueError("Multiple character matrices returned")
     else:
         return robjects.default_ri2py(o)

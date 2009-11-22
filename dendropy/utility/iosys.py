@@ -236,7 +236,7 @@ class Writeable(object):
         """
         raise NotImplementedError
 
-    def write_to_file(self, dest, format, **kwargs):
+    def write_to_stream(self, dest, format, **kwargs):
         """
         Writes to file-like object `dest`.
         """
