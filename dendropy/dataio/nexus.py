@@ -520,15 +520,16 @@ class NexusReader(iosys.DataReader):
             return
         char_group = self._parse_nexus_multistate(char_group)
         for char in char_group:
-            char = char.upper()
             if len(char) == 1:
                 try:
-                    state = symbol_state_map[char]
+                    state = symbol_state_map[char.upper()]
                 except KeyError:
                     raise self.data_format_error("Unrecognized (single) state encountered:'%s' is not defined in %s" % (char, symbol_state_map.keys()))
             else:
                 if hasattr(char, "open_tag"):
                     state = self._get_state_for_multistate_char(char, char_block.default_state_alphabet)
+                else:
+                    raise self.data_format_error("Multiple character state without multi-state mark-up:'%s'" % char)
             if state is None:
                 raise self.data_format_error("Unrecognized state encountered:'%s'" % char)
             char_block[taxon].append(dataobject.CharacterDataCell(value=state))
