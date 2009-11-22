@@ -28,7 +28,7 @@ import unittest
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 from dendropy.test.support import runlevel
-from dendropy.utility import paup
+from dendropy.interop import paup
 from dendropy import seqsim
 import dendropy
 

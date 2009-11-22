@@ -36,7 +36,7 @@ from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
 from dendropy import splitmask
-from dendropy.utility import paup
+from dendropy.interop import paup
 
 if "PAUP_PATH" in os.environ:
     PAUP_PATH = os.environ["PAUP_PATH"]

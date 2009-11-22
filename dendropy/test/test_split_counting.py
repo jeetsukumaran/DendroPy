@@ -31,7 +31,7 @@ from dendropy.test.support import pathmap
 from dendropy.test.support import runlevel
 from dendropy.test.support.extendedtest import ExtendedTestCase
 from dendropy.utility import messaging
-from dendropy.utility import paup
+from dendropy.interop import paup
 from dendropy.dataio import nexus
 from dendropy import treesum
 from dendropy import splitmask
