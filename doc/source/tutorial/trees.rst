@@ -66,14 +66,28 @@ The following example sets the edge lengths of a tree to the proportions of the 
 .. literalinclude:: /examples/rescale_tree_length.py
     :linenos:
 
+Or remove the edge lengths entirely:
+
+.. literalinclude:: /examples/remove_branch_lengths.py
+    :linenos:
+
 Like the node iterators, the edge iterators also optionally take a filter function as a second argument, except here the filter function should take an :class:`~dendropy.dataobject.tree.Edge` object as an argument.
-The following examples shows how you might iterate over all edges with lengths less than some value:
+The following example shows how you might iterate over all edges with lengths less than some value:
 
 .. literalinclude:: /examples/preorder_filtered_edge_iteration.py
     :linenos:
 
 Tree Metrics
 ============
+
+Tree Length
+-----------
+
+The :meth:`~dendropy.dataobject.tree.Tree.length()` method returns the sum of edge lengths of a :class:`~dendropy.dataobject.tree.Tree` object, with edges that do not have any length assigned being treated as edges with length 0.
+The following example shows how to identify the "critical" value for an `Archie-Faith-Cranston or PTP test <http://hymenoptera.tamu.edu/courses/ento606/Suggested%20Readings/Slowinksi_Crother_1998.pdf>`_ from a sample of :class:`~dendropy.dataobject.tree.Tree` objects, i.e. a tree length equal to or greater than 95% of the trees in the sample:
+
+.. literalinclude:: /examples/tree_length_crit.py
+    :linenos:
 
 Node Ages
 ---------

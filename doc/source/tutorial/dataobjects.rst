@@ -25,7 +25,7 @@ Phylogenetic data in DendroPy is represented by one or more objects of the follo
         :class:`~dendropy.dataobject.taxon.Taxon` objects as keys and character data as values associated with those keys.
 
     :class:`~dendropy.dataobject.dataset.DataSet`
-        A meta-collection of phylogenetic data, consisting of lists of multiple :class:`~dendropy.dataobject.taxon.TaxonSet` objects (:attr:`~dendropy.dataobject.DataSet.taxon_sets`), :class:`~dendropy.dataobject.tree.TreeList` objects (:attr:`~dendropy.dataobject.DataSet.tree_lists`), and :class:`~dendropy.dataobject.CharacterArray` objects (:attr:`~dendropy.dataobject.DataSet.char_arrays`).
+        A meta-collection of phylogenetic data, consisting of lists of multiple :class:`~dendropy.dataobject.taxon.TaxonSet` objects (:attr:`~dendropy.dataobject.DataSet.taxon_sets`), :class:`~dendropy.dataobject.tree.TreeList` objects (:attr:`~dendropy.dataobject.DataSet.tree_lists`), and :class:`~dendropy.dataobject.char.CharacterArray` objects (:attr:`~dendropy.dataobject.DataSet.char_arrays`).
 
 Creating New (Empty) Objects
 ============================
@@ -65,8 +65,9 @@ All these methods minimally take a source and format reference as arguments and 
     >>> import dendropy
     >>> tree1 = dendropy.Tree.get_from_string("((A,B),(C,D))", format="newick")
     >>> tree_list1 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus")
-    >>> dna1 = dendropy.DnaCharacterArray.get_from_stream(open("pythonidae.fasta"), format="dnafasta")
-    >>> dataset1 = dendropy.DataSet.get_from_path('pythonidae.nex', format='nexus')
+    >>> dna1 = dendropy.DnaCharacterArray.get_from_stream(open("pythonidae.fasta"), "dnafasta")
+    >>> std1 = dendropy.StandardCharacterArray.get_from_path("python_morph.nex", "nexus")
+    >>> dataset1 = dendropy.DataSet.get_from_path("pythonidae.nex", "nexus")
 
 The format specification can be one of: "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc. Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.tree.TreeList` object from a FASTA-formatted data source).
 
@@ -171,7 +172,7 @@ The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.T
 
 As above, the format specification can be any supported and type-apppropriate format, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc., and, as above, depending on the object and format, additional keyword arguments may be specified.
 
-For example, print a :class:`~dendropy.dataobject.tree.Tree` object without branch lengths or internal labels (default is to write both, if present)::
+For example, to print a :class:`~dendropy.dataobject.tree.Tree` object without branch lengths or internal labels (default is to write both, if present)::
 
     >>> import dendropy
     >>> mle_tree = dendropy.Tree.get_from_path("pythonidae.mle.nex", "nexus")
