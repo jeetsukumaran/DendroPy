@@ -79,12 +79,5 @@ class TreePatristicDistTest(unittest.TestCase):
         _chk_distance(pdm, "f", "d", 4)
         _chk_distance(pdm, "c", "d", 6)
 
-class TreePHGammTest(unittest.TestCase):
-
-    def runTest(self):
-        newick_str = "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);"
-        tree = dendropy.Tree(stream=StringIO(newick_str), format="newick")
-        self.assertAlmostEqual(treecalc.pybus_harvey_gamma(tree), 0.546276, 4)
-
 if __name__ == "__main__":
     unittest.main()
