@@ -224,9 +224,7 @@ class NewickWriter(iosys.DataWriter):
         else:
             tag = ""
         if tag:
-            if self.spaces_to_underscore:
-                tag = tag.replace(' ', '_')
-            tag = texttools.escape_nexus_token(tag)
+            tag = texttools.escape_nexus_token(tag, spaces_to_underscore=self.spaces_to_underscore)
         return tag
 
     def compose_node(self, node):

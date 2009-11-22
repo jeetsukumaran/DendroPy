@@ -31,35 +31,39 @@ import dendropy
 _R = robjects.r
 _R('library(ape)')
 
-def as_ape_tree(t):
+def as_ape_object(o):
     """
-    Returns `t` as an ape object. If `t` is a TreeList or list of Trees,
-    then the ape object is `multiPhylo` list of `phylo` objects.
-    If `t` is a Tree, then the ape object is a `phylo` object.
+    Returns `o` as an ape object.
     """
     kwargs = {}
-    if isinstance(t, list):
+    if isinstance(o, dendropy.TreeList):
         kwargs['keep.multi'] = True
-        if isinstance(t, dendropy.TreeList):
-            text = t.as_string("newick", spaces_to_underscore=True)
-        else:
-            text = ";\n".join([i.as_string("newick", spaces_to_underscore=True) for i in t])
-    else:
+        text = o.as_string("newick", spaces_to_underscore=True)
+        return _R['read.tree'](text=text, **kwargs)
+    elif isinstance(o, dendropy.Tree):
         kwargs['keep.multi'] = False
-        text = t.as_string(format="newick", spaces_to_underscore=True)
-    t = _R['read.tree'](text=text, **kwargs)
-    return t
+        text = o.as_string("newick", spaces_to_underscore=True)
+        return _R['read.tree'](text=text, **kwargs)
+    elif isinstance(o, dendropy.CharacterArray):
+        text = o.as_string("nexus", spaces_to_underscore=True)
+        return _R['read.nexus.data'](text=text)
+    else:
+        return robjects.default_py2ri(o)
 
-def as_dendropy_tree(t, taxon_set=None):
+def as_dendropy_object(o, taxon_set=None):
     """
-    Returns a DendroPy object corresponding to the ape object `t`. If `t` is
-    a single tree (i.e., `phylo`), then a DendroPy Tree is returned. If `t` is
+    Returns a DendroPy object corresponding to the ape object `o`. If `o` is
+    a single tree (i.e., `phylo`), then a DendroPy Tree is returned. If `o` is
     a list of trees (i.e., a `multiPhylo` object, or list of `phylo` objects),
     then a DendroPy TreeList is returned.
     """
-    f = tempfile.NamedTemporaryFile()
-    _R['write.nexus'](t, file=f.name)
-    if t.rclass[0] == "multiPhylo":
+    if o.rclass[0] == "multiPhylo":
+        f = tempfile.NamedTemporaryFile()
+        _R['write.nexus'](o, file=f.name)
         return dendropy.TreeList.get_from_path(f.name, "nexus", taxon_set=taxon_set)
-    else:
+    elif o.rclass[0] == "phylo":
+        f = tempfile.NamedTemporaryFile()
+        _R['write.nexus'](o, file=f.name)
         return dendropy.Tree.get_from_path(f.name, "nexus", taxon_set=taxon_set)
+    else:
+        return robjects.default_ri2py(o)

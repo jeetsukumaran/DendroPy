@@ -700,10 +700,11 @@ class NexusWriter(iosys.DataWriter):
         """
         iosys.DataWriter.__init__(self, **kwargs)
         self.simple = kwargs.get("simple", False)
-        self.is_write_taxa_block = kwargs.get("taxa_block", True)
+        self.exclude_taxa = kwargs.get("exclude_taxa", True)
         self.is_write_rooting = kwargs.get("write_rooting", True)
         self.is_write_edge_lengths = kwargs.get("edge_lengths", True)
         self.is_write_internal_labels = kwargs.get("internal_labels", True)
+        self.spaces_to_underscore = kwargs.get("spaces_to_underscore", False)
         self.comment = kwargs.get("comment", [])
 
     def write(self, stream, **kwargs):
@@ -727,7 +728,7 @@ class NexusWriter(iosys.DataWriter):
         if (( (not self.exclude_chars) and self.dataset.char_arrays) \
                 or ( (not self.exclude_trees) and self.dataset.tree_lists)) \
                 and (not self.simple) \
-                and (self.is_write_taxa_block):
+                and (not self.exclude_taxa):
             for taxon_set in self.dataset.taxon_sets:
                 if self.bound_taxon_set is None or taxon_set is self.bound_taxon_set:
                     self.write_taxa_block(taxon_set, stream=stream)
@@ -746,7 +747,7 @@ class NexusWriter(iosys.DataWriter):
         block.append('    dimensions ntax=%d;' % len(taxon_set))
         block.append('    taxlabels')
         for taxon in taxon_set:
-            block.append('        %s' % texttools.escape_nexus_token(taxon.label))
+            block.append('        %s' % texttools.escape_nexus_token(taxon.label, spaces_to_underscore=self.spaces_to_underscore))
         block.append('  ;')
         block.append('end;\n\n')
         stream.write('\n'.join(block))
@@ -768,7 +769,7 @@ class NexusWriter(iosys.DataWriter):
                 rooting = "[&U] "
             else:
                 rooting = ""
-            block.append('    tree %s = %s%s;' % (texttools.escape_nexus_token(tree_name),
+            block.append('    tree %s = %s%s;' % (texttools.escape_nexus_token(tree_name, spaces_to_underscore=self.spaces_to_underscore),
                 rooting,
                 newick_str))
         block.append('end;\n\n')
@@ -776,7 +777,8 @@ class NexusWriter(iosys.DataWriter):
 
     def write_char_block(self, char_array, stream, simple_nexus=False):
         nexus = []
-        taxlabels = [texttools.escape_nexus_token(taxon.label) for taxon in char_array.taxon_set]
+        taxlabels = [texttools.escape_nexus_token(taxon.label, spaces_to_underscore=self.spaces_to_underscore) \
+                for taxon in char_array.taxon_set]
         max_label_len = max([len(label) for label in taxlabels])
         nchar = max([len(seq) for seq in char_array.values()])
         if simple_nexus:
@@ -807,7 +809,7 @@ class NexusWriter(iosys.DataWriter):
                     else:
                         raise Exception("Could not match character state to symbol: '%s'." % state)
                     seq.write(state_string_map[state])
-            nexus.append('%s    %s' % (texttools.escape_nexus_token(taxon.label).ljust(max_label_len), seq.getvalue()))
+            nexus.append('%s    %s' % (texttools.escape_nexus_token(taxon.label, spaces_to_underscore=self.spaces_to_underscore).ljust(max_label_len), seq.getvalue()))
         nexus.append('    ;')
         nexus.append('end;\n\n')
         stream.write('\n'.join(nexus))

@@ -32,9 +32,11 @@ import time
 ## Properly protects a NEXUS token. Placed here instead of `nexustokenizer` so that
 ## it is available to the entire library within needing to import `nexustokenizer`.
 
-def escape_nexus_token(label):
+def escape_nexus_token(label, spaces_to_underscore=False):
     if label is None:
         return ""
+    if spaces_to_underscore:
+        label = label.replace(' ', '_')
     if re.search('[\(\)\[\]\{\}\\\/\,\;\:\=\*\'\"\`\+\-\<\>\0\t\n\r ]', label):
         s = label.split("'")
         if len(s) == 1:
