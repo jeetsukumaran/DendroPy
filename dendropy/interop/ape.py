@@ -70,8 +70,7 @@ def as_dendropy_object(o, taxon_set=None):
     elif o.rclass[0] == "list":
         f = tempfile.NamedTemporaryFile()
         _R['write.nexus.data'](o, file=f.name)
-#        k = open(f.name, "r")
-#        print k.read()
+#        print open(f.name, "r").read()
         d = dendropy.DataSet.get_from_path(f.name, "nexus", taxon_set=taxon_set)
         if len(d.char_arrays) == 0:
             raise ValueError("No character data found")
