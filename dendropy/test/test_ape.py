@@ -86,13 +86,21 @@ class ApeFunctions(unittest.TestCase):
         for i, n in enumerate(t.leaf_iter()):
             n.num_species = num_species[i]
         bd = ape.bd_ext(t)
+#        expected = {
+#            'deviance': -44.609589999999997,
+#            'log-likelihood': 22.3048,
+#            'd/b': 0.99938660000000001,
+#            'd/b s.e.': 0.00011987800000000001,
+#            'b-d': 1.560403,
+#            'b-d s.e.': 0.38816460000000003,
+#        }
         expected = {
-            'deviance': -44.609589999999997,
-            'log-likelihood': 22.3048,
-            'd/b': 0.99938660000000001,
-            'd/b s.e.': 0.00011987800000000001,
-            'b-d': 1.560403,
-            'b-d s.e.': 0.38816460000000003,
+            'deviance': -140.75389999999999,
+            'log-likelihood': 70.376930000000002,
+            'd/b': 0.0,
+            'd/b s.e.': 0.0,
+            'b-d': 2900.3229999999999,
+            'b-d s.e.': 273.3707,
         }
         for k, v in expected.items():
             self.assertAlmostEqual(v, bd[k])

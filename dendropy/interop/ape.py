@@ -125,7 +125,7 @@ def bd_ext(t, num_species_node_attr='num_species'):
     """
     taxon_num_species_map = {}
     for nd in t.leaf_iter():
-        taxon_num_species_map[nd.taxon.label] = nd.num_species
+        taxon_num_species_map[nd.taxon.label.replace(" ", "_")] = nd.num_species
     stdout, stderr = exec_and_capture(_R['bd.ext'], as_ape_object(t), as_r_vector(taxon_num_species_map, int))
     patterns = {
         'deviance' : '\s*Deviance: ([\d\-\.Ee\+]+).*',
