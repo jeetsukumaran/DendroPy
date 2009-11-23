@@ -80,3 +80,9 @@ def as_dendropy_object(o, taxon_set=None):
             raise ValueError("Multiple character matrices returned")
     else:
         return robjects.default_ri2py(o)
+
+def branching_times(t):
+    """
+    Returns a vector of branching times of a tree.
+    """
+    return as_dendropy_object(_R['branching.times'](as_ape_object(t)))

@@ -927,32 +927,23 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         # where n is the number of taxa, and g_2 ... g_n is the vector of waiting
         #   times between consecutive (in time, not along a branch) speciation times.
         node = None
-        speciation_depths = []
+        speciation_ages = []
         n = 0
         for node in self.postorder_node_iter():
-            ch = node.child_nodes()
-            n_ch = len(ch)
-            if n_ch == 0:
-                node.depth = 0.0
-                n += 1
-            elif n_ch > 2:
-                raise ValueError("Polytomy encountered")
+            if len(node.child_nodes()) == 2:
+                try:
+                    speciation_ages.append(node.age)
+                except AttributeError:
+                    self.add_ages_to_nodes(check_prec=prec)
+                    speciation_ages.append(node.age)
             else:
-                first_child = ch[0]
-                node.depth = first_child.depth + first_child.edge.length
-                last_child = ch[-1]
-                for nnd in ch[1:]:
-                    ocnd = nnd.depth + nnd.edge.length
-                    if abs(node.depth - ocnd) > prec:
-                        raise ValueError("Tree is not ultrametric")
-                if n_ch == 2:
-                    speciation_depths.append(node.depth)
+                n += 1
         if node is None:
             raise ValueError("Empty tree encountered")
-        speciation_depths.sort(reverse=True)
+        speciation_ages.sort(reverse=True)
         g = []
-        older = speciation_depths[0]
-        for age in speciation_depths[1:]:
+        older = speciation_ages[0]
+        for age in speciation_ages[1:]:
             g.append(older - age)
             older = age
         g.append(older)
