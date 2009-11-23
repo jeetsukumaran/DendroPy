@@ -25,6 +25,7 @@ Wrappers for interacting with the APE library for R.
 """
 
 import tempfile
+import re
 from rpy2 import robjects
 import dendropy
 
@@ -98,15 +99,46 @@ def as_dendropy_object(o, taxon_set=None):
     else:
         return robjects.default_ri2py(o)
 
+def exec_and_capture(rfunc, *args, **kwargs):
+    stdoutf = tempfile.NamedTemporaryFile()
+    stderrf = tempfile.NamedTemporaryFile()
+    _R('sink("%s")' % stdoutf.name)
+    _R('zz = file("%s", "wt")' % stderrf.name)
+    _R('sink(zz, type="message")')
+    rfunc(*args, **kwargs)
+    _R('sink(type="message")')
+    _R('sink()')
+    i = open(stdoutf.name, "rU")
+    stdout = i.read()
+    i = open(stderrf.name, "rU")
+    stderr = i.read()
+    return stdout, stderr
+
 def bd_ext(t, num_species_node_attr='num_species'):
     """
     This function fits by maximum likelihood a birth-death model to
     the combined phylogenetic and taxonomic data of a given clade. The
     phylogenetic data are given by a tree, `t`, and the taxonomic data by
     an attribute `num_species` of each of the leaf nodes in the tree.
+    Returns dictionary, where keys are estimate names and values are estimate
+    values.
     """
     taxon_num_species_map = {}
     for nd in t.leaf_iter():
         taxon_num_species_map[nd.taxon.label] = nd.num_species
-    b = _R['bd.ext'](as_ape_object(t), as_ape_vector(taxon_num_species_map, int))
-    return b
+    stdout, stderr = exec_and_capture(_R['bd.ext'], as_ape_object(t), as_ape_vector(taxon_num_species_map, int))
+    patterns = {
+        'deviance' : '\s*Deviance: ([\d\-\.Ee\+]+).*',
+        'log-likelihood' : '\s*Log-likelihood: ([\d\-\.Ee\+]+)',
+        'd/b' : '\s*d / b = ([\d\-\.Ee\+]+)',
+        'd/b s.e.' : '\s*d / b = .* StdErr = ([\d\-\.Ee\+]+)',
+        'b-d' : '\s*b - d = ([\d\-\.Ee\+]+)',
+        'b-d s.e.' : '\s*b - d = .* StdErr = ([\d\-\.Ee\+]+)',
+    }
+    results = {}
+    for k, v in patterns.items():
+        m = re.findall(v, stdout)
+        if m:
+            results[k] = m[0]
+    return results
+
