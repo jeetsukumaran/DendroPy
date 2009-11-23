@@ -53,11 +53,11 @@ def as_ape_object(o):
     else:
         return robjects.default_py2ri(o)
 
-def as_ape_vector(o, val_type):
+def as_r_vector(o, val_type):
     if isinstance(o, dict):
         keys = o.keys()
         vals = [o[k] for k in keys]
-        robj = as_ape_vector(vals, val_type=val_type)
+        robj = as_r_vector(vals, val_type=val_type)
         robj.setnames(keys)
     else:
         if val_type == int:
@@ -120,13 +120,13 @@ def bd_ext(t, num_species_node_attr='num_species'):
     the combined phylogenetic and taxonomic data of a given clade. The
     phylogenetic data are given by a tree, `t`, and the taxonomic data by
     an attribute `num_species` of each of the leaf nodes in the tree.
-    Returns dictionary, where keys are estimate names and values are estimate
+    Returns dictionary, where keys are param names and values are param
     values.
     """
     taxon_num_species_map = {}
     for nd in t.leaf_iter():
         taxon_num_species_map[nd.taxon.label] = nd.num_species
-    stdout, stderr = exec_and_capture(_R['bd.ext'], as_ape_object(t), as_ape_vector(taxon_num_species_map, int))
+    stdout, stderr = exec_and_capture(_R['bd.ext'], as_ape_object(t), as_r_vector(taxon_num_species_map, int))
     patterns = {
         'deviance' : '\s*Deviance: ([\d\-\.Ee\+]+).*',
         'log-likelihood' : '\s*Log-likelihood: ([\d\-\.Ee\+]+)',
@@ -139,6 +139,32 @@ def bd_ext(t, num_species_node_attr='num_species'):
     for k, v in patterns.items():
         m = re.findall(v, stdout)
         if m:
-            results[k] = m[0]
+            results[k] = float(m[0])
     return results
+
+def birthdeath(t):
+    """
+    This function fits by maximum likelihood a birth-death model to
+    the branching times computed from a phylogenetic tree using the
+    method of Nee et al. (1994).
+    Returns dictionary, where keys are param names and values are param
+    values.
+    """
+    _R('options(warn=-99)')
+    rval = _R['birthdeath'](as_ape_object(t))
+    _R('options(warn=0)')
+    results = {}
+    names = [n for n in rval.names]
+    results['deviance'] = float(rval[names.index('dev')][0])
+    results['log-likelihood'] = results['deviance'] / 2
+    para = rval[names.index('para')]
+    para_names = [n for n in para.names]
+    results['d/b'] = float(para[para_names.index('d/b')])
+    results['b-d'] = float(para[para_names.index('b-d')])
+    se = rval[names.index('se')]
+    se_names = [n for n in se.names]
+    results['d/b s.e.'] = float(se[se_names.index('d/b')])
+    results['b-d s.e.'] = float(se[se_names.index('b-d')])
+    return results
+
 
