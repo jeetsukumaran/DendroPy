@@ -641,32 +641,6 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 yield node.edge
 
     ###########################################################################
-    ## Information/Utilities
-
-    def add_ages_to_nodes(self, attr_name='age', check_prec=0.0000001):
-        """
-        Takes an ultrametric `tree` and adds a attribute named `attr` to
-        each node, with the value equal to the sum of edge lengths from the
-        node to the tips. If the lengths of different paths to the node
-        differ by more than `check_prec`, then a ValueError exception
-        will be raised indicating deviation from ultrametricity. If
-        `check_prec` is negative or False, then this check will be
-        skipped.
-        """
-        for node in self.postorder_node_iter():
-            ch = node.child_nodes()
-            if len(ch) == 0:
-                setattr(node, attr_name, 0.0)
-            else:
-                first_child = ch[0]
-                setattr(node, attr_name, getattr(first_child, attr_name) + first_child.edge.length)
-                if not (check_prec < 0 or check_prec == False):
-                    for nnd in ch[1:]:
-                        ocnd = getattr(nnd, attr_name) + nnd.edge.length
-                        if abs(getattr(node, attr_name) - ocnd) > check_prec:
-                            raise ValueError("Tree is not ultrametric")
-
-    ###########################################################################
     ## Taxa Management
 
     def infer_taxa(self):
@@ -890,6 +864,41 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     ###########################################################################
     ## Metrics
 
+    def add_ages_to_nodes(self, attr_name='age', check_prec=0.0000001):
+        """
+        Takes an ultrametric `tree` and adds a attribute named `attr` to
+        each node, with the value equal to the sum of edge lengths from the
+        node to the tips. If the lengths of different paths to the node
+        differ by more than `check_prec`, then a ValueError exception
+        will be raised indicating deviation from ultrametricity. If
+        `check_prec` is negative or False, then this check will be
+        skipped.
+        """
+        for node in self.postorder_node_iter():
+            ch = node.child_nodes()
+            if len(ch) == 0:
+                setattr(node, attr_name, 0.0)
+            else:
+                first_child = ch[0]
+                setattr(node, attr_name, getattr(first_child, attr_name) + first_child.edge.length)
+                if not (check_prec < 0 or check_prec == False):
+                    for nnd in ch[1:]:
+                        ocnd = getattr(nnd, attr_name) + nnd.edge.length
+                        if abs(getattr(node, attr_name) - ocnd) > check_prec:
+                            raise ValueError("Tree is not ultrametric")
+
+    def node_ages(self, check_prec=0.0000001):
+        """
+        Returns list of ages of speciation events / coalescence times on tree.
+        """
+        try:
+            ages = [n.age for n in self.internal_nodes()]
+        except AttributeError:
+            self.add_ages_to_nodes(attr_name='age', check_prec=check_prec)
+            ages = [n.age for n in self.internal_nodes()]
+        ages.sort()
+        return ages
+
     def length(self):
         """
         Returns sum of edge lengths of self. Edges with no lengths defined
@@ -901,6 +910,18 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         for edge in self.postorder_edge_iter():
             total += (edge.length if edge.length is not None else 0)
         return total
+
+    def coalescence_intervals(self):
+        """
+        Returns list of coalescence intervals on `tree`., i.e., the waiting
+        times between successive coalescence events.
+        """
+        ages = self.node_ages()
+        intervals = []
+        intervals.append(ages[0])
+        for i, d in enumerate(ages[1:]):
+            intervals.append(d - ages[i])
+        return intervals
 
     def pybus_harvey_gamma(self, prec=0.00001):
         """Returns the gamma statistic of Pybus and Harvey (2000). This statistic

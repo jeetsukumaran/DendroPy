@@ -66,7 +66,7 @@ The following example sets the edge lengths of a tree to the proportions of the 
 .. literalinclude:: /examples/rescale_tree_length.py
     :linenos:
 
-Or remove the edge lengths entirely:
+While this one removes the edge lengths entirely:
 
 .. literalinclude:: /examples/remove_branch_lengths.py
     :linenos:

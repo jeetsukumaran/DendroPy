@@ -3,37 +3,37 @@
 Begin taxa;
 	Dimensions ntax=13;
 	Taxlabels
-		Antaresia maculosa
-		Antaresia perthensis
-		Antaresia stimsoni
-		Aspidites ramsayi
-		Bothrochilus boa
-		Liasis fuscus
-		Morelia boeleni
-		Morelia bredli
-		Morelia carinata
-		Morelia oenpelliensis
-		Morelia viridis
-		Python brongersmai
-		Python timoriensis
+        'Antaresia maculosa'
+        'Antaresia perthensis'
+        'Antaresia stimsoni'
+        'Aspidites ramsayi'
+        'Bothrochilus boa'
+        'Liasis fuscus'
+        'Morelia boeleni'
+        'Morelia bredli'
+        'Morelia carinata'
+        'Morelia oenpelliensis'
+        'Morelia viridis'
+        'Python brongersmai'
+        'Python timoriensis'
 		;
 End;
 
 Begin trees;
 	Translate
-		1 Antaresia maculosa,
-		2 Antaresia perthensis,
-		3 Antaresia stimsoni,
-		4 Aspidites ramsayi,
-		5 Bothrochilus boa,
-		6 Liasis fuscus,
-		7 Morelia boeleni,
-		8 Morelia bredli,
-		9 Morelia carinata,
-		10 Morelia oenpelliensis,
-		11 Morelia viridis,
-		12 Python brongersmai,
-		13 Python timoriensis
+		1 'Antaresia maculosa',
+		2 'Antaresia perthensis',
+		3 'Antaresia stimsoni',
+		4 'Aspidites ramsayi',
+		5 'Bothrochilus boa',
+		6 'Liasis fuscus',
+		7 'Morelia boeleni',
+		8 'Morelia bredli',
+		9 'Morelia carinata',
+		10 'Morelia oenpelliensis',
+		11 'Morelia viridis',
+		12 'Python brongersmai',
+		13 'Python timoriensis'
 		;
 tree STATE_0 [&lnP=-5688.169043982002] = [&R] ((((9[&rate=80.00483737366042]:8.378548344270661E-4,13[&rate=102.08958792255486]:8.378548344270661E-4)[&rate=78.30545030336808]:2.207297044675917E-4,6[&rate=82.68730712354119]:0.0010585845388946578)[&rate=93.00614594524671]:9.225023652651332E-5,((1[&rate=96.67954407581612]:8.03560620678725E-4,(3[&rate=95.3507500713952]:6.400535440154149E-4,2[&rate=98.17423720650196]:6.400535440154149E-4)[&rate=84.92040444993299]:1.6350707666331016E-4)[&rate=88.91910840585325]:5.593970818646441E-5,(11[&rate=89.90386090100195]:6.357231679748066E-4,8[&rate=85.95314935710981]:6.357231679748066E-4)[&rate=81.42840098411786]:2.237771608903828E-4)[&rate=86.95506666697213]:2.913344465559817E-4)[&rate=99.92109747344873]:2.000213732472611E-5,((5[&rate=91.93450663637228]:9.087335869803404E-4,(12[&rate=105.10273003684884]:7.385158291658043E-4,10[&rate=94.13722420827736]:7.385158291658043E-4)[&rate=87.93981078911168]:1.7021775781453613E-4)[&rate=110.82217372112312]:7.516668926476385E-5,(7[&rate=72.13512319003742]:8.186914235776848E-4,4[&rate=76.06054714999507]:8.186914235776848E-4)[&rate=90.90503017719418]:1.6520885266741944E-4)[&rate=83.83962525281865]:1.86936636500793E-4);
 tree STATE_10000 [&lnP=-5690.456149399219] = [&R] (6[&rate=47.30077038191388]:0.0016399932037128467,((9[&rate=53.303166235152666]:0.0013698685683851744,13[&rate=74.23519241092647]:0.0013698685683851744)[&rate=85.6504801947235]:2.300950502285193E-4,(((1[&rate=95.52352187668623]:9.731017088563755E-4,(3[&rate=70.94462917979054]:8.080520284893638E-4,2[&rate=77.73775965077989]:8.080520284893638E-4)[&rate=119.37687163304375]:1.6504968036701166E-4)[&rate=64.81069562620745]:1.4290661225832958E-4,(11[&rate=67.81675393502572]:9.703359263239811E-4,8[&rate=59.02270022288916]:9.703359263239811E-4)[&rate=109.331885092602]:1.45672394790724E-4)[&rate=56.17288366812796]:2.455680074360347E-4,((7[&rate=61.89057263434055]:9.38483697430383E-4,4[&rate=81.5149839287036]:9.38483697430383E-4)[&rate=40.30290285112261]:1.7443706253108128E-4,(5[&rate=101.71577378657538]:9.010948453739099E-4,(12[&rate=134.4737890751994]:5.921398683369189E-4,10[&rate=90.2617011318281]:5.921398683369189E-4)[&rate=50.3670129155042]:3.089549770369911E-4)[&rate=35.77823227251367]:2.1182591458755436E-4)[&rate=28.80085459331185]:2.4865556858927546E-4)[&rate=44.005776137697424]:2.3838729006295397E-4)[&rate=167.05179509550925]:4.002958509915296E-5);

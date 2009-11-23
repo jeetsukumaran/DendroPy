@@ -33,6 +33,8 @@ from dendropy.dataobject.taxon import *
 from dendropy.dataobject.tree import *
 from dendropy.dataobject.char import *
 from dendropy.dataobject.dataset import *
+from dendropy.interop import paup
+from dendropy.interop import ape
 
 ###############################################################################
 ## PACKAGE METADATA

@@ -52,6 +52,23 @@ def as_ape_object(o):
     else:
         return robjects.default_py2ri(o)
 
+def as_ape_vector(o, val_type):
+    if isinstance(o, dict):
+        keys = o.keys()
+        vals = [o[k] for k in keys]
+        robj = as_ape_vector(vals, val_type=val_type)
+        robj.setnames(keys)
+    else:
+        if val_type == int:
+            robj = robjects.IntVector(o)
+        elif val_type == float:
+            robj = robjects.FloatVector(o)
+        elif val_type == bool:
+            robj = robjects.BoolVector(o)
+        else:
+            robj = robjects.RVector(o)
+    return robj
+
 def as_dendropy_object(o, taxon_set=None):
     """
     Returns a DendroPy object corresponding to the ape object `o`. If `o` is
@@ -81,8 +98,15 @@ def as_dendropy_object(o, taxon_set=None):
     else:
         return robjects.default_ri2py(o)
 
-def branching_times(t):
+def bd_ext(t, num_species_node_attr='num_species'):
     """
-    Returns a vector of branching times of a tree.
+    This function fits by maximum likelihood a birth-death model to
+    the combined phylogenetic and taxonomic data of a given clade. The
+    phylogenetic data are given by a tree, `t`, and the taxonomic data by
+    an attribute `num_species` of each of the leaf nodes in the tree.
     """
-    return as_dendropy_object(_R['branching.times'](as_ape_object(t)))
+    taxon_num_species_map = {}
+    for nd in t.leaf_iter():
+        taxon_num_species_map[nd.taxon.label] = nd.num_species
+    b = _R['bd.ext'](as_ape_object(t), as_ape_vector(taxon_num_species_map, int))
+    return b

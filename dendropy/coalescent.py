@@ -233,17 +233,6 @@ def coalesce(nodes,
     # return the list of nodes that have not coalesced
     return nodes
 
-def coalescence_intervals(tree):
-    """Returns list of coalescence intervals on `tree`."""
-    tree.add_ages_to_nodes(attr_name='age')
-    ages = [n.age for n in tree.internal_nodes()]
-    ages.sort()
-    intervals = []
-    intervals.append(ages[0])
-    for i, d in enumerate(ages[1:]):
-        intervals.append(d - ages[i])
-    return intervals
-
 def node_waiting_time_pairs(tree):
     """Returns list of tuples of (node, coalescent interval [= time between
     last coalescent event and current node age])"""
