@@ -32,7 +32,7 @@ While the previous example works, it is probably clearer and more efficient to u
         Iterates over nodes in a :class:`~dendropy.dataobject.tree.Tree` object in a  `breadth-first <http://en.wikipedia.org/wiki/Breadth-first_traversal>`_  search pattern, i.e., every node at a particular level is visited before proceeding to the next level.
 
     :meth:`~dendropy.dataobject.tree.Tree.leaf_iter()`
-        Iterates over the leaf or tip nodes :class:`~dendropy.dataobject.tree.Tree` object.
+        Iterates over the leaf or tip nodes of a :class:`~dendropy.dataobject.tree.Tree` object.
 
 The previous example would thus be better implemented as follows:
 
