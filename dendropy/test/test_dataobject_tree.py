@@ -109,13 +109,13 @@ class TreeCreateTest(datatest.DataObjectVerificationTestCase):
 
     def testFromFileFactoryDistinctTaxa(self):
         tree_list = datagen.reference_tree_list()
-        s = pathmap.tree_source_path('reference.trees.nexus')
+        s = pathmap.tree_source_path(datagen.reference_trees_filename(format="nexus"))
         tree = dendropy.Tree.get_from_stream(open(s, "rU"), "nexus", from_index=2)
         self.assertDistinctButEqual(tree_list[2], tree, distinct_taxa=True)
 
     def testFromPathFactoryDistinctTaxa(self):
         tree_list = datagen.reference_tree_list()
-        s = pathmap.tree_source_path('reference.trees.nexus')
+        s = pathmap.tree_source_path(datagen.reference_trees_filename(format="nexus"))
         tree = dendropy.Tree.get_from_path(s, "nexus", from_index=2)
         self.assertDistinctButEqual(tree_list[2], tree, distinct_taxa=True)
 
@@ -126,13 +126,13 @@ class TreeCreateTest(datatest.DataObjectVerificationTestCase):
 
     def testFromFileFactorySameTaxa(self):
         tree_list = datagen.reference_tree_list()
-        s = pathmap.tree_source_path('reference.trees.nexus')
+        s = pathmap.tree_source_path(datagen.reference_trees_filename(format="nexus"))
         tree = dendropy.Tree.get_from_stream(open(s, "rU"), "nexus", from_index=2, taxon_set=tree_list.taxon_set)
         self.assertDistinctButEqual(tree_list[2], tree, distinct_taxa=False)
 
     def testFromPathFactorySameTaxa(self):
         tree_list = datagen.reference_tree_list()
-        s = pathmap.tree_source_path('reference.trees.nexus')
+        s = pathmap.tree_source_path(datagen.reference_trees_filename(format="nexus"))
         tree = dendropy.Tree.get_from_path(s, "nexus", from_index=2, taxon_set=tree_list.taxon_set)
         self.assertDistinctButEqual(tree_list[2], tree, distinct_taxa=False)
 

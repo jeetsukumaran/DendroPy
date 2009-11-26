@@ -64,7 +64,7 @@ def main():
     result.append("    return treelist_node_references")
     result.append("")
 
-    tree_list_name = 'reference_tree_list'
+    tree_list_name = 'tree_list'
     src_lines = tlist.as_python_source(tree_list_name=tree_list_name, oids=True).split("\n")
     result.append("def reference_tree_list():")
     for s in src_lines:
