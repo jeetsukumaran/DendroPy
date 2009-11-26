@@ -175,9 +175,9 @@ class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
         return t
 
     def testMixedNexusAndNewickDistinctTaxa(self):
-        filenames = ["reference.trees.newick",
+        filenames = [datagen.reference_trees_filename(format="newick"),
                      "reference.trees.nexus",
-                     "reference.trees.newick",
+                     datagen.reference_trees_filename(format="newick"),
                      "reference.trees.nexus"]
         filepaths = [pathmap.tree_source_path(f) for f in filenames]
         taxon_set = dendropy.TaxonSet()
@@ -186,9 +186,9 @@ class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
         self.assertEqual(idx, 39)
 
     def testMixedNexusAndNewickSameTaxa(self):
-        filenames = ["reference.trees.newick",
+        filenames = [datagen.reference_trees_filename(format="newick"),
                      "reference.trees.nexus",
-                     "reference.trees.newick",
+                     datagen.reference_trees_filename(format="newick"),
                      "reference.trees.nexus"]
         filepaths = [pathmap.tree_source_path(f) for f in filenames]
         taxon_set = self.ref_tree_list.taxon_set
@@ -197,9 +197,9 @@ class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
         self.assertEqual(idx, 39)
 
     def testBurnIn(self):
-        filenames = ["reference.trees.newick",
+        filenames = [datagen.reference_trees_filename(format="newick"),
                      "reference.trees.nexus",
-                     "reference.trees.newick",
+                     datagen.reference_trees_filename(format="newick"),
                      "reference.trees.nexus"]
         filepaths = [pathmap.tree_source_path(f) for f in filenames]
         taxon_set = self.ref_tree_list.taxon_set

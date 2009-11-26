@@ -59,7 +59,7 @@ class DataForTestingTest(datatest.DataObjectVerificationTestCase):
         char_array = datagen.reference_dna_array()
         taxon_set = char_array.taxon_set
         dna_dict = datagen.reference_dna_dict()
-        self.assertEqual(len(char_array), 13)
+        self.assertEqual(len(char_array), 29)
         self.assertSame(char_array.default_state_alphabet, dendropy.DNA_STATE_ALPHABET)
         for tax_label, tax_seq_symbols in dna_dict.items():
             taxon = taxon_set.require_taxon(label=tax_label)
@@ -74,7 +74,7 @@ class DataForTestingTest(datatest.DataObjectVerificationTestCase):
     def testReferenceSingleTaxonSetDataSet(self):
         dataset = datagen.reference_single_taxonset_dataset()
         self.assertEqual(len(dataset.taxon_sets), 1)
-        self.assertEqual(len(dataset.taxon_sets[0]), 13)
+        self.assertEqual(len(dataset.taxon_sets[0]), 29)
         self.assertEqual(len(dataset.tree_lists), 1)
         self.assertSame(dataset.tree_lists[0].taxon_set, dataset.taxon_sets[0])
         self.assertEqual(len(dataset.char_arrays), 2)

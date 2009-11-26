@@ -60,7 +60,7 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        t_tree_list = dendropy.TreeList.get_from_path(pathmap.tree_source_path("reference.trees.newick"), 'newick')
+        t_tree_list = dendropy.TreeList.get_from_path(pathmap.tree_source_path(datagen.reference_trees_filename(format="newick")), 'newick')
         self.assertDistinctButEqualTreeList(
                 ref_tree_list,
                 t_tree_list,
@@ -70,7 +70,7 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileSameTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        t_tree_list = dendropy.TreeList.get_from_path(pathmap.tree_source_path("reference.trees.newick"),
+        t_tree_list = dendropy.TreeList.get_from_path(pathmap.tree_source_path(datagen.reference_trees_filename(format="newick")),
                 'newick',
                 taxon_set=ref_tree_list.taxon_set)
         self.assertDistinctButEqualTreeList(
@@ -191,22 +191,22 @@ class NewickDocumentReaderTest(datatest.DataObjectVerificationTestCase):
 
     def testBasicDocumentParseFromReader(self):
         reader = newick.NewickReader()
-        test_dataset = reader.read(stream=pathmap.tree_source_stream("reference.trees.newick"))
+        test_dataset = reader.read(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick")))
         self.assertDistinctButEqual(self.reference_dataset, test_dataset)
 
     def testBasicDocumentParseFromRead(self):
         test_dataset = dendropy.DataSet()
-        test_dataset.read(stream=pathmap.tree_source_stream("reference.trees.newick"), format="newick")
+        test_dataset.read(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick")), format="newick")
         self.assertDistinctButEqual(self.reference_dataset, test_dataset)
 
     def testBasicDocumentFromInit(self):
-        test_dataset = dendropy.DataSet(stream=pathmap.tree_source_stream("reference.trees.newick"), format="newick")
+        test_dataset = dendropy.DataSet(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick")), format="newick")
         self.assertDistinctButEqual(self.reference_dataset, test_dataset)
 
     def testMultiDocumentParse(self):
         test_dataset = dendropy.DataSet()
-        test_dataset.read(stream=pathmap.tree_source_stream("reference.trees.newick"), format="newick")
-        test_dataset.read(stream=pathmap.tree_source_stream("reference.trees.newick"), format="newick")
+        test_dataset.read(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick")), format="newick")
+        test_dataset.read(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick")), format="newick")
         self.assertEqual(len(test_dataset.taxon_sets), 2)
         self.assertEqual(len(test_dataset.tree_lists), 2)
         self.assertDistinctButEqual(test_dataset.taxon_sets[0], test_dataset.taxon_sets[1])
