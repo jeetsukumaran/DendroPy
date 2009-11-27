@@ -180,10 +180,10 @@ For example, to print a :class:`~dendropy.dataobject.tree.Tree` object without b
 
 We can also request that the tree string have their spaces replaced by underscores::
 
->>> import dendropy
->>> mle_tree = dendropy.Tree.get_from_path("pythonidae.mle.nex", "nexus")
->>> print(mle_tree.as_string("newick", edge_lengths=False, spaces_to_underscores=True))
-(Python_molurus,((Python_sebae,(((((Morelia_tracyae,(Morelia_amethistina,((Morelia_nauta,Morelia_kinghorni),Morelia_clastolepis))),Morelia_boeleni),((Python_reticulatus,Python_timoriensis),Morelia_oenpelliensis)),((((Morelia_viridis,(Morelia_carinata,(Morelia_spilota,Morelia_bredli))),(Antaresia_maculosa,((Antaresia_childreni,Antaresia_stimsoni),Antaresia_perthensis))),(Leiopython_albertisii,Bothrochilus_boa)),((Liasis_olivaceus,(Liasis_mackloti,Liasis_fuscus)),Apodora_papuana))),(Aspidites_ramsayi,Aspidites_melanocephalus))),Python_brongersmai),Python_regius);
+    >>> import dendropy
+    >>> mle_tree = dendropy.Tree.get_from_path("pythonidae.mle.nex", "nexus")
+    >>> print(mle_tree.as_string("newick", edge_lengths=False, spaces_to_underscores=True))
+    (Python_molurus,((Python_sebae,(((((Morelia_tracyae,(Morelia_amethistina,((Morelia_nauta,Morelia_kinghorni),Morelia_clastolepis))),Morelia_boeleni),((Python_reticulatus,Python_timoriensis),Morelia_oenpelliensis)),((((Morelia_viridis,(Morelia_carinata,(Morelia_spilota,Morelia_bredli))),(Antaresia_maculosa,((Antaresia_childreni,Antaresia_stimsoni),Antaresia_perthensis))),(Leiopython_albertisii,Bothrochilus_boa)),((Liasis_olivaceus,(Liasis_mackloti,Liasis_fuscus)),Apodora_papuana))),(Aspidites_ramsayi,Aspidites_melanocephalus))),Python_brongersmai),Python_regius);
 
 
 Converting from FASTA format to NEXUS::
