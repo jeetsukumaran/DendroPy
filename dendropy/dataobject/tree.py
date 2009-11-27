@@ -556,13 +556,20 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             return node
         return None
 
-    def find_taxon_node(self, taxon_filter_fn=None):
+    def find_node_with_taxon(self, taxon_filter_fn=None):
         "Finds the first node for which taxon_filter_fn(node.taxon) == True."
         for node in self.preorder_node_iter():
             if hasattr(node, "taxon") and node.taxon is not None:
                 if taxon_filter_fn(node.taxon):
                     return node
         return None
+
+    def find_node_with_taxon_label(self, label):
+        "Returns node with taxon with given label."
+        taxon = self.taxon_set.get_taxon(label=label)
+        if taxon is None:
+            return None
+        return self.find_node_with_taxon(lambda x: True if x is taxon else False)
 
     def find_edge(self, oid):
         "Finds the first edge with matching id."
