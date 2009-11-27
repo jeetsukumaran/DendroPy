@@ -119,14 +119,21 @@ def bd_ext(t, num_species_node_attr='num_species'):
     This function fits by maximum likelihood a birth-death model to
     the combined phylogenetic and taxonomic data of a given clade. The
     phylogenetic data are given by a tree, `t`, and the taxonomic data by
-    an attribute `num_species` of each of the leaf nodes in the tree.
+    an attribute `num_species` of each of the taxa in the tree.
     Returns dictionary, where keys are param names and values are param
     values.
     """
-    taxon_num_species_map = {}
-    for nd in t.leaf_iter():
-        taxon_num_species_map[nd.taxon.label.replace(" ", "_")] = nd.num_species
-    stdout, stderr = exec_and_capture(_R['bd.ext'], as_ape_object(t), as_r_vector(taxon_num_species_map, int))
+    taxon_num_species = []
+    for taxon in t.taxon_set:
+        taxon_num_species.append(taxon.num_species)
+#    taxon_num_species_map = {}
+#    for taxon in t.taxon_set:
+#        taxon_num_species_map[taxon.label.replace(" ", "_")] = taxon.num_species
+#    taxon_num_species_map = [10, 47, 69, 214, 161, 17,
+#            355, 51, 56, 10, 39, 152,
+#            6, 143, 358, 103, 319,
+#            23, 291, 313, 196, 1027, 5712]
+    stdout, stderr = exec_and_capture(_R['bd.ext'], as_ape_object(t), as_r_vector(taxon_num_species, int))
     patterns = {
         'deviance' : '\s*Deviance: ([\d\-\.Ee\+]+).*',
         'log-likelihood' : '\s*Log-likelihood: ([\d\-\.Ee\+]+)',
@@ -156,7 +163,7 @@ def birthdeath(t):
     results = {}
     names = [n for n in rval.names]
     results['deviance'] = float(rval[names.index('dev')][0])
-    results['log-likelihood'] = results['deviance'] / 2
+    results['log-likelihood'] = results['deviance'] / -2
     para = rval[names.index('para')]
     para_names = [n for n in para.names]
     results['d/b'] = float(para[para_names.index('d/b')])
