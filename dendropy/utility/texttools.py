@@ -35,9 +35,9 @@ import time
 def escape_nexus_token(label, spaces_to_underscore=False):
     if label is None:
         return ""
-    if spaces_to_underscore:
-        label = label.replace(' ', '_')
-    if re.search('[\(\)\[\]\{\}\\\/\,\;\:\=\*\'\"\`\+\-\<\>\0\t\n\r ]', label):
+    if spaces_to_underscore and not re.search('[\(\)\[\]\{\}\\\/\,\;\:\=\*\'\"\`\+\-\<\>\0]', label):
+        label = label.replace(' ', '_').replace('\t', '_')
+    elif re.search('[\(\)\[\]\{\}\\\/\,\;\:\=\*\'\"\`\+\-\<\>\0\t\n\r ]', label):
         s = label.split("'")
         if len(s) == 1:
             return "'" + label + "'"
