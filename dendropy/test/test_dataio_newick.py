@@ -192,16 +192,16 @@ class NewickDocumentReaderTest(datatest.DataObjectVerificationTestCase):
     def testBasicDocumentParseFromReader(self):
         reader = newick.NewickReader()
         test_dataset = reader.read(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick")))
-        self.assertDistinctButEqual(self.reference_dataset, test_dataset)
+        self.assertDistinctButEqual(self.reference_dataset, test_dataset, ignore_taxon_order=True)
 
     def testBasicDocumentParseFromRead(self):
         test_dataset = dendropy.DataSet()
         test_dataset.read(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick")), format="newick")
-        self.assertDistinctButEqual(self.reference_dataset, test_dataset)
+        self.assertDistinctButEqual(self.reference_dataset, test_dataset, ignore_taxon_order=True)
 
     def testBasicDocumentFromInit(self):
         test_dataset = dendropy.DataSet(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick")), format="newick")
-        self.assertDistinctButEqual(self.reference_dataset, test_dataset)
+        self.assertDistinctButEqual(self.reference_dataset, test_dataset, ignore_taxon_order=True)
 
     def testMultiDocumentParse(self):
         test_dataset = dendropy.DataSet()
@@ -219,7 +219,7 @@ class NewickDocumentWriterTest(datatest.DataObjectVerificationTestCase):
         self.reference_dataset = dendropy.DataSet(reference_tree_list)
 
     def testRoundTrip(self):
-        self.roundTripDataSetTest(self.reference_dataset, "newick")
+        self.roundTripDataSetTest(self.reference_dataset, "newick", ignore_taxon_order=True)
 
 if __name__ == "__main__":
     unittest.main()
