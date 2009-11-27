@@ -146,15 +146,14 @@ The :class:`~dendropy.dataobject.tree.TreeList` objects automatically handles ta
 
 In contrast to the aggregating behavior of :meth:`read_from_*()` of :class:`~dendropy.dataobject.tree.TreeList` and :class:`~dendropy.dataobject.dataset.DataSet` objects, the :meth:`read_from_*()` methods of :class:`~dendropy.dataobject.tree.Tree` and :class:`~dendropy.dataobject.char.CharacterArray`-derived objects show replacement behavior. For example, the following changes the contents of a :class:`~dendropy.dataobject.tree.Tree` by re-reading it::
 
+    >>> import dendropy
     >>> t = dendropy.Tree()
     >>> t.read_from_path('pythonidae.mle.nex', 'nexus')
-    <Tree object at 0x79db0>
     >>> print(t.description())
-    Tree object at 0x79db0 (Tree6557072: 'MLE'): ('Python brongersmai':0.194351089393,((('Antaresia maculosa':0.109099293954,('Antaresia stimsoni':0.0602487311076,'Antaresia perthensis':0.103243143758):0.0179343676839):0.00824964546739,('Morelia viridis':0.0900605954734,('Morelia carinata':0.099000642532,'Morelia bredli':0.0762805233034):0.0100895762174):0.00532489577077):0.0169831787421,(('Python timoriensis':0.164594494686,'Morelia oenpelliensis':0.0845040654358):0.01077026635,(('Morelia boeleni':0.108513275703,'Bothrochilus boa':0.102695794094):0.0038585904059,'Liasis fuscus':0.116512710724):0.00431514301361):0.00384869899099):0.0126515429931,'Aspidites ramsayi':0.0700307228917):0.0
+    Tree object at 0x79c70 (Tree37413776: '0'): ('Python molurus':0.0779719244,(('Python sebae':0.1414715009,((((('Morelia tracyae':0.0435011998,('Morelia amethistina':0.0305993564,(('Morelia nauta':0.0092774432,'Morelia kinghorni':0.0093145395):0.005595,'Morelia clastolepis':0.005204698):0.023435):0.012223):0.025359,'Morelia boeleni':0.0863199106):0.019894,(('Python reticulatus':0.0828549023,'Python timoriensis':0.0963051344):0.072003,'Morelia oenpelliensis':0.0820543043):0.002785):0.00274,(((('Morelia viridis':0.0925974416,('Morelia carinata':0.0943697342,('Morelia spilota':0.0237557178,'Morelia bredli':0.0357358071):0.041377):0.005225):0.004424,('Antaresia maculosa':0.1141193265,(('Antaresia childreni':0.0363195704,'Antaresia stimsoni':0.0188535952):0.043287,'Antaresia perthensis':0.0947695442):0.019148):0.007921):0.022413,('Leiopython albertisii':0.0698883547,'Bothrochilus boa':0.0811607602):0.020941):0.007439,(('Liasis olivaceus':0.0449896545,('Liasis mackloti':0.0331564496,'Liasis fuscus':0.0230286886):0.058253):0.016766,'Apodora papuana':0.0847328612):0.008417):0.006539):0.011557,('Aspidites ramsayi':0.0349772256,'Aspidites melanocephalus':0.0577536309):0.042499):0.036177):0.016859,'Python brongersmai':0.1147218285):0.001271,'Python regius':0.1800489093):0.0
     >>> t.read_from_path('pythonidae.mcmc-con.nex', 'nexus')
-    <Tree object at 0x79db0>
     >>> print(t.description())
-    Tree object at 0x79db0 (Tree6612560: 'mb 50 majrule'): ('Aspidites ramsayi':0.096507,'Bothrochilus boa':0.142761,'Liasis fuscus':0.158747,'Python timoriensis':0.214838,'Python brongersmai':0.276612,'Morelia boeleni':0.139709,'Morelia oenpelliensis':0.10482,((('Antaresia stimsoni':0.074305,'Antaresia perthensis':0.146934):0.029441,'Antaresia maculosa':0.136347):0.016492,('Morelia viridis':0.1111,('Morelia bredli':0.102316,'Morelia carinata':0.1242):0.018918):0.009631):0.026255)
+    Tree object at 0x79c70 (Tree37414064: 'con 50 majrule'): ('Python regius':0.212275,('Python sebae':0.176816,(((((('Antaresia maculosa':0.127351,('Antaresia perthensis':0.108378,('Antaresia stimsoni':0.021372,'Antaresia childreni':0.038155):0.046446):0.025262):0.012957,('Morelia carinata':0.101145,('Morelia bredli':0.038563,'Morelia spilota':0.025643):0.050967):0.010472,'Morelia viridis':0.098541):0.023291,('Bothrochilus boa':0.091928,'Leiopython albertisii':0.080986):0.031583):0.008347,((('Liasis fuscus':0.026601,'Liasis mackloti':0.034524):0.069881,'Liasis olivaceus':0.047727):0.023758,'Apodora papuana':0.096097):0.01474):0.010084,(('Python timoriensis':0.101865,'Python reticulatus':0.095018):0.0922,('Morelia boeleni':0.093309,('Morelia tracyae':0.04727,('Morelia amethistina':0.034936,(('Morelia nauta':0.011,'Morelia kinghorni':0.011198):0.006932,'Morelia clastolepis':0.008103):0.025987):0.017415):0.033886):0.027519,'Morelia oenpelliensis':0.092143):0.006779):0.018238,('Aspidites ramsayi':0.030898,'Aspidites melanocephalus':0.068553):0.049525):0.050607):0.023304,('Python brongersmai':0.132193,'Python molurus':0.08872):0.011466)
 
 Writing or Saving Data
 ======================
@@ -177,7 +176,15 @@ For example, to print a :class:`~dendropy.dataobject.tree.Tree` object without b
     >>> import dendropy
     >>> mle_tree = dendropy.Tree.get_from_path("pythonidae.mle.nex", "nexus")
     >>> print(mle_tree.as_string("newick", edge_lengths=False, internal_labels=False))
-    ('Python brongersmai',((('Antaresia maculosa',('Antaresia stimsoni','Antaresia perthensis')),('Morelia viridis',('Morelia carinata','Morelia bredli'))),(('Python timoriensis','Morelia oenpelliensis'),(('Morelia boeleni','Bothrochilus boa'),'Liasis fuscus'))),'Aspidites ramsayi');
+    ('Python molurus',(('Python sebae',((((('Morelia tracyae',('Morelia amethistina',(('Morelia nauta','Morelia kinghorni'),'Morelia clastolepis'))),'Morelia boeleni'),(('Python reticulatus','Python timoriensis'),'Morelia oenpelliensis')),(((('Morelia viridis',('Morelia carinata',('Morelia spilota','Morelia bredli'))),('Antaresia maculosa',(('Antaresia childreni','Antaresia stimsoni'),'Antaresia perthensis'))),('Leiopython albertisii','Bothrochilus boa')),(('Liasis olivaceus',('Liasis mackloti','Liasis fuscus')),'Apodora papuana'))),('Aspidites ramsayi','Aspidites melanocephalus'))),'Python brongersmai'),'Python regius');
+
+We can also request that the tree string have their spaces replaced by underscores::
+
+>>> import dendropy
+>>> mle_tree = dendropy.Tree.get_from_path("pythonidae.mle.nex", "nexus")
+>>> print(mle_tree.as_string("newick", edge_lengths=False, spaces_to_underscores=True))
+(Python_molurus,((Python_sebae,(((((Morelia_tracyae,(Morelia_amethistina,((Morelia_nauta,Morelia_kinghorni),Morelia_clastolepis))),Morelia_boeleni),((Python_reticulatus,Python_timoriensis),Morelia_oenpelliensis)),((((Morelia_viridis,(Morelia_carinata,(Morelia_spilota,Morelia_bredli))),(Antaresia_maculosa,((Antaresia_childreni,Antaresia_stimsoni),Antaresia_perthensis))),(Leiopython_albertisii,Bothrochilus_boa)),((Liasis_olivaceus,(Liasis_mackloti,Liasis_fuscus)),Apodora_papuana))),(Aspidites_ramsayi,Aspidites_melanocephalus))),Python_brongersmai),Python_regius);
+
 
 Converting from FASTA format to NEXUS::
 
@@ -218,54 +225,71 @@ This method optionally takes a numeric value as its first argument that determin
     >>> import dendropy
     >>> d = dendropy.DataSet.get_from_path('pythonidae.nex', 'nexus')
     >>> print(d.description())
-    DataSet object at 0x79d50: 1 Taxon Sets, 1 Tree Lists, 1 Character Arrays
-    >>> print(d.description(2))
-    DataSet object at 0x79d50: 1 Taxon Sets, 1 Tree Lists, 1 Character Arrays
-        [Taxon Sets]
-            [0] TaxonSet object at 0x64b210 (TaxonSet6599184): 13 Taxa
-        [Tree Lists]
-            [0] TreeList object at 0x64b600 (TreeList6600192):  1 Trees
-        [Character Arrays]
-            [0] DnaCharacterArray object at 0x641770 (DnaCharacterArray6559600):  13 Sequences
+    DataSet object at 0x79dd0: 1 Taxon Sets, 0 Tree Lists, 1 Character Arrays
     >>> print(d.description(3))
-    DataSet object at 0x79d50: 1 Taxon Sets, 1 Tree Lists, 1 Character Arrays
+    DataSet object at 0x79dd0: 1 Taxon Sets, 0 Tree Lists, 1 Character Arrays
         [Taxon Sets]
-            [0] TaxonSet object at 0x64b1e0 (TaxonSet6599136): 13 Taxa
-                [0] Taxon object at 0x6416b0 (Taxon6559408): 'Aspidites ramsayi'
-                [1] Taxon object at 0x6419f0 (Taxon6560240): 'Bothrochilus boa'
-                [2] Taxon object at 0x6419d0 (Taxon6560208): 'Liasis fuscus'
-                [3] Taxon object at 0x579070 (Taxon5738608): 'Antaresia stimsoni'
-                [4] Taxon object at 0x69d3b0 (Taxon6935472): 'Morelia viridis'
-                [5] Taxon object at 0x702d10 (Taxon7351568): 'Morelia bredli'
-                [6] Taxon object at 0x7733b0 (Taxon7812016): 'Antaresia perthensis'
-                [7] Taxon object at 0x103dd50 (Taxon17030480): 'Python timoriensis'
-                [8] Taxon object at 0x1049070 (Taxon17076336): 'Antaresia maculosa'
-                [9] Taxon object at 0x10ae6d0 (Taxon17491664): 'Morelia carinata'
-                [10] Taxon object at 0x1113d50 (Taxon17907024): 'Python brongersmai'
-                [11] Taxon object at 0x11843b0 (Taxon18367408): 'Morelia boeleni'
-                [12] Taxon object at 0x124ed50 (Taxon19197264): 'Morelia oenpelliensis'
-        [Tree Lists]
-            [0] TreeList object at 0x64b5d0 (TreeList6600144):  1 Trees
-                [Taxon Set]
-                    TaxonSet object at 0x64b1e0 (TaxonSet6599136): 13 Taxa
-                [Trees]
-                    [0] Tree object at 0x1324a50 (Tree20073040: 'MLE'): ('Python brongersmai':0.194351089393,((('Antaresia maculosa':0.109099293954,('Antaresia stimsoni':0.0602487311076,'Antaresia perthensis':0.103243143758):0.0179343676839):0.00824964546739,('Morelia viridis':0.0900605954734,('Morelia carinata':0.099000642532,'Morelia bredli':0.0762805233034):0.0100895762174):0.00532489577077):0.0169831787421,(('Python timoriensis':0.164594494686,'Morelia oenpelliensis':0.0845040654358):0.01077026635,(('Morelia boeleni':0.108513275703,'Bothrochilus boa':0.102695794094):0.0038585904059,'Liasis fuscus':0.116512710724):0.00431514301361):0.00384869899099):0.0126515429931,'Aspidites ramsayi':0.0700307228917):0.0
-
+            [0] TaxonSet object at 0x5a4a20 (TaxonSet5917216): 29 Taxa
+                [0] Taxon object at 0x22c0fd0 (Taxon36442064): 'Python regius'
+                [1] Taxon object at 0x22c0f10 (Taxon36441872): 'Python sebae'
+                [2] Taxon object at 0x22c0ed0 (Taxon36441808): 'Python brongersmai'
+                [3] Taxon object at 0x22c0f70 (Taxon36441968): 'Antaresia maculosa'
+                [4] Taxon object at 0x22c0f30 (Taxon36441904): 'Python timoriensis'
+                [5] Taxon object at 0x22c0f50 (Taxon36441936): 'Python molurus'
+                [6] Taxon object at 0x22c0ff0 (Taxon36442096): 'Morelia carinata'
+                [7] Taxon object at 0x23ae050 (Taxon37412944): 'Morelia boeleni'
+                [8] Taxon object at 0x23ae030 (Taxon37412912): 'Antaresia perthensis'
+                [9] Taxon object at 0x23ae070 (Taxon37412976): 'Morelia viridis'
+                [10] Taxon object at 0x23ae090 (Taxon37413008): 'Aspidites ramsayi'
+                [11] Taxon object at 0x23ae0b0 (Taxon37413040): 'Aspidites melanocephalus'
+                [12] Taxon object at 0x22c0fb0 (Taxon36442032): 'Morelia oenpelliensis'
+                [13] Taxon object at 0x23ae0d0 (Taxon37413072): 'Bothrochilus boa'
+                [14] Taxon object at 0x23ae130 (Taxon37413168): 'Morelia bredli'
+                [15] Taxon object at 0x23ae110 (Taxon37413136): 'Morelia spilota'
+                [16] Taxon object at 0x23ae150 (Taxon37413200): 'Antaresia stimsoni'
+                [17] Taxon object at 0x23ae0f0 (Taxon37413104): 'Antaresia childreni'
+                [18] Taxon object at 0x23ae1b0 (Taxon37413296): 'Leiopython albertisii'
+                [19] Taxon object at 0x23ae170 (Taxon37413232): 'Python reticulatus'
+                [20] Taxon object at 0x23ae190 (Taxon37413264): 'Morelia tracyae'
+                [21] Taxon object at 0x23ae1d0 (Taxon37413328): 'Morelia amethistina'
+                [22] Taxon object at 0x23ae230 (Taxon37413424): 'Morelia nauta'
+                [23] Taxon object at 0x23ae250 (Taxon37413456): 'Morelia kinghorni'
+                [24] Taxon object at 0x23ae210 (Taxon37413392): 'Morelia clastolepis'
+                [25] Taxon object at 0x23ae290 (Taxon37413520): 'Liasis fuscus'
+                [26] Taxon object at 0x23ae2b0 (Taxon37413552): 'Liasis mackloti'
+                [27] Taxon object at 0x23ae270 (Taxon37413488): 'Liasis olivaceus'
+                [28] Taxon object at 0x23ae2f0 (Taxon37413616): 'Apodora papuana'
         [Character Arrays]
-            [0] DnaCharacterArray object at 0x641630 (DnaCharacterArray6559280):  13 Sequences
+            [0] DnaCharacterArray object at 0x22c0f90 (DnaCharacterArray36442000):  29 Sequences
                 [Taxon Set]
-                    TaxonSet object at 0x64b1e0 (TaxonSet6599136): 13 Taxa
+                    TaxonSet object at 0x5a4a20 (TaxonSet5917216): 29 Taxa
                 [Characters]
-                    [0] Aspidites ramsayi : 1066 characters
-                    [1] Bothrochilus boa : 1066 characters
-                    [2] Liasis fuscus : 1066 characters
-                    [3] Antaresia stimsoni : 1066 characters
-                    [4] Morelia viridis : 1066 characters
-                    [5] Morelia bredli : 1066 characters
-                    [6] Antaresia perthensis : 1066 characters
-                    [7] Python timoriensis : 1066 characters
-                    [8] Antaresia maculosa : 1066 characters
-                    [9] Morelia carinata : 1066 characters
-                    [10] Python brongersmai : 1066 characters
-                    [11] Morelia boeleni : 1066 characters
-                    [12] Morelia oenpelliensis : 1066 characters
+                    [0] Python regius : 1114 characters
+                    [1] Python sebae : 1114 characters
+                    [2] Python brongersmai : 1114 characters
+                    [3] Antaresia maculosa : 1114 characters
+                    [4] Python timoriensis : 1114 characters
+                    [5] Python molurus : 1114 characters
+                    [6] Morelia carinata : 1114 characters
+                    [7] Morelia boeleni : 1114 characters
+                    [8] Antaresia perthensis : 1114 characters
+                    [9] Morelia viridis : 1114 characters
+                    [10] Aspidites ramsayi : 1114 characters
+                    [11] Aspidites melanocephalus : 1114 characters
+                    [12] Morelia oenpelliensis : 1114 characters
+                    [13] Bothrochilus boa : 1114 characters
+                    [14] Morelia bredli : 1114 characters
+                    [15] Morelia spilota : 1114 characters
+                    [16] Antaresia stimsoni : 1114 characters
+                    [17] Antaresia childreni : 1114 characters
+                    [18] Leiopython albertisii : 1114 characters
+                    [19] Python reticulatus : 1114 characters
+                    [20] Morelia tracyae : 1114 characters
+                    [21] Morelia amethistina : 1114 characters
+                    [22] Morelia nauta : 1114 characters
+                    [23] Morelia kinghorni : 1114 characters
+                    [24] Morelia clastolepis : 1114 characters
+                    [25] Liasis fuscus : 1114 characters
+                    [26] Liasis mackloti : 1114 characters
+                    [27] Liasis olivaceus : 1114 characters
+                    [28] Apodora papuana : 1114 characters

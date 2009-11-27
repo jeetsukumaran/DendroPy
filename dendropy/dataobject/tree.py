@@ -490,7 +490,6 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             self.taxon_set = kwargs["taxon_set"]
         t = tree_source_iter(stream=stream, format=format, **kwargs).next()
         self.__dict__ = t.__dict__
-        return self
 
     def write(self, stream, format, **kwargs):
         """

@@ -563,7 +563,7 @@ class CharacterArray(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if not isinstance(self, d.char_arrays[index].__class__):
             raise ValueError("Character data found was of type '%s' (object is of type '%s')" %
                     (d.char_arrays[index].__class__.__name__, self.__class__.__name__))
-        return self.clone_from(d.char_arrays[index])
+        self.clone_from(d.char_arrays[index])
 
     def write(self, stream, format, **kwargs):
         """

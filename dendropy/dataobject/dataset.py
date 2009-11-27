@@ -137,7 +137,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         from dendropy.dataio import get_reader
         kwargs["dataset"] = self
         reader = get_reader(format=format, **kwargs)
-        return reader.read(stream, **kwargs)
+        reader.read(stream, **kwargs)
 
     def write(self, stream, format, **kwargs):
         """
