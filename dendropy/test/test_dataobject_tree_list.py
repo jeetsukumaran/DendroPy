@@ -36,7 +36,7 @@ class TreeListCreateTest(datatest.DataObjectVerificationTestCase):
 
     def setUp(self):
         self.tree_list1 = datagen.reference_tree_list()
-        self.tree_list1_stream = StringIO(self.tree_list1.as_string("newick"))
+        self.tree_list1_stream = StringIO(self.tree_list1.as_string("nexus"))
 
     def testDeepCopyTreeListFromTreeListSameTaxa(self):
         tree_list2 = dendropy.TreeList(self.tree_list1, taxon_set=self.tree_list1.taxon_set)
@@ -57,7 +57,7 @@ class TreeListCreateTest(datatest.DataObjectVerificationTestCase):
 
     def testDeepCopyTreeListFromTreeListDifferentTaxa(self):
         tree_list2 = dendropy.TreeList([dendropy.Tree(t) for t in self.tree_list1])
-        self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=True, equal_oids=False, distinct_trees=True)
+        self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=True, equal_oids=False, distinct_trees=True, ignore_taxon_order=True)
 
     def testTooManyPosArgs(self):
         self.assertRaises(error.TooManyArgumentsError, dendropy.TreeList, self.tree_list1, dendropy.TreeList())
@@ -66,11 +66,11 @@ class TreeListCreateTest(datatest.DataObjectVerificationTestCase):
         self.assertRaises(error.MultipleInitializationSourceError, dendropy.TreeList, self.tree_list1, stream=self.tree_list1_stream, format="newick")
 
     def testTreeListFromFileSameTaxa(self):
-        tree_list2 = dendropy.TreeList(stream=self.tree_list1_stream, format="newick", taxon_set=self.tree_list1.taxon_set)
+        tree_list2 = dendropy.TreeList(stream=self.tree_list1_stream, format="nexus", taxon_set=self.tree_list1.taxon_set)
         self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=False, equal_oids=False, distinct_trees=True)
 
     def testTreeListFromFileDifferentTaxa(self):
-        tree_list2 = dendropy.TreeList([dendropy.Tree(t) for t in self.tree_list1])
+        tree_list2 = dendropy.TreeList(stream=self.tree_list1_stream, format="nexus")
         self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=True, equal_oids=False, distinct_trees=True)
 
     def testTreeListFromFileNoFormatSpecification(self):
