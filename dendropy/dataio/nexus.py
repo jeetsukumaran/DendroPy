@@ -603,7 +603,7 @@ class NexusReader(iosys.DataReader):
                 self.tax_label_lookup[l] = t
                 if self.encode_splits:
                     ti = self.current_taxon_set.index(t)
-                    t.clade_mask = (1 << ti)
+                    t.split_bitmask = (1 << ti)
 
     def _parse_tree_statement(self):
         """

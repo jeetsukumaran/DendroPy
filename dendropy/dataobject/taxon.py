@@ -292,13 +292,13 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         taxon does not exist.
         """
         try:
-            return taxon.clade_mask
+            return taxon.split_bitmask
         except AttributeError:
             pass
         try:
             i = self.index(taxon)
             m = 1 << i
-            taxon.clade_mask = m
+            taxon.split_bitmask = m
             return m
         except ValueError:
             raise IndexError("Taxon with ID '%s' and label '%s' not found"

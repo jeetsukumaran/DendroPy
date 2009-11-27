@@ -279,12 +279,12 @@ def paup_group_to_mask(group_string, normalized=False):
           (and not changed otherwise).
     """
     group_string = group_string[::-1] # flip to get correct orientation
-    clade_mask = int(group_string.replace("*", "1").replace(".", "0"), 2)
+    split_bitmask = int(group_string.replace("*", "1").replace(".", "0"), 2)
     if normalized:
         mask=((2 ** len(group_string)) -1)
-        return containers.NormalizedBitmaskDict.normalize(clade_mask, mask)
+        return containers.NormalizedBitmaskDict.normalize(split_bitmask, mask)
     else:
-        return clade_mask
+        return split_bitmask
 
 ###############################################################################
 ## OLD STUFF

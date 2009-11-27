@@ -54,7 +54,7 @@ _LOG = messaging.get_logger(__name__)
 #                for tree in nexus.tree_source_iter(stream=open(tree_filepath, "rU")):
 #                    splitmask.encode_splits(tree)
 #                    for edge in tree.preorder_edge_iter():
-#                        cm = edge.clade_mask
+#                        cm = edge.split_bitmask
 #                        e = splitmask.find_edge_from_split(tree.seed_node, cm)
 #                        self.assertTrue(e is edge)
 

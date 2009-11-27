@@ -109,7 +109,7 @@ class TreeSummarizer(object):
         if leaf_to_root_search:
             to_leaf_dict = {}
             for leaf in leaves:
-                to_leaf_dict[leaf.edge.clade_mask] = leaf
+                to_leaf_dict[leaf.edge.split_bitmask] = leaf
         include_edge_lengths = self.support_as_labels and include_edge_lengths
         unrooted = split_distribution.unrooted
 
@@ -134,36 +134,36 @@ class TreeSummarizer(object):
         root_edge = root.edge
         # Now when we add splits in order, we will do a greedy, extended majority-rule consensus tree
         for freq, split_to_add, split_in_dict in to_try_to_add:
-            if (split_to_add & root_edge.clade_mask) != split_to_add:
+            if (split_to_add & root_edge.split_bitmask) != split_to_add:
                 continue
             elif leaf_to_root_search:
                 lb = splitmask.lowest_bit_only(split_to_add)
                 one_leaf = to_leaf_dict[lb]
                 parent_node = one_leaf
-                while (split_to_add & parent_node.edge.clade_mask) != split_to_add:
+                while (split_to_add & parent_node.edge.split_bitmask) != split_to_add:
                     parent_node = parent_node.parent_node
             else:
                 parent_node = treecalc.find_mrca(start_node=con_tree.seed_node,
                                                     split=split_to_add,
                                                     taxa_mask=taxa_mask)
-            if parent_node is None or parent_node.edge.clade_mask == split_to_add:
+            if parent_node is None or parent_node.edge.split_bitmask == split_to_add:
                 continue # split is not in tree, or already in tree.
             new_node = dendropy.Node()
             self.map_split_support_to_node(node=new_node, split_support=freq)
             new_node_children = []
             new_edge = new_node.edge
-            new_edge.clade_mask = 0
+            new_edge.split_bitmask = 0
             for child in parent_node.child_nodes():
                 # might need to modify the following if rooted splits
                 # are used
-                cecm = child.edge.clade_mask
+                cecm = child.edge.split_bitmask
                 if (cecm & split_to_add ):
                     assert cecm != split_to_add
-                    new_edge.clade_mask |= cecm
+                    new_edge.split_bitmask |= cecm
                     new_node_children.append(child)
             # Check to see if we have accumulated all of the bits that we
             #   needed, but none that we don't need.
-            if new_edge.clade_mask == split_to_add:
+            if new_edge.split_bitmask == split_to_add:
                 if include_edge_lengths:
                     elen = split_distribution.split_edge_lengths[split_in_dict]
                     if len(elen) > 0:
@@ -179,9 +179,9 @@ class TreeSummarizer(object):
         ## here we add the support values and/or edge lengths for the terminal taxa ##
         for node in leaves:
             if unrooted:
-                split = con_tree.split_edges.normalize_key(node.edge.clade_mask)
+                split = con_tree.split_edges.normalize_key(node.edge.split_bitmask)
             else:
-                split = node.edge.clade_mask
+                split = node.edge.split_bitmask
             self.map_split_support_to_node(node, 1.0)
             if include_edge_lengths:
                 elen = split_distribution.split_edge_lengths.get(split, [0.0])

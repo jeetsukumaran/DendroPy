@@ -40,14 +40,14 @@ def get_mrca(start_node, split, taxa_mask):
     This function is used to find the "insertion point" for a new split via a
         root to tip search.
     """
-    if (start_node.edge.clade_mask & split) != split:
+    if (start_node.edge.split_bitmask & split) != split:
         return None
     curr_node = start_node
     last_match = start_node
     nd_source = iter(start_node.child_nodes())
     try:
         while True:
-            cm = curr_node.edge.clade_mask
+            cm = curr_node.edge.split_bitmask
             cms = (cm & split)
             if cms:
                 # for at least one taxon cm has 1 and split has 1
@@ -64,9 +64,9 @@ def get_mrca(start_node, split, taxa_mask):
             curr_node = nd_source.next()
     except StopIteration:
         # we shouldn't reach this if all of the descendants are properly
-        #   decorated with clade_mask attributes, but there may be some hacky
+        #   decorated with split_bitmask attributes, but there may be some hacky
         #   context in which we want to allow the function to be called with
-        #   leaves that have not been encoded with clade_masks.
+        #   leaves that have not been encoded with split_bitmasks.
         return last_match
 
 class PatristicDistanceMatrix(object):

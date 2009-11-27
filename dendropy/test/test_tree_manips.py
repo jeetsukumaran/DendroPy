@@ -89,7 +89,7 @@ class CollapseConflictingTest(unittest.TestCase):
         tree = tree_list[0]
         expected_tree = tree_list[1]
         splitmask.encode_splits(tree)
-        all_cm = tree.seed_node.edge.clade_mask
+        all_cm = tree.seed_node.edge.split_bitmask
         split_to_target = 0xA
         treemanip.collapse_conflicting(tree.seed_node, split_to_target, all_cm)
         splitmask.encode_splits(tree)
@@ -99,7 +99,7 @@ class CollapseConflictingTest(unittest.TestCase):
         tree = tree_list[2]
         expected_tree = tree_list[3]
         splitmask.encode_splits(tree)
-        all_cm = tree.seed_node.edge.clade_mask
+        all_cm = tree.seed_node.edge.split_bitmask
         split_to_target = 0x3
         treemanip.collapse_conflicting(tree.seed_node, split_to_target, all_cm)
         splitmask.encode_splits(tree)
@@ -109,7 +109,7 @@ class CollapseConflictingTest(unittest.TestCase):
         tree = tree_list[4]
         expected_tree = tree_list[5]
         splitmask.encode_splits(tree)
-        all_cm = tree.seed_node.edge.clade_mask
+        all_cm = tree.seed_node.edge.split_bitmask
         split_to_target = 0x5
         treemanip.collapse_conflicting(tree.seed_node, split_to_target, all_cm)
         splitmask.encode_splits(tree)

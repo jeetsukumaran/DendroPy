@@ -116,19 +116,19 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
     tree.seed_node = dataobject.Node()
     curr_node = tree.seed_node
     if encode_splits:
-        curr_node.edge.clade_mask = 0L
+        curr_node.edge.split_bitmask = 0L
 
     while True:
         if not token or token == ';':
             if curr_node is not tree.seed_node:
                 raise stream_tokenizer.data_format_error("Unbalanced parentheses -- not enough ')' characters found in tree description")
             if encode_splits:
-                split_map[curr_node.edge.clade_mask] = curr_node.edge
+                split_map[curr_node.edge.split_bitmask] = curr_node.edge
             break
         if token == '(':
             tmp_node = dataobject.Node()
             if encode_splits:
-                tmp_node.edge.clade_mask = 0L
+                tmp_node.edge.split_bitmask = 0L
             curr_node.add_child(tmp_node)
             curr_node = tmp_node
             token = stream_tokenizer.read_next_token()
@@ -142,11 +142,11 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
             if not p:
                 raise stream_tokenizer.data_format_error("Comma found one the 'outside' of a newick tree description")
             if encode_splits:
-                tmp_node.edge.clade_mask = 0L
+                tmp_node.edge.split_bitmask = 0L
                 e = curr_node.edge
-                u = e.clade_mask
+                u = e.split_bitmask
                 split_map[u] = e
-                p.edge.clade_mask |= u
+                p.edge.split_bitmask |= u
             if finish_node_func is not None:
                 finish_node_func(curr_node, tree)
             p.add_child(tmp_node)
@@ -163,8 +163,8 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
                     raise stream_tokenizer.data_format_error("Unbalanced parentheses -- too many ')' characters found in tree description")
                 if encode_splits:
                     e = curr_node.edge
-                    u = e.clade_mask
-                    p.edge.clade_mask |= u
+                    u = e.split_bitmask
+                    p.edge.split_bitmask |= u
                     split_map[u] = curr_node.edge
                 if finish_node_func is not None:
                     finish_node_func(curr_node, tree)
@@ -181,11 +181,11 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
                     curr_node.taxon = t
                     if encode_splits:
                         try:
-                            cm = t.clade_mask
+                            cm = t.split_bitmask
                         except:
                             cm = 1 << (stt.index(t))
                         e = curr_node.edge
-                        e.clade_mask = cm
+                        e.split_bitmask = cm
                         split_map[cm] = e
 
             token = stream_tokenizer.read_next_token()

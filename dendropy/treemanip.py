@@ -95,7 +95,7 @@ def randomly_reorient_tree(tree, rng=None, splits=False):
     """Randomly picks a new rooting position and rotates the branches around all
     internal nodes in the `tree`.
 
-    If `splits` is True, the the `clade_mask` and `split_edges` attributes
+    If `splits` is True, the the `split_bitmask` and `split_edges` attributes
         kept valid.
     """
     nd = rng.sample(tree.nodes(), 1)[0]
@@ -115,28 +115,28 @@ def randomly_rotate(tree, rng=None):
         rng.shuffle(c)
         nd.set_children(c)
 
-def collapse_conflicting(subtree_root, split, clade_mask):
+def collapse_conflicting(subtree_root, split, split_bitmask):
     """Takes a node that is the root of a subtree.  Collapses every edge in the
     subtree that conflicts with split.  This can include the edge subtending
     subtree_root.
     """
     # we flip splits so that both the split and each edges split  have the
     # lowest bit of the clade mask set to one
-    lb = splitmask.lowest_bit_only(clade_mask)
+    lb = splitmask.lowest_bit_only(split_bitmask)
 
     if lb & split:
-        cropped_split = split & clade_mask
+        cropped_split = split & split_bitmask
     else:
-        cropped_split = (~split) & clade_mask
+        cropped_split = (~split) & split_bitmask
 
     to_collapse_head_nodes = []
     for nd in subtree_root.postorder_iter(subtree_root):
         if not nd.is_leaf():
-            ncm = nd.edge.clade_mask
+            ncm = nd.edge.split_bitmask
             if lb & ncm:
-                nd_split = ncm & clade_mask
+                nd_split = ncm & split_bitmask
             else:
-                nd_split = (~ncm) & clade_mask
+                nd_split = (~ncm) & split_bitmask
 
             cm_union = nd_split | cropped_split
             if (cm_union != nd_split) and (cm_union != cropped_split):

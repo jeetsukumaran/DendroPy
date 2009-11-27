@@ -700,13 +700,13 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """Takes an internal node, `nd` that must already be in the tree and
         reroots the tree such that `nd` is the `seed_node` of the tree.
 
-        If `splits` is True, then the edges' `clade_mask` and the tree's
+        If `splits` is True, then the edges' `split_bitmask` and the tree's
             `split_edges` attributes will be updated."""
         old_par = nd.parent_node
         if old_par is None:
             return
         if splits:
-            taxa_mask = self.seed_node.edge.clade_mask
+            taxa_mask = self.seed_node.edge.split_bitmask
         to_edge_dict = None
         if splits:
             to_edge_dict = getattr(self, "split_edges", None)
@@ -727,9 +727,9 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 edge_to_del = nd.edge
                 nd.edge = old_par.edge
                 if splits:
-                    assert nd.edge.clade_mask == taxa_mask
+                    assert nd.edge.split_bitmask == taxa_mask
                 if to_edge_dict:
-                    del to_edge_dict[edge_to_del.clade_mask]
+                    del to_edge_dict[edge_to_del.split_bitmask]
                 nd.add_child(sister, edge_length=sister.edge.length)
                 self.seed_node = nd
                 return
@@ -739,11 +739,11 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         e = old_par.edge
         if splits:
             if to_edge_dict:
-                del to_edge_dict[e.clade_mask]
-            e.clade_mask = (~(e.clade_mask)) & taxa_mask
+                del to_edge_dict[e.split_bitmask]
+            e.split_bitmask = (~(e.split_bitmask)) & taxa_mask
             if to_edge_dict:
-                to_edge_dict[e.clade_mask] = e
-            assert nd.edge.clade_mask == taxa_mask
+                to_edge_dict[e.split_bitmask] = e
+            assert nd.edge.split_bitmask == taxa_mask
         old_par.remove_child(nd)
         nd.add_child(old_par, edge_length=e.length)
         self.seed_node = nd
@@ -755,7 +755,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
         Assumes that `nd` and `nd.parent_node` and are in the tree
 
-        If `splits` is True, then the edges' `clade_mask` and the tree's
+        If `splits` is True, then the edges' `split_bitmask` and the tree's
             `split_edges` attributes will be updated.
         If `delete_deg_two` is True and the old root of the tree has an
             outdegree of 2, then the node will be removed from the tree.
@@ -1030,7 +1030,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """Performs sanity-checks of the tree data structure.
 
         kwargs:
-            `splits` if True specifies that the split_edge and clade_mask attributes
+            `splits` if True specifies that the split_edge and split_bitmask attributes
                 are checked.
         """
         check_splits = kwargs.get('splits', False)
@@ -1038,7 +1038,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if taxon_set is None:
             taxon_set = self.taxon_set
         if check_splits:
-            taxa_mask = self.seed_node.edge.clade_mask
+            taxa_mask = self.seed_node.edge.split_bitmask
         nodes = set()
         edges = set()
         curr_node = self.seed_node
@@ -1056,19 +1056,19 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             assert(curr_edge.head_node is curr_node)
             if check_splits:
                 cm = 0
-                clade_mask = curr_edge.clade_mask
-                assert((clade_mask | taxa_mask) == taxa_mask)
+                split_bitmask = curr_edge.split_bitmask
+                assert((split_bitmask | taxa_mask) == taxa_mask)
             c = curr_node.child_nodes()
             if c:
                 for child in c:
                     assert child.parent_node is curr_node
                     if check_splits:
-                        cm |= child.edge.clade_mask
+                        cm |= child.edge.split_bitmask
             elif check_splits:
                 cm = taxon_set.taxon_bitmask(curr_node.taxon)
             if check_splits:
-                assert((cm & taxa_mask) == clade_mask)
-                assert self.split_edges[clade_mask] == curr_edge
+                assert((cm & taxa_mask) == split_bitmask)
+                assert self.split_edges[split_bitmask] == curr_edge
             curr_node, level = _preorder_list_manip(curr_node, siblings, ancestors)
         if check_splits:
             for s, e in self.split_edges.iteritems():
@@ -1592,12 +1592,12 @@ class Node(TaxonLinked):
             output_strio.write('\n%s[Parent]' % leader1)
             output_strio.write('\n%s%s' % (leader2,
                     self.parent_node.description(0) if self.parent_node is not None else 'None'))
-            if hasattr(self.edge, 'clade_mask'):
+            if hasattr(self.edge, 'split_bitmask'):
                 output_strio.write('\n%s[Clade Mask]' % leader1)
                 if taxon_set is None:
-                    output_strio.write('\n%s%s' % (leader2, self.edge.clade_mask))
+                    output_strio.write('\n%s%s' % (leader2, self.edge.split_bitmask))
                 else:
-                    output_strio.write('\n%s%s' % (leader2, taxon_set.split_bitmask_string(self.edge.clade_mask)))
+                    output_strio.write('\n%s%s' % (leader2, taxon_set.split_bitmask_string(self.edge.split_bitmask)))
             output_strio.write('\n%s[Children]' % leader1)
             if len(self._child_nodes) == 0:
                 output_strio.write('\n%sNone' % leader2)
@@ -1698,7 +1698,7 @@ class Node(TaxonLinked):
 
     def write_indented_form(self, out, **kwargs):
         indentation = kwargs.get("indentation", "    ")
-        clade_masks = kwargs.get("splits", True)
+        split_bitmasks = kwargs.get("splits", True)
         level = kwargs.get("level", 0)
         ancestors = []
         siblings = []
@@ -1717,7 +1717,7 @@ class Node(TaxonLinked):
         indentation = kwargs.get("indentation", "    ")
         label = format_node(self, **kwargs)
         if kwargs.get("splits"):
-            cm = "%s " % format_split(self.edge.clade_mask, **kwargs)
+            cm = "%s " % format_split(self.edge.split_bitmask, **kwargs)
         else:
             cm = ""
         out.write("%s%s%s\n" % ( cm, indentation*level, label))
@@ -1834,12 +1834,12 @@ class Edge(IdTagged):
             output_strio.write('\n%s[Head Node]' % leader1)
             output_strio.write('\n%s%s' % (leader2,
                     self.head_node.description(0) if self.head_node is not None else 'None'))
-            if hasattr(self, 'clade_mask'):
+            if hasattr(self, 'split_bitmask'):
                 output_strio.write('\n%s[Clade Mask]' % leader1)
                 if taxon_set is None:
-                    output_strio.write('\n%s%s' % (leader2, self.clade_mask))
+                    output_strio.write('\n%s%s' % (leader2, self.split_bitmask))
                 else:
-                    output_strio.write('\n%s%s' % (leader2, taxon_set.split_bitmask_string(self.clade_mask)))
+                    output_strio.write('\n%s%s' % (leader2, taxon_set.split_bitmask_string(self.split_bitmask)))
         s = output_strio.getvalue()
         if output is not None:
             output.write(s)

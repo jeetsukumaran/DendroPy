@@ -51,19 +51,19 @@ class CladeMaskTest(unittest.TestCase):
             i.debug_check_tree(splits=True, logger_obj=_LOG)
         root1 = tree_list[0].seed_node
         root1e = root1.edge
-        self.assertEqual(splitmask.split_to_list(root1e.clade_mask), range(6))
-        self.assertEqual(splitmask.split_to_list(root1e.clade_mask, one_based=True), range(1,7))
-        self.assertEqual(splitmask.split_to_list(root1e.clade_mask, mask=21, one_based=True), [1, 3, 5])
-        self.assertEqual(splitmask.split_to_list(root1e.clade_mask, mask=21), [0, 2, 4])
-        self.assertEqual(splitmask.count_bits(root1e.clade_mask), 6)
+        self.assertEqual(splitmask.split_to_list(root1e.split_bitmask), range(6))
+        self.assertEqual(splitmask.split_to_list(root1e.split_bitmask, one_based=True), range(1,7))
+        self.assertEqual(splitmask.split_to_list(root1e.split_bitmask, mask=21, one_based=True), [1, 3, 5])
+        self.assertEqual(splitmask.split_to_list(root1e.split_bitmask, mask=21), [0, 2, 4])
+        self.assertEqual(splitmask.count_bits(root1e.split_bitmask), 6)
 
         fc1 = root1.child_nodes()[0]
         fc1e = fc1.edge
-        self.assertEqual(splitmask.split_to_list(fc1e.clade_mask), [0, 1])
-        self.assertEqual(splitmask.split_to_list(fc1e.clade_mask, one_based=True), [1, 2])
-        self.assertEqual(splitmask.split_to_list(fc1e.clade_mask, mask=0x15, one_based=True), [1])
-        self.assertEqual(splitmask.split_to_list(fc1e.clade_mask, mask=0x15), [0])
-        self.assertEqual(splitmask.count_bits(fc1e.clade_mask), 2)
+        self.assertEqual(splitmask.split_to_list(fc1e.split_bitmask), [0, 1])
+        self.assertEqual(splitmask.split_to_list(fc1e.split_bitmask, one_based=True), [1, 2])
+        self.assertEqual(splitmask.split_to_list(fc1e.split_bitmask, mask=0x15, one_based=True), [1])
+        self.assertEqual(splitmask.split_to_list(fc1e.split_bitmask, mask=0x15), [0])
+        self.assertEqual(splitmask.count_bits(fc1e.split_bitmask), 2)
 
 class CountBitsTest(unittest.TestCase):
 
