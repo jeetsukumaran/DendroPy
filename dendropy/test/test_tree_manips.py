@@ -30,7 +30,7 @@ import unittest
 import dendropy
 from dendropy import treecalc
 from dendropy import treemanip
-from dendropy import splitmask
+from dendropy import treesplit
 from dendropy.test.support.datagen import RepeatedRandom
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
@@ -43,8 +43,8 @@ class RandomlyRotateTest(unittest.TestCase):
         ref = trees[0]
         changing = trees[1]
         rng = RepeatedRandom()
-        splitmask.encode_splits(ref)
-        splitmask.encode_splits(changing)
+        treesplit.encode_splits(ref)
+        treesplit.encode_splits(changing)
         orig_root = changing.seed_node
         for i in xrange(50):
             treemanip.randomly_rotate(changing, rng=rng)
@@ -88,32 +88,32 @@ class CollapseConflictingTest(unittest.TestCase):
             taxon_set=taxon_set)
         tree = tree_list[0]
         expected_tree = tree_list[1]
-        splitmask.encode_splits(tree)
+        treesplit.encode_splits(tree)
         all_cm = tree.seed_node.edge.split_bitmask
         split_to_target = 0xA
         treemanip.collapse_conflicting(tree.seed_node, split_to_target, all_cm)
-        splitmask.encode_splits(tree)
-        splitmask.encode_splits(expected_tree)
+        treesplit.encode_splits(tree)
+        treesplit.encode_splits(expected_tree)
         self.assertEqual(treecalc.symmetric_difference(tree, expected_tree), 0)
 
         tree = tree_list[2]
         expected_tree = tree_list[3]
-        splitmask.encode_splits(tree)
+        treesplit.encode_splits(tree)
         all_cm = tree.seed_node.edge.split_bitmask
         split_to_target = 0x3
         treemanip.collapse_conflicting(tree.seed_node, split_to_target, all_cm)
-        splitmask.encode_splits(tree)
-        splitmask.encode_splits(expected_tree)
+        treesplit.encode_splits(tree)
+        treesplit.encode_splits(expected_tree)
         self.assertEqual(treecalc.symmetric_difference(tree, expected_tree), 0)
 
         tree = tree_list[4]
         expected_tree = tree_list[5]
-        splitmask.encode_splits(tree)
+        treesplit.encode_splits(tree)
         all_cm = tree.seed_node.edge.split_bitmask
         split_to_target = 0x5
         treemanip.collapse_conflicting(tree.seed_node, split_to_target, all_cm)
-        splitmask.encode_splits(tree)
-        splitmask.encode_splits(expected_tree)
+        treesplit.encode_splits(tree)
+        treesplit.encode_splits(expected_tree)
         self.assertEqual(treecalc.symmetric_difference(tree, expected_tree), 0)
 
 if __name__ == "__main__":

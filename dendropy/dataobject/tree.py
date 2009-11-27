@@ -1928,7 +1928,7 @@ def format_node(nd, **kwargs):
     return label
 
 def format_split(split, width=None, **kwargs):
-    from dendropy.splitmask import split_as_string
+    from dendropy.treesplit import split_as_string
     if width is None:
         width = len(kwargs.get("taxon_set"))
     s = split_as_string(split, width, symbol1=kwargs.get("off_symbol"), symbol2=kwargs.get("on_symbol"))

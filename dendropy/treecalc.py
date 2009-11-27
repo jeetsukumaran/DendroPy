@@ -25,14 +25,14 @@ Tree metrics/statistics calculations.
 """
 
 from math import sqrt
-from dendropy import splitmask
+from dendropy import treesplit
 
 def get_mrca(start_node, split, taxa_mask):
     """Returns the shallowest node in the tree (the node furthest from
     `start_node`) that has all of the taxa that are specified in `split` or
     None if no appropriate node is found.
 
-    Assumes that edges on tree have been decorated with splitmask.
+    Assumes that edges on tree have been decorated with treesplit.
 
     It is possible that split is not compatible with the subtree that is
         returned! (compatibility tests are not fully performed).
@@ -96,7 +96,7 @@ class PatristicDistanceMatrix(object):
         """
         self.tree = tree
         if not hasattr(self.tree, "split_edges"):
-            splitmask.encode_splits(self.tree)
+            treesplit.encode_splits(self.tree)
         self.taxon_set = tree.taxon_set
         self._pat_dists = {}
         for i1, t1 in enumerate(self.taxon_set):
@@ -139,7 +139,7 @@ def patristic_distance(tree, taxon1, taxon2):
     patristic distance between the two.
     """
     if not hasattr(tree, "split_edges"):
-        splitmask.encode_splits(tree)
+        treesplit.encode_splits(tree)
     split = tree.taxon_set.taxon_bitmask(taxon1) | tree.taxon_set.taxon_bitmask(taxon2)
     mrca = get_mrca(tree.seed_node, split, tree.taxon_set.all_taxa_bitmask())
     dist = 0
@@ -199,9 +199,9 @@ def splits_distance(tree1,
         raise TypeError("Trees have different TaxonSet objects: %s vs. %s" \
                 % (hex(id(tree1.taxon_set)), hex(id(tree2.taxon_set))))
     if not hasattr(tree1, "split_edges"):
-        splitmask.encode_splits(tree1)
+        treesplit.encode_splits(tree1)
     if not hasattr(tree2, "split_edges"):
-        splitmask.encode_splits(tree2)
+        treesplit.encode_splits(tree2)
     split_edges2_copy = dict(tree2.split_edges) # O(n*(2*bind + dict_item_cost))
     split_edges1_ref = tree1.split_edges
     for split, edge in split_edges1_ref.iteritems(): # O n : 2*bind
@@ -292,9 +292,9 @@ def false_positives_and_negatives(reference_tree, test_tree):
         raise TypeError("Trees have different TaxonSet objects: %s vs. %s" \
                 % (hex(id(reference_tree.taxon_set)), hex(id(test_tree.taxon_set))))
     if not hasattr(reference_tree, "split_edges"):
-        splitmask.encode_splits(reference_tree)
+        treesplit.encode_splits(reference_tree)
     if not hasattr(test_tree, "split_edges"):
-        splitmask.encode_splits(test_tree)
+        treesplit.encode_splits(test_tree)
     for split in reference_tree.split_edges:
         if split in test_tree.split_edges:
             pass

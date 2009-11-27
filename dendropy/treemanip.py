@@ -30,7 +30,7 @@ import copy
 import math
 
 from dendropy.utility import GLOBAL_RNG
-from dendropy import splitmask
+from dendropy import treesplit
 from dendropy import dataobject
 
 def collapse_edge(edge):
@@ -122,7 +122,7 @@ def collapse_conflicting(subtree_root, split, split_bitmask):
     """
     # we flip splits so that both the split and each edges split  have the
     # lowest bit of the clade mask set to one
-    lb = splitmask.lowest_bit_only(split_bitmask)
+    lb = treesplit.lowest_bit_only(split_bitmask)
 
     if lb & split:
         cropped_split = split & split_bitmask

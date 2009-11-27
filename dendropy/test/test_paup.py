@@ -35,7 +35,7 @@ from dendropy.utility import containers
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
-from dendropy import splitmask
+from dendropy import treesplit
 from dendropy.interop import paup
 
 if "PAUP_PATH" in os.environ:
@@ -47,26 +47,26 @@ class PaupWrapperRepToSplitMaskTest(unittest.TestCase):
 
     def testUnnormalized(self):
         for i in xrange(0xFF):
-            s = splitmask.split_as_string(i, 8, ".", "*")[::-1]
+            s = treesplit.split_as_string(i, 8, ".", "*")[::-1]
             r = paup.paup_group_to_mask(s, normalized=False)
             self.assertEqual(r, i, "%s  =>  %s  =>  %s" \
-                % (splitmask.split_as_string(i, 8), s, splitmask.split_as_string(r, 8)))
+                % (treesplit.split_as_string(i, 8), s, treesplit.split_as_string(r, 8)))
 
     def testNormalized0(self):
         for i in xrange(0xFF):
-            s = splitmask.split_as_string(i, 8, "*", ".")[::-1]
+            s = treesplit.split_as_string(i, 8, "*", ".")[::-1]
             r = paup.paup_group_to_mask(s, normalized=True)
             normalized = containers.NormalizedBitmaskDict.normalize(i, 0xFF)
             self.assertEqual(r, normalized, "%s  =>  %s  =>  %s" \
-                % (splitmask.split_as_string(i, 8), s, splitmask.split_as_string(normalized, 8)))
+                % (treesplit.split_as_string(i, 8), s, treesplit.split_as_string(normalized, 8)))
 
     def testNormalized1(self):
         for i in xrange(0xFF):
-            s = splitmask.split_as_string(i, 8, ".", "*")[::-1]
+            s = treesplit.split_as_string(i, 8, ".", "*")[::-1]
             r = paup.paup_group_to_mask(s, normalized=True)
             normalized = containers.NormalizedBitmaskDict.normalize(i, 0xFF)
             self.assertEqual(r, normalized, "%s  =>  %s  =>  %s" \
-                % (splitmask.split_as_string(i, 8), s, splitmask.split_as_string(normalized, 8)))
+                % (treesplit.split_as_string(i, 8), s, treesplit.split_as_string(normalized, 8)))
 
 class PaupWrapperSplitsParse(ExtendedTestCase):
 

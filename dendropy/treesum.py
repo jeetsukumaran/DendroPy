@@ -30,7 +30,7 @@ _LOG = messaging.get_logger(__name__)
 import sys
 
 import dendropy
-from dendropy import splitmask
+from dendropy import treesplit
 from dendropy import dataobject
 from dendropy import treecalc
 from dendropy import treesim
@@ -83,7 +83,7 @@ class TreeSummarizer(object):
         split_frequencies = split_distribution.split_frequencies
         tree.reindex_taxa(taxon_set=split_distribution.taxon_set)
         assert tree.taxon_set is split_distribution.taxon_set
-        splitmask.encode_splits(tree)
+        treesplit.encode_splits(tree)
         for split in tree.split_edges:
             if split in split_frequencies:
                 split_support = split_frequencies[split]
@@ -103,7 +103,7 @@ class TreeSummarizer(object):
         con_tree = treesim.star_tree(taxon_set)
         split_freqs = split_distribution.split_frequencies
         taxa_mask = taxon_set.all_taxa_bitmask()
-        splitmask.encode_splits(con_tree)
+        treesplit.encode_splits(con_tree)
         leaves = con_tree.leaf_nodes()
 
         if leaf_to_root_search:
@@ -137,7 +137,7 @@ class TreeSummarizer(object):
             if (split_to_add & root_edge.split_bitmask) != split_to_add:
                 continue
             elif leaf_to_root_search:
-                lb = splitmask.lowest_bit_only(split_to_add)
+                lb = treesplit.lowest_bit_only(split_to_add)
                 one_leaf = to_leaf_dict[lb]
                 parent_node = one_leaf
                 while (split_to_add & parent_node.edge.split_bitmask) != split_to_add:
@@ -197,7 +197,7 @@ class TreeSummarizer(object):
         if passed as an argument) is returned collating the split data in the files.
         """
         if split_distribution is None:
-            split_distribution = splitmask.SplitDistribution()
+            split_distribution = treesplit.SplitDistribution()
         taxon_set = split_distribution.taxon_set
         for tree_idx, tree in enumerate(tree_iterator):
             self.total_trees_counted += 1
@@ -208,7 +208,7 @@ class TreeSummarizer(object):
             else:
                 assert(taxon_set is tree.taxon_set)
             if not trees_splits_encoded:
-                splitmask.encode_splits(tree)
+                treesplit.encode_splits(tree)
             split_distribution.count_splits_on_tree(tree)
         return split_distribution
 

@@ -30,7 +30,7 @@ import math
 from cStringIO import StringIO
 
 import dendropy
-from dendropy.splitmask import encode_splits
+from dendropy.treesplit import encode_splits
 from dendropy import treecalc
 
 class TreeEuclideanDistTest(unittest.TestCase):
