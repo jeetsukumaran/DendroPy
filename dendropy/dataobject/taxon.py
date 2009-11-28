@@ -231,23 +231,6 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
                 return taxon
         return None
 
-    def get_taxa(self, **kwargs):
-        """
-        Retrieves list of taxon objects with given id OR label (if both are
-        given, the any match is included). If taxon does not
-        exist then an empty list is returned.
-        """
-        if "oid" not in kwargs and "label" not in kwargs:
-            raise TypeError("Need to specify Taxon oid or Label.")
-        oid = kwargs.get("oid", None)
-        label = kwargs.get("label", None)
-        taxa = []
-        for taxon in self:
-            if (oid is not None and taxon.oid == oid) \
-                or (label is not None and taxon.label == label):
-                taxa.append(taxon)
-        return taxa
-
     def require_taxon(self, **kwargs):
         """
         Retrieves taxon object with given id OR label (if both are
@@ -264,7 +247,28 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
             self.add(taxon)
             return taxon
         else:
-            raise KeyError("Taxon not in TaxonSet, and cannot be created because TaxonSet is immutable.")
+            raise KeyError("Taxon not in TaxonSet, and cannot be created because TaxonSet is immutable")
+
+    def get_taxa(self, **kwargs):
+        """
+        Retrieves list of taxon objects with given id OR label (if both are
+        given, the any match is included). If taxon does not
+        exist then an empty list is returned.
+        """
+        if "oids" not in kwargs and "labels" not in kwargs:
+            raise TypeError("Need to specify taxa oid's or labels")
+        oids = kwargs.get("oids", [])
+        labels = kwargs.get("labels", [])
+        taxa = []
+        for oid in oids:
+            t = self.get_taxon(oid=oid)
+            if t:
+                taxa.append(t)
+        for label in labels:
+            t = self.get_taxon(label=label)
+            if t:
+                taxa.append(t)
+        return taxa
 
     def add_taxon(self, taxon):
         """
@@ -277,9 +281,9 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
     def new_taxon(self, label=None, oid=None, error_if_label_exists=False):
         "Creates and add a new `Taxon` if not already in the taxon index."
         if not self._is_mutable:
-            raise KeyError("Taxon %s:'%s' cannot be added to an immutable TaxonSet." % (oid, label))
+            raise KeyError("Taxon %s:'%s' cannot be added to an immutable TaxonSet" % (oid, label))
         if error_if_label_exists and self.get_taxon(label=label, taxon_required=False) is not None:
-            raise KeyError("Taxon with label %s:'%s' already defined in the TaxonSet." % (oid, label))
+            raise KeyError("Taxon with label %s:'%s' already defined in the TaxonSet" % (oid, label))
         taxon = Taxon(label=label, oid=oid)
         self.add(taxon)
         return taxon

@@ -126,7 +126,7 @@ def get_mrca(start_node, **kwargs):
             if "taxon_labels" in kwargs:
                 taxa = taxon_set.get_taxa(labels=kwargs["taxon_labels"])
                 if len(taxa) != len(kwargs["taxon_labels"]):
-                    raise ValueError("Not all labels matched to taxa")
+                    raise KeyError("Not all labels matched to taxa")
             else:
                 raise TypeError("Must specify one of: 'split_bitmask', 'taxa' or 'taxon_labels'")
         if taxa is None:
@@ -135,6 +135,9 @@ def get_mrca(start_node, **kwargs):
 
     if split_bitmask is None or split_bitmask == 0:
         raise ValueError("Null split bitmask (0)")
+
+    if not hasattr(start_node.edge, "split_bitmask"):
+        raise ValueError("Splits not encoded")
 
     if (start_node.edge.split_bitmask & split_bitmask) != split_bitmask:
         return None

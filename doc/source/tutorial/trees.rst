@@ -95,13 +95,16 @@ Because we might find it easier to refer to :class:`~dendropy.dataobject.taxon.T
 .. literalinclude:: /examples/find_taxon_node2.py
     :linenos:
 
-Most Recent Common Ancestors
-----------------------------
+Find Most Recent Common Ancestor Nodes
+--------------------------------------
 
 The MRCA (most recent common ancestor) of two nodes can be retrieved by the class method :meth:`~dendropy.dataobject.tree.Tree.ancestor()`, which takes two :class:`~dendropy.dataobject.tree.Node` objects as arguments and returns a :class:`~dendropy.dataobject.tree.Node` object corresponding their ancestor:
 
 .. literalinclude:: /examples/mrca1.py
     :linenos:
+
+For multiple taxa, a better approach is to use the :func:`~dendropy.treecalc.get_mrca()` function of the :mod:`dendropy.treecalc` module.
+This function takes a list of :class:`~dendropy.dataobject.taxon.Taxon` objects specified by the `taxa` keyword argument, or a list of taxon labels specified by the `taxon_labels` keyword argument, and returns the MRCA node:
 
 Note that the :meth:`~dendropy.dataobject.tree.Tree.ancestor()` method is inefficient, and working with multiple ancestors (as, for example, when calculating the patristic distances between taxa on a tree), you should prefer to use the :class:`~dendropy.treecalc.PatristicDistanceMatrix` class.
 
