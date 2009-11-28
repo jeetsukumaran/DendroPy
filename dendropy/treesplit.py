@@ -128,7 +128,7 @@ def find_edge_from_split(root, split_to_find, mask=-1):
             return r
     return None
 
-def encode_splits(tree, create_dict=True, delete_degree_two=True):
+def encode_splits(tree, create_dict=True, delete_degree_two=False):
     """
     Processes splits on a tree, encoding them as bitmask on each edge.
     Adds the following to each edge:

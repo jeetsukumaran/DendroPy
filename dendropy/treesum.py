@@ -40,12 +40,13 @@ _LOG = messaging.get_logger(__name__)
 class TreeSummarizer(object):
     "Summarizes a distribution of trees."
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         "Initializes settings."
-        self.support_as_labels = True
-        self.support_as_percentages = False
-        self.support_label_decimals = 2
-        self.ignore_node_ages = True
+        self.support_as_labels = kwargs.get("support_as_labels", True)
+        self.support_as_percentages = kwargs.get("support_as_percentages", False)
+        self.default_support_label_decimals = 4
+        self.support_label_decimals = kwargs.get("support_label_decimals", self.default_support_label_decimals)
+        self.ignore_node_ages = kwargs.get("ignore_node_ages", True)
         self.total_trees_counted = 0
 
     def compose_support_label(self, split_support_freq):
@@ -59,7 +60,7 @@ class TreeSummarizer(object):
                     self.support_label_decimals)
         else:
             if self.support_label_decimals <= 0:
-                support_label_decimals = 2
+                support_label_decimals = self.default_support_label_decimals
             else:
                 support_label_decimals = self.support_label_decimals
             support_label_template = "%%0.%df" % support_label_decimals

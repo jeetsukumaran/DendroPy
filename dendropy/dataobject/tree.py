@@ -233,18 +233,18 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             self.reindex_tree_taxa(tree)
         self[len(self):] = [tree]
 
-    def consensus(self, min_freq=0.5, trees_splits_encoded=False):
+    def consensus(self, min_freq=0.5, trees_splits_encoded=False, **kwargs):
         """
         Returns a consensus tree of all trees in self, with minumum frequency
         of split to be added to the consensus tree given by `min_freq`.
         """
         from dendropy import treesum
-        split_distribution = treesplit.SplitDistribution(taxon_set=self.taxon_set)
-        tsum = treesum.TreeSummarizer()
+        self.split_distribution = treesplit.SplitDistribution(taxon_set=self.taxon_set)
+        tsum = treesum.TreeSummarizer(**kwargs)
         tsum.count_splits_on_trees(self,
-                split_distribution=split_distribution,
+                split_distribution=self.split_distribution,
                 trees_splits_encoded=trees_splits_encoded)
-        tree = tsum.tree_from_splits(split_distribution, min_freq=min_freq)
+        tree = tsum.tree_from_splits(self.split_distribution, min_freq=min_freq)
         return tree
 
     def __str__(self):
@@ -430,7 +430,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         iosys.Readable.__init__(self)
         self.seed_node = Node(edge=Edge())
         self.length_type = None
-        self.is_rooted = False
+        self._is_rooted = False
 
         if len(args) > 1:
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
@@ -688,6 +688,22 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     ###########################################################################
     ## Structure
 
+    def _get_is_rooted(self):
+        return self._is_rooted
+
+    def _set_is_rooted(self, val):
+        self.is_rooted = val
+
+    is_rooted = property(_get_is_rooted, _set_is_rooted)
+
+    def _get_is_unrooted(self):
+        return not self._is_rooted
+
+    def _set_is_unrooted(self, val):
+        self.is_rooted = not val
+
+    is_unrooted = property(_get_is_unrooted, _set_is_unrooted)
+
     def deroot(self):
         "Converts a degree-2 node at the root to a degree-3 node."
         seed_node = self.seed_node
@@ -781,11 +797,11 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         p.remove_child(nd)
         p.add_child(nd, edge_length=nd.edge.length, pos=0)
 
-    def encode_splits(self):
+    def encode_splits(self, **kwargs):
         """
         Decorates edges with split bitmasks.
         """
-        treesplit.encode_splits(self)
+        treesplit.encode_splits(self, **kwargs)
 
     ###########################################################################
     ## Representation

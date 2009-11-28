@@ -343,6 +343,7 @@ def false_positives_and_negatives(reference_tree, test_tree):
     sym_diff = 0
     false_positives = 0
     false_negatives = 0
+
     if reference_tree.taxon_set is not test_tree.taxon_set:
         raise TypeError("Trees have different TaxonSet objects: %s vs. %s" \
                 % (hex(id(reference_tree.taxon_set)), hex(id(test_tree.taxon_set))))

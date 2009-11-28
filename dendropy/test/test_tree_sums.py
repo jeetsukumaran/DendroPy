@@ -26,6 +26,7 @@ Tests of summarization.
 
 import unittest
 import dendropy
+from dendropy import treecalc
 from dendropy import treesum
 from dendropy import treesplit
 from dendropy.test.support import pathmap
@@ -34,18 +35,30 @@ class TestConsensusTree(unittest.TestCase):
 
     def setUp(self):
         self.tree_list = dendropy.TreeList()
-        for t in xrange(1, 4):
+        for t in xrange(1, 5):
             tf = pathmap.tree_source_path('pythonidae_cytb.mb.run%d.t' % t)
-            self.tree_list.read_from_path(tf, 'nexus')
+            self.tree_list.read_from_path(tf, 'nexus', from_index=25)
         self.mb_con_tree = dendropy.Tree.get_from_path(
                 pathmap.tree_source_path("pythonidae_cytb.mb.con"),
                 format="nexus",
-                from_index=0,
+                index=0,
                 taxon_set=self.tree_list.taxon_set)
+        self.mb_con_tree.encode_splits()
 
     def testConsensus(self):
-        con_tree = self.tree_list.consensus(min_freq=0.5, trees_splits_encoded=False)
+        con_tree = self.tree_list.consensus(min_freq=0.50, trees_splits_encoded=False, support_label_decimals=2)
         con_tree.encode_splits()
+        self.assertEqual(treecalc.symmetric_difference(self.mb_con_tree, con_tree), 0)
+        self.assertEqual(len(con_tree.split_edges), len(self.mb_con_tree.split_edges))
+        sd = self.tree_list.split_distribution
+        for split in self.mb_con_tree.split_edges:
+            edge1 = self.mb_con_tree.split_edges[split]
+            edge2 = con_tree.split_edges[split]
+#            print con_tree.taxon_set.split_bitmask_string(split), edge1.head_node.label, edge2.head_node.label, sd.split_frequencies[split]
+            if edge1.head_node.label and edge2.head_node.label:
+                s1 = float(edge1.head_node.label)
+                s2 = round(float(edge2.head_node.label), 2)
+                self.assertAlmostEqual(s1, s2, 2)
 
 if __name__ == "__main__":
     unittest.main()
