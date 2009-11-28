@@ -64,12 +64,14 @@ class TreeSymmetricDistTest(unittest.TestCase):
 
 class TreePatristicDistTest(unittest.TestCase):
 
-    def runTest(self):
-        tree = dendropy.Tree(stream=StringIO("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;"), format="newick")
-        pdm = treecalc.PatristicDistanceMatrix(tree)
+    def setUp(self):
+        self.tree = dendropy.Tree.get_from_string("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", format="newick")
+
+    def testPatDistMatrix(self):
+        pdm = treecalc.PatristicDistanceMatrix(self.tree)
         def _chk_distance(pdm, t1, t2, exp_distance):
-            tax1 = tree.taxon_set.require_taxon(label=t1)
-            tax2 = tree.taxon_set.require_taxon(label=t2)
+            tax1 = self.tree.taxon_set.require_taxon(label=t1)
+            tax2 = self.tree.taxon_set.require_taxon(label=t2)
             pd = pdm(tax1, tax2)
             self.assertEqual(pd, exp_distance)
         _chk_distance(pdm, "a", "b", 2)
@@ -78,6 +80,20 @@ class TreePatristicDistTest(unittest.TestCase):
         _chk_distance(pdm, "a", "d", 6)
         _chk_distance(pdm, "f", "d", 4)
         _chk_distance(pdm, "c", "d", 6)
+
+    def testPatDistFunc(self):
+        encode_splits(self.tree)
+        def _chk_distance(t1, t2, exp_distance):
+            tax1 = self.tree.taxon_set.get_taxon(label=t1)
+            tax2 = self.tree.taxon_set.get_taxon(label=t2)
+            pd = treecalc.patristic_distance(self.tree, tax1, tax2)
+            self.assertEqual(pd, exp_distance)
+        _chk_distance("a", "b", 2)
+        _chk_distance("a", "c", 4)
+        _chk_distance("b", "c", 4)
+        _chk_distance("a", "d", 6)
+        _chk_distance("f", "d", 4)
+        _chk_distance("c", "d", 6)
 
 if __name__ == "__main__":
     unittest.main()

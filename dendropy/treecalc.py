@@ -27,48 +27,6 @@ Tree metrics/statistics calculations.
 from math import sqrt
 from dendropy import treesplit
 
-def get_mrca(start_node, split, taxa_mask):
-    """Returns the shallowest node in the tree (the node furthest from
-    `start_node`) that has all of the taxa that are specified in `split` or
-    None if no appropriate node is found.
-
-    Assumes that edges on tree have been decorated with treesplit.
-
-    It is possible that split is not compatible with the subtree that is
-        returned! (compatibility tests are not fully performed).
-
-    This function is used to find the "insertion point" for a new split via a
-        root to tip search.
-    """
-    if (start_node.edge.split_bitmask & split) != split:
-        return None
-    curr_node = start_node
-    last_match = start_node
-    nd_source = iter(start_node.child_nodes())
-    try:
-        while True:
-            cm = curr_node.edge.split_bitmask
-            cms = (cm & split)
-            if cms:
-                # for at least one taxon cm has 1 and split has 1
-                if cms == split:
-                    # curr_node has all of the 1's that split has
-                    if cm == split:
-                        return curr_node
-                    last_match = curr_node
-                    nd_source = iter(curr_node.child_nodes())
-                else:
-                    # we have reached a child that has some, but not all of the
-                    #   required taxa as descendants, so we return the last_match
-                    return last_match
-            curr_node = nd_source.next()
-    except StopIteration:
-        # we shouldn't reach this if all of the descendants are properly
-        #   decorated with split_bitmask attributes, but there may be some hacky
-        #   context in which we want to allow the function to be called with
-        #   leaves that have not been encoded with split_bitmasks.
-        return last_match
-
 class PatristicDistanceMatrix(object):
     """
     Calculates and maintains patristic distance information of taxa on a tree.
@@ -133,6 +91,81 @@ class PatristicDistanceMatrix(object):
         """
         return sum(self.distances())
 
+def get_mrca(start_node, **kwargs):
+    """Returns the shallowest node in the tree (the node furthest from
+    `start_node`) that has all of the taxa that:
+
+        - are specified by the split bitmask given by the keyword argument
+         `split_bitmask`
+        - are in the list of Taxon objects given by the keyword argument
+          'taxa'
+        - have the labels specified by the list of strings given by the
+          keyword argument 'taxon_labels'
+
+    If `taxa` or `taxon_labels` are used, then a TaxonSet object must be
+    given by the keyword `taxon_set`.
+    Returns None if no appropriate node is found.
+    Assumes that edges on tree have been decorated with treesplit.
+    It is possible that split is not compatible with the subtree that is
+        returned! (compatibility tests are not fully performed).
+    This function is used to find the "insertion point" for a new split via a
+        root to tip search.
+    """
+
+    split_bitmask = None
+
+    if "split_bitmask" in kwargs:
+        split_bitmask = kwargs["split_bitmask"]
+    else:
+        if "taxon_set" not in kwargs:
+            raise TypeError("Must specify TaxonSet using keyword 'taxon_set' if" \
+                + " specifying 'taxa' or 'taxon_labels' arguments")
+        taxon_set = kwargs["taxon_set"]
+        taxa = kwargs.get("taxa", None)
+        if taxa is None:
+            if "taxon_labels" in kwargs:
+                taxa = taxon_set.get_taxa(labels=kwargs["taxon_labels"])
+                if len(taxa) != len(kwargs["taxon_labels"]):
+                    raise ValueError("Not all labels matched to taxa")
+            else:
+                raise TypeError("Must specify one of: 'split_bitmask', 'taxa' or 'taxon_labels'")
+        if taxa is None:
+            raise ValueError("No taxa matching criteria found")
+        split_bitmask = taxon_set.get_taxa_bitmask(taxa=taxa)
+
+    if split_bitmask is None or split_bitmask == 0:
+        raise ValueError("Null split bitmask (0)")
+
+    if (start_node.edge.split_bitmask & split_bitmask) != split_bitmask:
+        return None
+
+    curr_node = start_node
+    last_match = start_node
+    nd_source = iter(start_node.child_nodes())
+    try:
+        while True:
+            cm = curr_node.edge.split_bitmask
+            cms = (cm & split_bitmask)
+            if cms:
+                # for at least one taxon cm has 1 and split has 1
+                if cms == split_bitmask:
+                    # curr_node has all of the 1's that split has
+                    if cm == split_bitmask:
+                        return curr_node
+                    last_match = curr_node
+                    nd_source = iter(curr_node.child_nodes())
+                else:
+                    # we have reached a child that has some, but not all of the
+                    #   required taxa as descendants, so we return the last_match
+                    return last_match
+            curr_node = nd_source.next()
+    except StopIteration:
+        # we shouldn't reach this if all of the descendants are properly
+        #   decorated with split_bitmask attributes, but there may be some hacky
+        #   context in which we want to allow the function to be called with
+        #   leaves that have not been encoded with split_bitmasks.
+        return last_match
+
 def patristic_distance(tree, taxon1, taxon2):
     """
     Given a tree with splits encoded, and two taxa on that tree, returns the
@@ -140,8 +173,7 @@ def patristic_distance(tree, taxon1, taxon2):
     """
     if not hasattr(tree, "split_edges"):
         treesplit.encode_splits(tree)
-    split = tree.taxon_set.taxon_bitmask(taxon1) | tree.taxon_set.taxon_bitmask(taxon2)
-    mrca = get_mrca(tree.seed_node, split, tree.taxon_set.all_taxa_bitmask())
+    mrca = get_mrca(tree.seed_node, taxa=[taxon1, taxon2], taxon_set=tree.taxon_set)
     dist = 0
     n = tree.find_node(lambda x: x.taxon == taxon1)
     while n != mrca:

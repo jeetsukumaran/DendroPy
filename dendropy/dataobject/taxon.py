@@ -231,6 +231,23 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
                 return taxon
         return None
 
+    def get_taxa(self, **kwargs):
+        """
+        Retrieves list of taxon objects with given id OR label (if both are
+        given, the any match is included). If taxon does not
+        exist then an empty list is returned.
+        """
+        if "oid" not in kwargs and "label" not in kwargs:
+            raise TypeError("Need to specify Taxon oid or Label.")
+        oid = kwargs.get("oid", None)
+        label = kwargs.get("label", None)
+        taxa = []
+        for taxon in self:
+            if (oid is not None and taxon.oid == oid) \
+                or (label is not None and taxon.label == label):
+                taxa.append(taxon)
+        return taxa
+
     def require_taxon(self, **kwargs):
         """
         Retrieves taxon object with given id OR label (if both are
@@ -303,6 +320,20 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         except ValueError:
             raise IndexError("Taxon with ID '%s' and label '%s' not found"
                              % (str(taxon.oid), str(taxon.label)))
+
+    def get_taxa_bitmask(self, **kwargs):
+        """
+        Retrieves bitmask represent all taxa specified by keyword-specified list
+        of taxon objects (`taxa=`), labels (`labels=`) or oids (`oids=`).
+        """
+        if "taxa" in kwargs:
+            taxa = kwargs["taxa"]
+        else:
+            taxa = self.get_taxa(**kwargs)
+        bitmask = 0
+        for taxon in taxa:
+            bitmask |= self.taxon_bitmask(taxon)
+        return bitmask
 
     def split_bitmask_string(self, split_bitmask):
         "Returns bitstring representation of split_bitmask."
