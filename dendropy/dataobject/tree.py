@@ -731,7 +731,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             taxa = kwargs.get("taxa", None)
             if taxa is None:
                 if "taxon_labels" in kwargs:
-                    taxa = taxon_set.get_taxa(labels=kwargs["taxon_labels"])
+                    taxa = self.taxon_set.get_taxa(labels=kwargs["taxon_labels"])
                     if len(taxa) != len(kwargs["taxon_labels"]):
                         raise KeyError("Not all labels matched to taxa")
                 else:
