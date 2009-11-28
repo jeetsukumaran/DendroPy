@@ -37,6 +37,7 @@ from dendropy.utility import error
 from dendropy.utility import texttools
 from dendropy.dataobject.base import IdTagged
 from dendropy.dataobject.taxon import TaxonSetLinked, TaxonLinked
+from dendropy import treesplit
 
 ##############################################################################
 ## TreeList
@@ -231,6 +232,20 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if reindex_taxa:
             self.reindex_tree_taxa(tree)
         self[len(self):] = [tree]
+
+    def consensus(self, min_freq=0.5, trees_splits_encoded=False):
+        """
+        Returns a consensus tree of all trees in self, with minumum frequency
+        of split to be added to the consensus tree given by `min_freq`.
+        """
+        from dendropy import treesum
+        split_distribution = treesplit.SplitDistribution(taxon_set=self.taxon_set)
+        tsum = treesum.TreeSummarizer()
+        tsum.count_splits_on_trees(self,
+                split_distribution=split_distribution,
+                trees_splits_encoded=trees_splits_encoded)
+        tree = tsum.tree_from_splits(split_distribution, min_freq=min_freq)
+        return tree
 
     def __str__(self):
         return " ".join([ (str(tree) + ";") for tree in self ])
@@ -765,6 +780,12 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         self.reroot_at(p, splits=splits)
         p.remove_child(nd)
         p.add_child(nd, edge_length=nd.edge.length, pos=0)
+
+    def encode_splits(self):
+        """
+        Decorates edges with split bitmasks.
+        """
+        treesplit.encode_splits(self)
 
     ###########################################################################
     ## Representation
@@ -1667,6 +1688,7 @@ class Node(TaxonLinked):
         """
         is_leaf = (len(self._child_nodes) == 0)
         include_internal_labels = kwargs.get("include_internal_labels")
+        preserve_spaces = kwargs.get("include_internal_labels", False)
         if (not is_leaf) and (not include_internal_labels):
             return ""
         try:
@@ -1686,7 +1708,7 @@ class Node(TaxonLinked):
                     tag = self.oid
         if "raw_labels" in kwargs:
             return tag
-        return texttools.escape_nexus_token(tag)
+        return texttools.escape_nexus_token(tag, preserve_spaces=preserve_spaces)
 
     ###########################################################################
     ## alternate representation of tree structure for debugging

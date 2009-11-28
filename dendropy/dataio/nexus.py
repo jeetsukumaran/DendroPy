@@ -707,7 +707,6 @@ class NexusWriter(iosys.DataWriter):
         self.is_write_rooting = kwargs.get("write_rooting", True)
         self.is_write_edge_lengths = kwargs.get("edge_lengths", True)
         self.is_write_internal_labels = kwargs.get("internal_labels", True)
-        self.spaces_to_underscores = kwargs.get("spaces_to_underscores", False)
         self.comment = kwargs.get("comment", [])
 
     def write(self, stream, **kwargs):
@@ -750,7 +749,7 @@ class NexusWriter(iosys.DataWriter):
         block.append('    dimensions ntax=%d;' % len(taxon_set))
         block.append('    taxlabels')
         for taxon in taxon_set:
-            block.append('        %s' % texttools.escape_nexus_token(taxon.label, spaces_to_underscores=self.spaces_to_underscores))
+            block.append('        %s' % texttools.escape_nexus_token(taxon.label))
         block.append('  ;')
         block.append('end;\n\n')
         stream.write('\n'.join(block))
@@ -772,7 +771,7 @@ class NexusWriter(iosys.DataWriter):
                 rooting = "[&U] "
             else:
                 rooting = ""
-            block.append('    tree %s = %s%s;' % (texttools.escape_nexus_token(tree_name, spaces_to_underscores=self.spaces_to_underscores),
+            block.append('    tree %s = %s%s;' % (texttools.escape_nexus_token(tree_name),
                 rooting,
                 newick_str))
         block.append('end;\n\n')
@@ -780,8 +779,7 @@ class NexusWriter(iosys.DataWriter):
 
     def write_char_block(self, char_array, stream):
         nexus = []
-        taxlabels = [texttools.escape_nexus_token(taxon.label, spaces_to_underscores=self.spaces_to_underscores) \
-                for taxon in char_array.taxon_set]
+        taxlabels = [texttools.escape_nexus_token(taxon.label) for taxon in char_array.taxon_set]
         max_label_len = max([len(label) for label in taxlabels])
         nchar = max([len(seq) for seq in char_array.values()])
         if self.simple:
@@ -812,7 +810,7 @@ class NexusWriter(iosys.DataWriter):
                     else:
                         raise Exception("Could not match character state to symbol: '%s'." % state)
                     seq.write(state_string_map[state])
-            nexus.append('%s    %s' % (texttools.escape_nexus_token(taxon.label, spaces_to_underscores=self.spaces_to_underscores).ljust(max_label_len), seq.getvalue()))
+            nexus.append('%s    %s' % (texttools.escape_nexus_token(taxon.label).ljust(max_label_len), seq.getvalue()))
         nexus.append('    ;')
         nexus.append('end;\n\n')
         stream.write('\n'.join(nexus))

@@ -183,7 +183,6 @@ class NewickWriter(iosys.DataWriter):
         iosys.DataWriter.__init__(self, **kwargs)
         self.edge_lengths = kwargs.get("edge_lengths", True)
         self.internal_labels = kwargs.get("internal_labels", True)
-        self.spaces_to_underscores = kwargs.get("spaces_to_underscores", False)
 
     def write(self, stream, **kwargs):
         """
@@ -224,7 +223,7 @@ class NewickWriter(iosys.DataWriter):
         else:
             tag = ""
         if tag:
-            tag = texttools.escape_nexus_token(tag, spaces_to_underscores=self.spaces_to_underscores)
+            tag = texttools.escape_nexus_token(tag)
         return tag
 
     def compose_node(self, node):

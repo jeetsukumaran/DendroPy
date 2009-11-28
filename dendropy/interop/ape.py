@@ -39,15 +39,15 @@ def as_ape_object(o):
     kwargs = {}
     if isinstance(o, dendropy.TreeList):
         kwargs['keep.multi'] = True
-        text = o.as_string("newick", spaces_to_underscores=True)
+        text = o.as_string("newick")
         return _R['read.tree'](text=text, **kwargs)
     elif isinstance(o, dendropy.Tree):
         kwargs['keep.multi'] = False
-        text = o.as_string("newick", spaces_to_underscores=True)
+        text = o.as_string("newick")
         return _R['read.tree'](text=text, **kwargs)
     elif isinstance(o, dendropy.CharacterArray):
         f = tempfile.NamedTemporaryFile()
-        o.write_to_stream(f, "nexus", simple=True, spaces_to_underscores=True)
+        o.write_to_stream(f, "nexus", simple=True)
         f.flush()
         return _R['read.nexus.data'](f.name)
     else:

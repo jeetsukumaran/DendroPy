@@ -194,9 +194,9 @@ def main_cli():
             if tree_count >= opts.burnin and not (tree_count % opts.stride):
                 trees_added += 1
                 if opts.phylip_format:
-                    output_dest.write(tree.as_string(format="newick") + ";\n")
+                    output_dest.write(tree.as_string(format="newick"))
                 else:
-                    output_dest.write("tree %d = %s;\n" % (trees_added, tree.as_string(format="newick")))
+                    output_dest.write("tree %d = %s" % (trees_added, tree.as_string(format="newick")))
         total_trees_added += trees_added
         message = ("%s: %d trees in file, sampling 1 tree of every %d trees after %d tree burn-in: %d trees added (current total = %d trees)" \
             % (tree_filepath, tree_count+1, opts.stride, opts.burnin, trees_added, total_trees_added))

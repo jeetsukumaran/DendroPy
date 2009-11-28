@@ -1,13 +1,77 @@
 #NEXUS
 
-[ID: 0344228063]
+[ID: None Available]
+begin taxa;
+	dimensions ntax=29;
+	taxlabels
+		Python_regius
+		Python_sebae
+		Python_brongersmai
+		Antaresia_maculosa
+		Python_timoriensis
+		Python_molurus
+		Morelia_carinata
+		Morelia_boeleni
+		Antaresia_perthensis
+		Morelia_viridis
+		Aspidites_ramsayi
+		Aspidites_melanocephalus
+		Morelia_oenpelliensis
+		Bothrochilus_boa
+		Morelia_bredli
+		Morelia_spilota
+		Antaresia_stimsoni
+		Antaresia_childreni
+		Leiopython_albertisii
+		Python_reticulatus
+		Morelia_tracyae
+		Morelia_amethistina
+		Morelia_nauta
+		Morelia_kinghorni
+		Morelia_clastolepis
+		Liasis_fuscus
+		Liasis_mackloti
+		Liasis_olivaceus
+		Apodora_papuana
+		;end;
 begin trees;
+	translate
+		1	Python_regius,
+		2	Python_sebae,
+		3	Python_brongersmai,
+		4	Antaresia_maculosa,
+		5	Python_timoriensis,
+		6	Python_molurus,
+		7	Morelia_carinata,
+		8	Morelia_boeleni,
+		9	Antaresia_perthensis,
+		10	Morelia_viridis,
+		11	Aspidites_ramsayi,
+		12	Aspidites_melanocephalus,
+		13	Morelia_oenpelliensis,
+		14	Bothrochilus_boa,
+		15	Morelia_bredli,
+		16	Morelia_spilota,
+		17	Antaresia_stimsoni,
+		18	Antaresia_childreni,
+		19	Leiopython_albertisii,
+		20	Python_reticulatus,
+		21	Morelia_tracyae,
+		22	Morelia_amethistina,
+		23	Morelia_nauta,
+		24	Morelia_kinghorni,
+		25	Morelia_clastolepis,
+		26	Liasis_fuscus,
+		27	Liasis_mackloti,
+		28	Liasis_olivaceus,
+		29	Apodora_papuana
+		;
    [Note: This tree contains information on the topology, 
           branch lengths (if present), and the probability
           of the partition indicated by the branch.]
-   tree con_50_majrule = (Python_regius:0.212275,(Python_sebae:0.176816,((((((Antaresia_maculosa:0.127351,(Antaresia_perthensis:0.108378,(Antaresia_stimsoni:0.021372,Antaresia_childreni:0.038155)1.00:0.046446)1.00:0.025262)0.94:0.012957,(Morelia_carinata:0.101145,(Morelia_bredli:0.038563,Morelia_spilota:0.025643)1.00:0.050967)0.52:0.010472,Morelia_viridis:0.098541)0.98:0.023291,(Bothrochilus_boa:0.091928,Leiopython_albertisii:0.080986)1.00:0.031583)0.54:0.008347,(((Liasis_fuscus:0.026601,Liasis_mackloti:0.034524)1.00:0.069881,Liasis_olivaceus:0.047727)0.99:0.023758,Apodora_papuana:0.096097)0.89:0.014740)0.78:0.010084,((Python_timoriensis:0.101865,Python_reticulatus:0.095018)1.00:0.092200,(Morelia_boeleni:0.093309,(Morelia_tracyae:0.047270,(Morelia_amethistina:0.034936,((Morelia_nauta:0.011000,Morelia_kinghorni:0.011198)0.90:0.006932,Morelia_clastolepis:0.008103)1.00:0.025987)0.93:0.017415)1.00:0.033886)0.98:0.027519,Morelia_oenpelliensis:0.092143)0.52:0.006779)0.99:0.018238,(Aspidites_ramsayi:0.030898,Aspidites_melanocephalus:0.068553)1.00:0.049525)1.00:0.050607)0.95:0.023304,(Python_brongersmai:0.132193,Python_molurus:0.088720)0.55:0.011466);
+   tree con_50_majrule = (1:0.212134,(2:0.177224,((((((4:0.127311,(9:0.107823,(17:0.021153,18:0.038076)1.00:0.046428)1.00:0.025084)0.94:0.012933,(7:0.100903,(15:0.038344,16:0.025637)1.00:0.050913)0.53:0.010269,10:0.098237)0.99:0.023210,(14:0.091631,19:0.080721)1.00:0.031547)0.54:0.008338,(((26:0.026519,27:0.034403)1.00:0.069783,28:0.047570)1.00:0.023759,29:0.095988)0.89:0.014638)0.78:0.010067,((5:0.101790,20:0.094829)1.00:0.092089,(8:0.093188,(21:0.047218,(22:0.034990,((23:0.010972,24:0.011132)0.90:0.006928,25:0.007960)1.00:0.025833)0.94:0.017312)1.00:0.033876)0.98:0.027467,13:0.092019)0.52:0.006802)0.99:0.018191,(11:0.030808,12:0.068381)1.00:0.049618)1.00:0.050438)0.95:0.023268,(3:0.132287,6:0.088493)0.55:0.011443);
 
    [Note: This tree contains information only on the topology
           and branch lengths (mean of the posterior probability density).]
-   tree con_50_majrule = (Python_regius:0.212275,(Python_sebae:0.176816,((((((Antaresia_maculosa:0.127351,(Antaresia_perthensis:0.108378,(Antaresia_stimsoni:0.021372,Antaresia_childreni:0.038155):0.046446):0.025262):0.012957,(Morelia_carinata:0.101145,(Morelia_bredli:0.038563,Morelia_spilota:0.025643):0.050967):0.010472,Morelia_viridis:0.098541):0.023291,(Bothrochilus_boa:0.091928,Leiopython_albertisii:0.080986):0.031583):0.008347,(((Liasis_fuscus:0.026601,Liasis_mackloti:0.034524):0.069881,Liasis_olivaceus:0.047727):0.023758,Apodora_papuana:0.096097):0.014740):0.010084,((Python_timoriensis:0.101865,Python_reticulatus:0.095018):0.092200,(Morelia_boeleni:0.093309,(Morelia_tracyae:0.047270,(Morelia_amethistina:0.034936,((Morelia_nauta:0.011000,Morelia_kinghorni:0.011198):0.006932,Morelia_clastolepis:0.008103):0.025987):0.017415):0.033886):0.027519,Morelia_oenpelliensis:0.092143):0.006779):0.018238,(Aspidites_ramsayi:0.030898,Aspidites_melanocephalus:0.068553):0.049525):0.050607):0.023304,(Python_brongersmai:0.132193,Python_molurus:0.088720):0.011466);
+   tree con_50_majrule = (1:0.212134,(2:0.177224,((((((4:0.127311,(9:0.107823,(17:0.021153,18:0.038076):0.046428):0.025084):0.012933,(7:0.100903,(15:0.038344,16:0.025637):0.050913):0.010269,10:0.098237):0.023210,(14:0.091631,19:0.080721):0.031547):0.008338,(((26:0.026519,27:0.034403):0.069783,28:0.047570):0.023759,29:0.095988):0.014638):0.010067,((5:0.101790,20:0.094829):0.092089,(8:0.093188,(21:0.047218,(22:0.034990,((23:0.010972,24:0.011132):0.006928,25:0.007960):0.025833):0.017312):0.033876):0.027467,13:0.092019):0.006802):0.018191,(11:0.030808,12:0.068381):0.049618):0.050438):0.023268,(3:0.132287,6:0.088493):0.011443);
 end;
