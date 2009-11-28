@@ -106,6 +106,8 @@ def find_mrca(tree, **kwargs):
     Returns None if no appropriate node is found.
     Assumes that edges on tree have been decorated with treesplit.
     """
+    if not hasattr(tree.seed_node.edge, "split_bitmask"):
+        treesplit.encode_splits(tree)
     return find_mrca_from_node(tree.seed_node, taxon_set=tree.taxon_set, **kwargs)
 
 def find_mrca_from_node(start_node, **kwargs):
