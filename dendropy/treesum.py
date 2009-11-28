@@ -144,8 +144,7 @@ class TreeSummarizer(object):
                 while (split_to_add & parent_node.edge.split_bitmask) != split_to_add:
                     parent_node = parent_node.parent_node
             else:
-                parent_node = treecalc.find_mrca_from_node(start_node=con_tree.seed_node,
-                                                 split_bitmask=split_to_add)
+                parent_node = con_tree.mrca(split_bitmask=split_to_add)
             if parent_node is None or parent_node.edge.split_bitmask == split_to_add:
                 continue # split is not in tree, or already in tree.
             new_node = dendropy.Node()

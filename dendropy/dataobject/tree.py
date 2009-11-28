@@ -704,6 +704,78 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     is_unrooted = property(_get_is_unrooted, _set_is_unrooted)
 
+    def mrca(self, **kwargs):
+        """Returns the shallowest node in the tree (the node furthest from
+        the root, or `start_node`, in the direction toward the tips of
+        the tree) that has all of the taxa that:
+
+            - are specified by the split bitmask given by the keyword argument
+             `split_bitmask`
+            - are in the list of Taxon objects given by the keyword argument
+              'taxa'
+            - have the labels specified by the list of strings given by the
+              keyword argument 'taxon_labels'
+
+        Returns None if no appropriate node is found.
+        Assumes that edges on tree have been decorated with treesplit.
+        It is possible that split is not compatible with the subtree that is
+            returned! (compatibility tests are not fully performed).
+        This function is used to find the "insertion point" for a new split via a
+            root to tip search.
+        """
+        start_node = kwargs.get("start_node", self.seed_node)
+        split_bitmask = None
+        if "split_bitmask" in kwargs:
+            split_bitmask = kwargs["split_bitmask"]
+        else:
+            taxa = kwargs.get("taxa", None)
+            if taxa is None:
+                if "taxon_labels" in kwargs:
+                    taxa = taxon_set.get_taxa(labels=kwargs["taxon_labels"])
+                    if len(taxa) != len(kwargs["taxon_labels"]):
+                        raise KeyError("Not all labels matched to taxa")
+                else:
+                    raise TypeError("Must specify one of: 'split_bitmask', 'taxa' or 'taxon_labels'")
+            if taxa is None:
+                raise ValueError("No taxa matching criteria found")
+            split_bitmask = self.taxon_set.get_taxa_bitmask(taxa=taxa)
+
+        if split_bitmask is None or split_bitmask == 0:
+            raise ValueError("Null split bitmask (0)")
+
+        if not hasattr(start_node.edge, "split_bitmask"):
+            treesplit.encode_splits(self, delete_degree_two=False)
+
+        if (start_node.edge.split_bitmask & split_bitmask) != split_bitmask:
+            return None
+
+        curr_node = start_node
+        last_match = start_node
+        nd_source = iter(start_node.child_nodes())
+        try:
+            while True:
+                cm = curr_node.edge.split_bitmask
+                cms = (cm & split_bitmask)
+                if cms:
+                    # for at least one taxon cm has 1 and split has 1
+                    if cms == split_bitmask:
+                        # curr_node has all of the 1's that split has
+                        if cm == split_bitmask:
+                            return curr_node
+                        last_match = curr_node
+                        nd_source = iter(curr_node.child_nodes())
+                    else:
+                        # we have reached a child that has some, but not all of the
+                        #   required taxa as descendants, so we return the last_match
+                        return last_match
+                curr_node = nd_source.next()
+        except StopIteration:
+            # we shouldn't reach this if all of the descendants are properly
+            #   decorated with split_bitmask attributes, but there may be some hacky
+            #   context in which we want to allow the function to be called with
+            #   leaves that have not been encoded with split_bitmasks.
+            return last_match
+
     def deroot(self):
         "Converts a degree-2 node at the root to a degree-3 node."
         seed_node = self.seed_node
