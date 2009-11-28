@@ -692,7 +692,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         return self._is_rooted
 
     def _set_is_rooted(self, val):
-        self.is_rooted = val
+        self._is_rooted = val
 
     is_rooted = property(_get_is_rooted, _set_is_rooted)
 
@@ -700,7 +700,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         return not self._is_rooted
 
     def _set_is_unrooted(self, val):
-        self.is_rooted = not val
+        self._is_rooted = not val
 
     is_unrooted = property(_get_is_unrooted, _set_is_unrooted)
 
