@@ -25,6 +25,8 @@ Controls which tests are run.
 """
 
 import os
+from dendropy.utility import messaging
+_LOG = messaging.get_logger(__name__)
 
 FAST, NORMAL, SLOW, EXHAUSTIVE = 0, 10, 20, 30
 
@@ -80,8 +82,8 @@ def get_current_testing_level():
             return FAST
         return NORMAL
     try:
-        return name_to_int(l)
-    except:
+        return TestLevel.name_to_int(l)
+    except ValueError:
         _LOG.warn("the value %s for DENDROPY_TESTING_LEVEL is not recognized.  Using NORMAL level" % l)
     return NORMAL
 

@@ -382,7 +382,7 @@ def estimate_model(char_array,
         treeb = ds.new_tree_list(taxon_set=taxab)
         treeb.append(tree_model)
         tf = tempfile.NamedTemporaryFile()
-        ds.write(file=tf, format='nexus', exclude_chars=True, exclude_trees=False)
+        ds.write_to_stream(tf, format='nexus', exclude_chars=True, exclude_trees=False)
         tf.flush()
         paup_args['tree'] = "gettrees file=%s storebrlens=yes;" % tf.name
     else:
@@ -398,7 +398,7 @@ def estimate_model(char_array,
     char_array.reindex_taxa(taxab)
     charb = ds.add_char_array(char_array=char_array)
     cf = tempfile.NamedTemporaryFile()
-    ds.write(file=cf, format='nexus', exclude_chars=False, exclude_trees=True)
+    ds.write_to_stream(cf, format='nexus', exclude_chars=False, exclude_trees=True)
     cf.flush()
     paup_args['datafile'] = cf.name
 
@@ -454,6 +454,6 @@ def estimate_model(char_array,
             except:
                 pass
 
-    est_ds = dendropy.DataSet(file=open(output_tree_filepath, "rU"), format="NEXUS")
+    est_ds = dendropy.DataSet(stream=open(output_tree_filepath, "rU"), format="NEXUS")
     return est_ds.tree_lists[0], results
 

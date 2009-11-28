@@ -54,7 +54,7 @@ if runlevel.is_test_enabled(runlevel.SLOW, _LOG, __name__, "skipping all sequenc
     class SeqSimTest(unittest.TestCase):
 
         def setUp(self):
-            self.tree_model = dendropy.TreeList(str=tree_model_string, format="NEXUS")[0]
+            self.tree_model = dendropy.Tree.get_from_string(tree_model_string, format="NEXUS")
             assert self.tree_model.taxon_set is not None
 
         def estimate_params(self,
