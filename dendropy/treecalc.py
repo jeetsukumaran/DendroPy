@@ -91,9 +91,27 @@ class PatristicDistanceMatrix(object):
         """
         return sum(self.distances())
 
-def get_mrca(start_node, **kwargs):
+def find_mrca(tree, **kwargs):
+    """Returns the MRCA of all taxa that:
+
+        - are specified by the split bitmask given by the keyword argument
+         `split_bitmask`
+        - are in the list of Taxon objects given by the keyword argument
+          'taxa'
+        - have the labels specified by the list of strings given by the
+          keyword argument 'taxon_labels'
+
+    If `taxa` or `taxon_labels` are used, then a TaxonSet object must be
+    given by the keyword `taxon_set`.
+    Returns None if no appropriate node is found.
+    Assumes that edges on tree have been decorated with treesplit.
+    """
+    return find_mrca_from_node(tree.seed_node, taxon_set=tree.taxon_set, **kwargs)
+
+def find_mrca_from_node(start_node, **kwargs):
     """Returns the shallowest node in the tree (the node furthest from
-    `start_node`) that has all of the taxa that:
+    `start_node` in a direction away from the root) that has
+    all of the taxa that:
 
         - are specified by the split bitmask given by the keyword argument
          `split_bitmask`
@@ -176,7 +194,7 @@ def patristic_distance(tree, taxon1, taxon2):
     """
     if not hasattr(tree, "split_edges"):
         treesplit.encode_splits(tree)
-    mrca = get_mrca(tree.seed_node, taxa=[taxon1, taxon2], taxon_set=tree.taxon_set)
+    mrca = find_mrca_from_node(tree.seed_node, taxa=[taxon1, taxon2], taxon_set=tree.taxon_set)
     dist = 0
     n = tree.find_node(lambda x: x.taxon == taxon1)
     while n != mrca:
