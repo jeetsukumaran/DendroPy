@@ -705,23 +705,21 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     is_unrooted = property(_get_is_unrooted, _set_is_unrooted)
 
     def mrca(self, **kwargs):
-        """Returns the shallowest node in the tree (the node furthest from
+        """
+        Returns the shallowest node in the tree (the node furthest from
         the root, or `start_node`, in the direction toward the tips of
         the tree) that has all of the taxa that:
 
-            - are specified by the split bitmask given by the keyword argument
-             `split_bitmask`
-            - are in the list of Taxon objects given by the keyword argument
-              'taxa'
-            - have the labels specified by the list of strings given by the
-              keyword argument 'taxon_labels'
+            - are specified by the split bitmask given by the keyword argument `split_bitmask`
+            - are in the list of Taxon objects given by the keyword argument 'taxa'
+            - have the labels specified by the list of strings given by the keyword argument 'taxon_labels'
 
         Returns None if no appropriate node is found.
         Assumes that edges on tree have been decorated with treesplit.
         It is possible that split is not compatible with the subtree that is
-            returned! (compatibility tests are not fully performed).
+        returned! (compatibility tests are not fully performed).
         This function is used to find the "insertion point" for a new split via a
-            root to tip search.
+        root to tip search.
         """
         start_node = kwargs.get("start_node", self.seed_node)
         split_bitmask = None

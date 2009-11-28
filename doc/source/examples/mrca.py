@@ -9,5 +9,5 @@ taxon_labels=['Python sebae',
               'Python regius',
               'Python brongersmai',
               'Python molurus']
-mrca = treecalc.find_mrca(tree, taxon_labels=taxon_labels)
+mrca = tree.mrca(taxon_labels=taxon_labels)
 print(mrca.description())
