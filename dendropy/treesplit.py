@@ -233,12 +233,28 @@ class SplitDistribution(object):
         self.split_node_ages = {}
         self.ignore_edge_lengths = False
         self.ignore_node_ages = True
-        self.unrooted = True
+        self._is_rooted = False
         self._split_freqs = None
         self._trees_counted_for_freqs = 0
         if split_set:
             for split in split_set:
                 self.add_split_count(split, count=1)
+
+    def _get_is_rooted(self):
+        return self._is_rooted
+
+    def _set_is_rooted(self, val):
+        self._is_rooted = val
+
+    is_rooted = property(_get_is_rooted, _set_is_rooted)
+
+    def _get_is_unrooted(self):
+        return not self._is_rooted
+
+    def _set_is_unrooted(self, val):
+        self._is_rooted = not val
+
+    is_unrooted = property(_get_is_unrooted, _set_is_unrooted)
 
     def add_split_count(self, split, count=1):
         if split not in self.splits:
@@ -302,7 +318,7 @@ class SplitDistribution(object):
         self.total_trees_counted += 1
 
         for split, edge in tree.split_edges.iteritems():
-            if not self.unrooted:
+            if self.is_rooted:
                 split = edge.split_bitmask
             if split not in self.split_counts:
                 self.splits.append(split)

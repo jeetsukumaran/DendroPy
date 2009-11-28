@@ -84,14 +84,14 @@ class PaupWrapperSplitsParse(ExtendedTestCase):
         self.expected_num_trees = expected_num_trees
         self.expected_split_freqs = dict([ (s[0], int(s[1])) for s in csv.reader(open(self.splitscsv_filepath, "rU"))])
 
-    def count_splits(self, unrooted=True):
+    def count_splits(self, is_rooted=False):
         if self.tree_filepath is None:
             _LOG.warning("Null Test Case")
             return
         p = paup.PaupRunner()
         p.stage_execute_file(self.taxa_filepath, clear_trees=True)
         p.stage_list_taxa()
-        p.stage_load_trees(tree_filepaths=[self.tree_filepath], unrooted=unrooted)
+        p.stage_load_trees(tree_filepaths=[self.tree_filepath], is_rooted=is_rooted)
         p.stage_count_splits()
         p.run()
         taxon_set = p.parse_taxon_set()
@@ -106,10 +106,10 @@ class PaupWrapperSplitsParse(ExtendedTestCase):
         sd = paup.build_split_distribution(bipartition_counts,
                                            tree_count,
                                            taxon_set,
-                                           unrooted=unrooted)
+                                           is_rooted=is_rooted)
         sf = sd.split_frequencies
         for g in bipartition_counts:
-            s = paup.paup_group_to_mask(g, normalized=unrooted)
+            s = paup.paup_group_to_mask(g, normalized=not is_rooted)
             self.assertContained(s, sd.splits)
             self.assertContained(s, sd.split_counts)
             self.assertEqual(sd.split_counts[s], bipartition_counts[g])

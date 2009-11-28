@@ -337,7 +337,7 @@ def main_cli():
                                          taxon_set=taxon_set,
                                          encode_splits=encode_splits)
     split_distribution = splitmask.SplitDistribution()
-    split_distribution.unrooted = not opts.rooted_trees
+    split_distribution.is_rooted = not opts.rooted_trees
     tsum.count_splits_on_trees(tree_source,
         split_distribution=split_distribution,
         trees_splits_encoded=encode_splits)

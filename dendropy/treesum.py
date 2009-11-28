@@ -112,14 +112,14 @@ class TreeSummarizer(object):
             for leaf in leaves:
                 to_leaf_dict[leaf.edge.split_bitmask] = leaf
         include_edge_lengths = self.support_as_labels and include_edge_lengths
-        unrooted = split_distribution.unrooted
+        is_rooted = split_distribution.is_rooted
 
         to_try_to_add = []
         for s, f in split_freqs.iteritems():
             if (min_freq is None) or (f > min_freq):
                 m = s & taxa_mask
                 if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
-                    if unrooted:
+                    if not is_rooted:
                         c = (~m) & taxa_mask
                         if (c-1) & c: # not singleton (i.e., one "0")
                             if 1 & m:
@@ -178,7 +178,7 @@ class TreeSummarizer(object):
 
         ## here we add the support values and/or edge lengths for the terminal taxa ##
         for node in leaves:
-            if unrooted:
+            if not is_rooted:
                 split = con_tree.split_edges.normalize_key(node.edge.split_bitmask)
             else:
                 split = node.edge.split_bitmask

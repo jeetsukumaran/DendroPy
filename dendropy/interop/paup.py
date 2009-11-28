@@ -50,14 +50,14 @@ else:
 
 def get_split_distribution(tree_filepaths,
                            taxa_filepath,
-                           unrooted=True,
+                           is_rooted=False,
                            burnin=0):
     """Returns a SplitDistribution object of splits calculated over
     specified trees"""
     p = PaupRunner()
     p.stage_execute_file(taxa_filepath, clear_trees=True)
     p.stage_list_taxa()
-    p.stage_load_trees(tree_filepaths=tree_filepaths, unrooted=unrooted, burnin=burnin)
+    p.stage_load_trees(tree_filepaths=tree_filepaths, is_rooted=is_rooted, burnin=burnin)
     p.stage_count_splits()
     p.run()
     taxon_set = p.parse_taxon_set()
@@ -65,7 +65,7 @@ def get_split_distribution(tree_filepaths,
     sd = build_split_distribution(bipartition_counts,
                                   tree_count,
                                   taxon_set,
-                                  unrooted=unrooted)
+                                  is_rooted=is_rooted)
     return sd
 
 ###############################################################################
@@ -144,7 +144,7 @@ class PaupRunner(object):
 
     def stage_load_trees(self,
                            tree_filepaths,
-                           unrooted=True,
+                           is_rooted=False,
                            burnin=0,
                            mode=7): # keep trees in memory, specify 3 to clear
         """
@@ -153,10 +153,10 @@ class PaupRunner(object):
         """
         if isinstance(tree_filepaths, str):
             raise Exception("expecting list of filepaths, not string")
-        if unrooted:
-            rooting = "unrooted=yes"
-        else:
+        if is_rooted:
             rooting = "rooted=yes"
+        else:
+            rooting = "unrooted=yes"
         gettree_template = 'gett file= %%s storebrlens=yes warntree=no %s from=%d mode=%d;' % (rooting, burnin+1, mode)
         paup_template = []
         paup_template.append("set warnreset=no; set increase=auto; set warnroot=no;")
@@ -253,16 +253,16 @@ class PaupRunner(object):
 def build_split_distribution(bipartition_counts,
                              tree_count,
                              taxon_set,
-                             unrooted=True):
+                             is_rooted=False):
     """
     Returns a populated SplitDistribution object based on the given
     bipartition info.
     """
     sd = treesplit.SplitDistribution(taxon_set=taxon_set)
-    sd.unrooted = unrooted
+    sd.is_rooted = is_rooted
     sd.total_trees_counted = tree_count
     for g in bipartition_counts:
-        sd.add_split_count(paup_group_to_mask(g, normalized=unrooted),
+        sd.add_split_count(paup_group_to_mask(g, normalized=not is_rooted),
             bipartition_counts[g])
     return sd
 

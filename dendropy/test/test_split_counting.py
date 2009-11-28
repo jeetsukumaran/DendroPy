@@ -70,18 +70,18 @@ class SplitCountTest(ExtendedTestCase):
             ])
 
     def runTest(self):
-        unrooted = True
+        is_rooted = False
         for tc in self.test_cases:
             _LOG.info(tc[0] + "; " + tc[1])
             tree_filepaths = [pathmap.tree_source_path(tc[0])]
             taxa_filepath = pathmap.tree_source_path(tc[1])
             paup_sd = paup.get_split_distribution(tree_filepaths, taxa_filepath,
-                        unrooted=unrooted, burnin=0)
+                        is_rooted=is_rooted, burnin=0)
             taxon_set = paup_sd.taxon_set
             dp_sd = treesplit.SplitDistribution(taxon_set=taxon_set)
             dp_sd.ignore_edge_lengths = True
             dp_sd.ignore_node_ages = True
-            dp_sd.unrooted = unrooted
+            dp_sd.is_rooted = is_rooted
 
             _LOG.debug("Taxon set: %s" % [t.label for t in taxon_set])
             taxa_mask = taxon_set.all_taxa_bitmask()
