@@ -26,7 +26,9 @@ Tests rooting interpretation.
 
 import unittest
 import dendropy
+from cStringIO import StringIO
 from dendropy.dataio.nexustokenizer import RootingInterpreter
+from dendropy.dataio import tree_source_iter
 
 class RootingIntepreterInstantiationTest(unittest.TestCase):
 
@@ -145,6 +147,14 @@ class TreeRootingIntepretationTest(unittest.TestCase):
             else:
                 self.assertEqual(v1[i], self.trees_mixed_is_rooted[i])
 
+    def iterated_trees(self, tree_source_string, format, **kwargs):
+        ti = tree_source_iter(StringIO(tree_source_string), format, **kwargs)
+        return [t for t in ti]
+
+    ###########################################################################
+    ############################ NEXUS Reader  ################################
+    ###########################################################################
+
     ###########################################################################
     ## NEXUS / as_rooted = True
 
@@ -250,7 +260,184 @@ class TreeRootingIntepretationTest(unittest.TestCase):
         self.assertEqual(len(trees), len(self.trees_mixed))
         self.check_mixed_with_default(trees, True)
 
+    ###########################################################################
+    ## NEXUS / default_as_rooted = False
 
+    def testNexusReaderAllRootedAsDefaultUnrooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_nexus(self.trees_all_rooted),
+                "nexus",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_rooted))
+        self.check_all_rooted(trees)
+
+    def testNexusReaderAllUnrootedAsDefaultUnrooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_nexus(self.trees_all_unrooted),
+                "nexus",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_unrooted))
+        self.check_all_unrooted(trees)
+
+    def testNexusReaderAllUnspecifiedAsDefaultUnrooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_nexus(self.trees_all_unspecified),
+                "nexus",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_unspecified))
+        self.check_all_unrooted(trees)
+
+    def testNexusReaderMixedAsDefaultUnrooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_nexus(self.trees_mixed),
+                "nexus",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_mixed))
+        self.check_mixed_with_default(trees, False)
+
+    ###########################################################################
+    ############################ NEXUS Iterator ###############################
+    ###########################################################################
+
+    ###########################################################################
+    ## NEXUS / as_rooted = True
+
+    def testNexusReaderAllRootedAsRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_all_rooted),
+                "nexus",
+                as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_rooted))
+        self.check_all_rooted(trees)
+
+    def testNexusReaderAllUnrootedAsRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_all_unrooted),
+                "nexus",
+                as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_unrooted))
+        self.check_all_rooted(trees)
+
+    def testNexusReaderAllUnspecifiedAsRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_all_unspecified),
+                "nexus",
+                as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_unspecified))
+        self.check_all_rooted(trees)
+
+    def testNexusReaderMixedAsRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_mixed),
+                "nexus",
+                as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_mixed))
+        self.check_all_rooted(trees)
+
+    ###########################################################################
+    ## NEXUS / as_rooted = False
+
+    def testNexusReaderAllRootedAsUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_all_rooted),
+                "nexus",
+                as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_rooted))
+        self.check_all_unrooted(trees)
+
+    def testNexusReaderAllUnrootedAsUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_all_unrooted),
+                "nexus",
+                as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_unrooted))
+        self.check_all_unrooted(trees)
+
+    def testNexusReaderAllUnspecifiedAsUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_all_unspecified),
+                "nexus",
+                as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_unspecified))
+        self.check_all_unrooted(trees)
+
+    def testNexusReaderMixedAsUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_mixed),
+                "nexus",
+                as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_mixed))
+        self.check_all_unrooted(trees)
+
+    ###########################################################################
+    ## NEXUS / default_as_rooted = True
+
+    def testNexusReaderAllRootedAsDefaultRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_all_rooted),
+                "nexus",
+                default_as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_rooted))
+        self.check_all_rooted(trees)
+
+    def testNexusReaderAllUnrootedAsDefaultRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_all_unrooted),
+                "nexus",
+                default_as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_unrooted))
+        self.check_all_unrooted(trees)
+
+    def testNexusReaderAllUnspecifiedAsDefaultRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_all_unspecified),
+                "nexus",
+                default_as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_unspecified))
+        self.check_all_rooted(trees)
+
+    def testNexusReaderMixedAsDefaultRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_mixed),
+                "nexus",
+                default_as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_mixed))
+        self.check_mixed_with_default(trees, True)
+
+    ###########################################################################
+    ## NEXUS / default_as_rooted = False
+
+    def testNexusReaderAllRootedAsDefaultUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_all_rooted),
+                "nexus",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_rooted))
+        self.check_all_rooted(trees)
+
+    def testNexusReaderAllUnrootedAsDefaultUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_all_unrooted),
+                "nexus",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_unrooted))
+        self.check_all_unrooted(trees)
+
+    def testNexusReaderAllUnspecifiedAsDefaultUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_all_unspecified),
+                "nexus",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_unspecified))
+        self.check_all_unrooted(trees)
+
+    def testNexusReaderMixedAsDefaultUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_nexus(self.trees_mixed),
+                "nexus",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_mixed))
+        self.check_mixed_with_default(trees, False)
 
 
 
