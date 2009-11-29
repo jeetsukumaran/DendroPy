@@ -31,7 +31,6 @@ from dendropy.utility import texttools
 from dendropy.utility import iosys
 from dendropy.dataio import nexustokenizer
 from dendropy import dataobject
-from dendropy.dataobject.tree import RootingInterpretation
 
 ###############################################################################
 ## lightweight trees from NEWICK sources
@@ -138,6 +137,7 @@ class NewickReader(iosys.DataReader):
         iosys.DataReader.__init__(self, **kwargs)
         self.stream_tokenizer = nexustokenizer.NexusTokenizer()
         self.finish_node_func = kwargs.get("finish_node_func", None)
+        self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
 
     def read(self, stream, **kwargs):
         """
@@ -147,8 +147,7 @@ class NewickReader(iosys.DataReader):
         """
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
-        self.default_rooting = kwargs.get("is_rooted", \
-                RootingInterpretation.UNKNOWN_DEF_ROOTED)
+        self.rooting_interpreter.update(**kwargs)
         if "taxon_set" in kwargs:
             if self.bound_taxon_set is not None:
                 raise TypeError("Cannot specify 'taxon_set' to read() of a Reader with a bound TaxonSet")
@@ -162,8 +161,7 @@ class NewickReader(iosys.DataReader):
             taxon_set = self.dataset.new_taxon_set()
         tree_list = self.dataset.new_tree_list(taxon_set=taxon_set)
         kwargs["taxon_set"] = taxon_set
-        if "rooted" not in kwargs:
-            kwargs["rooted"] = self.default_rooting
+        kwargs["rooting_interpreter"] = self.rooting_interpreter
         for t in tree_source_iter(stream=stream, **kwargs):
             tree_list.append(t, reindex_taxa=False)
         return self.dataset

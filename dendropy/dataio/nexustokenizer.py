@@ -29,8 +29,107 @@ import re
 from cStringIO import StringIO
 from dendropy.utility import containers
 from dendropy.utility.error import DataFormatError
-from dendropy.dataobject.tree import RootingInterpretation
 from dendropy import dataobject
+
+###############################################################################
+## RootingInterpreter
+
+class RootingInterpreter(object):
+
+    def evaluate_as_rooted_kwargs(kwdict, default):
+        if "as_rooted" in kwdict and "as_unrooted" in kwdict \
+                and (kwdict["as_rooted"] != (not kwdict["as_unrooted"])):
+            raise TypeError("Conflict rooting specification: 'as_rooted'=%s and 'as_unrooted'=%s" \
+                    % (kwdict["as_rooted"], kwdict["as_unrooted"]))
+        if "as_rooted" in kwdict:
+            if kwdict["as_rooted"] is True or kwdict["as_rooted"] is False:
+                return kwdict["as_rooted"]
+            else:
+                raise ValueError("Invalid value for 'as_rooted' (expecting True/False, but received '%s')" \
+                        % kwdict["as_rooted"])
+        elif "as_unrooted" in kwdict:
+            if kwdict["as_unrooted"] is True or kwdict["as_unrooted"] is False:
+                return kwdict["as_unrooted"]
+            else:
+                raise ValueError("Invalid value for 'as_unrooted' (expecting True/False, but received '%s')" \
+                        % kwdict["as_rooted"])
+        else:
+            return default
+
+    evaluate_as_rooted_kwargs = staticmethod(evaluate_as_rooted_kwargs)
+
+    def evaluate_default_as_rooted_kwargs(kwdict, default=None):
+        if "default_as_rooted" in kwdict and "default_as_unrooted" in kwdict \
+                and (kwdict["default_as_rooted"] != (not kwdict["default_as_unrooted"])):
+            raise TypeError("Conflict rooting specification: 'default_as_rooted'=%s and 'default_as_unrooted'=%s" \
+                    % (kwdict["default_as_rooted"], kwdict["default_as_unrooted"]))
+        if "default_as_rooted" in kwdict:
+            if kwdict["default_as_rooted"] is True or kwdict["default_as_rooted"] is False:
+                return kwdict["default_as_rooted"]
+            else:
+                raise ValueError("Invalid value for 'default_as_rooted' (expecting True/False, but received '%s')" \
+                        % kwdict["default_as_rooted"])
+        elif "default_as_unrooted" in kwdict:
+            if kwdict["default_as_unrooted"] is True or kwdict["default_as_unrooted"] is False:
+                return kwdict["default_as_unrooted"]
+            else:
+                raise ValueError("Invalid value for 'default_as_unrooted' (expecting True/False, but received '%s')" \
+                        % kwdict["default_as_rooted"])
+        else:
+            return default
+
+    evaluate_default_as_rooted_kwargs = staticmethod(evaluate_default_as_rooted_kwargs)
+
+    def __init__(self, **kwargs):
+        self._as_rooted = RootingInterpreter.evaluate_as_rooted_kwargs(kwargs, None)
+        self._default_as_rooted = RootingInterpreter.evaluate_as_rooted_kwargs(kwargs, None)
+
+    def update(self, **kwargs):
+        self._as_rooted = RootingInterpreter.evaluate_as_rooted_kwargs(kwargs, self._as_rooted)
+        self._default_as_rooted = RootingInterpreter.evaluate_as_rooted_kwargs(kwargs, self._default_as_rooted)
+
+    def _get_as_rooted(self):
+        return self._as_rooted
+
+    def _set_as_rooted(self, val):
+        self._as_rooted = val
+
+    as_rooted = property(_get_as_rooted, _set_as_rooted)
+
+    def _get_as_unrooted(self):
+        return not self._as_rooted
+
+    def _set_as_unrooted(self, val):
+        self._as_rooted = not val
+
+    as_unrooted = property(_get_as_unrooted, _set_as_unrooted)
+
+    def _get_default_as_rooted(self):
+        return self._default_as_rooted
+
+    def _set_default_as_rooted(self, val):
+        self._default_as_rooted = val
+
+    default_as_rooted = property(_get_default_as_rooted, _set_default_as_rooted)
+
+    def _get_default_as_unrooted(self):
+        return not self._default_as_rooted
+
+    def _set_default_as_unrooted(self, val):
+        self._default_as_rooted = not val
+
+    default_as_unrooted = property(_get_default_as_unrooted, _set_default_as_unrooted)
+
+    def interpret_as_rooted(self, tree_rooting_comment=None, **kwargs):
+        if self.as_rooted is not None:
+            return self.as_rooted
+        elif tree_rooting_comment is not None:
+            return tree_rooting_comment.upper() == "&R"
+        else:
+            return self.default_as_rooted
+
+    def interpret_as_unrooted(self, **kwargs):
+        return not self.interpret_as_rooted(**kwargs)
 
 ###############################################################################
 ## StrToTaxon
@@ -62,40 +161,32 @@ class StrToTaxon(object):
 def parse_tree_from_stream(stream_tokenizer, **kwargs):
     """
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
-    located at the beginning of the statement (i.e., the first
-    parenthesis that defines the tree).
+    located at the beginning of the statement (i.e., the first non-comment
+    token should be the opening parenthesis of the tree definition).
     """
 
     translate_dict = kwargs.get("translate_dict", None)
     encode_splits = kwargs.get("encode_splits", False)
-    is_rooted = kwargs.get("is_rooted", RootingInterpretation.UNKNOWN_DEF_UNROOTED)
+    rooting_interpreter = kwargs.get("rooting_interpreter", RootingInterpreter(**kwargs))
     finish_node_func = kwargs.get("finish_node_func", None)
     edge_len_type = kwargs.get("edge_len_type", float)
     taxon_set = kwargs.get("taxon_set", None)
-    token = stream_tokenizer.read_next_token()
-    if not token:
-        return None
     if taxon_set is None:
         taxon_set = dataobject.TaxonSet()
     tree = dataobject.Tree(taxon_set=taxon_set)
 
+    stream_tokenizer.tree_rooting_comment = None # clear previous comment
+    token = stream_tokenizer.read_next_token()
+    if not token:
+        return None
+    tree.is_rooted = rooting_interpreter.interpret_as_rooted(stream_tokenizer.tree_rooting_comment)
     if encode_splits:
         if len(taxon_set) == 0:
             raise Exception("When encoding splits on a tree as it is being parsed, a "
                 + "fully pre-populated TaxonSet object must be specified using the 'taxon_set' keyword " \
                 + "to avoid taxon/split bitmask values changing as new Taxon objects are created " \
                 + "and added to the TaxonSet.")
-        if is_rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED \
-                or is_rooted == RootingInterpretation.UNKNOWN_DEF_UNROOTED:
-            r = stream_tokenizer.tree_rooted_comment()
-            if r is not None:
-                if r:
-                    is_rooted = RootingInterpretation.ROOTED
-                else:
-                    is_rooted = RootingInterpretation.UNROOTED
-
-        if is_rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED \
-                or is_rooted == RootingInterpretation.ROOTED:
+        if tree.is_rooted:
             tree.split_edges = {}
         else:
             atb = taxon_set.all_taxa_bitmask()
@@ -260,6 +351,7 @@ class NexusTokenizer(object):
         self.current_line_number = 1
         self.current_col_number = 1
         self.previous_file_char = None
+        self.tree_rooting_comment = None
 
     def _get_current_file_char(self):
         "Returns the current character from the file stream."
@@ -271,17 +363,6 @@ class NexusTokenizer(object):
         self._current_file_char = new_char
 
     current_file_char = property(_get_current_file_char, _set_current_file_char)
-
-    def tree_rooted_comment(self):
-        """This is as hack it is called at the beginning of reading a tree.
-        Returns True if &R in comments, False in &U and None if no command comment
-        is found """
-        for c in self.comments:
-            if c == '&U' or c == '&u':
-                return False
-            if c == '&R' or c == '&r':
-                return True
-        return False
 
     def read_next_char(self):
         """
@@ -334,7 +415,12 @@ class NexusTokenizer(object):
                 nesting += 1
             cmt_body.write(c)
             c = self.read_next_char()
-        self.comments.append(cmt_body.getvalue())
+        comment = cmt_body.getvalue()
+        self.comments.append(comment)
+        if comment.strip().upper() == "&R":
+            self.tree_rooting_comment = "&R"
+        elif comment.strip().upper() == "&U":
+            self.tree_rooting_comment = "&R"
         self.read_next_char()
 
     def read_noncomment_character(self):
