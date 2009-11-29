@@ -31,6 +31,7 @@ from dendropy.utility import texttools
 from dendropy.utility import iosys
 from dendropy.dataio import nexustokenizer
 from dendropy import dataobject
+from dendropy.dataobject.tree import RootingInterpretation
 
 ###############################################################################
 ## lightweight trees from NEWICK sources
@@ -136,8 +137,6 @@ class NewickReader(iosys.DataReader):
         """
         iosys.DataReader.__init__(self, **kwargs)
         self.stream_tokenizer = nexustokenizer.NexusTokenizer()
-        self.default_rooting = kwargs.get("default_rooting", \
-                nexustokenizer.RootingInterpretation.UNKNOWN_DEF_ROOTED)
         self.finish_node_func = kwargs.get("finish_node_func", None)
 
     def read(self, stream, **kwargs):
@@ -148,6 +147,8 @@ class NewickReader(iosys.DataReader):
         """
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
+        self.default_rooting = kwargs.get("is_rooted", \
+                RootingInterpretation.UNKNOWN_DEF_ROOTED)
         if "taxon_set" in kwargs:
             if self.bound_taxon_set is not None:
                 raise TypeError("Cannot specify 'taxon_set' to read() of a Reader with a bound TaxonSet")

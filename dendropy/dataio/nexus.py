@@ -27,6 +27,7 @@ Implementation of NEXUS-format data reader and writer.
 from cStringIO import StringIO
 import re
 
+from dendropy.dataobject.tree import RootingInterpretation
 from dendropy import dataobject
 from dendropy.utility import texttools
 from dendropy.utility import iosys
@@ -104,15 +105,15 @@ class NexusReader(iosys.DataReader):
         """
         Recognized keywords in addition to those of `DataReader` are:
 
-            - `default_rooting` : default root for trees read in
             - `finish_node_func` : function to be applied to each node on a
                tree as soon as it has been instantiated
             - `allow_duplicate_taxon_labels` : if True, allow duplicate labels
               on trees [False]
+
         """
         iosys.DataReader.__init__(self, **kwargs)
         self.stream_tokenizer = nexustokenizer.NexusTokenizer()
-        self.default_rooting = kwargs.get("default_rooting", nexustokenizer.RootingInterpretation.UNKNOWN_DEF_ROOTED)
+        self.default_rooting = kwargs.get("default_rooting", RootingInterpretation.UNKNOWN_DEF_ROOTED)
         self.finish_node_func = kwargs.get("finish_node_func", None)
         self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", False)
         self.reset()
@@ -124,6 +125,7 @@ class NexusReader(iosys.DataReader):
 
         """
         self.reset()
+        self.default_rooting = kwargs.get("is_rooted", RootingInterpretation.UNKNOWN_DEF_ROOTED)
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
         self._prepare_to_read_from_stream(stream)
@@ -157,6 +159,7 @@ class NexusReader(iosys.DataReader):
         tree blocks are handled by a full NEXUS data file read.
         """
         self.reset()
+        self.default_rooting = kwargs.get("is_rooted", RootingInterpretation.UNKNOWN_DEF_ROOTED)
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
         if "taxon_set" in kwargs:
@@ -619,21 +622,21 @@ class NexusReader(iosys.DataReader):
         if token != '=':
             raise self.data_format_error("Expecting '=' in definition of Tree '%s' but found '%s'" % (tree_name, token))
 
-        rooted = self.default_rooting
-        if rooted == nexustokenizer.RootingInterpretation.UNKNOWN_DEF_ROOTED \
-                or rooted == nexustokenizer.RootingInterpretation.UNKNOWN_DEF_UNROOTED:
+        is_rooted = self.default_rooting
+        if is_rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED \
+                or is_rooted == RootingInterpretation.UNKNOWN_DEF_UNROOTED:
             for c in self.stream_tokenizer.comments:
                 if c == '&U' or c == '&u':
-                    rooted = nexustokenizer.RootingInterpretation.UNROOTED
+                    is_rooted = RootingInterpretation.UNROOTED
                     break
                 elif c == '&R' or c == '&r':
-                    rooted = nexustokenizer.RootingInterpretation.ROOTED
+                    is_rooted = RootingInterpretation.ROOTED
                     break
         tree = nexustokenizer.parse_tree_from_stream(stream_tokenizer=self.stream_tokenizer,
                 taxon_set=self.current_taxon_set,
                 translate_dict=self.tree_translate_dict,
                 encode_splits=self.encode_splits,
-                rooted=rooted,
+                is_rooted=is_rooted,
                 finish_node_func=self.finish_node_func)
         tree.label = tree_name
 

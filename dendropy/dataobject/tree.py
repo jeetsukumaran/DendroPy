@@ -39,6 +39,16 @@ from dendropy.dataobject.base import IdTagged
 from dendropy.dataobject.taxon import TaxonSetLinked, TaxonLinked
 from dendropy import treesplit
 
+
+###############################################################################
+## RootingInterpretation
+
+class RootingInterpretation:
+    UNKNOWN_DEF_ROOTED = 1000
+    UNKNOWN_DEF_UNROOTED = 2000
+    ROOTED = True
+    UNROOTED = False
+
 ##############################################################################
 ## TreeList
 

@@ -29,16 +29,8 @@ import re
 from cStringIO import StringIO
 from dendropy.utility import containers
 from dendropy.utility.error import DataFormatError
+from dendropy.dataobject.tree import RootingInterpretation
 from dendropy import dataobject
-
-###############################################################################
-## RootingInterpretation
-
-class RootingInterpretation:
-    UNKNOWN_DEF_ROOTED = 0
-    UNKNOWN_DEF_UNROOTED = 1
-    ROOTED = 2
-    UNROOTED = 3
 
 ###############################################################################
 ## StrToTaxon
@@ -76,7 +68,7 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
 
     translate_dict = kwargs.get("translate_dict", None)
     encode_splits = kwargs.get("encode_splits", False)
-    rooted = kwargs.get("rooted", RootingInterpretation.UNKNOWN_DEF_UNROOTED)
+    is_rooted = kwargs.get("is_rooted", RootingInterpretation.UNKNOWN_DEF_UNROOTED)
     finish_node_func = kwargs.get("finish_node_func", None)
     edge_len_type = kwargs.get("edge_len_type", float)
     taxon_set = kwargs.get("taxon_set", None)
@@ -93,17 +85,17 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
                 + "fully pre-populated TaxonSet object must be specified using the 'taxon_set' keyword " \
                 + "to avoid taxon/split bitmask values changing as new Taxon objects are created " \
                 + "and added to the TaxonSet.")
-        if rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED \
-                or rooted == RootingInterpretation.UNKNOWN_DEF_UNROOTED:
+        if is_rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED \
+                or is_rooted == RootingInterpretation.UNKNOWN_DEF_UNROOTED:
             r = stream_tokenizer.tree_rooted_comment()
             if r is not None:
                 if r:
-                    rooted = RootingInterpretation.ROOTED
+                    is_rooted = RootingInterpretation.ROOTED
                 else:
-                    rooted = RootingInterpretation.UNROOTED
+                    is_rooted = RootingInterpretation.UNROOTED
 
-        if rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED \
-                or rooted == RootingInterpretation.ROOTED:
+        if is_rooted == RootingInterpretation.UNKNOWN_DEF_ROOTED \
+                or is_rooted == RootingInterpretation.ROOTED:
             tree.split_edges = {}
         else:
             atb = taxon_set.all_taxa_bitmask()
