@@ -94,6 +94,7 @@ class PaupRunner(object):
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
         stdout, stderr = paup_run.communicate(commands)
+        #_LOG.info(commands)
         results = stdout.split("\n")
         if stderr:
             _LOG.error("\n*** ERROR FROM PAUP ***")

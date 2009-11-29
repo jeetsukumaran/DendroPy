@@ -23,7 +23,7 @@
 """
 Split calculation and management.
 """
-
+from copy import deepcopy
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
@@ -98,16 +98,6 @@ def split_as_string_rev(split_mask, width, symbol1='.', symbol2='*'):
                            symbol1=symbol1,
                            symbol2=symbol2)[::-1]
 
-def split_taxa_list(split_mask, taxa, from_index=0):
-    "Returns list of taxa represented by split."
-    taxa = []
-    while split_mask:
-        if split_mask & 1:
-            taxa.append(taxa[index])
-        split_mask = split_mask >> 1
-        index += 1
-    return taxa
-
 def find_edge_from_split(root, split_to_find, mask=-1):
     """Searches for a split_bitmask (in the rooted context -- it does not flip the
     bits) within the subtree descending from `root`.
@@ -139,7 +129,7 @@ def encode_splits(tree, create_dict=True, delete_degree_two=True):
         - `split_edges`:
             [if `tree.is_rooted`]: a dictionary where keys are the
             splits and values are edges.
-            [othersie]: a containers.NormalizedBitmaskDictionary where the keys are the
+            [otherwise]: a containers.NormalizedBitmaskDictionary where the keys are the
             normalized (unrooted) split representations and the values
             are edges. A normalized split_mask is where the split_bitmask
             is complemented if the right-most bit is not '1' (or just
@@ -161,7 +151,7 @@ def encode_splits(tree, create_dict=True, delete_degree_two=True):
             d = containers.NormalizedBitmaskDict(mask=atb)
             tree.split_edges = d
         split_map = tree.split_edges
-    if delete_degree_two and (not tree.is_rooted):
+    if delete_degree_two and not tree.is_rooted:
         c = tree.seed_node.child_nodes()
         if len(c) == 2:
             tree.deroot()
@@ -316,6 +306,12 @@ class SplitDistribution(object):
         else:
             assert tree.taxon_set is self.taxon_set
         self.total_trees_counted += 1
+
+        if self.is_rooted != tree.is_rooted:
+            t = deepcopy(tree)
+            t.is_rooted = self.is_rooted
+            encode_splits(t)
+            tree = t
 
         for split, edge in tree.split_edges.iteritems():
             if self.is_rooted:

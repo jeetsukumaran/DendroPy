@@ -343,6 +343,16 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         "Returns bitstring representation of split_bitmask."
         return "%s" % texttools.int_to_bitstring(split_bitmask).rjust(len(self), "0")
 
+    def split_taxa_list(self, split_bitmask, index=0):
+        "Returns list of taxa represented by split."
+        taxa = []
+        while split_bitmask:
+            if split_bitmask & 1:
+                taxa.append(self[index])
+            split_bitmask = split_bitmask >> 1
+            index += 1
+        return taxa
+
     def __str__(self):
         return "TaxonSet(%s)" % (", ".join([str(taxon) for taxon in self]))
 
