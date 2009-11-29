@@ -83,11 +83,11 @@ def tree_source_iter(stream, **kwargs):
 ###############################################################################
 ## split_as_newick_str
 
-def split_as_newick_str(split, taxon_set):
+def split_as_newick_str(split, taxon_set, preserve_spaces=False):
     """
     Represents a split as a newick string.
     """
-    taxlabels = [texttools.escape_nexus_token(label) for label in taxon_set.labels()]
+    taxlabels = [texttools.escape_nexus_token(label, preserve_spaces=preserve_spaces) for label in taxon_set.labels()]
 
     # do not do the root
     if split == 0 or (split == taxon_set.all_taxon_set_bitmask()):
@@ -184,6 +184,7 @@ class NewickWriter(iosys.DataWriter):
         iosys.DataWriter.__init__(self, **kwargs)
         self.edge_lengths = kwargs.get("edge_lengths", True)
         self.internal_labels = kwargs.get("internal_labels", True)
+        self.preserve_spaces = kwargs.get("preserve_spaces", False)
 
     def write(self, stream, **kwargs):
         """
@@ -192,6 +193,7 @@ class NewickWriter(iosys.DataWriter):
         """
         assert self.dataset is not None, \
             "NewickWriter instance is not bound to a DataSet: no source of data"
+        self.preserve_spaces = kwargs.get("preserve_spaces", self.preserve_spaces)
         for tree_list in self.dataset.tree_lists:
             if self.bound_taxon_set is None or self.bound_taxon_set is tree_list.taxon_set:
                 self.write_tree_list(tree_list, stream)
@@ -224,7 +226,7 @@ class NewickWriter(iosys.DataWriter):
         else:
             tag = ""
         if tag:
-            tag = texttools.escape_nexus_token(tag)
+            tag = texttools.escape_nexus_token(tag, preserve_spaces=self.preserve_spaces)
         return tag
 
     def compose_node(self, node):
