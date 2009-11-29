@@ -49,7 +49,7 @@ class RootingInterpreter(object):
                         % kwdict["as_rooted"])
         elif "as_unrooted" in kwdict:
             if kwdict["as_unrooted"] is True or kwdict["as_unrooted"] is False:
-                return kwdict["as_unrooted"]
+                return not kwdict["as_unrooted"]
             else:
                 raise ValueError("Invalid value for 'as_unrooted' (expecting True/False, but received '%s')" \
                         % kwdict["as_rooted"])
@@ -71,7 +71,7 @@ class RootingInterpreter(object):
                         % kwdict["default_as_rooted"])
         elif "default_as_unrooted" in kwdict:
             if kwdict["default_as_unrooted"] is True or kwdict["default_as_unrooted"] is False:
-                return kwdict["default_as_unrooted"]
+                return not kwdict["default_as_unrooted"]
             else:
                 raise ValueError("Invalid value for 'default_as_unrooted' (expecting True/False, but received '%s')" \
                         % kwdict["default_as_rooted"])

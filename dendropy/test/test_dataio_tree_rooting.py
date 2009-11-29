@@ -55,6 +55,26 @@ class RootingIntepreterInstantiationTest(unittest.TestCase):
         self.assertEqual(ri._as_rooted, True)
         self.assertEqual(ri._default_as_rooted, False)
 
+    def testAsDefaultRootedTrue(self):
+        ri = RootingInterpreter(default_as_rooted=True)
+        self.assertEqual(ri._as_rooted, None)
+        self.assertEqual(ri._default_as_rooted, True)
+
+    def testAsDefaultRootedFalse(self):
+        ri = RootingInterpreter(default_as_rooted=False)
+        self.assertEqual(ri._as_rooted, None)
+        self.assertEqual(ri._default_as_rooted, False)
+
+    def testAsDefaultUnrootedTrue(self):
+        ri = RootingInterpreter(default_as_unrooted=True)
+        self.assertEqual(ri._as_rooted, None)
+        self.assertEqual(ri._default_as_rooted, False)
+
+    def testAsDefaultUnrootedFalse(self):
+        ri = RootingInterpreter(default_as_unrooted=False)
+        self.assertEqual(ri._as_rooted, None)
+        self.assertEqual(ri._default_as_rooted, True)
+
 class TreeRootingIntepretationTest(unittest.TestCase):
 
     def setUp(self):
