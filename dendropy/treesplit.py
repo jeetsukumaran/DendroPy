@@ -307,11 +307,11 @@ class SplitDistribution(object):
             assert tree.taxon_set is self.taxon_set
         self.total_trees_counted += 1
 
-        if self.is_rooted != tree.is_rooted:
-            t = deepcopy(tree)
-            t.is_rooted = self.is_rooted
-            encode_splits(t)
-            tree = t
+#        if self.is_rooted != tree.is_rooted:
+#            t = deepcopy(tree)
+#            t.is_rooted = self.is_rooted
+#            encode_splits(t)
+#            tree = t
 
         for split, edge in tree.split_edges.iteritems():
             if self.is_rooted:
