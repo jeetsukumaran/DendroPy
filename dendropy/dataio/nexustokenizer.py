@@ -82,11 +82,11 @@ class RootingInterpreter(object):
 
     def __init__(self, **kwargs):
         self._as_rooted = RootingInterpreter.evaluate_as_rooted_kwargs(kwargs, None)
-        self._default_as_rooted = RootingInterpreter.evaluate_as_rooted_kwargs(kwargs, None)
+        self._default_as_rooted = RootingInterpreter.evaluate_default_as_rooted_kwargs(kwargs, False)
 
     def update(self, **kwargs):
         self._as_rooted = RootingInterpreter.evaluate_as_rooted_kwargs(kwargs, self._as_rooted)
-        self._default_as_rooted = RootingInterpreter.evaluate_as_rooted_kwargs(kwargs, self._default_as_rooted)
+        self._default_as_rooted = RootingInterpreter.evaluate_default_as_rooted_kwargs(kwargs, self._default_as_rooted)
 
     def _get_as_rooted(self):
         return self._as_rooted
