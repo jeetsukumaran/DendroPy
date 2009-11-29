@@ -439,7 +439,293 @@ class TreeRootingIntepretationTest(unittest.TestCase):
         self.assertEqual(len(trees), len(self.trees_mixed))
         self.check_mixed_with_default(trees, False)
 
+    ###########################################################################
+    ############################ NEWICK Reader  ################################
+    ###########################################################################
 
+    ###########################################################################
+    ## NEWICK / as_rooted = True
+
+    def testNewickReaderAllRootedAsRooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_all_rooted),
+                "newick",
+                as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_rooted))
+        self.check_all_rooted(trees)
+
+    def testNewickReaderAllUnrootedAsRooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_all_unrooted),
+                "newick",
+                as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_unrooted))
+        self.check_all_rooted(trees)
+
+    def testNewickReaderAllUnspecifiedAsRooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_all_unspecified),
+                "newick",
+                as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_unspecified))
+        self.check_all_rooted(trees)
+
+    def testNewickReaderMixedAsRooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_mixed),
+                "newick",
+                as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_mixed))
+        self.check_all_rooted(trees)
+
+    ###########################################################################
+    ## NEWICK / as_rooted = False
+
+    def testNewickReaderAllRootedAsUnrooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_all_rooted),
+                "newick",
+                as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_rooted))
+        self.check_all_unrooted(trees)
+
+    def testNewickReaderAllUnrootedAsUnrooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_all_unrooted),
+                "newick",
+                as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_unrooted))
+        self.check_all_unrooted(trees)
+
+    def testNewickReaderAllUnspecifiedAsUnrooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_all_unspecified),
+                "newick",
+                as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_unspecified))
+        self.check_all_unrooted(trees)
+
+    def testNewickReaderMixedAsUnrooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_mixed),
+                "newick",
+                as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_mixed))
+        self.check_all_unrooted(trees)
+
+    ###########################################################################
+    ## NEWICK / default_as_rooted = True
+
+    def testNewickReaderAllRootedAsDefaultRooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_all_rooted),
+                "newick",
+                default_as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_rooted))
+        self.check_all_rooted(trees)
+
+    def testNewickReaderAllUnrootedAsDefaultRooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_all_unrooted),
+                "newick",
+                default_as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_unrooted))
+        self.check_all_unrooted(trees)
+
+    def testNewickReaderAllUnspecifiedAsDefaultRooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_all_unspecified),
+                "newick",
+                default_as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_unspecified))
+        self.check_all_rooted(trees)
+
+    def testNewickReaderMixedAsDefaultRooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_mixed),
+                "newick",
+                default_as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_mixed))
+        self.check_mixed_with_default(trees, True)
+
+    ###########################################################################
+    ## NEWICK / default_as_rooted = False
+
+    def testNewickReaderAllRootedAsDefaultUnrooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_all_rooted),
+                "newick",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_rooted))
+        self.check_all_rooted(trees)
+
+    def testNewickReaderAllUnrootedAsDefaultUnrooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_all_unrooted),
+                "newick",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_unrooted))
+        self.check_all_unrooted(trees)
+
+    def testNewickReaderAllUnspecifiedAsDefaultUnrooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_all_unspecified),
+                "newick",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_unspecified))
+        self.check_all_unrooted(trees)
+
+    def testNewickReaderMixedAsDefaultUnrooted(self):
+        trees = dendropy.TreeList.get_from_string(
+                self.get_as_newick(self.trees_mixed),
+                "newick",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_mixed))
+        self.check_mixed_with_default(trees, False)
+
+    ###########################################################################
+    ############################ NEWICK Iterator ###############################
+    ###########################################################################
+
+    ###########################################################################
+    ## NEWICK / as_rooted = True
+
+    def testNewickReaderAllRootedAsRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_all_rooted),
+                "newick",
+                as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_rooted))
+        self.check_all_rooted(trees)
+
+    def testNewickReaderAllUnrootedAsRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_all_unrooted),
+                "newick",
+                as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_unrooted))
+        self.check_all_rooted(trees)
+
+    def testNewickReaderAllUnspecifiedAsRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_all_unspecified),
+                "newick",
+                as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_unspecified))
+        self.check_all_rooted(trees)
+
+    def testNewickReaderMixedAsRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_mixed),
+                "newick",
+                as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_mixed))
+        self.check_all_rooted(trees)
+
+    ###########################################################################
+    ## NEWICK / as_rooted = False
+
+    def testNewickReaderAllRootedAsUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_all_rooted),
+                "newick",
+                as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_rooted))
+        self.check_all_unrooted(trees)
+
+    def testNewickReaderAllUnrootedAsUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_all_unrooted),
+                "newick",
+                as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_unrooted))
+        self.check_all_unrooted(trees)
+
+    def testNewickReaderAllUnspecifiedAsUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_all_unspecified),
+                "newick",
+                as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_unspecified))
+        self.check_all_unrooted(trees)
+
+    def testNewickReaderMixedAsUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_mixed),
+                "newick",
+                as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_mixed))
+        self.check_all_unrooted(trees)
+
+    ###########################################################################
+    ## NEWICK / default_as_rooted = True
+
+    def testNewickReaderAllRootedAsDefaultRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_all_rooted),
+                "newick",
+                default_as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_rooted))
+        self.check_all_rooted(trees)
+
+    def testNewickReaderAllUnrootedAsDefaultRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_all_unrooted),
+                "newick",
+                default_as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_unrooted))
+        self.check_all_unrooted(trees)
+
+    def testNewickReaderAllUnspecifiedAsDefaultRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_all_unspecified),
+                "newick",
+                default_as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_all_unspecified))
+        self.check_all_rooted(trees)
+
+    def testNewickReaderMixedAsDefaultRooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_mixed),
+                "newick",
+                default_as_rooted=True)
+        self.assertEqual(len(trees), len(self.trees_mixed))
+        self.check_mixed_with_default(trees, True)
+
+    ###########################################################################
+    ## NEWICK / default_as_rooted = False
+
+    def testNewickReaderAllRootedAsDefaultUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_all_rooted),
+                "newick",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_rooted))
+        self.check_all_rooted(trees)
+
+    def testNewickReaderAllUnrootedAsDefaultUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_all_unrooted),
+                "newick",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_unrooted))
+        self.check_all_unrooted(trees)
+
+    def testNewickReaderAllUnspecifiedAsDefaultUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_all_unspecified),
+                "newick",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_all_unspecified))
+        self.check_all_unrooted(trees)
+
+    def testNewickReaderMixedAsDefaultUnrooted(self):
+        trees = self.iterated_trees(
+                self.get_as_newick(self.trees_mixed),
+                "newick",
+                default_as_rooted=False)
+        self.assertEqual(len(trees), len(self.trees_mixed))
+        self.check_mixed_with_default(trees, False)
 
 if __name__ == "__main__":
     unittest.main()
