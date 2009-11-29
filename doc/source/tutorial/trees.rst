@@ -1,6 +1,6 @@
-*****************
-Trees in DendroPy
-*****************
+*******************************************
+Working with Trees and Collections of Trees
+*******************************************
 
 Trees in are represented by the class :class:`~dendropy.dataobject.tree.Tree`.
 Every :class:`~dendropy.dataobject.tree.Tree` object has a :attr:`~dendropy.dataobject.tree.Tree.seed_node` attribute. If the tree is rooted, then this is the root node. If the tree is not rooted, however, then this is an artificial node that serves as the "starting point" for the tree.
@@ -8,6 +8,29 @@ The :attr:`~dendropy.dataobject.tree.Tree.seed_node`, like every other node on t
 Every :class:`~dendropy.dataobject.tree.Node` object maintains a list of its immediate child :class:`~dendropy.dataobject.tree.Node` objects as well as a reference to its parent :class:`~dendropy.dataobject.tree.Node` object.
 You can request a shallow-copy :func:`~list` of child :class:`~dendropy.dataobject.tree.Node` objects using the :meth:`~dendropy.dataobject.tree.Node.child_nodes()` method, and you can access the parent :class:`~dendropy.dataobject.tree.Node` object directly through the :attr:`~dendropy.dataobject.tree.Node.parent_node` attribute.
 By definition, the :attr:`~dendropy.dataobject.tree.Tree.seed_node` has no parent node, leaf nodes have no child nodes, and internal nodes have both parent nodes and child nodes.
+
+Customizing Tree Creation and Reading
+=====================================
+
+Interpreting Rootings
+---------------------
+
+The rooting state of a :class:`~dendropy.dataobject.tree.Tree` object is set by the :attr:`~dendropy.dataobject.tree.Tree.is_rooted` property.
+When parsing NEXUS- and Newick-formatted data, the rooting states of the resulting :class:`~dendropy.dataobject.tree.Tree` objects are given by ``[&R]`` (for rooted) or ``[&U]`` (for unrooted) comment tags preceding the tree definition in the data source.
+If these tags are not present, then the trees are assumed to be unrooted.
+This behavior can be changed by specifying keyword arguments to the :meth:`get_from_*()`,  or :meth:`read_from_*()` methods of both the :class:`~dendropy.dataobject.tree.Tree` and :class:`~dendropy.dataobject.tree.TreeList` classes, or the constructors of these classes when specifying a data source from which to construct the tree:
+
+The ``as_rooted`` keyword argument, if :keyword:`True`, forces all trees to be interpreted as rooted, regardless of whether or not the ``[&R]``/``[&U]`` comment tags are given.
+Conversely, if :keyword:`False`, all trees will be interpreted as unrooted.
+For semantic clarity, you can also specify ``as_unrooted`` to be :keyword:`True` to force all trees to be unrooted.
+
+.. literalinclude:: /examples/tree_rootings1.py
+    :linenos:
+
+The ``default_as_rooted`` keyword argument, if :keyword:`True`, forces all trees to be interpreted as rooted, *if* the ``[&R]``/``[&U]`` comment tags are *not* given, otherwise the rooting will follow the ``[&R]``/``[&U]`` commands.
+Conversely, if ``default_as_rooted`` is :keyword:`False`, all trees will be interpreted as unrooted if the ``[&R]``/``[&U]`` comment tags are not given.
+Again, for semantic clarity, you can also specify ``default_as_unrooted`` to be :keyword:`True` to assume all trees are unrooted if not explicitly specified, though, as this is default behavior, this should not be neccessary.
+
 
 Tree Traversal
 ==============
@@ -99,7 +122,7 @@ Most Recent Common Ancestors
 ----------------------------
 
 The MRCA (most recent common ancestor) of taxa or nodes can be retrieved by the instance method :meth:`~dendropy.dataobject.tree.Tree.mrca()`.
-This method takes a list of :class:`~dendropy.dataobject.taxon.Taxon` objects given by the `taxa` keyword argument, or a list of taxon labels given by the `taxon_labels` keyword argument, and returns a :class:`~dendropy.dataobject.tree.Node` object that corresponds to the MRCA of the specified taxa.
+This method takes a list of :class:`~dendropy.dataobject.taxon.Taxon` objects given by the ``taxa`` keyword argument, or a list of taxon labels given by the ``taxon_labels`` keyword argument, and returns a :class:`~dendropy.dataobject.tree.Node` object that corresponds to the MRCA of the specified taxa.
 For example:
 
 .. literalinclude:: /examples/mrca.py

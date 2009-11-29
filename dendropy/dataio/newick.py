@@ -40,9 +40,6 @@ def tree_source_iter(stream, **kwargs):
     Iterates over a NEWICK-formatted source of trees given by file-like object
     `stream`
 
-    All keywords defined in `dendropy.dataio.dataformat.tree_source_iter` are
-    accepted.
-
     Note that if `encode_splits` is True, then a `taxon_set` has to be given.
     This is because adding Taxon objects to a taxon set may invalidate split
     bitmasks. Because NEWICK tree taxa are added to a TaxonSet as they are found
@@ -51,15 +48,21 @@ def tree_source_iter(stream, **kwargs):
     importantly to avoid errors downstream in client code due to this, we
     force specification of a `taxon_set` if `encode_splits` is requested.
 
-    Other optional keyword arguments:
+    The following optional keyword arguments are also recognized:
 
-        - `translate_dict` should provide a dictionary mapping taxon numbers (as
-           found in the source) to taxon labels (as defined in the source).
-        - `rooted` specifies the default rooting interpretation of the tree (see
-           `dendropy.dataio.nexustokenizer` for details).
-        - `finish_node_func` is a function that will be applied to each node
+        - `taxon_set`: TaxonSet object to use when reading data
+        - `as_rooted=True` (or `as_unrooted=False`): interprets trees as rooted
+        - `as_unrooted=True` (or `as_rooted=False`): interprets trees as unrooted
+        - `default_as_rooted=True` (or `default_as_unrooted=False`): interprets
+           all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
+        - `default_as_unrooted=True` (or `default_as_rooted=False`): interprets
+           all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
+        - `edge_len_type`: specifies the type of the edge lengths (int or float)
+        - `encode_splits`: specifies whether or not split bitmasks will be
+           calculated and attached to the edges.
+        - `finish_node_func`: is a function that will be applied to each node
            after it has been constructed.
-        - `edge_len_type` specifies the type of the edge lengths (int or float)
+
     """
     if "taxon_set" in kwargs:
         taxon_set = kwargs["taxon_set"]
@@ -126,13 +129,23 @@ class NewickReader(iosys.DataReader):
 
     def __init__(self, **kwargs):
         """
-        Recognized keywords in addition to those of `DataReader` are:
+        Recognized keywords are:
 
-            - `default_rooting` : default root for trees read in
-            - `finish_node_func` : function to be applied to each node on a
-                tree as soon as it has been instantiated
-            - `allow_duplicate_taxon_labels` : if True, allow duplicate labels
-                on trees [False]
+            - `dataset`: all data read from the source will be instantiated as
+               objects within this `DataSet` object
+            - `taxon_set`: TaxonSet object to use when reading data
+            - `as_rooted=True` (or `as_unrooted=False`): interprets trees as rooted
+            - `as_unrooted=True` (or `as_rooted=False`): interprets trees as unrooted
+            - `default_as_rooted=True` (or `default_as_unrooted=False`): interprets
+               all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
+            - `default_as_unrooted=True` (or `default_as_rooted=False`): interprets
+               all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
+            - `edge_len_type`: specifies the type of the edge lengths (int or float)
+            - `encode_splits`: specifies whether or not split bitmasks will be
+               calculated and attached to the edges.
+            - `finish_node_func`: is a function that will be applied to each node
+               after it has been constructed.
+
         """
         iosys.DataReader.__init__(self, **kwargs)
         self.stream_tokenizer = nexustokenizer.NexusTokenizer()
@@ -144,6 +157,15 @@ class NewickReader(iosys.DataReader):
         Instantiates and returns a `DataSet` object based on the
         NEWICK-formatted contents read from the file-like object source
         `stream`.
+
+            - `taxon_set`: TaxonSet object to use when reading data
+            - `as_rooted=True`: (or `as_unrooted=False`) interprets trees as rooted
+            - `as_unrooted=True`: (or `as_rooted=False`) interprets trees as rooted
+            - `default_as_rooted`: (or `default_as_unrooted=False`) interprets
+               all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
+            - `default_as_unrooted`: (or `default_as_rooted=False`) interprets
+               all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
+
         """
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
@@ -176,6 +198,7 @@ class NewickWriter(iosys.DataWriter):
         """
         Recognized keywords in addition to those of `DataWriter` are:
 
+            - `dataset`: data to be written
             - `edge_lengths` : if False, edges will not write edge lengths [True]
             - `internal_labels` : if False, internal labels will not be written [True]
         """

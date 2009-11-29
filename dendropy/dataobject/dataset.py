@@ -51,8 +51,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         taxa, trees and characters), or a file-like object opened for reading
         and a string specifying the format of the data in the file-like object,
         in which case the DataSet will be populated from data in the given
-        file. Also accepts keywords `stream` and `formae populated from data in the given
-        file. Also accepts keywords `stream` and `format`.
+        file.
         """
         DataObject.__init__(self)
         iosys.Writeable.__init__(self)
@@ -120,14 +119,24 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         `UnsupportedFormatError` is raised.
 
         The following optional keyword arguments are also recognized:
+
             - `exclude_trees` if True skips over tree data
             - `exclude_chars` if True skips over character data
             - `encode_splits` specifies whether or not split bitmasks will be
                calculated and attached to the edges.
-            - `rooted` specifies the default rooting interpretation of the tree
-               (see `dendropy.dataio.nexustokenizer` for details).
             - `finish_node_func` is a function that will be applied to each node
                after it has been constructed.
+
+        The following keyword arguments are recognized when parsing NEXUS or
+        NEWICK sources:
+
+            - `taxon_set` TaxonSet object to use when reading data
+            - `as_rooted=True` (or `as_unrooted=False`) interprets trees as rooted
+            - `as_unrooted=True` (or `as_rooted=False`) interprets trees as rooted
+            - `default_as_rooted` (or `default_as_unrooted=False`) interprets
+               all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
+            - `default_as_unrooted` (or `default_as_rooted=False`) interprets
+               all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
             - `edge_len_type` specifies the type of the edge lengths (int or float)
 
         Additional keyword arguments may be handled by various readers
@@ -147,6 +156,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         the format specified, then a `UnsupportedFormatError` is raised.
 
         The following optional keyword arguments are also recognized:
+
             - `exclude_trees` if True skips over tree data
             - `exclude_chars` if True skips over character data
 

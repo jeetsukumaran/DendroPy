@@ -1,6 +1,6 @@
-#############################
-Phylogenetic Data in DendroPy
-#############################
+***********************************************
+Creating, Reading and Writing Phylogenetic Data
+***********************************************
 
 Introduction
 ============
@@ -71,14 +71,14 @@ All these methods minimally take a source and format reference as arguments and 
 
 The format specification can be one of: "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc. Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.tree.TreeList` object from a FASTA-formatted data source).
 
-All these methods take a `taxon_set` keyword that specifies the :class:`~dendropy.dataobject.taxon.TaxonSet` to use to manage the operational taxonomic units defined or referenced in the data source. If not given, a new :class:`~dendropy.dataobject.taxon.TaxonSet` will be created and used.
+All these methods take a ``taxon_set`` keyword that specifies the :class:`~dendropy.dataobject.taxon.TaxonSet` to use to manage the operational taxonomic units defined or referenced in the data source. If not given, a new :class:`~dendropy.dataobject.taxon.TaxonSet` will be created and used.
 
 Depending on the particular type being created and data source, these factory methods may take additional keyword arguments.
 For example, if a data source contains multiple trees, you may specify a particular tree to be parsed by passing the 0-based index of the tree to the ":meth:`get_from_*()`" of :class:`~dendropy.dataobject.tree.Tree`::
 
     >>> tree2 = dendropy.Tree.get_from_path("pythonidae.mcmc.nex", format="nexus", from_index=200)
 
-The object `tree2` is now a DendroPy representation of the 201st tree found in the specified :download:`file </examples/pythonidae.mcmc.nex>`. :class:`~dendropy.dataobject.tree.TreeList` also takes a `from_index` keyword argument, and specifying this will result in all trees starting from the given index being parsed and added to the collection.
+The object ``tree2`` is now a DendroPy representation of the 201st tree found in the specified :download:`file </examples/pythonidae.mcmc.nex>`. :class:`~dendropy.dataobject.tree.TreeList` also takes a ``from_index`` keyword argument, and specifying this will result in all trees starting from the given index being parsed and added to the collection.
 
     >>> tree_list1 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus")
     >>> print(tree_list1.description())
@@ -94,7 +94,7 @@ With a :class:`~dendropy.dataobject.dataset.DataSet`, you can request that only 
 
 Depending on the format and type of object, there might be other keyword arguments that accepted.
 
-In addition to the factory methods, you can specify a data source to the constructor of the objects directly using the `stream` and `format` keywords::
+In addition to the factory methods, you can specify a data source to the constructor of the objects directly using the ``stream`` and ``format`` keywords::
 
     >>> tree2 = dendropy.Tree(stream=open("pythonidae.mcmc.nex"), format="nexus", from_index=200)
     >>> tree_list2 = dendropy.TreeList(stream=open("pythonidae.mcmc.nex"), format="nexus")
