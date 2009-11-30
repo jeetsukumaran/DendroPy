@@ -59,6 +59,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         self.taxon_sets = containers.OrderedSet()
         self.tree_lists = containers.OrderedSet()
         self.char_arrays = containers.OrderedSet()
+        self.bound_taxon_set = None
         if len(args) > 0:
             if ("stream" in kwargs and kwargs["stream"] is not None) \
                     or ("format" in kwargs and kwargs["format"] is not None):
@@ -145,6 +146,11 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         from dendropy.utility import iosys
         from dendropy.dataio import get_reader
         kwargs["dataset"] = self
+        if self.bound_taxon_set is not None:
+            if "bound_taxon_set" not in kwargs:
+                kwargs["bound_taxon_set"] = self.bound_taxon_set
+            elif kwargs["bound_taxon_set"] is not self.bound_taxon_set:
+                raise TypeError("DataSet object is already bound to a TaxonSet, but different TaxonSet passed to read() using 'bound_taxon_set' keyword argument")
         reader = get_reader(format=format, **kwargs)
         reader.read(stream, **kwargs)
 
@@ -251,6 +257,29 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         t = TaxonSet(*args, **kwargs)
         self.add_taxon_set(t)
         return t
+
+    def bind_taxon_set(self, taxon_set=None):
+        """
+        Forces all read() calls on this DataSet to use the same TaxonSet.
+        If `taxon_set` is None, and len(self.taxon_sets) == 1, then self.taxon_sets[0]
+        will be the TaxonSet used. If `taxon_set` is None, and len(self.taxon_sets) == 0
+        then a new TaxonSet will be created, added to self.taxa, and that is
+        the TaxonSet that will be bound. If `taxon_set` is None, and len(self.taxon_sets)
+        > 1, then a TypeError will be raised.
+        """
+        if taxon_set is None:
+            if len(self.taxon_sets) == 0:
+                taxon_set = self.new_taxon_set()
+            elif len(self.taxon_sets) == 1:
+                taxon_set = self.taxon_sets[0]
+            else:
+                raise TypeError("Multiple TaxonSet objects already exist in DataSet: must specify TaxonSet object explicitly")
+        elif taxon_set not in self.taxon_sets:
+            self.add_taxon_set(taxon_set)
+        self.bound_taxon_set = taxon_set
+
+    def unbind_taxon_set(self):
+        self.bound_taxon_set = None
 
     def add_tree_list(self, tree_list):
         "Accession of existing `TreeList` object into `tree_lists` of self."

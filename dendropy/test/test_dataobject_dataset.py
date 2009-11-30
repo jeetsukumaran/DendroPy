@@ -76,5 +76,18 @@ class DataSetCreateTest(datatest.DataObjectVerificationTestCase):
         ds2 = dendropy.DataSet(ds1)
         self.assertDistinctButEqual(ds1, ds2)
 
+class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
+
+    def testNoBinding(self):
+        d = dendropy.DataSet()
+        d.read_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
+        self.assertEqual(len(d.taxon_sets), 1)
+        self.assertEqual(len(d.taxon_sets[0]), 29)
+        d.read_from_path(pathmap.tree_source_path('pythonidae.mle.nex'), "nexus")
+        self.assertEqual(len(d.taxon_sets), 2)
+        self.assertEqual(len(d.taxon_sets[1]), 29)
+        d.read_from_path(pathmap.char_source_path('caenophidia_mos.chars.fasta'), "dnafasta")
+
+
 if __name__ == "__main__":
     unittest.main()
