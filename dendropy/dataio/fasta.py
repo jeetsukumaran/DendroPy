@@ -53,12 +53,17 @@ class FastaReader(iosys.DataReader):
         simple_rows = kwargs.get('row_type', 'rich').upper() == 'STR'
 
         nts = len(self.dataset.taxon_sets)
-        if nts > 1:
-            raise ValueError('datasets with multiple taxon sets are not supported by FASTA')
-        if nts == 0:
-            taxon_set = self.dataset.new_taxon_set()
+        if "taxon_set" in kwargs:
+            if self.bound_taxon_set is not None:
+                raise TypeError("Cannot specify 'taxon_set' to read() of a Reader with a bound TaxonSet")
+            else:
+                taxon_set = kwargs["taxon_set"]
+        elif self.bound_taxon_set is not None:
+            if self.bound_taxon_set not in self.dataset.taxon_sets:
+                self.dataset.add_taxon_set(self.bound_taxon_set)
+            taxon_set = self.bound_taxon_set
         else:
-            taxon_set = self.dataset.taxon_sets[0]
+            taxon_set = self.dataset.new_taxon_set()
 
         char_array = self.dataset.new_char_array(char_array_type=self.char_array_type, taxon_set=taxon_set)
         char_array.taxon_set = taxon_set

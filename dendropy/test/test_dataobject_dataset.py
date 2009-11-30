@@ -86,7 +86,9 @@ class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
         d.read_from_path(pathmap.tree_source_path('pythonidae.mle.nex'), "nexus")
         self.assertEqual(len(d.taxon_sets), 2)
         self.assertEqual(len(d.taxon_sets[1]), 29)
-        d.read_from_path(pathmap.char_source_path('caenophidia_mos.chars.fasta'), "dnafasta")
+        d.read_from_path(pathmap.char_source_path('caenophidia_mos.chars.fasta'), "proteinfasta")
+        self.assertEqual(len(d.taxon_sets), 3)
+        self.assertEqual(len(d.taxon_sets[2]), 114)
 
 
 if __name__ == "__main__":
