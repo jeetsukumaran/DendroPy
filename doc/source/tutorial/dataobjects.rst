@@ -299,3 +299,10 @@ This method optionally takes a numeric value as its first argument that determin
                     [27] Liasis olivaceus : 1114 characters
                     [28] Apodora papuana : 1114 characters
 
+If you want to see the data in a particular format, you can call the :meth:`as_string()` method, passing it a format-specification string ("nexus", "newick", "fasta", "phylip", etc.), as well as other optional arguments specific to varous formats::
+
+    >>> import dendropy
+    >>> d = dendropy.DataSet.get_from_path('pythonidae.nex', 'nexus')
+    >>> print(d.as_string("nexus"))
+    >>> print(d.as_string("fasta"))
+    >>> print(d.as_string("phylip"))

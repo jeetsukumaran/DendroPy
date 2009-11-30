@@ -115,6 +115,23 @@ So, for example, the following is logically identical to the previous::
     >>> mcmc2 = dendropy.TreeList(taxon_set=taxa)
     >>> mcmc2.read_from_path('pythonidae.mcmc2.nex', 'nexus')
 
+Taxon Management with Character Arrays
+======================================
+
+Taxon management with :class:`~dendropy.dataobject.char.CharacterArray`-derived objects work very much the same as it does with :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.tree.TreeList objects`: every time a :class:`~dendropy.dataobject.char.CharacterArray`-derived object is independentally created or read, a new :class:`~dendropy.dataobject.taxon.TaxonSet` is created, unless an existing one is specified.
+Thus, again, if you are creating multiple character arrays that refer to the same set of taxa, you will want to make sure to pass each of them a common :class:`~dendropy.dataobject.taxon.TaxonSet` reference::
+
+    >>> import dendropy
+    >>> taxa = dendropy.TaxonSet()
+    >>> dna1 = dendropy.DnaCharacterArray.get_from_path("pythonidae_cytb.fasta", "dnafasta", taxon_set=taxa)
+    >>> std1 = dendropy.ProteinCharacterArray.get_from_path("pythonidae_morph.nex", "nexus", taxon_set=taxa)
+
+Taxon Management with Data Sets
+===============================
+The :class:`~dendropy.dataobject.dataset.DataSet` object, representing a meta-collection of phylogenetic data differs in one important way from all the other phylogenetic data objects discussed so far with respect to taxon management, in that it is not associated with any particular :class:`~dendropy.dataobject.taxon.TaxonSet` objects.
+Rather, it maintains a list of *all* the :class:`~dendropy.dataobject.taxon.TaxonSet` objects (in the property :attr:`~dendropy.dataobject.char.DataSet.taxon_sets`) referenced by all other phylogenetic data within it (in the properties (in the property :attr:`~dendropy.dataobject.char.DataSet.tree_lists` and :attr:`~dendropy.dataobject.char.DataSet.char_arrays`).
+
+
 A Word of Caution: Taxon Label Mapping
 ======================================
 DendroPy maps taxon definitions encountered in a data source to :class:`~dendropy.dataobject.taxon.Taxon` objects by the taxon label.
