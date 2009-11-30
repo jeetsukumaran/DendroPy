@@ -141,8 +141,15 @@ class NexusReader(iosys.DataReader):
         """
         self.reset()
         self.rooting_interpreter.update(**kwargs)
-        if self.dataset is None:
-            self.dataset = dataobject.DataSet()
+        if "taxon_set" in kwargs:
+            self.bound_taxon_set = kwargs["taxon_set"]
+        if self.bound_taxon_set is None:
+            if self.dataset is None:
+                self.dataset = dataobject.DataSet()
+            self.bound_taxon_set = self.dataset.bound_taxon_set
+        else:
+            if self.dataset is None:
+                self.dataset = dataobject.DataSet(taxon_set=self.bound_taxon_set)
         self._prepare_to_read_from_stream(stream)
         self._parse_nexus_file()
         self.reset()
@@ -173,10 +180,17 @@ class NexusReader(iosys.DataReader):
         """
         self.reset()
         self.rooting_interpreter.update(**kwargs)
+
         if "taxon_set" in kwargs:
-            self._current_taxon_set = kwargs["taxon_set"]
-        if self.dataset is None:
-            self.dataset = dataobject.DataSet(taxon_set=self._current_taxon_set)
+            self.bound_taxon_set = kwargs["taxon_set"]
+        if self.bound_taxon_set is None:
+            if self.dataset is None:
+                self.dataset = dataobject.DataSet()
+            self.bound_taxon_set = self.dataset.bound_taxon_set
+        else:
+            if self.dataset is None:
+                self.dataset = dataobject.DataSet(taxon_set=self.bound_taxon_set)
+
         self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream)
         token = self.stream_tokenizer.read_next_token_ucase()
         if token != "#NEXUS":
