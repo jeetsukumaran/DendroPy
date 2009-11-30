@@ -86,3 +86,84 @@ As :class:`~dendropy.dataobject.tree.Tree` objects are appended to a :class:`~de
     0.0
 
 The same applies when using the :meth:`read_from_*` method of a :class:`~dendropy.dataobject.tree.TreeList` object: all trees read from the data source will be assigned the same :class:`~dendropy.dataobject.taxon.TaxonSet` object, and the taxa referenced in the tree definition will be mapped to corresponding :class:`~dendropy.dataobject.taxon.Taxon` objects, identified by label, in the :class:`~dendropy.dataobject.taxon.TaxonSet`, with new :class:`~dendropy.dataobject.taxon.Taxon` objects created if no suitable match is found.
+
+While :class:`~dendropy.dataobject.tree.TreeList` objects ensure that all :class:`~dendropy.dataobject.tree.Tree` objects created, read or added using them all have the same :class:`~dendropy.dataobject.taxon.TaxonSet` object reference, if two :class:`~dendropy.dataobject.tree.TreeList` objects are independentally created, they will each have their own, distinct, :class:`~dendropy.dataobject.taxon.TaxonSet` object reference.
+For example, if you want to read in two collections of trees and compare trees between the two collections, the following will **not** work:
+
+
+    >>> import dendropy
+    >>> mcmc1 = dendropy.TreeList.get_from_path('pythonidae.mcmc1.nex', 'nexus')
+    >>> mcmc2 = dendropy.TreeList.get_from_path('pythonidae.mcmc2.nex', 'nexus')
+
+Of course, reading both data sources into the same  :class:`~dendropy.dataobject.tree.TreeList` object *will* work insofar as ensuring all the :class:`~dendropy.dataobject.tree.Tree` objects have the same :class:`~dendropy.dataobject.taxon.TaxonSet`  reference, but then you will lose the distinction between the two sources, unless you keep track of the indexes of where one source begins and the other ends, which error-prone and tedious.
+A better approach would be simply to create a :class:`~dendropy.dataobject.taxon.TaxonSet` object, and pass it to the factory methods of both  :class:`~dendropy.dataobject.tree.TreeList` objects::
+
+    >>> import dendropy
+    >>> taxa = dendropy.TaxonSet()
+    >>> mcmc1 = dendropy.TreeList.get_from_path('pythonidae.mcmc1.nex', 'nexus', taxon_set=taxa)
+    >>> mcmc2 = dendropy.TreeList.get_from_path('pythonidae.mcmc2.nex', 'nexus', taxon_set=taxa)
+
+Now both ``mcmc1`` and ``mcmc2`` share the same :class:`~dendropy.dataobject.taxon.TaxonSet`, and thus so do the :class:`~dendropy.dataobject.tree.Tree` objects created within them, which means the :class:`~dendropy.dataobject.tree.Tree` objects can be compared both within and between the collections.
+You can also pass the :class:`~dendropy.dataobject.taxon.TaxonSet` to the constructor of :class:`~dendropy.dataobject.tree.TreeList`.
+So, for example, the following is logically identical to the previous::
+
+    >>> import dendropy
+    >>> taxa = dendropy.TaxonSet()
+    >>> mcmc1 = dendropy.TreeList(taxon_set=taxa)
+    >>> mcmc1.read_from_path('pythonidae.mcmc1.nex', 'nexus')
+    >>> mcmc2 = dendropy.TreeList(taxon_set=taxa)
+    >>> mcmc2.read_from_path('pythonidae.mcmc2.nex', 'nexus')
+
+A Word of Caution: Taxon Label Mapping
+======================================
+DendroPy maps taxon definitions encountered in a data source to :class:`~dendropy.dataobject.taxon.Taxon` objects by the taxon label.
+The labels have to match *exactly*, including in case, for the taxa to be correctly mapped.
+Thus, "Python regius", "PYTHON REGIUS", "python regious", "P. regious", etc. will all be considered as referring to distinct and different taxa.
+
+Further quirks may arise due to some format-specific idiosyncracies.
+For example, the NEXUS standard dictates that an underscore ("_") is equivalent to a space.
+When reading a NEXUS-formatted (or NEWICK-formatted) file, all underscores in taxon labels will automatically be substituted with spaces, and thus the following labels are equivalent: "Python_regius" and "Python regius".
+
+However, this underscore-to-space mapping does **not** take place when reading, for example, a FASTA format file.
+Here, underscores are preserved, and thus "Python_regius" does not map to "Python regius".
+This means that if you were to read a NEXUS file with the taxon label, "Python_regius", and later a read a FASTA file with the same taxon label, i.e., "Python_regius", these would map to different taxa!
+This is illustrated by the following:
+
+.. literalinclude:: /examples/taxon_labels1.py
+    :linenos:
+
+Which produces the following result::
+
+    TaxonSet object at 0x43b4e0 (TaxonSet4437216): 4 Taxa
+        [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python regious'
+        [1] Taxon object at 0x2286810 (Taxon36202512): 'Python sebae'
+        [2] Taxon object at 0x22867d0 (Taxon36202448): 'Python_regious'
+        [3] Taxon object at 0x2286830 (Taxon36202544): 'Python_sebae'
+
+Even more confusingly, if this file is written out in NEXUS format, it would result in the space/underscore substitution taking place, resulting in two pairs of taxa with the same labels.
+
+As such, if you plan on mixing sources from different formats, it is important to keep in mind the space/underscore substitution, and in data formats that do not have this convention, avoid underscores and use spaces instead:
+
+.. literalinclude:: /examples/taxon_labels2.py
+    :linenos:
+
+Which results in the following::
+
+    TaxonSet object at 0x43b4e0 (TaxonSet4437216): 2 Taxa
+        [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python regious'
+        [1] Taxon object at 0x2286810 (Taxon36202512): 'Python sebae'
+
+Alternatively, you can wrap the underscore-bearing labels in the NEXUS/NEWICK source in quotes, which preserves them from being substituted for spaces:
+
+.. literalinclude:: /examples/taxon_labels3.py
+    :linenos:
+
+Which results in the following::
+
+    TaxonSet object at 0x43b4e0 (TaxonSet4437216): 2 Taxa
+        [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python_regious'
+        [1] Taxon object at 0x2286810 (Taxon36202512): 'Python_sebae'
+
+
+
+

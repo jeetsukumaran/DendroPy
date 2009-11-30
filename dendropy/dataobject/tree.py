@@ -168,7 +168,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         from dendropy.utility import iosys
         from dendropy.dataio import tree_source_iter
         if "taxon_set" in kwargs:
-            if kwargs["taxon_set"] is not self.taxon_set and len(self) > 1:
+            if kwargs["taxon_set"] is not self.taxon_set and len(self) > 0:
                 raise Exception("Cannot specify a different TaxonSet when reading into a populated TreeList.")
             else:
                 self.taxon_set = kwargs["taxon_set"]
