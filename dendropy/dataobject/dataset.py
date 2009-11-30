@@ -147,10 +147,10 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         from dendropy.dataio import get_reader
         kwargs["dataset"] = self
         if self.bound_taxon_set is not None:
-            if "bound_taxon_set" not in kwargs:
-                kwargs["bound_taxon_set"] = self.bound_taxon_set
-            elif kwargs["bound_taxon_set"] is not self.bound_taxon_set:
-                raise TypeError("DataSet object is already bound to a TaxonSet, but different TaxonSet passed to read() using 'bound_taxon_set' keyword argument")
+            if "taxon_set" not in kwargs:
+                kwargs["taxon_set"] = self.bound_taxon_set
+            elif kwargs["taxon_set"] is not self.bound_taxon_set:
+                raise TypeError("DataSet object is already bound to a TaxonSet, but different TaxonSet passed to read() using 'taxon_set' keyword argument")
         reader = get_reader(format=format, **kwargs)
         reader.read(stream, **kwargs)
 

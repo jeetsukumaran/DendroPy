@@ -54,10 +54,8 @@ class FastaReader(iosys.DataReader):
 
         nts = len(self.dataset.taxon_sets)
         if "taxon_set" in kwargs:
-            if self.bound_taxon_set is not None:
-                raise TypeError("Cannot specify 'taxon_set' to read() of a Reader with a bound TaxonSet")
-            else:
-                taxon_set = kwargs["taxon_set"]
+            taxon_set = kwargs["taxon_set"]
+            self.bound_taxon_set = taxon_set
         elif self.bound_taxon_set is not None:
             if self.bound_taxon_set not in self.dataset.taxon_sets:
                 self.dataset.add_taxon_set(self.bound_taxon_set)
