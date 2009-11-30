@@ -122,8 +122,8 @@ The labels have to match **exactly** for the taxa to be correctly mapped, with t
 Thus, "Python regius", "PYTHON REGIUS", "python regious", "P. regious", etc. will all be considered as referring to distinct and different taxa.
 
 Further quirks may arise due to some format-specific idiosyncracies.
-For example, the NEXUS standard dictates that an underscore ("_") is equivalent to a space.
-When reading a NEXUS-formatted (or NEWICK-formatted) file, all underscores in taxon labels will automatically be substituted with spaces, and thus, in this context, "Python_regius" and "Python regius" are exactly equivalent.
+For example, the NEXUS standard dictates that an underscore ("_") should be substituted for a space in all labels.
+Thus, when reading a NEXUS or NEWICK source, the taxon labels "Python_regius" and "Python regius" are exactly equivalent, and will be mapped to the same :class:`~dendropy.dataobject.taxon.Taxon` object.
 
 However, this underscore-to-space mapping does **not** take place when reading, for example, a FASTA format file.
 Here, underscores are preserved, and thus "Python_regius" does not map to "Python regius".
