@@ -27,7 +27,8 @@ For semantic clarity, you can also specify ``as_unrooted`` to be :keyword:`True`
 .. literalinclude:: /examples/tree_rootings1.py
     :linenos:
 
-The ``default_as_rooted`` keyword argument, if :keyword:`True`, forces all trees to be interpreted as rooted, *if* the ``[&R]``/``[&U]`` comment tags are *not* given, otherwise the rooting will follow the ``[&R]``/``[&U]`` commands.
+In addition, you can specify a ``default_as_rooted`` keyword argument, which, if :keyword:`True`, forces all trees to be interpreted as rooted, *if* the ``[&R]``/``[&U]`` comment tags are *not* given.
+Otherwise the rooting will follow the ``[&R]``/``[&U]`` commands.
 Conversely, if ``default_as_rooted`` is :keyword:`False`, all trees will be interpreted as unrooted if the ``[&R]``/``[&U]`` comment tags are not given.
 Again, for semantic clarity, you can also specify ``default_as_unrooted`` to be :keyword:`True` to assume all trees are unrooted if not explicitly specified, though, as this is default behavior, this should not be neccessary.
 
