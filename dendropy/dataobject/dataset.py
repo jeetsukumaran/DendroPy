@@ -59,7 +59,12 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         self.taxon_sets = containers.OrderedSet()
         self.tree_lists = containers.OrderedSet()
         self.char_arrays = containers.OrderedSet()
-        self.bound_taxon_set = None
+        if kwargs.get("bound_taxon_set", True):
+            self.bind_taxon_set()
+        elif kwargs.get("taxon_set", None) is not None:
+            self.bind_taxon_set(kwargs["taxon_set"])
+        else:
+            self.bound_taxon_set = None
         if len(args) > 0:
             if ("stream" in kwargs and kwargs["stream"] is not None) \
                     or ("format" in kwargs and kwargs["format"] is not None):
@@ -74,6 +79,8 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
                     else:
                         self.add(arg)
         elif "stream" in kwargs:
+            if self.bound_taxon_set is not None:
+                kwargs["taxon_set"] = self.bound_taxon_set
             self.process_source_kwargs(**kwargs)
 
     ###########################################################################
@@ -281,21 +288,45 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
     def unbind_taxon_set(self):
         self.bound_taxon_set = None
 
+    def unify_taxa(self, taxon_set=None, bind=True):
+        """
+        Reindexes taxa across all subcomponents, mapping to single taxon set.
+        """
+        if len(self.taxon_sets) or len(self.tree_lists) or len(self.char_arrays):
+            self.taxon_sets.clear()
+            if taxon_set is None:
+                taxon_set = self.new_taxon_set()
+            for tree_list in self.tree_lists:
+                tree_list.reindex_taxa(taxon_set=self.taxon_set, clear=False)
+            for char_array in self.char_arrays:
+                char_array.reindex_taxa(taxon_set=self.taxon_set, clear=False)
+        if bind:
+            self.bind_taxon_set(taxon_set)
+
     def add_tree_list(self, tree_list):
         "Accession of existing `TreeList` object into `tree_lists` of self."
-        if tree_list.taxon_set not in self.taxon_sets:
+        if self.bound_taxon_set is not None:
+            tree_list.reindex_taxa(taxon_set=self.bound_taxon_set, clear=False)
+        elif tree_list.taxon_set not in self.taxon_sets:
             self.taxon_sets.add(tree_list.taxon_set)
         self.tree_lists.add(tree_list)
         return tree_list
 
     def new_tree_list(self, *args, **kwargs):
         "Creation and accession of new `TreeList` into `trees` of self."
+        if self.bound_taxon_set is not None:
+            if "taxon_set" in kwargs and kwargs["taxon_set"] is not self.bound_taxon_set:
+                raise TypeError("DataSet object is already bound to a TaxonSet, but different 'taxon_set' passed as argument")
+            else:
+                kwargs["taxon_set"] = self.bound_taxon_set
         tree_list = TreeList(*args, **kwargs)
         return self.add_tree_list(tree_list)
 
     def add_char_array(self, char_array):
         "Accession of existing `CharacterArray` into `chars` of self."
-        if char_array.taxon_set not in self.taxon_sets:
+        if self.bound_taxon_set is not None:
+            char_array.reindex_taxa(taxon_set=self.bound_taxon_set, clear=False)
+        elif char_array.taxon_set not in self.taxon_sets:
             self.taxon_sets.add(char_array.taxon_set)
         self.char_arrays.add(char_array)
         return char_array
@@ -305,5 +336,10 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         Creation and accession of new `CharacterArray` (of class
         `char_array_type`) into `chars` of self."
         """
+        if self.bound_taxon_set is not None:
+            if "taxon_set" in kwargs and kwargs["taxon_set"] is not self.bound_taxon_set:
+                raise TypeError("DataSet object is already bound to a TaxonSet, but different 'taxon_set' passed as argument")
+            else:
+                kwargs["taxon_set"] = self.bound_taxon_set
         char_array = char_array_type(*args, **kwargs)
         return self.add_char_array(char_array)

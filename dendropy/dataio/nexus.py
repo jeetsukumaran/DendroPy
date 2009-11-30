@@ -173,10 +173,10 @@ class NexusReader(iosys.DataReader):
         """
         self.reset()
         self.rooting_interpreter.update(**kwargs)
-        if self.dataset is None:
-            self.dataset = dataobject.DataSet()
         if "taxon_set" in kwargs:
             self._current_taxon_set = kwargs["taxon_set"]
+        if self.dataset is None:
+            self.dataset = dataobject.DataSet(taxon_set=self._current_taxon_set)
         self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream)
         token = self.stream_tokenizer.read_next_token_ucase()
         if token != "#NEXUS":
