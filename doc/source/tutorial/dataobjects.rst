@@ -185,8 +185,8 @@ We can also request that the tree string have their spaces replaced by underscor
     >>> print(mle_tree.as_string("newick", edge_lengths=False, spaces_to_underscores=True))
     (Python_molurus,((Python_sebae,(((((Morelia_tracyae,(Morelia_amethistina,((Morelia_nauta,Morelia_kinghorni),Morelia_clastolepis))),Morelia_boeleni),((Python_reticulatus,Python_timoriensis),Morelia_oenpelliensis)),((((Morelia_viridis,(Morelia_carinata,(Morelia_spilota,Morelia_bredli))),(Antaresia_maculosa,((Antaresia_childreni,Antaresia_stimsoni),Antaresia_perthensis))),(Leiopython_albertisii,Bothrochilus_boa)),((Liasis_olivaceus,(Liasis_mackloti,Liasis_fuscus)),Apodora_papuana))),(Aspidites_ramsayi,Aspidites_melanocephalus))),Python_brongersmai),Python_regius);
 
-Converting Data Formats
-=======================
+Converting Between Data Formats
+===============================
 
 Any data in a format that can be read by DendroPy, can be saved to files in any format that can be written by DendroPy.
 Converting data between formats is simply a matter of calling readers and writers of the appropriate type.
@@ -298,3 +298,4 @@ This method optionally takes a numeric value as its first argument that determin
                     [26] Liasis mackloti : 1114 characters
                     [27] Liasis olivaceus : 1114 characters
                     [28] Apodora papuana : 1114 characters
+

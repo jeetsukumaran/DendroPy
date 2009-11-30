@@ -104,8 +104,8 @@ The following example shows how you might iterate over all edges with lengths le
 Finding Nodes on Trees
 ======================
 
-Nodes with Taxa
----------------
+Nodes with Particular Taxa
+--------------------------
 
 To retrieve a node associated with a particular taxon, we can use the :meth:`~dendropy.dataobject.tree.Tree.find_taxon_node()` method, which takes a filter function as an argument.
 The filter function should take a :class:`~dendropy.dataobject.taxon.Taxon` object as an argument and return :keyword:`True` if the taxon is to be returned.
