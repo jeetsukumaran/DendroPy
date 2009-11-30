@@ -104,6 +104,7 @@ A better approach would be simply to create a :class:`~dendropy.dataobject.taxon
     >>> mcmc2 = dendropy.TreeList.get_from_path('pythonidae.mcmc2.nex', 'nexus', taxon_set=taxa)
 
 Now both ``mcmc1`` and ``mcmc2`` share the same :class:`~dendropy.dataobject.taxon.TaxonSet`, and thus so do the :class:`~dendropy.dataobject.tree.Tree` objects created within them, which means the :class:`~dendropy.dataobject.tree.Tree` objects can be compared both within and between the collections.
+
 You can also pass the :class:`~dendropy.dataobject.taxon.TaxonSet` to the constructor of :class:`~dendropy.dataobject.tree.TreeList`.
 So, for example, the following is logically identical to the previous::
 
@@ -117,12 +118,12 @@ So, for example, the following is logically identical to the previous::
 A Word of Caution: Taxon Label Mapping
 ======================================
 DendroPy maps taxon definitions encountered in a data source to :class:`~dendropy.dataobject.taxon.Taxon` objects by the taxon label.
-The labels have to match *exactly*, including in case, for the taxa to be correctly mapped.
+The labels have to match **exactly** for the taxa to be correctly mapped, with the match being **case-sensitive**.
 Thus, "Python regius", "PYTHON REGIUS", "python regious", "P. regious", etc. will all be considered as referring to distinct and different taxa.
 
 Further quirks may arise due to some format-specific idiosyncracies.
 For example, the NEXUS standard dictates that an underscore ("_") is equivalent to a space.
-When reading a NEXUS-formatted (or NEWICK-formatted) file, all underscores in taxon labels will automatically be substituted with spaces, and thus the following labels are equivalent: "Python_regius" and "Python regius".
+When reading a NEXUS-formatted (or NEWICK-formatted) file, all underscores in taxon labels will automatically be substituted with spaces, and thus, in this context, "Python_regius" and "Python regius" are exactly equivalent.
 
 However, this underscore-to-space mapping does **not** take place when reading, for example, a FASTA format file.
 Here, underscores are preserved, and thus "Python_regius" does not map to "Python regius".
@@ -132,7 +133,7 @@ This is illustrated by the following:
 .. literalinclude:: /examples/taxon_labels1.py
     :linenos:
 
-Which produces the following result::
+Which produces the following, almost certainly incorrect, result::
 
     TaxonSet object at 0x43b4e0 (TaxonSet4437216): 4 Taxa
         [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python regious'
@@ -147,7 +148,7 @@ As such, if you plan on mixing sources from different formats, it is important t
 .. literalinclude:: /examples/taxon_labels2.py
     :linenos:
 
-Which results in the following::
+Which results in the following, correct, behavior::
 
     TaxonSet object at 0x43b4e0 (TaxonSet4437216): 2 Taxa
         [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python regious'
@@ -158,7 +159,7 @@ Alternatively, you can wrap the underscore-bearing labels in the NEXUS/NEWICK so
 .. literalinclude:: /examples/taxon_labels3.py
     :linenos:
 
-Which results in the following::
+Which results in the following, also correct, behavior::
 
     TaxonSet object at 0x43b4e0 (TaxonSet4437216): 2 Taxa
         [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python_regious'
