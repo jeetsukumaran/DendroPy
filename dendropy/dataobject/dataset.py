@@ -60,9 +60,9 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         self.tree_lists = containers.OrderedSet()
         self.char_arrays = containers.OrderedSet()
         if kwargs.get("fixed_taxon_set", False):
-            self.fix_taxon_set(kwargs.get("taxon_set", None))
+            self.bind_taxon_set(kwargs.get("taxon_set", None))
         elif kwargs.get("taxon_set", None) is not None:
-            self.fix_taxon_set(kwargs["taxon_set"])
+            self.bind_taxon_set(kwargs["taxon_set"])
         else:
             self.bound_taxon_set = None
         if len(args) > 0:
@@ -265,7 +265,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         self.add_taxon_set(t)
         return t
 
-    def fix_taxon_set(self, taxon_set=None):
+    def bind_taxon_set(self, taxon_set=None):
         """
         Forces all read() calls on this DataSet to use the same TaxonSet. If
         `taxon_set` If `taxon_set` is None, then a new TaxonSet will be
@@ -278,7 +278,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
             self.add_taxon_set(taxon_set)
         self.bound_taxon_set = taxon_set
 
-    def unfix_taxon_set(self):
+    def unbind_taxon_set(self):
         self.bound_taxon_set = None
 
     def unify_taxa(self, taxon_set=None, bind=True):
@@ -294,7 +294,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
             for char_array in self.char_arrays:
                 char_array.reindex_taxa(taxon_set=self.taxon_set, clear=False)
         if bind:
-            self.fix_taxon_set(taxon_set)
+            self.bind_taxon_set(taxon_set)
 
     def add_tree_list(self, tree_list):
         "Accession of existing `TreeList` object into `tree_lists` of self."
