@@ -195,14 +195,52 @@ For example::
 Or alternatively::
 
     >>> import dendropy
+    >>> ds = dendropy.DataSet()
     >>> ds.fix_taxon_set()
-    >>> ds = dendropy.DataSet(fixed_taxon_set=True)
     >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
     >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
     >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
     >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
 
 Both of the above will result in only a single :class:`~dendropy.dataobject.taxon.TaxonSet` object that have all the taxa from the four data sources mapped to them.
+
+Switching Between Fixed and Multiple Taxon Set Modes
+-----------------------------------------------------
+As noted above, you can use the :meth:`~dendropy.dataobject.dataset.DataSet.fix_taxon_set()` method to switch a :class:`~dendropy.dataobject.dataset.DataSet` object to fixed taxon set mode.
+To restore it to multiple taxon set mode, you would use the :meth:`~dendropy.dataobject.dataset.DataSet.unfix_taxon_set()` method::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet()
+    >>> ds.fix_taxon_set()
+    >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
+    >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
+    >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
+    >>> ds.unfix_taxon_set()
+    >>> ds.read_from_path("primates.nex", "nexus")
+
+Here, the same :class:`~dendropy.dataobject.taxon.TaxonSet` object is used to manage taxon references for data parsed from the first four files, while the data from the fifth and final file gets its own, distinct, :class:`~dendropy.dataobject.taxon.TaxonSet` object and associated :class:`~dendropy.dataobject.taxon.Taxon` object references.
+
+Fixing a Particular Taxon Set
+-----------------------------
+
+When :meth:`~dendropy.dataobject.dataset.DataSet.fix_taxon_set()` is called without arguments, a new :class:`~dendropy.dataobject.taxon.TaxonSet` object is created and added to the :attr:`~dendropy.dataobject.char.DataSet.taxon_sets` list of the :class:`~dendropy.dataobject.dataset.DataSet` object, and the taxon references all data subsequently read from data sources (or created and added independentally) will be mapped to :class:`~dendropy.dataobject.taxon.Taxon` objects in this new :class:`~dendropy.dataobject.taxon.TaxonSet` object.
+If you want to use an existing :class:`~dendropy.dataobject.taxon.TaxonSet` object instead of a new one, you can pass this object as an argument to the :meth:`~dendropy.dataobject.dataset.DataSet.fix_taxon_set()` method::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet()
+    >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> ds.read_from_path("primates.nex", "nexus")
+    >>> ds.fix_taxon_set(ds.taxon_sets[0])
+    >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
+    >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
+    >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
+    >>> ds.unfix_taxon_set()
+
+Here, the first two :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements result in two distinct :class:`~dendropy.dataobject.taxon.TaxonSet` objects, one for each read, each with their own independent :class:`~dendropy.dataobject.taxon.Taxon` objects.
+The :meth:`~dendropy.dataobject.dataset.DataSet.fix_taxon_set()` statement is passed the :class:`~dendropy.dataobject.taxon.TaxonSet` object from the first read operation, and all data created from the next three :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements will have their taxon references mapped to this first :class:`~dendropy.dataobject.taxon.TaxonSet` object.
+
+
 
 A Word of Caution: Taxon Label Mapping
 ======================================
