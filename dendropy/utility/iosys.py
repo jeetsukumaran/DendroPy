@@ -119,6 +119,26 @@ class DataReader(IOService):
         """
         raise NotImplementedError
 
+    def get_taxon_set(self, **kwargs):
+        """
+        Returns an appropriate TaxonSet object, based on current settings.
+        """
+        if self.dataset is None:
+            raise TypeError("'dataset' is not defined")
+        if "taxon_set" in kwargs:
+            self.bound_taxon_set = kwargs["taxon_set"]
+        if self.dataset.bound_taxon_set is not None:
+            if self.bound_taxon_set is not None \
+                    and self.dataset.bound_taxon_set is not self.bound_taxon_set:
+                raise TypeError("DataSet is bound to different TaxonSet than that specified by 'taxon_set'")
+            self.bound_taxon_set = self.dataset.bound_taxon_set
+        if self.bound_taxon_set is not None:
+            if self.bound_taxon_set not in self.dataset.taxon_sets:
+                self.dataset.add(self.bound_taxon_set)
+            return self.bound_taxon_set
+        else:
+            return self.dataset.new_taxon_set()
+
 ###############################################################################
 ## DataReader
 

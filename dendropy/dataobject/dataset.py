@@ -59,7 +59,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         self.taxon_sets = containers.OrderedSet()
         self.tree_lists = containers.OrderedSet()
         self.char_arrays = containers.OrderedSet()
-        if kwargs.get("bound_taxon_set", True):
+        if kwargs.get("bound_taxon_set", False):
             self.bind_taxon_set()
         elif kwargs.get("taxon_set", None) is not None:
             self.bind_taxon_set(kwargs["taxon_set"])
@@ -267,20 +267,13 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
 
     def bind_taxon_set(self, taxon_set=None):
         """
-        Forces all read() calls on this DataSet to use the same TaxonSet.
-        If `taxon_set` is None, and len(self.taxon_sets) == 1, then self.taxon_sets[0]
-        will be the TaxonSet used. If `taxon_set` is None, and len(self.taxon_sets) == 0
-        then a new TaxonSet will be created, added to self.taxa, and that is
-        the TaxonSet that will be bound. If `taxon_set` is None, and len(self.taxon_sets)
-        > 1, then a TypeError will be raised.
+        Forces all read() calls on this DataSet to use the same TaxonSet. If
+        `taxon_set` If `taxon_set` is None, then a new TaxonSet will be
+        created, added to self.taxa, and that is the TaxonSet that will be
+        bound.
         """
         if taxon_set is None:
-            if len(self.taxon_sets) == 0:
-                taxon_set = self.new_taxon_set()
-            elif len(self.taxon_sets) == 1:
-                taxon_set = self.taxon_sets[0]
-            else:
-                raise TypeError("Multiple TaxonSet objects already exist in DataSet: must specify TaxonSet object explicitly")
+            taxon_set = self.new_taxon_set()
         elif taxon_set not in self.taxon_sets:
             self.add_taxon_set(taxon_set)
         self.bound_taxon_set = taxon_set

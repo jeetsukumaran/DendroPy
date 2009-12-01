@@ -167,18 +167,10 @@ class NewickReader(iosys.DataReader):
                all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
 
         """
+        self.rooting_interpreter.update(**kwargs)
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
-        self.rooting_interpreter.update(**kwargs)
-        if "taxon_set" in kwargs:
-            taxon_set = kwargs["taxon_set"]
-            self.bound_taxon_set = taxon_set
-        elif self.bound_taxon_set is not None:
-            if self.bound_taxon_set not in self.dataset.taxon_sets:
-                self.dataset.add_taxon_set(self.bound_taxon_set)
-            taxon_set = self.bound_taxon_set
-        else:
-            taxon_set = self.dataset.new_taxon_set()
+        taxon_set = self.get_taxon_set(**kwargs)
         tree_list = self.dataset.new_tree_list(taxon_set=taxon_set)
         kwargs["taxon_set"] = taxon_set
         kwargs["rooting_interpreter"] = self.rooting_interpreter

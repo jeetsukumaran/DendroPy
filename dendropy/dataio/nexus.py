@@ -141,15 +141,9 @@ class NexusReader(iosys.DataReader):
         """
         self.reset()
         self.rooting_interpreter.update(**kwargs)
-        if "taxon_set" in kwargs:
-            self.bound_taxon_set = kwargs["taxon_set"]
-        if self.bound_taxon_set is None:
-            if self.dataset is None:
-                self.dataset = dataobject.DataSet()
-            self.bound_taxon_set = self.dataset.bound_taxon_set
-        else:
-            if self.dataset is None:
-                self.dataset = dataobject.DataSet(taxon_set=self.bound_taxon_set)
+        if self.dataset is None:
+            self.dataset = dataobject.DataSet()
+        self._current_taxon_set = self.get_taxon_set(**kwargs)
         self._prepare_to_read_from_stream(stream)
         self._parse_nexus_file()
         self.reset()
@@ -267,12 +261,7 @@ class NexusReader(iosys.DataReader):
         retrieve a particular one based on a LINK or some such statement.
         """
         if self._current_taxon_set is None:
-            if self.bound_taxon_set is None:
-                self._current_taxon_set = self.dataset.new_taxon_set()
-            else:
-                self._current_taxon_set = self.bound_taxon_set
-                if self._current_taxon_set not in self.dataset.taxon_sets:
-                    self.dataset.taxon_sets.add(self._current_taxon_set)
+            self._current_taxon_set = self.get_taxon_set()
         return self._current_taxon_set
 
     def _set_current_taxon_set(self, taxon_set):
@@ -292,7 +281,6 @@ class NexusReader(iosys.DataReader):
     def _parse_nexus_file(self):
         "Main file parsing driver."
         finish_node_func = self.finish_node_func
-        self.reset()
         token = self.stream_tokenizer.read_next_token()
         if token != "#NEXUS":
             raise self.data_format_error("Expecting '#NEXUS', but found '%s'" % token)

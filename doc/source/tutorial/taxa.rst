@@ -131,9 +131,10 @@ Taxon Management with Data Sets
 The :class:`~dendropy.dataobject.dataset.DataSet` object, representing a meta-collection of phylogenetic data differs in one important way from all the other phylogenetic data objects discussed so far with respect to taxon management, in that it is not associated with any particular :class:`~dendropy.dataobject.taxon.TaxonSet` objects.
 Rather, it maintains a list (in the property :attr:`~dendropy.dataobject.char.DataSet.taxon_sets`) of *all* the :class:`~dendropy.dataobject.taxon.TaxonSet` objects referenced by its contained :class:`~dendropy.dataobject.tree.TreeList` objects (in the property :attr:`~dendropy.dataobject.char.DataSet.tree_lists`) and :class:`~dendropy.dataobject.char.CharacterArray` objects (in the property :attr:`~dendropy.dataobject.char.DataSet.char_arrays`).
 
-With respect to taxon management, by default the :class:`~dendropy.dataobject.dataset.DataSet` object behaves very much like a :class:`~dendropy.dataobject.tree.TreeList` object, in that it ensures that all data added or read into it refer to the same :class:`~dendropy.dataobject.taxon.TaxonSet`.
-Very often, this behavior is desirable and correct, as when, for example, accumulating data that refer to same taxa from different data sources.
-Sometimes this is not, however, and you would then need to call :meth:`~dendropy.dataobject.dataset.DataSet.unbind_taxon_set()` to make the :class:`~dendropy.dataobject.dataset.DataSet` object create a new :class:`~dendropy.dataobject.taxon.TaxonSet` object (or more, if more than one are defined in the data source) for every data source read.
+With respect to taxon management, :class:`~dendropy.dataobject.dataset.DataSet` objects operate in one of two modes.
+In the "multiple taxon set" mode, taxon management is restricted only to tracking all :class:`~dendropy.dataobject.taxon.TaxonSet` references of their other data members in the property :attr:`~dendropy.dataobject.char.DataSet.taxon_sets`.
+In the "bound taxon set" mode, :class:`~dendropy.dataobject.dataset.DataSet` objects behave very much like :class:`~dendropy.dataobject.tree.TreeList` objects in that they ensure that the taxon references of all data objects that are added to them are mapped to the same single :class:`~dendropy.dataobject.dataset.DataSet`-wide :class:`~dendropy.dataobject.taxon.TaxonSet` object.
+
 
 A Word of Caution: Taxon Label Mapping
 ======================================
