@@ -79,7 +79,7 @@ class DataSetCreateTest(datatest.DataObjectVerificationTestCase):
 class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
 
     def testNoBinding(self):
-        d = dendropy.DataSet(bound_taxon_set=False)
+        d = dendropy.DataSet(fixed_taxon_set=False)
         d.read_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
         self.assertEqual(len(d.taxon_sets), 1)
         self.assertEqual(len(d.taxon_sets[0]), 29)
@@ -94,7 +94,7 @@ class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
         self.assertEqual(len(d.taxon_sets[3]), 114)
 
     def testBindingEmpty(self):
-        d = dendropy.DataSet(bound_taxon_set=True)
+        d = dendropy.DataSet(fixed_taxon_set=True)
         self.assertEqual(len(d.taxon_sets), 1)
         self.assertSame(d.taxon_sets[0], d.bound_taxon_set)
         d.read_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
@@ -111,7 +111,7 @@ class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
         self.assertEqual(len(d.taxon_sets[0]), 143)
 
     def testBindAndUnbind(self):
-        d = dendropy.DataSet(bound_taxon_set=True)
+        d = dendropy.DataSet(fixed_taxon_set=True)
         self.assertEqual(len(d.taxon_sets), 1)
         self.assertSame(d.taxon_sets[0], d.bound_taxon_set)
         d.read_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
@@ -123,7 +123,7 @@ class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
         d.read_from_path(pathmap.tree_source_path('pythonidae.reference-trees.newick'), "newick")
         self.assertEqual(len(d.taxon_sets), 1)
         self.assertEqual(len(d.taxon_sets[0]), 29)
-        d.unbind_taxon_set()
+        d.unfix_taxon_set()
         d.read_from_path(pathmap.char_source_path('caenophidia_mos.chars.fasta'), "proteinfasta")
         self.assertEqual(len(d.taxon_sets), 2)
         self.assertEqual(len(d.taxon_sets[0]), 29)
@@ -132,7 +132,7 @@ class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
     def testBindToSpecifiedTaxonSet(self):
         d = dendropy.DataSet()
         t = dendropy.TaxonSet()
-        d.bind_taxon_set(t)
+        d.fix_taxon_set(t)
         self.assertEqual(len(d.taxon_sets), 1)
         self.assertSame(d.taxon_sets[0], d.bound_taxon_set)
         self.assertSame(d.bound_taxon_set, t)
@@ -145,7 +145,7 @@ class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
         d.read_from_path(pathmap.tree_source_path('pythonidae.reference-trees.newick'), "newick")
         self.assertEqual(len(d.taxon_sets), 1)
         self.assertEqual(len(d.taxon_sets[0]), 29)
-        d.unbind_taxon_set()
+        d.unfix_taxon_set()
         d.read_from_path(pathmap.char_source_path('caenophidia_mos.chars.fasta'), "proteinfasta")
         self.assertEqual(len(d.taxon_sets), 2)
         self.assertEqual(len(d.taxon_sets[0]), 29)
