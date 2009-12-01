@@ -128,13 +128,65 @@ Thus, again, if you are creating multiple character arrays that refer to the sam
 
 Taxon Management with Data Sets
 ===============================
-The :class:`~dendropy.dataobject.dataset.DataSet` object, representing a meta-collection of phylogenetic data differs in one important way from all the other phylogenetic data objects discussed so far with respect to taxon management, in that it is not associated with any particular :class:`~dendropy.dataobject.taxon.TaxonSet` objects.
+The :class:`~dendropy.dataobject.dataset.DataSet` object, representing a meta-collection of phylogenetic data, differs in one important way from all the other phylogenetic data objects discussed so far with respect to taxon management, in that it is not associated with any particular :class:`~dendropy.dataobject.taxon.TaxonSet` object.
 Rather, it maintains a list (in the property :attr:`~dendropy.dataobject.char.DataSet.taxon_sets`) of *all* the :class:`~dendropy.dataobject.taxon.TaxonSet` objects referenced by its contained :class:`~dendropy.dataobject.tree.TreeList` objects (in the property :attr:`~dendropy.dataobject.char.DataSet.tree_lists`) and :class:`~dendropy.dataobject.char.CharacterArray` objects (in the property :attr:`~dendropy.dataobject.char.DataSet.char_arrays`).
 
-With respect to taxon management, :class:`~dendropy.dataobject.dataset.DataSet` objects operate in one of two modes.
-In the "multiple taxon set" mode, taxon management is restricted only to tracking all :class:`~dendropy.dataobject.taxon.TaxonSet` references of their other data members in the property :attr:`~dendropy.dataobject.char.DataSet.taxon_sets`.
-In the "bound taxon set" mode, :class:`~dendropy.dataobject.dataset.DataSet` objects behave very much like :class:`~dendropy.dataobject.tree.TreeList` objects in that they ensure that the taxon references of all data objects that are added to them are mapped to the same single :class:`~dendropy.dataobject.dataset.DataSet`-wide :class:`~dendropy.dataobject.taxon.TaxonSet` object.
+With respect to taxon management, :class:`~dendropy.dataobject.dataset.DataSet` objects operate in one of two modes: "multiple taxon set" mode and "fixed taxon set" mode.
 
+Multiple Taxon Set Mode
+-----------------------
+In the "multiple taxon set" mode, which is the default, taxon management is restricted only to tracking all :class:`~dendropy.dataobject.taxon.TaxonSet` references of their other data members in the property :attr:`~dendropy.dataobject.char.DataSet.taxon_sets`.
+
+Thus, every time a data source is read with a "multiple taxon set" mode :class:`~dendropy.dataobject.dataset.DataSet` object, new  :class:`~dendropy.dataobject.taxon.TaxonSet` objects will be created and associated with the :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, or :class:`~dendropy.dataobject.char.CharacterArray` objects created from the data source, resulting in multiple :class:`~dendropy.dataobject.taxon.TaxonSet` independent references.
+
+For example::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet()
+    >>> ds.read_from_path("primates.nex", "nexus")
+    >>> ds.read_from_path("snakes.nex", "nexus")
+
+The dataset, ``ds``, will now contain two distinct sets of :class:`~dendropy.dataobject.taxon.TaxonSet` objects, one for the taxa defined in "primates.nex", and the other for the taxa defined for "snakes.nex".
+It can be seen that "multiple taxon set" mode :class:`~dendropy.dataobject.dataset.DataSet` objects are suitable for handling data with multiple distinct sets of taxa.
+
+However, consider the following::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet()
+    >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
+    >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
+    >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
+
+Here, even though all the data files refer to the same set of taxa, the resulting  :class:`~dendropy.dataobject.dataset.DataSet` object will actually have 4 distinct  :class:`~dendropy.dataobject.taxon.TaxonSet` objects, one for each of the independent reads.
+The multiple taxon set mode is not appropriate in this case, and the "fixed taxon set mode" should be used.
+
+
+Fixed (Single) Taxon Set Mode
+-----------------------------
+In the "fixed taxon set" mode, :class:`~dendropy.dataobject.dataset.DataSet` objects ensure that the taxon references of all data objects that are added to them are mapped to the same :class:`~dendropy.dataobject.taxon.TaxonSet` object (at least one for each independent read or creation operation).
+The "fixed taxon set" can be set by passing the keyword argument ``fixed_taxon_set=True`` to the constructor of the :class:`~dendropy.dataobject.dataset.DataSet` when instantiating a new :class:`~dendropy.dataobject.dataset.DataSet` object, or by calling :meth:`~dendropy.dataobject.dataset.DataSet.fix_taxon_set()` on an existing :class:`~dendropy.dataobject.dataset.DataSet` object
+
+For example::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet(fixed_taxon_set=True)
+    >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
+    >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
+    >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
+
+Or alternatively::
+
+    >>> import dendropy
+    >>> ds.fix_taxon_set()
+    >>> ds = dendropy.DataSet(fixed_taxon_set=True)
+    >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
+    >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
+    >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
+
+Both of the above will result in only a single :class:`~dendropy.dataobject.taxon.TaxonSet` object that have all the taxa from the four data sources mapped to them.
 
 A Word of Caution: Taxon Label Mapping
 ======================================
