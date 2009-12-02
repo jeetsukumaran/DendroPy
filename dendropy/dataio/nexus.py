@@ -143,6 +143,8 @@ class NexusReader(iosys.DataReader):
         self.rooting_interpreter.update(**kwargs)
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
+        if "taxon_set" in kwargs:
+            self.bound_taxon_set = kwargs["taxon_set"]
         self._prepare_to_read_from_stream(stream)
         self._parse_nexus_file()
         self.reset()
@@ -173,17 +175,10 @@ class NexusReader(iosys.DataReader):
         """
         self.reset()
         self.rooting_interpreter.update(**kwargs)
-
         if "taxon_set" in kwargs:
             self.bound_taxon_set = kwargs["taxon_set"]
-        if self.bound_taxon_set is None:
-            if self.dataset is None:
-                self.dataset = dataobject.DataSet()
-            self.bound_taxon_set = self.dataset.bound_taxon_set
-        else:
-            if self.dataset is None:
-                self.dataset = dataobject.DataSet(taxon_set=self.bound_taxon_set)
-
+        if self.dataset is None:
+            self.dataset = dataobject.DataSet()
         self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream)
         token = self.stream_tokenizer.read_next_token_ucase()
         if token != "#NEXUS":
@@ -395,7 +390,8 @@ class NexusReader(iosys.DataReader):
                 raise self.data_format_error("Cannot add '%s':" % label \
                                       + " Declared number of taxa (%d) already defined: %s" % (self.file_specified_ntax,
                                           str([("%s" % t.label) for t in self.current_taxon_set])))
-            taxon_set.require_taxon(label=label)
+            else:
+                taxon_set.require_taxon(label=label)
             token = self.stream_tokenizer.read_next_token()
 
     def _parse_link_statement(self):
