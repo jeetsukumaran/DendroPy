@@ -364,6 +364,10 @@ class MesquiteNexusMultiTaxaTest(datatest.DataObjectVerificationTestCase):
     def testParseMesquiteMultiTaxa(self):
         reader = nexus.NexusReader()
         dataset = reader.read(stream=pathmap.mixed_source_stream("multitaxa_mesquite.nex"))
+        self.assertEqual(len(dataset.taxon_sets), 3)
+        self.assertEqual(dataset.taxon_sets[0].label, 'Taxa')
+        self.assertEqual(dataset.taxon_sets[1].label, 'Taxa2')
+        self.assertEqual(dataset.taxon_sets[2].label, 'Taxa3')
 
 
 if __name__ == "__main__":

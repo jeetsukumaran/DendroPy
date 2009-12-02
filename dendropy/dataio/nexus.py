@@ -323,7 +323,7 @@ class NexusReader(iosys.DataReader):
                                 and not token==None:
                             token = self.stream_tokenizer.read_next_token_ucase()
                             if token == 'TITLE':
-                                token = self.stream_tokenizer.read_next_token_ucase()
+                                token = self.stream_tokenizer.read_next_token()
                                 block_title = token
                             if token == "LINK":
                                 link_title = self._parse_link_statement()
@@ -346,7 +346,7 @@ class NexusReader(iosys.DataReader):
                                 and not token==None:
                             token = self.stream_tokenizer.read_next_token_ucase()
                             if token == 'TITLE':
-                                token = self.stream_tokenizer.read_next_token_ucase()
+                                token = self.stream_tokenizer.read_next_token()
                                 block_title = token
                             if token == "LINK":
                                 link_title = self._parse_link_statement()
@@ -380,7 +380,7 @@ class NexusReader(iosys.DataReader):
             and not token==None:
             token = self.stream_tokenizer.read_next_token_ucase()
             if token == "TITLE":
-                token = self.stream_tokenizer.read_next_token_ucase()
+                token = self.stream_tokenizer.read_next_token()
                 taxon_set = self._new_taxon_set(token)
             if token == 'DIMENSIONS':
                 self._parse_dimensions_statement()
@@ -419,17 +419,17 @@ class NexusReader(iosys.DataReader):
         token = self.stream_tokenizer.read_next_token_ucase()
         while token != ';':
             if token == 'TAXA':
-                token = self.stream_tokenizer.read_next_token_ucase()
+                token = self.stream_tokenizer.read_next_token()
                 if token != "=":
                     raise self.data_format_error("Expecting '=' after LINK TAXA")
-                token = self.stream_tokenizer.read_next_token_ucase()
-                title = token
+                token = self.stream_tokenizer.read_next_token()
+                link_title = token
                 break
             else:
                 break
         if token != ";":
             self.stream_tokenizer.skip_to_semicolon()
-        return title
+        return link_title
 
     ###########################################################################
     ## CHARACTER/DATA BLOCK PARSERS AND SUPPORT
@@ -755,7 +755,7 @@ class NexusReader(iosys.DataReader):
                 if token == 'LINK':
                     link_title = self._parse_link_statement()
                 if token == 'TITLE':
-                    token = self.stream_tokenizer.read_next_token_ucase()
+                    token = self.stream_tokenizer.read_next_token()
                     block_title = token
                 if token == 'TRANSLATE':
                     if not taxon_set:
