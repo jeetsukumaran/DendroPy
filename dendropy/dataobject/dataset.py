@@ -60,10 +60,16 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         self.tree_lists = containers.OrderedSet()
         self.char_arrays = containers.OrderedSet()
         self.bound_taxon_set = None
-        if kwargs.get("multi_taxon_set", False):
-            self.bound_taxon_set = None
-        else:
+        if kwargs.get("bound_taxon_set", False):
             self.bind_taxon_set(kwargs.get("taxon_set", None))
+        elif kwargs.get("taxon_set", None) is not None:
+            self.bind_taxon_set(kwargs["taxon_set"])
+        else:
+            self.bound_taxon_set = None
+#        if kwargs.get("multi_taxon_set", False):
+#            self.bound_taxon_set = None
+#        else:
+#            self.bind_taxon_set(kwargs.get("taxon_set", None))
         if len(args) > 0:
             if ("stream" in kwargs and kwargs["stream"] is not None) \
                     or ("format" in kwargs and kwargs["format"] is not None):
