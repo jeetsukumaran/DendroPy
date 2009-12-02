@@ -12,7 +12,7 @@ END;
 
 
 BEGIN CHARACTERS;
-	TITLE  Pythonidae_Cytochrome_B_mtDNA;
+	TITLE  "Pythonidae Cytochrome B mtDNA";
 	LINK TAXA = Pythonidae;
 	DIMENSIONS  NCHAR=1114;
 	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
