@@ -199,7 +199,7 @@ class NexusReader(iosys.DataReader):
                 link_title = None
                 taxon_set = None
                 trees_block = None
-                prepared_to_parse_trees = False
+#                prepared_to_parse_trees = False
                 while not (token == 'END' or token == 'ENDBLOCK') \
                     and not self.stream_tokenizer.eof \
                     and not token==None:
@@ -732,7 +732,7 @@ class NexusReader(iosys.DataReader):
             link_title = None
             taxon_set = None
             trees_block = None
-            prepared_to_parse_trees = False
+#            prepared_to_parse_trees = False
             while not (token == 'END' or token == 'ENDBLOCK') \
                 and not self.stream_tokenizer.eof \
                 and not token==None:

@@ -141,11 +141,52 @@ class NexusTreeListReaderTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileSameTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        t_tree_list = dendropy.TreeList.get_from_stream(pathmap.tree_source_stream(datagen.reference_trees_filename(format="nexus")), "nexus", taxon_set=ref_tree_list.taxon_set)
+        t_tree_list = dendropy.TreeList.get_from_stream(pathmap.tree_source_stream("pythonidae.reference-trees.no-taxa-block.nexus"), "nexus", taxon_set=ref_tree_list.taxon_set)
         self.assertDistinctButEqualTreeList(
                 ref_tree_list,
                 t_tree_list,
                 distinct_taxa=False,
+                equal_oids=None)
+
+    def testReferenceTreeFileNoTaxaBlockDistinctTaxa(self):
+        ref_tree_list = datagen.reference_tree_list()
+        t_tree_list = dendropy.TreeList.get_from_stream(pathmap.tree_source_stream("pythonidae.reference-trees.no-taxa-block.nexus"), "nexus")
+        self.assertDistinctButEqualTreeList(
+                ref_tree_list,
+                t_tree_list,
+                distinct_taxa=True,
+                equal_oids=None)
+
+    def testReferenceTreeFileNoTaxaBlockDistinctTaxa(self):
+        ref_tree_list = datagen.reference_tree_list()
+        reader = nexus.NexusReader()
+        dataset = reader.read(stream=pathmap.tree_source_stream("pythonidae.reference-trees.no-taxa-block.nexus"))
+        self.assertEqual(len(dataset.tree_lists), 1)
+        self.assertDistinctButEqualTreeList(
+                ref_tree_list,
+                dataset.tree_lists[0],
+                distinct_taxa=True,
+                equal_oids=None)
+
+    def testReferenceTreeFileNoTaxaBlockNoTranslateBlockDistinctTaxa(self):
+        ref_tree_list = datagen.reference_tree_list()
+        t_tree_list = dendropy.TreeList.get_from_stream(pathmap.tree_source_stream("pythonidae.reference-trees.no-taxa-no-translate-block.nexus"), "nexus")
+        self.assertDistinctButEqualTreeList(
+                ref_tree_list,
+                t_tree_list,
+                distinct_taxa=True,
+                equal_oids=None)
+
+    def testReferenceTreeFileNoTaxaBlockNoTranslateBlockDistinctTaxa(self):
+        ref_tree_list = datagen.reference_tree_list()
+        reader = nexus.NexusReader()
+        dataset = reader.read(stream=pathmap.tree_source_stream("pythonidae.reference-trees.no-taxa-no-translate-block.nexus"))
+        self.assertEqual(len(dataset.tree_lists), 1)
+        self.assertDistinctButEqualTreeList(
+                ref_tree_list,
+                dataset.tree_lists[0],
+                distinct_taxa=True,
+                ignore_taxon_order=True,
                 equal_oids=None)
 
 class NexusTreeListWriterTest(datatest.DataObjectVerificationTestCase):
@@ -248,6 +289,53 @@ class NexusTreeDocumentReaderTest(datatest.DataObjectVerificationTestCase):
                 ref_tree_list,
                 dataset.tree_lists[0],
                 distinct_taxa=True,
+                equal_oids=None)
+
+    def testReferenceTreeFileNoTaxaBlockSameTaxa(self):
+        ref_tree_list = datagen.reference_tree_list()
+        reader = nexus.NexusReader()
+        dataset = reader.read(stream=pathmap.tree_source_stream("pythonidae.reference-trees.no-taxa-block.nexus"),
+                              taxon_set=ref_tree_list.taxon_set)
+        self.assertEqual(len(dataset.tree_lists), 1)
+        self.assertDistinctButEqualTreeList(
+                ref_tree_list,
+                dataset.tree_lists[0],
+                distinct_taxa=False,
+                equal_oids=None)
+
+    def testReferenceTreeFileNoTaxaBlockDistinctTaxa(self):
+        ref_tree_list = datagen.reference_tree_list()
+        reader = nexus.NexusReader()
+        dataset = reader.read(stream=pathmap.tree_source_stream("pythonidae.reference-trees.no-taxa-block.nexus"))
+        self.assertEqual(len(dataset.tree_lists), 1)
+        self.assertDistinctButEqualTreeList(
+                ref_tree_list,
+                dataset.tree_lists[0],
+                distinct_taxa=True,
+                equal_oids=None)
+
+    def testReferenceTreeFileNoTaxaBlockNoTranslateBlockSameTaxa(self):
+        ref_tree_list = datagen.reference_tree_list()
+        reader = nexus.NexusReader()
+        dataset = reader.read(stream=pathmap.tree_source_stream("pythonidae.reference-trees.no-taxa-no-translate-block.nexus"),
+                              taxon_set=ref_tree_list.taxon_set)
+        self.assertEqual(len(dataset.tree_lists), 1)
+        self.assertDistinctButEqualTreeList(
+                ref_tree_list,
+                dataset.tree_lists[0],
+                distinct_taxa=False,
+                equal_oids=None)
+
+    def testReferenceTreeFileNoTaxaBlockNoTranslateBlockDistinctTaxa(self):
+        ref_tree_list = datagen.reference_tree_list()
+        reader = nexus.NexusReader()
+        dataset = reader.read(stream=pathmap.tree_source_stream("pythonidae.reference-trees.no-taxa-no-translate-block.nexus"))
+        self.assertEqual(len(dataset.tree_lists), 1)
+        self.assertDistinctButEqualTreeList(
+                ref_tree_list,
+                dataset.tree_lists[0],
+                distinct_taxa=True,
+                ignore_taxon_order=True,
                 equal_oids=None)
 
 class NexusDocumentReadWriteTest(datatest.DataObjectVerificationTestCase):
