@@ -317,10 +317,14 @@ class NexusReader(iosys.DataReader):
                     if not self.exclude_chars:
                         self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
                         link_title = None
+                        block_title = None
                         while not (token == 'END' or token == 'ENDBLOCK') \
                                 and not self.stream_tokenizer.eof \
                                 and not token==None:
                             token = self.stream_tokenizer.read_next_token_ucase()
+                            if token == 'TITLE':
+                                token = self.stream_tokenizer.read_next_token_ucase()
+                                block_title = token
                             if token == "LINK":
                                 link_title = self._parse_link_statement()
                             if token == 'DIMENSIONS':
@@ -328,18 +332,22 @@ class NexusReader(iosys.DataReader):
                             if token == 'FORMAT':
                                 self._parse_format_statement()
                             if token == 'MATRIX':
-                                self._parse_matrix_statement(link_title)
+                                self._parse_matrix_statement(block_title=block_title, link_title=link_title)
                         self.stream_tokenizer.skip_to_semicolon() # move past END command
                     else:
                         token = self._consume_to_end_of_block(token)
                 elif token == 'DATA':
                     if not self.exclude_chars:
                         self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
+                        block_title = None
                         link_title = None
                         while not (token == 'END' or token == 'ENDBLOCK') \
                                 and not self.stream_tokenizer.eof \
                                 and not token==None:
                             token = self.stream_tokenizer.read_next_token_ucase()
+                            if token == 'TITLE':
+                                token = self.stream_tokenizer.read_next_token_ucase()
+                                block_title = token
                             if token == "LINK":
                                 link_title = self._parse_link_statement()
                             if token == 'DIMENSIONS':
@@ -347,7 +355,7 @@ class NexusReader(iosys.DataReader):
                             if token == 'FORMAT':
                                 self._parse_format_statement()
                             if token == 'MATRIX':
-                                self._parse_matrix_statement(link_title)
+                                self._parse_matrix_statement(block_title=block_title, link_title=link_title)
                         self.stream_tokenizer.skip_to_semicolon() # move past END command
                     else:
                         token = self._consume_to_end_of_block(token)
@@ -547,7 +555,7 @@ class NexusReader(iosys.DataReader):
                     raise self.data_format_error("Expecting '=' after NCHAR keyword")
             token = self.stream_tokenizer.read_next_token_ucase()
 
-    def _parse_matrix_statement(self, link_title=None):
+    def _parse_matrix_statement(self, block_title=None, link_title=None):
         """
         Processes a MATRIX command. Assumes that the file reader
         is positioned right after the "MATRIX" token in a MATRIX command,
@@ -559,8 +567,10 @@ class NexusReader(iosys.DataReader):
             raise self.data_format_error('NCHAR must be defined by DIMENSIONS command to non-zero value before MATRIX command')
 
         taxon_set = self._get_taxon_set(link_title)
-        char_block = self.dataset.new_char_array(char_array_type=self.char_block_type, \
-            taxon_set=taxon_set)
+        char_block = self.dataset.new_char_array(
+            char_array_type=self.char_block_type, \
+            taxon_set=taxon_set,
+            label=block_title)
 
         if isinstance(char_block, dataobject.StandardCharacterArray):
             self._build_state_alphabet(char_block, self.symbols)
