@@ -145,6 +145,8 @@ class NexusReader(iosys.DataReader):
             self.dataset = dataobject.DataSet()
         if "taxon_set" in kwargs:
             self.bound_taxon_set = kwargs["taxon_set"]
+        if self.bound_taxon_set is not None and self.bound_taxon_set not in self.dataset.taxon_sets:
+            self.dataset.add(self.bound_taxon_set)
         self._prepare_to_read_from_stream(stream)
         self._parse_nexus_file()
         self.reset()
@@ -175,10 +177,12 @@ class NexusReader(iosys.DataReader):
         """
         self.reset()
         self.rooting_interpreter.update(**kwargs)
-        if "taxon_set" in kwargs:
-            self.bound_taxon_set = kwargs["taxon_set"]
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
+        if "taxon_set" in kwargs:
+            self.bound_taxon_set = kwargs["taxon_set"]
+        if self.bound_taxon_set is not None and self.bound_taxon_set not in self.dataset.taxon_sets:
+            self.dataset.add(self.bound_taxon_set)
         self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream)
         token = self.stream_tokenizer.read_next_token_ucase()
         if token != "#NEXUS":
@@ -211,9 +215,9 @@ class NexusReader(iosys.DataReader):
                             taxon_set = self._get_taxon_set(link_title)
                         if not trees_block:
                             trees_block = self.dataset.new_tree_list(taxon_set=taxon_set)
-                        if not prepared_to_parse_trees:
-                            self._prepare_to_parse_trees(taxon_set)
-                            prepared_to_parse_trees = True
+#                        if not prepared_to_parse_trees:
+#                            self._prepare_to_parse_trees(taxon_set)
+#                            prepared_to_parse_trees = True
                         tree = self._parse_tree_statement(taxon_set)
                         yield tree
                 self.stream_tokenizer.skip_to_semicolon() # move past END command
@@ -276,7 +280,7 @@ class NexusReader(iosys.DataReader):
             return self.bound_taxon_set
         if title is None:
             if len(self.taxa_blocks) == 0:
-                self.taxa_blocks['DEFAULT'] = self.get_default_taxon_set()
+                self.taxa_blocks['DEFAULT'] = self._new_taxon_set()
                 return self.taxa_blocks['DEFAULT']
             elif len(self.taxa_blocks) == 1:
                 return self.taxa_blocks.values()[0]
@@ -664,18 +668,18 @@ class NexusReader(iosys.DataReader):
     ## TREE / TREE BLOCK PARSERS
 
     def _prepare_to_parse_trees(self, taxon_set):
-            self.tree_translate_dict = {}
-            self.tax_label_lookup = {}
-            for n, t in enumerate(taxon_set):
-                self.tree_translate_dict[str(n + 1)] = t
-            # add labels second so that numbers have priority over number
-            for n, t in enumerate(taxon_set):
-                l = t.label
-                self.tree_translate_dict[l] = t
-                self.tax_label_lookup[l] = t
-                if self.encode_splits:
-                    ti = self.current_taxon_set.index(t)
-                    t.split_bitmask = (1 << ti)
+        self.tree_translate_dict = {}
+        self.tax_label_lookup = {}
+        for n, t in enumerate(taxon_set):
+            self.tree_translate_dict[str(n + 1)] = t
+        # add labels second so that labels have priority over number
+        for n, t in enumerate(taxon_set):
+            l = t.label
+            self.tree_translate_dict[l] = t
+            self.tax_label_lookup[l] = t
+            if self.encode_splits:
+                ti = taxon_set.index(t)
+                t.split_bitmask = (1 << ti)
 
     def _parse_tree_statement(self, taxon_set=None):
         """
@@ -744,9 +748,9 @@ class NexusReader(iosys.DataReader):
                         taxon_set = self._get_taxon_set(link_title)
                     if not trees_block:
                         trees_block = self.dataset.new_tree_list(taxon_set=taxon_set)
-                    if not prepared_to_parse_trees:
-                        self._prepare_to_parse_trees(taxon_set)
-                        prepared_to_parse_trees = True
+#                    if not prepared_to_parse_trees:
+#                        self._prepare_to_parse_trees(taxon_set)
+#                        prepared_to_parse_trees = True
                     tree = self._parse_tree_statement(taxon_set)
                     trees_block.append(tree, reindex_taxa=False)
             self.stream_tokenizer.skip_to_semicolon() # move past END command

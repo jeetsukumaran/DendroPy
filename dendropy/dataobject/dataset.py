@@ -238,7 +238,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         elif isinstance(data_object, CharacterArray):
             self.add_char_array(data_object)
         else:
-            raise error.InvalidArgumentValueError("Cannot add object of type '%s' to DataSet" % type(arg))
+            raise error.InvalidArgumentValueError("Cannot add object of type '%s' to DataSet" % type(data_object))
 
     def get_default_taxon_set(self, **kwargs):
         """

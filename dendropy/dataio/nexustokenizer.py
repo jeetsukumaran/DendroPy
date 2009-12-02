@@ -148,8 +148,8 @@ class StrToTaxon(object):
         if v is not None:
             return v
         t = self.taxon_set.require_taxon(label=label)
-        if t is not None:
-            self.translate[label] = t #@this could lead to problems when we support multiple taxon blocks, but now it'll speed thing up
+#        if t is not None:
+#            self.translate[label] = t #@this could lead to problems when we support multiple taxon blocks, but now it'll speed thing up
         return t
 
     def index(self, t):
