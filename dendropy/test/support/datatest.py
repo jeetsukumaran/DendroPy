@@ -445,3 +445,81 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 tax_label2 = tax_label2.replace("_", " ")
             self.assertEqual(tax_label1, tax_label2)
             self.assertEqual(seq_symbols1, seq_symbols2)
+
+class ComplexMultiTaxonSetDataVerificationTest(DataObjectVerificationTestCase):
+
+    def setUp(self):
+        self.taxon_set_names = [
+            "Pythonidae",
+            "Caenophidia",
+            "Primates"
+        ]
+        self.taxon_set_taxon_labels = [
+            ["Python molurus", "Python sebae", "Morelia tracyae", "Morelia amethistina",
+             "Morelia nauta", "Morelia kinghorni", "Morelia clastolepis", "Morelia boeleni",
+             "Python reticulatus", "Python timoriensis", "Morelia oenpelliensis",
+             "Morelia viridis", "Morelia carinata", "Morelia spilota", "Morelia bredli",
+             "Antaresia maculosa", "Antaresia childreni", "Antaresia stimsoni",
+             "Antaresia perthensis", "Leiopython albertisii", "Bothrochilus boa",
+             "Liasis olivaceus", "Liasis mackloti", "Liasis fuscus", "Apodora papuana",
+             "Aspidites ramsayi", "Aspidites melanocephalus", "Python brongersmai", "Python regius"],
+            ["Lystrophis dorbignyi", "Waglerophis merremi", "Lystrophis histricus",
+              "Xenoxybelis argenteus", "Liophis jaegeri", "Liophis elegantissimus",
+              "Liophis meridionalis", "Liophis typhlus", "Erythrolamprus aesculapii",
+              "Atractus albuquerquei", "Atractus trihedrurus", "Heterodon nasicus",
+              "Sibynomorphus mikanii", "Ninia atrata", "Dipsas indica", "Dipsas neivai",
+              "Sibynomorphus garmani", "Hydrops triangularis", "Helicops infrataeniatus",
+              "Pseudoeryx plicatilis", "Helicops pictiventris", "Helicops gomesi",
+              "Helicops angulatus", "Oxyrhopus rhombifer", "Oxyrhopus clathratus",
+              "Lycognathophis seychellensis", "Taeniophallus brevirostris",
+              "Hydrodynastes gigas", "Hydrodynastes bicinctus", "Pseudoboa nigra",
+              "Pseudoboa coronata", "Boiruna maculata", "Drepanoides anomalus",
+              "Clelia bicolor", "Phimophis guerini", "Psomophis joberti",
+              "Psomophis genimaculatus", "Leptodeira annulata", "Thamnodynastes rutilus",
+              "Pseudotomodon trigonatus", "Tachymenis peruviana", "Tomodon dorsatus",
+              "Ptychophis flavovirgatus", "Calamodontophis paucidens", "Pseudablabes agassizi",
+              "Philodryas patagoniensis", "Philodryas aestiva", "Philodryas mattogrossensis",
+              "Taeniophallus affinis", "Liophis amarali", "Imantodes cenchoa",
+              "Apostolepis dimidiata", "Phalotris nasutus", "Phalotris lemniscatus",
+              "Apostolepis assimilis", "Elapomorphus quinquelineatus", "Siphlophis pulcher",
+              "Siphlophis compressus", "Dendroaspis polylepis", "Bothrolycus ater",
+              "Bothrophthalmus lineatus", "Bothrophthalmus brunneus", "Lamprophis virgatus",
+              "Lamprophis fuliginosus mentalis", "Lamprophis lineatus",
+              "Lamprophis fuliginosus", "Lamprophis olivaceus", "Lamprophis capensis",
+              "Lamprophis inornatus", "Lycodonomorphus whytii", "Lamprophis fiskii",
+              "Lycodonomorphus rufulus", "Lamprophis guttatus", "Homoroselaps lacteus",
+              "Atractaspis bibronii", "Atractaspis corpulenta", "Atractaspis boulengeri",
+              "Atractaspis micropholis", "Aparallactus modestus", "Polemon collaris",
+              "Polemon acanthias", "Polemon notatum", "Xenocalamus transvaalensis",
+              "Amblyodipsas polylepis", "Macrelaps microlepidotus", "Mehelya nyassae",
+              "Psammophis phillipsi", "Psammophis praeornatus", "Psammophis sp.",
+              "Psammophis schokari", "Prosymna janii", "Dromicodryas bernieri",
+              "Buhoma depressiceps", "Liophidium chabaudi", "Heteroliodon occipitalis",
+              "Lycophidion capense", "Rhamphiophis oxyrhynchus", "Hemirhagerrhis hildebrandtii",
+              "Amplorhinus multimaculatus", "Lycophidion laterale", "Buhoma procterae",
+              "Mehelya stenophthalmus", "Psammodynastes sp.", "Rhamphiophis rostratus",
+              "Pseudaspis cana", "Gonionotophis brussauxi", "Psammophylax rhombeatus",
+              "Psammophylax variabilis", "Mehelya poensis", "Duberria variegata",
+              "Duberria lutrix", "Stenophis citrinus", "Lycodryas sanctijohannis",
+              "Ithycyphus oursi"],
+            ["Lemur catta", "Homo sapiens", "Pan", "Gorilla", "Pongo",
+              "Hylobates", "Macaca fuscata", "Macaca mulatta", "Macaca fascicularis",
+              "Macaca sylvanus", "Saimiri sciureus", "Tarsius syrichta"]
+        ]
+
+    def check_full_dataset_taxon_references(self, dataset):
+        self.check_taxon_set_names(dataset)
+        self.check_taxon_set_taxon_labels(dataset)
+
+    def check_taxon_set_names(self, dataset):
+        self.assertEqual(len(dataset.taxon_sets), len(self.taxon_set_names))
+        for i, tax_label in enumerate(self.taxon_set_names):
+            self.assertEqual(tax_label, dataset.taxon_sets[i].label)
+
+    def check_taxon_set_taxon_labels(self, dataset):
+        self.assertEqual(len(dataset.taxon_sets), len(self.taxon_set_taxon_labels))
+        for i, taxon_set in enumerate(dataset.taxon_sets):
+            tax_labels = self.taxon_set_taxon_labels[i]
+            self.assertEqual(len(tax_labels), len(taxon_set))
+            ds_tax_labels = [t.label for t in taxon_set]
+            self.assertEqual(tax_labels, ds_tax_labels)
