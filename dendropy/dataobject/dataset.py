@@ -86,9 +86,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
     ## CLONING
 
     def __deepcopy__(self, memo):
-        o = self.__class__()
-        memo[id(self)] = o
-
+        o = self.__class__(multi_taxon_set=True)
         for ts0 in self.taxon_sets:
             ts1 = o.new_taxon_set(label=ts0.label)
             memo[id(ts0)] = ts1
@@ -96,7 +94,6 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
                 ts1.new_taxon(label=t.label)
                 memo[id(t)] = ts1[-1]
         memo[id(self.taxon_sets)] = o.taxon_sets
-
         for tli, tl1 in enumerate(self.tree_lists):
             tl2 = o.new_tree_list(label=tl1.label, taxon_set=memo[id(tl1.taxon_set)])
             memo[id(tl1)] = tl2
@@ -105,13 +102,15 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
                 tl2.append(t2)
                 memo[id(t1)] = t2
         memo[id(self.tree_lists)] = o.tree_lists
-
         for cai, ca1 in enumerate(self.char_arrays):
             ca2 = deepcopy(ca1, memo)
             o.char_arrays.add(ca2)
             memo[id(ca1)] = ca2
         memo[id(self.char_arrays)] = o.char_arrays
-
+        if self.bound_taxon_set is not None:
+            o.bound_taxon_set = memo[id(self.bound_taxon_set)]
+        else:
+            o.bound_taxon_set = None
         return o
 
     ###########################################################################

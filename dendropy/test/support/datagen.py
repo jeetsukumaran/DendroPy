@@ -2020,7 +2020,8 @@ def reference_single_taxonset_dataset():
     taxon_set = reference_taxon_set()
     d = dendropy.DataSet(reference_tree_list(taxon_set=taxon_set),
                          reference_dna_array(taxon_set=taxon_set),
-                         reference_standard_array(taxon_set=taxon_set))
+                         reference_standard_array(taxon_set=taxon_set),
+                         taxon_set=taxon_set)
     return d
 
 class RepeatedRandom(Random):

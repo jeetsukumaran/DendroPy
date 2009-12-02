@@ -137,7 +137,7 @@ class DataReader(IOService):
                 self.dataset.add(self.bound_taxon_set)
             return self.bound_taxon_set
         else:
-            return self.dataset.new_taxon_set()
+            return self.dataset.new_taxon_set(**kwargs)
 
 ###############################################################################
 ## DataReader

@@ -225,22 +225,36 @@ class NexmlReader(iosys.DataReader):
         Given an xml_document, parses the XmlElement representation of
         taxon sets, character matrices, and trees into a DataSet object.
         """
-        if self.dataset is None:
-            dataset = dendropy.DataSet()
-        self.parse_taxon_sets(xml_doc, self.dataset)
+        taxon_set_elements = [i for i in xml_doc.getiterator('otus')]
+        if len(taxon_set_elements) > 1:
+            if self.dataset is None:
+                self.dataset = dendropy.DataSet(multi_taxon_set=True)
+            else:
+                if self.dataset.bound_taxon_set is not None:
+                    raise TypeError('Multiple taxon sets in data source, but DataSet object is in bound (single) taxon set mode')
+            self.parse_taxon_sets(taxon_set_elements, self.dataset)
+        elif len(taxon_set_elements) == 1:
+            if self.dataset is None:
+                self.dataset = dendropy.DataSet()
+            nxtaxa = taxon_set_elements[0]
+            taxon_set = self.get_taxon_set(oid=nxtaxa.get('id', None), label=nxtaxa.get('label', None))
+            nxt = _NexmlTaxaParser()
+            nxt.set_taxon_set_from_xml(nxtaxa, taxon_set=taxon_set)
+        else:
+            raise error.DataFormatError("No taxon definitions found in data source")
         if not self.exclude_chars:
             self.parse_char_arrays(xml_doc, self.dataset)
         if not self.exclude_trees:
             self.parse_tree_lists(xml_doc, self.dataset)
         return self.dataset
 
-    def parse_taxon_sets(self, xml_doc, dataset):
+    def parse_taxon_sets(self, taxon_set_elements, dataset):
         """
         Given an xml_document, parses the XmlElement representation of
         taxon sets into a TaxonSets objects.
         """
         nxt = _NexmlTaxaParser()
-        for taxa_element in xml_doc.getiterator('otus'):
+        for taxa_element in taxon_set_elements:
             taxon_set = nxt.parse_taxa(taxa_element, dataset)
 
     def parse_char_arrays(self, xml_doc, dataset):
@@ -369,7 +383,7 @@ class _NexmlTreesParser(_NexmlElementParser):
         taxa_id = nxtrees.get('otus', None)
         if taxa_id is None:
             raise Exception("Taxa block not specified for trees block \"%s\"" % oid)
-        taxon_set = dataset.get_taxon_set(oid = taxa_id)
+        taxon_set = dataset.get_taxon_set(oid=taxa_id)
         if not taxon_set:
             raise Exception("Taxa block \"%s\" not found" % taxa_id)
         tree_list = dendropy.TreeList(oid=oid, label=label, taxon_set=taxon_set)
@@ -541,21 +555,29 @@ class _NexmlTaxaParser(_NexmlElementParser):
         "Does nothing too useful right now."
         super(_NexmlTaxaParser, self).__init__()
 
-    def parse_taxa(self, nxtaxa, dataset):
-        """
-        Given an XmlElement representing a nexml taxa block, this
-        instantiates and returns a corresponding DendroPy Taxa object.
-        """
+    def set_taxon_set_from_xml(self, nxtaxa, taxon_set=None):
         oid = nxtaxa.get('id', None)
         label = nxtaxa.get('label', None)
-        taxon_set = dendropy.TaxonSet(oid=oid, label=label)
+        if taxon_set is None:
+            taxon_set = dendropy.TaxonSet(oid=oid, label=label)
+        else:
+            if oid is not None:
+                taxon_set.oid = oid
+            if label is not None:
+                taxon_set.label = label
         self.parse_annotations(annotated=taxon_set, nxelement=nxtaxa)
         for idx, nxtaxon in enumerate(nxtaxa.getiterator('otu')):
             taxon = dendropy.Taxon(label=nxtaxon.get('label', "Taxon" + str(idx)),
                     oid=nxtaxon.get('id', "s" + str(idx) ), )
             self.parse_annotations(annotated=taxon, nxelement=nxtaxon)
             taxon_set.append(taxon)
-        dataset.taxon_sets.append(taxon_set)
+
+    def parse_taxa(self, nxtaxa, dataset):
+        """
+        Given an XmlElement representing a nexml taxa block, this
+        instantiates and returns a corresponding DendroPy Taxa object.
+        """
+        dataset.taxon_sets.append(set_taxon_set_from_xml(self, nxtaxa))
 
 class _NexmlCharBlockParser(_NexmlElementParser):
     "Parses an XmlElement representation of NEXML taxa blocks."
