@@ -176,7 +176,7 @@ class Readable(object):
         Factory method to return new object of this class from file-like
         object `src`.
         """
-        readable = cls()
+        readable = cls(**kwargs)
         readable.read_from_stream(src, format, **kwargs)
         return readable
     get_from_stream = classmethod(get_from_stream)
@@ -186,7 +186,7 @@ class Readable(object):
         Factory method to return new object of this class from file
         specified by string `src`.
         """
-        readable = cls()
+        readable = cls(**kwargs)
         readable.read_from_path(src, format, **kwargs)
         return readable
     get_from_path = classmethod(get_from_path)
@@ -195,7 +195,7 @@ class Readable(object):
         """
         Factory method to return new object of this class from string `src`.
         """
-        readable = cls()
+        readable = cls(**kwargs)
         readable.read_from_string(src, format, **kwargs)
         return readable
     get_from_string = classmethod(get_from_string)

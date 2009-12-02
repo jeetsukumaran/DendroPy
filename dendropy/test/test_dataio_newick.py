@@ -203,15 +203,6 @@ class NewickDocumentReaderTest(datatest.DataObjectVerificationTestCase):
         test_dataset = dendropy.DataSet(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick")), format="newick")
         self.assertDistinctButEqual(self.reference_dataset, test_dataset, ignore_taxon_order=True)
 
-    def testMultiDocumentParse(self):
-        test_dataset = dendropy.DataSet()
-        test_dataset.read(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick")), format="newick")
-        test_dataset.read(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick")), format="newick")
-        self.assertEqual(len(test_dataset.taxon_sets), 2)
-        self.assertEqual(len(test_dataset.tree_lists), 2)
-        self.assertDistinctButEqual(test_dataset.taxon_sets[0], test_dataset.taxon_sets[1])
-        self.assertDistinctButEqual(test_dataset.tree_lists[0], test_dataset.tree_lists[1], distinct_taxa=True)
-
 class NewickDocumentWriterTest(datatest.DataObjectVerificationTestCase):
 
     def setUp(self):

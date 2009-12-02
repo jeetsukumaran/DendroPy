@@ -59,12 +59,11 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         self.taxon_sets = containers.OrderedSet()
         self.tree_lists = containers.OrderedSet()
         self.char_arrays = containers.OrderedSet()
-        if kwargs.get("fixed_taxon_set", False):
-            self.bind_taxon_set(kwargs.get("taxon_set", None))
-        elif kwargs.get("taxon_set", None) is not None:
-            self.bind_taxon_set(kwargs["taxon_set"])
-        else:
+        self.bound_taxon_set = None
+        if kwargs.get("multi_taxon_set", False):
             self.bound_taxon_set = None
+        else:
+            self.bind_taxon_set(kwargs.get("taxon_set", None))
         if len(args) > 0:
             if ("stream" in kwargs and kwargs["stream"] is not None) \
                     or ("format" in kwargs and kwargs["format"] is not None):
@@ -157,7 +156,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
             if "taxon_set" not in kwargs:
                 kwargs["taxon_set"] = self.bound_taxon_set
             elif kwargs["taxon_set"] is not self.bound_taxon_set:
-                raise TypeError("DataSet object is already bound to a TaxonSet, but different TaxonSet passed to read() using 'taxon_set' keyword argument")
+                raise TypeError("DataSet object is already bound to a TaxonSet, but different TaxonSet passed to using 'taxon_set' keyword argument")
         reader = get_reader(format=format, **kwargs)
         reader.read(stream, **kwargs)
 
@@ -179,6 +178,11 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         from dendropy.utility.iosys import require_format_from_kwargs
         from dendropy.dataio import get_writer
         kwargs["dataset"] = self
+#        if self.bound_taxon_set is not None:
+#            if "taxon_set" not in kwargs:
+#                kwargs["taxon_set"] = self.bound_taxon_set
+#            elif kwargs["taxon_set"] is not self.bound_taxon_set:
+#                raise TypeError("DataSet object is already bound to a TaxonSet, but different TaxonSet passed using 'taxon_set' keyword argument")
         writer = get_writer(format=format, **kwargs)
         writer.write(stream, **kwargs)
 

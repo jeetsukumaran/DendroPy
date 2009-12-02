@@ -78,8 +78,8 @@ class DataSetCreateTest(datatest.DataObjectVerificationTestCase):
 
 class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
 
-    def testNoBinding(self):
-        d = dendropy.DataSet(fixed_taxon_set=False)
+    def testMultiTaxonSet(self):
+        d = dendropy.DataSet(multi_taxon_set=True)
         d.read_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
         self.assertEqual(len(d.taxon_sets), 1)
         self.assertEqual(len(d.taxon_sets[0]), 29)
@@ -93,8 +93,8 @@ class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
         self.assertEqual(len(d.taxon_sets), 4)
         self.assertEqual(len(d.taxon_sets[3]), 114)
 
-    def testBindingEmpty(self):
-        d = dendropy.DataSet(fixed_taxon_set=True)
+    def testBoundTaxonSetDefault(self):
+        d = dendropy.DataSet()
         self.assertEqual(len(d.taxon_sets), 1)
         self.assertSame(d.taxon_sets[0], d.bound_taxon_set)
         d.read_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
@@ -111,7 +111,7 @@ class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
         self.assertEqual(len(d.taxon_sets[0]), 143)
 
     def testBindAndUnbind(self):
-        d = dendropy.DataSet(fixed_taxon_set=True)
+        d = dendropy.DataSet()
         self.assertEqual(len(d.taxon_sets), 1)
         self.assertSame(d.taxon_sets[0], d.bound_taxon_set)
         d.read_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
@@ -130,7 +130,7 @@ class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
         self.assertEqual(len(d.taxon_sets[1]), 114)
 
     def testBindToSpecifiedTaxonSet(self):
-        d = dendropy.DataSet()
+        d = dendropy.DataSet(multi_taxon_set=True)
         t = dendropy.TaxonSet()
         d.bind_taxon_set(t)
         self.assertEqual(len(d.taxon_sets), 1)
