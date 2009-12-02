@@ -198,7 +198,8 @@ class NexusReader(iosys.DataReader):
                 self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
                 link_title = None
                 taxon_set = None
-                trees_block = None
+#                trees_block = None
+#                block_title = None
 #                prepared_to_parse_trees = False
                 while not (token == 'END' or token == 'ENDBLOCK') \
                     and not self.stream_tokenizer.eof \
@@ -206,6 +207,9 @@ class NexusReader(iosys.DataReader):
                     token = self.stream_tokenizer.read_next_token_ucase()
                     if token == 'LINK':
                         link_title = self._parse_link_statement()
+#                    if token == 'TITLE':
+#                        token = self.stream_tokenizer.read_next_token_ucase()
+#                        block_title = token
                     if token == 'TRANSLATE':
                         if not taxon_set:
                             taxon_set = self._get_taxon_set(link_title)
@@ -213,8 +217,8 @@ class NexusReader(iosys.DataReader):
                     if token == 'TREE':
                         if not taxon_set:
                             taxon_set = self._get_taxon_set(link_title)
-                        if not trees_block:
-                            trees_block = self.dataset.new_tree_list(taxon_set=taxon_set)
+#                        if not trees_block:
+#                            trees_block = self.dataset.new_tree_list(taxon_set=taxon_set, label=block_title)
 #                        if not prepared_to_parse_trees:
 #                            self._prepare_to_parse_trees(taxon_set)
 #                            prepared_to_parse_trees = True
@@ -732,6 +736,7 @@ class NexusReader(iosys.DataReader):
             link_title = None
             taxon_set = None
             trees_block = None
+            block_title = None
 #            prepared_to_parse_trees = False
             while not (token == 'END' or token == 'ENDBLOCK') \
                 and not self.stream_tokenizer.eof \
@@ -739,6 +744,9 @@ class NexusReader(iosys.DataReader):
                 token = self.stream_tokenizer.read_next_token_ucase()
                 if token == 'LINK':
                     link_title = self._parse_link_statement()
+                if token == 'TITLE':
+                    token = self.stream_tokenizer.read_next_token_ucase()
+                    block_title = token
                 if token == 'TRANSLATE':
                     if not taxon_set:
                         taxon_set = self._get_taxon_set(link_title)
@@ -747,7 +755,7 @@ class NexusReader(iosys.DataReader):
                     if not taxon_set:
                         taxon_set = self._get_taxon_set(link_title)
                     if not trees_block:
-                        trees_block = self.dataset.new_tree_list(taxon_set=taxon_set)
+                        trees_block = self.dataset.new_tree_list(taxon_set=taxon_set, label=block_title)
 #                    if not prepared_to_parse_trees:
 #                        self._prepare_to_parse_trees(taxon_set)
 #                        prepared_to_parse_trees = True
