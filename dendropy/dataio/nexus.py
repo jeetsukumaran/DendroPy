@@ -143,7 +143,6 @@ class NexusReader(iosys.DataReader):
         self.rooting_interpreter.update(**kwargs)
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
-        self._current_taxon_set = self.get_taxon_set(**kwargs)
         self._prepare_to_read_from_stream(stream)
         self._parse_nexus_file()
         self.reset()
@@ -197,16 +196,30 @@ class NexusReader(iosys.DataReader):
             if token == 'TAXA':
                 self._parse_taxa_block()
             elif token == 'TREES':
-                self._prepare_to_parse_trees()
                 self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
+                link_title = None
+                taxon_set = None
+                trees_block = None
+                prepared_to_parse_trees = False
                 while not (token == 'END' or token == 'ENDBLOCK') \
                     and not self.stream_tokenizer.eof \
                     and not token==None:
                     token = self.stream_tokenizer.read_next_token_ucase()
+                    if token == 'LINK':
+                        link_title = self._parse_link_statement()
                     if token == 'TRANSLATE':
-                        self._parse_translate_statement()
+                        if not taxon_set:
+                            taxon_set = self._get_taxon_set(link_title)
+                        self._parse_translate_statement(taxon_set)
                     if token == 'TREE':
-                        tree = self._parse_tree_statement()
+                        if not taxon_set:
+                            taxon_set = self._get_taxon_set(link_title)
+                        if not trees_block:
+                            trees_block = self.dataset.new_tree_list(taxon_set=taxon_set)
+                        if not prepared_to_parse_trees:
+                            self._prepare_to_parse_trees(taxon_set)
+                            prepared_to_parse_trees = True
+                        tree = self._parse_tree_statement(taxon_set)
                         yield tree
                 self.stream_tokenizer.skip_to_semicolon() # move past END command
             else:
@@ -227,7 +240,7 @@ class NexusReader(iosys.DataReader):
         self.match_char = '.'
         self.tree_translate_dict = {}
         self.tax_label_lookup = {}
-        self._current_taxon_set = None
+        self.taxa_blocks = {}
 
     def data_format_error(self, message):
         """
@@ -254,26 +267,31 @@ class NexusReader(iosys.DataReader):
     ###########################################################################
     ## DATA MANAGEMENT
 
-    def _get_current_taxon_set(self):
-        """
-        In the future, we may allow for multiple taxon sets, in which
-        case this will return the most-recently read taxon set or
-        retrieve a particular one based on a LINK or some such statement.
-        """
-        if self._current_taxon_set is None:
-            self._current_taxon_set = self.get_taxon_set()
-        return self._current_taxon_set
+    def _new_taxon_set(self, title=None):
+        if self.bound_taxon_set is not None:
+            return self.bound_taxon_set
+        if title is None:
+            title = 'DEFAULT'
+        taxon_set = self.dataset.new_taxon_set(label=title)
+        self.taxa_blocks[title] = taxon_set
+        return taxon_set
 
-    def _set_current_taxon_set(self, taxon_set):
-        self._current_taxon_set = taxon_set
-        if self._current_taxon_set not in self.dataset.taxon_sets:
-            self.dataset.taxon_sets.add(self._current_taxon_set)
-
-    current_taxon_set = property(_get_current_taxon_set, _set_current_taxon_set)
-
-    def _get_new_taxon_set(self):
-        """For now, we restrict NEXUS data to single taxon sets."""
-        return self.current_taxon_set
+    def _get_taxon_set(self, title=None):
+        if self.bound_taxon_set is not None:
+            return self.bound_taxon_set
+        if title is None:
+            if len(self.taxa_blocks) == 0:
+                self.taxa_blocks['DEFAULT'] = self.get_default_taxon_set()
+                return self.taxa_blocks['DEFAULT']
+            elif len(self.taxa_blocks) == 1:
+                return self.taxa_blocks.values()[0]
+            else:
+                raise self.data_format_error("Multiple taxa blocks defined: require 'LINK' statement")
+        else:
+            if title in self.taxa_blocks:
+                return self.taxa_blocks[title]
+            else:
+                raise self.data_format_error("TaxaBlock with title '%s' not found" % title)
 
     ###########################################################################
     ## MAIN STREAM PARSE DRIVER
@@ -295,32 +313,41 @@ class NexusReader(iosys.DataReader):
                 elif token == 'CHARACTERS':
                     if not self.exclude_chars:
                         self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
+                        link_title = None
                         while not (token == 'END' or token == 'ENDBLOCK') \
                                 and not self.stream_tokenizer.eof \
                                 and not token==None:
                             token = self.stream_tokenizer.read_next_token_ucase()
+                            if token == "LINK":
+                                link_title = self._parse_link_statement()
                             if token == 'DIMENSIONS':
                                 self._parse_dimensions_statement()
                             if token == 'FORMAT':
                                 self._parse_format_statement()
                             if token == 'MATRIX':
-                                self._parse_matrix_statement()
+                                self._parse_matrix_statement(link_title)
                         self.stream_tokenizer.skip_to_semicolon() # move past END command
                     else:
                         token = self._consume_to_end_of_block(token)
                 elif token == 'DATA':
-                    self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
-                    while not (token == 'END' or token == 'ENDBLOCK') \
-                            and not self.stream_tokenizer.eof \
-                            and not token==None:
-                        token = self.stream_tokenizer.read_next_token_ucase()
-                        if token == 'DIMENSIONS':
-                            self._parse_dimensions_statement()
-                        if token == 'FORMAT':
-                            self._parse_format_statement()
-                        if token == 'MATRIX':
-                            self._parse_matrix_statement()
-                    self.stream_tokenizer.skip_to_semicolon() # move past END command
+                    if not self.exclude_chars:
+                        self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
+                        link_title = None
+                        while not (token == 'END' or token == 'ENDBLOCK') \
+                                and not self.stream_tokenizer.eof \
+                                and not token==None:
+                            token = self.stream_tokenizer.read_next_token_ucase()
+                            if token == "LINK":
+                                link_title = self._parse_link_statement()
+                            if token == 'DIMENSIONS':
+                                self._parse_dimensions_statement()
+                            if token == 'FORMAT':
+                                self._parse_format_statement()
+                            if token == 'MATRIX':
+                                self._parse_matrix_statement(link_title)
+                        self.stream_tokenizer.skip_to_semicolon() # move past END command
+                    else:
+                        token = self._consume_to_end_of_block(token)
                 elif token == 'TREES':
                     self._parse_trees_block()
                 else:
@@ -330,37 +357,67 @@ class NexusReader(iosys.DataReader):
         return self.dataset
 
     ###########################################################################
-    ## TAXA BLOCK PARSERS
+    ## TAXA BLOCK / LINK PARSERS
 
     def _parse_taxa_block(self):
         token = ''
         self.stream_tokenizer.skip_to_semicolon() # move past BEGIN statement
+        title = None
+        taxon_set = None
         while not (token == 'END' or token == 'ENDBLOCK') \
             and not self.stream_tokenizer.eof \
             and not token==None:
             token = self.stream_tokenizer.read_next_token_ucase()
+            if token == "TITLE":
+                token = self.stream_tokenizer.read_next_token_ucase()
+                taxon_set = self._new_taxon_set(token)
             if token == 'DIMENSIONS':
                 self._parse_dimensions_statement()
             if token == 'TAXLABELS':
-                self._parse_taxlabels_statement()
+                if taxon_set is None:
+                    taxon_set = self._new_taxon_set()
+                self._parse_taxlabels_statement(taxon_set)
         self.stream_tokenizer.skip_to_semicolon() # move past END statement
 
-    def _parse_taxlabels_statement(self):
+    def _parse_taxlabels_statement(self, taxon_set=None):
         """
         Processes a TAXLABELS command. Assumes that the file reader is
         positioned right after the "TAXLABELS" token in a TAXLABELS command.
         """
+        if taxon_set is None:
+            taxon_set = self._get_taxon_set()
         token = self.stream_tokenizer.read_next_token()
         while token != ';':
             label = token
-            if self.current_taxon_set.has_taxon(label=label):
+            if taxon_set.has_taxon(label=label):
                 pass
-            elif len(self.current_taxon_set) >= self.file_specified_ntax:
+            elif len(taxon_set) >= self.file_specified_ntax and not self.bound_taxon_set:
                 raise self.data_format_error("Cannot add '%s':" % label \
                                       + " Declared number of taxa (%d) already defined: %s" % (self.file_specified_ntax,
                                           str([("%s" % t.label) for t in self.current_taxon_set])))
-            self.current_taxon_set.require_taxon(label=label)
+            taxon_set.require_taxon(label=label)
             token = self.stream_tokenizer.read_next_token()
+
+    def _parse_link_statement(self):
+        """
+        Processes a MESQUITE 'LINK' statement.
+        """
+        link_type = None
+        link_title = None
+        token = self.stream_tokenizer.read_next_token_ucase()
+        while token != ';':
+            if token == 'TAXA':
+                token = self.stream_tokenizer.read_next_token_ucase()
+                if token != "=":
+                    raise self.data_format_error("Expecting '=' after LINK TAXA")
+                token = self.stream_tokenizer.read_next_token_ucase()
+                title = token
+                break
+            else:
+                break
+        if token != ";":
+            self.stream_tokenizer.skip_to_semicolon()
+        return title
 
     ###########################################################################
     ## CHARACTER/DATA BLOCK PARSERS AND SUPPORT
@@ -486,7 +543,7 @@ class NexusReader(iosys.DataReader):
                     raise self.data_format_error("Expecting '=' after NCHAR keyword")
             token = self.stream_tokenizer.read_next_token_ucase()
 
-    def _parse_matrix_statement(self):
+    def _parse_matrix_statement(self, link_title=None):
         """
         Processes a MATRIX command. Assumes that the file reader
         is positioned right after the "MATRIX" token in a MATRIX command,
@@ -497,8 +554,9 @@ class NexusReader(iosys.DataReader):
         elif not self.file_specified_nchar:
             raise self.data_format_error('NCHAR must be defined by DIMENSIONS command to non-zero value before MATRIX command')
 
+        taxon_set = self._get_taxon_set(link_title)
         char_block = self.dataset.new_char_array(char_array_type=self.char_block_type, \
-            taxon_set=self.current_taxon_set)
+            taxon_set=taxon_set)
 
         if isinstance(char_block, dataobject.StandardCharacterArray):
             self._build_state_alphabet(char_block, self.symbols)
@@ -507,7 +565,7 @@ class NexusReader(iosys.DataReader):
 
         token = self.stream_tokenizer.read_next_token()
         while token != ';' and not self.stream_tokenizer.eof:
-            taxon = self.current_taxon_set.require_taxon(label=token)
+            taxon = taxon_set.require_taxon(label=token)
             if taxon not in char_block:
                 if not self.exclude_chars:
                     char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
@@ -609,13 +667,13 @@ class NexusReader(iosys.DataReader):
     ###########################################################################
     ## TREE / TREE BLOCK PARSERS
 
-    def _prepare_to_parse_trees(self):
+    def _prepare_to_parse_trees(self, taxon_set):
             self.tree_translate_dict = {}
             self.tax_label_lookup = {}
-            for n, t in enumerate(self.current_taxon_set):
+            for n, t in enumerate(taxon_set):
                 self.tree_translate_dict[str(n + 1)] = t
             # add labels second so that numbers have priority over number
-            for n, t in enumerate(self.current_taxon_set):
+            for n, t in enumerate(taxon_set):
                 l = t.label
                 self.tree_translate_dict[l] = t
                 self.tax_label_lookup[l] = t
@@ -623,7 +681,7 @@ class NexusReader(iosys.DataReader):
                     ti = self.current_taxon_set.index(t)
                     t.split_bitmask = (1 << ti)
 
-    def _parse_tree_statement(self):
+    def _parse_tree_statement(self, taxon_set=None):
         """
         Processes a TREE command. Assumes that the file reader is
         positioned right after the "TREE" token in a TREE command.
@@ -637,7 +695,7 @@ class NexusReader(iosys.DataReader):
         if token != '=':
             raise self.data_format_error("Expecting '=' in definition of Tree '%s' but found '%s'" % (tree_name, token))
         tree = nexustokenizer.parse_tree_from_stream(stream_tokenizer=self.stream_tokenizer,
-                taxon_set=self.current_taxon_set,
+                taxon_set=taxon_set,
                 translate_dict=self.tree_translate_dict,
                 encode_splits=self.encode_splits,
                 rooting_interpreter=self.rooting_interpreter,
@@ -647,7 +705,7 @@ class NexusReader(iosys.DataReader):
             self.stream_tokenizer.skip_to_semicolon()
         return tree
 
-    def _parse_translate_statement(self):
+    def _parse_translate_statement(self, taxon_set):
         """
         Processes a TRANSLATE command. Assumes that the file reader is
         positioned right after the "TRANSLATE" token in a TRANSLATE command.
@@ -658,7 +716,7 @@ class NexusReader(iosys.DataReader):
             translation_label = self.stream_tokenizer.read_next_token()
             t = self.tax_label_lookup.get(translation_label)
             if t is None:
-                t = self.current_taxon_set.require_taxon(label=translation_label)
+                t = taxon_set.require_taxon(label=translation_label)
             self.tree_translate_dict[translation_token] = t
 
             token = self.stream_tokenizer.read_next_token() # ","
@@ -670,17 +728,30 @@ class NexusReader(iosys.DataReader):
     def _parse_trees_block(self):
         token = 'TREES'
         if not self.exclude_trees:
-            trees_block = self.dataset.new_tree_list(taxon_set=self.current_taxon_set)
-            self._prepare_to_parse_trees()
             self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
+            link_title = None
+            taxon_set = None
+            trees_block = None
+            prepared_to_parse_trees = False
             while not (token == 'END' or token == 'ENDBLOCK') \
                 and not self.stream_tokenizer.eof \
                 and not token==None:
                 token = self.stream_tokenizer.read_next_token_ucase()
+                if token == 'LINK':
+                    link_title = self._parse_link_statement()
                 if token == 'TRANSLATE':
-                    self._parse_translate_statement()
+                    if not taxon_set:
+                        taxon_set = self._get_taxon_set(link_title)
+                    self._parse_translate_statement(taxon_set)
                 if token == 'TREE':
-                    tree = self._parse_tree_statement()
+                    if not taxon_set:
+                        taxon_set = self._get_taxon_set(link_title)
+                    if not trees_block:
+                        trees_block = self.dataset.new_tree_list(taxon_set=taxon_set)
+                    if not prepared_to_parse_trees:
+                        self._prepare_to_parse_trees(taxon_set)
+                        prepared_to_parse_trees = True
+                    tree = self._parse_tree_statement(taxon_set)
                     trees_block.append(tree, reindex_taxa=False)
             self.stream_tokenizer.skip_to_semicolon() # move past END command
         else:

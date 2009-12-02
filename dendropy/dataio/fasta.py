@@ -50,7 +50,7 @@ class FastaReader(iosys.DataReader):
         simple_rows = kwargs.get('row_type', 'rich').upper() == 'STR'
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
-        taxon_set = self.get_taxon_set(**kwargs)
+        taxon_set = self.get_default_taxon_set(**kwargs)
         char_array = self.dataset.new_char_array(char_array_type=self.char_array_type, taxon_set=taxon_set)
         char_array.taxon_set = taxon_set
         symbol_state_map = char_array.default_state_alphabet.symbol_state_map()

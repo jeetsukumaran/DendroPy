@@ -240,7 +240,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         else:
             raise error.InvalidArgumentValueError("Cannot add object of type '%s' to DataSet" % type(arg))
 
-    def get_taxon_set(self, **kwargs):
+    def get_default_taxon_set(self, **kwargs):
         """
         Returns an existing `TaxonSet` object in this `DataSet`, selected
         by keywords `oid` or `label`.
@@ -252,7 +252,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
             attr = 'label'
             val = kwargs['label']
         else:
-            raise Exception("'get_taxon_set' only requires keywords 'oid' or 'label'")
+            raise Exception("'get_default_taxon_set' only requires keywords 'oid' or 'label'")
         for t in self.taxon_sets:
             if getattr(t, attr) == val:
                 return t

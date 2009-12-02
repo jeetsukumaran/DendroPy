@@ -170,7 +170,7 @@ class NewickReader(iosys.DataReader):
         self.rooting_interpreter.update(**kwargs)
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
-        taxon_set = self.get_taxon_set(**kwargs)
+        taxon_set = self.get_default_taxon_set(**kwargs)
         tree_list = self.dataset.new_tree_list(taxon_set=taxon_set)
         kwargs["taxon_set"] = taxon_set
         kwargs["rooting_interpreter"] = self.rooting_interpreter

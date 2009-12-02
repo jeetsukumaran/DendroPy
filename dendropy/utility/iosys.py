@@ -119,7 +119,7 @@ class DataReader(IOService):
         """
         raise NotImplementedError
 
-    def get_taxon_set(self, **kwargs):
+    def get_default_taxon_set(self, **kwargs):
         """
         Returns an appropriate TaxonSet object, based on current settings.
         """

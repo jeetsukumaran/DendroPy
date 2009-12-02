@@ -237,7 +237,7 @@ class NexmlReader(iosys.DataReader):
             if self.dataset is None:
                 self.dataset = dendropy.DataSet()
             nxtaxa = taxon_set_elements[0]
-            taxon_set = self.get_taxon_set(oid=nxtaxa.get('id', None), label=nxtaxa.get('label', None))
+            taxon_set = self.get_default_taxon_set(oid=nxtaxa.get('id', None), label=nxtaxa.get('label', None))
             nxt = _NexmlTaxaParser()
             nxt.set_taxon_set_from_xml(nxtaxa, taxon_set=taxon_set)
         else:
@@ -383,7 +383,7 @@ class _NexmlTreesParser(_NexmlElementParser):
         taxa_id = nxtrees.get('otus', None)
         if taxa_id is None:
             raise Exception("Taxa block not specified for trees block \"%s\"" % oid)
-        taxon_set = dataset.get_taxon_set(oid=taxa_id)
+        taxon_set = dataset.get_default_taxon_set(oid=taxa_id)
         if not taxon_set:
             raise Exception("Taxa block \"%s\" not found" % taxa_id)
         tree_list = dendropy.TreeList(oid=oid, label=label, taxon_set=taxon_set)
@@ -713,7 +713,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         taxa_id = nxchars.get('otus', None)
         if taxa_id is None:
             raise Exception("Character Block %s (\"%s\"): Taxa block not specified for trees block \"%s\"" % (char_array.oid, char_array.label, char_array.oid))
-        taxon_set = dataset.get_taxon_set(oid = taxa_id)
+        taxon_set = dataset.get_default_taxon_set(oid = taxa_id)
         if not taxon_set:
             raise Exception("Character Block %s (\"%s\"): Taxa block \"%s\" not found" % (char_array.oid, char_array.label, taxa_id))
         char_array.taxon_set = taxon_set
