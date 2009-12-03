@@ -119,7 +119,7 @@ So, for example, the following is logically identical to the previous::
     >>> mcmc2.read_from_path('pythonidae.mcmc2.nex', 'nexus')
 
 Taxon Management with Character Matrices
-======================================
+========================================
 
 Taxon management with :class:`~dendropy.dataobject.char.CharacterMatrix`-derived objects work very much the same as it does with :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.tree.TreeList objects`: every time a :class:`~dendropy.dataobject.char.CharacterMatrix`-derived object is independentally created or read, a new :class:`~dendropy.dataobject.taxon.TaxonSet` is created, unless an existing one is specified.
 Thus, again, if you are creating multiple character matrices that refer to the same set of taxa, you will want to make sure to pass each of them a common :class:`~dendropy.dataobject.taxon.TaxonSet` reference::
