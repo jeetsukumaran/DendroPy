@@ -169,7 +169,8 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         of the reader specialized to handle `format` formats.
         """
         from dendropy.dataobject.dataset import DataSet
-        index = kwargs.get("from_index", 0)
+        tree_index = kwargs.get("from_index", 0)
+        tree_list_index = kwargs.get("from_collection", 0)
         if "taxon_set" in kwargs:
             if kwargs["taxon_set"] is not self.taxon_set and len(self) > 0:
                 raise Exception("Cannot specify a different TaxonSet when reading into a populated TreeList.")
@@ -180,13 +181,14 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         d = DataSet(stream=stream, format=format, **kwargs)
         if len(d.tree_lists) == 0:
             raise ValueError("No tree_lists in data source")
-        if index >= len(d.tree_lists):
+        if tree_list_index >= len(d.tree_lists):
             raise IndexError("Tree list of index %d specified, but data source only has %d tree collections defined (max. index=%d)" \
-                % (index, len(d.tree_lists), len(d.tree_lists)-1))
-        if self.label is None and len(self) == 0 and d.tree_lists[index].label is not None:
-            self.label = d.tree_lists[index].label
-        for t in d.tree_lists[index]:
-            self.append(t, reindex_taxa=False)
+                % (tree_list_index, len(d.tree_lists), len(d.tree_lists)-1))
+        if self.label is None and len(self) == 0 and d.tree_lists[tree_list_index].label is not None:
+            self.label = d.tree_lists[tree_list_index].label
+        for i, t in enumerate(d.tree_lists[tree_list_index]):
+            if i >= tree_index:
+                self.append(t, reindex_taxa=False)
 
     def write(self, stream, format, **kwargs):
         """
