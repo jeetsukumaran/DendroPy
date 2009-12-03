@@ -181,12 +181,12 @@ While this approach works to ensure correct taxon mapping across multiple data o
 Attached (Single) Taxon Set Mode
 --------------------------------
 In the "attached taxon set" mode, :class:`~dendropy.dataobject.dataset.DataSet` objects ensure that the taxon references of all data objects that are added to them are mapped to the same :class:`~dendropy.dataobject.taxon.TaxonSet` object (at least one for each independent read or creation operation).
-The "attached taxon set" mode can be set by passing the keyword argument ``attached_taxon_set=True`` to the constructor of the :class:`~dendropy.dataobject.dataset.DataSet` when instantiating a new :class:`~dendropy.dataobject.dataset.DataSet` object (in which case a new :class:`~dendropy.dataobject.taxon.TaxonSet` object will be created and added to the :class:`~dendropy.dataobject.dataset.DataSet` object as the default), by passing an existing :class:`~dendropy.dataobject.taxon.TaxonSet` object to which to attach using the keyword argument ``taxon_set``, or by calling :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` on an existing :class:`~dendropy.dataobject.dataset.DataSet` object
+The "attached taxon set" mode can be set by passing the keyword argument ``attach_taxon_set=True`` to the constructor of the :class:`~dendropy.dataobject.dataset.DataSet` when instantiating a new :class:`~dendropy.dataobject.dataset.DataSet` object (in which case a new :class:`~dendropy.dataobject.taxon.TaxonSet` object will be created and added to the :class:`~dendropy.dataobject.dataset.DataSet` object as the default), by passing an existing :class:`~dendropy.dataobject.taxon.TaxonSet` object to which to attach using the keyword argument ``taxon_set``, or by calling :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` on an existing :class:`~dendropy.dataobject.dataset.DataSet` object
 
 For example::
 
     >>> import dendropy
-    >>> ds = dendropy.DataSet(attached_taxon_set=True)
+    >>> ds = dendropy.DataSet(attach_taxon_set=True)
     >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
     >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
     >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")

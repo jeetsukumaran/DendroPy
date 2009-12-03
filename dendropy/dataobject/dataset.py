@@ -60,7 +60,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         self.tree_lists = containers.OrderedSet()
         self.char_matrices = containers.OrderedSet()
         self.attached_taxon_set = None
-        if kwargs.get("attached_taxon_set", False):
+        if kwargs.get("attach_taxon_set", False):
             self.attach_taxon_set(kwargs.get("taxon_set", None))
         elif kwargs.get("taxon_set", None) is not None:
             self.attach_taxon_set(kwargs["taxon_set"])
