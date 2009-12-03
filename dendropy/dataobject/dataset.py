@@ -59,17 +59,17 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         self.taxon_sets = containers.OrderedSet()
         self.tree_lists = containers.OrderedSet()
         self.char_matrices = containers.OrderedSet()
-        self.bound_taxon_set = None
-        if kwargs.get("bound_taxon_set", False):
-            self.bind_taxon_set(kwargs.get("taxon_set", None))
+        self.attached_taxon_set = None
+        if kwargs.get("attached_taxon_set", False):
+            self.attach_taxon_set(kwargs.get("taxon_set", None))
         elif kwargs.get("taxon_set", None) is not None:
-            self.bind_taxon_set(kwargs["taxon_set"])
+            self.attach_taxon_set(kwargs["taxon_set"])
         else:
-            self.bound_taxon_set = None
+            self.attached_taxon_set = None
 #        if kwargs.get("multi_taxon_set", False):
-#            self.bound_taxon_set = None
+#            self.attached_taxon_set = None
 #        else:
-#            self.bind_taxon_set(kwargs.get("taxon_set", None))
+#            self.attach_taxon_set(kwargs.get("taxon_set", None))
         if len(args) > 0:
             if ("stream" in kwargs and kwargs["stream"] is not None) \
                     or ("format" in kwargs and kwargs["format"] is not None):
@@ -84,8 +84,8 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
                     else:
                         self.add(arg)
         elif "stream" in kwargs:
-            if self.bound_taxon_set is not None:
-                kwargs["taxon_set"] = self.bound_taxon_set
+            if self.attached_taxon_set is not None:
+                kwargs["taxon_set"] = self.attached_taxon_set
             self.process_source_kwargs(**kwargs)
 
     ###########################################################################
@@ -113,10 +113,10 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
             o.char_matrices.add(ca2)
             memo[id(ca1)] = ca2
         memo[id(self.char_matrices)] = o.char_matrices
-        if self.bound_taxon_set is not None:
-            o.bound_taxon_set = memo[id(self.bound_taxon_set)]
+        if self.attached_taxon_set is not None:
+            o.attached_taxon_set = memo[id(self.attached_taxon_set)]
         else:
-            o.bound_taxon_set = None
+            o.attached_taxon_set = None
         return o
 
     ###########################################################################
@@ -157,11 +157,11 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         from dendropy.utility import iosys
         from dendropy.dataio import get_reader
         kwargs["dataset"] = self
-        if self.bound_taxon_set is not None:
+        if self.attached_taxon_set is not None:
             if "taxon_set" not in kwargs:
-                kwargs["taxon_set"] = self.bound_taxon_set
-            elif kwargs["taxon_set"] is not self.bound_taxon_set:
-                raise TypeError("DataSet object is already bound to a TaxonSet, but different TaxonSet passed to using 'taxon_set' keyword argument")
+                kwargs["taxon_set"] = self.attached_taxon_set
+            elif kwargs["taxon_set"] is not self.attached_taxon_set:
+                raise TypeError("DataSet object is already attached to a TaxonSet, but different TaxonSet passed to using 'taxon_set' keyword argument")
         reader = get_reader(format=format, **kwargs)
         reader.read(stream, **kwargs)
 
@@ -183,11 +183,11 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         from dendropy.utility.iosys import require_format_from_kwargs
         from dendropy.dataio import get_writer
         kwargs["dataset"] = self
-#        if self.bound_taxon_set is not None:
+#        if self.attached_taxon_set is not None:
 #            if "taxon_set" not in kwargs:
-#                kwargs["taxon_set"] = self.bound_taxon_set
-#            elif kwargs["taxon_set"] is not self.bound_taxon_set:
-#                raise TypeError("DataSet object is already bound to a TaxonSet, but different TaxonSet passed using 'taxon_set' keyword argument")
+#                kwargs["taxon_set"] = self.attached_taxon_set
+#            elif kwargs["taxon_set"] is not self.attached_taxon_set:
+#                raise TypeError("DataSet object is already attached to a TaxonSet, but different TaxonSet passed using 'taxon_set' keyword argument")
         writer = get_writer(format=format, **kwargs)
         writer.write(stream, **kwargs)
 
@@ -274,21 +274,21 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         self.add_taxon_set(t)
         return t
 
-    def bind_taxon_set(self, taxon_set=None):
+    def attach_taxon_set(self, taxon_set=None):
         """
         Forces all read() calls on this DataSet to use the same TaxonSet. If
         `taxon_set` If `taxon_set` is None, then a new TaxonSet will be
         created, added to self.taxa, and that is the TaxonSet that will be
-        bound.
+        attached.
         """
         if taxon_set is None:
             taxon_set = self.new_taxon_set()
         elif taxon_set not in self.taxon_sets:
             self.add_taxon_set(taxon_set)
-        self.bound_taxon_set = taxon_set
+        self.attached_taxon_set = taxon_set
 
-    def unbind_taxon_set(self):
-        self.bound_taxon_set = None
+    def detach_taxon_set(self):
+        self.attached_taxon_set = None
 
     def unify_taxa(self, taxon_set=None, bind=True):
         """
@@ -303,12 +303,12 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
             for char_matrix in self.char_matrices:
                 char_matrix.reindex_taxa(taxon_set=self.taxon_set, clear=False)
         if bind:
-            self.bind_taxon_set(taxon_set)
+            self.attach_taxon_set(taxon_set)
 
     def add_tree_list(self, tree_list):
         "Accession of existing `TreeList` object into `tree_lists` of self."
-        if self.bound_taxon_set is not None:
-            tree_list.reindex_taxa(taxon_set=self.bound_taxon_set, clear=False)
+        if self.attached_taxon_set is not None:
+            tree_list.reindex_taxa(taxon_set=self.attached_taxon_set, clear=False)
         elif tree_list.taxon_set not in self.taxon_sets:
             self.taxon_sets.add(tree_list.taxon_set)
         self.tree_lists.add(tree_list)
@@ -316,18 +316,18 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
 
     def new_tree_list(self, *args, **kwargs):
         "Creation and accession of new `TreeList` into `trees` of self."
-        if self.bound_taxon_set is not None:
-            if "taxon_set" in kwargs and kwargs["taxon_set"] is not self.bound_taxon_set:
-                raise TypeError("DataSet object is already bound to a TaxonSet, but different 'taxon_set' passed as argument")
+        if self.attached_taxon_set is not None:
+            if "taxon_set" in kwargs and kwargs["taxon_set"] is not self.attached_taxon_set:
+                raise TypeError("DataSet object is already attached to a TaxonSet, but different 'taxon_set' passed as argument")
             else:
-                kwargs["taxon_set"] = self.bound_taxon_set
+                kwargs["taxon_set"] = self.attached_taxon_set
         tree_list = TreeList(*args, **kwargs)
         return self.add_tree_list(tree_list)
 
     def add_char_matrix(self, char_matrix):
         "Accession of existing `CharacterMatrix` into `chars` of self."
-        if self.bound_taxon_set is not None:
-            char_matrix.reindex_taxa(taxon_set=self.bound_taxon_set, clear=False)
+        if self.attached_taxon_set is not None:
+            char_matrix.reindex_taxa(taxon_set=self.attached_taxon_set, clear=False)
         elif char_matrix.taxon_set not in self.taxon_sets:
             self.taxon_sets.add(char_matrix.taxon_set)
         self.char_matrices.add(char_matrix)
@@ -338,10 +338,10 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         Creation and accession of new `CharacterMatrix` (of class
         `char_matrix_type`) into `chars` of self."
         """
-        if self.bound_taxon_set is not None:
-            if "taxon_set" in kwargs and kwargs["taxon_set"] is not self.bound_taxon_set:
-                raise TypeError("DataSet object is already bound to a TaxonSet, but different 'taxon_set' passed as argument")
+        if self.attached_taxon_set is not None:
+            if "taxon_set" in kwargs and kwargs["taxon_set"] is not self.attached_taxon_set:
+                raise TypeError("DataSet object is already attached to a TaxonSet, but different 'taxon_set' passed as argument")
             else:
-                kwargs["taxon_set"] = self.bound_taxon_set
+                kwargs["taxon_set"] = self.attached_taxon_set
         char_matrix = char_matrix_type(*args, **kwargs)
         return self.add_char_matrix(char_matrix)

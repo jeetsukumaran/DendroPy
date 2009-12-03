@@ -221,6 +221,16 @@ Collecting data from multiple sources and writing to a NEXUS-formatted file::
 
 Note how, after the first data source has been loaded, the resulting :class:`~dendropy.dataobject.taxon.TaxonSet` (i.e., the first one) is passed to the subsequent :meth:`read_from_path()` statements, to ensure that the same taxa are referenced as objects corresponding to the additional data sources are created. Otherwise, as each data source is read, a new :class:`~dendropy.dataobject.taxon.TaxonSet` will be created, and this will result in multiple :class:`~dendropy.dataobject.taxon.TaxonSet` objects in the :class:`~dendropy.dataobject.dataset.DataSet`, with the data from each data source associated with their own, distinct :class:`~dendropy.dataobject.taxon.TaxonSet`.
 
+A better way to do this, described in detail in :doc:`taxa`, is to use the "attached taxon set" mode :class:`~dendropy.dataobject.dataset.DataSet` object::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet(attached_taxon_set=True)
+    >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
+    >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
+    >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
+    >>> ds.write_to_path("pythonidae_combined.nex", "nexus")
+
 Examining Data Objects
 ======================
 

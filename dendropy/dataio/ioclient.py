@@ -126,7 +126,7 @@ def tree_source_iter(stream, format, **kwargs):
             if write_progress is not None:
                 write_progress("Skipping tree at index %d" % count)
     if count < tree_offset:
-        raise KeyError("0-based index out of bounds: %d (trees=%d, tree_offset=[0, %d])" % (tree_offset, count, count-1))
+        raise KeyError("0-based index out of attacheds: %d (trees=%d, tree_offset=[0, %d])" % (tree_offset, count, count-1))
 
 def multi_tree_source_iter(sources, format, **kwargs):
     """

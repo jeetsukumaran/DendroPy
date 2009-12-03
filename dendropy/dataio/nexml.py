@@ -230,8 +230,8 @@ class NexmlReader(iosys.DataReader):
             if self.dataset is None:
                 self.dataset = dendropy.DataSet(multi_taxon_set=True)
             else:
-                if self.dataset.bound_taxon_set is not None:
-                    raise TypeError('Multiple taxon sets in data source, but DataSet object is in bound (single) taxon set mode')
+                if self.dataset.attached_taxon_set is not None:
+                    raise TypeError('Multiple taxon sets in data source, but DataSet object is in attached (single) taxon set mode')
             self.parse_taxon_sets(taxon_set_elements, self.dataset)
         elif len(taxon_set_elements) == 1:
             if self.dataset is None:

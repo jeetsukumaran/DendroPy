@@ -267,7 +267,7 @@ def constrained_kingman(pop_tree,
     # We iterate through the edges of the population tree in post-order,
     # i.e., visiting child edges before we visit parent edges. For
     # each edge visited, we take the genes found in the child nodes,
-    # and run the coalescent simulation on them bounded by the length
+    # and run the coalescent simulation on them attacheded by the length
     # of the edge. Any genes that have not yet coalesced at the end of
     # this period are added to the genes of the tail (parent) node of
     # the edge.

@@ -132,12 +132,12 @@ class FastaWriter(iosys.DataWriter):
 
     def write(self, stream, **kwargs):
         """
-        Writes bound `DataSource` or `TaxonDomain` in FASTA format to a
+        Writes attached `DataSource` or `TaxonDomain` in FASTA format to a
         file-like object `stream`.
         """
 
         assert self.dataset is not None, \
-            "FastaWriter instance is not bound to a DataSet: no source of data"
+            "FastaWriter instance is not attached to a DataSet: no source of data"
         if self.exclude_chars:
             return
 

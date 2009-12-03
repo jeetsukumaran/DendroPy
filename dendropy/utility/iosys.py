@@ -87,7 +87,7 @@ class IOService(object):
         - `exclude_chars`: Characters in the source will be skipped.
         """
         self.dataset = extract_kwarg(kwargs, "dataset", None)
-        self.bound_taxon_set = extract_kwarg(kwargs, "taxon_set", None)
+        self.attached_taxon_set = extract_kwarg(kwargs, "taxon_set", None)
         self.exclude_trees = extract_kwarg(kwargs, "exclude_trees", False)
         self.exclude_chars = extract_kwarg(kwargs, "exclude_chars", False)
 
@@ -114,8 +114,8 @@ class DataReader(IOService):
     def read(self, stream, **kwargs):
         """
         Reads data from the file-like object `stream`, and populates
-        and returns the bound `DataSet` object or a new `DataSet` object
-        if none is bound.
+        and returns the attached `DataSet` object or a new `DataSet` object
+        if none is attached.
         """
         raise NotImplementedError
 
@@ -126,16 +126,16 @@ class DataReader(IOService):
         if self.dataset is None:
             raise TypeError("'dataset' is not defined")
         if "taxon_set" in kwargs:
-            self.bound_taxon_set = kwargs["taxon_set"]
-        if self.dataset.bound_taxon_set is not None:
-            if self.bound_taxon_set is not None \
-                    and self.dataset.bound_taxon_set is not self.bound_taxon_set:
-                raise TypeError("DataSet is bound to different TaxonSet than that specified by 'taxon_set'")
-            self.bound_taxon_set = self.dataset.bound_taxon_set
-        if self.bound_taxon_set is not None:
-            if self.bound_taxon_set not in self.dataset.taxon_sets:
-                self.dataset.add(self.bound_taxon_set)
-            return self.bound_taxon_set
+            self.attached_taxon_set = kwargs["taxon_set"]
+        if self.dataset.attached_taxon_set is not None:
+            if self.attached_taxon_set is not None \
+                    and self.dataset.attached_taxon_set is not self.attached_taxon_set:
+                raise TypeError("DataSet is attached to different TaxonSet than that specified by 'taxon_set'")
+            self.attached_taxon_set = self.dataset.attached_taxon_set
+        if self.attached_taxon_set is not None:
+            if self.attached_taxon_set not in self.dataset.taxon_sets:
+                self.dataset.add(self.attached_taxon_set)
+            return self.attached_taxon_set
         else:
             return self.dataset.new_taxon_set(**kwargs)
 
@@ -158,7 +158,7 @@ class DataWriter(IOService):
 
     def write(self, stream, **kwargs):
         """
-        Writes data in the bound `DataSet` object to a destination given
+        Writes data in the attached `DataSet` object to a destination given
         by the file-like object `stream`.
         """
         raise NotImplementedError

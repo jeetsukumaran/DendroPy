@@ -199,14 +199,14 @@ class NewickWriter(iosys.DataWriter):
 
     def write(self, stream, **kwargs):
         """
-        Writes bound `DataSource` or `TaxonDomain` to a destination given
+        Writes attached `DataSource` or `TaxonDomain` to a destination given
         by the file-like object `stream`.
         """
         assert self.dataset is not None, \
-            "NewickWriter instance is not bound to a DataSet: no source of data"
+            "NewickWriter instance is not attached to a DataSet: no source of data"
         self.preserve_spaces = kwargs.get("preserve_spaces", self.preserve_spaces)
         for tree_list in self.dataset.tree_lists:
-            if self.bound_taxon_set is None or self.bound_taxon_set is tree_list.taxon_set:
+            if self.attached_taxon_set is None or self.attached_taxon_set is tree_list.taxon_set:
                 self.write_tree_list(tree_list, stream)
 
     def write_tree_list(self, tree_list, stream):

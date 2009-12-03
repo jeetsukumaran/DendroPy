@@ -144,9 +144,9 @@ class NexusReader(iosys.DataReader):
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
         if "taxon_set" in kwargs:
-            self.bound_taxon_set = kwargs["taxon_set"]
-        if self.bound_taxon_set is not None and self.bound_taxon_set not in self.dataset.taxon_sets:
-            self.dataset.add(self.bound_taxon_set)
+            self.attached_taxon_set = kwargs["taxon_set"]
+        if self.attached_taxon_set is not None and self.attached_taxon_set not in self.dataset.taxon_sets:
+            self.dataset.add(self.attached_taxon_set)
         self._prepare_to_read_from_stream(stream)
         self._parse_nexus_file()
         self.reset()
@@ -180,9 +180,9 @@ class NexusReader(iosys.DataReader):
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
         if "taxon_set" in kwargs:
-            self.bound_taxon_set = kwargs["taxon_set"]
-        if self.bound_taxon_set is not None and self.bound_taxon_set not in self.dataset.taxon_sets:
-            self.dataset.add(self.bound_taxon_set)
+            self.attached_taxon_set = kwargs["taxon_set"]
+        if self.attached_taxon_set is not None and self.attached_taxon_set not in self.dataset.taxon_sets:
+            self.dataset.add(self.attached_taxon_set)
         self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream)
         token = self.stream_tokenizer.read_next_token_ucase()
         if token != "#NEXUS":
@@ -271,8 +271,8 @@ class NexusReader(iosys.DataReader):
     ## DATA MANAGEMENT
 
     def _new_taxon_set(self, title=None):
-        if self.bound_taxon_set is not None:
-            return self.bound_taxon_set
+        if self.attached_taxon_set is not None:
+            return self.attached_taxon_set
         if title is None:
             title = 'DEFAULT'
         taxon_set = self.dataset.new_taxon_set(label=title)
@@ -280,8 +280,8 @@ class NexusReader(iosys.DataReader):
         return taxon_set
 
     def _get_taxon_set(self, title=None):
-        if self.bound_taxon_set is not None:
-            return self.bound_taxon_set
+        if self.attached_taxon_set is not None:
+            return self.attached_taxon_set
         if title is None:
             if len(self.taxa_blocks) == 0:
                 self.taxa_blocks['DEFAULT'] = self._new_taxon_set()
@@ -402,7 +402,7 @@ class NexusReader(iosys.DataReader):
             label = token
             if taxon_set.has_taxon(label=label):
                 pass
-            elif len(taxon_set) >= self.file_specified_ntax and not self.bound_taxon_set:
+            elif len(taxon_set) >= self.file_specified_ntax and not self.attached_taxon_set:
                 raise self.data_format_error("Cannot add '%s':" % label \
                                       + " Declared number of taxa (%d) already defined: %s" % (self.file_specified_ntax,
                                           str([("%s" % t.label) for t in self.current_taxon_set])))
@@ -807,11 +807,11 @@ class NexusWriter(iosys.DataWriter):
 
     def write(self, stream, **kwargs):
         """
-        Writes bound `DataSource` or `TaxonDomain` to the file-like object
+        Writes attached `DataSource` or `TaxonDomain` to the file-like object
         `stream`.
         """
         assert self.dataset is not None, \
-            "NexusWriter instance is not bound to a DataSet: no source of data"
+            "NexusWriter instance is not attached to a DataSet: no source of data"
         self.preserve_spaces = kwargs.get("preserve_spaces", self.preserve_spaces)
         stream.write('#NEXUS\n\n')
         if self.comment is not None:
@@ -829,15 +829,15 @@ class NexusWriter(iosys.DataWriter):
                 and (not self.simple) \
                 and (not self.exclude_taxa):
             for taxon_set in self.dataset.taxon_sets:
-                if self.bound_taxon_set is None or taxon_set is self.bound_taxon_set:
+                if self.attached_taxon_set is None or taxon_set is self.attached_taxon_set:
                     self.write_taxa_block(taxon_set, stream=stream)
         if not self.exclude_chars:
             for char_matrix in self.dataset.char_matrices:
-                if self.bound_taxon_set is None or char_matrix.taxon_set is self.bound_taxon_set:
+                if self.attached_taxon_set is None or char_matrix.taxon_set is self.attached_taxon_set:
                     self.write_char_block(char_matrix=char_matrix, stream=stream)
         if not self.exclude_trees:
             for tree_list in self.dataset.tree_lists:
-                if self.bound_taxon_set is None or tree_list.taxon_set is self.bound_taxon_set:
+                if self.attached_taxon_set is None or tree_list.taxon_set is self.attached_taxon_set:
                     self.write_trees_block(tree_list=tree_list, stream=stream)
 
     def write_taxa_block(self, taxon_set, stream):
