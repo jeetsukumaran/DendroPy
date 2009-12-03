@@ -39,25 +39,6 @@ import dendropy
 
 _LOG = messaging.get_logger(__name__)
 
-#    def runTest(self):
-#        taxon_set = dendropy.TaxonSet()
-#        tsum = treesum.TreeSummarizer()
-#        filepaths = [dendropy.test.data_source_path("primates.tre")]
-#        for f in filepaths:
-#                ti = nexus.tree_source_iter(stream=open(f, "rU"), taxon_set=taxon_set, from_index=0)
-#                sd = tsum.count_splits_on_trees(ti, split_distribution=None, trees_splits_encoded=False)
-
-#    def testFindSplits(self):
-#        unrooted = True
-#        for tc in test_cases:
-#            for tree_filepath in [dendropy.test.data_source_path(tc[0])]:
-#                for tree in nexus.tree_source_iter(stream=open(tree_filepath, "rU")):
-#                    treesplit.encode_splits(tree)
-#                    for edge in tree.preorder_edge_iter():
-#                        cm = edge.split_bitmask
-#                        e = treesplit.find_edge_from_split(tree.seed_node, cm)
-#                        self.assertTrue(e is edge)
-
 class SplitCountTest(ExtendedTestCase):
 
     def setUp(self):

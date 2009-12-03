@@ -332,7 +332,7 @@ def main_cli():
         encode_splits = False # cannot encode while parsing newick
     tree_source = multi_tree_source_iter(sources=support_file_objs,
                                          format=file_format,
-                                         from_index=opts.burnin,
+                                         tree_offset=opts.burnin,
                                          write_progress=messenger.write,
                                          taxon_set=taxon_set,
                                          encode_splits=encode_splits)

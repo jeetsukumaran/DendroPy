@@ -248,7 +248,7 @@ class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
         for idx, test_tree in enumerate(multi_tree_source_iter(filepaths,
                 format="nexus/newick",
                 taxon_set=taxon_set,
-                from_index=5)):
+                tree_offset=5)):
             check_tree = self.next_ref_tree(restart_index=5)
             self.assertDistinctButEqualTree(check_tree, test_tree, distinct_taxa=False, ignore_taxon_order=True)
         self.assertEqual(idx, 19)

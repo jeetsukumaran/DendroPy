@@ -144,14 +144,15 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def read(self, stream, format, **kwargs):
         """
-        Populates the `TreeList` from a `format`-formatted file-like
-        source `stream`. `format` must be a recognized and tree file
-        format, such as `nexus`, `newick`, etc, for which a specialized
-        reader is available. If this is not implemented for
-        the format specified, then a `UnsupportedFormatError` is raised.
-        If multiple tree lists are in the data source, a 0-based index of the
-        character array to use can be specified using the `collection_index`
-        keyword (defaults to 0, i.e., first tree list).
+        Populates the `TreeList` from a `format`-formatted file-like source
+        `stream`. `format` must be a recognized and tree file format, such as
+        `nexus`, `newick`, etc, for which a reader is available. If this is
+        not implemented for the format specified, then a
+        `UnsupportedFormatError` is raised. If the source defines multiple
+        tree collections (e.g. multiple NEXUS "Trees" blocks), then the
+        keyword argument ``collection_offset`` can be used to specify the
+        0-based index of the tree collection. If not specified, or if value <
+        0, then all collections in the source are merged and read.
 
         The following optional keyword arguments are recognized:
 
@@ -169,8 +170,8 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         of the reader specialized to handle `format` formats.
         """
         from dendropy.dataobject.dataset import DataSet
-        tree_index = kwargs.get("from_index", 0)
-        tree_list_index = kwargs.get("from_collection", 0)
+        collection_offset = kwargs.get("collection_offset", -1)
+        tree_offset = kwargs.get("tree_offset", 0)
         if "taxon_set" in kwargs:
             if kwargs["taxon_set"] is not self.taxon_set and len(self) > 0:
                 raise Exception("Cannot specify a different TaxonSet when reading into a populated TreeList.")
@@ -180,15 +181,30 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             kwargs["taxon_set"] = self.taxon_set
         d = DataSet(stream=stream, format=format, **kwargs)
         if len(d.tree_lists) == 0:
-            raise ValueError("No tree_lists in data source")
-        if tree_list_index >= len(d.tree_lists):
-            raise IndexError("Tree list of index %d specified, but data source only has %d tree collections defined (max. index=%d)" \
-                % (tree_list_index, len(d.tree_lists), len(d.tree_lists)-1))
-        if self.label is None and len(self) == 0 and d.tree_lists[tree_list_index].label is not None:
-            self.label = d.tree_lists[tree_list_index].label
-        for i, t in enumerate(d.tree_lists[tree_list_index]):
-            if i >= tree_index:
-                self.append(t, reindex_taxa=False)
+            raise ValueError("No trees in data source")
+        if collection_offset >= len(d.tree_lists):
+            raise IndexError("Tree collection offset %d specified, but data source only has %d tree collections defined" \
+                % (collection_offset, len(d.tree_lists)))
+        if collection_offset < 0:
+            i = 0
+            for tlist in d.tree_lists:
+                for t in tlist:
+                    if i >= tree_offset:
+                        self.append(t, reindex_taxa=False)
+                    i += 1
+            if i < tree_offset:
+                raise IndexError("Tree offset %d specified, but data source only has %d trees defined" \
+                        % (tree_offset, len(tlist)))
+        else:
+            tlist = d.tree_lists[collection_offset]
+            if self.label is None and len(self) == 0 and tlist.label is not None:
+                self.label = tlist.label
+            if len(tlist) < tree_offset:
+                for t in tlist[tree_offset:]:
+                    self.append(t, reindex_taxa=False)
+            else:
+                raise IndexError("Tree offset %d specified, but tree collection only has %d trees defined" \
+                        % (tree_offset, len(tlist)))
 
     def write(self, stream, format, **kwargs):
         """
@@ -504,19 +520,45 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                after it has been constructed.
             - `edge_len_type` specifies the type of the edge lengths (int or float)
 
-        If the source defines multiple trees, only the first one will be
-        returned unless the keyword `from_index` is used to specify the
-        0-based index of the tree to be returned. If `from_index` >= number
-        of trees, a KeyError is raised.
+        If the source defines multiple tree collections (e.g. multiple NEXUS "Trees"
+        blocks), then the keyword argument ``collection_offset`` can be used to specify
+        the 0-based index of the tree collection, and the keyword argument
+        ``tree_offset`` can be used to specify the 0-based index of the tree
+        within the collection, as the source.
+        If ``collection_offset`` is not specified and < 0, then all collections
+        in the source are merged before considering ``tree_offset``.
+        If ``tree_offset`` is not specified, then the first tree (offset=0) is
+        returned.
         """
-        from dendropy.utility import iosys
-        from dendropy.dataio import tree_source_iter
-        if "taxon_set" not in kwargs:
-            kwargs["taxon_set"] = self.taxon_set
-        else:
+        from dendropy.dataobject.dataset import DataSet
+        collection_offset = kwargs.get("collection_offset", -1)
+        tree_offset = kwargs.get("tree_offset", 0)
+        if "taxon_set" in kwargs:
             self.taxon_set = kwargs["taxon_set"]
-        t = tree_source_iter(stream=stream, format=format, **kwargs).next()
-        self.__dict__ = t.__dict__
+        d = DataSet(stream=stream, format=format, **kwargs)
+        if len(d.tree_lists) == 0:
+            raise ValueError("No trees in data source")
+        if collection_offset >= len(d.tree_lists):
+            raise IndexError("Tree collection offset %d specified, but data source only has %d tree collections defined" \
+                % (collection_offset, len(d.tree_lists)))
+        if collection_offset < 0:
+            i = 0
+            for tlist in d.tree_lists:
+                for t in tlist:
+                    if i == tree_offset:
+                        self.__dict__ = t.__dict__
+                    i += 1
+            if i < tree_offset:
+                raise IndexError("Tree offset %d specified, but data source only has %d trees defined" \
+                            % (tree_offset, i+1))
+        else:
+            tlist = d.tree_lists[collection_offset]
+            if tree_offset < len(tlist):
+                t = tlist[tree_offset]
+                self.__dict__ = t.__dict__
+            else:
+                raise IndexError("Tree offset %d specified, but tree collection only has %d trees defined" \
+                        % (tree_offset, len(tlist)))
 
     def write(self, stream, format, **kwargs):
         """

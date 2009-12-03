@@ -50,12 +50,12 @@ def main():
     """
     Main CLI handler.
     """
-    
-    parser = OptionParser(usage=_prog_usage, 
-        add_help_option=True, 
-        version=_prog_version, 
+
+    parser = OptionParser(usage=_prog_usage,
+        add_help_option=True,
+        version=_prog_version,
         description=_prog_description)
-        
+
     parser.add_option('-b', '--burnin',
         action='store',
         dest='burnin',
@@ -63,64 +63,64 @@ def main():
         default=0,
         metavar='BURN-IN',
         help='number of initial trees to discard from each file (default=%default)')
-        
-    parser.add_option('-s','--separator',  
+
+    parser.add_option('-s','--separator',
         dest='separator',
         default='\t',
         help="character to use to separate/delimit columns (default=<TAB>)")
-        
-    parser.add_option('-o','--output',  
+
+    parser.add_option('-o','--output',
         dest='output_filepath',
         default=None,
         help="path to output file (if not given, will print to standard output)")
-        
-    parser.add_option('--no-header-row',  
+
+    parser.add_option('--no-header-row',
         dest='show_header_row',
         action="store_false",
         default=True,
         help="skip output of column headers")
-        
-    parser.add_option('--no-split-string',   
+
+    parser.add_option('--no-split-string',
         dest='show_split_string',
         action="store_false",
         default=True,
-        help="do not output split representation")    
-        
-    parser.add_option('--ignore-missing-files', 
-        action='store_true', 
+        help="do not output split representation")
+
+    parser.add_option('--ignore-missing-files',
+        action='store_true',
         dest='ignore_missing_files',
         default=False,
         help="ignore missing tree files (at least one must exist!)")
-        
-    parser.add_option('-r', '--replace', 
-        action='store_true', 
+
+    parser.add_option('-r', '--replace',
+        action='store_true',
         dest='replace',
         default=False,
         help="replace/overwrite output file without asking if it already exists ")
-        
-    parser.add_option('-q', '--quiet', 
-        action='store_true', 
+
+    parser.add_option('-q', '--quiet',
+        action='store_true',
         dest='quiet',
         default=False,
-        help="suppress progress messages")         
-        
+        help="suppress progress messages")
+
     (opts, args) = parser.parse_args()
     messenger = Messenger(quiet=opts.quiet)
-    
-    # splash 
+
+    # splash
     if not opts.quiet:
-        show_splash(prog_name=_prog_name, 
-            prog_subtitle=_prog_subtitle, 
-            prog_version=_prog_version, 
-            prog_author=_prog_author, 
-            prog_copyright=_prog_copyright, 
-            dest=sys.stderr, 
-            extended=False)  
-    
-    missing = False 
+        show_splash(prog_name=_prog_name,
+            prog_subtitle=_prog_subtitle,
+            prog_version=_prog_version,
+            prog_author=_prog_author,
+            prog_copyright=_prog_copyright,
+            dest=sys.stderr,
+            extended=False)
+
+    missing = False
     tree_filepaths = []
     for fpath in args:
-        fpath = os.path.expanduser(os.path.expandvars(fpath))        
+        fpath = os.path.expanduser(os.path.expandvars(fpath))
         if not os.path.exists(fpath):
             messenger.send_error(('Tree file not found: "%s"' % fpath))
             missing = True
@@ -140,9 +140,9 @@ def main():
             + "containing tree samples "
             + "to summarize.", force=True)
             sys.exit(1)
-             
-    tree_file_objs = [open(f, "rU") for f in tree_filepaths]  
-    
+
+    tree_file_objs = [open(f, "rU") for f in tree_filepaths]
+
     if opts.output_filepath is None:
         output_dest = sys.stdout
     else:
@@ -151,7 +151,7 @@ def main():
             output_dest = open(output_fpath, "w")
         else:
             sys.exit(1)
-        
+
     dataset = datasets.Dataset()
     taxa_block = dataset.add_taxa_block()
     split_dists = {}
@@ -159,23 +159,23 @@ def main():
     splits_to_consider = set()
     for tfile_idx, tfile in enumerate(tree_file_objs):
         messenger.send("File %d of %d: %s" % (tfile_idx+1, len(tree_file_objs), tfile.name))
-        tree_iterator = nexus.iterate_over_trees(tfile, taxa_block=taxa_block, from_index=opts.burnin+1)
+        tree_iterator = nexus.iterate_over_trees(tfile, taxa_block=taxa_block, tree_offset=opts.burnin+1)
         split_dists[tfile] = tsum.count_splits_on_trees(tree_iterator, split_distribution=None, trees_splits_encoded=False)
         split_dists[tfile].calc_freqs()
-        splits_to_consider.update(split_dists[tfile].splits)          
+        splits_to_consider.update(split_dists[tfile].splits)
         num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = split_dists[tfile].splits_considered()
-        messenger.send("  Trees counted: %s" % split_dists[tfile].total_trees_counted)      
-        messenger.send("  Total number of splits: %s" % num_splits)      
-        messenger.send("  Total number of unique splits: %s" % num_unique_splits)      
+        messenger.send("  Trees counted: %s" % split_dists[tfile].total_trees_counted)
+        messenger.send("  Total number of splits: %s" % num_splits)
+        messenger.send("  Total number of unique splits: %s" % num_unique_splits)
         messenger.send("  Total number of non-trivial splits: %s" % num_nt_splits)
-        messenger.send("  Total number of unique non-trivial splits: %s\n" % num_nt_unique_splits)        
-        
+        messenger.send("  Total number of unique non-trivial splits: %s\n" % num_nt_unique_splits)
+
     if opts.show_header_row:
         column_labels = [f.name for f in tree_file_objs]
         if opts.show_split_string:
-            column_labels.insert(0, "Split")        
-        output_dest.write(opts.separator.join(column_labels) + "\n")                
-        
+            column_labels.insert(0, "Split")
+        output_dest.write(opts.separator.join(column_labels) + "\n")
+
     for split in splits_to_consider:
         freqs = []
         for tfile in tree_file_objs:
@@ -186,9 +186,9 @@ def main():
         row = [str(f) for f in freqs]
         if opts.show_split_string:
             row.insert(0, nexus.split_to_newick(split, taxa_block))
-        output_dest.write(opts.separator.join(row) + "\n")           
-                                    
+        output_dest.write(opts.separator.join(row) + "\n")
+
 if __name__ == "__main__":
     main()
 
-    
+

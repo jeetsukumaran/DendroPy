@@ -89,7 +89,7 @@ def tree_source_iter(stream, format, **kwargs):
 
     Keyword arguments accepted (handled here):
 
-        - `from_index` 0-based index specifying first tree to actually return
+        - `tree_offset` 0-based index specifying first tree to actually return
            (raises KeyError if >= #trees)
 
     Keyword arguments that should be handled by implementing Readers:
@@ -105,11 +105,11 @@ def tree_source_iter(stream, format, **kwargs):
         - `edge_len_type` specifies the type of the edge lengths (int or float)
 
     """
-    if "from_index" in kwargs:
-        from_index = kwargs["from_index"]
-        del(kwargs["from_index"])
+    if "tree_offset" in kwargs:
+        tree_offset = kwargs["tree_offset"]
+        del(kwargs["tree_offset"])
     else:
-        from_index = 0
+        tree_offset = 0
     if "write_progress" in kwargs:
         write_progress = kwargs["write_progress"]
         del(kwargs["write_progress"])
@@ -117,7 +117,7 @@ def tree_source_iter(stream, format, **kwargs):
         write_progress = None
     tree_iter = _GLOBAL_DATA_FORMAT_REGISTRY.tree_source_iter(stream, format, **kwargs)
     for count, t in enumerate(tree_iter):
-        if count >= from_index and t is not None:
+        if count >= tree_offset and t is not None:
             if write_progress is not None:
                 write_progress("Processing tree at index %d" % count)
             count += 1
@@ -125,8 +125,8 @@ def tree_source_iter(stream, format, **kwargs):
         else:
             if write_progress is not None:
                 write_progress("Skipping tree at index %d" % count)
-    if count < from_index:
-        raise KeyError("0-based index out of bounds: %d (trees=%d, from_index=[0, %d])" % (from_index, count, count-1))
+    if count < tree_offset:
+        raise KeyError("0-based index out of bounds: %d (trees=%d, tree_offset=[0, %d])" % (tree_offset, count, count-1))
 
 def multi_tree_source_iter(sources, format, **kwargs):
     """

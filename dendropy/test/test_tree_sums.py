@@ -42,7 +42,7 @@ class TestConsensusTree(unittest.TestCase):
         self.tree_list = dendropy.TreeList()
         for t in xrange(1, 5):
             tf = pathmap.tree_source_path('pythonidae_cytb.mb.run%d.t' % t)
-            self.tree_list.read_from_path(tf, 'nexus', from_index=25)
+            self.tree_list.read_from_path(tf, 'nexus', tree_offset=25)
         self.mb_con_tree = dendropy.Tree.get_from_path(
                 pathmap.tree_source_path("pythonidae_cytb.mb.con"),
                 format="nexus",
