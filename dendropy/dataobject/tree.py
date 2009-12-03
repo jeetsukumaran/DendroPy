@@ -187,6 +187,8 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 % (collection_offset, len(d.tree_lists)))
         if collection_offset < 0:
             i = 0
+            if self.label is None and len(self) == 0 and len(d.tree_lists) == 1:
+                self.label = d.tree_lists[0].label
             for tlist in d.tree_lists:
                 for t in tlist:
                     if i >= tree_offset:
