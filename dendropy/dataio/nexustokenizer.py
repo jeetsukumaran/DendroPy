@@ -164,7 +164,6 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
     located at the beginning of the statement (i.e., the first non-comment
     token should be the opening parenthesis of the tree definition).
     """
-
     translate_dict = kwargs.get("translate_dict", None)
     encode_splits = kwargs.get("encode_splits", False)
     rooting_interpreter = kwargs.get("rooting_interpreter", RootingInterpreter(**kwargs))

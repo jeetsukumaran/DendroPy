@@ -1830,7 +1830,7 @@ class Node(TaxonLinked):
         """
         is_leaf = (len(self._child_nodes) == 0)
         include_internal_labels = kwargs.get("include_internal_labels")
-        preserve_spaces = kwargs.get("include_internal_labels", False)
+        preserve_spaces = kwargs.get("preserve_spaces", False)
         if (not is_leaf) and (not include_internal_labels):
             return ""
         try:
