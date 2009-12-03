@@ -34,11 +34,6 @@ from dendropy.test.support import pathmap
 class TestConsensusTree(unittest.TestCase):
 
     def setUp(self):
-#        x = dendropy.Tree.get_from_path(
-#                pathmap.tree_source_path("pythonidae_cytb.mb.con"),
-#                format="nexus",
-#                index=0)
-#        self.tree_list = dendropy.TreeList(taxon_set=x.taxon_set)
         self.tree_list = dendropy.TreeList()
         for t in xrange(1, 5):
             tf = pathmap.tree_source_path('pythonidae_cytb.mb.run%d.t' % t)
@@ -53,25 +48,12 @@ class TestConsensusTree(unittest.TestCase):
     def testConsensus(self):
         con_tree = self.tree_list.consensus(min_freq=0.50, trees_splits_encoded=False, support_label_decimals=2)
         con_tree.encode_splits()
-
-#        print self.tree_list.taxon_set.description(2)
-#        print
-#        print self.mb_con_tree.taxon_set.description(2)
-#        print
-#        print con_tree.taxon_set.description(2)
-
-#        print "#NEXUS"
-#        print "Begin trees;"
-#        print "tree 1 = ", self.mb_con_tree.as_string("newick"), ";"
-#        print "tree 2 = ", con_tree.as_string("newick"),";"
-#        print "end;"
         self.assertEqual(treecalc.symmetric_difference(self.mb_con_tree, con_tree), 0)
         self.assertEqual(len(con_tree.split_edges), len(self.mb_con_tree.split_edges))
         sd = self.tree_list.split_distribution
         for split in self.mb_con_tree.split_edges:
             edge1 = self.mb_con_tree.split_edges[split]
             edge2 = con_tree.split_edges[split]
-#            print con_tree.taxon_set.split_bitmask_string(split), edge1.head_node.label, edge2.head_node.label, sd.split_frequencies[split]
             if edge1.head_node.label and edge2.head_node.label:
                 s1 = float(edge1.head_node.label)
                 s2 = round(float(edge2.head_node.label), 2)

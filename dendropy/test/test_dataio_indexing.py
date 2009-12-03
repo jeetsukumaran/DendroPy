@@ -27,7 +27,7 @@ Tests of data indexing.
 import unittest
 import dendropy
 
-class TestConsensusTree(unittest.TestCase):
+class TestTreeIndexing(unittest.TestCase):
 
     def setUp(self):
         self.trees1 = """
@@ -66,6 +66,21 @@ END;
     def testDefaultTreeIndexing(self):
         t = dendropy.Tree.get_from_string(self.trees1, "nexus")
         self.assertEqual(t.label, '0 0')
+
+    def testUnifiedTreeIndexing(self):
+        t = dendropy.Tree.get_from_string(self.trees1, "nexus", tree_offset=7)
+        self.assertEqual(t.label, '2 1')
+
+    def testCollectionTreeIndexing(self):
+        t = dendropy.Tree.get_from_string(self.trees1, "nexus", collection_offset=3, tree_offset=2)
+        self.assertEqual(t.label, '3 2')
+
+    def testDefaultTreeOutOfRange(self):
+        self.assertRaises(IndexError, dendropy.Tree.get_from_string, self.trees1, "nexus", tree_offset=99)
+
+    def testCollectionTreeOutOfRange(self):
+        self.assertRaises(IndexError, dendropy.Tree.get_from_string, self.trees1, "nexus", collection_offset=7, tree_offset=0)
+
 
 
 if __name__ == "__main__":

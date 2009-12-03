@@ -549,16 +549,16 @@ class CharacterArray(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         data in the file-like object source `stream`, *replacing*
         all current data. If multiple character arrays are in the data
         source, a 0-based index of the character array to use can
-        be specified using the `index` keyword (defaults to 0, i.e., first
+        be specified using the `matrix_offset` keyword (defaults to 0, i.e., first
         character array).
         """
-        index = kwargs.get("index", 0)
+        index = kwargs.get("matrix_offset", 0)
         from dendropy.dataobject.dataset import DataSet
         d = DataSet(stream=stream, format=format, **kwargs)
         if len(d.char_arrays) == 0:
             raise ValueError("No character data in data source")
         if index >= len(d.char_arrays):
-            raise IndexError("Character array of index %d specified, but data source only has %d arrays defined (max. index=%d)" \
+            raise IndexError("Character array of offset %d specified, but data source only has %d arrays defined (max. index=%d)" \
                 % (index, len(d.char_arrays), len(d.char_arrays)-1))
         if not isinstance(self, d.char_arrays[index].__class__):
             raise ValueError("Character data found was of type '%s' (object is of type '%s')" %
