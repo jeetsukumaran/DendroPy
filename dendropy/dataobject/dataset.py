@@ -32,7 +32,7 @@ from dendropy.utility import error
 from dendropy.dataobject.base import DataObject
 from dendropy.dataobject.taxon import TaxonSet
 from dendropy.dataobject.tree import TreeList
-from dendropy.dataobject.char import CharacterArray
+from dendropy.dataobject.char import CharacterMatrix
 
 ###############################################################################
 ## DataSet
@@ -58,7 +58,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         iosys.Readable.__init__(self)
         self.taxon_sets = containers.OrderedSet()
         self.tree_lists = containers.OrderedSet()
-        self.char_arrays = containers.OrderedSet()
+        self.char_matrices = containers.OrderedSet()
         self.bound_taxon_set = None
         if kwargs.get("bound_taxon_set", False):
             self.bind_taxon_set(kwargs.get("taxon_set", None))
@@ -108,11 +108,11 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
                 tl2.append(t2)
                 memo[id(t1)] = t2
         memo[id(self.tree_lists)] = o.tree_lists
-        for cai, ca1 in enumerate(self.char_arrays):
+        for cai, ca1 in enumerate(self.char_matrices):
             ca2 = deepcopy(ca1, memo)
-            o.char_arrays.add(ca2)
+            o.char_matrices.add(ca2)
             memo[id(ca1)] = ca2
-        memo[id(self.char_arrays)] = o.char_arrays
+        memo[id(self.char_matrices)] = o.char_matrices
         if self.bound_taxon_set is not None:
             o.bound_taxon_set = memo[id(self.bound_taxon_set)]
         else:
@@ -212,13 +212,13 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         output_strio = StringIO()
         output_strio.write('DataSet object at %s' % hex(id(self)))
         if depth >= 1:
-            output_strio.write(': %d Taxon Sets, %d Tree Lists, %d Character Arrays' %
-                    (len(self.taxon_sets), len(self.tree_lists), len(self.char_arrays)))
+            output_strio.write(': %d Taxon Sets, %d Tree Lists, %d Character Matrices' %
+                    (len(self.taxon_sets), len(self.tree_lists), len(self.char_matrices)))
         if depth >= 2:
             indent += 4
             self._subdescription('Taxon Sets', self.taxon_sets, depth, indent, itemize, output_strio)
             self._subdescription('Tree Lists', self.tree_lists, depth, indent, itemize, output_strio)
-            self._subdescription('Character Arrays', self.char_arrays, depth, indent, itemize, output_strio)
+            self._subdescription('Character Matrices', self.char_matrices, depth, indent, itemize, output_strio)
         s =  output_strio.getvalue()
         if output is not None:
             output.write(s)
@@ -229,14 +229,14 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
 
     def add(self, data_object, **kwargs):
         """
-        Generic add for TaxonSet, TreeList or CharacterArray objects.
+        Generic add for TaxonSet, TreeList or CharacterMatrix objects.
         """
         if isinstance(data_object, TaxonSet):
             self.add_taxon_set(data_object)
         elif isinstance(data_object, TreeList):
             self.add_tree_list(data_object)
-        elif isinstance(data_object, CharacterArray):
-            self.add_char_array(data_object)
+        elif isinstance(data_object, CharacterMatrix):
+            self.add_char_matrix(data_object)
         else:
             raise error.InvalidArgumentValueError("Cannot add object of type '%s' to DataSet" % type(data_object))
 
@@ -294,14 +294,14 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         """
         Reindexes taxa across all subcomponents, mapping to single taxon set.
         """
-        if len(self.taxon_sets) or len(self.tree_lists) or len(self.char_arrays):
+        if len(self.taxon_sets) or len(self.tree_lists) or len(self.char_matrices):
             self.taxon_sets.clear()
             if taxon_set is None:
                 taxon_set = self.new_taxon_set()
             for tree_list in self.tree_lists:
                 tree_list.reindex_taxa(taxon_set=self.taxon_set, clear=False)
-            for char_array in self.char_arrays:
-                char_array.reindex_taxa(taxon_set=self.taxon_set, clear=False)
+            for char_matrix in self.char_matrices:
+                char_matrix.reindex_taxa(taxon_set=self.taxon_set, clear=False)
         if bind:
             self.bind_taxon_set(taxon_set)
 
@@ -324,24 +324,24 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         tree_list = TreeList(*args, **kwargs)
         return self.add_tree_list(tree_list)
 
-    def add_char_array(self, char_array):
-        "Accession of existing `CharacterArray` into `chars` of self."
+    def add_char_matrix(self, char_matrix):
+        "Accession of existing `CharacterMatrix` into `chars` of self."
         if self.bound_taxon_set is not None:
-            char_array.reindex_taxa(taxon_set=self.bound_taxon_set, clear=False)
-        elif char_array.taxon_set not in self.taxon_sets:
-            self.taxon_sets.add(char_array.taxon_set)
-        self.char_arrays.add(char_array)
-        return char_array
+            char_matrix.reindex_taxa(taxon_set=self.bound_taxon_set, clear=False)
+        elif char_matrix.taxon_set not in self.taxon_sets:
+            self.taxon_sets.add(char_matrix.taxon_set)
+        self.char_matrices.add(char_matrix)
+        return char_matrix
 
-    def new_char_array(self, char_array_type, *args, **kwargs):
+    def new_char_matrix(self, char_matrix_type, *args, **kwargs):
         """
-        Creation and accession of new `CharacterArray` (of class
-        `char_array_type`) into `chars` of self."
+        Creation and accession of new `CharacterMatrix` (of class
+        `char_matrix_type`) into `chars` of self."
         """
         if self.bound_taxon_set is not None:
             if "taxon_set" in kwargs and kwargs["taxon_set"] is not self.bound_taxon_set:
                 raise TypeError("DataSet object is already bound to a TaxonSet, but different 'taxon_set' passed as argument")
             else:
                 kwargs["taxon_set"] = self.bound_taxon_set
-        char_array = char_array_type(*args, **kwargs)
-        return self.add_char_array(char_array)
+        char_matrix = char_matrix_type(*args, **kwargs)
+        return self.add_char_matrix(char_matrix)

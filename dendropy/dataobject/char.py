@@ -363,7 +363,7 @@ INFINITE_SITES_STATE_ALPHABET = InfiniteSitesStateAlphabet()
 class CharacterType(IdTagged):
     """
     A character format or type of a particular column: i.e., maps
-    a particular set of character state definitions to a column in a character array.
+    a particular set of character state definitions to a column in a character matrix.
     """
 
     def __init__(self, *args, **kwargs):
@@ -386,7 +386,7 @@ class CharacterType(IdTagged):
 
 class CharacterDataCell(Annotated):
     """
-    A container for the state / state value for a particular cell in a array.
+    A container for the state / state value for a particular cell in a matrix.
     """
 
     def __init__(self, value=None, character_type=None):
@@ -462,9 +462,9 @@ class CharacterDataMap(dict, Annotated):
 
     def extend_characters(self, other_map):
         """
-        Extends this array by adding characters from sequences of taxa
-        in given array to sequences of taxa with correspond labels in
-        this one. Taxa in the second array that do not exist in the
+        Extends this matrix by adding characters from sequences of taxa
+        in given matrix to sequences of taxa with correspond labels in
+        this one. Taxa in the second matrix that do not exist in the
         current one are ignored.
         """
         label_taxon_map = dict([(taxon.label, taxon) for taxon in other_map])
@@ -477,18 +477,18 @@ class CharacterDataMap(dict, Annotated):
         overwrite_existing=False,
         extend_existing=False):
         """
-        Extends this array by adding taxa and characters from the given
-        array to this one.  If `overwrite_existing` is True and a taxon
-        in the other array is already present in the current one, then
-        the sequence associated with the taxon in the second array
+        Extends this matrix by adding taxa and characters from the given
+        matrix to this one.  If `overwrite_existing` is True and a taxon
+        in the other matrix is already present in the current one, then
+        the sequence associated with the taxon in the second matrix
         replaces the sequence in the current one. If `extend_existing`
-        is True and a taxon in the other array is already present in
+        is True and a taxon in the other matrix is already present in
         the current one, then the squence associated with the taxon in
-        the second array will be added to the sequence in the current
+        the second matrix will be added to the sequence in the current
         one. If both are True, then an exception is raised. If neither
-        are True,  and a taxon in the other array is already present in
+        are True,  and a taxon in the other matrix is already present in
         the current one, then the sequence is ignored.
-        Note that the containing CharacterArray taxa has to be normalized
+        Note that the containing CharacterMatrix taxa has to be normalized
         after this operation.
         """
         if overwrite_existing and extend_existing:
@@ -504,7 +504,7 @@ class CharacterDataMap(dict, Annotated):
             else:
                 self[other_taxon] = other_map[other_taxon]
 
-class CharacterArray(TaxonSetLinked, iosys.Readable, iosys.Writeable):
+class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     "Character data container/manager manager."
 
     def __init__(self, *args, **kwargs):
@@ -547,23 +547,23 @@ class CharacterArray(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         Populates objects of this type from `format`-formatted
         data in the file-like object source `stream`, *replacing*
-        all current data. If multiple character arrays are in the data
-        source, a 0-based index of the character array to use can
+        all current data. If multiple character matrices are in the data
+        source, a 0-based index of the character matrix to use can
         be specified using the `matrix_offset` keyword (defaults to 0, i.e., first
-        character array).
+        character matrix).
         """
         index = kwargs.get("matrix_offset", 0)
         from dendropy.dataobject.dataset import DataSet
         d = DataSet(stream=stream, format=format, **kwargs)
-        if len(d.char_arrays) == 0:
+        if len(d.char_matrices) == 0:
             raise ValueError("No character data in data source")
-        if index >= len(d.char_arrays):
-            raise IndexError("Character array of offset %d specified, but data source only has %d arrays defined (max. index=%d)" \
-                % (index, len(d.char_arrays), len(d.char_arrays)-1))
-        if not isinstance(self, d.char_arrays[index].__class__):
+        if index >= len(d.char_matrices):
+            raise IndexError("Character matrix of offset %d specified, but data source only has %d matrices defined (max. index=%d)" \
+                % (index, len(d.char_matrices), len(d.char_matrices)-1))
+        if not isinstance(self, d.char_matrices[index].__class__):
             raise ValueError("Character data found was of type '%s' (object is of type '%s')" %
-                    (d.char_arrays[index].__class__.__name__, self.__class__.__name__))
-        self.clone_from(d.char_arrays[index])
+                    (d.char_matrices[index].__class__.__name__, self.__class__.__name__))
+        self.clone_from(d.char_matrices[index])
 
     def write(self, stream, format, **kwargs):
         """
@@ -575,26 +575,26 @@ class CharacterArray(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         d.add(self)
         d.write(stream=stream, format=format, **kwargs)
 
-    def extend_characters(self, other_array):
+    def extend_characters(self, other_matrix):
         """
-        Extends this array by adding characters from sequences of taxa
-        in given array to sequences of taxa with correspond labels in
-        this one. Taxa in the second array that do not exist in the
+        Extends this matrix by adding characters from sequences of taxa
+        in given matrix to sequences of taxa with correspond labels in
+        this one. Taxa in the second matrix that do not exist in the
         current one are ignored.
         """
-        self.taxon_seq_map.extend_characters(other_array.taxon_seq_map)
+        self.taxon_seq_map.extend_characters(other_matrix.taxon_seq_map)
 
     def extend_map(self,
                       other_map,
                       overwrite_existing=False,
                       extend_existing=False):
         """
-        Extends this array by adding taxa and characters from the given
+        Extends this matrix by adding taxa and characters from the given
         map to this one.  If `overwrite_existing` is True and a taxon
         in the other map is already present in the current one, then
         the sequence associated with the taxon in the second map
         replaces the sequence in the current one. If `extend_existing`
-        is True and a taxon in the other array is already present in
+        is True and a taxon in the other matrix is already present in
         the current one, then the squence map with the taxon in
         the second map will be added to the sequence in the current
         one. If both are True, then an exception is raised. If neither
@@ -607,23 +607,23 @@ class CharacterArray(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         self.update_taxon_set()
 
     def extend(self,
-               other_array,
+               other_matrix,
                overwrite_existing=False,
                extend_existing=False):
         """
-        Extends this array by adding taxa and characters from the given
-        array to this one.  If `overwrite_existing` is True and a taxon
-        in the other array is already present in the current one, then
-        the sequence associated with the taxon in the second array
+        Extends this matrix by adding taxa and characters from the given
+        matrix to this one.  If `overwrite_existing` is True and a taxon
+        in the other matrix is already present in the current one, then
+        the sequence associated with the taxon in the second matrix
         replaces the sequence in the current one. If `extend_existing`
-        is True and a taxon in the other array is already present in
+        is True and a taxon in the other matrix is already present in
         the current one, then the sequence associated with the taxon in
-        the second array will be added to the sequence in the current
+        the second matrix will be added to the sequence in the current
         one. If both are True, then an exception is raised. If neither
-        are True, and a taxon in the other array is already present in
+        are True, and a taxon in the other matrix is already present in
         the current one, then the sequence is ignored.
         """
-        self.taxon_seq_map.extend(other_array.taxon_seq_map,
+        self.taxon_seq_map.extend(other_matrix.taxon_seq_map,
             overwrite_existing=overwrite_existing,
             extend_existing=extend_existing)
         self.update_taxon_set()
@@ -659,7 +659,7 @@ class CharacterArray(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             return []
         return None
 
-    # following allows a CharacterArray object to simulate a dictionary
+    # following allows a CharacterMatrix object to simulate a dictionary
     # by `passing-through` calls to the underlying character map
 
     def __len__(self):
@@ -804,14 +804,14 @@ class CharacterArray(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             output.write(s)
         return s
 
-class ContinuousCharacterArray(CharacterArray):
+class ContinuousCharacterMatrix(CharacterMatrix):
     "Character data container/manager manager."
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        CharacterArray.__init__(self, *args, **kwargs)
+        CharacterMatrix.__init__(self, *args, **kwargs)
 
-class DiscreteCharacterArray(CharacterArray):
+class DiscreteCharacterMatrix(CharacterMatrix):
     """Character data container/manager manager.
 
     That adds the attributes self.state_alphabets (a list of alphabets)
@@ -820,7 +820,7 @@ class DiscreteCharacterArray(CharacterArray):
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        CharacterArray.__init__(self, **kwargs)
+        CharacterMatrix.__init__(self, **kwargs)
         self.state_alphabets = []
         self.default_state_alphabet = None
         self._default_symbol_state_map = None
@@ -844,12 +844,12 @@ class DiscreteCharacterArray(CharacterArray):
                 symbol = str(value)
             self[taxon].append(CharacterDataCell(value=self.default_symbol_state_map[symbol]))
 
-class StandardCharacterArray(DiscreteCharacterArray):
+class StandardCharacterMatrix(DiscreteCharacterMatrix):
     "`standard` data."
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        DiscreteCharacterArray.__init__(self, **kwargs)
+        DiscreteCharacterMatrix.__init__(self, **kwargs)
         if len(args) > 0:
             self.clone_from(*args)
 
@@ -876,35 +876,35 @@ class StandardCharacterArray(DiscreteCharacterArray):
         return o
 
     def extend(self,
-               other_array,
+               other_matrix,
                overwrite_existing=False,
                extend_existing=False):
         """
-        Extends this array by adding taxa and characters from the given
-        array to this one.  If `overwrite_existing` is True and a taxon
-        in the other array is already present in the current one, then
-        the sequence associated with the taxon in the second array
+        Extends this matrix by adding taxa and characters from the given
+        matrix to this one.  If `overwrite_existing` is True and a taxon
+        in the other matrix is already present in the current one, then
+        the sequence associated with the taxon in the second matrix
         replaces the sequence in the current one. If `extend_existing`
-        is True and a taxon in the other array is already present in
+        is True and a taxon in the other matrix is already present in
         the current one, then the sequence associated with the taxon in
-        the second array will be added to the sequence in the current
+        the second matrix will be added to the sequence in the current
         one. If both are True, then an exception is raised. If neither
-        are True, and a taxon in the other array is already present in
+        are True, and a taxon in the other matrix is already present in
         the current one, then the sequence is ignored.
         """
-        CharacterArray.extend(self,
-                other_array=other_array,
+        CharacterMatrix.extend(self,
+                other_matrix=other_matrix,
                 overwrite_existing=overwrite_existing,
                 extend_existing=extend_existing)
-        for s in other_array.state_alphabets:
+        for s in other_matrix.state_alphabets:
             if s not in self.state_alphabets:
                 self.state_alphabets.append(s)
 
-class FixedAlphabetCharacterArray(DiscreteCharacterArray):
+class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        DiscreteCharacterArray.__init__(self, **kwargs)
+        DiscreteCharacterMatrix.__init__(self, **kwargs)
         if len(args) > 0:
             self.clone_from(*args)
 
@@ -939,58 +939,58 @@ class FixedAlphabetCharacterArray(DiscreteCharacterArray):
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
 
-class DnaCharacterArray(FixedAlphabetCharacterArray):
+class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "DNA nucleotide data."
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        FixedAlphabetCharacterArray.__init__(self, **kwargs)
+        FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
         self.default_state_alphabet = DNA_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
         if len(args) > 0:
             self.clone_from(*args)
 
-class RnaCharacterArray(FixedAlphabetCharacterArray):
+class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "RNA nucleotide data."
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        FixedAlphabetCharacterArray.__init__(self, **kwargs)
+        FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
         self.default_state_alphabet = RNA_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
         if len(args) > 0:
             self.clone_from(*args)
 
-class ProteinCharacterArray(FixedAlphabetCharacterArray):
+class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Protein / amino acid data."
 
     def __init__(self, *args, **kwargs):
         """
         Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`.
         """
-        FixedAlphabetCharacterArray.__init__(self, **kwargs)
+        FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
         self.default_state_alphabet = PROTEIN_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
         if len(args) > 0:
             self.clone_from(*args)
 
-class RestrictionSitesCharacterArray(FixedAlphabetCharacterArray):
+class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Restriction sites data."
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        FixedAlphabetCharacterArray.__init__(self, **kwargs)
+        FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
         self.default_state_alphabet = RESTRICTION_SITES_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
         if len(args) > 0:
             self.clone_from(*args)
 
-class InfiniteSitesCharacterArray(FixedAlphabetCharacterArray):
+class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Infinite sites data."
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
-        FixedAlphabetCharacterArray.__init__(self, **kwargs)
+        FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
         self.default_state_alphabet = INFINITE_SITES_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
         if len(args) > 0:

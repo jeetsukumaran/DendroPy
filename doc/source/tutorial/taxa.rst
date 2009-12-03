@@ -118,21 +118,21 @@ So, for example, the following is logically identical to the previous::
     >>> mcmc2 = dendropy.TreeList(taxon_set=taxa)
     >>> mcmc2.read_from_path('pythonidae.mcmc2.nex', 'nexus')
 
-Taxon Management with Character Arrays
+Taxon Management with Character Matrices
 ======================================
 
-Taxon management with :class:`~dendropy.dataobject.char.CharacterArray`-derived objects work very much the same as it does with :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.tree.TreeList objects`: every time a :class:`~dendropy.dataobject.char.CharacterArray`-derived object is independentally created or read, a new :class:`~dendropy.dataobject.taxon.TaxonSet` is created, unless an existing one is specified.
-Thus, again, if you are creating multiple character arrays that refer to the same set of taxa, you will want to make sure to pass each of them a common :class:`~dendropy.dataobject.taxon.TaxonSet` reference::
+Taxon management with :class:`~dendropy.dataobject.char.CharacterMatrix`-derived objects work very much the same as it does with :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.tree.TreeList objects`: every time a :class:`~dendropy.dataobject.char.CharacterMatrix`-derived object is independentally created or read, a new :class:`~dendropy.dataobject.taxon.TaxonSet` is created, unless an existing one is specified.
+Thus, again, if you are creating multiple character matrices that refer to the same set of taxa, you will want to make sure to pass each of them a common :class:`~dendropy.dataobject.taxon.TaxonSet` reference::
 
     >>> import dendropy
     >>> taxa = dendropy.TaxonSet()
-    >>> dna1 = dendropy.DnaCharacterArray.get_from_path("pythonidae_cytb.fasta", "dnafasta", taxon_set=taxa)
-    >>> std1 = dendropy.ProteinCharacterArray.get_from_path("pythonidae_morph.nex", "nexus", taxon_set=taxa)
+    >>> dna1 = dendropy.DnaCharacterMatrix.get_from_path("pythonidae_cytb.fasta", "dnafasta", taxon_set=taxa)
+    >>> std1 = dendropy.ProteinCharacterMatrix.get_from_path("pythonidae_morph.nex", "nexus", taxon_set=taxa)
 
 Taxon Management with Data Sets
 ===============================
 The :class:`~dendropy.dataobject.dataset.DataSet` object, representing a meta-collection of phylogenetic data, differs in one important way from all the other phylogenetic data objects discussed so far with respect to taxon management, in that it is not associated with any particular :class:`~dendropy.dataobject.taxon.TaxonSet` object.
-Rather, it maintains a list (in the property :attr:`~dendropy.dataobject.char.DataSet.taxon_sets`) of *all* the :class:`~dendropy.dataobject.taxon.TaxonSet` objects referenced by its contained :class:`~dendropy.dataobject.tree.TreeList` objects (in the property :attr:`~dendropy.dataobject.char.DataSet.tree_lists`) and :class:`~dendropy.dataobject.char.CharacterArray` objects (in the property :attr:`~dendropy.dataobject.char.DataSet.char_arrays`).
+Rather, it maintains a list (in the property :attr:`~dendropy.dataobject.char.DataSet.taxon_sets`) of *all* the :class:`~dendropy.dataobject.taxon.TaxonSet` objects referenced by its contained :class:`~dendropy.dataobject.tree.TreeList` objects (in the property :attr:`~dendropy.dataobject.char.DataSet.tree_lists`) and :class:`~dendropy.dataobject.char.CharacterMatrix` objects (in the property :attr:`~dendropy.dataobject.char.DataSet.char_matrices`).
 
 With respect to taxon management, :class:`~dendropy.dataobject.dataset.DataSet` objects operate in one of two modes: "multiple taxon set" mode and "fixed taxon set" mode.
 
@@ -140,7 +140,7 @@ Multiple Taxon Set Mode
 -----------------------
 
 In the "multiple taxon set" mode, which is the default, :class:`~dendropy.dataobject.dataset.DataSet` object tracks all :class:`~dendropy.dataobject.taxon.TaxonSet` references of their other data members in the property :attr:`~dendropy.dataobject.char.DataSet.taxon_sets`, but no effort is made at taxon management as such.
-Thus, every time a data source is read with a "multiple taxon set" mode :class:`~dendropy.dataobject.dataset.DataSet` object, by deault, a new  :class:`~dendropy.dataobject.taxon.TaxonSet` object will be created and associated with the :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, or :class:`~dendropy.dataobject.char.CharacterArray` objects created from each data source, resulting in multiple :class:`~dendropy.dataobject.taxon.TaxonSet` independent references.
+Thus, every time a data source is read with a "multiple taxon set" mode :class:`~dendropy.dataobject.dataset.DataSet` object, by deault, a new  :class:`~dendropy.dataobject.taxon.TaxonSet` object will be created and associated with the :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, or :class:`~dendropy.dataobject.char.CharacterMatrix` objects created from each data source, resulting in multiple :class:`~dendropy.dataobject.taxon.TaxonSet` independent references.
 As such, "multiple taxon set" mode :class:`~dendropy.dataobject.dataset.DataSet` objects are suitable for handling data with multiple distinct sets of taxa.
 
 For example::

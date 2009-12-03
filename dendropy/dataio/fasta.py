@@ -37,11 +37,11 @@ class FastaReader(iosys.DataReader):
 
     def __init__(self, **kwargs):
         """
-        Keywords `row_type` kwarg can be RICH or STR, `char_array_type`
-        is one of the `CharacterArray` types.
+        Keywords `row_type` kwarg can be RICH or STR, `char_matrix_type`
+        is one of the `CharacterMatrix` types.
         """
         iosys.DataReader.__init__(self, **kwargs)
-        self.char_array_type = kwargs.get("char_array_type", dataobject.DnaCharacterArray)
+        self.char_matrix_type = kwargs.get("char_matrix_type", dataobject.DnaCharacterMatrix)
 
     def read(self, stream, **kwargs):
         """
@@ -51,15 +51,15 @@ class FastaReader(iosys.DataReader):
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
         taxon_set = self.get_default_taxon_set(**kwargs)
-        char_array = self.dataset.new_char_array(char_array_type=self.char_array_type, taxon_set=taxon_set)
-        char_array.taxon_set = taxon_set
-        symbol_state_map = char_array.default_state_alphabet.symbol_state_map()
+        char_matrix = self.dataset.new_char_matrix(char_matrix_type=self.char_matrix_type, taxon_set=taxon_set)
+        char_matrix.taxon_set = taxon_set
+        symbol_state_map = char_matrix.default_state_alphabet.symbol_state_map()
 
         curr_vec = None
         curr_taxon = None
 
         if simple_rows:
-            legal_chars = char_array.default_state_alphabet.get_legal_symbols_as_str()
+            legal_chars = char_matrix.default_state_alphabet.get_legal_symbols_as_str()
 
         for line_index, line in enumerate(stream):
             s = line.strip()
@@ -67,10 +67,10 @@ class FastaReader(iosys.DataReader):
                 continue
             if s.startswith('>'):
                 if simple_rows and curr_taxon and curr_vec:
-                    char_array[curr_taxon] = "".join(curr_vec)
+                    char_matrix[curr_taxon] = "".join(curr_vec)
                 name = s[1:].strip()
                 curr_taxon = taxon_set.require_taxon(label=name)
-                if curr_taxon in char_array:
+                if curr_taxon in char_matrix:
                     raise DataFormatError(row=line_index + 1, message="Fasta error: Repeated sequence name (%s) found" % name)
                 if curr_vec is not None and len(curr_vec) == 0:
                     raise DataFormatError(row=line_index + 1, message="Fasta error: Expected sequence, but found another sequence name (%s)" % name)
@@ -78,7 +78,7 @@ class FastaReader(iosys.DataReader):
                     curr_vec = []
                 else:
                     curr_vec = dataobject.CharacterDataVector(taxon=curr_taxon)
-                    char_array[curr_taxon] = curr_vec
+                    char_matrix[curr_taxon] = curr_vec
             elif curr_vec is None:
                 raise DataFormatError(row=line_index + 1, message="Fasta error: Expecting a lines starting with > before sequences")
             else:
@@ -101,20 +101,20 @@ class FastaReader(iosys.DataReader):
                         except:
                             raise DataFormatError(row=line_index + 1, column=col_ind + 1, message='Unrecognized sequence symbol "%s"' % c)
         if simple_rows and curr_taxon and curr_vec:
-            char_array[curr_taxon] = "".join(curr_vec)
+            char_matrix[curr_taxon] = "".join(curr_vec)
         return self.dataset
 
 class DNAFastaReader(FastaReader):
     def __init__(self, **kwargs):
-        FastaReader.__init__(self, char_array_type=dataobject.DnaCharacterArray, **kwargs)
+        FastaReader.__init__(self, char_matrix_type=dataobject.DnaCharacterMatrix, **kwargs)
 
 class RNAFastaReader(FastaReader):
     def __init__(self, **kwargs):
-        FastaReader.__init__(self, char_array_type=dataobject.RnaCharacterArray, **kwargs)
+        FastaReader.__init__(self, char_matrix_type=dataobject.RnaCharacterMatrix, **kwargs)
 
 class ProteinFastaReader(FastaReader):
     def __init__(self, **kwargs):
-        FastaReader.__init__(self, char_array_type=dataobject.ProteinCharacterArray, **kwargs)
+        FastaReader.__init__(self, char_matrix_type=dataobject.ProteinCharacterMatrix, **kwargs)
 
 class FastaWriter(iosys.DataWriter):
     """
@@ -141,10 +141,10 @@ class FastaWriter(iosys.DataWriter):
         if self.exclude_chars:
             return
 
-        for char_array in self.dataset.char_arrays:
-            for taxon in char_array.taxon_set:
+        for char_matrix in self.dataset.char_matrices:
+            for taxon in char_matrix.taxon_set:
                 stream.write(">%s\n" % taxon.label)
-                seqs = char_array[taxon]
+                seqs = char_matrix[taxon]
                 if isinstance(seqs, dataobject.CharacterDataVector):
                     seqs = seqs.symbols_as_string()
                 if self.wrap > 0:

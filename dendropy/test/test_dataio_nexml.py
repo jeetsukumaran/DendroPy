@@ -75,7 +75,7 @@ class NexmlRoundTripTest(datatest.DataObjectVerificationTestCase):
     def testRoundTripStandard2(self):
         s = pathmap.char_source_stream("apternodus.chars.nexus")
         d1 = dendropy.DataSet(stream=s, format="nexus")
-        for ca in d1.char_arrays:
+        for ca in d1.char_matrices:
             ca.markup_as_sequences = False
         self.roundTripDataSetTest(d1, "nexml")
 

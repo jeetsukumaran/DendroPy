@@ -52,7 +52,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
     def assertDistinctButEqual(self, data_object1, data_object2, **kwargs):
         """
         Verifies that two DendroPy phylogenetic data objects (Tree, TreeList,
-        CharArray, DataSet etc.) are independent objects, but equal. That is,
+        CharMatrix, DataSet etc.) are independent objects, but equal. That is,
         if `data_object1` and `data_object` are the same object, then the
         distinction criterion is failed. If `distinct_taxa` is True, then the
         distinct/independence is criterion is enforced down to Taxon and
@@ -79,8 +79,8 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             self.assertDistinctButEqualTree(data_object1, data_object2, **kwargs)
         elif isinstance(data_object1, dendropy.TreeList):
             self.assertDistinctButEqualTreeList(data_object1, data_object2, **kwargs)
-        elif isinstance(data_object1, dendropy.CharacterArray):
-            self.assertDistinctButEqualCharArray(data_object1, data_object2, **kwargs)
+        elif isinstance(data_object1, dendropy.CharacterMatrix):
+            self.assertDistinctButEqualCharMatrix(data_object1, data_object2, **kwargs)
         else:
             raise ValueError("Unsupported type for comparison: %s" % type(data_object1))
 
@@ -94,10 +94,10 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             taxon_set2 = dataset2.taxon_sets[idx]
             self.assertDistinctButEqualTaxonSet(taxon_set1, taxon_set2, **kwargs)
 
-        self.assertEqual(len(dataset1.char_arrays), len(dataset2.char_arrays))
-        for tsi, char_array1 in enumerate(dataset1.char_arrays):
-            char_array2 = dataset2.char_arrays[tsi]
-            self.assertDistinctButEqualCharArray(char_array1, char_array2, **kwargs)
+        self.assertEqual(len(dataset1.char_matrices), len(dataset2.char_matrices))
+        for tsi, char_matrix1 in enumerate(dataset1.char_matrices):
+            char_matrix2 = dataset2.char_matrices[tsi]
+            self.assertDistinctButEqualCharMatrix(char_matrix1, char_matrix2, **kwargs)
 
         self.assertEqual(len(dataset1.tree_lists), len(dataset2.tree_lists))
         for tsi, tree_list1 in enumerate(dataset1.tree_lists):
@@ -287,9 +287,9 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             state2 = state_alphabet2[state_idx]
             self.assertDistinctButEqualStateAlphabetElement(state1, state2)
 
-    def assertDistinctButEqualDiscreteCharArray(self, char_array1, char_array2, **kwargs):
+    def assertDistinctButEqualDiscreteCharMatrix(self, char_matrix1, char_matrix2, **kwargs):
         """
-        `char_array1` and `char_array2` must be distinct but equivalent objects
+        `char_matrix1` and `char_matrix2` must be distinct but equivalent objects
          (if `distinct_state_alphabets` is False, as it should be for fixed state
          alphabets such as ).
         """
@@ -297,41 +297,41 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         distinct_taxa = kwargs.get("distinct_taxa", True)
         equal_oids = kwargs.get("equal_oids", None)
         ignore_chartypes = kwargs.get("ignore_chartypes", True)
-        self.logger.info("Comparing DiscreteCharacterArray objects %d and %d" % (id(char_array1), id(char_array2)))
-        self.assertNotSame(char_array1, char_array2)
+        self.logger.info("Comparing DiscreteCharacterMatrix objects %d and %d" % (id(char_matrix1), id(char_matrix2)))
+        self.assertNotSame(char_matrix1, char_matrix2)
         if distinct_taxa:
-            self.assertNotSame(char_array1.taxon_set, char_array2.taxon_set)
-            self.assertDistinctButEqualTaxonSet(char_array1.taxon_set, char_array2.taxon_set, **kwargs)
+            self.assertNotSame(char_matrix1.taxon_set, char_matrix2.taxon_set)
+            self.assertDistinctButEqualTaxonSet(char_matrix1.taxon_set, char_matrix2.taxon_set, **kwargs)
         else:
-            self.assertSame(char_array1.taxon_set, char_array2.taxon_set)
+            self.assertSame(char_matrix1.taxon_set, char_matrix2.taxon_set)
         if equal_oids is True:
-            self.assertEqual(char_array1.oid, char_array2.oid)
+            self.assertEqual(char_matrix1.oid, char_matrix2.oid)
         elif equal_oids is False:
-            self.assertNotEqual(char_array1.oid, char_array2.oid)
+            self.assertNotEqual(char_matrix1.oid, char_matrix2.oid)
         if distinct_state_alphabets is True:
-            self.assertEqual(len(char_array1.state_alphabets), len(char_array2.state_alphabets))
-            for sai, sa1 in enumerate(char_array1.state_alphabets):
-                sa2 = char_array2.state_alphabets[sai]
+            self.assertEqual(len(char_matrix1.state_alphabets), len(char_matrix2.state_alphabets))
+            for sai, sa1 in enumerate(char_matrix1.state_alphabets):
+                sa2 = char_matrix2.state_alphabets[sai]
                 self.assertDistinctButEqualStateAlphabet(sa1, sa2)
         elif distinct_state_alphabets is False:
-            for sai, sa1 in enumerate(char_array1.state_alphabets):
-                sa2 = char_array2.state_alphabets[sai]
+            for sai, sa1 in enumerate(char_matrix1.state_alphabets):
+                sa2 = char_matrix2.state_alphabets[sai]
                 self.assertSame(sa1, sa2)
-                self.assertSame(char_array1.default_state_alphabet, char_array2.default_state_alphabet)
+                self.assertSame(char_matrix1.default_state_alphabet, char_matrix2.default_state_alphabet)
         if not ignore_chartypes:
-            self.assertEqual(len(char_array1.character_types), len(char_array2.character_types))
-        for coli, col1 in enumerate(char_array1.character_types):
+            self.assertEqual(len(char_matrix1.character_types), len(char_matrix2.character_types))
+        for coli, col1 in enumerate(char_matrix1.character_types):
             if distinct_state_alphabets is True:
-                col2 = char_array2.character_types[coli]
+                col2 = char_matrix2.character_types[coli]
                 self.assertDistinctButEqualStateAlphabet(col1.state_alphabet, col2.state_alphabet)
             elif distinct_state_alphabets is False:
                 self.assertSame(col1.state_alphabet, col2.state_alphabet)
-        self.assertEqual(len(char_array1), len(char_array2))
+        self.assertEqual(len(char_matrix1), len(char_matrix2))
 
-        for ti, taxon1 in enumerate(char_array1):
-            vec1 = char_array1[taxon1]
-            taxon2 = char_array2.taxon_set[ti]
-            vec2 = char_array2[taxon2]
+        for ti, taxon1 in enumerate(char_matrix1):
+            vec1 = char_matrix1[taxon1]
+            taxon2 = char_matrix2.taxon_set[ti]
+            vec2 = char_matrix2[taxon2]
             self.logger.info("Comparing CharacterDataVector objects %d and %d" % (id(vec2), id(vec2)))
             if distinct_taxa:
                 self.assertDistinctButEqualTaxon(taxon1, taxon2, **kwargs)
@@ -343,9 +343,9 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             for i, c1 in enumerate(vec1):
                 c2 = vec2[i]
                 self.assertNotSame(c1, c2)
-                if len(char_array1.state_alphabets) == 1:
-                    self.assertContained(c1.value, char_array1.state_alphabets[0])
-                    self.assertContained(c2.value, char_array2.state_alphabets[0])
+                if len(char_matrix1.state_alphabets) == 1:
+                    self.assertContained(c1.value, char_matrix1.state_alphabets[0])
+                    self.assertContained(c2.value, char_matrix2.state_alphabets[0])
                 else:
                     # assume mapped by columns, and will be checked there
                     pass
@@ -360,16 +360,16 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                             self.assertDistinctButEqualStateAlphabet(c1.character_type.state_alphabet, c2.character_type.state_alphabet)
                         elif distinct_state_alphabets is False:
                             self.assertSame(c1.character_type.state_alphabet, c2.character_type.state_alphabet)
-                        self.assertContained(c1.character_type.state_alphabet, char_array1.state_alphabets)
-                        self.assertContained(c2.character_type.state_alphabet, char_array2.state_alphabets)
+                        self.assertContained(c1.character_type.state_alphabet, char_matrix1.state_alphabets)
+                        self.assertContained(c2.character_type.state_alphabet, char_matrix2.state_alphabets)
                         self.assertContained(c1.value, c1.character_type.state_alphabet)
                         self.assertContained(c2.value, c2.character_type.state_alphabet)
                     else:
                         self.assertSame(c2.character_type, None)
 
-    def assertDistinctButEqualCharArray(self, char_array1, char_array2, **kwargs):
-        if isinstance(char_array1, dendropy.DiscreteCharacterArray):
-            self.assertDistinctButEqualDiscreteCharArray(char_array1, char_array2, **kwargs)
+    def assertDistinctButEqualCharMatrix(self, char_matrix1, char_matrix2, **kwargs):
+        if isinstance(char_matrix1, dendropy.DiscreteCharacterMatrix):
+            self.assertDistinctButEqualDiscreteCharMatrix(char_matrix1, char_matrix2, **kwargs)
         else:
             raise NotImplementedError()
 
@@ -391,34 +391,34 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                         data.append(values)
         return data
 
-    def char_array_to_label_symbol_tuples(self, char_array):
+    def char_matrix_to_label_symbol_tuples(self, char_matrix):
         """
-        Takes a `char_array` and returns a list of pairs with first element the
+        Takes a `char_matrix` and returns a list of pairs with first element the
         taxon label and the second a string of state symbols.
         """
         data = []
-        for t, s in char_array.items():
+        for t, s in char_matrix.items():
             data.append((t.label, s.symbols_as_string()))
         return data
 
-    def assertEqualCharArrayLabelSymbols(self, char_array, **kwargs):
+    def assertEqualCharMatrixLabelSymbols(self, char_matrix, **kwargs):
         """
-        Takes a CharacterArray object, extracts tuples in the form of
+        Takes a CharacterMatrix object, extracts tuples in the form of
         (<Taxon label string>, <sequence symbols string>), and compares it with
         *one* of the following passed as keyword arguments:
 
             - `expected_label_symbol_tuples`, a list of tuples of strings
-               corresponding to the tuples expected from the CharacterArray object.
+               corresponding to the tuples expected from the CharacterMatrix object.
 
             - `expected_label_symbol_text`, a tab-delimited string with rows
-               describing the tuples expected from the CharacterArray object
+               describing the tuples expected from the CharacterMatrix object
                in the form of::
 
                     <Taxon label string>\t<sequence symbols string>
 
             - `expected_label_symbol_stream`, a file-like object with the file
                containing rows describing the tuples expected from the
-               CharacterArray object in the form of::
+               CharacterMatrix object in the form of::
 
                     <Taxon label string>\t<sequence symbols string>
 
@@ -432,7 +432,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             expected_label_symbol_text = kwargs["expected_label_symbol_stream"].read()
             expected_label_symbol_tuples = self.text_to_label_symbol_tuples(expected_label_symbol_text)
 
-        obs_label_symbol_tuples = self.char_array_to_label_symbol_tuples(char_array)
+        obs_label_symbol_tuples = self.char_matrix_to_label_symbol_tuples(char_matrix)
 
         self.assertEqual(len(obs_label_symbol_tuples), len(expected_label_symbol_tuples))
         for i, x1 in enumerate(expected_label_symbol_tuples):

@@ -36,8 +36,8 @@ class DataRoundTrip(datatest.DataObjectVerificationTestCase):
 
     def setUp(self):
         self.trees = datagen.reference_tree_list()
-        self.dna_chars = datagen.reference_dna_array()
-        self.std_chars = datagen.reference_standard_array()
+        self.dna_chars = datagen.reference_dna_matrix()
+        self.std_chars = datagen.reference_standard_matrix()
 
     def testTreeRoundTrip(self):
         for i, t1 in enumerate(self.trees):

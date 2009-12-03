@@ -60,19 +60,19 @@ class DataSetCreateTest(datatest.DataObjectVerificationTestCase):
         ds2 = dendropy.DataSet(self.dataset)
         self.assertDistinctButEqual(self.dataset, ds2)
 
-    def testSimpleCopyDnaArray(self):
-        char_array = datagen.reference_dna_array()
-        ds1 = dendropy.DataSet(char_array)
-        self.assertEqual(len(ds1.char_arrays), 1)
-        self.assertSame(ds1.char_arrays[0], char_array)
+    def testSimpleCopyDnaMatrix(self):
+        char_matrix = datagen.reference_dna_matrix()
+        ds1 = dendropy.DataSet(char_matrix)
+        self.assertEqual(len(ds1.char_matrices), 1)
+        self.assertSame(ds1.char_matrices[0], char_matrix)
         ds2 = dendropy.DataSet(ds1)
         self.assertDistinctButEqual(ds1, ds2)
 
-    def testSimpleCopyStandardArray(self):
-        char_array = datagen.reference_standard_array()
-        ds1 = dendropy.DataSet(char_array)
-        self.assertEqual(len(ds1.char_arrays), 1)
-        self.assertSame(ds1.char_arrays[0], char_array)
+    def testSimpleCopyStandardMatrix(self):
+        char_matrix = datagen.reference_standard_matrix()
+        ds1 = dendropy.DataSet(char_matrix)
+        self.assertEqual(len(ds1.char_matrices), 1)
+        self.assertSame(ds1.char_matrices[0], char_matrix)
         ds2 = dendropy.DataSet(ds1)
         self.assertDistinctButEqual(ds1, ds2)
 

@@ -69,9 +69,9 @@ if runlevel.is_test_enabled(runlevel.SLOW, _LOG, __name__, "skipping all sequenc
                 tree_model=self.tree_model,
                 kappa=kappa,
                 base_freqs=base_freqs)
-            self.tree_model.reindex_taxa(output_ds.char_arrays[0].taxon_set)
+            self.tree_model.reindex_taxa(output_ds.char_matrices[0].taxon_set)
 
-            est_tree, mle = paup.estimate_model(char_array=output_ds.char_arrays[0],
+            est_tree, mle = paup.estimate_model(char_matrix=output_ds.char_matrices[0],
                                                 tree_model=self.tree_model,
                                                 num_states=2,
                                                 unequal_base_freqs=unequal_base_freqs,

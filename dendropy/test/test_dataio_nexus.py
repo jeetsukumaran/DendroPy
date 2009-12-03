@@ -43,8 +43,8 @@ class NexusGeneralParseCharsTest(datatest.DataObjectVerificationTestCase):
         reader = nexus.NexusReader()
         dataset = reader.read(stream=pathmap.char_source_stream(data_filename))
         expected_label_symbol_stream = pathmap.char_source_stream(expected_filename)
-        self.assertEqual(len(dataset.char_arrays), 1)
-        self.assertEqualCharArrayLabelSymbols(dataset.char_arrays[0], \
+        self.assertEqual(len(dataset.char_matrices), 1)
+        self.assertEqualCharMatrixLabelSymbols(dataset.char_matrices[0], \
             expected_label_symbol_stream=expected_label_symbol_stream)
 
 class NexusParseDnaCharsTest(NexusGeneralParseCharsTest):
@@ -52,28 +52,28 @@ class NexusParseDnaCharsTest(NexusGeneralParseCharsTest):
     def runTest(self):
         self.check_chars_against_expected("pythonidae_cytb.chars.nexus",
                 "pythonidae_cytb.chars.txt",
-                dendropy.DnaCharacterArray)
+                dendropy.DnaCharacterMatrix)
 
 class NexusParseDnaCharsInterleavedTest(NexusGeneralParseCharsTest):
 
     def runTest(self):
         self.check_chars_against_expected("pythonidae_cytb.chars.interleaved.nexus",
                 "pythonidae_cytb.chars.txt",
-                dendropy.DnaCharacterArray)
+                dendropy.DnaCharacterMatrix)
 
 class NexusParseProteinCharsTest(NexusGeneralParseCharsTest):
 
     def runTest(self):
         self.check_chars_against_expected("caenophidia_mos.chars.nexus",
                 "caenophidia_mos.chars.txt",
-                dendropy.ProteinCharacterArray)
+                dendropy.ProteinCharacterMatrix)
 
 class NexusParseStandardCharsTest(NexusGeneralParseCharsTest):
 
     def runTest(self):
         self.check_chars_against_expected("angiosperms.chars.nexus",
                 "angiosperms.chars.txt",
-                dendropy.ProteinCharacterArray)
+                dendropy.ProteinCharacterMatrix)
 
 class NexusParseStandardCharsWithMultistateTest(datatest.DataObjectVerificationTestCase):
     """
@@ -81,14 +81,14 @@ class NexusParseStandardCharsWithMultistateTest(datatest.DataObjectVerificationT
     "()" constructs in the data. Two files are used, one in which the
     ambiguous data are marked up using "{}" and "()" constructs, and the other
     in which these are substituted by symbols representing the appropriate
-    multistate. The first file is parsed, and the result character array's
+    multistate. The first file is parsed, and the result character matrix's
     state alphabet is hacked to map the ambiguous states to the symbols used
     in the second file. The resulting label-symbol lists are then compared.
     """
 
-    def map_multistate_to_symbols(self, char_array):
-        self.assertEqual(len(char_array.state_alphabets), 1)
-        sa = char_array.state_alphabets[0]
+    def map_multistate_to_symbols(self, char_matrix):
+        self.assertEqual(len(char_matrix.state_alphabets), 1)
+        sa = char_matrix.state_alphabets[0]
         for sae in sa:
             if sae.multistate != dendropy.StateAlphabetElement.SINGLE_STATE \
                     and sae.symbol is None:
@@ -116,10 +116,10 @@ class NexusParseStandardCharsWithMultistateTest(datatest.DataObjectVerificationT
     def check_parse_with_ambiguities(self, data_filename, expected_filename):
         reader = nexus.NexusReader()
         dataset = reader.read(stream=pathmap.char_source_stream(data_filename))
-        self.assertEqual(len(dataset.char_arrays), 1)
-        self.map_multistate_to_symbols(dataset.char_arrays[0])
+        self.assertEqual(len(dataset.char_matrices), 1)
+        self.map_multistate_to_symbols(dataset.char_matrices[0])
         expected_label_symbol_stream = pathmap.char_source_stream(expected_filename)
-        self.assertEqualCharArrayLabelSymbols(dataset.char_arrays[0], \
+        self.assertEqualCharMatrixLabelSymbols(dataset.char_matrices[0], \
             expected_label_symbol_stream = expected_label_symbol_stream)
 
     def testStandardWithMultistateInBraces(self):

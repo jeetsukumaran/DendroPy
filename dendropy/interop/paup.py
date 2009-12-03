@@ -354,7 +354,7 @@ def bipartitions(data_filepath,
                     tax_labels.append(ti_match.group(2).strip())
     return tax_labels, bipartitions, bipartition_counts, bipartition_freqs
 
-def estimate_model(char_array,
+def estimate_model(char_matrix,
                    tree_model=None,
                    num_states=6,
                    unequal_base_freqs=True,
@@ -364,7 +364,7 @@ def estimate_model(char_array,
                    tree_user_brlens=True,
                    paup_path='paup'):
     """
-    Given a dataset, `char_array`, uses client-supplied tree or estimates a
+    Given a dataset, `char_matrix`, uses client-supplied tree or estimates a
     tree, and character substitution model for the data.
     Returns a tuple, consisting of a trees block with the tree(s) used for the
     estimated character model, and a dictionary with estimates of rates, kappa,
@@ -377,9 +377,9 @@ def estimate_model(char_array,
         'rates' : gamma_rates and 'gamma' or 'equal',
         'pinvar' : prop_invar and 'estimate' or '0',
     }
-    taxab = ds.new_taxon_set(taxon_set=char_array.taxon_set)
+    taxab = ds.new_taxon_set(taxon_set=char_matrix.taxon_set)
     if tree_model is not None:
-        assert tree_model.taxon_set is char_array.taxon_set
+        assert tree_model.taxon_set is char_matrix.taxon_set
         treeb = ds.new_tree_list(taxon_set=taxab)
         treeb.append(tree_model)
         tf = tempfile.NamedTemporaryFile()
@@ -396,8 +396,8 @@ def estimate_model(char_array,
     else:
         paup_args['userbrlens'] = 'no'
 
-    char_array.reindex_taxa(taxab)
-    charb = ds.add_char_array(char_array=char_array)
+    char_matrix.reindex_taxa(taxab)
+    charb = ds.add_char_matrix(char_matrix=char_matrix)
     cf = tempfile.NamedTemporaryFile()
     ds.write_to_stream(cf, format='nexus', exclude_chars=False, exclude_trees=True)
     cf.flush()

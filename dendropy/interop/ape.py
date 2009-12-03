@@ -45,7 +45,7 @@ def as_ape_object(o):
         kwargs['keep.multi'] = False
         text = o.as_string("newick")
         return _R['read.tree'](text=text, **kwargs)
-    elif isinstance(o, dendropy.CharacterArray):
+    elif isinstance(o, dendropy.CharacterMatrix):
         f = tempfile.NamedTemporaryFile()
         o.write_to_stream(f, "nexus", simple=True)
         f.flush()
@@ -90,10 +90,10 @@ def as_dendropy_object(o, taxon_set=None):
         _R['write.nexus.data'](o, file=f.name)
 #        print open(f.name, "r").read()
         d = dendropy.DataSet.get_from_path(f.name, "nexus", taxon_set=taxon_set)
-        if len(d.char_arrays) == 0:
+        if len(d.char_matrices) == 0:
             raise ValueError("No character data found")
-        elif len(d.char_arrays) == 1:
-            return d.char_arrays[0]
+        elif len(d.char_matrices) == 1:
+            return d.char_matrices[0]
         else:
             raise ValueError("Multiple character matrices returned")
     else:

@@ -82,8 +82,8 @@ if runlevel.is_test_enabled(runlevel.SLOW, _LOG, __name__, "skipping all popgens
         END;
         """)
             d = dendropy.DataSet(stream=s3, format="nexus")
-            self.assertAlmostEqual(popgenstat.average_number_of_pairwise_differences(d.char_arrays[0], ignore_uncertain=True),  111.0606, 4)
-            self.assertAlmostEqual(popgenstat.nucleotide_diversity(d.char_arrays[0], ignore_uncertain=True), 0.2343, 4)
+            self.assertAlmostEqual(popgenstat.average_number_of_pairwise_differences(d.char_matrices[0], ignore_uncertain=True),  111.0606, 4)
+            self.assertAlmostEqual(popgenstat.nucleotide_diversity(d.char_matrices[0], ignore_uncertain=True), 0.2343, 4)
 
         def testWakeleysSigma(self):
             s3 = StringIO.StringIO("""
@@ -129,7 +129,7 @@ if runlevel.is_test_enabled(runlevel.SLOW, _LOG, __name__, "skipping all popgens
                     groups[0].append(t)
                 else:
                     groups[1].append(t)
-            sigma = popgenstat.wakeleys_Psi(d.char_arrays[0], groups)
+            sigma = popgenstat.wakeleys_Psi(d.char_matrices[0], groups)
             self.assertTrue((sigma - 0.82) ** 2 <= 0.02 ** 2)
 
     if __name__ == "__main__":

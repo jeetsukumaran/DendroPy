@@ -21,7 +21,7 @@
 ###############################################################################
 
 """
-Tests creation, reading, update, deletion of CharArray objects.
+Tests creation, reading, update, deletion of CharMatrix objects.
 """
 
 import unittest
@@ -39,13 +39,13 @@ class TestCharStruct(ExtendedTestCase):
         self.tb1 = dendropy.TaxonSet(label="TI1")
         for i in range(1,11):
             self.tb1.new_taxon(label="T%02d" % i)
-        self.cb1 = dendropy.DnaCharacterArray(taxon_set=self.tb1, label="TI1, CA1")
+        self.cb1 = dendropy.DnaCharacterMatrix(taxon_set=self.tb1, label="TI1, CA1")
         for t in self.tb1:
             self.cb1.append_taxon_sequence(t, state_symbols="AAAAAAAAAA")
         self.tb2 = dendropy.TaxonSet(label="TI2")
         for i in range(1,21):
             self.tb2.new_taxon(label="T%02d" % i)
-        self.cb2 = dendropy.DnaCharacterArray(taxon_set=self.tb2, label="TI2, CA2")
+        self.cb2 = dendropy.DnaCharacterMatrix(taxon_set=self.tb2, label="TI2, CA2")
         for t in self.tb2:
             self.cb2.append_taxon_sequence(t, state_symbols="CCCCCCCCCC")
 
@@ -96,35 +96,35 @@ class TestExtendSequencesAppend(TestCharStruct):
                 self.assertEqual(len(self.cb1[t]), 20)
                 self.assertEqual(self.cb1[t].symbols_as_string(), "AAAAAAAAAACCCCCCCCCC")
 
-class DnaArrayTest(datatest.DataObjectVerificationTestCase):
+class DnaMatrixTest(datatest.DataObjectVerificationTestCase):
 
     def setUp(self):
-        self.char_array1 = datagen.reference_dna_array()
+        self.char_matrix1 = datagen.reference_dna_matrix()
 
-    def testFromDnaCharArray(self):
-        ca2 = dendropy.DnaCharacterArray(self.char_array1)
+    def testFromDnaCharMatrix(self):
+        ca2 = dendropy.DnaCharacterMatrix(self.char_matrix1)
         self.assertDistinctButEqual(
-            self.char_array1,
+            self.char_matrix1,
             ca2,
-            char_type=dendropy.DnaCharacterArray,
+            char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
             distinct_taxa=False)
 
-class StandardArrayTest(datatest.DataObjectVerificationTestCase):
+class StandardMatrixTest(datatest.DataObjectVerificationTestCase):
 
     def setUp(self):
-        self.char_array1 = datagen.reference_standard_array()
+        self.char_matrix1 = datagen.reference_standard_matrix()
 
-    def testFromStandardCharArray(self):
-        ca2 = dendropy.StandardCharacterArray(self.char_array1)
+    def testFromStandardCharMatrix(self):
+        ca2 = dendropy.StandardCharacterMatrix(self.char_matrix1)
         self.assertDistinctButEqual(
-            self.char_array1,
+            self.char_matrix1,
             ca2,
-            char_type=dendropy.StandardCharacterArray,
+            char_type=dendropy.StandardCharacterMatrix,
             distinct_state_alphabets=True,
             distinct_taxa=False)
 
-class CharArrayReadTest(datatest.DataObjectVerificationTestCase):
+class CharMatrixReadTest(datatest.DataObjectVerificationTestCase):
 
     def setUp(self):
         self.reference_dataset = datagen.reference_single_taxonset_dataset()
@@ -132,120 +132,120 @@ class CharArrayReadTest(datatest.DataObjectVerificationTestCase):
         self.reference_dataset.write_to_path(self.data_path, "nexus")
 
     def testNonIndexedRead(self):
-        c = dendropy.DnaCharacterArray()
+        c = dendropy.DnaCharacterMatrix()
         c.read_from_path(self.data_path, "nexus")
         self.assertDistinctButEqual(
-            self.reference_dataset.char_arrays[0],
+            self.reference_dataset.char_matrices[0],
             c,
-            char_type=dendropy.DnaCharacterArray,
+            char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
             distinct_taxa=True)
 
     def testIndexedRead(self):
-        c = dendropy.StandardCharacterArray()
+        c = dendropy.StandardCharacterMatrix()
         c.read_from_stream(open(self.data_path, "rU"), "nexus", matrix_offset=1)
         self.assertDistinctButEqual(
-            self.reference_dataset.char_arrays[1],
+            self.reference_dataset.char_matrices[1],
             c,
-            char_type=dendropy.StandardCharacterArray,
+            char_type=dendropy.StandardCharacterMatrix,
             distinct_state_alphabets=None,
             distinct_taxa=True)
 
     def testIncompatibleRead(self):
-        c = dendropy.DnaCharacterArray()
+        c = dendropy.DnaCharacterMatrix()
         self.assertRaises(ValueError, c.read_from_path, self.data_path, "nexus", matrix_offset=1)
 
     def testInitRead(self):
-        c = dendropy.DnaCharacterArray(stream=open(self.data_path, "rU"),
+        c = dendropy.DnaCharacterMatrix(stream=open(self.data_path, "rU"),
                 format="nexus")
         self.assertDistinctButEqual(
-            self.reference_dataset.char_arrays[0],
+            self.reference_dataset.char_matrices[0],
             c,
-            char_type=dendropy.DnaCharacterArray,
+            char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
             distinct_taxa=True)
 
     def testSameTaxaRead(self):
-        c = dendropy.DnaCharacterArray()
+        c = dendropy.DnaCharacterMatrix()
         c.read_from_path(self.data_path,
                 format="nexus",
-                taxon_set=self.reference_dataset.char_arrays[0].taxon_set)
+                taxon_set=self.reference_dataset.char_matrices[0].taxon_set)
         self.assertDistinctButEqual(
-            self.reference_dataset.char_arrays[0],
+            self.reference_dataset.char_matrices[0],
             c,
-            char_type=dendropy.DnaCharacterArray,
+            char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
             distinct_taxa=False)
 
     def testSameTaxaInit(self):
-        c = dendropy.DnaCharacterArray(stream=open(self.data_path, "rU"),
+        c = dendropy.DnaCharacterMatrix(stream=open(self.data_path, "rU"),
                 format="nexus",
-                taxon_set=self.reference_dataset.char_arrays[0].taxon_set)
+                taxon_set=self.reference_dataset.char_matrices[0].taxon_set)
         self.assertDistinctButEqual(
-            self.reference_dataset.char_arrays[0],
+            self.reference_dataset.char_matrices[0],
             c,
-            char_type=dendropy.DnaCharacterArray,
+            char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
             distinct_taxa=False)
 
-class CharArrayWriteTest(datatest.DataObjectVerificationTestCase):
+class CharMatrixWriteTest(datatest.DataObjectVerificationTestCase):
 
     def testDnaRountTripDistinctTaxa(self):
-        c1 = datagen.reference_dna_array()
+        c1 = datagen.reference_dna_matrix()
         path = pathmap.named_output_path("char_rw_dna.nex")
         c1.write_to_path(path, "nexus")
-        c2 = dendropy.DnaCharacterArray.get_from_path(path, "nexus")
+        c2 = dendropy.DnaCharacterMatrix.get_from_path(path, "nexus")
         self.assertDistinctButEqual(
             c1,
             c2,
-            char_type=dendropy.DnaCharacterArray,
+            char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
             distinct_taxa=True)
 
     def testDnaRountTripToStringDistinctTaxa(self):
-        c1 = datagen.reference_dna_array()
+        c1 = datagen.reference_dna_matrix()
         s1 = c1.as_string(format="nexus")
-        c2 = dendropy.DnaCharacterArray.get_from_string(s1, "nexus")
+        c2 = dendropy.DnaCharacterMatrix.get_from_string(s1, "nexus")
         self.assertDistinctButEqual(
             c1,
             c2,
-            char_type=dendropy.DnaCharacterArray,
+            char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
             distinct_taxa=True)
 
     def testDnaRountTripSameTaxa(self):
-        c1 = datagen.reference_dna_array()
+        c1 = datagen.reference_dna_matrix()
         path = pathmap.named_output_path("char_rw_dna.nex")
         c1.write_to_path(path, "nexus")
-        c2 = dendropy.DnaCharacterArray.get_from_path(path, "nexus", taxon_set=c1.taxon_set)
+        c2 = dendropy.DnaCharacterMatrix.get_from_path(path, "nexus", taxon_set=c1.taxon_set)
         self.assertDistinctButEqual(
             c1,
             c2,
-            char_type=dendropy.DnaCharacterArray,
+            char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
             distinct_taxa=False)
 
     def testStandardRountTripDistinctTaxa(self):
-        c1 = datagen.reference_standard_array()
+        c1 = datagen.reference_standard_matrix()
         path = pathmap.named_output_path("char_rw_dna.nex")
         c1.write_to_path(path, "nexus")
-        c2 = dendropy.StandardCharacterArray.get_from_stream(open(path, "rU"), "nexus")
+        c2 = dendropy.StandardCharacterMatrix.get_from_stream(open(path, "rU"), "nexus")
         self.assertDistinctButEqual(
             c1,
             c2,
-            char_type=dendropy.StandardCharacterArray,
+            char_type=dendropy.StandardCharacterMatrix,
             distinct_state_alphabets=None,
             distinct_taxa=True)
 
     def testStandardRountTripSameTaxa(self):
-        c1 = datagen.reference_standard_array()
+        c1 = datagen.reference_standard_matrix()
         path = pathmap.named_output_path("char_rw_dna.nex")
         c1.write_to_path(path, "nexus")
-        c2 = dendropy.StandardCharacterArray.get_from_path(path, "nexus", taxon_set=c1.taxon_set)
+        c2 = dendropy.StandardCharacterMatrix.get_from_path(path, "nexus", taxon_set=c1.taxon_set)
         self.assertDistinctButEqual(
             c1,
             c2,
-            char_type=dendropy.StandardCharacterArray,
+            char_type=dendropy.StandardCharacterMatrix,
             distinct_state_alphabets=None,
             distinct_taxa=False)
 

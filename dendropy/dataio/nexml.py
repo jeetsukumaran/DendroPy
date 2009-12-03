@@ -243,7 +243,7 @@ class NexmlReader(iosys.DataReader):
         else:
             raise error.DataFormatError("No taxon definitions found in data source")
         if not self.exclude_chars:
-            self.parse_char_arrays(xml_doc, self.dataset)
+            self.parse_char_matrices(xml_doc, self.dataset)
         if not self.exclude_trees:
             self.parse_tree_lists(xml_doc, self.dataset)
         return self.dataset
@@ -257,14 +257,14 @@ class NexmlReader(iosys.DataReader):
         for taxa_element in taxon_set_elements:
             taxon_set = nxt.parse_taxa(taxa_element, dataset)
 
-    def parse_char_arrays(self, xml_doc, dataset):
+    def parse_char_matrices(self, xml_doc, dataset):
         """
         Given an xml_document, parses the XmlElement representation of
         character sequences into a list of CharacterMatrix objects.
         """
         nxc = _NexmlCharBlockParser()
-        for char_array_element in xml_doc.getiterator('characters'):
-            nxc.parse_char_array(char_array_element, dataset)
+        for char_matrix_element in xml_doc.getiterator('characters'):
+            nxc.parse_char_matrix(char_matrix_element, dataset)
 
     def parse_tree_lists(self, xml_doc, dataset):
         """
@@ -644,33 +644,33 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             state_alphabet.append(self.parse_polymorphic_state(nxstate, state_alphabet))
         return state_alphabet
 
-    def parse_characters_format(self, nxformat, char_array):
+    def parse_characters_format(self, nxformat, char_matrix):
         """
         Given an XmlElement format element ("format"), this parses the
         state definitions (if any) and characters (column definitions, if any),
-        and populates the given char_array accordingly.
+        and populates the given char_matrix accordingly.
         """
         if nxformat is not None:
             for nxstates in nxformat.getiterator('states'):
-                char_array.state_alphabets.append(self.parse_state_alphabet(nxstates))
+                char_matrix.state_alphabets.append(self.parse_state_alphabet(nxstates))
             for nxchars in nxformat.getiterator('char'):
                 col = dendropy.CharacterType(oid=nxchars.get('id', None))
                 char_state_set_id = nxchars.get('states')
                 if char_state_set_id is not None:
                     state_alphabet = None
-                    for state_sets in char_array.state_alphabets:
+                    for state_sets in char_matrix.state_alphabets:
                         if state_sets.oid == char_state_set_id:
                             state_alphabet = state_sets
                             break
                     if state_alphabet is None:
                         raise Exception("State set '%s' not defined" % char_state_set_id)
                     col.state_alphabet = state_alphabet
-                elif hasattr(char_array, "default_state_alphabet") \
-                    and char_array.default_state_alphabet is not None:
-                    col.state_alphabet = char_array.default_state_alphabet
-                char_array.character_types.append(col)
+                elif hasattr(char_matrix, "default_state_alphabet") \
+                    and char_matrix.default_state_alphabet is not None:
+                    col.state_alphabet = char_matrix.default_state_alphabet
+                char_matrix.character_types.append(col)
 
-    def create_standard_character_alphabet(self, char_array, symbol_list=None):
+    def create_standard_character_alphabet(self, char_matrix, symbol_list=None):
         """
         Returns a standard character state alphabet based on symbol_list.
         Defaults to '0' - '9' if not specified.
@@ -680,58 +680,58 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         state_alphabet = dendropy.StateAlphabet()
         for s in symbol_list:
             state_alphabet.append(dendropy.StateAlphabetElement(symbol=s))
-        char_array.state_alphabets.append(state_alphabet)
-        char_array.default_state_alphabet = state_alphabet
+        char_matrix.state_alphabets.append(state_alphabet)
+        char_matrix.default_state_alphabet = state_alphabet
 
-    def parse_char_array(self, nxchars, dataset):
+    def parse_char_matrix(self, nxchars, dataset):
         """
         Given an XmlElement representing a nexml characters block, this
         instantiates and returns a corresponding DendroPy CharacterMatrix object.
         """
         nxchartype = nxchars.get('{http://www.w3.org/2001/XMLSchema-instance}type', None)
         if nxchartype.startswith('nex:Dna'):
-            char_array = dendropy.DnaCharacterArray()
+            char_matrix = dendropy.DnaCharacterMatrix()
         elif nxchartype.startswith('nex:Rna'):
-            char_array = dendropy.RnaCharacterArray()
+            char_matrix = dendropy.RnaCharacterMatrix()
         elif nxchartype.startswith('nex:Protein'):
-            char_array = dendropy.ProteinCharacterArray()
+            char_matrix = dendropy.ProteinCharacterMatrix()
         elif nxchartype.startswith('nex:Restriction'):
-            char_array = dendropy.RestrictionSitesCharacterArray()
+            char_matrix = dendropy.RestrictionSitesCharacterMatrix()
         elif nxchartype.startswith('nex:Standard'):
-            char_array = dendropy.StandardCharacterArray()
+            char_matrix = dendropy.StandardCharacterMatrix()
         elif nxchartype.startswith('nex:Continuous'):
-            char_array = dendropy.ContinuousCharacterArray()
+            char_matrix = dendropy.ContinuousCharacterMatrix()
         else:
             raise NotImplementedError('Character Block %s (\"%s\"): Character type "%s" not supported.'
-                % (char_array.oid, char_array.label, nxchartype))
+                % (char_matrix.oid, char_matrix.label, nxchartype))
 
         oid = nxchars.get('id', None)
         label = nxchars.get('label', None)
-        char_array.oid = oid
-        char_array.label = label
+        char_matrix.oid = oid
+        char_matrix.label = label
 
         taxa_id = nxchars.get('otus', None)
         if taxa_id is None:
-            raise Exception("Character Block %s (\"%s\"): Taxa block not specified for trees block \"%s\"" % (char_array.oid, char_array.label, char_array.oid))
+            raise Exception("Character Block %s (\"%s\"): Taxa block not specified for trees block \"%s\"" % (char_matrix.oid, char_matrix.label, char_matrix.oid))
         taxon_set = dataset.get_default_taxon_set(oid = taxa_id)
         if not taxon_set:
-            raise Exception("Character Block %s (\"%s\"): Taxa block \"%s\" not found" % (char_array.oid, char_array.label, taxa_id))
-        char_array.taxon_set = taxon_set
-        self.parse_annotations(annotated=char_array, nxelement=nxchars)
+            raise Exception("Character Block %s (\"%s\"): Taxa block \"%s\" not found" % (char_matrix.oid, char_matrix.label, taxa_id))
+        char_matrix.taxon_set = taxon_set
+        self.parse_annotations(annotated=char_matrix, nxelement=nxchars)
 
         nxformat = nxchars.find('format')
         if nxformat is not None:
-            self.parse_characters_format(nxformat, char_array)
-        elif isinstance(char_array, dendropy.StandardCharacterArray):
+            self.parse_characters_format(nxformat, char_matrix)
+        elif isinstance(char_matrix, dendropy.StandardCharacterMatrix):
             # default to all integers < 10 as symbols
-            self.create_standard_character_alphabet(char_array)
+            self.create_standard_character_alphabet(char_matrix)
 
         matrix = nxchars.find('matrix')
-        self.parse_annotations(annotated=char_array.taxon_seq_map, nxelement=matrix)
+        self.parse_annotations(annotated=char_matrix.taxon_seq_map, nxelement=matrix)
 
-        if char_array.character_types:
-            id_chartype_map = char_array.id_chartype_map()
-            chartypes = [char for char in char_array.character_types]
+        if char_matrix.character_types:
+            id_chartype_map = char_matrix.id_chartype_map()
+            chartypes = [char for char in char_matrix.character_types]
         else:
             id_chartype_map = {}
             chartypes = []
@@ -743,14 +743,14 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             try:
                 taxon = taxon_set.require_taxon(oid=taxon_id)
             except KeyError, e:
-                raise error.DataFormatError(message='Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_array.oid, char_array.label, taxon_id, taxon_set.oid))
+                raise error.DataFormatError(message='Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_matrix.oid, char_matrix.label, taxon_id, taxon_set.oid))
 
             character_vector = dendropy.CharacterDataVector(oid=row_id, label=label, taxon=taxon)
             self.parse_annotations(annotated=character_vector, nxelement=nxrow)
 
-            if isinstance(char_array, dendropy.ContinuousCharacterArray):
+            if isinstance(char_matrix, dendropy.ContinuousCharacterMatrix):
                 if nxchartype.endswith('Seqs'):
-                    char_array.markup_as_sequences = True
+                    char_matrix.markup_as_sequences = True
                     seq = nxrow.findtext('seq')
                     if seq is not None:
                         seq = seq.replace('\n\r', ' ').replace('\r\n', ' ').replace('\n', ' ').replace('\r',' ')
@@ -761,19 +761,19 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                                 col_idx += 1
                                 if len(chartypes) <= col_idx:
                                     raise error.DataFormatError(message="Character column/type ('<char>') not defined for character in position"\
-                                        + " %d (array = '%s' row='%s', taxon='%s')" % (col_idx+1, char_array.oid, row_id, taxon.label))
+                                        + " %d (matrix = '%s' row='%s', taxon='%s')" % (col_idx+1, char_matrix.oid, row_id, taxon.label))
                                 cell = dendropy.CharacterDataCell(value=float(char), character_type=chartypes[col_idx])
                                 character_vector.append(cell)
                 else:
-                    char_array.markup_as_sequences = False
+                    char_matrix.markup_as_sequences = False
                     for nxcell in nxrow.getiterator('cell'):
                         chartype_id = nxcell.get('char', None)
                         if chartype_id is None:
                             raise error.DataFormatError(message="'char' attribute missing for cell: cell markup must indicate character column type for character"\
-                                        + " (array = '%s' row='%s', taxon='%s')" % (char_array.oid, row_id, taxon.label))
+                                        + " (matrix = '%s' row='%s', taxon='%s')" % (char_matrix.oid, row_id, taxon.label))
                         if chartype_id not in id_chartype_map:
                             raise error.DataFormatError(message="Character type ('<char>') with id '%s' referenced but not found for character" % chartype_id \
-                                        + " (array = '%s' row='%s', taxon='%s')" % (char_array.oid, row_id, taxon.label))
+                                        + " (matrix = '%s' row='%s', taxon='%s')" % (char_matrix.oid, row_id, taxon.label))
                         chartype = id_chartype_map[chartype_id]
                         pos_idx = chartypes.index(chartype)
 #                         column = id_chartype_map[chartype_id]
@@ -783,36 +783,36 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                         character_vector.set_cell_by_index(pos_idx, cell)
             else:
                 if nxchartype.endswith('Seqs'):
-                    char_array.markup_as_sequences = True
-#                     symbol_state_map = char_array.default_state_alphabet.symbol_state_map()
+                    char_matrix.markup_as_sequences = True
+#                     symbol_state_map = char_matrix.default_state_alphabet.symbol_state_map()
                     seq = nxrow.findtext('seq')
                     if seq is not None:
                         seq = seq.replace(' ', '').replace('\n', '').replace('\r', '')
                         col_idx = -1
                         for char in seq:
                             col_idx += 1
-                            symbol_state_map = char_array.character_types[col_idx].state_alphabet.symbol_state_map()
+                            symbol_state_map = char_matrix.character_types[col_idx].state_alphabet.symbol_state_map()
                             if char in symbol_state_map:
                                 if len(chartypes) <= col_idx:
                                     raise error.DataFormatError(message="Character column/type ('<char>') not defined for character in position"\
-                                        + " %d (array = '%s' row='%s', taxon='%s')" % (col_idx+1, char_array.oid, row_id, taxon.label))
+                                        + " %d (matrix = '%s' row='%s', taxon='%s')" % (col_idx+1, char_matrix.oid, row_id, taxon.label))
                                 state = symbol_state_map[char]
                                 character_type = chartypes[col_idx]
                                 character_vector.append(dendropy.CharacterDataCell(value=state, character_type=character_type))
                             else:
                                 raise error.DataFormatError(message="Character Block '%s', row '%s', character position %s: State with symbol '%s' in sequence '%s' not defined" \
-                                        % (char_array.oid, row_id, col_idx, char, seq))
+                                        % (char_matrix.oid, row_id, col_idx, char, seq))
                 else:
-                    char_array.markup_as_sequences = False
+                    char_matrix.markup_as_sequences = False
                     id_state_maps = {}
                     for nxcell in nxrow.getiterator('cell'):
                         chartype_id = nxcell.get('char', None)
                         if chartype_id is None:
                             raise error.DataFormatError(message="'char' attribute missing for cell: cell markup must indicate character column type for character"\
-                                        + " (array = '%s' row='%s', taxon='%s')" % (char_array.oid, row_id, taxon.label))
+                                        + " (matrix = '%s' row='%s', taxon='%s')" % (char_matrix.oid, row_id, taxon.label))
                         if chartype_id not in id_chartype_map:
                             raise error.DataFormatError(message="Character type ('<char>') with id '%s' referenced but not found for character" % chartype_id \
-                                        + " (array = '%s' row='%s', taxon='%s')" % (char_array.oid, row_id, taxon.label))
+                                        + " (matrix = '%s' row='%s', taxon='%s')" % (char_matrix.oid, row_id, taxon.label))
                         chartype = id_chartype_map[chartype_id]
                         pos_idx = chartypes.index(chartype)
                         if chartype_id not in id_state_maps:
@@ -821,9 +821,9 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                         cell = dendropy.CharacterDataCell(value=state, character_type=chartype)
                         character_vector.set_cell_by_index(pos_idx, cell)
 
-            char_array[taxon] = character_vector
+            char_matrix[taxon] = character_vector
 
-        dataset.char_arrays.append(char_array)
+        dataset.char_matrices.append(char_matrix)
 
 class NexmlWriter(iosys.DataWriter):
     "Implements the DataWriter interface for handling NEXML files."
@@ -844,7 +844,7 @@ class NexmlWriter(iosys.DataWriter):
 #         self.write_extensions(self.dataset, dest)
         self.write_taxon_sets(taxon_sets=self.dataset.taxon_sets, dest=stream)
         if not self.exclude_chars:
-            self.write_char_arrays(char_arrays=self.dataset.char_arrays, dest=stream)
+            self.write_char_matrices(char_matrices=self.dataset.char_matrices, dest=stream)
         if not self.exclude_trees:
             self.write_tree_lists(tree_lists=self.dataset.tree_lists, dest=stream)
         self.write_to_nexml_close(stream, indent_level=0)
@@ -936,34 +936,34 @@ class NexmlWriter(iosys.DataWriter):
             parts.append("%s</%s>" % ((self.indent * indent_level), tag))
         return parts
 
-    def write_char_arrays(self, char_arrays, dest, indent_level=1):
+    def write_char_matrices(self, char_matrices, dest, indent_level=1):
         "Writes out character matrices."
-        for idx, char_array in enumerate(char_arrays):
+        for idx, char_matrix in enumerate(char_matrices):
             dest.write(self.indent * indent_level)
             parts = []
             parts.append('characters')
-            if char_array.oid is not None:
-                parts.append('id="%s"' % char_array.oid)
+            if char_matrix.oid is not None:
+                parts.append('id="%s"' % char_matrix.oid)
             else:
                 raise Exception("Character block without ID")
-            if char_array.label:
-                parts.append('label=%s' % _protect_attr(char_array.label))
-            parts.append('otus="%s"' % char_array.taxon_set.oid)
-            if isinstance(char_array, dendropy.DnaCharacterArray):
+            if char_matrix.label:
+                parts.append('label=%s' % _protect_attr(char_matrix.label))
+            parts.append('otus="%s"' % char_matrix.taxon_set.oid)
+            if isinstance(char_matrix, dendropy.DnaCharacterMatrix):
                 xsi_datatype = 'nex:Dna'
-            elif isinstance(char_array, dendropy.RnaCharacterArray):
+            elif isinstance(char_matrix, dendropy.RnaCharacterMatrix):
                 xsi_datatype = 'nex:Rna'
-            elif isinstance(char_array, dendropy.ProteinCharacterArray):
+            elif isinstance(char_matrix, dendropy.ProteinCharacterMatrix):
                 xsi_datatype = 'nex:Protein'
-            elif isinstance(char_array, dendropy.RestrictionSitesCharacterArray):
+            elif isinstance(char_matrix, dendropy.RestrictionSitesCharacterMatrix):
                 xsi_datatype = 'nex:Restriction'
-            elif isinstance(char_array, dendropy.StandardCharacterArray):
+            elif isinstance(char_matrix, dendropy.StandardCharacterMatrix):
                 xsi_datatype = 'nex:Standard'
-            elif isinstance(char_array, dendropy.ContinuousCharacterArray):
+            elif isinstance(char_matrix, dendropy.ContinuousCharacterMatrix):
                 xsi_datatype = 'nex:Continuous'
             else:
                 raise Exception("Unrecognized character block data type.")
-            if char_array.markup_as_sequences:
+            if char_matrix.markup_as_sequences:
                 xsi_markup = 'Seqs'
             else:
                 xsi_markup = 'Cells'
@@ -972,12 +972,12 @@ class NexmlWriter(iosys.DataWriter):
             dest.write("<%s>\n" % ' '.join(parts))
 
             # annotate
-#             self.write_extensions(char_array, dest, indent_level=indent_level+1)
-#             if isinstance(char_array, base.Annotated) and char_array.has_annotations():
-#                 self.write_annotations(char_array, dest, indent_level=indent_level+1)
+#             self.write_extensions(char_matrix, dest, indent_level=indent_level+1)
+#             if isinstance(char_matrix, base.Annotated) and char_matrix.has_annotations():
+#                 self.write_annotations(char_matrix, dest, indent_level=indent_level+1)
             state_alphabet_parts = []
-            if hasattr(char_array, "state_alphabets"): #isinstance(char_array, dendropy.StandardCharacterArray):
-                for state_alphabet in char_array.state_alphabets:
+            if hasattr(char_matrix, "state_alphabets"): #isinstance(char_matrix, dendropy.StandardCharacterMatrix):
+                for state_alphabet in char_matrix.state_alphabets:
                     state_alphabet_parts.append('%s<states id="%s">'
                         % (self.indent * (indent_level+2), state_alphabet.oid))
                     for state in state_alphabet:
@@ -994,27 +994,27 @@ class NexmlWriter(iosys.DataWriter):
             chartypes_to_add = []
             column_chartype_map = {}
             cell_chartype_map = {}
-            for taxon, row in char_array.taxon_seq_map.items():
+            for taxon, row in char_matrix.taxon_seq_map.items():
                 for col_idx, cell in enumerate(row):
                     chartype = None
 
-                    if hasattr(char_array, "state_alphabets"):
+                    if hasattr(char_matrix, "state_alphabets"):
                         if col_idx in column_chartype_map:
                             chartype = column_chartype_map[col_idx]
                         elif not hasattr(cell, 'character_type') or cell.character_type is None:
                             chartype_oid = "c%d" % col_idx
-                            if char_array.default_state_alphabet is not None:
-                                chartype = dendropy.CharacterType(state_alphabet=char_array.default_state_alphabet, oid=chartype_oid)
-                            elif len(char_array.state_alphabets) == 1:
-                                chartype = dendropy.CharacterType(state_alphabet=char_array.state_alphabets[0], oid=chartype_oid)
-                            elif len(char_array.state_alphabets) > 1:
+                            if char_matrix.default_state_alphabet is not None:
+                                chartype = dendropy.CharacterType(state_alphabet=char_matrix.default_state_alphabet, oid=chartype_oid)
+                            elif len(char_matrix.state_alphabets) == 1:
+                                chartype = dendropy.CharacterType(state_alphabet=char_matrix.state_alphabets[0], oid=chartype_oid)
+                            elif len(char_matrix.state_alphabets) > 1:
                                 raise TypeError("Character cell %d for taxon %s ('%s') does not have a state alphabet mapping given by the" % (col_idx, taxon.oid, taxon.label)\
                                         + " 'character_type' property, and multiple state alphabets are defined for the containing" \
-                                        + " character array ('%s') with no default specified" % char_array.oid)
-                            elif len(char_array.state_alphabets) == 0:
+                                        + " character matrix ('%s') with no default specified" % char_matrix.oid)
+                            elif len(char_matrix.state_alphabets) == 0:
                                 raise TypeError("Character cell %d for taxon %s ('%s') does not have a state alphabet mapping given by the" % (col_idx, taxon.oid, taxon.label)\
                                         + " 'character_type' property, and no state alphabets are defined for the containing" \
-                                        + " character array" % char_array.oid)
+                                        + " character matrix" % char_matrix.oid)
                         else:
                             chartype = dendropy.CharacterType(state_alphabet=cell.character_type.state_alphabet, oid="c%d" % col_idx)
                     else:
@@ -1029,7 +1029,7 @@ class NexmlWriter(iosys.DataWriter):
                         cell_chartype_map[cell] = chartype
                         column_chartype_map[col_idx] = chartype
                     else:
-                        raise TypeError("Cannot create character type mapping: character cell %d for taxon %s ('%s') in character array '%s'" %  (col_idx, taxon.oid, taxon.label, char_array))
+                        raise TypeError("Cannot create character type mapping: character cell %d for taxon %s ('%s') in character matrix '%s'" %  (col_idx, taxon.oid, taxon.label, char_matrix))
 
             character_types_parts = []
             for column in chartypes_to_add:
@@ -1052,11 +1052,11 @@ class NexmlWriter(iosys.DataWriter):
 
             dest.write("%s<matrix>\n" % (self.indent * (indent_level+1)))
 
-#             self.write_extensions(char_array.taxon_seq_map, dest, indent_level=indent_level+1)
-#             if isinstance(char_array.taxon_seq_map, base.Annotated) and char_array.taxon_seq_map.has_annotations():
-#                 self.write_annotations(char_array.taxon_seq_map, dest, indent_level=indent_level+1)
+#             self.write_extensions(char_matrix.taxon_seq_map, dest, indent_level=indent_level+1)
+#             if isinstance(char_matrix.taxon_seq_map, base.Annotated) and char_matrix.taxon_seq_map.has_annotations():
+#                 self.write_annotations(char_matrix.taxon_seq_map, dest, indent_level=indent_level+1)
 
-            for taxon, row in char_array.taxon_seq_map.items():
+            for taxon, row in char_matrix.taxon_seq_map.items():
                 dest.write(self.indent*(indent_level+2))
                 parts = []
                 parts.append('row')
@@ -1073,12 +1073,12 @@ class NexmlWriter(iosys.DataWriter):
 #                     self.write_annotations(row, dest, indent_level=indent_level+3)
 
 
-                if hasattr(char_array, 'markup_as_sequences') and char_array.markup_as_sequences:
+                if hasattr(char_matrix, 'markup_as_sequences') and char_matrix.markup_as_sequences:
                     ### actual sequences get written here ###
-                    if isinstance(char_array, dendropy.DnaCharacterArray) \
-                        or isinstance(char_array, dendropy.RnaCharacterArray) \
-                        or isinstance(char_array, dendropy.ProteinCharacterArray) \
-                        or isinstance(char_array, dendropy.RestrictionSitesCharacterArray):
+                    if isinstance(char_matrix, dendropy.DnaCharacterMatrix) \
+                        or isinstance(char_matrix, dendropy.RnaCharacterMatrix) \
+                        or isinstance(char_matrix, dendropy.ProteinCharacterMatrix) \
+                        or isinstance(char_matrix, dendropy.RestrictionSitesCharacterMatrix):
                         separator = ''
                         break_long_words = True
                     else:
@@ -1086,12 +1086,12 @@ class NexmlWriter(iosys.DataWriter):
                         separator = ' '
                         break_long_words = False
 
-                    if isinstance(char_array, dendropy.DiscreteCharacterArray):
+                    if isinstance(char_matrix, dendropy.DiscreteCharacterMatrix):
                         seq_symbols = []
                         for cidx, c in enumerate(row):
                             if c.value.symbol is None:
                                 raise TypeError("Character %d in row '%d' does not have a symbol defined for its character state:" % (cidx, row.oid) \
-                                            + " this array cannot be written in sequence format (set 'markup_as_sequences' to False)'")
+                                            + " this matrix cannot be written in sequence format (set 'markup_as_sequences' to False)'")
                             seq_symbols.append(c.value.symbol)
                     else:
                         seq_symbols = [str(c) for c in row]

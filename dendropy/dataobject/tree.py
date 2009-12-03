@@ -1633,7 +1633,7 @@ class Node(TaxonLinked):
 
             0 - node removed
             1 - parent of node removed
-            2 - pos in parent array
+            2 - pos in parent matrix
             3 - children of node removed that were "stolen"
             4 - edge that was lengthened by "stealing" length from node's edge
         """

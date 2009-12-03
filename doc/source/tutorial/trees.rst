@@ -156,7 +156,7 @@ Patristic Distances
 
 .. SCRATCH
     Each :class:`~dendropy.dataobject.tree.Tree` object has an attribute, :attr:`~dendropy.dataobject.tree.Tree.taxon_set`, which is a ``TaxaBlock`` object, and manages all the :class:`~dendropy.dataobject.taxon.Taxon` objects associated with the tree.
-    The ``TaxaBlock`` object referenced by a :class:`~dendropy.dataobject.tree.Tree` object's :attr:`~dendropy.dataobject.tree.Tree.taxon_set` might be shared by many other elements of the dataset, including other :class:`~dendropy.dataobject.tree.Tree` objects and :class:`~dendropy.dataobject.char.CharacterArray` objects, so any modification of elements of a :class:`~dendropy.dataobject.tree.Tree` object's :attr:`~dendropy.dataobject.tree.Tree.taxon_set` will probably have dataset-wide effects.
+    The ``TaxaBlock`` object referenced by a :class:`~dendropy.dataobject.tree.Tree` object's :attr:`~dendropy.dataobject.tree.Tree.taxon_set` might be shared by many other elements of the dataset, including other :class:`~dendropy.dataobject.tree.Tree` objects and :class:`~dendropy.dataobject.char.CharacterMatrix` objects, so any modification of elements of a :class:`~dendropy.dataobject.tree.Tree` object's :attr:`~dendropy.dataobject.tree.Tree.taxon_set` will probably have dataset-wide effects.
     That is, if you were to change the label of a :class:`~dendropy.dataobject.taxon.Taxon` object maintained by a particular :class:`~dendropy.dataobject.tree.Tree` object's :attr:`~dendropy.dataobject.tree.Tree.taxon_set`, all other :class:`~dendropy.dataobject.tree.Tree` objects in the dataset referencing the same ``TaxaBlock`` will be effected.
 
 

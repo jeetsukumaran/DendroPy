@@ -235,7 +235,7 @@ class NexusReader(iosys.DataReader):
         self.reset()
 
     def reset(self):
-        self.char_block_type = dataobject.StandardCharacterArray
+        self.char_block_type = dataobject.StandardCharacterMatrix
         self.interleave = False
         self.symbols = "012"
         self.gap_char = '-'
@@ -462,14 +462,14 @@ class NexusReader(iosys.DataReader):
                 if token == '=':
                     token = self.stream_tokenizer.read_next_token_ucase()
                     if token == "DNA" or token == "NUCLEOTIDES":
-                        self.char_block_type = dataobject.DnaCharacterArray
+                        self.char_block_type = dataobject.DnaCharacterMatrix
                     elif token == "RNA":
-                        self.char_block_type = dataobject.RnaCharacterArray
+                        self.char_block_type = dataobject.RnaCharacterMatrix
                     elif token == "PROTEIN":
-                        self.char_block_type = dataobject.ProteinCharacterArray
+                        self.char_block_type = dataobject.ProteinCharacterMatrix
                     else:
                         # defaults to STANDARD elif token == "STANDARD":
-                        self.char_block_type = dataobject.StandardCharacterArray
+                        self.char_block_type = dataobject.StandardCharacterMatrix
                         self.symbols = "12"
                 else:
                     raise self.data_format_error("Expecting '=' after DATATYPE keyword")
@@ -567,12 +567,12 @@ class NexusReader(iosys.DataReader):
             raise self.data_format_error('NCHAR must be defined by DIMENSIONS command to non-zero value before MATRIX command')
 
         taxon_set = self._get_taxon_set(link_title)
-        char_block = self.dataset.new_char_array(
-            char_array_type=self.char_block_type, \
+        char_block = self.dataset.new_char_matrix(
+            char_matrix_type=self.char_block_type, \
             taxon_set=taxon_set,
             label=block_title)
 
-        if isinstance(char_block, dataobject.StandardCharacterArray):
+        if isinstance(char_block, dataobject.StandardCharacterMatrix):
             self._build_state_alphabet(char_block, self.symbols)
 
         symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
@@ -824,7 +824,7 @@ class NexusWriter(iosys.DataWriter):
                 stream.write("\n")
             else:
                 stream.write("[ %s ]\n\n" % self.comment)
-        if (( (not self.exclude_chars) and self.dataset.char_arrays) \
+        if (( (not self.exclude_chars) and self.dataset.char_matrices) \
                 or ( (not self.exclude_trees) and self.dataset.tree_lists)) \
                 and (not self.simple) \
                 and (not self.exclude_taxa):
@@ -832,9 +832,9 @@ class NexusWriter(iosys.DataWriter):
                 if self.bound_taxon_set is None or taxon_set is self.bound_taxon_set:
                     self.write_taxa_block(taxon_set, stream=stream)
         if not self.exclude_chars:
-            for char_array in self.dataset.char_arrays:
-                if self.bound_taxon_set is None or char_array.taxon_set is self.bound_taxon_set:
-                    self.write_char_block(char_array=char_array, stream=stream)
+            for char_matrix in self.dataset.char_matrices:
+                if self.bound_taxon_set is None or char_matrix.taxon_set is self.bound_taxon_set:
+                    self.write_char_block(char_matrix=char_matrix, stream=stream)
         if not self.exclude_trees:
             for tree_list in self.dataset.tree_lists:
                 if self.bound_taxon_set is None or tree_list.taxon_set is self.bound_taxon_set:
@@ -876,11 +876,11 @@ class NexusWriter(iosys.DataWriter):
         block.append('end;\n\n')
         stream.write('\n'.join(block))
 
-    def write_char_block(self, char_array, stream):
+    def write_char_block(self, char_matrix, stream):
         nexus = []
-        taxlabels = [texttools.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces) for taxon in char_array.taxon_set]
+        taxlabels = [texttools.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces) for taxon in char_matrix.taxon_set]
         max_label_len = max([len(label) for label in taxlabels])
-        nchar = max([len(seq) for seq in char_array.values()])
+        nchar = max([len(seq) for seq in char_matrix.values()])
         if self.simple:
             nexus.append('begin data;')
             ntaxstr = "ntax=%d" % len(taxlabels)
@@ -888,11 +888,11 @@ class NexusWriter(iosys.DataWriter):
             nexus.append('begin characters;')
             ntaxstr = ""
         nexus.append('    dimensions %s nchar=%d;' % (ntaxstr, nchar))
-        nexus.append('    format %s;' % self.compose_format_terms(char_array))
+        nexus.append('    format %s;' % self.compose_format_terms(char_matrix))
         nexus.append('    matrix')
         state_string_map = {}
-        for taxon in char_array.taxon_set:
-            seq_vec = char_array[taxon]
+        for taxon in char_matrix.taxon_set:
+            seq_vec = char_matrix[taxon]
             seq = StringIO()
             for cell in seq_vec:
                 state = cell.value
@@ -914,22 +914,22 @@ class NexusWriter(iosys.DataWriter):
         nexus.append('end;\n\n')
         stream.write('\n'.join(nexus))
 
-    def compose_format_terms(self, char_array):
+    def compose_format_terms(self, char_matrix):
         format = []
-        if isinstance(char_array, dataobject.DnaCharacterArray):
+        if isinstance(char_matrix, dataobject.DnaCharacterMatrix):
             format.append("datatype=dna")
             format.append("gap=- missing=? matchchar=.")
-        elif isinstance(char_array, dataobject.RnaCharacterArray):
+        elif isinstance(char_matrix, dataobject.RnaCharacterMatrix):
             format.append("datatype=rna")
             format.append("gap=- missing=? matchchar=.")
-        elif isinstance(char_array, dataobject.ProteinCharacterArray):
+        elif isinstance(char_matrix, dataobject.ProteinCharacterMatrix):
             format.append("datatype=protein")
             format.append("gap=- missing=? matchchar=.")
         else:
             format.append("datatype=standard")
 
             fundamental_symbols = set()
-            for state_alphabet in char_array.state_alphabets:
+            for state_alphabet in char_matrix.state_alphabets:
                 for s in state_alphabet.fundamental_states():
                     if s.symbol is not None:
                         fundamental_symbols.add(s.symbol)
@@ -938,7 +938,7 @@ class NexusWriter(iosys.DataWriter):
             format.append('symbols="%s"' % "".join(fundamental_symbols))
 
             equates = set()
-            for state_alphabet in char_array.state_alphabets:
+            for state_alphabet in char_matrix.state_alphabets:
                 for a in state_alphabet.ambiguous_states():
                     if a.symbol == "?":
                         format.append("missing=?")
@@ -948,7 +948,7 @@ class NexusWriter(iosys.DataWriter):
                         if a.symbol is not None:
                             equates.append("%s={%s}" % (a.symbol, "".join(a.fundamental_symbols())))
 
-            for state_alphabet in char_array.state_alphabets:
+            for state_alphabet in char_matrix.state_alphabets:
                 for p in state_alphabet.polymorphic_states():
                     if p.symbol is not None:
                         equates.append("%s=(%s)" % (p.symbol, "".join(p.fundamental_symbols())))

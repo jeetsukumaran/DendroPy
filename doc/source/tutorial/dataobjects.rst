@@ -20,12 +20,12 @@ Phylogenetic data in DendroPy is represented by one or more objects of the follo
     :class:`~dendropy.dataobject.tree.TreeList`
         A :class:`list` of :class:`~dendropy.dataobject.tree.Tree` objects. A :class:`~dendropy.dataobject.tree.TreeList` object has an attribute, :attr:`~dendropy.dataobject.tree.TreeList.taxon_set`, which specifies the set of taxa that are referenced by all member :class:`~dendropy.dataobject.tree.Tree` elements. This is enforced when a :class:`~dendropy.dataobject.tree.Tree` object is added to a :class:`~dendropy.dataobject.tree.TreeList`, with the :class:`~dendropy.dataobject.taxon.TaxonSet` of the :class:`~dendropy.dataobject.tree.Tree` object and all :class:`~dendropy.dataobject.taxon.Taxon` references of the :class:`~dendropy.dataobject.tree.Node` objects in the :class:`~dendropy.dataobject.tree.Tree` mapped to the :class:`~dendropy.dataobject.taxon.TaxonSet` of the :class:`~dendropy.dataobject.tree.TreeList`.
 
-    :class:`~dendropy.dataobject.char.CharacterArray`
-        Representation of character data, with specializations for different data types: :class:`~dendropy.dataobject.char.DnaCharacterArray`, :class:`~dendropy.dataobject.char.RnaCharacterArray`, :class:`~dendropy.dataobject.char.ProteinCharacterArray`, :class:`~dendropy.dataobject.char.StandardCharacterArray`, :class:`~dendropy.dataobject.char.ContinuousCharacterArray`, etc. A :class:`~dendropy.dataobject.char.CharacterArray` can treated very much like a :class:`dict` object, with
+    :class:`~dendropy.dataobject.char.CharacterMatrix`
+        Representation of character data, with specializations for different data types: :class:`~dendropy.dataobject.char.DnaCharacterMatrix`, :class:`~dendropy.dataobject.char.RnaCharacterMatrix`, :class:`~dendropy.dataobject.char.ProteinCharacterMatrix`, :class:`~dendropy.dataobject.char.StandardCharacterMatrix`, :class:`~dendropy.dataobject.char.ContinuousCharacterMatrix`, etc. A :class:`~dendropy.dataobject.char.CharacterMatrix` can treated very much like a :class:`dict` object, with
         :class:`~dendropy.dataobject.taxon.Taxon` objects as keys and character data as values associated with those keys.
 
     :class:`~dendropy.dataobject.dataset.DataSet`
-        A meta-collection of phylogenetic data, consisting of lists of multiple :class:`~dendropy.dataobject.taxon.TaxonSet` objects (:attr:`~dendropy.dataobject.DataSet.taxon_sets`), :class:`~dendropy.dataobject.tree.TreeList` objects (:attr:`~dendropy.dataobject.DataSet.tree_lists`), and :class:`~dendropy.dataobject.char.CharacterArray` objects (:attr:`~dendropy.dataobject.DataSet.char_arrays`).
+        A meta-collection of phylogenetic data, consisting of lists of multiple :class:`~dendropy.dataobject.taxon.TaxonSet` objects (:attr:`~dendropy.dataobject.DataSet.taxon_sets`), :class:`~dendropy.dataobject.tree.TreeList` objects (:attr:`~dendropy.dataobject.DataSet.tree_lists`), and :class:`~dendropy.dataobject.char.CharacterMatrix` objects (:attr:`~dendropy.dataobject.DataSet.char_matrices`).
 
 Creating New (Empty) Objects
 ============================
@@ -35,21 +35,21 @@ All of the above names are imported into the the the :mod:`dendropy` namespace, 
     >>> import dendropy
     >>> tree1 = dendropy.Tree()
     >>> tree_list11 = dendropy.TreeList()
-    >>> dna1 = = dendropy.DnaCharacterArray()
+    >>> dna1 = = dendropy.DnaCharacterMatrix()
     >>> dataset1 = dendropy.DataSet()
 
 Or import the names directly::
 
-    >>> from dendropy import Tree, TreeList, DnaCharacterArray, DataSet
+    >>> from dendropy import Tree, TreeList, DnaCharacterMatrix, DataSet
     >>> tree1 = Tree()
     >>> tree_list1 = TreeList()
-    >>> dna1 = = DnaCharacterArray()
+    >>> dna1 = = DnaCharacterMatrix()
     >>> dataset1 = DataSet()
 
 Creating and Populating New Objects
 ===================================
 
-The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterArray`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support ":meth:`get_from_*()`" factory methods that allow for the simultaneous instantiation and population of the objects from a data source:
+The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterMatrix`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support ":meth:`get_from_*()`" factory methods that allow for the simultaneous instantiation and population of the objects from a data source:
 
     - :meth:`get_from_stream(src, format, **kwargs)`
         Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the format as the second.
@@ -65,8 +65,8 @@ All these methods minimally take a source and format reference as arguments and 
     >>> import dendropy
     >>> tree1 = dendropy.Tree.get_from_string("((A,B),(C,D))", format="newick")
     >>> tree_list1 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus")
-    >>> dna1 = dendropy.DnaCharacterArray.get_from_stream(open("pythonidae.fasta"), "dnafasta")
-    >>> std1 = dendropy.StandardCharacterArray.get_from_path("python_morph.nex", "nexus")
+    >>> dna1 = dendropy.DnaCharacterMatrix.get_from_stream(open("pythonidae.fasta"), "dnafasta")
+    >>> std1 = dendropy.StandardCharacterMatrix.get_from_path("python_morph.nex", "nexus")
     >>> dataset1 = dendropy.DataSet.get_from_path("pythonidae.nex", "nexus")
 
 The format specification can be one of: "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc. Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.tree.TreeList` object from a FASTA-formatted data source).
@@ -98,20 +98,20 @@ In addition to the factory methods, you can specify a data source to the constru
 
     >>> tree2 = dendropy.Tree(stream=open("pythonidae.mcmc.nex"), format="nexus", from_index=200)
     >>> tree_list2 = dendropy.TreeList(stream=open("pythonidae.mcmc.nex"), format="nexus")
-    >>> dna2 = dendropy.DnaCharacterArray(stream=open("pythonidae_cytb.fasta"), format="fasta")
+    >>> dna2 = dendropy.DnaCharacterMatrix(stream=open("pythonidae_cytb.fasta"), format="fasta")
     >>> dataset2 = dendropy.DataSet(stream=open("pythonidae.nex"), format="nexus")
 
 You can also clone existing objects (i.e., create a deep-copy of everything but the taxon references)::
 
     >>> tree3 = dendropy.Tree(tree2)
     >>> tree_list3 = dendropy.TreeList(tree_list2)
-    >>> dna3 = dendropy.DnaCharacterArray(dna2)
+    >>> dna3 = dendropy.DnaCharacterMatrix(dna2)
     >>> dataset3 = dendropy.DataSet(dataset2)
 
 Reading and Populating (or Repopulating) Existing Objects
 =========================================================
 
-The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterArray`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support a suite of ":meth:`read_from_*()`" instance methods that parallels the ":meth:`get_from_*()`" factory methods described above:
+The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterMatrix`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support a suite of ":meth:`read_from_*()`" instance methods that parallels the ":meth:`get_from_*()`" factory methods described above:
 
     - :meth:`read_from_stream(src, format, **kwargs)`
         Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the format as the second.
@@ -122,7 +122,7 @@ The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.T
     - :meth:`read_from_string(src, format, **kwargs)`
         Takes a string specifying containing the source data as the first argument, and a string specifying the format as the second.
 
-When called on an existing :class:`~dendropy.dataobject.tree.TreeList` or :class:`~dendropy.dataobject.dataset.DataSet` object, these methods *add* the data from the data source to the object, whereas when called on an existing :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.char.CharacterArray` object,  they *replace* the object's data with data from the data source.
+When called on an existing :class:`~dendropy.dataobject.tree.TreeList` or :class:`~dendropy.dataobject.dataset.DataSet` object, these methods *add* the data from the data source to the object, whereas when called on an existing :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.char.CharacterMatrix` object,  they *replace* the object's data with data from the data source.
 As with the ":meth:`get_from_*()`" methods, the format specification can be any supported and type-apppropriate format, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc.
 
 For example, the following accumulates post-burn-in trees from a several different files into a single :class:`~dendropy.dataobject.tree.TreeList` object::
@@ -144,7 +144,7 @@ For example, the following accumulates post-burn-in trees from a several differe
 
 The :class:`~dendropy.dataobject.tree.TreeList` objects automatically handles taxon management, and ensures that all appended :class:`~dendropy.dataobject.tree.Tree` objects share the same :class:`~dendropy.dataobject.taxon.TaxonSet` reference. Thus all the :class:`~dendropy.dataobject.tree.Tree` objects created and aggregated from the data sources in the example will all share the same :class:`~dendropy.dataobject.taxon.TaxonSet` and :class:`~dendropy.dataobject.taxon.Taxon` objects, which is important if you are going to be carrying comparisons or operations between multiple :class:`~dendropy.dataobject.tree.Tree` objects.
 
-In contrast to the aggregating behavior of :meth:`read_from_*()` of :class:`~dendropy.dataobject.tree.TreeList` and :class:`~dendropy.dataobject.dataset.DataSet` objects, the :meth:`read_from_*()` methods of :class:`~dendropy.dataobject.tree.Tree` and :class:`~dendropy.dataobject.char.CharacterArray`-derived objects show replacement behavior. For example, the following changes the contents of a :class:`~dendropy.dataobject.tree.Tree` by re-reading it::
+In contrast to the aggregating behavior of :meth:`read_from_*()` of :class:`~dendropy.dataobject.tree.TreeList` and :class:`~dendropy.dataobject.dataset.DataSet` objects, the :meth:`read_from_*()` methods of :class:`~dendropy.dataobject.tree.Tree` and :class:`~dendropy.dataobject.char.CharacterMatrix`-derived objects show replacement behavior. For example, the following changes the contents of a :class:`~dendropy.dataobject.tree.Tree` by re-reading it::
 
     >>> import dendropy
     >>> t = dendropy.Tree()
@@ -158,7 +158,7 @@ In contrast to the aggregating behavior of :meth:`read_from_*()` of :class:`~den
 Writing or Saving Data
 ======================
 
-The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterArray`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support the following instance methods for writing data:
+The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterMatrix`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support the following instance methods for writing data:
 
     - :meth:`write_to_stream(dest, format, **kwargs)`
         Takes a file or file-like object opened for writing the data as the first argument, and a string specifying the format as the second.
@@ -194,7 +194,7 @@ Converting data between formats is simply a matter of calling readers and writer
 Converting from FASTA format to NEXUS::
 
     >>> import dendropy
-    >>> cytb = dendropy.DnaCharacterArray.get_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> cytb = dendropy.DnaCharacterMatrix.get_from_path("pythonidae_cytb.fasta", "dnafasta")
     >>> cytb.write_to_path("pythonidae_cytb.nexus", "nexus")
 
 Converting a collection of trees from NEXUS format to NEWICK::
@@ -224,15 +224,15 @@ Note how, after the first data source has been loaded, the resulting :class:`~de
 Examining Data Objects
 ======================
 
-High-level summaries of the contents of DendroPy phylogenetic data objects are given by the :meth:`description()` instance method of the :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterArray`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes.
+High-level summaries of the contents of DendroPy phylogenetic data objects are given by the :meth:`description()` instance method of the :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterMatrix`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes.
 This method optionally takes a numeric value as its first argument that determines the level of detail (or depth) of the summary::
 
     >>> import dendropy
     >>> d = dendropy.DataSet.get_from_path('pythonidae.nex', 'nexus')
     >>> print(d.description())
-    DataSet object at 0x79dd0: 1 Taxon Sets, 0 Tree Lists, 1 Character Arrays
+    DataSet object at 0x79dd0: 1 Taxon Sets, 0 Tree Lists, 1 Character Matrices
     >>> print(d.description(3))
-    DataSet object at 0x79dd0: 1 Taxon Sets, 0 Tree Lists, 1 Character Arrays
+    DataSet object at 0x79dd0: 1 Taxon Sets, 0 Tree Lists, 1 Character Matrices
         [Taxon Sets]
             [0] TaxonSet object at 0x5a4a20 (TaxonSet5917216): 29 Taxa
                 [0] Taxon object at 0x22c0fd0 (Taxon36442064): 'Python regius'
@@ -264,8 +264,8 @@ This method optionally takes a numeric value as its first argument that determin
                 [26] Taxon object at 0x23ae2b0 (Taxon37413552): 'Liasis mackloti'
                 [27] Taxon object at 0x23ae270 (Taxon37413488): 'Liasis olivaceus'
                 [28] Taxon object at 0x23ae2f0 (Taxon37413616): 'Apodora papuana'
-        [Character Arrays]
-            [0] DnaCharacterArray object at 0x22c0f90 (DnaCharacterArray36442000):  29 Sequences
+        [Character Matrices]
+            [0] DnaCharacterMatrix object at 0x22c0f90 (DnaCharacterMatrix36442000):  29 Sequences
                 [Taxon Set]
                     TaxonSet object at 0x5a4a20 (TaxonSet5917216): 29 Taxa
                 [Characters]

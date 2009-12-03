@@ -56,7 +56,7 @@ def generate_hky_dataset(seq_len,
     `root_states`   : vector of root states (length must equal `seq_len`)
     `dataset`       : a dendropy.dendropy.DataSet object.
                       if given, the new
-                      dendropy.CharacterArray object will be added to
+                      dendropy.CharacterMatrix object will be added to
                       this (along with a new taxon_set if required). Otherwise,
                       a new dendropy.dendropy.DataSet object will be created.
     `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
@@ -78,7 +78,7 @@ def generate_hky_characters(seq_len,
                             kappa=1.0,
                             base_freqs=[0.25, 0.25, 0.25, 0.25],
                             root_states=None,
-                            char_array=None,
+                            char_matrix=None,
                             rng=None):
     """
     Convenience class to wrap generation of characters (as a CharacterBlock
@@ -88,27 +88,27 @@ def generate_hky_characters(seq_len,
     `mutation_rate` : mutation *modifier* rate (should be 1.0 if branch lengths
                       on tree reflect true expected number of changes
     `root_states`   : vector of root states (length must equal `seq_len`)
-    `char_array`    : dendropy.CharacterArray object.
+    `char_matrix`    : dendropy.CharacterMatrix object.
                       if given, new sequences for taxa on `tree_model` leaf_nodes
                       will be appended to existing sequences of corresponding
-                      taxa in char_array; if not, a new
-                      dendropy.CharacterArray object will be created
+                      taxa in char_matrix; if not, a new
+                      dendropy.CharacterMatrix object will be created
     `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
                       used
-    Returns: a dendropy.CharacterArray object.
+    Returns: a dendropy.CharacterMatrix object.
 
     Since characters will be appended to existing sequences, you can simulate a
     sequences under a mixed model by calling this method multiple times with
     different character model parameter values and/or different mutation
-    rates, passing in the same `char_array` object each time.
+    rates, passing in the same `char_matrix` object each time.
     """
     seq_model = seqmodel.Hky85SeqModel(kappa=kappa, base_freqs=base_freqs)
-    return generate_char_array(seq_len=seq_len,
+    return generate_char_matrix(seq_len=seq_len,
                                tree_model=tree_model,
                                seq_model=seq_model,
                                mutation_rate=mutation_rate,
                                root_states=root_states,
-                               char_array=char_array,
+                               char_matrix=char_matrix,
                                rng=rng)
 
 def generate_dataset(seq_len,
@@ -129,7 +129,7 @@ def generate_dataset(seq_len,
     `root_states`   : vector of root states (length must equal `seq_len`)
     `dataset`       : a dendropy.dendropy.DataSet object.
                       if given, the new
-                      dendropy.CharacterArray object will be added to
+                      dendropy.CharacterMatrix object will be added to
                       this (along with a new taxon_set if required). Otherwise,
                       a new dendropy.dendropy.DataSet object will be created.
     `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
@@ -142,22 +142,22 @@ def generate_dataset(seq_len,
         taxon_set = dataset.add_taxon_set(tree_model.taxon_set)
     else:
         taxon_set = tree_model.taxon_set
-    char_array = generate_char_array(seq_len=seq_len,
+    char_matrix = generate_char_matrix(seq_len=seq_len,
         tree_model=tree_model,
         seq_model=seq_model,
         mutation_rate=mutation_rate,
         root_states=root_states,
-        char_array=None,
+        char_matrix=None,
         rng=None)
-    dataset.add_char_array(char_array=char_array)
+    dataset.add_char_matrix(char_matrix=char_matrix)
     return dataset
 
-def generate_char_array(seq_len,
+def generate_char_matrix(seq_len,
                         tree_model,
                         seq_model,
                         mutation_rate=1.0,
                         root_states=None,
-                        char_array=None,
+                        char_matrix=None,
                         rng=None):
     """
     Wrapper to conveniently generate a characters simulated under
@@ -168,20 +168,20 @@ def generate_char_array(seq_len,
     `mutation_rate` : mutation *modifier* rate (should be 1.0 if branch lengths
                       on tree reflect true expected number of changes
     `root_states`   : vector of root states (length must equal `seq_len`)
-    `char_array`    : dendropy.CharacterArray object.
+    `char_matrix`    : dendropy.CharacterMatrix object.
                       if given, new sequences for taxa on `tree_model` leaf_nodes
                       will be appended to existing sequences of corresponding
-                      taxa in char_array; if not, a new
-                      dendropy.CharacterArray object will be created
+                      taxa in char_matrix; if not, a new
+                      dendropy.CharacterMatrix object will be created
     `rng`           : random number generator; if not given, `GLOBAL_RNG` will be
                       used
 
-    Returns: a dendropy.CharacterArray object.
+    Returns: a dendropy.CharacterMatrix object.
 
     Since characters will be appended to existing sequences, you can simulate a
     sequences under a mixed model by calling this method multiple times with
     different character models and/or different mutation rates, passing
-    in the same `char_array` object each time.
+    in the same `char_matrix` object each time.
     """
     seq_evolver = SeqEvolver(seq_model=seq_model,
                                mutation_rate=mutation_rate)
@@ -190,17 +190,17 @@ def generate_char_array(seq_len,
         root_states=None,
         rng=rng)
     char_map = seq_evolver.compose_char_map(tree, tree.taxon_set)
-    if char_array is None:
-        char_array = dendropy.DnaCharacterArray()
-        char_array.taxon_set = tree_model.taxon_set
-    if char_array.taxon_set is None:
-        char_array.taxon_set = tree_model.taxon_set
+    if char_matrix is None:
+        char_matrix = dendropy.DnaCharacterMatrix()
+        char_matrix.taxon_set = tree_model.taxon_set
+    if char_matrix.taxon_set is None:
+        char_matrix.taxon_set = tree_model.taxon_set
     else:
-        assert char_array.taxon_set is tree_model.taxon_set, "conflicting taxon sets"
-    char_array.extend_map(other_map=char_map,
+        assert char_matrix.taxon_set is tree_model.taxon_set, "conflicting taxon sets"
+    char_matrix.extend_map(other_map=char_map,
         overwrite_existing=False,
         extend_existing=True)
-    return char_array
+    return char_matrix
 
 ############################################################################
 ## Workhorse class(es)

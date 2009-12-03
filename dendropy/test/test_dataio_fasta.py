@@ -47,7 +47,7 @@ class TestFasta(datatest.DataObjectVerificationTestCase):
         self.assertEquals(label, expected)
 
     def testReadingAndWriting(self):
-        ds1 = dendropy.DataSet(datagen.reference_dna_array())
+        ds1 = dendropy.DataSet(datagen.reference_dna_matrix())
         dataset = self.roundTripDataSetTest(ds1, "DNAFASTA")
 
 if __name__ == "__main__":

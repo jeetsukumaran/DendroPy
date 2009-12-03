@@ -39,10 +39,10 @@ class PhylipWriter(iosys.DataWriter):
             return
         assert self.dataset is not None, \
             "NexusWriter instance is not bound to a DataSet: no source of data"
-        char_array = self.dataset.char_arrays[0]
-        n_seqs = len(char_array)
-        n_sites = len(char_array.values()[0])
+        char_matrix = self.dataset.char_matrices[0]
+        n_seqs = len(char_matrix)
+        n_sites = len(char_matrix.values()[0])
         stream.write("%d %d\n" % (n_seqs, n_sites))
-        maxlen = max([len(str(taxon)) for taxon in char_array])
-        for taxon in char_array.taxon_set:
-            stream.write("%s        %s\n" % ( str(taxon).ljust(maxlen), str(char_array[taxon].symbols_as_string()).replace(' ', '')))
+        maxlen = max([len(str(taxon)) for taxon in char_matrix])
+        for taxon in char_matrix.taxon_set:
+            stream.write("%s        %s\n" % ( str(taxon).ljust(maxlen), str(char_matrix[taxon].symbols_as_string()).replace(' ', '')))

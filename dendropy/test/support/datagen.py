@@ -1936,10 +1936,10 @@ def reference_taxon_set():
     taxon_set.new_taxon(label="Python timoriensis", oid="Taxon36961520")
     return taxon_set
 
-def reference_dna_array(taxon_set=None):
+def reference_dna_matrix(taxon_set=None):
     if taxon_set is None:
         taxon_set = reference_taxon_set()
-    dna = dendropy.DnaCharacterArray(taxon_set=taxon_set)
+    dna = dendropy.DnaCharacterMatrix(taxon_set=taxon_set)
     sa = dna.default_state_alphabet
     assert len(dna.taxon_set) == 29
     labels = labels=[ "Python regius",
@@ -1994,10 +1994,10 @@ def _get_standard_cells(col_type, symbols):
     cells = [dendropy.CharacterDataCell(value=s, character_type=col_type) for s in col_type.state_alphabet.get_states(symbols=symbols)]
     return cells
 
-def reference_standard_array(taxon_set=None):
+def reference_standard_matrix(taxon_set=None):
     if taxon_set is None:
         taxon_set = reference_taxon_set()
-    ca1 = dendropy.StandardCharacterArray(taxon_set=taxon_set)
+    ca1 = dendropy.StandardCharacterMatrix(taxon_set=taxon_set)
     assert len(ca1.taxon_set) == 29
     sa1 = _get_standard_state_alphabet("012")
     sa2 = _get_standard_state_alphabet("XYZ")
@@ -2019,8 +2019,8 @@ def reference_standard_array(taxon_set=None):
 def reference_single_taxonset_dataset():
     taxon_set = reference_taxon_set()
     d = dendropy.DataSet(reference_tree_list(taxon_set=taxon_set),
-                         reference_dna_array(taxon_set=taxon_set),
-                         reference_standard_array(taxon_set=taxon_set),
+                         reference_dna_matrix(taxon_set=taxon_set),
+                         reference_standard_matrix(taxon_set=taxon_set),
                          taxon_set=taxon_set)
     return d
 
