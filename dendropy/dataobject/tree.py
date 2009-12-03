@@ -201,7 +201,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             tlist = d.tree_lists[collection_offset]
             if self.label is None and len(self) == 0 and tlist.label is not None:
                 self.label = tlist.label
-            if len(tlist) < tree_offset:
+            if tree_offset < len(tlist):
                 for t in tlist[tree_offset:]:
                     self.append(t, reindex_taxa=False)
             else:

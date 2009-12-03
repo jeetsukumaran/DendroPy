@@ -27,7 +27,7 @@ Tests of data indexing.
 import unittest
 import dendropy
 
-class TestTreeIndexing(unittest.TestCase):
+class IndexingTestCase(unittest.TestCase):
 
     def setUp(self):
         self.trees1 = """
@@ -63,6 +63,8 @@ END;
 
 """
 
+class TestTreeIndexing(IndexingTestCase):
+
     def testDefaultTreeIndexing(self):
         t = dendropy.Tree.get_from_string(self.trees1, "nexus")
         self.assertEqual(t.label, '0 0')
@@ -81,7 +83,35 @@ END;
     def testCollectionTreeOutOfRange(self):
         self.assertRaises(IndexError, dendropy.Tree.get_from_string, self.trees1, "nexus", collection_offset=7, tree_offset=0)
 
+class TestTreeListIndexing(IndexingTestCase):
 
+    def testDefaultCollection(self):
+        t = dendropy.TreeList.get_from_string(self.trees1, "nexus")
+        self.assertEqual(len(t), 12)
+
+    def testDefaultCollectionTreeOffset(self):
+        t = dendropy.TreeList.get_from_string(self.trees1, "nexus", tree_offset=7)
+        self.assertEqual(len(t), 5)
+        self.assertEqual(t[0].label, '2 1')
+
+    def testTreeCollectionIndexing(self):
+        t = dendropy.TreeList.get_from_string(self.trees1, "nexus", collection_offset=2)
+        self.assertEqual(len(t), 3)
+        self.assertEqual(t[0].label, '2 0')
+
+    def testTreeCollectionIndexingTreeIndexing(self):
+        t = dendropy.TreeList.get_from_string(self.trees1, "nexus", collection_offset=2, tree_offset=1)
+        self.assertEqual(len(t), 2)
+        self.assertEqual(t[0].label, '2 1')
+
+    def testDefaultCollectionTreeOutOfRange(self):
+        self.assertRaises(IndexError, dendropy.TreeList.get_from_string, self.trees1, "nexus", tree_offset=99)
+
+    def testCollectionOutOfRange(self):
+        self.assertRaises(IndexError, dendropy.TreeList.get_from_string, self.trees1, "nexus", collection_offset=7, tree_offset=0)
+
+    def testCollectionTreeOutOfRange(self):
+        self.assertRaises(IndexError, dendropy.TreeList.get_from_string, self.trees1, "nexus", collection_offset=2, tree_offset=4)
 
 if __name__ == "__main__":
     unittest.main()
