@@ -552,8 +552,10 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         be specified using the `matrix_offset` keyword (defaults to 0, i.e., first
         character matrix).
         """
-        index = kwargs.get("matrix_offset", 0)
         from dendropy.dataobject.dataset import DataSet
+        index = kwargs.get("matrix_offset", 0)
+        kwargs["exclude_chars"] = False
+        kwargs["exclude_trees"] = True
         d = DataSet(stream=stream, format=format, **kwargs)
         if len(d.char_matrices) == 0:
             raise ValueError("No character data in data source")

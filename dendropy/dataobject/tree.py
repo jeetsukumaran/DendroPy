@@ -179,6 +179,8 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 self.taxon_set = kwargs["taxon_set"]
         else:
             kwargs["taxon_set"] = self.taxon_set
+        kwargs["exclude_chars"] = True
+        kwargs["exclude_trees"] = False
         d = DataSet(stream=stream, format=format, **kwargs)
         if len(d.tree_lists) == 0:
             raise ValueError("No trees in data source")
@@ -537,6 +539,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         tree_offset = kwargs.get("tree_offset", 0)
         if "taxon_set" in kwargs:
             self.taxon_set = kwargs["taxon_set"]
+        kwargs["exclude_chars"] = True
+        kwargs["exclude_trees"] = False
         d = DataSet(stream=stream, format=format, **kwargs)
         if len(d.tree_lists) == 0:
             raise ValueError("No trees in data source")

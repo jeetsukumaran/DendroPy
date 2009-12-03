@@ -773,7 +773,7 @@ class NexusReader(iosys.DataReader):
                     trees_block.append(tree, reindex_taxa=False)
             self.stream_tokenizer.skip_to_semicolon() # move past END command
         else:
-            token = self.consume_to_end_of_block(token)
+            token = self._consume_to_end_of_block(token)
 
 ###############################################################################
 ## NexusWriter
