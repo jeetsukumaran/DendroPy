@@ -522,9 +522,9 @@ class ComplexMultiTaxonSetDataVerificationTest(DataObjectVerificationTestCase):
         }
         self.tree_list_strings = [
             """
+            #NEXUS
             BEGIN TREES;
                 Title Pythonidae_Random_Trees;
-                LINK Taxa = Pythonidae;
                 TRANSLATE
                     1 Python_molurus,
                     2 Python_sebae,
@@ -568,9 +568,9 @@ class ComplexMultiTaxonSetDataVerificationTest(DataObjectVerificationTestCase):
             END;
         """,
         """
+            #NEXUS
             BEGIN TREES;
                 Title Caenophidia_Random_Yule_1;
-                LINK Taxa = Caenophidia;
             [!Parameters: Tree simulator: Uniform speciation (Yule). [seed: 1259785426822]]
                 TRANSLATE
                     1 Lystrophis_dorbignyi,
@@ -700,9 +700,9 @@ class ComplexMultiTaxonSetDataVerificationTest(DataObjectVerificationTestCase):
             END;
         """,
         """
+            #NEXUS
             BEGIN TREES;
                 Title Caenophidia_Random_Yule_2;
-                LINK Taxa = Caenophidia;
             [!Parameters: Tree simulator: Coalescent Trees. [seed: 1259785463881]]
                 TRANSLATE
                     1 Lystrophis_dorbignyi,
@@ -833,9 +833,9 @@ class ComplexMultiTaxonSetDataVerificationTest(DataObjectVerificationTestCase):
             END;
         """,
         """
+            #NEXUS
             BEGIN TREES;
                 Title Primates_Random_Yule;
-                LINK Taxa = Primates;
             [!Parameters: Tree simulator: Uniform speciation (Yule). [seed: 1259785889153]]
                 TRANSLATE
                     1 Lemur_catta,
@@ -864,9 +864,9 @@ class ComplexMultiTaxonSetDataVerificationTest(DataObjectVerificationTestCase):
             END;
         """,
         """
+            #NEXUS
             BEGIN TREES;
                 Title Pythonidae_CytB_MLE;
-                LINK Taxa = Pythonidae;
                 TRANSLATE
                     1 Python_molurus,
                     2 Python_sebae,
@@ -922,4 +922,8 @@ class ComplexMultiTaxonSetDataVerificationTest(DataObjectVerificationTestCase):
         self.assertEqual(self.tree_list_labels, [t.label for t in dataset.tree_lists])
         for t in dataset.tree_lists:
             self.assertEqual(t.taxon_set.label, self.tree_list_taxon_set_labels[t.label])
-
+        self.assertEqual(len(self.tree_list_strings), len(dataset.tree_lists))
+        for i, tree_list_str in enumerate(self.tree_list_strings):
+            ds_tlist = dataset.tree_lists[i]
+            check_tlist = dendropy.TreeList.get_from_string(tree_list_str, "nexus")
+            self.assertDistinctButEqual(check_tlist, ds_tlist, distinct_taxa=True)

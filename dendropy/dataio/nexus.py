@@ -195,6 +195,7 @@ class NexusReader(iosys.DataReader):
             if token == 'TAXA':
                 self._parse_taxa_block()
             elif token == 'TREES':
+                print "do I come here?"
                 self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
                 link_title = None
                 taxon_set = None

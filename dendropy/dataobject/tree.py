@@ -147,8 +147,11 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         Populates the `TreeList` from a `format`-formatted file-like
         source `stream`. `format` must be a recognized and tree file
         format, such as `nexus`, `newick`, etc, for which a specialized
-        tree list writer is available. If this is not implemented for
+        reader is available. If this is not implemented for
         the format specified, then a `UnsupportedFormatError` is raised.
+        If multiple tree lists are in the data source, a 0-based index of the
+        character array to use can be specified using the `collection_index`
+        keyword (defaults to 0, i.e., first tree list).
 
         The following optional keyword arguments are recognized:
 
@@ -165,8 +168,8 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         Other keyword arguments may be available, depending on the implementation
         of the reader specialized to handle `format` formats.
         """
-        from dendropy.utility import iosys
-        from dendropy.dataio import tree_source_iter
+        from dendropy.dataobject.dataset import DataSet
+        index = kwargs.get("from_index", 0)
         if "taxon_set" in kwargs:
             if kwargs["taxon_set"] is not self.taxon_set and len(self) > 0:
                 raise Exception("Cannot specify a different TaxonSet when reading into a populated TreeList.")
@@ -174,9 +177,16 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 self.taxon_set = kwargs["taxon_set"]
         else:
             kwargs["taxon_set"] = self.taxon_set
-        for t in tree_source_iter(stream=stream, format=format, **kwargs):
-            if t is not None:
-                self.append(t, reindex_taxa=False)
+        d = DataSet(stream=stream, format=format, **kwargs)
+        if len(d.tree_lists) == 0:
+            raise ValueError("No tree_lists in data source")
+        if index >= len(d.tree_lists):
+            raise IndexError("Tree list of index %d specified, but data source only has %d tree collections defined (max. index=%d)" \
+                % (index, len(d.tree_lists), len(d.tree_lists)-1))
+        if self.label is None and len(self) == 0 and d.tree_lists[index].label is not None:
+            self.label = d.tree_lists[index].label
+        for t in d.tree_lists[index]:
+            self.append(t, reindex_taxa=False)
 
     def write(self, stream, format, **kwargs):
         """
