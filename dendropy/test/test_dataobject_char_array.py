@@ -143,7 +143,7 @@ class CharArrayReadTest(datatest.DataObjectVerificationTestCase):
 
     def testIndexedRead(self):
         c = dendropy.StandardCharacterArray()
-        c.read_from_stream(open(self.data_path, "rU"), "nexus", index=1)
+        c.read_from_stream(open(self.data_path, "rU"), "nexus", matrix_offset=1)
         self.assertDistinctButEqual(
             self.reference_dataset.char_arrays[1],
             c,
@@ -153,7 +153,7 @@ class CharArrayReadTest(datatest.DataObjectVerificationTestCase):
 
     def testIncompatibleRead(self):
         c = dendropy.DnaCharacterArray()
-        self.assertRaises(ValueError, c.read_from_path, self.data_path, "nexus", index=1)
+        self.assertRaises(ValueError, c.read_from_path, self.data_path, "nexus", matrix_offset=1)
 
     def testInitRead(self):
         c = dendropy.DnaCharacterArray(stream=open(self.data_path, "rU"),
