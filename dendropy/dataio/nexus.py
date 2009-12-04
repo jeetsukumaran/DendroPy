@@ -567,17 +567,34 @@ class NexusReader(iosys.DataReader):
             raise self.data_format_error('NTAX must be defined by DIMENSIONS command to non-zero value before MATRIX command')
         elif not self.file_specified_nchar:
             raise self.data_format_error('NCHAR must be defined by DIMENSIONS command to non-zero value before MATRIX command')
-
         taxon_set = self._get_taxon_set(link_title)
         char_block = self.dataset.new_char_matrix(
             char_matrix_type=self.char_block_type, \
             taxon_set=taxon_set,
             label=block_title)
-
         if isinstance(char_block, dataobject.ContinuousCharacterMatrix):
-            raise NotImplementedError("Continuous characters in NEXUS format not yet supported")
+            self._process_continuous_matrix_data(char_block)
         else:
             self._process_discrete_matrix_data(char_block)
+
+    def _process_continuous_matrix_data(self, char_block):
+        taxon_set = char_block.taxon_set
+        token = self.stream_tokenizer.read_next_token()
+        while token != ';' and not self.stream_tokenizer.eof:
+            taxon = taxon_set.require_taxon(label=token)
+            if taxon not in char_block:
+                if not self.exclude_chars:
+                    char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
+                if self.interleave:
+                    raise NotImplementedError("Continuous characters in NEXUS format not yet supported")
+                else:
+                    while len(char_block[taxon]) < self.file_specified_nchar and not self.stream_tokenizer.eof:
+                        char_group = self.stream_tokenizer.read_next_token(ignore_punctuation="-+")
+                        char_block[taxon].append(dataobject.CharacterDataCell(value=float(char_group)))
+                    if len(char_block[taxon]) < self.file_specified_nchar:
+                        raise self.data_format_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
+                            % (taxon.label, self.file_specified_nchar, len(char_block[taxon]), char_block[taxon].symbols_as_string()))
+                    token = self.stream_tokenizer.read_next_token()
 
     def _process_discrete_matrix_data(self, char_block):
         if isinstance(char_block, dataobject.StandardCharacterMatrix):
