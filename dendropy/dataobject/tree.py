@@ -1241,7 +1241,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             for s, e in self.split_edges.iteritems():
                 assert(e in edges)
         return True
-
+    def compose_newick(self):
+        return self.as_newick_str(preserve_spaces=True)
 ##############################################################################
 ## Node
 
