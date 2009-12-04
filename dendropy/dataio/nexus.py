@@ -467,6 +467,8 @@ class NexusReader(iosys.DataReader):
                         self.char_block_type = dataobject.RnaCharacterMatrix
                     elif token == "PROTEIN":
                         self.char_block_type = dataobject.ProteinCharacterMatrix
+                    elif token == "CONTINUOUS":
+                        self.char_block_type = dataobject.ContinuousCharacterMatrix
                     else:
                         # defaults to STANDARD elif token == "STANDARD":
                         self.char_block_type = dataobject.StandardCharacterMatrix
@@ -572,11 +574,16 @@ class NexusReader(iosys.DataReader):
             taxon_set=taxon_set,
             label=block_title)
 
+        if isinstance(char_block, dataobject.ContinuousCharacterMatrix):
+            raise NotImplementedError("Continuous characters in NEXUS format not yet supported")
+        else:
+            self._process_discrete_matrix_data(char_block)
+
+    def _process_discrete_matrix_data(self, char_block):
         if isinstance(char_block, dataobject.StandardCharacterMatrix):
             self._build_state_alphabet(char_block, self.symbols)
-
+        taxon_set = char_block.taxon_set
         symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
-
         token = self.stream_tokenizer.read_next_token()
         while token != ';' and not self.stream_tokenizer.eof:
             taxon = taxon_set.require_taxon(label=token)
