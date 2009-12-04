@@ -527,6 +527,8 @@ class NexusReader(iosys.DataReader):
                 else:
                     raise self.data_format_error("Expecting '=' after MISSING keyword")
                 token = self.stream_tokenizer.read_next_token_ucase()
+            else:
+                token = self.stream_tokenizer.read_next_token_ucase()
 
     def _parse_dimensions_statement(self):
         """
