@@ -843,6 +843,8 @@ class NexusWriter(iosys.DataWriter):
     def write_taxa_block(self, taxon_set, stream):
         block = []
         block.append('begin taxa;')
+        if not self.simple:
+            block.append('    title %s;' % taxon_set.oid)
         block.append('    dimensions ntax=%d;' % len(taxon_set))
         block.append('    taxlabels')
         for taxon in taxon_set:
@@ -858,6 +860,8 @@ class NexusWriter(iosys.DataWriter):
                 internal_labels=self.is_write_internal_labels,
                 preserve_spaces=self.preserve_spaces)
         block.append('begin trees;')
+        if not self.simple:
+            block.append('    link taxa = %s;' % tree_list.taxon_set.oid)
         for treeidx, tree in enumerate(tree_list):
             if tree.label:
                 tree_name = tree.label
@@ -886,6 +890,7 @@ class NexusWriter(iosys.DataWriter):
             ntaxstr = "ntax=%d" % len(taxlabels)
         else:
             nexus.append('begin characters;')
+            nexus.append('    link taxa = %s;' % char_matrix.taxon_set.oid)
             ntaxstr = ""
         nexus.append('    dimensions %s nchar=%d;' % (ntaxstr, nchar))
         nexus.append('    format %s;' % self.compose_format_terms(char_matrix))
