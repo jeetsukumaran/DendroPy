@@ -29,11 +29,13 @@ import re
 import sys
 import dendropy
 
+DENDROPY_APE_INTEROPERABILITY = False
 try:
     from rpy2 import robjects
     from rpy2.rinterface import RRuntimeError
     _R = robjects.r
     _R('library(ape)')
+    DENDROPY_APE_INTEROPERABILITY = True
 except ImportError:
     sys.stderr.write("rpy2 not installed: APE interoperability not available")
 except RRuntimeError:
