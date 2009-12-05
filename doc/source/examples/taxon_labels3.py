@@ -28,7 +28,7 @@ ACGT
 """
 
 d = dendropy.DataSet()
-d.bind_taxon_set()
+d.attach_taxon_set()
 d.read_from_string(nexus1, "nexus")
 d.read_from_string(fasta1, "dnafasta")
 print(d.taxon_sets[0].description(2))

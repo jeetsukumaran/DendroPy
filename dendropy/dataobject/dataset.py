@@ -286,6 +286,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         elif taxon_set not in self.taxon_sets:
             self.add_taxon_set(taxon_set)
         self.attached_taxon_set = taxon_set
+        return self.attached_taxon_set
 
     def detach_taxon_set(self):
         self.attached_taxon_set = None

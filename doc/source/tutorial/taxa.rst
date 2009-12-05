@@ -207,12 +207,15 @@ Or::
     >>> import dendropy
     >>> ds = dendropy.DataSet()
     >>> ds.attach_taxon_set()
+    <TaxonSet object at 0x5779c0>
     >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
     >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
     >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
     >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
 
 All of the above will result in only a single :class:`~dendropy.dataobject.taxon.TaxonSet` object that have all the taxa from the four data sources mapped to them.
+Note how :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` returns the new :class:`~dendropy.dataobject.taxon.TaxonSet` object created and attached when called.
+If you needed to detach the :class:`~dendropy.dataobject.taxon.TaxonSet` object and then later on reattach it again, you would assign the return value to a variable, and pass it to as an argument to the later call to :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()`.
 
 Switching Between Attached and Detached Taxon Set Modes
 -------------------------------------------------------
@@ -222,6 +225,7 @@ To restore it to multiple taxon set mode, you would use the :meth:`~dendropy.dat
     >>> import dendropy
     >>> ds = dendropy.DataSet()
     >>> ds.attach_taxon_set()
+    <TaxonSet object at 0x5779c0>
     >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
     >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
     >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
@@ -242,6 +246,7 @@ If you want to use an existing :class:`~dendropy.dataobject.taxon.TaxonSet` obje
     >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
     >>> ds.read_from_path("primates.nex", "nexus")
     >>> ds.attach_taxon_set(ds.taxon_sets[0])
+    <TaxonSet object at 0x5b8150>
     >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
     >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
     >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
