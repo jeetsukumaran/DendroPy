@@ -26,15 +26,19 @@ Wrappers for interacting with the APE library for R.
 
 import tempfile
 import re
+import sys
 import dendropy
+
 try:
     from rpy2 import robjects
-except ImportError:
-    import sys
-    sys.stderr.write("rpy2 not installed: APE interoperability not available\n")
-else:
+    from rpy2.rinterface import RRuntimeError
     _R = robjects.r
     _R('library(ape)')
+except ImportError:
+    sys.stderr.write("rpy2 not installed: APE interoperability not available")
+except RRuntimeError:
+    sys.stderr.write("APE library not installed: APE interoperability not available")
+else:
 
     def as_ape_object(o):
         """
