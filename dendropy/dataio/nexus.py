@@ -119,11 +119,11 @@ class NexusReader(iosys.DataReader):
 
         """
         iosys.DataReader.__init__(self, **kwargs)
-        self.stream_tokenizer = nexustokenizer.NexusTokenizer()
+        self.reset()
         self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
         self.finish_node_func = kwargs.get("finish_node_func", None)
         self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", False)
-        self.reset()
+        self.preserve_underscores = kwargs.get('preserve_underscores', False)
 
     def read(self, stream, **kwargs):
         """
@@ -141,6 +141,7 @@ class NexusReader(iosys.DataReader):
         """
         self.reset()
         self.rooting_interpreter.update(**kwargs)
+        self.preserve_underscores = kwargs.get('preserve_underscores', False)
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
         if "taxon_set" in kwargs:
@@ -177,13 +178,14 @@ class NexusReader(iosys.DataReader):
         """
         self.reset()
         self.rooting_interpreter.update(**kwargs)
+        self.preserve_underscores = kwargs.get('preserve_underscores', False)
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
         if "taxon_set" in kwargs:
             self.attached_taxon_set = kwargs["taxon_set"]
         if self.attached_taxon_set is not None and self.attached_taxon_set not in self.dataset.taxon_sets:
             self.dataset.add(self.attached_taxon_set)
-        self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream)
+        self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream, preserve_underscores=self.preserve_underscores)
         token = self.stream_tokenizer.read_next_token_ucase()
         if token != "#NEXUS":
             raise self.data_format_error("Expecting '#NEXUS', but found '%s'" % token)
@@ -244,6 +246,7 @@ class NexusReader(iosys.DataReader):
         self.tree_translate_dict = {}
         self.tax_label_lookup = {}
         self.taxa_blocks = {}
+        self.preserve_underscores = False
 
     def data_format_error(self, message):
         """
@@ -256,8 +259,8 @@ class NexusReader(iosys.DataReader):
     ## HELPERS
 
     def _prepare_to_read_from_stream(self, file_obj):
-        self.stream_tokenizer = nexustokenizer.NexusTokenizer()
-        self.stream_tokenizer.stream_handle = file_obj
+        self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream_handle=file_obj,
+                preserve_underscores=self.preserve_underscores)
 
     def _consume_to_end_of_block(self, token):
         while not (token == 'END' or token == 'ENDBLOCK') \

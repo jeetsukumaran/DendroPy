@@ -73,7 +73,8 @@ def tree_source_iter(stream, **kwargs):
         raise Exception('When encoding splits on trees, a pre-populated TaxonSet instance ' \
             + "must be provided using the 'taxon_set' keyword to avoid taxon/split bitmask values "\
             + "changing as new Taxon objects are added to the set.")
-    newick_stream = nexustokenizer.NexusTokenizer(stream)
+    preserve_underscores = kwargs.get('preserve_underscores', False)
+    newick_stream = nexustokenizer.NexusTokenizer(stream, preserve_underscores=preserve_underscores)
     i = 0
     while not newick_stream.eof:
         t = nexustokenizer.parse_tree_from_stream(newick_stream, taxon_set=taxon_set, **kwargs)

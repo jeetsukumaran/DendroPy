@@ -337,8 +337,9 @@ class NexusTokenizer(object):
     #######################################################################
     ## INSTANCE METHODS
 
-    def __init__(self, stream_handle=None):
+    def __init__(self, stream_handle=None, **kwargs):
         self._reset()
+        self.preserve_underscores = kwargs.get('preserve_underscores', False)
         if stream_handle:
             self.stream_handle = stream_handle
 
@@ -351,6 +352,7 @@ class NexusTokenizer(object):
         self.current_col_number = 1
         self.previous_file_char = None
         self.tree_rooting_comment = None
+        self.preserve_underscores = False
 
     def _get_current_file_char(self):
         "Returns the current character from the file stream."
@@ -496,7 +498,7 @@ class NexusTokenizer(object):
                             continue
                         if not c in ignore_punctuation:
                             break
-                    if c == '_':
+                    if c == '_' and not self.preserve_underscores:
                         c = ' '
                     token.write(c)
                     prev = c
@@ -511,7 +513,7 @@ class NexusTokenizer(object):
                             c = self.current_file_char
                             continue
                         break
-                    if c == '_':
+                    if c == '_' and not self.preserve_underscores:
                         c = ' '
                     token.write(c)
                     prev = c
