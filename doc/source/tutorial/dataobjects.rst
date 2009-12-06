@@ -76,14 +76,14 @@ All these methods take a ``taxon_set`` keyword that specifies the :class:`~dendr
 Depending on the particular type being created and data source, these factory methods may take additional keyword arguments.
 For example, if a data source contains multiple trees, you may specify a particular tree to be parsed by passing the 0-based index of the tree to the ":meth:`get_from_*()`" of :class:`~dendropy.dataobject.tree.Tree`::
 
-    >>> tree2 = dendropy.Tree.get_from_path("pythonidae.mcmc.nex", format="nexus", from_index=200)
+    >>> tree2 = dendropy.Tree.get_from_path("pythonidae.mcmc.nex", format="nexus", tree_offset=200)
 
-The object ``tree2`` is now a DendroPy representation of the 201st tree found in the specified :download:`file </examples/pythonidae.mcmc.nex>`. :class:`~dendropy.dataobject.tree.TreeList` also takes a ``from_index`` keyword argument, and specifying this will result in all trees starting from the given index being parsed and added to the collection.
+The object ``tree2`` is now a DendroPy representation of the 201st tree found in the specified :download:`file </examples/pythonidae.mcmc.nex>`. :class:`~dendropy.dataobject.tree.TreeList` also takes a ``tree_offset`` keyword argument, and specifying this will result in all trees starting from the given index being parsed and added to the collection.
 
     >>> tree_list1 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus")
     >>> print(tree_list1.description())
     TreeList object at 0x64a510 (TreeList6595856):  1001 Trees
-    >>> tree_list2 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus", from_index=200)
+    >>> tree_list2 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus", tree_offset=200)
     >>> print(tree_list2.description())
     TreeList object at 0x551a80 (TreeList5577344):  801 Trees
 
@@ -96,7 +96,7 @@ Depending on the format and type of object, there might be other keyword argumen
 
 In addition to the factory methods, you can specify a data source to the constructor of the objects directly using the ``stream`` and ``format`` keywords::
 
-    >>> tree2 = dendropy.Tree(stream=open("pythonidae.mcmc.nex"), format="nexus", from_index=200)
+    >>> tree2 = dendropy.Tree(stream=open("pythonidae.mcmc.nex"), format="nexus", tree_offset=200)
     >>> tree_list2 = dendropy.TreeList(stream=open("pythonidae.mcmc.nex"), format="nexus")
     >>> dna2 = dendropy.DnaCharacterMatrix(stream=open("pythonidae_cytb.fasta"), format="fasta")
     >>> dataset2 = dendropy.DataSet(stream=open("pythonidae.nex"), format="nexus")
@@ -129,16 +129,16 @@ For example, the following accumulates post-burn-in trees from a several differe
 
     >>> import dendropy
     >>> post_trees = dendropy.TreeList()
-    >>> post_trees.read_from_path("pythonidae.nex.run1.t", "nexus", from_index=200)
+    >>> post_trees.read_from_path("pythonidae.nex.run1.t", "nexus", tree_offset=200)
     >>> print(post_trees.description())
     TreeList object at 0x550990 (TreeList5573008): 801 Trees
-    >>> post_trees.read_from_path("pythonidae.nex.run2.t", "nexus", from_index=200)
+    >>> post_trees.read_from_path("pythonidae.nex.run2.t", "nexus", tree_offset=200)
     >>> print(post_trees.description())
     TreeList object at 0x550990 (TreeList5573008): 1602 Trees
-    >>> post_trees.read_from_path("pythonidae.nex.run3.t", "nexus", from_index=200)
+    >>> post_trees.read_from_path("pythonidae.nex.run3.t", "nexus", tree_offset=200)
     >>> print(post_trees.description())
     TreeList object at 0x550990 (TreeList5573008): 2403 Trees
-    >>> post_trees.read_from_path("pythonidae.nex.run4.t", "nexus", from_index=200)
+    >>> post_trees.read_from_path("pythonidae.nex.run4.t", "nexus", tree_offset=200)
     >>> print(post_trees.description())
     TreeList object at 0x5508a0 (TreeList5572768): 3204 Trees
 
