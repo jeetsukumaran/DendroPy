@@ -868,15 +868,15 @@ class NexusWriter(iosys.DataWriter):
 
     def write_taxa_block(self, taxon_set, stream):
         block = []
-        block.append('begin taxa;')
+        block.append('BEGIN TAXA;')
         if not self.simple:
-            block.append('    title %s;' % taxon_set.oid)
-        block.append('    dimensions ntax=%d;' % len(taxon_set))
-        block.append('    taxlabels')
+            block.append('    TITLE %s;' % texttools.escape_nexus_token(taxon_set.oid))
+        block.append('    DIMENSIONS NTAX=%d;' % len(taxon_set))
+        block.append('    TAXLABELS')
         for taxon in taxon_set:
             block.append('        %s' % texttools.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces))
         block.append('  ;')
-        block.append('end;\n\n')
+        block.append('END;\n\n')
         stream.write('\n'.join(block))
 
     def write_trees_block(self, tree_list, stream):
@@ -885,9 +885,9 @@ class NexusWriter(iosys.DataWriter):
                 edge_lengths=self.is_write_edge_lengths,
                 internal_labels=self.is_write_internal_labels,
                 preserve_spaces=self.preserve_spaces)
-        block.append('begin trees;')
+        block.append('BEGIN TREES;')
         if not self.simple:
-            block.append('    link taxa = %s;' % tree_list.taxon_set.oid)
+            block.append('    LINK TAXA = %s;' % texttools.escape_nexus_token(tree_list.taxon_set.oid))
         for treeidx, tree in enumerate(tree_list):
             if tree.label:
                 tree_name = tree.label
@@ -900,10 +900,10 @@ class NexusWriter(iosys.DataWriter):
                 rooting = "[&U] "
             else:
                 rooting = ""
-            block.append('    tree %s = %s%s;' % (texttools.escape_nexus_token(tree_name, preserve_spaces=self.preserve_spaces),
+            block.append('    TREE %s = %s%s;' % (texttools.escape_nexus_token(tree_name, preserve_spaces=self.preserve_spaces),
                 rooting,
                 newick_str))
-        block.append('end;\n\n')
+        block.append('END;\n\n')
         stream.write('\n'.join(block))
 
     def write_char_block(self, char_matrix, stream):
@@ -912,15 +912,15 @@ class NexusWriter(iosys.DataWriter):
         max_label_len = max([len(label) for label in taxlabels])
         nchar = max([len(seq) for seq in char_matrix.values()])
         if self.simple:
-            nexus.append('begin data;')
-            ntaxstr = "ntax=%d" % len(taxlabels)
+            nexus.append('BEGIN DATA;')
+            ntaxstr = "NTAX=%d" % len(taxlabels)
         else:
-            nexus.append('begin characters;')
-            nexus.append('    link taxa = %s;' % char_matrix.taxon_set.oid)
+            nexus.append('BEGIN CHARACTERS;')
+            nexus.append('    LINK TAXA = %s;' % texttools.escape_nexus_token(char_matrix.taxon_set.oid))
             ntaxstr = ""
-        nexus.append('    dimensions %s nchar=%d;' % (ntaxstr, nchar))
-        nexus.append('    format %s;' % self.compose_format_terms(char_matrix))
-        nexus.append('    matrix')
+        nexus.append('    DIMENSIONS %s NCHAR=%d;' % (ntaxstr, nchar))
+        nexus.append('    FORMAT %s;' % self.compose_format_terms(char_matrix))
+        nexus.append('    MATRIX')
         state_string_map = {}
         if isinstance(char_matrix, dataobject.ContinuousCharacterMatrix):
             for taxon in char_matrix.taxon_set:
@@ -947,24 +947,24 @@ class NexusWriter(iosys.DataWriter):
                         seq.write(state_string_map[state])
                 nexus.append('%s    %s' % (texttools.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces).ljust(max_label_len), seq.getvalue()))
         nexus.append('    ;')
-        nexus.append('end;\n\n')
+        nexus.append('END;\n\n')
         stream.write('\n'.join(nexus))
 
     def compose_format_terms(self, char_matrix):
         format = []
         if isinstance(char_matrix, dataobject.DnaCharacterMatrix):
-            format.append("datatype=dna")
-            format.append("gap=- missing=? matchchar=.")
+            format.append("DATATYPE=DNA")
+            format.append("GAP=- MISSING=? MATCHCHAR=.")
         elif isinstance(char_matrix, dataobject.RnaCharacterMatrix):
             format.append("datatype=rna")
-            format.append("gap=- missing=? matchchar=.")
+            format.append("GAP=- MISSING=? MATCHCHAR=.")
         elif isinstance(char_matrix, dataobject.ProteinCharacterMatrix):
-            format.append("datatype=protein")
-            format.append("gap=- missing=? matchchar=.")
+            format.append("DATATYPE=PROTEIN")
+            format.append("GAP=- MISSING=? MATCHCHAR=.")
         elif isinstance(char_matrix, dataobject.ContinuousCharacterMatrix):
-            format.append("datatype=continuous items=(states)")
+            format.append("DATATYPE=CONTINUOUS ITEMS=(STATES)")
         else:
-            format.append("datatype=standard")
+            format.append("DATATYPE=STANDARD")
 
             fundamental_symbols = set()
             for state_alphabet in char_matrix.state_alphabets:
@@ -973,15 +973,15 @@ class NexusWriter(iosys.DataWriter):
                         fundamental_symbols.add(s.symbol)
                     else:
                         raise Exception("Could not match character state to symbol: '%s'." % s)
-            format.append('symbols="%s"' % "".join(fundamental_symbols))
+            format.append('SYMBOLS="%s"' % "".join(fundamental_symbols))
 
             equates = set()
             for state_alphabet in char_matrix.state_alphabets:
                 for a in state_alphabet.ambiguous_states():
                     if a.symbol == "?":
-                        format.append("missing=?")
+                        format.append("MISSING=?")
                     elif a.symbol == "-":
-                        format.append("gap=-")
+                        format.append("GAP=-")
                     else:
                         if a.symbol is not None:
                             equates.append("%s={%s}" % (a.symbol, "".join(a.fundamental_symbols())))
@@ -992,7 +992,7 @@ class NexusWriter(iosys.DataWriter):
                         equates.append("%s=(%s)" % (p.symbol, "".join(p.fundamental_symbols())))
 
             if equates:
-                format.append('equate="%s"' % equates)
+                format.append('EQUATE="%s"' % equates)
 
         return ' '.join(format)
 
