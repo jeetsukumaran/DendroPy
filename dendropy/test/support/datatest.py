@@ -127,6 +127,8 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         self.logger.info("Comparing TaxonSet objects %d and %d" % (id(taxon_set1), id(taxon_set2)))
         self.assertNotSame(taxon_set1, taxon_set2)
         self.assertEqual(len(taxon_set1), len(taxon_set2))
+        if not kwargs.get("ignore_label", True):
+            self.assertEqual(taxon_set1.label, taxon_set1.label)
         if not ignore_taxon_order:
             for tidx, taxon1 in enumerate(taxon_set1):
                 taxon2 = taxon_set2[tidx]
@@ -165,11 +167,12 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             self.assertDistinctButEqualTaxonSet(tree_list1.taxon_set, tree_list2.taxon_set, **kwargs)
         else:
             self.assertSame(tree_list1.taxon_set, tree_list2.taxon_set)
-        self.assertEqual(tree_list1.label, tree_list2.label)
         if equal_oids is True:
             self.assertEqual(tree_list1.oid, tree_list1.oid)
         elif equal_oids is False:
             self.assertNotEqual(tree_list1.oid, tree_list2.oid)
+        if not kwargs.get("ignore_label", True):
+            self.assertEqual(tree_list1.label, tree_list2.label)
         distinct_trees = kwargs.get("distinct_trees", True)
         for tree_idx, tree1 in enumerate(tree_list1):
             tree2 = tree_list2[tree_idx]
@@ -209,7 +212,8 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             self.assertEqual(tree1.oid, tree2.oid)
         elif equal_oids is False:
             self.assertNotEqual(tree1.oid, tree2.oid)
-
+        if not kwargs.get("ignore_label", True):
+            self.assertEqual(tree1.label, tree2.label)
         tree1_nodes = [nd for nd in tree1.postorder_node_iter()]
         tree2_nodes = [nd for nd in tree2.postorder_node_iter()]
         self.assertEqual(len(tree1_nodes), len(tree2_nodes))
@@ -302,6 +306,12 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             self.assertEqual(char_matrix1.oid, char_matrix2.oid)
         elif equal_oids is False:
             self.assertNotEqual(char_matrix1.oid, char_matrix2.oid)
+        if equal_oids is True:
+            self.assertEqual(char_matrix1.oid, char_matrix2.oid)
+        elif equal_oids is False:
+            self.assertNotEqual(char_matrix1.oid, char_matrix2.oid)
+        if not kwargs.get("ignore_label", True):
+            self.assertEqual(char_matrix1.label, char_matrix2.label)
         self.assertEqual(len(char_matrix1), len(char_matrix2))
 
         for ti, taxon1 in enumerate(char_matrix1):
@@ -341,6 +351,8 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             self.assertEqual(char_matrix1.oid, char_matrix2.oid)
         elif equal_oids is False:
             self.assertNotEqual(char_matrix1.oid, char_matrix2.oid)
+        if not kwargs.get("ignore_label", True):
+            self.assertEqual(char_matrix1.label, char_matrix2.label)
         if distinct_state_alphabets is True:
             self.assertEqual(len(char_matrix1.state_alphabets), len(char_matrix2.state_alphabets))
             for sai, sa1 in enumerate(char_matrix1.state_alphabets):

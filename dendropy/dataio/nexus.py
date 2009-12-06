@@ -866,11 +866,20 @@ class NexusWriter(iosys.DataWriter):
                 if self.attached_taxon_set is None or tree_list.taxon_set is self.attached_taxon_set:
                     self.write_trees_block(tree_list=tree_list, stream=stream)
 
+    def compose_block_title(self, block):
+        if not block.label:
+            block.label = block.oid
+        if block.label:
+            return "TITLE %s" % texttools.escape_nexus_token(block.label, preserve_spaces=self.preserve_spaces)
+        else:
+            return ""
+
     def write_taxa_block(self, taxon_set, stream):
         block = []
         block.append('BEGIN TAXA;')
-        if not self.simple:
-            block.append('    TITLE %s;' % texttools.escape_nexus_token(taxon_set.oid))
+        title = self.compose_block_title(taxon_set)
+        if title:
+            block.append('    %s;' % title)
         block.append('    DIMENSIONS NTAX=%d;' % len(taxon_set))
         block.append('    TAXLABELS')
         for taxon in taxon_set:
@@ -886,8 +895,11 @@ class NexusWriter(iosys.DataWriter):
                 internal_labels=self.is_write_internal_labels,
                 preserve_spaces=self.preserve_spaces)
         block.append('BEGIN TREES;')
-        if not self.simple:
-            block.append('    LINK TAXA = %s;' % texttools.escape_nexus_token(tree_list.taxon_set.oid))
+        title = self.compose_block_title(tree_list)
+        if title:
+            block.append('    %s;' % title)
+        if tree_list.taxon_set.label:
+            block.append('    LINK TAXA = %s;' % texttools.escape_nexus_token(tree_list.taxon_set.label))
         for treeidx, tree in enumerate(tree_list):
             if tree.label:
                 tree_name = tree.label
@@ -916,8 +928,12 @@ class NexusWriter(iosys.DataWriter):
             ntaxstr = "NTAX=%d" % len(taxlabels)
         else:
             nexus.append('BEGIN CHARACTERS;')
-            nexus.append('    LINK TAXA = %s;' % texttools.escape_nexus_token(char_matrix.taxon_set.oid))
-            ntaxstr = ""
+        title = self.compose_block_title(char_matrix)
+        if title:
+            nexus.append('    %s;' % title)
+        if char_matrix.taxon_set.label:
+            nexus.append('    LINK TAXA = %s;' % texttools.escape_nexus_token(char_matrix.taxon_set.label))
+        ntaxstr = ""
         nexus.append('    DIMENSIONS %s NCHAR=%d;' % (ntaxstr, nchar))
         nexus.append('    FORMAT %s;' % self.compose_format_terms(char_matrix))
         nexus.append('    MATRIX')

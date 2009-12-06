@@ -40,20 +40,20 @@ class TreeListCreateTest(datatest.DataObjectVerificationTestCase):
 
     def testDeepCopyTreeListFromTreeListSameTaxa(self):
         tree_list2 = dendropy.TreeList(self.tree_list1, taxon_set=self.tree_list1.taxon_set)
-        self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=False, equal_oids=False, distinct_trees=True)
+        self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=False, equal_oids=False, distinct_trees=True, ignore_label=True)
 
     def testDeepCopyTreeListFromTreeListSameTaxa(self):
         tree_list2 = dendropy.TreeList([dendropy.Tree(t) for t in self.tree_list1], taxon_set=self.tree_list1.taxon_set)
-        self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=False, equal_oids=False, distinct_trees=True)
+        self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=False, equal_oids=False, distinct_trees=True, ignore_label=True)
 
     def testShallowCopyTreeListFromListSameTaxa(self):
         src_trees = [t for t in self.tree_list1]
         tree_list2 = dendropy.TreeList(src_trees, taxon_set=self.tree_list1.taxon_set)
-        self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=False, equal_oids=False, distinct_trees=False)
+        self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=False, equal_oids=False, distinct_trees=False, ignore_label=True)
 
     def testDeepCopyTreeListFromTreeListDifferentTaxa(self):
         tree_list2 = dendropy.TreeList(self.tree_list1)
-        self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=True, equal_oids=False, distinct_trees=True)
+        self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=True, equal_oids=False, distinct_trees=True, ignore_label=True)
 
     def testDeepCopyTreeListFromTreeListDifferentTaxa(self):
         tree_list2 = dendropy.TreeList([dendropy.Tree(t) for t in self.tree_list1])
