@@ -56,6 +56,11 @@ else:
             kwargs['keep.multi'] = False
             text = o.as_string("newick")
             return _R['read.tree'](text=text, **kwargs)
+#        if isinstance(o, dendropy.Tree) or isinstance(o, dendropy.TreeList):
+#            f = tempfile.NamedTemporaryFile()
+#            o.write_to_stream(f, "nexus", simple=True, block_titles=False)
+#            f.flush()
+#            return _R['read.nexus'](f.name)
         elif isinstance(o, dendropy.CharacterMatrix):
             f = tempfile.NamedTemporaryFile()
             o.write_to_stream(f, "nexus", simple=True, block_titles=False)
