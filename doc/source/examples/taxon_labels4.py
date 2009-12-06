@@ -7,28 +7,28 @@ nexus1 = """
 
 begin taxa;
     dimensions ntax=2;
-    taxlabels 'Python regious' 'Python sebae';
+    taxlabels Python_regious Python_sebae;
 end;
 
 begin characters;
     dimensions nchar=5;
     format datatype=dna gap=- missing=? matchchar=.;
     matrix
-        'Python regious' ACGTA
-        'Python sebae'   ACGTA
+        Python_regious ACGTA
+        Python_sebae   ACGTA
     ;
 end;
 """
 
 fasta1 = """
->Python regious
+>Python_regious
 AAAA
->Python sebae
+>Python_sebae
 ACGT
 """
 
 d = dendropy.DataSet()
 d.attach_taxon_set()
-d.read_from_string(nexus1, "nexus")
+d.read_from_string(nexus1, "nexus", preserve_underscores=True)
 d.read_from_string(fasta1, "dnafasta")
 print(d.taxon_sets[0].description(2))

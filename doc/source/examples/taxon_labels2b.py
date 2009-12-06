@@ -7,15 +7,15 @@ nexus1 = """
 
 begin taxa;
     dimensions ntax=2;
-    taxlabels 'Python regious' 'Python sebae';
+    taxlabels Python_regious Python_sebae;
 end;
 
 begin characters;
     dimensions nchar=5;
     format datatype=dna gap=- missing=? matchchar=.;
     matrix
-        'Python regious' ACGTA
-        'Python sebae'   ACGTA
+        Python_regious ACGTA
+        Python_sebae   ACGTA
     ;
 end;
 """

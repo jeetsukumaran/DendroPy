@@ -285,20 +285,9 @@ Even more confusingly, if this file is written out in NEXUS format, it would res
 
 If you plan on mixing sources from different formats, it is important to keep in mind the space/underscore substitution that takes place by default with NEXUS/NEWICK formats, but does not take place with other formats.
 
-You could simply avoid underscores in data formats that do not have this underscore-to-space convention, and use only spaces instead:
+You could simply avoid underscores and use only spaces instead:
 
 .. literalinclude:: /examples/taxon_labels2.py
-    :linenos:
-
-which results in::
-
-    TaxonSet object at 0x43b4e0 (TaxonSet4437216): 2 Taxa
-        [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python regious'
-        [1] Taxon object at 0x2286810 (Taxon36202512): 'Python sebae'
-
-You can wrap the underscore-bearing labels in the NEXUS/NEWICK source in quotes, which preserves them from being substituted for spaces:
-
-.. literalinclude:: /examples/taxon_labels3.py
     :linenos:
 
 Which results in::
@@ -307,8 +296,29 @@ Which results in::
         [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python_regious'
         [1] Taxon object at 0x2286810 (Taxon36202512): 'Python_sebae'
 
+Or use underscores in the NEXUS-formatted data, but spaces in the non-NEXUS data:
 
-You can also override the default behavior by passing the keyword argument ``preserve_underscores=True`` to any :meth:`read_from_*`, :meth:`get_from_*` or stream-parsing constructor. For example:
+.. literalinclude:: /examples/taxon_labels2b.py
+    :linenos:
+
+Which results in the same as the preceding example::
+
+    TaxonSet object at 0x43b4e0 (TaxonSet4437216): 2 Taxa
+        [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python regious'
+        [1] Taxon object at 0x2286810 (Taxon36202512): 'Python sebae'
+
+You can also wrap the underscore-bearing labels in the NEXUS/NEWICK source in quotes, which preserves them from being substituted for spaces:
+
+.. literalinclude:: /examples/taxon_labels3.py
+    :linenos:
+
+Which will result in::
+
+    TaxonSet object at 0x43c780 (TaxonSet4441984): 2 Taxa
+        [0] Taxon object at 0x2386770 (Taxon37250928): 'Python_regious'
+        [1] Taxon object at 0x2386790 (Taxon37250960): 'Python_sebae'
+
+Finally, you can also override the default behavior of DendroPy's NEXUS/NEWICK parser by passing the keyword argument ``preserve_underscores=True`` to any :meth:`read_from_*`, :meth:`get_from_*` or stream-parsing constructor. For example:
 
 .. literalinclude:: /examples/taxon_labels4.py
     :linenos:
@@ -355,7 +365,7 @@ This may seem the simplest solution, in so far as it does not mean that you need
         ;
     END;
 
-Technically, the taxon labels have changed, as "Python_regius", while equivalent to "Python regius", is **not** equivalent to "'Python_regius'", according to the NEXUS standard).
+Note that the taxon labels have changed semantically between the input and the NEXUS output, as, according to the NEXUS standard, "Python_regius", while equivalent to "Python regius", is **not** equivalent to "'Python_regius'".
 To control this, you can pass the keyword argument ``quote_underscores=False`` to any :meth:`write_to_*`, or :meth:`as_string()` method, which will omit the quotes even if the labels contain underscores::
 
     >>> print(d.as_string('nexus', quote_underscores=False))
