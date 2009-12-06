@@ -922,25 +922,30 @@ class NexusWriter(iosys.DataWriter):
         nexus.append('    format %s;' % self.compose_format_terms(char_matrix))
         nexus.append('    matrix')
         state_string_map = {}
-        for taxon in char_matrix.taxon_set:
-            seq_vec = char_matrix[taxon]
-            seq = StringIO()
-            for cell in seq_vec:
-                state = cell.value
-                assert state is not None, "Undefined state encountered in character sequence."
-                try:
-                    seq.write(state_string_map[state])
-                except:
-                    if state.symbol is not None:
-                        state_string_map[state] = state.symbol
-                    elif state.multistate == dataobject.StateAlphabetElement.AMBIGUOUS_STATE:
-                        state_string_map[state] = "{%s}" % ("".join(state.fundamental_symbols))
-                    elif state.multistate == dataobject.StateAlphabetElement.POLYMORPHIC_STATE:
-                        state_string_map[state] = "(%s)" % ("".join(state.fundamental_symbols))
-                    else:
-                        raise Exception("Could not match character state to symbol: '%s'." % state)
-                    seq.write(state_string_map[state])
-            nexus.append('%s    %s' % (texttools.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces).ljust(max_label_len), seq.getvalue()))
+        if isinstance(char_matrix, dataobject.ContinuousCharacterMatrix):
+            for taxon in char_matrix.taxon_set:
+                seq = " ".join([str(v) for v in char_matrix[taxon]])
+                nexus.append('%s    %s' % (texttools.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces).ljust(max_label_len), seq))
+        else:
+            for taxon in char_matrix.taxon_set:
+                seq_vec = char_matrix[taxon]
+                seq = StringIO()
+                for cell in seq_vec:
+                    state = cell.value
+                    assert state is not None, "Undefined state encountered in character sequence."
+                    try:
+                        seq.write(state_string_map[state])
+                    except:
+                        if state.symbol is not None:
+                            state_string_map[state] = state.symbol
+                        elif state.multistate == dataobject.StateAlphabetElement.AMBIGUOUS_STATE:
+                            state_string_map[state] = "{%s}" % ("".join(state.fundamental_symbols))
+                        elif state.multistate == dataobject.StateAlphabetElement.POLYMORPHIC_STATE:
+                            state_string_map[state] = "(%s)" % ("".join(state.fundamental_symbols))
+                        else:
+                            raise Exception("Could not match character state to symbol: '%s'." % state)
+                        seq.write(state_string_map[state])
+                nexus.append('%s    %s' % (texttools.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces).ljust(max_label_len), seq.getvalue()))
         nexus.append('    ;')
         nexus.append('end;\n\n')
         stream.write('\n'.join(nexus))
@@ -956,6 +961,8 @@ class NexusWriter(iosys.DataWriter):
         elif isinstance(char_matrix, dataobject.ProteinCharacterMatrix):
             format.append("datatype=protein")
             format.append("gap=- missing=? matchchar=.")
+        elif isinstance(char_matrix, dataobject.ContinuousCharacterMatrix):
+            format.append("datatype=continuous items=(states)")
         else:
             format.append("datatype=standard")
 

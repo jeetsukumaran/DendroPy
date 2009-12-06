@@ -287,6 +287,39 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             state2 = state_alphabet2[state_idx]
             self.assertDistinctButEqualStateAlphabetElement(state1, state2)
 
+    def assertDistinctButEqualContinuousCharMatrix(self, char_matrix1, char_matrix2, **kwargs):
+        distinct_taxa = kwargs.get("distinct_taxa", True)
+        equal_oids = kwargs.get("equal_oids", None)
+        ignore_chartypes = kwargs.get("ignore_chartypes", True)
+        self.logger.info("Comparing ContinuousCharacterMatrix objects %d and %d" % (id(char_matrix1), id(char_matrix2)))
+        self.assertNotSame(char_matrix1, char_matrix2)
+        if distinct_taxa:
+            self.assertNotSame(char_matrix1.taxon_set, char_matrix2.taxon_set)
+            self.assertDistinctButEqualTaxonSet(char_matrix1.taxon_set, char_matrix2.taxon_set, **kwargs)
+        else:
+            self.assertSame(char_matrix1.taxon_set, char_matrix2.taxon_set)
+        if equal_oids is True:
+            self.assertEqual(char_matrix1.oid, char_matrix2.oid)
+        elif equal_oids is False:
+            self.assertNotEqual(char_matrix1.oid, char_matrix2.oid)
+        self.assertEqual(len(char_matrix1), len(char_matrix2))
+
+        for ti, taxon1 in enumerate(char_matrix1):
+            vec1 = char_matrix1[taxon1]
+            taxon2 = char_matrix2.taxon_set[ti]
+            vec2 = char_matrix2[taxon2]
+            self.logger.info("Comparing CharacterDataVector objects %d and %d" % (id(vec2), id(vec2)))
+            if distinct_taxa:
+                self.assertDistinctButEqualTaxon(taxon1, taxon2, **kwargs)
+            else:
+                self.assertSame(taxon1, taxon2)
+            self.logger.info("%s: %s" % (taxon1.label, vec1.symbols_as_list()))
+            self.logger.info("%s: %s" % (taxon2.label, vec2.symbols_as_list()))
+            self.assertEqual(len(vec1), len(vec2))
+            for i, c1 in enumerate(vec1):
+                c2 = vec2[i]
+                self.assertAlmostEqual(c1.value, c2.value, 6)
+
     def assertDistinctButEqualDiscreteCharMatrix(self, char_matrix1, char_matrix2, **kwargs):
         """
         `char_matrix1` and `char_matrix2` must be distinct but equivalent objects
@@ -370,6 +403,8 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
     def assertDistinctButEqualCharMatrix(self, char_matrix1, char_matrix2, **kwargs):
         if isinstance(char_matrix1, dendropy.DiscreteCharacterMatrix):
             self.assertDistinctButEqualDiscreteCharMatrix(char_matrix1, char_matrix2, **kwargs)
+        elif isinstance(char_matrix1, dendropy.ContinuousCharacterMatrix):
+            self.assertDistinctButEqualContinuousCharMatrix(char_matrix1, char_matrix2, **kwargs)
         else:
             raise NotImplementedError()
 

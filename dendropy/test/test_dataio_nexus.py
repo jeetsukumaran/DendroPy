@@ -375,6 +375,12 @@ class NexusDocumentReadWriteTest(datatest.DataObjectVerificationTestCase):
         d1 = dendropy.DataSet(stream=s, format="nexus")
         self.roundTripDataSetTest(d1, "nexus")
 
+    def testRoundTripContinuous(self):
+        s = pathmap.char_source_stream("pythonidae_continuous.chars.nexus")
+        d1 = dendropy.DataSet(stream=s, format="nexus")
+        self.roundTripDataSetTest(d1, "nexus")
+
+
 class MesquiteNexusMultiTaxaTest(datatest.ComplexMultiTaxonSetDataVerificationTest):
 
     def testParseMesquiteMultiTaxa(self):
