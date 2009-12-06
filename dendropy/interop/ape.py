@@ -58,7 +58,7 @@ else:
             return _R['read.tree'](text=text, **kwargs)
         elif isinstance(o, dendropy.CharacterMatrix):
             f = tempfile.NamedTemporaryFile()
-            o.write_to_stream(f, "nexus", simple=True)
+            o.write_to_stream(f, "nexus", simple=True, block_titles=False)
             f.flush()
             return _R['read.nexus.data'](f.name)
         else:

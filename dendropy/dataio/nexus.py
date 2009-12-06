@@ -828,6 +828,7 @@ class NexusWriter(iosys.DataWriter):
         self.is_write_rooting = kwargs.get("write_rooting", True)
         self.is_write_edge_lengths = kwargs.get("edge_lengths", True)
         self.is_write_internal_labels = kwargs.get("internal_labels", True)
+        self.is_write_block_titles = kwargs.get("block_titles", True)
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
         self.comment = kwargs.get("comment", [])
 
@@ -867,6 +868,8 @@ class NexusWriter(iosys.DataWriter):
                     self.write_trees_block(tree_list=tree_list, stream=stream)
 
     def compose_block_title(self, block):
+        if not self.is_write_block_titles:
+            return ""
         if not block.label:
             block.label = block.oid
         if block.label:
@@ -877,9 +880,10 @@ class NexusWriter(iosys.DataWriter):
     def write_taxa_block(self, taxon_set, stream):
         block = []
         block.append('BEGIN TAXA;')
-        title = self.compose_block_title(taxon_set)
-        if title:
-            block.append('    %s;' % title)
+        if self.is_write_block_titles:
+            title = self.compose_block_title(taxon_set)
+            if title:
+                block.append('    %s;' % title)
         block.append('    DIMENSIONS NTAX=%d;' % len(taxon_set))
         block.append('    TAXLABELS')
         for taxon in taxon_set:
@@ -895,11 +899,12 @@ class NexusWriter(iosys.DataWriter):
                 internal_labels=self.is_write_internal_labels,
                 preserve_spaces=self.preserve_spaces)
         block.append('BEGIN TREES;')
-        title = self.compose_block_title(tree_list)
-        if title:
-            block.append('    %s;' % title)
-        if tree_list.taxon_set.label:
-            block.append('    LINK TAXA = %s;' % texttools.escape_nexus_token(tree_list.taxon_set.label))
+        if self.is_write_block_titles:
+            title = self.compose_block_title(tree_list)
+            if title:
+                block.append('    %s;' % title)
+            if tree_list.taxon_set.labels:
+                block.append('    LINK TAXA = %s;' % texttools.escape_nexus_token(tree_list.taxon_set.label))
         for treeidx, tree in enumerate(tree_list):
             if tree.label:
                 tree_name = tree.label
@@ -928,12 +933,13 @@ class NexusWriter(iosys.DataWriter):
             ntaxstr = "NTAX=%d" % len(taxlabels)
         else:
             nexus.append('BEGIN CHARACTERS;')
-        title = self.compose_block_title(char_matrix)
-        if title:
-            nexus.append('    %s;' % title)
-        if char_matrix.taxon_set.label:
-            nexus.append('    LINK TAXA = %s;' % texttools.escape_nexus_token(char_matrix.taxon_set.label))
-        ntaxstr = ""
+            ntaxstr = ""
+        if self.is_write_block_titles:
+            title = self.compose_block_title(char_matrix)
+            if title:
+                nexus.append('    %s;' % title)
+            if char_matrix.taxon_set.label:
+                nexus.append('    LINK TAXA = %s;' % texttools.escape_nexus_token(char_matrix.taxon_set.label))
         nexus.append('    DIMENSIONS %s NCHAR=%d;' % (ntaxstr, nchar))
         nexus.append('    FORMAT %s;' % self.compose_format_terms(char_matrix))
         nexus.append('    MATRIX')
