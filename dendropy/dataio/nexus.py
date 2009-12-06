@@ -833,6 +833,7 @@ class NexusWriter(iosys.DataWriter):
         self.is_write_internal_labels = kwargs.get("internal_labels", True)
         self.is_write_block_titles = kwargs.get("block_titles", True)
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
+        self.quote_underscores = kwargs.get('quote_underscores', True)
         self.comment = kwargs.get("comment", [])
 
     def write(self, stream, **kwargs):
@@ -876,7 +877,7 @@ class NexusWriter(iosys.DataWriter):
         if not block.label:
             block.label = block.oid
         if block.label:
-            return "TITLE %s" % texttools.escape_nexus_token(block.label, preserve_spaces=self.preserve_spaces)
+            return "TITLE %s" % texttools.escape_nexus_token(block.label, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores)
         else:
             return ""
 
@@ -890,7 +891,7 @@ class NexusWriter(iosys.DataWriter):
         block.append('    DIMENSIONS NTAX=%d;' % len(taxon_set))
         block.append('    TAXLABELS')
         for taxon in taxon_set:
-            block.append('        %s' % texttools.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces))
+            block.append('        %s' % texttools.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores))
         block.append('  ;')
         block.append('END;\n\n')
         stream.write('\n'.join(block))
@@ -907,7 +908,7 @@ class NexusWriter(iosys.DataWriter):
             if title:
                 block.append('    %s;' % title)
             if tree_list.taxon_set.labels:
-                block.append('    LINK TAXA = %s;' % texttools.escape_nexus_token(tree_list.taxon_set.label))
+                block.append('    LINK TAXA = %s;' % texttools.escape_nexus_token(tree_list.taxon_set.label, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores))
         for treeidx, tree in enumerate(tree_list):
             if tree.label:
                 tree_name = tree.label
@@ -920,7 +921,7 @@ class NexusWriter(iosys.DataWriter):
                 rooting = "[&U] "
             else:
                 rooting = ""
-            block.append('    TREE %s = %s%s;' % (texttools.escape_nexus_token(tree_name, preserve_spaces=self.preserve_spaces),
+            block.append('    TREE %s = %s%s;' % (texttools.escape_nexus_token(tree_name, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores),
                 rooting,
                 newick_str))
         block.append('END;\n\n')
@@ -928,7 +929,7 @@ class NexusWriter(iosys.DataWriter):
 
     def write_char_block(self, char_matrix, stream):
         nexus = []
-        taxlabels = [texttools.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces) for taxon in char_matrix.taxon_set]
+        taxlabels = [texttools.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores) for taxon in char_matrix.taxon_set]
         max_label_len = max([len(label) for label in taxlabels])
         nchar = max([len(seq) for seq in char_matrix.values()])
         if self.simple:
@@ -942,7 +943,7 @@ class NexusWriter(iosys.DataWriter):
             if title:
                 nexus.append('    %s;' % title)
             if char_matrix.taxon_set.label:
-                nexus.append('    LINK TAXA = %s;' % texttools.escape_nexus_token(char_matrix.taxon_set.label))
+                nexus.append('    LINK TAXA = %s;' % texttools.escape_nexus_token(char_matrix.taxon_set.label, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores))
         nexus.append('    DIMENSIONS %s NCHAR=%d;' % (ntaxstr, nchar))
         nexus.append('    FORMAT %s;' % self.compose_format_terms(char_matrix))
         nexus.append('    MATRIX')
@@ -950,7 +951,7 @@ class NexusWriter(iosys.DataWriter):
         if isinstance(char_matrix, dataobject.ContinuousCharacterMatrix):
             for taxon in char_matrix.taxon_set:
                 seq = " ".join([str(v) for v in char_matrix[taxon]])
-                nexus.append('%s    %s' % (texttools.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces).ljust(max_label_len), seq))
+                nexus.append('%s    %s' % (texttools.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores).ljust(max_label_len), seq))
         else:
             for taxon in char_matrix.taxon_set:
                 seq_vec = char_matrix[taxon]
@@ -970,7 +971,7 @@ class NexusWriter(iosys.DataWriter):
                         else:
                             raise Exception("Could not match character state to symbol: '%s'." % state)
                         seq.write(state_string_map[state])
-                nexus.append('%s    %s' % (texttools.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces).ljust(max_label_len), seq.getvalue()))
+                nexus.append('%s    %s' % (texttools.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores).ljust(max_label_len), seq.getvalue()))
         nexus.append('    ;')
         nexus.append('END;\n\n')
         stream.write('\n'.join(nexus))

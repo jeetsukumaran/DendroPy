@@ -283,28 +283,111 @@ Which produces the following, almost certainly incorrect, result::
 
 Even more confusingly, if this file is written out in NEXUS format, it would result in the space/underscore substitution taking place, resulting in two pairs of taxa with the same labels.
 
-As such, if you plan on mixing sources from different formats, it is important to keep in mind the space/underscore substitution, and in data formats that do not have this convention, avoid underscores and use spaces instead:
+If you plan on mixing sources from different formats, it is important to keep in mind the space/underscore substitution that takes place by default with NEXUS/NEWICK formats, but does not take place with other formats.
+
+You could simply avoid underscores in data formats that do not have this underscore-to-space convention, and use only spaces instead:
 
 .. literalinclude:: /examples/taxon_labels2.py
     :linenos:
 
-Which results in the following, correct, behavior::
+which results in::
 
     TaxonSet object at 0x43b4e0 (TaxonSet4437216): 2 Taxa
         [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python regious'
         [1] Taxon object at 0x2286810 (Taxon36202512): 'Python sebae'
 
-Alternatively, you can wrap the underscore-bearing labels in the NEXUS/NEWICK source in quotes, which preserves them from being substituted for spaces:
+You can wrap the underscore-bearing labels in the NEXUS/NEWICK source in quotes, which preserves them from being substituted for spaces:
 
 .. literalinclude:: /examples/taxon_labels3.py
     :linenos:
 
-Which results in the following, also correct, behavior::
+Which results in::
 
     TaxonSet object at 0x43b4e0 (TaxonSet4437216): 2 Taxa
         [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python_regious'
         [1] Taxon object at 0x2286810 (Taxon36202512): 'Python_sebae'
 
 
+You can also override the default behavior by passing the keyword argument ``preserve_underscores=True`` to any :meth:`read_from_*`, :meth:`get_from_*` or stream-parsing constructor. For example:
 
+.. literalinclude:: /examples/taxon_labels4.py
+    :linenos:
 
+will result in::
+
+    TaxonSet object at 0x43c780 (TaxonSet4441984): 2 Taxa
+        [0] Taxon object at 0x2386770 (Taxon37250928): 'Python_regious'
+        [1] Taxon object at 0x2386790 (Taxon37250960): 'Python_sebae'
+
+This may seem the simplest solution, in so far as it does not mean that you need not maintain lexically-different taxon labels across files of different formats, but a gotcha here is that if writing to NEXUS/NEWICK format, any label with underscores will be automatically quoted to preserve the underscores (again, as dictated by the NEXUS standard), which will mean that: (a) your output file will have quotes, and, as a result, (b) the underscores in the labels will be "hard" underscores if the file is read by PAUP* or DendroPy. So, for example, continuing from the previous example, the NEXUS-formatted output would look like::
+
+    >>> print(d.as_string('nexus'))
+    #NEXUS
+
+    BEGIN TAXA;
+        TITLE TaxonSet5736800;
+        DIMENSIONS NTAX=2;
+        TAXLABELS
+            'Python_regious'
+            'Python_sebae'
+      ;
+    END;
+
+    BEGIN CHARACTERS;
+        TITLE DnaCharacterMatrix37505040;
+        LINK TAXA = TaxonSet5736800;
+        DIMENSIONS  NCHAR=5;
+        FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;
+        MATRIX
+    'Python_regious'    ACGTA
+    'Python_sebae'      ACGTA
+        ;
+    END;
+
+    BEGIN CHARACTERS;
+        TITLE DnaCharacterMatrix37504848;
+        LINK TAXA = TaxonSet5736800;
+        DIMENSIONS  NCHAR=4;
+        FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;
+        MATRIX
+    'Python_regious'    AAAA
+    'Python_sebae'      ACGT
+        ;
+    END;
+
+Technically, the taxon labels have changed, as "Python_regius", while equivalent to "Python regius", is **not** equivalent to "'Python_regius'", according to the NEXUS standard).
+To control this, you can pass the keyword argument ``quote_underscores=False`` to any :meth:`write_to_*`, or :meth:`as_string()` method, which will omit the quotes even if the labels contain underscores::
+
+    >>> print(d.as_string('nexus', quote_underscores=False))
+    #NEXUS
+
+    BEGIN TAXA;
+        TITLE TaxonSet5736800;
+        DIMENSIONS NTAX=2;
+        TAXLABELS
+            Python_regious
+            Python_sebae
+      ;
+    END;
+
+    BEGIN CHARACTERS;
+        TITLE DnaCharacterMatrix37505040;
+        LINK TAXA = TaxonSet5736800;
+        DIMENSIONS  NCHAR=5;
+        FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;
+        MATRIX
+    Python_regious    ACGTA
+    Python_sebae      ACGTA
+        ;
+    END;
+
+    BEGIN CHARACTERS;
+        TITLE DnaCharacterMatrix37504848;
+        LINK TAXA = TaxonSet5736800;
+        DIMENSIONS  NCHAR=4;
+        FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;
+        MATRIX
+    Python_regious    AAAA
+    Python_sebae      ACGT
+        ;
+    END;

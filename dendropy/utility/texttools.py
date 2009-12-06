@@ -32,14 +32,15 @@ import time
 ## Properly protects a NEXUS token. Placed here instead of `nexustokenizer` so that
 ## it is available to the entire library within needing to import `nexustokenizer`.
 
-def escape_nexus_token(label, preserve_spaces=False):
+def escape_nexus_token(label, preserve_spaces=False, quote_underscores=True):
     if label is None:
         return ""
     if not preserve_spaces \
             and "_" not in label \
             and not re.search('[\(\)\[\]\{\}\\\/\,\;\:\=\*\'\"\`\+\-\<\>\0\t\n]', label):
         label = label.replace(' ', '_').replace('\t', '_')
-    elif re.search('[\(\)\[\]\{\}\\\/\,\;\:\=\*\'\"\`\+\-\<\>\0\t\n\r ]', label):
+    elif re.search('[\(\)\[\]\{\}\\\/\,\;\:\=\*\'\"\`\+\-\<\>\0\t\n\r ]', label) \
+        or quote_underscores and "_" in label:
         s = label.split("'")
         if len(s) == 1:
             return "'" + label + "'"
