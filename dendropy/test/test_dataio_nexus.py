@@ -47,6 +47,15 @@ class NexusGeneralParseCharsTest(datatest.DataObjectVerificationTestCase):
         self.assertEqualCharMatrixLabelSymbols(dataset.char_matrices[0], \
             expected_label_symbol_stream=expected_label_symbol_stream)
 
+    def check_continuous_chars_against_expected(self, data_filename, expected_filename, datatype):
+        self.logger.info("Checking '%s' => %s" % (data_filename, datatype.__name__))
+        reader = nexus.NexusReader()
+        dataset = reader.read(stream=pathmap.char_source_stream(data_filename))
+        expected_label_symbol_stream = pathmap.char_source_stream(expected_filename)
+        self.assertEqual(len(dataset.char_matrices), 1)
+        self.assertEqualCharMatrixLabelContinuousValues(dataset.char_matrices[0], \
+            expected_label_symbol_stream=expected_label_symbol_stream)
+
 class NexusParseDnaCharsTest(NexusGeneralParseCharsTest):
 
     def runTest(self):
@@ -74,6 +83,13 @@ class NexusParseStandardCharsTest(NexusGeneralParseCharsTest):
         self.check_chars_against_expected("angiosperms.chars.nexus",
                 "angiosperms.chars.txt",
                 dendropy.ProteinCharacterMatrix)
+
+class NexusParseContinuousCharsTest(NexusGeneralParseCharsTest):
+
+    def runTest(self):
+        self.check_continuous_chars_against_expected("pythonidae_continuous.chars.nexus",
+                "pythonidae_continuous.chars.txt",
+                dendropy.ContinuousCharacterMatrix)
 
 class NexusParseStandardCharsWithMultistateTest(datatest.DataObjectVerificationTestCase):
     """

@@ -391,6 +391,25 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                         data.append(values)
         return data
 
+    def text_to_label_value_list(self, text, val_type=float):
+        """
+        Takes a tab-delimited string in the form of:
+            <TAXON_NAME>\t<CHAR1> <CHAR2> <CHAR3> ...
+        and returns a list of pairs with first element the
+        taxon label and the second a list of values.
+        """
+        data = []
+        for i in text.split("\n"):
+            if i:
+                j = i.split("\t")
+                assert len(j) == 2
+                if j:
+                    if j[0] and j[1]:
+                        val_list = [val_type(x) for x in j[1].split(' ')]
+                        values = [j[0], val_list]
+                        data.append(values)
+        return data
+
     def char_matrix_to_label_symbol_tuples(self, char_matrix):
         """
         Takes a `char_matrix` and returns a list of pairs with first element the
@@ -445,6 +464,35 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 tax_label2 = tax_label2.replace("_", " ")
             self.assertEqual(tax_label1, tax_label2)
             self.assertEqual(seq_symbols1, seq_symbols2)
+
+    def assertEqualCharMatrixLabelContinuousValues(self, char_matrix, **kwargs):
+        ignore_underscore_substitution = kwargs.get("ignore_underscore_substitution", False)
+        if "expected_label_symbol_tuples" in kwargs:
+            expected_label_value_list = kwargs["expected_label_symbol_tuples"]
+        elif "expected_label_symbol_text" in kwargs:
+            expected_label_value_list = self.text_to_label_value_list(kwargs["expected_label_symbol_text"])
+        elif "expected_label_symbol_stream" in kwargs:
+            expected_label_value_text = kwargs["expected_label_symbol_stream"].read()
+            expected_label_value_list = self.text_to_label_value_list(expected_label_value_text)
+        val_type = kwargs.get("val_type", float)
+
+        obs_label_value_list = []
+        for t in char_matrix.taxon_set:
+            obs_label_value_list.append([t.label, [val_type(v.value) for v in char_matrix[t]]])
+
+        self.assertEqual(len(obs_label_value_list), len(expected_label_value_list))
+        for i, x1 in enumerate(expected_label_value_list):
+            tax_label1 = x1[0]
+            seq_values1 = x1[1]
+            tax_label2 = obs_label_value_list[i][0]
+            seq_values2 = obs_label_value_list[i][1]
+            if ignore_underscore_substitution:
+                tax_label1 = tax_label1.replace("_", " ")
+                tax_label2 = tax_label2.replace("_", " ")
+            self.assertEqual(tax_label1, tax_label2)
+            for j, v1 in enumerate(seq_values1):
+                v2 = seq_values2[j]
+                self.assertAlmostEqual(v1, v2, 4)
 
 class ComplexMultiTaxonSetDataVerificationTest(DataObjectVerificationTestCase):
 
