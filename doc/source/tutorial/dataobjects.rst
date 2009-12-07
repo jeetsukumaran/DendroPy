@@ -234,10 +234,8 @@ Format-Specific Options
 With NEXUS and NEWICK data sources, the following keyword arguments are additionally available:
 
     ``preserve_underscores``
-    ``as_rooted``
-    ``as_unrooted``
-    ``default_as_rooted``
-    ``default_as_unrooted``
+        The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces. Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores.
+
 
 Writing or Saving Data
 ======================
