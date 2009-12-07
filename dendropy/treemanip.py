@@ -59,17 +59,16 @@ def collapse_clade(node):
     leaves = [i for i in dataobject.Node.leaf_iter(node)]
     node.set_children(leaves)
 
-def prune_taxa(tree, taxon_set):
-    """Removes terminal edges associated with taxa in `taxa` from `tree`."""
-    for taxon in taxon_set:
-        nd = tree.find_node(lambda x: x.taxon == taxon)
+def prune_nodes(tree, nodes):
+    """Removes terminal nodes."""
+    for nd in nodes:
         if nd is not None:
             nd.edge.tail_node.remove_child(nd)
     # clean up dead leaves
     for nd in tree.postorder_node_iter():
-        if nd.taxon is None and len(nd.child_nodes()) == 0:
+        if len(nd.child_nodes()) == 0:
             dnd = nd
-            while dnd.taxon is None and dnd.parent_node is not None and len(dnd.child_nodes()) == 0:
+            while dnd.parent_node is not None and len(dnd.child_nodes()) == 0:
                 new_dnd = dnd.parent_node
                 new_dnd.remove_child(dnd)
                 dnd = new_dnd
@@ -85,6 +84,15 @@ def prune_taxa(tree, taxon_set):
                     children[0].edge.length += nd.edge.length
             nd.parent_node.remove_child(nd)
     return tree
+
+def prune_taxa(tree, taxon_set):
+    """Removes terminal edges associated with taxa in `taxa` from `tree`."""
+    nodes = []
+    for taxon in taxon_set:
+        nd = tree.find_node(lambda x: x.taxon == taxon)
+        if nd is not None:
+            nodes.append(nd)
+    return prune_nodes(tree, nodes)
 
 def retain_taxa(tree, taxa):
     """Removes all taxa *not* in `taxa` from the tree."""

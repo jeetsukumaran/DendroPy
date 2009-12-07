@@ -171,7 +171,6 @@ General keyword arguments include:
         If the data source defines multiple collections of taxa (as is possible with, for example, the NEXML format, or the Mesquite variant of the NEXUS format), then multiple new :class:`~dendropy.dataobject.taxon.TaxonSet` object will be created.
         By passing a :class:`~dendropy.dataobject.taxon.TaxonSet` object through the ``taxon_set`` keyword, you can force DendroPy to use the same :class:`~dendropy.dataobject.taxon.TaxonSet` object for all taxon references.
 
-
     ``exclude_trees``
         A boolean value indicating whether or not tree data should be parsed from the data source.
         Default value is :keyword:`False`, i.e., all tree data will be included.
