@@ -59,12 +59,17 @@ def collapse_clade(node):
     leaves = [i for i in dataobject.Node.leaf_iter(node)]
     node.set_children(leaves)
 
-def prune_nodes(tree, nodes):
-    """Removes terminal nodes."""
-    for nd in nodes:
-        if nd is not None:
-            nd.edge.tail_node.remove_child(nd)
-    # clean up dead leaves
+def prune_subtree(tree, node):
+    """Removes subtree starting at `node` from tree."""
+    if not node:
+        raise ValueError("Tried to remove an non-existing or null node")
+    if node.parent_node is None:
+        raise TypeError('Node has no parent and is implicit root: cannot be pruned')
+    node.parent_node.remove_child(node)
+    tree.suppress_outdegree_one_nodes()
+    return tree
+
+def prune_leaves_without_taxa(tree):
     for nd in tree.postorder_node_iter():
         if len(nd.child_nodes()) == 0:
             dnd = nd
@@ -72,31 +77,22 @@ def prune_nodes(tree, nodes):
                 new_dnd = dnd.parent_node
                 new_dnd.remove_child(dnd)
                 dnd = new_dnd
-    # remove outdegree 1 nodes
-    for nd in tree.postorder_node_iter():
-        children = nd.child_nodes()
-        if nd.parent_node is not None and len(children) == 1:
-            nd.parent_node.add_child(children[0])
-            if nd.edge.length is not None:
-                if children[0].edge.length is None:
-                    children[0].edge.length = nd.edge.length
-                else:
-                    children[0].edge.length += nd.edge.length
-            nd.parent_node.remove_child(nd)
     return tree
 
-def prune_taxa(tree, taxon_set):
+def prune_taxa(tree, taxa):
     """Removes terminal edges associated with taxa in `taxa` from `tree`."""
     nodes = []
-    for taxon in taxon_set:
+    for taxon in taxa:
         nd = tree.find_node(lambda x: x.taxon == taxon)
         if nd is not None:
-            nodes.append(nd)
-    return prune_nodes(tree, nodes)
+            nd.edge.tail_node.remove_child(nd)
+    prune_leaves_without_taxa(tree)
+    tree.suppress_outdegree_one_nodes()
+    return tree
 
 def retain_taxa(tree, taxa):
     """Removes all taxa *not* in `taxa` from the tree."""
-    to_prune = [t for t in tree.taxon_set if t not in taxon_set]
+    to_prune = [t for t in tree.taxon_set if t not in taxa]
     return prune_taxa(tree, to_prune)
 
 def randomly_reorient_tree(tree, rng=None, splits=False):

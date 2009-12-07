@@ -631,6 +631,13 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             return node
         return None
 
+    def find_node_with_label(self, label):
+        "Finds the first node with matching label."
+        for node in self.preorder_node_iter():
+            if node.label == label:
+                return node
+        return None
+
     def find_node_with_taxon(self, taxon_filter_fn=None):
         "Finds the first node for which taxon_filter_fn(node.taxon) == True."
         for node in self.preorder_node_iter():
@@ -926,6 +933,23 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         self.reroot_at(p, splits=splits)
         p.remove_child(nd)
         p.add_child(nd, edge_length=nd.edge.length, pos=0)
+
+    def suppress_outdegree_one_nodes(self):
+        for nd in self.postorder_node_iter():
+            children = nd.child_nodes()
+            if len(children) == 1:
+                if nd.edge.length is not None:
+                    if children[0].edge.length is None:
+                        children[0].edge.length = nd.edge.length
+                    else:
+                        children[0].edge.length += nd.edge.length
+                if nd.parent_node is not None:
+                    pos = nd.parent_node.child_nodes().index(nd)
+                    nd.parent_node.add_child(children[0], pos=pos)
+                    nd.parent_node.remove_child(nd)
+                else:
+                    assert nd is self.seed_node
+                    self.seed_node = children[0]
 
     def encode_splits(self, **kwargs):
         """
@@ -1241,6 +1265,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             for s, e in self.split_edges.iteritems():
                 assert(e in edges)
         return True
+
     def compose_newick(self):
         return self.as_newick_string(preserve_spaces=True)
 ##############################################################################
@@ -1359,7 +1384,7 @@ class Node(TaxonLinked):
 
     nodeset_hash = staticmethod(nodeset_hash)
 
-    ## INSTANCE METHODS########################################################
+    ## INSTANCE METHODS #######################################################
 
     def __init__(self, **kwargs):
         TaxonLinked.__init__(self,
@@ -1622,12 +1647,10 @@ class Node(TaxonLinked):
                     t = (to_remove, self, pos, tr_children, e)
                     removed.append(t)
 
-
         return removed
 
     def reinsert_nodes(self, nd_connection_list):
-        """T
-        his function should be used to "undo" the effects of
+        """This function should be used to "undo" the effects of
         Node.reversible_remove_child NOTE: the behavior is only
         guaranteed if the tree has not been modified between the
         remove_child and reinsert_nodes calls! (or the tree has been

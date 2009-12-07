@@ -116,5 +116,15 @@ class CollapseConflictingTest(unittest.TestCase):
         treesplit.encode_splits(expected_tree)
         self.assertEqual(treecalc.symmetric_difference(tree, expected_tree), 0)
 
+class PruneTest(unittest.TestCase):
+
+    def testPruneNodes(self):
+        """NOT IMPLEMENTED YET: PRIORITY TODO!!!"""
+        pass
+
+    def testPruneTaxa(self):
+        """NOT IMPLEMENTED YET: PRIORITY TODO!!!"""
+        pass
+
 if __name__ == "__main__":
     unittest.main()
