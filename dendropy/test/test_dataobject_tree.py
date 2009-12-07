@@ -36,7 +36,7 @@ class TreeCreateTest(datatest.DataObjectVerificationTestCase):
 
     def setUp(self):
         self.tree1 = datagen.four_taxon_tree1()
-        self.tree1_newick_str = self.tree1.as_newick_str(include_internal_labels=True)
+        self.tree1_newick_str = self.tree1.as_newick_string(include_internal_labels=True)
 
     def testTreeFromTreeSameTaxa(self):
         tree2 = dendropy.Tree(self.tree1)

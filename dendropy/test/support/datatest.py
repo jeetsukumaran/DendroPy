@@ -198,9 +198,9 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         distinct_taxa = kwargs.get("distinct_taxa", True)
         equal_oids = kwargs.get("equal_oids", None)
         self.logger.info("Comparing Tree objects %d and %d" % (id(tree1), id(tree2)))
-        self.logger.info(tree1.as_newick_str())
+        self.logger.info(tree1.as_newick_string())
         tree1.debug_check_tree(logger=self.logger)
-        self.logger.info(tree2.as_newick_str())
+        self.logger.info(tree2.as_newick_string())
         tree2.debug_check_tree(logger=self.logger)
         self.assertNotSame(tree1, tree2)
         if distinct_taxa:

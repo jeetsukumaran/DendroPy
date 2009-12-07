@@ -84,9 +84,9 @@ def tree_source_iter(stream, **kwargs):
             raise StopIteration()
 
 ###############################################################################
-## split_as_newick_str
+## split_as_newick_string
 
-def split_as_newick_str(split, taxon_set, preserve_spaces=False):
+def split_as_newick_string(split, taxon_set, preserve_spaces=False):
     """
     Represents a split as a newick string.
     """

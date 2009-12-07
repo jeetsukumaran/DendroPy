@@ -938,7 +938,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def __str__(self):
         "Dump Newick string."
-        return "%s" % self.as_newick_str()
+        return "%s" % self.as_newick_string()
 
     def __repr__(self):
         return "<Tree object at %s>" % (hex(id(self)))
@@ -960,7 +960,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                    hex(id(self)),
                    label))
         if depth >= 1:
-            newick_str = self.as_newick_str()
+            newick_str = self.as_newick_string()
             if not newick_str:
                 newick_str = "()"
             if depth == 1:
@@ -1029,10 +1029,10 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
         return "\n".join(p)
 
-    def as_newick_str(self, **kwargs):
+    def as_newick_string(self, **kwargs):
         """kwargs["reverse_translate"] can be function that takes a taxon and
            returns the label to appear in the tree."""
-        return self.seed_node.as_newick_str(**kwargs)
+        return self.seed_node.as_newick_string(**kwargs)
 
     ###########################################################################
     ## Metrics
@@ -1242,7 +1242,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 assert(e in edges)
         return True
     def compose_newick(self):
-        return self.as_newick_str(preserve_spaces=True)
+        return self.as_newick_string(preserve_spaces=True)
 ##############################################################################
 ## Node
 
@@ -1783,7 +1783,7 @@ class Node(TaxonLinked):
     ## use Newick/Nexus readers/writers, or Tree.write(), TreeList.write(),
     ## DataSet.write() etc.
 
-    def as_newick_str(self, **kwargs):
+    def as_newick_string(self, **kwargs):
         """
         This returns the Node as a NEWICK
         statement according to the given formatting rules.

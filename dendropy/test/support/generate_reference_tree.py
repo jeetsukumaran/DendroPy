@@ -44,7 +44,7 @@ def main():
     result.append("def reference_tree_list_newick_string():")
     result.append('    return """\\')
     for t in tlist:
-        result.append('        %s;' % t.as_newick_str(include_internal_labels=True))
+        result.append('        %s;' % t.as_newick_string(include_internal_labels=True))
     result.append('    """')
     result.append("")
 
