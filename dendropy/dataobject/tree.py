@@ -117,12 +117,12 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 if isinstance(args[0], TreeList):
                     for t in args[0]:
                         if not isinstance(t, Tree):
-                            raise ValueError("TreeList() only accepts Tree objects as members")
+                            raise ValueError("TreeList() requires TreeList or list of Tree objects as initialization argument in this context")
                         self.append(Tree(t))
                 else:
                     for t in args[0]:
                         if not isinstance(t, Tree):
-                            raise ValueError("TreeList() only accepts Tree objects as members")
+                            raise ValueError("TreeList() requires TreeList or list of Tree objects as initialization argument in this context")
                         self.append(t)
             else:
                 raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
