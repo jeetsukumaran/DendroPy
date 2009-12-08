@@ -287,10 +287,6 @@ def paup_group_to_mask(group_string, normalized=False):
     else:
         return split_bitmask
 
-###############################################################################
-## OLD STUFF
-###############################################################################
-
 def bipartitions(data_filepath,
                  tree_filepath,
                  min_clade_freq=0.5,
@@ -354,6 +350,52 @@ def bipartitions(data_filepath,
                     tax_labels.append(ti_match.group(2).strip())
     return tax_labels, bipartitions, bipartition_counts, bipartition_freqs
 
+def estimate_tree(char_matrix,
+                   tree_est_criterion="likelihood",
+                   num_states=6,
+                   unequal_base_freqs=True,
+                   gamma_rates=True,
+                   prop_invar=True,
+                   paup_path='paup'):
+    """
+    Given a dataset, `char_matrix`, estimates a tree using the given criterion.
+    """
+    paup_args = {
+        'nst': num_states,
+        'basefreq' : unequal_base_freqs and 'estimate' or 'equal',
+        'rates' : gamma_rates and 'gamma' or 'equal',
+        'pinvar' : prop_invar and 'estimate' or '0',
+    }
+    if tree_est_criterion == 'nj':
+        paup_args['tree'] = 'nj;'
+    else:
+        paup_args['tree'] = "set crit=%s; hsearch;" % tree_est_criterion
+    cf = tempfile.NamedTemporaryFile()
+    char_matrix.write_to_stream(cf, format='nexus', exclude_chars=False, exclude_trees=True)
+    cf.flush()
+    paup_args['datafile'] = cf.name
+    output_tree_file_handle, output_tree_filepath = tempfile.mkstemp(text=True)
+    paup_args['est_tree_file'] = output_tree_filepath
+    paup_template = """\
+    set warnreset=no;
+    exe %(datafile)s;
+    """
+    if tree_est_criterion.startswith("like"):
+        paup_template += """\
+    lset tratio=estimate rmatrix=estimate nst=%(nst)s basefreq=%(basefreq)s rates=%(rates)s shape=estimate pinvar=%(pinvar)s userbrlens=yes;
+    """
+    paup_template += """\
+    %(tree)s;
+    savetrees file=%(est_tree_file)s format=nexus root=yes brlens=yes taxablk=yes maxdecimals=20;
+    """
+    paup_run = subprocess.Popen(['%s -n' % paup_path],
+                                shell=True,
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE)
+    stdout, stderr = paup_run.communicate(paup_template % paup_args)
+    t = dendropy.Tree.get_from_path(output_tree_filepath, "nexus", taxon_set=char_matrix.taxon_set)
+    return t
+
 def estimate_model(char_matrix,
                    tree_model=None,
                    num_states=6,
@@ -370,20 +412,16 @@ def estimate_model(char_matrix,
     estimated character model, and a dictionary with estimates of rates, kappa,
     base_frequencies, alpha, prop_invar, etc. as well as likelihood.
     """
-    ds = dendropy.DataSet()
     paup_args = {
         'nst': num_states,
         'basefreq' : unequal_base_freqs and 'estimate' or 'equal',
         'rates' : gamma_rates and 'gamma' or 'equal',
         'pinvar' : prop_invar and 'estimate' or '0',
     }
-    taxab = ds.new_taxon_set(taxon_set=char_matrix.taxon_set)
     if tree_model is not None:
         assert tree_model.taxon_set is char_matrix.taxon_set
-        treeb = ds.new_tree_list(taxon_set=taxab)
-        treeb.append(tree_model)
         tf = tempfile.NamedTemporaryFile()
-        ds.write_to_stream(tf, format='nexus', exclude_chars=True, exclude_trees=False)
+        tree_model.write_to_stream(tf, 'nexus')
         tf.flush()
         paup_args['tree'] = "gettrees file=%s storebrlens=yes;" % tf.name
     else:
@@ -396,16 +434,12 @@ def estimate_model(char_matrix,
     else:
         paup_args['userbrlens'] = 'no'
 
-    char_matrix.reindex_taxa(taxab)
-    charb = ds.add_char_matrix(char_matrix=char_matrix)
     cf = tempfile.NamedTemporaryFile()
-    ds.write_to_stream(cf, format='nexus', exclude_chars=False, exclude_trees=True)
+    char_matrix.write_to_stream(cf, format='nexus', exclude_chars=False, exclude_trees=True)
     cf.flush()
     paup_args['datafile'] = cf.name
-
     output_tree_file_handle, output_tree_filepath = tempfile.mkstemp(text=True)
     paup_args['est_tree_file'] = output_tree_filepath
-
     paup_template = """\
     set warnreset=no;
     exe %(datafile)s;
@@ -420,6 +454,7 @@ def estimate_model(char_matrix,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE)
     stdout, stderr = paup_run.communicate(paup_template % paup_args)
+    results = {}
     patterns = {
         'likelihood' : re.compile('-ln L\s+([\d\.]+)'),
         'rAC' : re.compile('  AC\s+([\d\.]+)'),
@@ -436,8 +471,6 @@ def estimate_model(char_matrix,
         'pG' : re.compile('  G\s+([\d\.]+)'),
         'pT' : re.compile('  T\s+([\d\.]+)'),
     }
-
-    results = {}
     for value_name in patterns:
         results[value_name] = None
     for line in stdout.split('\n'):
@@ -445,7 +478,6 @@ def estimate_model(char_matrix,
             m = patterns[value_name].match(line)
             if m:
                 results[value_name] = m.group(1)
-
     for value_name in results:
         if value_name == 'likelihood':
             results[value_name] = -1 * float(results[value_name])
@@ -454,7 +486,6 @@ def estimate_model(char_matrix,
                 results[value_name] = float(results[value_name])
             except:
                 pass
-
-    est_ds = dendropy.DataSet(stream=open(output_tree_filepath, "rU"), format="NEXUS")
-    return est_ds.tree_lists[0], results
+    t = dendropy.Tree.get_from_path(output_tree_filepath, "nexus", taxon_set=char_matrix.taxon_set)
+    return t, results
 
