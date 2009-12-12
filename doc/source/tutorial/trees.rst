@@ -12,6 +12,57 @@ By definition, the :attr:`~dendropy.dataobject.tree.Tree.seed_node` has no paren
 Customizing Tree Creation and Reading
 =====================================
 
+Selecting Specific Trees or Subsets of Trees
+--------------------------------------------
+
+The ``tree_offset`` and ``collection_offset`` keywords allow you to control which tree defintions are parsed from the data source:
+
+    ``tree_offset``
+        A non-negative integer specifying the 0-based index of a tree within a collection in the data source.
+        The default is 0, which means that the first tree definition is used.
+        If passed to :meth:`get_from_*()`, :meth:`read_from_*()` or a constructor of :class:`~dendropy.dataobject.tree.Tree`, this selects a specific tree definition in the source (i.e, ``tree_offset=2`` will create or populate the :class:`~dendropy.dataobject.tree.Tree` object based on the 3rd tree definition). If passed to  :meth:`get_from_*()`, :meth:`read_from_*()` or a constructor of :class:`~dendropy.dataobject.tree.TreeList` or :class:`~dendropy.dataobject.dataset.DataSet` object, this effectively skips all the tree definitions preceding the specified index from being created (i.e, ``tree_offset=200`` will populate the :class:`~dendropy.dataobject.tree.TreeList` object starting with the 201st tree definition).
+
+
+        For example, the following creates a :class:`~dendropy.dataobject.tree.Tree` object from the second tree definition in the data source::
+
+            >>> import dendropy
+            >>> t = dendropy.Tree.get_from_path('pythonidae.best-trees.tre', \
+                        'nexus', tree_offset=1)
+
+        While this effectively skips over the first 200 trees as burn-in from an MCMC sample of trees::
+
+            >>> import dendropy
+            >>> pp_trees = dendropy.TreeList.get_from_path('pythonidae_mcmc.tre', \
+                    'nexus', tree_offset=200)
+
+    ``collection_offset``
+        A non-negative integer specifying the 0-based index of a collection (e.g., a NEXUS "TREES" block) of trees in the data source.
+        A negative value means that a union of all the tree collections in the data source will be used.
+        The default is -1, i.e., all the collections will be aggregated.
+        For example, the following selects the third tree collection to populate a :class:`~dendropy.dataobject.tree.TreeList` object::
+
+            >>> import dendropy
+            >>> trees = dendropy.Tree.get_from_path('pythonidae.nex', 'nexus', \
+                    collection_offset=4)
+
+        While this reads all the trees from all "TREES" block in the data source::
+
+            >>> import dendropy
+            >>> trees = dendropy.TreeList.get_from_path('pythonidae.nex', 'nexus', \
+                    collection_offset=-1)
+
+        The following selects the second tree from the third "TREES" block in the data source::
+
+            >>> import dendropy
+            >>> trees = dendropy.Tree.get_from_path('pythonidae.nex', 'nexus', \
+                    collection_offset=2, tree_offset=1)
+
+        The following selects the 30th tree defined in the data source across all tree collections, with the first tree in the first collection treated as having index 0::
+
+            >>> import dendropy
+            >>> tree_31 = dendropy.Tree.get_from_path('pythonidae.nex', 'nexus', \
+                    collection_offset=-1, tree_offset=29)
+
 Interpreting Rootings
 ---------------------
 
