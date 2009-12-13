@@ -4,6 +4,8 @@ Working with Data Sets
 
 The :class:`~dendropy.dataobject.dataset.DataSet` class provides for objects that allow you to manage multiple types of phylogenetic data.
 
+.. _Customizing_Data_Set_Creation_and_Reading:
+
 Customizing Data Set Creation and Reading
 =========================================
 

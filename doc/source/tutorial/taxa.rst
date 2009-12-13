@@ -255,6 +255,8 @@ If you want to use an existing :class:`~dendropy.dataobject.taxon.TaxonSet` obje
 Here, the first two :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements result in two distinct :class:`~dendropy.dataobject.taxon.TaxonSet` objects, one for each read, each with their own independent :class:`~dendropy.dataobject.taxon.Taxon` objects.
 The :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` statement is passed the :class:`~dendropy.dataobject.taxon.TaxonSet` object from the first read operation, and all data created from the next three :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements will have their taxon references mapped to this first :class:`~dendropy.dataobject.taxon.TaxonSet` object.
 
+.. _Taxon_Label_Mapping:
+
 A Word of Caution: Taxon Label Mapping
 ======================================
 DendroPy maps taxon definitions encountered in a data source to :class:`~dendropy.dataobject.taxon.Taxon` objects by the taxon label.

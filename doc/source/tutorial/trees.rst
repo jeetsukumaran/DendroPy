@@ -9,6 +9,9 @@ Every :class:`~dendropy.dataobject.tree.Node` object maintains a list of its imm
 You can request a shallow-copy :func:`~list` of child :class:`~dendropy.dataobject.tree.Node` objects using the :meth:`~dendropy.dataobject.tree.Node.child_nodes()` method, and you can access the parent :class:`~dendropy.dataobject.tree.Node` object directly through the :attr:`~dendropy.dataobject.tree.Node.parent_node` attribute.
 By definition, the :attr:`~dendropy.dataobject.tree.Tree.seed_node` has no parent node, leaf nodes have no child nodes, and internal nodes have both parent nodes and child nodes.
 
+
+.. _Customizing_Tree_Creation_and_Reading:
+
 Customizing Tree Creation and Reading
 =====================================
 

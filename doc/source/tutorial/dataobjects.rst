@@ -71,42 +71,8 @@ All these methods minimally take a source and format reference as arguments and 
 
 The format specification can be one of: "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc. Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.tree.TreeList` object from a FASTA-formatted data source).
 
-All these methods take a ``taxon_set`` keyword that specifies the :class:`~dendropy.dataobject.taxon.TaxonSet` to use to manage the operational taxonomic units defined or referenced in the data source. If not given, a new :class:`~dendropy.dataobject.taxon.TaxonSet` will be created and used.
-
-Depending on the particular type being created and data source, these factory methods may take additional keyword arguments.
-For example, if a data source contains multiple trees, you may specify a particular tree to be parsed by passing the 0-based index of the tree to the ":meth:`get_from_*()`" of :class:`~dendropy.dataobject.tree.Tree`::
-
-    >>> tree2 = dendropy.Tree.get_from_path("pythonidae.mcmc.nex", format="nexus", tree_offset=200)
-
-The object ``tree2`` is now a DendroPy representation of the 201st tree found in the specified :download:`file </examples/pythonidae.mcmc.nex>`. :class:`~dendropy.dataobject.tree.TreeList` also takes a ``tree_offset`` keyword argument, and specifying this will result in all trees starting from the given index being parsed and added to the collection.
-
-    >>> tree_list1 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus")
-    >>> print(tree_list1.description())
-    TreeList object at 0x64a510 (TreeList6595856):  1001 Trees
-    >>> tree_list2 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus", tree_offset=200)
-    >>> print(tree_list2.description())
-    TreeList object at 0x551a80 (TreeList5577344):  801 Trees
-
-With a :class:`~dendropy.dataobject.dataset.DataSet`, you can request that only trees or only characters are parsed::
-
-    >>> ds1 = dendropy.DataSet.get_from_path('data1.nex', 'nexus', exclude_chars=True)
-    >>> ds2 = dendropy.DataSet.get_from_path('data1.nex', 'nexus', exclude_trees=True)
-
-Depending on the format and type of object, there might be other keyword arguments that accepted.
-
-In addition to the factory methods, you can specify a data source to the constructor of the objects directly using the ``stream`` and ``format`` keywords::
-
-    >>> tree2 = dendropy.Tree(stream=open("pythonidae.mcmc.nex"), format="nexus", tree_offset=200)
-    >>> tree_list2 = dendropy.TreeList(stream=open("pythonidae.mcmc.nex"), format="nexus")
-    >>> dna2 = dendropy.DnaCharacterMatrix(stream=open("pythonidae_cytb.fasta"), format="fasta")
-    >>> dataset2 = dendropy.DataSet(stream=open("pythonidae.nex"), format="nexus")
-
-You can also clone existing objects (i.e., create a deep-copy of everything but the taxon references)::
-
-    >>> tree3 = dendropy.Tree(tree2)
-    >>> tree_list3 = dendropy.TreeList(tree_list2)
-    >>> dna3 = dendropy.DnaCharacterMatrix(dna2)
-    >>> dataset3 = dendropy.DataSet(dataset2)
+Various keyword arguments can also be passed to these methods which customize or control how the data is parsed and mapped into DendroPy object space.
+These are discussed below.
 
 Reading and Populating (or Repopulating) Existing Objects
 =========================================================
@@ -125,7 +91,7 @@ The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.T
 When called on an existing :class:`~dendropy.dataobject.tree.TreeList` or :class:`~dendropy.dataobject.dataset.DataSet` object, these methods *add* the data from the data source to the object, whereas when called on an existing :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.char.CharacterMatrix` object,  they *replace* the object's data with data from the data source.
 As with the ":meth:`get_from_*()`" methods, the format specification can be any supported and type-apppropriate format, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc.
 
-For example, the following accumulates post-burn-in trees from a several different files into a single :class:`~dendropy.dataobject.tree.TreeList` object::
+For example, the following accumulates post-burn-in trees from a several different files into a single :class:`~dendropy.dataobject.tree.TreeList` object (the ``tree_offset`` keyword is discussed `here <Customizing_Tree_Creation_and_Reading>`_)::
 
     >>> import dendropy
     >>> post_trees = dendropy.TreeList()
@@ -155,86 +121,23 @@ In contrast to the aggregating behavior of :meth:`read_from_*()` of :class:`~den
     >>> print(t.description())
     Tree object at 0x79c70 (Tree37414064: 'con 50 majrule'): ('Python regius':0.212275,('Python sebae':0.176816,(((((('Antaresia maculosa':0.127351,('Antaresia perthensis':0.108378,('Antaresia stimsoni':0.021372,'Antaresia childreni':0.038155):0.046446):0.025262):0.012957,('Morelia carinata':0.101145,('Morelia bredli':0.038563,'Morelia spilota':0.025643):0.050967):0.010472,'Morelia viridis':0.098541):0.023291,('Bothrochilus boa':0.091928,'Leiopython albertisii':0.080986):0.031583):0.008347,((('Liasis fuscus':0.026601,'Liasis mackloti':0.034524):0.069881,'Liasis olivaceus':0.047727):0.023758,'Apodora papuana':0.096097):0.01474):0.010084,(('Python timoriensis':0.101865,'Python reticulatus':0.095018):0.0922,('Morelia boeleni':0.093309,('Morelia tracyae':0.04727,('Morelia amethistina':0.034936,(('Morelia nauta':0.011,'Morelia kinghorni':0.011198):0.006932,'Morelia clastolepis':0.008103):0.025987):0.017415):0.033886):0.027519,'Morelia oenpelliensis':0.092143):0.006779):0.018238,('Aspidites ramsayi':0.030898,'Aspidites melanocephalus':0.068553):0.049525):0.050607):0.023304,('Python brongersmai':0.132193,'Python molurus':0.08872):0.011466)
 
+As with the :meth:`get_from_*()` methods, keyword arguments can be used to provide control on the data source parsing.
+
 Customizing Data Creation and Reading
 =====================================
 When specifying a data source from which to create or populate data objects using the :meth:`get_from_*()`, :meth:`read_from_*()`, or passing a data source stream to a constructor, you can also specify keyword arguments that provide fine-grained control over how the data source is parsed.
-Some of these keyword arguments apply generally, regardless of the format of the data source, while others are format specific.
+Some of these keyword arguments apply generally, regardless of the format of the data source or the data object being created, while others are specific to the data object type or the data source format.
 
-General Options
----------------
+Probably the most import general keyword is the ``taxon_set`` keyword, which passes a :class:`~dendropy.dataobject.taxon.TaxonSet` object to the parser to use to manage all taxon definitions and reference in the data source.
+If not specified, every time a data source is parsed, at least one new :class:`~dendropy.dataobject.taxon.TaxonSet` object will be created for each definition of taxa (e.g., a NEXUS "TAXA" block), and all taxon definitions or references in the data source will be mapped to :class:`~dendropy.dataobject.taxon.Taxon` objects within that :class:`~dendropy.dataobject.taxon.TaxonSet` object.
+If the taxa in the data source correspond to taxa already defined in an existing :class:`~dendropy.dataobject.taxon.TaxonSet` object, you would use the ``taxon_set`` keyword to ensure that this correspondence is maintained within DendroPy.
+More details on this are given in the :doc:`taxa` article.
 
-General keyword arguments include:
+With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=True``.
+The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces.
+Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores. More details on using this keyword to manage taxon references and mapping can be found in here: :ref:`Taxon_Label_Mapping`.
 
-    ``taxon_set``
-        A :class:`~dendropy.dataobject.taxon.TaxonSet` object that will be used to manage **all** taxon references in the data source.
-        Every time a data source is parsed, by default at least one new :class:`~dendropy.dataobject.taxon.TaxonSet` object will be created to manage the taxa defined in the data source.
-        If the data source defines multiple collections of taxa (as is possible with, for example, the NEXML format, or the Mesquite variant of the NEXUS format), then multiple new :class:`~dendropy.dataobject.taxon.TaxonSet` object will be created.
-        By passing a :class:`~dendropy.dataobject.taxon.TaxonSet` object through the ``taxon_set`` keyword, you can force DendroPy to use the same :class:`~dendropy.dataobject.taxon.TaxonSet` object for all taxon references.
-
-    ``exclude_trees``
-        A boolean value indicating whether or not tree data should be parsed from the data source.
-        Default value is :keyword:`False`, i.e., all tree data will be included.
-        This keyword argument is only meaningful when called using a :class:`~dendropy.dataobject.dataset.DataSet` object, and can be used to restrict the type of data included in the resulting object.
-
-    ``exclude_chars``
-        A boolean value indicating whether or not character data should be parsed from the data source.
-        Default value is :keyword:`False`, i.e., all character data will be included.
-        This keyword argument is only meaningful when called using a :class:`~dendropy.dataobject.dataset.DataSet` object, and can be used to restrict the type of data included in the resulting object.
-
-    ``tree_offset``
-        A non-negative integer specifying the 0-based index of a tree within a collection in the data source.
-        The default is 0, which means that the first tree definition is used.
-        If passed to :meth:`get_from_*()`, :meth:`read_from_*()` or a constructor of :class:`~dendropy.dataobject.tree.Tree`, this selects a specific tree definition in the source (i.e, ``tree_offset=2`` will create or populate the :class:`~dendropy.dataobject.tree.Tree` object based on the 3rd tree definition). If passed to  :meth:`get_from_*()`, :meth:`read_from_*()` or a constructor of :class:`~dendropy.dataobject.tree.TreeList` or :class:`~dendropy.dataobject.dataset.DataSet` object, this effectively skips all the tree definitions preceding the specified index from being created (i.e, ``tree_offset=200`` will populate the :class:`~dendropy.dataobject.tree.TreeList` object starting with the 201st tree definition).
-
-
-        For example, the following creates a :class:`~dendropy.dataobject.tree.Tree` object from the second tree definition in the data source::
-
-            >>> import dendropy
-            >>> t = dendropy.Tree.get_from_path('pythonidae.best-trees.tre', \
-                        'nexus', tree_offset=1)
-
-        While this effectively skips over the first 200 trees as burn-in from an MCMC sample of trees::
-
-            >>> import dendropy
-            >>> pp_trees = dendropy.TreeList.get_from_path('pythonidae_mcmc.tre', \
-                    'nexus', tree_offset=200)
-
-    ``collection_offset``
-        A non-negative integer specifying the 0-based index of a collection (e.g., a NEXUS "TREES" block) of trees in the data source.
-        A negative value means that a union of all the tree collections in the data source will be used.
-        The default is -1, i.e., all the collections will be aggregated.
-        For example, the following selects the third tree collection to populate a :class:`~dendropy.dataobject.tree.TreeList` object::
-
-            >>> import dendropy
-            >>> trees = dendropy.Tree.get_from_path('pythonidae.nex', 'nexus', \
-                    collection_offset=4)
-
-        While this reads all the trees from all "TREES" block in the data source::
-
-            >>> import dendropy
-            >>> trees = dendropy.TreeList.get_from_path('pythonidae.nex', 'nexus', \
-                    collection_offset=-1)
-
-        The following selects the second tree from the third "TREES" block in the data source::
-
-            >>> import dendropy
-            >>> trees = dendropy.Tree.get_from_path('pythonidae.nex', 'nexus', \
-                    collection_offset=2, tree_offset=1)
-
-        The following selects the 30th tree defined in the data source across all tree collections, with the first tree in the first collection treated as having index 0::
-
-            >>> import dendropy
-            >>> tree_31 = dendropy.Tree.get_from_path('pythonidae.nex', 'nexus', \
-                    collection_offset=-1, tree_offset=29)
-
-Format-Specific Options
------------------------
-
-With NEXUS and NEWICK data sources, the following keyword arguments are additionally available:
-
-    ``preserve_underscores``
-        The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces. Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores.
-
+Other keyword arguments to customize data creation and reading, such as ``tree_offset``, ``collection_offset``, ``as_rooted``/``as_unrooted``, ``exclude_trees``, ``exclude_chars``, etc., are discussed in detail in specific sections: :ref:`Customizing_Tree_Creation_and_Reading`, :ref:`Customizing_Character_Creation_and_Reading`,  :ref:`Customizing_Data_Set_Creation_and_Reading`.
 
 Writing or Saving Data
 ======================
