@@ -122,6 +122,20 @@ rst_epilog = """
 .. |sumtrees_citation| replace:: Sukumaran, J. and Mark T. Holder. 2009. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.2*. Part of the *DendroPy Phylogenetic Computation Library Version 2.6.1* (|dendropy_homepage_url|).
 .. |dendropy_citation| replace:: Sukumaran, J. and Mark T. Holder. 2009. *DendroPy Phylogenetic Computing Library Version 2.6.1* (|dendropy_homepage_url|).
 .. |dendropy_copyright| replace:: **Copyright 2009 Jeet Sukumaran and Mark T. Holder**
+
+.. |Tree| replace:: :class:`~dendropy.dataobject.tree.Tree`
+.. |TreeList| replace:: :class:`~dendropy.dataobject.tree.TreeList`
+.. |Node| replace:: :class:`~dendropy.dataobject.tree.Node`
+.. |Edge| replace:: :class:`~dendropy.dataobject.tree.Edge`
+.. |Taxon| replace:: :class:`~dendropy.dataobject.taxon.Taxon`
+.. |TaxonSet| replace:: :class:`~dendropy.dataobject.taxon.TaxonSet`
+.. |DataSet| replace:: :class:`~dendropy.dataobject.dataset.DataSet`
+.. |CharacterMatrix| replace:: :class:`~dendropy.dataobject.char.CharacterMatrix`
+.. |DnaCharacterMatrix| replace:: :class:`~dendropy.dataobject.char.DnaCharacterMatrix`
+.. |RnaCharacterMatrix| replace:: :class:`~dendropy.dataobject.char.RnaCharacterMatrix`
+.. |ProteinCharacterMatrix| replace:: :class:`~dendropy.dataobject.char.ProteinCharacterMatrix`
+.. |StandardCharacterMatrix| replace:: :class:`~dendropy.dataobject.char.StandardCharacterMatrix`
+.. |ContinuousCharacterMatrix| replace:: :class:`~dendropy.dataobject.char.ContinuousCharacterMatrix`
 """
 
 # -- Options for HTML output ---------------------------------------------------

@@ -2,18 +2,18 @@
 Taxa and Taxon Management
 *************************
 
-Operational taxonomic units in DendroPy are represented by :class:`~dendropy.dataobject.taxon.Taxon` objects, and distinct collections of operational taxonomic units are represented by :class:`~dendropy.dataobject.taxon.TaxonSet` objects.
+Operational taxonomic units in DendroPy are represented by |Taxon| objects, and distinct collections of operational taxonomic units are represented by |TaxonSet| objects.
 
-Every time a definition of taxa is encountered in a data source, for example, a "TAXA" block in a NEXUS file, a new :class:`~dendropy.dataobject.taxon.TaxonSet` object is created and populated with :class:`~dendropy.dataobject.taxon.Taxon` objects corresponding to the taxa defined in the data source.
+Every time a definition of taxa is encountered in a data source, for example, a "TAXA" block in a NEXUS file, a new |TaxonSet| object is created and populated with |Taxon| objects corresponding to the taxa defined in the data source.
 Some data formats do not have explicit definition of taxa, e.g. a NEWICK tree source.
 These nonetheless can be considered to have an implicit definition of a collection of operational taxonomic units given by the aggregate of all operational taxonomic units referenced in the data (i.e., the set of all distinct labels on trees in a NEWICK file).
 
-Every time a reference to a taxon is encountered in a data source, such as a taxon label in a tree or matrix statement in a NEXUS file, the current :class:`~dendropy.dataobject.taxon.TaxonSet` object is searched for corresponding :class:`~dendropy.dataobject.taxon.Taxon` object with a matching label (see below for details on how the match is made). If found, the :class:`~dendropy.dataobject.taxon.Taxon` object is used to represent the taxon. If not, a new :class:`~dendropy.dataobject.taxon.Taxon` object is created, added to the :class:`~dendropy.dataobject.taxon.TaxonSet` object, and used to represent the taxon.
+Every time a reference to a taxon is encountered in a data source, such as a taxon label in a tree or matrix statement in a NEXUS file, the current |TaxonSet| object is searched for corresponding |Taxon| object with a matching label (see below for details on how the match is made). If found, the |Taxon| object is used to represent the taxon. If not, a new |Taxon| object is created, added to the |TaxonSet| object, and used to represent the taxon.
 
 Taxon Management with Trees
 ===========================
 
-It is important to recognize that, by default, DendroPy will create new :class:`~dendropy.dataobject.taxon.TaxonSet` object every time a data source is parsed (and, if the data source has multiple taxon objects, there may be more than one :class:`~dendropy.dataobject.taxon.TaxonSet` created).
+It is important to recognize that, by default, DendroPy will create new |TaxonSet| object every time a data source is parsed (and, if the data source has multiple taxon objects, there may be more than one |TaxonSet| created).
 
 Consider the following example::
 
@@ -33,7 +33,7 @@ Consider the following example::
         [Tree]
             ((A,B),(C,D))
 
-We now have two distinct :class:`~dendropy.dataobject.tree.Tree` objects, each associated with a distinct :class:`~dendropy.dataobject.taxon.TaxonSet` objects, each with its own set of :class:`~dendropy.dataobject.taxon.Taxon` objects that, while having the same labels, are distinct from one another::
+We now have two distinct |Tree| objects, each associated with a distinct |TaxonSet| objects, each with its own set of |Taxon| objects that, while having the same labels, are distinct from one another::
 
     >>> t1.leaf_nodes()[0].taxon == t2.leaf_nodes()[0].taxon
     False
@@ -56,7 +56,7 @@ This means that even though the tree shape and structure is identical between th
 
     TypeError: Trees have different TaxonSet objects: 0x101f630 vs. 0x103bf30
 
-The solution is to explicitly specify the same ``taxon_set`` when creating the trees. In DendroPy all phylogenetic data classes that are associated with :class:`~dendropy.dataobject.taxon.TaxonSet` objects have constructors, factory methods, and ``read_from_*`` methods take a specific :class:`TaxonSet` object as an argument using the ``taxon_set`` a keyword. For example::
+The solution is to explicitly specify the same ``taxon_set`` when creating the trees. In DendroPy all phylogenetic data classes that are associated with |TaxonSet| objects have constructors, factory methods, and ``read_from_*`` methods take a specific :class:`TaxonSet` object as an argument using the ``taxon_set`` a keyword. For example::
 
     >>> taxa = dendropy.TaxonSet()
     >>> t1 = dendropy.Tree.get_from_string('((A,B),(C,D))', format='newick', taxon_set=taxa)
@@ -67,8 +67,8 @@ The solution is to explicitly specify the same ``taxon_set`` when creating the t
 Taxon Management with Tree Lists
 ================================
 
-The :class:`~dendropy.dataobject.tree.TreeList` class is designed to manage collections of :class:`~dendropy.dataobject.tree.Tree` objects that share the same :class:`~dendropy.dataobject.taxon.TaxonSet`.
-As :class:`~dendropy.dataobject.tree.Tree` objects are appended to a :class:`~dendropy.dataobject.tree.TreeList` object, the :class:`~dendropy.dataobject.tree.TreeList` object will automatically take care of remapping the :class:`~dendropy.dataobject.taxon.TaxonSet` and associated :class:`~dendropy.dataobject.taxon.Taxon` objects::
+The |TreeList| class is designed to manage collections of |Tree| objects that share the same |TaxonSet|.
+As |Tree| objects are appended to a |TreeList| object, the |TreeList| object will automatically take care of remapping the |TaxonSet| and associated |Taxon| objects::
 
     >>> t1 = dendropy.Tree.get_from_string('((A,B),(C,D))', format='newick')
     >>> t2 = dendropy.Tree.get_from_string('((A,B),(C,D))', format='newick')
@@ -88,9 +88,9 @@ As :class:`~dendropy.dataobject.tree.Tree` objects are appended to a :class:`~de
     >>> treecalc.robinson_foulds_distance(t1, t2)
     0.0
 
-The same applies when using the :meth:`read_from_*` method of a :class:`~dendropy.dataobject.tree.TreeList` object: all trees read from the data source will be assigned the same :class:`~dendropy.dataobject.taxon.TaxonSet` object, and the taxa referenced in the tree definition will be mapped to corresponding :class:`~dendropy.dataobject.taxon.Taxon` objects, identified by label, in the :class:`~dendropy.dataobject.taxon.TaxonSet`, with new :class:`~dendropy.dataobject.taxon.Taxon` objects created if no suitable match is found.
+The same applies when using the :meth:`read_from_*` method of a |TreeList| object: all trees read from the data source will be assigned the same |TaxonSet| object, and the taxa referenced in the tree definition will be mapped to corresponding |Taxon| objects, identified by label, in the |TaxonSet|, with new |Taxon| objects created if no suitable match is found.
 
-While :class:`~dendropy.dataobject.tree.TreeList` objects ensure that all :class:`~dendropy.dataobject.tree.Tree` objects created, read or added using them all have the same :class:`~dendropy.dataobject.taxon.TaxonSet` object reference, if two :class:`~dendropy.dataobject.tree.TreeList` objects are independentally created, they will each have their own, distinct, :class:`~dendropy.dataobject.taxon.TaxonSet` object reference.
+While |TreeList| objects ensure that all |Tree| objects created, read or added using them all have the same |TaxonSet| object reference, if two |TreeList| objects are independentally created, they will each have their own, distinct, |TaxonSet| object reference.
 For example, if you want to read in two collections of trees and compare trees between the two collections, the following will **not** work:
 
 
@@ -98,17 +98,17 @@ For example, if you want to read in two collections of trees and compare trees b
     >>> mcmc1 = dendropy.TreeList.get_from_path('pythonidae.mcmc1.nex', 'nexus')
     >>> mcmc2 = dendropy.TreeList.get_from_path('pythonidae.mcmc2.nex', 'nexus')
 
-Of course, reading both data sources into the same  :class:`~dendropy.dataobject.tree.TreeList` object *will* work insofar as ensuring all the :class:`~dendropy.dataobject.tree.Tree` objects have the same :class:`~dendropy.dataobject.taxon.TaxonSet`  reference, but then you will lose the distinction between the two sources, unless you keep track of the indexes of where one source begins and the other ends, which error-prone and tedious.
-A better approach would be simply to create a :class:`~dendropy.dataobject.taxon.TaxonSet` object, and pass it to the factory methods of both  :class:`~dendropy.dataobject.tree.TreeList` objects::
+Of course, reading both data sources into the same  |TreeList| object *will* work insofar as ensuring all the |Tree| objects have the same |TaxonSet|  reference, but then you will lose the distinction between the two sources, unless you keep track of the indexes of where one source begins and the other ends, which error-prone and tedious.
+A better approach would be simply to create a |TaxonSet| object, and pass it to the factory methods of both  |TreeList| objects::
 
     >>> import dendropy
     >>> taxa = dendropy.TaxonSet()
     >>> mcmc1 = dendropy.TreeList.get_from_path('pythonidae.mcmc1.nex', 'nexus', taxon_set=taxa)
     >>> mcmc2 = dendropy.TreeList.get_from_path('pythonidae.mcmc2.nex', 'nexus', taxon_set=taxa)
 
-Now both ``mcmc1`` and ``mcmc2`` share the same :class:`~dendropy.dataobject.taxon.TaxonSet`, and thus so do the :class:`~dendropy.dataobject.tree.Tree` objects created within them, which means the :class:`~dendropy.dataobject.tree.Tree` objects can be compared both within and between the collections.
+Now both ``mcmc1`` and ``mcmc2`` share the same |TaxonSet|, and thus so do the |Tree| objects created within them, which means the |Tree| objects can be compared both within and between the collections.
 
-You can also pass the :class:`~dendropy.dataobject.taxon.TaxonSet` to the constructor of :class:`~dendropy.dataobject.tree.TreeList`.
+You can also pass the |TaxonSet| to the constructor of |TreeList|.
 So, for example, the following is logically identical to the previous::
 
     >>> import dendropy
@@ -121,8 +121,8 @@ So, for example, the following is logically identical to the previous::
 Taxon Management with Character Matrices
 ========================================
 
-Taxon management with :class:`~dendropy.dataobject.char.CharacterMatrix`-derived objects work very much the same as it does with :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.tree.TreeList objects`: every time a :class:`~dendropy.dataobject.char.CharacterMatrix`-derived object is independentally created or read, a new :class:`~dendropy.dataobject.taxon.TaxonSet` is created, unless an existing one is specified.
-Thus, again, if you are creating multiple character matrices that refer to the same set of taxa, you will want to make sure to pass each of them a common :class:`~dendropy.dataobject.taxon.TaxonSet` reference::
+Taxon management with |CharacterMatrix|-derived objects work very much the same as it does with |Tree| or :class:`~dendropy.dataobject.tree.TreeList objects`: every time a |CharacterMatrix|-derived object is independentally created or read, a new |TaxonSet| is created, unless an existing one is specified.
+Thus, again, if you are creating multiple character matrices that refer to the same set of taxa, you will want to make sure to pass each of them a common |TaxonSet| reference::
 
     >>> import dendropy
     >>> taxa = dendropy.TaxonSet()
@@ -131,17 +131,17 @@ Thus, again, if you are creating multiple character matrices that refer to the s
 
 Taxon Management with Data Sets
 ===============================
-The :class:`~dendropy.dataobject.dataset.DataSet` object, representing a meta-collection of phylogenetic data, differs in one important way from all the other phylogenetic data objects discussed so far with respect to taxon management, in that it is not associated with any particular :class:`~dendropy.dataobject.taxon.TaxonSet` object.
-Rather, it maintains a list (in the property :attr:`~dendropy.dataobject.char.DataSet.taxon_sets`) of *all* the :class:`~dendropy.dataobject.taxon.TaxonSet` objects referenced by its contained :class:`~dendropy.dataobject.tree.TreeList` objects (in the property :attr:`~dendropy.dataobject.char.DataSet.tree_lists`) and :class:`~dendropy.dataobject.char.CharacterMatrix` objects (in the property :attr:`~dendropy.dataobject.char.DataSet.char_matrices`).
+The |DataSet| object, representing a meta-collection of phylogenetic data, differs in one important way from all the other phylogenetic data objects discussed so far with respect to taxon management, in that it is not associated with any particular |TaxonSet| object.
+Rather, it maintains a list (in the property :attr:`~dendropy.dataobject.char.DataSet.taxon_sets`) of *all* the |TaxonSet| objects referenced by its contained |TreeList| objects (in the property :attr:`~dendropy.dataobject.char.DataSet.tree_lists`) and |CharacterMatrix| objects (in the property :attr:`~dendropy.dataobject.char.DataSet.char_matrices`).
 
-With respect to taxon management, :class:`~dendropy.dataobject.dataset.DataSet` objects operate in one of two modes: "detached taxon set" mode and "attached taxon set" mode.
+With respect to taxon management, |DataSet| objects operate in one of two modes: "detached taxon set" mode and "attached taxon set" mode.
 
 Detached (Multiple) Taxon Set Mode
 ----------------------------------
 
-In the "detached taxon set" mode, which is the default, :class:`~dendropy.dataobject.dataset.DataSet` object tracks all :class:`~dendropy.dataobject.taxon.TaxonSet` references of their other data members in the property :attr:`~dendropy.dataobject.char.DataSet.taxon_sets`, but no effort is made at taxon management as such.
-Thus, every time a data source is read with a "detached taxon set" mode :class:`~dendropy.dataobject.dataset.DataSet` object, by deault, a new  :class:`~dendropy.dataobject.taxon.TaxonSet` object will be created and associated with the :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, or :class:`~dendropy.dataobject.char.CharacterMatrix` objects created from each data source, resulting in multiple :class:`~dendropy.dataobject.taxon.TaxonSet` independent references.
-As such, "detached taxon set" mode :class:`~dendropy.dataobject.dataset.DataSet` objects are suitable for handling data with multiple distinct sets of taxa.
+In the "detached taxon set" mode, which is the default, |DataSet| object tracks all |TaxonSet| references of their other data members in the property :attr:`~dendropy.dataobject.char.DataSet.taxon_sets`, but no effort is made at taxon management as such.
+Thus, every time a data source is read with a "detached taxon set" mode |DataSet| object, by deault, a new  |TaxonSet| object will be created and associated with the |Tree|, |TreeList|, or |CharacterMatrix| objects created from each data source, resulting in multiple |TaxonSet| independent references.
+As such, "detached taxon set" mode |DataSet| objects are suitable for handling data with multiple distinct sets of taxa.
 
 For example::
 
@@ -150,7 +150,7 @@ For example::
     >>> ds.read_from_path("primates.nex", "nexus")
     >>> ds.read_from_path("snakes.nex", "nexus")
 
-The dataset, ``ds``, will now contain two distinct sets of :class:`~dendropy.dataobject.taxon.TaxonSet` objects, one for the taxa defined in "primates.nex", and the other for the taxa defined for "snakes.nex".
+The dataset, ``ds``, will now contain two distinct sets of |TaxonSet| objects, one for the taxa defined in "primates.nex", and the other for the taxa defined for "snakes.nex".
 In this case, this behavior is correct, as the two files do indeed refer to different sets of taxa.
 
 However, consider the following::
@@ -162,8 +162,8 @@ However, consider the following::
     >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
     >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
 
-Here, even though all the data files refer to the same set of taxa, the resulting  :class:`~dendropy.dataobject.dataset.DataSet` object will actually have 4 distinct  :class:`~dendropy.dataobject.taxon.TaxonSet` objects, one for each of the independent reads, and a taxon with a particular label in the first file (e.g., "Python regius" of "pythonidae_cytb.fasta") will map to a completely distinct :class:`~dendropy.dataobject.taxon.Taxon` object than a taxon with the same label in the second file (e.g., "Python regius" of "pythonidae_aa.nex").
-This is incorrect behavior, and to achieve the correct behavior with a multiple taxon set mode :class:`~dendropy.dataobject.dataset.DataSet` object, we need to explicitly pass a :class:`~dendropy.dataobject.taxon.TaxonSet` object to each of the :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements::
+Here, even though all the data files refer to the same set of taxa, the resulting  |DataSet| object will actually have 4 distinct  |TaxonSet| objects, one for each of the independent reads, and a taxon with a particular label in the first file (e.g., "Python regius" of "pythonidae_cytb.fasta") will map to a completely distinct |Taxon| object than a taxon with the same label in the second file (e.g., "Python regius" of "pythonidae_aa.nex").
+This is incorrect behavior, and to achieve the correct behavior with a multiple taxon set mode |DataSet| object, we need to explicitly pass a |TaxonSet| object to each of the :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements::
 
     >>> import dendropy
     >>> ds = dendropy.DataSet()
@@ -173,15 +173,15 @@ This is incorrect behavior, and to achieve the correct behavior with a multiple 
     >>> ds.read_from_path("pythonidae.mle.tre", "nexus", taxon_set=ds.taxon_sets[0])
     >>> ds.write_to_path("pythonidae_combined.nex", "nexus")
 
-In the previous example, the first :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statement results in a new :class:`~dendropy.dataobject.taxon.TaxonSet` object, which is added to the :attr:`~dendropy.dataobject.char.DataSet.taxon_sets` property of the :class:`~dendropy.dataobject.dataset.DataSet` object ``ds``.
-This :class:`~dendropy.dataobject.taxon.TaxonSet` object gets passed via the ``taxon_set`` keyword to subsequent :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements, and thus as each of the data sources are processed, the taxon references get mapped to :class:`~dendropy.dataobject.taxon.Taxon` objects in the same, single, :class:`~dendropy.dataobject.taxon.TaxonSet` object.
+In the previous example, the first :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statement results in a new |TaxonSet| object, which is added to the :attr:`~dendropy.dataobject.char.DataSet.taxon_sets` property of the |DataSet| object ``ds``.
+This |TaxonSet| object gets passed via the ``taxon_set`` keyword to subsequent :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements, and thus as each of the data sources are processed, the taxon references get mapped to |Taxon| objects in the same, single, |TaxonSet| object.
 
-While this approach works to ensure correct taxon mapping across multiple data object reads and instantiation, in this context, it is probably more convenient to use the :class:`~dendropy.dataobject.dataset.DataSet` in "attached taxon set" mode.
+While this approach works to ensure correct taxon mapping across multiple data object reads and instantiation, in this context, it is probably more convenient to use the |DataSet| in "attached taxon set" mode.
 
 Attached (Single) Taxon Set Mode
 --------------------------------
-In the "attached taxon set" mode, :class:`~dendropy.dataobject.dataset.DataSet` objects ensure that the taxon references of all data objects that are added to them are mapped to the same :class:`~dendropy.dataobject.taxon.TaxonSet` object (at least one for each independent read or creation operation).
-The "attached taxon set" mode can be set by passing the keyword argument ``attach_taxon_set=True`` to the constructor of the :class:`~dendropy.dataobject.dataset.DataSet` when instantiating a new :class:`~dendropy.dataobject.dataset.DataSet` object (in which case a new :class:`~dendropy.dataobject.taxon.TaxonSet` object will be created and added to the :class:`~dendropy.dataobject.dataset.DataSet` object as the default), by passing an existing :class:`~dendropy.dataobject.taxon.TaxonSet` object to which to attach using the keyword argument ``taxon_set``, or by calling :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` on an existing :class:`~dendropy.dataobject.dataset.DataSet` object
+In the "attached taxon set" mode, |DataSet| objects ensure that the taxon references of all data objects that are added to them are mapped to the same |TaxonSet| object (at least one for each independent read or creation operation).
+The "attached taxon set" mode can be set by passing the keyword argument ``attach_taxon_set=True`` to the constructor of the |DataSet| when instantiating a new |DataSet| object (in which case a new |TaxonSet| object will be created and added to the |DataSet| object as the default), by passing an existing |TaxonSet| object to which to attach using the keyword argument ``taxon_set``, or by calling :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` on an existing |DataSet| object
 
 For example::
 
@@ -213,13 +213,13 @@ Or::
     >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
     >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
 
-All of the above will result in only a single :class:`~dendropy.dataobject.taxon.TaxonSet` object that have all the taxa from the four data sources mapped to them.
-Note how :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` returns the new :class:`~dendropy.dataobject.taxon.TaxonSet` object created and attached when called.
-If you needed to detach the :class:`~dendropy.dataobject.taxon.TaxonSet` object and then later on reattach it again, you would assign the return value to a variable, and pass it to as an argument to the later call to :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()`.
+All of the above will result in only a single |TaxonSet| object that have all the taxa from the four data sources mapped to them.
+Note how :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` returns the new |TaxonSet| object created and attached when called.
+If you needed to detach the |TaxonSet| object and then later on reattach it again, you would assign the return value to a variable, and pass it to as an argument to the later call to :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()`.
 
 Switching Between Attached and Detached Taxon Set Modes
 -------------------------------------------------------
-As noted above, you can use the :meth:`~dendropy.dataobject.dataset.DataSet.attached_taxon_set()` method to switch a :class:`~dendropy.dataobject.dataset.DataSet` object to attached taxon set mode.
+As noted above, you can use the :meth:`~dendropy.dataobject.dataset.DataSet.attached_taxon_set()` method to switch a |DataSet| object to attached taxon set mode.
 To restore it to multiple taxon set mode, you would use the :meth:`~dendropy.dataobject.dataset.DataSet.detach_taxon_set()` method::
 
     >>> import dendropy
@@ -233,13 +233,13 @@ To restore it to multiple taxon set mode, you would use the :meth:`~dendropy.dat
     >>> ds.detach_taxon_set()
     >>> ds.read_from_path("primates.nex", "nexus")
 
-Here, the same :class:`~dendropy.dataobject.taxon.TaxonSet` object is used to manage taxon references for data parsed from the first four files, while the data from the fifth and final file gets its own, distinct, :class:`~dendropy.dataobject.taxon.TaxonSet` object and associated :class:`~dendropy.dataobject.taxon.Taxon` object references.
+Here, the same |TaxonSet| object is used to manage taxon references for data parsed from the first four files, while the data from the fifth and final file gets its own, distinct, |TaxonSet| object and associated |Taxon| object references.
 
 Attaching a Particular Taxon Set
 --------------------------------
 
-When :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` is called without arguments, a new :class:`~dendropy.dataobject.taxon.TaxonSet` object is created and added to the :attr:`~dendropy.dataobject.char.DataSet.taxon_sets` list of the :class:`~dendropy.dataobject.dataset.DataSet` object, and taxon references of all data subsequently read (or created and added independentally) will be mapped to :class:`~dendropy.dataobject.taxon.Taxon` objects in this new :class:`~dendropy.dataobject.taxon.TaxonSet` object.
-If you want to use an existing :class:`~dendropy.dataobject.taxon.TaxonSet` object instead of a new one, you can pass this object as an argument to the :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` method::
+When :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` is called without arguments, a new |TaxonSet| object is created and added to the :attr:`~dendropy.dataobject.char.DataSet.taxon_sets` list of the |DataSet| object, and taxon references of all data subsequently read (or created and added independentally) will be mapped to |Taxon| objects in this new |TaxonSet| object.
+If you want to use an existing |TaxonSet| object instead of a new one, you can pass this object as an argument to the :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` method::
 
     >>> import dendropy
     >>> ds = dendropy.DataSet()
@@ -252,20 +252,20 @@ If you want to use an existing :class:`~dendropy.dataobject.taxon.TaxonSet` obje
     >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
     >>> ds.detach_taxon_set()
 
-Here, the first two :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements result in two distinct :class:`~dendropy.dataobject.taxon.TaxonSet` objects, one for each read, each with their own independent :class:`~dendropy.dataobject.taxon.Taxon` objects.
-The :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` statement is passed the :class:`~dendropy.dataobject.taxon.TaxonSet` object from the first read operation, and all data created from the next three :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements will have their taxon references mapped to this first :class:`~dendropy.dataobject.taxon.TaxonSet` object.
+Here, the first two :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements result in two distinct |TaxonSet| objects, one for each read, each with their own independent |Taxon| objects.
+The :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` statement is passed the |TaxonSet| object from the first read operation, and all data created from the next three :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements will have their taxon references mapped to this first |TaxonSet| object.
 
 .. _Taxon_Label_Mapping:
 
 A Word of Caution: Taxon Label Mapping
 ======================================
-DendroPy maps taxon definitions encountered in a data source to :class:`~dendropy.dataobject.taxon.Taxon` objects by the taxon label.
+DendroPy maps taxon definitions encountered in a data source to |Taxon| objects by the taxon label.
 The labels have to match **exactly** for the taxa to be correctly mapped, with the match being **case-sensitive**.
 Thus, "Python regius", "PYTHON REGIUS", "python regious", "P. regious", etc. will all be considered as referring to distinct and different taxa.
 
 Further quirks may arise due to some format-specific idiosyncracies.
 For example, the NEXUS standard dictates that an underscore ("_") should be substituted for a space in all labels.
-Thus, when reading a NEXUS or NEWICK source, the taxon labels "Python_regius" and "Python regius" are exactly equivalent, and will be mapped to the same :class:`~dendropy.dataobject.taxon.Taxon` object.
+Thus, when reading a NEXUS or NEWICK source, the taxon labels "Python_regius" and "Python regius" are exactly equivalent, and will be mapped to the same |Taxon| object.
 
 However, this underscore-to-space mapping does **not** take place when reading, for example, a FASTA format file.
 Here, underscores are preserved, and thus "Python_regius" does not map to "Python regius".

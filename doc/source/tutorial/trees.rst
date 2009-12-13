@@ -2,11 +2,11 @@
 Working with Trees and Collections of Trees
 *******************************************
 
-Trees in are represented by the class :class:`~dendropy.dataobject.tree.Tree`.
-Every :class:`~dendropy.dataobject.tree.Tree` object has a :attr:`~dendropy.dataobject.tree.Tree.seed_node` attribute. If the tree is rooted, then this is the root node. If the tree is not rooted, however, then this is an artificial node that serves as the "starting point" for the tree.
-The :attr:`~dendropy.dataobject.tree.Tree.seed_node`, like every other node on the tree, is a :class:`~dendropy.dataobject.tree.Node` object.
-Every :class:`~dendropy.dataobject.tree.Node` object maintains a list of its immediate child :class:`~dendropy.dataobject.tree.Node` objects as well as a reference to its parent :class:`~dendropy.dataobject.tree.Node` object.
-You can request a shallow-copy :func:`~list` of child :class:`~dendropy.dataobject.tree.Node` objects using the :meth:`~dendropy.dataobject.tree.Node.child_nodes()` method, and you can access the parent :class:`~dendropy.dataobject.tree.Node` object directly through the :attr:`~dendropy.dataobject.tree.Node.parent_node` attribute.
+Trees in are represented by the class |Tree|.
+Every |Tree| object has a :attr:`~dendropy.dataobject.tree.Tree.seed_node` attribute. If the tree is rooted, then this is the root node. If the tree is not rooted, however, then this is an artificial node that serves as the "starting point" for the tree.
+The :attr:`~dendropy.dataobject.tree.Tree.seed_node`, like every other node on the tree, is a |Node| object.
+Every |Node| object maintains a list of its immediate child |Node| objects as well as a reference to its parent |Node| object.
+You can request a shallow-copy :func:`~list` of child |Node| objects using the :meth:`~dendropy.dataobject.tree.Node.child_nodes()` method, and you can access the parent |Node| object directly through the :attr:`~dendropy.dataobject.tree.Node.parent_node` attribute.
 By definition, the :attr:`~dendropy.dataobject.tree.Tree.seed_node` has no parent node, leaf nodes have no child nodes, and internal nodes have both parent nodes and child nodes.
 
 
@@ -23,10 +23,10 @@ The ``tree_offset`` and ``collection_offset`` keywords allow you to control whic
     ``tree_offset``
         A non-negative integer specifying the 0-based index of a tree within a collection in the data source.
         The default is 0, which means that the first tree definition is used.
-        If passed to :meth:`get_from_*()`, :meth:`read_from_*()` or a constructor of :class:`~dendropy.dataobject.tree.Tree`, this selects a specific tree definition in the source (i.e, ``tree_offset=2`` will create or populate the :class:`~dendropy.dataobject.tree.Tree` object based on the 3rd tree definition). If passed to  :meth:`get_from_*()`, :meth:`read_from_*()` or a constructor of :class:`~dendropy.dataobject.tree.TreeList` or :class:`~dendropy.dataobject.dataset.DataSet` object, this effectively skips all the tree definitions preceding the specified index from being created (i.e, ``tree_offset=200`` will populate the :class:`~dendropy.dataobject.tree.TreeList` object starting with the 201st tree definition).
+        If passed to :meth:`get_from_*()`, :meth:`read_from_*()` or a constructor of |Tree|, this selects a specific tree definition in the source (i.e, ``tree_offset=2`` will create or populate the |Tree| object based on the 3rd tree definition). If passed to  :meth:`get_from_*()`, :meth:`read_from_*()` or a constructor of |TreeList| or |DataSet| object, this effectively skips all the tree definitions preceding the specified index from being created (i.e, ``tree_offset=200`` will populate the |TreeList| object starting with the 201st tree definition).
 
 
-        For example, the following creates a :class:`~dendropy.dataobject.tree.Tree` object from the second tree definition in the data source::
+        For example, the following creates a |Tree| object from the second tree definition in the data source::
 
             >>> import dendropy
             >>> t = dendropy.Tree.get_from_path('pythonidae.best-trees.tre', \
@@ -42,7 +42,7 @@ The ``tree_offset`` and ``collection_offset`` keywords allow you to control whic
         A non-negative integer specifying the 0-based index of a collection (e.g., a NEXUS "TREES" block) of trees in the data source.
         A negative value means that a union of all the tree collections in the data source will be used.
         The default is -1, i.e., all the collections will be aggregated.
-        For example, the following selects the third tree collection to populate a :class:`~dendropy.dataobject.tree.TreeList` object::
+        For example, the following selects the third tree collection to populate a |TreeList| object::
 
             >>> import dendropy
             >>> trees = dendropy.Tree.get_from_path('pythonidae.nex', 'nexus', \
@@ -69,10 +69,10 @@ The ``tree_offset`` and ``collection_offset`` keywords allow you to control whic
 Interpreting Rootings
 ---------------------
 
-The rooting state of a :class:`~dendropy.dataobject.tree.Tree` object is set by the :attr:`~dendropy.dataobject.tree.Tree.is_rooted` property.
-When parsing NEXUS- and Newick-formatted data, the rooting states of the resulting :class:`~dendropy.dataobject.tree.Tree` objects are given by ``[&R]`` (for rooted) or ``[&U]`` (for unrooted) comment tags preceding the tree definition in the data source.
+The rooting state of a |Tree| object is set by the :attr:`~dendropy.dataobject.tree.Tree.is_rooted` property.
+When parsing NEXUS- and Newick-formatted data, the rooting states of the resulting |Tree| objects are given by ``[&R]`` (for rooted) or ``[&U]`` (for unrooted) comment tags preceding the tree definition in the data source.
 If these tags are not present, then the trees are assumed to be unrooted.
-This behavior can be changed by specifying keyword arguments to the :meth:`get_from_*()`,  or :meth:`read_from_*()` methods of both the :class:`~dendropy.dataobject.tree.Tree` and :class:`~dendropy.dataobject.tree.TreeList` classes, or the constructors of these classes when specifying a data source from which to construct the tree:
+This behavior can be changed by specifying keyword arguments to the :meth:`get_from_*()`,  or :meth:`read_from_*()` methods of both the |Tree| and |TreeList| classes, or the constructors of these classes when specifying a data source from which to construct the tree:
 
 The ``as_rooted`` keyword argument, if :keyword:`True`, forces all trees to be interpreted as rooted, regardless of whether or not the ``[&R]``/``[&U]`` comment tags are given.
 Conversely, if :keyword:`False`, all trees will be interpreted as unrooted.
@@ -101,16 +101,16 @@ The following example shows how you might evolve a continuous character on a tre
 While the previous example works, it is probably clearer and more efficient to use one of the pre-defined node iterator methods:
 
     :meth:`~dendropy.dataobject.tree.Tree.preorder_node_iter()`
-        Iterates over nodes in a :class:`~dendropy.dataobject.tree.Tree` object in a `depth-first <http://en.wikipedia.org/wiki/Depth-first_traversal>`_ search pattern, i.e., "visiting" a node before visiting the children of the node. This is the same traversal order as the previous example. This traversal order is useful if you require ancestral nodes to be processed before descendent nodes, as, for example, when evolving sequences over a tree.
+        Iterates over nodes in a |Tree| object in a `depth-first <http://en.wikipedia.org/wiki/Depth-first_traversal>`_ search pattern, i.e., "visiting" a node before visiting the children of the node. This is the same traversal order as the previous example. This traversal order is useful if you require ancestral nodes to be processed before descendent nodes, as, for example, when evolving sequences over a tree.
 
     :meth:`~dendropy.dataobject.tree.Tree.postorder_node_iter()`
-        Iterates over nodes in a :class:`~dendropy.dataobject.tree.Tree` object in a `postorder <http://en.wikipedia.org/wiki/Tree_traversal>`_ search pattern, i.e., visiting the children of the node before visiting the node itself. This traversal order is useful if you require descendent nodes to be processed before ancestor nodes, as, for example, when calculating ages of nodes.
+        Iterates over nodes in a |Tree| object in a `postorder <http://en.wikipedia.org/wiki/Tree_traversal>`_ search pattern, i.e., visiting the children of the node before visiting the node itself. This traversal order is useful if you require descendent nodes to be processed before ancestor nodes, as, for example, when calculating ages of nodes.
 
     :meth:`~dendropy.dataobject.tree.Tree.level_order_node_iter()`
-        Iterates over nodes in a :class:`~dendropy.dataobject.tree.Tree` object in a  `breadth-first <http://en.wikipedia.org/wiki/Breadth-first_traversal>`_  search pattern, i.e., every node at a particular level is visited before proceeding to the next level.
+        Iterates over nodes in a |Tree| object in a  `breadth-first <http://en.wikipedia.org/wiki/Breadth-first_traversal>`_  search pattern, i.e., every node at a particular level is visited before proceeding to the next level.
 
     :meth:`~dendropy.dataobject.tree.Tree.leaf_iter()`
-        Iterates over the leaf or tip nodes of a :class:`~dendropy.dataobject.tree.Tree` object.
+        Iterates over the leaf or tip nodes of a |Tree| object.
 
 The previous example would thus be better implemented as follows:
 
@@ -118,7 +118,7 @@ The previous example would thus be better implemented as follows:
     :linenos:
 
 The nodes returned by each of these iterators can be filtered if a filter function is passed as a second argument to the iterator.
-This filter function should take a :class:`~dendropy.dataobject.tree.Node` object as an argument, and return :keyword:`True` if the node is to be returned or :keyword:`False` if it is not. For example, the following iterates over all nodes that have more than two children:
+This filter function should take a |Node| object as an argument, and return :keyword:`True` if the node is to be returned or :keyword:`False` if it is not. For example, the following iterates over all nodes that have more than two children:
 
 .. literalinclude:: /examples/preorder_filtered_node_iteration.py
     :linenos:
@@ -126,18 +126,18 @@ This filter function should take a :class:`~dendropy.dataobject.tree.Node` objec
 Iterating Over Edges
 --------------------
 
-The :class:`~dendropy.dataobject.tree.Edge` objects associated with each :class:`~dendropy.dataobject.tree.Node` can be accessed through the :attr:`~dendropy.dataobject.tree.Node.edge` attribute of the :class:`~dendropy.dataobject.tree.Node` object.
+The |Edge| objects associated with each |Node| can be accessed through the :attr:`~dendropy.dataobject.tree.Node.edge` attribute of the |Node| object.
 So it is possible to iterate over every edge on a tree by iterating over the nodes and referencing the :attr:`~dendropy.dataobject.tree.Node.edge` attribute of the node when processing the node.
-But it is clearer and probably more convenient to use one of the :class:`~dendropy.dataobject.tree.Edge` iterators:
+But it is clearer and probably more convenient to use one of the |Edge| iterators:
 
     :meth:`~dendropy.dataobject.tree.Tree.preorder_edge_iter()`
-        Iterates over edges in a :class:`~dendropy.dataobject.tree.Tree` object in a `depth-first <http://en.wikipedia.org/wiki/Depth-first_traversal>`_ search pattern, i.e., "visiting" an edge before visiting the edges descending from that edge. This is the same traversal order as the previous example. This traversal order is useful if you require ancestral edges to be processed before descendent edges, as, for example, when calculating the sum of edge lengths from the root.
+        Iterates over edges in a |Tree| object in a `depth-first <http://en.wikipedia.org/wiki/Depth-first_traversal>`_ search pattern, i.e., "visiting" an edge before visiting the edges descending from that edge. This is the same traversal order as the previous example. This traversal order is useful if you require ancestral edges to be processed before descendent edges, as, for example, when calculating the sum of edge lengths from the root.
 
     :meth:`~dendropy.dataobject.tree.Tree.postorder_edge_iter()`
-        Iterates over edges in a :class:`~dendropy.dataobject.tree.Tree` object in a `postorder <http://en.wikipedia.org/wiki/Tree_traversal>`_ search pattern, i.e., visiting the descendents of the edge before visiting the edge itself. This traversal order is useful if you require descendent edges to be processed before ancestral edges, as, for example, when calculating the sum of edge lengths from the tip
+        Iterates over edges in a |Tree| object in a `postorder <http://en.wikipedia.org/wiki/Tree_traversal>`_ search pattern, i.e., visiting the descendents of the edge before visiting the edge itself. This traversal order is useful if you require descendent edges to be processed before ancestral edges, as, for example, when calculating the sum of edge lengths from the tip
 
     :meth:`~dendropy.dataobject.tree.Tree.level_order_edge_iter()`
-        Iterates over edges in a :class:`~dendropy.dataobject.tree.Tree` object in a  `breadth-first <http://en.wikipedia.org/wiki/Breadth-first_traversal>`_  search pattern, i.e., every edge at a particular level is visited before proceeding to the next level.
+        Iterates over edges in a |Tree| object in a  `breadth-first <http://en.wikipedia.org/wiki/Breadth-first_traversal>`_  search pattern, i.e., every edge at a particular level is visited before proceeding to the next level.
 
 The following example sets the edge lengths of a tree to the proportions of the total tree length that they represent:
 
@@ -149,7 +149,7 @@ While this one removes the edge lengths entirely:
 .. literalinclude:: /examples/remove_branch_lengths.py
     :linenos:
 
-Like the node iterators, the edge iterators also optionally take a filter function as a second argument, except here the filter function should take an :class:`~dendropy.dataobject.tree.Edge` object as an argument.
+Like the node iterators, the edge iterators also optionally take a filter function as a second argument, except here the filter function should take an |Edge| object as an argument.
 The following example shows how you might iterate over all edges with lengths less than some value:
 
 .. literalinclude:: /examples/preorder_filtered_edge_iteration.py
@@ -162,13 +162,13 @@ Nodes with Particular Taxa
 --------------------------
 
 To retrieve a node associated with a particular taxon, we can use the :meth:`~dendropy.dataobject.tree.Tree.find_taxon_node()` method, which takes a filter function as an argument.
-The filter function should take a :class:`~dendropy.dataobject.taxon.Taxon` object as an argument and return :keyword:`True` if the taxon is to be returned.
+The filter function should take a |Taxon| object as an argument and return :keyword:`True` if the taxon is to be returned.
 For example:
 
 .. literalinclude:: /examples/find_taxon_node1.py
     :linenos:
 
-Because we might find it easier to refer to :class:`~dendropy.dataobject.taxon.Taxon` objects by their labels, a convenience method that wraps the retrieval of nodes associated with :class:`~dendropy.dataobject.taxon.Taxon` objects of particular label is provided:
+Because we might find it easier to refer to |Taxon| objects by their labels, a convenience method that wraps the retrieval of nodes associated with |Taxon| objects of particular label is provided:
 
 .. literalinclude:: /examples/find_taxon_node2.py
     :linenos:
@@ -177,7 +177,7 @@ Most Recent Common Ancestors
 ----------------------------
 
 The MRCA (most recent common ancestor) of taxa or nodes can be retrieved by the instance method :meth:`~dendropy.dataobject.tree.Tree.mrca()`.
-This method takes a list of :class:`~dendropy.dataobject.taxon.Taxon` objects given by the ``taxa`` keyword argument, or a list of taxon labels given by the ``taxon_labels`` keyword argument, and returns a :class:`~dendropy.dataobject.tree.Node` object that corresponds to the MRCA of the specified taxa.
+This method takes a list of |Taxon| objects given by the ``taxa`` keyword argument, or a list of taxon labels given by the ``taxon_labels`` keyword argument, and returns a |Node| object that corresponds to the MRCA of the specified taxa.
 For example:
 
 .. literalinclude:: /examples/mrca.py
@@ -192,8 +192,8 @@ Tree Metrics
 Tree Length
 -----------
 
-The :meth:`~dendropy.dataobject.tree.Tree.length()` method returns the sum of edge lengths of a :class:`~dendropy.dataobject.tree.Tree` object, with edges that do not have any length assigned being treated as edges with length 0.
-The following example shows how to identify the "critical" value for an `Archie-Faith-Cranston or PTP test <http://hymenoptera.tamu.edu/courses/ento606/Suggested%20Readings/Slowinksi_Crother_1998.pdf>`_ from a sample of :class:`~dendropy.dataobject.tree.Tree` objects, i.e. a tree length equal to or greater than 95% of the trees in the sample:
+The :meth:`~dendropy.dataobject.tree.Tree.length()` method returns the sum of edge lengths of a |Tree| object, with edges that do not have any length assigned being treated as edges with length 0.
+The following example shows how to identify the "critical" value for an `Archie-Faith-Cranston or PTP test <http://hymenoptera.tamu.edu/courses/ento606/Suggested%20Readings/Slowinksi_Crother_1998.pdf>`_ from a sample of |Tree| objects, i.e. a tree length equal to or greater than 95% of the trees in the sample:
 
 .. literalinclude:: /examples/tree_length_crit.py
     :linenos:
@@ -209,14 +209,14 @@ Patristic Distances
 
 
 .. SCRATCH
-    Each :class:`~dendropy.dataobject.tree.Tree` object has an attribute, :attr:`~dendropy.dataobject.tree.Tree.taxon_set`, which is a ``TaxaBlock`` object, and manages all the :class:`~dendropy.dataobject.taxon.Taxon` objects associated with the tree.
-    The ``TaxaBlock`` object referenced by a :class:`~dendropy.dataobject.tree.Tree` object's :attr:`~dendropy.dataobject.tree.Tree.taxon_set` might be shared by many other elements of the dataset, including other :class:`~dendropy.dataobject.tree.Tree` objects and :class:`~dendropy.dataobject.char.CharacterMatrix` objects, so any modification of elements of a :class:`~dendropy.dataobject.tree.Tree` object's :attr:`~dendropy.dataobject.tree.Tree.taxon_set` will probably have dataset-wide effects.
-    That is, if you were to change the label of a :class:`~dendropy.dataobject.taxon.Taxon` object maintained by a particular :class:`~dendropy.dataobject.tree.Tree` object's :attr:`~dendropy.dataobject.tree.Tree.taxon_set`, all other :class:`~dendropy.dataobject.tree.Tree` objects in the dataset referencing the same ``TaxaBlock`` will be effected.
+    Each |Tree| object has an attribute, :attr:`~dendropy.dataobject.tree.Tree.taxon_set`, which is a ``TaxaBlock`` object, and manages all the |Taxon| objects associated with the tree.
+    The ``TaxaBlock`` object referenced by a |Tree| object's :attr:`~dendropy.dataobject.tree.Tree.taxon_set` might be shared by many other elements of the dataset, including other |Tree| objects and |CharacterMatrix| objects, so any modification of elements of a |Tree| object's :attr:`~dendropy.dataobject.tree.Tree.taxon_set` will probably have dataset-wide effects.
+    That is, if you were to change the label of a |Taxon| object maintained by a particular |Tree| object's :attr:`~dendropy.dataobject.tree.Tree.taxon_set`, all other |Tree| objects in the dataset referencing the same ``TaxaBlock`` will be effected.
 
 
 
-    Every :class:`~dendropy.dataobject.tree.Node` object also has an :attr:`~dendropy.dataobject.tree.Node.edge` attribute, which points to an :class:`~dendropy.dataobject.tree.Edge` object representing the branch subtending the node. :class:`~dendropy.dataobject.tree.Edge` objects have a :attr:`~dendropy.dataobject.tree.Edge.length` attribute, which is typically either a ``float`` or ``int`` value, representing the weight or length of the branch.
+    Every |Node| object also has an :attr:`~dendropy.dataobject.tree.Node.edge` attribute, which points to an |Edge| object representing the branch subtending the node. |Edge| objects have a :attr:`~dendropy.dataobject.tree.Edge.length` attribute, which is typically either a ``float`` or ``int`` value, representing the weight or length of the branch.
     If branch lengths have not been specified, then the value of :attr:`~dendropy.dataobject.tree.Edge.length` is :keyword:`~None`.
     Even if the source tree has had branch lengths specified, if the tree is unrooted, then the edge of the :attr:`~dendropy.dataobject.tree.Tree.seed_node` is usually :keyword:`~None`.
 
-    :class:`~dendropy.dataobject.tree.Node` objects also have a :attr:`~dendropy.dataobject.tree.Node.label` and :attr:`~dendropy.dataobject.tree.Node.taxon` attribute. Leaf nodes usually have their :attr:`~dendropy.dataobject.tree.Node.taxon` attribute set, pointing to :class:`~dendropy.dataobject.taxon.Taxon` object associated with that tip of the tree. The :attr:`~dendropy.dataobject.tree.Node.label` attribute will be set if the source tree has internal node labels, though, of course, you can also assign a value to this programmatically.
+    |Node| objects also have a :attr:`~dendropy.dataobject.tree.Node.label` and :attr:`~dendropy.dataobject.tree.Node.taxon` attribute. Leaf nodes usually have their :attr:`~dendropy.dataobject.tree.Node.taxon` attribute set, pointing to |Taxon| object associated with that tip of the tree. The :attr:`~dendropy.dataobject.tree.Node.label` attribute will be set if the source tree has internal node labels, though, of course, you can also assign a value to this programmatically.

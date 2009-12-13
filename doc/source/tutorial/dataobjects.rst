@@ -7,25 +7,25 @@ Introduction
 
 Phylogenetic data in DendroPy is represented by one or more objects of the following classes:
 
-    :class:`~dendropy.dataobject.taxon.Taxon`
+    |Taxon|
         A representation of an operational taxonomic unit, with an attribute, :attr:`~dendropy.dataobject.taxon.Taxon.label`, corresponding to the taxon label.
 
-    :class:`~dendropy.dataobject.taxon.TaxonSet`
-        A collection of :class:`~dendropy.dataobject.taxon.Taxon` objects representing a distinct definition of taxa (for example, as specified explicitly in a NEXUS "TAXA" block, or implicitly in the set of all taxon labels used across a NEWICK tree file).
+    |TaxonSet|
+        A collection of |Taxon| objects representing a distinct definition of taxa (for example, as specified explicitly in a NEXUS "TAXA" block, or implicitly in the set of all taxon labels used across a NEWICK tree file).
 
-    :class:`~dendropy.dataobject.tree.Tree`
-        A collection of :class:`~dendropy.dataobject.tree.Node` and :class:`~dendropy.dataobject.tree.Edge` objects representing a phylogenetic tree.
-        Each :class:`~dendropy.dataobject.tree.Tree` object maintains a reference to a :class:`~dendropy.dataobject.taxon.TaxonSet` object in its attribute, :attr:`~dendropy.dataobject.tree.Tree.taxon_set`, which specifies the set of taxa that are referenced by the tree and its nodes. Each :class:`~dendropy.dataobject.tree.Node` object has a :attr:`~dendropy.dataobject.tree.Node.taxon` attribute (which points to a particular :class:`~dendropy.dataobject.taxon.Taxon` object if there is an operational taxonomic unit associated with this node, or is :keyword:`None` if not), a :attr:`~dendropy.dataobject.tree.Node.parent_node` attribute (which will be :keyword:`None` if the :class:`~dendropy.dataobject.tree.Node` has no parent, e.g., a root node), a :class:`~dendropy.dataobject.tree.Edge` attribute, as well as a list of references to child nodes, a copy of which can be obtained by calling :meth:`~dendropy.dataobject.tree.Node.child_nodes()`.
+    |Tree|
+        A collection of |Node| and |Edge| objects representing a phylogenetic tree.
+        Each |Tree| object maintains a reference to a |TaxonSet| object in its attribute, :attr:`~dendropy.dataobject.tree.Tree.taxon_set`, which specifies the set of taxa that are referenced by the tree and its nodes. Each |Node| object has a :attr:`~dendropy.dataobject.tree.Node.taxon` attribute (which points to a particular |Taxon| object if there is an operational taxonomic unit associated with this node, or is :keyword:`None` if not), a :attr:`~dendropy.dataobject.tree.Node.parent_node` attribute (which will be :keyword:`None` if the |Node| has no parent, e.g., a root node), a |Edge| attribute, as well as a list of references to child nodes, a copy of which can be obtained by calling :meth:`~dendropy.dataobject.tree.Node.child_nodes()`.
 
-    :class:`~dendropy.dataobject.tree.TreeList`
-        A :class:`list` of :class:`~dendropy.dataobject.tree.Tree` objects. A :class:`~dendropy.dataobject.tree.TreeList` object has an attribute, :attr:`~dendropy.dataobject.tree.TreeList.taxon_set`, which specifies the set of taxa that are referenced by all member :class:`~dendropy.dataobject.tree.Tree` elements. This is enforced when a :class:`~dendropy.dataobject.tree.Tree` object is added to a :class:`~dendropy.dataobject.tree.TreeList`, with the :class:`~dendropy.dataobject.taxon.TaxonSet` of the :class:`~dendropy.dataobject.tree.Tree` object and all :class:`~dendropy.dataobject.taxon.Taxon` references of the :class:`~dendropy.dataobject.tree.Node` objects in the :class:`~dendropy.dataobject.tree.Tree` mapped to the :class:`~dendropy.dataobject.taxon.TaxonSet` of the :class:`~dendropy.dataobject.tree.TreeList`.
+    |TreeList|
+        A :class:`list` of |Tree| objects. A |TreeList| object has an attribute, :attr:`~dendropy.dataobject.tree.TreeList.taxon_set`, which specifies the set of taxa that are referenced by all member |Tree| elements. This is enforced when a |Tree| object is added to a |TreeList|, with the |TaxonSet| of the |Tree| object and all |Taxon| references of the |Node| objects in the |Tree| mapped to the |TaxonSet| of the |TreeList|.
 
-    :class:`~dendropy.dataobject.char.CharacterMatrix`
-        Representation of character data, with specializations for different data types: :class:`~dendropy.dataobject.char.DnaCharacterMatrix`, :class:`~dendropy.dataobject.char.RnaCharacterMatrix`, :class:`~dendropy.dataobject.char.ProteinCharacterMatrix`, :class:`~dendropy.dataobject.char.StandardCharacterMatrix`, :class:`~dendropy.dataobject.char.ContinuousCharacterMatrix`, etc. A :class:`~dendropy.dataobject.char.CharacterMatrix` can treated very much like a :class:`dict` object, with
-        :class:`~dendropy.dataobject.taxon.Taxon` objects as keys and character data as values associated with those keys.
+    |CharacterMatrix|
+        Representation of character data, with specializations for different data types: |DnaCharacterMatrix|, |RnaCharacterMatrix|, |ProteinCharacterMatrix|, |StandardCharacterMatrix|, |ContinuousCharacterMatrix|, etc. A |CharacterMatrix| can treated very much like a :class:`dict` object, with
+        |Taxon| objects as keys and character data as values associated with those keys.
 
-    :class:`~dendropy.dataobject.dataset.DataSet`
-        A meta-collection of phylogenetic data, consisting of lists of multiple :class:`~dendropy.dataobject.taxon.TaxonSet` objects (:attr:`~dendropy.dataobject.DataSet.taxon_sets`), :class:`~dendropy.dataobject.tree.TreeList` objects (:attr:`~dendropy.dataobject.DataSet.tree_lists`), and :class:`~dendropy.dataobject.char.CharacterMatrix` objects (:attr:`~dendropy.dataobject.DataSet.char_matrices`).
+    |DataSet|
+        A meta-collection of phylogenetic data, consisting of lists of multiple |TaxonSet| objects (:attr:`~dendropy.dataobject.DataSet.taxon_sets`), |TreeList| objects (:attr:`~dendropy.dataobject.DataSet.tree_lists`), and |CharacterMatrix| objects (:attr:`~dendropy.dataobject.DataSet.char_matrices`).
 
 Creating New (Empty) Objects
 ============================
@@ -49,7 +49,7 @@ Or import the names directly::
 Creating and Populating New Objects
 ===================================
 
-The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterMatrix`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support ":meth:`get_from_*()`" factory methods that allow for the simultaneous instantiation and population of the objects from a data source:
+The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all support ":meth:`get_from_*()`" factory methods that allow for the simultaneous instantiation and population of the objects from a data source:
 
     - :meth:`get_from_stream(src, format, **kwargs)`
         Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the format as the second.
@@ -69,7 +69,7 @@ All these methods minimally take a source and format reference as arguments and 
     >>> std1 = dendropy.StandardCharacterMatrix.get_from_path("python_morph.nex", "nexus")
     >>> dataset1 = dendropy.DataSet.get_from_path("pythonidae.nex", "nexus")
 
-The format specification can be one of: "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc. Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.tree.TreeList` object from a FASTA-formatted data source).
+The format specification can be one of: "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc. Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
 
 Various keyword arguments can also be passed to these methods which customize or control how the data is parsed and mapped into DendroPy object space.
 These are discussed below.
@@ -77,7 +77,7 @@ These are discussed below.
 Reading and Populating (or Repopulating) Existing Objects
 =========================================================
 
-The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterMatrix`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support a suite of ":meth:`read_from_*()`" instance methods that parallels the ":meth:`get_from_*()`" factory methods described above:
+The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all support a suite of ":meth:`read_from_*()`" instance methods that parallels the ":meth:`get_from_*()`" factory methods described above:
 
     - :meth:`read_from_stream(src, format, **kwargs)`
         Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the format as the second.
@@ -88,10 +88,10 @@ The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.T
     - :meth:`read_from_string(src, format, **kwargs)`
         Takes a string specifying containing the source data as the first argument, and a string specifying the format as the second.
 
-When called on an existing :class:`~dendropy.dataobject.tree.TreeList` or :class:`~dendropy.dataobject.dataset.DataSet` object, these methods *add* the data from the data source to the object, whereas when called on an existing :class:`~dendropy.dataobject.tree.Tree` or :class:`~dendropy.dataobject.char.CharacterMatrix` object,  they *replace* the object's data with data from the data source.
+When called on an existing |TreeList| or |DataSet| object, these methods *add* the data from the data source to the object, whereas when called on an existing |Tree| or |CharacterMatrix| object,  they *replace* the object's data with data from the data source.
 As with the ":meth:`get_from_*()`" methods, the format specification can be any supported and type-apppropriate format, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc.
 
-For example, the following accumulates post-burn-in trees from a several different files into a single :class:`~dendropy.dataobject.tree.TreeList` object (the ``tree_offset`` keyword is discussed `here <Customizing_Tree_Creation_and_Reading>`_)::
+For example, the following accumulates post-burn-in trees from a several different files into a single |TreeList| object (the ``tree_offset`` keyword is discussed `here <Customizing_Tree_Creation_and_Reading>`_)::
 
     >>> import dendropy
     >>> post_trees = dendropy.TreeList()
@@ -108,9 +108,9 @@ For example, the following accumulates post-burn-in trees from a several differe
     >>> print(post_trees.description())
     TreeList object at 0x5508a0 (TreeList5572768): 3204 Trees
 
-The :class:`~dendropy.dataobject.tree.TreeList` objects automatically handles taxon management, and ensures that all appended :class:`~dendropy.dataobject.tree.Tree` objects share the same :class:`~dendropy.dataobject.taxon.TaxonSet` reference. Thus all the :class:`~dendropy.dataobject.tree.Tree` objects created and aggregated from the data sources in the example will all share the same :class:`~dendropy.dataobject.taxon.TaxonSet` and :class:`~dendropy.dataobject.taxon.Taxon` objects, which is important if you are going to be carrying comparisons or operations between multiple :class:`~dendropy.dataobject.tree.Tree` objects.
+The |TreeList| objects automatically handles taxon management, and ensures that all appended |Tree| objects share the same |TaxonSet| reference. Thus all the |Tree| objects created and aggregated from the data sources in the example will all share the same |TaxonSet| and |Taxon| objects, which is important if you are going to be carrying comparisons or operations between multiple |Tree| objects.
 
-In contrast to the aggregating behavior of :meth:`read_from_*()` of :class:`~dendropy.dataobject.tree.TreeList` and :class:`~dendropy.dataobject.dataset.DataSet` objects, the :meth:`read_from_*()` methods of :class:`~dendropy.dataobject.tree.Tree` and :class:`~dendropy.dataobject.char.CharacterMatrix`-derived objects show replacement behavior. For example, the following changes the contents of a :class:`~dendropy.dataobject.tree.Tree` by re-reading it::
+In contrast to the aggregating behavior of :meth:`read_from_*()` of |TreeList| and |DataSet| objects, the :meth:`read_from_*()` methods of |Tree| and |CharacterMatrix|-derived objects show replacement behavior. For example, the following changes the contents of a |Tree| by re-reading it::
 
     >>> import dendropy
     >>> t = dendropy.Tree()
@@ -128,9 +128,9 @@ Customizing Data Creation and Reading
 When specifying a data source from which to create or populate data objects using the :meth:`get_from_*()`, :meth:`read_from_*()`, or passing a data source stream to a constructor, you can also specify keyword arguments that provide fine-grained control over how the data source is parsed.
 Some of these keyword arguments apply generally, regardless of the format of the data source or the data object being created, while others are specific to the data object type or the data source format.
 
-Probably the most import general keyword is the ``taxon_set`` keyword, which passes a :class:`~dendropy.dataobject.taxon.TaxonSet` object to the parser to use to manage all taxon definitions and reference in the data source.
-If not specified, every time a data source is parsed, at least one new :class:`~dendropy.dataobject.taxon.TaxonSet` object will be created for each definition of taxa (e.g., a NEXUS "TAXA" block), and all taxon definitions or references in the data source will be mapped to :class:`~dendropy.dataobject.taxon.Taxon` objects within that :class:`~dendropy.dataobject.taxon.TaxonSet` object.
-If the taxa in the data source correspond to taxa already defined in an existing :class:`~dendropy.dataobject.taxon.TaxonSet` object, you would use the ``taxon_set`` keyword to ensure that this correspondence is maintained within DendroPy.
+Probably the most import general keyword is the ``taxon_set`` keyword, which passes a |TaxonSet| object to the parser to use to manage all taxon definitions and reference in the data source.
+If not specified, every time a data source is parsed, at least one new |TaxonSet| object will be created for each definition of taxa (e.g., a NEXUS "TAXA" block), and all taxon definitions or references in the data source will be mapped to |Taxon| objects within that |TaxonSet| object.
+If the taxa in the data source correspond to taxa already defined in an existing |TaxonSet| object, you would use the ``taxon_set`` keyword to ensure that this correspondence is maintained within DendroPy.
 More details on this are given in the :doc:`taxa` article.
 
 With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=True``.
@@ -142,7 +142,7 @@ Other keyword arguments to customize data creation and reading, such as ``tree_o
 Writing or Saving Data
 ======================
 
-The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterMatrix`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes all support the following instance methods for writing data:
+The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all support the following instance methods for writing data:
 
     - :meth:`write_to_stream(dest, format, **kwargs)`
         Takes a file or file-like object opened for writing the data as the first argument, and a string specifying the format as the second.
@@ -155,7 +155,7 @@ The :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.T
 
 As above, the format specification can be any supported and type-apppropriate format, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc., and, as above, depending on the object and format, additional keyword arguments may be specified.
 
-For example, to print a :class:`~dendropy.dataobject.tree.Tree` object without branch lengths or internal labels (default is to write both, if present)::
+For example, to print a |Tree| object without branch lengths or internal labels (default is to write both, if present)::
 
     >>> import dendropy
     >>> mle_tree = dendropy.Tree.get_from_path("pythonidae.mle.nex", "nexus")
@@ -203,9 +203,9 @@ Collecting data from multiple sources and writing to a NEXUS-formatted file::
     >>> ds.read_from_path("pythonidae.mle.tre", "nexus", taxon_set=ds.taxon_sets[0])
     >>> ds.write_to_path("pythonidae_combined.nex", "nexus")
 
-Note how, after the first data source has been loaded, the resulting :class:`~dendropy.dataobject.taxon.TaxonSet` (i.e., the first one) is passed to the subsequent :meth:`read_from_path()` statements, to ensure that the same taxa are referenced as objects corresponding to the additional data sources are created. Otherwise, as each data source is read, a new :class:`~dendropy.dataobject.taxon.TaxonSet` will be created, and this will result in multiple :class:`~dendropy.dataobject.taxon.TaxonSet` objects in the :class:`~dendropy.dataobject.dataset.DataSet`, with the data from each data source associated with their own, distinct :class:`~dendropy.dataobject.taxon.TaxonSet`.
+Note how, after the first data source has been loaded, the resulting |TaxonSet| (i.e., the first one) is passed to the subsequent :meth:`read_from_path()` statements, to ensure that the same taxa are referenced as objects corresponding to the additional data sources are created. Otherwise, as each data source is read, a new |TaxonSet| will be created, and this will result in multiple |TaxonSet| objects in the |DataSet|, with the data from each data source associated with their own, distinct |TaxonSet|.
 
-A better way to do this, described in detail in :doc:`taxa`, is to use the "attached taxon set" mode :class:`~dendropy.dataobject.dataset.DataSet` object::
+A better way to do this, described in detail in :doc:`taxa`, is to use the "attached taxon set" mode |DataSet| object::
 
     >>> import dendropy
     >>> ds = dendropy.DataSet(attached_taxon_set=True)
@@ -218,7 +218,7 @@ A better way to do this, described in detail in :doc:`taxa`, is to use the "atta
 Examining Data Objects
 ======================
 
-High-level summaries of the contents of DendroPy phylogenetic data objects are given by the :meth:`description()` instance method of the :class:`~dendropy.dataobject.tree.Tree`, :class:`~dendropy.dataobject.tree.TreeList`, :class:`~dendropy.dataobject.char.CharacterMatrix`-derived, and :class:`~dendropy.dataobject.dataset.DataSet` classes.
+High-level summaries of the contents of DendroPy phylogenetic data objects are given by the :meth:`description()` instance method of the |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes.
 This method optionally takes a numeric value as its first argument that determines the level of detail (or depth) of the summary::
 
     >>> import dendropy
