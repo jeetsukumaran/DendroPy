@@ -101,7 +101,7 @@ class PaupRunner(object):
             _LOG.error(stderr)
             _LOG.error("\n*** COMMANDS SENT TO PAUP ***\n")
             _LOG.error(commands)
-            sys.exit(1)
+            raise RuntimeError('PAUP failed with message "%s"' % stderr)
         self.output.extend(results)
         return results
 
