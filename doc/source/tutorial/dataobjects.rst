@@ -71,6 +71,15 @@ All these methods minimally take a source and format reference as arguments and 
 
 The format specification can be one of: "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc. Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
 
+Alternatively, you can also pass a file-like object and format specification to the constructor of these classes using the keyword arguments ``stream'' and ``format'' respectively::
+
+    >>> import dendropy
+    >>> tree1 = dendropy.Tree(stream=open("mle.tre"), format="newick")
+    >>> tree_list1 = dendropy.TreeList(stream=open("pythonidae.mcmc.nex"), format="nexus")
+    >>> dna1 = dendropy.DnaCharacterMatrix(stream=open("pythonidae.fasta"), format="dnafasta")
+    >>> std1 = dendropy.StandardCharacterMatrix(stream=open("python_morph.nex"), format="nexus")
+    >>> dataset1 = dendropy.DataSet(stream=open("pythonidae.nex"), format="nexus")
+
 Various keyword arguments can also be passed to these methods which customize or control how the data is parsed and mapped into DendroPy object space.
 These are discussed below.
 

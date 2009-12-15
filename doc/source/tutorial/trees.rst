@@ -9,7 +9,6 @@ Every |Node| object maintains a list of its immediate child |Node| objects as we
 You can request a shallow-copy :func:`~list` of child |Node| objects using the :meth:`~dendropy.dataobject.tree.Node.child_nodes()` method, and you can access the parent |Node| object directly through the :attr:`~dendropy.dataobject.tree.Node.parent_node` attribute.
 By definition, the :attr:`~dendropy.dataobject.tree.Tree.seed_node` has no parent node, leaf nodes have no child nodes, and internal nodes have both parent nodes and child nodes.
 
-
 .. _Customizing_Tree_Creation_and_Reading:
 
 Customizing Tree Creation and Reading
@@ -85,6 +84,28 @@ In addition, you can specify a ``default_as_rooted`` keyword argument, which, if
 Otherwise the rooting will follow the ``[&R]``/``[&U]`` commands.
 Conversely, if ``default_as_rooted`` is :keyword:`False`, all trees will be interpreted as unrooted if the ``[&R]``/``[&U]`` comment tags are not given.
 Again, for semantic clarity, you can also specify ``default_as_unrooted`` to be :keyword:`True` to assume all trees are unrooted if not explicitly specified, though, as this is default behavior, this should not be neccessary.
+
+Efficiently Iterating Over Trees in a File
+==========================================
+
+If you need to process a collection of trees defined in a file source, you can read the trees into a |TreeList| object and iterate over the resulting collection::
+
+    >>> import dendropy
+    >>> trees = dendropy.TreeList.get_from_path('pythonidae.beast-mcmc.trees', 'nexus')
+    >>> for tree in trees:
+    ...     print(tree.as_string('newick'))
+
+In the above, the entire data source is parsed and stored in the ``trees`` object before being processed in the subsequent lines.
+In some cases, you might not need to maintain all the trees in memory at the same time.
+For example, you might be interested in calculating the distribution of a statistic over a collection of trees, but have no need to refer to any of the trees after the statistic has been calculated.
+In this case, it might be more efficient to use the :func:`~dendropy.dataio.tree_source_iter()` function.
+This takes a file-like object as its first argument and a format specification as the second and returns an iterator over the trees in the file.
+Additional keyword arguments to customize the parsing are the same as that for the general :meth:`get_from_*()` and :meth:`read_from_*()` methods.
+For example, the following script reads a model tree from a file, and then iterates over a collection of MCMC trees in another file, calculating a storing the symmetric distance between the model tree and each of the MCMC trees one at time:
+
+.. literalinclude:: /examples/tree_iter1.py
+    :linenos:
+
 
 
 Tree Traversal
