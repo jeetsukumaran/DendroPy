@@ -106,7 +106,20 @@ For example, the following script reads a model tree from a file, and then itera
 .. literalinclude:: /examples/tree_iter1.py
     :linenos:
 
+Note how a |TaxonSet| object is created and passed to both the :meth:`~dendropy.dataobject.Tree.get_from_path()` and the :func:`~dendropy.dataio.tree_source_iter()` functions using the ``taxon_set`` keyword argument.
+This is to ensure that the corresponding taxa in both sources get mapped to the same |Taxon| objects in DendroPy object space, so as to enable comparisons of the trees.
+If this was not done, then each tree would have its own distinct |TaxonSet| object (and associated |Taxon| objects), making comparisons impossible.
 
+Also note how the ``tree_offset`` keyword is used to skip over the burn-in trees from the MCMC sample.
+
+If you want to iterate over trees in multiple sources, you can use the :func:`~dendropy.dataio.multi_tree_source_iter()`.
+This takes a list of file-like objects *or* a list of filepath strings as its first argument, and a format-specification string as its second argument.
+Again, other keyword arguments supported by the general :meth:`get_from_*()` and :meth:`read_from_*()` methods are also available.
+
+For example:
+
+.. literalinclude:: /examples/tree_iter2.py
+    :linenos:
 
 Tree Traversal
 ==============

@@ -71,7 +71,7 @@ All these methods minimally take a source and format reference as arguments and 
 
 The format specification can be one of: "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc. Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
 
-Alternatively, you can also pass a file-like object and format specification to the constructor of these classes using the keyword arguments ``stream'' and ``format'' respectively::
+Alternatively, you can also pass a file-like object and format specification to the constructor of these classes using the keyword arguments ``stream`` and ``format`` respectively::
 
     >>> import dendropy
     >>> tree1 = dendropy.Tree(stream=open("mle.tre"), format="newick")
