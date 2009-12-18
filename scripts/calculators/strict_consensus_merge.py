@@ -3,17 +3,17 @@ import sys
 import copy
 import logging
 
-from dendropy import dataio
-from dendropy.splits import encode_splits, split_to_list, count_bits, lowest_bit_only
-from dendropy import get_logger
-from dendropy.treestruct import collapse_clade, collapse_edge
-from dendropy.trees import format_split
+from dendropy.utility.messaging import get_logger
+_LOG = get_logger(__name__)
 
-_LOG = get_logger('scripts.strict_consensus_merge')
+from dendropy.treesplit import encode_splits, count_bits, lowest_bit_only
+from dendropy.treemanip import collapse_clade, collapse_edge
+from dendropy.dataobject.tree import format_split
+from dendropy import DataSet
 verbose = False
 IS_DEBUG_LOGGING = _LOG.isEnabledFor(logging.DEBUG)
 
-from dendropy.utils import NormalizedBitmaskDict
+from dendropy.utility.containers import NormalizedBitmaskDict
 
 def reroot_on_lowest_common_index_path(t, common_mask):
     """This operation is only for unrooted trees that are being merged using
@@ -33,15 +33,15 @@ def reroot_on_lowest_common_index_path(t, common_mask):
     # walk back toward the root until we find a node that has another bit
     p = curr_n.parent_node
     while p:
-        if (p.edge.clade_mask & common_mask) != l:
+        if (p.edge.split_bitmask & common_mask) != l:
             break
         curr_n = p
         p = curr_n.parent_node
 
     without_lowest = common_mask^l
 
-    taxa_mask = t.seed_node.edge.clade_mask
-    if (curr_n.edge.clade_mask & common_mask) == l:
+    taxa_mask = t.seed_node.edge.split_bitmask
+    if (curr_n.edge.split_bitmask & common_mask) == l:
         # we did not make it to the root.  Make curr_n, the first_child of the root
         t.to_outgroup_position(curr_n, splits=True, delete_deg_two=True)
         avoid = curr_n
@@ -51,7 +51,7 @@ def reroot_on_lowest_common_index_path(t, common_mask):
             while True:
                 curr_n = nd_source.next()
                 if curr_n is not avoid:
-                    cm = (curr_n.edge.clade_mask & without_lowest)
+                    cm = (curr_n.edge.split_bitmask & without_lowest)
                     if cm:
                         if cm == without_lowest:
                             r = t.seed_node
@@ -74,7 +74,7 @@ def reroot_on_lowest_common_index_path(t, common_mask):
     try:
         while True:
             c = nd_source.next()
-            cm = c.edge.clade_mask
+            cm = c.edge.split_bitmask
             masked_cm = cm & common_mask
             if masked_cm:
                 if masked_cm == without_lowest:
@@ -109,7 +109,7 @@ def _collapse_paths_not_found(f, s, other_dict=None):
         if masked_split not in s:
             for edge in path:
                 if other_dict:
-                    del other_dict[edge.clade_mask]
+                    del other_dict[edge.split_bitmask]
                 collapse_edge(edge)
             to_del.append(masked_split)
     for k in to_del:
@@ -119,19 +119,19 @@ def _collapse_paths_not_found(f, s, other_dict=None):
 def add_to_scm(to_modify, to_consume, rooted=False, gordons_supertree=False):
     """Adds the tree `to_consume` to the tree `to_modify` in a strict consensus
     merge operation.  Both trees must have had encode_splits called on them."""
-    assert(to_modify.taxa_block is to_consume.taxa_block)
-    taxa_block = to_consume.taxa_block
+    assert(to_modify.taxon_set is to_consume.taxon_set)
+    taxon_set = to_consume.taxon_set
     if rooted:
         raise NotImplementedError("rooted form of add_to_scm not implemented")
     to_mod_root = to_modify.seed_node
-    to_mod_split = to_mod_root.edge.clade_mask
+    to_mod_split = to_mod_root.edge.split_bitmask
 
     to_consume_root = to_consume.seed_node
-    to_consume_split = to_consume_root.edge.clade_mask
+    to_consume_split = to_consume_root.edge.split_bitmask
 
     leaf_intersection = to_mod_split & to_consume_split
     if IS_DEBUG_LOGGING:
-        _LOG.debug("add_to_scm:\n  %s\n  + %s\n%s" % (str(to_modify), str(to_consume), format_split(leaf_intersection, taxa=taxa_block)))
+        _LOG.debug("add_to_scm:\n  %s\n  + %s\n%s" % (str(to_modify), str(to_consume), format_split(leaf_intersection, taxa=taxon_set)))
 
     n_common_leaves = count_bits(leaf_intersection)
     if n_common_leaves < 2:
@@ -141,13 +141,13 @@ def add_to_scm(to_modify, to_consume, rooted=False, gordons_supertree=False):
         # SCM with 2 leaves in common results in a polytomy
         collapse_clade(to_mod_root)
         collapse_clade(to_consume_root)
-        leaves_to_steal = [c for c in to_consume_root.child_nodes() if not (leaf_intersection & c.edge.clade_mask)]
+        leaves_to_steal = [c for c in to_consume_root.child_nodes() if not (leaf_intersection & c.edge.split_bitmask)]
         for leaf in leaves_to_steal:
             to_mod_root.add_child(leaf)
-            to_mod_root.edge.clade_mask |= leaf.edge.clade_mask
-        to_modify.split_edges = {to_mod_root.edge.clade_mask : to_mod_root.edge}
+            to_mod_root.edge.split_bitmask |= leaf.edge.split_bitmask
+        to_modify.split_edges = {to_mod_root.edge.split_bitmask : to_mod_root.edge}
         for child in to_mod_root.child_nodes():
-            to_modify.split_edges[child.edge.clade_mask] = child.edge
+            to_modify.split_edges[child.edge.split_bitmask] = child.edge
         return
     
     # at least 3 leaves in common
@@ -168,27 +168,27 @@ def add_to_scm(to_modify, to_consume, rooted=False, gordons_supertree=False):
             to_consume.debug_check_tree(splits=True, logger_obj=_LOG)
 
         to_mod_root = to_modify.seed_node
-        assert(to_mod_root.edge.clade_mask == to_mod_split)
+        assert(to_mod_root.edge.split_bitmask == to_mod_split)
         to_consume_root = to_consume.seed_node
-        assert(to_consume_root.edge.clade_mask == to_consume_split)
+        assert(to_consume_root.edge.split_bitmask == to_consume_split)
 
     for s, e in tmse.iteritems():
-        s = e.clade_mask
+        s = e.split_bitmask
         masked = s & leaf_intersection
         if masked and masked != leaf_intersection:
             e_list = to_mod_relevant_splits.setdefault(masked, [])
             e_list.append((s, e))
 
     for s, e in to_consume.split_edges.iteritems():
-        s = e.clade_mask
+        s = e.split_bitmask
         masked = s & leaf_intersection
         if masked and masked != leaf_intersection:
             e_list = to_consume_relevant_splits.setdefault(masked, [])
             e_list.append((s, e))
 
     # Because each of these paths radiates away from the root (none of the paths
-    #   cross the root), the clade_masks for deeper edges will be supersets
-    #   of the clade_masks for shallower nodes.  Thus if we reverse sort we
+    #   cross the root), the split_bitmasks for deeper edges will be supersets
+    #   of the split_bitmasks for shallower nodes.  Thus if we reverse sort we
     #   get the edges in the order root->tip
     for split, path in to_mod_relevant_splits.iteritems():
         path.sort(reverse=True)
@@ -218,29 +218,29 @@ def add_to_scm(to_modify, to_consume, rooted=False, gordons_supertree=False):
     #       - attached to "relevant" nodes
     # We simply move these subtrees from the to_consume tree to the appropriate
     #   node in to_modify
-    to_steal = [i for i in to_consume_root.child_nodes() if (i.edge.clade_mask & leaf_intersection) == 0]
+    to_steal = [i for i in to_consume_root.child_nodes() if (i.edge.split_bitmask & leaf_intersection) == 0]
     for child in to_steal:
         to_mod_root.add_child(child)
-        to_mod_root.edge.clade_mask |= child.edge.clade_mask
+        to_mod_root.edge.split_bitmask |= child.edge.split_bitmask
         
     for masked_split, to_consume_path in to_consume_relevant_splits.iteritems():
         to_mod_path = to_mod_relevant_splits.get(masked_split)
         if IS_DEBUG_LOGGING and to_mod_path is None: #to_mod_path is None:
-            _LOG.debug("%s = mask" % format_split(leaf_intersection, taxa=taxa_block))
-            _LOG.debug("%s = masked" % format_split(masked_split, taxa=taxa_block))
-            _LOG.debug("%s = raw" % format_split(to_consume_path[-1].clade_mask, taxa=taxa_block))
+            _LOG.debug("%s = mask" % format_split(leaf_intersection, taxa=taxon_set))
+            _LOG.debug("%s = masked" % format_split(masked_split, taxa=taxon_set))
+            _LOG.debug("%s = raw" % format_split(to_consume_path[-1].split_bitmask, taxa=taxon_set))
             for k, v in to_mod_relevant_splits.iteritems():
-                _LOG.debug("%s in to_mod_relevant_splits" % format_split(k, taxa=taxa_block))
+                _LOG.debug("%s in to_mod_relevant_splits" % format_split(k, taxa=taxon_set))
                 
         assert to_mod_path is not None
         to_mod_head = to_mod_path[-1].head_node
         to_mod_head_edge = to_mod_head.edge
         to_consume_head = to_consume_path[-1].head_node
         for child in to_consume_head.child_nodes():
-            if (child.edge.clade_mask & leaf_intersection) == 0:
+            if (child.edge.split_bitmask & leaf_intersection) == 0:
                 # child is the root of a subtree that has no children in the leaf_intersection
                 to_mod_head.add_child(child)
-                to_mod_head_edge.clade_mask |= child.edge.clade_mask
+                to_mod_head_edge.split_bitmask |= child.edge.split_bitmask
         if len(to_consume_path) > 1:
             if len(to_mod_path) > 1:
                 # collision
@@ -267,7 +267,7 @@ def add_to_scm(to_modify, to_consume, rooted=False, gordons_supertree=False):
                                 collapse_clade(child)
                                 if not child.is_leaf():
                                     collapse_edge(child.edge)
-                                mid_node.edge.clade_mask |= child.edge.clade_mask
+                                mid_node.edge.split_bitmask |= child.edge.split_bitmask
                 else:
                     for edge in to_mod_path[1:-1]:
                         collapse_edge(edge)
@@ -278,7 +278,7 @@ def add_to_scm(to_modify, to_consume, rooted=False, gordons_supertree=False):
                         for child in p.child_nodes():
                             if child is not avoid:
                                 mid_node.add_child(child)
-                                mid_node.edge.clade_mask |= child.edge.clade_mask
+                                mid_node.edge.split_bitmask |= child.edge.split_bitmask
             else:
                 # we have to move the subtrees from to_consume to to_modify
                 to_mod_edge = to_mod_path[0]
@@ -336,7 +336,6 @@ def strict_consensus_merge(trees_to_merge, copy_trees=False, rooted=False, gordo
 
 
 if __name__ == '__main__':
-    from dendropy.dataio import trees_from_newick, dataset_from_file
     from optparse import OptionParser
     parser = OptionParser()
     parser.add_option('-f', '--format', dest='format',
@@ -349,26 +348,14 @@ if __name__ == '__main__':
     format = options.format.upper()
 
     trees = []
-    if format == "NEXUS" or format == "NEXML":
-        for fn in args:
-            fo = open(fn, "rU")
-            d = dataset_from_file(fo, format=format)
-            t = []
-            for tb in d.trees_blocks:
-                t.extend(tb)
-            trees.extend(t)
-    elif format == "PHYLIP" or format == "NEWICK":
-        newicks = []
-        for f in args:
-            fo = open(f, "rU")
-            for line in fo:
-                l = line.strip()
-                if l:
-                    newicks.append(l)
-        dataset = trees_from_newick(newicks)
-        trees = [i[0] for i in dataset.trees_blocks]
-    else:
-        sys.exit("Unknown format %s" % format)
+    dataset = DataSet(attach_taxon_set=True)
+    if format == "PHYLIP":
+        format = "NEWICK"
+    for f in args:
+        fo = open(f, "rU")
+        dataset.read(stream=fo, format=format)
+    for tl in dataset.tree_lists:
+        trees.extend(tl)
     
     o = strict_consensus_merge(trees, gordons_supertree=options.gordons)
     sys.stdout.write("%s;\n" % str(o))
