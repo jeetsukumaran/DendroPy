@@ -111,8 +111,9 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
         elif len(args) == 1:
             if hasattr(args[0], "__iter__") and not isinstance(args[0], str):
-                if ("stream" in kwargs and kwargs["stream"] is not None) \
-                        or ("format" in kwargs and kwargs["format"] is not None):
+                stream = kwargs.get("stream")
+                format = kwargs.get("format")
+                if (stream is not None) or (format is not None):
                     raise error.MultipleInitializationSourceError(class_name=self.__class__.__name__, arg=args[0])
                 if isinstance(args[0], TreeList):
                     for t in args[0]:
@@ -1256,6 +1257,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                     if check_splits:
                         cm |= child.edge.split_bitmask
             elif check_splits:
+                assert(curr_node.taxon)
                 cm = taxon_set.taxon_bitmask(curr_node.taxon)
             if check_splits:
                 assert((cm & taxa_mask) == split_bitmask)
