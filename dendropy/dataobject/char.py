@@ -813,6 +813,26 @@ class ContinuousCharacterMatrix(CharacterMatrix):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
         CharacterMatrix.__init__(self, *args, **kwargs)
 
+    def __deepcopy__(self, memo):
+        o = TaxonSetLinked.__deepcopy__(self, memo)
+        for k, v in self.__dict__.iteritems():
+            if k not in ["taxon_set",
+                         "_oid",
+                         "taxon_seq_map"]:
+                o.__dict__[k] = copy.deepcopy(v, memo)
+        for taxon, cdv in self.taxon_seq_map.items():
+            otaxon = memo[id(taxon)]
+            ocdv = CharacterDataVector(oid=cdv.oid, label=cdv.label, taxon=otaxon)
+            for cell in cdv:
+                if cell.character_type is not None:
+                    character_type = memo[id(cell.character_type)]
+                else:
+                    character_type = None
+                ocdv.append(CharacterDataCell(value=cell.value, character_type=character_type))
+            o.taxon_seq_map[otaxon] = ocdv
+            memo[id(self.taxon_seq_map[taxon])] = o.taxon_seq_map[otaxon]
+        return o
+
 class DiscreteCharacterMatrix(CharacterMatrix):
     """Character data container/manager manager.
 
