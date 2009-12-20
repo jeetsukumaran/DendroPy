@@ -30,6 +30,8 @@ from cStringIO import StringIO
 from dendropy.utility import containers
 from dendropy.utility.error import DataFormatError
 from dendropy import dataobject
+from dendropy.utility import messaging
+_LOG = messaging.get_logger(__name__)
 
 ###############################################################################
 ## RootingInterpreter
@@ -149,6 +151,7 @@ class StrToTaxon(object):
             self.returned_taxon_set = set()
 
     def _returning(self, t, label):
+        #_LOG.debug("Checking if we can return %s" % str(t))
         if (self.returned_taxon_set is not None) and (t is not None):
             if t in self.returned_taxon_set:
                 raise DataFormatError(message="Taxon %s used twice (it appears as %s the second time)" % (str(t), label))
@@ -157,6 +160,8 @@ class StrToTaxon(object):
 
     def get_taxon(self, label):
         t = self.translate.get(label)
+        if t is None:
+            t = self.taxon_set.get_taxon(label=label)
         return self._returning(t, label)
         
     def require_taxon(self, label):
@@ -223,7 +228,11 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
             if encode_splits:
                 split_map[curr_node.edge.split_bitmask] = curr_node.edge
             break
+        #_LOG.debug("token = %s" % token)
         if token == '(':
+            if not curr_node.parent_node:
+                if curr_node.child_nodes():
+                    raise stream_tokenizer.data_format_error("Unexpected '(' after the tree description.  Expecting a label for the root or a ;")
             tmp_node = dataobject.Node()
             if encode_splits:
                 tmp_node.edge.split_bitmask = 0L
@@ -270,8 +279,12 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
             else:
                 is_leaf = curr_node.is_leaf()
                 if is_leaf:
+                    if curr_node.taxon:
+                        raise stream_tokenizer.data_format_error("Multiple labels found for the same leaf (taxon %s and label%s)" % (str(curr_node.taxon), label))
                     t = stt.require_taxon(label=token)
                 else:
+                    if curr_node.label:
+                        raise stream_tokenizer.data_format_error("Multiple labels found for the same leaf (taxon %s and label%s)" % (curr_node.label, label))
                     t = stt.get_taxon(label=token)
                 if t is None:
                     curr_node.label = token
@@ -289,6 +302,8 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
             token = stream_tokenizer.read_next_token()
             if token == ':':
                 edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-+.')
+                if not edge_length_str:
+                    raise stream_tokenizer.data_format_error("Expecting a branch length after : but encountered the end of the tree description" )
                 try:
                     curr_node.edge.length = edge_len_type(edge_length_str)
                 except:
