@@ -32,10 +32,16 @@ from cStringIO import StringIO
 from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
 from dendropy.test.support import datatest
+from dendropy import DataFormatError
 import dendropy
 from dendropy.dataio import newick
 
 class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
+
+    def testBadInit(self):
+        tl = dendropy.TreeList(stream=StringIO("(a,(b,c)) (a,(b,c))"), format="NEWICK")
+        str(tl)
+        self.assertRaises(DataFormatError, dendropy.TreeList, stream=StringIO("(a,(b,c)) (a,(b,c))"), format="NEWICK")
 
     def testTreeListReaderDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
@@ -136,7 +142,7 @@ class NewickEdgeLengthParsing(datatest.DataObjectVerificationTestCase):
 ('T3 is a (nice) taxon':3.3e7,
 T4:4.4e+8)'this is an internal node called "i2"':4.0e+1)i3:4.0E-4,
 (T5:6.7E+2,
-'and this so-called ''node'' is ("T6" with a length of ''7.2E-9'')':7.2E-9)i4:4.0E8)'this is the ''root''':7.0;
+'and this so-called ''node'' is ("T6" with a length of ''7.2E-9'')':7.2E-9)i4:4.0E8)'this is the ''root\'\'\':7.0;
 """, "newick")
         self.assertEquals(len(trees), 1)
         trees[0].debug_check_tree(self.logger)
