@@ -136,21 +136,37 @@ class RootingInterpreter(object):
 
 class StrToTaxon(object):
 
-    def __init__(self, taxon_set, translate_dict=None):
+    def __init__(self, taxon_set, translate_dict=None, allow_repeated_use=False):
+        """If `allow_repeated_use` is True, then get_taxon and require_taxon
+        can be called multiple times to get the same taxon.  If it is false then
+        calling the functions with the same label will generate a DataFormatError
+        indicating that the taxon has been used multiple times."""
         self.taxon_set = taxon_set
         self.translate = translate_dict or {}
+        if allow_repeated_use:
+            self.returned_taxon_set = None
+        else:
+            self.returned_taxon_set = set()
+
+    def _returning(self, t, label):
+        if (self.returned_taxon_set is not None) and (t is not None):
+            if t in self.returned_taxon_set:
+                raise DataFormatError(message="Taxon %s used twice (it appears as %s the second time)" % (str(t), label))
+            self.returned_taxon_set.add(t)
+        return t
 
     def get_taxon(self, label):
-        return self.translate.get(label)
-
+        t = self.translate.get(label)
+        return self._returning(t, label)
+        
     def require_taxon(self, label):
         v = self.get_taxon(label)
         if v is not None:
             return v
         t = self.taxon_set.require_taxon(label=label)
+        return self._returning(t, label)
 #        if t is not None:
 #            self.translate[label] = t #@this could lead to problems when we support multiple taxon blocks, but now it'll speed thing up
-        return t
 
     def index(self, t):
         return self.taxon_set.index(t)
@@ -193,7 +209,7 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
             tree.split_edges = d
         split_map = tree.split_edges
 
-    stt = StrToTaxon(taxon_set, translate_dict)
+    stt = StrToTaxon(taxon_set, translate_dict, allow_repeated_use=False)
 
     tree.seed_node = dataobject.Node()
     curr_node = tree.seed_node

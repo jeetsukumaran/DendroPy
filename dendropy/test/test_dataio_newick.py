@@ -39,9 +39,7 @@ from dendropy.dataio import newick
 class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
 
     def testBadInit(self):
-        tl = dendropy.TreeList(stream=StringIO("(a,(b,c)) (a,(b,c))"), format="NEWICK")
-        str(tl)
-        self.assertRaises(DataFormatError, dendropy.TreeList, stream=StringIO("(a,(b,c)) (a,(b,c))"), format="NEWICK")
+        self.assertRaises(DataFormatError, dendropy.TreeList, stream=StringIO("(a,(b,c)) (b,(a,c))"), format="NEWICK")
 
     def testTreeListReaderDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
