@@ -1859,10 +1859,11 @@ class Node(TaxonLinked):
         `include_internal_labels` is a Boolean.
         """
         is_leaf = (len(self._child_nodes) == 0)
-        include_internal_labels = kwargs.get("include_internal_labels")
-        preserve_spaces = kwargs.get("preserve_spaces", False)
-        if (not is_leaf) and (not include_internal_labels):
-            return ""
+        if (not is_leaf):
+            if kwargs.get("newick", False):
+                return self.as_newick_string()
+            if not kwargs.get("include_internal_labels"):
+                return ""
         try:
             t = self.taxon
             rt = kwargs.get("reverse_translate")
@@ -1878,7 +1879,9 @@ class Node(TaxonLinked):
             except AttributeError:
                 if not is_leaf:
                     tag = self.oid
-        if "raw_labels" in kwargs:
+        preserve_spaces = kwargs.get("preserve_spaces", False)
+        raw_labels = kwargs.get("raw_labels", False)
+        if raw_labels:
             return tag
         return texttools.escape_nexus_token(tag, preserve_spaces=preserve_spaces)
 

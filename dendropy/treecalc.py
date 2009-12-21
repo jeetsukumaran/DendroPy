@@ -23,7 +23,7 @@
 """
 Tree metrics/statistics calculations.
 """
-
+from itertools import izip
 from math import sqrt
 from dendropy import treesplit
 
@@ -271,4 +271,69 @@ def false_positives_and_negatives(reference_tree, test_tree):
     return false_positives, false_negatives
 
 
+def fitch_down_pass(postorder_node_list, attr_name="state_sets", weight_list=None):
+    """Reads `attr_name` attribute of leaves as an iterable of state sets, and 
+    sets that attribute for internal nodes using the ``preliminary phase'' of
+    Fitch's (1971) unordered parsimony algorithm.
+    Returns the parsimony score.
+    weight_list is an optional vector of weights for each pattern.
+    """
+    score = 0
+    for nd in postorder_node_list:
+        c = nd.child_nodes()
+        if not c:
+            continue
+        assert(len(c) == 2)
+        left_c, right_c = c
+        left_ssl = getattr(left_c, attr_name)
+        right_ssl = getattr(right_c, attr_name)
+        result = []
+        for n, ssp in enumerate(izip(left_ssl, right_ssl)):
+            left_ss, right_ss = ssp
+            inter = set.intersection(left_ss, right_ss)
+            if inter:
+                result.append(inter)
+            else:
+                if weight_list is None:
+                    wt = 1
+                else:
+                    wt = weight_list[n]
+                score += wt
+                result.append(set.union(left_ss, right_ss))
+        setattr(nd, attr_name, result)
+    return score
+
+def fitch_up_pass(preorder_node_list, attr_name="state_sets"):
+    """Reads `attr_name` attribute of nodes as an iterable of state sets, and 
+    sets that attribute for internal nodes using the ``final phase'' of Fitch's
+    (1971) unordered parsimony algorithm.
+    """
+    for nd in preorder_node_list:
+        c = nd.child_nodes()
+        p = nd.parent_node
+        if (not c) or (not p):
+            continue
+        assert(len(c) == 2)
+        left_c, right_c = c
+        left_ssl = getattr(left_c, attr_name)
+        right_ssl = getattr(right_c, attr_name)
+        par_ssl = getattr(p, attr_name)
+        curr_ssl = getattr(nd, attr_name)
+        result = []
+        for n, ssp in enumerate(izip(par_ssl, curr_ssl, left_ssl, right_ssl)):
+            par_ss, curr_ss, left_ss, right_ss = ssp
+            
+            down_parup_inter = set.intersection(par_ss, curr_ss)
+            if down_parup_inter == par_ss:
+                final_ss = down_parup_inter
+            else:
+                rl_inter = set.intersection(left_ss, right_ss)
+                if rl_inter:
+                    final_ss = set.union(par_ss, curr_ss)
+                else:
+                    in_par_and_left = set.intersection(par_ss, left_ss)
+                    in_par_and_right = set.intersection(par_ss, right_ss)
+                    final_ss = set.union(in_par_and_left, in_par_and_right, curr_ss)
+            result.append(final_ss)
+        setattr(nd, attr_name, result)
 
