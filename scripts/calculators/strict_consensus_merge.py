@@ -5,7 +5,7 @@ import logging
 
 from dendropy.utility.messaging import get_logger
 _LOG = get_logger(__name__)
-from dendropy import DataSet
+from dendropy import DataSet, TaxonSet
 verbose = False
 from dendropy.treesum import inplace_strict_consensus_merge
 
@@ -22,7 +22,8 @@ if __name__ == '__main__':
     format = options.format.upper()
 
     trees = []
-    dataset = DataSet(attach_taxon_set=True)
+    taxon_set = TaxonSet()
+    dataset = DataSet(taxon_set=taxon_set)
     if format == "PHYLIP":
         format = "NEWICK"
     for f in args:

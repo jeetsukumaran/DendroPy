@@ -60,7 +60,9 @@ from dendropy import PACKAGE_VERSION
 
 SCRIPT_SUBPATHS = [
     ['scripts', 'sumtrees', 'sumtrees.py'],
-    ['scripts', 'sumtrees', 'cattrees.py']
+    ['scripts', 'sumtrees', 'cattrees.py'],
+    ['scripts', 'calculators', 'strict_consensus_merge.py'],
+    ['scripts', 'calculators', 'long_branch_symmdiff.py'],
 ]
 SCRIPTS = [os.path.join(*i) for i in SCRIPT_SUBPATHS]
 sys.stderr.write("\nscripts: %s\n" % ", ".join(SCRIPTS))

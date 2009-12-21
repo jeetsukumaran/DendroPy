@@ -3,12 +3,11 @@ import sys
 import copy
 import logging
 import itertools
-from dendropy import dataio
-from dendropy.splits import encode_splits
-from dendropy import get_logger
-from dendropy.treestruct import collapse_edge
-from dendropy.treedists import symmetric_difference
-from dendropy.trees import format_split, Edge
+from dendropy.utility.messaging import get_logger
+from dendropy.treesplit import encode_splits
+from dendropy.treemanip import collapse_edge
+from dendropy.treecalc import symmetric_difference
+from dendropy import format_split, Edge, TaxonSet, DataSet
 
 _LOG = get_logger('scripts.long_branch_symmdiff')
 verbose = False
@@ -59,7 +58,6 @@ def long_branch_symmdiff(trees_to_compare, edge_len_threshold, copy_trees=False,
 
 
 if __name__ == '__main__':
-    from dendropy.dataio import trees_from_newick, dataset_from_file
     from optparse import OptionParser
     parser = OptionParser()
     parser.add_option('-f', '--format', dest='format',
@@ -80,29 +78,17 @@ if __name__ == '__main__':
         except ValueError:
             sys.exit('Expecting the cutoff to be a number found "%s"' % options.cutoff)
         
-    
     trees = []
-    if format == "NEXUS" or format == "NEXML":
-        for fn in args:
-            fo = open(fn, "rU")
-            d = dataset_from_file(fo, format=format)
-            t = []
-            for tb in d.trees_blocks:
-                t.extend(tb)
-            trees.extend(t)
-    elif format == "PHYLIP" or format == "NEWICK":
-        newicks = []
-        for f in args:
-            fo = open(f, "rU")
-            for line in fo:
-                l = line.strip()
-                if l:
-                    newicks.append(l)
-        dataset = trees_from_newick(newicks)
-        trees = [i[0] for i in dataset.trees_blocks]
-    else:
-        sys.exit("Unknown format %s" % format)
-    
+    taxon_set = TaxonSet()
+    dataset = DataSet(taxon_set=taxon_set)
+    if format == "PHYLIP":
+        format = "NEWICK"
+    for f in args:
+        fo = open(f, "rU")
+        dataset.read(stream=fo, format=format)
+    for tl in dataset.tree_lists:
+        trees.extend(tl)
+
     sd_mat = long_branch_symmdiff(trees, cutoff)
     o = sys.stdout
     if options.paup:
