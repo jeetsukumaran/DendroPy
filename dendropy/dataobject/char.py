@@ -533,6 +533,35 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if "label" in kwargs:
             self.label = kwargs["label"]
 
+    def create_taxon_to_state_set_map(self, char_indices=None):
+        """Returns a dictionary that maps taxon objects to lists of sets of state
+        indices
+        if `char_indices` is not None it should be a iterable collection of 
+        character indices to include.
+        """
+        taxon_to_state_indices = {}
+        for t in self.taxon_seq_map.keys():
+            cdv = self[t]
+            if char_indices is None:
+                ci = range(len(cdv))
+            else:
+                ci = char_indices
+            v = []
+            for char_index in ci:
+                cell = cdv[char_index]
+                cell_value = cell.value
+                try:
+                    state_alphabet = cell.character_type.state_alphabet
+                except AttributeError:
+                    state_alphabet = self.default_state_alphabet
+                if cell_value.multistate:
+                    inds = [state_alphabet.index(i) for i in cell_value.member_states]
+                else:
+                    inds = [state_alphabet.index(cell_value)]
+                v.append(set(inds))
+            taxon_to_state_indices[t] = v
+        return taxon_to_state_indices
+
     def clone_from(self, *args):
         if len(args) > 1:
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)

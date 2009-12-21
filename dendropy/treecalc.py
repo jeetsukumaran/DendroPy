@@ -271,42 +271,74 @@ def false_positives_and_negatives(reference_tree, test_tree):
     return false_positives, false_negatives
 
 
-def fitch_down_pass(postorder_node_list, attr_name="state_sets", weight_list=None):
+def fitch_down_pass(postorder_node_list, attr_name="state_sets", weight_list=None, taxa_to_state_set_map=None):
     """Reads `attr_name` attribute of leaves as an iterable of state sets, and 
     sets that attribute for internal nodes using the ``preliminary phase'' of
     Fitch's (1971) unordered parsimony algorithm.
     Returns the parsimony score.
     weight_list is an optional vector of weights for each pattern.
+    
+    `taxa_to_state_set_map` if a child node does not have an attribute with name
+    `attr_name` then the nodes.taxon will be used as a key in taxa_to_state_set_map
+    to find the state set. This allows for the scoring of previously "undecorated"
+    trees.
+    
+    Currently this requires a bifurcating tree (even at the root)
     """
     score = 0
     for nd in postorder_node_list:
         c = nd.child_nodes()
         if not c:
             continue
-        assert(len(c) == 2)
-        left_c, right_c = c
-        left_ssl = getattr(left_c, attr_name)
-        right_ssl = getattr(right_c, attr_name)
-        result = []
-        for n, ssp in enumerate(izip(left_ssl, right_ssl)):
-            left_ss, right_ss = ssp
-            inter = set.intersection(left_ss, right_ss)
-            if inter:
-                result.append(inter)
-            else:
-                if weight_list is None:
-                    wt = 1
+        left_c, right_c = c[:2]
+        remaining = c[2:]
+        try:
+            left_ssl = getattr(left_c, attr_name)
+        except AttributeError:
+            if not taxa_to_state_set_map:
+                raise
+            left_ssl = taxa_to_state_set_map[left_c.taxon]
+
+        while True:
+            try:
+                right_ssl = getattr(right_c, attr_name)
+            except AttributeError:
+                if not taxa_to_state_set_map:
+                    raise
+                right_ssl = taxa_to_state_set_map[right_c.taxon]
+            result = []
+            for n, ssp in enumerate(izip(left_ssl, right_ssl)):
+                left_ss, right_ss = ssp
+                inter = set.intersection(left_ss, right_ss)
+                if inter:
+                    result.append(inter)
                 else:
-                    wt = weight_list[n]
-                score += wt
-                result.append(set.union(left_ss, right_ss))
+                    if weight_list is None:
+                        wt = 1
+                    else:
+                        wt = weight_list[n]
+                    score += wt
+                    result.append(set.union(left_ss, right_ss))
+            if remaining:
+                right_c = remaining.pop(0)
+                left_ssl = result
+            else:
+                break
+                
         setattr(nd, attr_name, result)
     return score
 
-def fitch_up_pass(preorder_node_list, attr_name="state_sets"):
+def fitch_up_pass(preorder_node_list, attr_name="state_sets", taxa_to_state_set_map=None):
     """Reads `attr_name` attribute of nodes as an iterable of state sets, and 
     sets that attribute for internal nodes using the ``final phase'' of Fitch's
     (1971) unordered parsimony algorithm.
+
+    `taxa_to_state_set_map` if a child node does not have an attribute with name
+    `attr_name` then the nodes.taxon will be used as a key in taxa_to_state_set_map
+    to find the state set. This allows for the scoring of previously "undecorated"
+    trees.
+    
+    Currently this requires a bifurcating tree (even at the root)
     """
     for nd in preorder_node_list:
         c = nd.child_nodes()
@@ -315,8 +347,18 @@ def fitch_up_pass(preorder_node_list, attr_name="state_sets"):
             continue
         assert(len(c) == 2)
         left_c, right_c = c
-        left_ssl = getattr(left_c, attr_name)
-        right_ssl = getattr(right_c, attr_name)
+        try:
+            left_ssl = getattr(left_c, attr_name)
+        except AttributeError:
+            if not taxa_to_state_set_map:
+                raise
+            left_ssl = taxa_to_state_set_map[left_c.taxon]
+        try:
+            right_ssl = getattr(right_c, attr_name)
+        except AttributeError:
+            if not taxa_to_state_set_map:
+                raise
+            right_ssl = taxa_to_state_set_map[right_c.taxon]
         par_ssl = getattr(p, attr_name)
         curr_ssl = getattr(nd, attr_name)
         result = []

@@ -118,14 +118,7 @@ if __name__ == '__main__':
             tree = dataset.tree_lists[tree_list_index][tree_index]
             state_alphabet = char_mat.state_alphabets[char_index]
             
-            taxon_to_state_indices = {}
-            for t in taxon_set:
-                cell_value = char_mat[t][char_index].value
-                if cell_value.multistate:
-                    inds = [state_alphabet.index(i) for i in cell_value.member_states]
-                else:
-                    inds = [state_alphabet.index(cell_value)]
-                taxon_to_state_indices[t] = inds
+            taxon_to_state_indices = char_mat.create_taxon_to_state_set_map(char_indices=[char_index])
             
             if not tree.is_rooted:
                 raise ValueError("Tree must be rooted")
@@ -150,26 +143,14 @@ if __name__ == '__main__':
                 if c:
                     if len(c) != 2:
                         raise ValueError("Tree must be fully resolved")
-                    nd.state_sets = [set()]
-                else:
-                    ss = taxon_to_state_indices[nd.taxon]
-                    nd.state_sets = [set(ss)]
-                _LOG.debug("%s state_set = %s" % (nd.get_node_str(newick=True), str(nd.state_sets[0])))
 
-            _LOG.debug("Down-pass")
-            fitch_down_pass(node_list)
+            fitch_down_pass(node_list, taxa_to_state_set_map=taxon_to_state_indices)
 
-            for nd in node_list:
-                _LOG.debug("%s state_set = %s" % (nd.get_node_str(newick=True), str(nd.state_sets[0])))
 
             node_list.reverse()
 
-            _LOG.debug("Up-pass")
             root.state_sets = list(outgroup.state_sets)
-            fitch_up_pass(node_list)
-
-            for nd in node_list:
-                _LOG.debug("%s state_set = %s" % (nd.get_node_str(newick=True), str(nd.state_sets[0])))
+            fitch_up_pass(node_list, taxa_to_state_set_map=taxon_to_state_indices)
             
             
             node_list.remove(outgroup)
