@@ -94,7 +94,7 @@ class StateAlphabetElement(IdTagged):
 
 class StateAlphabet(IdTagged, list):
 
-    "A set of states available for a particular character type/format."
+    "A list of states available for a particular character type/format."
 
     def __init__(self, *args, **kwargs):
         IdTagged.__init__(self, *args, **kwargs)
@@ -410,7 +410,7 @@ class CharacterDataCell(Annotated):
         return not result
 
 class CharacterDataVector(list, TaxonLinked):
-    "A list of character data values."
+    "A list of character data values for a taxon -- a row of a Character Matrix"
 
     def __init__(self, *args, **kwargs):
         if len(args) > 2:
