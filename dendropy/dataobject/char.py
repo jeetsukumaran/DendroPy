@@ -31,6 +31,12 @@ from dendropy.utility import iosys
 from dendropy.dataobject.base import IdTagged, Annotated
 from dendropy.dataobject.taxon import TaxonLinked, TaxonSetLinked
 
+class ContinuousCharElement(IdTagged):
+    def __init__(self, value, column_def,  **kwargs):
+        IdTagged.__init__(self, **kwargs)
+        self.value = value
+        self.column_def = column_def
+        
 class StateAlphabetElement(IdTagged):
     """
     A character state definition, which can either be a fundamental state or
@@ -554,10 +560,7 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                     state_alphabet = cell.character_type.state_alphabet
                 except AttributeError:
                     state_alphabet = self.default_state_alphabet
-                if cell_value.multistate:
-                    inds = [state_alphabet.index(i) for i in cell_value.member_states]
-                else:
-                    inds = [state_alphabet.index(cell_value)]
+                inds = [state_alphabet.index(i) for i in cell_value.fundamental_states]
                 v.append(set(inds))
             taxon_to_state_indices[t] = v
         return taxon_to_state_indices
