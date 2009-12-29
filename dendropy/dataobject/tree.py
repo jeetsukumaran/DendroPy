@@ -2131,3 +2131,38 @@ def format_split(split, width=None, **kwargs):
     s = split_as_string(split, width, symbol1=kwargs.get("off_symbol"), symbol2=kwargs.get("on_symbol"))
     return s
 
+def convert_node_to_root_polytomy(nd):
+    """If `nd` has two children and at least on of them is an internal node,
+    then it will be converted to an out-degree three node (with the edge length
+    added as needed).
+    
+    Returns the child node that was detached (or None if the tree was not
+    modified). This can be useful for removing the deleted node from the split_edges
+    dictionary.
+    """
+    nd_children = nd.child_nodes()
+    if len(nd_children) != 2:
+        return None
+    left_child = nd_children[0]
+    right_child = nd_children[1]
+    if right_child.is_internal():
+        try:
+            left_child.edge.length += right_child.edge.length
+        except:
+            pass
+        nd.remove_child(right_child)
+        grand_kids = right_child.child_nodes()
+        for gc in grand_kids:
+            nd.add_child(gc)
+        return right_child
+    if left_child.is_internal():
+        try:
+            right_child.edge.length += left_child.edge.length
+        except:
+            pass
+        nd.remove_child(left_child)
+        grand_kids = left_child.child_nodes()
+        for gc in grand_kids:
+            nd.add_child(gc)
+        return left_child
+    return None
