@@ -28,6 +28,7 @@ import sys
 import os
 import unittest
 import tempfile
+from cStringIO import StringIO
 
 from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
@@ -35,6 +36,9 @@ from dendropy.test.support import datatest
 import dendropy
 from dendropy.dataio import nexus
 from dendropy.dataio import multi_tree_source_iter
+from dendropy.utility import error
+from dendropy.utility.messaging import get_logger
+_LOG = get_logger(__name__)
 
 class NexusGeneralParseCharsTest(datatest.DataObjectVerificationTestCase):
 
@@ -217,6 +221,67 @@ class NexusTreeListWriterTest(datatest.DataObjectVerificationTestCase):
                 t_tree_list,
                 distinct_taxa=True,
                 equal_oids=None)
+
+class ExtraSemiColonsNexusTest(unittest.TestCase):
+
+    def setUp(self):
+        self.str1 = """\
+#NEXUS
+begin trees;
+    ;
+    tree 1 = ((A,B),(C,D));;;
+    ;
+    tree 2 = ((A,(B,(C,D))));;;
+    ;
+    tree 3 = ((A,C),(D,B));;;
+end;
+"""
+
+        self.str2 = """\
+#NEXUS
+begin trees;
+    ;
+    tree 1 = ();;
+    ;
+    tree 2 = ();;;
+    tree 3 = ();;
+end;
+"""
+
+        self.str3 = """\
+#NEXUS
+begin trees;
+    ;
+    tree 1 = ;;
+    ;
+    tree 2 = ;;;
+    tree 3 = ;;
+end;
+"""
+
+    def testStr1AsDoc(self):
+        tlist = dendropy.TreeList.get_from_string(self.str1, "nexus")
+        self.assertEqual(len(tlist), 3)
+
+    def testStr1Iter(self):
+        for t in dendropy.tree_source_iter(StringIO(self.str1), "nexus"):
+            _LOG.info(t.as_string("newick"))
+
+    def testStr2AsDoc(self):
+        self.assertRaises(error.DataFormatError, dendropy.TreeList.get_from_string, self.str2, "nexus")
+
+#    def testStr2Iter(self):
+#        for t in dendropy.tree_source_iter(StringIO(self.str2), "nexus"):
+#            _LOG.info(t.as_string("newick"))
+
+    def testStr3AsDoc(self):
+#        self.assertRaises(error.DataFormatError, dendropy.TreeList.get_from_string, self.str3, "nexus")
+        tlist = dendropy.TreeList.get_from_string(self.str3, "nexus")
+        _LOG.info(tlist.as_string("nexus"))
+
+    def testStr3Iter(self):
+        for t in dendropy.tree_source_iter(StringIO(self.str3), "nexus"):
+            _LOG.info(t.as_string("newick"))
 
 class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
 
