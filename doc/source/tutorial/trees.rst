@@ -235,11 +235,24 @@ The following example shows how to identify the "critical" value for an `Archie-
 Node Ages
 ---------
 
+The :meth:`~dendropy.dataobject.tree.Tree.add_ages_to_nodes()` method calculates the age of a node (i.e., the sum of edge lengths from the node to a tip) and assigns it to a new attribute, :attr:`~dendropy.dataobject.tree.Node.age`, of the node. The following example iterates through the post-burn-in of an MCMC sample of ultrametric trees, calculating the age of the MRCA of two taxa, and reports the mean age of the node.
+
+.. literalinclude:: /examples/node_ages1.py
+    :linenos:
+
 Pybus-Harvey Gamma
--------------------
+------------------
+
+The Pybus-Harvey Gamma statistic is given by the :meth:`~dendropy.dataobject.tree.Tree.pybus_harvey_gamma()` instance method. The following example iterates through the post-burn-in of an MCMC sample of trees, reporting the mean Pybus-Harvey Gamma statistic:
+
+.. literalinclude:: /examples/pbhg.py
+    :linenos:
 
 Patristic Distances
 -------------------
+
+The :class:`~dendropy.treecalc.PatristicDistanceMatrix` is the most efficient way to calculate the patristic distances between any pair of taxa on a tree.
+Its constructor takes a |Tree| object as an argument.
 
 
 .. SCRATCH
