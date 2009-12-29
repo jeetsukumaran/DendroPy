@@ -89,6 +89,10 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
                 distinct_taxa=False,
                 equal_oids=None)
     def xtestToleratesExtraSemicolon(self):
+        """Should an extra semicolon result in another (empty) tree being created ? 
+        MTH does not think so - but such strings are probably not legal newick,
+        so whatever you want to do is OK with me
+        """
         trees = dendropy.TreeList.get_from_string(
                 """(((T1:1.1, T2:2.2)i1:4.0,(T3:3.3, T4:4.4)i2:4.0)i3:4.0,(T5:6.7, T6:7.2)i4:4.0)root:7.0;;""",
                 "newick"
