@@ -2136,11 +2136,13 @@ def convert_node_to_root_polytomy(nd):
     then it will be converted to an out-degree three node (with the edge length
     added as needed).
     
-    Returns True if the conversion was done.
+    Returns the child node that was detached (or None if the tree was not
+    modified). This can be useful for removing the deleted node from the split_edges
+    dictionary.
     """
     nd_children = nd.child_nodes()
     if len(nd_children) != 2:
-        return False
+        return None
     left_child = nd_children[0]
     right_child = nd_children[1]
     if right_child.is_internal():
@@ -2152,7 +2154,7 @@ def convert_node_to_root_polytomy(nd):
         grand_kids = right_child.child_nodes()
         for gc in grand_kids:
             nd.add_child(gc)
-        return True
+        return right_child
     if left_child.is_internal():
         try:
             right_child.edge.length += left_child.edge.length
@@ -2162,5 +2164,5 @@ def convert_node_to_root_polytomy(nd):
         grand_kids = left_child.child_nodes()
         for gc in grand_kids:
             nd.add_child(gc)
-        return True
-    return False
+        return left_child
+    return None
