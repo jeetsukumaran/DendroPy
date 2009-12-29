@@ -88,8 +88,15 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
                 t_tree_list,
                 distinct_taxa=False,
                 equal_oids=None)
+    def xtestToleratesExtraSemicolon(self):
+        trees = dendropy.TreeList.get_from_string(
+                """(((T1:1.1, T2:2.2)i1:4.0,(T3:3.3, T4:4.4)i2:4.0)i3:4.0,(T5:6.7, T6:7.2)i4:4.0)root:7.0;;""",
+                "newick"
+                )
+        self.assertEquals(len(trees), 1)
 
 class NewickEdgeLengthParsing(datatest.DataObjectVerificationTestCase):
+
 
     def testEdgeLengths1(self):
         trees = dendropy.TreeList.get_from_string(
