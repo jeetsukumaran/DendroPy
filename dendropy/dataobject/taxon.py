@@ -242,12 +242,16 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         taxon = self.get_taxon(**kwargs)
         if taxon is not None:
             return taxon
-        elif self._is_mutable:
-            taxon = Taxon(label=kwargs.get("label", None), oid=kwargs.get("oid", None))
+        label = kwargs.get("label")
+        if self._is_mutable:
+            taxon = Taxon(label=label, oid=kwargs.get("oid"))
             self.add(taxon)
             return taxon
+        if label:
+            s = '"%s" ' % label
         else:
-            raise KeyError("Taxon not in TaxonSet, and cannot be created because TaxonSet is immutable")
+            s = ''
+        raise KeyError("Taxon %snot in TaxonSet, and cannot be created because TaxonSet is immutable" % s)
 
     def get_taxa(self, **kwargs):
         """
