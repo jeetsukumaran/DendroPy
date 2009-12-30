@@ -63,14 +63,14 @@ class TreeListCreateTest(datatest.DataObjectVerificationTestCase):
         self.assertRaises(error.TooManyArgumentsError, dendropy.TreeList, self.tree_list1, dendropy.TreeList())
 
     def testMultipleSources(self):
-        self.assertRaises(error.MultipleInitializationSourceError, dendropy.TreeList, self.tree_list1, stream=self.tree_list1_stream, format="newick")
+        self.assertRaises(error.MultipleInitializationSourceError, dendropy.TreeList, self.tree_list1, stream=self.tree_list1_stream, schema="newick")
 
     def testTreeListFromFileSameTaxa(self):
-        tree_list2 = dendropy.TreeList(stream=self.tree_list1_stream, format="nexus", taxon_set=self.tree_list1.taxon_set)
+        tree_list2 = dendropy.TreeList(stream=self.tree_list1_stream, schema="nexus", taxon_set=self.tree_list1.taxon_set)
         self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=False, equal_oids=False, distinct_trees=True)
 
     def testTreeListFromFileDifferentTaxa(self):
-        tree_list2 = dendropy.TreeList(stream=self.tree_list1_stream, format="nexus")
+        tree_list2 = dendropy.TreeList(stream=self.tree_list1_stream, schema="nexus")
         self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=True, equal_oids=False, distinct_trees=True)
 
     def testTreeListFromFileNoFormatSpecification(self):
@@ -81,13 +81,13 @@ class TreeListCreateTest(datatest.DataObjectVerificationTestCase):
 
     def testFromFileFactoryDistinctTaxa(self):
         tree_list1 = datagen.reference_tree_list()
-        s = pathmap.tree_source_path(datagen.reference_trees_filename(format="nexus"))
+        s = pathmap.tree_source_path(datagen.reference_trees_filename(schema="nexus"))
         tree_list2 = dendropy.TreeList.get_from_stream(open(s, "rU"), "nexus")
         self.assertDistinctButEqual(tree_list1, tree_list2, distinct_taxa=True)
 
     def testFromPathFactoryDistinctTaxa(self):
         tree_list1 = datagen.reference_tree_list()
-        s = pathmap.tree_source_path(datagen.reference_trees_filename(format="nexus"))
+        s = pathmap.tree_source_path(datagen.reference_trees_filename(schema="nexus"))
         tree_list2 = dendropy.TreeList.get_from_path(s, "nexus")
         self.assertDistinctButEqual(tree_list1, tree_list2, distinct_taxa=True)
 

@@ -6,7 +6,7 @@ if __name__ == '__main__':
     from dendropy.treestats import pybus_harvey_gamma
 
     from optparse import OptionParser
-    usage = """Calculates the Pybus-Harvey Gamma statistic for a tree specified as 
+    usage = """Calculates the Pybus-Harvey Gamma statistic for a tree specified as
     newick string.
 """
     (options, args) = parser.parse_args()
@@ -17,7 +17,7 @@ if __name__ == '__main__':
     else:
         newick = sys.stdin.readline()
 
-    tree = dataio.trees_from_string(string=newick, format="NEWICK")[0]
+    tree = dataio.trees_from_string(string=newick, schema="NEWICK")[0]
     try:
         sys.stdout.write("%f\n" % pybus_harvey_gamma(tree))
     except ValueError as x:

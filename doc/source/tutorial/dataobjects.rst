@@ -51,34 +51,34 @@ Creating and Populating New Objects
 
 The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all support ":meth:`get_from_*()`" factory methods that allow for the simultaneous instantiation and population of the objects from a data source:
 
-    - :meth:`get_from_stream(src, format, **kwargs)`
-        Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the format as the second.
+    - :meth:`get_from_stream(src, schema, **kwargs)`
+        Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the schema as the second.
 
-    - :meth:`get_from_path(src, format, **kwargs)`
-        Takes a string specifying the path to the the data source file as the first argument, and a string specifying the format as the second.
+    - :meth:`get_from_path(src, schema, **kwargs)`
+        Takes a string specifying the path to the the data source file as the first argument, and a string specifying the schema as the second.
 
-    - :meth:`get_from_string(src, format, **kwargs)`
-        Takes a string specifying containing the source data as the first argument, and a string specifying the format as the second.
+    - :meth:`get_from_string(src, schema, **kwargs)`
+        Takes a string specifying containing the source data as the first argument, and a string specifying the schema as the second.
 
-All these methods minimally take a source and format reference as arguments and return a new object of the given type populated from the given source::
+All these methods minimally take a source and schema reference as arguments and return a new object of the given type populated from the given source::
 
     >>> import dendropy
-    >>> tree1 = dendropy.Tree.get_from_string("((A,B),(C,D))", format="newick")
-    >>> tree_list1 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", format="nexus")
+    >>> tree1 = dendropy.Tree.get_from_string("((A,B),(C,D))", schema="newick")
+    >>> tree_list1 = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", schema="nexus")
     >>> dna1 = dendropy.DnaCharacterMatrix.get_from_stream(open("pythonidae.fasta"), "dnafasta")
     >>> std1 = dendropy.StandardCharacterMatrix.get_from_path("python_morph.nex", "nexus")
     >>> dataset1 = dendropy.DataSet.get_from_path("pythonidae.nex", "nexus")
 
-The format specification can be one of: "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc. Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
+The schema specification can be one of: "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc. Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
 
-Alternatively, you can also pass a file-like object and format specification to the constructor of these classes using the keyword arguments ``stream`` and ``format`` respectively::
+Alternatively, you can also pass a file-like object and schema specification to the constructor of these classes using the keyword arguments ``stream`` and ``schema`` respectively::
 
     >>> import dendropy
-    >>> tree1 = dendropy.Tree(stream=open("mle.tre"), format="newick")
-    >>> tree_list1 = dendropy.TreeList(stream=open("pythonidae.mcmc.nex"), format="nexus")
-    >>> dna1 = dendropy.DnaCharacterMatrix(stream=open("pythonidae.fasta"), format="dnafasta")
-    >>> std1 = dendropy.StandardCharacterMatrix(stream=open("python_morph.nex"), format="nexus")
-    >>> dataset1 = dendropy.DataSet(stream=open("pythonidae.nex"), format="nexus")
+    >>> tree1 = dendropy.Tree(stream=open("mle.tre"), schema="newick")
+    >>> tree_list1 = dendropy.TreeList(stream=open("pythonidae.mcmc.nex"), schema="nexus")
+    >>> dna1 = dendropy.DnaCharacterMatrix(stream=open("pythonidae.fasta"), schema="dnafasta")
+    >>> std1 = dendropy.StandardCharacterMatrix(stream=open("python_morph.nex"), schema="nexus")
+    >>> dataset1 = dendropy.DataSet(stream=open("pythonidae.nex"), schema="nexus")
 
 Various keyword arguments can also be passed to these methods which customize or control how the data is parsed and mapped into DendroPy object space.
 These are discussed below.
@@ -88,17 +88,17 @@ Reading and Populating (or Repopulating) Existing Objects
 
 The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all support a suite of ":meth:`read_from_*()`" instance methods that parallels the ":meth:`get_from_*()`" factory methods described above:
 
-    - :meth:`read_from_stream(src, format, **kwargs)`
-        Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the format as the second.
+    - :meth:`read_from_stream(src, schema, **kwargs)`
+        Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the schema as the second.
 
-    - :meth:`read_from_path(src, format, **kwargs)`
-        Takes a string specifying the path to the the data source file as the first argument, and a string specifying the format as the second.
+    - :meth:`read_from_path(src, schema, **kwargs)`
+        Takes a string specifying the path to the the data source file as the first argument, and a string specifying the schema as the second.
 
-    - :meth:`read_from_string(src, format, **kwargs)`
-        Takes a string specifying containing the source data as the first argument, and a string specifying the format as the second.
+    - :meth:`read_from_string(src, schema, **kwargs)`
+        Takes a string specifying containing the source data as the first argument, and a string specifying the schema as the second.
 
 When called on an existing |TreeList| or |DataSet| object, these methods *add* the data from the data source to the object, whereas when called on an existing |Tree| or |CharacterMatrix| object,  they *replace* the object's data with data from the data source.
-As with the ":meth:`get_from_*()`" methods, the format specification can be any supported and type-apppropriate format, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc.
+As with the ":meth:`get_from_*()`" methods, the schema specification can be any supported and type-apppropriate schema, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc.
 
 For example, the following accumulates post-burn-in trees from a several different files into a single |TreeList| object (the ``tree_offset`` keyword is discussed `here <Customizing_Tree_Creation_and_Reading>`_)::
 
@@ -135,7 +135,7 @@ As with the :meth:`get_from_*()` methods, keyword arguments can be used to provi
 Customizing Data Creation and Reading
 =====================================
 When specifying a data source from which to create or populate data objects using the :meth:`get_from_*()`, :meth:`read_from_*()`, or passing a data source stream to a constructor, you can also specify keyword arguments that provide fine-grained control over how the data source is parsed.
-Some of these keyword arguments apply generally, regardless of the format of the data source or the data object being created, while others are specific to the data object type or the data source format.
+Some of these keyword arguments apply generally, regardless of the schema of the data source or the data object being created, while others are specific to the data object type or the data source schema.
 
 Probably the most import general keyword is the ``taxon_set`` keyword, which passes a |TaxonSet| object to the parser to use to manage all taxon definitions and reference in the data source.
 If not specified, every time a data source is parsed, at least one new |TaxonSet| object will be created for each definition of taxa (e.g., a NEXUS "TAXA" block), and all taxon definitions or references in the data source will be mapped to |Taxon| objects within that |TaxonSet| object.
@@ -153,16 +153,16 @@ Writing or Saving Data
 
 The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all support the following instance methods for writing data:
 
-    - :meth:`write_to_stream(dest, format, **kwargs)`
-        Takes a file or file-like object opened for writing the data as the first argument, and a string specifying the format as the second.
+    - :meth:`write_to_stream(dest, schema, **kwargs)`
+        Takes a file or file-like object opened for writing the data as the first argument, and a string specifying the schema as the second.
 
-    - :meth:`write_to_path(dest, format, **kwargs)`
-        Takes a string specifying the path to the file as the first argument, and a string specifying the format as the second.
+    - :meth:`write_to_path(dest, schema, **kwargs)`
+        Takes a string specifying the path to the file as the first argument, and a string specifying the schema as the second.
 
-    - :meth:`as_string(format, **kwargs)`
-        Takes a string specifying the format as the first argument, and returns a string containing the formatted-representation of the data.
+    - :meth:`as_string(schema, **kwargs)`
+        Takes a string specifying the schema as the first argument, and returns a string containing the formatted-representation of the data.
 
-As above, the format specification can be any supported and type-apppropriate format, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc., and, as above, depending on the object and format, additional keyword arguments may be specified.
+As above, the schema specification can be any supported and type-apppropriate schema, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc., and, as above, depending on the object and schema, additional keyword arguments may be specified.
 
 For example, to print a |Tree| object without branch lengths or internal labels (default is to write both, if present)::
 
@@ -181,22 +181,22 @@ We can also request that the tree string have their spaces replaced by underscor
 Converting Between Data Formats
 ===============================
 
-Any data in a format that can be read by DendroPy, can be saved to files in any format that can be written by DendroPy.
+Any data in a schema that can be read by DendroPy, can be saved to files in any schema that can be written by DendroPy.
 Converting data between formats is simply a matter of calling readers and writers of the appropriate type.
 
-Converting from FASTA format to NEXUS::
+Converting from FASTA schema to NEXUS::
 
     >>> import dendropy
     >>> cytb = dendropy.DnaCharacterMatrix.get_from_path("pythonidae_cytb.fasta", "dnafasta")
     >>> cytb.write_to_path("pythonidae_cytb.nexus", "nexus")
 
-Converting a collection of trees from NEXUS format to NEWICK::
+Converting a collection of trees from NEXUS schema to NEWICK::
 
     >>> import dendropy
     >>> mcmc = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", "nexus")
     >>> mcmc.write_to_path("pythonidae.mcmc.newick", "newick")
 
-Converting a single tree from NEWICK format to NEXUS::
+Converting a single tree from NEWICK schema to NEXUS::
 
     >>> import dendropy
     >>> mle = dendropy.Tree.get_from_path("pythonidae.mle.newick", "newick")
@@ -302,7 +302,7 @@ This method optionally takes a numeric value as its first argument that determin
                     [27] Liasis olivaceus : 1114 characters
                     [28] Apodora papuana : 1114 characters
 
-If you want to see the data in a particular format, you can call the :meth:`as_string()` method, passing it a format-specification string ("nexus", "newick", "fasta", "phylip", etc.), as well as other optional arguments specific to varous formats::
+If you want to see the data in a particular schema, you can call the :meth:`as_string()` method, passing it a schema-specification string ("nexus", "newick", "fasta", "phylip", etc.), as well as other optional arguments specific to varous formats::
 
     >>> import dendropy
     >>> d = dendropy.DataSet.get_from_path('pythonidae.nex', 'nexus')

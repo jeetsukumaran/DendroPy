@@ -13,9 +13,9 @@ _LOG = get_logger('scripts.long_branch_symmdiff')
 verbose = False
 
 def long_branch_symmdiff(trees_to_compare, edge_len_threshold, copy_trees=False, rooted=False):
-    """Returns matrix of the symmetric_differences between trees after all 
+    """Returns matrix of the symmetric_differences between trees after all
     internal edges with lengths < `edge_len_threshold` have been collapsed.
-    
+
     If `copy_trees` is True then the trees will be copied first (if False, then
         the trees may will have their short edges collapsed on exit).
     """
@@ -60,16 +60,16 @@ def long_branch_symmdiff(trees_to_compare, edge_len_threshold, copy_trees=False,
 if __name__ == '__main__':
     from optparse import OptionParser
     parser = OptionParser()
-    parser.add_option('-f', '--format', dest='format',
-                        type='str', default="newick", help='The input format (default is newick)') 
+    parser.add_option('-s', '--schema', dest='schema',
+                        type='str', default="newick", help='The format/schema of the input data (default is newick)')
     parser.add_option('-c', '--cutoff', dest='cutoff',
-                        type='str', default=0.0, help='The minimum edge length (any branches shorter than this will be collapsed).') 
+                        type='str', default=0.0, help='The minimum edge length (any branches shorter than this will be collapsed).')
     parser.add_option('-p', '--paup-style', dest='paup',
-                        action="store_true", default=False, help="Produce an output in the same format as PAUP's TreeDist command.") 
+                        action="store_true", default=False, help="Produce an output in the same format as PAUP's TreeDist command.")
     (options, args) = parser.parse_args()
     if len(args) == 0:
         sys.exit("Expecting a filename as an argument")
-    format = options.format.upper()
+    schema = options.schema.upper()
     try:
         cutoff = int(options.cutoff)
     except ValueError:
@@ -77,15 +77,15 @@ if __name__ == '__main__':
             cutoff = float(options.cutoff)
         except ValueError:
             sys.exit('Expecting the cutoff to be a number found "%s"' % options.cutoff)
-        
+
     trees = []
     taxon_set = TaxonSet()
     dataset = DataSet(taxon_set=taxon_set)
-    if format == "PHYLIP":
-        format = "NEWICK"
+    if schema == "PHYLIP":
+        schema = "NEWICK"
     for f in args:
         fo = open(f, "rU")
-        dataset.read(stream=fo, format=format)
+        dataset.read(stream=fo, schema=schema)
     for tl in dataset.tree_lists:
         trees.extend(tl)
 

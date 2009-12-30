@@ -41,9 +41,9 @@ class FitchTest(unittest.TestCase):
     def testPScore(self):
         expected_scores = [370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 671, 670, 678, 687, 633, 675, 689, 668, 652, 644]
         dataset = dendropy.DataSet(stream=open(pathmap.char_source_path("apternodus.chars.nexus"), "rU"),
-                                   format='NEXUS')
-        dataset.read(stream=open(pathmap.tree_source_path("apternodus.tre"), "rU"), 
-                     format='NEXUS',
+                                   schema='NEXUS')
+        dataset.read(stream=open(pathmap.tree_source_path("apternodus.tre"), "rU"),
+                     schema='NEXUS',
                      taxon_set=dataset.taxon_sets[0])
         char_mat = dataset.char_matrices[0]
         taxa_to_state_set_map = char_mat.create_taxon_to_state_set_map()

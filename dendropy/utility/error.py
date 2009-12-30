@@ -25,7 +25,7 @@ Exceptions and error.
 """
 import sys
 
-class DataFormatError(Exception):
+class DataSyntaxError(Exception):
 
     def __init__(self, row=None, column=None, message=None):
         Exception.__init__(self)
@@ -72,7 +72,7 @@ class InvalidArgumentValueError(ValueError):
 class MultipleInitializationSourceError(TypeError):
     def __init__(self, message=None, class_name=None, arg=None):
         if message is None and (class_name is not None and arg is not None):
-            message = "%s() does not accept data 'stream' or 'format' arguments when initializing with another object" % (class_name)
+            message = "%s() does not accept data 'stream' or 'schema' arguments when initializing with another object" % (class_name)
         TypeError.__init__(self, message)
 
 

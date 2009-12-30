@@ -38,7 +38,7 @@ class TestFasta(datatest.DataObjectVerificationTestCase):
     def testAsStrReading(self):
         dataset = dendropy.DataSet(
                 stream=open(pathmap.char_source_path("bad_names.fasta"), "rU"),
-                format='DNAFasta',
+                schema='DNAFasta',
                 row_type='str'
         )
         taxon_set = dataset.taxon_sets[0]

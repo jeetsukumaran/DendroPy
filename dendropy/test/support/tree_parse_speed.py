@@ -36,9 +36,9 @@ from dendropy.dataio import multi_tree_source_iter
 def main():
     usage = "%prog [options] <TREES FILE> [<TREES FILE> [<TREES FILE> [...]]"
     parser = OptionParser(usage=usage, add_help_option=True)
-    parser.add_option('-f', '--format',
+    parser.add_option('-s', '--schema',
                       action='store',
-                      dest='format',
+                      dest='schema',
                       default="nexus/newick",
                       help="file format of trees (default = '%s')")
     parser.add_option('-v', '--verbose',
@@ -65,7 +65,7 @@ def main():
 
     start_time = datetime.datetime.now()
     total_trees_read = 0
-    for t in multi_tree_source_iter(support_filepaths, format=opts.format):
+    for t in multi_tree_source_iter(support_filepaths, schema=opts.schema):
         total_trees_read += 1
 
     end_time = datetime.datetime.now()

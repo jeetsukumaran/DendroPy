@@ -33,13 +33,13 @@ from dendropy.utility import error
 
 def get_format_from_kwargs(kwdict):
     """
-    Extract and return format term from keyword dictionary, deleting term if
+    Extract and return schema term from keyword dictionary, deleting term if
     encountered.
     """
-    if "format" in kwdict:
-        format = kwdict["format"]
-        del(kwdict["format"])
-        return format
+    if "schema" in kwdict:
+        schema = kwdict["schema"]
+        del(kwdict["schema"])
+        return schema
     else:
         return None
 
@@ -47,10 +47,10 @@ def require_format_from_kwargs(kwdict):
     """
     As with `get_format_arg`, but raises Exception if not specified.
     """
-    format = get_format_from_kwargs(kwdict)
-    if format is None:
-        raise error.UnspecifiedFormatError("Must specify `format`.")
-    return format
+    schema = get_format_from_kwargs(kwdict)
+    if schema is None:
+        raise error.UnspecifiedFormatError("Must specify `schema`.")
+    return schema
 
 def extract_kwarg(kwdict, kw, default=None):
     if kw in kwdict:
@@ -171,32 +171,32 @@ class Readable(object):
     Data object that can be instantiated using a `DataReader` service.
     """
 
-    def get_from_stream(cls, src, format, **kwargs):
+    def get_from_stream(cls, src, schema, **kwargs):
         """
         Factory method to return new object of this class from file-like
         object `src`.
         """
         readable = cls(**kwargs)
-        readable.read_from_stream(src, format, **kwargs)
+        readable.read_from_stream(src, schema, **kwargs)
         return readable
     get_from_stream = classmethod(get_from_stream)
 
-    def get_from_path(cls, src, format, **kwargs):
+    def get_from_path(cls, src, schema, **kwargs):
         """
         Factory method to return new object of this class from file
         specified by string `src`.
         """
         readable = cls(**kwargs)
-        readable.read_from_path(src, format, **kwargs)
+        readable.read_from_path(src, schema, **kwargs)
         return readable
     get_from_path = classmethod(get_from_path)
 
-    def get_from_string(cls, src, format, **kwargs):
+    def get_from_string(cls, src, schema, **kwargs):
         """
         Factory method to return new object of this class from string `src`.
         """
         readable = cls(**kwargs)
-        readable.read_from_string(src, format, **kwargs)
+        readable.read_from_string(src, schema, **kwargs)
         return readable
     get_from_string = classmethod(get_from_string)
 
@@ -207,36 +207,36 @@ class Readable(object):
         if "stream" in kwargs:
             stream = kwargs["stream"]
             del(kwargs["stream"])
-            format = require_format_from_kwargs(kwargs)
-            self.read(stream=stream, format=format, **kwargs)
+            schema = require_format_from_kwargs(kwargs)
+            self.read(stream=stream, schema=schema, **kwargs)
 
-    def read(self, stream, format, **kwargs):
+    def read(self, stream, schema, **kwargs):
         """
-        Populates/constructs objects of this type from `format`-formatted
+        Populates/constructs objects of this type from `schema`-formatted
         data in the file-like object source `stream`.
         """
         raise NotImplementedError
 
-    def read_from_stream(self, fileobj, format, **kwargs):
+    def read_from_stream(self, fileobj, schema, **kwargs):
         """
         Reads from file (exactly equivalent to just `read()`, provided
         here as a separate method for completeness.
         """
-        return self.read(stream=fileobj, format=format, **kwargs)
+        return self.read(stream=fileobj, schema=schema, **kwargs)
 
-    def read_from_path(self, filepath, format, **kwargs):
+    def read_from_path(self, filepath, schema, **kwargs):
         """
         Reads from file specified by `filepath`.
         """
         f = open(os.path.expandvars(os.path.expanduser(filepath)), "rU")
-        return self.read(stream=f, format=format, **kwargs)
+        return self.read(stream=f, schema=schema, **kwargs)
 
-    def read_from_string(self, src_str, format, **kwargs):
+    def read_from_string(self, src_str, schema, **kwargs):
         """
         Reads a string object.
         """
         s = StringIO(src_str)
-        return self.read(stream=s, format=format, **kwargs)
+        return self.read(stream=s, schema=schema, **kwargs)
 
 ###############################################################################
 ## Writeable
@@ -249,31 +249,31 @@ class Writeable(object):
     def __init__(self, *args, **kwargs):
         pass
 
-    def write(self, stream, format, **kwargs):
+    def write(self, stream, schema, **kwargs):
         """
-        Writes the object to the file-like object `stream` in `format`
-        format.
+        Writes the object to the file-like object `stream` in `schema`
+        schema.
         """
         raise NotImplementedError
 
-    def write_to_stream(self, dest, format, **kwargs):
+    def write_to_stream(self, dest, schema, **kwargs):
         """
         Writes to file-like object `dest`.
         """
-        return self.write(stream=dest, format=format, **kwargs)
+        return self.write(stream=dest, schema=schema, **kwargs)
 
-    def write_to_path(self, dest, format, **kwargs):
+    def write_to_path(self, dest, schema, **kwargs):
         """
         Writes to file specified by `dest`.
         """
         f = open(os.path.expandvars(os.path.expanduser(dest)), "w")
-        return self.write(stream=f, format=format, **kwargs)
+        return self.write(stream=f, schema=schema, **kwargs)
 
-    def as_string(self, format, **kwargs):
+    def as_string(self, schema, **kwargs):
         """
         Composes and returns string representation of the data.
         """
         s = StringIO()
-        self.write(stream=s, format=format, **kwargs)
+        self.write(stream=s, schema=schema, **kwargs)
         return s.getvalue()
 

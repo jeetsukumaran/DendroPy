@@ -40,7 +40,7 @@ class TestConsensusTree(unittest.TestCase):
             self.tree_list.read_from_path(tf, 'nexus', tree_offset=25)
         self.mb_con_tree = dendropy.Tree.get_from_path(
                 pathmap.tree_source_path("pythonidae_cytb.mb.con"),
-                format="nexus",
+                schema="nexus",
                 index=0,
                 taxon_set=self.tree_list.taxon_set)
         self.mb_con_tree.encode_splits()

@@ -24,7 +24,7 @@
 
 import os
 import sys
-import subprocess      
+import subprocess
 from optparse import OptionParser
 
 from Bio.Seq import Seq
@@ -39,9 +39,9 @@ def compose_default_output_filepath(infilepath, output_dir=None):
 
 def compose_protein_filepath(infilepath, protein_dir):
     return os.path.join(protein_dir, os.path.basename(infilepath) + '.trans')
-    
+
 def compose_aligned_protein_filepath(infilepath, protein_dir):
-    return os.path.join(protein_dir, os.path.splitext(os.path.basename(infilepath))[0] + '.trans.aligned')    
+    return os.path.join(protein_dir, os.path.splitext(os.path.basename(infilepath))[0] + '.trans.aligned')
 
 def translate_nucleotide_file(infilepath, protfilepath, rna=False):
     infile = open(infilepath)
@@ -50,44 +50,44 @@ def translate_nucleotide_file(infilepath, protfilepath, rna=False):
     if rna:
         d.read(infile, "RNAFASTA")
     else:
-        d.read(infile, "DNAFASTA")    
+        d.read(infile, "DNAFASTA")
     chars = d.char_blocks[0]
     for t in d.taxa_blocks[0]:
         s = chars[t]
         nucs = Seq(s.values_as_string(), generic_dna)
         prots = nucs.translate()
         ofile.write(">%s\n%s\n\n" % (t.label, prots.tostring()))
-        
-def load_fasta(fpath, format="DNAFASTA"):
+
+def load_fasta(fpath, schema="DNAFASTA"):
     d = datasets.Dataset()
     data = {}
-    d.read(open(fpath, "rU"), format)
+    d.read(open(fpath, "rU"), schema)
     chars = d.char_blocks[0]
     for t in d.taxa_blocks[0]:
         data[t.label] = chars[t].values_as_string()
-    return data        
-        
+    return data
+
 def muscle_align_codons(infilepath, outfilepath, protein_dir=None, rna=False, muscle_path="muscle", muscle_options=''):
     if not protein_dir:
         protein_dir = os.path.dirname(outfilepath)
     protfilepath = compose_protein_filepath(infilepath, protein_dir)
     translate_nucleotide_file(infilepath, protfilepath, rna)
-    
+
     # align the proteins
     aligned_protfilepath = compose_aligned_protein_filepath(infilepath, protein_dir)
     command = '%s -in %s -out %s -stable %s' % (muscle_path, protfilepath, aligned_protfilepath, muscle_options)
-    
+
     sys.stdout.write("%s\n" % command)
     p = subprocess.Popen(command, shell=True)
     p.wait()
-    
+
     # create the nucleotide alignment, based on the protein alignment
     aligned_proteins = load_fasta(aligned_protfilepath, "PROTEINFASTA")
     if rna:
-        nucleotides = load_fasta(infilepath, "RNAFASTA")    
+        nucleotides = load_fasta(infilepath, "RNAFASTA")
     else:
         nucleotides = load_fasta(infilepath, "DNAFASTA")
-    
+
     ofile = file(outfilepath, 'w')
 
     for prot_title, prot_seq in aligned_proteins.items():
@@ -101,32 +101,32 @@ def muscle_align_codons(infilepath, outfilepath, protein_dir=None, rna=False, mu
                 aligned_nuc.append(nucleotides[prot_title][nuc_index+1])
                 aligned_nuc.append(nucleotides[prot_title][nuc_index+2])
                 nuc_index = nuc_index + 3
-        ofile.write(">%s\n%s\n\n" % (prot_title, ''.join(aligned_nuc)))                
-      
+        ofile.write(">%s\n%s\n\n" % (prot_title, ''.join(aligned_nuc)))
+
 _prog_name = "COALIGN-Muscle"
 _prog_version = "%prog version 1.0"
 
 def main():
-    
-    description = "COALIGN-Muscle -- Codon Alignment using MUSCLE -- by Jeet Sukumaran"    
+
+    description = "COALIGN-Muscle -- Codon Alignment using MUSCLE -- by Jeet Sukumaran"
     usage = "%prog [options] input [output]"
-    
+
     parser = OptionParser(usage=usage, add_help_option=True, version = _prog_version, description=description)
-    
-    parser.add_option('-r','--rna', 
-                      action='store_true',  
+
+    parser.add_option('-r','--rna',
+                      action='store_true',
                       dest='rna',
                       default=False,
                       help="RNA nucleodtide data")
-                      
-    parser.add_option('-a','--muscle',  
+
+    parser.add_option('-a','--muscle',
                       dest='muscle_path',
                       default='muscle',
-                      help='path to muscle application (default = "%default")')  
-    
+                      help='path to muscle application (default = "%default")')
+
     print 'COALIGN-Muscle -- Codon Alignment using MUSCLE'
     print 'by Jeet Sukumaran'
-    
+
     (options, args) = parser.parse_args()
 
     if len(args) < 1:
@@ -139,8 +139,8 @@ def main():
     else:
         input = args[0]
         output = args[1]
-        
+
     muscle_align_codons(infilepath=input, outfilepath=output, protein_dir=None, rna=options.rna, muscle_path=options.muscle_path, muscle_options='')
 
-if __name__ == "__main__":        
+if __name__ == "__main__":
     main()

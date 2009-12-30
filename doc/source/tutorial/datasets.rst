@@ -14,7 +14,7 @@ You can control how data is parsed from a data source using the following keywor
     ``taxon_set``
         A |TaxonSet| object that will be used to manage **all** taxon references in the data source.
         Every time a data source is parsed, by default at least one new |TaxonSet| object will be created to manage the taxa defined in the data source.
-        If the data source defines multiple collections of taxa (as is possible with, for example, the NEXML format, or the Mesquite variant of the NEXUS format), then multiple new |TaxonSet| object will be created.
+        If the data source defines multiple collections of taxa (as is possible with, for example, the NEXML schema, or the Mesquite variant of the NEXUS schema), then multiple new |TaxonSet| object will be created.
         By passing a |TaxonSet| object through the ``taxon_set`` keyword, you can force DendroPy to use the same |TaxonSet| object for all taxon references.
 
     ``exclude_trees``

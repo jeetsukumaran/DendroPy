@@ -21,7 +21,7 @@
 ###############################################################################
 
 """
-Implementation of PHYLIP-format i/o client(s).
+Implementation of PHYLIP-schema i/o client(s).
 """
 
 from dendropy.utility import iosys

@@ -38,12 +38,12 @@ class DataSetCreateTest(datatest.DataObjectVerificationTestCase):
         self.dataset = datagen.reference_single_taxonset_dataset()
 
     def testReadNexus(self):
-        ds_str = self.dataset.as_string(format="nexus")
-        ds2 = dendropy.DataSet(stream=StringIO(ds_str), format="nexus")
+        ds_str = self.dataset.as_string(schema="nexus")
+        ds2 = dendropy.DataSet(stream=StringIO(ds_str), schema="nexus")
         self.assertDistinctButEqual(self.dataset, ds2)
 
     def testFromFileFactory(self):
-        ds_str = self.dataset.as_string(format="nexus")
+        ds_str = self.dataset.as_string(schema="nexus")
         ds2 = dendropy.DataSet.get_from_stream(StringIO(ds_str), "nexus")
         self.assertDistinctButEqual(self.dataset, ds2)
 
@@ -52,7 +52,7 @@ class DataSetCreateTest(datatest.DataObjectVerificationTestCase):
         self.assertDistinctButEqual(self.dataset, ds2)
 
     def testFromStringFactory(self):
-        ds_str = self.dataset.as_string(format="nexus")
+        ds_str = self.dataset.as_string(schema="nexus")
         ds2 = dendropy.DataSet.get_from_string(ds_str, "nexus")
         self.assertDistinctButEqual(self.dataset, ds2)
 

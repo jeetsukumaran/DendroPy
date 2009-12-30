@@ -3,7 +3,7 @@
 import sys
 from dendropy.utility.messaging import get_logger
 from dendropy.treecalc import fitch_down_pass, fitch_up_pass
-from dendropy import DataSet, DataFormatError
+from dendropy import DataSet, DataSyntaxError
 _DEBUGGING = True
 _LOG = get_logger('geodispersal')
 verbose = False
@@ -15,7 +15,7 @@ def write_as_nexus(stream, patterns, label):
     num_areas = len(p)
     stream.write("""Begin Data;
     Dimensions ntax = %d nchar = %d;
-    Format datatype=standard symbols="012" ; 
+    Format datatype=standard symbols="012" ;
     Matrix \n""" % (num_areas, num_chars))
     for area_ind in range(num_areas):
         name = "area%d" % area_ind
@@ -45,7 +45,7 @@ def vicariance_patterns(node_list, num_areas):
         assert(p)
         par_area = p.state_sets[0]
         child_area = node.state_sets[0]
-        
+
         diff = par_area - child_area
         curr_pat = [0]*num_areas
         if diff:
@@ -75,7 +75,7 @@ def dispersal_patterns(node_list, num_areas):
         assert(p)
         par_area = p.state_sets[0]
         child_area = node.state_sets[0]
-        
+
         twos = child_area - par_area
         curr_pat = [0]*num_areas
         for i in twos:
@@ -98,14 +98,14 @@ if __name__ == '__main__':
     taxon_set_index = 0
     tree_list_index = 0
     tree_index = 0
-    
+
     try:
         for f in args:
             fo = open(f, "rU")
             dataset = DataSet()
             try:
-                dataset.read(stream=fo, format="NEXUS")
-            except DataFormatError as dfe:
+                dataset.read(stream=fo, schema="NEXUS")
+            except DataSyntaxError as dfe:
                 raise ValueError(str(dfe))
             if len(dataset.taxon_sets) != 1:
                 raise ValueError("Expecting one set of taxa in %s" % f)
@@ -117,9 +117,9 @@ if __name__ == '__main__':
             taxon_set = dataset.taxon_sets[taxon_set_index]
             tree = dataset.tree_lists[tree_list_index][tree_index]
             state_alphabet = char_mat.state_alphabets[char_index]
-            
+
             taxon_to_state_indices = char_mat.create_taxon_to_state_set_map(char_indices=[char_index])
-            
+
             if not tree.is_rooted:
                 raise ValueError("Tree must be rooted")
 
@@ -136,7 +136,7 @@ if __name__ == '__main__':
                 if len(root_children[1].child_nodes()) == 0:
                     raise ValueError("A tree of more than 2 leaves is required")
                 outgroup = root_children[0]
-                
+
             node_list = [i for i in tree.postorder_node_iter()]
             for nd in node_list:
                 c = nd.child_nodes()
@@ -151,13 +151,13 @@ if __name__ == '__main__':
 
             root.state_sets = list(outgroup.state_sets)
             fitch_up_pass(node_list, taxa_to_state_set_map=taxon_to_state_indices)
-            
-            
+
+
             node_list.remove(outgroup)
             num_areas = len(state_alphabet.fundamental_states())
             vp = vicariance_patterns(node_list, num_areas)
             dp = dispersal_patterns(node_list, num_areas)
-            
+
             sys.stdout.write("#NEXUS\n")
             write_as_nexus(sys.stdout, vp, "Vicariance")
             sys.stdout.write("\n\n\n\n")
@@ -166,4 +166,4 @@ if __name__ == '__main__':
         if _DEBUGGING:
             raise
         sys.exit(str(x))
-            
+

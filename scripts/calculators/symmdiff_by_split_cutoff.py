@@ -41,8 +41,8 @@ try:
     import getpass
 except:
     pass
-import platform    
-    
+import platform
+
 import dendropy
 from dendropy import nexus
 from dendropy import splits
@@ -63,12 +63,12 @@ _program_copyright = "Copyright (C) 2008 Mark T. Holder.\n" \
                  "License GPLv3+: GNU GPL version 3 or later.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
                  "There is NO WARRANTY,\nto the extent permitted by law."
-                 
-def confirm_overwrite(filepath, 
-                      messenger, 
-                      replace_without_asking=False, 
+
+def confirm_overwrite(filepath,
+                      messenger,
+                      replace_without_asking=False,
                       file_desc="Output"):
-    if os.path.exists(filepath):           
+    if os.path.exists(filepath):
         if replace_without_asking:
             overwrite = 'y'
         else:
@@ -77,7 +77,7 @@ def confirm_overwrite(filepath,
             messenger.send('')
         if not overwrite.lower().startswith("y"):
             return False
-        else:            
+        else:
             return True
     else:
         return True
@@ -95,44 +95,44 @@ def show_splash(dest=sys.stderr, extended=False):
     sbars = '=' * header_max
     dest.write("%s\n" % sbars)
     dest.write("%s\n" % ('\n'.join(lines)))
-    dest.write("%s\n\n" % sbars)       
-        
+    dest.write("%s\n\n" % sbars)
+
 def main_cli():
-    
-    description =  '%s %s ' % (_program_name, _program_version)    
+
+    description =  '%s %s ' % (_program_name, _program_version)
     usage = "%prog [options] <TREES FILE> [<TREES FILE> [<TREES FILE> [...]]"
-    
+
     parser = OptionParser(usage=usage, add_help_option=True, version = _program_version, description=description)
-    parser.add_option('-r','--reference',  
+    parser.add_option('-r','--reference',
                   dest='reference_tree_filepath',
                   default=None,
-                  help="path to file containing the reference (true) tree")  
-    parser.add_option('-v', '--verbose', 
-                      action='store_false', 
+                  help="path to file containing the reference (true) tree")
+    parser.add_option('-v', '--verbose',
+                      action='store_false',
                       dest='quiet',
                       default=True,
-                      help="Verbose mode") 
-  
+                      help="Verbose mode")
+
     (opts, args) = parser.parse_args()
-                                    
+
     ###################################################
     # Support file idiot checking
-        
-    sampled_filepaths = []        
-    missing = False 
+
+    sampled_filepaths = []
+    missing = False
     for fpath in args:
-        fpath = os.path.expanduser(os.path.expandvars(fpath))        
+        fpath = os.path.expanduser(os.path.expandvars(fpath))
         if not os.path.exists(fpath):
             sys.exit('Sampled trees file not found: "%s"' % fpath)
         sampled_filepaths.append(fpath)
     if not sampled_filepaths:
         sys.exit("Expecting arguments indicating files that contain sampled trees")
-        
+
     sampled_file_objs = [open(f, "rU") for f in sampled_filepaths]
 
     ###################################################
     # Lots of other idiot-checking ...
-    
+
     # target tree
     if opts.reference_tree_filepath is None:
         sys.exit("A reference tree must be specified (use -h to see all options)")
@@ -141,21 +141,21 @@ def main_cli():
         sys.exit('Reference tree file not found: "%s"\n' % reference_tree_filepath)
 
     d = Dataset()
-    ref_trees  = d.read_trees(open(reference_tree_filepath, 'ru'), format="NEXUS")
-    
+    ref_trees  = d.read_trees(open(reference_tree_filepath, 'ru'), schema="NEXUS")
+
     if len(ref_trees) != 1:
         sys.exit("Expecting one reference tree")
     ref_tree = ref_trees[0]
     splits.encode_splits(ref_tree)
     assert(len(d.taxa_blocks) == 1)
     taxa = d.taxa_blocks[0]
-    
-    
+
+
     ###################################################
     # Main work begins here: Count the splits
-    
+
     start_time = datetime.datetime.now()
-    
+
     comments = []
     tsum = treesum.TreeSummarizer()
     tsum.burnin = 0
@@ -169,20 +169,20 @@ def main_cli():
 
 
 
-    _LOG.debug("### COUNTING SPLITS ###\n") 
+    _LOG.debug("### COUNTING SPLITS ###\n")
     split_distribution = splits.SplitDistribution(taxa_block=taxa)
     tree_source = MultiFileTreeIterator(filepaths=sampled_filepaths, core_iterator=nexus.iterate_over_trees)
-    tsum.count_splits_on_trees(tree_source, split_distribution) 
-        
+    tsum.count_splits_on_trees(tree_source, split_distribution)
+
     report = []
     report.append("%d trees read from %d files." % (tsum.total_trees_read, len(sampled_filepaths)))
-    report.append("%d trees ignored in total." % (tree_source.total_trees_ignored))    
+    report.append("%d trees ignored in total." % (tree_source.total_trees_ignored))
     report.append("%d trees considered in total for split support assessment." % (tsum.total_trees_counted))
     report.append("%d unique taxa across all trees." % len(split_distribution.taxa_block))
     num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = split_distribution.splits_considered()
     report.append("%d unique splits out of %d total splits counted." % (num_unique_splits, num_splits))
     report.append("%d unique non-trivial splits out of %d total non-trivial splits counted." % (num_nt_unique_splits, num_nt_splits))
-        
+
     _LOG.debug("\n".join(report))
 
 
@@ -190,7 +190,7 @@ def main_cli():
     taxa_mask = taxa.all_taxa_bitmask()
     splits.encode_splits(con_tree)
     leaves = con_tree.leaf_nodes()
-    
+
     to_leaf_dict = {}
     for leaf in leaves:
         to_leaf_dict[leaf.edge.clade_mask] = leaf
@@ -213,7 +213,7 @@ def main_cli():
                 else:
                     sp_list.append((freq, m, m))
     sp_list.sort(reverse=True)
-    
+
     root = con_tree.seed_node
     root_edge = root.edge
 
@@ -234,7 +234,7 @@ def main_cli():
             curr_compat_splits_list = curr_l[1]
             compat_splits_by_freq.append(curr_l)
             curr_freq = freq
-        
+
         curr_all_splits_list.append(split_to_add)
 
         if (split_to_add & root_edge.clade_mask) != split_to_add:
@@ -246,7 +246,7 @@ def main_cli():
             parent_node = parent_node.parent_node
         if parent_node is None or parent_node.edge.clade_mask == split_to_add:
             continue # split is not in tree, or already in tree.
-        
+
         new_node = trees.Node()
         new_node_children = []
         new_edge = new_node.edge
@@ -277,10 +277,10 @@ def main_cli():
             k = m
         if not splits.is_trivial_split(k, taxa_mask):
             ref_set.add(k)
-        
+
     all_set = set()
     compat_set = set()
-    
+
     _LOG.debug("%d edges is the reference tree" % (len(ref_set)))
 
     print "freq\tcompatFP\tcompatFN\tcompatSD\tallFP\tallFN\tallSD"
@@ -294,10 +294,10 @@ def main_cli():
         compat_set.update(compat_sp)
         compat_fn = len(ref_set - compat_set)
         compat_fp = len(compat_set - ref_set)
-        
+
         print "%f\t%d\t%d\t%d\t%d\t%d\t%d" % (freq, compat_fp, compat_fn, compat_fp + compat_fn, all_fp, all_fn, all_fp + all_fn )
-        
-        
+
+
 
 
 if __name__ == '__main__':

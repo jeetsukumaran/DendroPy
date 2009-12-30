@@ -34,18 +34,18 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
     Extends ExtendedTestCase with tests for data object comparisons.
     """
 
-    def roundTripData(self, dataset, format):
-        output_path = pathmap.named_output_path(filename="roundtrip_test.%s" % format, suffix_timestamp=True)
+    def roundTripData(self, dataset, schema):
+        output_path = pathmap.named_output_path(filename="roundtrip_test.%s" % schema, suffix_timestamp=True)
         self.logger.info("Writing DataSet object to file '%s' and back" % output_path)
-        dataset.write(stream=open(output_path, "w"), format=format)
+        dataset.write(stream=open(output_path, "w"), schema=schema)
         self.logger.info("Reading file '%s'" % output_path)
-        return dendropy.DataSet(stream=open(output_path, "rU"), format=format)
+        return dendropy.DataSet(stream=open(output_path, "rU"), schema=schema)
 
     def roundTripDataSetTest(self,
                       dataset,
-                      format,
+                      schema,
                       **kwargs):
-        rt_dataset = self.roundTripData(dataset, format)
+        rt_dataset = self.roundTripData(dataset, schema)
         self.logger.info("Comparing original and round-tripped DataSet objects")
         self.assertDistinctButEqual(dataset, rt_dataset, **kwargs)
 

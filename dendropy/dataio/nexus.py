@@ -21,7 +21,7 @@
 ###############################################################################
 
 """
-Implementation of NEXUS-format data reader and writer.
+Implementation of NEXUS-schema data reader and writer.
 """
 
 from cStringIO import StringIO
@@ -75,28 +75,28 @@ def generalized_tree_source_iter(stream, **kwargs):
     """
     stream_tokenizer = nexustokenizer.NexusTokenizer(stream)
     token = stream_tokenizer.read_next_token_ucase()
-    format = None
-    if token == "#NEXUS":
-        format = "nexus"
+    schema = None
+    if token.upper() == "#NEXUS":
+        schema = "nexus"
     else:
         if token == "(":
-            format = "newick"
+            schema = "newick"
     try:
         stream_tokenizer.stream_handle.seek(0)
     except IOError:
-        raise TypeError("File format of non-random access source (such as stdin) must be specified in advance.")
-    if format == "nexus":
+        raise TypeError("File schema of non-random access source (such as stdin) must be specified in advance.")
+    if schema == "nexus":
         return tree_source_iter(stream, **kwargs)
-    elif format == "newick":
+    elif schema == "newick":
         return newick.tree_source_iter(stream, **kwargs)
     else:
-        raise TypeError("Cannot diagnose file format based on first token found: '%s' (looking for '#NEXUS' or '(')")
+        raise TypeError("Cannot diagnose file schema based on first token found: '%s' (looking for '#NEXUS' or '(')")
 
 ###############################################################################
 ## NexusReader
 
 class NexusReader(iosys.DataReader):
-    "Encapsulates loading and parsing of a NEXUS format file."
+    "Encapsulates loading and parsing of a NEXUS schema file."
 
     def __init__(self, **kwargs):
         """
@@ -591,7 +591,7 @@ class NexusReader(iosys.DataReader):
                 if not self.exclude_chars:
                     char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
                 if self.interleave:
-                    raise NotImplementedError("Continuous characters in NEXUS format not yet supported")
+                    raise NotImplementedError("Continuous characters in NEXUS schema not yet supported")
                 else:
                     while len(char_block[taxon]) < self.file_specified_nchar and not self.stream_tokenizer.eof:
                         char_group = self.stream_tokenizer.read_next_token(ignore_punctuation="-+")

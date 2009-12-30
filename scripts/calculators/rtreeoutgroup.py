@@ -12,7 +12,7 @@ def rtree_outgroup_labels(tree):
         p = getattr(e, "tail_node", None)
         if p:
             p.n_leaves_under = getattr(p, "n_leaves_under", 0) +  getattr(node, "n_leaves_under", 1)
-    
+
     # find the child of the root with the largest number of descendants
     seed_node = tree.seed_node
     ch = seed_node.child_nodes()
@@ -48,7 +48,7 @@ This script can be useful when you are simulating rooted trees and need to do
    you to specify an outgroup when you want to score under a clock model.
 """
     parser = OptionParser(usage=usage)
-    parser.add_option("-s", "--sep", dest="sep", default="\n", 
+    parser.add_option("-s", "--sep", dest="sep", default="\n",
         type="str",
         help="The string that separates taxa listed in the outgroup")
     (options, args) = parser.parse_args()
@@ -59,7 +59,7 @@ This script can be useful when you are simulating rooted trees and need to do
     else:
         newick = sys.stdin.readline()
 
-    tree = dataio.trees_from_string(string=newick, format="NEWICK")[0]
+    tree = dataio.trees_from_string(string=newick, schema="NEWICK")[0]
     outgroup_labels = rtree_outgroup_labels(tree)
     sep = options.sep
     sys.stdout.write("%s\n" % sep.join(outgroup_labels))

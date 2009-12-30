@@ -190,13 +190,13 @@ def main_cli():
         messenger.send("-- Reading tree source %d of %d: %s" \
             % (tree_filepath_idx+1, len(tree_filepaths), tree_filepath))
         trees_added = 0
-        for tree_count, tree in enumerate(tree_source_iter(stream=open(tree_filepath, "rU"), format='nexus/newick')):
+        for tree_count, tree in enumerate(tree_source_iter(stream=open(tree_filepath, "rU"), schema='nexus/newick')):
             if tree_count >= opts.burnin and not (tree_count % opts.stride):
                 trees_added += 1
                 if opts.phylip_format:
-                    output_dest.write(tree.as_string(format="newick"))
+                    output_dest.write(tree.as_string(schema="newick"))
                 else:
-                    output_dest.write("tree %d = %s" % (trees_added, tree.as_string(format="newick")))
+                    output_dest.write("tree %d = %s" % (trees_added, tree.as_string(schema="newick")))
         total_trees_added += trees_added
         message = ("%s: %d trees in file, sampling 1 tree of every %d trees after %d tree burn-in: %d trees added (current total = %d trees)" \
             % (tree_filepath, tree_count+1, opts.stride, opts.burnin, trees_added, total_trees_added))

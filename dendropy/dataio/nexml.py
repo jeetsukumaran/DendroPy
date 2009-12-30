@@ -21,7 +21,7 @@
 ###############################################################################
 
 """
-Implementation of NeXML-format data reader and writer.
+Implementation of NeXML-schema data reader and writer.
 """
 
 from xml.sax import saxutils
@@ -241,7 +241,7 @@ class NexmlReader(iosys.DataReader):
             nxt = _NexmlTaxaParser()
             nxt.set_taxon_set_from_xml(nxtaxa, taxon_set=taxon_set)
         else:
-            raise error.DataFormatError("No taxon definitions found in data source")
+            raise error.DataSyntaxError("No taxon definitions found in data source")
         if not self.exclude_chars:
             self.parse_char_matrices(xml_doc, self.dataset)
         if not self.exclude_trees:
@@ -365,7 +365,7 @@ class _NexmlElementParser(object):
                 annotated.annotate(an_key)
 
 class _NexmlTreesParser(_NexmlElementParser):
-    "Parses an XmlElement representation of NEXML format tree blocks."
+    "Parses an XmlElement representation of NEXML schema tree blocks."
 
     def __init__(self):
         super(_NexmlTreesParser, self).__init__()
@@ -646,7 +646,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
 
     def parse_characters_format(self, nxformat, char_matrix):
         """
-        Given an XmlElement format element ("format"), this parses the
+        Given an XmlElement schema element ("format"), this parses the
         state definitions (if any) and characters (column definitions, if any),
         and populates the given char_matrix accordingly.
         """
@@ -743,7 +743,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             try:
                 taxon = taxon_set.require_taxon(oid=taxon_id)
             except KeyError, e:
-                raise error.DataFormatError(message='Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_matrix.oid, char_matrix.label, taxon_id, taxon_set.oid))
+                raise error.DataSyntaxError(message='Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_matrix.oid, char_matrix.label, taxon_id, taxon_set.oid))
 
             character_vector = dendropy.CharacterDataVector(oid=row_id, label=label, taxon=taxon)
             self.parse_annotations(annotated=character_vector, nxelement=nxrow)
@@ -760,7 +760,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                             if char:
                                 col_idx += 1
                                 if len(chartypes) <= col_idx:
-                                    raise error.DataFormatError(message="Character column/type ('<char>') not defined for character in position"\
+                                    raise error.DataSyntaxError(message="Character column/type ('<char>') not defined for character in position"\
                                         + " %d (matrix = '%s' row='%s', taxon='%s')" % (col_idx+1, char_matrix.oid, row_id, taxon.label))
                                 cell = dendropy.CharacterDataCell(value=float(char), character_type=chartypes[col_idx])
                                 character_vector.append(cell)
@@ -769,10 +769,10 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                     for nxcell in nxrow.getiterator('cell'):
                         chartype_id = nxcell.get('char', None)
                         if chartype_id is None:
-                            raise error.DataFormatError(message="'char' attribute missing for cell: cell markup must indicate character column type for character"\
+                            raise error.DataSyntaxError(message="'char' attribute missing for cell: cell markup must indicate character column type for character"\
                                         + " (matrix = '%s' row='%s', taxon='%s')" % (char_matrix.oid, row_id, taxon.label))
                         if chartype_id not in id_chartype_map:
-                            raise error.DataFormatError(message="Character type ('<char>') with id '%s' referenced but not found for character" % chartype_id \
+                            raise error.DataSyntaxError(message="Character type ('<char>') with id '%s' referenced but not found for character" % chartype_id \
                                         + " (matrix = '%s' row='%s', taxon='%s')" % (char_matrix.oid, row_id, taxon.label))
                         chartype = id_chartype_map[chartype_id]
                         pos_idx = chartypes.index(chartype)
@@ -794,13 +794,13 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                             symbol_state_map = char_matrix.character_types[col_idx].state_alphabet.symbol_state_map()
                             if char in symbol_state_map:
                                 if len(chartypes) <= col_idx:
-                                    raise error.DataFormatError(message="Character column/type ('<char>') not defined for character in position"\
+                                    raise error.DataSyntaxError(message="Character column/type ('<char>') not defined for character in position"\
                                         + " %d (matrix = '%s' row='%s', taxon='%s')" % (col_idx+1, char_matrix.oid, row_id, taxon.label))
                                 state = symbol_state_map[char]
                                 character_type = chartypes[col_idx]
                                 character_vector.append(dendropy.CharacterDataCell(value=state, character_type=character_type))
                             else:
-                                raise error.DataFormatError(message="Character Block '%s', row '%s', character position %s: State with symbol '%s' in sequence '%s' not defined" \
+                                raise error.DataSyntaxError(message="Character Block '%s', row '%s', character position %s: State with symbol '%s' in sequence '%s' not defined" \
                                         % (char_matrix.oid, row_id, col_idx, char, seq))
                 else:
                     char_matrix.markup_as_sequences = False
@@ -808,10 +808,10 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                     for nxcell in nxrow.getiterator('cell'):
                         chartype_id = nxcell.get('char', None)
                         if chartype_id is None:
-                            raise error.DataFormatError(message="'char' attribute missing for cell: cell markup must indicate character column type for character"\
+                            raise error.DataSyntaxError(message="'char' attribute missing for cell: cell markup must indicate character column type for character"\
                                         + " (matrix = '%s' row='%s', taxon='%s')" % (char_matrix.oid, row_id, taxon.label))
                         if chartype_id not in id_chartype_map:
-                            raise error.DataFormatError(message="Character type ('<char>') with id '%s' referenced but not found for character" % chartype_id \
+                            raise error.DataSyntaxError(message="Character type ('<char>') with id '%s' referenced but not found for character" % chartype_id \
                                         + " (matrix = '%s' row='%s', taxon='%s')" % (char_matrix.oid, row_id, taxon.label))
                         chartype = id_chartype_map[chartype_id]
                         pos_idx = chartypes.index(chartype)

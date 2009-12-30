@@ -26,7 +26,7 @@ from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
 
 def main():
-    tlist = dendropy.TreeList(stream=pathmap.tree_source_stream(datagen.reference_trees_filename("nexus")), format="nexus")
+    tlist = dendropy.TreeList(stream=pathmap.tree_source_stream(datagen.reference_trees_filename("nexus")), schema="nexus")
     for idx, t in enumerate(tlist):
         t.label = "Tree%02d" % (idx+1)
         t.assign_node_labels_from_taxon_or_oid()

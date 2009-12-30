@@ -20,7 +20,7 @@ tree = dendropy.Tree.get_from_path("pythonidae.mle.nex", "nexus", as_unrooted=Fa
 # also applies to constructors ...
 tree = dendropy.Tree(
         stream=open("pythonidae.mle.nex", "rU"),
-        format="nexus",
+        schema="nexus",
         as_rooted=True)
 
 # and 'read_from_*' methods
@@ -30,7 +30,7 @@ tree.read_from_path("pythonidae.mle.nex", "nexus", as_rooted=True)
 # and TreeList constructor, 'get_from_*', and 'read_from_*' methods
 tree_list = dendropy.TreeList(
         stream=open("pythonidae.mcmc.nex", "rU"),
-        format="nexus",
+        schema="nexus",
         as_rooted=True)
 
 tree_list = dendropy.TreeList.get_from_path(

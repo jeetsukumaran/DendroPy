@@ -29,9 +29,9 @@ from dendropy.utility import iosys
 from dendropy.utility.containers import OrderedCaselessDict
 
 ###############################################################################
-## DataFormat
+## DataSchema
 
-class DataFormat(object):
+class DataSchema(object):
 
     def __init__(self,
                  name,
@@ -54,23 +54,23 @@ class DataFormat(object):
 
     def get_reader(self, **kwargs):
         if self.reader_type is None:
-            raise error.UnsupportedFormatError("Reading is not currently supported for data format '%s'" % self.name)
+            raise error.UnsupportedFormatError("Reading is not currently supported for data schema '%s'" % self.name)
         return self.reader_type(**kwargs)
 
     def get_writer(self, **kwargs):
         if self.writer_type is None:
-            raise error.UnsupportedFormatError("Writing is not currently supported for data format '%s'" % self.name)
+            raise error.UnsupportedFormatError("Writing is not currently supported for data schema '%s'" % self.name)
         return self.writer_type(**kwargs)
 
     def get_tree_source_iter(self, stream, **kwargs):
         if self.tree_source_iter is None:
-            raise error.UnsupportedFormatError("Iteration over source trees not currently supported for data format '%s'" % self.name)
+            raise error.UnsupportedFormatError("Iteration over source trees not currently supported for data schema '%s'" % self.name)
         return self.tree_source_iter(stream, **kwargs)
 
 ###############################################################################
-## DataFormatRegistry
+## DataSchemaRegistry
 
-class DataFormatRegistry(object):
+class DataSchemaRegistry(object):
 
     def __init__(self):
         self.formats = OrderedCaselessDict()
@@ -82,7 +82,7 @@ class DataFormatRegistry(object):
         del(self.formats[data_format.name])
 
     def add(self, name, reader_type=None, writer_type=None, tree_source_iter=None):
-        self.formats[name] = DataFormat(name,
+        self.formats[name] = DataSchema(name,
                 reader_type=reader_type,
                 writer_type=writer_type,
                 tree_source_iter=tree_source_iter)
@@ -93,19 +93,19 @@ class DataFormatRegistry(object):
     def get_reader(self, name, **kwargs):
         ## hack to avoid confusing users ##
         if name.lower() == "fasta":
-            raise error.UnsupportedFormatError("FASTA format needs to be specified as 'dnafasta', 'rnafasta', or 'proteinfasta'")
+            raise error.UnsupportedFormatError("FASTA data needs to be specified as 'dnafasta', 'rnafasta', or 'proteinfasta'")
         if name not in self.formats:
-            raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
+            raise error.UnsupportedFormatError("'%s' is not a recognized data schema name" % name)
         return self.formats[name].get_reader(**kwargs)
 
     def get_writer(self, name, **kwargs):
         if name not in self.formats:
-            raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
+            raise error.UnsupportedFormatError("'%s' is not a recognized data schema name" % name)
         return self.formats[name].get_writer(**kwargs)
 
     def tree_source_iter(self, stream, name, **kwargs):
         if name not in self.formats:
-            raise error.UnsupportedFormatError("Format '%s' is not a recognized data format name" % name)
+            raise error.UnsupportedFormatError("'%s' is not a recognized data schema name" % name)
         return self.formats[name].get_tree_source_iter(stream, **kwargs)
 
 

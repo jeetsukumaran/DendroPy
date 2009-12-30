@@ -42,7 +42,7 @@ class TreeEuclideanDistTest(unittest.TestCase):
                         ((t5:0.161175,t6:0.161175):0.392293,((t2:0.075411,(t4:0.104381,t1:0.075411):1):0.065840,t3:0.170221):0.383247);
                         ((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);
                         """),
-            format="newick")
+            schema="newick")
          for i in tree_list:
              encode_splits(i)
          self.assertAlmostEqual(treecalc.euclidean_distance(tree_list[0], tree_list[1]), 2.0)
@@ -55,17 +55,17 @@ class TreeEuclideanDistTest(unittest.TestCase):
 class TreeSymmetricDistTest(unittest.TestCase):
 
     def runTest(self):
-         ref = dendropy.Tree(stream=StringIO("((t5,t6),((t4,(t2,t1)),t3));"), format="newick")
+         ref = dendropy.Tree(stream=StringIO("((t5,t6),((t4,(t2,t1)),t3));"), schema="newick")
          taxon_set = ref.taxon_set
          encode_splits(ref)
-         o_tree = dendropy.Tree(stream=StringIO("((t1,t2),((t4,(t5,t6)),t3));"), format="newick", taxon_set=taxon_set)
+         o_tree = dendropy.Tree(stream=StringIO("((t1,t2),((t4,(t5,t6)),t3));"), schema="newick", taxon_set=taxon_set)
          encode_splits(o_tree)
          self.assertEqual(treecalc.symmetric_difference(o_tree, ref), 2)
 
 class TreePatristicDistTest(unittest.TestCase):
 
     def setUp(self):
-        self.tree = dendropy.Tree.get_from_string("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", format="newick")
+        self.tree = dendropy.Tree.get_from_string("(((a:1, b:1):1, c:2):1, (d:2, (e:1,f:1):1):1):0;", schema="newick")
 
     def testPatDistMatrix(self):
         pdm = treecalc.PatristicDistanceMatrix(self.tree)

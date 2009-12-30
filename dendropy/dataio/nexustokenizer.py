@@ -28,7 +28,7 @@ by both `dendropy.newick` and `dendropy.nexus` modules.
 import re
 from cStringIO import StringIO
 from dendropy.utility import containers
-from dendropy.utility.error import DataFormatError
+from dendropy.utility.error import DataSyntaxError
 from dendropy import dataobject
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
@@ -141,7 +141,7 @@ class StrToTaxon(object):
     def __init__(self, taxon_set, translate_dict=None, allow_repeated_use=False):
         """If `allow_repeated_use` is True, then get_taxon and require_taxon
         can be called multiple times to get the same taxon.  If it is false then
-        calling the functions with the same label will generate a DataFormatError
+        calling the functions with the same label will generate a DataSyntaxError
         indicating that the taxon has been used multiple times."""
         self.taxon_set = taxon_set
         self.translate = translate_dict or {}
@@ -154,7 +154,7 @@ class StrToTaxon(object):
         #_LOG.debug("Checking if we can return %s" % str(t))
         if (self.returned_taxon_set is not None) and (t is not None):
             if t in self.returned_taxon_set:
-                raise DataFormatError(message="Taxon %s used twice (it appears as %s the second time)" % (str(t), label))
+                raise DataSyntaxError(message="Taxon %s used twice (it appears as %s the second time)" % (str(t), label))
             self.returned_taxon_set.add(t)
         return t
 
@@ -582,7 +582,7 @@ class NexusTokenizer(object):
             Returns an exception object parameterized with line and
             column number values.
             """
-            return DataFormatError(row=self.current_line_number,
+            return DataSyntaxError(row=self.current_line_number,
                                    column=self.current_col_number,
                                    message=message)
 

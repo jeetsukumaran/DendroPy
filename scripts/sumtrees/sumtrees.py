@@ -331,7 +331,7 @@ def main_cli():
     else:
         encode_splits = False # cannot encode while parsing newick
     tree_source = multi_tree_source_iter(sources=support_file_objs,
-                                         format=file_format,
+                                         schema=file_format,
                                          tree_offset=opts.burnin,
                                          write_progress=messenger.write,
                                          taxon_set=taxon_set,
@@ -380,7 +380,7 @@ def main_cli():
     tt_trees = []
     if target_tree_filepath is not None:
         messenger.send("### MAPPING SUPPORT TO TARGET TREE(S) ###\n")
-        for tree in tree_source_iter(stream=open(target_tree_filepath, 'r'), format="nexus/newick", taxon_set=taxon_set):
+        for tree in tree_source_iter(stream=open(target_tree_filepath, 'r'), schema="nexus/newick", taxon_set=taxon_set):
             tt_trees.append(tree)
         messenger.send('Parsed "%s": %d tree(s) in file' % (target_tree_filepath, len(tt_trees)))
         comments.append('Split support mapped to trees in:')

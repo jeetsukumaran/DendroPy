@@ -52,7 +52,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         Initializes a new TreeList object, populating it with any iterable
         container with Tree object members passed as unnamed argument, or
-        from a data source if `stream` and `format` are passed.
+        from a data source if `stream` and `schema` are passed.
 
         If passed an iterable container, the objects in that container must be
         of type `Tree` (or derived). If the container is of type `TreeList`,
@@ -74,16 +74,16 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             tlst1 = TreeList()
 
             # populated from list of Tree objects
-            t1 = Tree(stream=StringIO("((A,B),(C,D))"), format="newick")
-            t2 = Tree(stream=StringIO("((A,C),(B,D))"), format="newick")
+            t1 = Tree(stream=StringIO("((A,B),(C,D))"), schema="newick")
+            t2 = Tree(stream=StringIO("((A,C),(B,D))"), schema="newick")
             tlist2 = TreeList([t1, t2])
 
             # tree from data source
-            tlst3 = TreeList(stream=StringIO("((A,B),(C,D));((A,C),(B,D));"), format="newick") # same
+            tlst3 = TreeList(stream=StringIO("((A,B),(C,D));((A,C),(B,D));"), schema="newick") # same
 
             # passing keywords to underlying tree parser
             tlst4 = TreeList(stream=StringIO("((A,B),(C,D));((A,C),(B,D));"),
-                             format="newick",
+                             schema="newick",
                              taxon_set=tlst3.taxon_set,
                              encode_splits=True)
 
@@ -112,8 +112,8 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         elif len(args) == 1:
             if hasattr(args[0], "__iter__") and not isinstance(args[0], str):
                 stream = kwargs.get("stream")
-                format = kwargs.get("format")
-                if (stream is not None) or (format is not None):
+                schema = kwargs.get("schema")
+                if (stream is not None) or (schema is not None):
                     raise error.MultipleInitializationSourceError(class_name=self.__class__.__name__, arg=args[0])
                 if isinstance(args[0], TreeList):
                     for t in args[0]:
@@ -143,12 +143,12 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
 
-    def read(self, stream, format, **kwargs):
+    def read(self, stream, schema, **kwargs):
         """
-        Populates the `TreeList` from a `format`-formatted file-like source
-        `stream`. `format` must be a recognized and tree file format, such as
+        Populates the `TreeList` from a `schema`-formatted file-like source
+        `stream`. `schema` must be a recognized and tree file schema, such as
         `nexus`, `newick`, etc, for which a reader is available. If this is
-        not implemented for the format specified, then a
+        not implemented for the schema specified, then a
         `UnsupportedFormatError` is raised. If the source defines multiple
         tree collections (e.g. multiple NEXUS "Trees" blocks), then the
         keyword argument ``collection_offset`` can be used to specify the
@@ -168,7 +168,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             - `edge_len_type` specifies the type of the edge lengths (int or float)
 
         Other keyword arguments may be available, depending on the implementation
-        of the reader specialized to handle `format` formats.
+        of the reader specialized to handle `schema` formats.
         """
         from dendropy.dataobject.dataset import DataSet
         collection_offset = kwargs.get("collection_offset", -1)
@@ -182,7 +182,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             kwargs["taxon_set"] = self.taxon_set
         kwargs["exclude_chars"] = True
         kwargs["exclude_trees"] = False
-        d = DataSet(stream=stream, format=format, **kwargs)
+        d = DataSet(stream=stream, schema=schema, **kwargs)
         if len(d.tree_lists) == 0:
             raise ValueError("No trees in data source")
         if collection_offset >= len(d.tree_lists):
@@ -211,9 +211,9 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 raise IndexError("Tree offset %d specified, but tree collection only has %d trees defined" \
                         % (tree_offset, len(tlist)))
 
-    def write(self, stream, format, **kwargs):
+    def write(self, stream, schema, **kwargs):
         """
-        Writes out `TreeList` in `format` to a destination described by
+        Writes out `TreeList` in `schema` to a destination described by
         given by `stream`.
 
         Additionally, for some formats, the following keywords are recognized:
@@ -224,7 +224,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         from dendropy.dataobject.dataset import DataSet
         d = DataSet()
         d.add(self)
-        d.write(stream=stream, format=format, **kwargs)
+        d.write(stream=stream, schema=schema, **kwargs)
 
     def reindex_subcomponent_taxa(self):
         """
@@ -407,16 +407,16 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         Initializes a new Tree object, optionally constructing it by cloning
         another Tree object if this is passed as the first argument, or
-        out of a data source if `stream` and `format` are keyword arguments are
-        passed with a file-like object and a format-specification string object
+        out of a data source if `stream` and `schema` are keyword arguments are
+        passed with a file-like object and a schema-specification string object
         values respectively.
 
-        If `stream` and `format` keyword arguments are given, will
-        construct this `Tree` object from `format`-formatted source
-        given by file-like object `stream`. `format` must be a
-        recognized and tree file format, such as `nexus`, `newick`, etc,
+        If `stream` and `schema` keyword arguments are given, will
+        construct this `Tree` object from `schema`-formatted source
+        given by file-like object `stream`. `schema` must be a
+        recognized and tree file schema, such as `nexus`, `newick`, etc,
         for which a specialized tree list writer is available. If this
-        is not implemented for the format specified, then a
+        is not implemented for the schema specified, then a
         `UnsupportedFormatError` is raised. Other keywords will be
         passed to the underlying tree parser.
 
@@ -431,11 +431,11 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             t1 = Tree()
 
             # tree from data source
-            t2 = dendropy.Tree(stream=StringIO("((A,B),(C,D));"), format="newick")
+            t2 = dendropy.Tree(stream=StringIO("((A,B),(C,D));"), schema="newick")
 
             # passing keywords to underlying tree parser
             t3 = dendropy.Tree(stream=StringIO("((A,B),(C,D));"),
-                      format="newick",
+                      schema="newick",
                       taxon_set=t3.taxon_set,
                       encode_splits=True)
 
@@ -469,7 +469,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
         if len(args) == 1:
             if ("stream" in kwargs and kwargs["stream"] is not None) \
-                    or ("format" in kwargs and kwargs["format"] is not None):
+                    or ("schema" in kwargs and kwargs["schema"] is not None):
                 raise error.MultipleInitializationSourceError(class_name=self.__class__.__name__, arg=args[0])
             if isinstance(args[0], Node):
                 self.seed_node = args[0]
@@ -505,9 +505,9 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 o.__dict__[k] = copy.deepcopy(v, memo)
         return o
 
-    def read(self, stream, format, **kwargs):
+    def read(self, stream, schema, **kwargs):
         """
-        Populates/constructs objects of this type from `format`-formatted
+        Populates/constructs objects of this type from `schema`-formatted
         data in the file-like object source `stream`.
 
         Recognized keywords arguments are:
@@ -542,7 +542,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             self.taxon_set = kwargs["taxon_set"]
         kwargs["exclude_chars"] = True
         kwargs["exclude_trees"] = False
-        d = DataSet(stream=stream, format=format, **kwargs)
+        d = DataSet(stream=stream, schema=schema, **kwargs)
         if len(d.tree_lists) == 0:
             raise ValueError("No trees in data source")
         if collection_offset >= len(d.tree_lists):
@@ -567,14 +567,14 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 raise IndexError("Tree offset %d specified, but tree collection only has %d trees defined" \
                         % (tree_offset, len(tlist)))
 
-    def write(self, stream, format, **kwargs):
+    def write(self, stream, schema, **kwargs):
         """
-        Writes out `Tree` in `format` to a destination given by file-like object
+        Writes out `Tree` in `schema` to a destination given by file-like object
         `stream`.
 
-        `format` must be a recognized and tree file format, such as `nexus`,
+        `schema` must be a recognized and tree file schema, such as `nexus`,
         `newick`, etc, for which a specialized tree list writer is
-        available. If this is not implemented for the format specified, then
+        available. If this is not implemented for the schema specified, then
         a `UnsupportedFormatError` is raised.
 
         Additionally, for some formats, the following keywords are recognized:
@@ -585,7 +585,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         from dendropy.dataobject.dataset import DataSet
         d = DataSet()
         d.add(TreeList([self]))
-        d.write(stream=stream, format=format, **kwargs)
+        d.write(stream=stream, schema=schema, **kwargs)
 
     ###########################################################################
     ## Getting/accessing methods
@@ -2135,7 +2135,7 @@ def convert_node_to_root_polytomy(nd):
     """If `nd` has two children and at least on of them is an internal node,
     then it will be converted to an out-degree three node (with the edge length
     added as needed).
-    
+
     Returns the child node that was detached (or None if the tree was not
     modified). This can be useful for removing the deleted node from the split_edges
     dictionary.

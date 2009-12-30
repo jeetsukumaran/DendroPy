@@ -53,11 +53,11 @@ IS_DEBUG_LOGGING = _LOG.isEnabledFor(logging.DEBUG)
 
 ### MODULE THAT WE ARE TESTING ###
 from dendropy.treesum import inplace_strict_consensus_merge
-### MODULE THAT WE ARE TESTING ###  
+### MODULE THAT WE ARE TESTING ###
 
 def trees_from_newick_str_list(newick_list):
     all_tree_str = " ".join(newick_list)
-    return TreeList(stream=StringIO(all_tree_str), taxon_set=TaxonSet(), format="NEWICK")
+    return TreeList(stream=StringIO(all_tree_str), taxon_set=TaxonSet(), schema="NEWICK")
 _counter = 0
 
 class SCMTest(unittest.TestCase):
@@ -86,7 +86,7 @@ class SCMTest(unittest.TestCase):
         n = o + [expected]
         trees = trees_from_newick_str_list(n)
         self.kernelOfTest(trees)
-    
+
 
     def testPolytomy(self):
         trees = trees_from_newick_str_list([
@@ -115,7 +115,7 @@ class SCMTest(unittest.TestCase):
 
     def testSimple(self):
         if not is_test_enabled(runlevel.SLOW, _LOG, module_name=__name__, message="skipping all rotation scm tests"):
-            return        
+            return
         clades = ['A', 'D', None, None]
         for m in [0, 1]:
             four_sisters = ['B', 'C']
@@ -181,7 +181,7 @@ class SCMTest(unittest.TestCase):
         o = ['(1,5,(2,((3,6),4)));', '(2,1,(3,(6,4)));', ]
         m = [o[0], o[1], '(1,5,(2,(3,6,4)));']
         trees = trees_from_newick_str_list(m)
-        self.kernelOfTest(trees)        
+        self.kernelOfTest(trees)
         rng = RepeatedRandom()
         for i in xrange(50):
             trees = trees_from_newick_str_list(m)
@@ -203,18 +203,18 @@ class SCMTest(unittest.TestCase):
     def testOrderDependent(self):
         o = ['(1,5,(2,(3,4)));', '(2,4,(3,(6,7)));', '(3,4,(6,(7,8)));']
         n = [o[0], o[2], o[1], '(1,2,3,4,5,6,7,8);']
-        
+
         trees = trees_from_newick_str_list(n)
         self.kernelOfTest(trees)
-    
+
         expected = '(1,5,(2,((3,(6,(7,8))),4)));'
         trees = trees_from_newick_str_list(o + [expected])
         self.kernelOfTest(trees)
-        
+
         o.reverse()
         trees = trees_from_newick_str_list(o + [expected])
         self.kernelOfTest(trees)
-        
+
         o = ['(1,5,(3,((2,6),4)));', '(2,1,(3,(6,4)));', ]
         n = [o[0], o[1], '((1,5),2,3,6,4);']
         trees = trees_from_newick_str_list(n)

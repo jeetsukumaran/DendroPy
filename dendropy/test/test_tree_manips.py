@@ -39,7 +39,7 @@ class RandomlyRotateTest(unittest.TestCase):
 
     def runTest(self):
         n = '(Basichlsac,(Lamprothma,Mougeotisp),(((Haplomitr2,Petalaphy),((Angiopteri,(((Azollacaro,((Dennstasam,(Oleandrapi,Polypodapp)),Dicksonant)),Vittarifle),Botrychbit)),(Isoetesmel,((((Agathismac,Agathisova),Pseudotsu),(((Libocedrus,Juniperusc),Callitris),Athrotaxi)),((Liriodchi,Nelumbo),Sagittari))))),Thuidium));'
-        trees = dendropy.TreeList(stream=StringIO(n+n), format="newick")
+        trees = dendropy.TreeList(stream=StringIO(n+n), schema="newick")
         ref = trees[0]
         changing = trees[1]
         rng = RepeatedRandom()
@@ -58,8 +58,8 @@ class RandomlyReorientTest(unittest.TestCase):
 
     def runTest(self):
         n = '(Basichlsac,(Lamprothma,Mougeotisp),(((Haplomitr2,Petalaphy),((Angiopteri,(((Azollacaro,((Dennstasam,(Oleandrapi,Polypodapp)),Dicksonant)),Vittarifle),Botrychbit)),(Isoetesmel,((((Agathismac,Agathisova),Pseudotsu),(((Libocedrus,Juniperusc),Callitris),Athrotaxi)),((Liriodchi,Nelumbo),Sagittari))))),Thuidium));'
-        k = dendropy.TreeList(stream=StringIO(n), format="newick")[0]
-        trees = dendropy.TreeList(stream=StringIO(n+n), format="newick", encode_splits=True, taxon_set=k.taxon_set)
+        k = dendropy.TreeList(stream=StringIO(n), schema="newick")[0]
+        trees = dendropy.TreeList(stream=StringIO(n+n), schema="newick", encode_splits=True, taxon_set=k.taxon_set)
         ref = trees[0]
         changing = trees[1]
         rng = RepeatedRandom()
@@ -84,7 +84,7 @@ class CollapseConflictingTest(unittest.TestCase):
             (5,((4,3),2),1);
             (5,4,3,2,1);
             """),
-            format="newick",
+            schema="newick",
             taxon_set=taxon_set)
         tree = tree_list[0]
         expected_tree = tree_list[1]

@@ -147,8 +147,8 @@ class TreeRootingIntepretationTest(unittest.TestCase):
             else:
                 self.assertEqual(v1[i], self.trees_mixed_is_rooted[i])
 
-    def iterated_trees(self, tree_source_string, format, **kwargs):
-        ti = tree_source_iter(StringIO(tree_source_string), format, **kwargs)
+    def iterated_trees(self, tree_source_string, schema, **kwargs):
+        ti = tree_source_iter(StringIO(tree_source_string), schema, **kwargs)
         return [t for t in ti]
 
     ###########################################################################

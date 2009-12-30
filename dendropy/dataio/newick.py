@@ -21,7 +21,7 @@
 ###############################################################################
 
 """
-Implementation of NEWICK-format data reader and writer.
+Implementation of NEWICK-schema data reader and writer.
 """
 from cStringIO import StringIO
 import re
@@ -213,7 +213,7 @@ class NewickWriter(iosys.DataWriter):
 
     def write_tree_list(self, tree_list, stream):
         """
-        Writes a `TreeList` in NEWICK format to `stream`.
+        Writes a `TreeList` in NEWICK schema to `stream`.
         """
         if self.exclude_trees:
             return

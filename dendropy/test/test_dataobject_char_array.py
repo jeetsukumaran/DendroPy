@@ -157,7 +157,7 @@ class CharMatrixReadTest(datatest.DataObjectVerificationTestCase):
 
     def testInitRead(self):
         c = dendropy.DnaCharacterMatrix(stream=open(self.data_path, "rU"),
-                format="nexus")
+                schema="nexus")
         self.assertDistinctButEqual(
             self.reference_dataset.char_matrices[0],
             c,
@@ -168,7 +168,7 @@ class CharMatrixReadTest(datatest.DataObjectVerificationTestCase):
     def testSameTaxaRead(self):
         c = dendropy.DnaCharacterMatrix()
         c.read_from_path(self.data_path,
-                format="nexus",
+                schema="nexus",
                 taxon_set=self.reference_dataset.char_matrices[0].taxon_set)
         self.assertDistinctButEqual(
             self.reference_dataset.char_matrices[0],
@@ -179,7 +179,7 @@ class CharMatrixReadTest(datatest.DataObjectVerificationTestCase):
 
     def testSameTaxaInit(self):
         c = dendropy.DnaCharacterMatrix(stream=open(self.data_path, "rU"),
-                format="nexus",
+                schema="nexus",
                 taxon_set=self.reference_dataset.char_matrices[0].taxon_set)
         self.assertDistinctButEqual(
             self.reference_dataset.char_matrices[0],
@@ -204,7 +204,7 @@ class CharMatrixWriteTest(datatest.DataObjectVerificationTestCase):
 
     def testDnaRountTripToStringDistinctTaxa(self):
         c1 = datagen.reference_dna_matrix()
-        s1 = c1.as_string(format="nexus")
+        s1 = c1.as_string(schema="nexus")
         c2 = dendropy.DnaCharacterMatrix.get_from_string(s1, "nexus")
         self.assertDistinctButEqual(
             c1,

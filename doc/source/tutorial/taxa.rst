@@ -18,8 +18,8 @@ It is important to recognize that, by default, DendroPy will create new |TaxonSe
 Consider the following example::
 
     >>> import dendropy
-    >>> t1 = dendropy.Tree.get_from_string('((A,B),(C,D))', format='newick')
-    >>> t2 = dendropy.Tree.get_from_string('((A,B),(C,D))', format='newick')
+    >>> t1 = dendropy.Tree.get_from_string('((A,B),(C,D))', schema='newick')
+    >>> t2 = dendropy.Tree.get_from_string('((A,B),(C,D))', schema='newick')
     >>> print(t1.description(2))
     Tree object at 0x64b130 (Tree6599856): 7 Nodes, 7 Edges
         [Taxon Set]
@@ -59,8 +59,8 @@ This means that even though the tree shape and structure is identical between th
 The solution is to explicitly specify the same ``taxon_set`` when creating the trees. In DendroPy all phylogenetic data classes that are associated with |TaxonSet| objects have constructors, factory methods, and ``read_from_*`` methods take a specific :class:`TaxonSet` object as an argument using the ``taxon_set`` a keyword. For example::
 
     >>> taxa = dendropy.TaxonSet()
-    >>> t1 = dendropy.Tree.get_from_string('((A,B),(C,D))', format='newick', taxon_set=taxa)
-    >>> t2 = dendropy.Tree.get_from_string('((A,B),(C,D))', format='newick', taxon_set=taxa)
+    >>> t1 = dendropy.Tree.get_from_string('((A,B),(C,D))', schema='newick', taxon_set=taxa)
+    >>> t2 = dendropy.Tree.get_from_string('((A,B),(C,D))', schema='newick', taxon_set=taxa)
     >>> treecalc.robinson_foulds_distance(t1, t2)
     0.0
 
@@ -70,8 +70,8 @@ Taxon Management with Tree Lists
 The |TreeList| class is designed to manage collections of |Tree| objects that share the same |TaxonSet|.
 As |Tree| objects are appended to a |TreeList| object, the |TreeList| object will automatically take care of remapping the |TaxonSet| and associated |Taxon| objects::
 
-    >>> t1 = dendropy.Tree.get_from_string('((A,B),(C,D))', format='newick')
-    >>> t2 = dendropy.Tree.get_from_string('((A,B),(C,D))', format='newick')
+    >>> t1 = dendropy.Tree.get_from_string('((A,B),(C,D))', schema='newick')
+    >>> t2 = dendropy.Tree.get_from_string('((A,B),(C,D))', schema='newick')
     >>> print(repr(t1.taxon_set))
     <TaxonSet object at 0x1243a20>
     >>> repr(t1.taxon_set)
@@ -263,11 +263,11 @@ DendroPy maps taxon definitions encountered in a data source to |Taxon| objects 
 The labels have to match **exactly** for the taxa to be correctly mapped, with the match being **case-sensitive**.
 Thus, "Python regius", "PYTHON REGIUS", "python regious", "P. regious", etc. will all be considered as referring to distinct and different taxa.
 
-Further quirks may arise due to some format-specific idiosyncracies.
+Further quirks may arise due to some schema-specific idiosyncracies.
 For example, the NEXUS standard dictates that an underscore ("_") should be substituted for a space in all labels.
 Thus, when reading a NEXUS or NEWICK source, the taxon labels "Python_regius" and "Python regius" are exactly equivalent, and will be mapped to the same |Taxon| object.
 
-However, this underscore-to-space mapping does **not** take place when reading, for example, a FASTA format file.
+However, this underscore-to-space mapping does **not** take place when reading, for example, a FASTA schema file.
 Here, underscores are preserved, and thus "Python_regius" does not map to "Python regius".
 This means that if you were to read a NEXUS file with the taxon label, "Python_regius", and later a read a FASTA file with the same taxon label, i.e., "Python_regius", these would map to different taxa!
 This is illustrated by the following:
@@ -283,7 +283,7 @@ Which produces the following, almost certainly incorrect, result::
         [2] Taxon object at 0x22867d0 (Taxon36202448): 'Python_regious'
         [3] Taxon object at 0x2286830 (Taxon36202544): 'Python_sebae'
 
-Even more confusingly, if this file is written out in NEXUS format, it would result in the space/underscore substitution taking place, resulting in two pairs of taxa with the same labels.
+Even more confusingly, if this file is written out in NEXUS schema, it would result in the space/underscore substitution taking place, resulting in two pairs of taxa with the same labels.
 
 If you plan on mixing sources from different formats, it is important to keep in mind the space/underscore substitution that takes place by default with NEXUS/NEWICK formats, but does not take place with other formats.
 
@@ -331,7 +331,7 @@ will result in::
         [0] Taxon object at 0x2386770 (Taxon37250928): 'Python_regious'
         [1] Taxon object at 0x2386790 (Taxon37250960): 'Python_sebae'
 
-This may seem the simplest solution, in so far as it does not mean that you need not maintain lexically-different taxon labels across files of different formats, but a gotcha here is that if writing to NEXUS/NEWICK format, any label with underscores will be automatically quoted to preserve the underscores (again, as dictated by the NEXUS standard), which will mean that: (a) your output file will have quotes, and, as a result, (b) the underscores in the labels will be "hard" underscores if the file is read by PAUP* or DendroPy. So, for example, continuing from the previous example, the NEXUS-formatted output would look like::
+This may seem the simplest solution, in so far as it does not mean that you need not maintain lexically-different taxon labels across files of different formats, but a gotcha here is that if writing to NEXUS/NEWICK schema, any label with underscores will be automatically quoted to preserve the underscores (again, as dictated by the NEXUS standard), which will mean that: (a) your output file will have quotes, and, as a result, (b) the underscores in the labels will be "hard" underscores if the file is read by PAUP* or DendroPy. So, for example, continuing from the previous example, the NEXUS-formatted output would look like::
 
     >>> print(d.as_string('nexus'))
     #NEXUS

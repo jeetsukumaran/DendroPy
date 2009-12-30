@@ -58,7 +58,7 @@ else:
         class SeqSimTest(unittest.TestCase):
 
             def setUp(self):
-                self.tree_model = dendropy.Tree.get_from_string(tree_model_string, format="NEXUS")
+                self.tree_model = dendropy.Tree.get_from_string(tree_model_string, schema="NEXUS")
                 assert self.tree_model.taxon_set is not None
 
             def estimate_params(self,

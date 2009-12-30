@@ -49,7 +49,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         Initializes a new `DataSet` object. Arguments accepted include
         another DataSet object (which will result in a deep copy of all
         taxa, trees and characters), or a file-like object opened for reading
-        and a string specifying the format of the data in the file-like object,
+        and a string specifying the schema of the data in the file-like object,
         in which case the DataSet will be populated from data in the given
         file.
         """
@@ -72,7 +72,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
 #            self.attach_taxon_set(kwargs.get("taxon_set", None))
         if len(args) > 0:
             if ("stream" in kwargs and kwargs["stream"] is not None) \
-                    or ("format" in kwargs and kwargs["format"] is not None):
+                    or ("schema" in kwargs and kwargs["schema"] is not None):
                 raise error.MultipleInitializationSourceError(self.__class__.__name__, args[0])
             if len(args) == 1 and isinstance(args[0], DataSet):
                 d = deepcopy(args[0])
@@ -122,12 +122,12 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
     ###########################################################################
     ## I/O and Representation
 
-    def read(self, stream, format, **kwargs):
+    def read(self, stream, schema, **kwargs):
         """
         Populates this `DataSet` object from a file-like object data
-        source `stream`, formatted in `format`. `format` must be a
-        recognized and supported phylogenetic data file format. If
-        reading is not implemented for the format specified, then a
+        source `stream`, formatted in `schema`. `schema` must be a
+        recognized and supported phylogenetic data file schema. If
+        reading is not implemented for the schema specified, then a
         `UnsupportedFormatError` is raised.
 
         The following optional keyword arguments are also recognized:
@@ -162,15 +162,15 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
                 kwargs["taxon_set"] = self.attached_taxon_set
             elif kwargs["taxon_set"] is not self.attached_taxon_set:
                 raise TypeError("DataSet object is already attached to a TaxonSet, but different TaxonSet passed to using 'taxon_set' keyword argument")
-        reader = get_reader(format=format, **kwargs)
+        reader = get_reader(schema=schema, **kwargs)
         reader.read(stream, **kwargs)
 
-    def write(self, stream, format, **kwargs):
+    def write(self, stream, schema, **kwargs):
         """
         Writes this `DataSet` object to the file-like object `stream`
-        in `format`. `format` must be a recognized and supported
-        phylogenetic data file format. If writing is not implemented for
-        the format specified, then a `UnsupportedFormatError` is raised.
+        in `schema`. `schema` must be a recognized and supported
+        phylogenetic data file schema. If writing is not implemented for
+        the schema specified, then a `UnsupportedFormatError` is raised.
 
         The following optional keyword arguments are also recognized:
 
@@ -188,7 +188,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
 #                kwargs["taxon_set"] = self.attached_taxon_set
 #            elif kwargs["taxon_set"] is not self.attached_taxon_set:
 #                raise TypeError("DataSet object is already attached to a TaxonSet, but different TaxonSet passed using 'taxon_set' keyword argument")
-        writer = get_writer(format=format, **kwargs)
+        writer = get_writer(schema=schema, **kwargs)
         writer.write(stream, **kwargs)
 
     def _subdescription(self, name, objs, depth, indent, itemize, output, **kwargs):

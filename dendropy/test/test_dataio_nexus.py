@@ -152,7 +152,7 @@ class NexusTreeListReaderTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        t_tree_list = dendropy.TreeList.get_from_stream(pathmap.tree_source_stream(datagen.reference_trees_filename(format="nexus")), "nexus")
+        t_tree_list = dendropy.TreeList.get_from_stream(pathmap.tree_source_stream(datagen.reference_trees_filename(schema="nexus")), "nexus")
         self.assertDistinctButEqualTreeList(
                 ref_tree_list,
                 t_tree_list,
@@ -268,14 +268,14 @@ end;
             _LOG.info(t.as_string("newick"))
 
     def testStr2AsDoc(self):
-        self.assertRaises(error.DataFormatError, dendropy.TreeList.get_from_string, self.str2, "nexus")
+        self.assertRaises(error.DataSyntaxError, dendropy.TreeList.get_from_string, self.str2, "nexus")
 
 #    def testStr2Iter(self):
 #        for t in dendropy.tree_source_iter(StringIO(self.str2), "nexus"):
 #            _LOG.info(t.as_string("newick"))
 
     def testStr3AsDoc(self):
-#        self.assertRaises(error.DataFormatError, dendropy.TreeList.get_from_string, self.str3, "nexus")
+#        self.assertRaises(error.DataSyntaxError, dendropy.TreeList.get_from_string, self.str3, "nexus")
         tlist = dendropy.TreeList.get_from_string(self.str3, "nexus")
         _LOG.info(tlist.as_string("nexus"))
 
@@ -297,37 +297,37 @@ class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
         return t
 
     def testMixedNexusAndNewickDistinctTaxa(self):
-        filenames = [datagen.reference_trees_filename(format="newick"),
-                     datagen.reference_trees_filename(format="nexus"),
-                     datagen.reference_trees_filename(format="newick"),
-                     datagen.reference_trees_filename(format="nexus")]
+        filenames = [datagen.reference_trees_filename(schema="newick"),
+                     datagen.reference_trees_filename(schema="nexus"),
+                     datagen.reference_trees_filename(schema="newick"),
+                     datagen.reference_trees_filename(schema="nexus")]
         filepaths = [pathmap.tree_source_path(f) for f in filenames]
         taxon_set = dendropy.TaxonSet()
-        for idx, test_tree in enumerate(multi_tree_source_iter(filepaths, format="nexus/newick", taxon_set=taxon_set)):
+        for idx, test_tree in enumerate(multi_tree_source_iter(filepaths, schema="nexus/newick", taxon_set=taxon_set)):
             self.assertDistinctButEqualTree(self.next_ref_tree(), test_tree, distinct_taxa=True, ignore_taxon_order=True)
         self.assertEqual(idx, 39)
 
     def testMixedNexusAndNewickSameTaxa(self):
-        filenames = [datagen.reference_trees_filename(format="newick"),
-                     datagen.reference_trees_filename(format="nexus"),
-                     datagen.reference_trees_filename(format="newick"),
-                     datagen.reference_trees_filename(format="nexus")]
+        filenames = [datagen.reference_trees_filename(schema="newick"),
+                     datagen.reference_trees_filename(schema="nexus"),
+                     datagen.reference_trees_filename(schema="newick"),
+                     datagen.reference_trees_filename(schema="nexus")]
         filepaths = [pathmap.tree_source_path(f) for f in filenames]
         taxon_set = self.ref_tree_list.taxon_set
-        for idx, test_tree in enumerate(multi_tree_source_iter(filepaths, format="nexus/newick", taxon_set=taxon_set)):
+        for idx, test_tree in enumerate(multi_tree_source_iter(filepaths, schema="nexus/newick", taxon_set=taxon_set)):
             self.assertDistinctButEqualTree(self.next_ref_tree(), test_tree, distinct_taxa=False, ignore_taxon_order=True)
         self.assertEqual(idx, 39)
 
     def testBurnIn(self):
-        filenames = [datagen.reference_trees_filename(format="newick"),
-                     datagen.reference_trees_filename(format="nexus"),
-                     datagen.reference_trees_filename(format="newick"),
-                     datagen.reference_trees_filename(format="nexus")]
+        filenames = [datagen.reference_trees_filename(schema="newick"),
+                     datagen.reference_trees_filename(schema="nexus"),
+                     datagen.reference_trees_filename(schema="newick"),
+                     datagen.reference_trees_filename(schema="nexus")]
         filepaths = [pathmap.tree_source_path(f) for f in filenames]
         taxon_set = self.ref_tree_list.taxon_set
         self.ref_index = 5
         for idx, test_tree in enumerate(multi_tree_source_iter(filepaths,
-                format="nexus/newick",
+                schema="nexus/newick",
                 taxon_set=taxon_set,
                 tree_offset=5)):
             check_tree = self.next_ref_tree(restart_index=5)
@@ -340,22 +340,22 @@ class NexusOrNewickTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
         self.ref_tree_list = datagen.reference_tree_list()
 
     def testNexusDistinctTaxa(self):
-        stream = pathmap.tree_source_stream(datagen.reference_trees_filename(format="nexus"))
+        stream = pathmap.tree_source_stream(datagen.reference_trees_filename(schema="nexus"))
         for idx, test_tree in enumerate(nexus.generalized_tree_source_iter(stream=stream)):
             self.assertDistinctButEqualTree(self.ref_tree_list[idx], test_tree, distinct_taxa=True)
 
     def testNexusSameTaxa(self):
-        stream = pathmap.tree_source_stream(datagen.reference_trees_filename(format="nexus"))
+        stream = pathmap.tree_source_stream(datagen.reference_trees_filename(schema="nexus"))
         for idx, test_tree in enumerate(nexus.generalized_tree_source_iter(stream=stream, taxon_set=self.ref_tree_list.taxon_set)):
             self.assertDistinctButEqualTree(self.ref_tree_list[idx], test_tree, distinct_taxa=False)
 
     def testNewickDistinctTaxa(self):
-        stream = pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick"))
+        stream = pathmap.tree_source_stream(datagen.reference_trees_filename(schema="newick"))
         for idx, test_tree in enumerate(nexus.generalized_tree_source_iter(stream=stream)):
             self.assertDistinctButEqualTree(self.ref_tree_list[idx], test_tree, distinct_taxa=True, ignore_taxon_order=True)
 
     def testNewickSameTaxa(self):
-        stream = pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick"))
+        stream = pathmap.tree_source_stream(datagen.reference_trees_filename(schema="newick"))
         for idx, test_tree in enumerate(nexus.generalized_tree_source_iter(stream=stream, taxon_set=self.ref_tree_list.taxon_set)):
             self.assertDistinctButEqualTree(self.ref_tree_list[idx], test_tree, distinct_taxa=False)
 
@@ -364,7 +364,7 @@ class NexusTreeDocumentReaderTest(datatest.DataObjectVerificationTestCase):
     def testReferenceTreeFileDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
         reader = nexus.NexusReader()
-        dataset = reader.read(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(format="nexus")))
+        dataset = reader.read(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(schema="nexus")))
         self.assertEqual(len(dataset.tree_lists), 1)
         self.assertDistinctButEqualTreeList(
                 ref_tree_list,
@@ -427,22 +427,22 @@ class NexusDocumentReadWriteTest(datatest.DataObjectVerificationTestCase):
 
     def testRoundTripProtein(self):
         s = pathmap.char_source_stream("caenophidia_mos.chars.nexus")
-        d1 = dendropy.DataSet(stream=s, format="nexus")
+        d1 = dendropy.DataSet(stream=s, schema="nexus")
         self.roundTripDataSetTest(d1, "nexus")
 
     def testRoundTripStandard1(self):
         s = pathmap.char_source_stream("angiosperms.chars.nexus")
-        d1 = dendropy.DataSet(stream=s, format="nexus")
+        d1 = dendropy.DataSet(stream=s, schema="nexus")
         self.roundTripDataSetTest(d1, "nexus")
 
     def testRoundTripStandard2(self):
         s = pathmap.char_source_stream("apternodus.chars.nexus")
-        d1 = dendropy.DataSet(stream=s, format="nexus")
+        d1 = dendropy.DataSet(stream=s, schema="nexus")
         self.roundTripDataSetTest(d1, "nexus")
 
     def testRoundTripContinuous(self):
         s = pathmap.char_source_stream("pythonidae_continuous.chars.nexus")
-        d1 = dendropy.DataSet(stream=s, format="nexus")
+        d1 = dendropy.DataSet(stream=s, schema="nexus")
         self.roundTripDataSetTest(d1, "nexus")
 
 class MesquiteNexusMultiTaxaTest(datatest.ComplexMultiTaxonSetDataVerificationTest):
@@ -454,7 +454,7 @@ class MesquiteNexusMultiTaxaTest(datatest.ComplexMultiTaxonSetDataVerificationTe
 
     def testRoundTripMesquiteMultiTaxa(self):
         s = pathmap.mixed_source_stream("multitaxa_mesquite.nex")
-        d1 = dendropy.DataSet(stream=s, format="nexus")
+        d1 = dendropy.DataSet(stream=s, schema="nexus")
         self.roundTripDataSetTest(d1, "nexus")
 
 if __name__ == "__main__":

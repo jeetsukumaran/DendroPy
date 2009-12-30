@@ -99,7 +99,7 @@ In the above, the entire data source is parsed and stored in the ``trees`` objec
 In some cases, you might not need to maintain all the trees in memory at the same time.
 For example, you might be interested in calculating the distribution of a statistic over a collection of trees, but have no need to refer to any of the trees after the statistic has been calculated.
 In this case, it might be more efficient to use the :func:`~dendropy.dataio.tree_source_iter()` function.
-This takes a file-like object as its first argument and a format specification as the second and returns an iterator over the trees in the file.
+This takes a file-like object as its first argument and a schema specification as the second and returns an iterator over the trees in the file.
 Additional keyword arguments to customize the parsing are the same as that for the general :meth:`get_from_*()` and :meth:`read_from_*()` methods.
 For example, the following script reads a model tree from a file, and then iterates over a collection of MCMC trees in another file, calculating a storing the symmetric distance between the model tree and each of the MCMC trees one at time:
 
@@ -113,7 +113,7 @@ If this was not done, then each tree would have its own distinct |TaxonSet| obje
 Also note how the ``tree_offset`` keyword is used to skip over the burn-in trees from the MCMC sample.
 
 If you want to iterate over trees in multiple sources, you can use the :func:`~dendropy.dataio.multi_tree_source_iter()`.
-This takes a list of file-like objects *or* a list of filepath strings as its first argument, and a format-specification string as its second argument.
+This takes a list of file-like objects *or* a list of filepath strings as its first argument, and a schema-specification string as its second argument.
 Again, other keyword arguments supported by the general :meth:`get_from_*()` and :meth:`read_from_*()` methods are also available.
 
 For example:
@@ -235,7 +235,7 @@ The following example shows how to identify the "critical" value for an `Archie-
 Node Ages
 ---------
 
-The :meth:`~dendropy.dataobject.tree.Tree.add_ages_to_nodes()` method calculates the age of a node (i.e., the sum of edge lengths from the node to a tip) and assigns it to a new attribute, :attr:`~dendropy.dataobject.tree.Node.age`, of the node. The following example iterates through the post-burn-in of an MCMC sample of ultrametric trees, calculating the age of the MRCA of two taxa, and reports the mean age of the node.
+The :meth:`~dendropy.dataobject.tree.Tree.add_ages_to_nodes()` method calculates the age of a node (i.e., the sum of edge lengths from the node to a tip) and assigns it to a new attribute of the node: :attr:`~dendropy.dataobject.tree.Node.age`. The following example iterates through the post-burn-in of an MCMC sample of ultrametric trees, calculating the age of the MRCA of two taxa, and reports the mean age of the node.
 
 .. literalinclude:: /examples/node_ages1.py
     :linenos:

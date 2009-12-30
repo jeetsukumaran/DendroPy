@@ -43,52 +43,52 @@ def main():
     """
     Main CLI handler.
     """
-    
-    parser = OptionParser(usage=_prog_usage, 
-        add_help_option=True, 
-        version=_prog_version, 
+
+    parser = OptionParser(usage=_prog_usage,
+        add_help_option=True,
+        version=_prog_version,
         description=_prog_description)
-        
+
     parser.add_option('-n', '--nexus',
         action='store_const',
-        dest='format',
-        const='NEXUS',        
+        dest='schema',
+        const='NEXUS',
         default="NEXUS",
         help='output in NEXUS format (default)')
-        
+
     parser.add_option('-p', '--phylip',
         action='store_const',
-        dest='format',
-        const='PHYLIP',        
-        help='output in NEXUS format (default)')          
-       
+        dest='schema',
+        const='PHYLIP',
+        help='output in NEXUS format (default)')
+
     parser.add_option('-f', '--fasta',
         action='store_const',
-        dest='format',
+        dest='schema',
         const='FASTA',
-        help='output in FASTA format')     
+        help='output in FASTA format')
 
     (opts, args) = parser.parse_args()
-    
+
     if len(args) == 0:
         sys.stderr.write("(reading from standard input)\n")
         input = sys.stdin
     else:
         input = open(args[0], "rU")
-        
-    output = sys.stdout        
+
+    output = sys.stdout
 
     fd = datasets.Dataset()
     fd.read(input, "DNAFASTA")
     pattern = re.compile("gi\|.+\|.+\|(.+)\|\S* ([\w\.]+) ([\w\.]+) (\w+).*")
     for t in fd.taxa_blocks[0]:
         m = pattern.match(t.label)
-        t.label = m.groups(1)[1] + "_" + m.groups(1)[2] + "_" + m.groups(1)[0] 
+        t.label = m.groups(1)[1] + "_" + m.groups(1)[2] + "_" + m.groups(1)[0]
 
-    fd.write(output, opts.format)    
-    
+    fd.write(output, opts.schema)
+
 if __name__ == '__main__':
     main()
 
-    
+
 

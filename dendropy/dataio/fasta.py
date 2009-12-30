@@ -30,7 +30,7 @@ import textwrap
 
 from dendropy import dataobject
 from dendropy.utility import iosys
-from dendropy.utility.error import DataFormatError
+from dendropy.utility.error import DataSyntaxError
 
 class FastaReader(iosys.DataReader):
     "Encapsulates loading and parsing of a FASTA format file."
@@ -71,16 +71,16 @@ class FastaReader(iosys.DataReader):
                 name = s[1:].strip()
                 curr_taxon = taxon_set.require_taxon(label=name)
                 if curr_taxon in char_matrix:
-                    raise DataFormatError(row=line_index + 1, message="Fasta error: Repeated sequence name (%s) found" % name)
+                    raise DataSyntaxError(row=line_index + 1, message="Fasta error: Repeated sequence name (%s) found" % name)
                 if curr_vec is not None and len(curr_vec) == 0:
-                    raise DataFormatError(row=line_index + 1, message="Fasta error: Expected sequence, but found another sequence name (%s)" % name)
+                    raise DataSyntaxError(row=line_index + 1, message="Fasta error: Expected sequence, but found another sequence name (%s)" % name)
                 if simple_rows:
                     curr_vec = []
                 else:
                     curr_vec = dataobject.CharacterDataVector(taxon=curr_taxon)
                     char_matrix[curr_taxon] = curr_vec
             elif curr_vec is None:
-                raise DataFormatError(row=line_index + 1, message="Fasta error: Expecting a lines starting with > before sequences")
+                raise DataSyntaxError(row=line_index + 1, message="Fasta error: Expecting a lines starting with > before sequences")
             else:
                 if simple_rows:
                     for col_ind, c in enumerate(s):
@@ -88,7 +88,7 @@ class FastaReader(iosys.DataReader):
                         if not c:
                             continue
                         if c not in legal_chars:
-                            DataFormatError(row=line_index + 1, column=col_ind + 1, message='Unrecognized sequence symbol "%s"' % c)
+                            DataSyntaxError(row=line_index + 1, column=col_ind + 1, message='Unrecognized sequence symbol "%s"' % c)
                         curr_vec.append(c)
                 else:
                     for col_ind, c in enumerate(s):
@@ -99,7 +99,7 @@ class FastaReader(iosys.DataReader):
                             state = symbol_state_map[c]
                             curr_vec.append(dataobject.CharacterDataCell(value=state))
                         except:
-                            raise DataFormatError(row=line_index + 1, column=col_ind + 1, message='Unrecognized sequence symbol "%s"' % c)
+                            raise DataSyntaxError(row=line_index + 1, column=col_ind + 1, message='Unrecognized sequence symbol "%s"' % c)
         if simple_rows and curr_taxon and curr_vec:
             char_matrix[curr_taxon] = "".join(curr_vec)
         return self.dataset

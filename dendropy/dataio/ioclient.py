@@ -24,21 +24,21 @@
 Provides high-level brokerage between formats and associated parsers/writers.
 """
 
-from dendropy.dataio.dataformat import DataFormatRegistry
+from dendropy.dataio.dataschema import DataSchemaRegistry
 
-_GLOBAL_DATA_FORMAT_REGISTRY = DataFormatRegistry()
+_GLOBAL_DATA_SCHEMA_REGISTRY = DataSchemaRegistry()
 
-def register(format, reader, writer, tree_source_iter):
-    _GLOBAL_DATA_FORMAT_REGISTRY.add(format, reader, writer, tree_source_iter)
+def register(schema, reader, writer, tree_source_iter):
+    _GLOBAL_DATA_SCHEMA_REGISTRY.add(schema, reader, writer, tree_source_iter)
 
-def get_reader(format, **kwargs):
+def get_reader(schema, **kwargs):
     """
-    Returns a reader object of the appropriate format-handler as specified by
-    `format`.
+    Returns a reader object of the appropriate schema-handler as specified by
+    `schema`.
 
-    `format` is a string that is name of one of the registered data
+    `schema` is a string that is name of one of the registered data
     formats, such as `nexus`, `newick`, etc, for which a specialized
-    reader is available. If this is not implemented for the format
+    reader is available. If this is not implemented for the schema
     specified, then a `UnsupportedFormatError` is raised.
 
     The following keyword arguments are recognized:
@@ -58,15 +58,15 @@ def get_reader(format, **kwargs):
     Other keywords may be implemented by specific readers (e.g. NexusReader,
     NewickReader). Refer to their documentation for details.
     """
-    return _GLOBAL_DATA_FORMAT_REGISTRY.get_reader(format, **kwargs)
+    return _GLOBAL_DATA_SCHEMA_REGISTRY.get_reader(schema, **kwargs)
 
-def get_writer(format, **kwargs):
+def get_writer(schema, **kwargs):
     """
-    Returns a writer object of the appropriate format as specified by `format`.
+    Returns a writer object of the appropriate schema as specified by `schema`.
 
-    `format` is a string that is name of one of the registered data
+    `schema` is a string that is name of one of the registered data
     formats, such as `nexus`, `newick`, etc, for which a specialized
-    writer is available. If this is not implemented for the format
+    writer is available. If this is not implemented for the schema
     specified, then a `UnsupportedFormatError` is raised.
 
     The following keyword arguments are recognized:
@@ -78,13 +78,13 @@ def get_writer(format, **kwargs):
         - `exclude_chars`: Characters in the `DataSet` or `TaxonDomain` will
                 not written.
     """
-    return _GLOBAL_DATA_FORMAT_REGISTRY.get_writer(format, **kwargs)
+    return _GLOBAL_DATA_SCHEMA_REGISTRY.get_writer(schema, **kwargs)
 
-def tree_source_iter(stream, format, **kwargs):
+def tree_source_iter(stream, schema, **kwargs):
     """
-    Returns an iterator over trees in `format`-formatted data
+    Returns an iterator over trees in `schema`-formatted data
     in from file-like object source `stream`. Keyword arguments
-    are passed to format-specialized implementation of the iterator
+    are passed to schema-specialized implementation of the iterator
     invoked.
 
     Keyword arguments accepted (handled here):
@@ -115,7 +115,7 @@ def tree_source_iter(stream, format, **kwargs):
         del(kwargs["write_progress"])
     else:
         write_progress = None
-    tree_iter = _GLOBAL_DATA_FORMAT_REGISTRY.tree_source_iter(stream, format, **kwargs)
+    tree_iter = _GLOBAL_DATA_SCHEMA_REGISTRY.tree_source_iter(stream, schema, **kwargs)
     for count, t in enumerate(tree_iter):
         if count >= tree_offset and t is not None:
             if write_progress is not None:
@@ -128,7 +128,7 @@ def tree_source_iter(stream, format, **kwargs):
     if count < tree_offset:
         raise KeyError("0-based index out of attacheds: %d (trees=%d, tree_offset=[0, %d])" % (tree_offset, count, count-1))
 
-def multi_tree_source_iter(sources, format, **kwargs):
+def multi_tree_source_iter(sources, schema, **kwargs):
     """
     Iterates over trees from multiple sources, which may be given as file-like
     objects or filepaths (strings). Note that unless a TaxonSet object is
@@ -153,5 +153,5 @@ def multi_tree_source_iter(sources, format, **kwargs):
                     % (i+1, num_sources, str(x)))
         else:
             write_subprogress = None
-        for t in tree_source_iter(src, format, write_progress=write_subprogress, **kwargs):
+        for t in tree_source_iter(src, schema, write_progress=write_subprogress, **kwargs):
             yield t

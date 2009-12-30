@@ -13,7 +13,7 @@ mcmc_tree_file_paths = ['pythonidae_cytb.mb.run1.t',
         'pythonidae_cytb.mb.run4.t']
 for mcmc_tree in multi_tree_source_iter(
         mcmc_tree_file_paths,
-        format='nexus',
+        schema='nexus',
         taxon_set=taxa):
     distances.append(treecalc.symmetric_difference(mle_tree, mcmc_tree))
 print("Mean symmetric distance between MLE and MCMC trees: %d"

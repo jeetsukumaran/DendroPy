@@ -381,7 +381,7 @@ else:
         else:
             paup_args['tree'] = "set crit=%s; hsearch;" % tree_est_criterion
         cf = tempfile.NamedTemporaryFile()
-        char_matrix.write_to_stream(cf, format='nexus', exclude_chars=False, exclude_trees=True)
+        char_matrix.write_to_stream(cf, schema='nexus', exclude_chars=False, exclude_trees=True)
         cf.flush()
         paup_args['datafile'] = cf.name
         output_tree_file_handle, output_tree_filepath = tempfile.mkstemp(text=True)
@@ -445,7 +445,7 @@ else:
             paup_args['userbrlens'] = 'no'
 
         cf = tempfile.NamedTemporaryFile()
-        char_matrix.write_to_stream(cf, format='nexus', exclude_chars=False, exclude_trees=True)
+        char_matrix.write_to_stream(cf, schema='nexus', exclude_chars=False, exclude_trees=True)
         cf.flush()
         paup_args['datafile'] = cf.name
         output_tree_file_handle, output_tree_filepath = tempfile.mkstemp(text=True)

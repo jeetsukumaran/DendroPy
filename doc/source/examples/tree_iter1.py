@@ -9,7 +9,7 @@ taxa = dendropy.TaxonSet()
 mle_tree = dendropy.Tree.get_from_path('pythonidae.mle.nex', 'nexus', taxon_set=taxa)
 for mcmc_tree in tree_source_iter(
         stream=open('pythonidae.mcmc.nex', 'rU'),
-        format='nexus',
+        schema='nexus',
         taxon_set=taxa,
         tree_offset=200):
     distances.append(treecalc.symmetric_difference(mle_tree, mcmc_tree))

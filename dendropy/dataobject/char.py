@@ -36,7 +36,7 @@ class ContinuousCharElement(IdTagged):
         IdTagged.__init__(self, **kwargs)
         self.value = value
         self.column_def = column_def
-        
+
 class StateAlphabetElement(IdTagged):
     """
     A character state definition, which can either be a fundamental state or
@@ -526,7 +526,7 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
         if len(args) == 1:
             if ("stream" in kwargs and kwargs["stream"] is not None) \
-                    or ("format" in kwargs and kwargs["format"] is not None):
+                    or ("schema" in kwargs and kwargs["schema"] is not None):
                 raise error.MultipleInitializationSourceError(class_name=self.__class__.__name__, arg=args[0])
             if isinstance(args[0], self.__class__):
                 self.clone_from(args[0])
@@ -542,7 +542,7 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     def create_taxon_to_state_set_map(self, char_indices=None):
         """Returns a dictionary that maps taxon objects to lists of sets of state
         indices
-        if `char_indices` is not None it should be a iterable collection of 
+        if `char_indices` is not None it should be a iterable collection of
         character indices to include.
         """
         taxon_to_state_indices = {}
@@ -575,9 +575,9 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         return self
 
-    def read(self, stream, format, **kwargs):
+    def read(self, stream, schema, **kwargs):
         """
-        Populates objects of this type from `format`-formatted
+        Populates objects of this type from `schema`-formatted
         data in the file-like object source `stream`, *replacing*
         all current data. If multiple character matrices are in the data
         source, a 0-based index of the character matrix to use can
@@ -588,7 +588,7 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         index = kwargs.get("matrix_offset", 0)
         kwargs["exclude_chars"] = False
         kwargs["exclude_trees"] = True
-        d = DataSet(stream=stream, format=format, **kwargs)
+        d = DataSet(stream=stream, schema=schema, **kwargs)
         if len(d.char_matrices) == 0:
             raise ValueError("No character data in data source")
         if index >= len(d.char_matrices):
@@ -599,7 +599,7 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                     (d.char_matrices[index].__class__.__name__, self.__class__.__name__))
         self.clone_from(d.char_matrices[index])
 
-    def write(self, stream, format, **kwargs):
+    def write(self, stream, schema, **kwargs):
         """
         Writes out this object's data to a file-like object opened for writing
         `stream`.
@@ -607,7 +607,7 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         from dendropy.dataobject.dataset import DataSet
         d = DataSet()
         d.add(self)
-        d.write(stream=stream, format=format, **kwargs)
+        d.write(stream=stream, schema=schema, **kwargs)
 
     def extend_characters(self, other_matrix):
         """

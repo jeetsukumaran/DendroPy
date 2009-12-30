@@ -32,20 +32,20 @@ from cStringIO import StringIO
 from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
 from dendropy.test.support import datatest
-from dendropy import DataFormatError
+from dendropy import DataSyntaxError
 import dendropy
 from dendropy.dataio import newick
 
 class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
 
     def testBadInit(self):
-        self.assertRaises(DataFormatError, dendropy.TreeList, stream=StringIO("(a,(b,c))a"), format="NEWICK")
-        self.assertRaises(DataFormatError, dendropy.TreeList, stream=StringIO("(a,(b,c)) (b,(a,c))"), format="NEWICK")
-        self.assertRaises(DataFormatError, dendropy.TreeList, stream=StringIO("(a,(b,c)) (d,(e,f))"), format="NEWICK")
-        self.assertRaises(DataFormatError, dendropy.TreeList, stream=StringIO("(a,(b,c)),"), format="NEWICK")
-        self.assertRaises(DataFormatError, dendropy.TreeList, stream=StringIO("(a,(b,c)))"), format="NEWICK")
-        self.assertRaises(DataFormatError, dendropy.TreeList, stream=StringIO("(a,(b,c)):"), format="NEWICK")
-        self.assertRaises(DataFormatError, dendropy.TreeList, stream=StringIO("(a,(b,c))("), format="NEWICK")
+        self.assertRaises(DataSyntaxError, dendropy.TreeList, stream=StringIO("(a,(b,c))a"), schema="NEWICK")
+        self.assertRaises(DataSyntaxError, dendropy.TreeList, stream=StringIO("(a,(b,c)) (b,(a,c))"), schema="NEWICK")
+        self.assertRaises(DataSyntaxError, dendropy.TreeList, stream=StringIO("(a,(b,c)) (d,(e,f))"), schema="NEWICK")
+        self.assertRaises(DataSyntaxError, dendropy.TreeList, stream=StringIO("(a,(b,c)),"), schema="NEWICK")
+        self.assertRaises(DataSyntaxError, dendropy.TreeList, stream=StringIO("(a,(b,c)))"), schema="NEWICK")
+        self.assertRaises(DataSyntaxError, dendropy.TreeList, stream=StringIO("(a,(b,c)):"), schema="NEWICK")
+        self.assertRaises(DataSyntaxError, dendropy.TreeList, stream=StringIO("(a,(b,c))("), schema="NEWICK")
 
     def testTreeListReaderDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
@@ -70,7 +70,7 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        t_tree_list = dendropy.TreeList.get_from_path(pathmap.tree_source_path(datagen.reference_trees_filename(format="newick")), 'newick')
+        t_tree_list = dendropy.TreeList.get_from_path(pathmap.tree_source_path(datagen.reference_trees_filename(schema="newick")), 'newick')
         self.assertDistinctButEqualTreeList(
                 ref_tree_list,
                 t_tree_list,
@@ -80,7 +80,7 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileSameTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        t_tree_list = dendropy.TreeList.get_from_path(pathmap.tree_source_path(datagen.reference_trees_filename(format="newick")),
+        t_tree_list = dendropy.TreeList.get_from_path(pathmap.tree_source_path(datagen.reference_trees_filename(schema="newick")),
                 'newick',
                 taxon_set=ref_tree_list.taxon_set)
         self.assertDistinctButEqualTreeList(
@@ -89,7 +89,7 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
                 distinct_taxa=False,
                 equal_oids=None)
     def xtestToleratesExtraSemicolon(self):
-        """Should an extra semicolon result in another (empty) tree being created ? 
+        """Should an extra semicolon result in another (empty) tree being created ?
         MTH does not think so - but such strings are probably not legal newick,
         so whatever you want to do is OK with me
         """
@@ -185,7 +185,7 @@ class NewickTreeListWriterTest(datatest.DataObjectVerificationTestCase):
 
     def testWriteTreeListDistinctTaxa(self):
         output_path = pathmap.named_output_path(filename="reference.trees.out.newick", suffix_timestamp=True)
-        self.ref_tree_list.write_to_path(output_path, format="newick")
+        self.ref_tree_list.write_to_path(output_path, schema="newick")
         t_tree_list = dendropy.TreeList.get_from_path(output_path, "newick")
         self.assertDistinctButEqualTreeList(
                 self.ref_tree_list,
@@ -196,7 +196,7 @@ class NewickTreeListWriterTest(datatest.DataObjectVerificationTestCase):
 
     def testWriteTreeListSameTaxa(self):
         output_path = pathmap.named_output_path(filename="reference.trees.out.newick", suffix_timestamp=True)
-        self.ref_tree_list.write_to_path(output_path, format="newick")
+        self.ref_tree_list.write_to_path(output_path, schema="newick")
         t_tree_list = dendropy.TreeList.get_from_path(output_path, "newick", taxon_set=self.ref_tree_list.taxon_set)
         self.assertDistinctButEqualTreeList(
                 self.ref_tree_list,
@@ -212,16 +212,16 @@ class NewickDocumentReaderTest(datatest.DataObjectVerificationTestCase):
 
     def testBasicDocumentParseFromReader(self):
         reader = newick.NewickReader()
-        test_dataset = reader.read(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick")))
+        test_dataset = reader.read(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(schema="newick")))
         self.assertDistinctButEqual(self.reference_dataset, test_dataset, ignore_taxon_order=True)
 
     def testBasicDocumentParseFromRead(self):
         test_dataset = dendropy.DataSet()
-        test_dataset.read(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick")), format="newick")
+        test_dataset.read(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(schema="newick")), schema="newick")
         self.assertDistinctButEqual(self.reference_dataset, test_dataset, ignore_taxon_order=True)
 
     def testBasicDocumentFromInit(self):
-        test_dataset = dendropy.DataSet(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(format="newick")), format="newick")
+        test_dataset = dendropy.DataSet(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(schema="newick")), schema="newick")
         self.assertDistinctButEqual(self.reference_dataset, test_dataset, ignore_taxon_order=True)
 
 class NewickDocumentWriterTest(datatest.DataObjectVerificationTestCase):

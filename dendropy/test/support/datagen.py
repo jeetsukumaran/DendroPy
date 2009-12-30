@@ -50,13 +50,13 @@ def four_taxon_tree1():
     d.edge.length = 2.0
     return tree
 
-def reference_trees_filename(format):
-    if format == "nexus":
+def reference_trees_filename(schema):
+    if schema == "nexus":
         return "pythonidae.reference-trees.nexus"
-    elif format == "newick":
+    elif schema == "newick":
         return "pythonidae.reference-trees.newick"
     else:
-        raise ValueError("Reference trees not available in '%s' format" % format)
+        raise ValueError("Reference trees not available in '%s' format" % schema)
 
 def reference_tree_list_postorder_node_labels():
     return [

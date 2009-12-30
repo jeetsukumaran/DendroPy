@@ -81,7 +81,7 @@ if runlevel.is_test_enabled(runlevel.SLOW, _LOG, __name__, "skipping all popgens
             ;
         END;
         """)
-            d = dendropy.DataSet(stream=s3, format="nexus")
+            d = dendropy.DataSet(stream=s3, schema="nexus")
             self.assertAlmostEqual(popgenstat.average_number_of_pairwise_differences(d.char_matrices[0], ignore_uncertain=True),  111.0606, 4)
             self.assertAlmostEqual(popgenstat.nucleotide_diversity(d.char_matrices[0], ignore_uncertain=True), 0.2343, 4)
 
@@ -122,7 +122,7 @@ if runlevel.is_test_enabled(runlevel.SLOW, _LOG, __name__, "skipping all popgens
 
 
         """)
-            d = dendropy.DataSet(stream=s3, format="nexus")
+            d = dendropy.DataSet(stream=s3, schema="nexus")
             groups = [[],[]]
             for idx, t in enumerate(d.taxon_sets[0]):
                 if t.label.startswith('EPAC'):

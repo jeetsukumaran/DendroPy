@@ -64,17 +64,17 @@ class NexmlRoundTripTest(datatest.DataObjectVerificationTestCase):
 
     def testRoundTripProtein(self):
         s = pathmap.char_source_stream("caenophidia_mos.chars.nexus")
-        d1 = dendropy.DataSet(stream=s, format="nexus")
+        d1 = dendropy.DataSet(stream=s, schema="nexus")
         self.roundTripDataSetTest(d1, "nexml")
 
     def testRoundTripStandard1(self):
         s = pathmap.char_source_stream("angiosperms.chars.nexus")
-        d1 = dendropy.DataSet(stream=s, format="nexus")
+        d1 = dendropy.DataSet(stream=s, schema="nexus")
         self.roundTripDataSetTest(d1, "nexml")
 
     def testRoundTripStandard2(self):
         s = pathmap.char_source_stream("apternodus.chars.nexus")
-        d1 = dendropy.DataSet(stream=s, format="nexus")
+        d1 = dendropy.DataSet(stream=s, schema="nexus")
         for ca in d1.char_matrices:
             ca.markup_as_sequences = False
         self.roundTripDataSetTest(d1, "nexml")
