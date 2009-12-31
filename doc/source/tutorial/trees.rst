@@ -252,7 +252,10 @@ Patristic Distances
 -------------------
 
 The :class:`~dendropy.treecalc.PatristicDistanceMatrix` is the most efficient way to calculate the patristic distances between any pair of taxa on a tree.
-Its constructor takes a |Tree| object as an argument.
+Its constructor takes a |Tree| object as an argument, and the object return is callable, taking two |Taxon| objects as arguments and returning the sum of edge lengths between the two. The following example reports the pairwise distances between all taxa on the input tree:
+
+.. literalinclude:: /examples/pdm.py
+    :linenos:
 
 
 .. SCRATCH
