@@ -707,6 +707,15 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 key = self.taxon_set[key]
             else:
                 raise KeyError(key)
+        elif isinstance(key, str):
+            label = key
+            key = None
+            for t in self.taxon_set:
+                if t.label == label:
+                    key = t
+                    break
+            if key is None:
+                raise KeyError(label)
         return self.taxon_seq_map[key]
 
     def __setitem__(self, key, value):
