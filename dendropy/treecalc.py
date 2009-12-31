@@ -43,6 +43,8 @@ class PatristicDistanceMatrix(object):
         """
         Returns patristic distance between two taxon objects.
         """
+        if taxon1 is taxon2:
+            return 0.0
         try:
             return self._pat_dists[taxon1][taxon2]
         except KeyError, e:
@@ -272,17 +274,17 @@ def false_positives_and_negatives(reference_tree, test_tree):
 
 
 def fitch_down_pass(postorder_node_list, attr_name="state_sets", weight_list=None, taxa_to_state_set_map=None):
-    """Reads `attr_name` attribute of leaves as an iterable of state sets, and 
+    """Reads `attr_name` attribute of leaves as an iterable of state sets, and
     sets that attribute for internal nodes using the ``preliminary phase'' of
     Fitch's (1971) unordered parsimony algorithm.
     Returns the parsimony score.
     weight_list is an optional vector of weights for each pattern.
-    
+
     `taxa_to_state_set_map` if a child node does not have an attribute with name
     `attr_name` then the nodes.taxon will be used as a key in taxa_to_state_set_map
     to find the state set. This allows for the scoring of previously "undecorated"
     trees.
-    
+
     Currently this requires a bifurcating tree (even at the root)
     """
     score = 0
@@ -324,12 +326,12 @@ def fitch_down_pass(postorder_node_list, attr_name="state_sets", weight_list=Non
                 left_ssl = result
             else:
                 break
-                
+
         setattr(nd, attr_name, result)
     return score
 
 def fitch_up_pass(preorder_node_list, attr_name="state_sets", taxa_to_state_set_map=None):
-    """Reads `attr_name` attribute of nodes as an iterable of state sets, and 
+    """Reads `attr_name` attribute of nodes as an iterable of state sets, and
     sets that attribute for internal nodes using the ``final phase'' of Fitch's
     (1971) unordered parsimony algorithm.
 
@@ -337,7 +339,7 @@ def fitch_up_pass(preorder_node_list, attr_name="state_sets", taxa_to_state_set_
     `attr_name` then the nodes.taxon will be used as a key in taxa_to_state_set_map
     to find the state set. This allows for the scoring of previously "undecorated"
     trees.
-    
+
     Currently this requires a bifurcating tree (even at the root)
     """
     for nd in preorder_node_list:
@@ -364,7 +366,7 @@ def fitch_up_pass(preorder_node_list, attr_name="state_sets", taxa_to_state_set_
         result = []
         for n, ssp in enumerate(izip(par_ssl, curr_ssl, left_ssl, right_ssl)):
             par_ss, curr_ss, left_ss, right_ss = ssp
-            
+
             down_parup_inter = set.intersection(par_ss, curr_ss)
             if down_parup_inter == par_ss:
                 final_ss = down_parup_inter
