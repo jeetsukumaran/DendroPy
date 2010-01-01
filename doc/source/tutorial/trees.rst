@@ -2,6 +2,9 @@
 Working with Trees and Collections of Trees
 *******************************************
 
+Trees
+-----
+
 Trees in are represented by the class |Tree|.
 Every |Tree| object has a :attr:`~dendropy.dataobject.tree.Tree.seed_node` attribute. If the tree is rooted, then this is the root node. If the tree is not rooted, however, then this is an artificial node that serves as the "starting point" for the tree.
 The :attr:`~dendropy.dataobject.tree.Tree.seed_node`, like every other node on the tree, is a |Node| object.
@@ -9,10 +12,19 @@ Every |Node| object maintains a list of its immediate child |Node| objects as we
 You can request a shallow-copy :func:`~list` of child |Node| objects using the :meth:`~dendropy.dataobject.tree.Node.child_nodes()` method, and you can access the parent |Node| object directly through the :attr:`~dendropy.dataobject.tree.Node.parent_node` attribute.
 By definition, the :attr:`~dendropy.dataobject.tree.Tree.seed_node` has no parent node, leaf nodes have no child nodes, and internal nodes have both parent nodes and child nodes.
 
+Tree Lists
+----------
+
+|TreeList| objects are lists of |Tree| objects constrained to sharing the same |TaxonSet|.
+Any |Tree| object added to a |TreeList| will have its :attr:`~dendropy.dataobject.tree.Tree.taxon_set` attribute assigned to the |TaxonSet| object of the |TreeList|, and all referenced |Taxon| objects will be mapped to the same or corresponding |Taxon| objects of this new |TaxonSet|, with new |Taxon| objects created if no suitable match is found.
+
 .. _Customizing_Tree_Creation_and_Reading:
 
-Customizing Tree Creation and Reading
-=====================================
+Customizing |Tree| and |TreeList| Creation and Reading
+======================================================
+
+Both the |Tree| and |TreeList| classes support the :meth:`get_from_*()` factory class methods for simultaneously instantiating and populating objects, as well as the  :meth:`read_from_*()` instance methods for populating existing objects.
+In the case of |Tree| objects, calling :meth:`read_from_*()` **repopulates** (i.e., redefines) the |Tree| with data from the data source, while in the case of |TreeList| objects, calling :meth:`read_from_*()` **appends** the tree definitions in the data source to the |TreeList|.
 
 Using a Specific |TaxonSet|
 ---------------------------

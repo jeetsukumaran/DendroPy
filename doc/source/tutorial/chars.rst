@@ -63,3 +63,14 @@ Population Genetic Summary Statistics
 =====================================
 
 The :mod:`popgenstat` module provides functions that calculate some common population genetic summary statistics.
+The :func:`popgenstat.summarize()` function takes a |CharacterMatrix| object as its first argument and a pair of lists of |Taxon| objects as its second argument.
+The second argument needs to partition the |TaxonSet| of the |CharacterMatrix| into distinct populations, with every |Taxon| object represented in one, and only one, of the two sublists.
+Given this, :func:`popgenstat.summarize()` will return a dictionary of summary statistics with the following keys and values::
+
+    - ``k`` : overall proportion of pairwise differences (Pi)
+    - ``k_b`` : proportion of pairwise differences between the two populations (Pi_b)
+    - ``k_w``: proportion of pairwise differences within each population (Pi_w)
+    - ``k_net``
+    - ``S`` : number of segregating sites
+    - ``theta``
+    - ``psi``
