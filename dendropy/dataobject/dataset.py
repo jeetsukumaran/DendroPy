@@ -165,7 +165,8 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         reader = get_reader(schema=schema, **kwargs)
         try:
             reader.read(stream, **kwargs)
-        except error.DataSyntaxError as x:
+#        except error.DataSyntaxError as x:
+        except error.DataSyntaxError, x:
             x.decorate_with_name(stream=stream)
             raise x
 
