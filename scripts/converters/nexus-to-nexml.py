@@ -19,7 +19,7 @@ def main():
     parser = OptionParser(usage=_prog_usage, 
         add_help_option=True, 
         version=_prog_version, 
-        description=_prog_description)                        
+        description=_prog_description)
 
     (opts, args) = parser.parse_args()
     

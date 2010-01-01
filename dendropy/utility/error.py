@@ -27,18 +27,32 @@ import sys
 
 class DataSyntaxError(Exception):
 
-    def __init__(self, row=None, column=None, message=None):
+    def __init__(self, row=None, column=None, message=None, filename=None, stream=None):
         Exception.__init__(self)
         self.row = row
         self.column = column
         self.msg = message
+        self.filename = None
+        self.decorate_with_name(filename=filename, stream=stream)
+
+    def decorate_with_name(self, filename=None, stream=None):
+        if filename is not None:
+            self.filename = filename
+        if stream is not None:
+            try:
+                self.filename = stream.name
+            except AttributeError:
+                pass
 
     def __str__(self):
-        if self.row is None:
-            t = ""
-        else:
-            t =  "Line %d in data source: " % self.row
-        return '%s%s' % (t, self.msg)
+        f, l, c = "", "", ""
+        if self.filename:
+            f =  ' "%s"' % self.filename
+        if self.row is not None:
+            l =  " on line %d" % self.row
+        if self.column is not None:
+            c =  " at column %d" % self.column
+        return 'Error parsing data file%s%s%s: %s' % (f, l, c, self.msg)
 
 class UnsupportedFormatError(NotImplementedError):
 

@@ -830,7 +830,7 @@ class GarliConf(object):
         #   than allowing a duplicate list to be created.
         #####
         for i in range(len(next_round_trees)):
-            next_round_trees[i] = self.score_tree(next_round_trees[i], culled, n, self.tree_scoring_stop_gen) 
+            next_round_trees[i] = self.score_tree(next_round_trees[i], culled, n, self.tree_scoring_stop_gen)
 
         _LOG.info('A total of %d trees were retained for ntax = %d lnL range from %f to %f' % (len(next_round_trees), self.curr_n_taxa, next_round_trees[0].score, next_round_trees[-1].score))
 

@@ -163,7 +163,11 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
             elif kwargs["taxon_set"] is not self.attached_taxon_set:
                 raise TypeError("DataSet object is already attached to a TaxonSet, but different TaxonSet passed to using 'taxon_set' keyword argument")
         reader = get_reader(schema=schema, **kwargs)
-        reader.read(stream, **kwargs)
+        try:
+            reader.read(stream, **kwargs)
+        except error.DataSyntaxError as x:
+            x.decorate_with_name(stream=stream)
+            raise x
 
     def write(self, stream, schema, **kwargs):
         """
