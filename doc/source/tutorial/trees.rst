@@ -14,6 +14,11 @@ By definition, the :attr:`~dendropy.dataobject.tree.Tree.seed_node` has no paren
 Customizing Tree Creation and Reading
 =====================================
 
+Using a Specific |TaxonSet|
+---------------------------
+Passing a |TaxonSet| object using the ``taxon_set`` argument when instantiating a |Tree| or |TreeList| object (using, for example, the meth:`get_from_*()` or :meth:`read_from_*()` methods) results in the |Tree| or |TreeList| object being bound to the specified |TaxonSet| object.
+
+
 Selecting Specific Trees or Subsets of Trees
 --------------------------------------------
 
@@ -84,6 +89,13 @@ In addition, you can specify a ``default_as_rooted`` keyword argument, which, if
 Otherwise the rooting will follow the ``[&R]``/``[&U]`` commands.
 Conversely, if ``default_as_rooted`` is :keyword:`False`, all trees will be interpreted as unrooted if the ``[&R]``/``[&U]`` comment tags are not given.
 Again, for semantic clarity, you can also specify ``default_as_unrooted`` to be :keyword:`True` to assume all trees are unrooted if not explicitly specified, though, as this is default behavior, this should not be neccessary.
+
+Custom Handling of Underscores
+------------------------------
+With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=True``.
+The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces.
+Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores. More details on using this keyword to manage taxon references and mapping can be found in here: :ref:`Taxon_Label_Mapping`.
+
 
 Efficiently Iterating Over Trees in a File
 ==========================================

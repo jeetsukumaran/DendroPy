@@ -136,6 +136,8 @@ rst_epilog = """
 .. |ProteinCharacterMatrix| replace:: :class:`~dendropy.dataobject.char.ProteinCharacterMatrix`
 .. |StandardCharacterMatrix| replace:: :class:`~dendropy.dataobject.char.StandardCharacterMatrix`
 .. |ContinuousCharacterMatrix| replace:: :class:`~dendropy.dataobject.char.ContinuousCharacterMatrix`
+.. |CharacterDataVector| replace:: :class:`~dendropy.dataobject.char.CharacterDataVector`
+.. |CharacterDataCell| replace:: :class:`~dendropy.dataobject.char.CharacterDataCell`
 """
 
 # -- Options for HTML output ---------------------------------------------------
