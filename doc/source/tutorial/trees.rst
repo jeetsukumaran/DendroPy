@@ -2,6 +2,9 @@
 Working with Trees and Collections of Trees
 *******************************************
 
+Trees and Tree Lists
+====================
+
 Trees
 -----
 
@@ -18,18 +21,44 @@ Tree Lists
 |TreeList| objects are lists of |Tree| objects constrained to sharing the same |TaxonSet|.
 Any |Tree| object added to a |TreeList| will have its :attr:`~dendropy.dataobject.tree.Tree.taxon_set` attribute assigned to the |TaxonSet| object of the |TreeList|, and all referenced |Taxon| objects will be mapped to the same or corresponding |Taxon| objects of this new |TaxonSet|, with new |Taxon| objects created if no suitable match is found.
 
+Basic |Tree| and |TreeList| Creation and Reading
+================================================
+
+Both the |Tree| and |TreeList| classes support the :meth:`get_from_*()` factory class methods for simultaneously instantiating and populating objects, taking a data source as the first argument and a data format or schema specification as the second:
+
+    >>> import dendropy
+    >>> tree = dendropy.Tree.get_from_path('pythonidae.mle.nex', 'nexus')
+    >>> treelist = dendropy.TreeList.get_from_path('pythonidae.mcmc.nex', 'nexus')
+
+The  :meth:`read_from_*()` instance methods for populating existing objects, taking the same arguments, are also supported:
+
+    >>> import dendropy
+    >>> tree = dendropy.Tree()
+    >>> tree.read_from_path('pythonidae.mle.nex', 'nexus')
+    >>> treelist = dendropy.TreeList()
+    >>> treelist.read_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
+    >>> treelist.read_from_path('pythonidae_cytb.mb.run2.t', 'nexus')
+    >>> treelist.read_from_path('pythonidae_cytb.mb.run3.t', 'nexus')
+    >>> treelist.read_from_path('pythonidae_cytb.mb.run4.t', 'nexus')
+
+In the case of |Tree| objects, calling :meth:`read_from_*()` *repopulates* (i.e., redefines) the |Tree| with data from the data source, while in the case of |TreeList| objects, calling :meth:`read_from_*()` *appends* the tree definitions in the data source to the |TreeList|.
+
+You can also clone existing |Tree| and |TreeList| objects by passing them as arguments to their respective constructors:
+
+    >>> import dendropy
+    >>> tree1 = dendropy.Tree.get_from_path('pythonidae.mle.tree', 'nexus')
+    >>> tree2 = dendropy.Tree(tree1)
+    >>> treelist1 = dendropy.TreeList.get_from_path('pythonidae.mcmc.nex', 'nexus')
+    >>> treelist2 = dendropy.TreeList(treelist1)
+
 .. _Customizing_Tree_Creation_and_Reading:
 
 Customizing |Tree| and |TreeList| Creation and Reading
 ======================================================
 
-Both the |Tree| and |TreeList| classes support the :meth:`get_from_*()` factory class methods for simultaneously instantiating and populating objects, as well as the  :meth:`read_from_*()` instance methods for populating existing objects.
-In the case of |Tree| objects, calling :meth:`read_from_*()` **repopulates** (i.e., redefines) the |Tree| with data from the data source, while in the case of |TreeList| objects, calling :meth:`read_from_*()` **appends** the tree definitions in the data source to the |TreeList|.
-
 Using a Specific |TaxonSet|
 ---------------------------
 Passing a |TaxonSet| object using the ``taxon_set`` argument when instantiating a |Tree| or |TreeList| object (using, for example, the meth:`get_from_*()` or :meth:`read_from_*()` methods) results in the |Tree| or |TreeList| object being bound to the specified |TaxonSet| object.
-
 
 Selecting Specific Trees or Subsets of Trees
 --------------------------------------------
