@@ -24,13 +24,21 @@ Any |Tree| object added to a |TreeList| will have its :attr:`~dendropy.dataobjec
 Basic |Tree| and |TreeList| Creation and Reading
 ================================================
 
-Both the |Tree| and |TreeList| classes support the :meth:`get_from_*()` factory class methods for simultaneously instantiating and populating objects, taking a data source as the first argument and a data format or schema specification as the second:
+Creating a new |Tree| or |TreeList| from a Data Source
+-------------------------------------------------------
+
+Both the |Tree| and |TreeList| classes support the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating objects, taking a data source as the first argument and a data format or schema specification as the second:
 
     >>> import dendropy
     >>> tree = dendropy.Tree.get_from_path('pythonidae.mle.nex', 'nexus')
     >>> treelist = dendropy.TreeList.get_from_path('pythonidae.mcmc.nex', 'nexus')
 
-The  :meth:`read_from_*()` instance methods for populating existing objects, taking the same arguments, are also supported:
+Valid schema specification strings include: "``nexus``", "``newick``", "``nexml``", "``dnafasta``", "``rnafasta``", "``proteinfasta``" etc.
+
+Reading into an Existing |Tree| or |TreeList| from a Data Source
+----------------------------------------------------------------
+
+The :meth:`read_from_stream()`, :meth:`read_from_path()`, and :meth:`read_from_string()` instance methods for populating existing objects are also supported, taking the same arguments:
 
     >>> import dendropy
     >>> tree = dendropy.Tree()
@@ -43,13 +51,28 @@ The  :meth:`read_from_*()` instance methods for populating existing objects, tak
 
 In the case of |Tree| objects, calling :meth:`read_from_*()` *repopulates* (i.e., redefines) the |Tree| with data from the data source, while in the case of |TreeList| objects, calling :meth:`read_from_*()` *appends* the tree definitions in the data source to the |TreeList|.
 
-You can also clone existing |Tree| and |TreeList| objects by passing them as arguments to their respective constructors:
+Cloning an Existing |Tree| or |TreeList|
+----------------------------------------
+
+You can also clone existing |Tree| and |TreeList| objects by passing them as arguments to their respective constructors.
+
+For example, to create a clone of a |Tree| object:
 
     >>> import dendropy
     >>> tree1 = dendropy.Tree.get_from_path('pythonidae.mle.tree', 'nexus')
     >>> tree2 = dendropy.Tree(tree1)
+
+With this, ``tree2`` will be an exact clone of ``tree1``, and can be independentally manipulated (e.g., derooted, branches pruned, splits collapsed, etc.) without effecting ``tree1``.
+Note, however, that the |Taxon| objects remain linked: changing the label, for example, of a |Taxon| object on ``tree2`` will result in the label of the corresponding |Taxon| object in ``tree1`` being similarly affected.
+
+To create a clone of a |TreeList| object:
+
+    >>> import dendropy
     >>> treelist1 = dendropy.TreeList.get_from_path('pythonidae.mcmc.nex', 'nexus')
     >>> treelist2 = dendropy.TreeList(treelist1)
+
+Here, ``treelist2`` will be a *deep-copy* of ``treelist1``, i.e., with each |Tree| object in ``treelist2`` being a clone of the corresponding |Tree| object in ``treelist1``.
+The same constraint regarding |Taxon| object applies: i.e., the cloning does not extend to |Taxon| objects, and these are shared across all |Tree| objects in both ``treelist1`` and ``treelist2``, as well as the |TreeList| objects themselves.
 
 .. _Customizing_Tree_Creation_and_Reading:
 
