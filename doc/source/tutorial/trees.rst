@@ -21,8 +21,8 @@ Tree Lists
 |TreeList| objects are lists of |Tree| objects constrained to sharing the same |TaxonSet|.
 Any |Tree| object added to a |TreeList| will have its :attr:`~dendropy.dataobject.tree.Tree.taxon_set` attribute assigned to the |TaxonSet| object of the |TreeList|, and all referenced |Taxon| objects will be mapped to the same or corresponding |Taxon| objects of this new |TaxonSet|, with new |Taxon| objects created if no suitable match is found.
 
-Basic |Tree| and |TreeList| Creation and Reading
-================================================
+|Tree| and |TreeList| Creation and Reading
+==========================================
 
 Creating a new |Tree| or |TreeList| from a Data Source
 -------------------------------------------------------
@@ -77,14 +77,15 @@ The same constraint regarding |Taxon| object applies: i.e., the cloning does not
 .. _Customizing_Tree_Creation_and_Reading:
 
 Customizing |Tree| and |TreeList| Creation and Reading
-======================================================
+------------------------------------------------------
 
 Using a Specific |TaxonSet|
----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Passing a |TaxonSet| object using the ``taxon_set`` argument when instantiating a |Tree| or |TreeList| object (using, for example, the meth:`get_from_*()` or :meth:`read_from_*()` methods) results in the |Tree| or |TreeList| object being bound to the specified |TaxonSet| object.
 
 Selecting Specific Trees or Subsets of Trees
---------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``tree_offset`` and ``collection_offset`` keywords allow you to control which tree defintions are parsed from the data source:
 
@@ -135,7 +136,7 @@ The ``tree_offset`` and ``collection_offset`` keywords allow you to control whic
                     collection_offset=-1, tree_offset=29)
 
 Interpreting Rootings
----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 The rooting state of a |Tree| object is set by the :attr:`~dendropy.dataobject.tree.Tree.is_rooted` property.
 When parsing NEXUS- and Newick-formatted data, the rooting states of the resulting |Tree| objects are given by ``[&R]`` (for rooted) or ``[&U]`` (for unrooted) comment tags preceding the tree definition in the data source.
@@ -155,10 +156,36 @@ Conversely, if ``default_as_rooted`` is :keyword:`False`, all trees will be inte
 Again, for semantic clarity, you can also specify ``default_as_unrooted`` to be :keyword:`True` to assume all trees are unrooted if not explicitly specified, though, as this is default behavior, this should not be neccessary.
 
 Custom Handling of Underscores
-------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=True``.
 The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces.
 Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores. More details on using this keyword to manage taxon references and mapping can be found in here: :ref:`Taxon_Label_Mapping`.
+
+Writing or Saving |Tree| and |TreeList| Objects
+===============================================
+
+The :meth:`write_to_stream()`, and :meth:`write_to_path()` instance methods allow you to write the data of |Tree| and |TreeList| to a file-like object or a file path respectively.
+These methods take a file-like object (in the case of :meth:`write_to_stream()`) or a string specifying a filepath (in the case of :meth:`write_to_path()`) as the first argument, and a format or schema specification string as the second argument:
+
+The following example aggregates the post-burn in MCMC samples from a series of NEXUS-formatted files, and saves the collection as a NEWICK-formatted file:
+
+    >>> import dendropy
+    >>> treelist = dendropy.TreeList()
+    >>> treelist.read_from_path('pythonidae_cytb.mb.run1.t', 'nexus', tree_offset=200)
+    >>> treelist.read_from_path('pythonidae_cytb.mb.run2.t', 'nexus', tree_offset=200)
+    >>> treelist.read_from_path('pythonidae_cytb.mb.run3.t', 'nexus', tree_offset=200)
+    >>> treelist.read_from_path('pythonidae_cytb.mb.run4.t', 'nexus', tree_offset=200)
+    >>> treelist.write_to_path('pythonidae_cytb.mcmc-postburnin.tre', 'newick')
+
+If you do not want to actually write to a file, but instead simply need a string representing the data in a particular format, you can call the instance method :meth:`as_string()`, passing a schema or format specification string as the first argument:
+
+    >>> import dendropy
+    >>> tree = dendropy.Tree()
+    >>> tree.read_from_path('pythonidae.mle.nex', 'nexus')
+    >>> s = tree.as_string('newick')
+    >>> print(s)
+    >>> (Python_molurus:0.0779719244,((Python_sebae:0.1414715009,(((((Morelia_tracyae:0.0435011998,(Morelia_amethistina:0.0305993564,((Morelia_nauta:0.0092774432,Morelia_kinghorni:0.0093145395):0.005595,Morelia_clastolepis:0.0052046980):0.023435):0.012223):0.025359,Morelia_boeleni:0.0863199106):0.019894,((Python_reticulatus:0.0828549023,Python_timoriensis:0.0963051344):0.072003,Morelia_oenpelliensis:0.0820543043):0.002785):0.002740,((((Morelia_viridis:0.0925974416,(Morelia_carinata:0.0943697342,(Morelia_spilota:0.0237557178,Morelia_bredli:0.0357358071):0.041377):0.005225):0.004424,(Antaresia_maculosa:0.1141193265,((Antaresia_childreni:0.0363195704,Antaresia_stimsoni:0.0188535952):0.043287,Antaresia_perthensis:0.0947695442):0.019148):0.007921):0.022413,(Leiopython_albertisii:0.0698883547,Bothrochilus_boa:0.0811607602):0.020941):0.007439,((Liasis_olivaceus:0.0449896545,(Liasis_mackloti:0.0331564496,Liasis_fuscus:0.0230286886):0.058253):0.016766,Apodora_papuana:0.0847328612):0.008417):0.006539):0.011557,(Aspidites_ramsayi:0.0349772256,Aspidites_melanocephalus:0.0577536309):0.042499):0.036177):0.016859,Python_brongersmai:0.1147218285):0.001271,Python_regius:0.1800489093):0.000000;
 
 
 Efficiently Iterating Over Trees in a File
