@@ -10,8 +10,8 @@ It has three primary attributes:
     - :attr:`~dendropy.dataobject.dataset.DataSet.tree_lists`, a list of all |TreeList| objects in the |DataSet|, in the order that they were added or read.
     - :attr:`~dendropy.dataobject.dataset.DataSet.char_matrices`, a list of all |CharacterMatrix| objects in the |DataSet|, in the order that they were added or read.
 
-Basic Instantiation and Reading
-================================
+|DataSet| Creation and Reading
+===============================
 
 Creating a new |DataSet| from a Data Source
 --------------------------------------------
@@ -39,10 +39,17 @@ Note how the :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` met
 Cloning an Existing |DataSet|
 -----------------------------
 
-You can also clone an existing |DataSet| object by passing it as an argument to the |DataSet| constructor.
+You can also clone an existing |DataSet| object by passing it as an argument to the |DataSet| constructor:
 
-Adding Data to an Existing |DataSet|
-------------------------------------
+    >>> import dendropy
+    >>> ds1 = dendropy.DataSet.get_from_path('pythonidae.cytb.fasta', 'dnafasta')
+    >>> ds2 = dendropy.DataSet(ds1)
+
+Following this, ``ds2`` will be a *full* deep-copy clone of ``ds1``, with distinct and independent, but identical, |Taxon|, |TaxonSet|, |TreeList|, |Tree| and |CharacterMatrix| objects.
+Note that, in distinction to the similar cloning methods of |Tree| and |TreeList|, even the |Taxon| and |TaxonSet| objects are cloned, meaning that you manipulate the |Taxon| and |TaxonSet| objects of ``ds2`` without in any way effecting those of ``ds1``.
+
+Creating a New |DataSet| from Existing |TreeList| and |CharacterMatrix| Objects
+-------------------------------------------------------------------------------
 
 You can add independentally created or parsed data objects to a |DataSet| by passing them as unnamed arguments to the constructor:
 
@@ -53,11 +60,31 @@ You can add independentally created or parsed data objects to a |DataSet| by pas
     >>> treelist4 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
     >>> cytb = dendropy.DnaCharacterMatrix.get_from_path('pythonidae_cytb.fasta', 'dnafasta')
     >>> ds = dendropy.DataSet(cytb, treelist1, treelist2, treelist3, treelist4)
-    >>> ds.reindex_taxa()
+    >>> ds.unify_taxa()
 
-Note how we call the instance method :meth:`~dendropy.dataobject.dataset.DataSet.reindex_taxa()` after the creation of the |DataSet| object.
+Note how we call the instance method :meth:`~dendropy.dataobject.dataset.DataSet.unify_taxa()` after the creation of the |DataSet| object.
 This method will remove all existing |TaxonSet| objects from the |DataSet|, create and add a new one, and then map all taxon references in all contained |TreeList| and |CharacterMatrix| objects to this new, unified |TaxonSet|.
 
+Adding Data to an Exisiting |DataSet|
+-------------------------------------
+
+You can add independentally created or parsed data objects to a |DataSet| using the :meth:`~dendropy.dataobject.dataset.DataSet.add()` method:
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet()
+    >>> treelist1 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
+    >>> treelist2 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
+    >>> treelist3 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
+    >>> treelist4 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
+    >>> cytb = dendropy.DnaCharacterMatrix.get_from_path('pythonidae_cytb.fasta', 'dnafasta')
+    >>> ds.add(treelist1)
+    >>> ds.add(treelist2)
+    >>> ds.add(treelist3)
+    >>> ds.add(treelist4)
+    >>> ds.add(cytb)
+    >>> ds.unify_taxa()
+
+Here, again, we call the :meth:`~dendropy.dataobject.dataset.DataSet.unify_taxa()` to map all taxon references to the same, common, unified |TaxonSet|.
 
 .. _Customizing_Data_Set_Creation_and_Reading:
 
