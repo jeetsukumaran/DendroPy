@@ -162,11 +162,11 @@ With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=
 The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces.
 Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores. More details on using this keyword to manage taxon references and mapping can be found in here: :ref:`Taxon_Label_Mapping`.
 
-Writing or Saving |Tree| and |TreeList| Objects
-===============================================
+|Tree| and |TreeList| Saving and Writing
+========================================
 
 The :meth:`write_to_stream()`, and :meth:`write_to_path()` instance methods allow you to write the data of |Tree| and |TreeList| to a file-like object or a file path respectively.
-These methods take a file-like object (in the case of :meth:`write_to_stream()`) or a string specifying a filepath (in the case of :meth:`write_to_path()`) as the first argument, and a format or schema specification string as the second argument:
+These methods take a file-like object (in the case of :meth:`write_to_stream()`) or a string specifying a filepath (in the case of :meth:`write_to_path()`) as the first argument, and a format or schema specification string as the second argument.
 
 The following example aggregates the post-burn in MCMC samples from a series of NEXUS-formatted files, and saves the collection as a NEWICK-formatted file:
 

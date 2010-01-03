@@ -109,3 +109,28 @@ You can control how data is parsed from a data source using the following keywor
     ``exclude_chars``
         A boolean value indicating whether or not character data should be parsed from the data source.
         Default value is :keyword:`False`, i.e., all character data will be included.
+
+|DataSet| Saving and Writing
+=============================
+
+The :meth:`write_to_stream()`, and :meth:`write_to_path()` instance methods allow you to write the data of a |DataSet| object to a file-like object or a file path respectively.
+These methods take a file-like object (in the case of :meth:`write_to_stream()`) or a string specifying a filepath (in the case of :meth:`write_to_path()`) as the first argument, and a format or schema specification string as the second argument.
+
+The following example aggregates the post-burn in MCMC samples from a series of NEXUS-formatted tree files into a single |TreeList|, then, adds the |TreeList| as well as the original character data into a single |DataSet| object, which is then written out as NEXUS-formatted file:
+
+    >>> import dendropy
+    >>> trees = dendropy.TreeList()
+    >>> trees.read_from_path('pythonidae_cytb.mb.run1.t', 'nexus', tree_offset=200)
+    >>> trees.read_from_path('pythonidae_cytb.mb.run1.t', 'nexus', tree_offset=200)
+    >>> trees.read_from_path('pythonidae_cytb.mb.run1.t', 'nexus', tree_offset=200)
+    >>> trees.read_from_path('pythonidae_cytb.mb.run1.t', 'nexus', tree_offset=200)
+    >>> ds = dendropy.DataSet(trees)
+    >>> ds.read_from_path('pythonidae_cytb.fasta', 'dnafasta', taxon_set=ds.taxon_sets[0])
+    >>> ds.write_to_path('pythonidae_combined.nex', 'nexus')
+
+If you do not want to actually write to a file, but instead simply need a string representing the data in a particular format, you can call the instance method :meth:`as_string()`, passing a schema or format specification string as the first argument:
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet(attached_taxon_set=True)
+    >>> ds.read_from_path('pythonidae.cytb.fasta', 'dnafasta')
+    >>> s = ds.as_string('nexus')
