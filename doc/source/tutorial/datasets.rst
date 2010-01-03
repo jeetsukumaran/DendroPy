@@ -11,14 +11,22 @@ It has three primary attributes:
     - :attr:`~dendropy.dataobject.dataset.DataSet.char_matrices`, a list of all |CharacterMatrix| objects in the |DataSet|, in the order that they were added or read.
 
 Basic Instantiation and Reading
--------------------------------
+================================
 
-The |DataSet| class provides the :meth:`get_from_*()` factory class methods for simultaneously instantiating and populating |DataSet| objects, taking a data source as the first argument and a data format or schema specification as the second:
+Creating a new |DataSet| from a Data Source
+--------------------------------------------
+
+You can use the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating an object, taking a data source as the first argument and a data format or schema specification as the second:
 
     >>> import dendropy
     >>> ds = dendropy.DataSet.get_from_path('pythonidae.nex', 'nexus')
 
-The :meth:`read_from_*()` instance methods for populating existing objects, are also supported, taking the same arguments:
+Valid schema specification strings include: "``nexus``", "``newick``", "``nexml``", "``dnafasta``", "``rnafasta``", "``proteinfasta``" etc.
+
+Reading into an Existing |DataSet| from a Data Source
+-----------------------------------------------------
+
+The :meth:`read_from_stream()`, :meth:`read_from_path()`, and :meth:`read_from_string()` instance methods for populating existing objects are also supported, taking the same arguments:
 
     >>> import dendropy
     >>> ds = dendropy.DataSet()
@@ -28,8 +36,13 @@ The :meth:`read_from_*()` instance methods for populating existing objects, are 
 
 Note how the :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` method is called before invoking any :meth:`read_from_*()` statements, to ensure that all the taxon references in the data sources get mapped to the same |TaxonSet| instance.
 
-Adding Data to a |DataSet|
---------------------------
+Cloning an Existing |DataSet|
+-----------------------------
+
+You can also clone an existing |DataSet| object by passing it as an argument to the |DataSet| constructor.
+
+Adding Data to an Existing |DataSet|
+------------------------------------
 
 You can add independentally created or parsed data objects to a |DataSet| by passing them as unnamed arguments to the constructor:
 
@@ -45,10 +58,11 @@ You can add independentally created or parsed data objects to a |DataSet| by pas
 Note how we call the instance method :meth:`~dendropy.dataobject.dataset.DataSet.reindex_taxa()` after the creation of the |DataSet| object.
 This method will remove all existing |TaxonSet| objects from the |DataSet|, create and add a new one, and then map all taxon references in all contained |TreeList| and |CharacterMatrix| objects to this new, unified |TaxonSet|.
 
+
 .. _Customizing_Data_Set_Creation_and_Reading:
 
 Customizing Data Set Creation and Reading
-=========================================
+------------------------------------------
 
 You can control how data is parsed from a data source using the following keywords passed to any :meth:`get_from_*()` or :meth:`read_from_*()` method of a |DataSet| object:
 
