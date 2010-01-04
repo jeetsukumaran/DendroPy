@@ -134,8 +134,8 @@ If you do not want to actually write to a file, but instead simply need a string
     >>> ds.read_from_path('pythonidae.cytb.fasta', 'dnafasta')
     >>> s = ds.as_string('nexus')
 
-Customizing |Tree| and |TreeList| Saving and Writing
------------------------------------------------------
+Customizing |DataSet| Saving and Writing
+-----------------------------------------
 
 The following keyword arguments, when passed to :meth:`write_to_stream()`, :meth:`write_to_path()`, or :meth:`as_string()`, allow you to control the formatting of the output:
 
