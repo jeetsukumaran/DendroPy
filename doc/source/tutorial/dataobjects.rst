@@ -162,21 +162,7 @@ The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all sup
     - :meth:`as_string(schema, **kwargs)`
         Takes a string specifying the schema as the first argument, and returns a string containing the formatted-representation of the data.
 
-As above, the schema specification can be any supported and type-apppropriate schema, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc., and, as above, depending on the object and schema, additional keyword arguments may be specified.
-
-For example, to print a |Tree| object without branch lengths or internal labels (default is to write both, if present)::
-
-    >>> import dendropy
-    >>> mle_tree = dendropy.Tree.get_from_path("pythonidae.mle.nex", "nexus")
-    >>> print(mle_tree.as_string("newick", edge_lengths=False, internal_labels=False))
-    ('Python molurus',(('Python sebae',((((('Morelia tracyae',('Morelia amethistina',(('Morelia nauta','Morelia kinghorni'),'Morelia clastolepis'))),'Morelia boeleni'),(('Python reticulatus','Python timoriensis'),'Morelia oenpelliensis')),(((('Morelia viridis',('Morelia carinata',('Morelia spilota','Morelia bredli'))),('Antaresia maculosa',(('Antaresia childreni','Antaresia stimsoni'),'Antaresia perthensis'))),('Leiopython albertisii','Bothrochilus boa')),(('Liasis olivaceus',('Liasis mackloti','Liasis fuscus')),'Apodora papuana'))),('Aspidites ramsayi','Aspidites melanocephalus'))),'Python brongersmai'),'Python regius');
-
-We can also request that the tree string have their spaces replaced by underscores::
-
-    >>> import dendropy
-    >>> mle_tree = dendropy.Tree.get_from_path("pythonidae.mle.nex", "nexus")
-    >>> print(mle_tree.as_string("newick", edge_lengths=False, spaces_to_underscores=True))
-    (Python_molurus,((Python_sebae,(((((Morelia_tracyae,(Morelia_amethistina,((Morelia_nauta,Morelia_kinghorni),Morelia_clastolepis))),Morelia_boeleni),((Python_reticulatus,Python_timoriensis),Morelia_oenpelliensis)),((((Morelia_viridis,(Morelia_carinata,(Morelia_spilota,Morelia_bredli))),(Antaresia_maculosa,((Antaresia_childreni,Antaresia_stimsoni),Antaresia_perthensis))),(Leiopython_albertisii,Bothrochilus_boa)),((Liasis_olivaceus,(Liasis_mackloti,Liasis_fuscus)),Apodora_papuana))),(Aspidites_ramsayi,Aspidites_melanocephalus))),Python_brongersmai),Python_regius);
+As above, the schema specification can be any supported and type-apppropriate schema, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc.
 
 Converting Between Data Formats
 ===============================

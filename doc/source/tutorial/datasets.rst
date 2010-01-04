@@ -55,9 +55,9 @@ You can add independentally created or parsed data objects to a |DataSet| by pas
 
     >>> import dendropy
     >>> treelist1 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
-    >>> treelist2 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
-    >>> treelist3 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
-    >>> treelist4 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
+    >>> treelist2 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run2.t', 'nexus')
+    >>> treelist3 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run3.t', 'nexus')
+    >>> treelist4 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run4.t', 'nexus')
     >>> cytb = dendropy.DnaCharacterMatrix.get_from_path('pythonidae_cytb.fasta', 'dnafasta')
     >>> ds = dendropy.DataSet(cytb, treelist1, treelist2, treelist3, treelist4)
     >>> ds.unify_taxa()
@@ -73,9 +73,9 @@ You can add independentally created or parsed data objects to a |DataSet| using 
     >>> import dendropy
     >>> ds = dendropy.DataSet()
     >>> treelist1 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
-    >>> treelist2 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
-    >>> treelist3 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
-    >>> treelist4 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
+    >>> treelist2 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run2.t', 'nexus')
+    >>> treelist3 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run3.t', 'nexus')
+    >>> treelist4 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run4.t', 'nexus')
     >>> cytb = dendropy.DnaCharacterMatrix.get_from_path('pythonidae_cytb.fasta', 'dnafasta')
     >>> ds.add(treelist1)
     >>> ds.add(treelist2)
@@ -118,15 +118,9 @@ These methods take a file-like object (in the case of :meth:`write_to_stream()`)
 
 The following example aggregates the post-burn in MCMC samples from a series of NEXUS-formatted tree files into a single |TreeList|, then, adds the |TreeList| as well as the original character data into a single |DataSet| object, which is then written out as NEXUS-formatted file:
 
-    >>> import dendropy
-    >>> trees = dendropy.TreeList()
-    >>> trees.read_from_path('pythonidae_cytb.mb.run1.t', 'nexus', tree_offset=200)
-    >>> trees.read_from_path('pythonidae_cytb.mb.run1.t', 'nexus', tree_offset=200)
-    >>> trees.read_from_path('pythonidae_cytb.mb.run1.t', 'nexus', tree_offset=200)
-    >>> trees.read_from_path('pythonidae_cytb.mb.run1.t', 'nexus', tree_offset=200)
-    >>> ds = dendropy.DataSet(trees)
-    >>> ds.read_from_path('pythonidae_cytb.fasta', 'dnafasta', taxon_set=ds.taxon_sets[0])
-    >>> ds.write_to_path('pythonidae_combined.nex', 'nexus')
+.. literalinclude:: /examples/dsrw1.py
+    :linenos:
+
 
 If you do not want to actually write to a file, but instead simply need a string representing the data in a particular format, you can call the instance method :meth:`as_string()`, passing a schema or format specification string as the first argument:
 
