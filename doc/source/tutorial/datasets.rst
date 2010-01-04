@@ -113,6 +113,9 @@ You can control how data is parsed from a data source using the following keywor
 |DataSet| Saving and Writing
 =============================
 
+Writing to Files
+----------------
+
 The :meth:`write_to_stream()`, and :meth:`write_to_path()` instance methods allow you to write the data of a |DataSet| object to a file-like object or a file path respectively.
 These methods take a file-like object (in the case of :meth:`write_to_stream()`) or a string specifying a filepath (in the case of :meth:`write_to_path()`) as the first argument, and a format or schema specification string as the second argument.
 
@@ -120,6 +123,9 @@ The following example aggregates the post-burn in MCMC samples from a series of 
 
 .. literalinclude:: /examples/dsrw1.py
     :linenos:
+
+Composing a String
+------------------
 
 If you do not want to actually write to a file, but instead simply need a string representing the data in a particular format, you can call the instance method :meth:`as_string()`, passing a schema or format specification string as the first argument:
 
@@ -155,7 +161,7 @@ The following keyword arguments, when passed to :meth:`write_to_stream()`, :meth
         When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then labels for internal nodes (if given) will not be written as part of the tree statements. By default, this is :keyword:`True`, i.e., internal node labels will be written.
 
     ``block_titles``
-        When writing NEXUS-formatted data, if :keyword:`False`, then title statements will not be added to the varous NEXUS blocks. By default, this is :keyword:`True`, i.e., block titles will be written.
+        When writing NEXUS-formatted data, if :keyword:`False`, then title statements will not be added to the various NEXUS blocks (i.e., "``TAXA``", "``CHARACTERS``", and "``TREES``") . By default, this is :keyword:`True`, i.e., block titles will be written.
 
     ``preserve_spaces``
         When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`True`, then no attempt will be made to produce unquoted labels by substituting spaces for underscores. By default, this is :keyword:`False`, i.e., any label that includes spaces but no other special punctuation character or underscores will have all spaces replaced by underscores so as to allow the label to be represented without quotes.
