@@ -24,7 +24,7 @@ Any |Tree| object added to a |TreeList| will have its :attr:`~dendropy.dataobjec
 |Tree| and |TreeList| Creation and Reading
 ==========================================
 
-Creating a new |Tree| or |TreeList| from a Data Source
+Creating a New |Tree| or |TreeList| from a Data Source
 -------------------------------------------------------
 
 Both the |Tree| and |TreeList| classes support the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating objects, taking a data source as the first argument and a data format or schema specification as the second:
@@ -168,7 +168,7 @@ Specifying ``preserve_underscores=True`` will force DendroPy to keep the undersc
 Writing to Files
 ----------------
 
-The :meth:`write_to_stream()`, and :meth:`write_to_path()` instance methods allow you to write the data of |Tree| and |TreeList| to a file-like object or a file path respectively.
+The :meth:`write_to_stream()`, and :meth:`write_to_path()` instance methods allow you to write the data of |Tree| and |TreeList| objects to a file-like object or a file path respectively.
 These methods take a file-like object (in the case of :meth:`write_to_stream()`) or a string specifying a filepath (in the case of :meth:`write_to_path()`) as the first argument, and a format or schema specification string as the second argument.
 
 The following example aggregates the post-burn in MCMC samples from a series of NEXUS-formatted files, and saves the collection as a NEWICK-formatted file:
