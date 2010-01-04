@@ -193,9 +193,6 @@ Customizing |Tree| and |TreeList| Saving and Writing
 
 The following keyword arguments, when passed to :meth:`write_to_stream()`, :meth:`write_to_path()`, or :meth:`as_string()`, allow you to control the formatting of the output:
 
-    ``simple``
-        When writing NEXUS-formatted data, if :keyword:`True`, then character data will be represented as a single "``DATA``" block, instead of separate "``TAXA``" and "``CHARACTERS``" blocks. By default this is :keyword:`False`.
-
     ``exclude_taxa``
         When writing NEXUS-formatted data, if :keyword:`True`, then a "``TAXA``" block will not be written. By default, this is :keyword:`False`, i.e., "``TAXA``" blocks will be written.
 
