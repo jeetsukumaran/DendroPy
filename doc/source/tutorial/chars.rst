@@ -57,7 +57,7 @@ Custom Handling of Underscores
 
 With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=True``.
 The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces.
-Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores. More details on using this keyword to manage taxon references and mapping can be found in here: :ref:`Taxon_Label_Mapping`.
+Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores.
 
 |CharacterMatrix| Saving and Writing
 ====================================
@@ -104,6 +104,18 @@ The following keyword arguments, when passed to :meth:`write_to_stream()`, :meth
 
     ``comment``
         When writing NEXUS-formatted data, then the contents of this variable will be added as NEXUS comment to the output. By default, this is :keyword:`None`.
+
+Taxon Management with Character Matrices
+========================================
+
+Taxon management with |CharacterMatrix|-derived objects work very much the same as it does with |Tree| or :class:`~dendropy.dataobject.tree.TreeList objects`: every time a |CharacterMatrix|-derived object is independentally created or read, a new |TaxonSet| is created, unless an existing one is specified.
+Thus, again, if you are creating multiple character matrices that refer to the same set of taxa, you will want to make sure to pass each of them a common |TaxonSet| reference::
+
+    >>> import dendropy
+    >>> taxa = dendropy.TaxonSet()
+    >>> dna1 = dendropy.DnaCharacterMatrix.get_from_path("pythonidae_cytb.fasta", "dnafasta", taxon_set=taxa)
+    >>> std1 = dendropy.ProteinCharacterMatrix.get_from_path("pythonidae_morph.nex", "nexus", taxon_set=taxa)
+
 
 
 Accessing Data
