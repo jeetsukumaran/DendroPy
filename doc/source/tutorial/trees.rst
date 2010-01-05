@@ -471,8 +471,8 @@ For example:
 Note that this method is inefficient when you need to resolve MRCA's for multiple sets or pairs of taxa.
 In this context, the :class:`~dendropy.treecalc.PatristicDistanceMatrix` offers a more efficient approach, and should be preferred for applications such as calculating the patristic distances between all pairs of taxa.
 
-Tree Metrics
-============
+Tree Statistics and Metrics
+===========================
 
 Tree Length
 -----------

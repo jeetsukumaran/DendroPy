@@ -297,7 +297,7 @@ If you want to see the data in a particular schema, you can call the :meth:`as_s
 
 
 Taxa and Taxon Management
-*************************
+=========================
 
 Operational taxonomic units in DendroPy are represented by |Taxon| objects, and distinct collections of operational taxonomic units are represented by |TaxonSet| objects.
 
