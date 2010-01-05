@@ -129,6 +129,8 @@ Thus, again, if you are creating multiple character matrices that refer to the s
     >>> dna1 = dendropy.DnaCharacterMatrix.get_from_path("pythonidae_cytb.fasta", "dnafasta", taxon_set=taxa)
     >>> std1 = dendropy.ProteinCharacterMatrix.get_from_path("pythonidae_morph.nex", "nexus", taxon_set=taxa)
 
+.. _Taxon_Management_with_Data_Sets:
+
 Taxon Management with Data Sets
 ===============================
 The |DataSet| object, representing a meta-collection of phylogenetic data, differs in one important way from all the other phylogenetic data objects discussed so far with respect to taxon management, in that it is not associated with any particular |TaxonSet| object.

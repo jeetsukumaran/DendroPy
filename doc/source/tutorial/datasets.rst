@@ -171,3 +171,24 @@ The following keyword arguments, when passed to :meth:`write_to_stream()`, :meth
 
     ``comment``
         When writing NEXUS-formatted data, then the contents of this variable will be added as NEXUS comment to the output. By default, this is :keyword:`None`.
+
+Unattached vs. Attached |TaxonSet| Modes
+========================================
+
+A |DataSet| object can manage taxon references in one of two modes: unattached or attached.
+The "unattached" taxon set mode is the default.
+In this mode, every time a data source is parsed, at least one new |TaxonSet| object will be created to manage taxon references in the data source, and new |Taxon| objects will be created and added to this |TaxonSet| for every taxon reference in the data source.
+This means that multiple read statements will result in multiple |TaxonSet| objects being created and added to the |DataSet|.
+In contrast, in "attached" taxon set mode, a single |TaxonSet| object will be used to manage taxon references across all data source reading operations.
+
+A |DataSet| can be placed in attached taxon set mode by calling the instance method :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()`.
+This method optionally takes a |TaxonSet| object as an argument that will be used as the |TaxonSet| object to manage all subsequent taxon references.
+If not given, a new |TaxonSet| object will be created.
+
+A |DataSet| can be placed in unattached taxon set mode by calling the instance method :meth:`~dendropy.dataobject.dataset.DataSet.unattach_taxon_set()`.
+This will restore the default behavior of a multiple taxon set |DataSet|.
+
+Note that placing a |DataSet| in attached taxon set mode using does not affect existing data: only data parsed while the |DataSet| object has an attached |TaxonSet| will have their taxon references mapped to the attached |TaxonSet|.
+You can use the instance method :meth:`~dendropy.dataobject.dataset.DataSet.unify_taxa()` to remap all taxon references of existing |TreeList| and |CharacterMatrix| objects to a (new) single |TaxonSet| object.
+
+More details on managing taxon references with |DataSet| objects using attached and unattached taxon set modes, as well as examples, is given in ":doc:`taxa`".
