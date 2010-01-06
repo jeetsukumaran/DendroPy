@@ -30,6 +30,7 @@ import math
 from cStringIO import StringIO
 
 import dendropy
+from dendropy.test.support import pathmap
 
 class TreePHGammTest(unittest.TestCase):
 
@@ -37,6 +38,22 @@ class TreePHGammTest(unittest.TestCase):
         newick_str = "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);"
         tree = dendropy.Tree(stream=StringIO(newick_str), schema="newick")
         self.assertAlmostEqual(tree.pybus_harvey_gamma(tree), 0.546276, 4)
+
+class FrequencyOfSplitsTest(unittest.TestCase):
+
+    def setUp(self):
+        self.trees = dendropy.TreeList.get_from_path(
+                src=pathmap.tree_source_path('pythonidae.random.tre'),
+                schema='nexus')
+
+    def testCount1(self):
+        split_leaves = ['Python regius', 'Apodora papuana']
+        f = self.trees.frequency_of_split(labels=split_leaves)
+        self.assertAlmostEqual(f, 0.02)
+
+    def testRaisesIndexError(self):
+        split_leaves = ['Bad Taxon', 'Apodora papuana']
+        self.assertRaises(IndexError, self.trees.frequency_of_split, labels=split_leaves)
 
 if __name__ == "__main__":
     unittest.main()

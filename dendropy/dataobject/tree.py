@@ -280,6 +280,36 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         tree = tsum.tree_from_splits(self.split_distribution, min_freq=min_freq)
         return tree
 
+    def frequency_of_split(self, **kwargs):
+        """
+        Given a split or bipartition specified as:
+
+            - a split bitmask given the keyword 'split_bitmask'
+            - a list of `Taxon` objects given with the keyword `taxa`
+            - a list of taxon labels given with the keyword `labels`
+            - a list of oids given with the keyword `oids`
+
+        this function returns the proportion of trees in self
+        in which the split is found.
+        """
+        if "split_bitmask" in kwargs:
+            split = kwargs["split_bitmask"]
+        else:
+            split = self.taxon_set.get_taxa_bitmask(**kwargs)
+            k = kwargs.values()[0]
+            if treesplit.count_bits(split) != len(k):
+                raise IndexError('Not all taxa could be mapped to split (%s): %s' \
+                    % (self.taxon_set.split_bitmask_string(split), k))
+        found = 0
+        total = 0
+        for tree in self:
+            if not hasattr(tree, "split_edges"):
+                treesplit.encode_splits(tree)
+            total += 1
+            if split in tree.split_edges:
+                found += 1
+        return float(found)/total
+
     def __str__(self):
         return " ".join([ (str(tree) + ";") for tree in self ])
 

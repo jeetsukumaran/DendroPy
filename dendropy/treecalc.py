@@ -380,4 +380,3 @@ def fitch_up_pass(preorder_node_list, attr_name="state_sets", taxa_to_state_set_
                     final_ss = set.union(in_par_and_left, in_par_and_right, curr_ss)
             result.append(final_ss)
         setattr(nd, attr_name, result)
-
