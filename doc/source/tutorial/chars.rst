@@ -136,14 +136,39 @@ Population Genetic Summary Statistics
 =====================================
 
 The :mod:`popgenstat` module provides functions that calculate some common population genetic summary statistics.
-The :func:`popgenstat.summarize()` function takes a |CharacterMatrix| object as its first argument and a pair of lists of |Taxon| objects as its second argument.
-The second argument needs to partition the |TaxonSet| of the |CharacterMatrix| into distinct populations, with every |Taxon| object represented in one, and only one, of the two sublists.
-Given this, :func:`popgenstat.summarize()` will return a dictionary of summary statistics with the following keys and values::
 
-    - ``k`` : overall proportion of pairwise differences (Pi)
-    - ``k_b`` : proportion of pairwise differences between the two populations (Pi_b)
-    - ``k_w``: proportion of pairwise differences within each population (Pi_w)
-    - ``k_net``
-    - ``S`` : number of segregating sites
-    - ``theta``
-    - ``psi``
+For example, given a |DnaCharacterMatrix| as an argument, the :func:`~dendropy.popgenstat.num_segregating_sites()` function returns the raw number of segregating sites, :func:`~dendropy.popgenstat.average_number_of_pairwise_differences()` returns the average number of pairwise differences, and :func:`~dendropy.popgenstat.nucleotide_diversity()` returns the nucleotide diversity.
+
+More complex statistics are provided by the :class:`~dendropy.popgenstat.PopulationPairSummaryStatistics` class.
+Objects of this class are instantatiated with two lists of |CharacterDataVector| objects as arguments, each representing a sample of DNA sequences drawn from two distinct but related populations.
+Once instantiated, the following attributes of the :class:`~dendropy.popgenstat.PopulationPairSummaryStatistics` object are available:
+
+        :attr:`~dendropy.popgenstat.PopulationPairSummaryStatistics.average_number_of_pairwise_differences`
+            The average number of pairwise differences between every sequence across both populations.
+
+        :attr:`~dendropy.popgenstat.PopulationPairSummaryStatistics.average_number_of_pairwise_differences_between`
+            The average number of pairwise differences between every sequence between both populations.
+
+        :attr:`~dendropy.popgenstat.PopulationPairSummaryStatistics.average_number_of_pairwise_differences_within`
+            The average number of pairwise differences between every sequence within each population.
+
+        :attr:`~dendropy.popgenstat.PopulationPairSummaryStatistics.average_number_of_pairwise_differences_net`
+            The net number of pairwise differences.
+
+        :attr:`~dendropy.popgenstat.PopulationPairSummaryStatistics.num_segregating_sites`
+            The number of segregating sites.
+
+        :attr:`~dendropy.popgenstat.PopulationPairSummaryStatistics.wattersons_theta`
+            Watterson's theta.
+
+        :attr:`~dendropy.popgenstat.PopulationPairSummaryStatistics.wakeleys_psi`
+            Wakeley's psi.
+
+        :attr:`~dendropy.popgenstat.PopulationPairSummaryStatistics.tajimas_d`
+            Tajima's D.
+
+The following example calculates the suite of population genetic summary statistics for sequences drawn from two populations of Pacific fishes:
+
+.. literalinclude:: /examples/pgstats1.py
+    :linenos:
+
