@@ -120,7 +120,7 @@ rst_epilog = """
 .. |sumtrees_doc| replace:: /scripts/sumtrees
 
 .. |sumtrees_citation| replace:: Sukumaran, J. and Mark T. Holder. 2009. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.2*. Part of the *DendroPy Phylogenetic Computation Library Version 2.6.1* (|dendropy_homepage_url|).
-.. |dendropy_citation| replace:: Sukumaran, J. and Mark T. Holder. 2009. *DendroPy Phylogenetic Computing Library Version 2.6.1* (|dendropy_homepage_url|).
+.. |dendropy_citation| replace:: Sukumaran, J. and Mark T. Holder. 2009. *DendroPy Phylogenetic Computing Library Version 3.0.0* (|dendropy_homepage_url|).
 .. |dendropy_copyright| replace:: **Copyright 2009 Jeet Sukumaran and Mark T. Holder**
 
 .. |Tree| replace:: :class:`~dendropy.dataobject.tree.Tree`

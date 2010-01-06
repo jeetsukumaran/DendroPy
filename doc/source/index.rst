@@ -18,25 +18,75 @@ DendroPy is a |Python|_ library for phylogenetic scripting, simulation, data pro
 Prerequisites
 =============
 
-DendroPy runs under any version of **Python 2.x greater than Python 2.4**.
+DendroPy runs under any version of **Python 2.x greater than Python 2.4 up to, but not including, Python 3.0**.
 
 
 Installation
 ============
 
-The current public release of DendroPy is available from the Python Package Index:
+.. warning::
 
-    |dendropy_download_url|
+    The latest version of DendroPy available from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_ is **2.x**, and **not** the **3.x** version discussed here.
 
-If you have `setuptools <http://pypi.python.org/pypi/setuptools>`_ installed on your system, then you can install DendroPy by simply running the following command::
+    Thus, until  the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_ version is updated, you **cannot** use ``easy_install`` to get DendroPy 3.x.
 
-    $ sudo easy_install -U dendropy
+    To get DendroPy 3.x, you currently *have* to install it from the source.
 
-Otherwise you will have to download the distribution archive from `the Python Package Index <http://pypi.python.org/pypi/DendroPy>`_, unpack it, and run the setup yourself::
+    It is **highly** recommended that you clone the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_ to simplify keeping up-to-date with the latest release.
 
-    $ tar -xvzf DendroPy-2.5.1.tar.gz
-    $ cd DendroPy-2.5.1
-    $ sudo python setup.py install
+#. If you do not already have it, get yourself |Git|_:
+    - `Source <http://www.kernel.org/pub/software/scm/git/git-1.6.6.tar.gz>`_
+    - `OS X binaries <http://code.google.com/p/git-osx-installer/downloads/list?can=3>`_
+    - Those of you unfortunates painfully suffering under the shoddy joke that is Microsoft Windows should first seriously consider getting yourself a `real operating system <http://distrowatch.com/>`_, failing which you can try to `make do <http://code.google.com/p/msysgit/downloads/list>`_.
+
+#. Clone the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_::
+
+    $ git clone http://github.com/jeetsukumaran/DendroPy
+
+#. Install DendroPy in development mode::
+
+    $ cd DendroPy
+    $ sudo python setup.py develop
+
+
+.. SNAPSHOT_RELEASE:
+
+    Installing the Latest Snapshot Release
+    --------------------------------------
+
+    .. warning::
+
+        Not recommended!
+
+    #. Download an archive of the latest snapshot here:
+
+        http://github.com/jeetsukumaran/DendroPy/tarball/master
+
+    - Unpack and install::
+
+        $ tar xvf jeetsukumaran-DendroPy-1594808.tar.gz
+        $ cd jeetsukumaran-DendroPy-1594808/
+        $ sudo python setup.py
+
+
+.. PYPI_RELEASE:
+
+    Public Release
+    --------------
+
+    The current public release of DendroPy is available from the Python Package Index:
+
+        |dendropy_download_url|
+
+    If you have `setuptools <http://pypi.python.org/pypi/setuptools>`_ installed on your system, then you can install DendroPy by simply running the following command::
+
+        $ sudo easy_install -U dendropy
+
+    Otherwise you will have to download the distribution archive from `the Python Package Index <http://pypi.python.org/pypi/DendroPy>`_, unpack it, and run the setup yourself::
+
+        $ tar -xvzf DendroPy-2.5.1.tar.gz
+        $ cd DendroPy-2.5.1
+        $ sudo python setup.py install
 
 Documentation
 ==============
@@ -46,13 +96,13 @@ DendroPy Tutorial
 
 The :doc:`DendroPy Tutorial </tutorial/index>` is a "cookbook"-style tutorial, consisting of annotated practical examples and code walk-throughs, and can be found here:
 
-    |dendropy_tutorial_url|
+    :doc:`DendroPy Tutorial </tutorial/index>`
 
 DendroPy Library Reference
 --------------------------
 The :doc:`DendroPy Library Reference </library/index>` documents the modules, classes and methods of the DendroPy library, and can be found here:
 
-     |dendropy_library_url|
+    :doc:`DendroPy Library Reference </library/index>`
 
 Much of this information is also readily available from the |Python|_ interpreter by invoking ``help()`` on an object or name.
 
