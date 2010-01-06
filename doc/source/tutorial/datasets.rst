@@ -1,20 +1,321 @@
-********
-Datasets
-********
+**********************
+Working with Data Sets
+**********************
 
-The :class:`dendropy.datasets.Dataset` class is the primary data management object in |DendroPy|. It has three main attributes:
+The |DataSet| class provides for objects that allow you to manage multiple types of phylogenetic data.
 
-    * :attr:`taxa_blocks`
-    * :attr:`trees_blocks`
-    * :attr:`char_blocks`
-    
-which are lists of :class:`dendropy.taxa.TaxaBlock`, :class:`dendropy.trees.Tree` and :class:`dendropy.characters.CharactersBlock` objects respectively.
+It has three primary attributes:
 
-You will use objects of the :class:`Dataset` to read, access, manage and write phylogenetic data such as taxa, trees and characters.
+    - :attr:`~dendropy.dataobject.dataset.DataSet.taxon_sets`, a list of all |TaxonSet|         objects in the |DataSet|, in the order that they were added or read.
+    - :attr:`~dendropy.dataobject.dataset.DataSet.tree_lists`, a list of all |TreeList| objects in the |DataSet|, in the order that they were added or read.
+    - :attr:`~dendropy.dataobject.dataset.DataSet.char_matrices`, a list of all |CharacterMatrix| objects in the |DataSet|, in the order that they were added or read.
 
-.. toctree::
-    :maxdepth: 2
+|DataSet| Creation and Reading
+===============================
 
-    reading_and_writing.rst    
-    accessing_data.rst
-    
+Creating a new |DataSet| from a Data Source
+--------------------------------------------
+
+You can use the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating an object, taking a data source as the first argument and a data format or schema specification as the second:
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet.get_from_path('pythonidae.nex', 'nexus')
+
+Valid schema specification strings include: "``nexus``", "``newick``", "``nexml``", "``dnafasta``", "``rnafasta``", "``proteinfasta``" etc.
+
+Reading into an Existing |DataSet| from a Data Source
+-----------------------------------------------------
+
+The :meth:`read_from_stream()`, :meth:`read_from_path()`, and :meth:`read_from_string()` instance methods for populating existing objects are also supported, taking the same arguments:
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet()
+    >>> ds.attach_taxon_set()
+    >>> ds = dendropy.DataSet.read_from_path('pythonidae.cytb.fasta', 'dnafasta')
+    >>> ds = dendropy.DataSet.read_from_path('pythonidae.mle.nex', 'nexus')
+
+Note how the :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` method is called before invoking any :meth:`read_from_*()` statements, to ensure that all the taxon references in the data sources get mapped to the same |TaxonSet| instance.
+
+Cloning an Existing |DataSet|
+-----------------------------
+
+You can also clone an existing |DataSet| object by passing it as an argument to the |DataSet| constructor:
+
+    >>> import dendropy
+    >>> ds1 = dendropy.DataSet.get_from_path('pythonidae.cytb.fasta', 'dnafasta')
+    >>> ds2 = dendropy.DataSet(ds1)
+
+Following this, ``ds2`` will be a *full* deep-copy clone of ``ds1``, with distinct and independent, but identical, |Taxon|, |TaxonSet|, |TreeList|, |Tree| and |CharacterMatrix| objects.
+Note that, in distinction to the similar cloning methods of |Tree| and |TreeList|, even the |Taxon| and |TaxonSet| objects are cloned, meaning that you manipulate the |Taxon| and |TaxonSet| objects of ``ds2`` without in any way effecting those of ``ds1``.
+
+Creating a New |DataSet| from Existing |TreeList| and |CharacterMatrix| Objects
+-------------------------------------------------------------------------------
+
+You can add independentally created or parsed data objects to a |DataSet| by passing them as unnamed arguments to the constructor:
+
+    >>> import dendropy
+    >>> treelist1 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
+    >>> treelist2 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run2.t', 'nexus')
+    >>> treelist3 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run3.t', 'nexus')
+    >>> treelist4 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run4.t', 'nexus')
+    >>> cytb = dendropy.DnaCharacterMatrix.get_from_path('pythonidae_cytb.fasta', 'dnafasta')
+    >>> ds = dendropy.DataSet(cytb, treelist1, treelist2, treelist3, treelist4)
+    >>> ds.unify_taxa()
+
+Note how we call the instance method :meth:`~dendropy.dataobject.dataset.DataSet.unify_taxa()` after the creation of the |DataSet| object.
+This method will remove all existing |TaxonSet| objects from the |DataSet|, create and add a new one, and then map all taxon references in all contained |TreeList| and |CharacterMatrix| objects to this new, unified |TaxonSet|.
+
+Adding Data to an Exisiting |DataSet|
+-------------------------------------
+
+You can add independentally created or parsed data objects to a |DataSet| using the :meth:`~dendropy.dataobject.dataset.DataSet.add()` method:
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet()
+    >>> treelist1 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run1.t', 'nexus')
+    >>> treelist2 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run2.t', 'nexus')
+    >>> treelist3 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run3.t', 'nexus')
+    >>> treelist4 = dendropy.TreeList.get_from_path('pythonidae_cytb.mb.run4.t', 'nexus')
+    >>> cytb = dendropy.DnaCharacterMatrix.get_from_path('pythonidae_cytb.fasta', 'dnafasta')
+    >>> ds.add(treelist1)
+    >>> ds.add(treelist2)
+    >>> ds.add(treelist3)
+    >>> ds.add(treelist4)
+    >>> ds.add(cytb)
+    >>> ds.unify_taxa()
+
+Here, again, we call the :meth:`~dendropy.dataobject.dataset.DataSet.unify_taxa()` to map all taxon references to the same, common, unified |TaxonSet|.
+
+.. _Customizing_Data_Set_Creation_and_Reading:
+
+Customizing Data Set Creation and Reading
+------------------------------------------
+
+You can control how data is parsed from a data source using the following keywords passed to any :meth:`get_from_*()` or :meth:`read_from_*()` method of a |DataSet| object:
+
+    ``attached_taxon_set``
+        If :keyword:`True`, then a new |TaxonSet| object will be created and added to the :attr:`~dendropy.dataobject.dataset.DataSet.taxon_sets` list of the |DataSet| object, and the |DataSet| object will be placed in "attached" (or single) taxon set mode, i.e., all taxa in any data sources parsed or read will be mapped to the same |TaxonSet| object. By default, this is :keyword:`False`, resulting in a multi-taxon set mode |DataSet| object.
+
+    ``taxon_set``
+        A |TaxonSet| object that will be used to manage **all** taxon references in the data source.
+        Every time a data source is parsed, by default at least one new |TaxonSet| object will be created to manage the taxa defined in the data source.
+        If the data source defines multiple collections of taxa (as is possible with, for example, the NEXML schema, or the Mesquite variant of the NEXUS schema), then multiple new |TaxonSet| object will be created.
+        By passing a |TaxonSet| object through the ``taxon_set`` keyword, you can force DendroPy to use the same |TaxonSet| object for all taxon references.
+
+    ``exclude_trees``
+        A boolean value indicating whether or not tree data should be parsed from the data source.
+        Default value is :keyword:`False`, i.e., all tree data will be included.
+
+    ``exclude_chars``
+        A boolean value indicating whether or not character data should be parsed from the data source.
+        Default value is :keyword:`False`, i.e., all character data will be included.
+
+|DataSet| Saving and Writing
+=============================
+
+Writing to Files
+----------------
+
+The :meth:`write_to_stream()`, and :meth:`write_to_path()` instance methods allow you to write the data of a |DataSet| object to a file-like object or a file path respectively.
+These methods take a file-like object (in the case of :meth:`write_to_stream()`) or a string specifying a filepath (in the case of :meth:`write_to_path()`) as the first argument, and a format or schema specification string as the second argument.
+
+The following example aggregates the post-burn in MCMC samples from a series of NEXUS-formatted tree files into a single |TreeList|, then, adds the |TreeList| as well as the original character data into a single |DataSet| object, which is then written out as NEXUS-formatted file:
+
+.. literalinclude:: /examples/dsrw1.py
+    :linenos:
+
+Composing a String
+------------------
+
+If you do not want to actually write to a file, but instead simply need a string representing the data in a particular format, you can call the instance method :meth:`as_string()`, passing a schema or format specification string as the first argument:
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet(attached_taxon_set=True)
+    >>> ds.read_from_path('pythonidae.cytb.fasta', 'dnafasta')
+    >>> s = ds.as_string('nexus')
+
+Customizing |DataSet| Saving and Writing
+-----------------------------------------
+
+The following keyword arguments, when passed to :meth:`write_to_stream()`, :meth:`write_to_path()`, or :meth:`as_string()`, allow you to control the formatting of the output:
+
+    ``taxon_set``
+        If passed a specific |TaxonSet|, then **only** |TreeList| and |CharacterMatrix| objects associated with this |TaxonSet| will be written. By default, this is :keyword:`None`, meaning that all data in the |DataSet| object will bne written.
+
+    ``exclude_trees``
+        If :keyword:`True`, then only **no** tree data will be written (i.e., all |TreeList| objects in the |DataSet| will be skipped in the output). By default, this is :keyword:`False`, meaning that all tree data will be written.
+
+    ``exclude_chars``
+        If :keyword:`True`, then only **no** characer data will be written (i.e., all |CharacterMatrix| objects in the |DataSet| will be skipped in the output). By default, this is :keyword:`False`, meaning that all character data will be written.
+
+    ``simple``
+        When writing NEXUS-formatted data, if :keyword:`True`, then character data will be represented as a single "``DATA``" block, instead of separate "``TAXA``" and "``CHARACTERS``" blocks. By default this is :keyword:`False`.
+
+    ``write_rooting``
+        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then tree rooting statements (e.g., "``[&R]``" or "``[&U]``") will not be prefixed to the tree statements. By default, this is :keyword:`True`, i.e., rooting statements will be written.
+
+    ``edge_lengths``
+        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then edge or branch lengths will not be written as part of the tree statements. By default, this is :keyword:`True`, i.e., edge lengths will be written.
+
+    ``internal_labels``
+        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then labels for internal nodes (if given) will not be written as part of the tree statements. By default, this is :keyword:`True`, i.e., internal node labels will be written.
+
+    ``block_titles``
+        When writing NEXUS-formatted data, if :keyword:`False`, then title statements will not be added to the various NEXUS blocks (i.e., "``TAXA``", "``CHARACTERS``", and "``TREES``") . By default, this is :keyword:`True`, i.e., block titles will be written.
+
+    ``preserve_spaces``
+        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`True`, then no attempt will be made to produce unquoted labels by substituting spaces for underscores. By default, this is :keyword:`False`, i.e., any label that includes spaces but no other special punctuation character or underscores will have all spaces replaced by underscores so as to allow the label to be represented without quotes.
+
+    ``quote_underscores``
+        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then labels will not be wrapped in quotes even if they contain underscores (meaning that the underscores will be interpreted as spaces according to the NEXUS standard). By default, this is :keyword:`True`, meaning that any label that contains underscores will be wrapped in quotes. Note that if a label has any other characters requiring quote protection as specified by the NEXUS standard, then the label will be quoted regardless of the value of this keyword argument.
+
+    ``comment``
+        When writing NEXUS-formatted data, then the contents of this variable will be added as NEXUS comment to the output. By default, this is :keyword:`None`.
+
+Taxon Management with Data Sets
+===============================
+
+The |DataSet| object, representing a meta-collection of phylogenetic data, differs in one important way from all the other phylogenetic data objects discussed so far with respect to taxon management, in that it is not associated with any particular |TaxonSet| object.
+Rather, it maintains a list (in the property :attr:`~dendropy.dataobject.char.DataSet.taxon_sets`) of *all* the |TaxonSet| objects referenced by its contained |TreeList| objects (in the property :attr:`~dendropy.dataobject.char.DataSet.tree_lists`) and |CharacterMatrix| objects (in the property :attr:`~dendropy.dataobject.char.DataSet.char_matrices`).
+
+With respect to taxon management, |DataSet| objects operate in one of two modes: "detached taxon set" mode and "attached taxon set" mode.
+
+Detached (Multiple) Taxon Set Mode
+----------------------------------
+
+In the "detached taxon set" mode, which is the default, |DataSet| object tracks all |TaxonSet| references of their other data members in the property :attr:`~dendropy.dataobject.char.DataSet.taxon_sets`, but no effort is made at taxon management as such.
+Thus, every time a data source is read with a "detached taxon set" mode |DataSet| object, by deault, a new  |TaxonSet| object will be created and associated with the |Tree|, |TreeList|, or |CharacterMatrix| objects created from each data source, resulting in multiple |TaxonSet| independent references.
+As such, "detached taxon set" mode |DataSet| objects are suitable for handling data with multiple distinct sets of taxa.
+
+For example::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet()
+    >>> ds.read_from_path("primates.nex", "nexus")
+    >>> ds.read_from_path("snakes.nex", "nexus")
+
+The dataset, ``ds``, will now contain two distinct sets of |TaxonSet| objects, one for the taxa defined in "primates.nex", and the other for the taxa defined for "snakes.nex".
+In this case, this behavior is correct, as the two files do indeed refer to different sets of taxa.
+
+However, consider the following::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet()
+    >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
+    >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
+    >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
+
+Here, even though all the data files refer to the same set of taxa, the resulting  |DataSet| object will actually have 4 distinct  |TaxonSet| objects, one for each of the independent reads, and a taxon with a particular label in the first file (e.g., "Python regius" of "pythonidae_cytb.fasta") will map to a completely distinct |Taxon| object than a taxon with the same label in the second file (e.g., "Python regius" of "pythonidae_aa.nex").
+This is incorrect behavior, and to achieve the correct behavior with a multiple taxon set mode |DataSet| object, we need to explicitly pass a |TaxonSet| object to each of the :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet()
+    >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> ds.read_from_path("pythonidae_aa.nex", "nexus", taxon_set=ds.taxon_sets[0])
+    >>> ds.read_from_path("pythonidae_morphological.nex", "nexus", taxon_set=ds.taxon_sets[0])
+    >>> ds.read_from_path("pythonidae.mle.tre", "nexus", taxon_set=ds.taxon_sets[0])
+    >>> ds.write_to_path("pythonidae_combined.nex", "nexus")
+
+In the previous example, the first :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statement results in a new |TaxonSet| object, which is added to the :attr:`~dendropy.dataobject.char.DataSet.taxon_sets` property of the |DataSet| object ``ds``.
+This |TaxonSet| object gets passed via the ``taxon_set`` keyword to subsequent :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements, and thus as each of the data sources are processed, the taxon references get mapped to |Taxon| objects in the same, single, |TaxonSet| object.
+
+While this approach works to ensure correct taxon mapping across multiple data object reads and instantiation, in this context, it is probably more convenient to use the |DataSet| in "attached taxon set" mode.
+
+Attached (Single) Taxon Set Mode
+--------------------------------
+In the "attached taxon set" mode, |DataSet| objects ensure that the taxon references of all data objects that are added to them are mapped to the same |TaxonSet| object (at least one for each independent read or creation operation).
+The "attached taxon set" mode can be set by passing the keyword argument ``attach_taxon_set=True`` to the constructor of the |DataSet| when instantiating a new |DataSet| object (in which case a new |TaxonSet| object will be created and added to the |DataSet| object as the default), by passing an existing |TaxonSet| object to which to attach using the keyword argument ``taxon_set``, or by calling :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` on an existing |DataSet| object
+
+For example::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet(attach_taxon_set=True)
+    >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
+    >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
+    >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
+
+Or::
+
+    >>> import dendropy
+    >>> taxa = dendropy.TaxonSet(label="global")
+    >>> ds = dendropy.DataSet(taxon_set=taxa)
+    >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
+    >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
+    >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
+
+Or::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet()
+    >>> ds.attach_taxon_set()
+    <TaxonSet object at 0x5779c0>
+    >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
+    >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
+    >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
+
+All of the above will result in only a single |TaxonSet| object that have all the taxa from the four data sources mapped to them.
+Note how :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` returns the new |TaxonSet| object created and attached when called.
+If you needed to detach the |TaxonSet| object and then later on reattach it again, you would assign the return value to a variable, and pass it to as an argument to the later call to :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()`.
+
+Switching Between Attached and Detached Taxon Set Modes
+-------------------------------------------------------
+As noted above, you can use the :meth:`~dendropy.dataobject.dataset.DataSet.attached_taxon_set()` method to switch a |DataSet| object to attached taxon set mode.
+To restore it to multiple taxon set mode, you would use the :meth:`~dendropy.dataobject.dataset.DataSet.detach_taxon_set()` method::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet()
+    >>> ds.attach_taxon_set()
+    <TaxonSet object at 0x5779c0>
+    >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
+    >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
+    >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
+    >>> ds.detach_taxon_set()
+    >>> ds.read_from_path("primates.nex", "nexus")
+
+Here, the same |TaxonSet| object is used to manage taxon references for data parsed from the first four files, while the data from the fifth and final file gets its own, distinct, |TaxonSet| object and associated |Taxon| object references.
+
+Attaching a Particular Taxon Set
+--------------------------------
+
+When :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` is called without arguments, a new |TaxonSet| object is created and added to the :attr:`~dendropy.dataobject.char.DataSet.taxon_sets` list of the |DataSet| object, and taxon references of all data subsequently read (or created and added independentally) will be mapped to |Taxon| objects in this new |TaxonSet| object.
+If you want to use an existing |TaxonSet| object instead of a new one, you can pass this object as an argument to the :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` method::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet()
+    >>> ds.read_from_path("pythonidae_cytb.fasta", "dnafasta")
+    >>> ds.read_from_path("primates.nex", "nexus")
+    >>> ds.attach_taxon_set(ds.taxon_sets[0])
+    <TaxonSet object at 0x5b8150>
+    >>> ds.read_from_path("pythonidae_aa.nex", "nexus")
+    >>> ds.read_from_path("pythonidae_morphological.nex", "nexus")
+    >>> ds.read_from_path("pythonidae.mle.tre", "nexus")
+    >>> ds.detach_taxon_set()
+
+Here, the first two :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements result in two distinct |TaxonSet| objects, one for each read, each with their own independent |Taxon| objects.
+The :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()` statement is passed the |TaxonSet| object from the first read operation, and all data created from the next three :meth:`~dendropy.dataobject.dataset.DataSet.read_from_path()` statements will have their taxon references mapped to this first |TaxonSet| object.
+
+
+.. SCRATCH
+    Unattached vs. Attached |TaxonSet| Modes
+    ========================================
+
+    A |DataSet| object can manage taxon references in one of two modes: unattached or attached.
+    The "unattached" taxon set mode is the default.
+    In this mode, every time a data source is parsed, at least one new |TaxonSet| object will be created to manage taxon references in the data source, and new |Taxon| objects will be created and added to this |TaxonSet| for every taxon reference in the data source.
+    This means that multiple read statements will result in multiple |TaxonSet| objects being created and added to the |DataSet|.
+    In contrast, in "attached" taxon set mode, a single |TaxonSet| object will be used to manage taxon references across all data source reading operations.
+
+    A |DataSet| can be placed in attached taxon set mode by calling the instance method :meth:`~dendropy.dataobject.dataset.DataSet.attach_taxon_set()`.
+    This method optionally takes a |TaxonSet| object as an argument that will be used as the |TaxonSet| object to manage all subsequent taxon references.
+    If not given, a new |TaxonSet| object will be created.
+
+    A |DataSet| can be placed in unattached taxon set mode by calling the instance method :meth:`~dendropy.dataobject.dataset.DataSet.unattach_taxon_set()`.
+    This will restore the default behavior of a multiple taxon set |DataSet|.
+
+    Note that placing a |DataSet| in attached taxon set mode using does not affect existing data: only data parsed while the |DataSet| object has an attached |TaxonSet| will have their taxon references mapped to the attached |TaxonSet|.
+    You can use the instance method :meth:`~dendropy.dataobject.dataset.DataSet.unify_taxa()` to remap all taxon references of existing |TreeList| and |CharacterMatrix| objects to a (new) single |TaxonSet| object.

@@ -1,0 +1,42 @@
+#NEXUS
+
+
+begin taxa;
+    dimensions ntax=29;
+    taxlabels
+        'Python molurus'
+        'Python sebae'
+        'Morelia tracyae'
+        'Morelia amethistina'
+        'Morelia nauta'
+        'Morelia kinghorni'
+        'Morelia clastolepis'
+        'Morelia boeleni'
+        'Python reticulatus'
+        'Python timoriensis'
+        'Morelia oenpelliensis'
+        'Morelia viridis'
+        'Morelia carinata'
+        'Morelia spilota'
+        'Morelia bredli'
+        'Antaresia maculosa'
+        'Antaresia childreni'
+        'Antaresia stimsoni'
+        'Antaresia perthensis'
+        'Leiopython albertisii'
+        'Bothrochilus boa'
+        'Liasis olivaceus'
+        'Liasis mackloti'
+        'Liasis fuscus'
+        'Apodora papuana'
+        'Aspidites ramsayi'
+        'Aspidites melanocephalus'
+        'Python brongersmai'
+        'Python regius'
+  ;
+end;
+
+begin trees;
+    tree 0 = [&U] ('Python molurus':0.0779719244,(('Python sebae':0.1414715009,((((('Morelia tracyae':0.0435011998,('Morelia amethistina':0.0305993564,(('Morelia nauta':0.0092774432,'Morelia kinghorni':0.0093145395):0.005595,'Morelia clastolepis':0.0052046980):0.023435):0.012223):0.025359,'Morelia boeleni':0.0863199106):0.019894,(('Python reticulatus':0.0828549023,'Python timoriensis':0.0963051344):0.072003,'Morelia oenpelliensis':0.0820543043):0.002785):0.002740,(((('Morelia viridis':0.0925974416,('Morelia carinata':0.0943697342,('Morelia spilota':0.0237557178,'Morelia bredli':0.0357358071):0.041377):0.005225):0.004424,('Antaresia maculosa':0.1141193265,(('Antaresia childreni':0.0363195704,'Antaresia stimsoni':0.0188535952):0.043287,'Antaresia perthensis':0.0947695442):0.019148):0.007921):0.022413,('Leiopython albertisii':0.0698883547,'Bothrochilus boa':0.0811607602):0.020941):0.007439,(('Liasis olivaceus':0.0449896545,('Liasis mackloti':0.0331564496,'Liasis fuscus':0.0230286886):0.058253):0.016766,'Apodora papuana':0.0847328612):0.008417):0.006539):0.011557,('Aspidites ramsayi':0.0349772256,'Aspidites melanocephalus':0.0577536309):0.042499):0.036177):0.016859,'Python brongersmai':0.1147218285):0.001271,'Python regius':0.1800489093):0.000000;
+end;
+

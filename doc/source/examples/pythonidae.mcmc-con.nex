@@ -1,0 +1,13 @@
+#NEXUS
+
+[ID: 0344228063]
+begin trees;
+   [Note: This tree contains information on the topology, 
+          branch lengths (if present), and the probability
+          of the partition indicated by the branch.]
+   tree con_50_majrule = (Python_regius:0.212275,(Python_sebae:0.176816,((((((Antaresia_maculosa:0.127351,(Antaresia_perthensis:0.108378,(Antaresia_stimsoni:0.021372,Antaresia_childreni:0.038155)1.00:0.046446)1.00:0.025262)0.94:0.012957,(Morelia_carinata:0.101145,(Morelia_bredli:0.038563,Morelia_spilota:0.025643)1.00:0.050967)0.52:0.010472,Morelia_viridis:0.098541)0.98:0.023291,(Bothrochilus_boa:0.091928,Leiopython_albertisii:0.080986)1.00:0.031583)0.54:0.008347,(((Liasis_fuscus:0.026601,Liasis_mackloti:0.034524)1.00:0.069881,Liasis_olivaceus:0.047727)0.99:0.023758,Apodora_papuana:0.096097)0.89:0.014740)0.78:0.010084,((Python_timoriensis:0.101865,Python_reticulatus:0.095018)1.00:0.092200,(Morelia_boeleni:0.093309,(Morelia_tracyae:0.047270,(Morelia_amethistina:0.034936,((Morelia_nauta:0.011000,Morelia_kinghorni:0.011198)0.90:0.006932,Morelia_clastolepis:0.008103)1.00:0.025987)0.93:0.017415)1.00:0.033886)0.98:0.027519,Morelia_oenpelliensis:0.092143)0.52:0.006779)0.99:0.018238,(Aspidites_ramsayi:0.030898,Aspidites_melanocephalus:0.068553)1.00:0.049525)1.00:0.050607)0.95:0.023304,(Python_brongersmai:0.132193,Python_molurus:0.088720)0.55:0.011466);
+
+   [Note: This tree contains information only on the topology
+          and branch lengths (mean of the posterior probability density).]
+   tree con_50_majrule = (Python_regius:0.212275,(Python_sebae:0.176816,((((((Antaresia_maculosa:0.127351,(Antaresia_perthensis:0.108378,(Antaresia_stimsoni:0.021372,Antaresia_childreni:0.038155):0.046446):0.025262):0.012957,(Morelia_carinata:0.101145,(Morelia_bredli:0.038563,Morelia_spilota:0.025643):0.050967):0.010472,Morelia_viridis:0.098541):0.023291,(Bothrochilus_boa:0.091928,Leiopython_albertisii:0.080986):0.031583):0.008347,(((Liasis_fuscus:0.026601,Liasis_mackloti:0.034524):0.069881,Liasis_olivaceus:0.047727):0.023758,Apodora_papuana:0.096097):0.014740):0.010084,((Python_timoriensis:0.101865,Python_reticulatus:0.095018):0.092200,(Morelia_boeleni:0.093309,(Morelia_tracyae:0.047270,(Morelia_amethistina:0.034936,((Morelia_nauta:0.011000,Morelia_kinghorni:0.011198):0.006932,Morelia_clastolepis:0.008103):0.025987):0.017415):0.033886):0.027519,Morelia_oenpelliensis:0.092143):0.006779):0.018238,(Aspidites_ramsayi:0.030898,Aspidites_melanocephalus:0.068553):0.049525):0.050607):0.023304,(Python_brongersmai:0.132193,Python_molurus:0.088720):0.011466);
+end;

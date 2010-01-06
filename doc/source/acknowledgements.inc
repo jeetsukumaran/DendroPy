@@ -6,8 +6,8 @@ Portions of |DendroPy|_ were developed under `CIPRES <http://www.phylo.org>`_, a
 .. container:: alignright
 
     .. image:: /_static/logo_cipres.gif
-        :height: 20   
-        :target: http://www.phylo.org/    
+        :height: 20
+        :target: http://www.phylo.org/
     .. image:: /_static/nsf.gif
         :height: 20
         :target: http://www.nsf.gov/

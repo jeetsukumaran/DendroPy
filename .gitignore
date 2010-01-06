@@ -4,10 +4,9 @@ setup.cfg
 DendroPy.egg-info*
 .svn*
 .DS_Store*
-dendropy/tests/output/
+dendropy/test/output/
 build/*
 dist/*
 setuptools-*.egg
-dendropy/tests/data/heavy/*
 *.bbprojectd
-clean.sh
+tags
