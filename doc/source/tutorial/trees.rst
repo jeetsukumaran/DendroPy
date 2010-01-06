@@ -523,8 +523,9 @@ The :mod:`~dendropy.coalescent` module provides a range of methods for simulatio
         Given a |Tree| object as the first argument, and a list of lists of
         |Taxon| objects representing the expected monophyletic partitioning of the |TaxonSet| of the |Tree| as the second argument, this returns the number of deep coalescences found in the relationships implied by the |Tree| object, conditional on the taxon groupings given by the second argument.
 
-Majority-Rule Consensus Tree
-----------------------------
+Majority-Rule Consensus Tree from a Collection of Trees
+-------------------------------------------------------
+
 To get the majority-rule consensus tree of a |TreeList| object, you can call the :meth:`~dendropy.dataobject.tree.TreeList.consensus()` instance method.
 You can specify the frequency threshold for the consensus tree by the ``min_freq`` argument, which default to 0.5 (i.e., a 50% majority rule tree).
 The following example aggregates the post-burn-in trees from four MCMC samples into a single |TreeList| object, and prints the 95% majority-rule consensus as a NEWICK string:
@@ -532,6 +533,15 @@ The following example aggregates the post-burn-in trees from four MCMC samples i
 .. literalinclude:: /examples/majrule.py
     :linenos:
 
+Frequency of a Split in a Collection of Trees
+---------------------------------------------
+
+The :meth:`~dendropy.dataobject.tree.TreeList.frequency_of_split()` method of a |TreeList| object returns the frequency of a single split across all the |Tree| objects in the |TreeList|.
+The split can be specified by passing a split bitmask directly using the ``split_bitmask`` keyword argument, as a list of |Taxon| objects using the ``taxa`` keyword argument, or as a list of taxon labels using the ``labels`` keyword argument.
+The following example shows how to calculate the frequency of a split defined by two taxa, "Morelia amethistina" and "Morelia tracyae", from the post-burn-in trees aggregated across for MCMC samples:
+
+.. literalinclude:: /examples/splitfreq.py
+    :linenos:
 
 .. SCRATCH
     Each |Tree| object has an attribute, :attr:`~dendropy.dataobject.tree.Tree.taxon_set`, which is a ``TaxaBlock`` object, and manages all the |Taxon| objects associated with the tree.
