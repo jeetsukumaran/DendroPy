@@ -30,7 +30,7 @@ Installation
 
     Thus, until  the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_ version is updated, you **cannot** use ``easy_install`` to get DendroPy 3.x.
 
-    To get DendroPy 3.x, you currently *have* to install it from the source.
+    To get DendroPy 3.x, you currently *have* to install it from the repository source.
 
     It is **highly** recommended that you clone the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_ to simplify keeping up-to-date with the latest release.
 
