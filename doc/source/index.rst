@@ -41,11 +41,15 @@ Installation
 
 #. Clone the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_::
 
-    $ git clone http://github.com/jeetsukumaran/DendroPy
+    $ git clone git://github.com/jeetsukumaran/DendroPy.git
+
+#. Checkout the DendroPy 3.0 branch::
+
+    $ cd DendroPy
+    $ git checkout -b dendropy3a origin/dendropy3a
 
 #. Install DendroPy in development mode::
 
-    $ cd DendroPy
     $ sudo python setup.py develop
 
 
