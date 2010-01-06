@@ -122,55 +122,6 @@ def nucleotide_diversity(char_matrix, ignore_uncertain=True):
     """
     return _nucleotide_diversity(char_matrix.vectors(), char_matrix.default_state_alphabet, ignore_uncertain)
 
-def _average_number_of_pairwise_differences_between_populations(char_x, char_y, state_alphabet, ignore_uncertain=True):
-    """
-    Implements Eq (3) of:
-
-    Wakeley, J. 1996. Distinguishing migration from isolation using the
-    variance of pairwise differences. Theoretical Population Biology 49:
-    369-386.
-    """
-    diffs = 0
-    for sx in char_x:
-        for sy in char_y:
-            for cidx, c in enumerate(sx):
-                c1 = c
-                c2 = sy[cidx]
-                if (not ignore_uncertain) \
-                    or (c1.value is not state_alphabet.gap \
-                        and c2.value is not state_alphabet.gap \
-                        and len(c1.value.fundamental_ids) == 1 \
-                        and len(c2.value.fundamental_ids) == 1):
-                    if c1.value is not c2.value:
-                        diffs += 1
-    dxy = float(1)/(len(char_x) * len(char_y)) * float(diffs)
-    return dxy
-
-def _variance_of_pairwise_differences_between_populations(char_x, char_y, mean_diff, state_alphabet, ignore_uncertain=True):
-    """
-    Implements Eq (10) of:
-
-    Wakeley, J. 1996. Distinguishing migration from isolation using the
-    variance of pairwise differences. Theoretical Population Biology 49:
-    369-386.
-    """
-    ss_diffs = 0
-    for sx in char_x:
-        for sy in char_y:
-            diffs = 0
-            for cidx, c in enumerate(sx):
-                c1 = c
-                c2 = sy[cidx]
-                if (not ignore_uncertain) \
-                    or (c1.value is not state_alphabet.gap \
-                        and c2.value is not state_alphabet.gap \
-                        and len(c1.value.fundamental_ids) == 1 \
-                        and len(c2.value.fundamental_ids) == 1):
-                    if c1.value is not c2.value:
-                        diffs += 1
-            ss_diffs += (float(diffs - mean_diff) ** 2)
-    return float(ss_diffs)/(len(char_x)*len(char_y))
-
 class PopulationPairSummaryStatistics(object):
 
     def __init__(self, pop1_seqs, pop2_seqs, ignore_uncertain=True):
@@ -199,10 +150,10 @@ class PopulationPairSummaryStatistics(object):
         diffs_y, mean_diffs_y, sq_diff_y = _count_differences(self.pop2_seqs, self.state_alphabet, self.ignore_uncertain)
         d_x = diffs_x / probability.binomial_coefficient(len(self.pop1_seqs), 2)
         d_y = diffs_y / probability.binomial_coefficient(len(self.pop2_seqs), 2)
-        d_xy = _average_number_of_pairwise_differences_between_populations(self.pop1_seqs, self.pop2_seqs, self.state_alphabet, self.ignore_uncertain)
+        d_xy = self._average_number_of_pairwise_differences_between_populations()
         s2_x = (float(sq_diff_x) / probability.binomial_coefficient(len(self.pop1_seqs), 2) ) - (d_x ** 2)
         s2_y = (float(sq_diff_y) / probability.binomial_coefficient(len(self.pop2_seqs), 2) ) - (d_y ** 2)
-        s2_xy = _variance_of_pairwise_differences_between_populations(self.pop1_seqs, self.pop2_seqs, d_xy, self.state_alphabet, self.ignore_uncertain)
+        s2_xy = self._variance_of_pairwise_differences_between_populations(d_xy)
         n = len(self.combined_seqs)
         n_x = float(len(self.pop1_seqs))
         n_y = float(len(self.pop2_seqs))
@@ -245,6 +196,55 @@ class PopulationPairSummaryStatistics(object):
         e2 = float(c2) / ( (a1**2) + a2 )
         D = float(k - self.num_segregating_sites) / math.sqrt( (e1 * self.num_segregating_sites ) + (e2 * self.num_segregating_sites) * (self.num_segregating_sites - 1) )
         self.tajimas_d = D
+
+    def _average_number_of_pairwise_differences_between_populations(self):
+        """
+        Implements Eq (3) of:
+
+        Wakeley, J. 1996. Distinguishing migration from isolation using the
+        variance of pairwise differences. Theoretical Population Biology 49:
+        369-386.
+        """
+        diffs = 0
+        for sx in self.pop1_seqs:
+            for sy in self.pop2_seqs:
+                for cidx, c in enumerate(sx):
+                    c1 = c
+                    c2 = sy[cidx]
+                    if (not self.ignore_uncertain) \
+                        or (c1.value is not self.state_alphabet.gap \
+                            and c2.value is not self.state_alphabet.gap \
+                            and len(c1.value.fundamental_ids) == 1 \
+                            and len(c2.value.fundamental_ids) == 1):
+                        if c1.value is not c2.value:
+                            diffs += 1
+        dxy = float(1)/(len(self.pop1_seqs) * len(self.pop2_seqs)) * float(diffs)
+        return dxy
+
+    def _variance_of_pairwise_differences_between_populations(self, mean_diff):
+        """
+        Implements Eq (10) of:
+
+        Wakeley, J. 1996. Distinguishing migration from isolation using the
+        variance of pairwise differences. Theoretical Population Biology 49:
+        369-386.
+        """
+        ss_diffs = 0
+        for sx in self.pop1_seqs:
+            for sy in self.pop2_seqs:
+                diffs = 0
+                for cidx, c in enumerate(sx):
+                    c1 = c
+                    c2 = sy[cidx]
+                    if (not self.ignore_uncertain) \
+                        or (c1.value is not self.state_alphabet.gap \
+                            and c2.value is not self.state_alphabet.gap \
+                            and len(c1.value.fundamental_ids) == 1 \
+                            and len(c2.value.fundamental_ids) == 1):
+                        if c1.value is not c2.value:
+                            diffs += 1
+                ss_diffs += (float(diffs - mean_diff) ** 2)
+        return float(ss_diffs)/(len(self.pop1_seqs)*len(self.pop2_seqs))
 
 def derived_state_matrix(char_vectors, ancestral_seq=None):
     """
