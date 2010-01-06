@@ -30,8 +30,8 @@ If you have `setuptools <http://pypi.python.org/pypi/setuptools>`_ installed on 
 
 Otherwise you will have to download the distribution archive from `the Python Package Index <http://pypi.python.org/pypi/DendroPy>`_, unpack it, and run the setup yourself::
 
-    $ tar -xvzf DendroPy-2.5.1.tar.gz
-    $ cd DendroPy-2.5.1
+    $ tar -xvzf DendroPy-3.0.0.tar.gz
+    $ cd DendroPy-3.0.0
     $ sudo python setup.py install
 
 
