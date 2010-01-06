@@ -85,7 +85,7 @@ if runlevel.is_test_enabled(runlevel.SLOW, _LOG, __name__, "skipping all popgens
             self.assertAlmostEqual(popgenstat.average_number_of_pairwise_differences(d.char_matrices[0], ignore_uncertain=True),  111.0606, 4)
             self.assertAlmostEqual(popgenstat.nucleotide_diversity(d.char_matrices[0], ignore_uncertain=True), 0.2343, 4)
 
-        def testWakeleysSigma(self):
+        def testPopulationPairSummaryStatistics(self):
             s3 = StringIO.StringIO("""
         #NEXUS
 
@@ -122,15 +122,16 @@ if runlevel.is_test_enabled(runlevel.SLOW, _LOG, __name__, "skipping all popgens
 
 
         """)
-            d = dendropy.DataSet(stream=s3, schema="nexus")
-            groups = [[],[]]
-            for idx, t in enumerate(d.taxon_sets[0]):
+            seqs = dendropy.DnaCharacterMatrix(stream=s3, schema="nexus")
+            p1 = []
+            p2 = []
+            for idx, t in enumerate(seqs.taxon_set):
                 if t.label.startswith('EPAC'):
-                    groups[0].append(t)
+                    p1.append(seqs[t])
                 else:
-                    groups[1].append(t)
-            sigma = popgenstat.wakeleys_Psi(d.char_matrices[0], groups)
-            self.assertTrue((sigma - 0.82) ** 2 <= 0.02 ** 2)
+                    p2.append(seqs[t])
+            pp = popgenstat.PopulationPairSummaryStatistics(p1, p2)
+            self.assertTrue((pp.wakeleys_psi - 0.82) ** 2 <= 0.02 ** 2)
 
     if __name__ == "__main__":
         unittest.main()

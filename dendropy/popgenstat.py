@@ -25,6 +25,7 @@ Population genetic statistics.
 """
 
 import math
+import dendropy
 from dendropy.utility import probability
 
 def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
@@ -170,112 +171,80 @@ def _variance_of_pairwise_differences_between_populations(char_x, char_y, mean_d
             ss_diffs += (float(diffs - mean_diff) ** 2)
     return float(ss_diffs)/(len(char_x)*len(char_y))
 
-def wakeleys_Psi(char_matrix, taxon_groups, ignore_uncertain=True):
-    """
-    Returns Wakeley's psi, as described in:
+class PopulationPairSummaryStatistics(object):
 
-    Wakeley, J. 1996. Distinguishing migration from isolation using the
-    variance of pairwise differences. Theoretical Population Biology 49:
-    369-386
-    """
-    char_x = []
-    char_y = []
-    state_alphabet = char_matrix.default_state_alphabet
-    for t in char_matrix.taxon_set:
-        if t in taxon_groups[0]:
-            char_x.append(char_matrix[t])
-        else:
-            char_y.append(char_matrix[t])
+    def __init__(self, pop1_seqs, pop2_seqs, ignore_uncertain=True):
+        self.pop1_seqs = pop1_seqs
+        self.pop2_seqs = pop2_seqs
+        self.combined_seqs = pop1_seqs + pop2_seqs
+        self.ignore_uncertain = ignore_uncertain
+        self.state_alphabet = dendropy.DNA_STATE_ALPHABET
 
-    diffs_x, mean_diffs_x, sq_diff_x = _count_differences(char_x, state_alphabet, ignore_uncertain)
-    diffs_y, mean_diffs_y, sq_diff_y = _count_differences(char_y, state_alphabet, ignore_uncertain)
-    d_x = diffs_x / probability.binomial_coefficient(len(char_x), 2)
-    d_y = diffs_y / probability.binomial_coefficient(len(char_y), 2)
-    d_xy = _average_number_of_pairwise_differences_between_populations(char_x, char_y, state_alphabet, ignore_uncertain)
-    s2_x = (float(sq_diff_x) / probability.binomial_coefficient(len(char_x), 2) ) - (d_x ** 2)
-    s2_y = (float(sq_diff_y) / probability.binomial_coefficient(len(char_y), 2) ) - (d_y ** 2)
-    s2_xy = _variance_of_pairwise_differences_between_populations(char_x, char_y, d_xy, state_alphabet, ignore_uncertain)
+        self.average_number_of_pairwise_differences = 0
+        self.average_number_of_pairwise_differences_between = 0
+        self.average_number_of_pairwise_differences_within = 0
+        self.average_number_of_pairwise_differences_net = 0
+        self.num_segregating_sites = 0
+        self.wattersons_theta = 0.0
+        self.wakeleys_psi = 0.0
+        self.tajimas_d = 0.0
+        self.calc()
 
-    n = len(char_matrix)
-    n_x = float(len(char_x))
-    n_y = float(len(char_y))
-    a = float(n * (n-1))
-    ax = float(n_x * (n_x - 1))
-    ay = float(n_y * (n_y - 1))
-    k = average_number_of_pairwise_differences(char_matrix, ignore_uncertain)
-    psi = (float(1)/(a)) * ( ax * (math.sqrt(s2_x)/d_x) + ay * (math.sqrt(s2_y)/d_y) + (2 * n_x * n_y * math.sqrt(s2_xy)/k))
-    return psi
+    def calc(self):
+        """
+        Returns a summary of a set of sequences that can be partitioned into
+        the list of lists of taxa given by `taxon_groups`.
+        """
+        diffs_x, mean_diffs_x, sq_diff_x = _count_differences(self.pop1_seqs, self.state_alphabet, self.ignore_uncertain)
+        diffs_y, mean_diffs_y, sq_diff_y = _count_differences(self.pop2_seqs, self.state_alphabet, self.ignore_uncertain)
+        d_x = diffs_x / probability.binomial_coefficient(len(self.pop1_seqs), 2)
+        d_y = diffs_y / probability.binomial_coefficient(len(self.pop2_seqs), 2)
+        d_xy = _average_number_of_pairwise_differences_between_populations(self.pop1_seqs, self.pop2_seqs, self.state_alphabet, self.ignore_uncertain)
+        s2_x = (float(sq_diff_x) / probability.binomial_coefficient(len(self.pop1_seqs), 2) ) - (d_x ** 2)
+        s2_y = (float(sq_diff_y) / probability.binomial_coefficient(len(self.pop2_seqs), 2) ) - (d_y ** 2)
+        s2_xy = _variance_of_pairwise_differences_between_populations(self.pop1_seqs, self.pop2_seqs, d_xy, self.state_alphabet, self.ignore_uncertain)
+        n = len(self.combined_seqs)
+        n_x = float(len(self.pop1_seqs))
+        n_y = float(len(self.pop2_seqs))
+        a = float(n * (n-1))
+        ax = float(n_x * (n_x - 1))
+        ay = float(n_y * (n_y - 1))
+        k = _average_number_of_pairwise_differences(self.combined_seqs, self.state_alphabet, self.ignore_uncertain)
+        n = len(self.combined_seqs)
 
-def summarize(char_matrix, taxon_groups, ignore_uncertain=True):
-    """
-    Returns a summary of a set of sequences that can be partitioned into
-    the list of lists of taxa given by `taxon_groups`.
-    """
-    char_x = []
-    char_y = []
-    state_alphabet = char_matrix.default_state_alphabet
-    for t in char_matrix.taxon_set:
-        if t in taxon_groups[0]:
-            char_x.append(char_matrix[t])
-        else:
-            char_y.append(char_matrix[t])
+        # Hickerson 2006: pi #
+        self.average_number_of_pairwise_differences = k
 
-    diffs_x, mean_diffs_x, sq_diff_x = _count_differences(char_x, state_alphabet, ignore_uncertain)
-    diffs_y, mean_diffs_y, sq_diff_y = _count_differences(char_y, state_alphabet, ignore_uncertain)
-    d_x = diffs_x / probability.binomial_coefficient(len(char_x), 2)
-    d_y = diffs_y / probability.binomial_coefficient(len(char_y), 2)
-    d_xy = _average_number_of_pairwise_differences_between_populations(char_x, char_y, state_alphabet, ignore_uncertain)
-    s2_x = (float(sq_diff_x) / probability.binomial_coefficient(len(char_x), 2) ) - (d_x ** 2)
-    s2_y = (float(sq_diff_y) / probability.binomial_coefficient(len(char_y), 2) ) - (d_y ** 2)
-    s2_xy = _variance_of_pairwise_differences_between_populations(char_x, char_y, d_xy, state_alphabet, ignore_uncertain)
+        # Hickerson 2006: pi_b #
+        self.average_number_of_pairwise_differences_between = d_xy
 
-    n = len(char_matrix)
-    n_x = float(len(char_x))
-    n_y = float(len(char_y))
-    a = float(n * (n-1))
-    ax = float(n_x * (n_x - 1))
-    ay = float(n_y * (n_y - 1))
-    k = average_number_of_pairwise_differences(char_matrix, ignore_uncertain)
+        # Hickerson 2006: pi_w #
+        self.average_number_of_pairwise_differences_within = d_x + d_y
 
-    summary = {}
+        # Hickerson 2006: pi_net #
+        self.average_number_of_pairwise_differences_net = d_xy - (d_x + d_y)
 
-    # Hickerson 2006: pi #
-    summary["k"] = k
+        # Hickerson 2006: S #
+        self.num_segregating_sites = _num_segregating_sites(self.combined_seqs, self.state_alphabet, self.ignore_uncertain)
 
-    # Hickerson 2006: pi_b #
-    summary["k_b"] = d_xy
+        # Hickerson 2006: theta #
+        a1 = sum([1.0/i for i in range(1, n)])
+        self.wattersons_theta = float(self.num_segregating_sites) / a1
 
-    # Hickerson 2006: pi_w #
-    summary["k_w"] = d_x + d_y
+        # Wakeley 1996 #
+        self.wakeleys_psi = (float(1)/(a)) * ( ax * (math.sqrt(s2_x)/d_x) + ay * (math.sqrt(s2_y)/d_y) + (2 * n_x * n_y * math.sqrt(s2_xy)/k))
 
-    # Hickerson 2006: pi_net #
-    summary["k_net"] = d_xy - (d_x + d_y)
-
-    # Hickerson 2006: S #
-    summary["S"] = num_segregating_sites(char_matrix, ignore_uncertain)
-
-    # Hickerson 2006: theta #
-    a1 = sum([1.0/i for i in range(1, len(char_matrix))])
-    summary["theta"] = float(summary["S"]) / a1
-
-    # Wakeley 1996 #
-    summary["psi"] = (float(1)/(a)) * ( ax * (math.sqrt(s2_x)/d_x) + ay * (math.sqrt(s2_y)/d_y) + (2 * n_x * n_y * math.sqrt(s2_xy)/k))
-
-    # Tajima's D #
-    n = len(char_matrix)
-    a1 = sum([1.0/i for i in range(1,n)])
-    a2 = sum([1.0/(i**2) for i in range(1,n)])
-    b1 = float(n+1)/(3*(n-1))
-    b2 = float(2 * ( (n**2) + n + 3 )) / (9*n*(n-1))
-    c1 = b1 - 1.0/a1
-    c2 = b2 - float(n+2)/(a1 * n) + float(a2)/(a1 ** 2)
-    e1 = float(c1) / a1
-    e2 = float(c2) / ( (a1**2) + a2 )
-    S = summary["S"]
-    D = float(k - S) / math.sqrt( (e1 * S ) + (e2 * S) * (S -1) )
-    summary["D"] = D
-
-    return summary
+        # Tajima's D #
+        a1 = sum([1.0/i for i in range(1,n)])
+        a2 = sum([1.0/(i**2) for i in range(1,n)])
+        b1 = float(n+1)/(3*(n-1))
+        b2 = float(2 * ( (n**2) + n + 3 )) / (9*n*(n-1))
+        c1 = b1 - 1.0/a1
+        c2 = b2 - float(n+2)/(a1 * n) + float(a2)/(a1 ** 2)
+        e1 = float(c1) / a1
+        e2 = float(c2) / ( (a1**2) + a2 )
+        D = float(k - self.num_segregating_sites) / math.sqrt( (e1 * self.num_segregating_sites ) + (e2 * self.num_segregating_sites) * (self.num_segregating_sites - 1) )
+        self.tajimas_d = D
 
 def derived_state_matrix(char_vectors, ancestral_seq=None):
     """
