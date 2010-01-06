@@ -42,7 +42,7 @@ from dendropy.dataio import get_reader, get_writer, tree_source_iter, multi_tree
 ###############################################################################
 ## PACKAGE METADATA
 
-__version__ = "3.0.0"
+__version__ = "3.0.1"
 PACKAGE_NAME = "DendroPy"
 PACKAGE_VERSION = __version__
 PACKAGE_AUTHOR = "Jeet Sukumaran and Mark T. Holder"
