@@ -50,7 +50,7 @@ import platform
 #from dendropy.dataio import MultiFileTreeIterator
 
 import dendropy
-from dendropy import splitmask
+from dendropy import treesplit
 from dendropy import treesum
 from dendropy.dataio import tree_source_iter
 from dendropy.dataio import multi_tree_source_iter
@@ -336,7 +336,7 @@ def main_cli():
                                          write_progress=messenger.write,
                                          taxon_set=taxon_set,
                                          encode_splits=encode_splits)
-    split_distribution = splitmask.SplitDistribution()
+    split_distribution = treesplit.SplitDistribution()
     split_distribution.is_rooted = not opts.rooted_trees
     tsum.count_splits_on_trees(tree_source,
         split_distribution=split_distribution,
