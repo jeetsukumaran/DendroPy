@@ -511,7 +511,7 @@ Its constructor takes a |Tree| object as an argument, and the object return is c
 Probability Under the Coalescent and Counting of Deep Coalescences
 ------------------------------------------------------------------
 
-The :mod:`~dendropy.coalescent` modules provides a range of methods for simulations and calculations under Kingman's coalescent framework and related models:
+The :mod:`~dendropy.coalescent` module provides a range of methods for simulations and calculations under Kingman's coalescent framework and related models:
 
     :func:`~dendropy.coalescent.log_probability_of_coalescent_tree`
         Given a |Tree| object as the first argument, and the haploid population size as the second, returns the log probability of the |Tree| under the neutral coalescent.
