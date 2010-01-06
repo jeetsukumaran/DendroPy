@@ -24,73 +24,16 @@ DendroPy runs under any version of **Python 2.x greater than Python 2.4 up to, b
 Installation
 ============
 
-.. warning::
+If you have `setuptools <http://pypi.python.org/pypi/setuptools>`_ installed on your system, then you can install DendroPy from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_  by simply running the following command::
 
-    The latest version of DendroPy available from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_ is **2.x**, and **not** the **3.x** version discussed here.
+    $ sudo easy_install -U dendropy
 
-    Thus, until  the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_ version is updated, you **cannot** use ``easy_install`` to get DendroPy 3.x.
+Otherwise you will have to download the distribution archive from `the Python Package Index <http://pypi.python.org/pypi/DendroPy>`_, unpack it, and run the setup yourself::
 
-    To get DendroPy 3.x, you currently *have* to install it from the repository source.
+    $ tar -xvzf DendroPy-2.5.1.tar.gz
+    $ cd DendroPy-2.5.1
+    $ sudo python setup.py install
 
-    It is **highly** recommended that you clone the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_ to simplify keeping up-to-date with the latest release.
-
-#. If you do not already have it, get yourself |Git|_:
-    - `Source <http://www.kernel.org/pub/software/scm/git/git-1.6.6.tar.gz>`_
-    - `OS X binaries <http://code.google.com/p/git-osx-installer/downloads/list?can=3>`_
-    - Those of you unfortunates painfully suffering under the shoddy joke that is Microsoft Windows should first seriously consider getting yourself a `real operating system <http://distrowatch.com/>`_, failing which you can try to `make do <http://code.google.com/p/msysgit/downloads/list>`_.
-
-#. Clone the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_::
-
-    $ git clone git://github.com/jeetsukumaran/DendroPy.git
-
-#. Checkout the DendroPy 3.0 branch::
-
-    $ cd DendroPy
-    $ git checkout -b dendropy3a origin/dendropy3a
-
-#. Install DendroPy in development mode::
-
-    $ sudo python setup.py develop
-
-
-.. SNAPSHOT_RELEASE:
-
-    Installing the Latest Snapshot Release
-    --------------------------------------
-
-    .. warning::
-
-        Not recommended!
-
-    #. Download an archive of the latest snapshot here:
-
-        http://github.com/jeetsukumaran/DendroPy/tarball/master
-
-    - Unpack and install::
-
-        $ tar xvf jeetsukumaran-DendroPy-1594808.tar.gz
-        $ cd jeetsukumaran-DendroPy-1594808/
-        $ sudo python setup.py
-
-
-.. PYPI_RELEASE:
-
-    Public Release
-    --------------
-
-    The current public release of DendroPy is available from the Python Package Index:
-
-        |dendropy_download_url|
-
-    If you have `setuptools <http://pypi.python.org/pypi/setuptools>`_ installed on your system, then you can install DendroPy by simply running the following command::
-
-        $ sudo easy_install -U dendropy
-
-    Otherwise you will have to download the distribution archive from `the Python Package Index <http://pypi.python.org/pypi/DendroPy>`_, unpack it, and run the setup yourself::
-
-        $ tar -xvzf DendroPy-2.5.1.tar.gz
-        $ cd DendroPy-2.5.1
-        $ sudo python setup.py install
 
 Documentation
 ==============
@@ -123,9 +66,19 @@ Included Scripts
 
 Repository Access
 =================
-The DendroPy public-access |Git|_ repository can be cloned from:
+#. If you do not already have it, get yourself |Git|_:
+    - `Source <http://www.kernel.org/pub/software/scm/git/git-1.6.6.tar.gz>`_
+    - `OS X binaries <http://code.google.com/p/git-osx-installer/downloads/list?can=3>`_
+    - `Microsoft Windows <http://code.google.com/p/msysgit/downloads/list>`_.
 
-        |dendropy_public_repo_url|
+#. Clone the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_::
+
+    $ git clone git://github.com/jeetsukumaran/DendroPy.git
+
+#. Install DendroPy in development mode::
+
+    $ cd DendroPy
+    $ sudo python setup.py develop
 
 Citation
 =========
