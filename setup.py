@@ -50,7 +50,7 @@ else:
         install_requires = ['setuptools'],
         include_package_data=True,
         test_suite = "dendropy.test",
-        zip_safe=True,
+        zip_safe=False,
     )
 PACKAGE_DIRS = [p.replace(".", os.path.sep) for p in PACKAGES]
 PACKAGE_INFO = [("% 40s : %s" % p) for p in zip(PACKAGES, PACKAGE_DIRS)]
