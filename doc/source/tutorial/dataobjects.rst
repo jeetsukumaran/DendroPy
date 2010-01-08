@@ -379,7 +379,7 @@ will result in::
         [0] Taxon object at 0x2386770 (Taxon37250928): 'Python_regious'
         [1] Taxon object at 0x2386790 (Taxon37250960): 'Python_sebae'
 
-This may seem the simplest solution, in so far as it does not mean that you need not maintain lexically-different taxon labels across files of different formats, but a gotcha here is that if writing to NEXUS/NEWICK schema, any label with underscores will be automatically quoted to preserve the underscores (again, as dictated by the NEXUS standard), which will mean that: (a) your output file will have quotes, and, as a result, (b) the underscores in the labels will be "hard" underscores if the file is read by PAUP* or DendroPy. So, for example, continuing from the previous example, the NEXUS-formatted output would look like::
+This may seem the simplest solution, in so far as it means that you need not maintain lexically-different taxon labels across files of different formats, but a gotcha here is that if writing to NEXUS/NEWICK schema, any label with underscores will be automatically quoted to preserve the underscores (again, as dictated by the NEXUS standard), which will mean that: (a) your output file will have quotes, and, as a result, (b) the underscores in the labels will be "hard" underscores if the file is read by PAUP* or DendroPy. So, for example, continuing from the previous example, the NEXUS-formatted output would look like::
 
     >>> print(d.as_string('nexus'))
     #NEXUS
