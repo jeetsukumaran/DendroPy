@@ -57,7 +57,7 @@ def show_splash(prog_name,
     lines.append("%s - %s" % (prog_name, prog_subtitle))
     lines.append("%s" % prog_version)
     lines.append("By %s" % prog_author)
-    lines.append("(using the DendroPy Phylogenetic Computing Library Version %s)" % (dendropy.PACKAGE_VERSION))
+    lines.append("(using the DendroPy Phylogenetic Computing Library Version %s)" % (dendropy.PROJECT_VERSION))
     if extended:
         lines.append('')
         lines.extend(prog_copyright.split('\n'))

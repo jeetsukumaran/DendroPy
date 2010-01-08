@@ -43,11 +43,12 @@ from dendropy.dataio import get_reader, get_writer, tree_source_iter, multi_tree
 ## PACKAGE METADATA
 
 __version__ = "3.0.1"
-PACKAGE_NAME = "DendroPy"
-PACKAGE_VERSION = __version__
-PACKAGE_AUTHOR = "Jeet Sukumaran and Mark T. Holder"
-PACKAGE_COPYRIGHT = "Copyright 2009 Jeet Sukumaran and Mark T. Holder."
-PACKAGE_LICENSE = """
+PROJECT_NAME = "DendroPy"
+PROJECT_VERSION = __version__
+PACKAGE_VERSION = PROJECT_VERSION # for backwards compatibility (with sate)
+PROJECT_AUTHOR = "Jeet Sukumaran and Mark T. Holder"
+PROJECT_COPYRIGHT = "Copyright 2009 Jeet Sukumaran and Mark T. Holder."
+PROJECT_LICENSE = """
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 3 of the License, or
@@ -68,4 +69,4 @@ DENDROPY_BRANCH = utility.get_current_git_branch(os.path.dirname(__file__))
 DENDROPY_TAG = utility.get_current_git_tag(os.path.dirname(__file__))
 
 if __name__ == "__main__":
-    sys.stdout.write("%s %s\n" % (PACKAGE_NAME, PACKAGE_VERSION))
+    sys.stdout.write("%s %s\n" % (PROJECT_NAME, PROJECT_VERSION))
