@@ -26,6 +26,7 @@ classes and methods for instantiating objects in the
 `dendropy.dataobject` subpackage to for usage by client code.
 """
 
+import sys
 import os
 from dendropy import utility
 from dendropy.dataobject.base import *
