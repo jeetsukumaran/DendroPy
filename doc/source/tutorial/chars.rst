@@ -50,7 +50,7 @@ Customizing Character Matrix Creation and Reading
 Using a Specific |TaxonSet|
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Passing a |TaxonSet| object using the ``taxon_set`` argument when using the meth:`get_from_*()` or :meth:`read_from_*()` methods results in the |CharacterMatrix| object being bound to the specified |TaxonSet| object.
+Passing a |TaxonSet| object using the ``taxon_set`` argument when using the :meth:`get_from_*()` or :meth:`read_from_*()` methods results in the |CharacterMatrix| object being bound to the specified |TaxonSet| object.
 
 Custom Handling of Underscores
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -168,12 +168,12 @@ Once instantiated, the following attributes of the :class:`~dendropy.popgenstat.
             Tajima's D.
 
 The following example calculates the suite of population genetic summary statistics for sequences drawn from two populations of sticklebacks.
-The original data consists of 23 sequences, with individuals from Eastern Pacific populations identified by their taxon labels beginning with "``EPAC``" and individuals from Western Pacific populations identified by their taxon labels beginning with "`WPAC`".
+The original data consists of 23 sequences, with individuals from Eastern Pacific populations identified by their taxon labels beginning with "``EPAC``" and individuals from Western Pacific populations identified by their taxon labels beginning with "``WPAC``".
 The taxon labels thus are used as the basis for sorting the sequences into the required lists of |CharacterDataVector| objects, ``p1`` and ``p2``.
 
 .. literalinclude:: /examples/pgstats1.py
     :linenos:
 
 Lines 6-12 build up the two lists of |CharacterDataVector| objects by sorting the original sequences into their source populations based on the taxon label (with operational taxonomic units with labels beginning with "``EPAC``" coming from the Eastern Pacific, and assigned to the list ``p1``, while those that begin with "``WPAC``" coming from the Western Pacific, and assigned to the list ``p2``).
-These lists are then passed as the instantiation arguments to the :class:`~dendropy.popgenstat.PopulationPairSummaryStatistics` constructor in line 13.
+These lists are then passed as the instantiation arguments to the :class:`~dendropy.popgenstat.PopulationPairSummaryStatistics` constructor in line 14.
 The calculations are performed immediately, and the results reported in the following lines.

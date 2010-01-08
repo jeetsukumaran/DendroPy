@@ -35,7 +35,7 @@ All of the above names are imported into the the the :mod:`dendropy` namespace, 
     >>> import dendropy
     >>> tree1 = dendropy.Tree()
     >>> tree_list11 = dendropy.TreeList()
-    >>> dna1 = = dendropy.DnaCharacterMatrix()
+    >>> dna1 = dendropy.DnaCharacterMatrix()
     >>> dataset1 = dendropy.DataSet()
 
 Or import the names directly::
@@ -43,7 +43,7 @@ Or import the names directly::
     >>> from dendropy import Tree, TreeList, DnaCharacterMatrix, DataSet
     >>> tree1 = Tree()
     >>> tree_list1 = TreeList()
-    >>> dna1 = = DnaCharacterMatrix()
+    >>> dna1 = DnaCharacterMatrix()
     >>> dataset1 = DataSet()
 
 Creating and Populating New Objects
@@ -58,7 +58,7 @@ The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all sup
         Takes a string specifying the path to the the data source file as the first argument, and a string specifying the schema as the second.
 
     - :meth:`get_from_string(src, schema, **kwargs)`
-        Takes a string specifying containing the source data as the first argument, and a string specifying the schema as the second.
+        Takes a string containing the source data as the first argument, and a string specifying the schema as the second.
 
 All these methods minimally take a source and schema reference as arguments and return a new object of the given type populated from the given source::
 
@@ -100,7 +100,7 @@ The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all sup
 When called on an existing |TreeList| or |DataSet| object, these methods *add* the data from the data source to the object, whereas when called on an existing |Tree| or |CharacterMatrix| object,  they *replace* the object's data with data from the data source.
 As with the ":meth:`get_from_*()`" methods, the schema specification can be any supported and type-apppropriate schema, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc.
 
-For example, the following accumulates post-burn-in trees from a several different files into a single |TreeList| object (the ``tree_offset`` keyword is discussed `here <Customizing_Tree_Creation_and_Reading>`_)::
+For example, the following accumulates post-burn-in trees from several different files into a single |TreeList| object (the ``tree_offset`` keyword is discussed `here <Customizing_Tree_Creation_and_Reading>`_)::
 
     >>> import dendropy
     >>> post_trees = dendropy.TreeList()
@@ -117,9 +117,9 @@ For example, the following accumulates post-burn-in trees from a several differe
     >>> print(post_trees.description())
     TreeList object at 0x5508a0 (TreeList5572768): 3204 Trees
 
-The |TreeList| objects automatically handles taxon management, and ensures that all appended |Tree| objects share the same |TaxonSet| reference. Thus all the |Tree| objects created and aggregated from the data sources in the example will all share the same |TaxonSet| and |Taxon| objects, which is important if you are going to be carrying comparisons or operations between multiple |Tree| objects.
+The |TreeList| object automatically handles taxon management, and ensures that all appended |Tree| objects share the same |TaxonSet| reference. Thus all the |Tree| objects created and aggregated from the data sources in the example will all share the same |TaxonSet| and |Taxon| objects, which is important if you are going to be carrying comparisons or operations between multiple |Tree| objects.
 
-In contrast to the aggregating behavior of :meth:`read_from_*()` of |TreeList| and |DataSet| objects, the :meth:`read_from_*()` methods of |Tree| and |CharacterMatrix|-derived objects show replacement behavior. For example, the following changes the contents of a |Tree| by re-reading it::
+In contrast to the aggregating behavior of :meth:`read_from_*()` of |TreeList| and |DataSet| objects, the :meth:`read_from_*()` methods of |Tree|- and |CharacterMatrix|-derived objects show replacement behavior. For example, the following changes the contents of a |Tree| by re-reading it::
 
     >>> import dendropy
     >>> t = dendropy.Tree()
@@ -309,7 +309,7 @@ Every time a reference to a taxon is encountered in a data source, such as a tax
 
 DendroPy maps taxon definitions encountered in a data source to |Taxon| objects by the taxon label.
 The labels have to match **exactly** for the taxa to be correctly mapped, with the match being **case-sensitive**.
-Thus, "Python regius", "PYTHON REGIUS", "python regious", "P. regious", etc. will all be considered as referring to distinct and different taxa.
+Thus, "Python regius", "PYTHON REGIUS", "python regious", "P. regius", etc. will all be considered as referring to distinct and different taxa.
 
 Further quirks may arise due to some schema-specific idiosyncracies.
 For example, the NEXUS standard dictates that an underscore ("_") should be substituted for a space in all labels.

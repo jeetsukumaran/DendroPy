@@ -8,7 +8,7 @@ Trees and Tree Lists
 Trees
 -----
 
-Trees in are represented by the class |Tree|.
+Trees in DendroPy are represented by the class |Tree|.
 Every |Tree| object has a :attr:`~dendropy.dataobject.tree.Tree.seed_node` attribute. If the tree is rooted, then this is the root node. If the tree is not rooted, however, then this is an artificial node that serves as the "starting point" for the tree.
 The :attr:`~dendropy.dataobject.tree.Tree.seed_node`, like every other node on the tree, is a |Node| object.
 Every |Node| object maintains a list of its immediate child |Node| objects as well as a reference to its parent |Node| object.
@@ -82,7 +82,7 @@ Customizing |Tree| and |TreeList| Creation and Reading
 Using a Specific |TaxonSet|
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Passing a |TaxonSet| object using the ``taxon_set`` argument when instantiating a |Tree| or |TreeList| object (using, for example, the meth:`get_from_*()` or :meth:`read_from_*()` methods) results in the |Tree| or |TreeList| object being bound to the specified |TaxonSet| object.
+Passing a |TaxonSet| object using the ``taxon_set`` argument when instantiating a |Tree| or |TreeList| object (using, for example, the :meth:`get_from_*()` or :meth:`read_from_*()` methods) results in the |Tree| or |TreeList| object being bound to the specified |TaxonSet| object.
 
 Selecting Specific Trees or Subsets of Trees
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -536,9 +536,9 @@ The following example aggregates the post-burn-in trees from four MCMC samples i
 Frequency of a Split in a Collection of Trees
 ---------------------------------------------
 
-The :meth:`~dendropy.dataobject.tree.TreeList.frequency_of_split()` method of a |TreeList| object returns the frequency of a single split across all the |Tree| objects in the |TreeList|.
+The :meth:`~dendropy.dataobject.tree.TreeList.frequency_of_split()` method of a |TreeList| object returns the frequency of occurrence of a single split across all the |Tree| objects in the |TreeList|.
 The split can be specified by passing a split bitmask directly using the ``split_bitmask`` keyword argument, as a list of |Taxon| objects using the ``taxa`` keyword argument, or as a list of taxon labels using the ``labels`` keyword argument.
-The following example shows how to calculate the frequency of a split defined by two taxa, "Morelia amethistina" and "Morelia tracyae", from the post-burn-in trees aggregated across for MCMC samples:
+The following example shows how to calculate the frequency of a split defined by two taxa, "Morelia amethistina" and "Morelia tracyae", from the post-burn-in trees aggregated across four MCMC samples:
 
 .. literalinclude:: /examples/splitfreq.py
     :linenos:
