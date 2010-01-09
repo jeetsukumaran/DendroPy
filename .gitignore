@@ -1,6 +1,5 @@
 *.pyc
 *.kpf
-setup.cfg
 DendroPy.egg-info*
 .svn*
 .DS_Store*
