@@ -35,8 +35,6 @@ from dendropy import treesplit
 from dendropy import dataobject
 from dendropy import treecalc
 from dendropy import treesim
-from dendropy.utility import messaging
-_LOG = messaging.get_logger(__name__)
 
 # the following imports are for the strict consensus merger
 _IS_DEBUG_LOGGING = _LOG.isEnabledFor(logging.DEBUG)
