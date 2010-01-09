@@ -1243,16 +1243,19 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         nd_id_to_dot_nd = {}
         for n, nd in enumerate(self.preorder_node_iter()):
             label = format_node(nd, **kwargs)
+            if nd is self.seed_node:
+                label = "root %s" % label
             dot_nd = "n%d" % n
             out.write(' %s  [label="%s"];\n' % (dot_nd, label))
             nd_id_to_dot_nd[nd] = dot_nd
         for nd, dot_nd in nd_id_to_dot_nd.iteritems():
             try:
-                par_dot_nd = nd_id_to_dot_nd[nd.edge.tail_node]
+                e = nd.edge
+                par_dot_nd = nd_id_to_dot_nd[e.tail_node]
             except:
                 pass
             else:
-                out.write(' %s -> %s;\n' % (par_dot_nd, dot_nd))
+                out.write(' %s -> %s [label="%s"];\n' % (par_dot_nd, dot_nd, str(e)))
         out.write("}\n")
         
     def debug_check_tree(self, logger_obj=None, **kwargs):
