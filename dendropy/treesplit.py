@@ -155,19 +155,21 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
         return
 
     if delete_outdegree_one:
+        sn = tree.seed_node
         if not tree.is_rooted:
-            if len(tree.seed_node.child_nodes()) == 2:
+            if len(sn.child_nodes()) == 2:
                 tree.deroot()
-        while len(tree.seed_node.child_nodes()) == 1:
-            c = tree.seed_node.child_nodes()[0]
+        while len(sn.child_nodes()) == 1:
+            c = sn.child_nodes()[0]
             if len(c.child_nodes()) == 0:
                 break
             try:
-                c.edge.length += tree.seed_node.edge.length
+                sn.edge.length += c.edge.length
             except:
                 pass
-            tree.seed_node = c
-            c.parent_node = None
+            sn.remove_child(c)
+            for gc in c.child_nodes():
+                sn.add_child(gc)
                 
     for edge in tree.postorder_edge_iter():
         cm = 0
@@ -175,7 +177,7 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
         child_nodes = h.child_nodes()
         nc = len(child_nodes)
         if nc > 0:
-            if nc == 1 and delete_outdegree_one:
+            if nc == 1 and delete_outdegree_one and edge.tail_node:
                 p = edge.tail_node
                 assert(p)
                 c = child_nodes[0]
