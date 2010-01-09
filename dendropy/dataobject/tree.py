@@ -840,7 +840,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             raise ValueError("Null split bitmask (0)")
 
         if not hasattr(start_node.edge, "split_bitmask"):
-            treesplit.encode_splits(self, delete_degree_two=False)
+            treesplit.encode_splits(self, delete_outdegree_one=False)
 
         if (start_node.edge.split_bitmask & split_bitmask) != split_bitmask:
             return None

@@ -118,7 +118,7 @@ def find_edge_from_split(root, split_to_find, mask=-1):
             return r
     return None
 
-def encode_splits(tree, create_dict=True, delete_degree_two=True):
+def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
     """
     Processes splits on a tree, encoding them as bitmask on each edge.
     Adds the following to each edge:
@@ -134,8 +134,8 @@ def encode_splits(tree, create_dict=True, delete_degree_two=True):
             are edges. A normalized split_mask is where the split_bitmask
             is complemented if the right-most bit is not '1' (or just
             the split_bitmask otherwise).
-    If `delete_degree_two` is True then degree 2 nodes (outdegree one in the
-        rooted case) will be deleted as they are encountered (this is required
+    If `delete_outdegree_one` is True then nodes with one 
+        will be deleted as they are encountered (this is required
         if the split_edges dictionary is to refer to all edges in the tree).
         Note this will mean that an unrooted tree like '(A,(B,C))' will
         be changed to '(A,B,C)' after this operation!
@@ -151,29 +151,41 @@ def encode_splits(tree, create_dict=True, delete_degree_two=True):
             d = containers.NormalizedBitmaskDict(mask=atb)
             tree.split_edges = d
         split_map = tree.split_edges
-    if delete_degree_two and not tree.is_rooted:
-        c = tree.seed_node.child_nodes()
-        if len(c) == 2:
-            tree.deroot()
+    if not tree.seed_node:
+        return
+
+    if delete_outdegree_one:
+        if not tree.is_rooted:
+            if len(tree.seed_node.child_nodes()) == 2:
+                tree.deroot()
+        while len(tree.seed_node.child_nodes()) == 1:
+            c = tree.seed_node.child_nodes()[0]
+            if len(c.child_nodes()) == 0:
+                break
+            try:
+                c.edge.length += tree.seed_node.edge.length
+            except:
+                pass
+            tree.seed_node = c
+            c.parent_node = None
+                
     for edge in tree.postorder_edge_iter():
         cm = 0
         h = edge.head_node
         child_nodes = h.child_nodes()
         nc = len(child_nodes)
         if nc > 0:
-            if nc == 1 and delete_degree_two:
+            if nc == 1 and delete_outdegree_one:
                 p = edge.tail_node
+                assert(p)
                 c = child_nodes[0]
                 try:
                     c.edge.length += edge.length
                 except:
                     pass
-                if p is not None:
-                    pos = p.child_nodes().index(h)
-                    p.add_child(c, pos=pos)
-                    p.remove_child(h)
-                else:
-                    assert h is tree.seed_node
+                pos = p.child_nodes().index(h)
+                p.add_child(c, pos=pos)
+                p.remove_child(h)
             else:
                 for child in child_nodes:
                     cm |= child.edge.split_bitmask
