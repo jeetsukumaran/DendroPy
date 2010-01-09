@@ -1234,7 +1234,27 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if not kwargs.get("taxon_set"):
                 kwargs["taxon_set"] = self.taxon_set
         self.seed_node.write_indented_form(out, **kwargs)
+    def write_as_dot(self, out, **kwargs):
+        """Writes the tree to `out` as a DOT formatted digraph"""
+        if not kwargs.get("taxon_set"):
+            kwargs["taxon_set"] = self.taxon_set
+        out.write("digraph G {\n")
 
+        nd_id_to_dot_nd = {}
+        for n, nd in enumerate(self.preorder_node_iter()):
+            label = format_node(nd, **kwargs)
+            dot_nd = "n%d" % n
+            out.write(' %s  [label="%s"];\n' % (dot_nd, label))
+            nd_id_to_dot_nd[nd] = dot_nd
+        for nd, dot_nd in nd_id_to_dot_nd.iteritems():
+            try:
+                par_dot_nd = nd_id_to_dot_nd[nd.edge.tail_node]
+            except:
+                pass
+            else:
+                out.write(' %s -> %s;\n' % (par_dot_nd, dot_nd))
+        out.write("}\n")
+        
     def debug_check_tree(self, logger_obj=None, **kwargs):
         import logging, inspect
         if logger_obj and logger_obj.isEnabledFor(logging.DEBUG):
