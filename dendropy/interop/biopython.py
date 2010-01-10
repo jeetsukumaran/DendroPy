@@ -44,16 +44,14 @@ else:
         Returns `o` as an biopython object.
         """
         if isinstance(o, dendropy.CharacterMatrix):
-            if len(o.state_alphabets) > 1:
-                raise ValueError('Multi-alphabet matrices not supported in Biopython')
-            sa = o.state_alphabets[0]
-            if isinstance(sa, dendropy.DnaCharacterMatrix):
+            if isinstance(o, dendropy.DnaCharacterMatrix):
                 bpa = generic_dna
-            elif isinstance(sa, dendropy.RnaCharacterMatrix):
+            elif isinstance(o, dendropy.RnaCharacterMatrix):
                 bpa = generic_rna
-            elif isinstance(sa, dendropy.ProteinCharacterMatrix):
+            elif isinstance(o, dendropy.ProteinCharacterMatrix):
                 bpa = generic_protein
             else:
-                raise ValueError("Character data type not supported in Biopython: '%s'" % type(sa))
+                raise ValueError("Character data type not supported in Biopython: '%s'" % type(o))
         else:
             raise ValueError("Invalid object type for conversion to Biopython: '%s'" % type(o))
+
