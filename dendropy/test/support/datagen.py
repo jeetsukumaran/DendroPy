@@ -1980,14 +1980,14 @@ def reference_dna_matrix(taxon_set=None):
         dna[t] = sa.get_states_as_vector(symbols=dna_dict[t.label])
     return dna
 
-def reference_continous_matrix(taxon_set=None):
+def reference_continuous_matrix(taxon_set=None):
     if taxon_set is None:
         taxon_set = reference_taxon_set()
     cvals = dendropy.ContinuousCharacterMatrix(taxon_set=taxon_set)
     assert len(cvals.taxon_set) == 29
     val_dict = reference_continuous_dict()
-    for t in cval.taxon_set:
-        cvals[t] = dendropy.CharacterDataVector([dendropy.CharacterDataCell(value=v) for v in val_dict[t]])
+    for t in cvals.taxon_set:
+        cvals[t] = dendropy.CharacterDataVector([dendropy.CharacterDataCell(value=v) for v in val_dict[t.label]])
 
 def _get_standard_state_alphabet(symbols):
     sa = dendropy.StateAlphabet()
