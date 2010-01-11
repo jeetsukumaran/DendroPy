@@ -1,11 +1,12 @@
 Introduction
 ============
 
-DendroPy is a Python library for phylogenetic scripting, simulation, data processing and data manipulation, with its main home page here:
+DendroPy is a Python library for phylogenetic scripting, simulation, data processing and data manipulation, with its primary home page at:
 
     http://packages.python.org/DendroPy/
 
 DendroPy provides classes and functions for working with phylogenetic data such as trees and character matrices, and supports reading and writing of the data in a range of standard phylogenetic data formats, such as NEXUS, NEWICK, NeXML, Phylip, FASTA, etc.
+
 In addition, scripts for performing some useful phylogenetic computations are distributed as part of the libary, such as SumTrees, which summarizes the support for splits or clades given by a posterior sample of phylogenetic trees.
 
 Requirements and Installation
@@ -48,7 +49,7 @@ The DendroPy source code is version-controlled using `Git <http://git-scm.com/>`
 Copyright, License and Warranty
 ===============================
 
-(C) 2009 Jeet Sukumaran and Mark T. Holder.
+Copyright 2009 Jeet Sukumaran and Mark T. Holder.
 
 The code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
