@@ -45,3 +45,10 @@ Source Code Repository
 The DendroPy source code is version-controlled using `Git <http://git-scm.com/>`_, and the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_ can be cloned by running::
 
     $ git clone git://github.com/jeetsukumaran/DendroPy.git
+
+More Information
+=================
+More information, including documentation, tutorials, citation, license, etc. can be found in the `DendroPy home page <http://packages.python.org/DendroPy/>`_:
+
+    http://packages.python.org/DendroPy/
+
