@@ -4,12 +4,3 @@ To install the DendroPy library from the source distribution, end-users can run:
 
     $ python setup.py install
 
-As mentioned above, this currently only works under Python 2.5. You can also manually install the library by one of the following:
-
-    * Add the current location of the ``dendropy`` subdirectory to your Python path environmental variable, ``$PYTHONPATH``
-    
-    * Copy (or symlink) the ``dendropy`` directory to the ``site-packages`` directory of your Python installation
-    
-You might also want to place the scripts in the ``scripts/`` subdirectory on your system path.
-
-Note: If you install the Nexus Class Library version 2.2 compiled with the --with-swig-python option passed to configure, then dendropy can use NCL to parse files. This improves the speed of the parse and will handle some exotic NEXUS syntaxes that are not supported by dendropy's pure-python parser.
