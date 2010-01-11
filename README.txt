@@ -41,7 +41,7 @@ While the API reference can be found here:
 Source Code Repository
 ======================
 
-The DendroPy source code is version-controlled using `Git <http://git-scm.com/>`_, and the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_ can be cloned by running:
+The DendroPy source code is version-controlled using `Git <http://git-scm.com/>`_, and the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_ can be cloned by running::
 
     $ git clone git://github.com/jeetsukumaran/DendroPy.git
 
