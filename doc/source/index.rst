@@ -14,26 +14,30 @@ Introduction
 ============
 
 DendroPy is a |Python|_ library for phylogenetic scripting, simulation, data processing and manipulation by |js|_ and |mth|_.
+DendroPy provides classes and functions for working with phylogenetic data such as trees and character matrices, and supports reading and writing of the data in a range of standard phylogenetic data formats, such as NEXUS, NEWICK, NeXML, Phylip, FASTA, etc.
+In addition, scripts for performing some useful phylogenetic computations are distributed as part of the libary, such as SumTrees, which summarizes the support for splits or clades given by a posterior sample of phylogenetic trees.
 
 Prerequisites
 =============
 
 DendroPy runs under any version of **Python 2.x greater than Python 2.4 up to, but not including, Python 3.0**.
 
-
 Installation
 ============
 
-If you have `setuptools <http://pypi.python.org/pypi/setuptools>`_ installed on your system, then you can install DendroPy from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_  by simply running the following command::
+If you have `setuptools <http://pypi.python.org/pypi/setuptools>`_ installed, you can install the latest release of DendroPy directly from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_ by running::
 
     $ sudo easy_install -U dendropy
 
-Otherwise you will have to download the distribution archive from `the Python Package Index <http://pypi.python.org/pypi/DendroPy>`_, unpack it, and run the setup yourself::
+Alternatively, if you have `pip <http://pypi.python.org/pypi/pip>`_ installed, you can run::
+
+    $ sudo pip install dendropy
+
+If you have downloaded the source code distribution archive from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_, you can unarchive it and install it from the local source by running::
 
     $ tar -xvzf DendroPy-3.0.0.tar.gz
     $ cd DendroPy-3.0.0
     $ sudo python setup.py install
-
 
 Documentation
 ==============
