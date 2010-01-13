@@ -64,13 +64,15 @@ def birth_death(birth_rate, death_rate, **kwargs):
     using the keyword `tree`: if given, then this tree will be used; otherwise
     a new one will be created.
 
-    If `taxon_set` is given (`tree.taxon_set`, if `tree` is given), and the
-    final number of tips on the tree after the termination condition is reached is
-    less then the number of taxa in `taxon_set` (as will be the case, for example,
-    when `ntax` < len(`taxon_set`)), then a random subset of taxa in `taxon_set`
-    will be assigned to the tips of tree. If the number of tips is more than the
-    number of taxa in the `taxon_set`, new Taxon objects will be created and added to
-    the `taxon_set`.
+    If `assign_taxa` is False, then taxa will *not* be assigned to the tips;
+    otherwise (default), taxa will be assigned. If `taxon_set` is given
+    (`tree.taxon_set`, if `tree` is given), and the final number of tips on the
+    tree after the termination condition is reached is less then the number of
+    taxa in `taxon_set` (as will be the case, for example, when
+    `ntax` < len(`taxon_set`)), then a random subset of taxa in `taxon_set` will
+    be assigned to the tips of tree. If the number of tips is more than the number
+    of taxa in the `taxon_set`, new Taxon objects will be created and added
+    to the `taxon_set`.
 
     In addition, a Random() object or equivalent can be passed using the `rng` keyword;
     otherwise GLOBAL_RNG is used.
@@ -130,22 +132,8 @@ def birth_death(birth_rate, death_rate, **kwargs):
     for nd in tree.leaf_nodes():
         nd.edge.length += gens_to_add
 
-    # assign taxa
-    if len(tree.taxon_set) == 0:
-        for i, nd in enumerate(tree.leaf_nodes()):
-            nd.taxon = tree.taxon_set.require_taxon(label=("T%d" % (i+1)))
-    else:
-        taxa = [t for t in tree.taxon_set]
-        for i, nd in enumerate(tree.leaf_nodes()):
-            if len(taxa) > 0:
-                nd.taxon = taxa.pop(rng.randint(0, len(taxa)-1))
-            else:
-                label = "T%d" % (i+1)
-                k = 0
-                while tree.taxon_set.has_taxon(label=label):
-                    label = "T%d" % (i+1+k)
-                    k += 1
-                nd.taxon = tree.taxon_set.require_taxon(label=label)
+    if kwargs.get("assign_taxa", True):
+        tree.randomly_assign_taxa(add_extra_taxa=True, rng=rng)
 
     # return
     return tree
