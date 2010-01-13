@@ -32,6 +32,7 @@ import re
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
+from dendropy.utility import GLOBAL_RNG
 from dendropy.utility import iosys
 from dendropy.utility import error
 from dendropy.utility import texttools
@@ -783,6 +784,52 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if t:
                 node.taxon = self.taxon_set.require_taxon(label=t.label)
 
+    def unassign_taxa(self, exclude_leaves=False, exclude_internal=False):
+        """
+        Strips taxon assignments from tree. If `exclude_leaves` is True,
+        then taxa on leaves will be retained. If `exclude_internal` is True,
+        then taxa on internal nodes will be retained. The `taxon_set` is not
+        affected by this operation.
+        """
+        for nd in self.postorder_node_iter():
+            if (len(nd._child_nodes) == 0) and not exclude_leaves:
+                nd.taxon = None
+            elif (len(nd._child_nodes) > 0) and not exclude_internal:
+                nd.taxon = None
+
+    def randomly_assign_taxa(self, add_extra_taxa=True, rng=None):
+        """
+        Randomly assigns taxa to leaf nodes. If the number of taxa defined in
+        the taxon set of the tree is more than the number of tips, then a random
+        subset of taxa in `taxon_set` will be assigned to the tips of tree.
+        If the number of tips is more than the number of taxa in the `taxon_set`,
+        and `add_extra_taxa` is not True [default], then new Taxon
+        objects will be created and added to the `taxon_set`; if `add_extra_taxa`
+        is False, then an exception is raised.
+
+        In addition, a Random() object or equivalent can be passed using `rng`;
+        otherwise GLOBAL_RNG is used.
+        """
+        if rng is None:
+            rng = GLOBAL_RNG
+        if len(self.taxon_set) == 0:
+            for i, nd in enumerate(self.leaf_nodes()):
+                nd.taxon = self.taxon_set.require_taxon(label=("T%d" % (i+1)))
+        else:
+            taxa = [t for t in self.taxon_set]
+            for i, nd in enumerate(self.leaf_nodes()):
+                if len(taxa) > 0:
+                    nd.taxon = taxa.pop(rng.randint(0, len(taxa)-1))
+                else:
+                    if not add_extra_taxa:
+                        raise ValueError("TaxonSet has %d taxa, but tree has %d tips" % (len(self.taxon_set), len(self.leaf_nodes())))
+                    label = "T%d" % (i+1)
+                    k = 0
+                    while self.taxon_set.has_taxon(label=label):
+                        label = "T%d" % (i+1+k)
+                        k += 1
+                    nd.taxon = self.taxon_set.require_taxon(label=label)
+
     ###########################################################################
     ## Structure
 
@@ -1257,7 +1304,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             else:
                 out.write(' %s -> %s [label="%s"];\n' % (par_dot_nd, dot_nd, str(e)))
         out.write("}\n")
-        
+
     def debug_check_tree(self, logger_obj=None, **kwargs):
         import logging, inspect
         if logger_obj and logger_obj.isEnabledFor(logging.DEBUG):
