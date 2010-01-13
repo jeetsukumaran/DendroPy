@@ -40,7 +40,7 @@ def star_tree(taxon_set):
         star_tree.seed_node.new_child(taxon=taxon)
     return star_tree
 
-def birth_death(birth_rate, death_rate, **kwargs):
+def uniform_birth_death(birth_rate, death_rate, **kwargs):
     """
     Returns a birth-death tree with birth rate specified by `birth_rate`, and
     death rate specified by `death_rate`.
