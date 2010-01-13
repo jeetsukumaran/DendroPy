@@ -72,7 +72,8 @@ def uniform_birth_death(birth_rate, death_rate, **kwargs):
     `ntax` < len(`taxon_set`)), then a random subset of taxa in `taxon_set` will
     be assigned to the tips of tree. If the number of tips is more than the number
     of taxa in the `taxon_set`, new Taxon objects will be created and added
-    to the `taxon_set`.
+    to the `taxon_set` if the keyword argument `create_required_taxa` is not given as
+    False.
 
     In addition, a Random() object or equivalent can be passed using the `rng` keyword;
     otherwise GLOBAL_RNG is used.
@@ -133,7 +134,7 @@ def uniform_birth_death(birth_rate, death_rate, **kwargs):
         nd.edge.length += gens_to_add
 
     if kwargs.get("assign_taxa", True):
-        tree.randomly_assign_taxa(add_extra_taxa=True, rng=rng)
+        tree.randomly_assign_taxa(create_required_taxa=True, rng=rng)
 
     # return
     return tree
