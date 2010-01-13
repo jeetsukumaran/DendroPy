@@ -105,16 +105,15 @@ def birth_death(birth_rate, death_rate, **kwargs):
             and (target_num_gens is None or num_gens < target_num_gens):
         for nd in leaf_nodes:
             nd.edge.length += 1
-        u = rng.uniform(0, 1)
-        if u < birth_rate:
-            nd = rng.choice(leaf_nodes)
-            c1 = nd.new_child()
-            c2 = nd.new_child()
-            c1.edge.length = 0
-            c2.edge.length = 0
-        elif u > birth_rate and u < (birth_rate + death_rate):
-            nd = rng.choice(leaf_nodes)
-            treemanip.prune_subtree(nd)
+            u = rng.uniform(0, 1)
+            if u < birth_rate:
+                c1 = nd.new_child()
+                c2 = nd.new_child()
+                c1.edge.length = 0
+                c2.edge.length = 0
+            elif u > birth_rate and u < (birth_rate + death_rate):
+                nd = rng.choice(leaf_nodes)
+                treemanip.prune_subtree(nd)
         num_gens += 1
         leaf_nodes = tree.leaf_nodes()
 
@@ -122,13 +121,14 @@ def birth_death(birth_rate, death_rate, **kwargs):
     # split will have a daughter edges of length == 0;
     # so we continue growing the edges until the next birth/death event *or*
     # the max number of generations condition is given and met
+    gens_to_add = 0
     while (target_num_gens is None or num_gens < target_num_gens):
         u = rng.uniform(0, 1)
         if u < (birth_rate + death_rate):
             break
-        for nd in tree.leaf_nodes():
-            nd.edge.length += 1
-        num_gens += 1
+        gens_to_add += 1
+    for nd in tree.leaf_nodes():
+        nd.edge.length += gens_to_add
 
     # assign taxa
     if len(tree.taxon_set) == 0:
