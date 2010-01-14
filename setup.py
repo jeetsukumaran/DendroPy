@@ -27,6 +27,9 @@ Package setup and installation.
 import sys
 import os
 
+###############################################################################
+# setuptools/distutils/etc. import and configuration
+
 try:
     import ez_setup
     sys.stderr.write("using ez_setup ('%s')\n" % os.path.abspath(ez_setup.__file__))
@@ -37,6 +40,7 @@ try:
 except ImportError, e:
     sys.stderr.write("using distutils\n")
     from distutils.core import setup
+    sys.stderr.write("using canned package list\n")
     PACKAGES = ['dendropy',
                 'dendropy.dataio',
                 'dendropy.dataobject',
@@ -45,6 +49,7 @@ except ImportError, e:
                 'dendropy.utility']
     EXTRA_KWARGS = {}
 else:
+    sys.stderr.write("searching for packages\n")
     PACKAGES = find_packages()
     EXTRA_KWARGS = dict(
         install_requires = ['setuptools'],
@@ -56,7 +61,8 @@ PACKAGE_DIRS = [p.replace(".", os.path.sep) for p in PACKAGES]
 PACKAGE_INFO = [("% 40s : %s" % p) for p in zip(PACKAGES, PACKAGE_DIRS)]
 sys.stderr.write("packages identified:\n%s\n" % ("\n".join(PACKAGE_INFO)))
 
-from dendropy import PACKAGE_VERSION
+###############################################################################
+# Script paths
 
 SCRIPT_SUBPATHS = [
     ['scripts', 'sumtrees', 'sumtrees.py'],
@@ -65,10 +71,16 @@ SCRIPT_SUBPATHS = [
     ['scripts', 'calculators', 'long_branch_symmdiff.py'],
 ]
 SCRIPTS = [os.path.join(*i) for i in SCRIPT_SUBPATHS]
-sys.stderr.write("\nscripts: %s\n" % ", ".join(SCRIPTS))
+sys.stderr.write("\nscripts identified: %s\n" % ", ".join(SCRIPTS))
+
+
+###############################################################################
+# Main setup
+
+from dendropy import PROJECT_VERSION
 
 setup(name='DendroPy',
-      version=PACKAGE_VERSION,
+      version=PROJECT_VERSION,
       author='Jeet Sukumaran and Mark T. Holder',
       author_email='jeet@ku.edu and mtholder@ku.edu',
       url='http://packages.python.org/DendroPy/',
