@@ -543,15 +543,17 @@ The following example shows how to calculate the frequency of a split defined by
 .. literalinclude:: /examples/splitfreq.py
     :linenos:
 
-.. SCRATCH
-    Each |Tree| object has an attribute, :attr:`~dendropy.dataobject.tree.Tree.taxon_set`, which is a ``TaxaBlock`` object, and manages all the |Taxon| objects associated with the tree.
-    The ``TaxaBlock`` object referenced by a |Tree| object's :attr:`~dendropy.dataobject.tree.Tree.taxon_set` might be shared by many other elements of the dataset, including other |Tree| objects and |CharacterMatrix| objects, so any modification of elements of a |Tree| object's :attr:`~dendropy.dataobject.tree.Tree.taxon_set` will probably have dataset-wide effects.
-    That is, if you were to change the label of a |Taxon| object maintained by a particular |Tree| object's :attr:`~dendropy.dataobject.tree.Tree.taxon_set`, all other |Tree| objects in the dataset referencing the same ``TaxaBlock`` will be effected.
+Tree Distances
+--------------
 
+The :mod:`~dendropy.treecalc` module provides a number of functions to calculate the distance between two trees:
 
+    :func:`~dendropy.treecalc.symmetric_distance`
+        This function returns the symmetric distance between two trees. The symmetric distance between two trees is the sum of splits found in one of the trees but not the other. It is common to see this statistic called the "Robinson-Foulds distance", but in DendroPy we reserve this term to apply to the Robinson-Foulds distance in the strict sense, i.e., the weighted symmetric distance (see below).
 
-    Every |Node| object also has an :attr:`~dendropy.dataobject.tree.Node.edge` attribute, which points to an |Edge| object representing the branch subtending the node. |Edge| objects have a :attr:`~dendropy.dataobject.tree.Edge.length` attribute, which is typically either a ``float`` or ``int`` value, representing the weight or length of the branch.
-    If branch lengths have not been specified, then the value of :attr:`~dendropy.dataobject.tree.Edge.length` is :keyword:`~None`.
-    Even if the source tree has had branch lengths specified, if the tree is unrooted, then the edge of the :attr:`~dendropy.dataobject.tree.Tree.seed_node` is usually :keyword:`~None`.
+    :func:`~dendropy.treecalc.euclidean_distance`
+        This function returns the "branch length distance" of Felsenstein (2004), i.e. the sum of absolute differences in branch lengths for equivalent splits between two trees, with the branch length for a missing split taken to be 0.0.
 
-    |Node| objects also have a :attr:`~dendropy.dataobject.tree.Node.label` and :attr:`~dendropy.dataobject.tree.Node.taxon` attribute. Leaf nodes usually have their :attr:`~dendropy.dataobject.tree.Node.taxon` attribute set, pointing to |Taxon| object associated with that tip of the tree. The :attr:`~dendropy.dataobject.tree.Node.label` attribute will be set if the source tree has internal node labels, though, of course, you can also assign a value to this programmatically.
+    :func:`~dendropy.treecalc.robinson_foulds_distance`
+        This function returns the Robinsons-Foulds distance between two trees, i.e., the sum of the square of differences in branch lengths for equivalent splits between two trees, with the branch length for a missing split taken to be 0.0.
+
