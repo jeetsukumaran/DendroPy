@@ -9,3 +9,4 @@ DendroPy Tutorial
     trees.rst
     chars.rst
     datasets.rst
+    treesims.rst
