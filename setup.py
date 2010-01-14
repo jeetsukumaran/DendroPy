@@ -54,8 +54,7 @@ else:
     EXTRA_KWARGS = dict(
         install_requires = ['setuptools'],
         include_package_data=True,
-        test_suite = "dendropy.test",
-        zip_safe=False,
+        test_suite = "dendropy.test"
     )
 
 PACKAGE_DIRS = [p.replace(".", os.path.sep) for p in PACKAGES]
@@ -97,6 +96,7 @@ except ImportError:
 # Main setup
 
 from dendropy import PROJECT_VERSION
+EXTRA_KWARGS["zip_safe"] = True
 
 setup(name='DendroPy',
       version=PROJECT_VERSION,

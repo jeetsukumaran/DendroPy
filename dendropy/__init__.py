@@ -43,7 +43,7 @@ from dendropy.dataio import get_reader, get_writer, tree_source_iter, multi_tree
 ###############################################################################
 ## PACKAGE METADATA
 
-__version__ = "3.0.4"
+__version__ = "3.0.5"
 PROJECT_NAME = "DendroPy"
 PROJECT_VERSION = __version__
 PACKAGE_VERSION = PROJECT_VERSION # for backwards compatibility (with sate)
@@ -63,11 +63,19 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with this program. If not, see <http://www.gnu.org/licenses/>.
 """
-
-DENDROPY_PATH = os.path.dirname(os.path.abspath(__file__))
-DENDROPY_HEAD = utility.get_current_git_head(os.path.dirname(__file__))
-DENDROPY_BRANCH = utility.get_current_git_branch(os.path.dirname(__file__))
-DENDROPY_TAG = utility.get_current_git_tag(os.path.dirname(__file__))
+DENDROPY_ZIP_SAFE = None
+try:
+    DENDROPY_PATH = os.path.dirname(os.path.abspath(__file__))
+    DENDROPY_HEAD = utility.get_current_git_head(os.path.dirname(__file__))
+    DENDROPY_BRANCH = utility.get_current_git_branch(os.path.dirname(__file__))
+    DENDROPY_TAG = utility.get_current_git_tag(os.path.dirname(__file__))
+    DENDROPY_ZIP_SAFE = False
+except OSError:
+    DENDROPY_PATH = "[UNAVAILABLE]"
+    DENDROPY_HEAD = "[UNAVAILABLE]"
+    DENDROPY_BRANCH = "[UNAVAILABLE]"
+    DENDROPY_TAG = "[UNAVAILABLE]"
+    DENDROPY_ZIP_SAFE = True
 
 if __name__ == "__main__":
     sys.stdout.write("%s %s\n" % (PROJECT_NAME, PROJECT_VERSION))
