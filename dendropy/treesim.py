@@ -257,7 +257,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
             prob_of_event = sum(event_probs)
 
             # waiting time based on above probability
-            waiting_time = rng.expovariate(1.0/prob_of_event)
+            waiting_time = rng.expovariate(prob_of_event)
 
         # add waiting time to nodes
         for nd in tree.leaf_nodes():
@@ -302,7 +302,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
                 nd.death_rate = death_rate
             event_probs.append(nd.birth_rate)
             event_probs.append(nd.death_rate)
-            waiting_time = rng.expovariate(1/sum(event_probs))
+            waiting_time = rng.expovariate(sum(event_probs))
             if max_time is None or (waiting_time + total_time) < max_time:
                 remaining_time = waiting_time
             else:
