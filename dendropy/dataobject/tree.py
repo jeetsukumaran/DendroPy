@@ -797,14 +797,14 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             elif (len(nd._child_nodes) > 0) and not exclude_internal:
                 nd.taxon = None
 
-    def randomly_assign_taxa(self, add_extra_taxa=True, rng=None):
+    def randomly_assign_taxa(self, create_required_taxa=True, rng=None):
         """
         Randomly assigns taxa to leaf nodes. If the number of taxa defined in
         the taxon set of the tree is more than the number of tips, then a random
         subset of taxa in `taxon_set` will be assigned to the tips of tree.
         If the number of tips is more than the number of taxa in the `taxon_set`,
         and `add_extra_taxa` is not True [default], then new Taxon
-        objects will be created and added to the `taxon_set`; if `add_extra_taxa`
+        objects will be created and added to the `taxon_set`; if `create_required_taxa`
         is False, then an exception is raised.
 
         In addition, a Random() object or equivalent can be passed using `rng`;
@@ -821,7 +821,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 if len(taxa) > 0:
                     nd.taxon = taxa.pop(rng.randint(0, len(taxa)-1))
                 else:
-                    if not add_extra_taxa:
+                    if not create_required_taxa:
                         raise ValueError("TaxonSet has %d taxa, but tree has %d tips" % (len(self.taxon_set), len(self.leaf_nodes())))
                     label = "T%d" % (i+1)
                     k = 0

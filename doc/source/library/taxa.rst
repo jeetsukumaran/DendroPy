@@ -2,7 +2,7 @@
 :mod:`dendropy.dataobject.taxon` -- Taxon Data
 **********************************************
 
-.. module:: taxa
+.. module:: dendropy.dataobject.taxa
 
 .. toctree::
     :maxdepth: 2

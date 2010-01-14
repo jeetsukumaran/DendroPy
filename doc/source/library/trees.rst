@@ -2,7 +2,7 @@
 :mod:`dendropy.dataobject.tree` -- Tree Data
 ********************************************
 
-.. module:: tree
+.. module:: dendropy.dataobject.tree
 
 .. toctree::
     :maxdepth: 2

@@ -2,7 +2,7 @@
 :mod:`dendropy.dataobject.dataset` -- Primary Data Manager
 **********************************************************
 
-.. module:: dendropy.dataobject.dataset
+.. module:: dataset
 
 .. toctree::
     :maxdepth: 2
