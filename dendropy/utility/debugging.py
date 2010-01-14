@@ -33,7 +33,7 @@ def trace_run(frame, event, arg):
     To activate::
         # /usr/bin/env python
         import sys
-        from dendropy.utility.debugging import traceit
+        from dendropy.utility.debugging import trace_run
         sys.settrace(trace_run)
         .
         (code)
