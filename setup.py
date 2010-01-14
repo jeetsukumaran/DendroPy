@@ -57,9 +57,11 @@ else:
         test_suite = "dendropy.test",
         zip_safe=False,
     )
+
 PACKAGE_DIRS = [p.replace(".", os.path.sep) for p in PACKAGES]
 PACKAGE_INFO = [("% 40s : %s" % p) for p in zip(PACKAGES, PACKAGE_DIRS)]
 sys.stderr.write("packages identified:\n%s\n" % ("\n".join(PACKAGE_INFO)))
+ENTRY_POINTS = {}
 
 ###############################################################################
 # Script paths
@@ -73,6 +75,23 @@ SCRIPT_SUBPATHS = [
 SCRIPTS = [os.path.join(*i) for i in SCRIPT_SUBPATHS]
 sys.stderr.write("\nscripts identified: %s\n" % ", ".join(SCRIPTS))
 
+###############################################################################
+# setuptools/distuils command extensions
+
+try:
+    from setuptools import Command
+    sys.stderr.write("setuptools command extensions are available\n")
+    command_hook = "distutils.commands"
+    ENTRY_POINTS[command_hook] = []
+
+    ###########################################################################
+    # coverage
+    from dendropy.test import coverage_analysis
+    if coverage_analysis.DENDROPY_COVERAGE_ANALYSIS_AVAILABLE:
+        ENTRY_POINTS[command_hook].append("coverage = dendropy.test.coverage_analysis:CoverageAnalysis")
+
+except ImportError:
+    sys.stderr.write("setuptools.Command could not be imported: setuptools extensions not available\n")
 
 ###############################################################################
 # Main setup
@@ -99,6 +118,7 @@ setup(name='DendroPy',
 #      },
       scripts = SCRIPTS,
       long_description=open('README.txt').read(),
+      entry_points = ENTRY_POINTS,
       classifiers = [
             "Environment :: Console",
             "Intended Audience :: Developers",
