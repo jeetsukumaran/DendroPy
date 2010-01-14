@@ -26,6 +26,7 @@ DendroPy testing suite.
 
 import unittest
 import re
+import os
 
 def get_test_suite():
     """
@@ -56,5 +57,5 @@ def run():
     runner.run(get_test_suite())
 
 if __name__ == "__main__":
-    unittest.main()
+    run()
 
