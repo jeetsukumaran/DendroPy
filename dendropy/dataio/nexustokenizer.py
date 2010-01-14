@@ -184,6 +184,8 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
     located at the beginning of the statement (i.e., the first non-comment
     token should be the opening parenthesis of the tree definition).
+    
+    str_to_taxon kwarg (if used) must supply the StrToTaxon interface).
     """
     translate_dict = kwargs.get("translate_dict", None)
     encode_splits = kwargs.get("encode_splits", False)
@@ -214,7 +216,9 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
             tree.split_edges = d
         split_map = tree.split_edges
 
-    stt = StrToTaxon(taxon_set, translate_dict, allow_repeated_use=False)
+    stt = kwargs.get('str_to_taxon')
+    if stt is None:
+        stt = StrToTaxon(taxon_set, translate_dict, allow_repeated_use=False)
 
     tree.seed_node = dataobject.Node()
     curr_node = tree.seed_node
@@ -280,11 +284,11 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
                 is_leaf = curr_node.is_leaf()
                 if is_leaf:
                     if curr_node.taxon:
-                        raise stream_tokenizer.data_format_error("Multiple labels found for the same leaf (taxon %s and label%s)" % (str(curr_node.taxon), label))
+                        raise stream_tokenizer.data_format_error("Multiple labels found for the same leaf (taxon %s and label %s)" % (str(curr_node.taxon), token))
                     t = stt.require_taxon(label=token)
                 else:
                     if curr_node.label:
-                        raise stream_tokenizer.data_format_error("Multiple labels found for the same leaf (taxon %s and label%s)" % (curr_node.label, label))
+                        raise stream_tokenizer.data_format_error("Multiple labels found for the same leaf (taxon %s and label %s)" % (curr_node.label, token))
                     t = stt.get_taxon(label=token)
                 if t is None:
                     curr_node.label = token
