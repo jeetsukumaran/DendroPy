@@ -291,6 +291,13 @@ def fitch_down_pass(postorder_node_list, attr_name="state_sets", weight_list=Non
     for nd in postorder_node_list:
         c = nd.child_nodes()
         if not c:
+            try:
+                ss = getattr(nd, attr_name)
+            except AttributeError:
+                if not taxa_to_state_set_map:
+                    raise
+                ss = taxa_to_state_set_map[nd.taxon]
+                setattr(nd, attr_name, ss)
             continue
         left_c, right_c = c[:2]
         remaining = c[2:]
