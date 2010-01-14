@@ -319,35 +319,29 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
 
 def uniform_pure_birth(taxon_set,
                        birth_rate=1.0,
-                       ultrametricize=True,
                        rng=None):
     "Generates a uniform-rate pure-birth process tree. "
     if rng is None:
         rng = GLOBAL_RNG # use the global rng by default
     tree = dataobject.Tree(taxon_set=taxon_set)
-
+    tree.seed_node.edge.length = 0.0
     leaf_nodes = tree.leaf_nodes()
-    count = 0
     while len(leaf_nodes) < len(taxon_set):
+        waiting_time = rng.expovariate(len(leaf_nodes)/birth_rate)
+        for nd in leaf_nodes:
+            nd.edge.length += waiting_time
         parent_node = rng.choice(leaf_nodes)
-        edge_length = rng.expovariate(len(leaf_nodes)/birth_rate)
-        child1 = dataobject.Node()
-        child2 = dataobject.Node()
-        child1.node_id = 'n' + str(count+1)
-        child2.node_id = 'n' + str(count+2)
-        child1.edge.length = edge_length
-        child2.edge.length = edge_length
-        parent_node.add_child(child1)
-        parent_node.add_child(child2)
-        count = count + 2
+        c1 = parent_node.new_child()
+        c2 = parent_node.new_child()
+        c1.edge.length = 0.0
+        c2.edge.length = 0.0
         leaf_nodes = tree.leaf_nodes()
     leaf_nodes = tree.leaf_nodes()
+    waiting_time = rng.expovariate(len(leaf_nodes)/birth_rate)
+    for nd in leaf_nodes:
+        nd.edge.length += waiting_time
     for idx, leaf in enumerate(leaf_nodes):
         leaf.taxon = taxon_set[idx]
-    if ultrametricize:
-        max_distance_from_root = max([node.distance_from_root() for node in leaf_nodes])
-        for node in leaf_nodes:
-            node.edge.length = node.edge.length + (max_distance_from_root - node.distance_from_root())
     tree.is_rooted = True
     return tree
 
