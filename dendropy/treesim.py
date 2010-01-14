@@ -245,23 +245,23 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
 
         # get vector of birth/death probabilities, and
         # associate with nodes/events
-        event_probs = []
+        event_rates = []
         event_nodes = []
         for nd in tree.leaf_nodes():
             if not hasattr(nd, 'birth_rate'):
                 nd.birth_rate = birth_rate
             if not hasattr(nd, 'death_rate'):
                 nd.death_rate = death_rate
-            event_probs.append(nd.birth_rate)
+            event_rates.append(nd.birth_rate)
             event_nodes.append((nd, True)) # birth event = True
-            event_probs.append(nd.death_rate)
+            event_rates.append(nd.death_rate)
             event_nodes.append((nd, False)) # birth event = False; i.e. death
 
             # get total probability of any birth/death
-            prob_of_event = sum(event_probs)
+            rate_of_any_event = sum(event_rates)
 
             # waiting time based on above probability
-            waiting_time = rng.expovariate(prob_of_event)
+            waiting_time = rng.expovariate(rate_of_any_event)
 
         # add waiting time to nodes
         for nd in tree.leaf_nodes():
@@ -272,11 +272,11 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
         if max_time is None or total_time <= max_time:
 
             # normalize probability
-            for i in xrange(len(event_probs)):
-                event_probs[i] = event_probs[i]/prob_of_event
+            for i in xrange(len(event_rates)):
+                event_rates[i] = event_rates[i]/rate_of_any_event
 
             # select node/event and process
-            nd, birth_event = probability.lengthed_choice(event_nodes, event_probs)
+            nd, birth_event = probability.lengthed_choice(event_nodes, event_rates)
             if birth_event:
                 c1 = nd.new_child()
                 c2 = nd.new_child()
@@ -304,9 +304,9 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
                 nd.birth_rate = birth_rate
             if not hasattr(nd, 'death_rate'):
                 nd.death_rate = death_rate
-            event_probs.append(nd.birth_rate)
-            event_probs.append(nd.death_rate)
-            waiting_time = rng.expovariate(sum(event_probs))
+            event_rates.append(nd.birth_rate)
+            event_rates.append(nd.death_rate)
+            waiting_time = rng.expovariate(sum(event_rates))
             if max_time is None or (waiting_time + total_time) < max_time:
                 remaining_time = waiting_time
             else:
