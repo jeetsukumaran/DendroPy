@@ -43,11 +43,11 @@ def trace_run(frame, event, arg):
         lineno = frame.f_lineno
         filename = frame.f_globals["__file__"]
         if filename == "<stdin>":
-            filename = "traceit.py"
+            filename = "debugging.py"
         if (filename.endswith(".pyc") or
             filename.endswith(".pyo")):
             filename = filename[:-1]
         name = frame.f_globals["__name__"]
         line = linecache.getline(filename, lineno)
         print "%s:%s: %s" % (name, lineno, line.rstrip())
-    return traceit
+    return trace_run
