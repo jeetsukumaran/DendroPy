@@ -111,7 +111,10 @@ def discrete_birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_s
             raise ValueError("Cannot specify both `tree` and `taxon_set`")
     else:
         tree = dataobject.Tree(taxon_set=taxon_set)
+        tree.is_rooted = True
         tree.seed_node.edge.length = 0
+        tree.seed_node.birth_rate = birth_rate
+        tree.seed_node.death_rate = death_rate
     leaf_nodes = tree.leaf_nodes()
     num_gens = 0
     while (target_num_taxa is None or len(leaf_nodes) < target_num_taxa) \
@@ -229,7 +232,8 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
             raise ValueError("Cannot specify both `tree` and `taxon_set`")
     else:
         tree = dataobject.Tree(taxon_set=taxon_set)
-        tree.seed_node.edge.length = 0
+        tree.is_rooted = True
+        tree.seed_node.edge.length = 0.0
         tree.seed_node.birth_rate = birth_rate
         tree.seed_node.death_rate = death_rate
 
