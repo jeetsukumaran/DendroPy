@@ -63,12 +63,12 @@ def discrete_birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_s
         - If `taxon_set` is given as a keyword argument, tree is grown until the
           number of tips == len(taxon_set), and the taxa are assigned randomly to the
           tips.
-        - If 'max_gens' is given as a keyword argument, tree is grown for `max_gens`
+        - If 'max_time' is given as a keyword argument, tree is grown for `max_time`
           number of generations.
 
     If more than one of the above is given, then tree growth will terminate when
     *any* of the termination conditions (i.e., number of tips == `ntax`, or number
-    of tips == len(taxon_set) or number of generations = `max_gens`) are met.
+    of tips == len(taxon_set) or number of generations = `max_time`) are met.
 
     Also accepts a Tree object (with valid branch lengths) as an argument passed
     using the keyword `tree`: if given, then this tree will be used; otherwise
@@ -90,11 +90,11 @@ def discrete_birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_s
     """
     if 'ntax' not in kwargs \
         and 'taxon_set' not in kwargs \
-        and 'max_gens' not in kwargs:
-            raise ValueError("At least one of the following must be specified: 'ntax', 'taxon_set', or 'max_gens'")
+        and 'max_time' not in kwargs:
+            raise ValueError("At least one of the following must be specified: 'ntax', 'taxon_set', or 'max_time'")
     target_num_taxa = None
     taxon_set = None
-    target_num_gens = kwargs.get('max_gens', None)
+    target_num_gens = kwargs.get('max_time', None)
     if 'taxon_set' in kwargs:
         taxon_set = kwargs.get('taxon_set')
         target_num_taxa = kwargs.get('ntax', len(taxon_set))
