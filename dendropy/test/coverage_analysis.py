@@ -25,6 +25,8 @@ Support for coverage analysis.
 """
 
 import unittest
+import shutil
+import sys
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
@@ -47,17 +49,15 @@ try:
             description = "run test coverage analysis"
             user_options = [
                 ('test-file=', 't', "explicitly specify a module to test (e.g. 'dendropy.test.test_containers')"),
-#                ('annotate', 'a', 'annotate source files with execution information'),
-#                ('branch', 'b', 'meassure branch coverage in addition to statement coverage'),
-#                ('directory=', 'd', 'write output files to DIR')
+                ('erase', None, "remove all existing coverage results"),
+                ('branch', 'b', 'measure branch coverage in addition to statement coverage'),
             ]
 
             def initialize_options(self):
                 """init options"""
                 self.test_file = None
-                self.annotate = False
                 self.branch = False
-                self.directory = None
+                self.erase = False
                 self.omit_prefixes = ['dendropy/test']
 
             def finalize_options(self):
@@ -66,19 +66,32 @@ try:
 
             def run(self):
                 """runner"""
+
+                ### for debugging ###
                 self.test_file = 'dendropy.test.test_containers'
-                if self.test_file is None:
-                    test_suite = get_test_suite()
+
+                if self.erase:
+                    _LOG.warn("Removing coverage results directory: '%s'" % pathmap.TESTS_COVERAGE_DIR)
+                    try:
+                        shutil.rmtree(pathmap.TESTS_COVERAGE_DIR)
+                    except:
+                        pass
                 else:
-                    test_suite = get_test_suite([self.test_file])
-                runner = unittest.TextTestRunner()
-                cov = coverage.coverage()
-                cov.start()
-                runner.run(test_suite)
-                cov.stop()
-                cov.annotate(omit_prefixes=self.omit_prefixes,
-                        directory=pathmap.TESTS_COVERAGE_SOURCE_DIR)
-                cov.report(omit_prefixes=self.omit_prefixes)
+                    _LOG.info("Running coverage analysis ...")
+                    if self.test_file is None:
+                        test_suite = get_test_suite()
+                    else:
+                        test_suite = get_test_suite([self.test_file])
+                    runner = unittest.TextTestRunner()
+                    cov = coverage.coverage(branch=self.branch)
+                    cov.start()
+                    runner.run(test_suite)
+                    cov.stop()
+                    cov.annotate(omit_prefixes=self.omit_prefixes,
+                            directory=pathmap.TESTS_COVERAGE_SOURCE_DIR)
+                    cov.html_report(omit_prefixes=self.omit_prefixes,
+                            directory=pathmap.TESTS_COVERAGE_REPORT_DIR)
+                    cov.report(omit_prefixes=self.omit_prefixes)
 
     except ImportError:
         _LOG.warn("coverage could not be imported: test coverage analysis not available")
