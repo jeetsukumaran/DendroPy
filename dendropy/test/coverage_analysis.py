@@ -48,9 +48,11 @@ try:
 
             description = "run test coverage analysis"
             user_options = [
-                ('test-file=', 't', "explicitly specify a module to test (e.g. 'dendropy.test.test_containers')"),
                 ('erase', None, "remove all existing coverage results"),
                 ('branch', 'b', 'measure branch coverage in addition to statement coverage'),
+                ('test-file=', 't', "explicitly specify a module to test (e.g. 'dendropy.test.test_containers')"),
+                ('no-annotate', None, "do not create annotated source code files"),
+                ('no-html', None, "do not create HTML report files"),
             ]
 
             def initialize_options(self):
@@ -58,6 +60,8 @@ try:
                 self.test_file = None
                 self.branch = False
                 self.erase = False
+                self.no_annotate = False
+                self.no_html = False
                 self.omit_prefixes = ['dendropy/test']
 
             def finalize_options(self):
@@ -68,13 +72,13 @@ try:
                 """runner"""
 
                 if self.erase:
-                    _LOG.warn("Removing coverage results directory: '%s'" % pathmap.TESTS_COVERAGE_DIR)
+                    _LOG.warn("removing coverage results directory: '%s'" % pathmap.TESTS_COVERAGE_DIR)
                     try:
                         shutil.rmtree(pathmap.TESTS_COVERAGE_DIR)
                     except:
                         pass
                 else:
-                    _LOG.info("Running coverage analysis ...")
+                    _LOG.info("running coverage analysis ...")
                     if self.test_file is None:
                         test_suite = get_test_suite()
                     else:
@@ -84,10 +88,12 @@ try:
                     cov.start()
                     runner.run(test_suite)
                     cov.stop()
-                    cov.annotate(omit_prefixes=self.omit_prefixes,
-                            directory=pathmap.TESTS_COVERAGE_SOURCE_DIR)
-                    cov.html_report(omit_prefixes=self.omit_prefixes,
-                            directory=pathmap.TESTS_COVERAGE_REPORT_DIR)
+                    if not self.no_annotate:
+                        cov.annotate(omit_prefixes=self.omit_prefixes,
+                                directory=pathmap.TESTS_COVERAGE_SOURCE_DIR)
+                    if not self.no_html:
+                        cov.html_report(omit_prefixes=self.omit_prefixes,
+                                directory=pathmap.TESTS_COVERAGE_REPORT_DIR)
                     cov.report(omit_prefixes=self.omit_prefixes)
 
     except ImportError:
