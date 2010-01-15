@@ -163,7 +163,7 @@ class StrToTaxon(object):
         if t is None:
             t = self.taxon_set.get_taxon(label=label)
         return self._returning(t, label)
-        
+
     def require_taxon(self, label):
         v = self.get_taxon(label)
         if v is not None:
@@ -184,7 +184,7 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
     located at the beginning of the statement (i.e., the first non-comment
     token should be the opening parenthesis of the tree definition).
-    
+
     str_to_taxon kwarg (if used) must supply the StrToTaxon interface).
     """
     translate_dict = kwargs.get("translate_dict", None)
@@ -225,6 +225,13 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
     if encode_splits:
         curr_node.edge.split_bitmask = 0L
 
+    ### NHX format support ###
+    def store_node_comments(active_node):
+        if stream_tokenizer.comments:
+            active_node.comments.extend(stream_tokenizer.comments)
+            stream_tokenizer.clear_comments()
+
+    stream_tokenizer.clear_comments()
     while True:
         if not token or token == ';':
             if curr_node is not tree.seed_node:
@@ -243,6 +250,7 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
             curr_node.add_child(tmp_node)
             curr_node = tmp_node
             token = stream_tokenizer.read_next_token()
+            store_node_comments(curr_node)
         elif token == ',':
             tmp_node = dataobject.Node()
             if curr_node.is_leaf() and not curr_node.taxon:
@@ -263,6 +271,7 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
             p.add_child(tmp_node)
             curr_node = tmp_node
             token = stream_tokenizer.read_next_token()
+            store_node_comments(curr_node)
         else:
             if token == ')':
                 if curr_node.is_leaf() and not curr_node.taxon:
@@ -304,6 +313,7 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
                         split_map[cm] = e
 
             token = stream_tokenizer.read_next_token()
+            store_node_comments(curr_node)
             if token == ':':
                 edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-+.')
                 if not edge_length_str:
@@ -313,6 +323,7 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
                 except:
                     curr_node.edge.length = edge_length_str
                 token = stream_tokenizer.read_next_token()
+                store_node_comments(curr_node)
     return tree
 
 
@@ -387,6 +398,7 @@ class NexusTokenizer(object):
         self.current_col_number = 1
         self.previous_file_char = None
         self.tree_rooting_comment = None
+        self.last_comment_parsed = None
         self.preserve_underscores = False
 
     def _get_current_file_char(self):
@@ -399,6 +411,9 @@ class NexusTokenizer(object):
         self._current_file_char = new_char
 
     current_file_char = property(_get_current_file_char, _set_current_file_char)
+
+    def clear_comments(self):
+        self.comments = []
 
     def read_next_char(self):
         """
@@ -453,6 +468,7 @@ class NexusTokenizer(object):
             c = self.read_next_char()
         comment = cmt_body.getvalue()
         self.comments.append(comment)
+        self.last_comment_parsed = comment
         if comment.strip().upper() == "&R":
             self.tree_rooting_comment = "&R"
         elif comment.strip().upper() == "&U":

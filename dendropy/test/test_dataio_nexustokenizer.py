@@ -31,6 +31,7 @@ from cStringIO import StringIO
 
 from dendropy.utility import messaging
 from dendropy.dataio import nexustokenizer
+import dendropy
 
 _LOG = messaging.get_logger(__name__)
 
@@ -101,3 +102,16 @@ END;
         for e in expected:
             token = tokenizer.read_next_token()
             self.assertEqual(e, token)
+
+class NewHampshireExtendedTest(unittest.TestCase):
+
+    def testSimplePostNodeComments(self):
+        s = "((A[A],B[B])AB[AB],(C[C],D[D])CD[CD])Root[Root]"
+        tree = dendropy.Tree.get_from_string(s, 'newick')
+        tree.assign_node_labels_from_taxon_or_oid()
+        for nd in tree.postorder_node_iter():
+            self.assertEqual(len(nd.comments), 1)
+            self.assertEqual(nd.comments[0], nd.label)
+
+if __name__ == "__main__":
+    unittest.main()

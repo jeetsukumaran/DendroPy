@@ -1498,6 +1498,7 @@ class Node(TaxonLinked):
         self._parent_node = None
         self.edge = kwargs.get("edge", Edge(head_node=self))
         self._edge.head_node = self
+        self.comments = []
 
     def __deepcopy__(self, memo):
         o = TaxonLinked.__deepcopy__(self, memo)
