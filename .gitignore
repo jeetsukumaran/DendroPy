@@ -4,6 +4,7 @@ DendroPy.egg-info*
 .svn*
 .DS_Store*
 dendropy/test/output/
+dendropy/test/coverage-results/*
 build/*
 dist/*
 setuptools-*.egg

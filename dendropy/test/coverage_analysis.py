@@ -37,6 +37,7 @@ try:
         DENDROPY_COVERAGE_ANALYSIS_AVAILABLE = True
 
         from dendropy.test import get_test_file_names, get_test_suite
+        from dendropy.test.support import pathmap
 
         class CoverageAnalysis(Command):
             """Code coverage analysis command."""
@@ -62,16 +63,18 @@ try:
 
             def run(self):
                 """runner"""
-                runner = unittest.TextTestRunner()
+                self.test_file = 'dendropy.test.test_containers'
                 if self.test_file is None:
                     test_suite = get_test_suite()
                 else:
                     test_suite = get_test_suite([self.test_file])
+                runner = unittest.TextTestRunner()
                 cov = coverage.coverage()
                 cov.start()
                 runner.run(test_suite)
                 cov.stop()
-                cov.html_report(directory='covhtml')
+                cov.annotate(directory=pathmap.TESTS_COVERAGE_SOURCE_DIR)
+                cov.report()
 
     except ImportError:
         _LOG.warn("coverage could not be imported: test coverage analysis not available")

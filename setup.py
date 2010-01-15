@@ -87,6 +87,7 @@ try:
     # coverage
     from dendropy.test import coverage_analysis
     if coverage_analysis.DENDROPY_COVERAGE_ANALYSIS_AVAILABLE:
+        sys.stderr.write("coverage analysis available: 'python setup.py coverage' to run\n")
         ENTRY_POINTS[command_hook].append("coverage = dendropy.test.coverage_analysis:CoverageAnalysis")
 
 except ImportError:
