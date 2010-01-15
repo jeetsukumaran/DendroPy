@@ -32,10 +32,18 @@ import os
 
 try:
     import ez_setup
-    sys.stderr.write("using ez_setup ('%s')\n" % os.path.abspath(ez_setup.__file__))
+    try:
+        ez_setup_path = " ('" + os.path.abspath(ez_setup.__file__) + "')"
+    except OSError:
+        ez_setup_path = ""
+    sys.stderr.write("using ez_setup%s\n" %  ez_setup_path)
     ez_setup.use_setuptools()
     import setuptools
-    sys.stderr.write("using setuptools ('%s')\n" % os.path.abspath(setuptools.__file__))
+    try:
+        setuptools_path = " ('" +  os.path.abspath(setuptools.__file__) + "')"
+    except OSError:
+        setuptools_path = ""
+    sys.stderr.write("using setuptools%s\n" % setuptools_path)
     from setuptools import setup, find_packages
 except ImportError, e:
     sys.stderr.write("using distutils\n")
