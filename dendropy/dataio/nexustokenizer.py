@@ -229,7 +229,6 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
     def store_node_comments(active_node):
         if stream_tokenizer.comments:
             active_node.comments.extend(stream_tokenizer.comments)
-            stream_tokenizer.clear_comments()
 
     stream_tokenizer.clear_comments()
     while True:
@@ -293,11 +292,11 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
                 is_leaf = curr_node.is_leaf()
                 if is_leaf:
                     if curr_node.taxon:
-                        raise stream_tokenizer.data_format_error("Multiple labels found for the same leaf (taxon %s and label %s)" % (str(curr_node.taxon), token))
+                        raise stream_tokenizer.data_format_error("Multiple labels found for the same leaf (taxon '%s' and label '%s')" % (str(curr_node.taxon), token))
                     t = stt.require_taxon(label=token)
                 else:
                     if curr_node.label:
-                        raise stream_tokenizer.data_format_error("Multiple labels found for the same leaf (taxon %s and label %s)" % (curr_node.label, token))
+                        raise stream_tokenizer.data_format_error("Multiple labels found for the same leaf (taxon '%s' and label '%s')" % (curr_node.label, token))
                     t = stt.get_taxon(label=token)
                 if t is None:
                     curr_node.label = token
@@ -398,6 +397,7 @@ class NexusTokenizer(object):
         self.current_line_number = 1
         self.current_col_number = 1
         self.previous_file_char = None
+        self.comments = []
         self.tree_rooting_comment = None
         self.last_comment_parsed = None
         self.preserve_underscores = False

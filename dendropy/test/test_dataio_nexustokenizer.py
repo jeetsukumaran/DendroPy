@@ -131,5 +131,17 @@ class NewHampshireExtendedTest(unittest.TestCase):
             self.assertEqual(nd.comments[0], nd.label)
             self.assertEqual(nd.comments[1], nd.label)
 
+    def testMultiPostNodeAndEdgeLengthComments(self):
+        s = """
+            ((A[A][A]:[A][A]1[A][A],B[B][B]:[B][B]1[B][B])AB[AB][AB]:[AB][AB]1[AB][AB],
+            (C[C][C]:[C][C]1[C][C],D[D][D]:[D][D]1[D][D])CD[CD][CD]:[CD][CD]1[CD][CD])Root[Root][Root]:[Root][Root]1[Root][Root]
+            """
+        tree = dendropy.Tree.get_from_string(s, 'newick')
+        tree.assign_node_labels_from_taxon_or_oid()
+        for nd in tree.postorder_node_iter():
+            self.assertEqual(len(nd.comments), 6)
+            for i in xrange(6):
+                self.assertEqual(nd.comments[i], nd.label)
+
 if __name__ == "__main__":
     unittest.main()
