@@ -67,9 +67,6 @@ try:
             def run(self):
                 """runner"""
 
-                ### for debugging ###
-                self.test_file = 'dendropy.test.test_containers'
-
                 if self.erase:
                     _LOG.warn("Removing coverage results directory: '%s'" % pathmap.TESTS_COVERAGE_DIR)
                     try:
