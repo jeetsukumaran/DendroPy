@@ -40,7 +40,9 @@ try:
         from dendropy.test.support import pathmap
 
         class CoverageAnalysis(Command):
-            """Code coverage analysis command."""
+            """
+            Code coverage analysis command.
+            """
 
             description = "run test coverage analysis"
             user_options = [
@@ -56,6 +58,7 @@ try:
                 self.annotate = False
                 self.branch = False
                 self.directory = None
+                self.omit_prefixes = ['dendropy/test']
 
             def finalize_options(self):
                 """finalize options"""
@@ -73,8 +76,9 @@ try:
                 cov.start()
                 runner.run(test_suite)
                 cov.stop()
-                cov.annotate(directory=pathmap.TESTS_COVERAGE_SOURCE_DIR)
-                cov.report()
+                cov.annotate(omit_prefixes=self.omit_prefixes,
+                        directory=pathmap.TESTS_COVERAGE_SOURCE_DIR)
+                cov.report(omit_prefixes=self.omit_prefixes)
 
     except ImportError:
         _LOG.warn("coverage could not be imported: test coverage analysis not available")
