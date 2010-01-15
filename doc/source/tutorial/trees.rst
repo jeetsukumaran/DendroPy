@@ -546,7 +546,7 @@ The following example shows how to calculate the frequency of a split defined by
 Tree Distances
 --------------
 
-The :mod:`~dendropy.treecalc` module provides a number of functions to calculate the distance between two trees:
+The :mod:`~dendropy.treecalc` module provides a number of functions to calculate the distance between two trees passed as arguments:
 
     :func:`~dendropy.treecalc.symmetric_distance`
         This function returns the symmetric distance between two trees. The symmetric distance between two trees is the sum of splits found in one of the trees but not the other. It is common to see this statistic called the "Robinson-Foulds distance", but in DendroPy we reserve this term to apply to the Robinson-Foulds distance in the strict sense, i.e., the weighted symmetric distance (see below).
