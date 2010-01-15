@@ -43,7 +43,7 @@ except:
 
 TESTS_DATA_DIR = os.path.join(TESTS_DIR, "data")
 TESTS_OUTPUT_DIR = os.path.join(TESTS_DIR, "output")
-TESTS_COVERAGE_DIR = os.path.join(TESTS_DIR, "coverage-results")
+TESTS_COVERAGE_DIR = os.path.join(TESTS_DIR, "coverage")
 TESTS_COVERAGE_REPORT_DIR = os.path.join(TESTS_COVERAGE_DIR, "report")
 TESTS_COVERAGE_SOURCE_DIR = os.path.join(TESTS_COVERAGE_DIR, "source")
 
