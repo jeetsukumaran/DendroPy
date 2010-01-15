@@ -316,6 +316,7 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
             store_node_comments(curr_node)
             if token == ':':
                 edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-+.')
+                store_node_comments(curr_node)
                 if not edge_length_str:
                     raise stream_tokenizer.data_format_error("Expecting a branch length after : but encountered the end of the tree description" )
                 try:
