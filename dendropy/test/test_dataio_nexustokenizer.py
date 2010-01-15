@@ -107,40 +107,52 @@ class NewHampshireExtendedTest(unittest.TestCase):
 
     def testSimplePostNodeComments(self):
         s = "((A[A]:1,B[B]:1)AB[AB]:1,(C[C]:1,D[D]:1)CD[CD]:1)Root[Root]:1"
+        _LOG.info("Tree = %s" % s)
         tree = dendropy.Tree.get_from_string(s, 'newick')
         tree.assign_node_labels_from_taxon_or_oid()
         for nd in tree.postorder_node_iter():
+            _LOG.info("%s: %s" % (nd.label, nd.comments))
             self.assertEqual(len(nd.comments), 1)
             self.assertEqual(nd.comments[0], nd.label)
             self.assertEqual(nd.edge.length, 1)
 
     def testSimplePostEdgeLengthComments(self):
         s = "((A:1[A],B:1[B])AB:1[AB],(C:1[C],D:1[D])CD:1[CD])Root:1[Root]"
+        _LOG.info("Tree = %s" % s)
         tree = dendropy.Tree.get_from_string(s, 'newick')
         tree.assign_node_labels_from_taxon_or_oid()
         for nd in tree.postorder_node_iter():
+            _LOG.info("%s: %s" % (nd.label, nd.comments))
             self.assertEqual(len(nd.comments), 1)
             self.assertEqual(nd.comments[0], nd.label)
 
     def testPostNodeAndEdgeLengthComments(self):
         s = "((A[A]:1[A],B[B]:1[B])AB[AB]:1[AB],(C[C]:1[C],D[D]:1[D])CD[CD]:1[CD])Root[Root]:1[Root]"
+        _LOG.info("Tree = %s" % s)
         tree = dendropy.Tree.get_from_string(s, 'newick')
         tree.assign_node_labels_from_taxon_or_oid()
         for nd in tree.postorder_node_iter():
+            _LOG.info("%s: %s" % (nd.label, nd.comments))
             self.assertEqual(len(nd.comments), 2)
             self.assertEqual(nd.comments[0], nd.label)
             self.assertEqual(nd.comments[1], nd.label)
 
-    def testMultiPostNodeAndEdgeLengthComments(self):
-        s = """
-            ((A[A][A]:[A][A]1[A][A],B[B][B]:[B][B]1[B][B])AB[AB][AB]:[AB][AB]1[AB][AB],
-            (C[C][C]:[C][C]1[C][C],D[D][D]:[D][D]1[D][D])CD[CD][CD]:[CD][CD]1[CD][CD])Root[Root][Root]:[Root][Root]1[Root][Root]
-            """
+    def testMultiPositionComments(self):
+        s = """(([xxx]A[A][A]:[A][A]1[A][A],
+                 [xxx]B[B][B]:[B][B]1[B][B])
+                 [xxx]AB[AB][AB]:[AB][AB]1[AB][AB],
+                ([xxx]C[C][C]:[C][C]1[C][C],
+                 [xxx]D[D][D]:[D][D]1[D][D])
+                 [xxx]CD[CD][CD]:[CD][CD]1[CD][CD])
+                 [xxx]Root[Root][Root]:[Root][Root]1[Root][Root]"""
+        _LOG.info("Tree = %s" % s)
         tree = dendropy.Tree.get_from_string(s, 'newick')
         tree.assign_node_labels_from_taxon_or_oid()
         for nd in tree.postorder_node_iter():
-            self.assertEqual(len(nd.comments), 6)
-            for i in xrange(6):
+            _LOG.info("%s: %s" % (nd.label, nd.comments))
+            self.assertEqual(len(nd.comments), 7)
+            self.assertEqual(nd.comments[0], 'xxx')
+            for i in xrange(1,7):
                 self.assertEqual(nd.comments[i], nd.label)
 
 if __name__ == "__main__":

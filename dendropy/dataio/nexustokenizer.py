@@ -238,7 +238,6 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
             if encode_splits:
                 split_map[curr_node.edge.split_bitmask] = curr_node.edge
             break
-        #_LOG.debug("token = %s" % token)
         if token == '(':
             if not curr_node.parent_node:
                 if curr_node.child_nodes():
@@ -274,8 +273,6 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
         else:
             if token == ')':
                 if curr_node.is_leaf() and not curr_node.taxon:
-#                     curr_node.taxon = dataobject.Taxon(oid="UNAMED_" + str(id(curr_node)), label='')
-#                     taxon_set.add(curr_node.taxon)
                     raise stream_tokenizer.data_format_error("Missing taxon specifier in a tree -- found either a '(,' or ',,' construct.")
                 p = curr_node.parent_node
                 if not p:
