@@ -31,13 +31,15 @@ _LOG = messaging.get_logger(__name__)
 
 try:
     import pkg_resources
-    _LOG.info("Using local pkg_resources path mapping")
+    _LOG.info("Using pkg_resources path mapping")
     TESTS_DIR = pkg_resources.resource_filename("dendropy", "test")
     SCRIPTS_DIR = pkg_resources.resource_filename("dendropy", "scripts")
 except:
     _LOG.info("Using local filesystem path mapping")
-    TESTS_DIR = os.path.dirname(__file__)
-    SCRIPTS_DIR = os.path.join(os.path.pardir, "scripts")
+    LOCAL_DIR = os.path.dirname(__file__)
+    TESTS_DIR = os.path.join(LOCAL_DIR, os.path.pardir)
+    PACKAGE_DIR = os.path.join(TESTS_DIR, os.path.pardir)
+    SCRIPTS_DIR = os.path.join(PACKAGE_DIR, os.path.pardir, "scripts")
 
 TESTS_DATA_DIR = os.path.join(TESTS_DIR, "data")
 TESTS_OUTPUT_DIR = os.path.join(TESTS_DIR, "output")
