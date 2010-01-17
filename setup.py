@@ -98,7 +98,7 @@ else:
     # coverage
     from dendropy.test.support import coverage_analysis
     if coverage_analysis.DENDROPY_COVERAGE_ANALYSIS_AVAILABLE:
-        sys.stderr.write("coverage analysis available using: 'python setup.py coverage'\n")
+        sys.stderr.write("coverage analysis available ('python setup.py coverage')\n")
         ENTRY_POINTS[command_hook].append("coverage = dendropy.test.support.coverage_analysis:CoverageAnalysis")
     else:
         sys.stderr.write("coverage analysis not available\n")
