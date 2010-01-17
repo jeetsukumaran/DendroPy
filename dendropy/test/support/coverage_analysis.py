@@ -45,7 +45,7 @@ else:
         _LOG.info("coverage imported successfully: test coverage analysis available")
         DENDROPY_COVERAGE_ANALYSIS_AVAILABLE = True
 
-        from dendropy.test import get_test_file_names, get_test_suite
+        from dendropy.test import get_test_suite
         from dendropy.test.support import pathmap
 
         class CoverageAnalysis(Command):
@@ -57,7 +57,7 @@ else:
             user_options = [
                 ('erase', None, "remove all existing coverage results"),
                 ('branch', 'b', 'measure branch coverage in addition to statement coverage'),
-                ('test-file=', 't', "explicitly specify a module to test (e.g. 'dendropy.test.test_containers')"),
+                ('test-module=', 't', "explicitly specify a module to test (e.g. 'dendropy.test.test_containers')"),
                 ('no-annotate', None, "do not create annotated source code files"),
                 ('no-html', None, "do not create HTML report files"),
             ]
@@ -66,7 +66,7 @@ else:
                 """
                 Initialize options to default values.
                 """
-                self.test_file = None
+                self.test_module = None
                 self.branch = False
                 self.erase = False
                 self.no_annotate = False
@@ -89,10 +89,10 @@ else:
                         pass
                 else:
                     _LOG.info("running coverage analysis ...")
-                    if self.test_file is None:
+                    if self.test_module is None:
                         test_suite = get_test_suite()
                     else:
-                        test_suite = get_test_suite([self.test_file])
+                        test_suite = get_test_suite([self.test_module])
                     runner = unittest.TextTestRunner()
                     cov = coverage.coverage(branch=self.branch)
                     cov.start()
@@ -111,14 +111,14 @@ else:
 #        parser = OptionParser(add_help_option=True)
 #        parser.add_option('--erase', dest='erase', action="store_true", default=False, help="remove all existing coverage results")
 #        parser.add_option('--branch', '-b', dest='branch', action="store_true", default=False, help='measure branch coverage in addition to statement coverage')
-#        parser.add_option('--test-file', '-t', dest='test_file', default=None, help="explicitly specify a module to test (e.g. 'dendropy.test.test_containers')")
+#        parser.add_option('--test-file', '-t', dest='test_module', default=None, help="explicitly specify a module to test (e.g. 'dendropy.test.test_containers')")
 #        parser.add_option('--no-annotate', dest='no_annotate', action="store_true", default=False, help="do not create annotated source code files"),
 #        parser.add_option('--no-html', dest='no_html', action="store_true", default=False, help="do not create HTML report files"),
 #        (opts, args) = parser.parse_args()
 #        cov = CoverageAnalysis()
 #        cov.erase = opts.erase
 #        cov.branch = opts.branch
-#        cov.test_file = opts.test_file
+#        cov.test_module = opts.test_module
 #        cov.no_annotate = opts.no_annotate
 #        cov.no_html = opt.no_html
 #        cov.run()
