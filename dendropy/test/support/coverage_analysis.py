@@ -27,14 +27,21 @@ Support for coverage analysis.
 import unittest
 import shutil
 import sys
+from optparse import OptionParser
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
+DENDROPY_COVERAGE_ANALYSIS_AVAILABLE = False
 try:
     from setuptools import Command
-    DENDROPY_COVERAGE_ANALYSIS_AVAILABLE = False
+except ImportError:
+    _LOG.warn("setuptools.Command could not be imported: setuptools extensions not available")
+else:
     try:
         import coverage
+    except ImportError:
+        _LOG.warn("coverage could not be imported: test coverage analysis not available")
+    else:
         _LOG.info("coverage imported successfully: test coverage analysis available")
         DENDROPY_COVERAGE_ANALYSIS_AVAILABLE = True
 
@@ -56,7 +63,9 @@ try:
             ]
 
             def initialize_options(self):
-                """init options"""
+                """
+                Initialize options to default values.
+                """
                 self.test_file = None
                 self.branch = False
                 self.erase = False
@@ -65,11 +74,12 @@ try:
                 self.omit_prefixes = ['dendropy/test']
 
             def finalize_options(self):
-                """finalize options"""
                 pass
 
             def run(self):
-                """runner"""
+                """
+                Main command implementation.
+                """
 
                 if self.erase:
                     _LOG.warn("removing coverage results directory: '%s'" % pathmap.TESTS_COVERAGE_DIR)
@@ -96,9 +106,22 @@ try:
                                 directory=pathmap.TESTS_COVERAGE_REPORT_DIR)
                     cov.report(omit_prefixes=self.omit_prefixes)
 
-    except ImportError:
-        _LOG.warn("coverage could not be imported: test coverage analysis not available")
-        DENDROPY_COVERAGE_ANALYSIS_AVAILABLE = False
-
-except ImportError:
-    _LOG.warn("setuptools.Command could not be imported: setuptools extensions not available")
+#if __name__ == "__main__":
+#    if DENDROPY_COVERAGE_ANALYSIS_AVAILABLE:
+#        parser = OptionParser(add_help_option=True)
+#        parser.add_option('--erase', dest='erase', action="store_true", default=False, help="remove all existing coverage results")
+#        parser.add_option('--branch', '-b', dest='branch', action="store_true", default=False, help='measure branch coverage in addition to statement coverage')
+#        parser.add_option('--test-file', '-t', dest='test_file', default=None, help="explicitly specify a module to test (e.g. 'dendropy.test.test_containers')")
+#        parser.add_option('--no-annotate', dest='no_annotate', action="store_true", default=False, help="do not create annotated source code files"),
+#        parser.add_option('--no-html', dest='no_html', action="store_true", default=False, help="do not create HTML report files"),
+#        (opts, args) = parser.parse_args()
+#        cov = CoverageAnalysis()
+#        cov.erase = opts.erase
+#        cov.branch = opts.branch
+#        cov.test_file = opts.test_file
+#        cov.no_annotate = opts.no_annotate
+#        cov.no_html = opt.no_html
+#        cov.run()
+#    else:
+#        sys.stderr.write("Coverage command extension not available: either setuptools or coverage or both could not be imported.\n")
+#        sys.exit(1)

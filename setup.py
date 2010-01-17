@@ -87,19 +87,22 @@ sys.stderr.write("\nscripts identified: %s\n" % ", ".join(SCRIPTS))
 
 try:
     from setuptools import Command
+except ImportError:
+    sys.stderr.write("setuptools.Command could not be imported: setuptools extensions not available\n")
+else:
     sys.stderr.write("setuptools command extensions are available\n")
     command_hook = "distutils.commands"
     ENTRY_POINTS[command_hook] = []
 
     ###########################################################################
     # coverage
-    from dendropy.test import coverage_analysis
+    from dendropy.test.support import coverage_analysis
     if coverage_analysis.DENDROPY_COVERAGE_ANALYSIS_AVAILABLE:
-        sys.stderr.write("coverage analysis available: 'python setup.py coverage' to run\n")
-        ENTRY_POINTS[command_hook].append("coverage = dendropy.test.coverage_analysis:CoverageAnalysis")
+        sys.stderr.write("coverage analysis available using: 'python setup.py coverage'\n")
+        ENTRY_POINTS[command_hook].append("coverage = dendropy.test.support.coverage_analysis:CoverageAnalysis")
+    else:
+        sys.stderr.write("coverage analysis not available\n")
 
-except ImportError:
-    sys.stderr.write("setuptools.Command could not be imported: setuptools extensions not available\n")
 
 ###############################################################################
 # Main setup
