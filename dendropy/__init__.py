@@ -69,12 +69,14 @@ try:
     DENDROPY_HEAD = utility.get_current_git_head(os.path.dirname(__file__))
     DENDROPY_BRANCH = utility.get_current_git_branch(os.path.dirname(__file__))
     DENDROPY_TAG = utility.get_current_git_tag(os.path.dirname(__file__))
+    DENDROPY_REVISION_DESCRIPTION = utility.get_current_git_desc(os.path.dirname(__file__))
     DENDROPY_ZIP_SAFE = False
 except OSError:
     DENDROPY_PATH = "[UNAVAILABLE]"
     DENDROPY_HEAD = "[UNAVAILABLE]"
     DENDROPY_BRANCH = "[UNAVAILABLE]"
     DENDROPY_TAG = "[UNAVAILABLE]"
+    DENDROPY_REVISION_DESCRIPTION = "[UNAVAILABLE]"
     DENDROPY_ZIP_SAFE = True
 
 if __name__ == "__main__":

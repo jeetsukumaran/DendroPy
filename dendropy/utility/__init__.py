@@ -83,9 +83,23 @@ def get_current_git_tag(dirpath=os.path.curdir):
         return '[NOT A GIT REPOSITORY]'
     tags = [t for t in p.stdout.read().split("\n") if t]
     if len(tags) == 0:
-        return 'UNSPECIFIED'
+        return 'UNTAGGED'
     else:
         return tags[-1]
+
+def get_current_git_desc(dirpath=os.path.curdir):
+    p = subprocess.Popen(['git describe'],
+            shell=True,
+        cwd=os.path.abspath(os.path.expandvars(dirpath)),
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+    stderr = p.stderr.read()
+    if stderr == 'fatal: Not a git repository\n':
+        return '[NOT A GIT REPOSITORY]'
+    elif stderr.startswith('fatal: cannot describe'):
+        return get_current_git_head(dirpath)
+    return p.stdout.read().replace('\n', '')
 
 ###############################################################################
 ## USER-SPECIFIC
