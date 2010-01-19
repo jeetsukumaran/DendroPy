@@ -2,14 +2,18 @@
 Tree Simulation and Generation
 ******************************
 
-The :mod:`~dendropy.treesim` module provides functions for the simulation of trees under a variety of theoretical models.
+(COMING SOON ...)
 
-Birth-Death Process Trees
-=========================
-
-There are three different birth-death process tree simulation routines in DendroPy:
 
 .. SCRATCH:
+
+
+    The :mod:`~dendropy.treesim` module provides functions for the simulation of trees under a variety of theoretical models.
+
+    Birth-Death Process Trees
+    =========================
+
+    There are three different birth-death process tree simulation routines in DendroPy:
 
     Returns a birth-death tree with birth rate specified by `birth_rate`, and
     death rate specified by `death_rate`, with edge lengths in continuous (real)
