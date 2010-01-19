@@ -1,6 +1,6 @@
-*******************************
-Working with Character Matrices
-*******************************
+******************
+Character Matrices
+******************
 
 Types of Character Matrices
 ===========================

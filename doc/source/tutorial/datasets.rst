@@ -1,6 +1,6 @@
-**********************
-Working with Data Sets
-**********************
+*********
+Data Sets
+*********
 
 The |DataSet| class provides for objects that allow you to manage multiple types of phylogenetic data.
 

@@ -10,4 +10,5 @@ The DendroPy Tutorial
     trees.rst
     chars.rst
     datasets.rst
+    treestats.rst
     treesims.rst
