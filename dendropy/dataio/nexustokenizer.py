@@ -535,9 +535,8 @@ class NexusTokenizer(object):
                 self.read_next_char()
                 return c
             token = StringIO()
-            fget = self.stream_handle.read
+            fget = self.read_next_char
             quick_check = NexusTokenizer.is_whitespace_or_punctuation
-
             if ignore_punctuation:
                 while True:
                     if quick_check(c):
@@ -551,7 +550,7 @@ class NexusTokenizer(object):
                         c = ' '
                     token.write(c)
                     prev = c
-                    c = fget(1)
+                    c = fget()
                     if not c:
                         break
             else:
@@ -566,7 +565,7 @@ class NexusTokenizer(object):
                         c = ' '
                     token.write(c)
                     prev = c
-                    c = fget(1)
+                    c = fget()
                     if not c:
                         break
             tokenstr = token.getvalue()
