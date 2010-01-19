@@ -1029,9 +1029,9 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                     assert nd is self.seed_node
                     self.seed_node = children[0]
 
-    def encode_splits(self, **kwargs):
+    def update_splits(self, **kwargs):
         """
-        Decorates edges with split bitmasks.
+        (Re-)decorates edges with split bitmasks.
         """
         treesplit.encode_splits(self, **kwargs)
 

@@ -43,11 +43,11 @@ class TestConsensusTree(unittest.TestCase):
                 schema="nexus",
                 index=0,
                 taxon_set=self.tree_list.taxon_set)
-        self.mb_con_tree.encode_splits()
+        self.mb_con_tree.update_splits()
 
     def testConsensus(self):
         con_tree = self.tree_list.consensus(min_freq=0.50, trees_splits_encoded=False, support_label_decimals=2)
-        con_tree.encode_splits()
+        con_tree.update_splits()
         self.assertEqual(treecalc.symmetric_difference(self.mb_con_tree, con_tree), 0)
         self.assertEqual(len(con_tree.split_edges), len(self.mb_con_tree.split_edges))
         sd = self.tree_list.split_distribution
