@@ -470,8 +470,8 @@ class NexusInterleavedWhitespace(unittest.TestCase):
                       """  dimensions nchar=8;""",
                       """  format interleave datatype=dna; """,
                       """    matrix  """,
-                      """ %s A   C  T  G      """ % tax_labels[0],
-                      """ %s A   C  T  G      """ % tax_labels[1],
+                      """ %s A   C  T [some comment] G      """ % tax_labels[0],
+                      """ %s A [another comment]  C  T  G      """ % tax_labels[1],
                       """ %s A   C  T  G      """ % tax_labels[2],
                       """ %s A   C  T  G      """ % tax_labels[3],
                       """    """,
@@ -483,6 +483,9 @@ class NexusInterleavedWhitespace(unittest.TestCase):
                       """ end; """,
                     ]
         data_src = "\n".join(data_rows)
+        print "###################"
+        print data_src
+        print "###################"
         parsed = dendropy.DnaCharacterMatrix.get_from_string(data_src, "nexus")
 
 if __name__ == "__main__":

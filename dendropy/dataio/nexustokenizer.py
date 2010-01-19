@@ -544,7 +544,7 @@ class NexusTokenizer(object):
                             self.skip_comment()
                             c = self.current_file_char
                             continue
-                        if not c in ignore_punctuation:
+                        if quick_check(c) and not c in ignore_punctuation:
                             break
                     if c == '_' and not self.preserve_underscores:
                         c = ' '

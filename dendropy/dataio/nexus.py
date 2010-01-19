@@ -619,11 +619,15 @@ class NexusReader(iosys.DataReader):
                         and not self.stream_tokenizer.eof \
                         and token != ";":
                     # including spaces and then stripping them out: hack to deal with trailing whitespace problems
-                    token = self.stream_tokenizer.read_next_token(ignore_punctuation="{}() ").replace(' ','')
+                    token = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
+                    print "token = '%s'" % token
                     char_group.write(token)
                 char_group = char_group.getvalue()
+                print "\n\nFULL CHAR GROUP: '%s'\n" % char_group
                 self._process_chars(char_group, char_block, symbol_state_map, taxon)
+                print "OK"
                 token = self.stream_tokenizer.read_next_token()
+                print "next token: '%s'" % token
             else:
                 while len(char_block[taxon]) < self.file_specified_nchar and not self.stream_tokenizer.eof:
                     char_group = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
@@ -644,14 +648,14 @@ class NexusReader(iosys.DataReader):
                 try:
                     state = symbol_state_map[char.upper()]
                 except KeyError:
-                    raise self.data_format_error("Unrecognized (single) state encountered:'%s' is not defined in %s" % (char, symbol_state_map.keys()))
+                    raise self.data_format_error("Unrecognized (single) state encountered: '%s' is not defined in %s" % (char, symbol_state_map.keys()))
             else:
                 if hasattr(char, "open_tag"):
                     state = self._get_state_for_multistate_char(char, char_block.default_state_alphabet)
                 else:
-                    raise self.data_format_error("Multiple character state without multi-state mark-up:'%s'" % char)
+                    raise self.data_format_error("Multiple character state without multi-state mark-up: '%s'" % char)
             if state is None:
-                raise self.data_format_error("Unrecognized state encountered:'%s'" % char)
+                raise self.data_format_error("Unrecognized state encountered: '%s'" % char)
             char_block[taxon].append(dataobject.CharacterDataCell(value=state))
 
     def _parse_nexus_multistate(self, seq):
