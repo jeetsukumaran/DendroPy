@@ -40,13 +40,11 @@ Probability Under the Coalescent Model
 =======================================
 
 The :mod:`~dendropy.coalescent` module provides a range of methods for simulations and calculations under Kingman's coalescent framework and related models:
-
     :func:`~dendropy.coalescent.log_probability_of_coalescent_tree`
         Given a |Tree| object as the first argument, and the haploid population size as the second, returns the log probability of the |Tree| under the neutral coalescent.
 
-Counting of Deep Coalescences
-=============================
-
+Numbers of Deep Coalescences
+============================
     :func:`~dendropy.coalescent.num_deep_coalescences_with_fitted_tree`
         Given two |Tree| objects, a gene tree and a species tree, sharing the same leaf-set, this returns the number of deep coalescences resulting from fitting the gene tree to the species tree.
 
