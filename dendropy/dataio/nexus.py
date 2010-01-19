@@ -618,11 +618,12 @@ class NexusReader(iosys.DataReader):
                         and self.stream_tokenizer.current_file_char != '\r' \
                         and not self.stream_tokenizer.eof \
                         and token != ";":
-                    token = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
+                    # including spaces and then stripping them out: hack to deal with trailing whitespace problems
+                    token = self.stream_tokenizer.read_next_token(ignore_punctuation="{}() ").replace(' ','')
                     char_group.write(token)
                 char_group = char_group.getvalue()
                 self._process_chars(char_group, char_block, symbol_state_map, taxon)
-                token = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
+                token = self.stream_tokenizer.read_next_token()
             else:
                 while len(char_block[taxon]) < self.file_specified_nchar and not self.stream_tokenizer.eof:
                     char_group = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
