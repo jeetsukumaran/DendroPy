@@ -1,5 +1,5 @@
-************************************
-Manipulating and Restructuring Trees
-************************************
+***********************************
+Tree Manipulation and Restructuring
+***********************************
 
 (COMING SOON ...)

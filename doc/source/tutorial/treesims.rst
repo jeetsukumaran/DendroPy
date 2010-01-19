@@ -1,6 +1,6 @@
-****************
-Simulating Trees
-****************
+******************************
+Tree Simulation and Generation
+******************************
 
 The :mod:`~dendropy.treesim` module provides functions for the simulation of trees under a variety of theoretical models.
 
