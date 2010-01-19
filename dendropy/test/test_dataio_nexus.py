@@ -457,5 +457,33 @@ class MesquiteNexusMultiTaxaTest(datatest.ComplexMultiTaxonSetDataVerificationTe
         d1 = dendropy.DataSet(stream=s, schema="nexus")
         self.roundTripDataSetTest(d1, "nexus")
 
+class NexusInterleavedWhitespace(unittest.TestCase):
+
+    def testSpaces1(self):
+        tax_labels = ("' A  1   '", "' B  2   '", "' C 3   '", "' D  4   '")
+        data_rows = [ """#NEXUS  """,
+                      """   begin taxa;   """,
+                      """  dimensions ntax = 4; """,
+                      """ taxlabels %s; """ % (" ".join(tax_labels)),
+                      """ end; """,
+                      """begin characters;""",
+                      """  dimensions nchar=8;""",
+                      """  format interleave datatype=dna; """,
+                      """    matrix  """,
+                      """ %s A   C  T  G      """ % tax_labels[0],
+                      """ %s A   C  T  G      """ % tax_labels[1],
+                      """ %s A   C  T  G      """ % tax_labels[2],
+                      """ %s A   C  T  G      """ % tax_labels[3],
+                      """    """,
+                      """ %s A   C  T  G      """ % tax_labels[0],
+                      """ %s A   C  T  G      """ % tax_labels[1],
+                      """ %s A   C  T  G      """ % tax_labels[2],
+                      """ %s A   C  T  G      """ % tax_labels[3],
+                      """ ; """,
+                      """ end; """,
+                    ]
+        data_src = "\n".join(data_rows)
+        parsed = dendropy.DnaCharacterMatrix.get_from_string(data_src, "nexus")
+
 if __name__ == "__main__":
     unittest.main()
