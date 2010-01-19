@@ -43,7 +43,7 @@ from dendropy.dataio import get_reader, get_writer, tree_source_iter, multi_tree
 ###############################################################################
 ## PACKAGE METADATA
 
-__version__ = "3.0.5"
+__version__ = "3.0.6"
 PROJECT_NAME = "DendroPy"
 PROJECT_VERSION = __version__
 PACKAGE_VERSION = PROJECT_VERSION # for backwards compatibility (with sate)
