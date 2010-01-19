@@ -10,6 +10,7 @@ The DendroPy Tutorial
     trees.rst
     chars.rst
     datasets.rst
+    treenav.rst
     treestats.rst
     treemanips.rst
     treesims.rst
