@@ -509,7 +509,7 @@ class NexusTokenizer(object):
         while (NexusTokenizer.is_whitespace(self.current_file_char) \
                 or self.current_file_char=='[') \
                 and not self.eof:
-            if self.current_file_char=='[':
+            if self.current_file_char == '[':
                 self.read_noncomment_character()
             elif _is_newline(self.current_file_char):
                 return None
@@ -555,27 +555,28 @@ class NexusTokenizer(object):
                                 c = self.current_file_char
                                 continue
                             if quick_check(c) and not c in ignore_punctuation:
+                                if not NexusTokenizer.is_whitespace(c):
+                                    token.write(c)
                                 break
                         if c == '_' and not self.preserve_underscores:
                             c = ' '
                         token.write(c)
-                        prev = c
                         c = self.read_next_char()
                         if not c:
                             break
                     token = token.getvalue()
+                    if token == ";":
+                        raise self.BlockTerminatedException()
+                    elif token:
+                        token_list.append(token)
                     if c == "\r" or c == "\n":
                         raise self.EolException()
-                    elif token == ";":
-                        raise self.BlockTerminatedException()
                     else:
-                        if token:
-                            token_list.append(token)
                         c = self.read_next_char()
         except self.EolException:
             pass
         except self.BlockTerminatedException:
-            pass
+            raise
         return token_list
 
     def skip_to_significant_character(self):
@@ -645,7 +646,6 @@ class NexusTokenizer(object):
                     if c == '_' and not self.preserve_underscores:
                         c = ' '
                     token.write(c)
-                    prev = c
                     c = fget()
                     if not c:
                         break
@@ -660,7 +660,6 @@ class NexusTokenizer(object):
                     if c == '_' and not self.preserve_underscores:
                         c = ' '
                     token.write(c)
-                    prev = c
                     c = fget()
                     if not c:
                         break
