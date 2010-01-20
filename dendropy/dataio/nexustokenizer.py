@@ -331,6 +331,15 @@ class NexusTokenizer(object):
     "Encapsulates reading NEXUS/NEWICK tokens from file."
 
     #######################################################################
+    ## FOR COMMUNICATING PARSER POSITION/STATUS
+
+    class BlockTerminatedException(Exception):
+        pass
+
+    class EolException(Exception):
+        pass
+
+    #######################################################################
     ## STATIC METHODS
 
     punctuation = '\(\)\[\]\{\}\\\/\,\;\:\=\*\'\"\`\+\-\<\>'
@@ -483,9 +492,94 @@ class NexusTokenizer(object):
         return self.current_file_char
     noncomment_file_char = property(read_noncomment_character)
 
+    def read_statement_tokens_till_eol(self, token_list=None, ignore_punctuation=None):
+        """
+        Reads all tokens in the file stream until EOL, EOF, or ';'
+        is encountered.
+        """
+        _is_newline = lambda x: x == '\n' or x == '\r'
+        self.comments = []
+        if ignore_punctuation == None:
+            ignore_punctuation = []
+        self.current_token = None
+        if self.eof:
+            return None
+
+        # skip to first significant
+        while (NexusTokenizer.is_whitespace(self.current_file_char) \
+                or self.current_file_char=='[') \
+                and not self.eof:
+            if self.current_file_char=='[':
+                self.read_noncomment_character()
+            elif _is_newline(self.current_file_char):
+                return None
+            else:
+                self.read_next_char()
+        if self.eof:
+            self.data_format_error("Unexpected end of file before statement completion")
+        elif self.current_file_char == ';':
+            return None
+
+        c = self.current_file_char
+        if token_list is None:
+            token_list = []
+        try:
+            while not self.eof:
+                if c == "'":
+                    token = StringIO()
+                    try:
+                        fastfunc = self._raw_read_next_char
+                        c = fastfunc()
+                        while True:
+                            if c == "'":
+                                c = self.read_next_char()
+                                if c == "'":
+                                    token.write("'")
+                                    c = fastfunc()
+                                else:
+                                    break
+                            else:
+                                token.write(c)
+                                c = fastfunc()
+                    except StopIteration:
+                        self.eof = True
+                        raise self.data_format_error("Unexpected end of file inside quoted token")
+                    token_list.append(token.getvalue())
+                else:
+                    token = StringIO()
+                    quick_check = NexusTokenizer.is_whitespace_or_punctuation
+                    while True:
+                        if quick_check(c):
+                            if c == '[':
+                                self.skip_comment()
+                                c = self.current_file_char
+                                continue
+                            if quick_check(c) and not c in ignore_punctuation:
+                                break
+                        if c == '_' and not self.preserve_underscores:
+                            c = ' '
+                        token.write(c)
+                        prev = c
+                        c = self.read_next_char()
+                        if not c:
+                            break
+                token = token.getvalue()
+                if token == "\r" or token == "\n":
+                    raise self.EolException()
+                elif token == ";":
+                    raise self.BlockTerminatedException()
+                else:
+                    token_list.append(token)
+        except self.EolException():
+            pass
+        except self.BlockTerminatedException():
+            pass
+        return token_list
+
     def skip_to_significant_character(self):
         "Advances to the first non-whitespace character outside a comment block."
-        while (NexusTokenizer.is_whitespace(self.current_file_char) or self.current_file_char=='[') and not self.eof:
+        while (NexusTokenizer.is_whitespace(self.current_file_char) \
+                or self.current_file_char=='[') and not self.eof:
             if self.current_file_char=='[':
                 self.read_noncomment_character()
             else:
@@ -494,8 +588,8 @@ class NexusTokenizer(object):
 
     def read_next_token(self, ignore_punctuation=None):
         """
-        Reads the next token in the file stream. A token in this context is any word or punctuation character
-        outside of a comment block.
+        Reads the next token in the file stream. A token in this context
+        is any word or punctuation character outside of a comment block.
         """
         self.comments = []
         if ignore_punctuation == None:
@@ -569,10 +663,6 @@ class NexusTokenizer(object):
                     if not c:
                         break
             tokenstr = token.getvalue()
-            self.current_col_number += len(tokenstr)
-            self.current_file_char = c
-            self.previous_file_char = prev
-
         self.current_token = tokenstr
         return tokenstr
 

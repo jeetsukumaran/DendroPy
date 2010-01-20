@@ -588,8 +588,7 @@ class NexusReader(iosys.DataReader):
         while token != ';' and not self.stream_tokenizer.eof:
             taxon = taxon_set.require_taxon(label=token)
             if taxon not in char_block:
-                if not self.exclude_chars:
-                    char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
+                char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
                 if self.interleave:
                     raise NotImplementedError("Continuous characters in NEXUS schema not yet supported")
                 else:
@@ -607,31 +606,30 @@ class NexusReader(iosys.DataReader):
         taxon_set = char_block.taxon_set
         symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
         token = self.stream_tokenizer.read_next_token()
-        while token != ';' and not self.stream_tokenizer.eof:
-            taxon = taxon_set.require_taxon(label=token)
-            if taxon not in char_block:
-                if not self.exclude_chars:
-                    char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
-            if self.interleave:
-                char_group = StringIO()
-                while self.stream_tokenizer.current_file_char != '\n' \
-                        and self.stream_tokenizer.current_file_char != '\r' \
-                        and not self.stream_tokenizer.eof \
-                        and token != ";":
-                    # including spaces and then stripping them out: hack to deal with trailing whitespace problems
-                    token = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
-                    print "token = '%s'" % token
-                    char_group.write(token)
-                char_group = char_group.getvalue()
-                print "\n\nFULL CHAR GROUP: '%s'\n" % char_group
-                self._process_chars(char_group, char_block, symbol_state_map, taxon)
-                print "OK"
+
+        if self.interleave:
+            try:
+                while token != ";" and not self.stream_tokenizer.eof:
+                    taxon = taxon_set.require_taxon(label=token)
+                    tokens = []
+                    if taxon not in char_block:
+                        char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
+                    tokens = self.stream_tokenizer.read_statement_tokens_till_eol(tokens, ignore_punctuation="{}()")
+                    if tokens is not None:
+                        self._process_chars(''.join(token), char_block, symbol_state_map, taxon)
                 token = self.stream_tokenizer.read_next_token()
-                print "next token: '%s'" % token
-            else:
-                while len(char_block[taxon]) < self.file_specified_nchar and not self.stream_tokenizer.eof:
+            except nexustokenizer.NexusTokenizer.BlockTerminatedException:
+                pass
+        else:
+            while token != ';' and not self.stream_tokenizer.eof:
+                taxon = taxon_set.require_taxon(label=token)
+                if taxon not in char_block:
+                    char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
+                while len(char_block[taxon]) < self.file_specified_nchar \
+                        and not self.stream_tokenizer.eof:
                     char_group = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
-                    self._process_chars(char_group, char_block, symbol_state_map, taxon)
+                    if char_group is not None:
+                        self._process_chars(char_group, char_block, symbol_state_map, taxon)
                 if len(char_block[taxon]) < self.file_specified_nchar:
                     raise self.data_format_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
                         % (taxon.label, self.file_specified_nchar, len(char_block[taxon]), char_block[taxon].symbols_as_string()))
