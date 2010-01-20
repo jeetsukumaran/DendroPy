@@ -33,6 +33,7 @@ from cStringIO import StringIO
 from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
 from dendropy.test.support import datatest
+from dendropy.test.support import extendedtest
 import dendropy
 from dendropy.dataio import nexus
 from dendropy.dataio import multi_tree_source_iter
@@ -457,38 +458,52 @@ class MesquiteNexusMultiTaxaTest(datatest.ComplexMultiTaxonSetDataVerificationTe
         d1 = dendropy.DataSet(stream=s, schema="nexus")
         self.roundTripDataSetTest(d1, "nexus")
 
-class NexusInterleavedWhitespace(unittest.TestCase):
+class NexusInterleavedWhitespace(extendedtest.ExtendedTestCase):
 
     def testSpaces1(self):
-        tax_labels = ("' A  1   '", "' B  2   '", "' C 3   '", "' D  4   '")
+        tax_labels = (" A  1   ", " B  2   ", " C 3   ", " D  4   ")
         data_rows = [ """#NEXUS  """,
                       """   begin taxa;   """,
                       """  dimensions ntax = 4; """,
-                      """ taxlabels %s; """ % (" ".join(tax_labels)),
+                      """ taxlabels %s; """ % (" ".join([("'%s'") % x for x in tax_labels])),
                       """ end; """,
                       """begin characters;""",
                       """  dimensions nchar=8;""",
                       """  format interleave datatype=dna; """,
                       """    matrix  """,
-                      """ %s A   C  T [some comment] G      """ % tax_labels[0],
-                      """ %s A [another comment]  C  T  G      """ % tax_labels[1],
-                      """ %s A   C  T  G      """ % tax_labels[2],
-                      """ %s A   C  T  G      """ % tax_labels[3],
+                      """ '%s' {ACTG}   C  T [some comment] G      """ % tax_labels[0],
+                      """ '%s' A [another comment]  C  T  G      """ % tax_labels[1],
+                      """ '%s' [starting with a comment] A   C {A T C}  G      """ % tax_labels[2],
+                      """ '%s' -   C  T  G      """ % tax_labels[3],
                       """    """,
-                      """ %s A   C  T  G      """ % tax_labels[0],
-                      """ %s A   C  T  G      """ % tax_labels[1],
-                      """ %s A   C  T  G      """ % tax_labels[2],
-                      """ %s A   C  T  G      """ % tax_labels[3],
+                      """ '%s' A   C  (T  C G) G      """ % tax_labels[0],
+                      """ '%s' A   C  T  G      """ % tax_labels[1],
+                      """ '%s' {C  A}   ?  -  -      """ % tax_labels[2],
+                      """ '%s' -   C  T  G      """ % tax_labels[3],
                       """ ; """,
                       """ end; """,
                     ]
         data_src = "\n".join(data_rows)
-        print "###################"
-        print data_src
-        print "###################"
-        parsed = dendropy.DnaCharacterMatrix.get_from_string(data_src, "nexus")
-        print
-        print parsed.as_string('nexus')
+        data = dendropy.DnaCharacterMatrix.get_from_string(data_src, "nexus")
+
+        expected_symbols = {
+            " A  1   "  : "NCTGACBG",
+            " B  2   "  : "ACTGACTG",
+            " C 3   "  : "ACHGM?--",
+            " D  4   "  : "-CTG-CTG",
+        }
+
+        self.assertEqual(len(data.taxon_set), len(tax_labels))
+        self.assertEqual(len(data), len(tax_labels))
+        for i, t in enumerate(data.taxon_set):
+            self.assertEqual(t.label, tax_labels[i])
+            self.assertContained(t, data)
+            self.assertSame(data[i], data[t])
+            s1 = data[t].symbols_as_list()
+            s2 = expected_symbols[t.label]
+            self.assertEqual(len(s1), len(s2))
+            for j, c in enumerate(s1):
+                self.assertEqual(c, s2[j])
 
 if __name__ == "__main__":
     unittest.main()
