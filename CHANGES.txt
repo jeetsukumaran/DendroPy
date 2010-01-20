@@ -1,27 +1,37 @@
+Changes
+=======
+
 Version 3.0.7
+-------------
 
     * More robust fix for trailing whitespaces in interleaved NEXUS data.
 
 Version 3.0.6
+-------------
 
     * Fixed bug in handling trailing whitespaces in interleaved NEXUS data.
 
 Version 3.0.5
+-------------
 
     * Setup is now zipsafe by default.
 
 Version 3.0.4
+-------------
 
     * Allowed custom string to taxon mapping in nexus stream tokenizer.
 
 Version 3.0.3
+-------------
 
     * Fixed issue with encoding of splits when root has degree one.
 
 Version 3.0.2
+-------------
 
     * Flagged setup as unzipped source-only.
 
 Version 3.0.0
+-------------
 
     * Initial release of Dendropy 3.
