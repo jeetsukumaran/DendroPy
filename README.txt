@@ -24,8 +24,8 @@ Alternatively, if you have `pip <http://pypi.python.org/pypi/pip>`_ installed, y
 
 If you download the source code archive from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_, you can unarchive it and install it from the local source by running::
 
-    $ tar -xvzf DendroPy-3.0.0.tar.gz
-    $ cd DendroPy-3.0.0
+    $ tar -xvzf DendroPy-3.x.x.tar.gz
+    $ cd DendroPy-3.x.x
     $ sudo python setup.py install
 
 Documentation
