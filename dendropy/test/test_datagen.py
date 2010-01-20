@@ -60,10 +60,10 @@ class DataForTestingTest(datatest.DataObjectVerificationTestCase):
         taxon_set = char_matrix.taxon_set
         dna_dict = datagen.reference_dna_dict()
         self.assertEqual(len(char_matrix), 29)
-        self.assertSame(char_matrix.default_state_alphabet, dendropy.DNA_STATE_ALPHABET)
+        self.assertIs(char_matrix.default_state_alphabet, dendropy.DNA_STATE_ALPHABET)
         for tax_label, tax_seq_symbols in dna_dict.items():
             taxon = taxon_set.require_taxon(label=tax_label)
-            self.assertContained(taxon, char_matrix)
+            self.assertIn(taxon, char_matrix)
             seq_vec = char_matrix[taxon]
             self.assertEqual(len(seq_vec), len(tax_seq_symbols))
             for si, s1 in enumerate(tax_seq_symbols):
@@ -76,10 +76,10 @@ class DataForTestingTest(datatest.DataObjectVerificationTestCase):
         self.assertEqual(len(dataset.taxon_sets), 1)
         self.assertEqual(len(dataset.taxon_sets[0]), 29)
         self.assertEqual(len(dataset.tree_lists), 1)
-        self.assertSame(dataset.tree_lists[0].taxon_set, dataset.taxon_sets[0])
+        self.assertIs(dataset.tree_lists[0].taxon_set, dataset.taxon_sets[0])
         self.assertEqual(len(dataset.char_matrices), 2)
-        self.assertSame(dataset.char_matrices[0].taxon_set, dataset.taxon_sets[0])
-        self.assertSame(dataset.char_matrices[1].taxon_set, dataset.taxon_sets[0])
+        self.assertIs(dataset.char_matrices[0].taxon_set, dataset.taxon_sets[0])
+        self.assertIs(dataset.char_matrices[1].taxon_set, dataset.taxon_sets[0])
 
 if __name__ == "__main__":
     unittest.main()

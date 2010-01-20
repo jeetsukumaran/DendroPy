@@ -75,15 +75,15 @@ class TaxaTest(datatest.DataObjectVerificationTestCase):
         self.assertRaises(KeyError, self.taxon_set.require_taxon, label="A1", oid=None)
         self.taxon_set.unlock()
         x1 = self.taxon_set.new_taxon(label="X1")
-        self.assertSame(x1, self.taxon_set.get_taxon(label="X1"))
-        self.assertSame(self.taxon_set.get_taxon(label="X2"), None)
+        self.assertIs(x1, self.taxon_set.get_taxon(label="X1"))
+        self.assertIs(self.taxon_set.get_taxon(label="X2"), None)
         self.taxon_set.require_taxon(label="X3")
         self.assertEquals(len(self.taxon_set), 12)
 
     def testTaxonQuerying(self):
         ts = dendropy.TaxonSet(self.labels)
-        self.assertSame(ts.get_taxon(label="Q"), None)
-        self.assertSame(ts.get_taxon(label="T1"), ts[0])
+        self.assertIs(ts.get_taxon(label="Q"), None)
+        self.assertIs(ts.get_taxon(label="T1"), ts[0])
 
 if __name__ == "__main__":
     unittest.main()

@@ -64,7 +64,7 @@ class DataSetCreateTest(datatest.DataObjectVerificationTestCase):
         char_matrix = datagen.reference_dna_matrix()
         ds1 = dendropy.DataSet(char_matrix)
         self.assertEqual(len(ds1.char_matrices), 1)
-        self.assertSame(ds1.char_matrices[0], char_matrix)
+        self.assertIs(ds1.char_matrices[0], char_matrix)
         ds2 = dendropy.DataSet(ds1)
         self.assertDistinctButEqual(ds1, ds2)
 
@@ -72,7 +72,7 @@ class DataSetCreateTest(datatest.DataObjectVerificationTestCase):
         char_matrix = datagen.reference_standard_matrix()
         ds1 = dendropy.DataSet(char_matrix)
         self.assertEqual(len(ds1.char_matrices), 1)
-        self.assertSame(ds1.char_matrices[0], char_matrix)
+        self.assertIs(ds1.char_matrices[0], char_matrix)
         ds2 = dendropy.DataSet(ds1)
         self.assertDistinctButEqual(ds1, ds2)
 
@@ -96,7 +96,7 @@ class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
     def testBoundTaxonSetDefault(self):
         d = dendropy.DataSet(attach_taxon_set=True)
         self.assertEqual(len(d.taxon_sets), 1)
-        self.assertSame(d.taxon_sets[0], d.attached_taxon_set)
+        self.assertIs(d.taxon_sets[0], d.attached_taxon_set)
         d.read_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
         self.assertEqual(len(d.taxon_sets), 1)
         self.assertEqual(len(d.taxon_sets[0]), 29)
@@ -113,7 +113,7 @@ class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
     def testBindAndUnbind(self):
         d = dendropy.DataSet(attach_taxon_set=True)
         self.assertEqual(len(d.taxon_sets), 1)
-        self.assertSame(d.taxon_sets[0], d.attached_taxon_set)
+        self.assertIs(d.taxon_sets[0], d.attached_taxon_set)
         d.read_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
         self.assertEqual(len(d.taxon_sets), 1)
         self.assertEqual(len(d.taxon_sets[0]), 29)
@@ -134,8 +134,8 @@ class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
         t = dendropy.TaxonSet()
         d.attach_taxon_set(t)
         self.assertEqual(len(d.taxon_sets), 1)
-        self.assertSame(d.taxon_sets[0], d.attached_taxon_set)
-        self.assertSame(d.attached_taxon_set, t)
+        self.assertIs(d.taxon_sets[0], d.attached_taxon_set)
+        self.assertIs(d.attached_taxon_set, t)
         d.read_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
         self.assertEqual(len(d.taxon_sets), 1)
         self.assertEqual(len(d.taxon_sets[0]), 29)

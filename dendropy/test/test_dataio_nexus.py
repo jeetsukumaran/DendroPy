@@ -497,8 +497,8 @@ class NexusInterleavedWhitespace(extendedtest.ExtendedTestCase):
         self.assertEqual(len(data), len(tax_labels))
         for i, t in enumerate(data.taxon_set):
             self.assertEqual(t.label, tax_labels[i])
-            self.assertContained(t, data)
-            self.assertSame(data[i], data[t])
+            self.assertIn(t, data)
+            self.assertIs(data[i], data[t])
             s1 = data[t].symbols_as_list()
             s2 = expected_symbols[t.label]
             self.assertEqual(len(s1), len(s2))

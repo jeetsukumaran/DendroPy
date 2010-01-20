@@ -108,9 +108,9 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         equal_oids = kwargs.get("equal_oids", None)
         ignore_underscore_substitution = kwargs.get("ignore_underscore_substitution", False)
         self.logger.info("Comparing Taxon objects %d ('%s') and %d ('%s')" % (id(taxon1), taxon1.label, id(taxon2), taxon2.label))
-        self.assertNotSame(taxon1, taxon2)
+        self.assertIsNot(taxon1, taxon2)
         if taxon1.label is None:
-            self.assertSame(taxon2.label, None)
+            self.assertIs(taxon2.label, None)
         elif ignore_underscore_substitution:
             self.assertEqual(taxon1.label.replace(" ", "_"), taxon2.label.replace(" ", "_"))
         else:
@@ -125,7 +125,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         ignore_underscore_substitution = kwargs.get("ignore_underscore_substitution", False)
         ignore_taxon_order = kwargs.get("ignore_taxon_order", False)
         self.logger.info("Comparing TaxonSet objects %d and %d" % (id(taxon_set1), id(taxon_set2)))
-        self.assertNotSame(taxon_set1, taxon_set2)
+        self.assertIsNot(taxon_set1, taxon_set2)
         self.assertEqual(len(taxon_set1), len(taxon_set2))
         if not kwargs.get("ignore_label", True):
             self.assertEqual(taxon_set1.label, taxon_set1.label)
@@ -159,14 +159,14 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         self.assertTrue(tree_list1 is not tree_list2)
         self.assertEqual(len(tree_list1), len(tree_list2))
         if distinct_taxa:
-            self.assertNotSame(tree_list1.taxon_set, tree_list2.taxon_set)
+            self.assertIsNot(tree_list1.taxon_set, tree_list2.taxon_set)
             self.assertDistinctButEqualTaxonSet(tree_list1.taxon_set, tree_list2.taxon_set, **kwargs)
         else:
-            self.assertSame(tree_list1.taxon_set, tree_list2.taxon_set)
+            self.assertIs(tree_list1.taxon_set, tree_list2.taxon_set)
         if distinct_taxa:
             self.assertDistinctButEqualTaxonSet(tree_list1.taxon_set, tree_list2.taxon_set, **kwargs)
         else:
-            self.assertSame(tree_list1.taxon_set, tree_list2.taxon_set)
+            self.assertIs(tree_list1.taxon_set, tree_list2.taxon_set)
         if equal_oids is True:
             self.assertEqual(tree_list1.oid, tree_list1.oid)
         elif equal_oids is False:
@@ -177,11 +177,11 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         for tree_idx, tree1 in enumerate(tree_list1):
             tree2 = tree_list2[tree_idx]
             if distinct_trees:
-                self.assertSame(tree1.taxon_set, tree_list1.taxon_set)
-                self.assertSame(tree2.taxon_set, tree_list2.taxon_set)
+                self.assertIs(tree1.taxon_set, tree_list1.taxon_set)
+                self.assertIs(tree2.taxon_set, tree_list2.taxon_set)
                 self.assertDistinctButEqualTree(tree1, tree2, **kwargs)
             else:
-                self.assertSame(tree1, tree2)
+                self.assertIs(tree1, tree2)
 
     def assertDistinctButEqualTree(self, tree1, tree2, **kwargs):
         """
@@ -202,12 +202,12 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         tree1.debug_check_tree(logger=self.logger)
         self.logger.info(tree2.as_newick_string())
         tree2.debug_check_tree(logger=self.logger)
-        self.assertNotSame(tree1, tree2)
+        self.assertIsNot(tree1, tree2)
         if distinct_taxa:
-            self.assertNotSame(tree1.taxon_set, tree2.taxon_set)
+            self.assertIsNot(tree1.taxon_set, tree2.taxon_set)
             self.assertDistinctButEqualTaxonSet(tree1.taxon_set, tree2.taxon_set, **kwargs)
         else:
-            self.assertSame(tree1.taxon_set, tree2.taxon_set)
+            self.assertIs(tree1.taxon_set, tree2.taxon_set)
         if equal_oids is True:
             self.assertEqual(tree1.oid, tree2.oid)
         elif equal_oids is False:
@@ -222,32 +222,32 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             if node1.taxon is not None:
                 self.assert_(node2.taxon is not None)
                 if distinct_taxa:
-                    self.assertNotSame(node1.taxon, node2.taxon)
+                    self.assertIsNot(node1.taxon, node2.taxon)
                     if equal_oids is True:
                         self.assertEqual(node1.oid, node2.oid)
                     elif equal_oids is False:
                         self.assertNotEqual(node1.oid, node2.oid)
                     self.assertEqual(node1.taxon.label, node2.taxon.label)
-                    self.assertContained(node1.taxon, tree1.taxon_set)
-                    self.assertContained(node2.taxon, tree2.taxon_set)
+                    self.assertIn(node1.taxon, tree1.taxon_set)
+                    self.assertIn(node2.taxon, tree2.taxon_set)
                 else:
-                    self.assertSame(node1.taxon, node2.taxon)
+                    self.assertIs(node1.taxon, node2.taxon)
             else:
-                self.assertSame(node2.taxon, None)
+                self.assertIs(node2.taxon, None)
             if node1.edge.length is not None:
-                self.assertNotSame(node2.edge.length, None)
+                self.assertIsNot(node2.edge.length, None)
                 self.assertAlmostEqual(node1.edge.length, node2.edge.length, 3)
             else:
-                self.assertSame(node2.edge.length, None)
+                self.assertIs(node2.edge.length, None)
             self.assertEqual(len(node1.child_nodes()), len(node2.child_nodes()))
         tree1_edges = [edge for edge in tree1.postorder_edge_iter()]
         tree2_edges = [edge for edge in tree2.postorder_edge_iter()]
         self.assertEqual(len(tree1_edges), len(tree2_edges))
         for edge_idx, edge1 in enumerate(tree1_edges):
             edge2 = tree2_edges[edge_idx]
-            self.assertNotSame(edge1, edge2)
+            self.assertIsNot(edge1, edge2)
             if edge1.length is None:
-                self.assertSame(edge1.length, None)
+                self.assertIs(edge1.length, None)
             else:
                 self.assertAlmostEqual(edge1.length, edge2.length, 2)
             if equal_oids is True:
@@ -258,7 +258,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
     def assertDistinctButEqualStateAlphabetElement(self, sae1, sae2, **kwargs):
         equal_oids = kwargs.get("equal_oids", None)
         equal_symbols = kwargs.get("equal_symbols", True)
-        self.assertNotSame(sae1, sae2)
+        self.assertIsNot(sae1, sae2)
         if equal_oids is True:
             self.assertEqual(sae1.oid, sae2.oid)
         elif equal_oids is False:
@@ -267,16 +267,16 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             self.assertEqual(sae1.symbol, sae2.symbol)
         self.assertEqual(sae1.multistate, sae2.multistate)
         if sae1.member_states is not None:
-            self.assertNotSame(sae2.member_states, None)
+            self.assertIsNot(sae2.member_states, None)
             for mi, ms1 in enumerate(sae1.member_states):
                 ms2 = sae2.member_states[mi]
                 self.assertDistinctButEqualStateAlphabetElement(ms1, ms2, **kwargs)
         else:
-            self.assertSame(sae2.member_states, None)
+            self.assertIs(sae2.member_states, None)
 
     def assertDistinctButEqualStateAlphabet(self, state_alphabet1, state_alphabet2, **kwargs):
         equal_oids = kwargs.get("equal_oids", None)
-        self.assertNotSame(state_alphabet1, state_alphabet2)
+        self.assertIsNot(state_alphabet1, state_alphabet2)
         self.logger.info("Comparing StateAlphabet objects %d and %d" % (id(state_alphabet1), id(state_alphabet2)))
         if equal_oids is True:
             self.assertEqual(state_alphabet1.oid, state_alphabet2.oid)
@@ -285,7 +285,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         if state_alphabet1.missing is not None:
             self.assertDistinctButEqualStateAlphabetElement(state_alphabet1.missing, state_alphabet2.missing, **kwargs)
         else:
-            self.assertSame(state_alphabet2.missing, None)
+            self.assertIs(state_alphabet2.missing, None)
         self.assertEqual(len(state_alphabet1), len(state_alphabet2))
         for state_idx, state1 in enumerate(state_alphabet1):
             state2 = state_alphabet2[state_idx]
@@ -296,12 +296,12 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         equal_oids = kwargs.get("equal_oids", None)
         ignore_chartypes = kwargs.get("ignore_chartypes", True)
         self.logger.info("Comparing ContinuousCharacterMatrix objects %d and %d" % (id(char_matrix1), id(char_matrix2)))
-        self.assertNotSame(char_matrix1, char_matrix2)
+        self.assertIsNot(char_matrix1, char_matrix2)
         if distinct_taxa:
-            self.assertNotSame(char_matrix1.taxon_set, char_matrix2.taxon_set)
+            self.assertIsNot(char_matrix1.taxon_set, char_matrix2.taxon_set)
             self.assertDistinctButEqualTaxonSet(char_matrix1.taxon_set, char_matrix2.taxon_set, **kwargs)
         else:
-            self.assertSame(char_matrix1.taxon_set, char_matrix2.taxon_set)
+            self.assertIs(char_matrix1.taxon_set, char_matrix2.taxon_set)
         if equal_oids is True:
             self.assertEqual(char_matrix1.oid, char_matrix2.oid)
         elif equal_oids is False:
@@ -322,7 +322,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             if distinct_taxa:
                 self.assertDistinctButEqualTaxon(taxon1, taxon2, **kwargs)
             else:
-                self.assertSame(taxon1, taxon2)
+                self.assertIs(taxon1, taxon2)
             self.logger.info("%s: %s" % (taxon1.label, vec1.symbols_as_list()))
             self.logger.info("%s: %s" % (taxon2.label, vec2.symbols_as_list()))
             self.assertEqual(len(vec1), len(vec2))
@@ -341,12 +341,12 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         equal_oids = kwargs.get("equal_oids", None)
         ignore_chartypes = kwargs.get("ignore_chartypes", True)
         self.logger.info("Comparing DiscreteCharacterMatrix objects %d and %d" % (id(char_matrix1), id(char_matrix2)))
-        self.assertNotSame(char_matrix1, char_matrix2)
+        self.assertIsNot(char_matrix1, char_matrix2)
         if distinct_taxa:
-            self.assertNotSame(char_matrix1.taxon_set, char_matrix2.taxon_set)
+            self.assertIsNot(char_matrix1.taxon_set, char_matrix2.taxon_set)
             self.assertDistinctButEqualTaxonSet(char_matrix1.taxon_set, char_matrix2.taxon_set, **kwargs)
         else:
-            self.assertSame(char_matrix1.taxon_set, char_matrix2.taxon_set)
+            self.assertIs(char_matrix1.taxon_set, char_matrix2.taxon_set)
         if equal_oids is True:
             self.assertEqual(char_matrix1.oid, char_matrix2.oid)
         elif equal_oids is False:
@@ -361,8 +361,8 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         elif distinct_state_alphabets is False:
             for sai, sa1 in enumerate(char_matrix1.state_alphabets):
                 sa2 = char_matrix2.state_alphabets[sai]
-                self.assertSame(sa1, sa2)
-                self.assertSame(char_matrix1.default_state_alphabet, char_matrix2.default_state_alphabet)
+                self.assertIs(sa1, sa2)
+                self.assertIs(char_matrix1.default_state_alphabet, char_matrix2.default_state_alphabet)
         if not ignore_chartypes:
             self.assertEqual(len(char_matrix1.character_types), len(char_matrix2.character_types))
         for coli, col1 in enumerate(char_matrix1.character_types):
@@ -370,7 +370,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 col2 = char_matrix2.character_types[coli]
                 self.assertDistinctButEqualStateAlphabet(col1.state_alphabet, col2.state_alphabet)
             elif distinct_state_alphabets is False:
-                self.assertSame(col1.state_alphabet, col2.state_alphabet)
+                self.assertIs(col1.state_alphabet, col2.state_alphabet)
         self.assertEqual(len(char_matrix1), len(char_matrix2))
 
         for ti, taxon1 in enumerate(char_matrix1):
@@ -381,36 +381,36 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             if distinct_taxa:
                 self.assertDistinctButEqualTaxon(taxon1, taxon2, **kwargs)
             else:
-                self.assertSame(taxon1, taxon2)
+                self.assertIs(taxon1, taxon2)
             self.logger.info("%s: %s" % (taxon1.label, vec1.symbols_as_string()))
             self.logger.info("%s: %s" % (taxon2.label, vec2.symbols_as_string()))
             self.assertEqual(len(vec1), len(vec2))
             for i, c1 in enumerate(vec1):
                 c2 = vec2[i]
-                self.assertNotSame(c1, c2)
+                self.assertIsNot(c1, c2)
                 if len(char_matrix1.state_alphabets) == 1:
-                    self.assertContained(c1.value, char_matrix1.state_alphabets[0])
-                    self.assertContained(c2.value, char_matrix2.state_alphabets[0])
+                    self.assertIn(c1.value, char_matrix1.state_alphabets[0])
+                    self.assertIn(c2.value, char_matrix2.state_alphabets[0])
                 else:
                     # assume mapped by columns, and will be checked there
                     pass
                 if distinct_state_alphabets is True:
                     self.assertDistinctButEqualStateAlphabetElement(c1.value, c2.value)
                 elif distinct_state_alphabets is False:
-                    self.assertSame(c1.value, c2.value)
+                    self.assertIs(c1.value, c2.value)
                 if not ignore_chartypes:
                     if c1.character_type is not None:
-                        self.assertNotSame(c1.character_type, c2.character_type)
+                        self.assertIsNot(c1.character_type, c2.character_type)
                         if distinct_state_alphabets is True:
                             self.assertDistinctButEqualStateAlphabet(c1.character_type.state_alphabet, c2.character_type.state_alphabet)
                         elif distinct_state_alphabets is False:
-                            self.assertSame(c1.character_type.state_alphabet, c2.character_type.state_alphabet)
-                        self.assertContained(c1.character_type.state_alphabet, char_matrix1.state_alphabets)
-                        self.assertContained(c2.character_type.state_alphabet, char_matrix2.state_alphabets)
-                        self.assertContained(c1.value, c1.character_type.state_alphabet)
-                        self.assertContained(c2.value, c2.character_type.state_alphabet)
+                            self.assertIs(c1.character_type.state_alphabet, c2.character_type.state_alphabet)
+                        self.assertIn(c1.character_type.state_alphabet, char_matrix1.state_alphabets)
+                        self.assertIn(c2.character_type.state_alphabet, char_matrix2.state_alphabets)
+                        self.assertIn(c1.value, c1.character_type.state_alphabet)
+                        self.assertIn(c2.value, c2.character_type.state_alphabet)
                     else:
-                        self.assertSame(c2.character_type, None)
+                        self.assertIs(c2.character_type, None)
 
     def assertDistinctButEqualCharMatrix(self, char_matrix1, char_matrix2, **kwargs):
         if isinstance(char_matrix1, dendropy.DiscreteCharacterMatrix):
