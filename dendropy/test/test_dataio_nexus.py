@@ -487,6 +487,8 @@ class NexusInterleavedWhitespace(unittest.TestCase):
         print data_src
         print "###################"
         parsed = dendropy.DnaCharacterMatrix.get_from_string(data_src, "nexus")
+        print
+        print parsed.as_string('nexus')
 
 if __name__ == "__main__":
     unittest.main()

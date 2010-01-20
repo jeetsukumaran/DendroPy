@@ -563,16 +563,18 @@ class NexusTokenizer(object):
                         c = self.read_next_char()
                         if not c:
                             break
-                token = token.getvalue()
-                if token == "\r" or token == "\n":
-                    raise self.EolException()
-                elif token == ";":
-                    raise self.BlockTerminatedException()
-                else:
-                    token_list.append(token)
-        except self.EolException():
+                    token = token.getvalue()
+                    if c == "\r" or c == "\n":
+                        raise self.EolException()
+                    elif token == ";":
+                        raise self.BlockTerminatedException()
+                    else:
+                        if token:
+                            token_list.append(token)
+                        c = self.read_next_char()
+        except self.EolException:
             pass
-        except self.BlockTerminatedException():
+        except self.BlockTerminatedException:
             pass
         return token_list
 

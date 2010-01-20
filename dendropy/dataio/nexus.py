@@ -610,16 +610,20 @@ class NexusReader(iosys.DataReader):
         if self.interleave:
             try:
                 while token != ";" and not self.stream_tokenizer.eof:
+                    print "taxon token = '%s'" % token
                     taxon = taxon_set.require_taxon(label=token)
-                    tokens = []
                     if taxon not in char_block:
                         char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
+                    tokens = []
                     tokens = self.stream_tokenizer.read_statement_tokens_till_eol(tokens, ignore_punctuation="{}()")
                     if tokens is not None:
-                        self._process_chars(''.join(token), char_block, symbol_state_map, taxon)
+                        self._process_chars(''.join(tokens), char_block, symbol_state_map, taxon)
+                    else:
+                        break
+                    token = self.stream_tokenizer.read_next_token()
                 token = self.stream_tokenizer.read_next_token()
             except nexustokenizer.NexusTokenizer.BlockTerminatedException:
-                pass
+                token = self.stream_tokenizer.read_next_token()
         else:
             while token != ';' and not self.stream_tokenizer.eof:
                 taxon = taxon_set.require_taxon(label=token)
