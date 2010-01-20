@@ -109,9 +109,17 @@ else:
 
 from dendropy import PROJECT_VERSION
 EXTRA_KWARGS["zip_safe"] = True
+
+### compose long description ###
 long_description = open('README.txt').read()
 long_description = long_description.replace("""download the source code archive""",
     """`download the source code archive <http://pypi.python.org/packages/source/D/DendroPy/DendroPy-%s.tar.gz>`_""" % PROJECT_VERSION)
+long_description = long_description + """
+Changes
+=======
+
+""" + open('CHANGES.txt').read()
+
 setup(name='DendroPy',
       version=PROJECT_VERSION,
       author='Jeet Sukumaran and Mark T. Holder',
