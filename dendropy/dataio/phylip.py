@@ -35,10 +35,19 @@ class PhylipWriter(iosys.DataWriter):
 
     def write(self, stream, **kwargs):
         "Writes dataset to a full PHYLIP document."
+
+        # update directives
+        self.dataset = kwargs.get("dataset", self.dataset)
+        self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
+        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
+        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
+
         if self.exclude_chars:
-            return
+            return self.dataset
+
         assert self.dataset is not None, \
-            "NexusWriter instance is not attached to a DataSet: no source of data"
+            "PhylipWriter instance is not attached to a DataSet: no source of data"
+
         char_matrix = self.dataset.char_matrices[0]
         n_seqs = len(char_matrix)
         n_sites = len(char_matrix.values()[0])

@@ -168,7 +168,16 @@ class NewickReader(iosys.DataReader):
                all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
 
         """
+
+        # update directives
+        self.dataset = kwargs.get("dataset", self.dataset)
+        self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
+        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
+        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
+        self.finish_node_func = kwargs.get("finish_node_func", self.finish_node_func)
         self.rooting_interpreter.update(**kwargs)
+        if self.exclude_trees:
+            self.dataset
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
         taxon_set = self.get_default_taxon_set(**kwargs)
@@ -204,9 +213,23 @@ class NewickWriter(iosys.DataWriter):
         Writes attached `DataSource` or `TaxonDomain` to a destination given
         by the file-like object `stream`.
         """
+
+        # update directives
+        self.dataset = kwargs.get("dataset", self.dataset)
+        self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
+        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
+        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
+        self.edge_lengths = kwargs.get("edge_lengths", self.edge_lengths)
+        self.internal_labels = kwargs.get("internal_labels", self.internal_labels)
+        self.preserve_spaces = kwargs.get("preserve_spaces", self.preserve_spaces)
+        self.quote_underscores = kwargs.get('quote_underscores', self.quote_underscores)
+
+        if self.exclude_trees:
+            return
+
         assert self.dataset is not None, \
             "NewickWriter instance is not attached to a DataSet: no source of data"
-        self.preserve_spaces = kwargs.get("preserve_spaces", self.preserve_spaces)
+
         for tree_list in self.dataset.tree_lists:
             if self.attached_taxon_set is None or self.attached_taxon_set is tree_list.taxon_set:
                 self.write_tree_list(tree_list, stream)

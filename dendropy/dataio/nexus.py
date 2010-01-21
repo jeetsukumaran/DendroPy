@@ -125,6 +125,19 @@ class NexusReader(iosys.DataReader):
         self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", False)
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
 
+    def update_directives(self, **kwargs):
+        """
+        Updates customization of reader.
+        """
+        self.dataset = kwargs.get("dataset", self.dataset)
+        self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
+        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
+        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
+        self.rooting_interpreter.update(**kwargs)
+        self.finish_node_func = kwargs.get("finish_node_func", self.finish_node_func)
+        self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", self.allow_duplicate_taxon_labels)
+        self.preserve_underscores = kwargs.get('preserve_underscores', self.preserve_underscores)
+
     def read(self, stream, **kwargs):
         """
         Instantiates and returns a DataSet object based on the
@@ -139,9 +152,10 @@ class NexusReader(iosys.DataReader):
                all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
 
         """
+        # reset and update directives
         self.reset()
-        self.rooting_interpreter.update(**kwargs)
-        self.preserve_underscores = kwargs.get('preserve_underscores', False)
+        self.update_directives(**kwargs)
+
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
         if "taxon_set" in kwargs:
@@ -176,9 +190,11 @@ class NexusReader(iosys.DataReader):
         `taxon_set` argument). This behavior is similar to how multiple
         tree blocks are handled by a full NEXUS data file read.
         """
+
+        # reset and update directives
         self.reset()
-        self.rooting_interpreter.update(**kwargs)
-        self.preserve_underscores = kwargs.get('preserve_underscores', False)
+        self.update_directives(**kwargs)
+
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
         if "taxon_set" in kwargs:
@@ -848,9 +864,24 @@ class NexusWriter(iosys.DataWriter):
         Writes attached `DataSource` or `TaxonDomain` to the file-like object
         `stream`.
         """
+
+        # update directives
+        self.dataset = kwargs.get("dataset", self.dataset)
+        self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
+        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
+        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
+        self.simple = kwargs.get("simple", self.simple)
+        self.exclude_taxa = kwargs.get("exclude_taxa", self.exclude_taxa)
+        self.is_write_rooting = kwargs.get("write_rooting", self.is_write_rooting)
+        self.is_write_edge_lengths = kwargs.get("edge_lengths", self.is_write_edge_lengths)
+        self.is_write_internal_labels = kwargs.get("internal_labels", self.is_write_internal_labels)
+        self.is_write_block_titles = kwargs.get("block_titles", self.is_write_block_titles)
+        self.preserve_spaces = kwargs.get("preserve_spaces", self.preserve_spaces)
+        self.quote_underscores = kwargs.get('quote_underscores', self.quote_underscores)
+
         assert self.dataset is not None, \
             "NexusWriter instance is not attached to a DataSet: no source of data"
-        self.preserve_spaces = kwargs.get("preserve_spaces", self.preserve_spaces)
+
         stream.write('#NEXUS\n\n')
         if self.comment is not None:
             if isinstance(self.comment, list):
