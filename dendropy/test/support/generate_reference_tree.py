@@ -21,6 +21,7 @@
 ###############################################################################
 
 import sys
+import re
 import dendropy
 from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
@@ -41,7 +42,7 @@ def main():
     result.append("    ]")
     result.append("")
 
-    result.append("def reference_tree_list_newick_string():")
+    result.append("def reference_tree_list_newick_string(taxon_set=None):")
     result.append('    return """\\')
     for t in tlist:
         result.append('        %s;' % t.as_newick_string(include_internal_labels=True))
@@ -66,17 +67,18 @@ def main():
 
     tree_list_name = 'tree_list'
     src_lines = tlist.as_python_source(tree_list_name=tree_list_name, oids=True).split("\n")
-    result.append("def reference_tree_list():")
+    result.append("def reference_tree_list(taxon_set=None):")
+    src_lines[0] = re.sub("(dendropy\.TreeList\(label\=.*)\)", "\g<1>, taxon_set=taxon_set)", src_lines[0])
     for s in src_lines:
         result.append("    %s" % s)
     result.append("""\
 
-        # set labels of nodes with taxa to taxon label, else oid (for consistent
-        # identification in debugging)
-        for t in %s:
-            t.assign_node_labels_from_taxon_or_oid()
+    # set labels of nodes with taxa to taxon label, else oid (for consistent
+    # identification in debugging)
+    for t in %s:
+        t.assign_node_labels_from_taxon_or_oid()
 
-        return %s
+    return %s
     """ % (tree_list_name, tree_list_name))
     result.append("")
 
