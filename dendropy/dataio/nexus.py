@@ -27,6 +27,8 @@ Implementation of NEXUS-schema data reader and writer.
 from cStringIO import StringIO
 import re
 
+from dendropy.utility.messaging import get_logger
+_LOG = get_logger(__name__)
 from dendropy import dataobject
 from dendropy.utility import texttools
 from dendropy.utility import iosys
@@ -854,7 +856,7 @@ class NexusWriter(iosys.DataWriter):
         self.is_write_rooting = kwargs.get("write_rooting", True)
         self.is_write_edge_lengths = kwargs.get("edge_lengths", True)
         self.is_write_internal_labels = kwargs.get("internal_labels", True)
-        self.is_write_block_titles = kwargs.get("block_titles", True)
+        self.is_write_block_titles = kwargs.get("block_titles", None)
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
         self.quote_underscores = kwargs.get('quote_underscores', True)
         self.comment = kwargs.get("comment", [])
@@ -881,6 +883,11 @@ class NexusWriter(iosys.DataWriter):
 
         assert self.dataset is not None, \
             "NexusWriter instance is not attached to a DataSet: no source of data"
+
+        if self.is_write_block_titles == False \
+                and self.attached_taxon_set is None \
+                and len(self.dataset.taxon_sets > 1):
+            _LOG.warn("Multiple taxon sets in data, but directed not to write block titles: data file may not be interpretable")
 
         stream.write('#NEXUS\n\n')
         if self.comment is not None:
@@ -909,8 +916,25 @@ class NexusWriter(iosys.DataWriter):
                 if self.attached_taxon_set is None or tree_list.taxon_set is self.attached_taxon_set:
                     self.write_trees_block(tree_list=tree_list, stream=stream)
 
+    def _link_blocks(self):
+        """
+        If only one taxon set in dataset, or in attached taxon set mode, then
+        unless the 'block_titles' directive has been explicitly set to True
+        by the user, block titles and links will not be written.
+        """
+        if self.is_write_block_titles is None:
+            if self.attached_taxon_set is None and len(self.dataset.taxon_sets) > 1:
+                return True
+            else:
+                return False
+        else:
+            return self.is_write_block_titles
+
     def compose_block_title(self, block):
-        if not self.is_write_block_titles:
+        # if self.is_write_block_titles is False then no block titles;
+        # if only one taxon set, or attached taxon set mode, unless self.is_write_block_titles
+        # is explicitly True, then again, we do not write block titles
+        if not self._link_blocks():
             return ""
         if not block.label:
             block.label = block.oid
@@ -922,7 +946,7 @@ class NexusWriter(iosys.DataWriter):
     def write_taxa_block(self, taxon_set, stream):
         block = []
         block.append('BEGIN TAXA;')
-        if self.is_write_block_titles:
+        if self._link_blocks():
             title = self.compose_block_title(taxon_set)
             if title:
                 block.append('    %s;' % title)
@@ -941,7 +965,7 @@ class NexusWriter(iosys.DataWriter):
                 internal_labels=self.is_write_internal_labels,
                 preserve_spaces=self.preserve_spaces)
         block.append('BEGIN TREES;')
-        if self.is_write_block_titles:
+        if self._link_blocks():
             title = self.compose_block_title(tree_list)
             if title:
                 block.append('    %s;' % title)
@@ -976,7 +1000,7 @@ class NexusWriter(iosys.DataWriter):
         else:
             nexus.append('BEGIN CHARACTERS;')
             ntaxstr = ""
-        if self.is_write_block_titles:
+        if self._link_blocks():
             title = self.compose_block_title(char_matrix)
             if title:
                 nexus.append('    %s;' % title)
