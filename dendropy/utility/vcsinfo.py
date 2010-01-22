@@ -75,7 +75,7 @@ class Revision(object):
         if parts:
             return "".join(parts)
         else:
-            return None
+            return ""
 
     @property
     def commit_id(self):
