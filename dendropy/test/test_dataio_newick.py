@@ -32,7 +32,7 @@ from cStringIO import StringIO
 from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
 from dendropy.test.support import datatest
-from dendropy import DataSyntaxError
+from dendropy.utility.error import DataSyntaxError
 import dendropy
 from dendropy.dataio import newick
 
