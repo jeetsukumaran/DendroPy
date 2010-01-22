@@ -70,14 +70,15 @@ except OSError:
     source_path = None
     revision = vcsinfo.Revision(repo_path=None)
 
-def revision_info():
+release = __version__
+def version_info():
     if revision.is_available:
-        revision_text = " (revision: %s)" % (revision)
+        revision_text = " (%s)" % (revision)
     else:
         revision_text = ""
-    return "%s %s%s" % (PROJECT_NAME, PROJECT_VERSION, revision_text)
+    return "%s %s%s" % (PROJECT_NAME, release, revision_text)
 
 if __name__ == "__main__":
-    sys.stdout.write("%s\n" % revision_info())
+    sys.stdout.write("%s\n" % version_info())
 
 

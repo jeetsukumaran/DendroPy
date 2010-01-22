@@ -77,6 +77,9 @@ class Revision(object):
         else:
             return ""
 
+    def __repr__(self):
+        return "<%s: '%s'>" % (self.__class__.__name__, self.description)
+
     @property
     def commit_id(self):
         if self._commit_id is None:
