@@ -28,13 +28,12 @@ classes and methods for instantiating objects in the
 
 import sys
 import os
-from dendropy import utility
+from dendropy.utility import vcsinfo
 from dendropy.dataobject.base import *
 from dendropy.dataobject.taxon import *
 from dendropy.dataobject.tree import *
 from dendropy.dataobject.char import *
 from dendropy.dataobject.dataset import *
-from dendropy.utility.error import DataSyntaxError
 
 from dendropy.dataio import get_reader, get_writer, tree_source_iter, multi_tree_source_iter
 #from dendropy.interop import paup
@@ -63,21 +62,22 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with this program. If not, see <http://www.gnu.org/licenses/>.
 """
-DENDROPY_ZIP_SAFE = None
+
 try:
-    DENDROPY_PATH = os.path.dirname(os.path.abspath(__file__))
-    DENDROPY_HEAD = utility.get_current_git_head(os.path.dirname(__file__))
-    DENDROPY_BRANCH = utility.get_current_git_branch(os.path.dirname(__file__))
-    DENDROPY_TAG = utility.get_current_git_tag(os.path.dirname(__file__))
-    DENDROPY_REVISION_DESCRIPTION = utility.get_current_git_desc(os.path.dirname(__file__))
-    DENDROPY_ZIP_SAFE = False
+    source_path = os.path.dirname(os.path.abspath(__file__))
+    revision = vcsinfo.Revision(repo_path=source_path)
 except OSError:
-    DENDROPY_PATH = "[UNAVAILABLE]"
-    DENDROPY_HEAD = "[UNAVAILABLE]"
-    DENDROPY_BRANCH = "[UNAVAILABLE]"
-    DENDROPY_TAG = "[UNAVAILABLE]"
-    DENDROPY_REVISION_DESCRIPTION = "[UNAVAILABLE]"
-    DENDROPY_ZIP_SAFE = True
+    source_path = None
+    revision = vcsinfo.Revision(repo_path=None)
+
+def revision_info():
+    if revision.is_available:
+        revision_text = " (revision: %s)" % (revision)
+    else:
+        revision_text = ""
+    return "%s %s%s" % (PROJECT_NAME, PROJECT_VERSION, revision_text)
 
 if __name__ == "__main__":
-    sys.stdout.write("%s %s\n" % (PROJECT_NAME, PROJECT_VERSION))
+    sys.stdout.write("%s\n" % revision_info())
+
+
