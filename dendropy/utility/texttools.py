@@ -55,6 +55,44 @@ class RichString(str):
     def __new__(cls, *args):
         return str.__new__(cls, *args)
 
+
+
+###############################################################################
+## Various formatters and pretty-printer
+
+def unique_taxon_label_map(taxa, taxon_label_map=None, max_label_len=0, logger=None):
+    """
+    Given a list of taxa, returns a dictionary with the Taxon objects as
+    keys and string labels as values, where the labels are guaranteed to
+    be unique. If `taxon_label_map` is pre-populated (as <Taxon> : 'label'),
+    then those labels will be used as the basis for the label composition,
+    otherwise the original taxon object label will be used. `max_label_len`
+    can be used to restrict the maximum length of the labels.
+    """
+    if taxon_label_map is None:
+        taxon_label_map = {}
+        for t in taxa:
+            taxon_label_map[t] = t.label
+    labels = []
+    for t in taxon_label_map:
+        label = t.label
+        idx = 1
+        if label in labels:
+            candidate_label = label
+            while candidate_label in labels:
+                idx += 1
+                if max_label_len > 0:
+                    k = max_label_len - len(str(idx))
+                    if k < 1:
+                        raise ValueError("Unable to make labels unique with maximum label length of %d" % max_label_len)
+                    candidate_label = label[:k] + str(idx)
+                else:
+                    candidate_label = label + str(idx)
+            label = candidate_label
+        labels.append(label)
+        taxon_label_map[t] = label
+    return taxon_label_map
+
 ###############################################################################
 ## Various formatters and pretty-printer
 

@@ -25,6 +25,9 @@ Implementation of PHYLIP-schema i/o client(s).
 """
 
 from dendropy.utility import iosys
+from dendropy.utility import texttools
+from dendropy.utility.messaging import get_logger
+_LOG = get_logger(__name__)
 
 class PhylipWriter(iosys.DataWriter):
     "Implements the DataWriter interface for handling PHYLIP files."
@@ -32,6 +35,33 @@ class PhylipWriter(iosys.DataWriter):
     def __init__(self, **kwargs):
         "Calls the base class constructor."
         iosys.DataWriter.__init__(self, **kwargs)
+        self.strict = kwargs.get("strict", False)
+        self.spaces_to_underscores = kwargs.get("spaces_to_underscores", False)
+        self.taxon_label_map = {}
+
+    def get_taxon_label_map(self, dataset):
+        if self.attached_taxon_set is not None:
+            taxon_sets = [self.attached_taxon_set]
+        else:
+            taxon_sets = dataset.taxon_sets
+        taxon_label_map = {}
+        taxa = []
+        if self.strict:
+            max_label_len = 10
+        else:
+            max_label_len = 0
+        for taxon_set in taxon_sets:
+            for taxon in taxon_set:
+                label = taxon.label
+                if self.spaces_to_underscores:
+                    label = label.replace(' ', '')
+                if self.strict:
+                    label = label[:max_label_len]
+                taxa.append(taxon)
+                taxon_label_map[taxon] = label
+        taxon_label_map = texttools.unique_taxon_label_map(taxa, taxon_label_map, max_label_len, _LOG)
+        return taxon_label_map
+
 
     def write(self, stream, **kwargs):
         "Writes dataset to a full PHYLIP document."
@@ -41,9 +71,15 @@ class PhylipWriter(iosys.DataWriter):
         self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
         self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
         self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
+        self.strict = kwargs.get("strict", False)
+        self.spaces_to_underscores = kwargs.get("spaces_to_underscores", False)
+        self.taxon_label_map = {}
 
         if self.exclude_chars:
             return self.dataset
+
+        if self.strict:
+            self.taxon_label_map = self.get_taxon_label_map(self.dataset)
 
         assert self.dataset is not None, \
             "PhylipWriter instance is not attached to a DataSet: no source of data"
