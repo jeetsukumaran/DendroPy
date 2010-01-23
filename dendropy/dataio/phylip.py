@@ -67,9 +67,24 @@ class PhylipReader(iosys.DataReader):
         if self.char_matrix_type not in PhylipReader.supported_matrix_types:
             raise ValueError("'%s' is not a supported data type for PhylipReader" % self.char_matrix_type.__name__)
         self.strict = kwargs.get("strict", False)
+        self.interleaved = kwargs.get("interleaved", False)
+        self.multispace_delimiter = kwargs.get("multispace_delimiter", False)
         self.underscores_to_spaces = kwargs.get("underscores_to_spaces", False)
+        self.ignore_invalid_chars = kwargs.get("underscores_to_spaces", False)
         self.ntax = None
         self.nchar = None
+
+    def describe_mode(self):
+        parts = []
+        if self.strict:
+            parts.append("strict")
+        else:
+            parts.append("relaxed")
+        if self.interleaved:
+            parts.append("interleaved")
+        else:
+            parts.append("sequential")
+        return ", ".join(parts)
 
     def read(self, stream, **kwargs):
         self.dataset = kwargs.get("dataset", self.dataset)
@@ -77,7 +92,10 @@ class PhylipReader(iosys.DataReader):
         self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
         self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
         self.strict = kwargs.get("strict", self.strict)
+        self.interleaved = kwargs.get("interleaved", self.interleaved)
+        self.multispace_delimiter = kwargs.get("multispace_delimiter", self.multispace_delimiter)
         self.underscores_to_spaces = kwargs.get("underscores_to_spaces", self.underscores_to_spaces)
+        self.ignore_invalid_chars = kwargs.get("ignore_invalid_chars", self.ignore_invalid_chars)
         if self.exclude_chars:
             return self.dataset
         if self.dataset is None:
@@ -87,52 +105,88 @@ class PhylipReader(iosys.DataReader):
             self.dataset.add(self.attached_taxon_set)
         else:
             self.attached_taxon_set = self.dataset.new_taxon_set()
-        lines = filetools.get_lines(stream)
+
+        self.char_matrix = self.dataset.new_char_matrix(char_matrix_type=self.char_matrix_type,
+                taxon_set=self.attached_taxon_set)
+        self.symbol_state_map = self.char_matrix.default_state_alphabet.symbol_state_map()
+
+        self.stream = stream
+        lines = filetools.get_lines(self.stream)
         if len(lines) == 0:
-            raise error.DataSourceError("No data in source", stream=stream)
+            raise error.DataSourceError("No data in source", stream=self.stream)
         elif len(lines) <= 2:
-            raise error.DataParseError("Expecting at least 2 lines in PHYLIP format data source", stream=stream)
+            raise error.DataParseError("Expecting at least 2 lines in PHYLIP format data source", stream=self.stream)
 
         desc_line = lines[0]
         lines = lines[1:]
         m = re.match('\s*(\d+)\s+(\d+)\s*$', desc_line)
         if m is None:
-            raise error.DataParseError("Invalid data description line: '%s'" % desc_line)
+            raise self._data_parse_error("Invalid data description line: '%s'" % desc_line)
         self.ntax = int(m.groups()[0])
         self.nchar = int(m.groups()[1])
         if self.ntax == 0 or self.nchar == 0:
-            raise error.DataSourceError("No data in source", stream=stream)
-        if self.strict:
-            self._parse_strict(lines)
+            raise error.DataSourceError("No data in source", stream=self.stream)
+        if self.interleaved:
+            raise _parse_interleaved(lines)
         else:
-            self._parse_relaxed(lines)
+            self._parse_sequential(lines)
+        self.stream = None
         return self.dataset
 
-    def _parse_strict(self, lines, line_num_start=1):
-        current_taxon = None
-        interleaved = False
+    def _data_parse_error(self, message, line_index=None):
+        if line_index is None:
+            row = None
+        else:
+            row = line_index + 2
+        return error.DataParseError(message, row=row, stream=self.stream)
+
+    def _parse_sequential(self, lines, line_num_start=1):
+        paged = False
         page_row_idx = 0
         seq_labels = []
+        current_taxon = None
         for line_index, line in enumerate(lines):
-            curr_file_line = line_num_start+line_index+1
+            line = line.rstrip()
             if line == '':
-                interleaved = True
-                page_row_idx = 0
                 continue
-            if len(line) < 11:
-                raise error.DataParseError('Expecting sequence character to begin at position 11, but line length is %d' % len(line), row=curr_file_line)
-            seq_label = line[:10].strip()
-            seq_chars = line[10:]
-            if interleaved:
-                pass
-            else:
-                if seq_label != '':
-                    if seq_label in seq_labels:
-                        raise error.DataParseError("Repeated taxon label: '%s'" % seq_label, row=curr_file_line)
-                    current_taxon = self.attached_taxon_set.require_taxon(label=seq_label)
-                    print "'%s'\n%s\n" % (current_taxon.label, seq_chars)
+            if current_taxon is None:
+                seq_label = None
+                if self.strict:
+                    seq_label = line[:10].strip()
+                    line = line[10:]
+                else:
+                    if self.multispace_delimiter:
+                        parts = re.split('[ \t]{2,}', line, maxsplit=1)
+                    else:
+                        parts = re.split('[ \t]{1,}', line, maxsplit=1)
+                    seq_label = parts[0]
+                    if len(parts) < 2:
+                        continue
+                    else:
+                        line = parts[1]
+                seq_label = seq_label.strip()
+                if not seq_label:
+                    raise self._data_parse_error("Expecting taxon label", line_index=line_index)
+                if self.underscores_to_spaces:
+                    seq_label.replace(' ', '_')
+                current_taxon = self.attached_taxon_set.require_taxon(label=seq_label)
+                if current_taxon not in self.char_matrix:
+                    self.char_matrix[current_taxon] = dataobject.CharacterDataVector(taxon=current_taxon)
+            for c in line:
+                if c in [' ', '\t']:
+                    continue
+                try:
+                    state = self.symbol_state_map[c.upper()]
+                except KeyError:
+                    if not self.ignore_invalid_chars:
+                        raise self._data_parse_error("Invalid state symbol '%s'" % c, line_index=line_index)
+                else:
+                    self.char_matrix[current_taxon].append(state)
+                    if len(self.char_matrix[current_taxon]) == self.nchar:
+                        self.current_taxon = None
+                        break
 
-    def _parse_relaxed(self, lines, line_num_start=1):
+    def _parse_interleaved(self, lines, line_num_start=1):
         raise NotImplementedError()
 
 class PhylipWriter(iosys.DataWriter):
