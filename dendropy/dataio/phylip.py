@@ -24,6 +24,7 @@
 Implementation of PHYLIP-schema i/o client(s).
 """
 
+from cStringIO import StringIO
 from dendropy.utility import iosys
 from dendropy.utility import texttools
 from dendropy.utility import error
@@ -64,11 +65,35 @@ class PhylipReader(iosys.DataReader):
         if self.char_matrix_type not in Phylip.supported_matrix_types:
             raise ValueError("'%s' is not a supported data type for PhylipReader" % self.char_matrix_type.__name__)
         self.strict = kwargs.get("strict", False)
-        self.relaxed_delimiter
         self.underscores_to_spaces = kwargs.get("underscores_to_spaces", False)
 
     def read(self, stream, **kwargs):
-        pass
+        self.dataset = kwargs.get("dataset", self.dataset)
+        self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
+        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
+        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
+        self.strict = kwargs.get("strict", False)
+        self.underscores_to_spaces = kwargs.get("underscores_to_spaces", False)
+        if self.exclude_chars:
+            return self.dataset
+        if self.dataset is None:
+            self.dataset = dataobject.DataSet()
+        if self.attached_taxon_set is not None \
+                and self.attached_taxon_set is not in self.dataset.taxon_sets:
+            self.dataset.add(self.attached_taxon_set)
+        else:
+            self.attached_taxon_set = self.dataset.new_taxon_set()
+        if self.strict:
+            self._parse_strict(stream)
+        else:
+            self._parse_relaxed(stream)
+        return self.dataset
+
+    def _parse_strict(self, stream):
+        raise NotImplementedError()
+
+    def _parse_relaxed(self, stream):
+        raise NotImplementedError()
 
 class PhylipWriter(iosys.DataWriter):
     "Implements the DataWriter interface for writing PHYLIP files."
