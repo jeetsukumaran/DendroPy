@@ -1058,3 +1058,19 @@ class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
         self.state_alphabets.append(self.default_state_alphabet)
         if len(args) > 0:
             self.clone_from(*args)
+
+character_data_type_label_map = {
+    'continuous' : ContinuousCharacterMatrix,
+    'dna' : DnaCharacterMatrix,
+    'rna' : RnaCharacterMatrix,
+    'protein' : ProteinCharacterMatrix,
+    'restriction' : RestrictionSitesCharacterMatrix,
+    'infinite' : InfiniteSitesCharacterMatrix,
+}
+#
+#def get_char_matrix_for_data_type_label(label):
+#    llabel = label.lower()
+#    if llabel not in char.character_data_type_label_map:
+#        raise ValueError("'%s' is not a valid data type specification; must be one of: %s" \
+#            % (label, ", ".join([("'" + d + "'") for d in char.character_data_type_label_map])))
+#    return character_data_type_label_map[llabel]
