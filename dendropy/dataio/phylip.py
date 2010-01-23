@@ -25,8 +25,10 @@ Implementation of PHYLIP-schema i/o client(s).
 """
 
 from cStringIO import StringIO
+import re
 from dendropy.utility import iosys
 from dendropy.utility import texttools
+from dendropy.utility import filetools
 from dendropy.utility import error
 from dendropy.utility.messaging import get_logger
 from dendropy import dataobject
@@ -66,6 +68,8 @@ class PhylipReader(iosys.DataReader):
             raise ValueError("'%s' is not a supported data type for PhylipReader" % self.char_matrix_type.__name__)
         self.strict = kwargs.get("strict", False)
         self.underscores_to_spaces = kwargs.get("underscores_to_spaces", False)
+        self.ntax = None
+        self.nrow = None
 
     def read(self, stream, **kwargs):
         self.dataset = kwargs.get("dataset", self.dataset)
@@ -79,10 +83,18 @@ class PhylipReader(iosys.DataReader):
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
         if self.attached_taxon_set is not None \
-                and self.attached_taxon_set is not in self.dataset.taxon_sets:
+                and self.attached_taxon_set not in self.dataset.taxon_sets:
             self.dataset.add(self.attached_taxon_set)
         else:
             self.attached_taxon_set = self.dataset.new_taxon_set()
+        lines = filetools.get_lines(stream)
+        if len(lines) == 0:
+            raise error.DataSourceError("No data in source", stream)
+
+        desc_line = lines[0]
+        lines = lines[1:]
+        m = re.match('\s*(\d+)\s+(\d+)\s*$', lin)
+
         if self.strict:
             self._parse_strict(stream)
         else:

@@ -27,7 +27,7 @@ import sys
 
 class DataSourceError(Exception):
 
-    def __init__(self, row=None, column=None, message=None, filename=None, stream=None):
+    def __init__(self, message=None, row=None, column=None, filename=None, stream=None):
         Exception.__init__(self)
         self.row = row
         self.column = column
@@ -56,8 +56,8 @@ class DataSourceError(Exception):
 
 class DataSyntaxError(DataSourceError):
 
-    def __init__(self, row=None, column=None, message=None, filename=None, stream=None):
-        DataSourceError.__init__(self, row=row, column=column, message=message, filename=filename, stream=stream)
+    def __init__(self, message=None, row=None, column=None, filename=None, stream=None):
+        DataSourceError.__init__(self, message=message, row=row, column=column, filename=filename, stream=stream)
 
 class UnsupportedFormatError(NotImplementedError):
 

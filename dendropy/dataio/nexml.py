@@ -241,7 +241,7 @@ class NexmlReader(iosys.DataReader):
             nxt = _NexmlTaxaParser()
             nxt.set_taxon_set_from_xml(nxtaxa, taxon_set=taxon_set)
         else:
-            raise error.DataSyntaxError("No taxon definitions found in data source")
+            raise error.DataSyntaxError(message="No taxon definitions found in data source")
         if not self.exclude_chars:
             self.parse_char_matrices(xml_doc, self.dataset)
         if not self.exclude_trees:

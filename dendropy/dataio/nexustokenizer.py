@@ -690,8 +690,6 @@ class NexusTokenizer(object):
             Returns an exception object parameterized with line and
             column number values.
             """
-            return DataSyntaxError(row=self.current_line_number,
-                                   column=self.current_col_number,
-                                   message=message)
-
-
+            return DataSyntaxError(message=message,
+                                   row=self.current_line_number,
+                                   column=self.current_col_number)

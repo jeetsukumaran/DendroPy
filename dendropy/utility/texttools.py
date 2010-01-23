@@ -55,8 +55,6 @@ class RichString(str):
     def __new__(cls, *args):
         return str.__new__(cls, *args)
 
-
-
 ###############################################################################
 ## Various formatters and pretty-printer
 
