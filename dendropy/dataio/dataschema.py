@@ -54,17 +54,17 @@ class DataSchema(object):
 
     def get_reader(self, **kwargs):
         if self.reader_type is None:
-            raise error.UnsupportedFormatError("Reading is not currently supported for data schema '%s'" % self.name)
+            raise error.UnsupportedSchemaError("Reading is not currently supported for data schema '%s'" % self.name)
         return self.reader_type(**kwargs)
 
     def get_writer(self, **kwargs):
         if self.writer_type is None:
-            raise error.UnsupportedFormatError("Writing is not currently supported for data schema '%s'" % self.name)
+            raise error.UnsupportedSchemaError("Writing is not currently supported for data schema '%s'" % self.name)
         return self.writer_type(**kwargs)
 
     def get_tree_source_iter(self, stream, **kwargs):
         if self.tree_source_iter is None:
-            raise error.UnsupportedFormatError("Iteration over source trees not currently supported for data schema '%s'" % self.name)
+            raise error.UnsupportedSchemaError("Iteration over source trees not currently supported for data schema '%s'" % self.name)
         return self.tree_source_iter(stream, **kwargs)
 
 ###############################################################################
@@ -93,19 +93,19 @@ class DataSchemaRegistry(object):
     def get_reader(self, name, **kwargs):
         ## hack to avoid confusing users ##
         if name.lower() == "fasta":
-            raise error.UnsupportedFormatError("FASTA data needs to be specified as 'dnafasta', 'rnafasta', or 'proteinfasta'")
+            raise error.UnsupportedSchemaError("FASTA data needs to be specified as 'dnafasta', 'rnafasta', or 'proteinfasta'")
         if name not in self.formats:
-            raise error.UnsupportedFormatError("'%s' is not a recognized data schema name" % name)
+            raise error.UnsupportedSchemaError("'%s' is not a recognized data schema name" % name)
         return self.formats[name].get_reader(**kwargs)
 
     def get_writer(self, name, **kwargs):
         if name not in self.formats:
-            raise error.UnsupportedFormatError("'%s' is not a recognized data schema name" % name)
+            raise error.UnsupportedSchemaError("'%s' is not a recognized data schema name" % name)
         return self.formats[name].get_writer(**kwargs)
 
     def tree_source_iter(self, stream, name, **kwargs):
         if name not in self.formats:
-            raise error.UnsupportedFormatError("'%s' is not a recognized data schema name" % name)
+            raise error.UnsupportedSchemaError("'%s' is not a recognized data schema name" % name)
         return self.formats[name].get_tree_source_iter(stream, **kwargs)
 
 

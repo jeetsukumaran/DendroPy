@@ -128,7 +128,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         source `stream`, formatted in `schema`. `schema` must be a
         recognized and supported phylogenetic data file schema. If
         reading is not implemented for the schema specified, then a
-        `UnsupportedFormatError` is raised.
+        `UnsupportedSchemaError` is raised.
 
         The following optional keyword arguments are also recognized:
 
@@ -165,8 +165,8 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         reader = get_reader(schema=schema, **kwargs)
         try:
             reader.read(stream, **kwargs)
-#        except error.DataSyntaxError as x:
-        except error.DataSyntaxError, x:
+#        except error.DataParseError as x:
+        except error.DataParseError, x:
             x.decorate_with_name(stream=stream)
             raise x
 
@@ -175,7 +175,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         Writes this `DataSet` object to the file-like object `stream`
         in `schema`. `schema` must be a recognized and supported
         phylogenetic data file schema. If writing is not implemented for
-        the schema specified, then a `UnsupportedFormatError` is raised.
+        the schema specified, then a `UnsupportedSchemaError` is raised.
 
         The following optional keyword arguments are also recognized:
 

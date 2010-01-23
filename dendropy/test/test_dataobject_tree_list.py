@@ -74,7 +74,7 @@ class TreeListCreateTest(datatest.DataObjectVerificationTestCase):
         self.assertDistinctButEqual(self.tree_list1, tree_list2, distinct_taxa=True, equal_oids=False, distinct_trees=True)
 
     def testTreeListFromFileNoFormatSpecification(self):
-        self.assertRaises(error.UnspecifiedFormatError, dendropy.TreeList, stream=self.tree_list1_stream)
+        self.assertRaises(error.UnspecifiedSchemaError, dendropy.TreeList, stream=self.tree_list1_stream)
 
     def testTreeListFromFileNoKeywords(self):
         self.assertRaises(ValueError, dendropy.TreeList, self.tree_list1_stream)

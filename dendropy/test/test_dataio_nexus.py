@@ -269,14 +269,14 @@ end;
             _LOG.info(t.as_string("newick"))
 
     def testStr2AsDoc(self):
-        self.assertRaises(error.DataSyntaxError, dendropy.TreeList.get_from_string, self.str2, "nexus")
+        self.assertRaises(error.DataParseError, dendropy.TreeList.get_from_string, self.str2, "nexus")
 
 #    def testStr2Iter(self):
 #        for t in dendropy.tree_source_iter(StringIO(self.str2), "nexus"):
 #            _LOG.info(t.as_string("newick"))
 
     def testStr3AsDoc(self):
-#        self.assertRaises(error.DataSyntaxError, dendropy.TreeList.get_from_string, self.str3, "nexus")
+#        self.assertRaises(error.DataParseError, dendropy.TreeList.get_from_string, self.str3, "nexus")
         tlist = dendropy.TreeList.get_from_string(self.str3, "nexus")
         _LOG.info(tlist.as_string("nexus"))
 

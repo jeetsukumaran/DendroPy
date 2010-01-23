@@ -25,7 +25,7 @@ Exceptions and error.
 """
 import sys
 
-class DataSourceError(Exception):
+class DataError(Exception):
 
     def __init__(self, message=None, row=None, column=None, filename=None, stream=None):
         Exception.__init__(self)
@@ -54,17 +54,17 @@ class DataSourceError(Exception):
             c =  " at column %d" % self.column
         return 'Error parsing data source%s%s%s: %s' % (f, l, c, self.msg)
 
-class DataSyntaxError(DataSourceError):
+class DataParseError(DataError):
 
     def __init__(self, message=None, row=None, column=None, filename=None, stream=None):
-        DataSourceError.__init__(self, message=message, row=row, column=column, filename=filename, stream=stream)
+        DataError.__init__(self, message=message, row=row, column=column, filename=filename, stream=stream)
 
-class UnsupportedFormatError(NotImplementedError):
+class UnsupportedSchemaError(NotImplementedError):
 
     def __init__(self, *args, **kwargs):
         NotImplementedError.__init__(self, *args, **kwargs)
 
-class UnspecifiedFormatError(Exception):
+class UnspecifiedSchemaError(Exception):
 
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)

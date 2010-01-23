@@ -39,7 +39,7 @@ def get_reader(schema, **kwargs):
     `schema` is a string that is name of one of the registered data
     formats, such as `nexus`, `newick`, etc, for which a specialized
     reader is available. If this is not implemented for the schema
-    specified, then a `UnsupportedFormatError` is raised.
+    specified, then a `UnsupportedSchemaError` is raised.
 
     The following keyword arguments are recognized:
 
@@ -67,7 +67,7 @@ def get_writer(schema, **kwargs):
     `schema` is a string that is name of one of the registered data
     formats, such as `nexus`, `newick`, etc, for which a specialized
     writer is available. If this is not implemented for the schema
-    specified, then a `UnsupportedFormatError` is raised.
+    specified, then a `UnsupportedSchemaError` is raised.
 
     The following keyword arguments are recognized:
 

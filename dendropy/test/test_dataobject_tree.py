@@ -76,7 +76,7 @@ class TreeCreateTest(datatest.DataObjectVerificationTestCase):
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
     def testTreeFromFilePosArgsWithNoFormat(self):
-        self.assertRaises(error.UnspecifiedFormatError, dendropy.Tree, stream=StringIO(self.tree1_newick_str), taxon_set=self.tree1.taxon_set)
+        self.assertRaises(error.UnspecifiedSchemaError, dendropy.Tree, stream=StringIO(self.tree1_newick_str), taxon_set=self.tree1.taxon_set)
 
     def testTreeFromMultipleSource(self):
         self.assertRaises(error.MultipleInitializationSourceError,

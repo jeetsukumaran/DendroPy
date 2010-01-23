@@ -49,7 +49,7 @@ def require_format_from_kwargs(kwdict):
     """
     schema = get_format_from_kwargs(kwdict)
     if schema is None:
-        raise error.UnspecifiedFormatError("Must specify `schema`.")
+        raise error.UnspecifiedSchemaError("Must specify `schema`.")
     return schema
 
 def extract_kwarg(kwdict, kw, default=None):

@@ -32,20 +32,20 @@ from cStringIO import StringIO
 from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
 from dendropy.test.support import datatest
-from dendropy.utility.error import DataSyntaxError
+from dendropy.utility.error import DataParseError
 import dendropy
 from dendropy.dataio import newick
 
 class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
 
     def testBadInit(self):
-        self.assertRaises(DataSyntaxError, dendropy.TreeList, stream=StringIO("(a,(b,c))a"), schema="NEWICK")
-        self.assertRaises(DataSyntaxError, dendropy.TreeList, stream=StringIO("(a,(b,c)) (b,(a,c))"), schema="NEWICK")
-        self.assertRaises(DataSyntaxError, dendropy.TreeList, stream=StringIO("(a,(b,c)) (d,(e,f))"), schema="NEWICK")
-        self.assertRaises(DataSyntaxError, dendropy.TreeList, stream=StringIO("(a,(b,c)),"), schema="NEWICK")
-        self.assertRaises(DataSyntaxError, dendropy.TreeList, stream=StringIO("(a,(b,c)))"), schema="NEWICK")
-        self.assertRaises(DataSyntaxError, dendropy.TreeList, stream=StringIO("(a,(b,c)):"), schema="NEWICK")
-        self.assertRaises(DataSyntaxError, dendropy.TreeList, stream=StringIO("(a,(b,c))("), schema="NEWICK")
+        self.assertRaises(DataParseError, dendropy.TreeList, stream=StringIO("(a,(b,c))a"), schema="NEWICK")
+        self.assertRaises(DataParseError, dendropy.TreeList, stream=StringIO("(a,(b,c)) (b,(a,c))"), schema="NEWICK")
+        self.assertRaises(DataParseError, dendropy.TreeList, stream=StringIO("(a,(b,c)) (d,(e,f))"), schema="NEWICK")
+        self.assertRaises(DataParseError, dendropy.TreeList, stream=StringIO("(a,(b,c)),"), schema="NEWICK")
+        self.assertRaises(DataParseError, dendropy.TreeList, stream=StringIO("(a,(b,c)))"), schema="NEWICK")
+        self.assertRaises(DataParseError, dendropy.TreeList, stream=StringIO("(a,(b,c)):"), schema="NEWICK")
+        self.assertRaises(DataParseError, dendropy.TreeList, stream=StringIO("(a,(b,c))("), schema="NEWICK")
 
     def testTreeListReaderDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()

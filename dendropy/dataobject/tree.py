@@ -150,7 +150,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         `stream`. `schema` must be a recognized and tree file schema, such as
         `nexus`, `newick`, etc, for which a reader is available. If this is
         not implemented for the schema specified, then a
-        `UnsupportedFormatError` is raised. If the source defines multiple
+        `UnsupportedSchemaError` is raised. If the source defines multiple
         tree collections (e.g. multiple NEXUS "Trees" blocks), then the
         keyword argument ``collection_offset`` can be used to specify the
         0-based index of the tree collection. If not specified, or if value <
@@ -448,7 +448,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         recognized and tree file schema, such as `nexus`, `newick`, etc,
         for which a specialized tree list writer is available. If this
         is not implemented for the schema specified, then a
-        `UnsupportedFormatError` is raised. Other keywords will be
+        `UnsupportedSchemaError` is raised. Other keywords will be
         passed to the underlying tree parser.
 
         Tree objects can thus be instantiated in the following ways::
@@ -606,7 +606,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         `schema` must be a recognized and tree file schema, such as `nexus`,
         `newick`, etc, for which a specialized tree list writer is
         available. If this is not implemented for the schema specified, then
-        a `UnsupportedFormatError` is raised.
+        a `UnsupportedSchemaError` is raised.
 
         Additionally, for some formats, the following keywords are recognized:
 

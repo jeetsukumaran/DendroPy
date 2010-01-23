@@ -3,7 +3,7 @@
 import sys
 from dendropy.utility.messaging import get_logger
 from dendropy.treecalc import fitch_down_pass, fitch_up_pass
-from dendropy import DataSet, DataSyntaxError
+from dendropy import DataSet, DataParseError
 _DEBUGGING = True
 _LOG = get_logger('geodispersal')
 verbose = False
@@ -105,7 +105,7 @@ if __name__ == '__main__':
             dataset = DataSet()
             try:
                 dataset.read(stream=fo, schema="NEXUS")
-            except DataSyntaxError as dfe:
+            except DataParseError as dfe:
                 raise ValueError(str(dfe))
             if len(dataset.taxon_sets) != 1:
                 raise ValueError("Expecting one set of taxa in %s" % f)
