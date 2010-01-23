@@ -64,20 +64,20 @@ class PhylipReader(iosys.DataReader):
 #            raise ValueError("Must specify at 'data_type' or 'char_matrix_type'")
         else:
             self.char_matrix_type = kwargs.get("char_matrix_type", dataobject.DnaCharacterMatrix)
-        if self.char_matrix_type not in Phylip.supported_matrix_types:
+        if self.char_matrix_type not in PhylipReader.supported_matrix_types:
             raise ValueError("'%s' is not a supported data type for PhylipReader" % self.char_matrix_type.__name__)
         self.strict = kwargs.get("strict", False)
         self.underscores_to_spaces = kwargs.get("underscores_to_spaces", False)
         self.ntax = None
-        self.nrow = None
+        self.nchar = None
 
     def read(self, stream, **kwargs):
         self.dataset = kwargs.get("dataset", self.dataset)
         self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
         self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
         self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
-        self.strict = kwargs.get("strict", False)
-        self.underscores_to_spaces = kwargs.get("underscores_to_spaces", False)
+        self.strict = kwargs.get("strict", self.strict)
+        self.underscores_to_spaces = kwargs.get("underscores_to_spaces", self.underscores_to_spaces)
         if self.exclude_chars:
             return self.dataset
         if self.dataset is None:
@@ -89,22 +89,50 @@ class PhylipReader(iosys.DataReader):
             self.attached_taxon_set = self.dataset.new_taxon_set()
         lines = filetools.get_lines(stream)
         if len(lines) == 0:
-            raise error.DataSourceError("No data in source", stream)
+            raise error.DataSourceError("No data in source", stream=stream)
+        elif len(lines) <= 2:
+            raise error.DataParseError("Expecting at least 2 lines in PHYLIP format data source", stream=stream)
 
         desc_line = lines[0]
         lines = lines[1:]
-        m = re.match('\s*(\d+)\s+(\d+)\s*$', lin)
-
+        m = re.match('\s*(\d+)\s+(\d+)\s*$', desc_line)
+        if m is None:
+            raise error.DataParseError("Invalid data description line: '%s'" % desc_line)
+        self.ntax = int(m.groups()[0])
+        self.nchar = int(m.groups()[1])
+        if self.ntax == 0 or self.nchar == 0:
+            raise error.DataSourceError("No data in source", stream=stream)
         if self.strict:
-            self._parse_strict(stream)
+            self._parse_strict(lines)
         else:
-            self._parse_relaxed(stream)
+            self._parse_relaxed(lines)
         return self.dataset
 
-    def _parse_strict(self, stream):
-        raise NotImplementedError()
+    def _parse_strict(self, lines, line_num_start=1):
+        current_taxon = None
+        interleaved = False
+        page_row_idx = 0
+        seq_labels = []
+        for line_index, line in enumerate(lines):
+            curr_file_line = line_num_start+line_index+1
+            if line == '':
+                interleaved = True
+                page_row_idx = 0
+                continue
+            if len(line) < 11:
+                raise error.DataParseError('Expecting sequence character to begin at position 11, but line length is %d' % len(line), row=curr_file_line)
+            seq_label = line[:10].strip()
+            seq_chars = line[10:]
+            if interleaved:
+                pass
+            else:
+                if seq_label != '':
+                    if seq_label in seq_labels:
+                        raise error.DataParseError("Repeated taxon label: '%s'" % seq_label, row=curr_file_line)
+                    current_taxon = self.attached_taxon_set.require_taxon(label=seq_label)
+                    print "'%s'\n%s\n" % (current_taxon.label, seq_chars)
 
-    def _parse_relaxed(self, stream):
+    def _parse_relaxed(self, lines, line_num_start=1):
         raise NotImplementedError()
 
 class PhylipWriter(iosys.DataWriter):
