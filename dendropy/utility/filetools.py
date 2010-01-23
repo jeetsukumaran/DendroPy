@@ -28,6 +28,7 @@ import fnmatch
 import time
 import os
 import sys
+import re
 from threading import Event, Thread, Lock
 
 from dendropy.utility import messaging
@@ -193,7 +194,7 @@ class LineReadingThread(Thread):
         _LOG.debug("LineReadingThread exiting")
 
 ###############################################################################
-## Getting lists of filepaths matching pattern
+## File Finding
 
 def glob_match(pathname, pattern, respect_case=False, complement=False):
     if respect_case:
@@ -296,3 +297,15 @@ def find_executable(executable, path=None):
                     return f
     else:
         return None
+
+###############################################################################
+## Dealing with streams that may not have been opened with the universal
+## newline option
+
+def get_lines(stream):
+    """
+    Parse stream into lines, dealing with all line break conventions.
+    """
+    s = stream.read()
+    return re.split(r'\r\n|\n|\r', s)
+
