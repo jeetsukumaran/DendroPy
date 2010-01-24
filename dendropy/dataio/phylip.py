@@ -192,6 +192,19 @@ class PhylipReader(iosys.DataReader):
                         % (current_taxon.label, self.char_matrix[current_taxon]), line_index=line_index)
         return current_taxon, line
 
+    def _parse_sequence_from_line(self, current_taxon, line, line_index):
+        for c in line:
+            if c in [' ', '\t']:
+                continue
+            try:
+                state = self.symbol_state_map[c.upper()]
+            except KeyError:
+                if not self.ignore_invalid_chars:
+                    raise self._data_parse_error("Invalid state symbol for taxon '%s': '%s'" % (current_taxon.label, c),
+                            line_index=line_index)
+            else:
+                self.char_matrix[current_taxon].append(dataobject.CharacterDataCell(value=state))
+
     def _parse_sequential(self, lines, line_num_start=1):
         seq_labels = []
         current_taxon = None
@@ -205,20 +218,9 @@ class PhylipReader(iosys.DataReader):
                     raise self._data_parse_error("Cannot add new sequence '%s': declared number of sequences (%d) already defined" \
                                 % (line.strip(), len(self.char_matrix.taxon_set)), line_index=line_index)
                 current_taxon, line = self._parse_taxon_from_line(line, line_index)
-            for c in line:
-                if c in [' ', '\t']:
-                    continue
-                try:
-                    state = self.symbol_state_map[c.upper()]
-                except KeyError:
-                    if not self.ignore_invalid_chars:
-                        raise self._data_parse_error("Invalid state symbol for taxon '%s': '%s'" % (current_taxon.label, c),
-                                line_index=line_index)
-                else:
-                    self.char_matrix[current_taxon].append(dataobject.CharacterDataCell(value=state))
-                    if len(self.char_matrix[current_taxon]) >= self.nchar:
-                        current_taxon = None
-                        break
+            self._parse_sequence_from_line(current_taxon, line, line_index)
+            if len(self.char_matrix[current_taxon]) >= self.nchar:
+                current_taxon = None
 
     def _parse_interleaved(self, lines, line_num_start=1):
         seq_labels = []
@@ -240,20 +242,8 @@ class PhylipReader(iosys.DataReader):
                 if len(self.char_matrix.taxon_set) == self.ntax:
                     paged = True
                     paged_row = -1
-            for c in line:
-                if c in [' ', '\t']:
-                    continue
-                try:
-                    state = self.symbol_state_map[c.upper()]
-                except KeyError:
-                    if not self.ignore_invalid_chars:
-                        raise self._data_parse_error("Invalid state symbol for taxon '%s': '%s'" % (current_taxon.label, c),
-                                line_index=line_index)
-                else:
-                    self.char_matrix[current_taxon].append(dataobject.CharacterDataCell(value=state))
-                    if len(self.char_matrix[current_taxon]) >= self.nchar:
-                        current_taxon = None
-                        break
+            self._parse_sequence_from_line(current_taxon, line, line_index)
+
 
 class PhylipWriter(iosys.DataWriter):
     "Implements the DataWriter interface for writing PHYLIP files."
