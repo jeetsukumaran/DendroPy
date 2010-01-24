@@ -47,6 +47,22 @@ class PhylipReader(iosys.DataReader):
                               dataobject.RestrictionSitesCharacterMatrix,
                               dataobject.InfiniteSitesCharacterMatrix]
 
+    class PhylipStrictSequentialError(error.DataParseError):
+        def __init__(self, *args, **kwargs):
+            error.DataParseError.__init__(self, *args, **kwargs)
+
+    class PhylipStrictInterleavedError(error.DataParseError):
+        def __init__(self, *args, **kwargs):
+            error.DataParseError.__init__(self, *args, **kwargs)
+
+    class PhylipRelaxedSequentialError(error.DataParseError):
+        def __init__(self, *args, **kwargs):
+            error.DataParseError.__init__(self, *args, **kwargs)
+
+    class PhylipRelaxedInterleavedError(error.DataParseError):
+        def __init__(self, *args, **kwargs):
+            error.DataParseError.__init__(self, *args, **kwargs)
+
     def __init__(self, **kwargs):
         iosys.DataReader.__init__(self, **kwargs)
         if "char_matrix_type" in kwargs and "data_type" in kwargs:
@@ -138,7 +154,15 @@ class PhylipReader(iosys.DataReader):
             row = None
         else:
             row = line_index + 2
-        return error.DataParseError(message, row=row, stream=self.stream)
+        if self.strict and self.interleaved:
+            error_type = PhylipReader.PhylipStrictInterleavedError
+        elif self.strict:
+            error_type = PhylipReader.PhylipStrictSequentialError
+        elif self.interleaved:
+            error_type = PhylipReader.PhylipRelaxedInterleavedError
+        else:
+            error_type = PhylipReader.PhylipStrictSequentialError
+        return error_type(message, row=row, stream=self.stream)
 
     def _parse_sequential(self, lines, line_num_start=1):
         paged = False
@@ -179,7 +203,7 @@ class PhylipReader(iosys.DataReader):
                     state = self.symbol_state_map[c.upper()]
                 except KeyError:
                     if not self.ignore_invalid_chars:
-                        raise self._data_parse_error("Invalid state symbol '%s' (current taxon = '%s'" % (c, current_taxon.label),
+                        raise self._data_parse_error("Invalid state symbol for taxon '%s': '%s'" % (current_taxon.label, c),
                                 line_index=line_index)
                 else:
                     self.char_matrix[current_taxon].append(dataobject.CharacterDataCell(value=state))
