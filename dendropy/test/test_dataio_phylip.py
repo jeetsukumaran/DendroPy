@@ -103,7 +103,7 @@ strict_sequential_dna_expected_seq_symbols = [
 ###############################################################################
 ## RELAXED SEQUENTIAL DATA
 
-relaxed_sequential_valid_chars_clean_str = """\
+relaxed_sequential_dna_valid_chars_clean_str = """\
   5    20
 Taxon1_ABCDEFG$AAGCTNGGGC ATTTCAGGGT
 Taxon2_ABCDEFG$AAGCCTTGGC AGTGCAGGGT
@@ -112,7 +112,7 @@ Taxon4_ABCDEFG$AAACCCTTGC CGTTACGCTT
 Taxon5_ABCDEFG$AAACCCTTGC CGGTACGCTT
 """
 
-relaxed_sequential_valid_chars_messy_str = "\n".join([
+relaxed_sequential_dna_valid_chars_messy_str = "\n".join([
     "  5    20    ",
     "Taxon1_ABCDEFG$AAGCTNGGGC ATTTCAGGGT    ",
     "Taxon2_ABCDEFG     ",
@@ -131,7 +131,7 @@ relaxed_sequential_valid_chars_messy_str = "\n".join([
     "          ",
     ])
 
-relaxed_sequential_invalid_chars_messy_str = "\n".join([
+relaxed_sequential_dna_invalid_chars_messy_str = "\n".join([
     "  5    20    ",
     "Taxon1_ABCDEFG$AAGCTNq q q z 44 212 1GGGC ATTTCA  123 1GGGT    ",
     "Taxon2_ABCDEFG$112     ",
@@ -194,6 +194,41 @@ strict_interleaved_dna_expected_taxon_labels = [
 ]
 
 strict_interleaved_dna_expected_seq_symbols = [
+        "???????????????????CCAATCTACACACGGG-GTAGGGATTACATATTTGGATGGTAG---GATATGGGCCTACCATGGCGTTAACGGGT-AACGY",
+        "AGCCACACCCTAGGGTTGGCCAATCTACTCCCAGGAGCAGGGAGGGCAGGTTTCGACGGTAA---GGTATTGGCTTACCGTGGCAATGACAGGT-GACGG",
+        "AGCCACACCCCAACCTTAGCCAATAGACATCCAGAAGCCCAAAAGGCAAGTTTCGACGGTAA---GGTATTGGCTTACCGTGGCAATGACAGGT-GACGY",
+        "GCCCGGGGAAGAGGAGGGGCCCGGCGG-AGGCGATAAAAGTGGGGACACATTTCGACGGTAA---GGTATTGGCTTACCGTGGCAATGACAGGT-GACGG",
+        "GGATGGAGAATTAGAGCACTTGTTCTTTTTGCAGAAGCTCAGAATAAACGTTTCGATGGTAA---GGTATTGGCTTACCGTGGCAATGACAGGT-GACGG",
+]
+
+###############################################################################
+## STRICT INTERLEAVED DATA
+
+relaxed_interleaved_dna_valid_chars_clean_str = """\
+    5 100
+
+Taxon1_ABCDEFG$?????????? ?????????C CAATCTACAC ACGGG-GTAG GGATTACATA
+Taxon2_ABCDEFG$AGCCACACCC TAGGGTTGGC CAATCTACTC CCAGGAGCAG GGAGGGCAGG
+Taxon3_ABCDEFG$AGCCACACCC CAACCTTAGC CAATAGACAT CCAGAAGCCC AAAAGGCAAG
+Taxon4_ABCDEFG$GCCCGGGGAA GAGGAGGGGC CCGGCGG-AG GCGATAAAAG TGGGGACACA
+Taxon5_ABCDEFG$GGATGGAGAA TTAGAGCACT TGTTCTTTTT GCAGAAGCTC AGAATAAACG
+
+TTTGGATGGT AG---GATAT GGGCCTACCA TGGCGTTAAC GGGT-AACGY
+TTTCGACGGT AA---GGTAT TGGCTTACCG TGGCAATGAC AGGT-GACGG
+TTTCGACGGT AA---GGTAT TGGCTTACCG TGGCAATGAC AGGT-GACGY
+TTTCGACGGT AA---GGTAT TGGCTTACCG TGGCAATGAC AGGT-GACGG
+TTTCGATGGT AA---GGTAT TGGCTTACCG TGGCAATGAC AGGT-GACGG
+"""
+
+relaxed_interleaved_dna_expected_taxon_labels = [
+        "Taxon1_ABCDEFG",
+        "Taxon2_ABCDEFG",
+        "Taxon3_ABCDEFG",
+        "Taxon4_ABCDEFG",
+        "Taxon5_ABCDEFG"
+]
+
+relaxed_interleaved_dna_expected_seq_symbols = [
         "???????????????????CCAATCTACACACGGG-GTAGGGATTACATATTTGGATGGTAG---GATATGGGCCTACCATGGCGTTAACGGGT-AACGY",
         "AGCCACACCCTAGGGTTGGCCAATCTACTCCCAGGAGCAGGGAGGGCAGGTTTCGACGGTAA---GGTATTGGCTTACCGTGGCAATGACAGGT-GACGG",
         "AGCCACACCCCAACCTTAGCCAATAGACATCCAGAAGCCCAAAAGGCAAGTTTCGACGGTAA---GGTATTGGCTTACCGTGGCAATGACAGGT-GACGY",
@@ -290,7 +325,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=False,
             underscores_to_spaces=False,
             ignore_invalid_chars=False)
-        s = relaxed_sequential_valid_chars_clean_str.replace('$', ' ')
+        s = relaxed_sequential_dna_valid_chars_clean_str.replace('$', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=False)
 
@@ -300,7 +335,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=False,
             underscores_to_spaces=True,
             ignore_invalid_chars=False)
-        s = relaxed_sequential_valid_chars_clean_str.replace('$', ' ')
+        s = relaxed_sequential_dna_valid_chars_clean_str.replace('$', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
 
@@ -310,7 +345,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=True,
             underscores_to_spaces=True,
             ignore_invalid_chars=False)
-        s = relaxed_sequential_valid_chars_clean_str.replace('$', '  ').replace('_', ' ')
+        s = relaxed_sequential_dna_valid_chars_clean_str.replace('$', '  ').replace('_', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
 
@@ -322,7 +357,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=False,
             underscores_to_spaces=False,
             ignore_invalid_chars=False)
-        s = relaxed_sequential_valid_chars_messy_str.replace('$', ' ')
+        s = relaxed_sequential_dna_valid_chars_messy_str.replace('$', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=False)
 
@@ -332,7 +367,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=False,
             underscores_to_spaces=True,
             ignore_invalid_chars=False)
-        s = relaxed_sequential_valid_chars_messy_str.replace('$', ' ')
+        s = relaxed_sequential_dna_valid_chars_messy_str.replace('$', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
 
@@ -342,7 +377,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=True,
             underscores_to_spaces=True,
             ignore_invalid_chars=False)
-        s = relaxed_sequential_valid_chars_messy_str.replace('$', '  ').replace('_', ' ')
+        s = relaxed_sequential_dna_valid_chars_messy_str.replace('$', '  ').replace('_', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
 
@@ -354,7 +389,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=False,
             underscores_to_spaces=False,
             ignore_invalid_chars=True)
-        s = relaxed_sequential_invalid_chars_messy_str.replace('$', ' ')
+        s = relaxed_sequential_dna_invalid_chars_messy_str.replace('$', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=False)
 
@@ -364,7 +399,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=False,
             underscores_to_spaces=True,
             ignore_invalid_chars=True)
-        s = relaxed_sequential_invalid_chars_messy_str.replace('$', ' ')
+        s = relaxed_sequential_dna_invalid_chars_messy_str.replace('$', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
 
@@ -374,7 +409,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=True,
             underscores_to_spaces=True,
             ignore_invalid_chars=True)
-        s = relaxed_sequential_invalid_chars_messy_str.replace('$', '  ').replace('_', ' ')
+        s = relaxed_sequential_dna_invalid_chars_messy_str.replace('$', '  ').replace('_', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
 
@@ -408,6 +443,62 @@ class StrictInterleavedDnaTest(extendedtest.ExtendedTestCase):
             ignore_invalid_chars=False)
         dataset = pr.read(StringIO(strict_interleaved_dna_valid_chars_clean_str))
         self.verify(dataset)
+
+###############################################################################
+## TESTS: Relaxed, Interleaved
+
+class RelaxedInterleavedDnaTest(extendedtest.ExtendedTestCase):
+
+    def verify(self, dataset, underscores_to_spaces=False):
+        self.assertEqual(len(dataset.taxon_sets), 1)
+        self.assertEqual(len(dataset.char_matrices), 1)
+        self.assertEqual(len(dataset.tree_lists), 0)
+        taxon_set = dataset.taxon_sets[0]
+        char_matrix = dataset.char_matrices[0]
+        self.assertIs(taxon_set, char_matrix.taxon_set)
+        self.assertEqual(len(char_matrix), len(strict_interleaved_dna_expected_seq_symbols))
+        for i, taxon in enumerate(taxon_set):
+            self.assertIn(taxon, char_matrix)
+            self.assertIs(char_matrix[taxon], char_matrix[i])
+            if underscores_to_spaces:
+                expected_label = relaxed_interleaved_dna_expected_taxon_labels[i].replace('_', ' ')
+            else:
+                expected_label = relaxed_interleaved_dna_expected_taxon_labels[i]
+            self.assertEqual(taxon.label, expected_label)
+            seqs = char_matrix[taxon].symbols_as_string()
+            self.assertEqual(seqs, relaxed_interleaved_dna_expected_seq_symbols[i])
+
+    ### clean, valid ###
+
+    def test_relaxed_single_space_dna_valid_chars_clean_str_with_underscores(self):
+        pr = phylip.PhylipReader(strict=False,
+            interleaved=True,
+            multispace_delimiter=False,
+            underscores_to_spaces=False,
+            ignore_invalid_chars=False)
+        s = relaxed_interleaved_dna_valid_chars_clean_str.replace('$', ' ')
+        dataset = pr.read(StringIO(s))
+        self.verify(dataset, underscores_to_spaces=False)
+
+    def test_relaxed_single_space_dna_valid_chars_clean_str_no_underscores(self):
+        pr = phylip.PhylipReader(strict=False,
+            interleaved=True,
+            multispace_delimiter=False,
+            underscores_to_spaces=True,
+            ignore_invalid_chars=False)
+        s = relaxed_interleaved_dna_valid_chars_clean_str.replace('$', ' ')
+        dataset = pr.read(StringIO(s))
+        self.verify(dataset, underscores_to_spaces=True)
+
+    def test_relaxed_multi_space_dna_valid_chars_clean_str(self):
+        pr = phylip.PhylipReader(strict=False,
+            interleaved=True,
+            multispace_delimiter=True,
+            underscores_to_spaces=True,
+            ignore_invalid_chars=False)
+        s = relaxed_interleaved_dna_valid_chars_clean_str.replace('$', '  ').replace('_', ' ')
+        dataset = pr.read(StringIO(s))
+        self.verify(dataset, underscores_to_spaces=True)
 
 if __name__ == "__main__":
     unittest.main()
