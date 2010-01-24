@@ -175,6 +175,9 @@ class PhylipReader(iosys.DataReader):
                 continue
             if current_taxon is None:
                 seq_label = None
+                if line.strip() and len(self.char_matrix.taxon_set) >= self.ntax:
+                    raise self._data_parse_error("Cannot add new sequence '%s': declared number of sequences (%d) already defined" \
+                                % (line.strip(), len(self.char_matrix.taxon_set)), line_index=line_index)
                 if self.strict:
                     seq_label = line[:10].strip()
                     line = line[10:]

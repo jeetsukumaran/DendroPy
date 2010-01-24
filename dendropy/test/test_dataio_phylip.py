@@ -146,8 +146,8 @@ relaxed_dna_invalid_chars_messy_str = "\n".join([
     "AAACCCT333TGC ",
     "   CGTTAq3 q3 34CGCTT",
     "Taxon5_ABCDEFG$AAA 3431 CCCTTGC CGGTACGCTT",
-    "      314    ",
-    "      1    ",
+    "           ",
+    "           ",
     ])
 
 relaxed_dna_expected_taxon_labels = [
@@ -308,6 +308,38 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             underscores_to_spaces=True,
             ignore_invalid_chars=False)
         s = relaxed_dna_valid_chars_messy_str.replace('$', '  ').replace('_', ' ')
+        dataset = pr.read(StringIO(s))
+        self.verify(dataset, underscores_to_spaces=True)
+
+    ### messy, invalid ###
+
+    def test_relaxed_single_space_dna_invalid_chars_messy_str_with_underscores(self):
+        pr = phylip.PhylipReader(strict=False,
+            interleaved=False,
+            multispace_delimiter=False,
+            underscores_to_spaces=False,
+            ignore_invalid_chars=True)
+        s = relaxed_dna_invalid_chars_messy_str.replace('$', ' ')
+        dataset = pr.read(StringIO(s))
+        self.verify(dataset, underscores_to_spaces=False)
+
+    def test_relaxed_single_space_dna_invalid_chars_messy_str_no_underscores(self):
+        pr = phylip.PhylipReader(strict=False,
+            interleaved=False,
+            multispace_delimiter=False,
+            underscores_to_spaces=True,
+            ignore_invalid_chars=True)
+        s = relaxed_dna_invalid_chars_messy_str.replace('$', ' ')
+        dataset = pr.read(StringIO(s))
+        self.verify(dataset, underscores_to_spaces=True)
+
+    def test_relaxed_multi_space_dna_invalid_chars_messy_str(self):
+        pr = phylip.PhylipReader(strict=False,
+            interleaved=False,
+            multispace_delimiter=True,
+            underscores_to_spaces=True,
+            ignore_invalid_chars=True)
+        s = relaxed_dna_invalid_chars_messy_str.replace('$', '  ').replace('_', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
 
