@@ -196,6 +196,10 @@ class PhylipReader(iosys.DataReader):
                 current_taxon = self.attached_taxon_set.require_taxon(label=seq_label)
                 if current_taxon not in self.char_matrix:
                     self.char_matrix[current_taxon] = dataobject.CharacterDataVector(taxon=current_taxon)
+                else:
+                    if len(self.char_matrix[current_taxon]) >= self.nchar:
+                        raise self._data_parse_error("Cannot add characters to sequence for taxon '%s': already has declared number of characters (%d)" \
+                                % (current_taxon.label, self.char_matrix[current_taxon]), line_index=line_index)
             for c in line:
                 if c in [' ', '\t']:
                     continue
