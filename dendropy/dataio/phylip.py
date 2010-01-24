@@ -86,7 +86,7 @@ class PhylipReader(iosys.DataReader):
         self.interleaved = kwargs.get("interleaved", False)
         self.multispace_delimiter = kwargs.get("multispace_delimiter", False)
         self.underscores_to_spaces = kwargs.get("underscores_to_spaces", False)
-        self.ignore_invalid_chars = kwargs.get("underscores_to_spaces", False)
+        self.ignore_invalid_chars = kwargs.get("ignore_invalid_chars", False)
         self.ntax = None
         self.nchar = None
 
