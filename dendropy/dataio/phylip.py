@@ -192,7 +192,7 @@ class PhylipReader(iosys.DataReader):
                 if not seq_label:
                     raise self._data_parse_error("Expecting taxon label", line_index=line_index)
                 if self.underscores_to_spaces:
-                    seq_label.replace(' ', '_')
+                    seq_label = seq_label.replace('_', ' ')
                 current_taxon = self.attached_taxon_set.require_taxon(label=seq_label)
                 if current_taxon not in self.char_matrix:
                     self.char_matrix[current_taxon] = dataobject.CharacterDataVector(taxon=current_taxon)
