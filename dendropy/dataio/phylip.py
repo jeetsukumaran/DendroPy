@@ -179,11 +179,12 @@ class PhylipReader(iosys.DataReader):
                     state = self.symbol_state_map[c.upper()]
                 except KeyError:
                     if not self.ignore_invalid_chars:
-                        raise self._data_parse_error("Invalid state symbol '%s'" % c, line_index=line_index)
+                        raise self._data_parse_error("Invalid state symbol '%s' (current taxon = '%s'" % (c, current_taxon.label),
+                                line_index=line_index)
                 else:
-                    self.char_matrix[current_taxon].append(state)
-                    if len(self.char_matrix[current_taxon]) == self.nchar:
-                        self.current_taxon = None
+                    self.char_matrix[current_taxon].append(dataobject.CharacterDataCell(value=state))
+                    if len(self.char_matrix[current_taxon]) >= self.nchar:
+                        current_taxon = None
                         break
 
     def _parse_interleaved(self, lines, line_num_start=1):
