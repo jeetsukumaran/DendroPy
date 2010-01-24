@@ -64,7 +64,7 @@ strict_dna_valid_chars_messy_str = "\n".join([
 
 strict_dna_invalid_chars_messy_str = "\n".join([
     "  5    20    ",
-    "Turkey    AAGCT441N   z cc lGGGC ATTTCAGGGT    ",
+    "Turkey    AAGCT441N   z q lGGGC ATTTCAGGGT    ",
     "Salmo gair     ",
     "  ",
     "",
@@ -72,9 +72,9 @@ strict_dna_invalid_chars_messy_str = "\n".join([
     "AGTGCAG   ",
     "GGT",
     "H. SapiensA",
-    "CCGGTTGGC CGTTCAGGqw. q.w qGT",
+    "CCGGTTGGC CGTTCAGGq   *. q.u qGT",
     "Chimp     ",
-    "AAACCCTTggqeq qGC ",
+    "AAACCCTT%56%qeq qGC ",
     "   CGTTACGCTT",
     "Gorilla   AAACC33CTTGC CGGTACGCTT",
     "          ",
