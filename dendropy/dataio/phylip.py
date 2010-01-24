@@ -185,7 +185,7 @@ class PhylipReader(iosys.DataReader):
                         parts = re.split('[ \t]{1,}', line, maxsplit=1)
                     seq_label = parts[0]
                     if len(parts) < 2:
-                        continue
+                        line = ''
                     else:
                         line = parts[1]
                 seq_label = seq_label.strip()

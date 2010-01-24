@@ -131,7 +131,7 @@ relaxed_dna_valid_chars_messy_str = "\n".join([
     "          ",
     ])
 
-relaxed_dna_valid_chars_messy_str = "\n".join([
+relaxed_dna_invalid_chars_messy_str = "\n".join([
     "  5    20    ",
     "Taxon1_ABCDEFG$AAGCTNq q q z 44 212 1GGGC ATTTCA  123 1GGGT    ",
     "Taxon2_ABCDEFG$112     ",
@@ -247,6 +247,8 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             seqs = char_matrix[taxon].symbols_as_string()
             self.assertEqual(seqs, relaxed_dna_expected_seq_symbols[i])
 
+    ### clean, valid ###
+
     def test_relaxed_single_space_dna_valid_chars_clean_str_with_underscores(self):
         pr = phylip.PhylipReader(strict=False,
             interleaved=False,
@@ -274,6 +276,38 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             underscores_to_spaces=True,
             ignore_invalid_chars=False)
         s = relaxed_dna_valid_chars_clean_str.replace('$', '  ').replace('_', ' ')
+        dataset = pr.read(StringIO(s))
+        self.verify(dataset, underscores_to_spaces=True)
+
+    ### messy, valid ###
+
+    def test_relaxed_single_space_dna_valid_chars_messy_str_with_underscores(self):
+        pr = phylip.PhylipReader(strict=False,
+            interleaved=False,
+            multispace_delimiter=False,
+            underscores_to_spaces=False,
+            ignore_invalid_chars=False)
+        s = relaxed_dna_valid_chars_messy_str.replace('$', ' ')
+        dataset = pr.read(StringIO(s))
+        self.verify(dataset, underscores_to_spaces=False)
+
+    def test_relaxed_single_space_dna_valid_chars_messy_str_no_underscores(self):
+        pr = phylip.PhylipReader(strict=False,
+            interleaved=False,
+            multispace_delimiter=False,
+            underscores_to_spaces=True,
+            ignore_invalid_chars=False)
+        s = relaxed_dna_valid_chars_messy_str.replace('$', ' ')
+        dataset = pr.read(StringIO(s))
+        self.verify(dataset, underscores_to_spaces=True)
+
+    def test_relaxed_multi_space_dna_valid_chars_messy_str(self):
+        pr = phylip.PhylipReader(strict=False,
+            interleaved=False,
+            multispace_delimiter=True,
+            underscores_to_spaces=True,
+            ignore_invalid_chars=False)
+        s = relaxed_dna_valid_chars_messy_str.replace('$', '  ').replace('_', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
 
