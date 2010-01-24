@@ -37,7 +37,7 @@ from dendropy.dataio import phylip
 ###############################################################################
 ## STRICT SEQUENTIAL DATA
 
-strict_dna_valid_chars_clean_str = """\
+strict_sequential_dna_valid_chars_clean_str = """\
   5    20
 Turkey    AAGCTNGGGC ATTTCAGGGT
 Salmo gairAAGCCTTGGC AGTGCAGGGT
@@ -46,7 +46,7 @@ Chimp     AAACCCTTGC CGTTACGCTT
 Gorilla   AAACCCTTGC CGGTACGCTT
 """
 
-strict_dna_valid_chars_messy_str = "\n".join([
+strict_sequential_dna_valid_chars_messy_str = "\n".join([
     "  5    20    ",
     "Turkey    AAGCTNGGGC ATTTCAGGGT    ",
     "Salmo gair     ",
@@ -65,7 +65,7 @@ strict_dna_valid_chars_messy_str = "\n".join([
     "          ",
     ])
 
-strict_dna_invalid_chars_messy_str = "\n".join([
+strict_sequential_dna_invalid_chars_messy_str = "\n".join([
     "  5    20    ",
     "Turkey    AAGCT441N   z q lGGGC ATTTCAGGGT    ",
     "Salmo gair     ",
@@ -84,7 +84,7 @@ strict_dna_invalid_chars_messy_str = "\n".join([
     "          ",
     ])
 
-strict_dna_expected_taxon_labels = [
+strict_sequential_dna_expected_taxon_labels = [
         "Turkey",
         "Salmo gair",
         "H. Sapiens",
@@ -92,7 +92,7 @@ strict_dna_expected_taxon_labels = [
         "Gorilla"
 ]
 
-strict_dna_expected_seq_symbols = [
+strict_sequential_dna_expected_seq_symbols = [
         "AAGCTNGGGCATTTCAGGGT",
         "AAGCCTTGGCAGTGCAGGGT",
         "ACCGGTTGGCCGTTCAGGGT",
@@ -103,7 +103,7 @@ strict_dna_expected_seq_symbols = [
 ###############################################################################
 ## RELAXED SEQUENTIAL DATA
 
-relaxed_dna_valid_chars_clean_str = """\
+relaxed_sequential_valid_chars_clean_str = """\
   5    20
 Taxon1_ABCDEFG$AAGCTNGGGC ATTTCAGGGT
 Taxon2_ABCDEFG$AAGCCTTGGC AGTGCAGGGT
@@ -112,7 +112,7 @@ Taxon4_ABCDEFG$AAACCCTTGC CGTTACGCTT
 Taxon5_ABCDEFG$AAACCCTTGC CGGTACGCTT
 """
 
-relaxed_dna_valid_chars_messy_str = "\n".join([
+relaxed_sequential_valid_chars_messy_str = "\n".join([
     "  5    20    ",
     "Taxon1_ABCDEFG$AAGCTNGGGC ATTTCAGGGT    ",
     "Taxon2_ABCDEFG     ",
@@ -131,7 +131,7 @@ relaxed_dna_valid_chars_messy_str = "\n".join([
     "          ",
     ])
 
-relaxed_dna_invalid_chars_messy_str = "\n".join([
+relaxed_sequential_invalid_chars_messy_str = "\n".join([
     "  5    20    ",
     "Taxon1_ABCDEFG$AAGCTNq q q z 44 212 1GGGC ATTTCA  123 1GGGT    ",
     "Taxon2_ABCDEFG$112     ",
@@ -150,7 +150,7 @@ relaxed_dna_invalid_chars_messy_str = "\n".join([
     "           ",
     ])
 
-relaxed_dna_expected_taxon_labels = [
+relaxed_sequential_dna_expected_taxon_labels = [
         "Taxon1_ABCDEFG",
         "Taxon2_ABCDEFG",
         "Taxon3_ABCDEFG",
@@ -158,12 +158,47 @@ relaxed_dna_expected_taxon_labels = [
         "Taxon5_ABCDEFG"
 ]
 
-relaxed_dna_expected_seq_symbols = [
+relaxed_sequential_dna_expected_seq_symbols = [
         "AAGCTNGGGCATTTCAGGGT",
         "AAGCCTTGGCAGTGCAGGGT",
         "ACCGGTTGGCCGTTCAGGGT",
         "AAACCCTTGCCGTTACGCTT",
         "AAACCCTTGCCGGTACGCTT",
+]
+
+###############################################################################
+## STRICT INTERLEAVED DATA
+
+strict_interleaved_dna_valid_chars_clean_str = """\
+    5 100
+
+Lagomorpha?????????? ?????????C CAATCTACAC ACGGG-GTAG GGATTACATA
+Human     AGCCACACCC TAGGGTTGGC CAATCTACTC CCAGGAGCAG GGAGGGCAGG
+Opossum   AGCCACACCC CAACCTTAGC CAATAGACAT CCAGAAGCCC AAAAGGCAAG
+Chicken   GCCCGGGGAA GAGGAGGGGC CCGGCGG-AG GCGATAAAAG TGGGGACACA
+Frog      GGATGGAGAA TTAGAGCACT TGTTCTTTTT GCAGAAGCTC AGAATAAACG
+
+TTTGGATGGT AG---GATAT GGGCCTACCA TGGCGTTAAC GGGT-AACGY
+TTTCGACGGT AA---GGTAT TGGCTTACCG TGGCAATGAC AGGT-GACGG
+TTTCGACGGT AA---GGTAT TGGCTTACCG TGGCAATGAC AGGT-GACGY
+TTTCGACGGT AA---GGTAT TGGCTTACCG TGGCAATGAC AGGT-GACGG
+TTTCGATGGT AA---GGTAT TGGCTTACCG TGGCAATGAC AGGT-GACGG
+"""
+
+strict_interleaved_dna_expected_taxon_labels = [
+        "Lagomorpha",
+        "Human",
+        "Opossum",
+        "Chicken",
+        "Frog"
+]
+
+strict_interleaved_dna_expected_seq_symbols = [
+        "???????????????????CCAATCTACACACGGG-GTAGGGATTACATATTTGGATGGTAG---GATATGGGCCTACCATGGCGTTAACGGGT-AACGY",
+        "AGCCACACCCTAGGGTTGGCCAATCTACTCCCAGGAGCAGGGAGGGCAGGTTTCGACGGTAA---GGTATTGGCTTACCGTGGCAATGACAGGT-GACGG",
+        "AGCCACACCCCAACCTTAGCCAATAGACATCCAGAAGCCCAAAAGGCAAGTTTCGACGGTAA---GGTATTGGCTTACCGTGGCAATGACAGGT-GACGY",
+        "GCCCGGGGAAGAGGAGGGGCCCGGCGG-AGGCGATAAAAGTGGGGACACATTTCGACGGTAA---GGTATTGGCTTACCGTGGCAATGACAGGT-GACGG",
+        "GGATGGAGAATTAGAGCACTTGTTCTTTTTGCAGAAGCTCAGAATAAACGTTTCGATGGTAA---GGTATTGGCTTACCGTGGCAATGACAGGT-GACGG",
 ]
 
 ###############################################################################
@@ -178,42 +213,42 @@ class StrictSequentialDnaTest(extendedtest.ExtendedTestCase):
         taxon_set = dataset.taxon_sets[0]
         char_matrix = dataset.char_matrices[0]
         self.assertIs(taxon_set, char_matrix.taxon_set)
-        self.assertEqual(len(char_matrix), len(strict_dna_expected_seq_symbols))
+        self.assertEqual(len(char_matrix), len(strict_sequential_dna_expected_seq_symbols))
         for i, taxon in enumerate(taxon_set):
             self.assertIn(taxon, char_matrix)
             self.assertIs(char_matrix[taxon], char_matrix[i])
-            self.assertEqual(taxon.label, strict_dna_expected_taxon_labels[i])
+            self.assertEqual(taxon.label, strict_sequential_dna_expected_taxon_labels[i])
             seqs = char_matrix[taxon].symbols_as_string()
-            self.assertEqual(seqs, strict_dna_expected_seq_symbols[i])
+            self.assertEqual(seqs, strict_sequential_dna_expected_seq_symbols[i])
 
-    def test_strict_dna_valid_chars_clean_str(self):
+    def test_strict_sequential_dna_valid_chars_clean_str(self):
         pr = phylip.PhylipReader(strict=True,
             interleaved=False,
             multispace_delimiter=False,
             underscores_to_spaces=False,
             ignore_invalid_chars=False)
-        dataset = pr.read(StringIO(strict_dna_valid_chars_clean_str))
+        dataset = pr.read(StringIO(strict_sequential_dna_valid_chars_clean_str))
         self.verify(dataset)
 
-    def test_strict_dna_valid_chars_messy_str(self):
+    def test_strict_sequential_dna_valid_chars_messy_str(self):
         pr = phylip.PhylipReader(strict=True,
             interleaved=False,
             multispace_delimiter=False,
             underscores_to_spaces=False,
             ignore_invalid_chars=False)
-        dataset = pr.read(StringIO(strict_dna_valid_chars_messy_str))
+        dataset = pr.read(StringIO(strict_sequential_dna_valid_chars_messy_str))
         self.verify(dataset)
 
-    def test_strict_dna_invalid_chars_messy_str(self):
+    def test_strict_sequential_dna_invalid_chars_messy_str(self):
         pr = phylip.PhylipReader(strict=True,
             interleaved=False,
             multispace_delimiter=False,
             underscores_to_spaces=False,
             ignore_invalid_chars=True)
-        dataset = pr.read(StringIO(strict_dna_invalid_chars_messy_str))
+        dataset = pr.read(StringIO(strict_sequential_dna_invalid_chars_messy_str))
         self.verify(dataset)
 
-    def test_raises_error_strict_dna_invalid_chars_messy_str(self):
+    def test_raises_error_strict_sequential_dna_invalid_chars_messy_str(self):
         pr = phylip.PhylipReader(strict=True,
             interleaved=False,
             multispace_delimiter=False,
@@ -221,7 +256,7 @@ class StrictSequentialDnaTest(extendedtest.ExtendedTestCase):
             ignore_invalid_chars=False)
         self.assertRaises(phylip.PhylipReader.PhylipStrictSequentialError,
             pr.read,
-            StringIO(strict_dna_invalid_chars_messy_str))
+            StringIO(strict_sequential_dna_invalid_chars_messy_str))
 
 ###############################################################################
 ## TESTS: Relaxed, Sequential
@@ -235,17 +270,17 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
         taxon_set = dataset.taxon_sets[0]
         char_matrix = dataset.char_matrices[0]
         self.assertIs(taxon_set, char_matrix.taxon_set)
-        self.assertEqual(len(char_matrix), len(strict_dna_expected_seq_symbols))
+        self.assertEqual(len(char_matrix), len(strict_sequential_dna_expected_seq_symbols))
         for i, taxon in enumerate(taxon_set):
             self.assertIn(taxon, char_matrix)
             self.assertIs(char_matrix[taxon], char_matrix[i])
             if underscores_to_spaces:
-                expected_label = relaxed_dna_expected_taxon_labels[i].replace('_', ' ')
+                expected_label = relaxed_sequential_dna_expected_taxon_labels[i].replace('_', ' ')
             else:
-                expected_label = relaxed_dna_expected_taxon_labels[i]
+                expected_label = relaxed_sequential_dna_expected_taxon_labels[i]
             self.assertEqual(taxon.label, expected_label)
             seqs = char_matrix[taxon].symbols_as_string()
-            self.assertEqual(seqs, relaxed_dna_expected_seq_symbols[i])
+            self.assertEqual(seqs, relaxed_sequential_dna_expected_seq_symbols[i])
 
     ### clean, valid ###
 
@@ -255,7 +290,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=False,
             underscores_to_spaces=False,
             ignore_invalid_chars=False)
-        s = relaxed_dna_valid_chars_clean_str.replace('$', ' ')
+        s = relaxed_sequential_valid_chars_clean_str.replace('$', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=False)
 
@@ -265,7 +300,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=False,
             underscores_to_spaces=True,
             ignore_invalid_chars=False)
-        s = relaxed_dna_valid_chars_clean_str.replace('$', ' ')
+        s = relaxed_sequential_valid_chars_clean_str.replace('$', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
 
@@ -275,7 +310,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=True,
             underscores_to_spaces=True,
             ignore_invalid_chars=False)
-        s = relaxed_dna_valid_chars_clean_str.replace('$', '  ').replace('_', ' ')
+        s = relaxed_sequential_valid_chars_clean_str.replace('$', '  ').replace('_', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
 
@@ -287,7 +322,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=False,
             underscores_to_spaces=False,
             ignore_invalid_chars=False)
-        s = relaxed_dna_valid_chars_messy_str.replace('$', ' ')
+        s = relaxed_sequential_valid_chars_messy_str.replace('$', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=False)
 
@@ -297,7 +332,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=False,
             underscores_to_spaces=True,
             ignore_invalid_chars=False)
-        s = relaxed_dna_valid_chars_messy_str.replace('$', ' ')
+        s = relaxed_sequential_valid_chars_messy_str.replace('$', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
 
@@ -307,7 +342,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=True,
             underscores_to_spaces=True,
             ignore_invalid_chars=False)
-        s = relaxed_dna_valid_chars_messy_str.replace('$', '  ').replace('_', ' ')
+        s = relaxed_sequential_valid_chars_messy_str.replace('$', '  ').replace('_', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
 
@@ -319,7 +354,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=False,
             underscores_to_spaces=False,
             ignore_invalid_chars=True)
-        s = relaxed_dna_invalid_chars_messy_str.replace('$', ' ')
+        s = relaxed_sequential_invalid_chars_messy_str.replace('$', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=False)
 
@@ -329,7 +364,7 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=False,
             underscores_to_spaces=True,
             ignore_invalid_chars=True)
-        s = relaxed_dna_invalid_chars_messy_str.replace('$', ' ')
+        s = relaxed_sequential_invalid_chars_messy_str.replace('$', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
 
@@ -339,9 +374,40 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
             multispace_delimiter=True,
             underscores_to_spaces=True,
             ignore_invalid_chars=True)
-        s = relaxed_dna_invalid_chars_messy_str.replace('$', '  ').replace('_', ' ')
+        s = relaxed_sequential_invalid_chars_messy_str.replace('$', '  ').replace('_', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
+
+###############################################################################
+## TESTS: Strict, Sequential
+
+class StrictInterleavedDnaTest(extendedtest.ExtendedTestCase):
+
+    def verify(self, dataset):
+        self.assertEqual(len(dataset.taxon_sets), 1)
+        self.assertEqual(len(dataset.char_matrices), 1)
+        self.assertEqual(len(dataset.tree_lists), 0)
+        taxon_set = dataset.taxon_sets[0]
+        char_matrix = dataset.char_matrices[0]
+        self.assertIs(taxon_set, char_matrix.taxon_set)
+        self.assertEqual(len(char_matrix), len(strict_interleaved_dna_expected_seq_symbols))
+        for i, taxon in enumerate(taxon_set):
+            self.assertIn(taxon, char_matrix)
+            self.assertIs(char_matrix[taxon], char_matrix[i])
+            self.assertEqual(taxon.label, strict_interleaved_dna_expected_taxon_labels[i])
+            seqs = char_matrix[taxon].symbols_as_string()
+            self.assertEqual(seqs, strict_interleaved_dna_expected_seq_symbols[i])
+
+    ### clean, valid ###
+
+    def test_strict_interleaved_dna_valid_chars_clean_str(self):
+        pr = phylip.PhylipReader(strict=True,
+            interleaved=True,
+            multispace_delimiter=False,
+            underscores_to_spaces=False,
+            ignore_invalid_chars=False)
+        dataset = pr.read(StringIO(strict_interleaved_dna_valid_chars_clean_str))
+        self.verify(dataset)
 
 if __name__ == "__main__":
     unittest.main()
