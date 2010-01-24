@@ -74,12 +74,10 @@ class PhylipReader(iosys.DataReader):
                     % (", ".join([("'" + d + "'") for d in PhylipReader.supported_data_types])))
             else:
                 self.char_matrix_type = dataobject.character_data_type_label_map[data_type]
-#        elif "char_matrix_type" in kwargs:
-#            self.char_matrix_type = kwargs.get("char_matrix_type")
-#        else:
-#            raise ValueError("Must specify at 'data_type' or 'char_matrix_type'")
+        elif "char_matrix_type" in kwargs:
+            self.char_matrix_type = kwargs.get("char_matrix_type")
         else:
-            self.char_matrix_type = kwargs.get("char_matrix_type", dataobject.DnaCharacterMatrix)
+            raise ValueError("Must specify 'data_type' for Phylip format, one of: %s" % (PhylipReader.supported_data_types))
         if self.char_matrix_type not in PhylipReader.supported_matrix_types:
             raise ValueError("'%s' is not a supported data type for PhylipReader" % self.char_matrix_type.__name__)
         self.strict = kwargs.get("strict", False)

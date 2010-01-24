@@ -257,7 +257,9 @@ class StrictSequentialDnaTest(extendedtest.ExtendedTestCase):
             self.assertEqual(seqs, strict_sequential_dna_expected_seq_symbols[i])
 
     def test_strict_sequential_dna_valid_chars_clean_str(self):
-        pr = phylip.PhylipReader(strict=True,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=True,
             interleaved=False,
             multispace_delimiter=False,
             underscores_to_spaces=False,
@@ -266,7 +268,9 @@ class StrictSequentialDnaTest(extendedtest.ExtendedTestCase):
         self.verify(dataset)
 
     def test_strict_sequential_dna_valid_chars_messy_str(self):
-        pr = phylip.PhylipReader(strict=True,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=True,
             interleaved=False,
             multispace_delimiter=False,
             underscores_to_spaces=False,
@@ -275,7 +279,9 @@ class StrictSequentialDnaTest(extendedtest.ExtendedTestCase):
         self.verify(dataset)
 
     def test_strict_sequential_dna_invalid_chars_messy_str(self):
-        pr = phylip.PhylipReader(strict=True,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=True,
             interleaved=False,
             multispace_delimiter=False,
             underscores_to_spaces=False,
@@ -284,7 +290,9 @@ class StrictSequentialDnaTest(extendedtest.ExtendedTestCase):
         self.verify(dataset)
 
     def test_raises_error_strict_sequential_dna_invalid_chars_messy_str(self):
-        pr = phylip.PhylipReader(strict=True,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=True,
             interleaved=False,
             multispace_delimiter=False,
             underscores_to_spaces=False,
@@ -320,7 +328,9 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
     ### clean, valid ###
 
     def test_relaxed_single_space_dna_valid_chars_clean_str_with_underscores(self):
-        pr = phylip.PhylipReader(strict=False,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=False,
             interleaved=False,
             multispace_delimiter=False,
             underscores_to_spaces=False,
@@ -330,7 +340,9 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
         self.verify(dataset, underscores_to_spaces=False)
 
     def test_relaxed_single_space_dna_valid_chars_clean_str_no_underscores(self):
-        pr = phylip.PhylipReader(strict=False,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=False,
             interleaved=False,
             multispace_delimiter=False,
             underscores_to_spaces=True,
@@ -340,7 +352,9 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
         self.verify(dataset, underscores_to_spaces=True)
 
     def test_relaxed_multi_space_dna_valid_chars_clean_str(self):
-        pr = phylip.PhylipReader(strict=False,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=False,
             interleaved=False,
             multispace_delimiter=True,
             underscores_to_spaces=True,
@@ -352,7 +366,9 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
     ### messy, valid ###
 
     def test_relaxed_single_space_dna_valid_chars_messy_str_with_underscores(self):
-        pr = phylip.PhylipReader(strict=False,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=False,
             interleaved=False,
             multispace_delimiter=False,
             underscores_to_spaces=False,
@@ -362,7 +378,9 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
         self.verify(dataset, underscores_to_spaces=False)
 
     def test_relaxed_single_space_dna_valid_chars_messy_str_no_underscores(self):
-        pr = phylip.PhylipReader(strict=False,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=False,
             interleaved=False,
             multispace_delimiter=False,
             underscores_to_spaces=True,
@@ -372,7 +390,9 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
         self.verify(dataset, underscores_to_spaces=True)
 
     def test_relaxed_multi_space_dna_valid_chars_messy_str(self):
-        pr = phylip.PhylipReader(strict=False,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=False,
             interleaved=False,
             multispace_delimiter=True,
             underscores_to_spaces=True,
@@ -384,7 +404,9 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
     ### messy, invalid ###
 
     def test_relaxed_single_space_dna_invalid_chars_messy_str_with_underscores(self):
-        pr = phylip.PhylipReader(strict=False,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=False,
             interleaved=False,
             multispace_delimiter=False,
             underscores_to_spaces=False,
@@ -394,7 +416,9 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
         self.verify(dataset, underscores_to_spaces=False)
 
     def test_relaxed_single_space_dna_invalid_chars_messy_str_no_underscores(self):
-        pr = phylip.PhylipReader(strict=False,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=False,
             interleaved=False,
             multispace_delimiter=False,
             underscores_to_spaces=True,
@@ -404,7 +428,9 @@ class RelaxedSequentialDnaTest(extendedtest.ExtendedTestCase):
         self.verify(dataset, underscores_to_spaces=True)
 
     def test_relaxed_multi_space_dna_invalid_chars_messy_str(self):
-        pr = phylip.PhylipReader(strict=False,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=False,
             interleaved=False,
             multispace_delimiter=True,
             underscores_to_spaces=True,
@@ -436,7 +462,9 @@ class StrictInterleavedDnaTest(extendedtest.ExtendedTestCase):
     ### clean, valid ###
 
     def test_strict_interleaved_dna_valid_chars_clean_str(self):
-        pr = phylip.PhylipReader(strict=True,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=True,
             interleaved=True,
             multispace_delimiter=False,
             underscores_to_spaces=False,
@@ -471,7 +499,9 @@ class RelaxedInterleavedDnaTest(extendedtest.ExtendedTestCase):
     ### clean, valid ###
 
     def test_relaxed_single_space_dna_valid_chars_clean_str_with_underscores(self):
-        pr = phylip.PhylipReader(strict=False,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=False,
             interleaved=True,
             multispace_delimiter=False,
             underscores_to_spaces=False,
@@ -481,7 +511,9 @@ class RelaxedInterleavedDnaTest(extendedtest.ExtendedTestCase):
         self.verify(dataset, underscores_to_spaces=False)
 
     def test_relaxed_single_space_dna_valid_chars_clean_str_no_underscores(self):
-        pr = phylip.PhylipReader(strict=False,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=False,
             interleaved=True,
             multispace_delimiter=False,
             underscores_to_spaces=True,
@@ -491,7 +523,9 @@ class RelaxedInterleavedDnaTest(extendedtest.ExtendedTestCase):
         self.verify(dataset, underscores_to_spaces=True)
 
     def test_relaxed_multi_space_dna_valid_chars_clean_str(self):
-        pr = phylip.PhylipReader(strict=False,
+        pr = phylip.PhylipReader(
+            data_type='dna',
+            strict=False,
             interleaved=True,
             multispace_delimiter=True,
             underscores_to_spaces=True,
