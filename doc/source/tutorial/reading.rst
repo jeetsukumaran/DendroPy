@@ -25,7 +25,7 @@ All these methods minimally take a source and :ref:`schema specification string 
     >>> std1 = dendropy.StandardCharacterMatrix.get_from_path("python_morph.nex", "nexus")
     >>> dataset1 = dendropy.DataSet.get_from_path("pythonidae.nex", "nexus")
 
-The :ref:`schema specification string <Specifying_the_Data_Source_Format>` can be one of: "nexus", "newick", "nexml", "fasta", or "phylip". Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
+The :ref:`schema specification string <Specifying_the_Data_Source_Format>` can be one of: "``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``". Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
 
 Alternatively, you can also pass a file-like object and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` to the constructor of these classes using the keyword arguments ``stream`` and ``schema`` respectively::
 
@@ -36,8 +36,7 @@ Alternatively, you can also pass a file-like object and a :ref:`schema specifica
     >>> std1 = dendropy.StandardCharacterMatrix(stream=open("python_morph.nex"), schema="nexus")
     >>> dataset1 = dendropy.DataSet(stream=open("pythonidae.nex"), schema="nexus")
 
-Various keyword arguments can also be passed to these methods which customize or control how the data is parsed and mapped into DendroPy object space.
-These are discussed below.
+Various :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>` can also be passed to these methods which customize or control how the data is parsed and mapped into DendroPy object space. These are discussed :ref:`below <Customizing_Data_Creation_and_Reading>`.
 
 Reading and Populating (or Repopulating) Existing Objects
 =========================================================
@@ -54,7 +53,7 @@ The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all sup
         Takes a string specifying containing the source data as the first argument, and a string specifying the schema as the second.
 
 When called on an existing |TreeList| or |DataSet| object, these methods *add* the data from the data source to the object, whereas when called on an existing |Tree| or |CharacterMatrix| object,  they *replace* the object's data with data from the data source.
-As with the ":meth:`get_from_*()`" methods, the :ref:`schema specification string <Specifying_the_Data_Source_Format>` can be any supported and type-apppropriate schema, such as "nexus", "newick", "nexml", "fasta", "phylip", etc.
+As with the ":meth:`get_from_*()`" methods, the :ref:`schema specification string <Specifying_the_Data_Source_Format>` can be any supported and type-apppropriate schema, such as "``nexus``", "``newick``", "``nexml``", "``fasta``", "``phylip``", etc.
 
 For example, the following accumulates post-burn-in trees from several different files into a single |TreeList| object (the ``tree_offset`` keyword is discussed `here <Customizing_Tree_Creation_and_Reading>`_)::
 
@@ -86,7 +85,7 @@ In contrast to the aggregating behavior of :meth:`read_from_*()` of |TreeList| a
     >>> print(t.description())
     Tree object at 0x79c70 (Tree37414064: 'con 50 majrule'): ('Python regius':0.212275,('Python sebae':0.176816,(((((('Antaresia maculosa':0.127351,('Antaresia perthensis':0.108378,('Antaresia stimsoni':0.021372,'Antaresia childreni':0.038155):0.046446):0.025262):0.012957,('Morelia carinata':0.101145,('Morelia bredli':0.038563,'Morelia spilota':0.025643):0.050967):0.010472,'Morelia viridis':0.098541):0.023291,('Bothrochilus boa':0.091928,'Leiopython albertisii':0.080986):0.031583):0.008347,((('Liasis fuscus':0.026601,'Liasis mackloti':0.034524):0.069881,'Liasis olivaceus':0.047727):0.023758,'Apodora papuana':0.096097):0.01474):0.010084,(('Python timoriensis':0.101865,'Python reticulatus':0.095018):0.0922,('Morelia boeleni':0.093309,('Morelia tracyae':0.04727,('Morelia amethistina':0.034936,(('Morelia nauta':0.011,'Morelia kinghorni':0.011198):0.006932,'Morelia clastolepis':0.008103):0.025987):0.017415):0.033886):0.027519,'Morelia oenpelliensis':0.092143):0.006779):0.018238,('Aspidites ramsayi':0.030898,'Aspidites melanocephalus':0.068553):0.049525):0.050607):0.023304,('Python brongersmai':0.132193,'Python molurus':0.08872):0.011466)
 
-As with the :meth:`get_from_*()` methods, keyword arguments can be used to provide control on the data source parsing.
+As with the :meth:`get_from_*()` methods, keyword arguments can be used to provide :ref:`control on the data source parsing <Customizing_Data_Creation_and_Reading>`.
 
 .. _Specifying_the_Data_Source_Format:
 
@@ -115,7 +114,7 @@ Customizing Data Creation and Reading
 =====================================
 
 When specifying a data source from which to create or populate data objects using the :meth:`get_from_*()`, :meth:`read_from_*()`, or passing a data source stream to a constructor, you can also specify keyword arguments that provide fine-grained control over how the data source is parsed.
-Some of these keyword arguments apply generally, regardless of the schema of the data source or the data object being created, while others are specific to the data object type or the data source schema.
+Some of these keyword arguments apply generally, regardless of the format of the data source or the data object being created, while others are specific to the data object type or the data source format.
 
 .. _Customizing_Reading_All_Formats:
 
