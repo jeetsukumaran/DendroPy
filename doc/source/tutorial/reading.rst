@@ -189,3 +189,6 @@ PHYLIP
     ``ignore_invalid_chars``
         By default, the PHYLIP parser will fail with an error if invalid characters are found in a sequence. By specifying ``ignore_invalid_chars=True``, the parser will simply ignore these characters.
 
+    ``underscores_to_spaces``
+        In the default relaxed PHYLIP format mode, since the first occurrence of a space in the data format is taken to denote the end of the taxon label, spaces are not permitted within taxon labels. A common convention is to use underscores in place of spaces in cases like this. By specifying ``underscores_to_spaces=True``, the parser will automatically substitute any underscores found in taxon labels with spaces, thus allowing for correspondence with the same taxa represented in other formats that allow spaces, such as NEXUS or Newick.
+
