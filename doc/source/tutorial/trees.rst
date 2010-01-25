@@ -74,94 +74,6 @@ To create a clone of a |TreeList| object:
 Here, ``treelist2`` will be a *deep-copy* of ``treelist1``, i.e., with each |Tree| object in ``treelist2`` being a clone of the corresponding |Tree| object in ``treelist1``.
 The same constraint regarding |Taxon| object applies: i.e., the cloning does not extend to |Taxon| objects, and these are shared across all |Tree| objects in both ``treelist1`` and ``treelist2``, as well as the |TreeList| objects themselves.
 
-.. _Customizing_Tree_Creation_and_Reading:
-
-Customizing |Tree| and |TreeList| Creation and Reading
-------------------------------------------------------
-
-You can control how data is parsed from a data source using the following keywords passed to any :meth:`get_from_*()` or :meth:`read_from_*()` method of a |TreeList| object:
-
-General
-^^^^^^^
-
-    ``taxon_set``
-        Passing a |TaxonSet| object using the ``taxon_set`` argument when instantiating a |Tree| or |TreeList| object (using, for example, the :meth:`get_from_*()` or :meth:`read_from_*()` methods) results in the |Tree| or |TreeList| object being bound to the specified |TaxonSet| object.
-
-    ``tree_offset``
-        A non-negative integer specifying the 0-based index of a tree within a collection in the data source.
-        The default is 0, which means that the first tree definition is used.
-        If passed to :meth:`get_from_*()`, :meth:`read_from_*()` or a constructor of |Tree|, this selects a specific tree definition in the source (i.e, ``tree_offset=2`` will create or populate the |Tree| object based on the 3rd tree definition). If passed to  :meth:`get_from_*()`, :meth:`read_from_*()` or a constructor of |TreeList| or |DataSet| object, this effectively skips all the tree definitions preceding the specified index from being created (i.e, ``tree_offset=200`` will populate the |TreeList| object starting with the 201st tree definition).
-
-
-        For example, the following creates a |Tree| object from the second tree definition in the data source::
-
-            >>> import dendropy
-            >>> t = dendropy.Tree.get_from_path('pythonidae.best-trees.tre', \
-                        'nexus', tree_offset=1)
-
-        While this effectively skips over the first 200 trees as burn-in from an MCMC sample of trees::
-
-            >>> import dendropy
-            >>> pp_trees = dendropy.TreeList.get_from_path('pythonidae_mcmc.tre', \
-                    'nexus', tree_offset=200)
-
-    ``collection_offset``
-        A non-negative integer specifying the 0-based index of a collection (e.g., a NEXUS "TREES" block) of trees in the data source.
-        A negative value means that a union of all the tree collections in the data source will be used.
-        The default is -1, i.e., all the collections will be aggregated.
-        For example, the following selects the third tree collection to populate a |TreeList| object::
-
-            >>> import dendropy
-            >>> trees = dendropy.Tree.get_from_path('pythonidae.nex', 'nexus', \
-                    collection_offset=4)
-
-        While this reads all the trees from all "TREES" block in the data source::
-
-            >>> import dendropy
-            >>> trees = dendropy.TreeList.get_from_path('pythonidae.nex', 'nexus', \
-                    collection_offset=-1)
-
-        The following selects the second tree from the third "TREES" block in the data source::
-
-            >>> import dendropy
-            >>> trees = dendropy.Tree.get_from_path('pythonidae.nex', 'nexus', \
-                    collection_offset=2, tree_offset=1)
-
-        The following selects the 30th tree defined in the data source across all tree collections, with the first tree in the first collection treated as having index 0::
-
-            >>> import dendropy
-            >>> tree_31 = dendropy.Tree.get_from_path('pythonidae.nex', 'nexus', \
-                    collection_offset=-1, tree_offset=29)
-
-.. _Interpreting_Rootings:
-
-NEXUS/NEWICK-specific
-^^^^^^^^^^^^^^^^^^^^^
-
-    ``is_rooted``, ``is_unrooted``, ``default_as_rooted``, ``default_as_unrooted``
-
-        The rooting state of a |Tree| object is set by the :attr:`~dendropy.dataobject.tree.Tree.is_rooted` property.
-        When parsing NEXUS- and Newick-formatted data, the rooting states of the resulting |Tree| objects are given by ``[&R]`` (for rooted) or ``[&U]`` (for unrooted) comment tags preceding the tree definition in the data source.
-        If these tags are not present, then the trees are assumed to be unrooted.
-        This behavior can be changed by specifying keyword arguments to the :meth:`get_from_*()`,  or :meth:`read_from_*()` methods of both the |Tree| and |TreeList| classes, or the constructors of these classes when specifying a data source from which to construct the tree:
-
-        The ``as_rooted`` keyword argument, if :keyword:`True`, forces all trees to be interpreted as rooted, regardless of whether or not the ``[&R]``/``[&U]`` comment tags are given.
-        Conversely, if :keyword:`False`, all trees will be interpreted as unrooted.
-        For semantic clarity, you can also specify ``as_unrooted`` to be :keyword:`True` to force all trees to be unrooted.
-
-        .. literalinclude:: /examples/tree_rootings1.py
-            :linenos:
-
-        In addition, you can specify a ``default_as_rooted`` keyword argument, which, if :keyword:`True`, forces all trees to be interpreted as rooted, *if* the ``[&R]``/``[&U]`` comment tags are *not* given.
-        Otherwise the rooting will follow the ``[&R]``/``[&U]`` commands.
-        Conversely, if ``default_as_rooted`` is :keyword:`False`, all trees will be interpreted as unrooted if the ``[&R]``/``[&U]`` comment tags are not given.
-        Again, for semantic clarity, you can also specify ``default_as_unrooted`` to be :keyword:`True` to assume all trees are unrooted if not explicitly specified, though, as this is default behavior, this should not be neccessary.
-
-    ``preserve_underscores``
-
-        With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=True``.
-        The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces.
-        Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores.
 
 |Tree| and |TreeList| Saving and Writing
 ========================================
@@ -193,43 +105,6 @@ If you do not want to actually write to a file, but instead simply need a string
     >>> s = tree.as_string('newick')
     >>> print(s)
     >>> (Python_molurus:0.0779719244,((Python_sebae:0.1414715009,(((((Morelia_tracyae:0.0435011998,(Morelia_amethistina:0.0305993564,((Morelia_nauta:0.0092774432,Morelia_kinghorni:0.0093145395):0.005595,Morelia_clastolepis:0.0052046980):0.023435):0.012223):0.025359,Morelia_boeleni:0.0863199106):0.019894,((Python_reticulatus:0.0828549023,Python_timoriensis:0.0963051344):0.072003,Morelia_oenpelliensis:0.0820543043):0.002785):0.002740,((((Morelia_viridis:0.0925974416,(Morelia_carinata:0.0943697342,(Morelia_spilota:0.0237557178,Morelia_bredli:0.0357358071):0.041377):0.005225):0.004424,(Antaresia_maculosa:0.1141193265,((Antaresia_childreni:0.0363195704,Antaresia_stimsoni:0.0188535952):0.043287,Antaresia_perthensis:0.0947695442):0.019148):0.007921):0.022413,(Leiopython_albertisii:0.0698883547,Bothrochilus_boa:0.0811607602):0.020941):0.007439,((Liasis_olivaceus:0.0449896545,(Liasis_mackloti:0.0331564496,Liasis_fuscus:0.0230286886):0.058253):0.016766,Apodora_papuana:0.0847328612):0.008417):0.006539):0.011557,(Aspidites_ramsayi:0.0349772256,Aspidites_melanocephalus:0.0577536309):0.042499):0.036177):0.016859,Python_brongersmai:0.1147218285):0.001271,Python_regius:0.1800489093):0.000000;
-
-
-Customizing |Tree| and |TreeList| Saving and Writing
------------------------------------------------------
-
-The following keyword arguments, when passed to :meth:`write_to_stream()`, :meth:`write_to_path()`, or :meth:`as_string()`, allow you to control the formatting of the output:
-
-General
-^^^^^^^
-
-    ``exclude_taxa``
-        When writing NEXUS-formatted data, if :keyword:`True`, then a "``TAXA``" block will not be written. By default, this is :keyword:`False`, i.e., "``TAXA``" blocks will be written.
-
-NEXUS/NEWICK-specific
-^^^^^^^^^^^^^^^^^^^^^
-
-    ``write_rooting``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then tree rooting statements (e.g., "``[&R]``" or "``[&U]``") will not be prefixed to the tree statements. By default, this is :keyword:`True`, i.e., rooting statements will be written.
-
-    ``edge_lengths``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then edge or branch lengths will not be written as part of the tree statements. By default, this is :keyword:`True`, i.e., edge lengths will be written.
-
-    ``internal_labels``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then labels for internal nodes (if given) will not be written as part of the tree statements. By default, this is :keyword:`True`, i.e., internal node labels will be written.
-
-    ``block_titles``
-        When writing NEXUS-formatted data, if :keyword:`False`, then title statements will not be added to the various NEXUS blocks. By default, this is :keyword:`True`, i.e., block titles will be written.
-
-    ``preserve_spaces``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`True`, then no attempt will be made to produce unquoted labels by substituting spaces for underscores. By default, this is :keyword:`False`, i.e., any label that includes spaces but no other special punctuation character or underscores will have all spaces replaced by underscores so as to allow the label to be represented without quotes.
-
-    ``quote_underscores``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then labels will not be wrapped in quotes even if they contain underscores (meaning that the underscores will be interpreted as spaces according to the NEXUS standard). By default, this is :keyword:`True`, meaning that any label that contains underscores will be wrapped in quotes. Note that if a label has any other characters requiring quote protection as specified by the NEXUS standard, then the label will be quoted regardless of the value of this keyword argument.
-
-    ``comment``
-        When writing NEXUS-formatted data, then the contents of this variable will be added as NEXUS comment to the output. By default, this is :keyword:`None`.
-
 
 Taxon Management with Trees and Tree Lists
 ==========================================

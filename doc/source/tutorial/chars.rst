@@ -42,29 +42,6 @@ The :meth:`read_from_*()` instance methods **replace** the calling object with d
 
 The second :meth:`read_from_*()` will result in the ``dna`` object being re-populated with data from the file ``pythonidae_rag1.nex``.
 
-.. _Customizing_Character_Creation_and_Reading:
-
-Customizing Character Matrix Creation and Reading
--------------------------------------------------
-
-You can control how data is parsed from a data source using the following keywords passed to any :meth:`get_from_*()` or :meth:`read_from_*()` method of a |CharacterMatrix| object:
-
-General
-^^^^^^^
-
-    ``taxon_set``
-
-        Passing a |TaxonSet| object using the ``taxon_set`` argument when using the :meth:`get_from_*()` or :meth:`read_from_*()` methods results in the |CharacterMatrix| object being bound to the specified |TaxonSet| object.
-
-NEXUS/NEWICK-specific
-^^^^^^^^^^^^^^^^^^^^^
-
-    ``preserve_underscores``
-        With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=True``.
-        The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces.
-        Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores.
-
-
 |CharacterMatrix| Saving and Writing
 ====================================
 
@@ -90,30 +67,6 @@ If you do not want to actually write to a file, but instead simply need a string
     >>> s = dna.as_string('nexus')
     >>> print(s)
 
-
-Customizing |CharacterMatrix| Saving and Writing
--------------------------------------------------
-
-The following keyword arguments, when passed to :meth:`write_to_stream()`, :meth:`write_to_path()`, or :meth:`as_string()`, allow you to control the formatting of the output:
-
-NEXUS/NEWICK-specific
-^^^^^^^^^^^^^^^^^^^^^
-
-    ``simple``
-        When writing NEXUS-formatted data, if :keyword:`True`, then character data will be represented as a single "``DATA``" block, instead of separate "``TAXA``" and "``CHARACTERS``" blocks. By default this is :keyword:`False`.
-
-    ``block_titles``
-        When writing NEXUS-formatted data, if :keyword:`False`, then title statements will not be added to the various NEXUS blocks. By default, this is :keyword:`True`, i.e., block titles will be written.
-
-    ``preserve_spaces``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`True`, then no attempt will be made to produce unquoted labels by substituting spaces for underscores. By default, this is :keyword:`False`, i.e., any label that includes spaces but no other special punctuation character or underscores will have all spaces replaced by underscores so as to allow the label to be represented without quotes.
-
-    ``quote_underscores``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then labels will not be wrapped in quotes even if they contain underscores (meaning that the underscores will be interpreted as spaces according to the NEXUS standard). By default, this is :keyword:`True`, meaning that any label that contains underscores will be wrapped in quotes. Note that if a label has any other characters requiring quote protection as specified by the NEXUS standard, then the label will be quoted regardless of the value of this keyword argument.
-
-    ``comment``
-        When writing NEXUS-formatted data, then the contents of this variable will be added as NEXUS comment to the output. By default, this is :keyword:`None`.
-
 Taxon Management with Character Matrices
 ========================================
 
@@ -124,7 +77,6 @@ Thus, again, if you are creating multiple character matrices that refer to the s
     >>> taxa = dendropy.TaxonSet()
     >>> dna1 = dendropy.DnaCharacterMatrix.get_from_path("pythonidae_cytb.fasta", "dnafasta", taxon_set=taxa)
     >>> std1 = dendropy.ProteinCharacterMatrix.get_from_path("pythonidae_morph.nex", "nexus", taxon_set=taxa)
-
 
 
 Accessing Data

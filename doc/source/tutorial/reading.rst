@@ -44,13 +44,13 @@ Reading and Populating (or Repopulating) Existing Objects
 
 The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all support a suite of ":meth:`read_from_*()`" instance methods that parallels the ":meth:`get_from_*()`" factory methods described above:
 
-    - :meth:`read_from_stream(src, schema, **kwargs)`
+    :meth:`read_from_stream(src, schema, **kwargs)`
         Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the schema as the second.
 
-    - :meth:`read_from_path(src, schema, **kwargs)`
+    :meth:`read_from_path(src, schema, **kwargs)`
         Takes a string specifying the path to the the data source file as the first argument, and a string specifying the schema as the second.
 
-    - :meth:`read_from_string(src, schema, **kwargs)`
+    :meth:`read_from_string(src, schema, **kwargs)`
         Takes a string specifying containing the source data as the first argument, and a string specifying the schema as the second.
 
 When called on an existing |TreeList| or |DataSet| object, these methods *add* the data from the data source to the object, whereas when called on an existing |Tree| or |CharacterMatrix| object,  they *replace* the object's data with data from the data source.
@@ -88,17 +88,78 @@ In contrast to the aggregating behavior of :meth:`read_from_*()` of |TreeList| a
 
 As with the :meth:`get_from_*()` methods, keyword arguments can be used to provide control on the data source parsing.
 
+Specifying the Format of the Data Source
+========================================
+
+All the :meth:`get_from_*()` and :meth:`read_from_*()` methods take a schema (or format) specification string using the ``schema`` argument.
+
+The string can be one of the following:
+
+    "``nexus``"
+        To read |Tree|, |TreeList|, |CharacterMatrix|, or |DataSet| objects from a NEXUS-formatted source.
+
+    "``newick``"
+        For reading |Tree|, |TreeList|, or |DataSet| objects from a NEWICK-formatted source.
+
+    "``fasta``"
+        To read |CharacterMatrix| or |DataSet| objects from a FASTA-formatted source. FASTA-sources require the additional keyword, ``data_type``, that describes the type of data: "``dna``", "``rna``", "``protein``", "``standard``"" (discrete data represented as binary 0/1), "``restriction``" (restriction sites), or "``infinite``" (infinite sites).
+
+    "``phylip``"
+        To read |CharacterMatrix| or |DataSet| objects from a Phylip-formatted source. Phylip-sources require the additional keyword, ``data_type``, that describes the type of data: "``dna``", "``rna``", "``protein``", "``standard``"" (discrete data represented as binary 0/1), "``restriction``" (restriction sites), or "``infinite``" (infinite sites).
+
+
 Customizing Data Creation and Reading
 =====================================
+
 When specifying a data source from which to create or populate data objects using the :meth:`get_from_*()`, :meth:`read_from_*()`, or passing a data source stream to a constructor, you can also specify keyword arguments that provide fine-grained control over how the data source is parsed.
 Some of these keyword arguments apply generally, regardless of the schema of the data source or the data object being created, while others are specific to the data object type or the data source schema.
 
-Probably the most import general keyword is the ``taxon_set`` keyword, which passes a |TaxonSet| object to the parser to use to manage all taxon definitions and reference in the data source.
-If not specified, every time a data source is parsed, at least one new |TaxonSet| object will be created for each definition of taxa (e.g., a NEXUS "TAXA" block), and all taxon definitions or references in the data source will be mapped to |Taxon| objects within that |TaxonSet| object.
-If the taxa in the data source correspond to taxa already defined in an existing |TaxonSet| object, you would use the ``taxon_set`` keyword to ensure that this correspondence is maintained within DendroPy.
+General
+^^^^^^^
 
-With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=True``.
-The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces.
-Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores.
+    ``attached_taxon_set``
+        When reading into a |DataSet| object, if :keyword:`True`, then a new |TaxonSet| object will be created and added to the :attr:`~dendropy.dataobject.dataset.DataSet.taxon_sets` list of the |DataSet| object, and the |DataSet| object will be placed in "attached" (or single) taxon set mode, i.e., all taxa in any data sources parsed or read will be mapped to the same |TaxonSet| object. By default, this is :keyword:`False`, resulting in a multi-taxon set mode |DataSet| object.
 
-Other keyword arguments to customize data creation and reading, such as ``tree_offset``, ``collection_offset``, ``as_rooted``/``as_unrooted``, ``exclude_trees``, ``exclude_chars``, etc., are discussed in detail in specific sections: :ref:`Customizing_Tree_Creation_and_Reading`, :ref:`Customizing_Character_Creation_and_Reading`,  :ref:`Customizing_Data_Set_Creation_and_Reading`.
+    ``taxon_set``
+        A |TaxonSet| object that will be used to manage all taxon references in the data source.
+        When creating a new |Tree|, |TreeList| or |CharacterMatrix| object from a data source, the |TaxonSet| object passed by this keyword will be used as the |TaxonSet| associated with the object.
+        When reading into a |DataSet| object, if the data source defines multiple collections of taxa (as is possible with, for example, the NEXML schema, or the Mesquite variant of the NEXUS schema), then multiple new |TaxonSet| object will be created. By passing a |TaxonSet| object through the ``taxon_set`` keyword, you can force DendroPy to use the same |TaxonSet| object for all taxon references.
+
+    ``exclude_trees``
+        A boolean value indicating whether or not tree data should be parsed from the data source.
+        Default value is :keyword:`False`, i.e., all tree data will be included.
+
+    ``exclude_chars``
+        A boolean value indicating whether or not character data should be parsed from the data source.
+        Default value is :keyword:`False`, i.e., all character data will be included.
+
+NEXUS/NEWICK-specific
+^^^^^^^^^^^^^^^^^^^^^
+
+    ``is_rooted``, ``is_unrooted``, ``default_as_rooted``, ``default_as_unrooted``
+
+        When reading into a |Tree|, |TreeList|, or |DataSet| object, this keyword determines how trees in the data source will be rooted.
+        The rooting state of a |Tree| object is set by the :attr:`~dendropy.dataobject.tree.Tree.is_rooted` property.
+        When parsing NEXUS- and Newick-formatted data, the rooting states of the resulting |Tree| objects are given by ``[&R]`` (for rooted) or ``[&U]`` (for unrooted) comment tags preceding the tree definition in the data source.
+        If these tags are not present, then the trees are assumed to be unrooted.
+        This behavior can be changed by specifying keyword arguments to the :meth:`get_from_*()`,  or :meth:`read_from_*()` methods of both the |Tree| and |TreeList| classes, or the constructors of these classes when specifying a data source from which to construct the tree:
+
+        The ``as_rooted`` keyword argument, if :keyword:`True`, forces all trees to be interpreted as rooted, regardless of whether or not the ``[&R]``/``[&U]`` comment tags are given.
+        Conversely, if :keyword:`False`, all trees will be interpreted as unrooted.
+        For semantic clarity, you can also specify ``as_unrooted`` to be :keyword:`True` to force all trees to be unrooted.
+
+        .. literalinclude:: /examples/tree_rootings1.py
+            :linenos:
+
+        In addition, you can specify a ``default_as_rooted`` keyword argument, which, if :keyword:`True`, forces all trees to be interpreted as rooted, *if* the ``[&R]``/``[&U]`` comment tags are *not* given.
+        Otherwise the rooting will follow the ``[&R]``/``[&U]`` commands.
+        Conversely, if ``default_as_rooted`` is :keyword:`False`, all trees will be interpreted as unrooted if the ``[&R]``/``[&U]`` comment tags are not given.
+        Again, for semantic clarity, you can also specify ``default_as_unrooted`` to be :keyword:`True` to assume all trees are unrooted if not explicitly specified, though, as this is default behavior, this should not be neccessary.
+
+
+    ``preserve_underscores``
+
+        With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=True``.
+        The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces.
+        Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores.
+
