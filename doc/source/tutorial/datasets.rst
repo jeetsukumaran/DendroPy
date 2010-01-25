@@ -93,8 +93,8 @@ Customizing Data Set Creation and Reading
 
 You can control how data is parsed from a data source using the following keywords passed to any :meth:`get_from_*()` or :meth:`read_from_*()` method of a |DataSet| object:
 
-General Keywords
-................
+General
+^^^^^^^
 
     ``attached_taxon_set``
         If :keyword:`True`, then a new |TaxonSet| object will be created and added to the :attr:`~dendropy.dataobject.dataset.DataSet.taxon_sets` list of the |DataSet| object, and the |DataSet| object will be placed in "attached" (or single) taxon set mode, i.e., all taxa in any data sources parsed or read will be mapped to the same |TaxonSet| object. By default, this is :keyword:`False`, resulting in a multi-taxon set mode |DataSet| object.
@@ -114,7 +114,7 @@ General Keywords
         Default value is :keyword:`False`, i.e., all character data will be included.
 
 NEXUS/NEWICK-specific
-.....................
+^^^^^^^^^^^^^^^^^^^^^
 
     ``is_rooted``, ``is_unrooted``, ``default_as_rooted``, ``default_as_unrooted``
         These keywords specify how tree rootings are interpreted. For more information, see the :ref:`Interpreting_Rootings` section.
@@ -153,6 +153,9 @@ Customizing |DataSet| Saving and Writing
 
 The following keyword arguments, when passed to :meth:`write_to_stream()`, :meth:`write_to_path()`, or :meth:`as_string()`, allow you to control the formatting of the output:
 
+General
+^^^^^^^
+
     ``taxon_set``
         If passed a specific |TaxonSet|, then **only** |TreeList| and |CharacterMatrix| objects associated with this |TaxonSet| will be written. By default, this is :keyword:`None`, meaning that all data in the |DataSet| object will be written.
 
@@ -161,6 +164,9 @@ The following keyword arguments, when passed to :meth:`write_to_stream()`, :meth
 
     ``exclude_chars``
         If :keyword:`True`, then only **no** characer data will be written (i.e., all |CharacterMatrix| objects in the |DataSet| will be skipped in the output). By default, this is :keyword:`False`, meaning that all character data will be written.
+
+NEXUS/NEWICK-specific
+^^^^^^^^^^^^^^^^^^^^^
 
     ``simple``
         When writing NEXUS-formatted data, if :keyword:`True`, then character data will be represented as a single "``DATA``" block, instead of separate "``TAXA``" and "``CHARACTERS``" blocks. By default this is :keyword:`False`.

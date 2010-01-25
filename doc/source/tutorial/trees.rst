@@ -79,15 +79,13 @@ The same constraint regarding |Taxon| object applies: i.e., the cloning does not
 Customizing |Tree| and |TreeList| Creation and Reading
 ------------------------------------------------------
 
-Using a Specific |TaxonSet|
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+You can control how data is parsed from a data source using the following keywords passed to any :meth:`get_from_*()` or :meth:`read_from_*()` method of a |TreeList| object:
 
-Passing a |TaxonSet| object using the ``taxon_set`` argument when instantiating a |Tree| or |TreeList| object (using, for example, the :meth:`get_from_*()` or :meth:`read_from_*()` methods) results in the |Tree| or |TreeList| object being bound to the specified |TaxonSet| object.
+General
+^^^^^^^
 
-Selecting Specific Trees or Subsets of Trees
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The ``tree_offset`` and ``collection_offset`` keywords allow you to control which tree defintions are parsed from the data source:
+    ``taxon_set``
+        Passing a |TaxonSet| object using the ``taxon_set`` argument when instantiating a |Tree| or |TreeList| object (using, for example, the :meth:`get_from_*()` or :meth:`read_from_*()` methods) results in the |Tree| or |TreeList| object being bound to the specified |TaxonSet| object.
 
     ``tree_offset``
         A non-negative integer specifying the 0-based index of a tree within a collection in the data source.
@@ -137,32 +135,33 @@ The ``tree_offset`` and ``collection_offset`` keywords allow you to control whic
 
 .. _Interpreting_Rootings:
 
-Interpreting Rootings
+NEXUS/NEWICK-specific
 ^^^^^^^^^^^^^^^^^^^^^
 
-The rooting state of a |Tree| object is set by the :attr:`~dendropy.dataobject.tree.Tree.is_rooted` property.
-When parsing NEXUS- and Newick-formatted data, the rooting states of the resulting |Tree| objects are given by ``[&R]`` (for rooted) or ``[&U]`` (for unrooted) comment tags preceding the tree definition in the data source.
-If these tags are not present, then the trees are assumed to be unrooted.
-This behavior can be changed by specifying keyword arguments to the :meth:`get_from_*()`,  or :meth:`read_from_*()` methods of both the |Tree| and |TreeList| classes, or the constructors of these classes when specifying a data source from which to construct the tree:
+    ``is_rooted``, ``is_unrooted``, ``default_as_rooted``, ``default_as_unrooted``
 
-The ``as_rooted`` keyword argument, if :keyword:`True`, forces all trees to be interpreted as rooted, regardless of whether or not the ``[&R]``/``[&U]`` comment tags are given.
-Conversely, if :keyword:`False`, all trees will be interpreted as unrooted.
-For semantic clarity, you can also specify ``as_unrooted`` to be :keyword:`True` to force all trees to be unrooted.
+        The rooting state of a |Tree| object is set by the :attr:`~dendropy.dataobject.tree.Tree.is_rooted` property.
+        When parsing NEXUS- and Newick-formatted data, the rooting states of the resulting |Tree| objects are given by ``[&R]`` (for rooted) or ``[&U]`` (for unrooted) comment tags preceding the tree definition in the data source.
+        If these tags are not present, then the trees are assumed to be unrooted.
+        This behavior can be changed by specifying keyword arguments to the :meth:`get_from_*()`,  or :meth:`read_from_*()` methods of both the |Tree| and |TreeList| classes, or the constructors of these classes when specifying a data source from which to construct the tree:
 
-.. literalinclude:: /examples/tree_rootings1.py
-    :linenos:
+        The ``as_rooted`` keyword argument, if :keyword:`True`, forces all trees to be interpreted as rooted, regardless of whether or not the ``[&R]``/``[&U]`` comment tags are given.
+        Conversely, if :keyword:`False`, all trees will be interpreted as unrooted.
+        For semantic clarity, you can also specify ``as_unrooted`` to be :keyword:`True` to force all trees to be unrooted.
 
-In addition, you can specify a ``default_as_rooted`` keyword argument, which, if :keyword:`True`, forces all trees to be interpreted as rooted, *if* the ``[&R]``/``[&U]`` comment tags are *not* given.
-Otherwise the rooting will follow the ``[&R]``/``[&U]`` commands.
-Conversely, if ``default_as_rooted`` is :keyword:`False`, all trees will be interpreted as unrooted if the ``[&R]``/``[&U]`` comment tags are not given.
-Again, for semantic clarity, you can also specify ``default_as_unrooted`` to be :keyword:`True` to assume all trees are unrooted if not explicitly specified, though, as this is default behavior, this should not be neccessary.
+        .. literalinclude:: /examples/tree_rootings1.py
+            :linenos:
 
-Custom Handling of Underscores
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        In addition, you can specify a ``default_as_rooted`` keyword argument, which, if :keyword:`True`, forces all trees to be interpreted as rooted, *if* the ``[&R]``/``[&U]`` comment tags are *not* given.
+        Otherwise the rooting will follow the ``[&R]``/``[&U]`` commands.
+        Conversely, if ``default_as_rooted`` is :keyword:`False`, all trees will be interpreted as unrooted if the ``[&R]``/``[&U]`` comment tags are not given.
+        Again, for semantic clarity, you can also specify ``default_as_unrooted`` to be :keyword:`True` to assume all trees are unrooted if not explicitly specified, though, as this is default behavior, this should not be neccessary.
 
-With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=True``.
-The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces.
-Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores.
+    ``preserve_underscores``
+
+        With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=True``.
+        The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces.
+        Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores.
 
 |Tree| and |TreeList| Saving and Writing
 ========================================
@@ -201,8 +200,14 @@ Customizing |Tree| and |TreeList| Saving and Writing
 
 The following keyword arguments, when passed to :meth:`write_to_stream()`, :meth:`write_to_path()`, or :meth:`as_string()`, allow you to control the formatting of the output:
 
+General
+^^^^^^^
+
     ``exclude_taxa``
         When writing NEXUS-formatted data, if :keyword:`True`, then a "``TAXA``" block will not be written. By default, this is :keyword:`False`, i.e., "``TAXA``" blocks will be written.
+
+NEXUS/NEWICK-specific
+^^^^^^^^^^^^^^^^^^^^^
 
     ``write_rooting``
         When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then tree rooting statements (e.g., "``[&R]``" or "``[&U]``") will not be prefixed to the tree statements. By default, this is :keyword:`True`, i.e., rooting statements will be written.

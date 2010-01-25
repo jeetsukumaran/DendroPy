@@ -47,17 +47,23 @@ The second :meth:`read_from_*()` will result in the ``dna`` object being re-popu
 Customizing Character Matrix Creation and Reading
 -------------------------------------------------
 
-Using a Specific |TaxonSet|
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+You can control how data is parsed from a data source using the following keywords passed to any :meth:`get_from_*()` or :meth:`read_from_*()` method of a |CharacterMatrix| object:
 
-Passing a |TaxonSet| object using the ``taxon_set`` argument when using the :meth:`get_from_*()` or :meth:`read_from_*()` methods results in the |CharacterMatrix| object being bound to the specified |TaxonSet| object.
+General
+^^^^^^^
 
-Custom Handling of Underscores
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ``taxon_set``
 
-With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=True``.
-The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces.
-Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores.
+        Passing a |TaxonSet| object using the ``taxon_set`` argument when using the :meth:`get_from_*()` or :meth:`read_from_*()` methods results in the |CharacterMatrix| object being bound to the specified |TaxonSet| object.
+
+NEXUS/NEWICK-specific
+^^^^^^^^^^^^^^^^^^^^^
+
+    ``preserve_underscores``
+        With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=True``.
+        The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces.
+        Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores.
+
 
 |CharacterMatrix| Saving and Writing
 ====================================
@@ -89,6 +95,9 @@ Customizing |CharacterMatrix| Saving and Writing
 -------------------------------------------------
 
 The following keyword arguments, when passed to :meth:`write_to_stream()`, :meth:`write_to_path()`, or :meth:`as_string()`, allow you to control the formatting of the output:
+
+NEXUS/NEWICK-specific
+^^^^^^^^^^^^^^^^^^^^^
 
     ``simple``
         When writing NEXUS-formatted data, if :keyword:`True`, then character data will be represented as a single "``DATA``" block, instead of separate "``TAXA``" and "``CHARACTERS``" blocks. By default this is :keyword:`False`.
