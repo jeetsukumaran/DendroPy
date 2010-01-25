@@ -135,6 +135,8 @@ The ``tree_offset`` and ``collection_offset`` keywords allow you to control whic
             >>> tree_31 = dendropy.Tree.get_from_path('pythonidae.nex', 'nexus', \
                     collection_offset=-1, tree_offset=29)
 
+.. _Interpreting_Rootings:
+
 Interpreting Rootings
 ^^^^^^^^^^^^^^^^^^^^^
 
