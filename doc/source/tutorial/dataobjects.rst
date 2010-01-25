@@ -11,7 +11,7 @@ Phylogenetic data in DendroPy is represented by one or more objects of the follo
         A representation of an operational taxonomic unit, with an attribute, :attr:`~dendropy.dataobject.taxon.Taxon.label`, corresponding to the taxon label.
 
     |TaxonSet|
-        A collection of |Taxon| objects representing a distinct definition of taxa (for example, as specified explicitly in a NEXUS "TAXA" block, or implicitly in the set of all taxon labels used across a NEWICK tree file).
+        A collection of |Taxon| objects representing a distinct definition of taxa (for example, as specified explicitly in a NEXUS "TAXA" block, or implicitly in the set of all taxon labels used across a Newick tree file).
 
     |Tree|
         A collection of |Node| and |Edge| objects representing a phylogenetic tree.
@@ -49,7 +49,7 @@ Or import the names directly::
 Reading and Writing Phylogenetic Data
 =====================================
 
-DendroPy provides a rich set of tools for reading and writing phylogenetic data in various formats, such as NEXUS, NEWICK, Phylip, etc. These are covered in detail in the following chapters:
+DendroPy provides a rich set of tools for reading and writing phylogenetic data in various formats, such as NEXUS, Newick, PHYLIP, etc. These are covered in detail in the following chapters:
 
 .. toctree::
     :maxdepth: 2

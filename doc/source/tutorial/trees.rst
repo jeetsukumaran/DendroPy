@@ -84,7 +84,7 @@ Writing to Files
 The :meth:`write_to_stream()`, and :meth:`write_to_path()` instance methods allow you to write the data of |Tree| and |TreeList| objects to a file-like object or a file path respectively.
 These methods take a file-like object (in the case of :meth:`write_to_stream()`) or a string specifying a filepath (in the case of :meth:`write_to_path()`) as the first argument, and a format or schema specification string as the second argument.
 
-The following example aggregates the post-burn in MCMC samples from a series of NEXUS-formatted files, and saves the collection as a NEWICK-formatted file:
+The following example aggregates the post-burn in MCMC samples from a series of NEXUS-formatted files, and saves the collection as a Newick-formatted file:
 
     >>> import dendropy
     >>> treelist = dendropy.TreeList()

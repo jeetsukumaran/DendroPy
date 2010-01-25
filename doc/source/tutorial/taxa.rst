@@ -5,8 +5,8 @@ Taxa and Taxon Management
 Operational taxonomic units in DendroPy are represented by |Taxon| objects, and distinct collections of operational taxonomic units are represented by |TaxonSet| objects.
 
 Every time a definition of taxa is encountered in a data source, for example, a "TAXA" block in a NEXUS file, a new |TaxonSet| object is created and populated with |Taxon| objects corresponding to the taxa defined in the data source.
-Some data formats do not have explicit definition of taxa, e.g. a NEWICK tree source.
-These nonetheless can be considered to have an implicit definition of a collection of operational taxonomic units given by the aggregate of all operational taxonomic units referenced in the data (i.e., the set of all distinct labels on trees in a NEWICK file).
+Some data formats do not have explicit definition of taxa, e.g. a Newick tree source.
+These nonetheless can be considered to have an implicit definition of a collection of operational taxonomic units given by the aggregate of all operational taxonomic units referenced in the data (i.e., the set of all distinct labels on trees in a Newick file).
 
 Every time a reference to a taxon is encountered in a data source, such as a taxon label in a tree or matrix statement in a NEXUS file, the current |TaxonSet| object is searched for corresponding |Taxon| object with a matching label (see below for details on how the match is made). If found, the |Taxon| object is used to represent the taxon. If not, a new |Taxon| object is created, added to the |TaxonSet| object, and used to represent the taxon.
 
@@ -16,7 +16,7 @@ Thus, "Python regius", "PYTHON REGIUS", "python regious", "P. regius", etc. will
 
 Further quirks may arise due to some schema-specific idiosyncracies.
 For example, the NEXUS standard dictates that an underscore ("_") should be substituted for a space in all labels.
-Thus, when reading a NEXUS or NEWICK source, the taxon labels "Python_regius" and "Python regius" are exactly equivalent, and will be mapped to the same |Taxon| object.
+Thus, when reading a NEXUS or Newick source, the taxon labels "Python_regius" and "Python regius" are exactly equivalent, and will be mapped to the same |Taxon| object.
 
 However, this underscore-to-space mapping does **not** take place when reading, for example, a FASTA schema file.
 Here, underscores are preserved, and thus "Python_regius" does not map to "Python regius".
@@ -36,7 +36,7 @@ Which produces the following, almost certainly incorrect, result::
 
 Even more confusingly, if this file is written out in NEXUS schema, it would result in the space/underscore substitution taking place, resulting in two pairs of taxa with the same labels.
 
-If you plan on mixing sources from different formats, it is important to keep in mind the space/underscore substitution that takes place by default with NEXUS/NEWICK formats, but does not take place with other formats.
+If you plan on mixing sources from different formats, it is important to keep in mind the space/underscore substitution that takes place by default with NEXUS/Newick formats, but does not take place with other formats.
 
 You could simply avoid underscores and use only spaces instead:
 
@@ -60,7 +60,7 @@ Which results in the same as the preceding example::
         [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python regious'
         [1] Taxon object at 0x2286810 (Taxon36202512): 'Python sebae'
 
-You can also wrap the underscore-bearing labels in the NEXUS/NEWICK source in quotes, which preserves them from being substituted for spaces:
+You can also wrap the underscore-bearing labels in the NEXUS/Newick source in quotes, which preserves them from being substituted for spaces:
 
 .. literalinclude:: /examples/taxon_labels3.py
     :linenos:
@@ -71,7 +71,7 @@ Which will result in::
         [0] Taxon object at 0x2386770 (Taxon37250928): 'Python_regious'
         [1] Taxon object at 0x2386790 (Taxon37250960): 'Python_sebae'
 
-Finally, you can also override the default behavior of DendroPy's NEXUS/NEWICK parser by passing the keyword argument ``preserve_underscores=True`` to any :meth:`read_from_*`, :meth:`get_from_*` or stream-parsing constructor. For example:
+Finally, you can also override the default behavior of DendroPy's NEXUS/Newick parser by passing the keyword argument ``preserve_underscores=True`` to any :meth:`read_from_*`, :meth:`get_from_*` or stream-parsing constructor. For example:
 
 .. literalinclude:: /examples/taxon_labels4.py
     :linenos:
@@ -82,7 +82,7 @@ will result in::
         [0] Taxon object at 0x2386770 (Taxon37250928): 'Python_regious'
         [1] Taxon object at 0x2386790 (Taxon37250960): 'Python_sebae'
 
-This may seem the simplest solution, in so far as it means that you need not maintain lexically-different taxon labels across files of different formats, but a gotcha here is that if writing to NEXUS/NEWICK schema, any label with underscores will be automatically quoted to preserve the underscores (again, as dictated by the NEXUS standard), which will mean that: (a) your output file will have quotes, and, as a result, (b) the underscores in the labels will be "hard" underscores if the file is read by PAUP* or DendroPy. So, for example, continuing from the previous example, the NEXUS-formatted output would look like::
+This may seem the simplest solution, in so far as it means that you need not maintain lexically-different taxon labels across files of different formats, but a gotcha here is that if writing to NEXUS/Newick schema, any label with underscores will be automatically quoted to preserve the underscores (again, as dictated by the NEXUS standard), which will mean that: (a) your output file will have quotes, and, as a result, (b) the underscores in the labels will be "hard" underscores if the file is read by PAUP* or DendroPy. So, for example, continuing from the previous example, the NEXUS-formatted output would look like::
 
     >>> print(d.as_string('nexus'))
     #NEXUS

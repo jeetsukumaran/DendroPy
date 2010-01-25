@@ -101,13 +101,13 @@ The string can be one of the following:
         To read |Tree|, |TreeList|, |CharacterMatrix|, or |DataSet| objects from a NEXUS-formatted source.
 
     "``newick``"
-        For reading |Tree|, |TreeList|, or |DataSet| objects from a NEWICK-formatted source.
+        For reading |Tree|, |TreeList|, or |DataSet| objects from a Newick-formatted source.
 
     "``fasta``"
         To read |CharacterMatrix| or |DataSet| objects from a FASTA-formatted source. FASTA-sources require the additional keyword, ``data_type``, that describes the type of data: "``dna``", "``rna``", "``protein``", "``standard``"" (discrete data represented as binary 0/1), "``restriction``" (restriction sites), or "``infinite``" (infinite sites).
 
     "``phylip``"
-        To read |CharacterMatrix| or |DataSet| objects from a Phylip-formatted source. Phylip-sources require the additional keyword, ``data_type``, that describes the type of data: "``dna``", "``rna``", "``protein``", "``standard``"" (discrete data represented as binary 0/1), "``restriction``" (restriction sites), or "``infinite``" (infinite sites).
+        To read |CharacterMatrix| or |DataSet| objects from a PHYLIP-formatted source. PHYLIP-sources require the additional keyword, ``data_type``, that describes the type of data: "``dna``", "``rna``", "``protein``", "``standard``"" (discrete data represented as binary 0/1), "``restriction``" (restriction sites), or "``infinite``" (infinite sites).
 
 
 Customizing Data Creation and Reading
@@ -116,8 +116,8 @@ Customizing Data Creation and Reading
 When specifying a data source from which to create or populate data objects using the :meth:`get_from_*()`, :meth:`read_from_*()`, or passing a data source stream to a constructor, you can also specify keyword arguments that provide fine-grained control over how the data source is parsed.
 Some of these keyword arguments apply generally, regardless of the schema of the data source or the data object being created, while others are specific to the data object type or the data source schema.
 
-General
-^^^^^^^
+All Formats
+^^^^^^^^^^^
 
     ``attached_taxon_set``
         When reading into a |DataSet| object, if :keyword:`True`, then a new |TaxonSet| object will be created and added to the :attr:`~dendropy.dataobject.dataset.DataSet.taxon_sets` list of the |DataSet| object, and the |DataSet| object will be placed in "attached" (or single) taxon set mode, i.e., all taxa in any data sources parsed or read will be mapped to the same |TaxonSet| object. By default, this is :keyword:`False`, resulting in a multi-taxon set mode |DataSet| object.
@@ -135,8 +135,8 @@ General
         A boolean value indicating whether or not character data should be parsed from the data source.
         Default value is :keyword:`False`, i.e., all character data will be included.
 
-NEXUS/NEWICK-specific
-^^^^^^^^^^^^^^^^^^^^^
+NEXUS/Newick
+^^^^^^^^^^^^
 
     ``is_rooted``, ``is_unrooted``, ``default_as_rooted``, ``default_as_unrooted``
 
@@ -161,7 +161,25 @@ NEXUS/NEWICK-specific
 
     ``preserve_underscores``
 
-        With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=True``.
-        The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces.
+        With NEXUS and Newick data sources, you can also specify ``preserve_underscores=True``.
+        The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/Newick data source will be substituted for spaces.
         Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores.
+
+PHYLIP
+^^^^^^
+
+    ``data_type``
+        As noted above, the PHYLIP format requires specification of the type of data using the ``data_type`` argument, which takes one of the following strings: "``dna``", "``rna``", "``protein``", "``standard``"", "``restriction``", or "``infinite``".
+
+    ``strict``
+        By default, the PHYLIP parser works in "relaxed" mode, which means that taxon labels can be of arbitrary length, and taxon labels and corresponding sequences are separated by one or more spaces. By specifying ``strict=True``, the parse will behave in strict mode, i.e., where taxon labels are limited to 10 characters in length, and sequences start on column 11.
+
+    ``interleaved``
+        By default, the PHYLIP parsers assumes that the data source is in sequential format. If the data is in interleaved format, you should specify ``interleaved=True``.
+
+    ``multispace_delimiter``
+        The default "relaxed" mode of the PHYLIP parser assumes that taxon labels are separated from sequence characters by one or more spaces. By specifying ``multispace_delimiter=True``, the parser will require two or more spaces to separate taxon labels from sequence characters, thus allowing you to use single spaces in your taxon labels.
+
+    ``ignore_invalid_chars``
+        By default, the PHYLIP parser will fail with an error if invalid characters are found in a sequence. By specifying ``ignore_invalid_chars=True``, the parser will simply ignore these characters.
 

@@ -11,13 +11,13 @@ Converting from FASTA schema to NEXUS::
     >>> cytb = dendropy.DnaCharacterMatrix.get_from_path("pythonidae_cytb.fasta", "dnafasta")
     >>> cytb.write_to_path("pythonidae_cytb.nexus", "nexus")
 
-Converting a collection of trees from NEXUS schema to NEWICK::
+Converting a collection of trees from NEXUS schema to Newick::
 
     >>> import dendropy
     >>> mcmc = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex", "nexus")
     >>> mcmc.write_to_path("pythonidae.mcmc.newick", "newick")
 
-Converting a single tree from NEWICK schema to NEXUS::
+Converting a single tree from Newick schema to NEXUS::
 
     >>> import dendropy
     >>> mle = dendropy.Tree.get_from_path("pythonidae.mle.newick", "newick")

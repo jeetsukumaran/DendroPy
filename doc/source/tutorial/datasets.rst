@@ -6,9 +6,14 @@ The |DataSet| class provides for objects that allow you to manage multiple types
 
 It has three primary attributes:
 
-    - :attr:`~dendropy.dataobject.dataset.DataSet.taxon_sets`, a list of all |TaxonSet|         objects in the |DataSet|, in the order that they were added or read, include |TaxonSet| objects added implicitly through being associated with added |TreeList| or |CharacterMatrix| objects.
-    - :attr:`~dendropy.dataobject.dataset.DataSet.tree_lists`, a list of all |TreeList| objects in the |DataSet|, in the order that they were added or read.
-    - :attr:`~dendropy.dataobject.dataset.DataSet.char_matrices`, a list of all |CharacterMatrix| objects in the |DataSet|, in the order that they were added or read.
+    :attr:`~dendropy.dataobject.dataset.DataSet.taxon_sets`
+        A list of all |TaxonSet| objects in the |DataSet|, in the order that they were added or read, include |TaxonSet| objects added implicitly through being associated with added |TreeList| or |CharacterMatrix| objects.
+
+    :attr:`~dendropy.dataobject.dataset.DataSet.tree_lists`
+        A list of all |TreeList| objects in the |DataSet|, in the order that they were added or read.
+
+    :attr:`~dendropy.dataobject.dataset.DataSet.char_matrices`
+        A list of all |CharacterMatrix| objects in the |DataSet|, in the order that they were added or read.
 
 |DataSet| Creation and Reading
 ===============================
