@@ -27,13 +27,13 @@ Any |Tree| object added to a |TreeList| will have its :attr:`~dendropy.dataobjec
 Creating a New |Tree| or |TreeList| from a Data Source
 -------------------------------------------------------
 
-Both the |Tree| and |TreeList| classes support the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating objects, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Format_of_the_Data_Source>` as the second:
+Both the |Tree| and |TreeList| classes support the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating objects, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second:
 
     >>> import dendropy
     >>> tree = dendropy.Tree.get_from_path('pythonidae.mle.nex', 'nexus')
     >>> treelist = dendropy.TreeList.get_from_path('pythonidae.mcmc.nex', 'nexus')
 
-Valid :ref:`schema specification strings <Specifying_the_Format_of_the_Data_Source>` include: "``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``".
+Valid :ref:`schema specification strings <Specifying_the_Data_Source_Format>` include: "``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``".
 
 Reading into an Existing |Tree| or |TreeList| from a Data Source
 ----------------------------------------------------------------

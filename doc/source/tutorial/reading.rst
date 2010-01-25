@@ -16,7 +16,7 @@ The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all sup
     :meth:`get_from_string(src, schema, **kwargs)`
         Takes a string containing the source data as the first argument, and a string specifying the schema as the second.
 
-All these methods minimally take a source and :ref:`schema specification string <Specifying_the_Format_of_the_Data_Source>` as arguments and return a new object of the given type populated from the given source::
+All these methods minimally take a source and :ref:`schema specification string <Specifying_the_Data_Source_Format>` as arguments and return a new object of the given type populated from the given source::
 
     >>> import dendropy
     >>> tree1 = dendropy.Tree.get_from_string("((A,B),(C,D))", schema="newick")
@@ -25,9 +25,9 @@ All these methods minimally take a source and :ref:`schema specification string 
     >>> std1 = dendropy.StandardCharacterMatrix.get_from_path("python_morph.nex", "nexus")
     >>> dataset1 = dendropy.DataSet.get_from_path("pythonidae.nex", "nexus")
 
-The :ref:`schema specification string <Specifying_the_Format_of_the_Data_Source>` can be one of: "nexus", "newick", "nexml", "fasta", or "phylip". Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
+The :ref:`schema specification string <Specifying_the_Data_Source_Format>` can be one of: "nexus", "newick", "nexml", "fasta", or "phylip". Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
 
-Alternatively, you can also pass a file-like object and a :ref:`schema specification string <Specifying_the_Format_of_the_Data_Source>` to the constructor of these classes using the keyword arguments ``stream`` and ``schema`` respectively::
+Alternatively, you can also pass a file-like object and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` to the constructor of these classes using the keyword arguments ``stream`` and ``schema`` respectively::
 
     >>> import dendropy
     >>> tree1 = dendropy.Tree(stream=open("mle.tre"), schema="newick")
@@ -54,7 +54,7 @@ The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all sup
         Takes a string specifying containing the source data as the first argument, and a string specifying the schema as the second.
 
 When called on an existing |TreeList| or |DataSet| object, these methods *add* the data from the data source to the object, whereas when called on an existing |Tree| or |CharacterMatrix| object,  they *replace* the object's data with data from the data source.
-As with the ":meth:`get_from_*()`" methods, the :ref:`schema specification string <Specifying_the_Format_of_the_Data_Source>` can be any supported and type-apppropriate schema, such as "nexus", "newick", "nexml", "fasta", "phylip", etc.
+As with the ":meth:`get_from_*()`" methods, the :ref:`schema specification string <Specifying_the_Data_Source_Format>` can be any supported and type-apppropriate schema, such as "nexus", "newick", "nexml", "fasta", "phylip", etc.
 
 For example, the following accumulates post-burn-in trees from several different files into a single |TreeList| object (the ``tree_offset`` keyword is discussed `here <Customizing_Tree_Creation_and_Reading>`_)::
 
@@ -88,12 +88,12 @@ In contrast to the aggregating behavior of :meth:`read_from_*()` of |TreeList| a
 
 As with the :meth:`get_from_*()` methods, keyword arguments can be used to provide control on the data source parsing.
 
-.. _Specifying_the_Format_of_the_Data_Source:
+.. _Specifying_the_Data_Source_Format:
 
-Specifying the Format of the Data Source
-========================================
+Specifying the Data Source Format
+==================================
 
-All the :meth:`get_from_*()` and :meth:`read_from_*()` methods take a schema (or format) specification string using the ``schema`` argument.
+All the :meth:`get_from_*()` and :meth:`read_from_*()` methods take a schema specification string using the ``schema`` argument which specifies the format of the data source.
 
 The string can be one of the following:
 
@@ -109,12 +109,15 @@ The string can be one of the following:
     "``phylip``"
         To read |CharacterMatrix| or |DataSet| objects from a PHYLIP-formatted source. PHYLIP-sources require the additional keyword, ``data_type``, that describes the type of data: "``dna``", "``rna``", "``protein``", "``standard``"" (discrete data represented as binary 0/1), "``restriction``" (restriction sites), or "``infinite``" (infinite sites).
 
+.. _Customizing_Data_Creation_and_Reading:
 
 Customizing Data Creation and Reading
 =====================================
 
 When specifying a data source from which to create or populate data objects using the :meth:`get_from_*()`, :meth:`read_from_*()`, or passing a data source stream to a constructor, you can also specify keyword arguments that provide fine-grained control over how the data source is parsed.
 Some of these keyword arguments apply generally, regardless of the schema of the data source or the data object being created, while others are specific to the data object type or the data source schema.
+
+.. _Customizing_Reading_All_Formats:
 
 All Formats
 ^^^^^^^^^^^
@@ -134,6 +137,8 @@ All Formats
     ``exclude_chars``
         A boolean value indicating whether or not character data should be parsed from the data source.
         Default value is :keyword:`False`, i.e., all character data will be included.
+
+.. _Customizing_Reading_NEXUS_and_Newick:
 
 NEXUS/Newick
 ^^^^^^^^^^^^
@@ -158,12 +163,13 @@ NEXUS/Newick
         Conversely, if ``default_as_rooted`` is :keyword:`False`, all trees will be interpreted as unrooted if the ``[&R]``/``[&U]`` comment tags are not given.
         Again, for semantic clarity, you can also specify ``default_as_unrooted`` to be :keyword:`True` to assume all trees are unrooted if not explicitly specified, though, as this is default behavior, this should not be neccessary.
 
-
     ``preserve_underscores``
 
         With NEXUS and Newick data sources, you can also specify ``preserve_underscores=True``.
         The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/Newick data source will be substituted for spaces.
         Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores.
+
+.. _Customizing_Reading_PHYLIP:
 
 PHYLIP
 ^^^^^^

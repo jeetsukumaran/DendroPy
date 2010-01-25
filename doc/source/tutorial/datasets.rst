@@ -21,12 +21,12 @@ It has three primary attributes:
 Creating a new |DataSet| from a Data Source
 --------------------------------------------
 
-You can use the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating an object, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Format_of_the_Data_Source>` as the second:
+You can use the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating an object, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second:
 
     >>> import dendropy
     >>> ds = dendropy.DataSet.get_from_path('pythonidae.nex', 'nexus')
 
-Valid :ref:`schema specification strings <Specifying_the_Format_of_the_Data_Source>` include: "``nexus``", "``newick``", "``nexml``", "``fasta``", "``phylip``", etc.
+Valid :ref:`schema specification strings <Specifying_the_Data_Source_Format>` include: "``nexus``", "``newick``", "``nexml``", "``fasta``", "``phylip``", etc.
 
 Reading into an Existing |DataSet| from a Data Source
 -----------------------------------------------------

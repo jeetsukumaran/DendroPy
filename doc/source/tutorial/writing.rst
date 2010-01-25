@@ -16,8 +16,10 @@ The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all sup
     :meth:`as_string(schema, **kwargs)`
         Takes a string specifying the schema as the first argument, and returns a string containing the formatted-representation of the data.
 
-Specifying the Format of the Data Output
-========================================
+.. _Specifying_the_Data_Writing_Format:
+
+Specifying the Data Writing Format
+==================================
 
 The schema specification string can be one of the following:
 
@@ -33,10 +35,14 @@ The schema specification string can be one of the following:
     "``phylip``"
         To write |CharacterMatrix| or |DataSet| objects in PHYLIP format. With |DataSet| objects, only character data will be written.
 
-Customizing Data Output Format
-==============================
+.. _Customizing_the_Data_Writing_Format:
+
+Customizing the Data Writing Format
+===================================
 
 The writing of data can be controlled or fine-tuned using keyword arguments. As with reading, some of these arguments apply generally, while others are only available or make sense for a particular format.
+
+.. _Customizing_Writing_All_Formats:
 
 All Formats
 ^^^^^^^^^^^
@@ -49,6 +55,8 @@ All Formats
 
     ``exclude_chars``
         When writing a |DataSet| object, if :keyword:`True`, then **no** characer data will be written (i.e., all |CharacterMatrix| objects in the |DataSet| will be skipped in the output). By default, this is :keyword:`False`, meaning that all character data will be written.
+
+.. _Customizing_Writing_NEXUS_and_Newick:
 
 NEXUS/Newick
 ^^^^^^^^^^^^
