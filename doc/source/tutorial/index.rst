@@ -19,13 +19,24 @@ Part I: Phylogenetic Data in DendroPy
     :maxdepth: 2
 
     dataobjects.rst
+    reading.rst
+    writing.rst
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Part II: Managing and Accessing Phylogenetic Data
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. toctree::
+    :maxdepth: 2
+
+    taxa.rst
     trees.rst
     chars.rst
     datasets.rst
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Part II: Working with Trees and Tree Lists
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Part III: Working with Trees and Tree Lists
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. toctree::
     :maxdepth: 2
