@@ -92,8 +92,8 @@ class DataSchemaRegistry(object):
 
     def get_reader(self, name, **kwargs):
         ## hack to avoid confusing users ##
-        if name.lower() == "fasta":
-            raise error.UnsupportedSchemaError("FASTA data needs to be specified as 'dnafasta', 'rnafasta', or 'proteinfasta'")
+#        if name.lower() == "fasta":
+#            raise error.UnsupportedSchemaError("FASTA data needs to be specified as 'dnafasta', 'rnafasta', or 'proteinfasta'")
         if name not in self.formats:
             raise error.UnsupportedSchemaError("'%s' is not a recognized data schema name" % name)
         return self.formats[name].get_reader(**kwargs)

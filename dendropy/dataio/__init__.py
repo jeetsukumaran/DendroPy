@@ -40,11 +40,11 @@ from dendropy.dataio import nexml
 ioclient.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter)
 ioclient.register("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
 ioclient.register("nexus/newick", None, None, nexus.generalized_tree_source_iter)
-ioclient.register("fasta", None, fasta.FastaWriter, None)
+ioclient.register("fasta", fasta.FastaReader, fasta.FastaWriter, None)
 ioclient.register("dnafasta", fasta.DNAFastaReader, fasta.FastaWriter, None)
 ioclient.register("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None)
 ioclient.register("proteinfasta", fasta.ProteinFastaReader, fasta.FastaWriter, None)
-ioclient.register("phylip", None, phylip.PhylipWriter, None)
+ioclient.register("phylip", phylip.PhylipReader, phylip.PhylipWriter, None)
 ioclient.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None)
 
 from dendropy.dataio.ioclient import get_reader, get_writer, tree_source_iter, multi_tree_source_iter

@@ -38,7 +38,8 @@ class TestFasta(datatest.DataObjectVerificationTestCase):
     def testAsStrReading(self):
         dataset = dendropy.DataSet(
                 stream=open(pathmap.char_source_path("bad_names.fasta"), "rU"),
-                schema='DNAFasta',
+                schema='fasta',
+                data_type='dna',
                 row_type='str'
         )
         taxon_set = dataset.taxon_sets[0]
@@ -48,7 +49,7 @@ class TestFasta(datatest.DataObjectVerificationTestCase):
 
     def testReadingAndWriting(self):
         ds1 = dendropy.DataSet(datagen.reference_dna_matrix())
-        dataset = self.roundTripDataSetTest(ds1, "DNAFASTA")
+        dataset = self.roundTripDataSetTest(ds1, "fasta", reader_kwargs={'data_type': 'dna'})
 
 if __name__ == "__main__":
     unittest.main()
