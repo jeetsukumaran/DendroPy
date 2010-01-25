@@ -7,16 +7,16 @@ Creating and Populating New Objects
 
 The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all support ":meth:`get_from_*()`" factory methods that allow for the simultaneous instantiation and population of the objects from a data source:
 
-    - :meth:`get_from_stream(src, schema, **kwargs)`
+    :meth:`get_from_stream(src, schema, **kwargs)`
         Takes a file or file-like object opened for reading the data source as the first argument, and a string specifying the schema as the second.
 
-    - :meth:`get_from_path(src, schema, **kwargs)`
+    :meth:`get_from_path(src, schema, **kwargs)`
         Takes a string specifying the path to the the data source file as the first argument, and a string specifying the schema as the second.
 
-    - :meth:`get_from_string(src, schema, **kwargs)`
+    :meth:`get_from_string(src, schema, **kwargs)`
         Takes a string containing the source data as the first argument, and a string specifying the schema as the second.
 
-All these methods minimally take a source and schema reference as arguments and return a new object of the given type populated from the given source::
+All these methods minimally take a source and :ref:`schema specification string <Specifying_the_Format_of_the_Data_Source>` as arguments and return a new object of the given type populated from the given source::
 
     >>> import dendropy
     >>> tree1 = dendropy.Tree.get_from_string("((A,B),(C,D))", schema="newick")
@@ -25,9 +25,9 @@ All these methods minimally take a source and schema reference as arguments and 
     >>> std1 = dendropy.StandardCharacterMatrix.get_from_path("python_morph.nex", "nexus")
     >>> dataset1 = dendropy.DataSet.get_from_path("pythonidae.nex", "nexus")
 
-The schema specification can be one of: "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc. Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
+The :ref:`schema specification string <Specifying_the_Format_of_the_Data_Source>` can be one of: "nexus", "newick", "nexml", "fasta", or "phylip". Not all formats are supported for reading, and not all formats make sense for particular objects (for example, it would not make sense to try and instantiate a |Tree| or |TreeList| object from a FASTA-formatted data source).
 
-Alternatively, you can also pass a file-like object and schema specification to the constructor of these classes using the keyword arguments ``stream`` and ``schema`` respectively::
+Alternatively, you can also pass a file-like object and a :ref:`schema specification string <Specifying_the_Format_of_the_Data_Source>` to the constructor of these classes using the keyword arguments ``stream`` and ``schema`` respectively::
 
     >>> import dendropy
     >>> tree1 = dendropy.Tree(stream=open("mle.tre"), schema="newick")
@@ -54,7 +54,7 @@ The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all sup
         Takes a string specifying containing the source data as the first argument, and a string specifying the schema as the second.
 
 When called on an existing |TreeList| or |DataSet| object, these methods *add* the data from the data source to the object, whereas when called on an existing |Tree| or |CharacterMatrix| object,  they *replace* the object's data with data from the data source.
-As with the ":meth:`get_from_*()`" methods, the schema specification can be any supported and type-apppropriate schema, such as "nexus", "newick", "nexml", "dnafasta", "rnafasta", "proteinfasta" etc.
+As with the ":meth:`get_from_*()`" methods, the :ref:`schema specification string <Specifying_the_Format_of_the_Data_Source>` can be any supported and type-apppropriate schema, such as "nexus", "newick", "nexml", "fasta", "phylip", etc.
 
 For example, the following accumulates post-burn-in trees from several different files into a single |TreeList| object (the ``tree_offset`` keyword is discussed `here <Customizing_Tree_Creation_and_Reading>`_)::
 
@@ -87,6 +87,8 @@ In contrast to the aggregating behavior of :meth:`read_from_*()` of |TreeList| a
     Tree object at 0x79c70 (Tree37414064: 'con 50 majrule'): ('Python regius':0.212275,('Python sebae':0.176816,(((((('Antaresia maculosa':0.127351,('Antaresia perthensis':0.108378,('Antaresia stimsoni':0.021372,'Antaresia childreni':0.038155):0.046446):0.025262):0.012957,('Morelia carinata':0.101145,('Morelia bredli':0.038563,'Morelia spilota':0.025643):0.050967):0.010472,'Morelia viridis':0.098541):0.023291,('Bothrochilus boa':0.091928,'Leiopython albertisii':0.080986):0.031583):0.008347,((('Liasis fuscus':0.026601,'Liasis mackloti':0.034524):0.069881,'Liasis olivaceus':0.047727):0.023758,'Apodora papuana':0.096097):0.01474):0.010084,(('Python timoriensis':0.101865,'Python reticulatus':0.095018):0.0922,('Morelia boeleni':0.093309,('Morelia tracyae':0.04727,('Morelia amethistina':0.034936,(('Morelia nauta':0.011,'Morelia kinghorni':0.011198):0.006932,'Morelia clastolepis':0.008103):0.025987):0.017415):0.033886):0.027519,'Morelia oenpelliensis':0.092143):0.006779):0.018238,('Aspidites ramsayi':0.030898,'Aspidites melanocephalus':0.068553):0.049525):0.050607):0.023304,('Python brongersmai':0.132193,'Python molurus':0.08872):0.011466)
 
 As with the :meth:`get_from_*()` methods, keyword arguments can be used to provide control on the data source parsing.
+
+.. _Specifying_the_Format_of_the_Data_Source:
 
 Specifying the Format of the Data Source
 ========================================

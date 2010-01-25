@@ -16,12 +16,12 @@ It has three primary attributes:
 Creating a new |DataSet| from a Data Source
 --------------------------------------------
 
-You can use the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating an object, taking a data source as the first argument and a data format or schema specification as the second:
+You can use the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating an object, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Format_of_the_Data_Source>` as the second:
 
     >>> import dendropy
     >>> ds = dendropy.DataSet.get_from_path('pythonidae.nex', 'nexus')
 
-Valid schema specification strings include: "``nexus``", "``newick``", "``nexml``", "``dnafasta``", "``rnafasta``", "``proteinfasta``" etc.
+Valid :ref:`schema specification strings <Specifying_the_Format_of_the_Data_Source>` include: "``nexus``", "``newick``", "``nexml``", "``fasta``", "``phylip``", etc.
 
 Reading into an Existing |DataSet| from a Data Source
 -----------------------------------------------------
@@ -109,50 +109,6 @@ If you do not want to actually write to a file, but instead simply need a string
     >>> ds = dendropy.DataSet(attached_taxon_set=True)
     >>> ds.read_from_path('pythonidae.cytb.fasta', 'dnafasta')
     >>> s = ds.as_string('nexus')
-
-Customizing |DataSet| Saving and Writing
------------------------------------------
-
-The following keyword arguments, when passed to :meth:`write_to_stream()`, :meth:`write_to_path()`, or :meth:`as_string()`, allow you to control the formatting of the output:
-
-General
-^^^^^^^
-
-    ``taxon_set``
-        If passed a specific |TaxonSet|, then **only** |TreeList| and |CharacterMatrix| objects associated with this |TaxonSet| will be written. By default, this is :keyword:`None`, meaning that all data in the |DataSet| object will be written.
-
-    ``exclude_trees``
-        If :keyword:`True`, then only **no** tree data will be written (i.e., all |TreeList| objects in the |DataSet| will be skipped in the output). By default, this is :keyword:`False`, meaning that all tree data will be written.
-
-    ``exclude_chars``
-        If :keyword:`True`, then only **no** characer data will be written (i.e., all |CharacterMatrix| objects in the |DataSet| will be skipped in the output). By default, this is :keyword:`False`, meaning that all character data will be written.
-
-NEXUS/NEWICK-specific
-^^^^^^^^^^^^^^^^^^^^^
-
-    ``simple``
-        When writing NEXUS-formatted data, if :keyword:`True`, then character data will be represented as a single "``DATA``" block, instead of separate "``TAXA``" and "``CHARACTERS``" blocks. By default this is :keyword:`False`.
-
-    ``write_rooting``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then tree rooting statements (e.g., "``[&R]``" or "``[&U]``") will not be prefixed to the tree statements. By default, this is :keyword:`True`, i.e., rooting statements will be written.
-
-    ``edge_lengths``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then edge or branch lengths will not be written as part of the tree statements. By default, this is :keyword:`True`, i.e., edge lengths will be written.
-
-    ``internal_labels``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then labels for internal nodes (if given) will not be written as part of the tree statements. By default, this is :keyword:`True`, i.e., internal node labels will be written.
-
-    ``block_titles``
-        When writing NEXUS-formatted data, if :keyword:`False`, then title statements will not be added to the various NEXUS blocks (i.e., "``TAXA``", "``CHARACTERS``", and "``TREES``") . By default, this is :keyword:`True`, i.e., block titles will be written.
-
-    ``preserve_spaces``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`True`, then no attempt will be made to produce unquoted labels by substituting spaces for underscores. By default, this is :keyword:`False`, i.e., any label that includes spaces but no other special punctuation character or underscores will have all spaces replaced by underscores so as to allow the label to be represented without quotes.
-
-    ``quote_underscores``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then labels will not be wrapped in quotes even if they contain underscores (meaning that the underscores will be interpreted as spaces according to the NEXUS standard). By default, this is :keyword:`True`, meaning that any label that contains underscores will be wrapped in quotes. Note that if a label has any other characters requiring quote protection as specified by the NEXUS standard, then the label will be quoted regardless of the value of this keyword argument.
-
-    ``comment``
-        When writing NEXUS-formatted data, then the contents of this variable will be added as NEXUS comment to the output. By default, this is :keyword:`None`.
 
 Taxon Management with Data Sets
 ===============================
