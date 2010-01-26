@@ -100,7 +100,7 @@ The string can be one of the following:
         To read |Tree|, |TreeList|, |CharacterMatrix|, or |DataSet| objects from a NEXUS-formatted source.
 
     "``newick``"
-        For reading |Tree|, |TreeList|, or |DataSet| objects from a Newick-formatted source.
+        To read |Tree|, |TreeList|, or |DataSet| objects from a Newick-formatted source.
 
     "``fasta``"
         To read |CharacterMatrix| or |DataSet| objects from a FASTA-formatted source. FASTA-sources require the additional keyword, ``data_type``, that describes the type of data: "``dna``", "``rna``", "``protein``", "``standard``"" (discrete data represented as binary 0/1), "``restriction``" (restriction sites), or "``infinite``" (infinite sites).
@@ -122,19 +122,19 @@ All Formats
 ^^^^^^^^^^^
 
     ``attached_taxon_set``
-        When reading into a |DataSet| object, if :keyword:`True`, then a new |TaxonSet| object will be created and added to the :attr:`~dendropy.dataobject.dataset.DataSet.taxon_sets` list of the |DataSet| object, and the |DataSet| object will be placed in "attached" (or single) taxon set mode, i.e., all taxa in any data sources parsed or read will be mapped to the same |TaxonSet| object. By default, this is :keyword:`False`, resulting in a multi-taxon set mode |DataSet| object.
+        If :keyword:`True` when reading into a |DataSet| object, then a new |TaxonSet| object will be created and added to the :attr:`~dendropy.dataobject.dataset.DataSet.taxon_sets` list of the |DataSet| object, and the |DataSet| object will be placed in "attached" (or single) taxon set mode, i.e., all taxa in any data sources parsed or read will be mapped to the same |TaxonSet| object. By default, this is :keyword:`False`, resulting in a multi-taxon set mode |DataSet| object.
 
     ``taxon_set``
-        A |TaxonSet| object that will be used to manage all taxon references in the data source.
+        If passed a |TaxonSet| object, then this |TaxonSet| will be used to manage all taxon references in the data source.
         When creating a new |Tree|, |TreeList| or |CharacterMatrix| object from a data source, the |TaxonSet| object passed by this keyword will be used as the |TaxonSet| associated with the object.
         When reading into a |DataSet| object, if the data source defines multiple collections of taxa (as is possible with, for example, the NEXML schema, or the Mesquite variant of the NEXUS schema), then multiple new |TaxonSet| object will be created. By passing a |TaxonSet| object through the ``taxon_set`` keyword, you can force DendroPy to use the same |TaxonSet| object for all taxon references.
 
     ``exclude_trees``
-        A boolean value indicating whether or not tree data should be parsed from the data source.
+        If :keyword:`True`, then all tree data in the data source will be skipped.
         Default value is :keyword:`False`, i.e., all tree data will be included.
 
     ``exclude_chars``
-        A boolean value indicating whether or not character data should be parsed from the data source.
+        If :keyword:`True`, then all character data in the data source will be skipped.
         Default value is :keyword:`False`, i.e., all character data will be included.
 
 .. _Customizing_Reading_NEXUS_and_Newick:
