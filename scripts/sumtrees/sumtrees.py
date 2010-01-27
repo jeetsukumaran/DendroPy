@@ -381,7 +381,7 @@ def main_cli():
     if target_tree_filepath is not None:
         messenger.send("### MAPPING SUPPORT TO TARGET TREE(S) ###\n")
         for tree in tree_source_iter(stream=open(target_tree_filepath, 'r'), schema="nexus/newick", taxon_set=taxon_set):
-            tt_trees.append(tree)
+            tt_trees.append(tsum.map_split_support_to_tree(tree, split_distribution))
         messenger.send('Parsed "%s": %d tree(s) in file' % (target_tree_filepath, len(tt_trees)))
         comments.append('Split support mapped to trees in:')
         comments.append('  - "%s" (%d trees)' % (os.path.abspath(target_tree_filepath), len(tt_trees)))
