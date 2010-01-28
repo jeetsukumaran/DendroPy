@@ -27,18 +27,19 @@ Any |Tree| object added to a |TreeList| will have its :attr:`~dendropy.dataobjec
 Creating a New |Tree| or |TreeList| from a Data Source
 -------------------------------------------------------
 
-Both the |Tree| and |TreeList| classes support the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating objects, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second:
+Both the |Tree| and |TreeList| classes support the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating objects, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` ("``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``", etc.) as the second:
 
     >>> import dendropy
     >>> tree = dendropy.Tree.get_from_path('pythonidae.mle.nex', 'nexus')
     >>> treelist = dendropy.TreeList.get_from_path('pythonidae.mcmc.nex', 'nexus')
 
-Valid :ref:`schema specification strings <Specifying_the_Data_Source_Format>` include: "``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``".
+In addition, fine-grained control over the parsing of the data source is available through various :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>`.
+
 
 Reading into an Existing |Tree| or |TreeList| from a Data Source
 ----------------------------------------------------------------
 
-The :meth:`read_from_stream()`, :meth:`read_from_path()`, and :meth:`read_from_string()` instance methods for populating existing objects are also supported, taking the same arguments:
+The :meth:`read_from_stream()`, :meth:`read_from_path()`, and :meth:`read_from_string()` instance methods for populating existing objects are also supported, taking the same arguments (i.e., a data source, a :ref:`schema specification string <Specifying_the_Data_Source_Format>`, as well as optional :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>` to customize the parse behavior):
 
     >>> import dendropy
     >>> tree = dendropy.Tree()

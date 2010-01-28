@@ -55,7 +55,7 @@ The |Tree|, |TreeList|, |CharacterMatrix|-derived, and |DataSet| classes all sup
 When called on an existing |TreeList| or |DataSet| object, these methods *add* the data from the data source to the object, whereas when called on an existing |Tree| or |CharacterMatrix| object,  they *replace* the object's data with data from the data source.
 As with the ":meth:`get_from_*()`" methods, the :ref:`schema specification string <Specifying_the_Data_Source_Format>` can be any supported and type-apppropriate schema, such as "``nexus``", "``newick``", "``nexml``", "``fasta``", "``phylip``", etc.
 
-For example, the following accumulates post-burn-in trees from several different files into a single |TreeList| object (the ``tree_offset`` keyword is discussed `here <Customizing_Tree_Creation_and_Reading>`_)::
+For example, the following accumulates post-burn-in trees from several different files into a single |TreeList| object::
 
     >>> import dendropy
     >>> post_trees = dendropy.TreeList()

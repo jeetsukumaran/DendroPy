@@ -17,10 +17,12 @@ In most cases, you will not deal with objects of the |CharacterMatrix| class dir
 |CharacterMatrix| Creating and Reading
 ======================================
 
+As with most other phylogenetic data objects, objects of the |CharacterMatrix|-derived classes support the :meth:`get_from_*()` factory and :meth:`read_from_*()` instance methods to populate objects from a data source.
+These methods take a data source as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` ("``nexus``", "``newick``", "``nexml``", "``fasta``", or "``phylip``", etc.) as the second, as well as optional :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>` to customize the reading behavior.
+
 Creating a New |CharacterMatrix| from a Data Source
 ---------------------------------------------------
 
-As with most other phylogenetic data objects, objects of the |CharacterMatrix|-derived classes support the :meth:`get_from_*()` factory and :meth:`read_from_*()` instance methods to populate objects from a data source.
 The following examples simultaneously instantiate and populate |CharacterMatrix| objects of the appropriate type from various file data sources::
 
     >>> import dendropy

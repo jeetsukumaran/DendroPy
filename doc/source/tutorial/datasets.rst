@@ -21,17 +21,16 @@ It has three primary attributes:
 Creating a new |DataSet| from a Data Source
 --------------------------------------------
 
-You can use the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating an object, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` as the second:
+You can use the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating an object, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` ("``nexus``", "``newick``", "``nexml``", "``fasta``", "``phylip``", etc.) as the second:
 
     >>> import dendropy
     >>> ds = dendropy.DataSet.get_from_path('pythonidae.nex', 'nexus')
 
-Valid :ref:`schema specification strings <Specifying_the_Data_Source_Format>` include: "``nexus``", "``newick``", "``nexml``", "``fasta``", "``phylip``", etc.
-
+In addition, fine-grained control over the parsing of the data source is available through various :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>`.
 Reading into an Existing |DataSet| from a Data Source
 -----------------------------------------------------
 
-The :meth:`read_from_stream()`, :meth:`read_from_path()`, and :meth:`read_from_string()` instance methods for populating existing objects are also supported, taking the same arguments:
+The :meth:`read_from_stream()`, :meth:`read_from_path()`, and :meth:`read_from_string()` instance methods for populating existing objects are also supported, taking the same arguments (i.e., a data source, a :ref:`schema specification string <Specifying_the_Data_Source_Format>`, as well as optional :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>` to customize the parse behavior)
 
     >>> import dendropy
     >>> ds = dendropy.DataSet()
