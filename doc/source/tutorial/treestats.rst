@@ -57,7 +57,7 @@ Majority-Rule Consensus Tree from a Collection of Trees
 
 To get the majority-rule consensus tree of a |TreeList| object, you can call the :meth:`~dendropy.dataobject.tree.TreeList.consensus()` instance method.
 You can specify the frequency threshold for the consensus tree by the ``min_freq`` argument, which default to 0.5 (i.e., a 50% majority rule tree).
-The following example aggregates the post-burn-in trees from four MCMC samples into a single |TreeList| object, and prints the 95% majority-rule consensus as a NEWICK string:
+The following example aggregates the post-burn-in trees from four MCMC samples into a single |TreeList| object, and prints the 95% majority-rule consensus as a Newick string:
 
 .. literalinclude:: /examples/majrule.py
     :linenos:

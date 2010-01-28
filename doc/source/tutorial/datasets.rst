@@ -6,9 +6,14 @@ The |DataSet| class provides for objects that allow you to manage multiple types
 
 It has three primary attributes:
 
-    - :attr:`~dendropy.dataobject.dataset.DataSet.taxon_sets`, a list of all |TaxonSet|         objects in the |DataSet|, in the order that they were added or read, include |TaxonSet| objects added implicitly through being associated with added |TreeList| or |CharacterMatrix| objects.
-    - :attr:`~dendropy.dataobject.dataset.DataSet.tree_lists`, a list of all |TreeList| objects in the |DataSet|, in the order that they were added or read.
-    - :attr:`~dendropy.dataobject.dataset.DataSet.char_matrices`, a list of all |CharacterMatrix| objects in the |DataSet|, in the order that they were added or read.
+    :attr:`~dendropy.dataobject.dataset.DataSet.taxon_sets`
+        A list of all |TaxonSet| objects in the |DataSet|, in the order that they were added or read, include |TaxonSet| objects added implicitly through being associated with added |TreeList| or |CharacterMatrix| objects.
+
+    :attr:`~dendropy.dataobject.dataset.DataSet.tree_lists`
+        A list of all |TreeList| objects in the |DataSet|, in the order that they were added or read.
+
+    :attr:`~dendropy.dataobject.dataset.DataSet.char_matrices`
+        A list of all |CharacterMatrix| objects in the |DataSet|, in the order that they were added or read.
 
 |DataSet| Creation and Reading
 ===============================
@@ -16,17 +21,16 @@ It has three primary attributes:
 Creating a new |DataSet| from a Data Source
 --------------------------------------------
 
-You can use the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating an object, taking a data source as the first argument and a data format or schema specification as the second:
+You can use the :meth:`get_from_stream()`, :meth:`get_from_path()`, and :meth:`get_from_string()` factory class methods for simultaneously instantiating and populating an object, taking a data source as the first argument and a :ref:`schema specification string <Specifying_the_Data_Source_Format>` ("``nexus``", "``newick``", "``nexml``", "``fasta``", "``phylip``", etc.) as the second:
 
     >>> import dendropy
     >>> ds = dendropy.DataSet.get_from_path('pythonidae.nex', 'nexus')
 
-Valid schema specification strings include: "``nexus``", "``newick``", "``nexml``", "``dnafasta``", "``rnafasta``", "``proteinfasta``" etc.
-
+In addition, fine-grained control over the parsing of the data source is available through various :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>`.
 Reading into an Existing |DataSet| from a Data Source
 -----------------------------------------------------
 
-The :meth:`read_from_stream()`, :meth:`read_from_path()`, and :meth:`read_from_string()` instance methods for populating existing objects are also supported, taking the same arguments:
+The :meth:`read_from_stream()`, :meth:`read_from_path()`, and :meth:`read_from_string()` instance methods for populating existing objects are also supported, taking the same arguments (i.e., a data source, a :ref:`schema specification string <Specifying_the_Data_Source_Format>`, as well as optional :ref:`keyword arguments <Customizing_Data_Creation_and_Reading>` to customize the parse behavior)
 
     >>> import dendropy
     >>> ds = dendropy.DataSet()
@@ -86,44 +90,6 @@ You can add independentally created or parsed data objects to a |DataSet| using 
 
 Here, again, we call the :meth:`~dendropy.dataobject.dataset.DataSet.unify_taxa()` to map all taxon references to the same, common, unified |TaxonSet|.
 
-.. _Customizing_Data_Set_Creation_and_Reading:
-
-Customizing Data Set Creation and Reading
-------------------------------------------
-
-You can control how data is parsed from a data source using the following keywords passed to any :meth:`get_from_*()` or :meth:`read_from_*()` method of a |DataSet| object:
-
-General
-^^^^^^^
-
-    ``attached_taxon_set``
-        If :keyword:`True`, then a new |TaxonSet| object will be created and added to the :attr:`~dendropy.dataobject.dataset.DataSet.taxon_sets` list of the |DataSet| object, and the |DataSet| object will be placed in "attached" (or single) taxon set mode, i.e., all taxa in any data sources parsed or read will be mapped to the same |TaxonSet| object. By default, this is :keyword:`False`, resulting in a multi-taxon set mode |DataSet| object.
-
-    ``taxon_set``
-        A |TaxonSet| object that will be used to manage **all** taxon references in the data source.
-        Every time a data source is parsed, by default at least one new |TaxonSet| object will be created to manage the taxa defined in the data source.
-        If the data source defines multiple collections of taxa (as is possible with, for example, the NEXML schema, or the Mesquite variant of the NEXUS schema), then multiple new |TaxonSet| object will be created.
-        By passing a |TaxonSet| object through the ``taxon_set`` keyword, you can force DendroPy to use the same |TaxonSet| object for all taxon references.
-
-    ``exclude_trees``
-        A boolean value indicating whether or not tree data should be parsed from the data source.
-        Default value is :keyword:`False`, i.e., all tree data will be included.
-
-    ``exclude_chars``
-        A boolean value indicating whether or not character data should be parsed from the data source.
-        Default value is :keyword:`False`, i.e., all character data will be included.
-
-NEXUS/NEWICK-specific
-^^^^^^^^^^^^^^^^^^^^^
-
-    ``is_rooted``, ``is_unrooted``, ``default_as_rooted``, ``default_as_unrooted``
-        These keywords specify how tree rootings are interpreted. For more information, see the :ref:`Interpreting_Rootings` section.
-
-    ``preserve_underscores``
-        With NEXUS and NEWICK data sources, you can also specify ``preserve_underscores=True``.
-        The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/NEWICK data source will be substituted for spaces.
-        Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores.
-
 |DataSet| Saving and Writing
 =============================
 
@@ -147,50 +113,6 @@ If you do not want to actually write to a file, but instead simply need a string
     >>> ds = dendropy.DataSet(attached_taxon_set=True)
     >>> ds.read_from_path('pythonidae.cytb.fasta', 'dnafasta')
     >>> s = ds.as_string('nexus')
-
-Customizing |DataSet| Saving and Writing
------------------------------------------
-
-The following keyword arguments, when passed to :meth:`write_to_stream()`, :meth:`write_to_path()`, or :meth:`as_string()`, allow you to control the formatting of the output:
-
-General
-^^^^^^^
-
-    ``taxon_set``
-        If passed a specific |TaxonSet|, then **only** |TreeList| and |CharacterMatrix| objects associated with this |TaxonSet| will be written. By default, this is :keyword:`None`, meaning that all data in the |DataSet| object will be written.
-
-    ``exclude_trees``
-        If :keyword:`True`, then only **no** tree data will be written (i.e., all |TreeList| objects in the |DataSet| will be skipped in the output). By default, this is :keyword:`False`, meaning that all tree data will be written.
-
-    ``exclude_chars``
-        If :keyword:`True`, then only **no** characer data will be written (i.e., all |CharacterMatrix| objects in the |DataSet| will be skipped in the output). By default, this is :keyword:`False`, meaning that all character data will be written.
-
-NEXUS/NEWICK-specific
-^^^^^^^^^^^^^^^^^^^^^
-
-    ``simple``
-        When writing NEXUS-formatted data, if :keyword:`True`, then character data will be represented as a single "``DATA``" block, instead of separate "``TAXA``" and "``CHARACTERS``" blocks. By default this is :keyword:`False`.
-
-    ``write_rooting``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then tree rooting statements (e.g., "``[&R]``" or "``[&U]``") will not be prefixed to the tree statements. By default, this is :keyword:`True`, i.e., rooting statements will be written.
-
-    ``edge_lengths``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then edge or branch lengths will not be written as part of the tree statements. By default, this is :keyword:`True`, i.e., edge lengths will be written.
-
-    ``internal_labels``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then labels for internal nodes (if given) will not be written as part of the tree statements. By default, this is :keyword:`True`, i.e., internal node labels will be written.
-
-    ``block_titles``
-        When writing NEXUS-formatted data, if :keyword:`False`, then title statements will not be added to the various NEXUS blocks (i.e., "``TAXA``", "``CHARACTERS``", and "``TREES``") . By default, this is :keyword:`True`, i.e., block titles will be written.
-
-    ``preserve_spaces``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`True`, then no attempt will be made to produce unquoted labels by substituting spaces for underscores. By default, this is :keyword:`False`, i.e., any label that includes spaces but no other special punctuation character or underscores will have all spaces replaced by underscores so as to allow the label to be represented without quotes.
-
-    ``quote_underscores``
-        When writing NEXUS-formatted or NEWICK-formatted data, if :keyword:`False`, then labels will not be wrapped in quotes even if they contain underscores (meaning that the underscores will be interpreted as spaces according to the NEXUS standard). By default, this is :keyword:`True`, meaning that any label that contains underscores will be wrapped in quotes. Note that if a label has any other characters requiring quote protection as specified by the NEXUS standard, then the label will be quoted regardless of the value of this keyword argument.
-
-    ``comment``
-        When writing NEXUS-formatted data, then the contents of this variable will be added as NEXUS comment to the output. By default, this is :keyword:`None`.
 
 Taxon Management with Data Sets
 ===============================

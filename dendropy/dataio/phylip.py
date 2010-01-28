@@ -77,7 +77,7 @@ class PhylipReader(iosys.DataReader):
         elif "char_matrix_type" in kwargs:
             self.char_matrix_type = kwargs.get("char_matrix_type")
         else:
-            raise ValueError("Must specify 'data_type' for Phylip format, one of: %s" % (PhylipReader.supported_data_types))
+            raise ValueError("Must specify 'data_type' for PHYLIP format, one of: %s" % (PhylipReader.supported_data_types))
         if self.char_matrix_type not in PhylipReader.supported_matrix_types:
             raise ValueError("'%s' is not a supported data type for PhylipReader" % self.char_matrix_type.__name__)
         self.strict = kwargs.get("strict", False)

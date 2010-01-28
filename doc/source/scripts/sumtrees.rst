@@ -125,7 +125,7 @@ Summarize a set of tree files using a 95% rule consensus tree, with support for 
 Tutorials and Examples
 ======================
 
-At its most basic, you will need to supply SumTrees with the path to one or more tree files in NEWICK or NEXUS format that you want to summarize::
+At its most basic, you will need to supply SumTrees with the path to one or more tree files in Newick or NEXUS format that you want to summarize::
 
     $ sumtrees.py phylo.tre
 
@@ -151,7 +151,7 @@ If the files are in different directories, or you are not in the same directory 
 
     $ sumtrees.py --output=/Users/myself/MyProjects/phylo1/final/phylo.consensus.sumtrees /Users/myself/MyProjects/phylo1/phylo.tre
 
-More extended options specify things like: where to save the output (by default it goes to the screen), the topology or tree to which to map the support (user-supplied or consensus tree), the output format (NEXUS by default, but it can also be NEWICK), whether support is indicated in terms of proportions or percentages etc.
+More extended options specify things like: where to save the output (by default it goes to the screen), the topology or tree to which to map the support (user-supplied or consensus tree), the output format (NEXUS by default, but it can also be Newick), whether support is indicated in terms of proportions or percentages etc.
 All of these options are specified on the command line when invoking the program, with multiple options separated by spaces.
 Many of the options have two alternate forms, a long form (a word or phrase preceded by two dashes, e.g., "``--option``") and a short form (a single letter preceded by a single dash, "``-o``").
 The long form of the options needs an equals sign before setting the paramater (e.g., "``--option=1``"), while the short one does not (e.g., "``-o1``" or "``-o 1``").
