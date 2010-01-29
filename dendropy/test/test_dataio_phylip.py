@@ -32,7 +32,9 @@ from cStringIO import StringIO
 from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
 from dendropy.test.support import extendedtest
+from dendropy.test.support import datatest
 from dendropy.dataio import phylip
+import dendropy
 
 ###############################################################################
 ## STRICT SEQUENTIAL DATA
@@ -533,6 +535,13 @@ class RelaxedInterleavedDnaTest(extendedtest.ExtendedTestCase):
         s = relaxed_interleaved_dna_valid_chars_clean_str.replace('$', '  ').replace('_', ' ')
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
+
+class StrictDnaReadWrite(datatest.DataObjectVerificationTestCase):
+
+    def test_round_trip(self):
+        ds1 = dendropy.DataSet.get_from_string(strict_sequential_dna_valid_chars_clean_str, 'phylip', data_type='dna', strict=True)
+        rw_kwargs = {'strict': True, 'data_type': 'dna'}
+        self.roundTripData(ds1, 'phylip', writer_kwargs=rw_kwargs, reader_kwargs=rw_kwargs)
 
 if __name__ == "__main__":
     unittest.main()
