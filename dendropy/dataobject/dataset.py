@@ -351,3 +351,4 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
                 kwargs["taxon_set"] = self.attached_taxon_set
         char_matrix = char_matrix_type(*args, **kwargs)
         return self.add_char_matrix(char_matrix)
+

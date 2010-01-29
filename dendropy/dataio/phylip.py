@@ -253,27 +253,20 @@ class PhylipWriter(iosys.DataWriter):
         self.spaces_to_underscores = kwargs.get("spaces_to_underscores", False)
         self.force_unique_taxon_labels = kwargs.get("force_unique_taxon_labels", False)
 
-    def get_taxon_label_map(self, dataset):
-        if self.attached_taxon_set is not None:
-            taxon_sets = [self.attached_taxon_set]
-        else:
-            taxon_sets = dataset.taxon_sets
+    def get_taxon_label_map(self, taxon_set):
         taxon_label_map = {}
-        taxa = []
         if self.strict:
             max_label_len = STRICT_MODE_MAX_LABEL_LENGTH
         else:
             max_label_len = 0
-        for taxon_set in taxon_sets:
-            for taxon in taxon_set:
-                label = taxon.label
-                if self.spaces_to_underscores:
-                    label = label.replace(' ', '')
-                if self.strict:
-                    label = label[:max_label_len]
-                taxa.append(taxon)
-                taxon_label_map[taxon] = label
-        taxon_label_map = texttools.unique_taxon_label_map(taxa, taxon_label_map, max_label_len, _LOG)
+        for taxon in taxon_set:
+            label = taxon.label
+            if self.spaces_to_underscores:
+                label = label.replace(' ', '_')
+            if self.strict:
+                label = label[:max_label_len]
+            taxon_label_map[taxon] = label
+        taxon_label_map = texttools.unique_taxon_label_map(taxon_set, taxon_label_map, max_label_len, _LOG)
         if self.strict:
             for t in taxon_label_map:
                 label = taxon_label_map[t]
@@ -303,31 +296,32 @@ class PhylipWriter(iosys.DataWriter):
         if len(self.dataset.char_matrices) == 0:
             raise ValueError("No character data in DataSet")
         if self.attached_taxon_set is not None:
-            for c in self.dataset.char_matrices:
-                if c.taxon_set is self.attached_taxon_set:
-                    char_matrix = c
-                    break
-            else:
-                raise ValueError("No character matrix found associated with TaxonSet %s" % repr(self.attached_taxon_set))
+            taxon_set_matrices = [cmat for cmat in self.dataset.char_matrices if cmat.taxon_set is self.attached_taxon_set]
+            if len(taxon_set_matrices) == 0:
+                raise ValueError("No character matrix associated with attached TaxonSet '%s'" % (repr(self.attached_taxon_set)))
+            if len(taxon_set_matrices) > 1:
+                raise ValueError("Multiple character matrices associated with attached TaxonSet '%s'" % (repr(self.attached_taxon_set)))
+            char_matrix = taxon_set_matrices_map[self.attached_taxon_set]
         else:
-            if len(char_matrix) > 1:
-                raise ValueError('Multiple character matrices in DataSet, and Writer is not bound to a TaxonSet')
+            if len(self.dataset.char_matrices) > 1:
+                raise ValueError("Multiple character matrices found")
             char_matrix = self.dataset.char_matrices[0]
-        assert char_matrix is not None
 
-        if self.strict or self.force_unque_taxon_labels:
-            taxon_label_map = self.get_taxon_label_map(self.dataset)
+        assert char_matrix is not None, \
+            "Failed to identify suitable CharacterMatrix"
+
+        if self.strict or self.force_unique_taxon_labels:
+            taxon_label_map = self.get_taxon_label_map(char_matrix.taxon_set)
         else:
             taxon_label_map = {}
-            for taxon_set in taxon_sets:
-                for taxon in taxon_set:
-                    taxon_label_map[taxon] = taxon.label
+            for taxon in char_matrix.taxon_set:
+                taxon_label_map[taxon] = taxon.label
         maxlen = max([len(str(label)) for label in taxon_label_map.values()])
 
-        char_matrix = self.dataset.char_matrices[0]
         n_seqs = len(char_matrix)
         n_sites = len(char_matrix.values()[0])
         stream.write("%d %d\n" % (n_seqs, n_sites))
 
         for taxon in char_matrix.taxon_set:
-            stream.write("%s        %s\n" % ( str(taxon).ljust(maxlen), str(char_matrix[taxon].symbols_as_string()).replace(' ', '')))
+            label = taxon_label_map[taxon]
+            stream.write("%s        %s\n" % ( label.ljust(maxlen), str(char_matrix[taxon].symbols_as_string()).replace(' ', '')))
