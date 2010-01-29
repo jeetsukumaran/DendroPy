@@ -7,7 +7,6 @@ Version 3.1.0
     * Fixed major bug in SumTrees when mapping support to target tree.
     * FASTA format now accepts 'fasta' as a schema specification, but requires supplemental keyword argument, 'data_type' to specify type of data ('dna', 'rna', 'protein', etc.)
     * Implemented full-featured PHYLIP reader and enhanced PHYLIP writer, for both strict and relaxed modes (reader requires 'data_type' keyword argument).
-    * Improved NEXUS parser.
     * Fixed bug in handling trailing whitespaces in interleaved NEXUS data.
     * Setup is now zipsafe by default.
     * Fixed issue with encoding of splits when root has degree one.
