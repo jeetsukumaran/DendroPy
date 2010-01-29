@@ -603,6 +603,8 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         index = kwargs.get("matrix_offset", 0)
         kwargs["exclude_chars"] = False
         kwargs["exclude_trees"] = True
+        if 'data_type' not in kwargs and 'char_matrix_type' not in kwargs:
+            kwargs['char_matrix_type'] = self.__class__
         d = DataSet(stream=stream, schema=schema, **kwargs)
         if len(d.char_matrices) == 0:
             raise ValueError("No character data in data source")

@@ -47,9 +47,16 @@ class TestFasta(datatest.DataObjectVerificationTestCase):
         expected = ['a Bad name', 'another', 'a Badn,ame', 'a  nothe++-_=+r', 'an!@#$o^&*()}{_ther']
         self.assertEquals(label, expected)
 
-    def testReadingAndWriting(self):
+    def testReadingAndWritingDataSet(self):
         ds1 = dendropy.DataSet(datagen.reference_dna_matrix())
         dataset = self.roundTripDataSetTest(ds1, "fasta", reader_kwargs={'data_type': 'dna'})
+
+    def testReadingAndWritingCharMatrix(self):
+        dna1 = datagen.reference_dna_matrix()
+        output_path = pathmap.named_output_path(filename="roundtrip_test.fasta", suffix_timestamp=True)
+        dna1.write_to_path(output_path, 'fasta')
+        dna2 = dendropy.DnaCharacterMatrix.get_from_path(output_path, 'fasta')
+        self.assertDistinctButEqual(dna1, dna2)
 
 if __name__ == "__main__":
     unittest.main()
