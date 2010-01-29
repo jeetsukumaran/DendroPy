@@ -51,7 +51,7 @@ Writing to Files
 ----------------
 
 The :meth:`write_to_stream()`, and :meth:`write_to_path()` instance methods allow you to write the data of a |CharacterMatrix| to a file-like object or a file path respectively.
-These methods take a file-like object (in the case of :meth:`write_to_stream()`) or a string specifying a filepath (in the case of :meth:`write_to_path()`) as the first argument, and a format or schema specification string as the second argument.
+These methods take a file-like object (in the case of :meth:`write_to_stream()`) or a string specifying a filepath (in the case of :meth:`write_to_path()`) as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Writing_Format>` as the second argument.
 
 The following example reads a FASTA-formatted file and writes it out to a a NEXUS-formatted file:
 
@@ -59,15 +59,19 @@ The following example reads a FASTA-formatted file and writes it out to a a NEXU
     >>> dna = dendropy.DnaCharacterMatrix.get_from_path('pythonidae_cytb.fasta', 'dnafasta')
     >>> dna.write_to_path('pythonidae_cytb.nexus', 'nexus')
 
+Fine-grained control over the output format can be specified using :ref:`keyword arguments <Customizing_the_Data_Writing_Format>`.
+
 Composing a String
 ------------------
 
-If you do not want to actually write to a file, but instead simply need a string representing the data in a particular format, you can call the instance method :meth:`as_string()`, passing a schema or format specification string as the first argument:
+If you do not want to actually write to a file, but instead simply need a string representing the data in a particular format, you can call the instance method :meth:`as_string()`, passing a :ref:`schema specification string <Specifying_the_Data_Writing_Format>` as the first argument:
 
     >>> import dendropy
     >>> dna = dendropy.DnaCharacterMatrix.get_from_path('pythonidae_cytb.fasta', 'dnafasta')
     >>> s = dna.as_string('nexus')
     >>> print(s)
+
+As above, fine-grained control over the output format can be specified using :ref:`keyword arguments <Customizing_the_Data_Writing_Format>`.
 
 Taxon Management with Character Matrices
 ========================================

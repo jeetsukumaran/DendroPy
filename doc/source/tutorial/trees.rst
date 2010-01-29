@@ -83,7 +83,7 @@ Writing to Files
 ----------------
 
 The :meth:`write_to_stream()`, and :meth:`write_to_path()` instance methods allow you to write the data of |Tree| and |TreeList| objects to a file-like object or a file path respectively.
-These methods take a file-like object (in the case of :meth:`write_to_stream()`) or a string specifying a filepath (in the case of :meth:`write_to_path()`) as the first argument, and a format or schema specification string as the second argument.
+These methods take a file-like object (in the case of :meth:`write_to_stream()`) or a string specifying a filepath (in the case of :meth:`write_to_path()`) as the first argument, and a :ref:`schema specification string <Specifying_the_Data_Writing_Format>` as the second argument.
 
 The following example aggregates the post-burn in MCMC samples from a series of NEXUS-formatted files, and saves the collection as a Newick-formatted file:
 
@@ -95,10 +95,12 @@ The following example aggregates the post-burn in MCMC samples from a series of 
     >>> treelist.read_from_path('pythonidae_cytb.mb.run4.t', 'nexus', tree_offset=200)
     >>> treelist.write_to_path('pythonidae_cytb.mcmc-postburnin.tre', 'newick')
 
+Fine-grained control over the output format can be specified using :ref:`keyword arguments <Customizing_the_Data_Writing_Format>`.
+
 Composing a String
 ------------------
 
-If you do not want to actually write to a file, but instead simply need a string representing the data in a particular format, you can call the instance method :meth:`as_string()`, passing a schema or format specification string as the first argument:
+If you do not want to actually write to a file, but instead simply need a string representing the data in a particular format, you can call the instance method :meth:`as_string()`, passing a :ref:`schema specification string <Specifying_the_Data_Writing_Format>` as the first argument:
 
     >>> import dendropy
     >>> tree = dendropy.Tree()
@@ -106,6 +108,8 @@ If you do not want to actually write to a file, but instead simply need a string
     >>> s = tree.as_string('newick')
     >>> print(s)
     >>> (Python_molurus:0.0779719244,((Python_sebae:0.1414715009,(((((Morelia_tracyae:0.0435011998,(Morelia_amethistina:0.0305993564,((Morelia_nauta:0.0092774432,Morelia_kinghorni:0.0093145395):0.005595,Morelia_clastolepis:0.0052046980):0.023435):0.012223):0.025359,Morelia_boeleni:0.0863199106):0.019894,((Python_reticulatus:0.0828549023,Python_timoriensis:0.0963051344):0.072003,Morelia_oenpelliensis:0.0820543043):0.002785):0.002740,((((Morelia_viridis:0.0925974416,(Morelia_carinata:0.0943697342,(Morelia_spilota:0.0237557178,Morelia_bredli:0.0357358071):0.041377):0.005225):0.004424,(Antaresia_maculosa:0.1141193265,((Antaresia_childreni:0.0363195704,Antaresia_stimsoni:0.0188535952):0.043287,Antaresia_perthensis:0.0947695442):0.019148):0.007921):0.022413,(Leiopython_albertisii:0.0698883547,Bothrochilus_boa:0.0811607602):0.020941):0.007439,((Liasis_olivaceus:0.0449896545,(Liasis_mackloti:0.0331564496,Liasis_fuscus:0.0230286886):0.058253):0.016766,Apodora_papuana:0.0847328612):0.008417):0.006539):0.011557,(Aspidites_ramsayi:0.0349772256,Aspidites_melanocephalus:0.0577536309):0.042499):0.036177):0.016859,Python_brongersmai:0.1147218285):0.001271,Python_regius:0.1800489093):0.000000;
+
+As above, fine-grained control over the output format can be specified using :ref:`keyword arguments <Customizing_the_Data_Writing_Format>`.
 
 Taxon Management with Trees and Tree Lists
 ==========================================

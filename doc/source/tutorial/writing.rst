@@ -84,3 +84,14 @@ NEXUS/Newick
 
     ``comment``
         When writing NEXUS-formatted data, then the contents of this variable will be added as NEXUS comment to the output. By default, this is :keyword:`None`.
+
+.. _Customizing_Writing_PHYLIP:
+
+PHYLIP
+^^^^^^
+
+    ``strict``
+        Write in "strict" PHYLIP format, i.e., with taxon labels truncated to 10-characters, and sequence characters beginning on column 11.
+
+    ``spaces_to_underscores``
+        Replace all spaces in taxon labels with underscores; useful if writing in relaxed mode, where spaces are used to delimit the beginning of sequence characters.
