@@ -12,7 +12,7 @@ New Features
         >>> import dendropy
         >>> cytb = dendropy.DnaCharacterMatrix.get_from_path("data.fas", "fasta")
 
-    but requires supplemental keyword argument, '``data_type``' to specify type of data ('``dna``', '``rna``', '``protein``', etc.) when using `DataSet`::
+      but requires supplemental keyword argument, '``data_type``' to specify type of data ('``dna``', '``rna``', '``protein``', etc.) when using `DataSet`::
 
         >>> import dendropy
         >>> cytb_ds = dendropy.DataSet.get_from_path("data.fas", "fasta", data_type="dna")
