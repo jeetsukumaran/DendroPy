@@ -257,7 +257,7 @@ class NexusReader(iosys.DataReader):
     def reset(self):
         self.char_block_type = dataobject.StandardCharacterMatrix
         self.interleave = False
-        self.symbols = "012"
+        self.symbols = "01"
         self.gap_char = '-'
         self.missing_char = '?'
         self.match_char = '.'
@@ -493,7 +493,7 @@ class NexusReader(iosys.DataReader):
                     else:
                         # defaults to STANDARD elif token == "STANDARD":
                         self.char_block_type = dataobject.StandardCharacterMatrix
-                        self.symbols = "12"
+                        self.symbols = "01"
                 else:
                     raise self.data_format_error("Expecting '=' after DATATYPE keyword")
                 token = self.stream_tokenizer.read_next_token_ucase()
