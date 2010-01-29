@@ -69,19 +69,35 @@ class FastaReader(iosys.DataReader):
         """
         Main file parsing driver.
         """
+        self.dataset = kwargs.get("dataset", self.dataset)
+        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
+        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
         simple_rows = kwargs.get('row_type', 'rich').upper() == 'STR'
+        if self.exclude_chars:
+            return self.dataset
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
-        taxon_set = self.get_default_taxon_set(**kwargs)
-        char_matrix = self.dataset.new_char_matrix(char_matrix_type=self.char_matrix_type, taxon_set=taxon_set)
-        char_matrix.taxon_set = taxon_set
-        symbol_state_map = char_matrix.default_state_alphabet.symbol_state_map()
+        self.attached_taxon_set = self.get_default_taxon_set(**kwargs)
+        self.char_matrix = self.dataset.new_char_matrix(char_matrix_type=self.char_matrix_type,
+                taxon_set=self.attached_taxon_set)
+        if isinstance(self.char_matrix, dataobject.StandardCharacterMatrix) \
+            and len(self.char_matrix.state_alphabets) == 0:
+                self.char_matrix.state_alphabets.append(dataobject.get_state_alphabet_from_symbols("0123456789"))
+                self.char_matrix.default_state_alphabet = self.char_matrix.state_alphabets[0]
+        if self.char_matrix.default_state_alphabet is not None:
+            self.symbol_state_map = self.char_matrix.default_state_alphabet.symbol_state_map()
+        elif len(self.char_matrix.state_alphabets) == 0:
+            raise ValueError("No state alphabets defined")
+        elif len(self.char_matrix.state_alphabets) > 1:
+            raise NotImplementedError("Mixed state-alphabet matrices not supported")
+        else:
+            self.symbol_state_map = self.char_matrix.state_alphabets[0]
 
         curr_vec = None
         curr_taxon = None
 
         if simple_rows:
-            legal_chars = char_matrix.default_state_alphabet.get_legal_symbols_as_str()
+            legal_chars = self.char_matrix.default_state_alphabet.get_legal_symbols_as_str()
 
         for line_index, line in enumerate(stream):
             s = line.strip()
@@ -89,10 +105,10 @@ class FastaReader(iosys.DataReader):
                 continue
             if s.startswith('>'):
                 if simple_rows and curr_taxon and curr_vec:
-                    char_matrix[curr_taxon] = "".join(curr_vec)
+                    self.char_matrix[curr_taxon] = "".join(curr_vec)
                 name = s[1:].strip()
-                curr_taxon = taxon_set.require_taxon(label=name)
-                if curr_taxon in char_matrix:
+                curr_taxon = self.attached_taxon_set.require_taxon(label=name)
+                if curr_taxon in self.char_matrix:
                     raise DataParseError(message="Fasta error: Repeated sequence name (%s) found" % name, row=line_index + 1, stream=stream)
                 if curr_vec is not None and len(curr_vec) == 0:
                     raise DataParseError(message="Fasta error: Expected sequence, but found another sequence name (%s)" % name, row=line_index + 1, stream=stream)
@@ -100,7 +116,7 @@ class FastaReader(iosys.DataReader):
                     curr_vec = []
                 else:
                     curr_vec = dataobject.CharacterDataVector(taxon=curr_taxon)
-                    char_matrix[curr_taxon] = curr_vec
+                    self.char_matrix[curr_taxon] = curr_vec
             elif curr_vec is None:
                 raise DataParseError(message="Fasta error: Expecting a lines starting with > before sequences", row=line_index + 1, stream=stream)
             else:
@@ -118,12 +134,12 @@ class FastaReader(iosys.DataReader):
                         if not c:
                             continue
                         try:
-                            state = symbol_state_map[c]
+                            state = self.symbol_state_map[c]
                             curr_vec.append(dataobject.CharacterDataCell(value=state))
                         except:
                             raise DataParseError(message='Unrecognized sequence symbol "%s"' % c, row=line_index + 1, column=col_ind + 1, stream=stream)
         if simple_rows and curr_taxon and curr_vec:
-            char_matrix[curr_taxon] = "".join(curr_vec)
+            self.char_matrix[curr_taxon] = "".join(curr_vec)
         return self.dataset
 
 class DNAFastaReader(FastaReader):
@@ -157,13 +173,19 @@ class FastaWriter(iosys.DataWriter):
         Writes attached `DataSource` or `TaxonDomain` in FASTA format to a
         file-like object `stream`.
         """
-
+        self.dataset = kwargs.get("dataset", self.dataset)
+        self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
+        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
+        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
         assert self.dataset is not None, \
             "FastaWriter instance is not attached to a DataSet: no source of data"
         if self.exclude_chars:
             return
 
         for char_matrix in self.dataset.char_matrices:
+            if self.attached_taxon_set is not None \
+                    and char_matrix.taxon_set is not self.attached_taxon_set:
+                continue
             for taxon in char_matrix.taxon_set:
                 stream.write(">%s\n" % taxon.label)
                 seqs = char_matrix[taxon]
