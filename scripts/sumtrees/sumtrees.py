@@ -357,7 +357,7 @@ def main_cli():
     report.append("%d unique taxa across all trees." % n_taxa)
     num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = split_distribution.splits_considered()
     report.append("%d unique splits out of %d total splits counted." % (num_unique_splits, num_splits))
-    #report.append("%d unique non-trivial splits out of %d total non-trivial splits counted." % (num_nt_unique_splits, num_nt_splits))
+    report.append("%d unique non-trivial splits out of %d total non-trivial splits counted." % (num_nt_unique_splits, num_nt_splits))
 
     comments.extend(report)
     messenger.send("---")
