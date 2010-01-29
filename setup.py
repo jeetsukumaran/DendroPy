@@ -115,7 +115,8 @@ long_description = open('README.txt').read()
 long_description = long_description.replace("DendroPy-3.x.x", "DendroPy-%s" % PROJECT_VERSION)
 long_description = long_description.replace("""download the source code archive""",
     """`download the source code archive <http://pypi.python.org/packages/source/D/DendroPy/DendroPy-%s.tar.gz>`_""" % PROJECT_VERSION)
-#long_description = long_description + open('CHANGES.txt').read()
+changes = open('CHANGES.txt').read()
+long_description = long_description + changes
 
 setup(name='DendroPy',
       version=PROJECT_VERSION,
