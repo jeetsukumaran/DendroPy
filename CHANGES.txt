@@ -1,7 +1,7 @@
 Changes
 =======
 
-Version 3.1
+Release 3.1
 -----------
 
 New Features
@@ -18,7 +18,7 @@ Fixes
     * Fixed bug in handling trailing whitespaces in interleaved NEXUS data.
     * Fixed issue with encoding of splits when root has degree one.
 
-Version 3.0
+Release 3.0
 -----------
 
     * Initial release of Dendropy 3.
