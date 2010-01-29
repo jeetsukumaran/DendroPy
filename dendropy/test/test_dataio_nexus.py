@@ -82,6 +82,13 @@ class NexusParseProteinCharsTest(NexusGeneralParseCharsTest):
                 "caenophidia_mos.chars.txt",
                 dendropy.ProteinCharacterMatrix)
 
+class NexusParseProteinMatchCharsTest(NexusGeneralParseCharsTest):
+
+    def runTest(self):
+        self.check_chars_against_expected("avian-ovomucoids.chars.nexus",
+                "avian-ovomucoids.chars.txt",
+                dendropy.ProteinCharacterMatrix)
+
 class NexusParseStandardCharsTest(NexusGeneralParseCharsTest):
 
     def runTest(self):

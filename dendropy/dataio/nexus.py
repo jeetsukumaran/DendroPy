@@ -668,7 +668,11 @@ class NexusReader(iosys.DataReader):
                 try:
                     state = symbol_state_map[char.upper()]
                 except KeyError:
-                    raise self.data_format_error("Unrecognized (single) state encountered: '%s' is not defined in %s" % (char, symbol_state_map.keys()))
+                    if self.match_char is not None \
+                        and char.upper() == self.match_char.upper():
+                            state = char_block[0][len(char_block[taxon])].value
+                    else:
+                        raise self.data_format_error("Unrecognized (single) state encountered: '%s' is not defined in %s" % (char, symbol_state_map.keys()))
             else:
                 if hasattr(char, "open_tag"):
                     state = self._get_state_for_multistate_char(char, char_block.default_state_alphabet)
