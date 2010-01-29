@@ -1,17 +1,24 @@
 Changes
 =======
 
-Version 3.1.0
--------------
+Version 3.1
+-----------
 
-    * Fixed major bug in SumTrees when mapping support to target tree.
+New Features
+^^^^^^^^^^^^
+
     * FASTA format now accepts 'fasta' as a schema specification, but requires supplemental keyword argument, 'data_type' to specify type of data ('dna', 'rna', 'protein', etc.)
     * Implemented full-featured PHYLIP reader and enhanced PHYLIP writer, for both strict and relaxed modes (reader requires 'data_type' keyword argument).
-    * Fixed bug in handling trailing whitespaces in interleaved NEXUS data.
     * Setup is now zipsafe by default.
+
+Fixes
+^^^^^
+
+    * Fixed major bug in SumTrees when mapping support to target tree.
+    * Fixed bug in handling trailing whitespaces in interleaved NEXUS data.
     * Fixed issue with encoding of splits when root has degree one.
 
-Version 3.0.0
--------------
+Version 3.0
+-----------
 
     * Initial release of Dendropy 3.
