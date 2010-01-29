@@ -114,12 +114,7 @@ class PhylipReader(iosys.DataReader):
             return self.dataset
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
-        if self.attached_taxon_set is not None \
-                and self.attached_taxon_set not in self.dataset.taxon_sets:
-            self.dataset.add(self.attached_taxon_set)
-        else:
-            self.attached_taxon_set = self.dataset.new_taxon_set()
-
+        self.attached_taxon_set = self.get_default_taxon_set(**kwargs)
         self.char_matrix = self.dataset.new_char_matrix(char_matrix_type=self.char_matrix_type,
                 taxon_set=self.attached_taxon_set)
         if isinstance(self.char_matrix, dataobject.StandardCharacterMatrix) \
