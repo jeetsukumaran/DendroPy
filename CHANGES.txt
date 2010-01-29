@@ -10,12 +10,12 @@ New Features
     * FASTA format reading now accepts '``fasta``' as a schema specification, but requires supplemental keyword argument, '``data_type``' to specify type of data ('``dna``', '``rna``', '``protein``', etc.)::
 
         >>> import dendropy
-        >>> dna = dendropy.DataSet.get_from_path("data.fas", "fasta", data_type="dna")
+        >>> cytb = dendropy.DnaCharacterMatrix.get_from_path("data.fas", "fasta", data_type="dna")
 
     * Implemented full-featured PHYLIP reader and enhanced PHYLIP writer, for both strict and relaxed modes (reader requires 'data_type' keyword argument)::
 
         >>> import dendropy
-        >>> dna = dendropy.DataSet.get_from_path("data.dat", "phylip", data_type="dna")
+        >>> cytb = dendropy.DnaCharacterMatrix.get_from_path("data.dat", "phylip", data_type="dna")
 
     * Setup is now zipsafe by default.
 
