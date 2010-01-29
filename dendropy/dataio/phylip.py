@@ -122,7 +122,18 @@ class PhylipReader(iosys.DataReader):
 
         self.char_matrix = self.dataset.new_char_matrix(char_matrix_type=self.char_matrix_type,
                 taxon_set=self.attached_taxon_set)
-        self.symbol_state_map = self.char_matrix.default_state_alphabet.symbol_state_map()
+        if isinstance(self.char_matrix, dataobject.StandardCharacterMatrix) \
+            and len(self.char_matrix.state_alphabets) == 0:
+                self.char_matrix.state_alphabets.append(dataobject.get_state_alphabet_from_symbols("0123456789"))
+                self.char_matrix.default_state_alphabet = self.char_matrix.state_alphabets[0]
+        if self.char_matrix.default_state_alphabet is not None:
+            self.symbol_state_map = self.char_matrix.default_state_alphabet.symbol_state_map()
+        elif len(self.char_matrix.state_alphabets) == 0:
+            raise ValueError("No state alphabets defined")
+        elif len(self.char_matrix.state_alphabets) > 1:
+            raise NotImplementedError("Mixed state-alphabet matrices not supported")
+        else:
+            self.symbol_state_map = self.char_matrix.state_alphabets[0]
 
         self.stream = stream
         lines = filetools.get_lines(self.stream)
@@ -283,8 +294,8 @@ class PhylipWriter(iosys.DataWriter):
         self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
         self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
         self.strict = kwargs.get("strict", False)
-        self.spaces_to_underscores = kwargs.get("spaces_to_underscores", False)
-        self.force_unique_taxon_labels = kwargs.get("force_unique_taxon_labels", False)
+        self.spaces_to_underscores = kwargs.get("spaces_to_underscores", self.spaces_to_underscores)
+        self.force_unique_taxon_labels = kwargs.get("force_unique_taxon_labels", self.force_unique_taxon_labels)
 
         if self.exclude_chars:
             return self.dataset
@@ -315,7 +326,10 @@ class PhylipWriter(iosys.DataWriter):
         else:
             taxon_label_map = {}
             for taxon in char_matrix.taxon_set:
-                taxon_label_map[taxon] = taxon.label
+                label = taxon.label
+                if self.spaces_to_underscores:
+                    label = label.replace(' ', '_')
+                taxon_label_map[taxon] = label
         maxlen = max([len(str(label)) for label in taxon_label_map.values()])
 
         n_seqs = len(char_matrix)

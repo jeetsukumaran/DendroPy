@@ -2005,6 +2005,19 @@ def _get_standard_cells(col_type, symbols):
     cells = [dendropy.CharacterDataCell(value=s, character_type=col_type) for s in col_type.state_alphabet.get_states(symbols=symbols)]
     return cells
 
+def reference_standard_binary_matrix(taxon_set=None):
+    if taxon_set is None:
+        taxon_set = reference_taxon_set()
+    ca1 = dendropy.StandardCharacterMatrix(taxon_set=taxon_set)
+    assert len(ca1.taxon_set) == 29
+    sa1 = _get_standard_state_alphabet("01")
+    ca1.state_alphabets = [sa1]
+    col_012 = dendropy.CharacterType(state_alphabet=sa1, label="COL_01")
+    ca1.character_types = [col_012]
+    for t in taxon_set:
+        ca1[t] = dendropy.CharacterDataVector(_get_standard_cells(col_012, "0011000111-??0111001--?1101"))
+    return ca1
+
 def reference_standard_matrix(taxon_set=None):
     if taxon_set is None:
         taxon_set = reference_taxon_set()

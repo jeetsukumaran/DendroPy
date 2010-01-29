@@ -543,5 +543,17 @@ class StrictDnaReadWrite(datatest.DataObjectVerificationTestCase):
         rw_kwargs = {'strict': True, 'data_type': 'dna'}
         self.roundTripData(ds1, 'phylip', writer_kwargs=rw_kwargs, reader_kwargs=rw_kwargs)
 
+class RelaxedReadWrite(datatest.DataObjectVerificationTestCase):
+
+    def test_dna_round_trip(self):
+        ds1 = datagen.reference_dna_matrix()
+        rw_kwargs = {'data_type': 'dna', 'underscores_to_spaces': True, 'spaces_to_underscores': True}
+        self.roundTripData(ds1, 'phylip', writer_kwargs=rw_kwargs, reader_kwargs=rw_kwargs)
+
+    def test_std_round_trip(self):
+        ds1 = datagen.reference_standard_binary_matrix()
+        rw_kwargs = {'data_type': 'standard', 'underscores_to_spaces': True, 'spaces_to_underscores': True}
+        self.roundTripData(ds1, 'phylip', writer_kwargs=rw_kwargs, reader_kwargs=rw_kwargs)
+
 if __name__ == "__main__":
     unittest.main()

@@ -37,6 +37,9 @@ class ContinuousCharElement(IdTagged):
         self.value = value
         self.column_def = column_def
 
+###############################################################################
+## State Alphabet Infrastructure
+
 class StateAlphabetElement(IdTagged):
     """
     A character state definition, which can either be a fundamental state or
@@ -228,6 +231,9 @@ class StateAlphabet(IdTagged, list):
         """
         return CharacterDataVector(self.get_states_as_cells(oids=oids, symbols=symbols, tokens=tokens), **kwargs)
 
+###############################################################################
+## Pre-defined State Alphabets
+
 class FixedStateAlphabet(StateAlphabet):
 
     def __init__(self, *args, **kwargs):
@@ -358,13 +364,19 @@ class InfiniteSitesStateAlphabet(BinaryStateAlphabet):
     def __init__(self, *args, **kwargs):
         BinaryStateAlphabet.__init__(self, *args, **kwargs)
 
-### GLOBAL STATE ALPHABETS ###
+
+###############################################################################
+## GLOBAL STATE ALPHABETS
 
 DNA_STATE_ALPHABET = DnaStateAlphabet()
 RNA_STATE_ALPHABET = RnaStateAlphabet()
 PROTEIN_STATE_ALPHABET = ProteinStateAlphabet()
 RESTRICTION_SITES_STATE_ALPHABET = RestrictionSitesStateAlphabet()
 INFINITE_SITES_STATE_ALPHABET = InfiniteSitesStateAlphabet()
+
+
+###############################################################################
+## Data Containers
 
 class CharacterType(IdTagged):
     """
@@ -509,6 +521,9 @@ class CharacterDataMap(dict, Annotated):
                     self[this_taxon].extend(other_map[other_taxon])
             else:
                 self[other_taxon] = other_map[other_taxon]
+
+###############################################################################
+## Base Character Matrix
 
 class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     "Character data container/manager manager."
@@ -847,6 +862,9 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             output.write(s)
         return s
 
+###############################################################################
+## Specialized Matrices
+
 class ContinuousCharacterMatrix(CharacterMatrix):
     "Character data container/manager manager."
 
@@ -1059,18 +1077,29 @@ class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
         if len(args) > 0:
             self.clone_from(*args)
 
+###############################################################################
+## Wrappers and Convenience Functions
+
 character_data_type_label_map = {
     'continuous' : ContinuousCharacterMatrix,
     'dna' : DnaCharacterMatrix,
     'rna' : RnaCharacterMatrix,
     'protein' : ProteinCharacterMatrix,
+    'standard' : StandardCharacterMatrix,
     'restriction' : RestrictionSitesCharacterMatrix,
     'infinite' : InfiniteSitesCharacterMatrix,
 }
-#
-#def get_char_matrix_for_data_type_label(label):
-#    llabel = label.lower()
-#    if llabel not in char.character_data_type_label_map:
-#        raise ValueError("'%s' is not a valid data type specification; must be one of: %s" \
-#            % (label, ", ".join([("'" + d + "'") for d in char.character_data_type_label_map])))
-#    return character_data_type_label_map[llabel]
+
+def get_state_alphabet_from_symbols(symbols, gap_symbol="-", missing_symbol="?"):
+    sa = StateAlphabet()
+    for symbol in symbols:
+        sa.append(StateAlphabetElement(symbol=symbol))
+    if gap_symbol:
+        sa.append(StateAlphabetElement(symbol=gap_symbol,
+                                           multistate=StateAlphabetElement.AMBIGUOUS_STATE,
+                                           member_states=sa.get_states(symbols=symbols)))
+    if missing_symbol:
+        sa.append(StateAlphabetElement(symbol=missing_symbol,
+                                           multistate=StateAlphabetElement.AMBIGUOUS_STATE,
+                                           member_states=sa.get_states(symbols=symbols)))
+    return sa
