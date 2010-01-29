@@ -22,7 +22,7 @@ New Features
 Fixes
 ^^^^^
 
-    * Fixed major bug in SumTrees when mapping support to target tree.
+    * Fixed major bug in SumTrees when mapping support to target tree (support value did not get written to node label).
     * Fixed bug in handling trailing whitespaces in interleaved NEXUS data.
     * Fixed issue with encoding of splits when root has degree one.
 
