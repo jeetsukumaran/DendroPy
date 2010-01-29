@@ -1,35 +1,16 @@
 Changes
 =======
 
-Version 3.0.7
+Version 3.1.0
 -------------
 
-    * More robust fix for trailing whitespaces in interleaved NEXUS data.
-
-Version 3.0.6
--------------
-
+    * Fixed major bug in SumTrees when mapping support to target tree.
+    * FASTA format now accepts 'fasta' as a schema specification, but requires supplemental keyword argument, 'data_type' to specify type of data ('dna', 'rna', 'protein', etc.)
+    * Implemented full-featured PHYLIP reader and enhanced PHYLIP writer, for both strict and relaxed modes (reader requires 'data_type' keyword argument).
+    * Improved NEXUS parser.
     * Fixed bug in handling trailing whitespaces in interleaved NEXUS data.
-
-Version 3.0.5
--------------
-
     * Setup is now zipsafe by default.
-
-Version 3.0.4
--------------
-
-    * Allowed custom string to taxon mapping in nexus stream tokenizer.
-
-Version 3.0.3
--------------
-
     * Fixed issue with encoding of splits when root has degree one.
-
-Version 3.0.2
--------------
-
-    * Flagged setup as unzipped source-only.
 
 Version 3.0.0
 -------------
