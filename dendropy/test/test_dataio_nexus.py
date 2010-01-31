@@ -64,15 +64,15 @@ class NexusGeneralParseCharsTest(datatest.DataObjectVerificationTestCase):
 class NexusParseDnaCharsTest(NexusGeneralParseCharsTest):
 
     def runTest(self):
-        self.check_chars_against_expected("pythonidae_cytb.chars.nexus",
-                "pythonidae_cytb.chars.txt",
+        self.check_chars_against_expected("pythonidae.chars.nexus",
+                "pythonidae.chars.txt",
                 dendropy.DnaCharacterMatrix)
 
 class NexusParseDnaCharsInterleavedTest(NexusGeneralParseCharsTest):
 
     def runTest(self):
-        self.check_chars_against_expected("pythonidae_cytb.chars.interleaved.nexus",
-                "pythonidae_cytb.chars.txt",
+        self.check_chars_against_expected("pythonidae.chars.interleaved.nexus",
+                "pythonidae.chars.txt",
                 dendropy.DnaCharacterMatrix)
 
 class NexusParseProteinCharsTest(NexusGeneralParseCharsTest):
