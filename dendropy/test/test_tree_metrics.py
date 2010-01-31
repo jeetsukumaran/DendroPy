@@ -43,13 +43,13 @@ class FrequencyOfSplitsTest(unittest.TestCase):
 
     def setUp(self):
         self.trees = dendropy.TreeList.get_from_path(
-                src=pathmap.tree_source_path('pythonidae.random.tre'),
+                src=pathmap.tree_source_path('pythonidae.random.bd0301.tre'),
                 schema='nexus')
 
     def testCount1(self):
         split_leaves = ['Python regius', 'Apodora papuana']
         f = self.trees.frequency_of_split(labels=split_leaves)
-        self.assertAlmostEqual(f, 0.02)
+        self.assertAlmostEqual(f, 0.04)
 
     def testRaisesIndexError(self):
         split_leaves = ['Bad Taxon', 'Apodora papuana']
