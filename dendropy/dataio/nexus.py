@@ -126,6 +126,7 @@ class NexusReader(iosys.DataReader):
         self.finish_node_func = kwargs.get("finish_node_func", None)
         self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", False)
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
+        self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
 
     def update_directives(self, **kwargs):
         """
@@ -139,6 +140,7 @@ class NexusReader(iosys.DataReader):
         self.finish_node_func = kwargs.get("finish_node_func", self.finish_node_func)
         self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", self.allow_duplicate_taxon_labels)
         self.preserve_underscores = kwargs.get('preserve_underscores', self.preserve_underscores)
+        self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", self.suppress_internal_node_taxa)
 
     def read(self, stream, **kwargs):
         """
@@ -770,7 +772,8 @@ class NexusReader(iosys.DataReader):
                 translate_dict=self.tree_translate_dict,
                 encode_splits=self.encode_splits,
                 rooting_interpreter=self.rooting_interpreter,
-                finish_node_func=self.finish_node_func)
+                finish_node_func=self.finish_node_func,
+                suppress_internal_node_taxa=self.suppress_internal_node_taxa)
         tree.label = tree_name
         if self.stream_tokenizer.current_token != ';':
             self.stream_tokenizer.skip_to_semicolon()

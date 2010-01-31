@@ -193,6 +193,7 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
     finish_node_func = kwargs.get("finish_node_func", None)
     edge_len_type = kwargs.get("edge_len_type", float)
     taxon_set = kwargs.get("taxon_set", None)
+    suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
     if taxon_set is None:
         taxon_set = dataobject.TaxonSet()
     tree = dataobject.Tree(taxon_set=taxon_set)
@@ -294,7 +295,10 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
                 else:
                     if curr_node.label:
                         raise stream_tokenizer.data_format_error("Multiple labels found for the same leaf (taxon '%s' and label '%s')" % (curr_node.label, token))
-                    t = stt.get_taxon(label=token)
+                    if suppress_internal_node_taxa:
+                        t = None
+                    else:
+                        t = stt.get_taxon(label=token)
                 if t is None:
                     curr_node.label = token
                 else:
