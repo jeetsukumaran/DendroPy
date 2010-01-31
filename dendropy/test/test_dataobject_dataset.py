@@ -110,7 +110,7 @@ class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
         self.assertEqual(len(d.taxon_sets[0]), 33)
         d.read_from_path(pathmap.char_source_path('caenophidia_mos.chars.fasta'), "proteinfasta")
         self.assertEqual(len(d.taxon_sets), 1)
-        self.assertEqual(len(d.taxon_sets[0]), 143)
+        self.assertEqual(len(d.taxon_sets[0]), 147)
 
     def testBindAndUnbind(self):
         d = dendropy.DataSet(attach_taxon_set=True)
