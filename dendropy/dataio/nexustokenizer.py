@@ -295,14 +295,20 @@ def parse_tree_from_stream(stream_tokenizer, **kwargs):
                 if is_leaf:
                     if curr_node.taxon:
                         raise stream_tokenizer.data_format_error("Multiple labels found for the same leaf (taxon '%s' and label '%s')" % (str(curr_node.taxon), token))
-                    t = stt.require_taxon(label=token)
+                    try:
+                        t = stt.require_taxon(label=token)
+                    except StrToTaxon.MultipleTaxonUseError, e:
+                        raise stream_tokenizer.data_format_error(e.msg)
                 else:
                     if curr_node.label:
                         raise stream_tokenizer.data_format_error("Multiple labels found for the same leaf (taxon '%s' and label '%s')" % (curr_node.label, token))
                     if suppress_internal_node_taxa:
                         t = None
                     else:
-                        t = stt.get_taxon(label=token)
+                        try:
+                            t = stt.get_taxon(label=token)
+                        except StrToTaxon.MultipleTaxonUseError, e:
+                            raise stream_tokenizer.data_format_error(e.msg)
                 if t is None:
                     curr_node.label = token
                 else:
