@@ -60,1808 +60,2252 @@ def reference_trees_filename(schema):
 
 def reference_tree_list_postorder_node_labels():
     return [
-        ['Morelia oenpelliensis','Morelia spilota','Node36995248','Apodora papuana','Aspidites melanocephalus','Morelia carinata','Node36995920','Node36995600','Bothrochilus boa','Morelia amethistina','Node36995952','Node36995536','Morelia nauta','Node36995472','Morelia tracyae','Python regius','Node36996400','Node36995440','Python reticulatus','Python brongersmai','Liasis olivaceus','Node36996880','Node36996464','Python timoriensis','Node36996560','Morelia clastolepis','Antaresia maculosa','Node36997072','Liasis fuscus','Liasis mackloti','Node36997360','Node36997168','Node36996176','Morelia boeleni','Node36996528','Node36995344','Python molurus','Antaresia stimsoni','Python sebae','Node36997712','Morelia kinghorni','Node36997840','Node36997616','Aspidites ramsayi','Antaresia childreni','Leiopython albertisii','Node36998032','Antaresia perthensis','Node36998320','Node36997968','Morelia viridis','Morelia bredli','Node36998704','Node36998064','Node36997392','Node36962224','Node36995184'],
-        ['Morelia boeleni','Leiopython albertisii','Bothrochilus boa','Node36999024','Morelia carinata','Morelia spilota','Morelia bredli','Node37061072','Antaresia maculosa','Antaresia perthensis','Antaresia childreni','Antaresia stimsoni','Node37061584','Node37061456','Node37061392','Node37060944','Morelia viridis','Node37061040','Node37060720','Node36962160','Liasis olivaceus','Liasis fuscus','Liasis mackloti','Node37062064','Node37061872','Apodora papuana','Node37061744','Node36995152','Morelia oenpelliensis','Morelia amethistina','Morelia clastolepis','Morelia kinghorni','Morelia nauta','Node37062896','Node37062768','Node37062544','Morelia tracyae','Node37062448','Python reticulatus','Python timoriensis','Node37063184','Node37062512','Node37062288','Python sebae','Python regius','Python brongersmai','Python molurus','Node37063664','Node37063536','Node37063248','Aspidites ramsayi','Aspidites melanocephalus','Node37063760','Node37063088','Node37062192','Node36999056','Node36995120'],
-        ['Python sebae','Python molurus','Python brongersmai','Node37064432','Python regius','Node37064496','Node37064048','Aspidites ramsayi','Aspidites melanocephalus','Node37654640','Node37063696','Morelia carinata','Morelia spilota','Morelia bredli','Node37655120','Node37064656','Antaresia maculosa','Antaresia perthensis','Antaresia childreni','Antaresia stimsoni','Node37655536','Node37655408','Node37655152','Node37654896','Morelia viridis','Node37654704','Node36998896','Leiopython albertisii','Bothrochilus boa','Node37655728','Node37064208','Liasis olivaceus','Liasis fuscus','Liasis mackloti','Node37656272','Node37655632','Apodora papuana','Node37655984','Morelia boeleni','Morelia amethistina','Morelia nauta','Morelia kinghorni','Node37656912','Morelia clastolepis','Node37656976','Node37656304','Morelia tracyae','Node37656688','Python reticulatus','Python timoriensis','Node37657392','Node37656528','Morelia oenpelliensis','Node37656656','Node37656560','Node37656048','Node37064144'],
-        ['Python sebae','Python regius','Python molurus','Python brongersmai','Node37658128','Node37658000','Node36962032','Aspidites ramsayi','Aspidites melanocephalus','Node37658224','Node37657776','Python reticulatus','Python timoriensis','Node37658160','Morelia amethistina','Morelia nauta','Morelia kinghorni','Morelia clastolepis','Node37712496','Node37712368','Node37711984','Morelia tracyae','Node37712016','Morelia boeleni','Node37658576','Node37658288','Morelia oenpelliensis','Node37657648','Morelia viridis','Antaresia maculosa','Antaresia perthensis','Antaresia childreni','Antaresia stimsoni','Node37713488','Node37713360','Node37713072','Morelia spilota','Morelia bredli','Node37713648','Node37713200','Node37712400','Morelia carinata','Node37712816','Leiopython albertisii','Bothrochilus boa','Node37714000','Node37712848','Liasis olivaceus','Liasis fuscus','Liasis mackloti','Node37714352','Node37714128','Apodora papuana','Node37714192','Node37712912','Node37658384','Node37657712'],
-        ['Python reticulatus','Python timoriensis','Node37714768','Morelia viridis','Morelia carinata','Morelia spilota','Morelia bredli','Node37715504','Node37715184','Antaresia maculosa','Antaresia perthensis','Antaresia childreni','Antaresia stimsoni','Node37715760','Node37715792','Node37715536','Node37715312','Node37714992','Leiopython albertisii','Bothrochilus boa','Node37715600','Node37714960','Liasis olivaceus','Liasis fuscus','Liasis mackloti','Node37773840','Node37773616','Apodora papuana','Node37773680','Node37714512','Morelia amethistina','Morelia clastolepis','Morelia nauta','Morelia kinghorni','Node37774608','Node37774480','Node37774160','Morelia tracyae','Node37773904','Morelia boeleni','Node37774032','Morelia oenpelliensis','Node37774128','Python sebae','Python regius','Python brongersmai','Python molurus','Node37775312','Node37775184','Node37774928','Aspidites ramsayi','Aspidites melanocephalus','Node37775408','Node37775024','Node37773872','Node37715024','Node37714704'],
-        ['Antaresia maculosa','Antaresia perthensis','Antaresia childreni','Antaresia stimsoni','Node37776432','Node37776304','Node37776016','Morelia viridis','Morelia spilota','Morelia bredli','Node37776784','Node37776144','Node37775952','Morelia carinata','Node37775472','Leiopython albertisii','Bothrochilus boa','Node37777072','Node37775568','Liasis olivaceus','Liasis fuscus','Liasis mackloti','Node37777360','Node37777232','Apodora papuana','Node37777264','Node37064112','Morelia amethistina','Morelia clastolepis','Morelia kinghorni','Morelia nauta','Node37831344','Node37831216','Node37830928','Morelia tracyae','Node37777040','Morelia boeleni','Node37830704','Morelia oenpelliensis','Node37830864','Node37775856','Python reticulatus','Python timoriensis','Node37831504','Python sebae','Python brongersmai','Python molurus','Node37832048','Python regius','Node37832176','Node37831888','Aspidites ramsayi','Aspidites melanocephalus','Node37832400','Node37832016','Node37831600','Node37775792'],
-        ['Python sebae','Python molurus','Python regius','Python brongersmai','Node37833136','Node37833008','Node37832848','Python reticulatus','Python timoriensis','Node37833168','Morelia viridis','Morelia spilota','Morelia bredli','Node37833904','Morelia carinata','Node37834032','Node37833520','Antaresia perthensis','Antaresia childreni','Antaresia stimsoni','Node37834512','Node37834288','Antaresia maculosa','Node37834256','Node37833680','Leiopython albertisii','Bothrochilus boa','Node37834736','Node37833456','Liasis olivaceus','Liasis fuscus','Liasis mackloti','Node37101968','Node37101808','Apodora papuana','Node37101712','Node37833744','Node37833328','Morelia oenpelliensis','Morelia tracyae','Morelia amethistina','Morelia nauta','Morelia kinghorni','Node37102608','Morelia clastolepis','Node37102672','Node37102544','Node37102288','Morelia boeleni','Node37102352','Node37101936','Node37833360','Aspidites ramsayi','Aspidites melanocephalus','Node37103024','Node37833200','Node37832784'],
-        ['Morelia tracyae','Morelia nauta','Morelia clastolepis','Node37103920','Morelia kinghorni','Node37103824','Morelia amethistina','Node37103888','Node37103568','Morelia boeleni','Node37103504','Apodora papuana','Liasis olivaceus','Liasis fuscus','Liasis mackloti','Node37104720','Node37104592','Node37104336','Leiopython albertisii','Bothrochilus boa','Node37104752','Antaresia perthensis','Antaresia childreni','Antaresia stimsoni','Node37105392','Node37105200','Antaresia maculosa','Node37104880','Morelia viridis','Morelia carinata','Morelia spilota','Morelia bredli','Node37163248','Node37105232','Node37105584','Node37104976','Node37104784','Node37104432','Node37103120','Python reticulatus','Python timoriensis','Node37163312','Morelia oenpelliensis','Node37103280','Node37102896','Aspidites ramsayi','Aspidites melanocephalus','Node37163504','Node37714672','Python molurus','Python brongersmai','Python regius','Node37164080','Node37163696','Node37103408','Python sebae','Node37103344'],
-        ['Morelia viridis','Morelia spilota','Morelia bredli','Node37164880','Morelia carinata','Node37164720','Antaresia maculosa','Antaresia perthensis','Antaresia childreni','Antaresia stimsoni','Node37165456','Node37165328','Node37165264','Node37164848','Node37164304','Python reticulatus','Python timoriensis','Node37165616','Apodora papuana','Leiopython albertisii','Bothrochilus boa','Node37166192','Node37165808','Liasis olivaceus','Liasis fuscus','Liasis mackloti','Node37166512','Node37166384','Node37165840','Morelia tracyae','Morelia kinghorni','Morelia nauta','Node37166992','Morelia clastolepis','Node37166896','Morelia amethistina','Node37166960','Node37166704','Morelia boeleni','Node37166544','Morelia oenpelliensis','Node37166576','Node37165968','Node37165712','Node37775760','Aspidites ramsayi','Aspidites melanocephalus','Node37220432','Node37164368','Python regius','Python brongersmai','Node37220944','Python molurus','Node37220976','Node37164496','Python sebae','Node37164432'],
-        ['Python sebae','Python regius','Python molurus','Python brongersmai','Node37221776','Node37221616','Morelia oenpelliensis','Morelia tracyae','Morelia kinghorni','Morelia nauta','Node37222448','Morelia clastolepis','Node37222288','Morelia amethistina','Node37222416','Node37222096','Morelia boeleni','Node37222224','Node37221872','Liasis olivaceus','Liasis fuscus','Liasis mackloti','Node37223184','Node37222864','Python reticulatus','Python timoriensis','Node37223376','Apodora papuana','Node37223248','Node37222960','Leiopython albertisii','Bothrochilus boa','Node37223408','Morelia carinata','Morelia spilota','Morelia bredli','Node37224208','Node37223888','Morelia viridis','Node37223728','Antaresia maculosa','Antaresia perthensis','Antaresia childreni','Antaresia stimsoni','Node37277904','Node37224368','Node37224304','Node37223760','Node37223632','Node37222736','Node37221968','Aspidites ramsayi','Aspidites melanocephalus','Node37224432','Node37221936','Node37221584','Node37221424'],
+        ['Antaresia childreni','Morelia clastolepis','Loxocemus bicolor','Node4313762448','Node4313762128','Antaresia melanocephalus','Antaresia perthensis','Node4313763216','Python timoriensis','Liasis albertisii','Node4313763600','Node4313763088','Python sebae','Antaresia maculosa','Node4313776208','Node4313762960','Python curtus','Bothrochilus boa','Node4313776912','Xenopeltis unicolor','Liasis fuscus','Node4313777296','Node4313776720','Node4313762704','Node4313762000','Morelia boeleni','Node4313761872','Morelia tracyae','Morelia viridisN','Python reticulatus','Node4313778192','Morelia bredli','Node4313777680','Node4313777808','Node4313761744','Liasis mackloti','Antaresia ramsayi','Node4313778832','Morelia kinghorni','Node4313778704','Node4313761616','Python regius','Candola aspera','Node4313779472','Antaresia stimsoni','Node4313779088','Node4313761488','Python molurus','Morelia amethistina','Node4313800784','Morelia viridisS','Liasis olivaceus','Node4313801168','Node4313780112','Morelia nauta','Node4313779728','Node4313761360','Apodora papuana','Morelia carinata','Node4313801552','Node4313761232','Morelia spilota','Morelia oenpelliensis','Node4313801936','Node4313761104'],
+        ['Candola aspera','Morelia amethistina','Morelia spilota','Morelia oenpelliensis','Morelia bredli','Node4313803792','Node4313802960','Node4313803536','Morelia carinata','Morelia viridisS','Morelia viridisN','Node4313804240','Node4313804560','Antaresia maculosa','Antaresia childreni','Antaresia stimsoni','Node4313826128','Antaresia perthensis','Node4313825744','Node4313825616','Node4313804432','Node4313803408','Liasis fuscus','Liasis mackloti','Node4313827024','Apodora papuana','Liasis olivaceus','Node4313827408','Node4313826896','Antaresia melanocephalus','Antaresia ramsayi','Node4313827664','Node4313826768','Morelia boeleni','Morelia tracyae','Morelia kinghorni','Morelia nauta','Node4313828816','Morelia clastolepis','Node4313828432','Node4313828176','Node4313828048','Node4313826384','Node4313803280','Python timoriensis','Python reticulatus','Node4316155984','Bothrochilus boa','Liasis albertisii','Node4313802512','Node4313829328','Node4313803152','Xenopeltis unicolor','Python curtus','Python sebae','Python molurus','Node4316157008','Node4316157136','Python regius','Node4316156624','Node4316156752','Node4313803024','Node4313802704','Loxocemus bicolor','Node4313802576'],
+        ['Candola aspera','Liasis fuscus','Liasis mackloti','Node4316159632','Apodora papuana','Liasis olivaceus','Node4316176464','Node4316159504','Antaresia melanocephalus','Antaresia ramsayi','Node4316176720','Node4316159376','Morelia boeleni','Morelia tracyae','Morelia kinghorni','Morelia nauta','Node4316177872','Morelia clastolepis','Node4316177488','Node4316177232','Node4316177104','Node4316159248','Morelia oenpelliensis','Morelia amethistina','Node4316178640','Morelia spilota','Morelia bredli','Node4316179024','Node4316178512','Bothrochilus boa','Liasis albertisii','Node4316179280','Node4316178128','Node4316159120','Morelia carinata','Morelia viridisS','Morelia viridisN','Node4316179664','Node4316179920','Antaresia maculosa','Antaresia childreni','Antaresia stimsoni','Node4316201296','Antaresia perthensis','Node4316158224','Node4316180432','Node4316179792','Node4316158992','Python timoriensis','Python reticulatus','Node4316201552','Node4316158864','Python curtus','Python sebae','Python molurus','Node4316202256','Node4316202384','Python regius','Node4316202128','Node4316158736','Loxocemus bicolor','Xenopeltis unicolor','Node4316203024','Node4316158608','Node4316158288'],
+        ['Candola aspera','Loxocemus bicolor','Liasis fuscus','Liasis mackloti','Node4316225808','Apodora papuana','Liasis olivaceus','Node4316226192','Node4316225680','Antaresia melanocephalus','Antaresia ramsayi','Node4316226448','Node4316205008','Bothrochilus boa','Liasis albertisii','Node4316226768','Node4316204880','Morelia boeleni','Node4316204752','Morelia spilota','Morelia bredli','Node4316227728','Morelia oenpelliensis','Morelia tracyae','Morelia clastolepis','Morelia kinghorni','Node4316228880','Morelia nauta','Node4316228752','Morelia amethistina','Node4316228368','Node4316227984','Node4316228112','Node4316227600','Morelia carinata','Morelia viridisS','Morelia viridisN','Node4316203600','Node4316229520','Antaresia maculosa','Antaresia childreni','Antaresia stimsoni','Node4316251088','Antaresia perthensis','Node4316250704','Node4316250576','Node4316229392','Node4316227472','Node4316204624','Python timoriensis','Python reticulatus','Node4316251600','Node4316204496','Python curtus','Python sebae','Python molurus','Node4316251984','Node4316252112','Python regius','Node4316251856','Node4316203920','Node4316204112','Xenopeltis unicolor','Node4316203984','Node4316203664'],
+        ['Candola aspera','Xenopeltis unicolor','Morelia boeleni','Liasis fuscus','Liasis mackloti','Node4316275408','Apodora papuana','Liasis olivaceus','Node4316275792','Node4316275280','Antaresia melanocephalus','Antaresia ramsayi','Node4316276048','Node4316275152','Bothrochilus boa','Liasis albertisii','Node4316276432','Node4316275024','Node4316254160','Morelia oenpelliensis','Morelia tracyae','Morelia clastolepis','Morelia kinghorni','Morelia nauta','Node4316253008','Node4316277712','Morelia amethistina','Node4316277584','Node4316277392','Morelia spilota','Morelia bredli','Node4316278352','Node4316276816','Node4316277072','Morelia carinata','Morelia viridisS','Morelia viridisN','Node4316299344','Node4316299536','Antaresia maculosa','Antaresia childreni','Antaresia stimsoni','Node4316300560','Antaresia perthensis','Node4316300176','Node4316300048','Node4316299408','Node4316276944','Node4316254032','Python timoriensis','Python reticulatus','Node4316301072','Node4316253904','Python curtus','Python sebae','Python molurus','Node4316301456','Node4316301584','Python regius','Node4316301328','Node4316253776','Loxocemus bicolor','Node4316253392','Node4316253456','Node4316253136'],
+        ['Candola aspera','Loxocemus bicolor','Morelia boeleni','Antaresia melanocephalus','Antaresia ramsayi','Node4316324752','Liasis fuscus','Liasis mackloti','Node4316325264','Apodora papuana','Liasis olivaceus','Node4316325648','Node4316325136','Node4316324624','Bothrochilus boa','Liasis albertisii','Node4316326032','Node4316324496','Node4316324176','Morelia spilota','Morelia bredli','Node4316326672','Morelia oenpelliensis','Node4316326544','Morelia tracyae','Morelia nauta','Morelia kinghorni','Node4316327696','Morelia clastolepis','Node4316327568','Morelia amethistina','Node4316326928','Node4316327184','Node4316326416','Morelia carinata','Morelia viridisS','Morelia viridisN','Node4316344400','Node4316344912','Antaresia maculosa','Antaresia childreni','Antaresia stimsoni','Node4316345936','Antaresia perthensis','Node4316345552','Node4316345424','Node4316344784','Node4316326288','Node4316324048','Python timoriensis','Python reticulatus','Node4316346448','Node4316323920','Python curtus','Python sebae','Python molurus','Node4316346832','Node4316346960','Python regius','Node4316346704','Node4316302864','Node4316303056','Xenopeltis unicolor','Node4316302928','Node4316302608'],
+        ['Candola aspera','Morelia spilota','Morelia bredli','Node4316369744','Morelia oenpelliensis','Morelia tracyae','Morelia nauta','Morelia kinghorni','Morelia clastolepis','Node4316370640','Node4316347856','Morelia amethistina','Node4316370384','Node4316370000','Node4316370128','Node4316369616','Morelia carinata','Morelia viridisS','Morelia viridisN','Node4316371408','Node4316371536','Antaresia maculosa','Antaresia childreni','Antaresia stimsoni','Node4316372496','Antaresia perthensis','Node4316372176','Node4316372048','Node4316371280','Node4316369488','Morelia boeleni','Antaresia melanocephalus','Antaresia ramsayi','Node4316394064','Liasis fuscus','Liasis mackloti','Node4316394640','Apodora papuana','Liasis olivaceus','Node4316395024','Node4316394512','Node4316393936','Bothrochilus boa','Liasis albertisii','Node4316395408','Node4316393616','Node4316372752','Node4316369360','Python timoriensis','Python reticulatus','Node4316395664','Node4316369232','Python curtus','Python sebae','Python molurus','Node4316396176','Node4316396304','Python regius','Node4316396048','Node4316369104','Loxocemus bicolor','Node4316368976','Xenopeltis unicolor','Node4316348304','Node4316347984'],
+        ['Candola aspera','Xenopeltis unicolor','Loxocemus bicolor','Morelia spilota','Morelia bredli','Node4316419472','Morelia tracyae','Morelia clastolepis','Morelia nauta','Morelia kinghorni','Node4316420112','Node4316420240','Morelia amethistina','Node4316419728','Node4316419856','Node4316419344','Morelia oenpelliensis','Node4316419216','Morelia carinata','Morelia viridisS','Morelia viridisN','Node4316420880','Node4316421264','Antaresia maculosa','Antaresia childreni','Antaresia stimsoni','Node4316442832','Antaresia perthensis','Node4316421904','Node4316421776','Node4316421136','Node4316397392','Morelia boeleni','Antaresia melanocephalus','Antaresia ramsayi','Node4316443856','Liasis fuscus','Liasis mackloti','Node4316444368','Apodora papuana','Liasis olivaceus','Node4316444752','Node4316444240','Node4316443728','Bothrochilus boa','Liasis albertisii','Node4316445136','Node4316443344','Node4316443088','Node4316419088','Python timoriensis','Python reticulatus','Node4316445392','Node4316418960','Python curtus','Python sebae','Python molurus','Node4316445904','Node4316446032','Python regius','Node4316445776','Node4316418576','Node4316418256','Node4316418320','Node4316397456'],
+        ['Candola aspera','Morelia boeleni','Bothrochilus boa','Liasis albertisii','Node4316468688','Antaresia melanocephalus','Antaresia ramsayi','Node4316469200','Liasis fuscus','Liasis mackloti','Node4316469712','Apodora papuana','Liasis olivaceus','Node4316470096','Node4316469584','Node4316469072','Node4316467408','Node4316468304','Morelia tracyae','Morelia nauta','Morelia clastolepis','Morelia kinghorni','Node4316471120','Node4316471248','Morelia amethistina','Node4316470352','Node4316470864','Morelia oenpelliensis','Node4316470736','Morelia spilota','Morelia bredli','Node4316488592','Node4316470608','Morelia carinata','Morelia viridisS','Morelia viridisN','Node4316488976','Node4316489104','Antaresia maculosa','Antaresia childreni','Antaresia stimsoni','Node4316490128','Antaresia perthensis','Node4316489744','Node4316489616','Node4316488848','Node4316470480','Node4316468176','Python timoriensis','Python reticulatus','Node4316490576','Node4316468048','Python curtus','Python sebae','Python molurus','Node4316491024','Node4316491152','Python regius','Node4316490896','Node4316467920','Loxocemus bicolor','Node4316467792','Xenopeltis unicolor','Node4316467344','Node4316467472'],
+        ['Candola aspera','Loxocemus bicolor','Morelia carinata','Morelia viridisS','Morelia viridisN','Node4316513552','Node4316514192','Antaresia maculosa','Antaresia childreni','Antaresia stimsoni','Node4316515216','Antaresia perthensis','Node4316514832','Node4316514704','Node4316514064','Morelia spilota','Morelia bredli','Node4316515856','Morelia tracyae','Morelia clastolepis','Morelia kinghorni','Morelia nauta','Node4316533072','Node4316533200','Morelia amethistina','Node4316516112','Node4316532816','Morelia oenpelliensis','Node4316516240','Node4316515728','Node4316513936','Morelia boeleni','Bothrochilus boa','Liasis albertisii','Node4316534480','Antaresia melanocephalus','Antaresia ramsayi','Node4316534992','Liasis fuscus','Liasis mackloti','Node4316535504','Apodora papuana','Liasis olivaceus','Node4316535888','Node4316535376','Node4316534864','Node4316533968','Node4316534096','Node4316513808','Python timoriensis','Python reticulatus','Node4316512784','Node4316513680','Python curtus','Python sebae','Python molurus','Node4316557520','Node4316536656','Python regius','Node4316536464','Node4316513104','Node4316513296','Xenopeltis unicolor','Node4316513168','Node4316512848'],
+        ['Xenopeltis unicolor','Loxocemus bicolor','Morelia carinata','Morelia viridisS','Morelia viridisN','Node4316559056','Node4316559696','Antaresia maculosa','Antaresia childreni','Antaresia stimsoni','Node4316560720','Antaresia perthensis','Node4316560336','Node4316560208','Node4316559568','Morelia oenpelliensis','Morelia tracyae','Morelia clastolepis','Morelia kinghorni','Morelia nauta','Node4316582416','Node4316582544','Morelia amethistina','Node4316582160','Node4316560976','Node4316561360','Morelia spilota','Morelia bredli','Node4316583312','Node4316561232','Node4316559440','Antaresia melanocephalus','Antaresia ramsayi','Node4316583952','Liasis fuscus','Liasis mackloti','Node4316584464','Apodora papuana','Liasis olivaceus','Node4316558288','Node4316584336','Node4316583824','Bothrochilus boa','Liasis albertisii','Node4316585232','Morelia boeleni','Node4316585104','Node4316583696','Node4316559312','Python timoriensis','Python reticulatus','Node4316585744','Node4316559184','Python curtus','Python sebae','Python molurus','Node4316606672','Node4316606800','Python regius','Node4316606544','Node4316558736','Node4316558800','Node4316558480','Candola aspera','Node4316558352'],
     ]
 
-def reference_tree_list_newick_string():
+def reference_tree_list_newick_string(taxon_set=None):
     return """\
-        (('Morelia oenpelliensis':5.50104114707,'Morelia spilota':5.50104114707)Node36995248:61.9915926669,(((((('Apodora papuana':0.707490222359,('Aspidites melanocephalus':0.236984491852,'Morelia carinata':0.236984491852)Node36995920:0.470505730507)Node36995600:2.09759626003,('Bothrochilus boa':1.06956986931,'Morelia amethistina':1.06956986931)Node36995952:1.73551661307)Node36995536:0.351619575146,'Morelia nauta':3.15670605753)Node36995472:1.09375666234,('Morelia tracyae':0.585328937986,'Python regius':0.585328937986)Node36996400:3.66513378189)Node36995440:33.0195611855,(((('Python reticulatus':1.32521964733,('Python brongersmai':0.626131270775,'Liasis olivaceus':0.626131270775)Node36996880:0.699088376552)Node36996464:3.58364386958,'Python timoriensis':4.9088635169)Node36996560:4.90381799328,(('Morelia clastolepis':0.520293181797,'Antaresia maculosa':0.520293181797)Node36997072:3.89664227731,('Liasis fuscus':0.193228819804,'Liasis mackloti':0.193228819804)Node36997360:4.2237066393)Node36997168:5.39574605108)Node36996176:3.49206820101,'Morelia boeleni':13.3047497112)Node36996528:23.9652741942)Node36995344:0.377327561902,(('Python molurus':12.8622487575,(('Antaresia stimsoni':1.20132174738,'Python sebae':1.20132174738)Node36997712:3.83058430268,'Morelia kinghorni':5.03190605005)Node36997840:7.83034270743)Node36997616:21.1685275644,(('Aspidites ramsayi':2.78732559217,(('Antaresia childreni':0.105428136944,'Leiopython albertisii':0.105428136944)Node36998032:1.30019225223,'Antaresia perthensis':1.40562038917)Node36998320:1.381705203)Node36997968:4.80697376221,('Morelia viridis':2.42117796541,'Morelia bredli':2.42117796541)Node36998704:5.17312138897)Node36998064:26.4364769675)Node36997392:3.61657514544)Node36962224:29.8452823467)Node36995184;
-        ('Morelia boeleni':26.0384706379,(((('Leiopython albertisii':15.2611605145,'Bothrochilus boa':15.2611605145)Node36999024:2.95693808858,('Morelia carinata':16.0625616183,((('Morelia spilota':7.05059979983,'Morelia bredli':7.05059979983)Node37061072:7.4747693113,('Antaresia maculosa':13.0854581588,('Antaresia perthensis':10.2267471766,('Antaresia childreni':4.8707020453,'Antaresia stimsoni':4.8707020453)Node37061584:5.35604513133)Node37061456:2.85871098218)Node37061392:1.43991095233)Node37060944:0.166805015451,'Morelia viridis':14.6921741266)Node37061040:1.37038749174)Node37060720:2.15553698471)Node36962160:1.64883491058,(('Liasis olivaceus':10.850645624,('Liasis fuscus':2.83048300382,'Liasis mackloti':2.83048300382)Node37062064:8.02016262021)Node37061872:1.94094943657,'Apodora papuana':12.7915950606)Node37061744:7.07533845302)Node36995152:0.952265882909,(('Morelia oenpelliensis':19.051793087,((('Morelia amethistina':8.12042923083,('Morelia clastolepis':2.0657194471,('Morelia kinghorni':0.999651724272,'Morelia nauta':0.999651724272)Node37062896:1.06606772283)Node37062768:6.05470978372)Node37062544:1.9541248425,'Morelia tracyae':10.0745540733)Node37062448:7.19864380037,('Python reticulatus':6.6158514927,'Python timoriensis':6.6158514927)Node37063184:10.657346381)Node37062512:1.77859521326)Node37062288:1.42657874327,(('Python sebae':14.3734153538,('Python regius':11.7636662419,('Python brongersmai':10.5318200836,'Python molurus':10.5318200836)Node37063664:1.23184615824)Node37063536:2.6097491119)Node37063248:3.93324105164,('Aspidites ramsayi':9.72719847603,'Aspidites melanocephalus':9.72719847603)Node37063760:8.5794579294)Node37063088:2.1717154248)Node37062192:0.340827566292)Node36999056:5.21927124134)Node36995120;
-        ((((('Python sebae':16.9224723285,(('Python molurus':13.9521024428,'Python brongersmai':13.9521024428)Node37064432:0.218628811139,'Python regius':14.170731254)Node37064496:2.75174107457)Node37064048:2.97395412534,('Aspidites ramsayi':7.82754382801,'Aspidites melanocephalus':7.82754382801)Node37654640:12.0688826259)Node37063696:3.261105684,((('Morelia carinata':11.7896562791,('Morelia spilota':4.05445265776,'Morelia bredli':4.05445265776)Node37655120:7.73520362135)Node37064656:2.97877570893,('Antaresia maculosa':13.5106259111,('Antaresia perthensis':11.2360265701,('Antaresia childreni':3.48847926746,'Antaresia stimsoni':3.48847926746)Node37655536:7.74754730265)Node37655408:2.27459934102)Node37655152:1.25780607691)Node37654896:2.9034791189,'Morelia viridis':17.6719111069)Node37654704:5.48562103095)Node36998896:1.06929723627,('Leiopython albertisii':13.3580917481,'Bothrochilus boa':13.3580917481)Node37655728:10.8687376261)Node37064208:0.0364728670888,((('Liasis olivaceus':6.21487951846,('Liasis fuscus':2.60536108558,'Liasis mackloti':2.60536108558)Node37656272:3.60951843288)Node37655632:1.91471562327,'Apodora papuana':8.12959514173)Node37655984:14.878020141,('Morelia boeleni':20.4730397427,(((('Morelia amethistina':4.43324641637,(('Morelia nauta':0.811519404534,'Morelia kinghorni':0.811519404534)Node37656912:0.622029416262,'Morelia clastolepis':1.4335488208)Node37656976:2.99969759558)Node37656304:3.28625146667,'Morelia tracyae':7.71949788304)Node37656688:9.88501788667,('Python reticulatus':5.78102399509,'Python timoriensis':5.78102399509)Node37657392:11.8234917746)Node37656528:0.296424924481,'Morelia oenpelliensis':17.9009406942)Node37656656:2.57209904849)Node37656560:2.53457554003)Node37656048:1.25568695854)Node37064144;
-        ((('Python sebae':16.5921325784,('Python regius':14.3799352093,('Python molurus':13.3821288803,'Python brongersmai':13.3821288803)Node37658128:0.997806328959)Node37658000:2.21219736911)Node36962032:3.43039474792,('Aspidites ramsayi':11.703431691,'Aspidites melanocephalus':11.703431691)Node37658224:8.31909563528)Node37657776:3.09272413642,(((('Python reticulatus':6.46326841791,'Python timoriensis':6.46326841791)Node37658160:13.3467104377,((('Morelia amethistina':4.67092080519,('Morelia nauta':2.08880085866,('Morelia kinghorni':1.48123046362,'Morelia clastolepis':1.48123046362)Node37712496:0.607570395039)Node37712368:2.58211994653)Node37711984:1.71754130617,'Morelia tracyae':6.38846211136)Node37712016:3.03031595643,'Morelia boeleni':9.41877806779)Node37658576:10.3912007878)Node37658288:0.121667790832,'Morelia oenpelliensis':19.9316466464)Node37657648:2.71760756257,(((('Morelia viridis':15.9488284198,(('Antaresia maculosa':14.0002983201,('Antaresia perthensis':11.4477602235,('Antaresia childreni':5.72844294344,'Antaresia stimsoni':5.72844294344)Node37713488:5.71931728003)Node37713360:2.5525380966)Node37713072:1.55388791109,('Morelia spilota':4.49531637063,'Morelia bredli':4.49531637063)Node37713648:11.0588698605)Node37713200:0.394642188595)Node37712400:2.23472642535,'Morelia carinata':18.1835548451)Node37712816:1.84844364601,('Leiopython albertisii':12.7456406695,'Bothrochilus boa':12.7456406695)Node37714000:7.28635782162)Node37712848:1.89223670238,(('Liasis olivaceus':13.5304034382,('Liasis fuscus':1.74454580066,'Liasis mackloti':1.74454580066)Node37714352:11.7858576376)Node37714128:1.71076794287,'Apodora papuana':15.2411713811)Node37714192:6.6830638124)Node37712912:0.725019015485)Node37658384:0.465997253751)Node37657712;
-        (('Python reticulatus':10.8300265774,'Python timoriensis':10.8300265774)Node37714768:17.6343232815,(((('Morelia viridis':14.0077690635,(('Morelia carinata':11.7785955814,('Morelia spilota':4.97579770159,'Morelia bredli':4.97579770159)Node37715504:6.80279787983)Node37715184:1.82500345118,('Antaresia maculosa':12.3274764924,('Antaresia perthensis':8.00332145017,('Antaresia childreni':4.01522437806,'Antaresia stimsoni':4.01522437806)Node37715760:3.98809707211)Node37715792:4.32415504222)Node37715536:1.27612254021)Node37715312:0.404170030911)Node37714992:4.88508122224,('Leiopython albertisii':11.1450426742,'Bothrochilus boa':11.1450426742)Node37715600:7.74780761159)Node37714960:1.31772152158,(('Liasis olivaceus':10.9742846954,('Liasis fuscus':3.16669963676,'Liasis mackloti':3.16669963676)Node37773840:7.80758505868)Node37773616:3.78712208743,'Apodora papuana':14.7614067829)Node37773680:5.44916502448)Node37714512:4.52906062503,((((('Morelia amethistina':5.50319615164,('Morelia clastolepis':1.57257658111,('Morelia nauta':1.4357285473,'Morelia kinghorni':1.4357285473)Node37774608:0.136848033805)Node37774480:3.93061957053)Node37774160:4.50938662462,'Morelia tracyae':10.0125827763)Node37773904:6.85886795982,'Morelia boeleni':16.8714507361)Node37774032:5.48583318771,'Morelia oenpelliensis':22.3572839238)Node37774128:1.8069504389,(('Python sebae':16.535465064,('Python regius':14.962419097,('Python brongersmai':13.1354320851,'Python molurus':13.1354320851)Node37775312:1.82698701194)Node37775184:1.573045967)Node37774928:4.52064732483,('Aspidites ramsayi':14.6640030997,'Aspidites melanocephalus':14.6640030997)Node37775408:6.39210928917)Node37775024:3.10812197386)Node37773872:0.57539806967)Node37715024:3.72471742653)Node37714704;
-        ((((((('Antaresia maculosa':12.6196623606,('Antaresia perthensis':10.1068643474,('Antaresia childreni':4.39318906371,'Antaresia stimsoni':4.39318906371)Node37776432:5.71367528366)Node37776304:2.51279801319)Node37776016:1.83427060068,('Morelia viridis':13.41617982,('Morelia spilota':4.03982713639,'Morelia bredli':4.03982713639)Node37776784:9.37635268364)Node37776144:1.03775314121)Node37775952:0.835745557531,'Morelia carinata':15.2896785188)Node37775472:1.65141371467,('Leiopython albertisii':12.7629580607,'Bothrochilus boa':12.7629580607)Node37777072:4.17813417278)Node37775568:0.754225130388,(('Liasis olivaceus':10.6502403013,('Liasis fuscus':3.67165568794,'Liasis mackloti':3.67165568794)Node37777360:6.97858461332)Node37777232:4.06497756637,'Apodora papuana':14.7152178676)Node37777264:2.9800994962)Node37064112:4.09971291135,(((('Morelia amethistina':4.6447123226,('Morelia clastolepis':2.17174905761,('Morelia kinghorni':0.904095798097,'Morelia nauta':0.904095798097)Node37831344:1.26765325952)Node37831216:2.47296326498)Node37830928:4.27056899374,'Morelia tracyae':8.91528131634)Node37777040:3.1657791763,'Morelia boeleni':12.0810604926)Node37830704:6.58446507703,'Morelia oenpelliensis':18.6655255697)Node37830864:3.12950470552)Node37775856:1.01117536037,(('Python reticulatus':11.5585932535,'Python timoriensis':11.5585932535)Node37831504:11.1718400909,(('Python sebae':15.9676320675,(('Python brongersmai':13.8599706405,'Python molurus':13.8599706405)Node37832048:1.04487219988,'Python regius':14.9048428404)Node37832176:1.06278922707)Node37831888:5.31414730047,('Aspidites ramsayi':15.5786974573,'Aspidites melanocephalus':15.5786974573)Node37832400:5.70308191065)Node37832016:1.44865397646)Node37831600:0.075772291124)Node37775792;
-        (('Python sebae':29.0711850036,('Python molurus':22.4124826989,('Python regius':21.9264827074,'Python brongersmai':21.9264827074)Node37833136:0.485999991488)Node37833008:6.65870230472)Node37832848:2.12261395029,(((('Python reticulatus':14.5492404256,'Python timoriensis':14.5492404256)Node37833168:5.89251749724,(((('Morelia viridis':14.834011977,(('Morelia spilota':6.2738399067,'Morelia bredli':6.2738399067)Node37833904:7.33173338162,'Morelia carinata':13.6055732883)Node37834032:1.22843868872)Node37833520:0.322649062335,(('Antaresia perthensis':10.1091415386,('Antaresia childreni':3.48320079048,'Antaresia stimsoni':3.48320079048)Node37834512:6.62594074811)Node37834288:4.22599220252,'Antaresia maculosa':14.3351337411)Node37834256:0.821527298272)Node37833680:2.93802844014,('Leiopython albertisii':9.28422587488,'Bothrochilus boa':9.28422587488)Node37834736:8.81046360463)Node37833456:0.826870765744,(('Liasis olivaceus':11.0151449224,('Liasis fuscus':4.0880111593,'Liasis mackloti':4.0880111593)Node37101968:6.92713376313)Node37101808:2.70301025103,'Apodora papuana':13.7181551735)Node37101712:5.2034050718)Node37833744:1.52019767757)Node37833328:1.10888028588,('Morelia oenpelliensis':17.6009445592,(('Morelia tracyae':5.80279597323,('Morelia amethistina':4.38107217442,(('Morelia nauta':1.8029155441,'Morelia kinghorni':1.8029155441)Node37102608:0.0774488112983,'Morelia clastolepis':1.8803643554)Node37102672:2.50070781902)Node37102544:1.42172379881)Node37102288:6.37126259081,'Morelia boeleni':12.174058564)Node37102352:5.4268859952)Node37101936:3.94969364946)Node37833360:1.24633634472,('Aspidites ramsayi':9.84704548855,'Aspidites melanocephalus':9.84704548855)Node37103024:12.9499290649)Node37833200:8.39682440052)Node37832784;
-        ((((((('Morelia tracyae':8.31432086046,((('Morelia nauta':0.912676316658,'Morelia clastolepis':0.912676316658)Node37103920:0.71440797492,'Morelia kinghorni':1.62708429158)Node37103824:2.88132393295,'Morelia amethistina':4.50840822453)Node37103888:3.80591263593)Node37103568:4.13809660753,'Morelia boeleni':12.452417468)Node37103504:9.50779575096,(('Apodora papuana':17.2449081924,('Liasis olivaceus':12.2505582513,('Liasis fuscus':6.29219869082,'Liasis mackloti':6.29219869082)Node37104720:5.95835956047)Node37104592:4.9943499411)Node37104336:1.50938344234,(('Leiopython albertisii':13.0633246673,'Bothrochilus boa':13.0633246673)Node37104752:5.19337056498,((('Antaresia perthensis':10.3499331345,('Antaresia childreni':3.38573289378,'Antaresia stimsoni':3.38573289378)Node37105392:6.96420024077)Node37105200:3.43791705079,'Antaresia maculosa':13.7878501853)Node37104880:2.06371429021,('Morelia viridis':15.2096070352,('Morelia carinata':13.6526925966,('Morelia spilota':4.92163119076,'Morelia bredli':4.92163119076)Node37163248:8.73106140586)Node37105232:1.5569144386)Node37105584:0.641957440329)Node37104976:2.40513075673)Node37104784:0.497596402447)Node37104432:3.20592158422)Node37103120:0.983173088098,(('Python reticulatus':14.7952666012,'Python timoriensis':14.7952666012)Node37163312:6.61343105392,'Morelia oenpelliensis':21.4086976551)Node37103280:1.53468865192)Node37102896:4.2262164672,('Aspidites ramsayi':6.63522564694,'Aspidites melanocephalus':6.63522564694)Node37163504:20.5343771273)Node37714672:6.41982933271,('Python molurus':23.4003588995,('Python brongersmai':23.3469263821,'Python regius':23.3469263821)Node37164080:0.0534325174359)Node37163696:10.1890732074)Node37103408:8.43656365605,'Python sebae':42.025995763)Node37103344;
-        ((((('Morelia viridis':14.5888315231,((('Morelia spilota':4.61249165082,'Morelia bredli':4.61249165082)Node37164880:5.06534441374,'Morelia carinata':9.67783606456)Node37164720:4.89600409139,('Antaresia maculosa':14.05750906,('Antaresia perthensis':7.60849369834,('Antaresia childreni':1.86358271521,'Antaresia stimsoni':1.86358271521)Node37165456:5.74491098314)Node37165328:6.44901536169)Node37165264:0.516331095919)Node37164848:0.0149913671254)Node37164304:2.82624159524,(('Python reticulatus':8.60012281197,'Python timoriensis':8.60012281197)Node37165616:8.7380438705,((('Apodora papuana':13.0669390597,('Leiopython albertisii':9.33840615844,'Bothrochilus boa':9.33840615844)Node37166192:3.7285329013)Node37165808:1.38724843406,('Liasis olivaceus':10.9703192915,('Liasis fuscus':7.13435131963,'Liasis mackloti':7.13435131963)Node37166512:3.83596797183)Node37166384:3.48386820234)Node37165840:1.98993837612,((('Morelia tracyae':8.32099940228,((('Morelia kinghorni':1.07398430658,'Morelia nauta':1.07398430658)Node37166992:0.774826953003,'Morelia clastolepis':1.84881125958)Node37166896:2.02523285213,'Morelia amethistina':3.87404411171)Node37166960:4.44695529056)Node37166704:1.7419442928,'Morelia boeleni':10.0629436951)Node37166544:3.52728125011,'Morelia oenpelliensis':13.5902249452)Node37166576:2.85390092474)Node37165968:0.894040812546)Node37165712:0.0769064358513)Node37775760:4.09158345085,('Aspidites ramsayi':9.1538829568,'Aspidites melanocephalus':9.1538829568)Node37220432:12.3527736124)Node37164368:3.29007229288,(('Python regius':22.6656294361,'Python brongersmai':22.6656294361)Node37220944:0.5196540118,'Python molurus':23.1852834479)Node37220976:1.61144541412)Node37164496:4.51223406477,'Python sebae':29.3089629268)Node37164432;
-        ('Python sebae':41.037475788,(('Python regius':32.1860160849,('Python molurus':28.8078489217,'Python brongersmai':28.8078489217)Node37221776:3.37816716317)Node37221616:7.88042810387,((('Morelia oenpelliensis':20.2736124855,(('Morelia tracyae':8.92774508942,((('Morelia kinghorni':3.15335248923,'Morelia nauta':3.15335248923)Node37222448:0.318849288103,'Morelia clastolepis':3.47220177733)Node37222288:4.46813855011,'Morelia amethistina':7.94034032744)Node37222416:0.98740476198)Node37222096:3.53762335708,'Morelia boeleni':12.4653684465)Node37222224:7.80824403904)Node37221872:3.04566241261,((('Liasis olivaceus':14.4158757568,('Liasis fuscus':4.30247792095,'Liasis mackloti':4.30247792095)Node37223184:10.1133978359)Node37222864:6.09401457319,(('Python reticulatus':11.1261504133,'Python timoriensis':11.1261504133)Node37223376:9.21506648422,'Apodora papuana':20.3412168975)Node37223248:0.168673432469)Node37222960:1.17144499717,(('Leiopython albertisii':16.554642571,'Bothrochilus boa':16.554642571)Node37223408:4.80149248356,((('Morelia carinata':13.6491727777,('Morelia spilota':5.95375576867,'Morelia bredli':5.95375576867)Node37224208:7.69541700903)Node37223888:0.59310677926,'Morelia viridis':14.242279557)Node37223728:1.51569357225,('Antaresia maculosa':13.2829808571,('Antaresia perthensis':9.80844705042,('Antaresia childreni':5.81147051386,'Antaresia stimsoni':5.81147051386)Node37277904:3.99697653657)Node37224368:3.47453380669)Node37224304:2.47499227209)Node37223760:5.59816192539)Node37223632:0.325200272563)Node37222736:1.63793957099)Node37221968:5.61233091052,('Aspidites ramsayi':9.3156335341,'Aspidites melanocephalus':9.3156335341)Node37224432:19.6159722746)Node37221936:11.1348383801)Node37221584:0.971031599202)Node37221424;
-    """
+    ((((((((('Antaresia childreni':3.82103266723,('Morelia clastolepis':1.09809398991,'Loxocemus bicolor':1.09809398991)Node4313762448:2.72293867732)Node4313762128:10.4795105126,(((('Antaresia melanocephalus':1.47649847948,'Antaresia perthensis':1.47649847948)Node4313763216:3.56964311758,('Python timoriensis':1.49653696768,'Liasis albertisii':1.49653696768)Node4313763600:3.54960462938)Node4313763088:1.10594701364,('Python sebae':5.20555672012,'Antaresia maculosa':5.20555672012)Node4313776208:0.946531890581)Node4313762960:4.47413907662,(('Python curtus':4.46599929505,'Bothrochilus boa':4.46599929505)Node4313776912:2.88197852526,('Xenopeltis unicolor':0.483824039664,'Liasis fuscus':0.483824039664)Node4313777296:6.86415378064)Node4313776720:3.27824986702)Node4313762704:3.67431549248)Node4313762000:4.00932181352,'Morelia boeleni':18.3098649933)Node4313761872:0.739270951321,('Morelia tracyae':2.17652327312,(('Morelia viridisN':0.0125016196671,'Python reticulatus':0.0125016196671)Node4313778192:0.491713738136,'Morelia bredli':0.504215357803)Node4313777680:1.67230791531)Node4313777808:16.8726126715)Node4313761744:1.29166787247,(('Liasis mackloti':4.19791393809,'Antaresia ramsayi':4.19791393809)Node4313778832:2.98661848623,'Morelia kinghorni':7.18453242432)Node4313778704:13.1562713928)Node4313761616:4.50960412336,(('Python regius':0.209207825685,'Candola aspera':0.209207825685)Node4313779472:0.207889736001,'Antaresia stimsoni':0.417097561686)Node4313779088:24.4333103788)Node4313761488:53.7887032791,((('Python molurus':5.1470935265,'Morelia amethistina':5.1470935265)Node4313800784:2.6364754365,('Morelia viridisS':0.657835681585,'Liasis olivaceus':0.657835681585)Node4313801168:7.12573328141)Node4313780112:1.24643505521,'Morelia nauta':9.03000401821)Node4313779728:69.6091072013)Node4313761360:123.936295332,('Apodora papuana':0.152425796315,'Morelia carinata':0.152425796315)Node4313801552:202.422980755)Node4313761232:78.6266408419,('Morelia spilota':51.3217384582,'Morelia oenpelliensis':51.3217384582)Node4313801936:229.880308935)Node4313761104;
+    (('Candola aspera':81.2974222246,((((('Morelia amethistina':21.0901008779,('Morelia spilota':17.7035654613,('Morelia oenpelliensis':15.0790936884,'Morelia bredli':15.0790936884)Node4313803792:2.6244717729)Node4313802960:3.38653541663)Node4313803536:15.1180336863,(('Morelia carinata':27.7948635409,('Morelia viridisS':19.4686760786,'Morelia viridisN':19.4686760786)Node4313804240:8.32618746237)Node4313804560:5.00375936144,('Antaresia maculosa':26.9874255418,(('Antaresia childreni':8.07749085501,'Antaresia stimsoni':8.07749085501)Node4313826128:16.6530983052,'Antaresia perthensis':24.7305891602)Node4313825744:2.25683638168)Node4313825616:5.81119736053)Node4313804432:3.40951166184)Node4313803408:4.5936111676,(((('Liasis fuscus':5.68389243709,'Liasis mackloti':5.68389243709)Node4313827024:26.1365403684,('Apodora papuana':19.714025971,'Liasis olivaceus':19.714025971)Node4313827408:12.1064068345)Node4313826896:3.37363071467,('Antaresia melanocephalus':18.8177870609,'Antaresia ramsayi':18.8177870609)Node4313827664:16.3762764593)Node4313826768:4.33214615343,('Morelia boeleni':28.5609164144,('Morelia tracyae':17.1692672846,(('Morelia kinghorni':5.2450565205,'Morelia nauta':5.2450565205)Node4313828816:1.44575855569,'Morelia clastolepis':6.69081507619)Node4313828432:10.4784522084)Node4313828176:11.3916491298)Node4313828048:10.9652932592)Node4313826384:1.27553605821)Node4313803280:0.76583222117,(('Python timoriensis':15.1414324532,'Python reticulatus':15.1414324532)Node4316155984:23.8923728386,('Bothrochilus boa':16.4481972995,'Liasis albertisii':16.4481972995)Node4313802512:22.5856079922)Node4313829328:2.53377266123)Node4313803152:6.57324583185,('Xenopeltis unicolor':31.8813718333,(('Python curtus':16.9648006514,('Python sebae':12.3010608596,'Python molurus':12.3010608596)Node4316157008:4.66373979181)Node4316157136:8.94343133576,'Python regius':25.9082319872)Node4316156624:5.97313984611)Node4316156752:16.2594519516)Node4313803024:33.1565984398)Node4313802704:18.8917197007,'Loxocemus bicolor':100.189141925)Node4313802576;
+    ('Candola aspera':109.372663833,((((((((('Liasis fuscus':10.9943371535,'Liasis mackloti':10.9943371535)Node4316159632:18.9362130146,('Apodora papuana':21.3765394762,'Liasis olivaceus':21.3765394762)Node4316176464:8.55401069191)Node4316159504:4.82772953939,('Antaresia melanocephalus':16.9627400103,'Antaresia ramsayi':16.9627400103)Node4316176720:17.7955396972)Node4316159376:6.39175712039,('Morelia boeleni':32.036740867,('Morelia tracyae':17.2575489744,(('Morelia kinghorni':3.4529882291,'Morelia nauta':3.4529882291)Node4316177872:0.439451186875,'Morelia clastolepis':3.89243941597)Node4316177488:13.3651095585)Node4316177232:14.7791918926)Node4316177104:9.11329596086)Node4316159248:2.41802497137,((('Morelia oenpelliensis':25.0022602166,'Morelia amethistina':25.0022602166)Node4316178640:1.13984981318,('Morelia spilota':12.987805351,'Morelia bredli':12.987805351)Node4316179024:13.1543046788)Node4316178512:11.5242004723,('Bothrochilus boa':24.274725326,'Liasis albertisii':24.274725326)Node4316179280:13.3915851761)Node4316178128:5.90175129715)Node4316159120:2.53965409687,(('Morelia carinata':30.4665100305,('Morelia viridisS':19.4621901768,'Morelia viridisN':19.4621901768)Node4316179664:11.0043198537)Node4316179920:7.8146690322,('Antaresia maculosa':33.1727582851,(('Antaresia childreni':9.02781095195,'Antaresia stimsoni':9.02781095195)Node4316201296:19.4308450954,'Antaresia perthensis':28.4586560473)Node4316158224:4.7141022378)Node4316180432:5.10842077756)Node4316179792:7.82653683343)Node4316158992:6.47536868825,('Python timoriensis':30.3039115511,'Python reticulatus':30.3039115511)Node4316201552:22.2791730332)Node4316158864:8.2214192007,(('Python curtus':37.2154940833,('Python sebae':21.9347777454,'Python molurus':21.9347777454)Node4316202256:15.2807163378)Node4316202384:6.14068810478,'Python regius':43.356182188)Node4316202128:17.448321597)Node4316158736:25.5450384687,('Loxocemus bicolor':82.94710604,'Xenopeltis unicolor':82.94710604)Node4316203024:3.40243621372)Node4316158608:23.0231215792)Node4316158288;
+    ('Candola aspera':157.750076773,(('Loxocemus bicolor':93.189940239,(((((((('Liasis fuscus':8.15449187544,'Liasis mackloti':8.15449187544)Node4316225808:24.6792964706,('Apodora papuana':24.3044203289,'Liasis olivaceus':24.3044203289)Node4316226192:8.52936801714)Node4316225680:6.3930928479,('Antaresia melanocephalus':15.9864414111,'Antaresia ramsayi':15.9864414111)Node4316226448:23.2404397828)Node4316205008:2.31767871982,('Bothrochilus boa':23.2898123636,'Liasis albertisii':23.2898123636)Node4316226768:18.2547475502)Node4316204880:1.34047834167,'Morelia boeleni':42.8850382554)Node4316204752:2.88538115771,((('Morelia spilota':16.278650612,'Morelia bredli':16.278650612)Node4316227728:12.5474231006,('Morelia oenpelliensis':27.5592919578,('Morelia tracyae':14.2553766995,((('Morelia clastolepis':3.46866488962,'Morelia kinghorni':3.46866488962)Node4316228880:0.230110019205,'Morelia nauta':3.69877490882)Node4316228752:8.89489387836,'Morelia amethistina':12.5936687872)Node4316228368:1.66170791236)Node4316227984:13.3039152583)Node4316228112:1.26678175478)Node4316227600:14.2175774566,(('Morelia carinata':33.2267204786,('Morelia viridisS':19.7961005329,'Morelia viridisN':19.7961005329)Node4316203600:13.4306199458)Node4316229520:5.88218975316,('Antaresia maculosa':31.9976247603,(('Antaresia childreni':11.3547051232,'Antaresia stimsoni':11.3547051232)Node4316251088:15.9285543528,'Antaresia perthensis':27.2832594761)Node4316250704:4.71436528425)Node4316250576:7.11128547149)Node4316229392:3.9347409374)Node4316227472:2.72676824396)Node4316204624:9.74044751021,('Python timoriensis':33.3905850116,'Python reticulatus':33.3905850116)Node4316251600:22.1202819118)Node4316204496:10.3875398007,(('Python curtus':34.8181553863,('Python sebae':26.9223231435,'Python molurus':26.9223231435)Node4316251984:7.89583224277)Node4316252112:11.1907198563,'Python regius':46.0088752426)Node4316251856:19.8895314814)Node4316203920:27.291533515)Node4316204112:19.5811677101,'Xenopeltis unicolor':112.771107949)Node4316203984:44.9789688242)Node4316203664;
+    ('Candola aspera':117.405482731,('Xenopeltis unicolor':90.5537014032,((((('Morelia boeleni':36.5498484742,(((('Liasis fuscus':6.29296152027,'Liasis mackloti':6.29296152027)Node4316275408:18.7911640437,('Apodora papuana':20.4324667004,'Liasis olivaceus':20.4324667004)Node4316275792:4.65165886356)Node4316275280:4.14502379891,('Antaresia melanocephalus':11.7665664768,'Antaresia ramsayi':11.7665664768)Node4316276048:17.4625828861)Node4316275152:6.27408700912,('Bothrochilus boa':20.0957025946,'Liasis albertisii':20.0957025946)Node4316276432:15.4075337774)Node4316275024:1.04661210215)Node4316254160:1.85501747057,(('Morelia oenpelliensis':24.8451626811,(('Morelia tracyae':14.3265271797,(('Morelia clastolepis':5.28574540958,('Morelia kinghorni':2.73160988664,'Morelia nauta':2.73160988664)Node4316253008:2.55413552294)Node4316277712:5.65307392619,'Morelia amethistina':10.9388193358)Node4316277584:3.38770784397)Node4316277392:7.72979171285,('Morelia spilota':9.57952070277,'Morelia bredli':9.57952070277)Node4316278352:12.4767981898)Node4316276816:2.78884378851)Node4316277072:10.9999278199,(('Morelia carinata':24.4395100584,('Morelia viridisS':16.6979256908,'Morelia viridisN':16.6979256908)Node4316299344:7.74158436759)Node4316299536:6.62946104565,('Antaresia maculosa':27.9986606508,(('Antaresia childreni':6.91002117518,'Antaresia stimsoni':6.91002117518)Node4316300560:16.2064963991,'Antaresia perthensis':23.1165175743)Node4316300176:4.88214307652)Node4316300048:3.07031045323)Node4316299408:4.77611939702)Node4316276944:2.5597754437)Node4316254032:12.3993667148,('Python timoriensis':27.4972972887,'Python reticulatus':27.4972972887)Node4316301072:23.3069353709)Node4316253904:6.56321044476,(('Python curtus':33.0996104792,('Python sebae':18.8062654172,'Python molurus':18.8062654172)Node4316301456:14.293345062)Node4316301584:6.08258726043,'Python regius':39.1821977396)Node4316301328:18.1852453647)Node4316253776:16.6353899137,'Loxocemus bicolor':74.0028330181)Node4316253392:16.5508683851)Node4316253456:26.8517813278)Node4316253136;
+    ('Candola aspera':126.159749307,(('Loxocemus bicolor':76.2142576718,(((('Morelia boeleni':36.5119154213,((('Antaresia melanocephalus':15.1074329521,'Antaresia ramsayi':15.1074329521)Node4316324752:17.772328432,(('Liasis fuscus':7.5711347092,'Liasis mackloti':7.5711347092)Node4316325264:20.8200876951,('Apodora papuana':24.0183292126,'Liasis olivaceus':24.0183292126)Node4316325648:4.37289319177)Node4316325136:4.4885389798)Node4316324624:2.24740276648,('Bothrochilus boa':22.1472140662,'Liasis albertisii':22.1472140662)Node4316326032:12.9799500845)Node4316324496:1.38475127065)Node4316324176:1.78294733026,(((('Morelia spilota':9.34118829512,'Morelia bredli':9.34118829512)Node4316326672:11.7610480778,'Morelia oenpelliensis':21.1022363729)Node4316326544:1.62908011033,('Morelia tracyae':16.5271748204,((('Morelia nauta':2.44563718163,'Morelia kinghorni':2.44563718163)Node4316327696:1.89524872622,'Morelia clastolepis':4.34088590785)Node4316327568:7.91289243511,'Morelia amethistina':12.253778343)Node4316326928:4.27339647744)Node4316327184:6.20414166284)Node4316326416:12.2960670728,(('Morelia carinata':25.8119331435,('Morelia viridisS':14.3781644505,'Morelia viridisN':14.3781644505)Node4316344400:11.4337686931)Node4316344912:5.03710806168,('Antaresia maculosa':26.7514685092,(('Antaresia childreni':6.97141003814,'Antaresia stimsoni':6.97141003814)Node4316345936:17.4436719435,'Antaresia perthensis':24.4150819817)Node4316345552:2.33638652753)Node4316345424:4.09757269601)Node4316344784:4.17834235089)Node4316326288:3.26747919544)Node4316324048:8.24675869634,('Python timoriensis':22.9852293488,'Python reticulatus':22.9852293488)Node4316346448:23.556392099)Node4316323920:7.33856679933,(('Python curtus':29.2153611098,('Python sebae':21.0555716576,'Python molurus':21.0555716576)Node4316346832:8.15978945225)Node4316346960:6.75664224871,'Python regius':35.9720033585)Node4316346704:17.9081848887)Node4316302864:22.3340694246)Node4316303056:20.4272017262,'Xenopeltis unicolor':96.6414593981)Node4316302928:29.5182899091)Node4316302608;
+    ('Candola aspera':124.564186516,(((((((('Morelia spilota':11.3186128368,'Morelia bredli':11.3186128368)Node4316369744:12.0191169658,('Morelia oenpelliensis':21.0803560094,('Morelia tracyae':14.1501582185,(('Morelia nauta':6.11730072991,('Morelia kinghorni':4.04355876922,'Morelia clastolepis':4.04355876922)Node4316370640:2.07374196069)Node4316347856:4.34576715349,'Morelia amethistina':10.4630678834)Node4316370384:3.68709033509)Node4316370000:6.93019779087)Node4316370128:2.25737379321)Node4316369616:12.5842551962,(('Morelia carinata':22.4623407504,('Morelia viridisS':16.5498725211,'Morelia viridisN':16.5498725211)Node4316371408:5.91246822929)Node4316371536:5.79725116231,('Antaresia maculosa':24.5414767549,(('Antaresia childreni':7.30910889905,'Antaresia stimsoni':7.30910889905)Node4316372496:11.551508813,'Antaresia perthensis':18.8606177121)Node4316372176:5.68085904285)Node4316372048:3.71811515781)Node4316371280:7.66239308607)Node4316369488:2.76745367097,('Morelia boeleni':37.5960808765,((('Antaresia melanocephalus':13.4678814627,'Antaresia ramsayi':13.4678814627)Node4316394064:19.1660901297,(('Liasis fuscus':6.08619858554,'Liasis mackloti':6.08619858554)Node4316394640:18.9933631628,('Apodora papuana':19.3061701007,'Liasis olivaceus':19.3061701007)Node4316395024:5.77339164759)Node4316394512:7.55440984409)Node4316393936:2.22916081797,('Bothrochilus boa':21.6486618625,'Liasis albertisii':21.6486618625)Node4316395408:13.2144705479)Node4316393616:2.73294846613)Node4316372752:1.09335779327)Node4316369360:7.28944403695,('Python timoriensis':25.9434669707,'Python reticulatus':25.9434669707)Node4316395664:20.035415736)Node4316369232:10.7040090023,(('Python curtus':30.462733423,('Python sebae':16.0194742188,'Python molurus':16.0194742188)Node4316396176:14.4432592042)Node4316396304:7.07244422644,'Python regius':37.5351776494)Node4316396048:19.1477140595)Node4316369104:20.3346663059,'Loxocemus bicolor':77.0175580149)Node4316368976:11.1789504571,'Xenopeltis unicolor':88.196508472)Node4316348304:36.3676780441)Node4316347984;
+    ('Candola aspera':95.8502441646,('Xenopeltis unicolor':73.9760796713,('Loxocemus bicolor':64.4465636894,((((((('Morelia spilota':9.02720708579,'Morelia bredli':9.02720708579)Node4316419472:8.29264517113,('Morelia tracyae':10.6182161258,(('Morelia clastolepis':2.86717460067,('Morelia nauta':2.49595908021,'Morelia kinghorni':2.49595908021)Node4316420112:0.371215520464)Node4316420240:4.27223311967,'Morelia amethistina':7.13940772034)Node4316419728:3.47880840545)Node4316419856:6.70163613113)Node4316419344:2.42060556338,'Morelia oenpelliensis':19.7404578203)Node4316419216:7.52518318022,(('Morelia carinata':21.6260059492,('Morelia viridisS':12.4726660393,'Morelia viridisN':12.4726660393)Node4316420880:9.1533399099)Node4316421264:3.24355281662,('Antaresia maculosa':21.6668574015,(('Antaresia childreni':5.8075137439,'Antaresia stimsoni':5.8075137439)Node4316442832:11.5233229214,'Antaresia perthensis':17.3308366653)Node4316421904:4.33602073619)Node4316421776:3.2027013644)Node4316421136:2.39608223465)Node4316397392:1.03257897787,('Morelia boeleni':27.0825353379,((('Antaresia melanocephalus':9.50619301624,'Antaresia ramsayi':9.50619301624)Node4316443856:13.5545767859,(('Liasis fuscus':5.48728159904,'Liasis mackloti':5.48728159904)Node4316444368:12.8995814401,('Apodora papuana':16.9983690986,'Liasis olivaceus':16.9983690986)Node4316444752:1.38849394051)Node4316444240:4.67390676307)Node4316443728:2.64946637554,('Bothrochilus boa':14.3052158982,'Liasis albertisii':14.3052158982)Node4316445136:11.4050202795)Node4316443344:1.37229916019)Node4316443088:1.21568464049)Node4316419088:6.7231540226,('Python timoriensis':19.8342036742,'Python reticulatus':19.8342036742)Node4316445392:15.1871703268)Node4316418960:6.43697452247,(('Python curtus':23.7257571548,('Python sebae':16.0945691729,'Python molurus':16.0945691729)Node4316445904:7.63118798191)Node4316446032:3.93234771773,'Python regius':27.6581048725)Node4316445776:13.8002436509)Node4316418576:22.9882151659)Node4316418256:9.52951598189)Node4316418320:21.8741644934)Node4316397456;
+    ('Candola aspera':126.147943419,(((((('Morelia boeleni':34.6878613533,(('Bothrochilus boa':21.8829103058,'Liasis albertisii':21.8829103058)Node4316468688:10.5685372807,(('Antaresia melanocephalus':13.1588228725,'Antaresia ramsayi':13.1588228725)Node4316469200:17.1757724208,(('Liasis fuscus':6.80247824391,'Liasis mackloti':6.80247824391)Node4316469712:19.5683902852,('Apodora papuana':21.5430118322,'Liasis olivaceus':21.5430118322)Node4316470096:4.82785669688)Node4316469584:3.96372676423)Node4316469072:2.11685229318)Node4316467408:2.23641376685)Node4316468304:0.617658990864,(((('Morelia tracyae':13.5020774756,(('Morelia nauta':3.78994236341,('Morelia clastolepis':2.53789923993,'Morelia kinghorni':2.53789923993)Node4316471120:1.25204312348)Node4316471248:6.20487512451,'Morelia amethistina':9.99481748791)Node4316470352:3.5072599877)Node4316470864:7.79402846351,'Morelia oenpelliensis':21.2961059391)Node4316470736:2.31259127041,('Morelia spilota':9.62601876119,'Morelia bredli':9.62601876119)Node4316488592:13.9826784484)Node4316470608:10.3401216686,(('Morelia carinata':22.5172124711,('Morelia viridisS':10.6110289453,'Morelia viridisN':10.6110289453)Node4316488976:11.9061835258)Node4316489104:4.39672345568,('Antaresia maculosa':22.9661472676,(('Antaresia childreni':7.25380762314,'Antaresia stimsoni':7.25380762314)Node4316490128:11.9409692012,'Antaresia perthensis':19.1947768244)Node4316489744:3.7713704432)Node4316489616:3.94778865925)Node4316488848:7.03488295134)Node4316470480:1.35670146604)Node4316468176:13.7010200713,('Python timoriensis':24.3086862402,'Python reticulatus':24.3086862402)Node4316490576:24.6978541753)Node4316468048:5.77299961102,(('Python curtus':27.8030546577,('Python sebae':17.3634777999,'Python molurus':17.3634777999)Node4316491024:10.4395768579)Node4316491152:5.80983351578,'Python regius':33.6128881735)Node4316490896:21.166651853)Node4316467920:17.1918011574,'Loxocemus bicolor':71.971341184)Node4316467792:13.6608326978,'Xenopeltis unicolor':85.6321738818)Node4316467344:40.5157695372)Node4316467472;
+    ('Candola aspera':146.770054852,(('Loxocemus bicolor':83.313555189,(((((('Morelia carinata':25.1454154452,('Morelia viridisS':14.566531775,'Morelia viridisN':14.566531775)Node4316513552:10.5788836702)Node4316514192:4.82232736143,('Antaresia maculosa':25.387694547,(('Antaresia childreni':6.91975332756,'Antaresia stimsoni':6.91975332756)Node4316515216:12.7115868187,'Antaresia perthensis':19.6313401463)Node4316514832:5.75635440071)Node4316514704:4.58004825968)Node4316514064:3.25905094181,(('Morelia spilota':8.71082523711,'Morelia bredli':8.71082523711)Node4316515856:14.4811675935,(('Morelia tracyae':14.4468651064,(('Morelia clastolepis':5.18823967855,('Morelia kinghorni':3.47759210261,'Morelia nauta':3.47759210261)Node4316533072:1.71064757594)Node4316533200:6.98040063458,'Morelia amethistina':12.1686403131)Node4316516112:2.27822479328)Node4316532816:7.95009719313,'Morelia oenpelliensis':22.3969622995)Node4316516240:0.795030531054)Node4316515728:10.0348009179)Node4316513936:1.94845077373,('Morelia boeleni':33.9681920922,(('Bothrochilus boa':20.2312473989,'Liasis albertisii':20.2312473989)Node4316534480:12.4520799939,(('Antaresia melanocephalus':11.9647468446,'Antaresia ramsayi':11.9647468446)Node4316534992:19.0383478987,(('Liasis fuscus':9.12565806357,'Liasis mackloti':9.12565806357)Node4316535504:17.1180008393,('Apodora papuana':23.561905752,'Liasis olivaceus':23.561905752)Node4316535888:2.6817531508)Node4316535376:4.75943584051)Node4316534864:1.68023264943)Node4316533968:1.28486469944)Node4316534096:1.20705242999)Node4316513808:9.51023675819,('Python timoriensis':19.2959696748,'Python reticulatus':19.2959696748)Node4316512784:25.3895116055)Node4316513680:8.15039409252,(('Python curtus':31.4380841777,('Python sebae':17.8823541984,'Python molurus':17.8823541984)Node4316557520:13.5557299793)Node4316536656:6.97033769,'Python regius':38.4084218677)Node4316536464:14.4274535052)Node4316513104:30.4776798161)Node4316513296:13.4634525107,'Xenopeltis unicolor':96.7770076997)Node4316513168:49.9930471528)Node4316512848;
+    (('Xenopeltis unicolor':140.081627971,('Loxocemus bicolor':114.058166915,(((((('Morelia carinata':31.0235157502,('Morelia viridisS':18.2580368884,'Morelia viridisN':18.2580368884)Node4316559056:12.7654788618)Node4316559696:7.53311752135,('Antaresia maculosa':34.3710545678,(('Antaresia childreni':11.2086808012,'Antaresia stimsoni':11.2086808012)Node4316560720:15.350690271,'Antaresia perthensis':26.5593710722)Node4316560336:7.81168349566)Node4316560208:4.18557870369)Node4316559568:5.98387013923,(('Morelia oenpelliensis':25.1807542407,('Morelia tracyae':17.5565482382,(('Morelia clastolepis':5.20352902397,('Morelia kinghorni':2.37153844665,'Morelia nauta':2.37153844665)Node4316582416:2.83199057731)Node4316582544:8.62088071739,'Morelia amethistina':13.8244097414)Node4316582160:3.73213849687)Node4316560976:7.6242060025)Node4316561360:1.39777518086,('Morelia spilota':12.9776723832,'Morelia bredli':12.9776723832)Node4316583312:13.6008570384)Node4316561232:17.9619739892)Node4316559440:4.4227398576,((('Antaresia melanocephalus':18.8644940012,'Antaresia ramsayi':18.8644940012)Node4316583952:23.3327851176,(('Liasis fuscus':7.32742614319,'Liasis mackloti':7.32742614319)Node4316584464:22.0000981488,('Apodora papuana':24.0871532021,'Liasis olivaceus':24.0871532021)Node4316558288:5.24037108992)Node4316584336:12.8697548268)Node4316583824:3.5026210108,(('Bothrochilus boa':25.4875902402,'Liasis albertisii':25.4875902402)Node4316585232:19.3585494438,'Morelia boeleni':44.846139684)Node4316585104:0.85376044557)Node4316583696:3.26334313874)Node4316559312:12.1691499629,('Python timoriensis':33.0773323832,'Python reticulatus':33.0773323832)Node4316585744:28.055060848)Node4316559184:12.7558559915,(('Python curtus':42.4795771694,('Python sebae':25.8300719638,'Python molurus':25.8300719638)Node4316606672:16.6495052056)Node4316606800:13.6364666177,'Python regius':56.1160437871)Node4316606544:17.7722054357)Node4316558736:40.1699176918)Node4316558800:26.0234610563)Node4316558480:71.3865451194,'Candola aspera':211.46817309)Node4316558352;
+"""
 
 def reference_tree_list_node_relationships():
     treelist_node_references = [
         {
-            'Node36995184' : NodeRelationship(parent_label=None, child_labels=['Node36995248','Node36962224'], edge_length=None, taxon_label=None),
-            'Node36995248' : NodeRelationship(parent_label='Node36995184', child_labels=['Morelia oenpelliensis','Morelia spilota'], edge_length=61.9915926669, taxon_label=None),
-            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node36995248', child_labels=[], edge_length=5.50104114707, taxon_label='Morelia oenpelliensis'),
-            'Morelia spilota' : NodeRelationship(parent_label='Node36995248', child_labels=[], edge_length=5.50104114707, taxon_label='Morelia spilota'),
-            'Node36962224' : NodeRelationship(parent_label='Node36995184', child_labels=['Node36995344','Node36997392'], edge_length=29.8452823467, taxon_label=None),
-            'Node36995344' : NodeRelationship(parent_label='Node36962224', child_labels=['Node36995440','Node36996528'], edge_length=0.377327561902, taxon_label=None),
-            'Node36995440' : NodeRelationship(parent_label='Node36995344', child_labels=['Node36995472','Node36996400'], edge_length=33.0195611855, taxon_label=None),
-            'Node36995472' : NodeRelationship(parent_label='Node36995440', child_labels=['Node36995536','Morelia nauta'], edge_length=1.09375666234, taxon_label=None),
-            'Node36995536' : NodeRelationship(parent_label='Node36995472', child_labels=['Node36995600','Node36995952'], edge_length=0.351619575146, taxon_label=None),
-            'Node36995600' : NodeRelationship(parent_label='Node36995536', child_labels=['Apodora papuana','Node36995920'], edge_length=2.09759626003, taxon_label=None),
-            'Apodora papuana' : NodeRelationship(parent_label='Node36995600', child_labels=[], edge_length=0.707490222359, taxon_label='Apodora papuana'),
-            'Node36995920' : NodeRelationship(parent_label='Node36995600', child_labels=['Aspidites melanocephalus','Morelia carinata'], edge_length=0.470505730507, taxon_label=None),
-            'Aspidites melanocephalus' : NodeRelationship(parent_label='Node36995920', child_labels=[], edge_length=0.236984491852, taxon_label='Aspidites melanocephalus'),
-            'Morelia carinata' : NodeRelationship(parent_label='Node36995920', child_labels=[], edge_length=0.236984491852, taxon_label='Morelia carinata'),
-            'Node36995952' : NodeRelationship(parent_label='Node36995536', child_labels=['Bothrochilus boa','Morelia amethistina'], edge_length=1.73551661307, taxon_label=None),
-            'Bothrochilus boa' : NodeRelationship(parent_label='Node36995952', child_labels=[], edge_length=1.06956986931, taxon_label='Bothrochilus boa'),
-            'Morelia amethistina' : NodeRelationship(parent_label='Node36995952', child_labels=[], edge_length=1.06956986931, taxon_label='Morelia amethistina'),
-            'Morelia nauta' : NodeRelationship(parent_label='Node36995472', child_labels=[], edge_length=3.15670605753, taxon_label='Morelia nauta'),
-            'Node36996400' : NodeRelationship(parent_label='Node36995440', child_labels=['Morelia tracyae','Python regius'], edge_length=3.66513378189, taxon_label=None),
-            'Morelia tracyae' : NodeRelationship(parent_label='Node36996400', child_labels=[], edge_length=0.585328937986, taxon_label='Morelia tracyae'),
-            'Python regius' : NodeRelationship(parent_label='Node36996400', child_labels=[], edge_length=0.585328937986, taxon_label='Python regius'),
-            'Node36996528' : NodeRelationship(parent_label='Node36995344', child_labels=['Node36996176','Morelia boeleni'], edge_length=23.9652741942, taxon_label=None),
-            'Node36996176' : NodeRelationship(parent_label='Node36996528', child_labels=['Node36996560','Node36997168'], edge_length=3.49206820101, taxon_label=None),
-            'Node36996560' : NodeRelationship(parent_label='Node36996176', child_labels=['Node36996464','Python timoriensis'], edge_length=4.90381799328, taxon_label=None),
-            'Node36996464' : NodeRelationship(parent_label='Node36996560', child_labels=['Python reticulatus','Node36996880'], edge_length=3.58364386958, taxon_label=None),
-            'Python reticulatus' : NodeRelationship(parent_label='Node36996464', child_labels=[], edge_length=1.32521964733, taxon_label='Python reticulatus'),
-            'Node36996880' : NodeRelationship(parent_label='Node36996464', child_labels=['Python brongersmai','Liasis olivaceus'], edge_length=0.699088376552, taxon_label=None),
-            'Python brongersmai' : NodeRelationship(parent_label='Node36996880', child_labels=[], edge_length=0.626131270775, taxon_label='Python brongersmai'),
-            'Liasis olivaceus' : NodeRelationship(parent_label='Node36996880', child_labels=[], edge_length=0.626131270775, taxon_label='Liasis olivaceus'),
-            'Python timoriensis' : NodeRelationship(parent_label='Node36996560', child_labels=[], edge_length=4.9088635169, taxon_label='Python timoriensis'),
-            'Node36997168' : NodeRelationship(parent_label='Node36996176', child_labels=['Node36997072','Node36997360'], edge_length=5.39574605108, taxon_label=None),
-            'Node36997072' : NodeRelationship(parent_label='Node36997168', child_labels=['Morelia clastolepis','Antaresia maculosa'], edge_length=3.89664227731, taxon_label=None),
-            'Morelia clastolepis' : NodeRelationship(parent_label='Node36997072', child_labels=[], edge_length=0.520293181797, taxon_label='Morelia clastolepis'),
-            'Antaresia maculosa' : NodeRelationship(parent_label='Node36997072', child_labels=[], edge_length=0.520293181797, taxon_label='Antaresia maculosa'),
-            'Node36997360' : NodeRelationship(parent_label='Node36997168', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=4.2237066393, taxon_label=None),
-            'Liasis fuscus' : NodeRelationship(parent_label='Node36997360', child_labels=[], edge_length=0.193228819804, taxon_label='Liasis fuscus'),
-            'Liasis mackloti' : NodeRelationship(parent_label='Node36997360', child_labels=[], edge_length=0.193228819804, taxon_label='Liasis mackloti'),
-            'Morelia boeleni' : NodeRelationship(parent_label='Node36996528', child_labels=[], edge_length=13.3047497112, taxon_label='Morelia boeleni'),
-            'Node36997392' : NodeRelationship(parent_label='Node36962224', child_labels=['Node36997616','Node36998064'], edge_length=3.61657514544, taxon_label=None),
-            'Node36997616' : NodeRelationship(parent_label='Node36997392', child_labels=['Python molurus','Node36997840'], edge_length=21.1685275644, taxon_label=None),
-            'Python molurus' : NodeRelationship(parent_label='Node36997616', child_labels=[], edge_length=12.8622487575, taxon_label='Python molurus'),
-            'Node36997840' : NodeRelationship(parent_label='Node36997616', child_labels=['Node36997712','Morelia kinghorni'], edge_length=7.83034270743, taxon_label=None),
-            'Node36997712' : NodeRelationship(parent_label='Node36997840', child_labels=['Antaresia stimsoni','Python sebae'], edge_length=3.83058430268, taxon_label=None),
-            'Antaresia stimsoni' : NodeRelationship(parent_label='Node36997712', child_labels=[], edge_length=1.20132174738, taxon_label='Antaresia stimsoni'),
-            'Python sebae' : NodeRelationship(parent_label='Node36997712', child_labels=[], edge_length=1.20132174738, taxon_label='Python sebae'),
-            'Morelia kinghorni' : NodeRelationship(parent_label='Node36997840', child_labels=[], edge_length=5.03190605005, taxon_label='Morelia kinghorni'),
-            'Node36998064' : NodeRelationship(parent_label='Node36997392', child_labels=['Node36997968','Node36998704'], edge_length=26.4364769675, taxon_label=None),
-            'Node36997968' : NodeRelationship(parent_label='Node36998064', child_labels=['Aspidites ramsayi','Node36998320'], edge_length=4.80697376221, taxon_label=None),
-            'Aspidites ramsayi' : NodeRelationship(parent_label='Node36997968', child_labels=[], edge_length=2.78732559217, taxon_label='Aspidites ramsayi'),
-            'Node36998320' : NodeRelationship(parent_label='Node36997968', child_labels=['Node36998032','Antaresia perthensis'], edge_length=1.381705203, taxon_label=None),
-            'Node36998032' : NodeRelationship(parent_label='Node36998320', child_labels=['Antaresia childreni','Leiopython albertisii'], edge_length=1.30019225223, taxon_label=None),
-            'Antaresia childreni' : NodeRelationship(parent_label='Node36998032', child_labels=[], edge_length=0.105428136944, taxon_label='Antaresia childreni'),
-            'Leiopython albertisii' : NodeRelationship(parent_label='Node36998032', child_labels=[], edge_length=0.105428136944, taxon_label='Leiopython albertisii'),
-            'Antaresia perthensis' : NodeRelationship(parent_label='Node36998320', child_labels=[], edge_length=1.40562038917, taxon_label='Antaresia perthensis'),
-            'Node36998704' : NodeRelationship(parent_label='Node36998064', child_labels=['Morelia viridis','Morelia bredli'], edge_length=5.17312138897, taxon_label=None),
-            'Morelia viridis' : NodeRelationship(parent_label='Node36998704', child_labels=[], edge_length=2.42117796541, taxon_label='Morelia viridis'),
-            'Morelia bredli' : NodeRelationship(parent_label='Node36998704', child_labels=[], edge_length=2.42117796541, taxon_label='Morelia bredli'),
+            'Node4313761104' : NodeRelationship(parent_label=None, child_labels=['Node4313761232','Node4313801936'], edge_length=None, taxon_label=None),
+            'Node4313761232' : NodeRelationship(parent_label='Node4313761104', child_labels=['Node4313761360','Node4313801552'], edge_length=78.6266408419, taxon_label=None),
+            'Node4313761360' : NodeRelationship(parent_label='Node4313761232', child_labels=['Node4313761488','Node4313779728'], edge_length=123.936295332, taxon_label=None),
+            'Node4313761488' : NodeRelationship(parent_label='Node4313761360', child_labels=['Node4313761616','Node4313779088'], edge_length=53.7887032791, taxon_label=None),
+            'Node4313761616' : NodeRelationship(parent_label='Node4313761488', child_labels=['Node4313761744','Node4313778704'], edge_length=4.50960412336, taxon_label=None),
+            'Node4313761744' : NodeRelationship(parent_label='Node4313761616', child_labels=['Node4313761872','Node4313777808'], edge_length=1.29166787247, taxon_label=None),
+            'Node4313761872' : NodeRelationship(parent_label='Node4313761744', child_labels=['Node4313762000','Morelia boeleni'], edge_length=0.739270951321, taxon_label=None),
+            'Node4313762000' : NodeRelationship(parent_label='Node4313761872', child_labels=['Node4313762128','Node4313762704'], edge_length=4.00932181352, taxon_label=None),
+            'Node4313762128' : NodeRelationship(parent_label='Node4313762000', child_labels=['Antaresia childreni','Node4313762448'], edge_length=10.4795105126, taxon_label=None),
+            'Antaresia childreni' : NodeRelationship(parent_label='Node4313762128', child_labels=[], edge_length=3.82103266723, taxon_label='Antaresia childreni'),
+            'Node4313762448' : NodeRelationship(parent_label='Node4313762128', child_labels=['Morelia clastolepis','Loxocemus bicolor'], edge_length=2.72293867732, taxon_label=None),
+            'Morelia clastolepis' : NodeRelationship(parent_label='Node4313762448', child_labels=[], edge_length=1.09809398991, taxon_label='Morelia clastolepis'),
+            'Loxocemus bicolor' : NodeRelationship(parent_label='Node4313762448', child_labels=[], edge_length=1.09809398991, taxon_label='Loxocemus bicolor'),
+            'Node4313762704' : NodeRelationship(parent_label='Node4313762000', child_labels=['Node4313762960','Node4313776720'], edge_length=3.67431549248, taxon_label=None),
+            'Node4313762960' : NodeRelationship(parent_label='Node4313762704', child_labels=['Node4313763088','Node4313776208'], edge_length=4.47413907662, taxon_label=None),
+            'Node4313763088' : NodeRelationship(parent_label='Node4313762960', child_labels=['Node4313763216','Node4313763600'], edge_length=1.10594701364, taxon_label=None),
+            'Node4313763216' : NodeRelationship(parent_label='Node4313763088', child_labels=['Antaresia melanocephalus','Antaresia perthensis'], edge_length=3.56964311758, taxon_label=None),
+            'Antaresia melanocephalus' : NodeRelationship(parent_label='Node4313763216', child_labels=[], edge_length=1.47649847948, taxon_label='Antaresia melanocephalus'),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node4313763216', child_labels=[], edge_length=1.47649847948, taxon_label='Antaresia perthensis'),
+            'Node4313763600' : NodeRelationship(parent_label='Node4313763088', child_labels=['Python timoriensis','Liasis albertisii'], edge_length=3.54960462938, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node4313763600', child_labels=[], edge_length=1.49653696768, taxon_label='Python timoriensis'),
+            'Liasis albertisii' : NodeRelationship(parent_label='Node4313763600', child_labels=[], edge_length=1.49653696768, taxon_label='Liasis albertisii'),
+            'Node4313776208' : NodeRelationship(parent_label='Node4313762960', child_labels=['Python sebae','Antaresia maculosa'], edge_length=0.946531890581, taxon_label=None),
+            'Python sebae' : NodeRelationship(parent_label='Node4313776208', child_labels=[], edge_length=5.20555672012, taxon_label='Python sebae'),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node4313776208', child_labels=[], edge_length=5.20555672012, taxon_label='Antaresia maculosa'),
+            'Node4313776720' : NodeRelationship(parent_label='Node4313762704', child_labels=['Node4313776912','Node4313777296'], edge_length=3.27824986702, taxon_label=None),
+            'Node4313776912' : NodeRelationship(parent_label='Node4313776720', child_labels=['Python curtus','Bothrochilus boa'], edge_length=2.88197852526, taxon_label=None),
+            'Python curtus' : NodeRelationship(parent_label='Node4313776912', child_labels=[], edge_length=4.46599929505, taxon_label='Python curtus'),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node4313776912', child_labels=[], edge_length=4.46599929505, taxon_label='Bothrochilus boa'),
+            'Node4313777296' : NodeRelationship(parent_label='Node4313776720', child_labels=['Xenopeltis unicolor','Liasis fuscus'], edge_length=6.86415378064, taxon_label=None),
+            'Xenopeltis unicolor' : NodeRelationship(parent_label='Node4313777296', child_labels=[], edge_length=0.483824039664, taxon_label='Xenopeltis unicolor'),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node4313777296', child_labels=[], edge_length=0.483824039664, taxon_label='Liasis fuscus'),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node4313761872', child_labels=[], edge_length=18.3098649933, taxon_label='Morelia boeleni'),
+            'Node4313777808' : NodeRelationship(parent_label='Node4313761744', child_labels=['Morelia tracyae','Node4313777680'], edge_length=16.8726126715, taxon_label=None),
+            'Morelia tracyae' : NodeRelationship(parent_label='Node4313777808', child_labels=[], edge_length=2.17652327312, taxon_label='Morelia tracyae'),
+            'Node4313777680' : NodeRelationship(parent_label='Node4313777808', child_labels=['Node4313778192','Morelia bredli'], edge_length=1.67230791531, taxon_label=None),
+            'Node4313778192' : NodeRelationship(parent_label='Node4313777680', child_labels=['Morelia viridisN','Python reticulatus'], edge_length=0.491713738136, taxon_label=None),
+            'Morelia viridisN' : NodeRelationship(parent_label='Node4313778192', child_labels=[], edge_length=0.0125016196671, taxon_label='Morelia viridisN'),
+            'Python reticulatus' : NodeRelationship(parent_label='Node4313778192', child_labels=[], edge_length=0.0125016196671, taxon_label='Python reticulatus'),
+            'Morelia bredli' : NodeRelationship(parent_label='Node4313777680', child_labels=[], edge_length=0.504215357803, taxon_label='Morelia bredli'),
+            'Node4313778704' : NodeRelationship(parent_label='Node4313761616', child_labels=['Node4313778832','Morelia kinghorni'], edge_length=13.1562713928, taxon_label=None),
+            'Node4313778832' : NodeRelationship(parent_label='Node4313778704', child_labels=['Liasis mackloti','Antaresia ramsayi'], edge_length=2.98661848623, taxon_label=None),
+            'Liasis mackloti' : NodeRelationship(parent_label='Node4313778832', child_labels=[], edge_length=4.19791393809, taxon_label='Liasis mackloti'),
+            'Antaresia ramsayi' : NodeRelationship(parent_label='Node4313778832', child_labels=[], edge_length=4.19791393809, taxon_label='Antaresia ramsayi'),
+            'Morelia kinghorni' : NodeRelationship(parent_label='Node4313778704', child_labels=[], edge_length=7.18453242432, taxon_label='Morelia kinghorni'),
+            'Node4313779088' : NodeRelationship(parent_label='Node4313761488', child_labels=['Node4313779472','Antaresia stimsoni'], edge_length=24.4333103788, taxon_label=None),
+            'Node4313779472' : NodeRelationship(parent_label='Node4313779088', child_labels=['Python regius','Candola aspera'], edge_length=0.207889736001, taxon_label=None),
+            'Python regius' : NodeRelationship(parent_label='Node4313779472', child_labels=[], edge_length=0.209207825685, taxon_label='Python regius'),
+            'Candola aspera' : NodeRelationship(parent_label='Node4313779472', child_labels=[], edge_length=0.209207825685, taxon_label='Candola aspera'),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node4313779088', child_labels=[], edge_length=0.417097561686, taxon_label='Antaresia stimsoni'),
+            'Node4313779728' : NodeRelationship(parent_label='Node4313761360', child_labels=['Node4313780112','Morelia nauta'], edge_length=69.6091072013, taxon_label=None),
+            'Node4313780112' : NodeRelationship(parent_label='Node4313779728', child_labels=['Node4313800784','Node4313801168'], edge_length=1.24643505521, taxon_label=None),
+            'Node4313800784' : NodeRelationship(parent_label='Node4313780112', child_labels=['Python molurus','Morelia amethistina'], edge_length=2.6364754365, taxon_label=None),
+            'Python molurus' : NodeRelationship(parent_label='Node4313800784', child_labels=[], edge_length=5.1470935265, taxon_label='Python molurus'),
+            'Morelia amethistina' : NodeRelationship(parent_label='Node4313800784', child_labels=[], edge_length=5.1470935265, taxon_label='Morelia amethistina'),
+            'Node4313801168' : NodeRelationship(parent_label='Node4313780112', child_labels=['Morelia viridisS','Liasis olivaceus'], edge_length=7.12573328141, taxon_label=None),
+            'Morelia viridisS' : NodeRelationship(parent_label='Node4313801168', child_labels=[], edge_length=0.657835681585, taxon_label='Morelia viridisS'),
+            'Liasis olivaceus' : NodeRelationship(parent_label='Node4313801168', child_labels=[], edge_length=0.657835681585, taxon_label='Liasis olivaceus'),
+            'Morelia nauta' : NodeRelationship(parent_label='Node4313779728', child_labels=[], edge_length=9.03000401821, taxon_label='Morelia nauta'),
+            'Node4313801552' : NodeRelationship(parent_label='Node4313761232', child_labels=['Apodora papuana','Morelia carinata'], edge_length=202.422980755, taxon_label=None),
+            'Apodora papuana' : NodeRelationship(parent_label='Node4313801552', child_labels=[], edge_length=0.152425796315, taxon_label='Apodora papuana'),
+            'Morelia carinata' : NodeRelationship(parent_label='Node4313801552', child_labels=[], edge_length=0.152425796315, taxon_label='Morelia carinata'),
+            'Node4313801936' : NodeRelationship(parent_label='Node4313761104', child_labels=['Morelia spilota','Morelia oenpelliensis'], edge_length=229.880308935, taxon_label=None),
+            'Morelia spilota' : NodeRelationship(parent_label='Node4313801936', child_labels=[], edge_length=51.3217384582, taxon_label='Morelia spilota'),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node4313801936', child_labels=[], edge_length=51.3217384582, taxon_label='Morelia oenpelliensis'),
         },
         {
-            'Node36995120' : NodeRelationship(parent_label=None, child_labels=['Morelia boeleni','Node36999056'], edge_length=None, taxon_label=None),
-            'Morelia boeleni' : NodeRelationship(parent_label='Node36995120', child_labels=[], edge_length=26.0384706379, taxon_label='Morelia boeleni'),
-            'Node36999056' : NodeRelationship(parent_label='Node36995120', child_labels=['Node36995152','Node37062192'], edge_length=5.21927124134, taxon_label=None),
-            'Node36995152' : NodeRelationship(parent_label='Node36999056', child_labels=['Node36962160','Node37061744'], edge_length=0.952265882909, taxon_label=None),
-            'Node36962160' : NodeRelationship(parent_label='Node36995152', child_labels=['Node36999024','Node37060720'], edge_length=1.64883491058, taxon_label=None),
-            'Node36999024' : NodeRelationship(parent_label='Node36962160', child_labels=['Leiopython albertisii','Bothrochilus boa'], edge_length=2.95693808858, taxon_label=None),
-            'Leiopython albertisii' : NodeRelationship(parent_label='Node36999024', child_labels=[], edge_length=15.2611605145, taxon_label='Leiopython albertisii'),
-            'Bothrochilus boa' : NodeRelationship(parent_label='Node36999024', child_labels=[], edge_length=15.2611605145, taxon_label='Bothrochilus boa'),
-            'Node37060720' : NodeRelationship(parent_label='Node36962160', child_labels=['Morelia carinata','Node37061040'], edge_length=2.15553698471, taxon_label=None),
-            'Morelia carinata' : NodeRelationship(parent_label='Node37060720', child_labels=[], edge_length=16.0625616183, taxon_label='Morelia carinata'),
-            'Node37061040' : NodeRelationship(parent_label='Node37060720', child_labels=['Node37060944','Morelia viridis'], edge_length=1.37038749174, taxon_label=None),
-            'Node37060944' : NodeRelationship(parent_label='Node37061040', child_labels=['Node37061072','Node37061392'], edge_length=0.166805015451, taxon_label=None),
-            'Node37061072' : NodeRelationship(parent_label='Node37060944', child_labels=['Morelia spilota','Morelia bredli'], edge_length=7.4747693113, taxon_label=None),
-            'Morelia spilota' : NodeRelationship(parent_label='Node37061072', child_labels=[], edge_length=7.05059979983, taxon_label='Morelia spilota'),
-            'Morelia bredli' : NodeRelationship(parent_label='Node37061072', child_labels=[], edge_length=7.05059979983, taxon_label='Morelia bredli'),
-            'Node37061392' : NodeRelationship(parent_label='Node37060944', child_labels=['Antaresia maculosa','Node37061456'], edge_length=1.43991095233, taxon_label=None),
-            'Antaresia maculosa' : NodeRelationship(parent_label='Node37061392', child_labels=[], edge_length=13.0854581588, taxon_label='Antaresia maculosa'),
-            'Node37061456' : NodeRelationship(parent_label='Node37061392', child_labels=['Antaresia perthensis','Node37061584'], edge_length=2.85871098218, taxon_label=None),
-            'Antaresia perthensis' : NodeRelationship(parent_label='Node37061456', child_labels=[], edge_length=10.2267471766, taxon_label='Antaresia perthensis'),
-            'Node37061584' : NodeRelationship(parent_label='Node37061456', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=5.35604513133, taxon_label=None),
-            'Antaresia childreni' : NodeRelationship(parent_label='Node37061584', child_labels=[], edge_length=4.8707020453, taxon_label='Antaresia childreni'),
-            'Antaresia stimsoni' : NodeRelationship(parent_label='Node37061584', child_labels=[], edge_length=4.8707020453, taxon_label='Antaresia stimsoni'),
-            'Morelia viridis' : NodeRelationship(parent_label='Node37061040', child_labels=[], edge_length=14.6921741266, taxon_label='Morelia viridis'),
-            'Node37061744' : NodeRelationship(parent_label='Node36995152', child_labels=['Node37061872','Apodora papuana'], edge_length=7.07533845302, taxon_label=None),
-            'Node37061872' : NodeRelationship(parent_label='Node37061744', child_labels=['Liasis olivaceus','Node37062064'], edge_length=1.94094943657, taxon_label=None),
-            'Liasis olivaceus' : NodeRelationship(parent_label='Node37061872', child_labels=[], edge_length=10.850645624, taxon_label='Liasis olivaceus'),
-            'Node37062064' : NodeRelationship(parent_label='Node37061872', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=8.02016262021, taxon_label=None),
-            'Liasis fuscus' : NodeRelationship(parent_label='Node37062064', child_labels=[], edge_length=2.83048300382, taxon_label='Liasis fuscus'),
-            'Liasis mackloti' : NodeRelationship(parent_label='Node37062064', child_labels=[], edge_length=2.83048300382, taxon_label='Liasis mackloti'),
-            'Apodora papuana' : NodeRelationship(parent_label='Node37061744', child_labels=[], edge_length=12.7915950606, taxon_label='Apodora papuana'),
-            'Node37062192' : NodeRelationship(parent_label='Node36999056', child_labels=['Node37062288','Node37063088'], edge_length=0.340827566292, taxon_label=None),
-            'Node37062288' : NodeRelationship(parent_label='Node37062192', child_labels=['Morelia oenpelliensis','Node37062512'], edge_length=1.42657874327, taxon_label=None),
-            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node37062288', child_labels=[], edge_length=19.051793087, taxon_label='Morelia oenpelliensis'),
-            'Node37062512' : NodeRelationship(parent_label='Node37062288', child_labels=['Node37062448','Node37063184'], edge_length=1.77859521326, taxon_label=None),
-            'Node37062448' : NodeRelationship(parent_label='Node37062512', child_labels=['Node37062544','Morelia tracyae'], edge_length=7.19864380037, taxon_label=None),
-            'Node37062544' : NodeRelationship(parent_label='Node37062448', child_labels=['Morelia amethistina','Node37062768'], edge_length=1.9541248425, taxon_label=None),
-            'Morelia amethistina' : NodeRelationship(parent_label='Node37062544', child_labels=[], edge_length=8.12042923083, taxon_label='Morelia amethistina'),
-            'Node37062768' : NodeRelationship(parent_label='Node37062544', child_labels=['Morelia clastolepis','Node37062896'], edge_length=6.05470978372, taxon_label=None),
-            'Morelia clastolepis' : NodeRelationship(parent_label='Node37062768', child_labels=[], edge_length=2.0657194471, taxon_label='Morelia clastolepis'),
-            'Node37062896' : NodeRelationship(parent_label='Node37062768', child_labels=['Morelia kinghorni','Morelia nauta'], edge_length=1.06606772283, taxon_label=None),
-            'Morelia kinghorni' : NodeRelationship(parent_label='Node37062896', child_labels=[], edge_length=0.999651724272, taxon_label='Morelia kinghorni'),
-            'Morelia nauta' : NodeRelationship(parent_label='Node37062896', child_labels=[], edge_length=0.999651724272, taxon_label='Morelia nauta'),
-            'Morelia tracyae' : NodeRelationship(parent_label='Node37062448', child_labels=[], edge_length=10.0745540733, taxon_label='Morelia tracyae'),
-            'Node37063184' : NodeRelationship(parent_label='Node37062512', child_labels=['Python reticulatus','Python timoriensis'], edge_length=10.657346381, taxon_label=None),
-            'Python reticulatus' : NodeRelationship(parent_label='Node37063184', child_labels=[], edge_length=6.6158514927, taxon_label='Python reticulatus'),
-            'Python timoriensis' : NodeRelationship(parent_label='Node37063184', child_labels=[], edge_length=6.6158514927, taxon_label='Python timoriensis'),
-            'Node37063088' : NodeRelationship(parent_label='Node37062192', child_labels=['Node37063248','Node37063760'], edge_length=2.1717154248, taxon_label=None),
-            'Node37063248' : NodeRelationship(parent_label='Node37063088', child_labels=['Python sebae','Node37063536'], edge_length=3.93324105164, taxon_label=None),
-            'Python sebae' : NodeRelationship(parent_label='Node37063248', child_labels=[], edge_length=14.3734153538, taxon_label='Python sebae'),
-            'Node37063536' : NodeRelationship(parent_label='Node37063248', child_labels=['Python regius','Node37063664'], edge_length=2.6097491119, taxon_label=None),
-            'Python regius' : NodeRelationship(parent_label='Node37063536', child_labels=[], edge_length=11.7636662419, taxon_label='Python regius'),
-            'Node37063664' : NodeRelationship(parent_label='Node37063536', child_labels=['Python brongersmai','Python molurus'], edge_length=1.23184615824, taxon_label=None),
-            'Python brongersmai' : NodeRelationship(parent_label='Node37063664', child_labels=[], edge_length=10.5318200836, taxon_label='Python brongersmai'),
-            'Python molurus' : NodeRelationship(parent_label='Node37063664', child_labels=[], edge_length=10.5318200836, taxon_label='Python molurus'),
-            'Node37063760' : NodeRelationship(parent_label='Node37063088', child_labels=['Aspidites ramsayi','Aspidites melanocephalus'], edge_length=8.5794579294, taxon_label=None),
-            'Aspidites ramsayi' : NodeRelationship(parent_label='Node37063760', child_labels=[], edge_length=9.72719847603, taxon_label='Aspidites ramsayi'),
-            'Aspidites melanocephalus' : NodeRelationship(parent_label='Node37063760', child_labels=[], edge_length=9.72719847603, taxon_label='Aspidites melanocephalus'),
+            'Node4313802576' : NodeRelationship(parent_label=None, child_labels=['Node4313802704','Loxocemus bicolor'], edge_length=None, taxon_label=None),
+            'Node4313802704' : NodeRelationship(parent_label='Node4313802576', child_labels=['Candola aspera','Node4313803024'], edge_length=18.8917197007, taxon_label=None),
+            'Candola aspera' : NodeRelationship(parent_label='Node4313802704', child_labels=[], edge_length=81.2974222246, taxon_label='Candola aspera'),
+            'Node4313803024' : NodeRelationship(parent_label='Node4313802704', child_labels=['Node4313803152','Node4316156752'], edge_length=33.1565984398, taxon_label=None),
+            'Node4313803152' : NodeRelationship(parent_label='Node4313803024', child_labels=['Node4313803280','Node4313829328'], edge_length=6.57324583185, taxon_label=None),
+            'Node4313803280' : NodeRelationship(parent_label='Node4313803152', child_labels=['Node4313803408','Node4313826384'], edge_length=0.76583222117, taxon_label=None),
+            'Node4313803408' : NodeRelationship(parent_label='Node4313803280', child_labels=['Node4313803536','Node4313804432'], edge_length=4.5936111676, taxon_label=None),
+            'Node4313803536' : NodeRelationship(parent_label='Node4313803408', child_labels=['Morelia amethistina','Node4313802960'], edge_length=15.1180336863, taxon_label=None),
+            'Morelia amethistina' : NodeRelationship(parent_label='Node4313803536', child_labels=[], edge_length=21.0901008779, taxon_label='Morelia amethistina'),
+            'Node4313802960' : NodeRelationship(parent_label='Node4313803536', child_labels=['Morelia spilota','Node4313803792'], edge_length=3.38653541663, taxon_label=None),
+            'Morelia spilota' : NodeRelationship(parent_label='Node4313802960', child_labels=[], edge_length=17.7035654613, taxon_label='Morelia spilota'),
+            'Node4313803792' : NodeRelationship(parent_label='Node4313802960', child_labels=['Morelia oenpelliensis','Morelia bredli'], edge_length=2.6244717729, taxon_label=None),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node4313803792', child_labels=[], edge_length=15.0790936884, taxon_label='Morelia oenpelliensis'),
+            'Morelia bredli' : NodeRelationship(parent_label='Node4313803792', child_labels=[], edge_length=15.0790936884, taxon_label='Morelia bredli'),
+            'Node4313804432' : NodeRelationship(parent_label='Node4313803408', child_labels=['Node4313804560','Node4313825616'], edge_length=3.40951166184, taxon_label=None),
+            'Node4313804560' : NodeRelationship(parent_label='Node4313804432', child_labels=['Morelia carinata','Node4313804240'], edge_length=5.00375936144, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node4313804560', child_labels=[], edge_length=27.7948635409, taxon_label='Morelia carinata'),
+            'Node4313804240' : NodeRelationship(parent_label='Node4313804560', child_labels=['Morelia viridisS','Morelia viridisN'], edge_length=8.32618746237, taxon_label=None),
+            'Morelia viridisS' : NodeRelationship(parent_label='Node4313804240', child_labels=[], edge_length=19.4686760786, taxon_label='Morelia viridisS'),
+            'Morelia viridisN' : NodeRelationship(parent_label='Node4313804240', child_labels=[], edge_length=19.4686760786, taxon_label='Morelia viridisN'),
+            'Node4313825616' : NodeRelationship(parent_label='Node4313804432', child_labels=['Antaresia maculosa','Node4313825744'], edge_length=5.81119736053, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node4313825616', child_labels=[], edge_length=26.9874255418, taxon_label='Antaresia maculosa'),
+            'Node4313825744' : NodeRelationship(parent_label='Node4313825616', child_labels=['Node4313826128','Antaresia perthensis'], edge_length=2.25683638168, taxon_label=None),
+            'Node4313826128' : NodeRelationship(parent_label='Node4313825744', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=16.6530983052, taxon_label=None),
+            'Antaresia childreni' : NodeRelationship(parent_label='Node4313826128', child_labels=[], edge_length=8.07749085501, taxon_label='Antaresia childreni'),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node4313826128', child_labels=[], edge_length=8.07749085501, taxon_label='Antaresia stimsoni'),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node4313825744', child_labels=[], edge_length=24.7305891602, taxon_label='Antaresia perthensis'),
+            'Node4313826384' : NodeRelationship(parent_label='Node4313803280', child_labels=['Node4313826768','Node4313828048'], edge_length=1.27553605821, taxon_label=None),
+            'Node4313826768' : NodeRelationship(parent_label='Node4313826384', child_labels=['Node4313826896','Node4313827664'], edge_length=4.33214615343, taxon_label=None),
+            'Node4313826896' : NodeRelationship(parent_label='Node4313826768', child_labels=['Node4313827024','Node4313827408'], edge_length=3.37363071467, taxon_label=None),
+            'Node4313827024' : NodeRelationship(parent_label='Node4313826896', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=26.1365403684, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node4313827024', child_labels=[], edge_length=5.68389243709, taxon_label='Liasis fuscus'),
+            'Liasis mackloti' : NodeRelationship(parent_label='Node4313827024', child_labels=[], edge_length=5.68389243709, taxon_label='Liasis mackloti'),
+            'Node4313827408' : NodeRelationship(parent_label='Node4313826896', child_labels=['Apodora papuana','Liasis olivaceus'], edge_length=12.1064068345, taxon_label=None),
+            'Apodora papuana' : NodeRelationship(parent_label='Node4313827408', child_labels=[], edge_length=19.714025971, taxon_label='Apodora papuana'),
+            'Liasis olivaceus' : NodeRelationship(parent_label='Node4313827408', child_labels=[], edge_length=19.714025971, taxon_label='Liasis olivaceus'),
+            'Node4313827664' : NodeRelationship(parent_label='Node4313826768', child_labels=['Antaresia melanocephalus','Antaresia ramsayi'], edge_length=16.3762764593, taxon_label=None),
+            'Antaresia melanocephalus' : NodeRelationship(parent_label='Node4313827664', child_labels=[], edge_length=18.8177870609, taxon_label='Antaresia melanocephalus'),
+            'Antaresia ramsayi' : NodeRelationship(parent_label='Node4313827664', child_labels=[], edge_length=18.8177870609, taxon_label='Antaresia ramsayi'),
+            'Node4313828048' : NodeRelationship(parent_label='Node4313826384', child_labels=['Morelia boeleni','Node4313828176'], edge_length=10.9652932592, taxon_label=None),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node4313828048', child_labels=[], edge_length=28.5609164144, taxon_label='Morelia boeleni'),
+            'Node4313828176' : NodeRelationship(parent_label='Node4313828048', child_labels=['Morelia tracyae','Node4313828432'], edge_length=11.3916491298, taxon_label=None),
+            'Morelia tracyae' : NodeRelationship(parent_label='Node4313828176', child_labels=[], edge_length=17.1692672846, taxon_label='Morelia tracyae'),
+            'Node4313828432' : NodeRelationship(parent_label='Node4313828176', child_labels=['Node4313828816','Morelia clastolepis'], edge_length=10.4784522084, taxon_label=None),
+            'Node4313828816' : NodeRelationship(parent_label='Node4313828432', child_labels=['Morelia kinghorni','Morelia nauta'], edge_length=1.44575855569, taxon_label=None),
+            'Morelia kinghorni' : NodeRelationship(parent_label='Node4313828816', child_labels=[], edge_length=5.2450565205, taxon_label='Morelia kinghorni'),
+            'Morelia nauta' : NodeRelationship(parent_label='Node4313828816', child_labels=[], edge_length=5.2450565205, taxon_label='Morelia nauta'),
+            'Morelia clastolepis' : NodeRelationship(parent_label='Node4313828432', child_labels=[], edge_length=6.69081507619, taxon_label='Morelia clastolepis'),
+            'Node4313829328' : NodeRelationship(parent_label='Node4313803152', child_labels=['Node4316155984','Node4313802512'], edge_length=2.53377266123, taxon_label=None),
+            'Node4316155984' : NodeRelationship(parent_label='Node4313829328', child_labels=['Python timoriensis','Python reticulatus'], edge_length=23.8923728386, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node4316155984', child_labels=[], edge_length=15.1414324532, taxon_label='Python timoriensis'),
+            'Python reticulatus' : NodeRelationship(parent_label='Node4316155984', child_labels=[], edge_length=15.1414324532, taxon_label='Python reticulatus'),
+            'Node4313802512' : NodeRelationship(parent_label='Node4313829328', child_labels=['Bothrochilus boa','Liasis albertisii'], edge_length=22.5856079922, taxon_label=None),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node4313802512', child_labels=[], edge_length=16.4481972995, taxon_label='Bothrochilus boa'),
+            'Liasis albertisii' : NodeRelationship(parent_label='Node4313802512', child_labels=[], edge_length=16.4481972995, taxon_label='Liasis albertisii'),
+            'Node4316156752' : NodeRelationship(parent_label='Node4313803024', child_labels=['Xenopeltis unicolor','Node4316156624'], edge_length=16.2594519516, taxon_label=None),
+            'Xenopeltis unicolor' : NodeRelationship(parent_label='Node4316156752', child_labels=[], edge_length=31.8813718333, taxon_label='Xenopeltis unicolor'),
+            'Node4316156624' : NodeRelationship(parent_label='Node4316156752', child_labels=['Node4316157136','Python regius'], edge_length=5.97313984611, taxon_label=None),
+            'Node4316157136' : NodeRelationship(parent_label='Node4316156624', child_labels=['Python curtus','Node4316157008'], edge_length=8.94343133576, taxon_label=None),
+            'Python curtus' : NodeRelationship(parent_label='Node4316157136', child_labels=[], edge_length=16.9648006514, taxon_label='Python curtus'),
+            'Node4316157008' : NodeRelationship(parent_label='Node4316157136', child_labels=['Python sebae','Python molurus'], edge_length=4.66373979181, taxon_label=None),
+            'Python sebae' : NodeRelationship(parent_label='Node4316157008', child_labels=[], edge_length=12.3010608596, taxon_label='Python sebae'),
+            'Python molurus' : NodeRelationship(parent_label='Node4316157008', child_labels=[], edge_length=12.3010608596, taxon_label='Python molurus'),
+            'Python regius' : NodeRelationship(parent_label='Node4316156624', child_labels=[], edge_length=25.9082319872, taxon_label='Python regius'),
+            'Loxocemus bicolor' : NodeRelationship(parent_label='Node4313802576', child_labels=[], edge_length=100.189141925, taxon_label='Loxocemus bicolor'),
         },
         {
-            'Node37064144' : NodeRelationship(parent_label=None, child_labels=['Node37064208','Node37656048'], edge_length=None, taxon_label=None),
-            'Node37064208' : NodeRelationship(parent_label='Node37064144', child_labels=['Node36998896','Node37655728'], edge_length=0.0364728670888, taxon_label=None),
-            'Node36998896' : NodeRelationship(parent_label='Node37064208', child_labels=['Node37063696','Node37654704'], edge_length=1.06929723627, taxon_label=None),
-            'Node37063696' : NodeRelationship(parent_label='Node36998896', child_labels=['Node37064048','Node37654640'], edge_length=3.261105684, taxon_label=None),
-            'Node37064048' : NodeRelationship(parent_label='Node37063696', child_labels=['Python sebae','Node37064496'], edge_length=2.97395412534, taxon_label=None),
-            'Python sebae' : NodeRelationship(parent_label='Node37064048', child_labels=[], edge_length=16.9224723285, taxon_label='Python sebae'),
-            'Node37064496' : NodeRelationship(parent_label='Node37064048', child_labels=['Node37064432','Python regius'], edge_length=2.75174107457, taxon_label=None),
-            'Node37064432' : NodeRelationship(parent_label='Node37064496', child_labels=['Python molurus','Python brongersmai'], edge_length=0.218628811139, taxon_label=None),
-            'Python molurus' : NodeRelationship(parent_label='Node37064432', child_labels=[], edge_length=13.9521024428, taxon_label='Python molurus'),
-            'Python brongersmai' : NodeRelationship(parent_label='Node37064432', child_labels=[], edge_length=13.9521024428, taxon_label='Python brongersmai'),
-            'Python regius' : NodeRelationship(parent_label='Node37064496', child_labels=[], edge_length=14.170731254, taxon_label='Python regius'),
-            'Node37654640' : NodeRelationship(parent_label='Node37063696', child_labels=['Aspidites ramsayi','Aspidites melanocephalus'], edge_length=12.0688826259, taxon_label=None),
-            'Aspidites ramsayi' : NodeRelationship(parent_label='Node37654640', child_labels=[], edge_length=7.82754382801, taxon_label='Aspidites ramsayi'),
-            'Aspidites melanocephalus' : NodeRelationship(parent_label='Node37654640', child_labels=[], edge_length=7.82754382801, taxon_label='Aspidites melanocephalus'),
-            'Node37654704' : NodeRelationship(parent_label='Node36998896', child_labels=['Node37654896','Morelia viridis'], edge_length=5.48562103095, taxon_label=None),
-            'Node37654896' : NodeRelationship(parent_label='Node37654704', child_labels=['Node37064656','Node37655152'], edge_length=2.9034791189, taxon_label=None),
-            'Node37064656' : NodeRelationship(parent_label='Node37654896', child_labels=['Morelia carinata','Node37655120'], edge_length=2.97877570893, taxon_label=None),
-            'Morelia carinata' : NodeRelationship(parent_label='Node37064656', child_labels=[], edge_length=11.7896562791, taxon_label='Morelia carinata'),
-            'Node37655120' : NodeRelationship(parent_label='Node37064656', child_labels=['Morelia spilota','Morelia bredli'], edge_length=7.73520362135, taxon_label=None),
-            'Morelia spilota' : NodeRelationship(parent_label='Node37655120', child_labels=[], edge_length=4.05445265776, taxon_label='Morelia spilota'),
-            'Morelia bredli' : NodeRelationship(parent_label='Node37655120', child_labels=[], edge_length=4.05445265776, taxon_label='Morelia bredli'),
-            'Node37655152' : NodeRelationship(parent_label='Node37654896', child_labels=['Antaresia maculosa','Node37655408'], edge_length=1.25780607691, taxon_label=None),
-            'Antaresia maculosa' : NodeRelationship(parent_label='Node37655152', child_labels=[], edge_length=13.5106259111, taxon_label='Antaresia maculosa'),
-            'Node37655408' : NodeRelationship(parent_label='Node37655152', child_labels=['Antaresia perthensis','Node37655536'], edge_length=2.27459934102, taxon_label=None),
-            'Antaresia perthensis' : NodeRelationship(parent_label='Node37655408', child_labels=[], edge_length=11.2360265701, taxon_label='Antaresia perthensis'),
-            'Node37655536' : NodeRelationship(parent_label='Node37655408', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=7.74754730265, taxon_label=None),
-            'Antaresia childreni' : NodeRelationship(parent_label='Node37655536', child_labels=[], edge_length=3.48847926746, taxon_label='Antaresia childreni'),
-            'Antaresia stimsoni' : NodeRelationship(parent_label='Node37655536', child_labels=[], edge_length=3.48847926746, taxon_label='Antaresia stimsoni'),
-            'Morelia viridis' : NodeRelationship(parent_label='Node37654704', child_labels=[], edge_length=17.6719111069, taxon_label='Morelia viridis'),
-            'Node37655728' : NodeRelationship(parent_label='Node37064208', child_labels=['Leiopython albertisii','Bothrochilus boa'], edge_length=10.8687376261, taxon_label=None),
-            'Leiopython albertisii' : NodeRelationship(parent_label='Node37655728', child_labels=[], edge_length=13.3580917481, taxon_label='Leiopython albertisii'),
-            'Bothrochilus boa' : NodeRelationship(parent_label='Node37655728', child_labels=[], edge_length=13.3580917481, taxon_label='Bothrochilus boa'),
-            'Node37656048' : NodeRelationship(parent_label='Node37064144', child_labels=['Node37655984','Node37656560'], edge_length=1.25568695854, taxon_label=None),
-            'Node37655984' : NodeRelationship(parent_label='Node37656048', child_labels=['Node37655632','Apodora papuana'], edge_length=14.878020141, taxon_label=None),
-            'Node37655632' : NodeRelationship(parent_label='Node37655984', child_labels=['Liasis olivaceus','Node37656272'], edge_length=1.91471562327, taxon_label=None),
-            'Liasis olivaceus' : NodeRelationship(parent_label='Node37655632', child_labels=[], edge_length=6.21487951846, taxon_label='Liasis olivaceus'),
-            'Node37656272' : NodeRelationship(parent_label='Node37655632', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=3.60951843288, taxon_label=None),
-            'Liasis fuscus' : NodeRelationship(parent_label='Node37656272', child_labels=[], edge_length=2.60536108558, taxon_label='Liasis fuscus'),
-            'Liasis mackloti' : NodeRelationship(parent_label='Node37656272', child_labels=[], edge_length=2.60536108558, taxon_label='Liasis mackloti'),
-            'Apodora papuana' : NodeRelationship(parent_label='Node37655984', child_labels=[], edge_length=8.12959514173, taxon_label='Apodora papuana'),
-            'Node37656560' : NodeRelationship(parent_label='Node37656048', child_labels=['Morelia boeleni','Node37656656'], edge_length=2.53457554003, taxon_label=None),
-            'Morelia boeleni' : NodeRelationship(parent_label='Node37656560', child_labels=[], edge_length=20.4730397427, taxon_label='Morelia boeleni'),
-            'Node37656656' : NodeRelationship(parent_label='Node37656560', child_labels=['Node37656528','Morelia oenpelliensis'], edge_length=2.57209904849, taxon_label=None),
-            'Node37656528' : NodeRelationship(parent_label='Node37656656', child_labels=['Node37656688','Node37657392'], edge_length=0.296424924481, taxon_label=None),
-            'Node37656688' : NodeRelationship(parent_label='Node37656528', child_labels=['Node37656304','Morelia tracyae'], edge_length=9.88501788667, taxon_label=None),
-            'Node37656304' : NodeRelationship(parent_label='Node37656688', child_labels=['Morelia amethistina','Node37656976'], edge_length=3.28625146667, taxon_label=None),
-            'Morelia amethistina' : NodeRelationship(parent_label='Node37656304', child_labels=[], edge_length=4.43324641637, taxon_label='Morelia amethistina'),
-            'Node37656976' : NodeRelationship(parent_label='Node37656304', child_labels=['Node37656912','Morelia clastolepis'], edge_length=2.99969759558, taxon_label=None),
-            'Node37656912' : NodeRelationship(parent_label='Node37656976', child_labels=['Morelia nauta','Morelia kinghorni'], edge_length=0.622029416262, taxon_label=None),
-            'Morelia nauta' : NodeRelationship(parent_label='Node37656912', child_labels=[], edge_length=0.811519404534, taxon_label='Morelia nauta'),
-            'Morelia kinghorni' : NodeRelationship(parent_label='Node37656912', child_labels=[], edge_length=0.811519404534, taxon_label='Morelia kinghorni'),
-            'Morelia clastolepis' : NodeRelationship(parent_label='Node37656976', child_labels=[], edge_length=1.4335488208, taxon_label='Morelia clastolepis'),
-            'Morelia tracyae' : NodeRelationship(parent_label='Node37656688', child_labels=[], edge_length=7.71949788304, taxon_label='Morelia tracyae'),
-            'Node37657392' : NodeRelationship(parent_label='Node37656528', child_labels=['Python reticulatus','Python timoriensis'], edge_length=11.8234917746, taxon_label=None),
-            'Python reticulatus' : NodeRelationship(parent_label='Node37657392', child_labels=[], edge_length=5.78102399509, taxon_label='Python reticulatus'),
-            'Python timoriensis' : NodeRelationship(parent_label='Node37657392', child_labels=[], edge_length=5.78102399509, taxon_label='Python timoriensis'),
-            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node37656656', child_labels=[], edge_length=17.9009406942, taxon_label='Morelia oenpelliensis'),
+            'Node4316158288' : NodeRelationship(parent_label=None, child_labels=['Candola aspera','Node4316158608'], edge_length=None, taxon_label=None),
+            'Candola aspera' : NodeRelationship(parent_label='Node4316158288', child_labels=[], edge_length=109.372663833, taxon_label='Candola aspera'),
+            'Node4316158608' : NodeRelationship(parent_label='Node4316158288', child_labels=['Node4316158736','Node4316203024'], edge_length=23.0231215792, taxon_label=None),
+            'Node4316158736' : NodeRelationship(parent_label='Node4316158608', child_labels=['Node4316158864','Node4316202128'], edge_length=25.5450384687, taxon_label=None),
+            'Node4316158864' : NodeRelationship(parent_label='Node4316158736', child_labels=['Node4316158992','Node4316201552'], edge_length=8.2214192007, taxon_label=None),
+            'Node4316158992' : NodeRelationship(parent_label='Node4316158864', child_labels=['Node4316159120','Node4316179792'], edge_length=6.47536868825, taxon_label=None),
+            'Node4316159120' : NodeRelationship(parent_label='Node4316158992', child_labels=['Node4316159248','Node4316178128'], edge_length=2.53965409687, taxon_label=None),
+            'Node4316159248' : NodeRelationship(parent_label='Node4316159120', child_labels=['Node4316159376','Node4316177104'], edge_length=2.41802497137, taxon_label=None),
+            'Node4316159376' : NodeRelationship(parent_label='Node4316159248', child_labels=['Node4316159504','Node4316176720'], edge_length=6.39175712039, taxon_label=None),
+            'Node4316159504' : NodeRelationship(parent_label='Node4316159376', child_labels=['Node4316159632','Node4316176464'], edge_length=4.82772953939, taxon_label=None),
+            'Node4316159632' : NodeRelationship(parent_label='Node4316159504', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=18.9362130146, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node4316159632', child_labels=[], edge_length=10.9943371535, taxon_label='Liasis fuscus'),
+            'Liasis mackloti' : NodeRelationship(parent_label='Node4316159632', child_labels=[], edge_length=10.9943371535, taxon_label='Liasis mackloti'),
+            'Node4316176464' : NodeRelationship(parent_label='Node4316159504', child_labels=['Apodora papuana','Liasis olivaceus'], edge_length=8.55401069191, taxon_label=None),
+            'Apodora papuana' : NodeRelationship(parent_label='Node4316176464', child_labels=[], edge_length=21.3765394762, taxon_label='Apodora papuana'),
+            'Liasis olivaceus' : NodeRelationship(parent_label='Node4316176464', child_labels=[], edge_length=21.3765394762, taxon_label='Liasis olivaceus'),
+            'Node4316176720' : NodeRelationship(parent_label='Node4316159376', child_labels=['Antaresia melanocephalus','Antaresia ramsayi'], edge_length=17.7955396972, taxon_label=None),
+            'Antaresia melanocephalus' : NodeRelationship(parent_label='Node4316176720', child_labels=[], edge_length=16.9627400103, taxon_label='Antaresia melanocephalus'),
+            'Antaresia ramsayi' : NodeRelationship(parent_label='Node4316176720', child_labels=[], edge_length=16.9627400103, taxon_label='Antaresia ramsayi'),
+            'Node4316177104' : NodeRelationship(parent_label='Node4316159248', child_labels=['Morelia boeleni','Node4316177232'], edge_length=9.11329596086, taxon_label=None),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node4316177104', child_labels=[], edge_length=32.036740867, taxon_label='Morelia boeleni'),
+            'Node4316177232' : NodeRelationship(parent_label='Node4316177104', child_labels=['Morelia tracyae','Node4316177488'], edge_length=14.7791918926, taxon_label=None),
+            'Morelia tracyae' : NodeRelationship(parent_label='Node4316177232', child_labels=[], edge_length=17.2575489744, taxon_label='Morelia tracyae'),
+            'Node4316177488' : NodeRelationship(parent_label='Node4316177232', child_labels=['Node4316177872','Morelia clastolepis'], edge_length=13.3651095585, taxon_label=None),
+            'Node4316177872' : NodeRelationship(parent_label='Node4316177488', child_labels=['Morelia kinghorni','Morelia nauta'], edge_length=0.439451186875, taxon_label=None),
+            'Morelia kinghorni' : NodeRelationship(parent_label='Node4316177872', child_labels=[], edge_length=3.4529882291, taxon_label='Morelia kinghorni'),
+            'Morelia nauta' : NodeRelationship(parent_label='Node4316177872', child_labels=[], edge_length=3.4529882291, taxon_label='Morelia nauta'),
+            'Morelia clastolepis' : NodeRelationship(parent_label='Node4316177488', child_labels=[], edge_length=3.89243941597, taxon_label='Morelia clastolepis'),
+            'Node4316178128' : NodeRelationship(parent_label='Node4316159120', child_labels=['Node4316178512','Node4316179280'], edge_length=5.90175129715, taxon_label=None),
+            'Node4316178512' : NodeRelationship(parent_label='Node4316178128', child_labels=['Node4316178640','Node4316179024'], edge_length=11.5242004723, taxon_label=None),
+            'Node4316178640' : NodeRelationship(parent_label='Node4316178512', child_labels=['Morelia oenpelliensis','Morelia amethistina'], edge_length=1.13984981318, taxon_label=None),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node4316178640', child_labels=[], edge_length=25.0022602166, taxon_label='Morelia oenpelliensis'),
+            'Morelia amethistina' : NodeRelationship(parent_label='Node4316178640', child_labels=[], edge_length=25.0022602166, taxon_label='Morelia amethistina'),
+            'Node4316179024' : NodeRelationship(parent_label='Node4316178512', child_labels=['Morelia spilota','Morelia bredli'], edge_length=13.1543046788, taxon_label=None),
+            'Morelia spilota' : NodeRelationship(parent_label='Node4316179024', child_labels=[], edge_length=12.987805351, taxon_label='Morelia spilota'),
+            'Morelia bredli' : NodeRelationship(parent_label='Node4316179024', child_labels=[], edge_length=12.987805351, taxon_label='Morelia bredli'),
+            'Node4316179280' : NodeRelationship(parent_label='Node4316178128', child_labels=['Bothrochilus boa','Liasis albertisii'], edge_length=13.3915851761, taxon_label=None),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node4316179280', child_labels=[], edge_length=24.274725326, taxon_label='Bothrochilus boa'),
+            'Liasis albertisii' : NodeRelationship(parent_label='Node4316179280', child_labels=[], edge_length=24.274725326, taxon_label='Liasis albertisii'),
+            'Node4316179792' : NodeRelationship(parent_label='Node4316158992', child_labels=['Node4316179920','Node4316180432'], edge_length=7.82653683343, taxon_label=None),
+            'Node4316179920' : NodeRelationship(parent_label='Node4316179792', child_labels=['Morelia carinata','Node4316179664'], edge_length=7.8146690322, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node4316179920', child_labels=[], edge_length=30.4665100305, taxon_label='Morelia carinata'),
+            'Node4316179664' : NodeRelationship(parent_label='Node4316179920', child_labels=['Morelia viridisS','Morelia viridisN'], edge_length=11.0043198537, taxon_label=None),
+            'Morelia viridisS' : NodeRelationship(parent_label='Node4316179664', child_labels=[], edge_length=19.4621901768, taxon_label='Morelia viridisS'),
+            'Morelia viridisN' : NodeRelationship(parent_label='Node4316179664', child_labels=[], edge_length=19.4621901768, taxon_label='Morelia viridisN'),
+            'Node4316180432' : NodeRelationship(parent_label='Node4316179792', child_labels=['Antaresia maculosa','Node4316158224'], edge_length=5.10842077756, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node4316180432', child_labels=[], edge_length=33.1727582851, taxon_label='Antaresia maculosa'),
+            'Node4316158224' : NodeRelationship(parent_label='Node4316180432', child_labels=['Node4316201296','Antaresia perthensis'], edge_length=4.7141022378, taxon_label=None),
+            'Node4316201296' : NodeRelationship(parent_label='Node4316158224', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=19.4308450954, taxon_label=None),
+            'Antaresia childreni' : NodeRelationship(parent_label='Node4316201296', child_labels=[], edge_length=9.02781095195, taxon_label='Antaresia childreni'),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node4316201296', child_labels=[], edge_length=9.02781095195, taxon_label='Antaresia stimsoni'),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node4316158224', child_labels=[], edge_length=28.4586560473, taxon_label='Antaresia perthensis'),
+            'Node4316201552' : NodeRelationship(parent_label='Node4316158864', child_labels=['Python timoriensis','Python reticulatus'], edge_length=22.2791730332, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node4316201552', child_labels=[], edge_length=30.3039115511, taxon_label='Python timoriensis'),
+            'Python reticulatus' : NodeRelationship(parent_label='Node4316201552', child_labels=[], edge_length=30.3039115511, taxon_label='Python reticulatus'),
+            'Node4316202128' : NodeRelationship(parent_label='Node4316158736', child_labels=['Node4316202384','Python regius'], edge_length=17.448321597, taxon_label=None),
+            'Node4316202384' : NodeRelationship(parent_label='Node4316202128', child_labels=['Python curtus','Node4316202256'], edge_length=6.14068810478, taxon_label=None),
+            'Python curtus' : NodeRelationship(parent_label='Node4316202384', child_labels=[], edge_length=37.2154940833, taxon_label='Python curtus'),
+            'Node4316202256' : NodeRelationship(parent_label='Node4316202384', child_labels=['Python sebae','Python molurus'], edge_length=15.2807163378, taxon_label=None),
+            'Python sebae' : NodeRelationship(parent_label='Node4316202256', child_labels=[], edge_length=21.9347777454, taxon_label='Python sebae'),
+            'Python molurus' : NodeRelationship(parent_label='Node4316202256', child_labels=[], edge_length=21.9347777454, taxon_label='Python molurus'),
+            'Python regius' : NodeRelationship(parent_label='Node4316202128', child_labels=[], edge_length=43.356182188, taxon_label='Python regius'),
+            'Node4316203024' : NodeRelationship(parent_label='Node4316158608', child_labels=['Loxocemus bicolor','Xenopeltis unicolor'], edge_length=3.40243621372, taxon_label=None),
+            'Loxocemus bicolor' : NodeRelationship(parent_label='Node4316203024', child_labels=[], edge_length=82.94710604, taxon_label='Loxocemus bicolor'),
+            'Xenopeltis unicolor' : NodeRelationship(parent_label='Node4316203024', child_labels=[], edge_length=82.94710604, taxon_label='Xenopeltis unicolor'),
         },
         {
-            'Node37657712' : NodeRelationship(parent_label=None, child_labels=['Node37657776','Node37658384'], edge_length=None, taxon_label=None),
-            'Node37657776' : NodeRelationship(parent_label='Node37657712', child_labels=['Node36962032','Node37658224'], edge_length=3.09272413642, taxon_label=None),
-            'Node36962032' : NodeRelationship(parent_label='Node37657776', child_labels=['Python sebae','Node37658000'], edge_length=3.43039474792, taxon_label=None),
-            'Python sebae' : NodeRelationship(parent_label='Node36962032', child_labels=[], edge_length=16.5921325784, taxon_label='Python sebae'),
-            'Node37658000' : NodeRelationship(parent_label='Node36962032', child_labels=['Python regius','Node37658128'], edge_length=2.21219736911, taxon_label=None),
-            'Python regius' : NodeRelationship(parent_label='Node37658000', child_labels=[], edge_length=14.3799352093, taxon_label='Python regius'),
-            'Node37658128' : NodeRelationship(parent_label='Node37658000', child_labels=['Python molurus','Python brongersmai'], edge_length=0.997806328959, taxon_label=None),
-            'Python molurus' : NodeRelationship(parent_label='Node37658128', child_labels=[], edge_length=13.3821288803, taxon_label='Python molurus'),
-            'Python brongersmai' : NodeRelationship(parent_label='Node37658128', child_labels=[], edge_length=13.3821288803, taxon_label='Python brongersmai'),
-            'Node37658224' : NodeRelationship(parent_label='Node37657776', child_labels=['Aspidites ramsayi','Aspidites melanocephalus'], edge_length=8.31909563528, taxon_label=None),
-            'Aspidites ramsayi' : NodeRelationship(parent_label='Node37658224', child_labels=[], edge_length=11.703431691, taxon_label='Aspidites ramsayi'),
-            'Aspidites melanocephalus' : NodeRelationship(parent_label='Node37658224', child_labels=[], edge_length=11.703431691, taxon_label='Aspidites melanocephalus'),
-            'Node37658384' : NodeRelationship(parent_label='Node37657712', child_labels=['Node37657648','Node37712912'], edge_length=0.465997253751, taxon_label=None),
-            'Node37657648' : NodeRelationship(parent_label='Node37658384', child_labels=['Node37658288','Morelia oenpelliensis'], edge_length=2.71760756257, taxon_label=None),
-            'Node37658288' : NodeRelationship(parent_label='Node37657648', child_labels=['Node37658160','Node37658576'], edge_length=0.121667790832, taxon_label=None),
-            'Node37658160' : NodeRelationship(parent_label='Node37658288', child_labels=['Python reticulatus','Python timoriensis'], edge_length=13.3467104377, taxon_label=None),
-            'Python reticulatus' : NodeRelationship(parent_label='Node37658160', child_labels=[], edge_length=6.46326841791, taxon_label='Python reticulatus'),
-            'Python timoriensis' : NodeRelationship(parent_label='Node37658160', child_labels=[], edge_length=6.46326841791, taxon_label='Python timoriensis'),
-            'Node37658576' : NodeRelationship(parent_label='Node37658288', child_labels=['Node37712016','Morelia boeleni'], edge_length=10.3912007878, taxon_label=None),
-            'Node37712016' : NodeRelationship(parent_label='Node37658576', child_labels=['Node37711984','Morelia tracyae'], edge_length=3.03031595643, taxon_label=None),
-            'Node37711984' : NodeRelationship(parent_label='Node37712016', child_labels=['Morelia amethistina','Node37712368'], edge_length=1.71754130617, taxon_label=None),
-            'Morelia amethistina' : NodeRelationship(parent_label='Node37711984', child_labels=[], edge_length=4.67092080519, taxon_label='Morelia amethistina'),
-            'Node37712368' : NodeRelationship(parent_label='Node37711984', child_labels=['Morelia nauta','Node37712496'], edge_length=2.58211994653, taxon_label=None),
-            'Morelia nauta' : NodeRelationship(parent_label='Node37712368', child_labels=[], edge_length=2.08880085866, taxon_label='Morelia nauta'),
-            'Node37712496' : NodeRelationship(parent_label='Node37712368', child_labels=['Morelia kinghorni','Morelia clastolepis'], edge_length=0.607570395039, taxon_label=None),
-            'Morelia kinghorni' : NodeRelationship(parent_label='Node37712496', child_labels=[], edge_length=1.48123046362, taxon_label='Morelia kinghorni'),
-            'Morelia clastolepis' : NodeRelationship(parent_label='Node37712496', child_labels=[], edge_length=1.48123046362, taxon_label='Morelia clastolepis'),
-            'Morelia tracyae' : NodeRelationship(parent_label='Node37712016', child_labels=[], edge_length=6.38846211136, taxon_label='Morelia tracyae'),
-            'Morelia boeleni' : NodeRelationship(parent_label='Node37658576', child_labels=[], edge_length=9.41877806779, taxon_label='Morelia boeleni'),
-            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node37657648', child_labels=[], edge_length=19.9316466464, taxon_label='Morelia oenpelliensis'),
-            'Node37712912' : NodeRelationship(parent_label='Node37658384', child_labels=['Node37712848','Node37714192'], edge_length=0.725019015485, taxon_label=None),
-            'Node37712848' : NodeRelationship(parent_label='Node37712912', child_labels=['Node37712816','Node37714000'], edge_length=1.89223670238, taxon_label=None),
-            'Node37712816' : NodeRelationship(parent_label='Node37712848', child_labels=['Node37712400','Morelia carinata'], edge_length=1.84844364601, taxon_label=None),
-            'Node37712400' : NodeRelationship(parent_label='Node37712816', child_labels=['Morelia viridis','Node37713200'], edge_length=2.23472642535, taxon_label=None),
-            'Morelia viridis' : NodeRelationship(parent_label='Node37712400', child_labels=[], edge_length=15.9488284198, taxon_label='Morelia viridis'),
-            'Node37713200' : NodeRelationship(parent_label='Node37712400', child_labels=['Node37713072','Node37713648'], edge_length=0.394642188595, taxon_label=None),
-            'Node37713072' : NodeRelationship(parent_label='Node37713200', child_labels=['Antaresia maculosa','Node37713360'], edge_length=1.55388791109, taxon_label=None),
-            'Antaresia maculosa' : NodeRelationship(parent_label='Node37713072', child_labels=[], edge_length=14.0002983201, taxon_label='Antaresia maculosa'),
-            'Node37713360' : NodeRelationship(parent_label='Node37713072', child_labels=['Antaresia perthensis','Node37713488'], edge_length=2.5525380966, taxon_label=None),
-            'Antaresia perthensis' : NodeRelationship(parent_label='Node37713360', child_labels=[], edge_length=11.4477602235, taxon_label='Antaresia perthensis'),
-            'Node37713488' : NodeRelationship(parent_label='Node37713360', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=5.71931728003, taxon_label=None),
-            'Antaresia childreni' : NodeRelationship(parent_label='Node37713488', child_labels=[], edge_length=5.72844294344, taxon_label='Antaresia childreni'),
-            'Antaresia stimsoni' : NodeRelationship(parent_label='Node37713488', child_labels=[], edge_length=5.72844294344, taxon_label='Antaresia stimsoni'),
-            'Node37713648' : NodeRelationship(parent_label='Node37713200', child_labels=['Morelia spilota','Morelia bredli'], edge_length=11.0588698605, taxon_label=None),
-            'Morelia spilota' : NodeRelationship(parent_label='Node37713648', child_labels=[], edge_length=4.49531637063, taxon_label='Morelia spilota'),
-            'Morelia bredli' : NodeRelationship(parent_label='Node37713648', child_labels=[], edge_length=4.49531637063, taxon_label='Morelia bredli'),
-            'Morelia carinata' : NodeRelationship(parent_label='Node37712816', child_labels=[], edge_length=18.1835548451, taxon_label='Morelia carinata'),
-            'Node37714000' : NodeRelationship(parent_label='Node37712848', child_labels=['Leiopython albertisii','Bothrochilus boa'], edge_length=7.28635782162, taxon_label=None),
-            'Leiopython albertisii' : NodeRelationship(parent_label='Node37714000', child_labels=[], edge_length=12.7456406695, taxon_label='Leiopython albertisii'),
-            'Bothrochilus boa' : NodeRelationship(parent_label='Node37714000', child_labels=[], edge_length=12.7456406695, taxon_label='Bothrochilus boa'),
-            'Node37714192' : NodeRelationship(parent_label='Node37712912', child_labels=['Node37714128','Apodora papuana'], edge_length=6.6830638124, taxon_label=None),
-            'Node37714128' : NodeRelationship(parent_label='Node37714192', child_labels=['Liasis olivaceus','Node37714352'], edge_length=1.71076794287, taxon_label=None),
-            'Liasis olivaceus' : NodeRelationship(parent_label='Node37714128', child_labels=[], edge_length=13.5304034382, taxon_label='Liasis olivaceus'),
-            'Node37714352' : NodeRelationship(parent_label='Node37714128', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=11.7858576376, taxon_label=None),
-            'Liasis fuscus' : NodeRelationship(parent_label='Node37714352', child_labels=[], edge_length=1.74454580066, taxon_label='Liasis fuscus'),
-            'Liasis mackloti' : NodeRelationship(parent_label='Node37714352', child_labels=[], edge_length=1.74454580066, taxon_label='Liasis mackloti'),
-            'Apodora papuana' : NodeRelationship(parent_label='Node37714192', child_labels=[], edge_length=15.2411713811, taxon_label='Apodora papuana'),
+            'Node4316203664' : NodeRelationship(parent_label=None, child_labels=['Candola aspera','Node4316203984'], edge_length=None, taxon_label=None),
+            'Candola aspera' : NodeRelationship(parent_label='Node4316203664', child_labels=[], edge_length=157.750076773, taxon_label='Candola aspera'),
+            'Node4316203984' : NodeRelationship(parent_label='Node4316203664', child_labels=['Node4316204112','Xenopeltis unicolor'], edge_length=44.9789688242, taxon_label=None),
+            'Node4316204112' : NodeRelationship(parent_label='Node4316203984', child_labels=['Loxocemus bicolor','Node4316203920'], edge_length=19.5811677101, taxon_label=None),
+            'Loxocemus bicolor' : NodeRelationship(parent_label='Node4316204112', child_labels=[], edge_length=93.189940239, taxon_label='Loxocemus bicolor'),
+            'Node4316203920' : NodeRelationship(parent_label='Node4316204112', child_labels=['Node4316204496','Node4316251856'], edge_length=27.291533515, taxon_label=None),
+            'Node4316204496' : NodeRelationship(parent_label='Node4316203920', child_labels=['Node4316204624','Node4316251600'], edge_length=10.3875398007, taxon_label=None),
+            'Node4316204624' : NodeRelationship(parent_label='Node4316204496', child_labels=['Node4316204752','Node4316227472'], edge_length=9.74044751021, taxon_label=None),
+            'Node4316204752' : NodeRelationship(parent_label='Node4316204624', child_labels=['Node4316204880','Morelia boeleni'], edge_length=2.88538115771, taxon_label=None),
+            'Node4316204880' : NodeRelationship(parent_label='Node4316204752', child_labels=['Node4316205008','Node4316226768'], edge_length=1.34047834167, taxon_label=None),
+            'Node4316205008' : NodeRelationship(parent_label='Node4316204880', child_labels=['Node4316225680','Node4316226448'], edge_length=2.31767871982, taxon_label=None),
+            'Node4316225680' : NodeRelationship(parent_label='Node4316205008', child_labels=['Node4316225808','Node4316226192'], edge_length=6.3930928479, taxon_label=None),
+            'Node4316225808' : NodeRelationship(parent_label='Node4316225680', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=24.6792964706, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node4316225808', child_labels=[], edge_length=8.15449187544, taxon_label='Liasis fuscus'),
+            'Liasis mackloti' : NodeRelationship(parent_label='Node4316225808', child_labels=[], edge_length=8.15449187544, taxon_label='Liasis mackloti'),
+            'Node4316226192' : NodeRelationship(parent_label='Node4316225680', child_labels=['Apodora papuana','Liasis olivaceus'], edge_length=8.52936801714, taxon_label=None),
+            'Apodora papuana' : NodeRelationship(parent_label='Node4316226192', child_labels=[], edge_length=24.3044203289, taxon_label='Apodora papuana'),
+            'Liasis olivaceus' : NodeRelationship(parent_label='Node4316226192', child_labels=[], edge_length=24.3044203289, taxon_label='Liasis olivaceus'),
+            'Node4316226448' : NodeRelationship(parent_label='Node4316205008', child_labels=['Antaresia melanocephalus','Antaresia ramsayi'], edge_length=23.2404397828, taxon_label=None),
+            'Antaresia melanocephalus' : NodeRelationship(parent_label='Node4316226448', child_labels=[], edge_length=15.9864414111, taxon_label='Antaresia melanocephalus'),
+            'Antaresia ramsayi' : NodeRelationship(parent_label='Node4316226448', child_labels=[], edge_length=15.9864414111, taxon_label='Antaresia ramsayi'),
+            'Node4316226768' : NodeRelationship(parent_label='Node4316204880', child_labels=['Bothrochilus boa','Liasis albertisii'], edge_length=18.2547475502, taxon_label=None),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node4316226768', child_labels=[], edge_length=23.2898123636, taxon_label='Bothrochilus boa'),
+            'Liasis albertisii' : NodeRelationship(parent_label='Node4316226768', child_labels=[], edge_length=23.2898123636, taxon_label='Liasis albertisii'),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node4316204752', child_labels=[], edge_length=42.8850382554, taxon_label='Morelia boeleni'),
+            'Node4316227472' : NodeRelationship(parent_label='Node4316204624', child_labels=['Node4316227600','Node4316229392'], edge_length=2.72676824396, taxon_label=None),
+            'Node4316227600' : NodeRelationship(parent_label='Node4316227472', child_labels=['Node4316227728','Node4316228112'], edge_length=14.2175774566, taxon_label=None),
+            'Node4316227728' : NodeRelationship(parent_label='Node4316227600', child_labels=['Morelia spilota','Morelia bredli'], edge_length=12.5474231006, taxon_label=None),
+            'Morelia spilota' : NodeRelationship(parent_label='Node4316227728', child_labels=[], edge_length=16.278650612, taxon_label='Morelia spilota'),
+            'Morelia bredli' : NodeRelationship(parent_label='Node4316227728', child_labels=[], edge_length=16.278650612, taxon_label='Morelia bredli'),
+            'Node4316228112' : NodeRelationship(parent_label='Node4316227600', child_labels=['Morelia oenpelliensis','Node4316227984'], edge_length=1.26678175478, taxon_label=None),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node4316228112', child_labels=[], edge_length=27.5592919578, taxon_label='Morelia oenpelliensis'),
+            'Node4316227984' : NodeRelationship(parent_label='Node4316228112', child_labels=['Morelia tracyae','Node4316228368'], edge_length=13.3039152583, taxon_label=None),
+            'Morelia tracyae' : NodeRelationship(parent_label='Node4316227984', child_labels=[], edge_length=14.2553766995, taxon_label='Morelia tracyae'),
+            'Node4316228368' : NodeRelationship(parent_label='Node4316227984', child_labels=['Node4316228752','Morelia amethistina'], edge_length=1.66170791236, taxon_label=None),
+            'Node4316228752' : NodeRelationship(parent_label='Node4316228368', child_labels=['Node4316228880','Morelia nauta'], edge_length=8.89489387836, taxon_label=None),
+            'Node4316228880' : NodeRelationship(parent_label='Node4316228752', child_labels=['Morelia clastolepis','Morelia kinghorni'], edge_length=0.230110019205, taxon_label=None),
+            'Morelia clastolepis' : NodeRelationship(parent_label='Node4316228880', child_labels=[], edge_length=3.46866488962, taxon_label='Morelia clastolepis'),
+            'Morelia kinghorni' : NodeRelationship(parent_label='Node4316228880', child_labels=[], edge_length=3.46866488962, taxon_label='Morelia kinghorni'),
+            'Morelia nauta' : NodeRelationship(parent_label='Node4316228752', child_labels=[], edge_length=3.69877490882, taxon_label='Morelia nauta'),
+            'Morelia amethistina' : NodeRelationship(parent_label='Node4316228368', child_labels=[], edge_length=12.5936687872, taxon_label='Morelia amethistina'),
+            'Node4316229392' : NodeRelationship(parent_label='Node4316227472', child_labels=['Node4316229520','Node4316250576'], edge_length=3.9347409374, taxon_label=None),
+            'Node4316229520' : NodeRelationship(parent_label='Node4316229392', child_labels=['Morelia carinata','Node4316203600'], edge_length=5.88218975316, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node4316229520', child_labels=[], edge_length=33.2267204786, taxon_label='Morelia carinata'),
+            'Node4316203600' : NodeRelationship(parent_label='Node4316229520', child_labels=['Morelia viridisS','Morelia viridisN'], edge_length=13.4306199458, taxon_label=None),
+            'Morelia viridisS' : NodeRelationship(parent_label='Node4316203600', child_labels=[], edge_length=19.7961005329, taxon_label='Morelia viridisS'),
+            'Morelia viridisN' : NodeRelationship(parent_label='Node4316203600', child_labels=[], edge_length=19.7961005329, taxon_label='Morelia viridisN'),
+            'Node4316250576' : NodeRelationship(parent_label='Node4316229392', child_labels=['Antaresia maculosa','Node4316250704'], edge_length=7.11128547149, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node4316250576', child_labels=[], edge_length=31.9976247603, taxon_label='Antaresia maculosa'),
+            'Node4316250704' : NodeRelationship(parent_label='Node4316250576', child_labels=['Node4316251088','Antaresia perthensis'], edge_length=4.71436528425, taxon_label=None),
+            'Node4316251088' : NodeRelationship(parent_label='Node4316250704', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=15.9285543528, taxon_label=None),
+            'Antaresia childreni' : NodeRelationship(parent_label='Node4316251088', child_labels=[], edge_length=11.3547051232, taxon_label='Antaresia childreni'),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node4316251088', child_labels=[], edge_length=11.3547051232, taxon_label='Antaresia stimsoni'),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node4316250704', child_labels=[], edge_length=27.2832594761, taxon_label='Antaresia perthensis'),
+            'Node4316251600' : NodeRelationship(parent_label='Node4316204496', child_labels=['Python timoriensis','Python reticulatus'], edge_length=22.1202819118, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node4316251600', child_labels=[], edge_length=33.3905850116, taxon_label='Python timoriensis'),
+            'Python reticulatus' : NodeRelationship(parent_label='Node4316251600', child_labels=[], edge_length=33.3905850116, taxon_label='Python reticulatus'),
+            'Node4316251856' : NodeRelationship(parent_label='Node4316203920', child_labels=['Node4316252112','Python regius'], edge_length=19.8895314814, taxon_label=None),
+            'Node4316252112' : NodeRelationship(parent_label='Node4316251856', child_labels=['Python curtus','Node4316251984'], edge_length=11.1907198563, taxon_label=None),
+            'Python curtus' : NodeRelationship(parent_label='Node4316252112', child_labels=[], edge_length=34.8181553863, taxon_label='Python curtus'),
+            'Node4316251984' : NodeRelationship(parent_label='Node4316252112', child_labels=['Python sebae','Python molurus'], edge_length=7.89583224277, taxon_label=None),
+            'Python sebae' : NodeRelationship(parent_label='Node4316251984', child_labels=[], edge_length=26.9223231435, taxon_label='Python sebae'),
+            'Python molurus' : NodeRelationship(parent_label='Node4316251984', child_labels=[], edge_length=26.9223231435, taxon_label='Python molurus'),
+            'Python regius' : NodeRelationship(parent_label='Node4316251856', child_labels=[], edge_length=46.0088752426, taxon_label='Python regius'),
+            'Xenopeltis unicolor' : NodeRelationship(parent_label='Node4316203984', child_labels=[], edge_length=112.771107949, taxon_label='Xenopeltis unicolor'),
         },
         {
-            'Node37714704' : NodeRelationship(parent_label=None, child_labels=['Node37714768','Node37715024'], edge_length=None, taxon_label=None),
-            'Node37714768' : NodeRelationship(parent_label='Node37714704', child_labels=['Python reticulatus','Python timoriensis'], edge_length=17.6343232815, taxon_label=None),
-            'Python reticulatus' : NodeRelationship(parent_label='Node37714768', child_labels=[], edge_length=10.8300265774, taxon_label='Python reticulatus'),
-            'Python timoriensis' : NodeRelationship(parent_label='Node37714768', child_labels=[], edge_length=10.8300265774, taxon_label='Python timoriensis'),
-            'Node37715024' : NodeRelationship(parent_label='Node37714704', child_labels=['Node37714512','Node37773872'], edge_length=3.72471742653, taxon_label=None),
-            'Node37714512' : NodeRelationship(parent_label='Node37715024', child_labels=['Node37714960','Node37773680'], edge_length=4.52906062503, taxon_label=None),
-            'Node37714960' : NodeRelationship(parent_label='Node37714512', child_labels=['Node37714992','Node37715600'], edge_length=1.31772152158, taxon_label=None),
-            'Node37714992' : NodeRelationship(parent_label='Node37714960', child_labels=['Morelia viridis','Node37715312'], edge_length=4.88508122224, taxon_label=None),
-            'Morelia viridis' : NodeRelationship(parent_label='Node37714992', child_labels=[], edge_length=14.0077690635, taxon_label='Morelia viridis'),
-            'Node37715312' : NodeRelationship(parent_label='Node37714992', child_labels=['Node37715184','Node37715536'], edge_length=0.404170030911, taxon_label=None),
-            'Node37715184' : NodeRelationship(parent_label='Node37715312', child_labels=['Morelia carinata','Node37715504'], edge_length=1.82500345118, taxon_label=None),
-            'Morelia carinata' : NodeRelationship(parent_label='Node37715184', child_labels=[], edge_length=11.7785955814, taxon_label='Morelia carinata'),
-            'Node37715504' : NodeRelationship(parent_label='Node37715184', child_labels=['Morelia spilota','Morelia bredli'], edge_length=6.80279787983, taxon_label=None),
-            'Morelia spilota' : NodeRelationship(parent_label='Node37715504', child_labels=[], edge_length=4.97579770159, taxon_label='Morelia spilota'),
-            'Morelia bredli' : NodeRelationship(parent_label='Node37715504', child_labels=[], edge_length=4.97579770159, taxon_label='Morelia bredli'),
-            'Node37715536' : NodeRelationship(parent_label='Node37715312', child_labels=['Antaresia maculosa','Node37715792'], edge_length=1.27612254021, taxon_label=None),
-            'Antaresia maculosa' : NodeRelationship(parent_label='Node37715536', child_labels=[], edge_length=12.3274764924, taxon_label='Antaresia maculosa'),
-            'Node37715792' : NodeRelationship(parent_label='Node37715536', child_labels=['Antaresia perthensis','Node37715760'], edge_length=4.32415504222, taxon_label=None),
-            'Antaresia perthensis' : NodeRelationship(parent_label='Node37715792', child_labels=[], edge_length=8.00332145017, taxon_label='Antaresia perthensis'),
-            'Node37715760' : NodeRelationship(parent_label='Node37715792', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=3.98809707211, taxon_label=None),
-            'Antaresia childreni' : NodeRelationship(parent_label='Node37715760', child_labels=[], edge_length=4.01522437806, taxon_label='Antaresia childreni'),
-            'Antaresia stimsoni' : NodeRelationship(parent_label='Node37715760', child_labels=[], edge_length=4.01522437806, taxon_label='Antaresia stimsoni'),
-            'Node37715600' : NodeRelationship(parent_label='Node37714960', child_labels=['Leiopython albertisii','Bothrochilus boa'], edge_length=7.74780761159, taxon_label=None),
-            'Leiopython albertisii' : NodeRelationship(parent_label='Node37715600', child_labels=[], edge_length=11.1450426742, taxon_label='Leiopython albertisii'),
-            'Bothrochilus boa' : NodeRelationship(parent_label='Node37715600', child_labels=[], edge_length=11.1450426742, taxon_label='Bothrochilus boa'),
-            'Node37773680' : NodeRelationship(parent_label='Node37714512', child_labels=['Node37773616','Apodora papuana'], edge_length=5.44916502448, taxon_label=None),
-            'Node37773616' : NodeRelationship(parent_label='Node37773680', child_labels=['Liasis olivaceus','Node37773840'], edge_length=3.78712208743, taxon_label=None),
-            'Liasis olivaceus' : NodeRelationship(parent_label='Node37773616', child_labels=[], edge_length=10.9742846954, taxon_label='Liasis olivaceus'),
-            'Node37773840' : NodeRelationship(parent_label='Node37773616', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=7.80758505868, taxon_label=None),
-            'Liasis fuscus' : NodeRelationship(parent_label='Node37773840', child_labels=[], edge_length=3.16669963676, taxon_label='Liasis fuscus'),
-            'Liasis mackloti' : NodeRelationship(parent_label='Node37773840', child_labels=[], edge_length=3.16669963676, taxon_label='Liasis mackloti'),
-            'Apodora papuana' : NodeRelationship(parent_label='Node37773680', child_labels=[], edge_length=14.7614067829, taxon_label='Apodora papuana'),
-            'Node37773872' : NodeRelationship(parent_label='Node37715024', child_labels=['Node37774128','Node37775024'], edge_length=0.57539806967, taxon_label=None),
-            'Node37774128' : NodeRelationship(parent_label='Node37773872', child_labels=['Node37774032','Morelia oenpelliensis'], edge_length=1.8069504389, taxon_label=None),
-            'Node37774032' : NodeRelationship(parent_label='Node37774128', child_labels=['Node37773904','Morelia boeleni'], edge_length=5.48583318771, taxon_label=None),
-            'Node37773904' : NodeRelationship(parent_label='Node37774032', child_labels=['Node37774160','Morelia tracyae'], edge_length=6.85886795982, taxon_label=None),
-            'Node37774160' : NodeRelationship(parent_label='Node37773904', child_labels=['Morelia amethistina','Node37774480'], edge_length=4.50938662462, taxon_label=None),
-            'Morelia amethistina' : NodeRelationship(parent_label='Node37774160', child_labels=[], edge_length=5.50319615164, taxon_label='Morelia amethistina'),
-            'Node37774480' : NodeRelationship(parent_label='Node37774160', child_labels=['Morelia clastolepis','Node37774608'], edge_length=3.93061957053, taxon_label=None),
-            'Morelia clastolepis' : NodeRelationship(parent_label='Node37774480', child_labels=[], edge_length=1.57257658111, taxon_label='Morelia clastolepis'),
-            'Node37774608' : NodeRelationship(parent_label='Node37774480', child_labels=['Morelia nauta','Morelia kinghorni'], edge_length=0.136848033805, taxon_label=None),
-            'Morelia nauta' : NodeRelationship(parent_label='Node37774608', child_labels=[], edge_length=1.4357285473, taxon_label='Morelia nauta'),
-            'Morelia kinghorni' : NodeRelationship(parent_label='Node37774608', child_labels=[], edge_length=1.4357285473, taxon_label='Morelia kinghorni'),
-            'Morelia tracyae' : NodeRelationship(parent_label='Node37773904', child_labels=[], edge_length=10.0125827763, taxon_label='Morelia tracyae'),
-            'Morelia boeleni' : NodeRelationship(parent_label='Node37774032', child_labels=[], edge_length=16.8714507361, taxon_label='Morelia boeleni'),
-            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node37774128', child_labels=[], edge_length=22.3572839238, taxon_label='Morelia oenpelliensis'),
-            'Node37775024' : NodeRelationship(parent_label='Node37773872', child_labels=['Node37774928','Node37775408'], edge_length=3.10812197386, taxon_label=None),
-            'Node37774928' : NodeRelationship(parent_label='Node37775024', child_labels=['Python sebae','Node37775184'], edge_length=4.52064732483, taxon_label=None),
-            'Python sebae' : NodeRelationship(parent_label='Node37774928', child_labels=[], edge_length=16.535465064, taxon_label='Python sebae'),
-            'Node37775184' : NodeRelationship(parent_label='Node37774928', child_labels=['Python regius','Node37775312'], edge_length=1.573045967, taxon_label=None),
-            'Python regius' : NodeRelationship(parent_label='Node37775184', child_labels=[], edge_length=14.962419097, taxon_label='Python regius'),
-            'Node37775312' : NodeRelationship(parent_label='Node37775184', child_labels=['Python brongersmai','Python molurus'], edge_length=1.82698701194, taxon_label=None),
-            'Python brongersmai' : NodeRelationship(parent_label='Node37775312', child_labels=[], edge_length=13.1354320851, taxon_label='Python brongersmai'),
-            'Python molurus' : NodeRelationship(parent_label='Node37775312', child_labels=[], edge_length=13.1354320851, taxon_label='Python molurus'),
-            'Node37775408' : NodeRelationship(parent_label='Node37775024', child_labels=['Aspidites ramsayi','Aspidites melanocephalus'], edge_length=6.39210928917, taxon_label=None),
-            'Aspidites ramsayi' : NodeRelationship(parent_label='Node37775408', child_labels=[], edge_length=14.6640030997, taxon_label='Aspidites ramsayi'),
-            'Aspidites melanocephalus' : NodeRelationship(parent_label='Node37775408', child_labels=[], edge_length=14.6640030997, taxon_label='Aspidites melanocephalus'),
+            'Node4316253136' : NodeRelationship(parent_label=None, child_labels=['Candola aspera','Node4316253456'], edge_length=None, taxon_label=None),
+            'Candola aspera' : NodeRelationship(parent_label='Node4316253136', child_labels=[], edge_length=117.405482731, taxon_label='Candola aspera'),
+            'Node4316253456' : NodeRelationship(parent_label='Node4316253136', child_labels=['Xenopeltis unicolor','Node4316253392'], edge_length=26.8517813278, taxon_label=None),
+            'Xenopeltis unicolor' : NodeRelationship(parent_label='Node4316253456', child_labels=[], edge_length=90.5537014032, taxon_label='Xenopeltis unicolor'),
+            'Node4316253392' : NodeRelationship(parent_label='Node4316253456', child_labels=['Node4316253776','Loxocemus bicolor'], edge_length=16.5508683851, taxon_label=None),
+            'Node4316253776' : NodeRelationship(parent_label='Node4316253392', child_labels=['Node4316253904','Node4316301328'], edge_length=16.6353899137, taxon_label=None),
+            'Node4316253904' : NodeRelationship(parent_label='Node4316253776', child_labels=['Node4316254032','Node4316301072'], edge_length=6.56321044476, taxon_label=None),
+            'Node4316254032' : NodeRelationship(parent_label='Node4316253904', child_labels=['Node4316254160','Node4316276944'], edge_length=12.3993667148, taxon_label=None),
+            'Node4316254160' : NodeRelationship(parent_label='Node4316254032', child_labels=['Morelia boeleni','Node4316275024'], edge_length=1.85501747057, taxon_label=None),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node4316254160', child_labels=[], edge_length=36.5498484742, taxon_label='Morelia boeleni'),
+            'Node4316275024' : NodeRelationship(parent_label='Node4316254160', child_labels=['Node4316275152','Node4316276432'], edge_length=1.04661210215, taxon_label=None),
+            'Node4316275152' : NodeRelationship(parent_label='Node4316275024', child_labels=['Node4316275280','Node4316276048'], edge_length=6.27408700912, taxon_label=None),
+            'Node4316275280' : NodeRelationship(parent_label='Node4316275152', child_labels=['Node4316275408','Node4316275792'], edge_length=4.14502379891, taxon_label=None),
+            'Node4316275408' : NodeRelationship(parent_label='Node4316275280', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=18.7911640437, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node4316275408', child_labels=[], edge_length=6.29296152027, taxon_label='Liasis fuscus'),
+            'Liasis mackloti' : NodeRelationship(parent_label='Node4316275408', child_labels=[], edge_length=6.29296152027, taxon_label='Liasis mackloti'),
+            'Node4316275792' : NodeRelationship(parent_label='Node4316275280', child_labels=['Apodora papuana','Liasis olivaceus'], edge_length=4.65165886356, taxon_label=None),
+            'Apodora papuana' : NodeRelationship(parent_label='Node4316275792', child_labels=[], edge_length=20.4324667004, taxon_label='Apodora papuana'),
+            'Liasis olivaceus' : NodeRelationship(parent_label='Node4316275792', child_labels=[], edge_length=20.4324667004, taxon_label='Liasis olivaceus'),
+            'Node4316276048' : NodeRelationship(parent_label='Node4316275152', child_labels=['Antaresia melanocephalus','Antaresia ramsayi'], edge_length=17.4625828861, taxon_label=None),
+            'Antaresia melanocephalus' : NodeRelationship(parent_label='Node4316276048', child_labels=[], edge_length=11.7665664768, taxon_label='Antaresia melanocephalus'),
+            'Antaresia ramsayi' : NodeRelationship(parent_label='Node4316276048', child_labels=[], edge_length=11.7665664768, taxon_label='Antaresia ramsayi'),
+            'Node4316276432' : NodeRelationship(parent_label='Node4316275024', child_labels=['Bothrochilus boa','Liasis albertisii'], edge_length=15.4075337774, taxon_label=None),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node4316276432', child_labels=[], edge_length=20.0957025946, taxon_label='Bothrochilus boa'),
+            'Liasis albertisii' : NodeRelationship(parent_label='Node4316276432', child_labels=[], edge_length=20.0957025946, taxon_label='Liasis albertisii'),
+            'Node4316276944' : NodeRelationship(parent_label='Node4316254032', child_labels=['Node4316277072','Node4316299408'], edge_length=2.5597754437, taxon_label=None),
+            'Node4316277072' : NodeRelationship(parent_label='Node4316276944', child_labels=['Morelia oenpelliensis','Node4316276816'], edge_length=10.9999278199, taxon_label=None),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node4316277072', child_labels=[], edge_length=24.8451626811, taxon_label='Morelia oenpelliensis'),
+            'Node4316276816' : NodeRelationship(parent_label='Node4316277072', child_labels=['Node4316277392','Node4316278352'], edge_length=2.78884378851, taxon_label=None),
+            'Node4316277392' : NodeRelationship(parent_label='Node4316276816', child_labels=['Morelia tracyae','Node4316277584'], edge_length=7.72979171285, taxon_label=None),
+            'Morelia tracyae' : NodeRelationship(parent_label='Node4316277392', child_labels=[], edge_length=14.3265271797, taxon_label='Morelia tracyae'),
+            'Node4316277584' : NodeRelationship(parent_label='Node4316277392', child_labels=['Node4316277712','Morelia amethistina'], edge_length=3.38770784397, taxon_label=None),
+            'Node4316277712' : NodeRelationship(parent_label='Node4316277584', child_labels=['Morelia clastolepis','Node4316253008'], edge_length=5.65307392619, taxon_label=None),
+            'Morelia clastolepis' : NodeRelationship(parent_label='Node4316277712', child_labels=[], edge_length=5.28574540958, taxon_label='Morelia clastolepis'),
+            'Node4316253008' : NodeRelationship(parent_label='Node4316277712', child_labels=['Morelia kinghorni','Morelia nauta'], edge_length=2.55413552294, taxon_label=None),
+            'Morelia kinghorni' : NodeRelationship(parent_label='Node4316253008', child_labels=[], edge_length=2.73160988664, taxon_label='Morelia kinghorni'),
+            'Morelia nauta' : NodeRelationship(parent_label='Node4316253008', child_labels=[], edge_length=2.73160988664, taxon_label='Morelia nauta'),
+            'Morelia amethistina' : NodeRelationship(parent_label='Node4316277584', child_labels=[], edge_length=10.9388193358, taxon_label='Morelia amethistina'),
+            'Node4316278352' : NodeRelationship(parent_label='Node4316276816', child_labels=['Morelia spilota','Morelia bredli'], edge_length=12.4767981898, taxon_label=None),
+            'Morelia spilota' : NodeRelationship(parent_label='Node4316278352', child_labels=[], edge_length=9.57952070277, taxon_label='Morelia spilota'),
+            'Morelia bredli' : NodeRelationship(parent_label='Node4316278352', child_labels=[], edge_length=9.57952070277, taxon_label='Morelia bredli'),
+            'Node4316299408' : NodeRelationship(parent_label='Node4316276944', child_labels=['Node4316299536','Node4316300048'], edge_length=4.77611939702, taxon_label=None),
+            'Node4316299536' : NodeRelationship(parent_label='Node4316299408', child_labels=['Morelia carinata','Node4316299344'], edge_length=6.62946104565, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node4316299536', child_labels=[], edge_length=24.4395100584, taxon_label='Morelia carinata'),
+            'Node4316299344' : NodeRelationship(parent_label='Node4316299536', child_labels=['Morelia viridisS','Morelia viridisN'], edge_length=7.74158436759, taxon_label=None),
+            'Morelia viridisS' : NodeRelationship(parent_label='Node4316299344', child_labels=[], edge_length=16.6979256908, taxon_label='Morelia viridisS'),
+            'Morelia viridisN' : NodeRelationship(parent_label='Node4316299344', child_labels=[], edge_length=16.6979256908, taxon_label='Morelia viridisN'),
+            'Node4316300048' : NodeRelationship(parent_label='Node4316299408', child_labels=['Antaresia maculosa','Node4316300176'], edge_length=3.07031045323, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node4316300048', child_labels=[], edge_length=27.9986606508, taxon_label='Antaresia maculosa'),
+            'Node4316300176' : NodeRelationship(parent_label='Node4316300048', child_labels=['Node4316300560','Antaresia perthensis'], edge_length=4.88214307652, taxon_label=None),
+            'Node4316300560' : NodeRelationship(parent_label='Node4316300176', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=16.2064963991, taxon_label=None),
+            'Antaresia childreni' : NodeRelationship(parent_label='Node4316300560', child_labels=[], edge_length=6.91002117518, taxon_label='Antaresia childreni'),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node4316300560', child_labels=[], edge_length=6.91002117518, taxon_label='Antaresia stimsoni'),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node4316300176', child_labels=[], edge_length=23.1165175743, taxon_label='Antaresia perthensis'),
+            'Node4316301072' : NodeRelationship(parent_label='Node4316253904', child_labels=['Python timoriensis','Python reticulatus'], edge_length=23.3069353709, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node4316301072', child_labels=[], edge_length=27.4972972887, taxon_label='Python timoriensis'),
+            'Python reticulatus' : NodeRelationship(parent_label='Node4316301072', child_labels=[], edge_length=27.4972972887, taxon_label='Python reticulatus'),
+            'Node4316301328' : NodeRelationship(parent_label='Node4316253776', child_labels=['Node4316301584','Python regius'], edge_length=18.1852453647, taxon_label=None),
+            'Node4316301584' : NodeRelationship(parent_label='Node4316301328', child_labels=['Python curtus','Node4316301456'], edge_length=6.08258726043, taxon_label=None),
+            'Python curtus' : NodeRelationship(parent_label='Node4316301584', child_labels=[], edge_length=33.0996104792, taxon_label='Python curtus'),
+            'Node4316301456' : NodeRelationship(parent_label='Node4316301584', child_labels=['Python sebae','Python molurus'], edge_length=14.293345062, taxon_label=None),
+            'Python sebae' : NodeRelationship(parent_label='Node4316301456', child_labels=[], edge_length=18.8062654172, taxon_label='Python sebae'),
+            'Python molurus' : NodeRelationship(parent_label='Node4316301456', child_labels=[], edge_length=18.8062654172, taxon_label='Python molurus'),
+            'Python regius' : NodeRelationship(parent_label='Node4316301328', child_labels=[], edge_length=39.1821977396, taxon_label='Python regius'),
+            'Loxocemus bicolor' : NodeRelationship(parent_label='Node4316253392', child_labels=[], edge_length=74.0028330181, taxon_label='Loxocemus bicolor'),
         },
         {
-            'Node37775792' : NodeRelationship(parent_label=None, child_labels=['Node37775856','Node37831600'], edge_length=None, taxon_label=None),
-            'Node37775856' : NodeRelationship(parent_label='Node37775792', child_labels=['Node37064112','Node37830864'], edge_length=1.01117536037, taxon_label=None),
-            'Node37064112' : NodeRelationship(parent_label='Node37775856', child_labels=['Node37775568','Node37777264'], edge_length=4.09971291135, taxon_label=None),
-            'Node37775568' : NodeRelationship(parent_label='Node37064112', child_labels=['Node37775472','Node37777072'], edge_length=0.754225130388, taxon_label=None),
-            'Node37775472' : NodeRelationship(parent_label='Node37775568', child_labels=['Node37775952','Morelia carinata'], edge_length=1.65141371467, taxon_label=None),
-            'Node37775952' : NodeRelationship(parent_label='Node37775472', child_labels=['Node37776016','Node37776144'], edge_length=0.835745557531, taxon_label=None),
-            'Node37776016' : NodeRelationship(parent_label='Node37775952', child_labels=['Antaresia maculosa','Node37776304'], edge_length=1.83427060068, taxon_label=None),
-            'Antaresia maculosa' : NodeRelationship(parent_label='Node37776016', child_labels=[], edge_length=12.6196623606, taxon_label='Antaresia maculosa'),
-            'Node37776304' : NodeRelationship(parent_label='Node37776016', child_labels=['Antaresia perthensis','Node37776432'], edge_length=2.51279801319, taxon_label=None),
-            'Antaresia perthensis' : NodeRelationship(parent_label='Node37776304', child_labels=[], edge_length=10.1068643474, taxon_label='Antaresia perthensis'),
-            'Node37776432' : NodeRelationship(parent_label='Node37776304', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=5.71367528366, taxon_label=None),
-            'Antaresia childreni' : NodeRelationship(parent_label='Node37776432', child_labels=[], edge_length=4.39318906371, taxon_label='Antaresia childreni'),
-            'Antaresia stimsoni' : NodeRelationship(parent_label='Node37776432', child_labels=[], edge_length=4.39318906371, taxon_label='Antaresia stimsoni'),
-            'Node37776144' : NodeRelationship(parent_label='Node37775952', child_labels=['Morelia viridis','Node37776784'], edge_length=1.03775314121, taxon_label=None),
-            'Morelia viridis' : NodeRelationship(parent_label='Node37776144', child_labels=[], edge_length=13.41617982, taxon_label='Morelia viridis'),
-            'Node37776784' : NodeRelationship(parent_label='Node37776144', child_labels=['Morelia spilota','Morelia bredli'], edge_length=9.37635268364, taxon_label=None),
-            'Morelia spilota' : NodeRelationship(parent_label='Node37776784', child_labels=[], edge_length=4.03982713639, taxon_label='Morelia spilota'),
-            'Morelia bredli' : NodeRelationship(parent_label='Node37776784', child_labels=[], edge_length=4.03982713639, taxon_label='Morelia bredli'),
-            'Morelia carinata' : NodeRelationship(parent_label='Node37775472', child_labels=[], edge_length=15.2896785188, taxon_label='Morelia carinata'),
-            'Node37777072' : NodeRelationship(parent_label='Node37775568', child_labels=['Leiopython albertisii','Bothrochilus boa'], edge_length=4.17813417278, taxon_label=None),
-            'Leiopython albertisii' : NodeRelationship(parent_label='Node37777072', child_labels=[], edge_length=12.7629580607, taxon_label='Leiopython albertisii'),
-            'Bothrochilus boa' : NodeRelationship(parent_label='Node37777072', child_labels=[], edge_length=12.7629580607, taxon_label='Bothrochilus boa'),
-            'Node37777264' : NodeRelationship(parent_label='Node37064112', child_labels=['Node37777232','Apodora papuana'], edge_length=2.9800994962, taxon_label=None),
-            'Node37777232' : NodeRelationship(parent_label='Node37777264', child_labels=['Liasis olivaceus','Node37777360'], edge_length=4.06497756637, taxon_label=None),
-            'Liasis olivaceus' : NodeRelationship(parent_label='Node37777232', child_labels=[], edge_length=10.6502403013, taxon_label='Liasis olivaceus'),
-            'Node37777360' : NodeRelationship(parent_label='Node37777232', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=6.97858461332, taxon_label=None),
-            'Liasis fuscus' : NodeRelationship(parent_label='Node37777360', child_labels=[], edge_length=3.67165568794, taxon_label='Liasis fuscus'),
-            'Liasis mackloti' : NodeRelationship(parent_label='Node37777360', child_labels=[], edge_length=3.67165568794, taxon_label='Liasis mackloti'),
-            'Apodora papuana' : NodeRelationship(parent_label='Node37777264', child_labels=[], edge_length=14.7152178676, taxon_label='Apodora papuana'),
-            'Node37830864' : NodeRelationship(parent_label='Node37775856', child_labels=['Node37830704','Morelia oenpelliensis'], edge_length=3.12950470552, taxon_label=None),
-            'Node37830704' : NodeRelationship(parent_label='Node37830864', child_labels=['Node37777040','Morelia boeleni'], edge_length=6.58446507703, taxon_label=None),
-            'Node37777040' : NodeRelationship(parent_label='Node37830704', child_labels=['Node37830928','Morelia tracyae'], edge_length=3.1657791763, taxon_label=None),
-            'Node37830928' : NodeRelationship(parent_label='Node37777040', child_labels=['Morelia amethistina','Node37831216'], edge_length=4.27056899374, taxon_label=None),
-            'Morelia amethistina' : NodeRelationship(parent_label='Node37830928', child_labels=[], edge_length=4.6447123226, taxon_label='Morelia amethistina'),
-            'Node37831216' : NodeRelationship(parent_label='Node37830928', child_labels=['Morelia clastolepis','Node37831344'], edge_length=2.47296326498, taxon_label=None),
-            'Morelia clastolepis' : NodeRelationship(parent_label='Node37831216', child_labels=[], edge_length=2.17174905761, taxon_label='Morelia clastolepis'),
-            'Node37831344' : NodeRelationship(parent_label='Node37831216', child_labels=['Morelia kinghorni','Morelia nauta'], edge_length=1.26765325952, taxon_label=None),
-            'Morelia kinghorni' : NodeRelationship(parent_label='Node37831344', child_labels=[], edge_length=0.904095798097, taxon_label='Morelia kinghorni'),
-            'Morelia nauta' : NodeRelationship(parent_label='Node37831344', child_labels=[], edge_length=0.904095798097, taxon_label='Morelia nauta'),
-            'Morelia tracyae' : NodeRelationship(parent_label='Node37777040', child_labels=[], edge_length=8.91528131634, taxon_label='Morelia tracyae'),
-            'Morelia boeleni' : NodeRelationship(parent_label='Node37830704', child_labels=[], edge_length=12.0810604926, taxon_label='Morelia boeleni'),
-            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node37830864', child_labels=[], edge_length=18.6655255697, taxon_label='Morelia oenpelliensis'),
-            'Node37831600' : NodeRelationship(parent_label='Node37775792', child_labels=['Node37831504','Node37832016'], edge_length=0.075772291124, taxon_label=None),
-            'Node37831504' : NodeRelationship(parent_label='Node37831600', child_labels=['Python reticulatus','Python timoriensis'], edge_length=11.1718400909, taxon_label=None),
-            'Python reticulatus' : NodeRelationship(parent_label='Node37831504', child_labels=[], edge_length=11.5585932535, taxon_label='Python reticulatus'),
-            'Python timoriensis' : NodeRelationship(parent_label='Node37831504', child_labels=[], edge_length=11.5585932535, taxon_label='Python timoriensis'),
-            'Node37832016' : NodeRelationship(parent_label='Node37831600', child_labels=['Node37831888','Node37832400'], edge_length=1.44865397646, taxon_label=None),
-            'Node37831888' : NodeRelationship(parent_label='Node37832016', child_labels=['Python sebae','Node37832176'], edge_length=5.31414730047, taxon_label=None),
-            'Python sebae' : NodeRelationship(parent_label='Node37831888', child_labels=[], edge_length=15.9676320675, taxon_label='Python sebae'),
-            'Node37832176' : NodeRelationship(parent_label='Node37831888', child_labels=['Node37832048','Python regius'], edge_length=1.06278922707, taxon_label=None),
-            'Node37832048' : NodeRelationship(parent_label='Node37832176', child_labels=['Python brongersmai','Python molurus'], edge_length=1.04487219988, taxon_label=None),
-            'Python brongersmai' : NodeRelationship(parent_label='Node37832048', child_labels=[], edge_length=13.8599706405, taxon_label='Python brongersmai'),
-            'Python molurus' : NodeRelationship(parent_label='Node37832048', child_labels=[], edge_length=13.8599706405, taxon_label='Python molurus'),
-            'Python regius' : NodeRelationship(parent_label='Node37832176', child_labels=[], edge_length=14.9048428404, taxon_label='Python regius'),
-            'Node37832400' : NodeRelationship(parent_label='Node37832016', child_labels=['Aspidites ramsayi','Aspidites melanocephalus'], edge_length=5.70308191065, taxon_label=None),
-            'Aspidites ramsayi' : NodeRelationship(parent_label='Node37832400', child_labels=[], edge_length=15.5786974573, taxon_label='Aspidites ramsayi'),
-            'Aspidites melanocephalus' : NodeRelationship(parent_label='Node37832400', child_labels=[], edge_length=15.5786974573, taxon_label='Aspidites melanocephalus'),
+            'Node4316302608' : NodeRelationship(parent_label=None, child_labels=['Candola aspera','Node4316302928'], edge_length=None, taxon_label=None),
+            'Candola aspera' : NodeRelationship(parent_label='Node4316302608', child_labels=[], edge_length=126.159749307, taxon_label='Candola aspera'),
+            'Node4316302928' : NodeRelationship(parent_label='Node4316302608', child_labels=['Node4316303056','Xenopeltis unicolor'], edge_length=29.5182899091, taxon_label=None),
+            'Node4316303056' : NodeRelationship(parent_label='Node4316302928', child_labels=['Loxocemus bicolor','Node4316302864'], edge_length=20.4272017262, taxon_label=None),
+            'Loxocemus bicolor' : NodeRelationship(parent_label='Node4316303056', child_labels=[], edge_length=76.2142576718, taxon_label='Loxocemus bicolor'),
+            'Node4316302864' : NodeRelationship(parent_label='Node4316303056', child_labels=['Node4316323920','Node4316346704'], edge_length=22.3340694246, taxon_label=None),
+            'Node4316323920' : NodeRelationship(parent_label='Node4316302864', child_labels=['Node4316324048','Node4316346448'], edge_length=7.33856679933, taxon_label=None),
+            'Node4316324048' : NodeRelationship(parent_label='Node4316323920', child_labels=['Node4316324176','Node4316326288'], edge_length=8.24675869634, taxon_label=None),
+            'Node4316324176' : NodeRelationship(parent_label='Node4316324048', child_labels=['Morelia boeleni','Node4316324496'], edge_length=1.78294733026, taxon_label=None),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node4316324176', child_labels=[], edge_length=36.5119154213, taxon_label='Morelia boeleni'),
+            'Node4316324496' : NodeRelationship(parent_label='Node4316324176', child_labels=['Node4316324624','Node4316326032'], edge_length=1.38475127065, taxon_label=None),
+            'Node4316324624' : NodeRelationship(parent_label='Node4316324496', child_labels=['Node4316324752','Node4316325136'], edge_length=2.24740276648, taxon_label=None),
+            'Node4316324752' : NodeRelationship(parent_label='Node4316324624', child_labels=['Antaresia melanocephalus','Antaresia ramsayi'], edge_length=17.772328432, taxon_label=None),
+            'Antaresia melanocephalus' : NodeRelationship(parent_label='Node4316324752', child_labels=[], edge_length=15.1074329521, taxon_label='Antaresia melanocephalus'),
+            'Antaresia ramsayi' : NodeRelationship(parent_label='Node4316324752', child_labels=[], edge_length=15.1074329521, taxon_label='Antaresia ramsayi'),
+            'Node4316325136' : NodeRelationship(parent_label='Node4316324624', child_labels=['Node4316325264','Node4316325648'], edge_length=4.4885389798, taxon_label=None),
+            'Node4316325264' : NodeRelationship(parent_label='Node4316325136', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=20.8200876951, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node4316325264', child_labels=[], edge_length=7.5711347092, taxon_label='Liasis fuscus'),
+            'Liasis mackloti' : NodeRelationship(parent_label='Node4316325264', child_labels=[], edge_length=7.5711347092, taxon_label='Liasis mackloti'),
+            'Node4316325648' : NodeRelationship(parent_label='Node4316325136', child_labels=['Apodora papuana','Liasis olivaceus'], edge_length=4.37289319177, taxon_label=None),
+            'Apodora papuana' : NodeRelationship(parent_label='Node4316325648', child_labels=[], edge_length=24.0183292126, taxon_label='Apodora papuana'),
+            'Liasis olivaceus' : NodeRelationship(parent_label='Node4316325648', child_labels=[], edge_length=24.0183292126, taxon_label='Liasis olivaceus'),
+            'Node4316326032' : NodeRelationship(parent_label='Node4316324496', child_labels=['Bothrochilus boa','Liasis albertisii'], edge_length=12.9799500845, taxon_label=None),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node4316326032', child_labels=[], edge_length=22.1472140662, taxon_label='Bothrochilus boa'),
+            'Liasis albertisii' : NodeRelationship(parent_label='Node4316326032', child_labels=[], edge_length=22.1472140662, taxon_label='Liasis albertisii'),
+            'Node4316326288' : NodeRelationship(parent_label='Node4316324048', child_labels=['Node4316326416','Node4316344784'], edge_length=3.26747919544, taxon_label=None),
+            'Node4316326416' : NodeRelationship(parent_label='Node4316326288', child_labels=['Node4316326544','Node4316327184'], edge_length=12.2960670728, taxon_label=None),
+            'Node4316326544' : NodeRelationship(parent_label='Node4316326416', child_labels=['Node4316326672','Morelia oenpelliensis'], edge_length=1.62908011033, taxon_label=None),
+            'Node4316326672' : NodeRelationship(parent_label='Node4316326544', child_labels=['Morelia spilota','Morelia bredli'], edge_length=11.7610480778, taxon_label=None),
+            'Morelia spilota' : NodeRelationship(parent_label='Node4316326672', child_labels=[], edge_length=9.34118829512, taxon_label='Morelia spilota'),
+            'Morelia bredli' : NodeRelationship(parent_label='Node4316326672', child_labels=[], edge_length=9.34118829512, taxon_label='Morelia bredli'),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node4316326544', child_labels=[], edge_length=21.1022363729, taxon_label='Morelia oenpelliensis'),
+            'Node4316327184' : NodeRelationship(parent_label='Node4316326416', child_labels=['Morelia tracyae','Node4316326928'], edge_length=6.20414166284, taxon_label=None),
+            'Morelia tracyae' : NodeRelationship(parent_label='Node4316327184', child_labels=[], edge_length=16.5271748204, taxon_label='Morelia tracyae'),
+            'Node4316326928' : NodeRelationship(parent_label='Node4316327184', child_labels=['Node4316327568','Morelia amethistina'], edge_length=4.27339647744, taxon_label=None),
+            'Node4316327568' : NodeRelationship(parent_label='Node4316326928', child_labels=['Node4316327696','Morelia clastolepis'], edge_length=7.91289243511, taxon_label=None),
+            'Node4316327696' : NodeRelationship(parent_label='Node4316327568', child_labels=['Morelia nauta','Morelia kinghorni'], edge_length=1.89524872622, taxon_label=None),
+            'Morelia nauta' : NodeRelationship(parent_label='Node4316327696', child_labels=[], edge_length=2.44563718163, taxon_label='Morelia nauta'),
+            'Morelia kinghorni' : NodeRelationship(parent_label='Node4316327696', child_labels=[], edge_length=2.44563718163, taxon_label='Morelia kinghorni'),
+            'Morelia clastolepis' : NodeRelationship(parent_label='Node4316327568', child_labels=[], edge_length=4.34088590785, taxon_label='Morelia clastolepis'),
+            'Morelia amethistina' : NodeRelationship(parent_label='Node4316326928', child_labels=[], edge_length=12.253778343, taxon_label='Morelia amethistina'),
+            'Node4316344784' : NodeRelationship(parent_label='Node4316326288', child_labels=['Node4316344912','Node4316345424'], edge_length=4.17834235089, taxon_label=None),
+            'Node4316344912' : NodeRelationship(parent_label='Node4316344784', child_labels=['Morelia carinata','Node4316344400'], edge_length=5.03710806168, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node4316344912', child_labels=[], edge_length=25.8119331435, taxon_label='Morelia carinata'),
+            'Node4316344400' : NodeRelationship(parent_label='Node4316344912', child_labels=['Morelia viridisS','Morelia viridisN'], edge_length=11.4337686931, taxon_label=None),
+            'Morelia viridisS' : NodeRelationship(parent_label='Node4316344400', child_labels=[], edge_length=14.3781644505, taxon_label='Morelia viridisS'),
+            'Morelia viridisN' : NodeRelationship(parent_label='Node4316344400', child_labels=[], edge_length=14.3781644505, taxon_label='Morelia viridisN'),
+            'Node4316345424' : NodeRelationship(parent_label='Node4316344784', child_labels=['Antaresia maculosa','Node4316345552'], edge_length=4.09757269601, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node4316345424', child_labels=[], edge_length=26.7514685092, taxon_label='Antaresia maculosa'),
+            'Node4316345552' : NodeRelationship(parent_label='Node4316345424', child_labels=['Node4316345936','Antaresia perthensis'], edge_length=2.33638652753, taxon_label=None),
+            'Node4316345936' : NodeRelationship(parent_label='Node4316345552', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=17.4436719435, taxon_label=None),
+            'Antaresia childreni' : NodeRelationship(parent_label='Node4316345936', child_labels=[], edge_length=6.97141003814, taxon_label='Antaresia childreni'),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node4316345936', child_labels=[], edge_length=6.97141003814, taxon_label='Antaresia stimsoni'),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node4316345552', child_labels=[], edge_length=24.4150819817, taxon_label='Antaresia perthensis'),
+            'Node4316346448' : NodeRelationship(parent_label='Node4316323920', child_labels=['Python timoriensis','Python reticulatus'], edge_length=23.556392099, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node4316346448', child_labels=[], edge_length=22.9852293488, taxon_label='Python timoriensis'),
+            'Python reticulatus' : NodeRelationship(parent_label='Node4316346448', child_labels=[], edge_length=22.9852293488, taxon_label='Python reticulatus'),
+            'Node4316346704' : NodeRelationship(parent_label='Node4316302864', child_labels=['Node4316346960','Python regius'], edge_length=17.9081848887, taxon_label=None),
+            'Node4316346960' : NodeRelationship(parent_label='Node4316346704', child_labels=['Python curtus','Node4316346832'], edge_length=6.75664224871, taxon_label=None),
+            'Python curtus' : NodeRelationship(parent_label='Node4316346960', child_labels=[], edge_length=29.2153611098, taxon_label='Python curtus'),
+            'Node4316346832' : NodeRelationship(parent_label='Node4316346960', child_labels=['Python sebae','Python molurus'], edge_length=8.15978945225, taxon_label=None),
+            'Python sebae' : NodeRelationship(parent_label='Node4316346832', child_labels=[], edge_length=21.0555716576, taxon_label='Python sebae'),
+            'Python molurus' : NodeRelationship(parent_label='Node4316346832', child_labels=[], edge_length=21.0555716576, taxon_label='Python molurus'),
+            'Python regius' : NodeRelationship(parent_label='Node4316346704', child_labels=[], edge_length=35.9720033585, taxon_label='Python regius'),
+            'Xenopeltis unicolor' : NodeRelationship(parent_label='Node4316302928', child_labels=[], edge_length=96.6414593981, taxon_label='Xenopeltis unicolor'),
         },
         {
-            'Node37832784' : NodeRelationship(parent_label=None, child_labels=['Node37832848','Node37833200'], edge_length=None, taxon_label=None),
-            'Node37832848' : NodeRelationship(parent_label='Node37832784', child_labels=['Python sebae','Node37833008'], edge_length=2.12261395029, taxon_label=None),
-            'Python sebae' : NodeRelationship(parent_label='Node37832848', child_labels=[], edge_length=29.0711850036, taxon_label='Python sebae'),
-            'Node37833008' : NodeRelationship(parent_label='Node37832848', child_labels=['Python molurus','Node37833136'], edge_length=6.65870230472, taxon_label=None),
-            'Python molurus' : NodeRelationship(parent_label='Node37833008', child_labels=[], edge_length=22.4124826989, taxon_label='Python molurus'),
-            'Node37833136' : NodeRelationship(parent_label='Node37833008', child_labels=['Python regius','Python brongersmai'], edge_length=0.485999991488, taxon_label=None),
-            'Python regius' : NodeRelationship(parent_label='Node37833136', child_labels=[], edge_length=21.9264827074, taxon_label='Python regius'),
-            'Python brongersmai' : NodeRelationship(parent_label='Node37833136', child_labels=[], edge_length=21.9264827074, taxon_label='Python brongersmai'),
-            'Node37833200' : NodeRelationship(parent_label='Node37832784', child_labels=['Node37833360','Node37103024'], edge_length=8.39682440052, taxon_label=None),
-            'Node37833360' : NodeRelationship(parent_label='Node37833200', child_labels=['Node37833328','Node37101936'], edge_length=1.24633634472, taxon_label=None),
-            'Node37833328' : NodeRelationship(parent_label='Node37833360', child_labels=['Node37833168','Node37833744'], edge_length=1.10888028588, taxon_label=None),
-            'Node37833168' : NodeRelationship(parent_label='Node37833328', child_labels=['Python reticulatus','Python timoriensis'], edge_length=5.89251749724, taxon_label=None),
-            'Python reticulatus' : NodeRelationship(parent_label='Node37833168', child_labels=[], edge_length=14.5492404256, taxon_label='Python reticulatus'),
-            'Python timoriensis' : NodeRelationship(parent_label='Node37833168', child_labels=[], edge_length=14.5492404256, taxon_label='Python timoriensis'),
-            'Node37833744' : NodeRelationship(parent_label='Node37833328', child_labels=['Node37833456','Node37101712'], edge_length=1.52019767757, taxon_label=None),
-            'Node37833456' : NodeRelationship(parent_label='Node37833744', child_labels=['Node37833680','Node37834736'], edge_length=0.826870765744, taxon_label=None),
-            'Node37833680' : NodeRelationship(parent_label='Node37833456', child_labels=['Node37833520','Node37834256'], edge_length=2.93802844014, taxon_label=None),
-            'Node37833520' : NodeRelationship(parent_label='Node37833680', child_labels=['Morelia viridis','Node37834032'], edge_length=0.322649062335, taxon_label=None),
-            'Morelia viridis' : NodeRelationship(parent_label='Node37833520', child_labels=[], edge_length=14.834011977, taxon_label='Morelia viridis'),
-            'Node37834032' : NodeRelationship(parent_label='Node37833520', child_labels=['Node37833904','Morelia carinata'], edge_length=1.22843868872, taxon_label=None),
-            'Node37833904' : NodeRelationship(parent_label='Node37834032', child_labels=['Morelia spilota','Morelia bredli'], edge_length=7.33173338162, taxon_label=None),
-            'Morelia spilota' : NodeRelationship(parent_label='Node37833904', child_labels=[], edge_length=6.2738399067, taxon_label='Morelia spilota'),
-            'Morelia bredli' : NodeRelationship(parent_label='Node37833904', child_labels=[], edge_length=6.2738399067, taxon_label='Morelia bredli'),
-            'Morelia carinata' : NodeRelationship(parent_label='Node37834032', child_labels=[], edge_length=13.6055732883, taxon_label='Morelia carinata'),
-            'Node37834256' : NodeRelationship(parent_label='Node37833680', child_labels=['Node37834288','Antaresia maculosa'], edge_length=0.821527298272, taxon_label=None),
-            'Node37834288' : NodeRelationship(parent_label='Node37834256', child_labels=['Antaresia perthensis','Node37834512'], edge_length=4.22599220252, taxon_label=None),
-            'Antaresia perthensis' : NodeRelationship(parent_label='Node37834288', child_labels=[], edge_length=10.1091415386, taxon_label='Antaresia perthensis'),
-            'Node37834512' : NodeRelationship(parent_label='Node37834288', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=6.62594074811, taxon_label=None),
-            'Antaresia childreni' : NodeRelationship(parent_label='Node37834512', child_labels=[], edge_length=3.48320079048, taxon_label='Antaresia childreni'),
-            'Antaresia stimsoni' : NodeRelationship(parent_label='Node37834512', child_labels=[], edge_length=3.48320079048, taxon_label='Antaresia stimsoni'),
-            'Antaresia maculosa' : NodeRelationship(parent_label='Node37834256', child_labels=[], edge_length=14.3351337411, taxon_label='Antaresia maculosa'),
-            'Node37834736' : NodeRelationship(parent_label='Node37833456', child_labels=['Leiopython albertisii','Bothrochilus boa'], edge_length=8.81046360463, taxon_label=None),
-            'Leiopython albertisii' : NodeRelationship(parent_label='Node37834736', child_labels=[], edge_length=9.28422587488, taxon_label='Leiopython albertisii'),
-            'Bothrochilus boa' : NodeRelationship(parent_label='Node37834736', child_labels=[], edge_length=9.28422587488, taxon_label='Bothrochilus boa'),
-            'Node37101712' : NodeRelationship(parent_label='Node37833744', child_labels=['Node37101808','Apodora papuana'], edge_length=5.2034050718, taxon_label=None),
-            'Node37101808' : NodeRelationship(parent_label='Node37101712', child_labels=['Liasis olivaceus','Node37101968'], edge_length=2.70301025103, taxon_label=None),
-            'Liasis olivaceus' : NodeRelationship(parent_label='Node37101808', child_labels=[], edge_length=11.0151449224, taxon_label='Liasis olivaceus'),
-            'Node37101968' : NodeRelationship(parent_label='Node37101808', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=6.92713376313, taxon_label=None),
-            'Liasis fuscus' : NodeRelationship(parent_label='Node37101968', child_labels=[], edge_length=4.0880111593, taxon_label='Liasis fuscus'),
-            'Liasis mackloti' : NodeRelationship(parent_label='Node37101968', child_labels=[], edge_length=4.0880111593, taxon_label='Liasis mackloti'),
-            'Apodora papuana' : NodeRelationship(parent_label='Node37101712', child_labels=[], edge_length=13.7181551735, taxon_label='Apodora papuana'),
-            'Node37101936' : NodeRelationship(parent_label='Node37833360', child_labels=['Morelia oenpelliensis','Node37102352'], edge_length=3.94969364946, taxon_label=None),
-            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node37101936', child_labels=[], edge_length=17.6009445592, taxon_label='Morelia oenpelliensis'),
-            'Node37102352' : NodeRelationship(parent_label='Node37101936', child_labels=['Node37102288','Morelia boeleni'], edge_length=5.4268859952, taxon_label=None),
-            'Node37102288' : NodeRelationship(parent_label='Node37102352', child_labels=['Morelia tracyae','Node37102544'], edge_length=6.37126259081, taxon_label=None),
-            'Morelia tracyae' : NodeRelationship(parent_label='Node37102288', child_labels=[], edge_length=5.80279597323, taxon_label='Morelia tracyae'),
-            'Node37102544' : NodeRelationship(parent_label='Node37102288', child_labels=['Morelia amethistina','Node37102672'], edge_length=1.42172379881, taxon_label=None),
-            'Morelia amethistina' : NodeRelationship(parent_label='Node37102544', child_labels=[], edge_length=4.38107217442, taxon_label='Morelia amethistina'),
-            'Node37102672' : NodeRelationship(parent_label='Node37102544', child_labels=['Node37102608','Morelia clastolepis'], edge_length=2.50070781902, taxon_label=None),
-            'Node37102608' : NodeRelationship(parent_label='Node37102672', child_labels=['Morelia nauta','Morelia kinghorni'], edge_length=0.0774488112983, taxon_label=None),
-            'Morelia nauta' : NodeRelationship(parent_label='Node37102608', child_labels=[], edge_length=1.8029155441, taxon_label='Morelia nauta'),
-            'Morelia kinghorni' : NodeRelationship(parent_label='Node37102608', child_labels=[], edge_length=1.8029155441, taxon_label='Morelia kinghorni'),
-            'Morelia clastolepis' : NodeRelationship(parent_label='Node37102672', child_labels=[], edge_length=1.8803643554, taxon_label='Morelia clastolepis'),
-            'Morelia boeleni' : NodeRelationship(parent_label='Node37102352', child_labels=[], edge_length=12.174058564, taxon_label='Morelia boeleni'),
-            'Node37103024' : NodeRelationship(parent_label='Node37833200', child_labels=['Aspidites ramsayi','Aspidites melanocephalus'], edge_length=12.9499290649, taxon_label=None),
-            'Aspidites ramsayi' : NodeRelationship(parent_label='Node37103024', child_labels=[], edge_length=9.84704548855, taxon_label='Aspidites ramsayi'),
-            'Aspidites melanocephalus' : NodeRelationship(parent_label='Node37103024', child_labels=[], edge_length=9.84704548855, taxon_label='Aspidites melanocephalus'),
+            'Node4316347984' : NodeRelationship(parent_label=None, child_labels=['Candola aspera','Node4316348304'], edge_length=None, taxon_label=None),
+            'Candola aspera' : NodeRelationship(parent_label='Node4316347984', child_labels=[], edge_length=124.564186516, taxon_label='Candola aspera'),
+            'Node4316348304' : NodeRelationship(parent_label='Node4316347984', child_labels=['Node4316368976','Xenopeltis unicolor'], edge_length=36.3676780441, taxon_label=None),
+            'Node4316368976' : NodeRelationship(parent_label='Node4316348304', child_labels=['Node4316369104','Loxocemus bicolor'], edge_length=11.1789504571, taxon_label=None),
+            'Node4316369104' : NodeRelationship(parent_label='Node4316368976', child_labels=['Node4316369232','Node4316396048'], edge_length=20.3346663059, taxon_label=None),
+            'Node4316369232' : NodeRelationship(parent_label='Node4316369104', child_labels=['Node4316369360','Node4316395664'], edge_length=10.7040090023, taxon_label=None),
+            'Node4316369360' : NodeRelationship(parent_label='Node4316369232', child_labels=['Node4316369488','Node4316372752'], edge_length=7.28944403695, taxon_label=None),
+            'Node4316369488' : NodeRelationship(parent_label='Node4316369360', child_labels=['Node4316369616','Node4316371280'], edge_length=2.76745367097, taxon_label=None),
+            'Node4316369616' : NodeRelationship(parent_label='Node4316369488', child_labels=['Node4316369744','Node4316370128'], edge_length=12.5842551962, taxon_label=None),
+            'Node4316369744' : NodeRelationship(parent_label='Node4316369616', child_labels=['Morelia spilota','Morelia bredli'], edge_length=12.0191169658, taxon_label=None),
+            'Morelia spilota' : NodeRelationship(parent_label='Node4316369744', child_labels=[], edge_length=11.3186128368, taxon_label='Morelia spilota'),
+            'Morelia bredli' : NodeRelationship(parent_label='Node4316369744', child_labels=[], edge_length=11.3186128368, taxon_label='Morelia bredli'),
+            'Node4316370128' : NodeRelationship(parent_label='Node4316369616', child_labels=['Morelia oenpelliensis','Node4316370000'], edge_length=2.25737379321, taxon_label=None),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node4316370128', child_labels=[], edge_length=21.0803560094, taxon_label='Morelia oenpelliensis'),
+            'Node4316370000' : NodeRelationship(parent_label='Node4316370128', child_labels=['Morelia tracyae','Node4316370384'], edge_length=6.93019779087, taxon_label=None),
+            'Morelia tracyae' : NodeRelationship(parent_label='Node4316370000', child_labels=[], edge_length=14.1501582185, taxon_label='Morelia tracyae'),
+            'Node4316370384' : NodeRelationship(parent_label='Node4316370000', child_labels=['Node4316347856','Morelia amethistina'], edge_length=3.68709033509, taxon_label=None),
+            'Node4316347856' : NodeRelationship(parent_label='Node4316370384', child_labels=['Morelia nauta','Node4316370640'], edge_length=4.34576715349, taxon_label=None),
+            'Morelia nauta' : NodeRelationship(parent_label='Node4316347856', child_labels=[], edge_length=6.11730072991, taxon_label='Morelia nauta'),
+            'Node4316370640' : NodeRelationship(parent_label='Node4316347856', child_labels=['Morelia kinghorni','Morelia clastolepis'], edge_length=2.07374196069, taxon_label=None),
+            'Morelia kinghorni' : NodeRelationship(parent_label='Node4316370640', child_labels=[], edge_length=4.04355876922, taxon_label='Morelia kinghorni'),
+            'Morelia clastolepis' : NodeRelationship(parent_label='Node4316370640', child_labels=[], edge_length=4.04355876922, taxon_label='Morelia clastolepis'),
+            'Morelia amethistina' : NodeRelationship(parent_label='Node4316370384', child_labels=[], edge_length=10.4630678834, taxon_label='Morelia amethistina'),
+            'Node4316371280' : NodeRelationship(parent_label='Node4316369488', child_labels=['Node4316371536','Node4316372048'], edge_length=7.66239308607, taxon_label=None),
+            'Node4316371536' : NodeRelationship(parent_label='Node4316371280', child_labels=['Morelia carinata','Node4316371408'], edge_length=5.79725116231, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node4316371536', child_labels=[], edge_length=22.4623407504, taxon_label='Morelia carinata'),
+            'Node4316371408' : NodeRelationship(parent_label='Node4316371536', child_labels=['Morelia viridisS','Morelia viridisN'], edge_length=5.91246822929, taxon_label=None),
+            'Morelia viridisS' : NodeRelationship(parent_label='Node4316371408', child_labels=[], edge_length=16.5498725211, taxon_label='Morelia viridisS'),
+            'Morelia viridisN' : NodeRelationship(parent_label='Node4316371408', child_labels=[], edge_length=16.5498725211, taxon_label='Morelia viridisN'),
+            'Node4316372048' : NodeRelationship(parent_label='Node4316371280', child_labels=['Antaresia maculosa','Node4316372176'], edge_length=3.71811515781, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node4316372048', child_labels=[], edge_length=24.5414767549, taxon_label='Antaresia maculosa'),
+            'Node4316372176' : NodeRelationship(parent_label='Node4316372048', child_labels=['Node4316372496','Antaresia perthensis'], edge_length=5.68085904285, taxon_label=None),
+            'Node4316372496' : NodeRelationship(parent_label='Node4316372176', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=11.551508813, taxon_label=None),
+            'Antaresia childreni' : NodeRelationship(parent_label='Node4316372496', child_labels=[], edge_length=7.30910889905, taxon_label='Antaresia childreni'),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node4316372496', child_labels=[], edge_length=7.30910889905, taxon_label='Antaresia stimsoni'),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node4316372176', child_labels=[], edge_length=18.8606177121, taxon_label='Antaresia perthensis'),
+            'Node4316372752' : NodeRelationship(parent_label='Node4316369360', child_labels=['Morelia boeleni','Node4316393616'], edge_length=1.09335779327, taxon_label=None),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node4316372752', child_labels=[], edge_length=37.5960808765, taxon_label='Morelia boeleni'),
+            'Node4316393616' : NodeRelationship(parent_label='Node4316372752', child_labels=['Node4316393936','Node4316395408'], edge_length=2.73294846613, taxon_label=None),
+            'Node4316393936' : NodeRelationship(parent_label='Node4316393616', child_labels=['Node4316394064','Node4316394512'], edge_length=2.22916081797, taxon_label=None),
+            'Node4316394064' : NodeRelationship(parent_label='Node4316393936', child_labels=['Antaresia melanocephalus','Antaresia ramsayi'], edge_length=19.1660901297, taxon_label=None),
+            'Antaresia melanocephalus' : NodeRelationship(parent_label='Node4316394064', child_labels=[], edge_length=13.4678814627, taxon_label='Antaresia melanocephalus'),
+            'Antaresia ramsayi' : NodeRelationship(parent_label='Node4316394064', child_labels=[], edge_length=13.4678814627, taxon_label='Antaresia ramsayi'),
+            'Node4316394512' : NodeRelationship(parent_label='Node4316393936', child_labels=['Node4316394640','Node4316395024'], edge_length=7.55440984409, taxon_label=None),
+            'Node4316394640' : NodeRelationship(parent_label='Node4316394512', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=18.9933631628, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node4316394640', child_labels=[], edge_length=6.08619858554, taxon_label='Liasis fuscus'),
+            'Liasis mackloti' : NodeRelationship(parent_label='Node4316394640', child_labels=[], edge_length=6.08619858554, taxon_label='Liasis mackloti'),
+            'Node4316395024' : NodeRelationship(parent_label='Node4316394512', child_labels=['Apodora papuana','Liasis olivaceus'], edge_length=5.77339164759, taxon_label=None),
+            'Apodora papuana' : NodeRelationship(parent_label='Node4316395024', child_labels=[], edge_length=19.3061701007, taxon_label='Apodora papuana'),
+            'Liasis olivaceus' : NodeRelationship(parent_label='Node4316395024', child_labels=[], edge_length=19.3061701007, taxon_label='Liasis olivaceus'),
+            'Node4316395408' : NodeRelationship(parent_label='Node4316393616', child_labels=['Bothrochilus boa','Liasis albertisii'], edge_length=13.2144705479, taxon_label=None),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node4316395408', child_labels=[], edge_length=21.6486618625, taxon_label='Bothrochilus boa'),
+            'Liasis albertisii' : NodeRelationship(parent_label='Node4316395408', child_labels=[], edge_length=21.6486618625, taxon_label='Liasis albertisii'),
+            'Node4316395664' : NodeRelationship(parent_label='Node4316369232', child_labels=['Python timoriensis','Python reticulatus'], edge_length=20.035415736, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node4316395664', child_labels=[], edge_length=25.9434669707, taxon_label='Python timoriensis'),
+            'Python reticulatus' : NodeRelationship(parent_label='Node4316395664', child_labels=[], edge_length=25.9434669707, taxon_label='Python reticulatus'),
+            'Node4316396048' : NodeRelationship(parent_label='Node4316369104', child_labels=['Node4316396304','Python regius'], edge_length=19.1477140595, taxon_label=None),
+            'Node4316396304' : NodeRelationship(parent_label='Node4316396048', child_labels=['Python curtus','Node4316396176'], edge_length=7.07244422644, taxon_label=None),
+            'Python curtus' : NodeRelationship(parent_label='Node4316396304', child_labels=[], edge_length=30.462733423, taxon_label='Python curtus'),
+            'Node4316396176' : NodeRelationship(parent_label='Node4316396304', child_labels=['Python sebae','Python molurus'], edge_length=14.4432592042, taxon_label=None),
+            'Python sebae' : NodeRelationship(parent_label='Node4316396176', child_labels=[], edge_length=16.0194742188, taxon_label='Python sebae'),
+            'Python molurus' : NodeRelationship(parent_label='Node4316396176', child_labels=[], edge_length=16.0194742188, taxon_label='Python molurus'),
+            'Python regius' : NodeRelationship(parent_label='Node4316396048', child_labels=[], edge_length=37.5351776494, taxon_label='Python regius'),
+            'Loxocemus bicolor' : NodeRelationship(parent_label='Node4316368976', child_labels=[], edge_length=77.0175580149, taxon_label='Loxocemus bicolor'),
+            'Xenopeltis unicolor' : NodeRelationship(parent_label='Node4316348304', child_labels=[], edge_length=88.196508472, taxon_label='Xenopeltis unicolor'),
         },
         {
-            'Node37103344' : NodeRelationship(parent_label=None, child_labels=['Node37103408','Python sebae'], edge_length=None, taxon_label=None),
-            'Node37103408' : NodeRelationship(parent_label='Node37103344', child_labels=['Node37714672','Node37163696'], edge_length=8.43656365605, taxon_label=None),
-            'Node37714672' : NodeRelationship(parent_label='Node37103408', child_labels=['Node37102896','Node37163504'], edge_length=6.41982933271, taxon_label=None),
-            'Node37102896' : NodeRelationship(parent_label='Node37714672', child_labels=['Node37103120','Node37103280'], edge_length=4.2262164672, taxon_label=None),
-            'Node37103120' : NodeRelationship(parent_label='Node37102896', child_labels=['Node37103504','Node37104432'], edge_length=0.983173088098, taxon_label=None),
-            'Node37103504' : NodeRelationship(parent_label='Node37103120', child_labels=['Node37103568','Morelia boeleni'], edge_length=9.50779575096, taxon_label=None),
-            'Node37103568' : NodeRelationship(parent_label='Node37103504', child_labels=['Morelia tracyae','Node37103888'], edge_length=4.13809660753, taxon_label=None),
-            'Morelia tracyae' : NodeRelationship(parent_label='Node37103568', child_labels=[], edge_length=8.31432086046, taxon_label='Morelia tracyae'),
-            'Node37103888' : NodeRelationship(parent_label='Node37103568', child_labels=['Node37103824','Morelia amethistina'], edge_length=3.80591263593, taxon_label=None),
-            'Node37103824' : NodeRelationship(parent_label='Node37103888', child_labels=['Node37103920','Morelia kinghorni'], edge_length=2.88132393295, taxon_label=None),
-            'Node37103920' : NodeRelationship(parent_label='Node37103824', child_labels=['Morelia nauta','Morelia clastolepis'], edge_length=0.71440797492, taxon_label=None),
-            'Morelia nauta' : NodeRelationship(parent_label='Node37103920', child_labels=[], edge_length=0.912676316658, taxon_label='Morelia nauta'),
-            'Morelia clastolepis' : NodeRelationship(parent_label='Node37103920', child_labels=[], edge_length=0.912676316658, taxon_label='Morelia clastolepis'),
-            'Morelia kinghorni' : NodeRelationship(parent_label='Node37103824', child_labels=[], edge_length=1.62708429158, taxon_label='Morelia kinghorni'),
-            'Morelia amethistina' : NodeRelationship(parent_label='Node37103888', child_labels=[], edge_length=4.50840822453, taxon_label='Morelia amethistina'),
-            'Morelia boeleni' : NodeRelationship(parent_label='Node37103504', child_labels=[], edge_length=12.452417468, taxon_label='Morelia boeleni'),
-            'Node37104432' : NodeRelationship(parent_label='Node37103120', child_labels=['Node37104336','Node37104784'], edge_length=3.20592158422, taxon_label=None),
-            'Node37104336' : NodeRelationship(parent_label='Node37104432', child_labels=['Apodora papuana','Node37104592'], edge_length=1.50938344234, taxon_label=None),
-            'Apodora papuana' : NodeRelationship(parent_label='Node37104336', child_labels=[], edge_length=17.2449081924, taxon_label='Apodora papuana'),
-            'Node37104592' : NodeRelationship(parent_label='Node37104336', child_labels=['Liasis olivaceus','Node37104720'], edge_length=4.9943499411, taxon_label=None),
-            'Liasis olivaceus' : NodeRelationship(parent_label='Node37104592', child_labels=[], edge_length=12.2505582513, taxon_label='Liasis olivaceus'),
-            'Node37104720' : NodeRelationship(parent_label='Node37104592', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=5.95835956047, taxon_label=None),
-            'Liasis fuscus' : NodeRelationship(parent_label='Node37104720', child_labels=[], edge_length=6.29219869082, taxon_label='Liasis fuscus'),
-            'Liasis mackloti' : NodeRelationship(parent_label='Node37104720', child_labels=[], edge_length=6.29219869082, taxon_label='Liasis mackloti'),
-            'Node37104784' : NodeRelationship(parent_label='Node37104432', child_labels=['Node37104752','Node37104976'], edge_length=0.497596402447, taxon_label=None),
-            'Node37104752' : NodeRelationship(parent_label='Node37104784', child_labels=['Leiopython albertisii','Bothrochilus boa'], edge_length=5.19337056498, taxon_label=None),
-            'Leiopython albertisii' : NodeRelationship(parent_label='Node37104752', child_labels=[], edge_length=13.0633246673, taxon_label='Leiopython albertisii'),
-            'Bothrochilus boa' : NodeRelationship(parent_label='Node37104752', child_labels=[], edge_length=13.0633246673, taxon_label='Bothrochilus boa'),
-            'Node37104976' : NodeRelationship(parent_label='Node37104784', child_labels=['Node37104880','Node37105584'], edge_length=2.40513075673, taxon_label=None),
-            'Node37104880' : NodeRelationship(parent_label='Node37104976', child_labels=['Node37105200','Antaresia maculosa'], edge_length=2.06371429021, taxon_label=None),
-            'Node37105200' : NodeRelationship(parent_label='Node37104880', child_labels=['Antaresia perthensis','Node37105392'], edge_length=3.43791705079, taxon_label=None),
-            'Antaresia perthensis' : NodeRelationship(parent_label='Node37105200', child_labels=[], edge_length=10.3499331345, taxon_label='Antaresia perthensis'),
-            'Node37105392' : NodeRelationship(parent_label='Node37105200', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=6.96420024077, taxon_label=None),
-            'Antaresia childreni' : NodeRelationship(parent_label='Node37105392', child_labels=[], edge_length=3.38573289378, taxon_label='Antaresia childreni'),
-            'Antaresia stimsoni' : NodeRelationship(parent_label='Node37105392', child_labels=[], edge_length=3.38573289378, taxon_label='Antaresia stimsoni'),
-            'Antaresia maculosa' : NodeRelationship(parent_label='Node37104880', child_labels=[], edge_length=13.7878501853, taxon_label='Antaresia maculosa'),
-            'Node37105584' : NodeRelationship(parent_label='Node37104976', child_labels=['Morelia viridis','Node37105232'], edge_length=0.641957440329, taxon_label=None),
-            'Morelia viridis' : NodeRelationship(parent_label='Node37105584', child_labels=[], edge_length=15.2096070352, taxon_label='Morelia viridis'),
-            'Node37105232' : NodeRelationship(parent_label='Node37105584', child_labels=['Morelia carinata','Node37163248'], edge_length=1.5569144386, taxon_label=None),
-            'Morelia carinata' : NodeRelationship(parent_label='Node37105232', child_labels=[], edge_length=13.6526925966, taxon_label='Morelia carinata'),
-            'Node37163248' : NodeRelationship(parent_label='Node37105232', child_labels=['Morelia spilota','Morelia bredli'], edge_length=8.73106140586, taxon_label=None),
-            'Morelia spilota' : NodeRelationship(parent_label='Node37163248', child_labels=[], edge_length=4.92163119076, taxon_label='Morelia spilota'),
-            'Morelia bredli' : NodeRelationship(parent_label='Node37163248', child_labels=[], edge_length=4.92163119076, taxon_label='Morelia bredli'),
-            'Node37103280' : NodeRelationship(parent_label='Node37102896', child_labels=['Node37163312','Morelia oenpelliensis'], edge_length=1.53468865192, taxon_label=None),
-            'Node37163312' : NodeRelationship(parent_label='Node37103280', child_labels=['Python reticulatus','Python timoriensis'], edge_length=6.61343105392, taxon_label=None),
-            'Python reticulatus' : NodeRelationship(parent_label='Node37163312', child_labels=[], edge_length=14.7952666012, taxon_label='Python reticulatus'),
-            'Python timoriensis' : NodeRelationship(parent_label='Node37163312', child_labels=[], edge_length=14.7952666012, taxon_label='Python timoriensis'),
-            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node37103280', child_labels=[], edge_length=21.4086976551, taxon_label='Morelia oenpelliensis'),
-            'Node37163504' : NodeRelationship(parent_label='Node37714672', child_labels=['Aspidites ramsayi','Aspidites melanocephalus'], edge_length=20.5343771273, taxon_label=None),
-            'Aspidites ramsayi' : NodeRelationship(parent_label='Node37163504', child_labels=[], edge_length=6.63522564694, taxon_label='Aspidites ramsayi'),
-            'Aspidites melanocephalus' : NodeRelationship(parent_label='Node37163504', child_labels=[], edge_length=6.63522564694, taxon_label='Aspidites melanocephalus'),
-            'Node37163696' : NodeRelationship(parent_label='Node37103408', child_labels=['Python molurus','Node37164080'], edge_length=10.1890732074, taxon_label=None),
-            'Python molurus' : NodeRelationship(parent_label='Node37163696', child_labels=[], edge_length=23.4003588995, taxon_label='Python molurus'),
-            'Node37164080' : NodeRelationship(parent_label='Node37163696', child_labels=['Python brongersmai','Python regius'], edge_length=0.0534325174359, taxon_label=None),
-            'Python brongersmai' : NodeRelationship(parent_label='Node37164080', child_labels=[], edge_length=23.3469263821, taxon_label='Python brongersmai'),
-            'Python regius' : NodeRelationship(parent_label='Node37164080', child_labels=[], edge_length=23.3469263821, taxon_label='Python regius'),
-            'Python sebae' : NodeRelationship(parent_label='Node37103344', child_labels=[], edge_length=42.025995763, taxon_label='Python sebae'),
+            'Node4316397456' : NodeRelationship(parent_label=None, child_labels=['Candola aspera','Node4316418320'], edge_length=None, taxon_label=None),
+            'Candola aspera' : NodeRelationship(parent_label='Node4316397456', child_labels=[], edge_length=95.8502441646, taxon_label='Candola aspera'),
+            'Node4316418320' : NodeRelationship(parent_label='Node4316397456', child_labels=['Xenopeltis unicolor','Node4316418256'], edge_length=21.8741644934, taxon_label=None),
+            'Xenopeltis unicolor' : NodeRelationship(parent_label='Node4316418320', child_labels=[], edge_length=73.9760796713, taxon_label='Xenopeltis unicolor'),
+            'Node4316418256' : NodeRelationship(parent_label='Node4316418320', child_labels=['Loxocemus bicolor','Node4316418576'], edge_length=9.52951598189, taxon_label=None),
+            'Loxocemus bicolor' : NodeRelationship(parent_label='Node4316418256', child_labels=[], edge_length=64.4465636894, taxon_label='Loxocemus bicolor'),
+            'Node4316418576' : NodeRelationship(parent_label='Node4316418256', child_labels=['Node4316418960','Node4316445776'], edge_length=22.9882151659, taxon_label=None),
+            'Node4316418960' : NodeRelationship(parent_label='Node4316418576', child_labels=['Node4316419088','Node4316445392'], edge_length=6.43697452247, taxon_label=None),
+            'Node4316419088' : NodeRelationship(parent_label='Node4316418960', child_labels=['Node4316397392','Node4316443088'], edge_length=6.7231540226, taxon_label=None),
+            'Node4316397392' : NodeRelationship(parent_label='Node4316419088', child_labels=['Node4316419216','Node4316421136'], edge_length=1.03257897787, taxon_label=None),
+            'Node4316419216' : NodeRelationship(parent_label='Node4316397392', child_labels=['Node4316419344','Morelia oenpelliensis'], edge_length=7.52518318022, taxon_label=None),
+            'Node4316419344' : NodeRelationship(parent_label='Node4316419216', child_labels=['Node4316419472','Node4316419856'], edge_length=2.42060556338, taxon_label=None),
+            'Node4316419472' : NodeRelationship(parent_label='Node4316419344', child_labels=['Morelia spilota','Morelia bredli'], edge_length=8.29264517113, taxon_label=None),
+            'Morelia spilota' : NodeRelationship(parent_label='Node4316419472', child_labels=[], edge_length=9.02720708579, taxon_label='Morelia spilota'),
+            'Morelia bredli' : NodeRelationship(parent_label='Node4316419472', child_labels=[], edge_length=9.02720708579, taxon_label='Morelia bredli'),
+            'Node4316419856' : NodeRelationship(parent_label='Node4316419344', child_labels=['Morelia tracyae','Node4316419728'], edge_length=6.70163613113, taxon_label=None),
+            'Morelia tracyae' : NodeRelationship(parent_label='Node4316419856', child_labels=[], edge_length=10.6182161258, taxon_label='Morelia tracyae'),
+            'Node4316419728' : NodeRelationship(parent_label='Node4316419856', child_labels=['Node4316420240','Morelia amethistina'], edge_length=3.47880840545, taxon_label=None),
+            'Node4316420240' : NodeRelationship(parent_label='Node4316419728', child_labels=['Morelia clastolepis','Node4316420112'], edge_length=4.27223311967, taxon_label=None),
+            'Morelia clastolepis' : NodeRelationship(parent_label='Node4316420240', child_labels=[], edge_length=2.86717460067, taxon_label='Morelia clastolepis'),
+            'Node4316420112' : NodeRelationship(parent_label='Node4316420240', child_labels=['Morelia nauta','Morelia kinghorni'], edge_length=0.371215520464, taxon_label=None),
+            'Morelia nauta' : NodeRelationship(parent_label='Node4316420112', child_labels=[], edge_length=2.49595908021, taxon_label='Morelia nauta'),
+            'Morelia kinghorni' : NodeRelationship(parent_label='Node4316420112', child_labels=[], edge_length=2.49595908021, taxon_label='Morelia kinghorni'),
+            'Morelia amethistina' : NodeRelationship(parent_label='Node4316419728', child_labels=[], edge_length=7.13940772034, taxon_label='Morelia amethistina'),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node4316419216', child_labels=[], edge_length=19.7404578203, taxon_label='Morelia oenpelliensis'),
+            'Node4316421136' : NodeRelationship(parent_label='Node4316397392', child_labels=['Node4316421264','Node4316421776'], edge_length=2.39608223465, taxon_label=None),
+            'Node4316421264' : NodeRelationship(parent_label='Node4316421136', child_labels=['Morelia carinata','Node4316420880'], edge_length=3.24355281662, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node4316421264', child_labels=[], edge_length=21.6260059492, taxon_label='Morelia carinata'),
+            'Node4316420880' : NodeRelationship(parent_label='Node4316421264', child_labels=['Morelia viridisS','Morelia viridisN'], edge_length=9.1533399099, taxon_label=None),
+            'Morelia viridisS' : NodeRelationship(parent_label='Node4316420880', child_labels=[], edge_length=12.4726660393, taxon_label='Morelia viridisS'),
+            'Morelia viridisN' : NodeRelationship(parent_label='Node4316420880', child_labels=[], edge_length=12.4726660393, taxon_label='Morelia viridisN'),
+            'Node4316421776' : NodeRelationship(parent_label='Node4316421136', child_labels=['Antaresia maculosa','Node4316421904'], edge_length=3.2027013644, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node4316421776', child_labels=[], edge_length=21.6668574015, taxon_label='Antaresia maculosa'),
+            'Node4316421904' : NodeRelationship(parent_label='Node4316421776', child_labels=['Node4316442832','Antaresia perthensis'], edge_length=4.33602073619, taxon_label=None),
+            'Node4316442832' : NodeRelationship(parent_label='Node4316421904', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=11.5233229214, taxon_label=None),
+            'Antaresia childreni' : NodeRelationship(parent_label='Node4316442832', child_labels=[], edge_length=5.8075137439, taxon_label='Antaresia childreni'),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node4316442832', child_labels=[], edge_length=5.8075137439, taxon_label='Antaresia stimsoni'),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node4316421904', child_labels=[], edge_length=17.3308366653, taxon_label='Antaresia perthensis'),
+            'Node4316443088' : NodeRelationship(parent_label='Node4316419088', child_labels=['Morelia boeleni','Node4316443344'], edge_length=1.21568464049, taxon_label=None),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node4316443088', child_labels=[], edge_length=27.0825353379, taxon_label='Morelia boeleni'),
+            'Node4316443344' : NodeRelationship(parent_label='Node4316443088', child_labels=['Node4316443728','Node4316445136'], edge_length=1.37229916019, taxon_label=None),
+            'Node4316443728' : NodeRelationship(parent_label='Node4316443344', child_labels=['Node4316443856','Node4316444240'], edge_length=2.64946637554, taxon_label=None),
+            'Node4316443856' : NodeRelationship(parent_label='Node4316443728', child_labels=['Antaresia melanocephalus','Antaresia ramsayi'], edge_length=13.5545767859, taxon_label=None),
+            'Antaresia melanocephalus' : NodeRelationship(parent_label='Node4316443856', child_labels=[], edge_length=9.50619301624, taxon_label='Antaresia melanocephalus'),
+            'Antaresia ramsayi' : NodeRelationship(parent_label='Node4316443856', child_labels=[], edge_length=9.50619301624, taxon_label='Antaresia ramsayi'),
+            'Node4316444240' : NodeRelationship(parent_label='Node4316443728', child_labels=['Node4316444368','Node4316444752'], edge_length=4.67390676307, taxon_label=None),
+            'Node4316444368' : NodeRelationship(parent_label='Node4316444240', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=12.8995814401, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node4316444368', child_labels=[], edge_length=5.48728159904, taxon_label='Liasis fuscus'),
+            'Liasis mackloti' : NodeRelationship(parent_label='Node4316444368', child_labels=[], edge_length=5.48728159904, taxon_label='Liasis mackloti'),
+            'Node4316444752' : NodeRelationship(parent_label='Node4316444240', child_labels=['Apodora papuana','Liasis olivaceus'], edge_length=1.38849394051, taxon_label=None),
+            'Apodora papuana' : NodeRelationship(parent_label='Node4316444752', child_labels=[], edge_length=16.9983690986, taxon_label='Apodora papuana'),
+            'Liasis olivaceus' : NodeRelationship(parent_label='Node4316444752', child_labels=[], edge_length=16.9983690986, taxon_label='Liasis olivaceus'),
+            'Node4316445136' : NodeRelationship(parent_label='Node4316443344', child_labels=['Bothrochilus boa','Liasis albertisii'], edge_length=11.4050202795, taxon_label=None),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node4316445136', child_labels=[], edge_length=14.3052158982, taxon_label='Bothrochilus boa'),
+            'Liasis albertisii' : NodeRelationship(parent_label='Node4316445136', child_labels=[], edge_length=14.3052158982, taxon_label='Liasis albertisii'),
+            'Node4316445392' : NodeRelationship(parent_label='Node4316418960', child_labels=['Python timoriensis','Python reticulatus'], edge_length=15.1871703268, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node4316445392', child_labels=[], edge_length=19.8342036742, taxon_label='Python timoriensis'),
+            'Python reticulatus' : NodeRelationship(parent_label='Node4316445392', child_labels=[], edge_length=19.8342036742, taxon_label='Python reticulatus'),
+            'Node4316445776' : NodeRelationship(parent_label='Node4316418576', child_labels=['Node4316446032','Python regius'], edge_length=13.8002436509, taxon_label=None),
+            'Node4316446032' : NodeRelationship(parent_label='Node4316445776', child_labels=['Python curtus','Node4316445904'], edge_length=3.93234771773, taxon_label=None),
+            'Python curtus' : NodeRelationship(parent_label='Node4316446032', child_labels=[], edge_length=23.7257571548, taxon_label='Python curtus'),
+            'Node4316445904' : NodeRelationship(parent_label='Node4316446032', child_labels=['Python sebae','Python molurus'], edge_length=7.63118798191, taxon_label=None),
+            'Python sebae' : NodeRelationship(parent_label='Node4316445904', child_labels=[], edge_length=16.0945691729, taxon_label='Python sebae'),
+            'Python molurus' : NodeRelationship(parent_label='Node4316445904', child_labels=[], edge_length=16.0945691729, taxon_label='Python molurus'),
+            'Python regius' : NodeRelationship(parent_label='Node4316445776', child_labels=[], edge_length=27.6581048725, taxon_label='Python regius'),
         },
         {
-            'Node37164432' : NodeRelationship(parent_label=None, child_labels=['Node37164496','Python sebae'], edge_length=None, taxon_label=None),
-            'Node37164496' : NodeRelationship(parent_label='Node37164432', child_labels=['Node37164368','Node37220976'], edge_length=4.51223406477, taxon_label=None),
-            'Node37164368' : NodeRelationship(parent_label='Node37164496', child_labels=['Node37775760','Node37220432'], edge_length=3.29007229288, taxon_label=None),
-            'Node37775760' : NodeRelationship(parent_label='Node37164368', child_labels=['Node37164304','Node37165712'], edge_length=4.09158345085, taxon_label=None),
-            'Node37164304' : NodeRelationship(parent_label='Node37775760', child_labels=['Morelia viridis','Node37164848'], edge_length=2.82624159524, taxon_label=None),
-            'Morelia viridis' : NodeRelationship(parent_label='Node37164304', child_labels=[], edge_length=14.5888315231, taxon_label='Morelia viridis'),
-            'Node37164848' : NodeRelationship(parent_label='Node37164304', child_labels=['Node37164720','Node37165264'], edge_length=0.0149913671254, taxon_label=None),
-            'Node37164720' : NodeRelationship(parent_label='Node37164848', child_labels=['Node37164880','Morelia carinata'], edge_length=4.89600409139, taxon_label=None),
-            'Node37164880' : NodeRelationship(parent_label='Node37164720', child_labels=['Morelia spilota','Morelia bredli'], edge_length=5.06534441374, taxon_label=None),
-            'Morelia spilota' : NodeRelationship(parent_label='Node37164880', child_labels=[], edge_length=4.61249165082, taxon_label='Morelia spilota'),
-            'Morelia bredli' : NodeRelationship(parent_label='Node37164880', child_labels=[], edge_length=4.61249165082, taxon_label='Morelia bredli'),
-            'Morelia carinata' : NodeRelationship(parent_label='Node37164720', child_labels=[], edge_length=9.67783606456, taxon_label='Morelia carinata'),
-            'Node37165264' : NodeRelationship(parent_label='Node37164848', child_labels=['Antaresia maculosa','Node37165328'], edge_length=0.516331095919, taxon_label=None),
-            'Antaresia maculosa' : NodeRelationship(parent_label='Node37165264', child_labels=[], edge_length=14.05750906, taxon_label='Antaresia maculosa'),
-            'Node37165328' : NodeRelationship(parent_label='Node37165264', child_labels=['Antaresia perthensis','Node37165456'], edge_length=6.44901536169, taxon_label=None),
-            'Antaresia perthensis' : NodeRelationship(parent_label='Node37165328', child_labels=[], edge_length=7.60849369834, taxon_label='Antaresia perthensis'),
-            'Node37165456' : NodeRelationship(parent_label='Node37165328', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=5.74491098314, taxon_label=None),
-            'Antaresia childreni' : NodeRelationship(parent_label='Node37165456', child_labels=[], edge_length=1.86358271521, taxon_label='Antaresia childreni'),
-            'Antaresia stimsoni' : NodeRelationship(parent_label='Node37165456', child_labels=[], edge_length=1.86358271521, taxon_label='Antaresia stimsoni'),
-            'Node37165712' : NodeRelationship(parent_label='Node37775760', child_labels=['Node37165616','Node37165968'], edge_length=0.0769064358513, taxon_label=None),
-            'Node37165616' : NodeRelationship(parent_label='Node37165712', child_labels=['Python reticulatus','Python timoriensis'], edge_length=8.7380438705, taxon_label=None),
-            'Python reticulatus' : NodeRelationship(parent_label='Node37165616', child_labels=[], edge_length=8.60012281197, taxon_label='Python reticulatus'),
-            'Python timoriensis' : NodeRelationship(parent_label='Node37165616', child_labels=[], edge_length=8.60012281197, taxon_label='Python timoriensis'),
-            'Node37165968' : NodeRelationship(parent_label='Node37165712', child_labels=['Node37165840','Node37166576'], edge_length=0.894040812546, taxon_label=None),
-            'Node37165840' : NodeRelationship(parent_label='Node37165968', child_labels=['Node37165808','Node37166384'], edge_length=1.98993837612, taxon_label=None),
-            'Node37165808' : NodeRelationship(parent_label='Node37165840', child_labels=['Apodora papuana','Node37166192'], edge_length=1.38724843406, taxon_label=None),
-            'Apodora papuana' : NodeRelationship(parent_label='Node37165808', child_labels=[], edge_length=13.0669390597, taxon_label='Apodora papuana'),
-            'Node37166192' : NodeRelationship(parent_label='Node37165808', child_labels=['Leiopython albertisii','Bothrochilus boa'], edge_length=3.7285329013, taxon_label=None),
-            'Leiopython albertisii' : NodeRelationship(parent_label='Node37166192', child_labels=[], edge_length=9.33840615844, taxon_label='Leiopython albertisii'),
-            'Bothrochilus boa' : NodeRelationship(parent_label='Node37166192', child_labels=[], edge_length=9.33840615844, taxon_label='Bothrochilus boa'),
-            'Node37166384' : NodeRelationship(parent_label='Node37165840', child_labels=['Liasis olivaceus','Node37166512'], edge_length=3.48386820234, taxon_label=None),
-            'Liasis olivaceus' : NodeRelationship(parent_label='Node37166384', child_labels=[], edge_length=10.9703192915, taxon_label='Liasis olivaceus'),
-            'Node37166512' : NodeRelationship(parent_label='Node37166384', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=3.83596797183, taxon_label=None),
-            'Liasis fuscus' : NodeRelationship(parent_label='Node37166512', child_labels=[], edge_length=7.13435131963, taxon_label='Liasis fuscus'),
-            'Liasis mackloti' : NodeRelationship(parent_label='Node37166512', child_labels=[], edge_length=7.13435131963, taxon_label='Liasis mackloti'),
-            'Node37166576' : NodeRelationship(parent_label='Node37165968', child_labels=['Node37166544','Morelia oenpelliensis'], edge_length=2.85390092474, taxon_label=None),
-            'Node37166544' : NodeRelationship(parent_label='Node37166576', child_labels=['Node37166704','Morelia boeleni'], edge_length=3.52728125011, taxon_label=None),
-            'Node37166704' : NodeRelationship(parent_label='Node37166544', child_labels=['Morelia tracyae','Node37166960'], edge_length=1.7419442928, taxon_label=None),
-            'Morelia tracyae' : NodeRelationship(parent_label='Node37166704', child_labels=[], edge_length=8.32099940228, taxon_label='Morelia tracyae'),
-            'Node37166960' : NodeRelationship(parent_label='Node37166704', child_labels=['Node37166896','Morelia amethistina'], edge_length=4.44695529056, taxon_label=None),
-            'Node37166896' : NodeRelationship(parent_label='Node37166960', child_labels=['Node37166992','Morelia clastolepis'], edge_length=2.02523285213, taxon_label=None),
-            'Node37166992' : NodeRelationship(parent_label='Node37166896', child_labels=['Morelia kinghorni','Morelia nauta'], edge_length=0.774826953003, taxon_label=None),
-            'Morelia kinghorni' : NodeRelationship(parent_label='Node37166992', child_labels=[], edge_length=1.07398430658, taxon_label='Morelia kinghorni'),
-            'Morelia nauta' : NodeRelationship(parent_label='Node37166992', child_labels=[], edge_length=1.07398430658, taxon_label='Morelia nauta'),
-            'Morelia clastolepis' : NodeRelationship(parent_label='Node37166896', child_labels=[], edge_length=1.84881125958, taxon_label='Morelia clastolepis'),
-            'Morelia amethistina' : NodeRelationship(parent_label='Node37166960', child_labels=[], edge_length=3.87404411171, taxon_label='Morelia amethistina'),
-            'Morelia boeleni' : NodeRelationship(parent_label='Node37166544', child_labels=[], edge_length=10.0629436951, taxon_label='Morelia boeleni'),
-            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node37166576', child_labels=[], edge_length=13.5902249452, taxon_label='Morelia oenpelliensis'),
-            'Node37220432' : NodeRelationship(parent_label='Node37164368', child_labels=['Aspidites ramsayi','Aspidites melanocephalus'], edge_length=12.3527736124, taxon_label=None),
-            'Aspidites ramsayi' : NodeRelationship(parent_label='Node37220432', child_labels=[], edge_length=9.1538829568, taxon_label='Aspidites ramsayi'),
-            'Aspidites melanocephalus' : NodeRelationship(parent_label='Node37220432', child_labels=[], edge_length=9.1538829568, taxon_label='Aspidites melanocephalus'),
-            'Node37220976' : NodeRelationship(parent_label='Node37164496', child_labels=['Node37220944','Python molurus'], edge_length=1.61144541412, taxon_label=None),
-            'Node37220944' : NodeRelationship(parent_label='Node37220976', child_labels=['Python regius','Python brongersmai'], edge_length=0.5196540118, taxon_label=None),
-            'Python regius' : NodeRelationship(parent_label='Node37220944', child_labels=[], edge_length=22.6656294361, taxon_label='Python regius'),
-            'Python brongersmai' : NodeRelationship(parent_label='Node37220944', child_labels=[], edge_length=22.6656294361, taxon_label='Python brongersmai'),
-            'Python molurus' : NodeRelationship(parent_label='Node37220976', child_labels=[], edge_length=23.1852834479, taxon_label='Python molurus'),
-            'Python sebae' : NodeRelationship(parent_label='Node37164432', child_labels=[], edge_length=29.3089629268, taxon_label='Python sebae'),
+            'Node4316467472' : NodeRelationship(parent_label=None, child_labels=['Candola aspera','Node4316467344'], edge_length=None, taxon_label=None),
+            'Candola aspera' : NodeRelationship(parent_label='Node4316467472', child_labels=[], edge_length=126.147943419, taxon_label='Candola aspera'),
+            'Node4316467344' : NodeRelationship(parent_label='Node4316467472', child_labels=['Node4316467792','Xenopeltis unicolor'], edge_length=40.5157695372, taxon_label=None),
+            'Node4316467792' : NodeRelationship(parent_label='Node4316467344', child_labels=['Node4316467920','Loxocemus bicolor'], edge_length=13.6608326978, taxon_label=None),
+            'Node4316467920' : NodeRelationship(parent_label='Node4316467792', child_labels=['Node4316468048','Node4316490896'], edge_length=17.1918011574, taxon_label=None),
+            'Node4316468048' : NodeRelationship(parent_label='Node4316467920', child_labels=['Node4316468176','Node4316490576'], edge_length=5.77299961102, taxon_label=None),
+            'Node4316468176' : NodeRelationship(parent_label='Node4316468048', child_labels=['Node4316468304','Node4316470480'], edge_length=13.7010200713, taxon_label=None),
+            'Node4316468304' : NodeRelationship(parent_label='Node4316468176', child_labels=['Morelia boeleni','Node4316467408'], edge_length=0.617658990864, taxon_label=None),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node4316468304', child_labels=[], edge_length=34.6878613533, taxon_label='Morelia boeleni'),
+            'Node4316467408' : NodeRelationship(parent_label='Node4316468304', child_labels=['Node4316468688','Node4316469072'], edge_length=2.23641376685, taxon_label=None),
+            'Node4316468688' : NodeRelationship(parent_label='Node4316467408', child_labels=['Bothrochilus boa','Liasis albertisii'], edge_length=10.5685372807, taxon_label=None),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node4316468688', child_labels=[], edge_length=21.8829103058, taxon_label='Bothrochilus boa'),
+            'Liasis albertisii' : NodeRelationship(parent_label='Node4316468688', child_labels=[], edge_length=21.8829103058, taxon_label='Liasis albertisii'),
+            'Node4316469072' : NodeRelationship(parent_label='Node4316467408', child_labels=['Node4316469200','Node4316469584'], edge_length=2.11685229318, taxon_label=None),
+            'Node4316469200' : NodeRelationship(parent_label='Node4316469072', child_labels=['Antaresia melanocephalus','Antaresia ramsayi'], edge_length=17.1757724208, taxon_label=None),
+            'Antaresia melanocephalus' : NodeRelationship(parent_label='Node4316469200', child_labels=[], edge_length=13.1588228725, taxon_label='Antaresia melanocephalus'),
+            'Antaresia ramsayi' : NodeRelationship(parent_label='Node4316469200', child_labels=[], edge_length=13.1588228725, taxon_label='Antaresia ramsayi'),
+            'Node4316469584' : NodeRelationship(parent_label='Node4316469072', child_labels=['Node4316469712','Node4316470096'], edge_length=3.96372676423, taxon_label=None),
+            'Node4316469712' : NodeRelationship(parent_label='Node4316469584', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=19.5683902852, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node4316469712', child_labels=[], edge_length=6.80247824391, taxon_label='Liasis fuscus'),
+            'Liasis mackloti' : NodeRelationship(parent_label='Node4316469712', child_labels=[], edge_length=6.80247824391, taxon_label='Liasis mackloti'),
+            'Node4316470096' : NodeRelationship(parent_label='Node4316469584', child_labels=['Apodora papuana','Liasis olivaceus'], edge_length=4.82785669688, taxon_label=None),
+            'Apodora papuana' : NodeRelationship(parent_label='Node4316470096', child_labels=[], edge_length=21.5430118322, taxon_label='Apodora papuana'),
+            'Liasis olivaceus' : NodeRelationship(parent_label='Node4316470096', child_labels=[], edge_length=21.5430118322, taxon_label='Liasis olivaceus'),
+            'Node4316470480' : NodeRelationship(parent_label='Node4316468176', child_labels=['Node4316470608','Node4316488848'], edge_length=1.35670146604, taxon_label=None),
+            'Node4316470608' : NodeRelationship(parent_label='Node4316470480', child_labels=['Node4316470736','Node4316488592'], edge_length=10.3401216686, taxon_label=None),
+            'Node4316470736' : NodeRelationship(parent_label='Node4316470608', child_labels=['Node4316470864','Morelia oenpelliensis'], edge_length=2.31259127041, taxon_label=None),
+            'Node4316470864' : NodeRelationship(parent_label='Node4316470736', child_labels=['Morelia tracyae','Node4316470352'], edge_length=7.79402846351, taxon_label=None),
+            'Morelia tracyae' : NodeRelationship(parent_label='Node4316470864', child_labels=[], edge_length=13.5020774756, taxon_label='Morelia tracyae'),
+            'Node4316470352' : NodeRelationship(parent_label='Node4316470864', child_labels=['Node4316471248','Morelia amethistina'], edge_length=3.5072599877, taxon_label=None),
+            'Node4316471248' : NodeRelationship(parent_label='Node4316470352', child_labels=['Morelia nauta','Node4316471120'], edge_length=6.20487512451, taxon_label=None),
+            'Morelia nauta' : NodeRelationship(parent_label='Node4316471248', child_labels=[], edge_length=3.78994236341, taxon_label='Morelia nauta'),
+            'Node4316471120' : NodeRelationship(parent_label='Node4316471248', child_labels=['Morelia clastolepis','Morelia kinghorni'], edge_length=1.25204312348, taxon_label=None),
+            'Morelia clastolepis' : NodeRelationship(parent_label='Node4316471120', child_labels=[], edge_length=2.53789923993, taxon_label='Morelia clastolepis'),
+            'Morelia kinghorni' : NodeRelationship(parent_label='Node4316471120', child_labels=[], edge_length=2.53789923993, taxon_label='Morelia kinghorni'),
+            'Morelia amethistina' : NodeRelationship(parent_label='Node4316470352', child_labels=[], edge_length=9.99481748791, taxon_label='Morelia amethistina'),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node4316470736', child_labels=[], edge_length=21.2961059391, taxon_label='Morelia oenpelliensis'),
+            'Node4316488592' : NodeRelationship(parent_label='Node4316470608', child_labels=['Morelia spilota','Morelia bredli'], edge_length=13.9826784484, taxon_label=None),
+            'Morelia spilota' : NodeRelationship(parent_label='Node4316488592', child_labels=[], edge_length=9.62601876119, taxon_label='Morelia spilota'),
+            'Morelia bredli' : NodeRelationship(parent_label='Node4316488592', child_labels=[], edge_length=9.62601876119, taxon_label='Morelia bredli'),
+            'Node4316488848' : NodeRelationship(parent_label='Node4316470480', child_labels=['Node4316489104','Node4316489616'], edge_length=7.03488295134, taxon_label=None),
+            'Node4316489104' : NodeRelationship(parent_label='Node4316488848', child_labels=['Morelia carinata','Node4316488976'], edge_length=4.39672345568, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node4316489104', child_labels=[], edge_length=22.5172124711, taxon_label='Morelia carinata'),
+            'Node4316488976' : NodeRelationship(parent_label='Node4316489104', child_labels=['Morelia viridisS','Morelia viridisN'], edge_length=11.9061835258, taxon_label=None),
+            'Morelia viridisS' : NodeRelationship(parent_label='Node4316488976', child_labels=[], edge_length=10.6110289453, taxon_label='Morelia viridisS'),
+            'Morelia viridisN' : NodeRelationship(parent_label='Node4316488976', child_labels=[], edge_length=10.6110289453, taxon_label='Morelia viridisN'),
+            'Node4316489616' : NodeRelationship(parent_label='Node4316488848', child_labels=['Antaresia maculosa','Node4316489744'], edge_length=3.94778865925, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node4316489616', child_labels=[], edge_length=22.9661472676, taxon_label='Antaresia maculosa'),
+            'Node4316489744' : NodeRelationship(parent_label='Node4316489616', child_labels=['Node4316490128','Antaresia perthensis'], edge_length=3.7713704432, taxon_label=None),
+            'Node4316490128' : NodeRelationship(parent_label='Node4316489744', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=11.9409692012, taxon_label=None),
+            'Antaresia childreni' : NodeRelationship(parent_label='Node4316490128', child_labels=[], edge_length=7.25380762314, taxon_label='Antaresia childreni'),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node4316490128', child_labels=[], edge_length=7.25380762314, taxon_label='Antaresia stimsoni'),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node4316489744', child_labels=[], edge_length=19.1947768244, taxon_label='Antaresia perthensis'),
+            'Node4316490576' : NodeRelationship(parent_label='Node4316468048', child_labels=['Python timoriensis','Python reticulatus'], edge_length=24.6978541753, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node4316490576', child_labels=[], edge_length=24.3086862402, taxon_label='Python timoriensis'),
+            'Python reticulatus' : NodeRelationship(parent_label='Node4316490576', child_labels=[], edge_length=24.3086862402, taxon_label='Python reticulatus'),
+            'Node4316490896' : NodeRelationship(parent_label='Node4316467920', child_labels=['Node4316491152','Python regius'], edge_length=21.166651853, taxon_label=None),
+            'Node4316491152' : NodeRelationship(parent_label='Node4316490896', child_labels=['Python curtus','Node4316491024'], edge_length=5.80983351578, taxon_label=None),
+            'Python curtus' : NodeRelationship(parent_label='Node4316491152', child_labels=[], edge_length=27.8030546577, taxon_label='Python curtus'),
+            'Node4316491024' : NodeRelationship(parent_label='Node4316491152', child_labels=['Python sebae','Python molurus'], edge_length=10.4395768579, taxon_label=None),
+            'Python sebae' : NodeRelationship(parent_label='Node4316491024', child_labels=[], edge_length=17.3634777999, taxon_label='Python sebae'),
+            'Python molurus' : NodeRelationship(parent_label='Node4316491024', child_labels=[], edge_length=17.3634777999, taxon_label='Python molurus'),
+            'Python regius' : NodeRelationship(parent_label='Node4316490896', child_labels=[], edge_length=33.6128881735, taxon_label='Python regius'),
+            'Loxocemus bicolor' : NodeRelationship(parent_label='Node4316467792', child_labels=[], edge_length=71.971341184, taxon_label='Loxocemus bicolor'),
+            'Xenopeltis unicolor' : NodeRelationship(parent_label='Node4316467344', child_labels=[], edge_length=85.6321738818, taxon_label='Xenopeltis unicolor'),
         },
         {
-            'Node37221424' : NodeRelationship(parent_label=None, child_labels=['Python sebae','Node37221584'], edge_length=None, taxon_label=None),
-            'Python sebae' : NodeRelationship(parent_label='Node37221424', child_labels=[], edge_length=41.037475788, taxon_label='Python sebae'),
-            'Node37221584' : NodeRelationship(parent_label='Node37221424', child_labels=['Node37221616','Node37221936'], edge_length=0.971031599202, taxon_label=None),
-            'Node37221616' : NodeRelationship(parent_label='Node37221584', child_labels=['Python regius','Node37221776'], edge_length=7.88042810387, taxon_label=None),
-            'Python regius' : NodeRelationship(parent_label='Node37221616', child_labels=[], edge_length=32.1860160849, taxon_label='Python regius'),
-            'Node37221776' : NodeRelationship(parent_label='Node37221616', child_labels=['Python molurus','Python brongersmai'], edge_length=3.37816716317, taxon_label=None),
-            'Python molurus' : NodeRelationship(parent_label='Node37221776', child_labels=[], edge_length=28.8078489217, taxon_label='Python molurus'),
-            'Python brongersmai' : NodeRelationship(parent_label='Node37221776', child_labels=[], edge_length=28.8078489217, taxon_label='Python brongersmai'),
-            'Node37221936' : NodeRelationship(parent_label='Node37221584', child_labels=['Node37221968','Node37224432'], edge_length=11.1348383801, taxon_label=None),
-            'Node37221968' : NodeRelationship(parent_label='Node37221936', child_labels=['Node37221872','Node37222736'], edge_length=5.61233091052, taxon_label=None),
-            'Node37221872' : NodeRelationship(parent_label='Node37221968', child_labels=['Morelia oenpelliensis','Node37222224'], edge_length=3.04566241261, taxon_label=None),
-            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node37221872', child_labels=[], edge_length=20.2736124855, taxon_label='Morelia oenpelliensis'),
-            'Node37222224' : NodeRelationship(parent_label='Node37221872', child_labels=['Node37222096','Morelia boeleni'], edge_length=7.80824403904, taxon_label=None),
-            'Node37222096' : NodeRelationship(parent_label='Node37222224', child_labels=['Morelia tracyae','Node37222416'], edge_length=3.53762335708, taxon_label=None),
-            'Morelia tracyae' : NodeRelationship(parent_label='Node37222096', child_labels=[], edge_length=8.92774508942, taxon_label='Morelia tracyae'),
-            'Node37222416' : NodeRelationship(parent_label='Node37222096', child_labels=['Node37222288','Morelia amethistina'], edge_length=0.98740476198, taxon_label=None),
-            'Node37222288' : NodeRelationship(parent_label='Node37222416', child_labels=['Node37222448','Morelia clastolepis'], edge_length=4.46813855011, taxon_label=None),
-            'Node37222448' : NodeRelationship(parent_label='Node37222288', child_labels=['Morelia kinghorni','Morelia nauta'], edge_length=0.318849288103, taxon_label=None),
-            'Morelia kinghorni' : NodeRelationship(parent_label='Node37222448', child_labels=[], edge_length=3.15335248923, taxon_label='Morelia kinghorni'),
-            'Morelia nauta' : NodeRelationship(parent_label='Node37222448', child_labels=[], edge_length=3.15335248923, taxon_label='Morelia nauta'),
-            'Morelia clastolepis' : NodeRelationship(parent_label='Node37222288', child_labels=[], edge_length=3.47220177733, taxon_label='Morelia clastolepis'),
-            'Morelia amethistina' : NodeRelationship(parent_label='Node37222416', child_labels=[], edge_length=7.94034032744, taxon_label='Morelia amethistina'),
-            'Morelia boeleni' : NodeRelationship(parent_label='Node37222224', child_labels=[], edge_length=12.4653684465, taxon_label='Morelia boeleni'),
-            'Node37222736' : NodeRelationship(parent_label='Node37221968', child_labels=['Node37222960','Node37223632'], edge_length=1.63793957099, taxon_label=None),
-            'Node37222960' : NodeRelationship(parent_label='Node37222736', child_labels=['Node37222864','Node37223248'], edge_length=1.17144499717, taxon_label=None),
-            'Node37222864' : NodeRelationship(parent_label='Node37222960', child_labels=['Liasis olivaceus','Node37223184'], edge_length=6.09401457319, taxon_label=None),
-            'Liasis olivaceus' : NodeRelationship(parent_label='Node37222864', child_labels=[], edge_length=14.4158757568, taxon_label='Liasis olivaceus'),
-            'Node37223184' : NodeRelationship(parent_label='Node37222864', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=10.1133978359, taxon_label=None),
-            'Liasis fuscus' : NodeRelationship(parent_label='Node37223184', child_labels=[], edge_length=4.30247792095, taxon_label='Liasis fuscus'),
-            'Liasis mackloti' : NodeRelationship(parent_label='Node37223184', child_labels=[], edge_length=4.30247792095, taxon_label='Liasis mackloti'),
-            'Node37223248' : NodeRelationship(parent_label='Node37222960', child_labels=['Node37223376','Apodora papuana'], edge_length=0.168673432469, taxon_label=None),
-            'Node37223376' : NodeRelationship(parent_label='Node37223248', child_labels=['Python reticulatus','Python timoriensis'], edge_length=9.21506648422, taxon_label=None),
-            'Python reticulatus' : NodeRelationship(parent_label='Node37223376', child_labels=[], edge_length=11.1261504133, taxon_label='Python reticulatus'),
-            'Python timoriensis' : NodeRelationship(parent_label='Node37223376', child_labels=[], edge_length=11.1261504133, taxon_label='Python timoriensis'),
-            'Apodora papuana' : NodeRelationship(parent_label='Node37223248', child_labels=[], edge_length=20.3412168975, taxon_label='Apodora papuana'),
-            'Node37223632' : NodeRelationship(parent_label='Node37222736', child_labels=['Node37223408','Node37223760'], edge_length=0.325200272563, taxon_label=None),
-            'Node37223408' : NodeRelationship(parent_label='Node37223632', child_labels=['Leiopython albertisii','Bothrochilus boa'], edge_length=4.80149248356, taxon_label=None),
-            'Leiopython albertisii' : NodeRelationship(parent_label='Node37223408', child_labels=[], edge_length=16.554642571, taxon_label='Leiopython albertisii'),
-            'Bothrochilus boa' : NodeRelationship(parent_label='Node37223408', child_labels=[], edge_length=16.554642571, taxon_label='Bothrochilus boa'),
-            'Node37223760' : NodeRelationship(parent_label='Node37223632', child_labels=['Node37223728','Node37224304'], edge_length=5.59816192539, taxon_label=None),
-            'Node37223728' : NodeRelationship(parent_label='Node37223760', child_labels=['Node37223888','Morelia viridis'], edge_length=1.51569357225, taxon_label=None),
-            'Node37223888' : NodeRelationship(parent_label='Node37223728', child_labels=['Morelia carinata','Node37224208'], edge_length=0.59310677926, taxon_label=None),
-            'Morelia carinata' : NodeRelationship(parent_label='Node37223888', child_labels=[], edge_length=13.6491727777, taxon_label='Morelia carinata'),
-            'Node37224208' : NodeRelationship(parent_label='Node37223888', child_labels=['Morelia spilota','Morelia bredli'], edge_length=7.69541700903, taxon_label=None),
-            'Morelia spilota' : NodeRelationship(parent_label='Node37224208', child_labels=[], edge_length=5.95375576867, taxon_label='Morelia spilota'),
-            'Morelia bredli' : NodeRelationship(parent_label='Node37224208', child_labels=[], edge_length=5.95375576867, taxon_label='Morelia bredli'),
-            'Morelia viridis' : NodeRelationship(parent_label='Node37223728', child_labels=[], edge_length=14.242279557, taxon_label='Morelia viridis'),
-            'Node37224304' : NodeRelationship(parent_label='Node37223760', child_labels=['Antaresia maculosa','Node37224368'], edge_length=2.47499227209, taxon_label=None),
-            'Antaresia maculosa' : NodeRelationship(parent_label='Node37224304', child_labels=[], edge_length=13.2829808571, taxon_label='Antaresia maculosa'),
-            'Node37224368' : NodeRelationship(parent_label='Node37224304', child_labels=['Antaresia perthensis','Node37277904'], edge_length=3.47453380669, taxon_label=None),
-            'Antaresia perthensis' : NodeRelationship(parent_label='Node37224368', child_labels=[], edge_length=9.80844705042, taxon_label='Antaresia perthensis'),
-            'Node37277904' : NodeRelationship(parent_label='Node37224368', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=3.99697653657, taxon_label=None),
-            'Antaresia childreni' : NodeRelationship(parent_label='Node37277904', child_labels=[], edge_length=5.81147051386, taxon_label='Antaresia childreni'),
-            'Antaresia stimsoni' : NodeRelationship(parent_label='Node37277904', child_labels=[], edge_length=5.81147051386, taxon_label='Antaresia stimsoni'),
-            'Node37224432' : NodeRelationship(parent_label='Node37221936', child_labels=['Aspidites ramsayi','Aspidites melanocephalus'], edge_length=19.6159722746, taxon_label=None),
-            'Aspidites ramsayi' : NodeRelationship(parent_label='Node37224432', child_labels=[], edge_length=9.3156335341, taxon_label='Aspidites ramsayi'),
-            'Aspidites melanocephalus' : NodeRelationship(parent_label='Node37224432', child_labels=[], edge_length=9.3156335341, taxon_label='Aspidites melanocephalus'),
+            'Node4316512848' : NodeRelationship(parent_label=None, child_labels=['Candola aspera','Node4316513168'], edge_length=None, taxon_label=None),
+            'Candola aspera' : NodeRelationship(parent_label='Node4316512848', child_labels=[], edge_length=146.770054852, taxon_label='Candola aspera'),
+            'Node4316513168' : NodeRelationship(parent_label='Node4316512848', child_labels=['Node4316513296','Xenopeltis unicolor'], edge_length=49.9930471528, taxon_label=None),
+            'Node4316513296' : NodeRelationship(parent_label='Node4316513168', child_labels=['Loxocemus bicolor','Node4316513104'], edge_length=13.4634525107, taxon_label=None),
+            'Loxocemus bicolor' : NodeRelationship(parent_label='Node4316513296', child_labels=[], edge_length=83.313555189, taxon_label='Loxocemus bicolor'),
+            'Node4316513104' : NodeRelationship(parent_label='Node4316513296', child_labels=['Node4316513680','Node4316536464'], edge_length=30.4776798161, taxon_label=None),
+            'Node4316513680' : NodeRelationship(parent_label='Node4316513104', child_labels=['Node4316513808','Node4316512784'], edge_length=8.15039409252, taxon_label=None),
+            'Node4316513808' : NodeRelationship(parent_label='Node4316513680', child_labels=['Node4316513936','Node4316534096'], edge_length=9.51023675819, taxon_label=None),
+            'Node4316513936' : NodeRelationship(parent_label='Node4316513808', child_labels=['Node4316514064','Node4316515728'], edge_length=1.94845077373, taxon_label=None),
+            'Node4316514064' : NodeRelationship(parent_label='Node4316513936', child_labels=['Node4316514192','Node4316514704'], edge_length=3.25905094181, taxon_label=None),
+            'Node4316514192' : NodeRelationship(parent_label='Node4316514064', child_labels=['Morelia carinata','Node4316513552'], edge_length=4.82232736143, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node4316514192', child_labels=[], edge_length=25.1454154452, taxon_label='Morelia carinata'),
+            'Node4316513552' : NodeRelationship(parent_label='Node4316514192', child_labels=['Morelia viridisS','Morelia viridisN'], edge_length=10.5788836702, taxon_label=None),
+            'Morelia viridisS' : NodeRelationship(parent_label='Node4316513552', child_labels=[], edge_length=14.566531775, taxon_label='Morelia viridisS'),
+            'Morelia viridisN' : NodeRelationship(parent_label='Node4316513552', child_labels=[], edge_length=14.566531775, taxon_label='Morelia viridisN'),
+            'Node4316514704' : NodeRelationship(parent_label='Node4316514064', child_labels=['Antaresia maculosa','Node4316514832'], edge_length=4.58004825968, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node4316514704', child_labels=[], edge_length=25.387694547, taxon_label='Antaresia maculosa'),
+            'Node4316514832' : NodeRelationship(parent_label='Node4316514704', child_labels=['Node4316515216','Antaresia perthensis'], edge_length=5.75635440071, taxon_label=None),
+            'Node4316515216' : NodeRelationship(parent_label='Node4316514832', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=12.7115868187, taxon_label=None),
+            'Antaresia childreni' : NodeRelationship(parent_label='Node4316515216', child_labels=[], edge_length=6.91975332756, taxon_label='Antaresia childreni'),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node4316515216', child_labels=[], edge_length=6.91975332756, taxon_label='Antaresia stimsoni'),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node4316514832', child_labels=[], edge_length=19.6313401463, taxon_label='Antaresia perthensis'),
+            'Node4316515728' : NodeRelationship(parent_label='Node4316513936', child_labels=['Node4316515856','Node4316516240'], edge_length=10.0348009179, taxon_label=None),
+            'Node4316515856' : NodeRelationship(parent_label='Node4316515728', child_labels=['Morelia spilota','Morelia bredli'], edge_length=14.4811675935, taxon_label=None),
+            'Morelia spilota' : NodeRelationship(parent_label='Node4316515856', child_labels=[], edge_length=8.71082523711, taxon_label='Morelia spilota'),
+            'Morelia bredli' : NodeRelationship(parent_label='Node4316515856', child_labels=[], edge_length=8.71082523711, taxon_label='Morelia bredli'),
+            'Node4316516240' : NodeRelationship(parent_label='Node4316515728', child_labels=['Node4316532816','Morelia oenpelliensis'], edge_length=0.795030531054, taxon_label=None),
+            'Node4316532816' : NodeRelationship(parent_label='Node4316516240', child_labels=['Morelia tracyae','Node4316516112'], edge_length=7.95009719313, taxon_label=None),
+            'Morelia tracyae' : NodeRelationship(parent_label='Node4316532816', child_labels=[], edge_length=14.4468651064, taxon_label='Morelia tracyae'),
+            'Node4316516112' : NodeRelationship(parent_label='Node4316532816', child_labels=['Node4316533200','Morelia amethistina'], edge_length=2.27822479328, taxon_label=None),
+            'Node4316533200' : NodeRelationship(parent_label='Node4316516112', child_labels=['Morelia clastolepis','Node4316533072'], edge_length=6.98040063458, taxon_label=None),
+            'Morelia clastolepis' : NodeRelationship(parent_label='Node4316533200', child_labels=[], edge_length=5.18823967855, taxon_label='Morelia clastolepis'),
+            'Node4316533072' : NodeRelationship(parent_label='Node4316533200', child_labels=['Morelia kinghorni','Morelia nauta'], edge_length=1.71064757594, taxon_label=None),
+            'Morelia kinghorni' : NodeRelationship(parent_label='Node4316533072', child_labels=[], edge_length=3.47759210261, taxon_label='Morelia kinghorni'),
+            'Morelia nauta' : NodeRelationship(parent_label='Node4316533072', child_labels=[], edge_length=3.47759210261, taxon_label='Morelia nauta'),
+            'Morelia amethistina' : NodeRelationship(parent_label='Node4316516112', child_labels=[], edge_length=12.1686403131, taxon_label='Morelia amethistina'),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node4316516240', child_labels=[], edge_length=22.3969622995, taxon_label='Morelia oenpelliensis'),
+            'Node4316534096' : NodeRelationship(parent_label='Node4316513808', child_labels=['Morelia boeleni','Node4316533968'], edge_length=1.20705242999, taxon_label=None),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node4316534096', child_labels=[], edge_length=33.9681920922, taxon_label='Morelia boeleni'),
+            'Node4316533968' : NodeRelationship(parent_label='Node4316534096', child_labels=['Node4316534480','Node4316534864'], edge_length=1.28486469944, taxon_label=None),
+            'Node4316534480' : NodeRelationship(parent_label='Node4316533968', child_labels=['Bothrochilus boa','Liasis albertisii'], edge_length=12.4520799939, taxon_label=None),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node4316534480', child_labels=[], edge_length=20.2312473989, taxon_label='Bothrochilus boa'),
+            'Liasis albertisii' : NodeRelationship(parent_label='Node4316534480', child_labels=[], edge_length=20.2312473989, taxon_label='Liasis albertisii'),
+            'Node4316534864' : NodeRelationship(parent_label='Node4316533968', child_labels=['Node4316534992','Node4316535376'], edge_length=1.68023264943, taxon_label=None),
+            'Node4316534992' : NodeRelationship(parent_label='Node4316534864', child_labels=['Antaresia melanocephalus','Antaresia ramsayi'], edge_length=19.0383478987, taxon_label=None),
+            'Antaresia melanocephalus' : NodeRelationship(parent_label='Node4316534992', child_labels=[], edge_length=11.9647468446, taxon_label='Antaresia melanocephalus'),
+            'Antaresia ramsayi' : NodeRelationship(parent_label='Node4316534992', child_labels=[], edge_length=11.9647468446, taxon_label='Antaresia ramsayi'),
+            'Node4316535376' : NodeRelationship(parent_label='Node4316534864', child_labels=['Node4316535504','Node4316535888'], edge_length=4.75943584051, taxon_label=None),
+            'Node4316535504' : NodeRelationship(parent_label='Node4316535376', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=17.1180008393, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node4316535504', child_labels=[], edge_length=9.12565806357, taxon_label='Liasis fuscus'),
+            'Liasis mackloti' : NodeRelationship(parent_label='Node4316535504', child_labels=[], edge_length=9.12565806357, taxon_label='Liasis mackloti'),
+            'Node4316535888' : NodeRelationship(parent_label='Node4316535376', child_labels=['Apodora papuana','Liasis olivaceus'], edge_length=2.6817531508, taxon_label=None),
+            'Apodora papuana' : NodeRelationship(parent_label='Node4316535888', child_labels=[], edge_length=23.561905752, taxon_label='Apodora papuana'),
+            'Liasis olivaceus' : NodeRelationship(parent_label='Node4316535888', child_labels=[], edge_length=23.561905752, taxon_label='Liasis olivaceus'),
+            'Node4316512784' : NodeRelationship(parent_label='Node4316513680', child_labels=['Python timoriensis','Python reticulatus'], edge_length=25.3895116055, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node4316512784', child_labels=[], edge_length=19.2959696748, taxon_label='Python timoriensis'),
+            'Python reticulatus' : NodeRelationship(parent_label='Node4316512784', child_labels=[], edge_length=19.2959696748, taxon_label='Python reticulatus'),
+            'Node4316536464' : NodeRelationship(parent_label='Node4316513104', child_labels=['Node4316536656','Python regius'], edge_length=14.4274535052, taxon_label=None),
+            'Node4316536656' : NodeRelationship(parent_label='Node4316536464', child_labels=['Python curtus','Node4316557520'], edge_length=6.97033769, taxon_label=None),
+            'Python curtus' : NodeRelationship(parent_label='Node4316536656', child_labels=[], edge_length=31.4380841777, taxon_label='Python curtus'),
+            'Node4316557520' : NodeRelationship(parent_label='Node4316536656', child_labels=['Python sebae','Python molurus'], edge_length=13.5557299793, taxon_label=None),
+            'Python sebae' : NodeRelationship(parent_label='Node4316557520', child_labels=[], edge_length=17.8823541984, taxon_label='Python sebae'),
+            'Python molurus' : NodeRelationship(parent_label='Node4316557520', child_labels=[], edge_length=17.8823541984, taxon_label='Python molurus'),
+            'Python regius' : NodeRelationship(parent_label='Node4316536464', child_labels=[], edge_length=38.4084218677, taxon_label='Python regius'),
+            'Xenopeltis unicolor' : NodeRelationship(parent_label='Node4316513168', child_labels=[], edge_length=96.7770076997, taxon_label='Xenopeltis unicolor'),
+        },
+        {
+            'Node4316558352' : NodeRelationship(parent_label=None, child_labels=['Node4316558480','Candola aspera'], edge_length=None, taxon_label=None),
+            'Node4316558480' : NodeRelationship(parent_label='Node4316558352', child_labels=['Xenopeltis unicolor','Node4316558800'], edge_length=71.3865451194, taxon_label=None),
+            'Xenopeltis unicolor' : NodeRelationship(parent_label='Node4316558480', child_labels=[], edge_length=140.081627971, taxon_label='Xenopeltis unicolor'),
+            'Node4316558800' : NodeRelationship(parent_label='Node4316558480', child_labels=['Loxocemus bicolor','Node4316558736'], edge_length=26.0234610563, taxon_label=None),
+            'Loxocemus bicolor' : NodeRelationship(parent_label='Node4316558800', child_labels=[], edge_length=114.058166915, taxon_label='Loxocemus bicolor'),
+            'Node4316558736' : NodeRelationship(parent_label='Node4316558800', child_labels=['Node4316559184','Node4316606544'], edge_length=40.1699176918, taxon_label=None),
+            'Node4316559184' : NodeRelationship(parent_label='Node4316558736', child_labels=['Node4316559312','Node4316585744'], edge_length=12.7558559915, taxon_label=None),
+            'Node4316559312' : NodeRelationship(parent_label='Node4316559184', child_labels=['Node4316559440','Node4316583696'], edge_length=12.1691499629, taxon_label=None),
+            'Node4316559440' : NodeRelationship(parent_label='Node4316559312', child_labels=['Node4316559568','Node4316561232'], edge_length=4.4227398576, taxon_label=None),
+            'Node4316559568' : NodeRelationship(parent_label='Node4316559440', child_labels=['Node4316559696','Node4316560208'], edge_length=5.98387013923, taxon_label=None),
+            'Node4316559696' : NodeRelationship(parent_label='Node4316559568', child_labels=['Morelia carinata','Node4316559056'], edge_length=7.53311752135, taxon_label=None),
+            'Morelia carinata' : NodeRelationship(parent_label='Node4316559696', child_labels=[], edge_length=31.0235157502, taxon_label='Morelia carinata'),
+            'Node4316559056' : NodeRelationship(parent_label='Node4316559696', child_labels=['Morelia viridisS','Morelia viridisN'], edge_length=12.7654788618, taxon_label=None),
+            'Morelia viridisS' : NodeRelationship(parent_label='Node4316559056', child_labels=[], edge_length=18.2580368884, taxon_label='Morelia viridisS'),
+            'Morelia viridisN' : NodeRelationship(parent_label='Node4316559056', child_labels=[], edge_length=18.2580368884, taxon_label='Morelia viridisN'),
+            'Node4316560208' : NodeRelationship(parent_label='Node4316559568', child_labels=['Antaresia maculosa','Node4316560336'], edge_length=4.18557870369, taxon_label=None),
+            'Antaresia maculosa' : NodeRelationship(parent_label='Node4316560208', child_labels=[], edge_length=34.3710545678, taxon_label='Antaresia maculosa'),
+            'Node4316560336' : NodeRelationship(parent_label='Node4316560208', child_labels=['Node4316560720','Antaresia perthensis'], edge_length=7.81168349566, taxon_label=None),
+            'Node4316560720' : NodeRelationship(parent_label='Node4316560336', child_labels=['Antaresia childreni','Antaresia stimsoni'], edge_length=15.350690271, taxon_label=None),
+            'Antaresia childreni' : NodeRelationship(parent_label='Node4316560720', child_labels=[], edge_length=11.2086808012, taxon_label='Antaresia childreni'),
+            'Antaresia stimsoni' : NodeRelationship(parent_label='Node4316560720', child_labels=[], edge_length=11.2086808012, taxon_label='Antaresia stimsoni'),
+            'Antaresia perthensis' : NodeRelationship(parent_label='Node4316560336', child_labels=[], edge_length=26.5593710722, taxon_label='Antaresia perthensis'),
+            'Node4316561232' : NodeRelationship(parent_label='Node4316559440', child_labels=['Node4316561360','Node4316583312'], edge_length=17.9619739892, taxon_label=None),
+            'Node4316561360' : NodeRelationship(parent_label='Node4316561232', child_labels=['Morelia oenpelliensis','Node4316560976'], edge_length=1.39777518086, taxon_label=None),
+            'Morelia oenpelliensis' : NodeRelationship(parent_label='Node4316561360', child_labels=[], edge_length=25.1807542407, taxon_label='Morelia oenpelliensis'),
+            'Node4316560976' : NodeRelationship(parent_label='Node4316561360', child_labels=['Morelia tracyae','Node4316582160'], edge_length=7.6242060025, taxon_label=None),
+            'Morelia tracyae' : NodeRelationship(parent_label='Node4316560976', child_labels=[], edge_length=17.5565482382, taxon_label='Morelia tracyae'),
+            'Node4316582160' : NodeRelationship(parent_label='Node4316560976', child_labels=['Node4316582544','Morelia amethistina'], edge_length=3.73213849687, taxon_label=None),
+            'Node4316582544' : NodeRelationship(parent_label='Node4316582160', child_labels=['Morelia clastolepis','Node4316582416'], edge_length=8.62088071739, taxon_label=None),
+            'Morelia clastolepis' : NodeRelationship(parent_label='Node4316582544', child_labels=[], edge_length=5.20352902397, taxon_label='Morelia clastolepis'),
+            'Node4316582416' : NodeRelationship(parent_label='Node4316582544', child_labels=['Morelia kinghorni','Morelia nauta'], edge_length=2.83199057731, taxon_label=None),
+            'Morelia kinghorni' : NodeRelationship(parent_label='Node4316582416', child_labels=[], edge_length=2.37153844665, taxon_label='Morelia kinghorni'),
+            'Morelia nauta' : NodeRelationship(parent_label='Node4316582416', child_labels=[], edge_length=2.37153844665, taxon_label='Morelia nauta'),
+            'Morelia amethistina' : NodeRelationship(parent_label='Node4316582160', child_labels=[], edge_length=13.8244097414, taxon_label='Morelia amethistina'),
+            'Node4316583312' : NodeRelationship(parent_label='Node4316561232', child_labels=['Morelia spilota','Morelia bredli'], edge_length=13.6008570384, taxon_label=None),
+            'Morelia spilota' : NodeRelationship(parent_label='Node4316583312', child_labels=[], edge_length=12.9776723832, taxon_label='Morelia spilota'),
+            'Morelia bredli' : NodeRelationship(parent_label='Node4316583312', child_labels=[], edge_length=12.9776723832, taxon_label='Morelia bredli'),
+            'Node4316583696' : NodeRelationship(parent_label='Node4316559312', child_labels=['Node4316583824','Node4316585104'], edge_length=3.26334313874, taxon_label=None),
+            'Node4316583824' : NodeRelationship(parent_label='Node4316583696', child_labels=['Node4316583952','Node4316584336'], edge_length=3.5026210108, taxon_label=None),
+            'Node4316583952' : NodeRelationship(parent_label='Node4316583824', child_labels=['Antaresia melanocephalus','Antaresia ramsayi'], edge_length=23.3327851176, taxon_label=None),
+            'Antaresia melanocephalus' : NodeRelationship(parent_label='Node4316583952', child_labels=[], edge_length=18.8644940012, taxon_label='Antaresia melanocephalus'),
+            'Antaresia ramsayi' : NodeRelationship(parent_label='Node4316583952', child_labels=[], edge_length=18.8644940012, taxon_label='Antaresia ramsayi'),
+            'Node4316584336' : NodeRelationship(parent_label='Node4316583824', child_labels=['Node4316584464','Node4316558288'], edge_length=12.8697548268, taxon_label=None),
+            'Node4316584464' : NodeRelationship(parent_label='Node4316584336', child_labels=['Liasis fuscus','Liasis mackloti'], edge_length=22.0000981488, taxon_label=None),
+            'Liasis fuscus' : NodeRelationship(parent_label='Node4316584464', child_labels=[], edge_length=7.32742614319, taxon_label='Liasis fuscus'),
+            'Liasis mackloti' : NodeRelationship(parent_label='Node4316584464', child_labels=[], edge_length=7.32742614319, taxon_label='Liasis mackloti'),
+            'Node4316558288' : NodeRelationship(parent_label='Node4316584336', child_labels=['Apodora papuana','Liasis olivaceus'], edge_length=5.24037108992, taxon_label=None),
+            'Apodora papuana' : NodeRelationship(parent_label='Node4316558288', child_labels=[], edge_length=24.0871532021, taxon_label='Apodora papuana'),
+            'Liasis olivaceus' : NodeRelationship(parent_label='Node4316558288', child_labels=[], edge_length=24.0871532021, taxon_label='Liasis olivaceus'),
+            'Node4316585104' : NodeRelationship(parent_label='Node4316583696', child_labels=['Node4316585232','Morelia boeleni'], edge_length=0.85376044557, taxon_label=None),
+            'Node4316585232' : NodeRelationship(parent_label='Node4316585104', child_labels=['Bothrochilus boa','Liasis albertisii'], edge_length=19.3585494438, taxon_label=None),
+            'Bothrochilus boa' : NodeRelationship(parent_label='Node4316585232', child_labels=[], edge_length=25.4875902402, taxon_label='Bothrochilus boa'),
+            'Liasis albertisii' : NodeRelationship(parent_label='Node4316585232', child_labels=[], edge_length=25.4875902402, taxon_label='Liasis albertisii'),
+            'Morelia boeleni' : NodeRelationship(parent_label='Node4316585104', child_labels=[], edge_length=44.846139684, taxon_label='Morelia boeleni'),
+            'Node4316585744' : NodeRelationship(parent_label='Node4316559184', child_labels=['Python timoriensis','Python reticulatus'], edge_length=28.055060848, taxon_label=None),
+            'Python timoriensis' : NodeRelationship(parent_label='Node4316585744', child_labels=[], edge_length=33.0773323832, taxon_label='Python timoriensis'),
+            'Python reticulatus' : NodeRelationship(parent_label='Node4316585744', child_labels=[], edge_length=33.0773323832, taxon_label='Python reticulatus'),
+            'Node4316606544' : NodeRelationship(parent_label='Node4316558736', child_labels=['Node4316606800','Python regius'], edge_length=17.7722054357, taxon_label=None),
+            'Node4316606800' : NodeRelationship(parent_label='Node4316606544', child_labels=['Python curtus','Node4316606672'], edge_length=13.6364666177, taxon_label=None),
+            'Python curtus' : NodeRelationship(parent_label='Node4316606800', child_labels=[], edge_length=42.4795771694, taxon_label='Python curtus'),
+            'Node4316606672' : NodeRelationship(parent_label='Node4316606800', child_labels=['Python sebae','Python molurus'], edge_length=16.6495052056, taxon_label=None),
+            'Python sebae' : NodeRelationship(parent_label='Node4316606672', child_labels=[], edge_length=25.8300719638, taxon_label='Python sebae'),
+            'Python molurus' : NodeRelationship(parent_label='Node4316606672', child_labels=[], edge_length=25.8300719638, taxon_label='Python molurus'),
+            'Python regius' : NodeRelationship(parent_label='Node4316606544', child_labels=[], edge_length=56.1160437871, taxon_label='Python regius'),
+            'Candola aspera' : NodeRelationship(parent_label='Node4316558352', child_labels=[], edge_length=211.46817309, taxon_label='Candola aspera'),
         },
     ]
     return treelist_node_references
 
 def reference_tree_list(taxon_set=None):
-    tree_list = dendropy.TreeList(label=None, oid="TreeList4523184", taxon_set=taxon_set)
-    tax_36960624 = tree_list.taxon_set.require_taxon(label="Antaresia childreni", oid="Taxon36960624")
-    tax_36960560 = tree_list.taxon_set.require_taxon(label="Antaresia maculosa", oid="Taxon36960560")
-    tax_36960592 = tree_list.taxon_set.require_taxon(label="Antaresia perthensis", oid="Taxon36960592")
-    tax_36960432 = tree_list.taxon_set.require_taxon(label="Antaresia stimsoni", oid="Taxon36960432")
-    tax_36960656 = tree_list.taxon_set.require_taxon(label="Aspidites melanocephalus", oid="Taxon36960656")
-    tax_36960528 = tree_list.taxon_set.require_taxon(label="Aspidites ramsayi", oid="Taxon36960528")
-    tax_36960784 = tree_list.taxon_set.require_taxon(label="Bothrochilus boa", oid="Taxon36960784")
-    tax_36960688 = tree_list.taxon_set.require_taxon(label="Leiopython albertisii", oid="Taxon36960688")
-    tax_36960720 = tree_list.taxon_set.require_taxon(label="Liasis fuscus", oid="Taxon36960720")
-    tax_36960912 = tree_list.taxon_set.require_taxon(label="Liasis mackloti", oid="Taxon36960912")
-    tax_36960816 = tree_list.taxon_set.require_taxon(label="Liasis olivaceus", oid="Taxon36960816")
-    tax_36960848 = tree_list.taxon_set.require_taxon(label="Apodora papuana", oid="Taxon36960848")
-    tax_36960880 = tree_list.taxon_set.require_taxon(label="Morelia amethistina", oid="Taxon36960880")
-    tax_36960944 = tree_list.taxon_set.require_taxon(label="Morelia boeleni", oid="Taxon36960944")
-    tax_36961008 = tree_list.taxon_set.require_taxon(label="Morelia bredli", oid="Taxon36961008")
-    tax_36961072 = tree_list.taxon_set.require_taxon(label="Morelia carinata", oid="Taxon36961072")
-    tax_36961264 = tree_list.taxon_set.require_taxon(label="Morelia clastolepis", oid="Taxon36961264")
-    tax_36960752 = tree_list.taxon_set.require_taxon(label="Morelia kinghorni", oid="Taxon36960752")
-    tax_36961328 = tree_list.taxon_set.require_taxon(label="Morelia nauta", oid="Taxon36961328")
-    tax_36961456 = tree_list.taxon_set.require_taxon(label="Morelia oenpelliensis", oid="Taxon36961456")
-    tax_36961200 = tree_list.taxon_set.require_taxon(label="Morelia spilota", oid="Taxon36961200")
-    tax_36961392 = tree_list.taxon_set.require_taxon(label="Morelia tracyae", oid="Taxon36961392")
-    tax_36961136 = tree_list.taxon_set.require_taxon(label="Morelia viridis", oid="Taxon36961136")
-    tax_36961584 = tree_list.taxon_set.require_taxon(label="Python brongersmai", oid="Taxon36961584")
-    tax_36961648 = tree_list.taxon_set.require_taxon(label="Python molurus", oid="Taxon36961648")
-    tax_36961712 = tree_list.taxon_set.require_taxon(label="Python regius", oid="Taxon36961712")
-    tax_36961904 = tree_list.taxon_set.require_taxon(label="Python reticulatus", oid="Taxon36961904")
-    tax_36961776 = tree_list.taxon_set.require_taxon(label="Python sebae", oid="Taxon36961776")
-    tax_36961520 = tree_list.taxon_set.require_taxon(label="Python timoriensis", oid="Taxon36961520")
-    tree_36962288 = dendropy.Tree(label="Tree01", taxon_set=tree_list.taxon_set, oid="Tree36962288")
-    tree_list.append(tree_36962288, reindex_taxa=False)
-    tree_36962288.seed_node.oid = 'Node36995184'
-    nd_36995248 = tree_36962288.seed_node.new_child(label="Node36995248", taxon=None, edge_length=61.9915926669, oid="Node36995248")
-    nd_36995248.edge.oid = "Edge36995280"
-    nd_36962224 = tree_36962288.seed_node.new_child(label="Node36962224", taxon=None, edge_length=29.8452823467, oid="Node36962224")
-    nd_36962224.edge.oid = "Edge36995376"
-    nd_36961968 = nd_36995248.new_child(label="Morelia oenpelliensis", taxon=tax_36961456, edge_length=5.50104114707, oid="Node36961968")
-    nd_36961968.edge.oid = "Edge36995312"
-    nd_36962096 = nd_36995248.new_child(label="Morelia spilota", taxon=tax_36961200, edge_length=5.50104114707, oid="Node36962096")
-    nd_36962096.edge.oid = "Edge36995408"
-    nd_36995344 = nd_36962224.new_child(label="Node36995344", taxon=None, edge_length=0.377327561902, oid="Node36995344")
-    nd_36995344.edge.oid = "Edge36995504"
-    nd_36997392 = nd_36962224.new_child(label="Node36997392", taxon=None, edge_length=3.61657514544, oid="Node36997392")
-    nd_36997392.edge.oid = "Edge36997680"
-    nd_36995440 = nd_36995344.new_child(label="Node36995440", taxon=None, edge_length=33.0195611855, oid="Node36995440")
-    nd_36995440.edge.oid = "Edge36995568"
-    nd_36996528 = nd_36995344.new_child(label="Node36996528", taxon=None, edge_length=23.9652741942, oid="Node36996528")
-    nd_36996528.edge.oid = "Edge36996592"
-    nd_36995472 = nd_36995440.new_child(label="Node36995472", taxon=None, edge_length=1.09375666234, oid="Node36995472")
-    nd_36995472.edge.oid = "Edge36995632"
-    nd_36996400 = nd_36995440.new_child(label="Node36996400", taxon=None, edge_length=3.66513378189, oid="Node36996400")
-    nd_36996400.edge.oid = "Edge36996048"
-    nd_36995536 = nd_36995472.new_child(label="Node36995536", taxon=None, edge_length=0.351619575146, oid="Node36995536")
-    nd_36995536.edge.oid = "Edge36995696"
-    nd_36995984 = nd_36995472.new_child(label="Morelia nauta", taxon=tax_36961328, edge_length=3.15670605753, oid="Node36995984")
-    nd_36995984.edge.oid = "Edge36996240"
-    nd_36995600 = nd_36995536.new_child(label="Node36995600", taxon=None, edge_length=2.09759626003, oid="Node36995600")
-    nd_36995600.edge.oid = "Edge36995760"
-    nd_36995952 = nd_36995536.new_child(label="Node36995952", taxon=None, edge_length=1.73551661307, oid="Node36995952")
-    nd_36995952.edge.oid = "Edge36995888"
-    nd_36995664 = nd_36995600.new_child(label="Apodora papuana", taxon=tax_36960848, edge_length=0.707490222359, oid="Node36995664")
-    nd_36995664.edge.oid = "Edge36995824"
-    nd_36995920 = nd_36995600.new_child(label="Node36995920", taxon=None, edge_length=0.470505730507, oid="Node36995920")
-    nd_36995920.edge.oid = "Edge36995728"
-    nd_36995792 = nd_36995920.new_child(label="Aspidites melanocephalus", taxon=tax_36960656, edge_length=0.236984491852, oid="Node36995792")
-    nd_36995792.edge.oid = "Edge36995856"
-    nd_36996016 = nd_36995920.new_child(label="Morelia carinata", taxon=tax_36961072, edge_length=0.236984491852, oid="Node36996016")
-    nd_36996016.edge.oid = "Edge36996080"
-    nd_36996144 = nd_36995952.new_child(label="Bothrochilus boa", taxon=tax_36960784, edge_length=1.06956986931, oid="Node36996144")
-    nd_36996144.edge.oid = "Edge36996112"
-    nd_36996208 = nd_36995952.new_child(label="Morelia amethistina", taxon=tax_36960880, edge_length=1.06956986931, oid="Node36996208")
-    nd_36996208.edge.oid = "Edge36996272"
-    nd_36996368 = nd_36996400.new_child(label="Morelia tracyae", taxon=tax_36961392, edge_length=0.585328937986, oid="Node36996368")
-    nd_36996368.edge.oid = "Edge36996336"
-    nd_36996496 = nd_36996400.new_child(label="Python regius", taxon=tax_36961712, edge_length=0.585328937986, oid="Node36996496")
-    nd_36996496.edge.oid = "Edge36996432"
-    nd_36996176 = nd_36996528.new_child(label="Node36996176", taxon=None, edge_length=3.49206820101, oid="Node36996176")
-    nd_36996176.edge.oid = "Edge36996304"
-    nd_36997424 = nd_36996528.new_child(label="Morelia boeleni", taxon=tax_36960944, edge_length=13.3047497112, oid="Node36997424")
-    nd_36997424.edge.oid = "Edge36997520"
-    nd_36996560 = nd_36996176.new_child(label="Node36996560", taxon=None, edge_length=4.90381799328, oid="Node36996560")
-    nd_36996560.edge.oid = "Edge36996656"
-    nd_36997168 = nd_36996176.new_child(label="Node36997168", taxon=None, edge_length=5.39574605108, oid="Node36997168")
-    nd_36997168.edge.oid = "Edge36997104"
-    nd_36996464 = nd_36996560.new_child(label="Node36996464", taxon=None, edge_length=3.58364386958, oid="Node36996464")
-    nd_36996464.edge.oid = "Edge36996720"
-    nd_36997040 = nd_36996560.new_child(label="Python timoriensis", taxon=tax_36961520, edge_length=4.9088635169, oid="Node36997040")
-    nd_36997040.edge.oid = "Edge36996688"
-    nd_36996624 = nd_36996464.new_child(label="Python reticulatus", taxon=tax_36961904, edge_length=1.32521964733, oid="Node36996624")
-    nd_36996624.edge.oid = "Edge36996784"
-    nd_36996880 = nd_36996464.new_child(label="Node36996880", taxon=None, edge_length=0.699088376552, oid="Node36996880")
-    nd_36996880.edge.oid = "Edge36996816"
-    nd_36996752 = nd_36996880.new_child(label="Python brongersmai", taxon=tax_36961584, edge_length=0.626131270775, oid="Node36996752")
-    nd_36996752.edge.oid = "Edge36996848"
-    nd_36997008 = nd_36996880.new_child(label="Liasis olivaceus", taxon=tax_36960816, edge_length=0.626131270775, oid="Node36997008")
-    nd_36997008.edge.oid = "Edge36996944"
-    nd_36997072 = nd_36997168.new_child(label="Node36997072", taxon=None, edge_length=3.89664227731, oid="Node36997072")
-    nd_36997072.edge.oid = "Edge36996976"
-    nd_36997360 = nd_36997168.new_child(label="Node36997360", taxon=None, edge_length=4.2237066393, oid="Node36997360")
-    nd_36997360.edge.oid = "Edge36997264"
-    nd_36996912 = nd_36997072.new_child(label="Morelia clastolepis", taxon=tax_36961264, edge_length=0.520293181797, oid="Node36996912")
-    nd_36996912.edge.oid = "Edge36997232"
-    nd_36997328 = nd_36997072.new_child(label="Antaresia maculosa", taxon=tax_36960560, edge_length=0.520293181797, oid="Node36997328")
-    nd_36997328.edge.oid = "Edge36997136"
-    nd_36997296 = nd_36997360.new_child(label="Liasis fuscus", taxon=tax_36960720, edge_length=0.193228819804, oid="Node36997296")
-    nd_36997296.edge.oid = "Edge36997200"
-    nd_36997488 = nd_36997360.new_child(label="Liasis mackloti", taxon=tax_36960912, edge_length=0.193228819804, oid="Node36997488")
-    nd_36997488.edge.oid = "Edge36997552"
-    nd_36997616 = nd_36997392.new_child(label="Node36997616", taxon=None, edge_length=21.1685275644, oid="Node36997616")
-    nd_36997616.edge.oid = "Edge36997584"
-    nd_36998064 = nd_36997392.new_child(label="Node36998064", taxon=None, edge_length=26.4364769675, oid="Node36998064")
-    nd_36998064.edge.oid = "Edge36998192"
-    nd_36997648 = nd_36997616.new_child(label="Python molurus", taxon=tax_36961648, edge_length=12.8622487575, oid="Node36997648")
-    nd_36997648.edge.oid = "Edge36997744"
-    nd_36997840 = nd_36997616.new_child(label="Node36997840", taxon=None, edge_length=7.83034270743, oid="Node36997840")
-    nd_36997840.edge.oid = "Edge36997776"
-    nd_36997712 = nd_36997840.new_child(label="Node36997712", taxon=None, edge_length=3.83058430268, oid="Node36997712")
-    nd_36997712.edge.oid = "Edge36997808"
-    nd_36998128 = nd_36997840.new_child(label="Morelia kinghorni", taxon=tax_36960752, edge_length=5.03190605005, oid="Node36998128")
-    nd_36998128.edge.oid = "Edge36998096"
-    nd_36997872 = nd_36997712.new_child(label="Antaresia stimsoni", taxon=tax_36960432, edge_length=1.20132174738, oid="Node36997872")
-    nd_36997872.edge.oid = "Edge36997936"
-    nd_36998000 = nd_36997712.new_child(label="Python sebae", taxon=tax_36961776, edge_length=1.20132174738, oid="Node36998000")
-    nd_36998000.edge.oid = "Edge36997456"
-    nd_36997968 = nd_36998064.new_child(label="Node36997968", taxon=None, edge_length=4.80697376221, oid="Node36997968")
-    nd_36997968.edge.oid = "Edge36997904"
-    nd_36998704 = nd_36998064.new_child(label="Node36998704", taxon=None, edge_length=5.17312138897, oid="Node36998704")
-    nd_36998704.edge.oid = "Edge36998608"
-    nd_36998160 = nd_36997968.new_child(label="Aspidites ramsayi", taxon=tax_36960528, edge_length=2.78732559217, oid="Node36998160")
-    nd_36998160.edge.oid = "Edge36998256"
-    nd_36998320 = nd_36997968.new_child(label="Node36998320", taxon=None, edge_length=1.381705203, oid="Node36998320")
-    nd_36998320.edge.oid = "Edge36998384"
-    nd_36998032 = nd_36998320.new_child(label="Node36998032", taxon=None, edge_length=1.30019225223, oid="Node36998032")
-    nd_36998032.edge.oid = "Edge36998352"
-    nd_36998416 = nd_36998320.new_child(label="Antaresia perthensis", taxon=tax_36960592, edge_length=1.40562038917, oid="Node36998416")
-    nd_36998416.edge.oid = "Edge36998480"
-    nd_36998224 = nd_36998032.new_child(label="Antaresia childreni", taxon=tax_36960624, edge_length=0.105428136944, oid="Node36998224")
-    nd_36998224.edge.oid = "Edge36998448"
-    nd_36998512 = nd_36998032.new_child(label="Leiopython albertisii", taxon=tax_36960688, edge_length=0.105428136944, oid="Node36998512")
-    nd_36998512.edge.oid = "Edge36998576"
-    nd_36998288 = nd_36998704.new_child(label="Morelia viridis", taxon=tax_36961136, edge_length=2.42117796541, oid="Node36998288")
-    nd_36998288.edge.oid = "Edge36998672"
-    nd_36998800 = nd_36998704.new_child(label="Morelia bredli", taxon=tax_36961008, edge_length=2.42117796541, oid="Node36998800")
-    nd_36998800.edge.oid = "Edge36998544"
-    tree_36998864 = dendropy.Tree(label="Tree02", taxon_set=tree_list.taxon_set, oid="Tree36998864")
-    tree_list.append(tree_36998864, reindex_taxa=False)
-    tree_36998864.seed_node.oid = 'Node36995120'
-    nd_36998960 = tree_36998864.seed_node.new_child(label="Morelia boeleni", taxon=tax_36960944, edge_length=26.0384706379, oid="Node36998960")
-    nd_36998960.edge.oid = "Edge36998992"
-    nd_36999056 = tree_36998864.seed_node.new_child(label="Node36999056", taxon=None, edge_length=5.21927124134, oid="Node36999056")
-    nd_36999056.edge.oid = "Edge36999088"
-    nd_36995152 = nd_36999056.new_child(label="Node36995152", taxon=None, edge_length=0.952265882909, oid="Node36995152")
-    nd_36995152.edge.oid = "Edge36998768"
-    nd_37062192 = nd_36999056.new_child(label="Node37062192", taxon=None, edge_length=0.340827566292, oid="Node37062192")
-    nd_37062192.edge.oid = "Edge37062320"
-    nd_36962160 = nd_36995152.new_child(label="Node36962160", taxon=None, edge_length=1.64883491058, oid="Node36962160")
-    nd_36962160.edge.oid = "Edge36999152"
-    nd_37061744 = nd_36995152.new_child(label="Node37061744", taxon=None, edge_length=7.07533845302, oid="Node37061744")
-    nd_37061744.edge.oid = "Edge37061360"
-    nd_36999024 = nd_36962160.new_child(label="Node36999024", taxon=None, edge_length=2.95693808858, oid="Node36999024")
-    nd_36999024.edge.oid = "Edge37060688"
-    nd_37060720 = nd_36962160.new_child(label="Node37060720", taxon=None, edge_length=2.15553698471, oid="Node37060720")
-    nd_37060720.edge.oid = "Edge37060848"
-    nd_36999120 = nd_36999024.new_child(label="Leiopython albertisii", taxon=tax_36960688, edge_length=15.2611605145, oid="Node36999120")
-    nd_36999120.edge.oid = "Edge37060752"
-    nd_37060816 = nd_36999024.new_child(label="Bothrochilus boa", taxon=tax_36960784, edge_length=15.2611605145, oid="Node37060816")
-    nd_37060816.edge.oid = "Edge37060880"
-    nd_37060784 = nd_37060720.new_child(label="Morelia carinata", taxon=tax_36961072, edge_length=16.0625616183, oid="Node37060784")
-    nd_37060784.edge.oid = "Edge37060656"
-    nd_37061040 = nd_37060720.new_child(label="Node37061040", taxon=None, edge_length=1.37038749174, oid="Node37061040")
-    nd_37061040.edge.oid = "Edge37060976"
-    nd_37060944 = nd_37061040.new_child(label="Node37060944", taxon=None, edge_length=0.166805015451, oid="Node37060944")
-    nd_37060944.edge.oid = "Edge37061008"
-    nd_37061840 = nd_37061040.new_child(label="Morelia viridis", taxon=tax_36961136, edge_length=14.6921741266, oid="Node37061840")
-    nd_37061840.edge.oid = "Edge37061808"
-    nd_37061072 = nd_37060944.new_child(label="Node37061072", taxon=None, edge_length=7.4747693113, oid="Node37061072")
-    nd_37061072.edge.oid = "Edge37061136"
-    nd_37061392 = nd_37060944.new_child(label="Node37061392", taxon=None, edge_length=1.43991095233, oid="Node37061392")
-    nd_37061392.edge.oid = "Edge37061264"
-    nd_37060912 = nd_37061072.new_child(label="Morelia spilota", taxon=tax_36961200, edge_length=7.05059979983, oid="Node37060912")
-    nd_37060912.edge.oid = "Edge37061200"
-    nd_37061296 = nd_37061072.new_child(label="Morelia bredli", taxon=tax_36961008, edge_length=7.05059979983, oid="Node37061296")
-    nd_37061296.edge.oid = "Edge37061168"
-    nd_37061232 = nd_37061392.new_child(label="Antaresia maculosa", taxon=tax_36960560, edge_length=13.0854581588, oid="Node37061232")
-    nd_37061232.edge.oid = "Edge37061328"
-    nd_37061456 = nd_37061392.new_child(label="Node37061456", taxon=None, edge_length=2.85871098218, oid="Node37061456")
-    nd_37061456.edge.oid = "Edge37061488"
-    nd_37061520 = nd_37061456.new_child(label="Antaresia perthensis", taxon=tax_36960592, edge_length=10.2267471766, oid="Node37061520")
-    nd_37061520.edge.oid = "Edge37061424"
-    nd_37061584 = nd_37061456.new_child(label="Node37061584", taxon=None, edge_length=5.35604513133, oid="Node37061584")
-    nd_37061584.edge.oid = "Edge37061616"
-    nd_37061648 = nd_37061584.new_child(label="Antaresia childreni", taxon=tax_36960624, edge_length=4.8707020453, oid="Node37061648")
-    nd_37061648.edge.oid = "Edge37061552"
-    nd_37061712 = nd_37061584.new_child(label="Antaresia stimsoni", taxon=tax_36960432, edge_length=4.8707020453, oid="Node37061712")
-    nd_37061712.edge.oid = "Edge37061776"
-    nd_37061872 = nd_37061744.new_child(label="Node37061872", taxon=None, edge_length=1.94094943657, oid="Node37061872")
-    nd_37061872.edge.oid = "Edge37061904"
-    nd_37062096 = nd_37061744.new_child(label="Apodora papuana", taxon=tax_36960848, edge_length=12.7915950606, oid="Node37062096")
-    nd_37062096.edge.oid = "Edge37062256"
-    nd_37061680 = nd_37061872.new_child(label="Liasis olivaceus", taxon=tax_36960816, edge_length=10.850645624, oid="Node37061680")
-    nd_37061680.edge.oid = "Edge37061968"
-    nd_37062064 = nd_37061872.new_child(label="Node37062064", taxon=None, edge_length=8.02016262021, oid="Node37062064")
-    nd_37062064.edge.oid = "Edge37061104"
-    nd_37061936 = nd_37062064.new_child(label="Liasis fuscus", taxon=tax_36960720, edge_length=2.83048300382, oid="Node37061936")
-    nd_37061936.edge.oid = "Edge37062000"
-    nd_37062160 = nd_37062064.new_child(label="Liasis mackloti", taxon=tax_36960912, edge_length=2.83048300382, oid="Node37062160")
-    nd_37062160.edge.oid = "Edge37062224"
-    nd_37062288 = nd_37062192.new_child(label="Node37062288", taxon=None, edge_length=1.42657874327, oid="Node37062288")
-    nd_37062288.edge.oid = "Edge37062128"
-    nd_37063088 = nd_37062192.new_child(label="Node37063088", taxon=None, edge_length=2.1717154248, oid="Node37063088")
-    nd_37063088.edge.oid = "Edge37063376"
-    nd_37062032 = nd_37062288.new_child(label="Morelia oenpelliensis", taxon=tax_36961456, edge_length=19.051793087, oid="Node37062032")
-    nd_37062032.edge.oid = "Edge37062416"
-    nd_37062512 = nd_37062288.new_child(label="Node37062512", taxon=None, edge_length=1.77859521326, oid="Node37062512")
-    nd_37062512.edge.oid = "Edge37062384"
-    nd_37062448 = nd_37062512.new_child(label="Node37062448", taxon=None, edge_length=7.19864380037, oid="Node37062448")
-    nd_37062448.edge.oid = "Edge37062480"
-    nd_37063184 = nd_37062512.new_child(label="Node37063184", taxon=None, edge_length=10.657346381, oid="Node37063184")
-    nd_37063184.edge.oid = "Edge37063056"
-    nd_37062544 = nd_37062448.new_child(label="Node37062544", taxon=None, edge_length=1.9541248425, oid="Node37062544")
-    nd_37062544.edge.oid = "Edge37062608"
-    nd_37062928 = nd_37062448.new_child(label="Morelia tracyae", taxon=tax_36961392, edge_length=10.0745540733, oid="Node37062928")
-    nd_37062928.edge.oid = "Edge37062992"
-    nd_37062352 = nd_37062544.new_child(label="Morelia amethistina", taxon=tax_36960880, edge_length=8.12042923083, oid="Node37062352")
-    nd_37062352.edge.oid = "Edge37062672"
-    nd_37062768 = nd_37062544.new_child(label="Node37062768", taxon=None, edge_length=6.05470978372, oid="Node37062768")
-    nd_37062768.edge.oid = "Edge37062640"
-    nd_37062576 = nd_37062768.new_child(label="Morelia clastolepis", taxon=tax_36961264, edge_length=2.0657194471, oid="Node37062576")
-    nd_37062576.edge.oid = "Edge37062704"
-    nd_37062896 = nd_37062768.new_child(label="Node37062896", taxon=None, edge_length=1.06606772283, oid="Node37062896")
-    nd_37062896.edge.oid = "Edge37062736"
-    nd_37062832 = nd_37062896.new_child(label="Morelia kinghorni", taxon=tax_36960752, edge_length=0.999651724272, oid="Node37062832")
-    nd_37062832.edge.oid = "Edge37062864"
-    nd_37063024 = nd_37062896.new_child(label="Morelia nauta", taxon=tax_36961328, edge_length=0.999651724272, oid="Node37063024")
-    nd_37063024.edge.oid = "Edge37062960"
-    nd_37063152 = nd_37063184.new_child(label="Python reticulatus", taxon=tax_36961904, edge_length=6.6158514927, oid="Node37063152")
-    nd_37063152.edge.oid = "Edge37062800"
-    nd_37063280 = nd_37063184.new_child(label="Python timoriensis", taxon=tax_36961520, edge_length=6.6158514927, oid="Node37063280")
-    nd_37063280.edge.oid = "Edge37063120"
-    nd_37063248 = nd_37063088.new_child(label="Node37063248", taxon=None, edge_length=3.93324105164, oid="Node37063248")
-    nd_37063248.edge.oid = "Edge37063344"
-    nd_37063760 = nd_37063088.new_child(label="Node37063760", taxon=None, edge_length=8.5794579294, oid="Node37063760")
-    nd_37063760.edge.oid = "Edge37063888"
-    nd_37063312 = nd_37063248.new_child(label="Python sebae", taxon=tax_36961776, edge_length=14.3734153538, oid="Node37063312")
-    nd_37063312.edge.oid = "Edge37063440"
-    nd_37063536 = nd_37063248.new_child(label="Node37063536", taxon=None, edge_length=2.6097491119, oid="Node37063536")
-    nd_37063536.edge.oid = "Edge37063472"
-    nd_37063408 = nd_37063536.new_child(label="Python regius", taxon=tax_36961712, edge_length=11.7636662419, oid="Node37063408")
-    nd_37063408.edge.oid = "Edge37063504"
-    nd_37063664 = nd_37063536.new_child(label="Node37063664", taxon=None, edge_length=1.23184615824, oid="Node37063664")
-    nd_37063664.edge.oid = "Edge37063600"
-    nd_37063216 = nd_37063664.new_child(label="Python brongersmai", taxon=tax_36961584, edge_length=10.5318200836, oid="Node37063216")
-    nd_37063216.edge.oid = "Edge37063632"
-    nd_37063792 = nd_37063664.new_child(label="Python molurus", taxon=tax_36961648, edge_length=10.5318200836, oid="Node37063792")
-    nd_37063792.edge.oid = "Edge37063728"
-    nd_37063568 = nd_37063760.new_child(label="Aspidites ramsayi", taxon=tax_36960528, edge_length=9.72719847603, oid="Node37063568")
-    nd_37063568.edge.oid = "Edge37063856"
-    nd_37063952 = nd_37063760.new_child(label="Aspidites melanocephalus", taxon=tax_36960656, edge_length=9.72719847603, oid="Node37063952")
-    nd_37063952.edge.oid = "Edge37064016"
-    tree_37063920 = dendropy.Tree(label="Tree03", taxon_set=tree_list.taxon_set, oid="Tree37063920")
-    tree_list.append(tree_37063920, reindex_taxa=False)
-    tree_37063920.seed_node.oid = 'Node37064144'
-    nd_37064208 = tree_37063920.seed_node.new_child(label="Node37064208", taxon=None, edge_length=0.0364728670888, oid="Node37064208")
-    nd_37064208.edge.oid = "Edge37064240"
-    nd_37656048 = tree_37063920.seed_node.new_child(label="Node37656048", taxon=None, edge_length=1.25568695854, oid="Node37656048")
-    nd_37656048.edge.oid = "Edge37656016"
-    nd_36998896 = nd_37064208.new_child(label="Node36998896", taxon=None, edge_length=1.06929723627, oid="Node36998896")
-    nd_36998896.edge.oid = "Edge37064272"
-    nd_37655728 = nd_37064208.new_child(label="Node37655728", taxon=None, edge_length=10.8687376261, oid="Node37655728")
-    nd_37655728.edge.oid = "Edge37655344"
-    nd_37063696 = nd_36998896.new_child(label="Node37063696", taxon=None, edge_length=3.261105684, oid="Node37063696")
-    nd_37063696.edge.oid = "Edge37064336"
-    nd_37654704 = nd_36998896.new_child(label="Node37654704", taxon=None, edge_length=5.48562103095, oid="Node37654704")
-    nd_37654704.edge.oid = "Edge37654736"
-    nd_37064048 = nd_37063696.new_child(label="Node37064048", taxon=None, edge_length=2.97395412534, oid="Node37064048")
-    nd_37064048.edge.oid = "Edge37064400"
-    nd_37654640 = nd_37063696.new_child(label="Node37654640", taxon=None, edge_length=12.0688826259, oid="Node37654640")
-    nd_37654640.edge.oid = "Edge37654608"
-    nd_37064304 = nd_37064048.new_child(label="Python sebae", taxon=tax_36961776, edge_length=16.9224723285, oid="Node37064304")
-    nd_37064304.edge.oid = "Edge37064464"
-    nd_37064496 = nd_37064048.new_child(label="Node37064496", taxon=None, edge_length=2.75174107457, oid="Node37064496")
-    nd_37064496.edge.oid = "Edge37063824"
-    nd_37064432 = nd_37064496.new_child(label="Node37064432", taxon=None, edge_length=0.218628811139, oid="Node37064432")
-    nd_37064432.edge.oid = "Edge37063984"
-    nd_37064624 = nd_37064496.new_child(label="Python regius", taxon=tax_36961712, edge_length=14.170731254, oid="Node37064624")
-    nd_37064624.edge.oid = "Edge37064368"
-    nd_37064528 = nd_37064432.new_child(label="Python molurus", taxon=tax_36961648, edge_length=13.9521024428, oid="Node37064528")
-    nd_37064528.edge.oid = "Edge37064592"
-    nd_37064688 = nd_37064432.new_child(label="Python brongersmai", taxon=tax_36961584, edge_length=13.9521024428, oid="Node37064688")
-    nd_37064688.edge.oid = "Edge37064560"
-    nd_37654672 = nd_37654640.new_child(label="Aspidites ramsayi", taxon=tax_36960528, edge_length=7.82754382801, oid="Node37654672")
-    nd_37654672.edge.oid = "Edge37654576"
-    nd_37654768 = nd_37654640.new_child(label="Aspidites melanocephalus", taxon=tax_36960656, edge_length=7.82754382801, oid="Node37654768")
-    nd_37654768.edge.oid = "Edge37654832"
-    nd_37654896 = nd_37654704.new_child(label="Node37654896", taxon=None, edge_length=2.9034791189, oid="Node37654896")
-    nd_37654896.edge.oid = "Edge37654800"
-    nd_37655184 = nd_37654704.new_child(label="Morelia viridis", taxon=tax_36961136, edge_length=17.6719111069, oid="Node37655184")
-    nd_37655184.edge.oid = "Edge37655760"
-    nd_37064656 = nd_37654896.new_child(label="Node37064656", taxon=None, edge_length=2.97877570893, oid="Node37064656")
-    nd_37064656.edge.oid = "Edge37654960"
-    nd_37655152 = nd_37654896.new_child(label="Node37655152", taxon=None, edge_length=1.25780607691, oid="Node37655152")
-    nd_37655152.edge.oid = "Edge37655312"
-    nd_37654864 = nd_37064656.new_child(label="Morelia carinata", taxon=tax_36961072, edge_length=11.7896562791, oid="Node37654864")
-    nd_37654864.edge.oid = "Edge37655024"
-    nd_37655120 = nd_37064656.new_child(label="Node37655120", taxon=None, edge_length=7.73520362135, oid="Node37655120")
-    nd_37655120.edge.oid = "Edge37655056"
-    nd_37654992 = nd_37655120.new_child(label="Morelia spilota", taxon=tax_36961200, edge_length=4.05445265776, oid="Node37654992")
-    nd_37654992.edge.oid = "Edge37655088"
-    nd_37655248 = nd_37655120.new_child(label="Morelia bredli", taxon=tax_36961008, edge_length=4.05445265776, oid="Node37655248")
-    nd_37655248.edge.oid = "Edge37654928"
-    nd_37655280 = nd_37655152.new_child(label="Antaresia maculosa", taxon=tax_36960560, edge_length=13.5106259111, oid="Node37655280")
-    nd_37655280.edge.oid = "Edge37655216"
-    nd_37655408 = nd_37655152.new_child(label="Node37655408", taxon=None, edge_length=2.27459934102, oid="Node37655408")
-    nd_37655408.edge.oid = "Edge37655440"
-    nd_37655472 = nd_37655408.new_child(label="Antaresia perthensis", taxon=tax_36960592, edge_length=11.2360265701, oid="Node37655472")
-    nd_37655472.edge.oid = "Edge37655376"
-    nd_37655536 = nd_37655408.new_child(label="Node37655536", taxon=None, edge_length=7.74754730265, oid="Node37655536")
-    nd_37655536.edge.oid = "Edge37655568"
-    nd_37655600 = nd_37655536.new_child(label="Antaresia childreni", taxon=tax_36960624, edge_length=3.48847926746, oid="Node37655600")
-    nd_37655600.edge.oid = "Edge37655504"
-    nd_37655664 = nd_37655536.new_child(label="Antaresia stimsoni", taxon=tax_36960432, edge_length=3.48847926746, oid="Node37655664")
-    nd_37655664.edge.oid = "Edge37655696"
-    nd_37655824 = nd_37655728.new_child(label="Leiopython albertisii", taxon=tax_36960688, edge_length=13.3580917481, oid="Node37655824")
-    nd_37655824.edge.oid = "Edge37655792"
-    nd_37655920 = nd_37655728.new_child(label="Bothrochilus boa", taxon=tax_36960784, edge_length=13.3580917481, oid="Node37655920")
-    nd_37655920.edge.oid = "Edge37655952"
-    nd_37655984 = nd_37656048.new_child(label="Node37655984", taxon=None, edge_length=14.878020141, oid="Node37655984")
-    nd_37655984.edge.oid = "Edge37655856"
-    nd_37656560 = nd_37656048.new_child(label="Node37656560", taxon=None, edge_length=2.53457554003, oid="Node37656560")
-    nd_37656560.edge.oid = "Edge37656240"
-    nd_37655632 = nd_37655984.new_child(label="Node37655632", taxon=None, edge_length=1.91471562327, oid="Node37655632")
-    nd_37655632.edge.oid = "Edge37656112"
-    nd_37656400 = nd_37655984.new_child(label="Apodora papuana", taxon=tax_36960848, edge_length=8.12959514173, oid="Node37656400")
-    nd_37656400.edge.oid = "Edge37656464"
-    nd_37655888 = nd_37655632.new_child(label="Liasis olivaceus", taxon=tax_36960816, edge_length=6.21487951846, oid="Node37655888")
-    nd_37655888.edge.oid = "Edge37656176"
-    nd_37656272 = nd_37655632.new_child(label="Node37656272", taxon=None, edge_length=3.60951843288, oid="Node37656272")
-    nd_37656272.edge.oid = "Edge37656144"
-    nd_37656080 = nd_37656272.new_child(label="Liasis fuscus", taxon=tax_36960720, edge_length=2.60536108558, oid="Node37656080")
-    nd_37656080.edge.oid = "Edge37656208"
-    nd_37656368 = nd_37656272.new_child(label="Liasis mackloti", taxon=tax_36960912, edge_length=2.60536108558, oid="Node37656368")
-    nd_37656368.edge.oid = "Edge37656432"
-    nd_37656336 = nd_37656560.new_child(label="Morelia boeleni", taxon=tax_36960944, edge_length=20.4730397427, oid="Node37656336")
-    nd_37656336.edge.oid = "Edge37656496"
-    nd_37656656 = nd_37656560.new_child(label="Node37656656", taxon=None, edge_length=2.57209904849, oid="Node37656656")
-    nd_37656656.edge.oid = "Edge37656592"
-    nd_37656528 = nd_37656656.new_child(label="Node37656528", taxon=None, edge_length=0.296424924481, oid="Node37656528")
-    nd_37656528.edge.oid = "Edge37656624"
-    nd_37657136 = nd_37656656.new_child(label="Morelia oenpelliensis", taxon=tax_36961456, edge_length=17.9009406942, oid="Node37657136")
-    nd_37657136.edge.oid = "Edge37657552"
-    nd_37656688 = nd_37656528.new_child(label="Node37656688", taxon=None, edge_length=9.88501788667, oid="Node37656688")
-    nd_37656688.edge.oid = "Edge37656752"
-    nd_37657392 = nd_37656528.new_child(label="Node37657392", taxon=None, edge_length=11.8234917746, oid="Node37657392")
-    nd_37657392.edge.oid = "Edge37657328"
-    nd_37656304 = nd_37656688.new_child(label="Node37656304", taxon=None, edge_length=3.28625146667, oid="Node37656304")
-    nd_37656304.edge.oid = "Edge37656816"
-    nd_37657200 = nd_37656688.new_child(label="Morelia tracyae", taxon=tax_36961392, edge_length=7.71949788304, oid="Node37657200")
-    nd_37657200.edge.oid = "Edge37657040"
-    nd_37656720 = nd_37656304.new_child(label="Morelia amethistina", taxon=tax_36960880, edge_length=4.43324641637, oid="Node37656720")
-    nd_37656720.edge.oid = "Edge37656880"
-    nd_37656976 = nd_37656304.new_child(label="Node37656976", taxon=None, edge_length=2.99969759558, oid="Node37656976")
-    nd_37656976.edge.oid = "Edge37656848"
-    nd_37656912 = nd_37656976.new_child(label="Node37656912", taxon=None, edge_length=0.622029416262, oid="Node37656912")
-    nd_37656912.edge.oid = "Edge37656944"
-    nd_37657264 = nd_37656976.new_child(label="Morelia clastolepis", taxon=tax_36961264, edge_length=1.4335488208, oid="Node37657264")
-    nd_37657264.edge.oid = "Edge37657232"
-    nd_37657008 = nd_37656912.new_child(label="Morelia nauta", taxon=tax_36961328, edge_length=0.811519404534, oid="Node37657008")
-    nd_37657008.edge.oid = "Edge37657072"
-    nd_37657168 = nd_37656912.new_child(label="Morelia kinghorni", taxon=tax_36960752, edge_length=0.811519404534, oid="Node37657168")
-    nd_37657168.edge.oid = "Edge37657104"
-    nd_37657296 = nd_37657392.new_child(label="Python reticulatus", taxon=tax_36961904, edge_length=5.78102399509, oid="Node37657296")
-    nd_37657296.edge.oid = "Edge37657360"
-    nd_37657488 = nd_37657392.new_child(label="Python timoriensis", taxon=tax_36961520, edge_length=5.78102399509, oid="Node37657488")
-    nd_37657488.edge.oid = "Edge37656784"
-    tree_37657456 = dendropy.Tree(label="Tree04", taxon_set=tree_list.taxon_set, oid="Tree37657456")
-    tree_list.append(tree_37657456, reindex_taxa=False)
-    tree_37657456.seed_node.oid = 'Node37657712'
-    nd_37657776 = tree_37657456.seed_node.new_child(label="Node37657776", taxon=None, edge_length=3.09272413642, oid="Node37657776")
-    nd_37657776.edge.oid = "Edge37657808"
-    nd_37658384 = tree_37657456.seed_node.new_child(label="Node37658384", taxon=None, edge_length=0.465997253751, oid="Node37658384")
-    nd_37658384.edge.oid = "Edge37658448"
-    nd_36962032 = nd_37657776.new_child(label="Node36962032", taxon=None, edge_length=3.43039474792, oid="Node36962032")
-    nd_36962032.edge.oid = "Edge37657840"
-    nd_37658224 = nd_37657776.new_child(label="Node37658224", taxon=None, edge_length=8.31909563528, oid="Node37658224")
-    nd_37658224.edge.oid = "Edge37658352"
-    nd_37657584 = nd_36962032.new_child(label="Python sebae", taxon=tax_36961776, edge_length=16.5921325784, oid="Node37657584")
-    nd_37657584.edge.oid = "Edge37657904"
-    nd_37658000 = nd_36962032.new_child(label="Node37658000", taxon=None, edge_length=2.21219736911, oid="Node37658000")
-    nd_37658000.edge.oid = "Edge37657936"
-    nd_37657872 = nd_37658000.new_child(label="Python regius", taxon=tax_36961712, edge_length=14.3799352093, oid="Node37657872")
-    nd_37657872.edge.oid = "Edge37657968"
-    nd_37658128 = nd_37658000.new_child(label="Node37658128", taxon=None, edge_length=0.997806328959, oid="Node37658128")
-    nd_37658128.edge.oid = "Edge37658064"
-    nd_37657616 = nd_37658128.new_child(label="Python molurus", taxon=tax_36961648, edge_length=13.3821288803, oid="Node37657616")
-    nd_37657616.edge.oid = "Edge37658096"
-    nd_37658256 = nd_37658128.new_child(label="Python brongersmai", taxon=tax_36961584, edge_length=13.3821288803, oid="Node37658256")
-    nd_37658256.edge.oid = "Edge37658032"
-    nd_37658192 = nd_37658224.new_child(label="Aspidites ramsayi", taxon=tax_36960528, edge_length=11.703431691, oid="Node37658192")
-    nd_37658192.edge.oid = "Edge37658320"
-    nd_37658416 = nd_37658224.new_child(label="Aspidites melanocephalus", taxon=tax_36960656, edge_length=11.703431691, oid="Node37658416")
-    nd_37658416.edge.oid = "Edge37658480"
-    nd_37657648 = nd_37658384.new_child(label="Node37657648", taxon=None, edge_length=2.71760756257, oid="Node37657648")
-    nd_37657648.edge.oid = "Edge37657520"
-    nd_37712912 = nd_37658384.new_child(label="Node37712912", taxon=None, edge_length=0.725019015485, oid="Node37712912")
-    nd_37712912.edge.oid = "Edge37712880"
-    nd_37658288 = nd_37657648.new_child(label="Node37658288", taxon=None, edge_length=0.121667790832, oid="Node37658288")
-    nd_37658288.edge.oid = "Edge37658544"
-    nd_37712752 = nd_37657648.new_child(label="Morelia oenpelliensis", taxon=tax_36961456, edge_length=19.9316466464, oid="Node37712752")
-    nd_37712752.edge.oid = "Edge37712688"
-    nd_37658160 = nd_37658288.new_child(label="Node37658160", taxon=None, edge_length=13.3467104377, oid="Node37658160")
-    nd_37658160.edge.oid = "Edge37658608"
-    nd_37658576 = nd_37658288.new_child(label="Node37658576", taxon=None, edge_length=10.3912007878, oid="Node37658576")
-    nd_37658576.edge.oid = "Edge37712144"
-    nd_37658512 = nd_37658160.new_child(label="Python reticulatus", taxon=tax_36961904, edge_length=6.46326841791, oid="Node37658512")
-    nd_37658512.edge.oid = "Edge37711952"
-    nd_37712048 = nd_37658160.new_child(label="Python timoriensis", taxon=tax_36961520, edge_length=6.46326841791, oid="Node37712048")
-    nd_37712048.edge.oid = "Edge37711920"
-    nd_37712016 = nd_37658576.new_child(label="Node37712016", taxon=None, edge_length=3.03031595643, oid="Node37712016")
-    nd_37712016.edge.oid = "Edge37712080"
-    nd_37712784 = nd_37658576.new_child(label="Morelia boeleni", taxon=tax_36960944, edge_length=9.41877806779, oid="Node37712784")
-    nd_37712784.edge.oid = "Edge37712528"
-    nd_37711984 = nd_37712016.new_child(label="Node37711984", taxon=None, edge_length=1.71754130617, oid="Node37711984")
-    nd_37711984.edge.oid = "Edge37712208"
-    nd_37712592 = nd_37712016.new_child(label="Morelia tracyae", taxon=tax_36961392, edge_length=6.38846211136, oid="Node37712592")
-    nd_37712592.edge.oid = "Edge37712720"
-    nd_37712112 = nd_37711984.new_child(label="Morelia amethistina", taxon=tax_36960880, edge_length=4.67092080519, oid="Node37712112")
-    nd_37712112.edge.oid = "Edge37712272"
-    nd_37712368 = nd_37711984.new_child(label="Node37712368", taxon=None, edge_length=2.58211994653, oid="Node37712368")
-    nd_37712368.edge.oid = "Edge37712240"
-    nd_37712304 = nd_37712368.new_child(label="Morelia nauta", taxon=tax_36961328, edge_length=2.08880085866, oid="Node37712304")
-    nd_37712304.edge.oid = "Edge37712336"
-    nd_37712496 = nd_37712368.new_child(label="Node37712496", taxon=None, edge_length=0.607570395039, oid="Node37712496")
-    nd_37712496.edge.oid = "Edge37712432"
-    nd_37712176 = nd_37712496.new_child(label="Morelia kinghorni", taxon=tax_36960752, edge_length=1.48123046362, oid="Node37712176")
-    nd_37712176.edge.oid = "Edge37712464"
-    nd_37712624 = nd_37712496.new_child(label="Morelia clastolepis", taxon=tax_36961264, edge_length=1.48123046362, oid="Node37712624")
-    nd_37712624.edge.oid = "Edge37712560"
-    nd_37712848 = nd_37712912.new_child(label="Node37712848", taxon=None, edge_length=1.89223670238, oid="Node37712848")
-    nd_37712848.edge.oid = "Edge37712656"
-    nd_37714192 = nd_37712912.new_child(label="Node37714192", taxon=None, edge_length=6.6830638124, oid="Node37714192")
-    nd_37714192.edge.oid = "Edge37714160"
-    nd_37712816 = nd_37712848.new_child(label="Node37712816", taxon=None, edge_length=1.84844364601, oid="Node37712816")
-    nd_37712816.edge.oid = "Edge37712976"
-    nd_37714000 = nd_37712848.new_child(label="Node37714000", taxon=None, edge_length=7.28635782162, oid="Node37714000")
-    nd_37714000.edge.oid = "Edge37713904"
-    nd_37712400 = nd_37712816.new_child(label="Node37712400", taxon=None, edge_length=2.23472642535, oid="Node37712400")
-    nd_37712400.edge.oid = "Edge37713040"
-    nd_37713808 = nd_37712816.new_child(label="Morelia carinata", taxon=tax_36961072, edge_length=18.1835548451, oid="Node37713808")
-    nd_37713808.edge.oid = "Edge37713776"
-    nd_37712944 = nd_37712400.new_child(label="Morelia viridis", taxon=tax_36961136, edge_length=15.9488284198, oid="Node37712944")
-    nd_37712944.edge.oid = "Edge37713104"
-    nd_37713200 = nd_37712400.new_child(label="Node37713200", taxon=None, edge_length=0.394642188595, oid="Node37713200")
-    nd_37713200.edge.oid = "Edge37713136"
-    nd_37713072 = nd_37713200.new_child(label="Node37713072", taxon=None, edge_length=1.55388791109, oid="Node37713072")
-    nd_37713072.edge.oid = "Edge37713168"
-    nd_37713648 = nd_37713200.new_child(label="Node37713648", taxon=None, edge_length=11.0588698605, oid="Node37713648")
-    nd_37713648.edge.oid = "Edge37713712"
-    nd_37713232 = nd_37713072.new_child(label="Antaresia maculosa", taxon=tax_36960560, edge_length=14.0002983201, oid="Node37713232")
-    nd_37713232.edge.oid = "Edge37713296"
-    nd_37713360 = nd_37713072.new_child(label="Node37713360", taxon=None, edge_length=2.5525380966, oid="Node37713360")
-    nd_37713360.edge.oid = "Edge37713424"
-    nd_37713392 = nd_37713360.new_child(label="Antaresia perthensis", taxon=tax_36960592, edge_length=11.4477602235, oid="Node37713392")
-    nd_37713392.edge.oid = "Edge37713328"
-    nd_37713488 = nd_37713360.new_child(label="Node37713488", taxon=None, edge_length=5.71931728003, oid="Node37713488")
-    nd_37713488.edge.oid = "Edge37713520"
-    nd_37713552 = nd_37713488.new_child(label="Antaresia childreni", taxon=tax_36960624, edge_length=5.72844294344, oid="Node37713552")
-    nd_37713552.edge.oid = "Edge37713456"
-    nd_37713616 = nd_37713488.new_child(label="Antaresia stimsoni", taxon=tax_36960432, edge_length=5.72844294344, oid="Node37713616")
-    nd_37713616.edge.oid = "Edge37713008"
-    nd_37713584 = nd_37713648.new_child(label="Morelia spilota", taxon=tax_36961200, edge_length=4.49531637063, oid="Node37713584")
-    nd_37713584.edge.oid = "Edge37713744"
-    nd_37713840 = nd_37713648.new_child(label="Morelia bredli", taxon=tax_36961008, edge_length=4.49531637063, oid="Node37713840")
-    nd_37713840.edge.oid = "Edge37713264"
-    nd_37713872 = nd_37714000.new_child(label="Leiopython albertisii", taxon=tax_36960688, edge_length=12.7456406695, oid="Node37713872")
-    nd_37713872.edge.oid = "Edge37713680"
-    nd_37714064 = nd_37714000.new_child(label="Bothrochilus boa", taxon=tax_36960784, edge_length=12.7456406695, oid="Node37714064")
-    nd_37714064.edge.oid = "Edge37713936"
-    nd_37714128 = nd_37714192.new_child(label="Node37714128", taxon=None, edge_length=1.71076794287, oid="Node37714128")
-    nd_37714128.edge.oid = "Edge37714096"
-    nd_37714320 = nd_37714192.new_child(label="Apodora papuana", taxon=tax_36960848, edge_length=15.2411713811, oid="Node37714320")
-    nd_37714320.edge.oid = "Edge37714544"
-    nd_37714032 = nd_37714128.new_child(label="Liasis olivaceus", taxon=tax_36960816, edge_length=13.5304034382, oid="Node37714032")
-    nd_37714032.edge.oid = "Edge37714256"
-    nd_37714352 = nd_37714128.new_child(label="Node37714352", taxon=None, edge_length=11.7858576376, oid="Node37714352")
-    nd_37714352.edge.oid = "Edge37714224"
-    nd_37713968 = nd_37714352.new_child(label="Liasis fuscus", taxon=tax_36960720, edge_length=1.74454580066, oid="Node37713968")
-    nd_37713968.edge.oid = "Edge37714288"
-    nd_37714448 = nd_37714352.new_child(label="Liasis mackloti", taxon=tax_36960912, edge_length=1.74454580066, oid="Node37714448")
-    nd_37714448.edge.oid = "Edge37714480"
-    tree_37714608 = dendropy.Tree(label="Tree05", taxon_set=tree_list.taxon_set, oid="Tree37714608")
-    tree_list.append(tree_37714608, reindex_taxa=False)
-    tree_37714608.seed_node.oid = 'Node37714704'
-    nd_37714768 = tree_37714608.seed_node.new_child(label="Node37714768", taxon=None, edge_length=17.6343232815, oid="Node37714768")
-    nd_37714768.edge.oid = "Edge37714800"
-    nd_37715024 = tree_37714608.seed_node.new_child(label="Node37715024", taxon=None, edge_length=3.72471742653, oid="Node37715024")
-    nd_37715024.edge.oid = "Edge37714896"
-    nd_36961840 = nd_37714768.new_child(label="Python reticulatus", taxon=tax_36961904, edge_length=10.8300265774, oid="Node36961840")
-    nd_36961840.edge.oid = "Edge37714832"
-    nd_37714928 = nd_37714768.new_child(label="Python timoriensis", taxon=tax_36961520, edge_length=10.8300265774, oid="Node37714928")
-    nd_37714928.edge.oid = "Edge37714864"
-    nd_37714512 = nd_37715024.new_child(label="Node37714512", taxon=None, edge_length=4.52906062503, oid="Node37714512")
-    nd_37714512.edge.oid = "Edge37714576"
-    nd_37773872 = nd_37715024.new_child(label="Node37773872", taxon=None, edge_length=0.57539806967, oid="Node37773872")
-    nd_37773872.edge.oid = "Edge37774064"
-    nd_37714960 = nd_37714512.new_child(label="Node37714960", taxon=None, edge_length=1.31772152158, oid="Node37714960")
-    nd_37714960.edge.oid = "Edge37715088"
-    nd_37773680 = nd_37714512.new_child(label="Node37773680", taxon=None, edge_length=5.44916502448, oid="Node37773680")
-    nd_37773680.edge.oid = "Edge37773648"
-    nd_37714992 = nd_37714960.new_child(label="Node37714992", taxon=None, edge_length=4.88508122224, oid="Node37714992")
-    nd_37714992.edge.oid = "Edge37715152"
-    nd_37715600 = nd_37714960.new_child(label="Node37715600", taxon=None, edge_length=7.74780761159, oid="Node37715600")
-    nd_37715600.edge.oid = "Edge37773360"
-    nd_37715056 = nd_37714992.new_child(label="Morelia viridis", taxon=tax_36961136, edge_length=14.0077690635, oid="Node37715056")
-    nd_37715056.edge.oid = "Edge37715216"
-    nd_37715312 = nd_37714992.new_child(label="Node37715312", taxon=None, edge_length=0.404170030911, oid="Node37715312")
-    nd_37715312.edge.oid = "Edge37715248"
-    nd_37715184 = nd_37715312.new_child(label="Node37715184", taxon=None, edge_length=1.82500345118, oid="Node37715184")
-    nd_37715184.edge.oid = "Edge37715280"
-    nd_37715536 = nd_37715312.new_child(label="Node37715536", taxon=None, edge_length=1.27612254021, oid="Node37715536")
-    nd_37715536.edge.oid = "Edge37715728"
-    nd_37715344 = nd_37715184.new_child(label="Morelia carinata", taxon=tax_36961072, edge_length=11.7785955814, oid="Node37715344")
-    nd_37715344.edge.oid = "Edge37715408"
-    nd_37715504 = nd_37715184.new_child(label="Node37715504", taxon=None, edge_length=6.80279787983, oid="Node37715504")
-    nd_37715504.edge.oid = "Edge37715440"
-    nd_37715376 = nd_37715504.new_child(label="Morelia spilota", taxon=tax_36961200, edge_length=4.97579770159, oid="Node37715376")
-    nd_37715376.edge.oid = "Edge37715472"
-    nd_37715632 = nd_37715504.new_child(label="Morelia bredli", taxon=tax_36961008, edge_length=4.97579770159, oid="Node37715632")
-    nd_37715632.edge.oid = "Edge37715120"
-    nd_37715568 = nd_37715536.new_child(label="Antaresia maculosa", taxon=tax_36960560, edge_length=12.3274764924, oid="Node37715568")
-    nd_37715568.edge.oid = "Edge37715664"
-    nd_37715792 = nd_37715536.new_child(label="Node37715792", taxon=None, edge_length=4.32415504222, oid="Node37715792")
-    nd_37715792.edge.oid = "Edge37715824"
-    nd_37715856 = nd_37715792.new_child(label="Antaresia perthensis", taxon=tax_36960592, edge_length=8.00332145017, oid="Node37715856")
-    nd_37715856.edge.oid = "Edge37714416"
-    nd_37715760 = nd_37715792.new_child(label="Node37715760", taxon=None, edge_length=3.98809707211, oid="Node37715760")
-    nd_37715760.edge.oid = "Edge37715920"
-    nd_37715888 = nd_37715760.new_child(label="Antaresia childreni", taxon=tax_36960624, edge_length=4.01522437806, oid="Node37715888")
-    nd_37715888.edge.oid = "Edge37715696"
-    nd_37714640 = nd_37715760.new_child(label="Antaresia stimsoni", taxon=tax_36960432, edge_length=4.01522437806, oid="Node37714640")
-    nd_37714640.edge.oid = "Edge37715952"
-    nd_37773456 = nd_37715600.new_child(label="Leiopython albertisii", taxon=tax_36960688, edge_length=11.1450426742, oid="Node37773456")
-    nd_37773456.edge.oid = "Edge37773392"
-    nd_37773552 = nd_37715600.new_child(label="Bothrochilus boa", taxon=tax_36960784, edge_length=11.1450426742, oid="Node37773552")
-    nd_37773552.edge.oid = "Edge37773584"
-    nd_37773616 = nd_37773680.new_child(label="Node37773616", taxon=None, edge_length=3.78712208743, oid="Node37773616")
-    nd_37773616.edge.oid = "Edge37773488"
-    nd_37773968 = nd_37773680.new_child(label="Apodora papuana", taxon=tax_36960848, edge_length=14.7614067829, oid="Node37773968")
-    nd_37773968.edge.oid = "Edge37773808"
-    nd_37773520 = nd_37773616.new_child(label="Liasis olivaceus", taxon=tax_36960816, edge_length=10.9742846954, oid="Node37773520")
-    nd_37773520.edge.oid = "Edge37773744"
-    nd_37773840 = nd_37773616.new_child(label="Node37773840", taxon=None, edge_length=7.80758505868, oid="Node37773840")
-    nd_37773840.edge.oid = "Edge37773424"
-    nd_37773712 = nd_37773840.new_child(label="Liasis fuscus", taxon=tax_36960720, edge_length=3.16669963676, oid="Node37773712")
-    nd_37773712.edge.oid = "Edge37773776"
-    nd_37773936 = nd_37773840.new_child(label="Liasis mackloti", taxon=tax_36960912, edge_length=3.16669963676, oid="Node37773936")
-    nd_37773936.edge.oid = "Edge37774000"
-    nd_37774128 = nd_37773872.new_child(label="Node37774128", taxon=None, edge_length=1.8069504389, oid="Node37774128")
-    nd_37774128.edge.oid = "Edge37774096"
-    nd_37775024 = nd_37773872.new_child(label="Node37775024", taxon=None, edge_length=3.10812197386, oid="Node37775024")
-    nd_37775024.edge.oid = "Edge37774992"
-    nd_37774032 = nd_37774128.new_child(label="Node37774032", taxon=None, edge_length=5.48583318771, oid="Node37774032")
-    nd_37774032.edge.oid = "Edge37774192"
-    nd_37774960 = nd_37774128.new_child(label="Morelia oenpelliensis", taxon=tax_36961456, edge_length=22.3572839238, oid="Node37774960")
-    nd_37774960.edge.oid = "Edge37774832"
-    nd_37773904 = nd_37774032.new_child(label="Node37773904", taxon=None, edge_length=6.85886795982, oid="Node37773904")
-    nd_37773904.edge.oid = "Edge37774256"
-    nd_37774896 = nd_37774032.new_child(label="Morelia boeleni", taxon=tax_36960944, edge_length=16.8714507361, oid="Node37774896")
-    nd_37774896.edge.oid = "Edge37774640"
-    nd_37774160 = nd_37773904.new_child(label="Node37774160", taxon=None, edge_length=4.50938662462, oid="Node37774160")
-    nd_37774160.edge.oid = "Edge37774320"
-    nd_37774800 = nd_37773904.new_child(label="Morelia tracyae", taxon=tax_36961392, edge_length=10.0125827763, oid="Node37774800")
-    nd_37774800.edge.oid = "Edge37774704"
-    nd_37774224 = nd_37774160.new_child(label="Morelia amethistina", taxon=tax_36960880, edge_length=5.50319615164, oid="Node37774224")
-    nd_37774224.edge.oid = "Edge37774384"
-    nd_37774480 = nd_37774160.new_child(label="Node37774480", taxon=None, edge_length=3.93061957053, oid="Node37774480")
-    nd_37774480.edge.oid = "Edge37774352"
-    nd_37774416 = nd_37774480.new_child(label="Morelia clastolepis", taxon=tax_36961264, edge_length=1.57257658111, oid="Node37774416")
-    nd_37774416.edge.oid = "Edge37774448"
-    nd_37774608 = nd_37774480.new_child(label="Node37774608", taxon=None, edge_length=0.136848033805, oid="Node37774608")
-    nd_37774608.edge.oid = "Edge37774544"
-    nd_37774288 = nd_37774608.new_child(label="Morelia nauta", taxon=tax_36961328, edge_length=1.4357285473, oid="Node37774288")
-    nd_37774288.edge.oid = "Edge37774576"
-    nd_37774736 = nd_37774608.new_child(label="Morelia kinghorni", taxon=tax_36960752, edge_length=1.4357285473, oid="Node37774736")
-    nd_37774736.edge.oid = "Edge37774512"
-    nd_37774928 = nd_37775024.new_child(label="Node37774928", taxon=None, edge_length=4.52064732483, oid="Node37774928")
-    nd_37774928.edge.oid = "Edge37774672"
-    nd_37775408 = nd_37775024.new_child(label="Node37775408", taxon=None, edge_length=6.39210928917, oid="Node37775408")
-    nd_37775408.edge.oid = "Edge37775216"
-    nd_37774768 = nd_37774928.new_child(label="Python sebae", taxon=tax_36961776, edge_length=16.535465064, oid="Node37774768")
-    nd_37774768.edge.oid = "Edge37775088"
-    nd_37775184 = nd_37774928.new_child(label="Node37775184", taxon=None, edge_length=1.573045967, oid="Node37775184")
-    nd_37775184.edge.oid = "Edge37775120"
-    nd_37775056 = nd_37775184.new_child(label="Python regius", taxon=tax_36961712, edge_length=14.962419097, oid="Node37775056")
-    nd_37775056.edge.oid = "Edge37775152"
-    nd_37775312 = nd_37775184.new_child(label="Node37775312", taxon=None, edge_length=1.82698701194, oid="Node37775312")
-    nd_37775312.edge.oid = "Edge37775248"
-    nd_37774864 = nd_37775312.new_child(label="Python brongersmai", taxon=tax_36961584, edge_length=13.1354320851, oid="Node37774864")
-    nd_37774864.edge.oid = "Edge37775280"
-    nd_37775440 = nd_37775312.new_child(label="Python molurus", taxon=tax_36961648, edge_length=13.1354320851, oid="Node37775440")
-    nd_37775440.edge.oid = "Edge37775376"
-    nd_37775536 = nd_37775408.new_child(label="Aspidites ramsayi", taxon=tax_36960528, edge_length=14.6640030997, oid="Node37775536")
-    nd_37775536.edge.oid = "Edge37775504"
-    nd_37775600 = nd_37775408.new_child(label="Aspidites melanocephalus", taxon=tax_36960656, edge_length=14.6640030997, oid="Node37775600")
-    nd_37775600.edge.oid = "Edge37775344"
-    tree_37775728 = dendropy.Tree(label="Tree06", taxon_set=tree_list.taxon_set, oid="Tree37775728")
-    tree_list.append(tree_37775728, reindex_taxa=False)
-    tree_37775728.seed_node.oid = 'Node37775792'
-    nd_37775856 = tree_37775728.seed_node.new_child(label="Node37775856", taxon=None, edge_length=1.01117536037, oid="Node37775856")
-    nd_37775856.edge.oid = "Edge37775888"
-    nd_37831600 = tree_37775728.seed_node.new_child(label="Node37831600", taxon=None, edge_length=0.075772291124, oid="Node37831600")
-    nd_37831600.edge.oid = "Edge37831728"
-    nd_37064112 = nd_37775856.new_child(label="Node37064112", taxon=None, edge_length=4.09971291135, oid="Node37064112")
-    nd_37064112.edge.oid = "Edge37775920"
-    nd_37830864 = nd_37775856.new_child(label="Node37830864", taxon=None, edge_length=3.12950470552, oid="Node37830864")
-    nd_37830864.edge.oid = "Edge37830832"
-    nd_37775568 = nd_37064112.new_child(label="Node37775568", taxon=None, edge_length=0.754225130388, oid="Node37775568")
-    nd_37775568.edge.oid = "Edge37775984"
-    nd_37777264 = nd_37064112.new_child(label="Node37777264", taxon=None, edge_length=2.9800994962, oid="Node37777264")
-    nd_37777264.edge.oid = "Edge37777104"
-    nd_37775472 = nd_37775568.new_child(label="Node37775472", taxon=None, edge_length=1.65141371467, oid="Node37775472")
-    nd_37775472.edge.oid = "Edge37776048"
-    nd_37777072 = nd_37775568.new_child(label="Node37777072", taxon=None, edge_length=4.17813417278, oid="Node37777072")
-    nd_37777072.edge.oid = "Edge37776880"
-    nd_37775952 = nd_37775472.new_child(label="Node37775952", taxon=None, edge_length=0.835745557531, oid="Node37775952")
-    nd_37775952.edge.oid = "Edge37776112"
-    nd_37776976 = nd_37775472.new_child(label="Morelia carinata", taxon=tax_36961072, edge_length=15.2896785188, oid="Node37776976")
-    nd_37776976.edge.oid = "Edge37777008"
-    nd_37776016 = nd_37775952.new_child(label="Node37776016", taxon=None, edge_length=1.83427060068, oid="Node37776016")
-    nd_37776016.edge.oid = "Edge37776176"
-    nd_37776144 = nd_37775952.new_child(label="Node37776144", taxon=None, edge_length=1.03775314121, oid="Node37776144")
-    nd_37776144.edge.oid = "Edge37776208"
-    nd_37776080 = nd_37776016.new_child(label="Antaresia maculosa", taxon=tax_36960560, edge_length=12.6196623606, oid="Node37776080")
-    nd_37776080.edge.oid = "Edge37776240"
-    nd_37776304 = nd_37776016.new_child(label="Node37776304", taxon=None, edge_length=2.51279801319, oid="Node37776304")
-    nd_37776304.edge.oid = "Edge37776336"
-    nd_37776368 = nd_37776304.new_child(label="Antaresia perthensis", taxon=tax_36960592, edge_length=10.1068643474, oid="Node37776368")
-    nd_37776368.edge.oid = "Edge37776272"
-    nd_37776432 = nd_37776304.new_child(label="Node37776432", taxon=None, edge_length=5.71367528366, oid="Node37776432")
-    nd_37776432.edge.oid = "Edge37776464"
-    nd_37776496 = nd_37776432.new_child(label="Antaresia childreni", taxon=tax_36960624, edge_length=4.39318906371, oid="Node37776496")
-    nd_37776496.edge.oid = "Edge37776400"
-    nd_37776560 = nd_37776432.new_child(label="Antaresia stimsoni", taxon=tax_36960432, edge_length=4.39318906371, oid="Node37776560")
-    nd_37776560.edge.oid = "Edge37776624"
-    nd_37776656 = nd_37776144.new_child(label="Morelia viridis", taxon=tax_36961136, edge_length=13.41617982, oid="Node37776656")
-    nd_37776656.edge.oid = "Edge37776528"
-    nd_37776784 = nd_37776144.new_child(label="Node37776784", taxon=None, edge_length=9.37635268364, oid="Node37776784")
-    nd_37776784.edge.oid = "Edge37776720"
-    nd_37776592 = nd_37776784.new_child(label="Morelia spilota", taxon=tax_36961200, edge_length=4.03982713639, oid="Node37776592")
-    nd_37776592.edge.oid = "Edge37776752"
-    nd_37776912 = nd_37776784.new_child(label="Morelia bredli", taxon=tax_36961008, edge_length=4.03982713639, oid="Node37776912")
-    nd_37776912.edge.oid = "Edge37776688"
-    nd_37776944 = nd_37777072.new_child(label="Leiopython albertisii", taxon=tax_36960688, edge_length=12.7629580607, oid="Node37776944")
-    nd_37776944.edge.oid = "Edge37776816"
-    nd_37777136 = nd_37777072.new_child(label="Bothrochilus boa", taxon=tax_36960784, edge_length=12.7629580607, oid="Node37777136")
-    nd_37777136.edge.oid = "Edge37777168"
-    nd_37777232 = nd_37777264.new_child(label="Node37777232", taxon=None, edge_length=4.06497756637, oid="Node37777232")
-    nd_37777232.edge.oid = "Edge37776848"
-    nd_37830768 = nd_37777264.new_child(label="Apodora papuana", taxon=tax_36960848, edge_length=14.7152178676, oid="Node37830768")
-    nd_37830768.edge.oid = "Edge37830800"
-    nd_37777200 = nd_37777232.new_child(label="Liasis olivaceus", taxon=tax_36960816, edge_length=10.6502403013, oid="Node37777200")
-    nd_37777200.edge.oid = "Edge37775696"
-    nd_37777360 = nd_37777232.new_child(label="Node37777360", taxon=None, edge_length=6.97858461332, oid="Node37777360")
-    nd_37777360.edge.oid = "Edge37777296"
-    nd_37775632 = nd_37777360.new_child(label="Liasis fuscus", taxon=tax_36960720, edge_length=3.67165568794, oid="Node37775632")
-    nd_37775632.edge.oid = "Edge37777328"
-    nd_37777392 = nd_37777360.new_child(label="Liasis mackloti", taxon=tax_36960912, edge_length=3.67165568794, oid="Node37777392")
-    nd_37777392.edge.oid = "Edge37830736"
-    nd_37830704 = nd_37830864.new_child(label="Node37830704", taxon=None, edge_length=6.58446507703, oid="Node37830704")
-    nd_37830704.edge.oid = "Edge37830896"
-    nd_37831696 = nd_37830864.new_child(label="Morelia oenpelliensis", taxon=tax_36961456, edge_length=18.6655255697, oid="Node37831696")
-    nd_37831696.edge.oid = "Edge37831536"
-    nd_37777040 = nd_37830704.new_child(label="Node37777040", taxon=None, edge_length=3.1657791763, oid="Node37777040")
-    nd_37777040.edge.oid = "Edge37830992"
-    nd_37831632 = nd_37830704.new_child(label="Morelia boeleni", taxon=tax_36960944, edge_length=12.0810604926, oid="Node37831632")
-    nd_37831632.edge.oid = "Edge37831376"
-    nd_37830928 = nd_37777040.new_child(label="Node37830928", taxon=None, edge_length=4.27056899374, oid="Node37830928")
-    nd_37830928.edge.oid = "Edge37831056"
-    nd_37831440 = nd_37777040.new_child(label="Morelia tracyae", taxon=tax_36961392, edge_length=8.91528131634, oid="Node37831440")
-    nd_37831440.edge.oid = "Edge37831568"
-    nd_37830960 = nd_37830928.new_child(label="Morelia amethistina", taxon=tax_36960880, edge_length=4.6447123226, oid="Node37830960")
-    nd_37830960.edge.oid = "Edge37831120"
-    nd_37831216 = nd_37830928.new_child(label="Node37831216", taxon=None, edge_length=2.47296326498, oid="Node37831216")
-    nd_37831216.edge.oid = "Edge37831088"
-    nd_37831024 = nd_37831216.new_child(label="Morelia clastolepis", taxon=tax_36961264, edge_length=2.17174905761, oid="Node37831024")
-    nd_37831024.edge.oid = "Edge37831152"
-    nd_37831344 = nd_37831216.new_child(label="Node37831344", taxon=None, edge_length=1.26765325952, oid="Node37831344")
-    nd_37831344.edge.oid = "Edge37831184"
-    nd_37831280 = nd_37831344.new_child(label="Morelia kinghorni", taxon=tax_36960752, edge_length=0.904095798097, oid="Node37831280")
-    nd_37831280.edge.oid = "Edge37831312"
-    nd_37831472 = nd_37831344.new_child(label="Morelia nauta", taxon=tax_36961328, edge_length=0.904095798097, oid="Node37831472")
-    nd_37831472.edge.oid = "Edge37831408"
-    nd_37831504 = nd_37831600.new_child(label="Node37831504", taxon=None, edge_length=11.1718400909, oid="Node37831504")
-    nd_37831504.edge.oid = "Edge37831248"
-    nd_37832016 = nd_37831600.new_child(label="Node37832016", taxon=None, edge_length=1.44865397646, oid="Node37832016")
-    nd_37832016.edge.oid = "Edge37831792"
-    nd_37831664 = nd_37831504.new_child(label="Python reticulatus", taxon=tax_36961904, edge_length=11.5585932535, oid="Node37831664")
-    nd_37831664.edge.oid = "Edge37831824"
-    nd_37831920 = nd_37831504.new_child(label="Python timoriensis", taxon=tax_36961520, edge_length=11.5585932535, oid="Node37831920")
-    nd_37831920.edge.oid = "Edge37831856"
-    nd_37831888 = nd_37832016.new_child(label="Node37831888", taxon=None, edge_length=5.31414730047, oid="Node37831888")
-    nd_37831888.edge.oid = "Edge37831760"
-    nd_37832400 = nd_37832016.new_child(label="Node37832400", taxon=None, edge_length=5.70308191065, oid="Node37832400")
-    nd_37832400.edge.oid = "Edge37832496"
-    nd_37831952 = nd_37831888.new_child(label="Python sebae", taxon=tax_36961776, edge_length=15.9676320675, oid="Node37831952")
-    nd_37831952.edge.oid = "Edge37832080"
-    nd_37832176 = nd_37831888.new_child(label="Node37832176", taxon=None, edge_length=1.06278922707, oid="Node37832176")
-    nd_37832176.edge.oid = "Edge37832144"
-    nd_37832048 = nd_37832176.new_child(label="Node37832048", taxon=None, edge_length=1.04487219988, oid="Node37832048")
-    nd_37832048.edge.oid = "Edge37831984"
-    nd_37832464 = nd_37832176.new_child(label="Python regius", taxon=tax_36961712, edge_length=14.9048428404, oid="Node37832464")
-    nd_37832464.edge.oid = "Edge37832240"
-    nd_37832208 = nd_37832048.new_child(label="Python brongersmai", taxon=tax_36961584, edge_length=13.8599706405, oid="Node37832208")
-    nd_37832208.edge.oid = "Edge37832272"
-    nd_37832368 = nd_37832048.new_child(label="Python molurus", taxon=tax_36961648, edge_length=13.8599706405, oid="Node37832368")
-    nd_37832368.edge.oid = "Edge37832304"
-    nd_37832432 = nd_37832400.new_child(label="Aspidites ramsayi", taxon=tax_36960528, edge_length=15.5786974573, oid="Node37832432")
-    nd_37832432.edge.oid = "Edge37832112"
-    nd_37832592 = nd_37832400.new_child(label="Aspidites melanocephalus", taxon=tax_36960656, edge_length=15.5786974573, oid="Node37832592")
-    nd_37832592.edge.oid = "Edge37832336"
-    tree_37832720 = dendropy.Tree(label="Tree07", taxon_set=tree_list.taxon_set, oid="Tree37832720")
-    tree_list.append(tree_37832720, reindex_taxa=False)
-    tree_37832720.seed_node.oid = 'Node37832784'
-    nd_37832848 = tree_37832720.seed_node.new_child(label="Node37832848", taxon=None, edge_length=2.12261395029, oid="Node37832848")
-    nd_37832848.edge.oid = "Edge37832880"
-    nd_37833200 = tree_37832720.seed_node.new_child(label="Node37833200", taxon=None, edge_length=8.39682440052, oid="Node37833200")
-    nd_37833200.edge.oid = "Edge37833232"
-    nd_37657680 = nd_37832848.new_child(label="Python sebae", taxon=tax_36961776, edge_length=29.0711850036, oid="Node37657680")
-    nd_37657680.edge.oid = "Edge37832912"
-    nd_37833008 = nd_37832848.new_child(label="Node37833008", taxon=None, edge_length=6.65870230472, oid="Node37833008")
-    nd_37833008.edge.oid = "Edge37832528"
-    nd_37832944 = nd_37833008.new_child(label="Python molurus", taxon=tax_36961648, edge_length=22.4124826989, oid="Node37832944")
-    nd_37832944.edge.oid = "Edge37832976"
-    nd_37833136 = nd_37833008.new_child(label="Node37833136", taxon=None, edge_length=0.485999991488, oid="Node37833136")
-    nd_37833136.edge.oid = "Edge37833072"
-    nd_37832656 = nd_37833136.new_child(label="Python regius", taxon=tax_36961712, edge_length=21.9264827074, oid="Node37832656")
-    nd_37832656.edge.oid = "Edge37833104"
-    nd_37833264 = nd_37833136.new_child(label="Python brongersmai", taxon=tax_36961584, edge_length=21.9264827074, oid="Node37833264")
-    nd_37833264.edge.oid = "Edge37833040"
-    nd_37833360 = nd_37833200.new_child(label="Node37833360", taxon=None, edge_length=1.24633634472, oid="Node37833360")
-    nd_37833360.edge.oid = "Edge37833296"
-    nd_37103024 = nd_37833200.new_child(label="Node37103024", taxon=None, edge_length=12.9499290649, oid="Node37103024")
-    nd_37103024.edge.oid = "Edge37103056"
-    nd_37833328 = nd_37833360.new_child(label="Node37833328", taxon=None, edge_length=1.10888028588, oid="Node37833328")
-    nd_37833328.edge.oid = "Edge37833424"
-    nd_37101936 = nd_37833360.new_child(label="Node37101936", taxon=None, edge_length=3.94969364946, oid="Node37101936")
-    nd_37101936.edge.oid = "Edge37102256"
-    nd_37833168 = nd_37833328.new_child(label="Node37833168", taxon=None, edge_length=5.89251749724, oid="Node37833168")
-    nd_37833168.edge.oid = "Edge37833488"
-    nd_37833744 = nd_37833328.new_child(label="Node37833744", taxon=None, edge_length=1.52019767757, oid="Node37833744")
-    nd_37833744.edge.oid = "Edge37833616"
-    nd_37833392 = nd_37833168.new_child(label="Python reticulatus", taxon=tax_36961904, edge_length=14.5492404256, oid="Node37833392")
-    nd_37833392.edge.oid = "Edge37833552"
-    nd_37833648 = nd_37833168.new_child(label="Python timoriensis", taxon=tax_36961520, edge_length=14.5492404256, oid="Node37833648")
-    nd_37833648.edge.oid = "Edge37833584"
-    nd_37833456 = nd_37833744.new_child(label="Node37833456", taxon=None, edge_length=0.826870765744, oid="Node37833456")
-    nd_37833456.edge.oid = "Edge37833712"
-    nd_37101712 = nd_37833744.new_child(label="Node37101712", taxon=None, edge_length=5.2034050718, oid="Node37101712")
-    nd_37101712.edge.oid = "Edge37101648"
-    nd_37833680 = nd_37833456.new_child(label="Node37833680", taxon=None, edge_length=2.93802844014, oid="Node37833680")
-    nd_37833680.edge.oid = "Edge37833808"
-    nd_37834736 = nd_37833456.new_child(label="Node37834736", taxon=None, edge_length=8.81046360463, oid="Node37834736")
-    nd_37834736.edge.oid = "Edge37832624"
-    nd_37833520 = nd_37833680.new_child(label="Node37833520", taxon=None, edge_length=0.322649062335, oid="Node37833520")
-    nd_37833520.edge.oid = "Edge37833872"
-    nd_37834256 = nd_37833680.new_child(label="Node37834256", taxon=None, edge_length=0.821527298272, oid="Node37834256")
-    nd_37834256.edge.oid = "Edge37834352"
-    nd_37833776 = nd_37833520.new_child(label="Morelia viridis", taxon=tax_36961136, edge_length=14.834011977, oid="Node37833776")
-    nd_37833776.edge.oid = "Edge37833936"
-    nd_37834032 = nd_37833520.new_child(label="Node37834032", taxon=None, edge_length=1.22843868872, oid="Node37834032")
-    nd_37834032.edge.oid = "Edge37833968"
-    nd_37833904 = nd_37834032.new_child(label="Node37833904", taxon=None, edge_length=7.33173338162, oid="Node37833904")
-    nd_37833904.edge.oid = "Edge37834000"
-    nd_37834320 = nd_37834032.new_child(label="Morelia carinata", taxon=tax_36961072, edge_length=13.6055732883, oid="Node37834320")
-    nd_37834320.edge.oid = "Edge37834096"
-    nd_37834064 = nd_37833904.new_child(label="Morelia spilota", taxon=tax_36961200, edge_length=6.2738399067, oid="Node37834064")
-    nd_37834064.edge.oid = "Edge37834128"
-    nd_37834224 = nd_37833904.new_child(label="Morelia bredli", taxon=tax_36961008, edge_length=6.2738399067, oid="Node37834224")
-    nd_37834224.edge.oid = "Edge37834160"
-    nd_37834288 = nd_37834256.new_child(label="Node37834288", taxon=None, edge_length=4.22599220252, oid="Node37834288")
-    nd_37834288.edge.oid = "Edge37833840"
-    nd_37834608 = nd_37834256.new_child(label="Antaresia maculosa", taxon=tax_36960560, edge_length=14.3351337411, oid="Node37834608")
-    nd_37834608.edge.oid = "Edge37832688"
-    nd_37834192 = nd_37834288.new_child(label="Antaresia perthensis", taxon=tax_36960592, edge_length=10.1091415386, oid="Node37834192")
-    nd_37834192.edge.oid = "Edge37834448"
-    nd_37834512 = nd_37834288.new_child(label="Node37834512", taxon=None, edge_length=6.62594074811, oid="Node37834512")
-    nd_37834512.edge.oid = "Edge37834544"
-    nd_37834576 = nd_37834512.new_child(label="Antaresia childreni", taxon=tax_36960624, edge_length=3.48320079048, oid="Node37834576")
-    nd_37834576.edge.oid = "Edge37834480"
-    nd_37834640 = nd_37834512.new_child(label="Antaresia stimsoni", taxon=tax_36960432, edge_length=3.48320079048, oid="Node37834640")
-    nd_37834640.edge.oid = "Edge37834672"
-    nd_37834704 = nd_37834736.new_child(label="Leiopython albertisii", taxon=tax_36960688, edge_length=9.28422587488, oid="Node37834704")
-    nd_37834704.edge.oid = "Edge37101616"
-    nd_37834384 = nd_37834736.new_child(label="Bothrochilus boa", taxon=tax_36960784, edge_length=9.28422587488, oid="Node37834384")
-    nd_37834384.edge.oid = "Edge37101680"
-    nd_37101808 = nd_37101712.new_child(label="Node37101808", taxon=None, edge_length=2.70301025103, oid="Node37101808")
-    nd_37101808.edge.oid = "Edge37101776"
-    nd_37102000 = nd_37101712.new_child(label="Apodora papuana", taxon=tax_36960848, edge_length=13.7181551735, oid="Node37102000")
-    nd_37102000.edge.oid = "Edge37102192"
-    nd_37834416 = nd_37101808.new_child(label="Liasis olivaceus", taxon=tax_36960816, edge_length=11.0151449224, oid="Node37834416")
-    nd_37834416.edge.oid = "Edge37101872"
-    nd_37101968 = nd_37101808.new_child(label="Node37101968", taxon=None, edge_length=6.92713376313, oid="Node37101968")
-    nd_37101968.edge.oid = "Edge37101744"
-    nd_37101840 = nd_37101968.new_child(label="Liasis fuscus", taxon=tax_36960720, edge_length=4.0880111593, oid="Node37101840")
-    nd_37101840.edge.oid = "Edge37101904"
-    nd_37102064 = nd_37101968.new_child(label="Liasis mackloti", taxon=tax_36960912, edge_length=4.0880111593, oid="Node37102064")
-    nd_37102064.edge.oid = "Edge37102128"
-    nd_37102160 = nd_37101936.new_child(label="Morelia oenpelliensis", taxon=tax_36961456, edge_length=17.6009445592, oid="Node37102160")
-    nd_37102160.edge.oid = "Edge37102224"
-    nd_37102352 = nd_37101936.new_child(label="Node37102352", taxon=None, edge_length=5.4268859952, oid="Node37102352")
-    nd_37102352.edge.oid = "Edge37102096"
-    nd_37102288 = nd_37102352.new_child(label="Node37102288", taxon=None, edge_length=6.37126259081, oid="Node37102288")
-    nd_37102288.edge.oid = "Edge37102320"
-    nd_37102576 = nd_37102352.new_child(label="Morelia boeleni", taxon=tax_36960944, edge_length=12.174058564, oid="Node37102576")
-    nd_37102576.edge.oid = "Edge37102736"
-    nd_37102384 = nd_37102288.new_child(label="Morelia tracyae", taxon=tax_36961392, edge_length=5.80279597323, oid="Node37102384")
-    nd_37102384.edge.oid = "Edge37102448"
-    nd_37102544 = nd_37102288.new_child(label="Node37102544", taxon=None, edge_length=1.42172379881, oid="Node37102544")
-    nd_37102544.edge.oid = "Edge37102480"
-    nd_37102416 = nd_37102544.new_child(label="Morelia amethistina", taxon=tax_36960880, edge_length=4.38107217442, oid="Node37102416")
-    nd_37102416.edge.oid = "Edge37102512"
-    nd_37102672 = nd_37102544.new_child(label="Node37102672", taxon=None, edge_length=2.50070781902, oid="Node37102672")
-    nd_37102672.edge.oid = "Edge37102032"
-    nd_37102608 = nd_37102672.new_child(label="Node37102608", taxon=None, edge_length=0.0774488112983, oid="Node37102608")
-    nd_37102608.edge.oid = "Edge37102640"
-    nd_37102960 = nd_37102672.new_child(label="Morelia clastolepis", taxon=tax_36961264, edge_length=1.8803643554, oid="Node37102960")
-    nd_37102960.edge.oid = "Edge37102832"
-    nd_37102704 = nd_37102608.new_child(label="Morelia nauta", taxon=tax_36961328, edge_length=1.8029155441, oid="Node37102704")
-    nd_37102704.edge.oid = "Edge37102768"
-    nd_37102864 = nd_37102608.new_child(label="Morelia kinghorni", taxon=tax_36960752, edge_length=1.8029155441, oid="Node37102864")
-    nd_37102864.edge.oid = "Edge37102800"
-    nd_37102992 = nd_37103024.new_child(label="Aspidites ramsayi", taxon=tax_36960528, edge_length=9.84704548855, oid="Node37102992")
-    nd_37102992.edge.oid = "Edge37102928"
-    nd_37103152 = nd_37103024.new_child(label="Aspidites melanocephalus", taxon=tax_36960656, edge_length=9.84704548855, oid="Node37103152")
-    nd_37103152.edge.oid = "Edge37103216"
-    tree_37103088 = dendropy.Tree(label="Tree08", taxon_set=tree_list.taxon_set, oid="Tree37103088")
-    tree_list.append(tree_37103088, reindex_taxa=False)
-    tree_37103088.seed_node.oid = 'Node37103344'
-    nd_37103408 = tree_37103088.seed_node.new_child(label="Node37103408", taxon=None, edge_length=8.43656365605, oid="Node37103408")
-    nd_37103408.edge.oid = "Edge37103440"
-    nd_37163888 = tree_37103088.seed_node.new_child(label="Python sebae", taxon=tax_36961776, edge_length=42.025995763, oid="Node37163888")
-    nd_37163888.edge.oid = "Edge37164176"
-    nd_37714672 = nd_37103408.new_child(label="Node37714672", taxon=None, edge_length=6.41982933271, oid="Node37714672")
-    nd_37714672.edge.oid = "Edge37103472"
-    nd_37163696 = nd_37103408.new_child(label="Node37163696", taxon=None, edge_length=10.1890732074, oid="Node37163696")
-    nd_37163696.edge.oid = "Edge37163952"
-    nd_37102896 = nd_37714672.new_child(label="Node37102896", taxon=None, edge_length=4.2262164672, oid="Node37102896")
-    nd_37102896.edge.oid = "Edge37103536"
-    nd_37163504 = nd_37714672.new_child(label="Node37163504", taxon=None, edge_length=20.5343771273, oid="Node37163504")
-    nd_37163504.edge.oid = "Edge37163760"
-    nd_37103120 = nd_37102896.new_child(label="Node37103120", taxon=None, edge_length=0.983173088098, oid="Node37103120")
-    nd_37103120.edge.oid = "Edge37103600"
-    nd_37103280 = nd_37102896.new_child(label="Node37103280", taxon=None, edge_length=1.53468865192, oid="Node37103280")
-    nd_37103280.edge.oid = "Edge37163344"
-    nd_37103504 = nd_37103120.new_child(label="Node37103504", taxon=None, edge_length=9.50779575096, oid="Node37103504")
-    nd_37103504.edge.oid = "Edge37103664"
-    nd_37104432 = nd_37103120.new_child(label="Node37104432", taxon=None, edge_length=3.20592158422, oid="Node37104432")
-    nd_37104432.edge.oid = "Edge37104272"
-    nd_37103568 = nd_37103504.new_child(label="Node37103568", taxon=None, edge_length=4.13809660753, oid="Node37103568")
-    nd_37103568.edge.oid = "Edge37103728"
-    nd_37104112 = nd_37103504.new_child(label="Morelia boeleni", taxon=tax_36960944, edge_length=12.452417468, oid="Node37104112")
-    nd_37104112.edge.oid = "Edge37104176"
-    nd_37103632 = nd_37103568.new_child(label="Morelia tracyae", taxon=tax_36961392, edge_length=8.31432086046, oid="Node37103632")
-    nd_37103632.edge.oid = "Edge37103792"
-    nd_37103888 = nd_37103568.new_child(label="Node37103888", taxon=None, edge_length=3.80591263593, oid="Node37103888")
-    nd_37103888.edge.oid = "Edge37103760"
-    nd_37103824 = nd_37103888.new_child(label="Node37103824", taxon=None, edge_length=2.88132393295, oid="Node37103824")
-    nd_37103824.edge.oid = "Edge37103856"
-    nd_37104304 = nd_37103888.new_child(label="Morelia amethistina", taxon=tax_36960880, edge_length=4.50840822453, oid="Node37104304")
-    nd_37104304.edge.oid = "Edge37104016"
-    nd_37103920 = nd_37103824.new_child(label="Node37103920", taxon=None, edge_length=0.71440797492, oid="Node37103920")
-    nd_37103920.edge.oid = "Edge37103984"
-    nd_37104240 = nd_37103824.new_child(label="Morelia kinghorni", taxon=tax_36960752, edge_length=1.62708429158, oid="Node37104240")
-    nd_37104240.edge.oid = "Edge37104208"
-    nd_37103696 = nd_37103920.new_child(label="Morelia nauta", taxon=tax_36961328, edge_length=0.912676316658, oid="Node37103696")
-    nd_37103696.edge.oid = "Edge37104048"
-    nd_37104144 = nd_37103920.new_child(label="Morelia clastolepis", taxon=tax_36961264, edge_length=0.912676316658, oid="Node37104144")
-    nd_37104144.edge.oid = "Edge37104080"
-    nd_37104336 = nd_37104432.new_child(label="Node37104336", taxon=None, edge_length=1.50938344234, oid="Node37104336")
-    nd_37104336.edge.oid = "Edge37104368"
-    nd_37104784 = nd_37104432.new_child(label="Node37104784", taxon=None, edge_length=0.497596402447, oid="Node37104784")
-    nd_37104784.edge.oid = "Edge37104624"
-    nd_37103952 = nd_37104336.new_child(label="Apodora papuana", taxon=tax_36960848, edge_length=17.2449081924, oid="Node37103952")
-    nd_37103952.edge.oid = "Edge37104496"
-    nd_37104592 = nd_37104336.new_child(label="Node37104592", taxon=None, edge_length=4.9943499411, oid="Node37104592")
-    nd_37104592.edge.oid = "Edge37104560"
-    nd_37104464 = nd_37104592.new_child(label="Liasis olivaceus", taxon=tax_36960816, edge_length=12.2505582513, oid="Node37104464")
-    nd_37104464.edge.oid = "Edge37104400"
-    nd_37104720 = nd_37104592.new_child(label="Node37104720", taxon=None, edge_length=5.95835956047, oid="Node37104720")
-    nd_37104720.edge.oid = "Edge37104656"
-    nd_37104528 = nd_37104720.new_child(label="Liasis fuscus", taxon=tax_36960720, edge_length=6.29219869082, oid="Node37104528")
-    nd_37104528.edge.oid = "Edge37104688"
-    nd_37104816 = nd_37104720.new_child(label="Liasis mackloti", taxon=tax_36960912, edge_length=6.29219869082, oid="Node37104816")
-    nd_37104816.edge.oid = "Edge37104848"
-    nd_37104752 = nd_37104784.new_child(label="Node37104752", taxon=None, edge_length=5.19337056498, oid="Node37104752")
-    nd_37104752.edge.oid = "Edge37104944"
-    nd_37104976 = nd_37104784.new_child(label="Node37104976", taxon=None, edge_length=2.40513075673, oid="Node37104976")
-    nd_37104976.edge.oid = "Edge37105136"
-    nd_37104912 = nd_37104752.new_child(label="Leiopython albertisii", taxon=tax_36960688, edge_length=13.0633246673, oid="Node37104912")
-    nd_37104912.edge.oid = "Edge37105008"
-    nd_37105072 = nd_37104752.new_child(label="Bothrochilus boa", taxon=tax_36960784, edge_length=13.0633246673, oid="Node37105072")
-    nd_37105072.edge.oid = "Edge37105104"
-    nd_37104880 = nd_37104976.new_child(label="Node37104880", taxon=None, edge_length=2.06371429021, oid="Node37104880")
-    nd_37104880.edge.oid = "Edge37105168"
-    nd_37105584 = nd_37104976.new_child(label="Node37105584", taxon=None, edge_length=0.641957440329, oid="Node37105584")
-    nd_37105584.edge.oid = "Edge37103184"
-    nd_37105200 = nd_37104880.new_child(label="Node37105200", taxon=None, edge_length=3.43791705079, oid="Node37105200")
-    nd_37105200.edge.oid = "Edge37105264"
-    nd_37105648 = nd_37104880.new_child(label="Antaresia maculosa", taxon=tax_36960560, edge_length=13.7878501853, oid="Node37105648")
-    nd_37105648.edge.oid = "Edge37105616"
-    nd_37105040 = nd_37105200.new_child(label="Antaresia perthensis", taxon=tax_36960592, edge_length=10.3499331345, oid="Node37105040")
-    nd_37105040.edge.oid = "Edge37105328"
-    nd_37105392 = nd_37105200.new_child(label="Node37105392", taxon=None, edge_length=6.96420024077, oid="Node37105392")
-    nd_37105392.edge.oid = "Edge37105424"
-    nd_37105456 = nd_37105392.new_child(label="Antaresia childreni", taxon=tax_36960624, edge_length=3.38573289378, oid="Node37105456")
-    nd_37105456.edge.oid = "Edge37105360"
-    nd_37105520 = nd_37105392.new_child(label="Antaresia stimsoni", taxon=tax_36960432, edge_length=3.38573289378, oid="Node37105520")
-    nd_37105520.edge.oid = "Edge37105552"
-    nd_37105488 = nd_37105584.new_child(label="Morelia viridis", taxon=tax_36961136, edge_length=15.2096070352, oid="Node37105488")
-    nd_37105488.edge.oid = "Edge37105296"
-    nd_37105232 = nd_37105584.new_child(label="Node37105232", taxon=None, edge_length=1.5569144386, oid="Node37105232")
-    nd_37105232.edge.oid = "Edge37163120"
-    nd_37163056 = nd_37105232.new_child(label="Morelia carinata", taxon=tax_36961072, edge_length=13.6526925966, oid="Node37163056")
-    nd_37163056.edge.oid = "Edge37163152"
-    nd_37163248 = nd_37105232.new_child(label="Node37163248", taxon=None, edge_length=8.73106140586, oid="Node37163248")
-    nd_37163248.edge.oid = "Edge37163088"
-    nd_37163184 = nd_37163248.new_child(label="Morelia spilota", taxon=tax_36961200, edge_length=4.92163119076, oid="Node37163184")
-    nd_37163184.edge.oid = "Edge37163216"
-    nd_37163376 = nd_37163248.new_child(label="Morelia bredli", taxon=tax_36961008, edge_length=4.92163119076, oid="Node37163376")
-    nd_37163376.edge.oid = "Edge37163280"
-    nd_37163312 = nd_37103280.new_child(label="Node37163312", taxon=None, edge_length=6.61343105392, oid="Node37163312")
-    nd_37163312.edge.oid = "Edge37163408"
-    nd_37163728 = nd_37103280.new_child(label="Morelia oenpelliensis", taxon=tax_36961456, edge_length=21.4086976551, oid="Node37163728")
-    nd_37163728.edge.oid = "Edge37163600"
-    nd_37163440 = nd_37163312.new_child(label="Python reticulatus", taxon=tax_36961904, edge_length=14.7952666012, oid="Node37163440")
-    nd_37163440.edge.oid = "Edge37163536"
-    nd_37163632 = nd_37163312.new_child(label="Python timoriensis", taxon=tax_36961520, edge_length=14.7952666012, oid="Node37163632")
-    nd_37163632.edge.oid = "Edge37163568"
-    nd_37163664 = nd_37163504.new_child(label="Aspidites ramsayi", taxon=tax_36960528, edge_length=6.63522564694, oid="Node37163664")
-    nd_37163664.edge.oid = "Edge37163472"
-    nd_37163856 = nd_37163504.new_child(label="Aspidites melanocephalus", taxon=tax_36960656, edge_length=6.63522564694, oid="Node37163856")
-    nd_37163856.edge.oid = "Edge37163920"
-    nd_37163792 = nd_37163696.new_child(label="Python molurus", taxon=tax_36961648, edge_length=23.4003588995, oid="Node37163792")
-    nd_37163792.edge.oid = "Edge37163984"
-    nd_37164080 = nd_37163696.new_child(label="Node37164080", taxon=None, edge_length=0.0534325174359, oid="Node37164080")
-    nd_37164080.edge.oid = "Edge37164016"
-    nd_37163824 = nd_37164080.new_child(label="Python brongersmai", taxon=tax_36961584, edge_length=23.3469263821, oid="Node37163824")
-    nd_37163824.edge.oid = "Edge37164048"
-    nd_37164208 = nd_37164080.new_child(label="Python regius", taxon=tax_36961712, edge_length=23.3469263821, oid="Node37164208")
-    nd_37164208.edge.oid = "Edge37164144"
-    tree_37164272 = dendropy.Tree(label="Tree09", taxon_set=tree_list.taxon_set, oid="Tree37164272")
-    tree_list.append(tree_37164272, reindex_taxa=False)
-    tree_37164272.seed_node.oid = 'Node37164432'
-    nd_37164496 = tree_37164272.seed_node.new_child(label="Node37164496", taxon=None, edge_length=4.51223406477, oid="Node37164496")
-    nd_37164496.edge.oid = "Edge37164528"
-    nd_37221168 = tree_37164272.seed_node.new_child(label="Python sebae", taxon=tax_36961776, edge_length=29.3089629268, oid="Node37221168")
-    nd_37221168.edge.oid = "Edge37220560"
-    nd_37164368 = nd_37164496.new_child(label="Node37164368", taxon=None, edge_length=3.29007229288, oid="Node37164368")
-    nd_37164368.edge.oid = "Edge37164560"
-    nd_37220976 = nd_37164496.new_child(label="Node37220976", taxon=None, edge_length=1.61144541412, oid="Node37220976")
-    nd_37220976.edge.oid = "Edge37220880"
-    nd_37775760 = nd_37164368.new_child(label="Node37775760", taxon=None, edge_length=4.09158345085, oid="Node37775760")
-    nd_37775760.edge.oid = "Edge37164624"
-    nd_37220432 = nd_37164368.new_child(label="Node37220432", taxon=None, edge_length=12.3527736124, oid="Node37220432")
-    nd_37220432.edge.oid = "Edge37220752"
-    nd_37164304 = nd_37775760.new_child(label="Node37164304", taxon=None, edge_length=2.82624159524, oid="Node37164304")
-    nd_37164304.edge.oid = "Edge37164688"
-    nd_37165712 = nd_37775760.new_child(label="Node37165712", taxon=None, edge_length=0.0769064358513, oid="Node37165712")
-    nd_37165712.edge.oid = "Edge37165648"
-    nd_37164592 = nd_37164304.new_child(label="Morelia viridis", taxon=tax_36961136, edge_length=14.5888315231, oid="Node37164592")
-    nd_37164592.edge.oid = "Edge37164752"
-    nd_37164848 = nd_37164304.new_child(label="Node37164848", taxon=None, edge_length=0.0149913671254, oid="Node37164848")
-    nd_37164848.edge.oid = "Edge37164656"
-    nd_37164720 = nd_37164848.new_child(label="Node37164720", taxon=None, edge_length=4.89600409139, oid="Node37164720")
-    nd_37164720.edge.oid = "Edge37164784"
-    nd_37165264 = nd_37164848.new_child(label="Node37165264", taxon=None, edge_length=0.516331095919, oid="Node37165264")
-    nd_37165264.edge.oid = "Edge37165136"
-    nd_37164880 = nd_37164720.new_child(label="Node37164880", taxon=None, edge_length=5.06534441374, oid="Node37164880")
-    nd_37164880.edge.oid = "Edge37164944"
-    nd_37165200 = nd_37164720.new_child(label="Morelia carinata", taxon=tax_36961072, edge_length=9.67783606456, oid="Node37165200")
-    nd_37165200.edge.oid = "Edge37165072"
-    nd_37164816 = nd_37164880.new_child(label="Morelia spilota", taxon=tax_36961200, edge_length=4.61249165082, oid="Node37164816")
-    nd_37164816.edge.oid = "Edge37165008"
-    nd_37165104 = nd_37164880.new_child(label="Morelia bredli", taxon=tax_36961008, edge_length=4.61249165082, oid="Node37165104")
-    nd_37165104.edge.oid = "Edge37164976"
-    nd_37165232 = nd_37165264.new_child(label="Antaresia maculosa", taxon=tax_36960560, edge_length=14.05750906, oid="Node37165232")
-    nd_37165232.edge.oid = "Edge37165040"
-    nd_37165328 = nd_37165264.new_child(label="Node37165328", taxon=None, edge_length=6.44901536169, oid="Node37165328")
-    nd_37165328.edge.oid = "Edge37165360"
-    nd_37165392 = nd_37165328.new_child(label="Antaresia perthensis", taxon=tax_36960592, edge_length=7.60849369834, oid="Node37165392")
-    nd_37165392.edge.oid = "Edge37165296"
-    nd_37165456 = nd_37165328.new_child(label="Node37165456", taxon=None, edge_length=5.74491098314, oid="Node37165456")
-    nd_37165456.edge.oid = "Edge37165488"
-    nd_37165520 = nd_37165456.new_child(label="Antaresia childreni", taxon=tax_36960624, edge_length=1.86358271521, oid="Node37165520")
-    nd_37165520.edge.oid = "Edge37165424"
-    nd_37165584 = nd_37165456.new_child(label="Antaresia stimsoni", taxon=tax_36960432, edge_length=1.86358271521, oid="Node37165584")
-    nd_37165584.edge.oid = "Edge37165552"
-    nd_37165616 = nd_37165712.new_child(label="Node37165616", taxon=None, edge_length=8.7380438705, oid="Node37165616")
-    nd_37165616.edge.oid = "Edge37165680"
-    nd_37165968 = nd_37165712.new_child(label="Node37165968", taxon=None, edge_length=0.894040812546, oid="Node37165968")
-    nd_37165968.edge.oid = "Edge37165168"
-    nd_37164912 = nd_37165616.new_child(label="Python reticulatus", taxon=tax_36961904, edge_length=8.60012281197, oid="Node37164912")
-    nd_37164912.edge.oid = "Edge37165776"
-    nd_37165872 = nd_37165616.new_child(label="Python timoriensis", taxon=tax_36961520, edge_length=8.60012281197, oid="Node37165872")
-    nd_37165872.edge.oid = "Edge37165744"
-    nd_37165840 = nd_37165968.new_child(label="Node37165840", taxon=None, edge_length=1.98993837612, oid="Node37165840")
-    nd_37165840.edge.oid = "Edge37165904"
-    nd_37166576 = nd_37165968.new_child(label="Node37166576", taxon=None, edge_length=2.85390092474, oid="Node37166576")
-    nd_37166576.edge.oid = "Edge37166736"
-    nd_37165808 = nd_37165840.new_child(label="Node37165808", taxon=None, edge_length=1.38724843406, oid="Node37165808")
-    nd_37165808.edge.oid = "Edge37166032"
-    nd_37166384 = nd_37165840.new_child(label="Node37166384", taxon=None, edge_length=3.48386820234, oid="Node37166384")
-    nd_37166384.edge.oid = "Edge37166256"
-    nd_37165936 = nd_37165808.new_child(label="Apodora papuana", taxon=tax_36960848, edge_length=13.0669390597, oid="Node37165936")
-    nd_37165936.edge.oid = "Edge37166096"
-    nd_37166192 = nd_37165808.new_child(label="Node37166192", taxon=None, edge_length=3.7285329013, oid="Node37166192")
-    nd_37166192.edge.oid = "Edge37166064"
-    nd_37166128 = nd_37166192.new_child(label="Leiopython albertisii", taxon=tax_36960688, edge_length=9.33840615844, oid="Node37166128")
-    nd_37166128.edge.oid = "Edge37166160"
-    nd_37166288 = nd_37166192.new_child(label="Bothrochilus boa", taxon=tax_36960784, edge_length=9.33840615844, oid="Node37166288")
-    nd_37166288.edge.oid = "Edge37166352"
-    nd_37166416 = nd_37166384.new_child(label="Liasis olivaceus", taxon=tax_36960816, edge_length=10.9703192915, oid="Node37166416")
-    nd_37166416.edge.oid = "Edge37166320"
-    nd_37166512 = nd_37166384.new_child(label="Node37166512", taxon=None, edge_length=3.83596797183, oid="Node37166512")
-    nd_37166512.edge.oid = "Edge37166448"
-    nd_37166000 = nd_37166512.new_child(label="Liasis fuscus", taxon=tax_36960720, edge_length=7.13435131963, oid="Node37166000")
-    nd_37166000.edge.oid = "Edge37166480"
-    nd_37166608 = nd_37166512.new_child(label="Liasis mackloti", taxon=tax_36960912, edge_length=7.13435131963, oid="Node37166608")
-    nd_37166608.edge.oid = "Edge37166640"
-    nd_37166544 = nd_37166576.new_child(label="Node37166544", taxon=None, edge_length=3.52728125011, oid="Node37166544")
-    nd_37166544.edge.oid = "Edge37166672"
-    nd_37220720 = nd_37166576.new_child(label="Morelia oenpelliensis", taxon=tax_36961456, edge_length=13.5902249452, oid="Node37220720")
-    nd_37220720.edge.oid = "Edge37220624"
-    nd_37166704 = nd_37166544.new_child(label="Node37166704", taxon=None, edge_length=1.7419442928, oid="Node37166704")
-    nd_37166704.edge.oid = "Edge37166800"
-    nd_37220496 = nd_37166544.new_child(label="Morelia boeleni", taxon=tax_36960944, edge_length=10.0629436951, oid="Node37220496")
-    nd_37220496.edge.oid = "Edge37220400"
-    nd_37166224 = nd_37166704.new_child(label="Morelia tracyae", taxon=tax_36961392, edge_length=8.32099940228, oid="Node37166224")
-    nd_37166224.edge.oid = "Edge37166864"
-    nd_37166960 = nd_37166704.new_child(label="Node37166960", taxon=None, edge_length=4.44695529056, oid="Node37166960")
-    nd_37166960.edge.oid = "Edge37166832"
-    nd_37166896 = nd_37166960.new_child(label="Node37166896", taxon=None, edge_length=2.02523285213, oid="Node37166896")
-    nd_37166896.edge.oid = "Edge37166928"
-    nd_37220592 = nd_37166960.new_child(label="Morelia amethistina", taxon=tax_36960880, edge_length=3.87404411171, oid="Node37220592")
-    nd_37220592.edge.oid = "Edge37220464"
-    nd_37166992 = nd_37166896.new_child(label="Node37166992", taxon=None, edge_length=0.774826953003, oid="Node37166992")
-    nd_37166992.edge.oid = "Edge37167056"
-    nd_37164112 = nd_37166896.new_child(label="Morelia clastolepis", taxon=tax_36961264, edge_length=1.84881125958, oid="Node37164112")
-    nd_37164112.edge.oid = "Edge37220528"
-    nd_37166768 = nd_37166992.new_child(label="Morelia kinghorni", taxon=tax_36960752, edge_length=1.07398430658, oid="Node37166768")
-    nd_37166768.edge.oid = "Edge37164240"
-    nd_37167024 = nd_37166992.new_child(label="Morelia nauta", taxon=tax_36961328, edge_length=1.07398430658, oid="Node37167024")
-    nd_37167024.edge.oid = "Edge37167088"
-    nd_37220688 = nd_37220432.new_child(label="Aspidites ramsayi", taxon=tax_36960528, edge_length=9.1538829568, oid="Node37220688")
-    nd_37220688.edge.oid = "Edge37220656"
-    nd_37220848 = nd_37220432.new_child(label="Aspidites melanocephalus", taxon=tax_36960656, edge_length=9.1538829568, oid="Node37220848")
-    nd_37220848.edge.oid = "Edge37220784"
-    nd_37220944 = nd_37220976.new_child(label="Node37220944", taxon=None, edge_length=0.5196540118, oid="Node37220944")
-    nd_37220944.edge.oid = "Edge37220912"
-    nd_37221232 = nd_37220976.new_child(label="Python molurus", taxon=tax_36961648, edge_length=23.1852834479, oid="Node37221232")
-    nd_37221232.edge.oid = "Edge37221008"
-    nd_37220816 = nd_37220944.new_child(label="Python regius", taxon=tax_36961712, edge_length=22.6656294361, oid="Node37220816")
-    nd_37220816.edge.oid = "Edge37221040"
-    nd_37221136 = nd_37220944.new_child(label="Python brongersmai", taxon=tax_36961584, edge_length=22.6656294361, oid="Node37221136")
-    nd_37221136.edge.oid = "Edge37221072"
-    tree_37221104 = dendropy.Tree(label="Tree10", taxon_set=tree_list.taxon_set, oid="Tree37221104")
-    tree_list.append(tree_37221104, reindex_taxa=False)
-    tree_37221104.seed_node.oid = 'Node37221424'
-    nd_37221488 = tree_37221104.seed_node.new_child(label="Python sebae", taxon=tax_36961776, edge_length=41.037475788, oid="Node37221488")
-    nd_37221488.edge.oid = "Edge37221520"
-    nd_37221584 = tree_37221104.seed_node.new_child(label="Node37221584", taxon=None, edge_length=0.971031599202, oid="Node37221584")
-    nd_37221584.edge.oid = "Edge37221360"
-    nd_37221616 = nd_37221584.new_child(label="Node37221616", taxon=None, edge_length=7.88042810387, oid="Node37221616")
-    nd_37221616.edge.oid = "Edge37221200"
-    nd_37221936 = nd_37221584.new_child(label="Node37221936", taxon=None, edge_length=11.1348383801, oid="Node37221936")
-    nd_37221936.edge.oid = "Edge37221552"
-    nd_37832752 = nd_37221616.new_child(label="Python regius", taxon=tax_36961712, edge_length=32.1860160849, oid="Node37832752")
-    nd_37832752.edge.oid = "Edge37221680"
-    nd_37221776 = nd_37221616.new_child(label="Node37221776", taxon=None, edge_length=3.37816716317, oid="Node37221776")
-    nd_37221776.edge.oid = "Edge37221648"
-    nd_37221712 = nd_37221776.new_child(label="Python molurus", taxon=tax_36961648, edge_length=28.8078489217, oid="Node37221712")
-    nd_37221712.edge.oid = "Edge37221744"
-    nd_37221904 = nd_37221776.new_child(label="Python brongersmai", taxon=tax_36961584, edge_length=28.8078489217, oid="Node37221904")
-    nd_37221904.edge.oid = "Edge37221840"
-    nd_37221968 = nd_37221936.new_child(label="Node37221968", taxon=None, edge_length=5.61233091052, oid="Node37221968")
-    nd_37221968.edge.oid = "Edge37221808"
-    nd_37224432 = nd_37221936.new_child(label="Node37224432", taxon=None, edge_length=19.6159722746, oid="Node37224432")
-    nd_37224432.edge.oid = "Edge37278000"
-    nd_37221872 = nd_37221968.new_child(label="Node37221872", taxon=None, edge_length=3.04566241261, oid="Node37221872")
-    nd_37221872.edge.oid = "Edge37222064"
-    nd_37222736 = nd_37221968.new_child(label="Node37222736", taxon=None, edge_length=1.63793957099, oid="Node37222736")
-    nd_37222736.edge.oid = "Edge37222896"
-    nd_37222000 = nd_37221872.new_child(label="Morelia oenpelliensis", taxon=tax_36961456, edge_length=20.2736124855, oid="Node37222000")
-    nd_37222000.edge.oid = "Edge37222128"
-    nd_37222224 = nd_37221872.new_child(label="Node37222224", taxon=None, edge_length=7.80824403904, oid="Node37222224")
-    nd_37222224.edge.oid = "Edge37222160"
-    nd_37222096 = nd_37222224.new_child(label="Node37222096", taxon=None, edge_length=3.53762335708, oid="Node37222096")
-    nd_37222096.edge.oid = "Edge37222192"
-    nd_37222800 = nd_37222224.new_child(label="Morelia boeleni", taxon=tax_36960944, edge_length=12.4653684465, oid="Node37222800")
-    nd_37222800.edge.oid = "Edge37222704"
-    nd_37222256 = nd_37222096.new_child(label="Morelia tracyae", taxon=tax_36961392, edge_length=8.92774508942, oid="Node37222256")
-    nd_37222256.edge.oid = "Edge37222320"
-    nd_37222416 = nd_37222096.new_child(label="Node37222416", taxon=None, edge_length=0.98740476198, oid="Node37222416")
-    nd_37222416.edge.oid = "Edge37222032"
-    nd_37222288 = nd_37222416.new_child(label="Node37222288", taxon=None, edge_length=4.46813855011, oid="Node37222288")
-    nd_37222288.edge.oid = "Edge37222352"
-    nd_37222832 = nd_37222416.new_child(label="Morelia amethistina", taxon=tax_36960880, edge_length=7.94034032744, oid="Node37222832")
-    nd_37222832.edge.oid = "Edge37222480"
-    nd_37222448 = nd_37222288.new_child(label="Node37222448", taxon=None, edge_length=0.318849288103, oid="Node37222448")
-    nd_37222448.edge.oid = "Edge37222512"
-    nd_37222768 = nd_37222288.new_child(label="Morelia clastolepis", taxon=tax_36961264, edge_length=3.47220177733, oid="Node37222768")
-    nd_37222768.edge.oid = "Edge37222544"
-    nd_37222384 = nd_37222448.new_child(label="Morelia kinghorni", taxon=tax_36960752, edge_length=3.15335248923, oid="Node37222384")
-    nd_37222384.edge.oid = "Edge37222576"
-    nd_37222672 = nd_37222448.new_child(label="Morelia nauta", taxon=tax_36961328, edge_length=3.15335248923, oid="Node37222672")
-    nd_37222672.edge.oid = "Edge37222608"
-    nd_37222960 = nd_37222736.new_child(label="Node37222960", taxon=None, edge_length=1.17144499717, oid="Node37222960")
-    nd_37222960.edge.oid = "Edge37222928"
-    nd_37223632 = nd_37222736.new_child(label="Node37223632", taxon=None, edge_length=0.325200272563, oid="Node37223632")
-    nd_37223632.edge.oid = "Edge37223536"
-    nd_37222864 = nd_37222960.new_child(label="Node37222864", taxon=None, edge_length=6.09401457319, oid="Node37222864")
-    nd_37222864.edge.oid = "Edge37223024"
-    nd_37223248 = nd_37222960.new_child(label="Node37223248", taxon=None, edge_length=0.168673432469, oid="Node37223248")
-    nd_37223248.edge.oid = "Edge37222992"
-    nd_37222640 = nd_37222864.new_child(label="Liasis olivaceus", taxon=tax_36960816, edge_length=14.4158757568, oid="Node37222640")
-    nd_37222640.edge.oid = "Edge37223088"
-    nd_37223184 = nd_37222864.new_child(label="Node37223184", taxon=None, edge_length=10.1133978359, oid="Node37223184")
-    nd_37223184.edge.oid = "Edge37223120"
-    nd_37223056 = nd_37223184.new_child(label="Liasis fuscus", taxon=tax_36960720, edge_length=4.30247792095, oid="Node37223056")
-    nd_37223056.edge.oid = "Edge37223152"
-    nd_37223280 = nd_37223184.new_child(label="Liasis mackloti", taxon=tax_36960912, edge_length=4.30247792095, oid="Node37223280")
-    nd_37223280.edge.oid = "Edge37223344"
-    nd_37223376 = nd_37223248.new_child(label="Node37223376", taxon=None, edge_length=9.21506648422, oid="Node37223376")
-    nd_37223376.edge.oid = "Edge37223216"
-    nd_37223664 = nd_37223248.new_child(label="Apodora papuana", taxon=tax_36960848, edge_length=20.3412168975, oid="Node37223664")
-    nd_37223664.edge.oid = "Edge37223504"
-    nd_37223312 = nd_37223376.new_child(label="Python reticulatus", taxon=tax_36961904, edge_length=11.1261504133, oid="Node37223312")
-    nd_37223312.edge.oid = "Edge37223472"
-    nd_37223568 = nd_37223376.new_child(label="Python timoriensis", taxon=tax_36961520, edge_length=11.1261504133, oid="Node37223568")
-    nd_37223568.edge.oid = "Edge37223440"
-    nd_37223408 = nd_37223632.new_child(label="Node37223408", taxon=None, edge_length=4.80149248356, oid="Node37223408")
-    nd_37223408.edge.oid = "Edge37223600"
-    nd_37223760 = nd_37223632.new_child(label="Node37223760", taxon=None, edge_length=5.59816192539, oid="Node37223760")
-    nd_37223760.edge.oid = "Edge37223952"
-    nd_37223696 = nd_37223408.new_child(label="Leiopython albertisii", taxon=tax_36960688, edge_length=16.554642571, oid="Node37223696")
-    nd_37223696.edge.oid = "Edge37223792"
-    nd_37223856 = nd_37223408.new_child(label="Bothrochilus boa", taxon=tax_36960784, edge_length=16.554642571, oid="Node37223856")
-    nd_37223856.edge.oid = "Edge37223920"
-    nd_37223728 = nd_37223760.new_child(label="Node37223728", taxon=None, edge_length=1.51569357225, oid="Node37223728")
-    nd_37223728.edge.oid = "Edge37223984"
-    nd_37224304 = nd_37223760.new_child(label="Node37224304", taxon=None, edge_length=2.47499227209, oid="Node37224304")
-    nd_37224304.edge.oid = "Edge37224272"
-    nd_37223888 = nd_37223728.new_child(label="Node37223888", taxon=None, edge_length=0.59310677926, oid="Node37223888")
-    nd_37223888.edge.oid = "Edge37224048"
-    nd_37224240 = nd_37223728.new_child(label="Morelia viridis", taxon=tax_36961136, edge_length=14.242279557, oid="Node37224240")
-    nd_37224240.edge.oid = "Edge37224400"
-    nd_37223824 = nd_37223888.new_child(label="Morelia carinata", taxon=tax_36961072, edge_length=13.6491727777, oid="Node37223824")
-    nd_37223824.edge.oid = "Edge37224112"
-    nd_37224208 = nd_37223888.new_child(label="Node37224208", taxon=None, edge_length=7.69541700903, oid="Node37224208")
-    nd_37224208.edge.oid = "Edge37224144"
-    nd_37224080 = nd_37224208.new_child(label="Morelia spilota", taxon=tax_36961200, edge_length=5.95375576867, oid="Node37224080")
-    nd_37224080.edge.oid = "Edge37224176"
-    nd_37224336 = nd_37224208.new_child(label="Morelia bredli", taxon=tax_36961008, edge_length=5.95375576867, oid="Node37224336")
-    nd_37224336.edge.oid = "Edge37224016"
-    nd_37277744 = nd_37224304.new_child(label="Antaresia maculosa", taxon=tax_36960560, edge_length=13.2829808571, oid="Node37277744")
-    nd_37277744.edge.oid = "Edge37221264"
-    nd_37224368 = nd_37224304.new_child(label="Node37224368", taxon=None, edge_length=3.47453380669, oid="Node37224368")
-    nd_37224368.edge.oid = "Edge37221296"
-    nd_37277840 = nd_37224368.new_child(label="Antaresia perthensis", taxon=tax_36960592, edge_length=9.80844705042, oid="Node37277840")
-    nd_37277840.edge.oid = "Edge37277808"
-    nd_37277904 = nd_37224368.new_child(label="Node37277904", taxon=None, edge_length=3.99697653657, oid="Node37277904")
-    nd_37277904.edge.oid = "Edge37277968"
-    nd_37277936 = nd_37277904.new_child(label="Antaresia childreni", taxon=tax_36960624, edge_length=5.81147051386, oid="Node37277936")
-    nd_37277936.edge.oid = "Edge37277872"
-    nd_37278032 = nd_37277904.new_child(label="Antaresia stimsoni", taxon=tax_36960432, edge_length=5.81147051386, oid="Node37278032")
-    nd_37278032.edge.oid = "Edge37278096"
-    nd_37277776 = nd_37224432.new_child(label="Aspidites ramsayi", taxon=tax_36960528, edge_length=9.3156335341, oid="Node37277776")
-    nd_37277776.edge.oid = "Edge37278128"
-    nd_37278224 = nd_37224432.new_child(label="Aspidites melanocephalus", taxon=tax_36960656, edge_length=9.3156335341, oid="Node37278224")
-    nd_37278224.edge.oid = "Edge37278288"
+    tree_list = dendropy.TreeList(label=None, oid="TreeList4303123040", taxon_set=taxon_set)
+    tax_4313741136 = tree_list.taxon_set.require_taxon(label="Antaresia childreni", oid="Taxon4313741136")
+    tax_4313741328 = tree_list.taxon_set.require_taxon(label="Antaresia maculosa", oid="Taxon4313741328")
+    tax_4313741456 = tree_list.taxon_set.require_taxon(label="Antaresia melanocephalus", oid="Taxon4313741456")
+    tax_4313741584 = tree_list.taxon_set.require_taxon(label="Antaresia perthensis", oid="Taxon4313741584")
+    tax_4313741712 = tree_list.taxon_set.require_taxon(label="Antaresia ramsayi", oid="Taxon4313741712")
+    tax_4313741840 = tree_list.taxon_set.require_taxon(label="Antaresia stimsoni", oid="Taxon4313741840")
+    tax_4313741904 = tree_list.taxon_set.require_taxon(label="Apodora papuana", oid="Taxon4313741904")
+    tax_4313741968 = tree_list.taxon_set.require_taxon(label="Bothrochilus boa", oid="Taxon4313741968")
+    tax_4313742032 = tree_list.taxon_set.require_taxon(label="Candola aspera", oid="Taxon4313742032")
+    tax_4313742160 = tree_list.taxon_set.require_taxon(label="Liasis albertisii", oid="Taxon4313742160")
+    tax_4313742224 = tree_list.taxon_set.require_taxon(label="Liasis fuscus", oid="Taxon4313742224")
+    tax_4313742288 = tree_list.taxon_set.require_taxon(label="Liasis mackloti", oid="Taxon4313742288")
+    tax_4313742352 = tree_list.taxon_set.require_taxon(label="Liasis olivaceus", oid="Taxon4313742352")
+    tax_4313742480 = tree_list.taxon_set.require_taxon(label="Loxocemus bicolor", oid="Taxon4313742480")
+    tax_4313742608 = tree_list.taxon_set.require_taxon(label="Morelia amethistina", oid="Taxon4313742608")
+    tax_4313742672 = tree_list.taxon_set.require_taxon(label="Morelia boeleni", oid="Taxon4313742672")
+    tax_4313742736 = tree_list.taxon_set.require_taxon(label="Morelia bredli", oid="Taxon4313742736")
+    tax_4313742800 = tree_list.taxon_set.require_taxon(label="Morelia carinata", oid="Taxon4313742800")
+    tax_4313742928 = tree_list.taxon_set.require_taxon(label="Morelia clastolepis", oid="Taxon4313742928")
+    tax_4313743056 = tree_list.taxon_set.require_taxon(label="Morelia kinghorni", oid="Taxon4313743056")
+    tax_4313743120 = tree_list.taxon_set.require_taxon(label="Morelia nauta", oid="Taxon4313743120")
+    tax_4313743248 = tree_list.taxon_set.require_taxon(label="Morelia oenpelliensis", oid="Taxon4313743248")
+    tax_4313743312 = tree_list.taxon_set.require_taxon(label="Morelia spilota", oid="Taxon4313743312")
+    tax_4313759824 = tree_list.taxon_set.require_taxon(label="Morelia tracyae", oid="Taxon4313759824")
+    tax_4313759888 = tree_list.taxon_set.require_taxon(label="Morelia viridisN", oid="Taxon4313759888")
+    tax_4313759952 = tree_list.taxon_set.require_taxon(label="Morelia viridisS", oid="Taxon4313759952")
+    tax_4313760016 = tree_list.taxon_set.require_taxon(label="Python curtus", oid="Taxon4313760016")
+    tax_4313760080 = tree_list.taxon_set.require_taxon(label="Python molurus", oid="Taxon4313760080")
+    tax_4313760144 = tree_list.taxon_set.require_taxon(label="Python regius", oid="Taxon4313760144")
+    tax_4313760272 = tree_list.taxon_set.require_taxon(label="Python reticulatus", oid="Taxon4313760272")
+    tax_4313760336 = tree_list.taxon_set.require_taxon(label="Python sebae", oid="Taxon4313760336")
+    tax_4313760464 = tree_list.taxon_set.require_taxon(label="Python timoriensis", oid="Taxon4313760464")
+    tax_4313760592 = tree_list.taxon_set.require_taxon(label="Xenopeltis unicolor", oid="Taxon4313760592")
+    tree_4313760848 = dendropy.Tree(label="Tree01", taxon_set=tree_list.taxon_set, oid="Tree4313760848")
+    tree_list.append(tree_4313760848, reindex_taxa=False)
+    tree_4313760848.seed_node.oid = 'Node4313761104'
+    nd_4313761232 = tree_4313760848.seed_node.new_child(label="Node4313761232", taxon=None, edge_length=78.6266408419, oid="Node4313761232")
+    nd_4313761232.edge.oid = "Edge4313761296"
+    nd_4313801936 = tree_4313760848.seed_node.new_child(label="Node4313801936", taxon=None, edge_length=229.880308935, oid="Node4313801936")
+    nd_4313801936.edge.oid = "Edge4313802128"
+    nd_4313761360 = nd_4313761232.new_child(label="Node4313761360", taxon=None, edge_length=123.936295332, oid="Node4313761360")
+    nd_4313761360.edge.oid = "Edge4313761424"
+    nd_4313801552 = nd_4313761232.new_child(label="Node4313801552", taxon=None, edge_length=202.422980755, oid="Node4313801552")
+    nd_4313801552.edge.oid = "Edge4313801744"
+    nd_4313761488 = nd_4313761360.new_child(label="Node4313761488", taxon=None, edge_length=53.7887032791, oid="Node4313761488")
+    nd_4313761488.edge.oid = "Edge4313761552"
+    nd_4313779728 = nd_4313761360.new_child(label="Node4313779728", taxon=None, edge_length=69.6091072013, oid="Node4313779728")
+    nd_4313779728.edge.oid = "Edge4313780048"
+    nd_4313761616 = nd_4313761488.new_child(label="Node4313761616", taxon=None, edge_length=4.50960412336, oid="Node4313761616")
+    nd_4313761616.edge.oid = "Edge4313761680"
+    nd_4313779088 = nd_4313761488.new_child(label="Node4313779088", taxon=None, edge_length=24.4333103788, oid="Node4313779088")
+    nd_4313779088.edge.oid = "Edge4313779408"
+    nd_4313761744 = nd_4313761616.new_child(label="Node4313761744", taxon=None, edge_length=1.29166787247, oid="Node4313761744")
+    nd_4313761744.edge.oid = "Edge4313761808"
+    nd_4313778704 = nd_4313761616.new_child(label="Node4313778704", taxon=None, edge_length=13.1562713928, oid="Node4313778704")
+    nd_4313778704.edge.oid = "Edge4313778768"
+    nd_4313761872 = nd_4313761744.new_child(label="Node4313761872", taxon=None, edge_length=0.739270951321, oid="Node4313761872")
+    nd_4313761872.edge.oid = "Edge4313761936"
+    nd_4313777808 = nd_4313761744.new_child(label="Node4313777808", taxon=None, edge_length=16.8726126715, oid="Node4313777808")
+    nd_4313777808.edge.oid = "Edge4313777872"
+    nd_4313762000 = nd_4313761872.new_child(label="Node4313762000", taxon=None, edge_length=4.00932181352, oid="Node4313762000")
+    nd_4313762000.edge.oid = "Edge4313762064"
+    nd_4313777552 = nd_4313761872.new_child(label="Morelia boeleni", taxon=tax_4313742672, edge_length=18.3098649933, oid="Node4313777552")
+    nd_4313777552.edge.oid = "Edge4313777744"
+    nd_4313762128 = nd_4313762000.new_child(label="Node4313762128", taxon=None, edge_length=10.4795105126, oid="Node4313762128")
+    nd_4313762128.edge.oid = "Edge4313762192"
+    nd_4313762704 = nd_4313762000.new_child(label="Node4313762704", taxon=None, edge_length=3.67431549248, oid="Node4313762704")
+    nd_4313762704.edge.oid = "Edge4313762896"
+    nd_4313762256 = nd_4313762128.new_child(label="Antaresia childreni", taxon=tax_4313741136, edge_length=3.82103266723, oid="Node4313762256")
+    nd_4313762256.edge.oid = "Edge4313762320"
+    nd_4313762448 = nd_4313762128.new_child(label="Node4313762448", taxon=None, edge_length=2.72293867732, oid="Node4313762448")
+    nd_4313762448.edge.oid = "Edge4313762512"
+    nd_4313762576 = nd_4313762448.new_child(label="Morelia clastolepis", taxon=tax_4313742928, edge_length=1.09809398991, oid="Node4313762576")
+    nd_4313762576.edge.oid = "Edge4313762640"
+    nd_4313762384 = nd_4313762448.new_child(label="Loxocemus bicolor", taxon=tax_4313742480, edge_length=1.09809398991, oid="Node4313762384")
+    nd_4313762384.edge.oid = "Edge4313762768"
+    nd_4313762960 = nd_4313762704.new_child(label="Node4313762960", taxon=None, edge_length=4.47413907662, oid="Node4313762960")
+    nd_4313762960.edge.oid = "Edge4313763024"
+    nd_4313776720 = nd_4313762704.new_child(label="Node4313776720", taxon=None, edge_length=3.27824986702, oid="Node4313776720")
+    nd_4313776720.edge.oid = "Edge4313776848"
+    nd_4313763088 = nd_4313762960.new_child(label="Node4313763088", taxon=None, edge_length=1.10594701364, oid="Node4313763088")
+    nd_4313763088.edge.oid = "Edge4313763152"
+    nd_4313776208 = nd_4313762960.new_child(label="Node4313776208", taxon=None, edge_length=0.946531890581, oid="Node4313776208")
+    nd_4313776208.edge.oid = "Edge4313776400"
+    nd_4313763216 = nd_4313763088.new_child(label="Node4313763216", taxon=None, edge_length=3.56964311758, oid="Node4313763216")
+    nd_4313763216.edge.oid = "Edge4313763280"
+    nd_4313763600 = nd_4313763088.new_child(label="Node4313763600", taxon=None, edge_length=3.54960462938, oid="Node4313763600")
+    nd_4313763600.edge.oid = "Edge4313763664"
+    nd_4313763344 = nd_4313763216.new_child(label="Antaresia melanocephalus", taxon=tax_4313741456, edge_length=1.47649847948, oid="Node4313763344")
+    nd_4313763344.edge.oid = "Edge4313763408"
+    nd_4313762832 = nd_4313763216.new_child(label="Antaresia perthensis", taxon=tax_4313741584, edge_length=1.47649847948, oid="Node4313762832")
+    nd_4313762832.edge.oid = "Edge4313763536"
+    nd_4313763728 = nd_4313763600.new_child(label="Python timoriensis", taxon=tax_4313760464, edge_length=1.49653696768, oid="Node4313763728")
+    nd_4313763728.edge.oid = "Edge4313763792"
+    nd_4313763472 = nd_4313763600.new_child(label="Liasis albertisii", taxon=tax_4313742160, edge_length=1.49653696768, oid="Node4313763472")
+    nd_4313763472.edge.oid = "Edge4313776272"
+    nd_4313776464 = nd_4313776208.new_child(label="Python sebae", taxon=tax_4313760336, edge_length=5.20555672012, oid="Node4313776464")
+    nd_4313776464.edge.oid = "Edge4313776528"
+    nd_4313776336 = nd_4313776208.new_child(label="Antaresia maculosa", taxon=tax_4313741328, edge_length=5.20555672012, oid="Node4313776336")
+    nd_4313776336.edge.oid = "Edge4313776656"
+    nd_4313776912 = nd_4313776720.new_child(label="Node4313776912", taxon=None, edge_length=2.88197852526, oid="Node4313776912")
+    nd_4313776912.edge.oid = "Edge4313776976"
+    nd_4313777296 = nd_4313776720.new_child(label="Node4313777296", taxon=None, edge_length=6.86415378064, oid="Node4313777296")
+    nd_4313777296.edge.oid = "Edge4313777360"
+    nd_4313777040 = nd_4313776912.new_child(label="Python curtus", taxon=tax_4313760016, edge_length=4.46599929505, oid="Node4313777040")
+    nd_4313777040.edge.oid = "Edge4313777104"
+    nd_4313776784 = nd_4313776912.new_child(label="Bothrochilus boa", taxon=tax_4313741968, edge_length=4.46599929505, oid="Node4313776784")
+    nd_4313776784.edge.oid = "Edge4313777232"
+    nd_4313777424 = nd_4313777296.new_child(label="Xenopeltis unicolor", taxon=tax_4313760592, edge_length=0.483824039664, oid="Node4313777424")
+    nd_4313777424.edge.oid = "Edge4313777488"
+    nd_4313777168 = nd_4313777296.new_child(label="Liasis fuscus", taxon=tax_4313742224, edge_length=0.483824039664, oid="Node4313777168")
+    nd_4313777168.edge.oid = "Edge4313777616"
+    nd_4313777936 = nd_4313777808.new_child(label="Morelia tracyae", taxon=tax_4313759824, edge_length=2.17652327312, oid="Node4313777936")
+    nd_4313777936.edge.oid = "Edge4313778000"
+    nd_4313777680 = nd_4313777808.new_child(label="Node4313777680", taxon=None, edge_length=1.67230791531, oid="Node4313777680")
+    nd_4313777680.edge.oid = "Edge4313778128"
+    nd_4313778192 = nd_4313777680.new_child(label="Node4313778192", taxon=None, edge_length=0.491713738136, oid="Node4313778192")
+    nd_4313778192.edge.oid = "Edge4313778256"
+    nd_4313778576 = nd_4313777680.new_child(label="Morelia bredli", taxon=tax_4313742736, edge_length=0.504215357803, oid="Node4313778576")
+    nd_4313778576.edge.oid = "Edge4313778640"
+    nd_4313778320 = nd_4313778192.new_child(label="Morelia viridisN", taxon=tax_4313759888, edge_length=0.0125016196671, oid="Node4313778320")
+    nd_4313778320.edge.oid = "Edge4313778384"
+    nd_4313778064 = nd_4313778192.new_child(label="Python reticulatus", taxon=tax_4313760272, edge_length=0.0125016196671, oid="Node4313778064")
+    nd_4313778064.edge.oid = "Edge4313778512"
+    nd_4313778832 = nd_4313778704.new_child(label="Node4313778832", taxon=None, edge_length=2.98661848623, oid="Node4313778832")
+    nd_4313778832.edge.oid = "Edge4313778896"
+    nd_4313779216 = nd_4313778704.new_child(label="Morelia kinghorni", taxon=tax_4313743056, edge_length=7.18453242432, oid="Node4313779216")
+    nd_4313779216.edge.oid = "Edge4313779280"
+    nd_4313778960 = nd_4313778832.new_child(label="Liasis mackloti", taxon=tax_4313742288, edge_length=4.19791393809, oid="Node4313778960")
+    nd_4313778960.edge.oid = "Edge4313779024"
+    nd_4313778448 = nd_4313778832.new_child(label="Antaresia ramsayi", taxon=tax_4313741712, edge_length=4.19791393809, oid="Node4313778448")
+    nd_4313778448.edge.oid = "Edge4313779152"
+    nd_4313779472 = nd_4313779088.new_child(label="Node4313779472", taxon=None, edge_length=0.207889736001, oid="Node4313779472")
+    nd_4313779472.edge.oid = "Edge4313779536"
+    nd_4313779856 = nd_4313779088.new_child(label="Antaresia stimsoni", taxon=tax_4313741840, edge_length=0.417097561686, oid="Node4313779856")
+    nd_4313779856.edge.oid = "Edge4313779920"
+    nd_4313779600 = nd_4313779472.new_child(label="Python regius", taxon=tax_4313760144, edge_length=0.209207825685, oid="Node4313779600")
+    nd_4313779600.edge.oid = "Edge4313779664"
+    nd_4313779344 = nd_4313779472.new_child(label="Candola aspera", taxon=tax_4313742032, edge_length=0.209207825685, oid="Node4313779344")
+    nd_4313779344.edge.oid = "Edge4313779792"
+    nd_4313780112 = nd_4313779728.new_child(label="Node4313780112", taxon=None, edge_length=1.24643505521, oid="Node4313780112")
+    nd_4313780112.edge.oid = "Edge4313780176"
+    nd_4313801424 = nd_4313779728.new_child(label="Morelia nauta", taxon=tax_4313743120, edge_length=9.03000401821, oid="Node4313801424")
+    nd_4313801424.edge.oid = "Edge4313801616"
+    nd_4313800784 = nd_4313780112.new_child(label="Node4313800784", taxon=None, edge_length=2.6364754365, oid="Node4313800784")
+    nd_4313800784.edge.oid = "Edge4313800848"
+    nd_4313801168 = nd_4313780112.new_child(label="Node4313801168", taxon=None, edge_length=7.12573328141, oid="Node4313801168")
+    nd_4313801168.edge.oid = "Edge4313801232"
+    nd_4313800912 = nd_4313800784.new_child(label="Python molurus", taxon=tax_4313760080, edge_length=5.1470935265, oid="Node4313800912")
+    nd_4313800912.edge.oid = "Edge4313800976"
+    nd_4313779984 = nd_4313800784.new_child(label="Morelia amethistina", taxon=tax_4313742608, edge_length=5.1470935265, oid="Node4313779984")
+    nd_4313779984.edge.oid = "Edge4313801040"
+    nd_4313801296 = nd_4313801168.new_child(label="Morelia viridisS", taxon=tax_4313759952, edge_length=0.657835681585, oid="Node4313801296")
+    nd_4313801296.edge.oid = "Edge4313801360"
+    nd_4313801104 = nd_4313801168.new_child(label="Liasis olivaceus", taxon=tax_4313742352, edge_length=0.657835681585, oid="Node4313801104")
+    nd_4313801104.edge.oid = "Edge4313801488"
+    nd_4313801808 = nd_4313801552.new_child(label="Apodora papuana", taxon=tax_4313741904, edge_length=0.152425796315, oid="Node4313801808")
+    nd_4313801808.edge.oid = "Edge4313801872"
+    nd_4313801680 = nd_4313801552.new_child(label="Morelia carinata", taxon=tax_4313742800, edge_length=0.152425796315, oid="Node4313801680")
+    nd_4313801680.edge.oid = "Edge4313802000"
+    nd_4313802192 = nd_4313801936.new_child(label="Morelia spilota", taxon=tax_4313743312, edge_length=51.3217384582, oid="Node4313802192")
+    nd_4313802192.edge.oid = "Edge4313802256"
+    nd_4313802064 = nd_4313801936.new_child(label="Morelia oenpelliensis", taxon=tax_4313743248, edge_length=51.3217384582, oid="Node4313802064")
+    nd_4313802064.edge.oid = "Edge4313802384"
+    tree_4313802320 = dendropy.Tree(label="Tree02", taxon_set=tree_list.taxon_set, oid="Tree4313802320")
+    tree_list.append(tree_4313802320, reindex_taxa=False)
+    tree_4313802320.seed_node.oid = 'Node4313802576'
+    nd_4313802704 = tree_4313802320.seed_node.new_child(label="Node4313802704", taxon=None, edge_length=18.8917197007, oid="Node4313802704")
+    nd_4313802704.edge.oid = "Edge4313802768"
+    nd_4316157840 = tree_4313802320.seed_node.new_child(label="Loxocemus bicolor", taxon=tax_4313742480, edge_length=100.189141925, oid="Node4316157840")
+    nd_4316157840.edge.oid = "Edge4316158096"
+    nd_4313802832 = nd_4313802704.new_child(label="Candola aspera", taxon=tax_4313742032, edge_length=81.2974222246, oid="Node4313802832")
+    nd_4313802832.edge.oid = "Edge4313802896"
+    nd_4313803024 = nd_4313802704.new_child(label="Node4313803024", taxon=None, edge_length=33.1565984398, oid="Node4313803024")
+    nd_4313803024.edge.oid = "Edge4313803088"
+    nd_4313803152 = nd_4313803024.new_child(label="Node4313803152", taxon=None, edge_length=6.57324583185, oid="Node4313803152")
+    nd_4313803152.edge.oid = "Edge4313803216"
+    nd_4316156752 = nd_4313803024.new_child(label="Node4316156752", taxon=None, edge_length=16.2594519516, oid="Node4316156752")
+    nd_4316156752.edge.oid = "Edge4316156816"
+    nd_4313803280 = nd_4313803152.new_child(label="Node4313803280", taxon=None, edge_length=0.76583222117, oid="Node4313803280")
+    nd_4313803280.edge.oid = "Edge4313803344"
+    nd_4313829328 = nd_4313803152.new_child(label="Node4313829328", taxon=None, edge_length=2.53377266123, oid="Node4313829328")
+    nd_4313829328.edge.oid = "Edge4313829072"
+    nd_4313803408 = nd_4313803280.new_child(label="Node4313803408", taxon=None, edge_length=4.5936111676, oid="Node4313803408")
+    nd_4313803408.edge.oid = "Edge4313803472"
+    nd_4313826384 = nd_4313803280.new_child(label="Node4313826384", taxon=None, edge_length=1.27553605821, oid="Node4313826384")
+    nd_4313826384.edge.oid = "Edge4313826704"
+    nd_4313803536 = nd_4313803408.new_child(label="Node4313803536", taxon=None, edge_length=15.1180336863, oid="Node4313803536")
+    nd_4313803536.edge.oid = "Edge4313803600"
+    nd_4313804432 = nd_4313803408.new_child(label="Node4313804432", taxon=None, edge_length=3.40951166184, oid="Node4313804432")
+    nd_4313804432.edge.oid = "Edge4313804496"
+    nd_4313803664 = nd_4313803536.new_child(label="Morelia amethistina", taxon=tax_4313742608, edge_length=21.0901008779, oid="Node4313803664")
+    nd_4313803664.edge.oid = "Edge4313803728"
+    nd_4313802960 = nd_4313803536.new_child(label="Node4313802960", taxon=None, edge_length=3.38653541663, oid="Node4313802960")
+    nd_4313802960.edge.oid = "Edge4313803856"
+    nd_4313803920 = nd_4313802960.new_child(label="Morelia spilota", taxon=tax_4313743312, edge_length=17.7035654613, oid="Node4313803920")
+    nd_4313803920.edge.oid = "Edge4313803984"
+    nd_4313803792 = nd_4313802960.new_child(label="Node4313803792", taxon=None, edge_length=2.6244717729, oid="Node4313803792")
+    nd_4313803792.edge.oid = "Edge4313804048"
+    nd_4313804112 = nd_4313803792.new_child(label="Morelia oenpelliensis", taxon=tax_4313743248, edge_length=15.0790936884, oid="Node4313804112")
+    nd_4313804112.edge.oid = "Edge4313804176"
+    nd_4313804304 = nd_4313803792.new_child(label="Morelia bredli", taxon=tax_4313742736, edge_length=15.0790936884, oid="Node4313804304")
+    nd_4313804304.edge.oid = "Edge4313804368"
+    nd_4313804560 = nd_4313804432.new_child(label="Node4313804560", taxon=None, edge_length=5.00375936144, oid="Node4313804560")
+    nd_4313804560.edge.oid = "Edge4313804624"
+    nd_4313825616 = nd_4313804432.new_child(label="Node4313825616", taxon=None, edge_length=5.81119736053, oid="Node4313825616")
+    nd_4313825616.edge.oid = "Edge4313825808"
+    nd_4313804688 = nd_4313804560.new_child(label="Morelia carinata", taxon=tax_4313742800, edge_length=27.7948635409, oid="Node4313804688")
+    nd_4313804688.edge.oid = "Edge4313804752"
+    nd_4313804240 = nd_4313804560.new_child(label="Node4313804240", taxon=None, edge_length=8.32618746237, oid="Node4313804240")
+    nd_4313804240.edge.oid = "Edge4313825424"
+    nd_4313825488 = nd_4313804240.new_child(label="Morelia viridisS", taxon=tax_4313759952, edge_length=19.4686760786, oid="Node4313825488")
+    nd_4313825488.edge.oid = "Edge4313825552"
+    nd_4313825360 = nd_4313804240.new_child(label="Morelia viridisN", taxon=tax_4313759888, edge_length=19.4686760786, oid="Node4313825360")
+    nd_4313825360.edge.oid = "Edge4313825680"
+    nd_4313825872 = nd_4313825616.new_child(label="Antaresia maculosa", taxon=tax_4313741328, edge_length=26.9874255418, oid="Node4313825872")
+    nd_4313825872.edge.oid = "Edge4313825936"
+    nd_4313825744 = nd_4313825616.new_child(label="Node4313825744", taxon=None, edge_length=2.25683638168, oid="Node4313825744")
+    nd_4313825744.edge.oid = "Edge4313826064"
+    nd_4313826128 = nd_4313825744.new_child(label="Node4313826128", taxon=None, edge_length=16.6530983052, oid="Node4313826128")
+    nd_4313826128.edge.oid = "Edge4313826192"
+    nd_4313826512 = nd_4313825744.new_child(label="Antaresia perthensis", taxon=tax_4313741584, edge_length=24.7305891602, oid="Node4313826512")
+    nd_4313826512.edge.oid = "Edge4313826576"
+    nd_4313826256 = nd_4313826128.new_child(label="Antaresia childreni", taxon=tax_4313741136, edge_length=8.07749085501, oid="Node4313826256")
+    nd_4313826256.edge.oid = "Edge4313826320"
+    nd_4313826000 = nd_4313826128.new_child(label="Antaresia stimsoni", taxon=tax_4313741840, edge_length=8.07749085501, oid="Node4313826000")
+    nd_4313826000.edge.oid = "Edge4313826448"
+    nd_4313826768 = nd_4313826384.new_child(label="Node4313826768", taxon=None, edge_length=4.33214615343, oid="Node4313826768")
+    nd_4313826768.edge.oid = "Edge4313826832"
+    nd_4313828048 = nd_4313826384.new_child(label="Node4313828048", taxon=None, edge_length=10.9652932592, oid="Node4313828048")
+    nd_4313828048.edge.oid = "Edge4313828240"
+    nd_4313826896 = nd_4313826768.new_child(label="Node4313826896", taxon=None, edge_length=3.37363071467, oid="Node4313826896")
+    nd_4313826896.edge.oid = "Edge4313826960"
+    nd_4313827664 = nd_4313826768.new_child(label="Node4313827664", taxon=None, edge_length=16.3762764593, oid="Node4313827664")
+    nd_4313827664.edge.oid = "Edge4313827856"
+    nd_4313827024 = nd_4313826896.new_child(label="Node4313827024", taxon=None, edge_length=26.1365403684, oid="Node4313827024")
+    nd_4313827024.edge.oid = "Edge4313827088"
+    nd_4313827408 = nd_4313826896.new_child(label="Node4313827408", taxon=None, edge_length=12.1064068345, oid="Node4313827408")
+    nd_4313827408.edge.oid = "Edge4313827472"
+    nd_4313827152 = nd_4313827024.new_child(label="Liasis fuscus", taxon=tax_4313742224, edge_length=5.68389243709, oid="Node4313827152")
+    nd_4313827152.edge.oid = "Edge4313827216"
+    nd_4313826640 = nd_4313827024.new_child(label="Liasis mackloti", taxon=tax_4313742288, edge_length=5.68389243709, oid="Node4313826640")
+    nd_4313826640.edge.oid = "Edge4313827344"
+    nd_4313827536 = nd_4313827408.new_child(label="Apodora papuana", taxon=tax_4313741904, edge_length=19.714025971, oid="Node4313827536")
+    nd_4313827536.edge.oid = "Edge4313827600"
+    nd_4313827280 = nd_4313827408.new_child(label="Liasis olivaceus", taxon=tax_4313742352, edge_length=19.714025971, oid="Node4313827280")
+    nd_4313827280.edge.oid = "Edge4313827728"
+    nd_4313827920 = nd_4313827664.new_child(label="Antaresia melanocephalus", taxon=tax_4313741456, edge_length=18.8177870609, oid="Node4313827920")
+    nd_4313827920.edge.oid = "Edge4313827984"
+    nd_4313827792 = nd_4313827664.new_child(label="Antaresia ramsayi", taxon=tax_4313741712, edge_length=18.8177870609, oid="Node4313827792")
+    nd_4313827792.edge.oid = "Edge4313828112"
+    nd_4313828304 = nd_4313828048.new_child(label="Morelia boeleni", taxon=tax_4313742672, edge_length=28.5609164144, oid="Node4313828304")
+    nd_4313828304.edge.oid = "Edge4313828368"
+    nd_4313828176 = nd_4313828048.new_child(label="Node4313828176", taxon=None, edge_length=11.3916491298, oid="Node4313828176")
+    nd_4313828176.edge.oid = "Edge4313828496"
+    nd_4313828560 = nd_4313828176.new_child(label="Morelia tracyae", taxon=tax_4313759824, edge_length=17.1692672846, oid="Node4313828560")
+    nd_4313828560.edge.oid = "Edge4313828624"
+    nd_4313828432 = nd_4313828176.new_child(label="Node4313828432", taxon=None, edge_length=10.4784522084, oid="Node4313828432")
+    nd_4313828432.edge.oid = "Edge4313828752"
+    nd_4313828816 = nd_4313828432.new_child(label="Node4313828816", taxon=None, edge_length=1.44575855569, oid="Node4313828816")
+    nd_4313828816.edge.oid = "Edge4313828880"
+    nd_4313829200 = nd_4313828432.new_child(label="Morelia clastolepis", taxon=tax_4313742928, edge_length=6.69081507619, oid="Node4313829200")
+    nd_4313829200.edge.oid = "Edge4313829264"
+    nd_4313828944 = nd_4313828816.new_child(label="Morelia kinghorni", taxon=tax_4313743056, edge_length=5.2450565205, oid="Node4313828944")
+    nd_4313828944.edge.oid = "Edge4313829008"
+    nd_4313828688 = nd_4313828816.new_child(label="Morelia nauta", taxon=tax_4313743120, edge_length=5.2450565205, oid="Node4313828688")
+    nd_4313828688.edge.oid = "Edge4313829136"
+    nd_4316155984 = nd_4313829328.new_child(label="Node4316155984", taxon=None, edge_length=23.8923728386, oid="Node4316155984")
+    nd_4316155984.edge.oid = "Edge4316156048"
+    nd_4313802512 = nd_4313829328.new_child(label="Node4313802512", taxon=None, edge_length=22.5856079922, oid="Node4313802512")
+    nd_4313802512.edge.oid = "Edge4316156304"
+    nd_4316156112 = nd_4316155984.new_child(label="Python timoriensis", taxon=tax_4313760464, edge_length=15.1414324532, oid="Node4316156112")
+    nd_4316156112.edge.oid = "Edge4316156176"
+    nd_4316156368 = nd_4316155984.new_child(label="Python reticulatus", taxon=tax_4313760272, edge_length=15.1414324532, oid="Node4316156368")
+    nd_4316156368.edge.oid = "Edge4316156432"
+    nd_4316156496 = nd_4313802512.new_child(label="Bothrochilus boa", taxon=tax_4313741968, edge_length=16.4481972995, oid="Node4316156496")
+    nd_4316156496.edge.oid = "Edge4316156560"
+    nd_4313802448 = nd_4313802512.new_child(label="Liasis albertisii", taxon=tax_4313742160, edge_length=16.4481972995, oid="Node4313802448")
+    nd_4313802448.edge.oid = "Edge4316156688"
+    nd_4316156880 = nd_4316156752.new_child(label="Xenopeltis unicolor", taxon=tax_4313760592, edge_length=31.8813718333, oid="Node4316156880")
+    nd_4316156880.edge.oid = "Edge4316156944"
+    nd_4316156624 = nd_4316156752.new_child(label="Node4316156624", taxon=None, edge_length=5.97313984611, oid="Node4316156624")
+    nd_4316156624.edge.oid = "Edge4316157072"
+    nd_4316157136 = nd_4316156624.new_child(label="Node4316157136", taxon=None, edge_length=8.94343133576, oid="Node4316157136")
+    nd_4316157136.edge.oid = "Edge4316157200"
+    nd_4316157904 = nd_4316156624.new_child(label="Python regius", taxon=tax_4313760144, edge_length=25.9082319872, oid="Node4316157904")
+    nd_4316157904.edge.oid = "Edge4316157968"
+    nd_4316157264 = nd_4316157136.new_child(label="Python curtus", taxon=tax_4313760016, edge_length=16.9648006514, oid="Node4316157264")
+    nd_4316157264.edge.oid = "Edge4316157328"
+    nd_4316157008 = nd_4316157136.new_child(label="Node4316157008", taxon=None, edge_length=4.66373979181, oid="Node4316157008")
+    nd_4316157008.edge.oid = "Edge4316157520"
+    nd_4316157584 = nd_4316157008.new_child(label="Python sebae", taxon=tax_4313760336, edge_length=12.3010608596, oid="Node4316157584")
+    nd_4316157584.edge.oid = "Edge4316157648"
+    nd_4316157456 = nd_4316157008.new_child(label="Python molurus", taxon=tax_4313760080, edge_length=12.3010608596, oid="Node4316157456")
+    nd_4316157456.edge.oid = "Edge4316157776"
+    tree_4316158160 = dendropy.Tree(label="Tree03", taxon_set=tree_list.taxon_set, oid="Tree4316158160")
+    tree_list.append(tree_4316158160, reindex_taxa=False)
+    tree_4316158160.seed_node.oid = 'Node4316158288'
+    nd_4316158416 = tree_4316158160.seed_node.new_child(label="Candola aspera", taxon=tax_4313742032, edge_length=109.372663833, oid="Node4316158416")
+    nd_4316158416.edge.oid = "Edge4316158480"
+    nd_4316158608 = tree_4316158160.seed_node.new_child(label="Node4316158608", taxon=None, edge_length=23.0231215792, oid="Node4316158608")
+    nd_4316158608.edge.oid = "Edge4316158672"
+    nd_4316158736 = nd_4316158608.new_child(label="Node4316158736", taxon=None, edge_length=25.5450384687, oid="Node4316158736")
+    nd_4316158736.edge.oid = "Edge4316158800"
+    nd_4316203024 = nd_4316158608.new_child(label="Node4316203024", taxon=None, edge_length=3.40243621372, oid="Node4316203024")
+    nd_4316203024.edge.oid = "Edge4316203216"
+    nd_4316158864 = nd_4316158736.new_child(label="Node4316158864", taxon=None, edge_length=8.2214192007, oid="Node4316158864")
+    nd_4316158864.edge.oid = "Edge4316158928"
+    nd_4316202128 = nd_4316158736.new_child(label="Node4316202128", taxon=None, edge_length=17.448321597, oid="Node4316202128")
+    nd_4316202128.edge.oid = "Edge4316202320"
+    nd_4316158992 = nd_4316158864.new_child(label="Node4316158992", taxon=None, edge_length=6.47536868825, oid="Node4316158992")
+    nd_4316158992.edge.oid = "Edge4316159056"
+    nd_4316201552 = nd_4316158864.new_child(label="Node4316201552", taxon=None, edge_length=22.2791730332, oid="Node4316201552")
+    nd_4316201552.edge.oid = "Edge4316201936"
+    nd_4316159120 = nd_4316158992.new_child(label="Node4316159120", taxon=None, edge_length=2.53965409687, oid="Node4316159120")
+    nd_4316159120.edge.oid = "Edge4316159184"
+    nd_4316179792 = nd_4316158992.new_child(label="Node4316179792", taxon=None, edge_length=7.82653683343, oid="Node4316179792")
+    nd_4316179792.edge.oid = "Edge4316179856"
+    nd_4316159248 = nd_4316159120.new_child(label="Node4316159248", taxon=None, edge_length=2.41802497137, oid="Node4316159248")
+    nd_4316159248.edge.oid = "Edge4316159312"
+    nd_4316178128 = nd_4316159120.new_child(label="Node4316178128", taxon=None, edge_length=5.90175129715, oid="Node4316178128")
+    nd_4316178128.edge.oid = "Edge4316178448"
+    nd_4316159376 = nd_4316159248.new_child(label="Node4316159376", taxon=None, edge_length=6.39175712039, oid="Node4316159376")
+    nd_4316159376.edge.oid = "Edge4316159440"
+    nd_4316177104 = nd_4316159248.new_child(label="Node4316177104", taxon=None, edge_length=9.11329596086, oid="Node4316177104")
+    nd_4316177104.edge.oid = "Edge4316177296"
+    nd_4316159504 = nd_4316159376.new_child(label="Node4316159504", taxon=None, edge_length=4.82772953939, oid="Node4316159504")
+    nd_4316159504.edge.oid = "Edge4316159568"
+    nd_4316176720 = nd_4316159376.new_child(label="Node4316176720", taxon=None, edge_length=17.7955396972, oid="Node4316176720")
+    nd_4316176720.edge.oid = "Edge4316176912"
+    nd_4316159632 = nd_4316159504.new_child(label="Node4316159632", taxon=None, edge_length=18.9362130146, oid="Node4316159632")
+    nd_4316159632.edge.oid = "Edge4316159696"
+    nd_4316176464 = nd_4316159504.new_child(label="Node4316176464", taxon=None, edge_length=8.55401069191, oid="Node4316176464")
+    nd_4316176464.edge.oid = "Edge4316176528"
+    nd_4316159760 = nd_4316159632.new_child(label="Liasis fuscus", taxon=tax_4313742224, edge_length=10.9943371535, oid="Node4316159760")
+    nd_4316159760.edge.oid = "Edge4316159824"
+    nd_4316158544 = nd_4316159632.new_child(label="Liasis mackloti", taxon=tax_4313742288, edge_length=10.9943371535, oid="Node4316158544")
+    nd_4316158544.edge.oid = "Edge4316159952"
+    nd_4316176592 = nd_4316176464.new_child(label="Apodora papuana", taxon=tax_4313741904, edge_length=21.3765394762, oid="Node4316176592")
+    nd_4316176592.edge.oid = "Edge4316176656"
+    nd_4316159888 = nd_4316176464.new_child(label="Liasis olivaceus", taxon=tax_4313742352, edge_length=21.3765394762, oid="Node4316159888")
+    nd_4316159888.edge.oid = "Edge4316176784"
+    nd_4316176976 = nd_4316176720.new_child(label="Antaresia melanocephalus", taxon=tax_4313741456, edge_length=16.9627400103, oid="Node4316176976")
+    nd_4316176976.edge.oid = "Edge4316177040"
+    nd_4316176848 = nd_4316176720.new_child(label="Antaresia ramsayi", taxon=tax_4313741712, edge_length=16.9627400103, oid="Node4316176848")
+    nd_4316176848.edge.oid = "Edge4316177168"
+    nd_4316177360 = nd_4316177104.new_child(label="Morelia boeleni", taxon=tax_4313742672, edge_length=32.036740867, oid="Node4316177360")
+    nd_4316177360.edge.oid = "Edge4316177424"
+    nd_4316177232 = nd_4316177104.new_child(label="Node4316177232", taxon=None, edge_length=14.7791918926, oid="Node4316177232")
+    nd_4316177232.edge.oid = "Edge4316177552"
+    nd_4316177616 = nd_4316177232.new_child(label="Morelia tracyae", taxon=tax_4313759824, edge_length=17.2575489744, oid="Node4316177616")
+    nd_4316177616.edge.oid = "Edge4316177680"
+    nd_4316177488 = nd_4316177232.new_child(label="Node4316177488", taxon=None, edge_length=13.3651095585, oid="Node4316177488")
+    nd_4316177488.edge.oid = "Edge4316177808"
+    nd_4316177872 = nd_4316177488.new_child(label="Node4316177872", taxon=None, edge_length=0.439451186875, oid="Node4316177872")
+    nd_4316177872.edge.oid = "Edge4316177936"
+    nd_4316178256 = nd_4316177488.new_child(label="Morelia clastolepis", taxon=tax_4313742928, edge_length=3.89243941597, oid="Node4316178256")
+    nd_4316178256.edge.oid = "Edge4316178320"
+    nd_4316178000 = nd_4316177872.new_child(label="Morelia kinghorni", taxon=tax_4313743056, edge_length=3.4529882291, oid="Node4316178000")
+    nd_4316178000.edge.oid = "Edge4316178064"
+    nd_4316177744 = nd_4316177872.new_child(label="Morelia nauta", taxon=tax_4313743120, edge_length=3.4529882291, oid="Node4316177744")
+    nd_4316177744.edge.oid = "Edge4316178192"
+    nd_4316178512 = nd_4316178128.new_child(label="Node4316178512", taxon=None, edge_length=11.5242004723, oid="Node4316178512")
+    nd_4316178512.edge.oid = "Edge4316178576"
+    nd_4316179280 = nd_4316178128.new_child(label="Node4316179280", taxon=None, edge_length=13.3915851761, oid="Node4316179280")
+    nd_4316179280.edge.oid = "Edge4316179472"
+    nd_4316178640 = nd_4316178512.new_child(label="Node4316178640", taxon=None, edge_length=1.13984981318, oid="Node4316178640")
+    nd_4316178640.edge.oid = "Edge4316178704"
+    nd_4316179024 = nd_4316178512.new_child(label="Node4316179024", taxon=None, edge_length=13.1543046788, oid="Node4316179024")
+    nd_4316179024.edge.oid = "Edge4316179088"
+    nd_4316178768 = nd_4316178640.new_child(label="Morelia oenpelliensis", taxon=tax_4313743248, edge_length=25.0022602166, oid="Node4316178768")
+    nd_4316178768.edge.oid = "Edge4316178832"
+    nd_4316178384 = nd_4316178640.new_child(label="Morelia amethistina", taxon=tax_4313742608, edge_length=25.0022602166, oid="Node4316178384")
+    nd_4316178384.edge.oid = "Edge4316178960"
+    nd_4316179152 = nd_4316179024.new_child(label="Morelia spilota", taxon=tax_4313743312, edge_length=12.987805351, oid="Node4316179152")
+    nd_4316179152.edge.oid = "Edge4316179216"
+    nd_4316178896 = nd_4316179024.new_child(label="Morelia bredli", taxon=tax_4313742736, edge_length=12.987805351, oid="Node4316178896")
+    nd_4316178896.edge.oid = "Edge4316179344"
+    nd_4316179536 = nd_4316179280.new_child(label="Bothrochilus boa", taxon=tax_4313741968, edge_length=24.274725326, oid="Node4316179536")
+    nd_4316179536.edge.oid = "Edge4316179600"
+    nd_4316179408 = nd_4316179280.new_child(label="Liasis albertisii", taxon=tax_4313742160, edge_length=24.274725326, oid="Node4316179408")
+    nd_4316179408.edge.oid = "Edge4316179728"
+    nd_4316179920 = nd_4316179792.new_child(label="Node4316179920", taxon=None, edge_length=7.8146690322, oid="Node4316179920")
+    nd_4316179920.edge.oid = "Edge4316179984"
+    nd_4316180432 = nd_4316179792.new_child(label="Node4316180432", taxon=None, edge_length=5.10842077756, oid="Node4316180432")
+    nd_4316180432.edge.oid = "Edge4316158032"
+    nd_4316180048 = nd_4316179920.new_child(label="Morelia carinata", taxon=tax_4313742800, edge_length=30.4665100305, oid="Node4316180048")
+    nd_4316180048.edge.oid = "Edge4316180112"
+    nd_4316179664 = nd_4316179920.new_child(label="Node4316179664", taxon=None, edge_length=11.0043198537, oid="Node4316179664")
+    nd_4316179664.edge.oid = "Edge4316180240"
+    nd_4316180304 = nd_4316179664.new_child(label="Morelia viridisS", taxon=tax_4313759952, edge_length=19.4621901768, oid="Node4316180304")
+    nd_4316180304.edge.oid = "Edge4316180368"
+    nd_4316180176 = nd_4316179664.new_child(label="Morelia viridisN", taxon=tax_4313759888, edge_length=19.4621901768, oid="Node4316180176")
+    nd_4316180176.edge.oid = "Edge4316201040"
+    nd_4316201104 = nd_4316180432.new_child(label="Antaresia maculosa", taxon=tax_4313741328, edge_length=33.1727582851, oid="Node4316201104")
+    nd_4316201104.edge.oid = "Edge4316201168"
+    nd_4316158224 = nd_4316180432.new_child(label="Node4316158224", taxon=None, edge_length=4.7141022378, oid="Node4316158224")
+    nd_4316158224.edge.oid = "Edge4316201232"
+    nd_4316201296 = nd_4316158224.new_child(label="Node4316201296", taxon=None, edge_length=19.4308450954, oid="Node4316201296")
+    nd_4316201296.edge.oid = "Edge4316201360"
+    nd_4316201744 = nd_4316158224.new_child(label="Antaresia perthensis", taxon=tax_4313741584, edge_length=28.4586560473, oid="Node4316201744")
+    nd_4316201744.edge.oid = "Edge4316201808"
+    nd_4316201424 = nd_4316201296.new_child(label="Antaresia childreni", taxon=tax_4313741136, edge_length=9.02781095195, oid="Node4316201424")
+    nd_4316201424.edge.oid = "Edge4316201488"
+    nd_4316201616 = nd_4316201296.new_child(label="Antaresia stimsoni", taxon=tax_4313741840, edge_length=9.02781095195, oid="Node4316201616")
+    nd_4316201616.edge.oid = "Edge4316201680"
+    nd_4316202000 = nd_4316201552.new_child(label="Python timoriensis", taxon=tax_4313760464, edge_length=30.3039115511, oid="Node4316202000")
+    nd_4316202000.edge.oid = "Edge4316202064"
+    nd_4316201872 = nd_4316201552.new_child(label="Python reticulatus", taxon=tax_4313760272, edge_length=30.3039115511, oid="Node4316201872")
+    nd_4316201872.edge.oid = "Edge4316202192"
+    nd_4316202384 = nd_4316202128.new_child(label="Node4316202384", taxon=None, edge_length=6.14068810478, oid="Node4316202384")
+    nd_4316202384.edge.oid = "Edge4316202448"
+    nd_4316202896 = nd_4316202128.new_child(label="Python regius", taxon=tax_4313760144, edge_length=43.356182188, oid="Node4316202896")
+    nd_4316202896.edge.oid = "Edge4316203088"
+    nd_4316202512 = nd_4316202384.new_child(label="Python curtus", taxon=tax_4313760016, edge_length=37.2154940833, oid="Node4316202512")
+    nd_4316202512.edge.oid = "Edge4316202576"
+    nd_4316202256 = nd_4316202384.new_child(label="Node4316202256", taxon=None, edge_length=15.2807163378, oid="Node4316202256")
+    nd_4316202256.edge.oid = "Edge4316202704"
+    nd_4316202768 = nd_4316202256.new_child(label="Python sebae", taxon=tax_4313760336, edge_length=21.9347777454, oid="Node4316202768")
+    nd_4316202768.edge.oid = "Edge4316202832"
+    nd_4316202640 = nd_4316202256.new_child(label="Python molurus", taxon=tax_4313760080, edge_length=21.9347777454, oid="Node4316202640")
+    nd_4316202640.edge.oid = "Edge4316202960"
+    nd_4316203280 = nd_4316203024.new_child(label="Loxocemus bicolor", taxon=tax_4313742480, edge_length=82.94710604, oid="Node4316203280")
+    nd_4316203280.edge.oid = "Edge4316203344"
+    nd_4316203152 = nd_4316203024.new_child(label="Xenopeltis unicolor", taxon=tax_4313760592, edge_length=82.94710604, oid="Node4316203152")
+    nd_4316203152.edge.oid = "Edge4316203472"
+    tree_4316203536 = dendropy.Tree(label="Tree04", taxon_set=tree_list.taxon_set, oid="Tree4316203536")
+    tree_list.append(tree_4316203536, reindex_taxa=False)
+    tree_4316203536.seed_node.oid = 'Node4316203664'
+    nd_4316203792 = tree_4316203536.seed_node.new_child(label="Candola aspera", taxon=tax_4313742032, edge_length=157.750076773, oid="Node4316203792")
+    nd_4316203792.edge.oid = "Edge4316203856"
+    nd_4316203984 = tree_4316203536.seed_node.new_child(label="Node4316203984", taxon=None, edge_length=44.9789688242, oid="Node4316203984")
+    nd_4316203984.edge.oid = "Edge4316204048"
+    nd_4316204112 = nd_4316203984.new_child(label="Node4316204112", taxon=None, edge_length=19.5811677101, oid="Node4316204112")
+    nd_4316204112.edge.oid = "Edge4316204176"
+    nd_4316252880 = nd_4316203984.new_child(label="Xenopeltis unicolor", taxon=tax_4313760592, edge_length=112.771107949, oid="Node4316252880")
+    nd_4316252880.edge.oid = "Edge4316252944"
+    nd_4316204240 = nd_4316204112.new_child(label="Loxocemus bicolor", taxon=tax_4313742480, edge_length=93.189940239, oid="Node4316204240")
+    nd_4316204240.edge.oid = "Edge4316204304"
+    nd_4316203920 = nd_4316204112.new_child(label="Node4316203920", taxon=None, edge_length=27.291533515, oid="Node4316203920")
+    nd_4316203920.edge.oid = "Edge4316204432"
+    nd_4316204496 = nd_4316203920.new_child(label="Node4316204496", taxon=None, edge_length=10.3875398007, oid="Node4316204496")
+    nd_4316204496.edge.oid = "Edge4316204560"
+    nd_4316251856 = nd_4316203920.new_child(label="Node4316251856", taxon=None, edge_length=19.8895314814, oid="Node4316251856")
+    nd_4316251856.edge.oid = "Edge4316252048"
+    nd_4316204624 = nd_4316204496.new_child(label="Node4316204624", taxon=None, edge_length=9.74044751021, oid="Node4316204624")
+    nd_4316204624.edge.oid = "Edge4316204688"
+    nd_4316251600 = nd_4316204496.new_child(label="Node4316251600", taxon=None, edge_length=22.1202819118, oid="Node4316251600")
+    nd_4316251600.edge.oid = "Edge4316251664"
+    nd_4316204752 = nd_4316204624.new_child(label="Node4316204752", taxon=None, edge_length=2.88538115771, oid="Node4316204752")
+    nd_4316204752.edge.oid = "Edge4316204816"
+    nd_4316227472 = nd_4316204624.new_child(label="Node4316227472", taxon=None, edge_length=2.72676824396, oid="Node4316227472")
+    nd_4316227472.edge.oid = "Edge4316227536"
+    nd_4316204880 = nd_4316204752.new_child(label="Node4316204880", taxon=None, edge_length=1.34047834167, oid="Node4316204880")
+    nd_4316204880.edge.oid = "Edge4316204944"
+    nd_4316227216 = nd_4316204752.new_child(label="Morelia boeleni", taxon=tax_4313742672, edge_length=42.8850382554, oid="Node4316227216")
+    nd_4316227216.edge.oid = "Edge4316227408"
+    nd_4316205008 = nd_4316204880.new_child(label="Node4316205008", taxon=None, edge_length=2.31767871982, oid="Node4316205008")
+    nd_4316205008.edge.oid = "Edge4316225616"
+    nd_4316226768 = nd_4316204880.new_child(label="Node4316226768", taxon=None, edge_length=18.2547475502, oid="Node4316226768")
+    nd_4316226768.edge.oid = "Edge4316227024"
+    nd_4316225680 = nd_4316205008.new_child(label="Node4316225680", taxon=None, edge_length=6.3930928479, oid="Node4316225680")
+    nd_4316225680.edge.oid = "Edge4316225744"
+    nd_4316226448 = nd_4316205008.new_child(label="Node4316226448", taxon=None, edge_length=23.2404397828, oid="Node4316226448")
+    nd_4316226448.edge.oid = "Edge4316226576"
+    nd_4316225808 = nd_4316225680.new_child(label="Node4316225808", taxon=None, edge_length=24.6792964706, oid="Node4316225808")
+    nd_4316225808.edge.oid = "Edge4316225872"
+    nd_4316226192 = nd_4316225680.new_child(label="Node4316226192", taxon=None, edge_length=8.52936801714, oid="Node4316226192")
+    nd_4316226192.edge.oid = "Edge4316226256"
+    nd_4316225936 = nd_4316225808.new_child(label="Liasis fuscus", taxon=tax_4313742224, edge_length=8.15449187544, oid="Node4316225936")
+    nd_4316225936.edge.oid = "Edge4316226000"
+    nd_4316204368 = nd_4316225808.new_child(label="Liasis mackloti", taxon=tax_4313742288, edge_length=8.15449187544, oid="Node4316204368")
+    nd_4316204368.edge.oid = "Edge4316226064"
+    nd_4316226320 = nd_4316226192.new_child(label="Apodora papuana", taxon=tax_4313741904, edge_length=24.3044203289, oid="Node4316226320")
+    nd_4316226320.edge.oid = "Edge4316226384"
+    nd_4316226128 = nd_4316226192.new_child(label="Liasis olivaceus", taxon=tax_4313742352, edge_length=24.3044203289, oid="Node4316226128")
+    nd_4316226128.edge.oid = "Edge4316226512"
+    nd_4316226640 = nd_4316226448.new_child(label="Antaresia melanocephalus", taxon=tax_4313741456, edge_length=15.9864414111, oid="Node4316226640")
+    nd_4316226640.edge.oid = "Edge4316226704"
+    nd_4316226832 = nd_4316226448.new_child(label="Antaresia ramsayi", taxon=tax_4313741712, edge_length=15.9864414111, oid="Node4316226832")
+    nd_4316226832.edge.oid = "Edge4316226896"
+    nd_4316227088 = nd_4316226768.new_child(label="Bothrochilus boa", taxon=tax_4313741968, edge_length=23.2898123636, oid="Node4316227088")
+    nd_4316227088.edge.oid = "Edge4316227152"
+    nd_4316226960 = nd_4316226768.new_child(label="Liasis albertisii", taxon=tax_4313742160, edge_length=23.2898123636, oid="Node4316226960")
+    nd_4316226960.edge.oid = "Edge4316227280"
+    nd_4316227600 = nd_4316227472.new_child(label="Node4316227600", taxon=None, edge_length=14.2175774566, oid="Node4316227600")
+    nd_4316227600.edge.oid = "Edge4316227664"
+    nd_4316229392 = nd_4316227472.new_child(label="Node4316229392", taxon=None, edge_length=3.9347409374, oid="Node4316229392")
+    nd_4316229392.edge.oid = "Edge4316229456"
+    nd_4316227728 = nd_4316227600.new_child(label="Node4316227728", taxon=None, edge_length=12.5474231006, oid="Node4316227728")
+    nd_4316227728.edge.oid = "Edge4316227792"
+    nd_4316228112 = nd_4316227600.new_child(label="Node4316228112", taxon=None, edge_length=1.26678175478, oid="Node4316228112")
+    nd_4316228112.edge.oid = "Edge4316228176"
+    nd_4316227856 = nd_4316227728.new_child(label="Morelia spilota", taxon=tax_4313743312, edge_length=16.278650612, oid="Node4316227856")
+    nd_4316227856.edge.oid = "Edge4316227920"
+    nd_4316227344 = nd_4316227728.new_child(label="Morelia bredli", taxon=tax_4313742736, edge_length=16.278650612, oid="Node4316227344")
+    nd_4316227344.edge.oid = "Edge4316228048"
+    nd_4316228240 = nd_4316228112.new_child(label="Morelia oenpelliensis", taxon=tax_4313743248, edge_length=27.5592919578, oid="Node4316228240")
+    nd_4316228240.edge.oid = "Edge4316228304"
+    nd_4316227984 = nd_4316228112.new_child(label="Node4316227984", taxon=None, edge_length=13.3039152583, oid="Node4316227984")
+    nd_4316227984.edge.oid = "Edge4316228432"
+    nd_4316228496 = nd_4316227984.new_child(label="Morelia tracyae", taxon=tax_4313759824, edge_length=14.2553766995, oid="Node4316228496")
+    nd_4316228496.edge.oid = "Edge4316228560"
+    nd_4316228368 = nd_4316227984.new_child(label="Node4316228368", taxon=None, edge_length=1.66170791236, oid="Node4316228368")
+    nd_4316228368.edge.oid = "Edge4316228688"
+    nd_4316228752 = nd_4316228368.new_child(label="Node4316228752", taxon=None, edge_length=8.89489387836, oid="Node4316228752")
+    nd_4316228752.edge.oid = "Edge4316228816"
+    nd_4316229264 = nd_4316228368.new_child(label="Morelia amethistina", taxon=tax_4313742608, edge_length=12.5936687872, oid="Node4316229264")
+    nd_4316229264.edge.oid = "Edge4316229328"
+    nd_4316228880 = nd_4316228752.new_child(label="Node4316228880", taxon=None, edge_length=0.230110019205, oid="Node4316228880")
+    nd_4316228880.edge.oid = "Edge4316228944"
+    nd_4316229136 = nd_4316228752.new_child(label="Morelia nauta", taxon=tax_4313743120, edge_length=3.69877490882, oid="Node4316229136")
+    nd_4316229136.edge.oid = "Edge4316229200"
+    nd_4316229008 = nd_4316228880.new_child(label="Morelia clastolepis", taxon=tax_4313742928, edge_length=3.46866488962, oid="Node4316229008")
+    nd_4316229008.edge.oid = "Edge4316229072"
+    nd_4316203408 = nd_4316228880.new_child(label="Morelia kinghorni", taxon=tax_4313743056, edge_length=3.46866488962, oid="Node4316203408")
+    nd_4316203408.edge.oid = "Edge4316228624"
+    nd_4316229520 = nd_4316229392.new_child(label="Node4316229520", taxon=None, edge_length=5.88218975316, oid="Node4316229520")
+    nd_4316229520.edge.oid = "Edge4316229584"
+    nd_4316250576 = nd_4316229392.new_child(label="Node4316250576", taxon=None, edge_length=7.11128547149, oid="Node4316250576")
+    nd_4316250576.edge.oid = "Edge4316250768"
+    nd_4316250192 = nd_4316229520.new_child(label="Morelia carinata", taxon=tax_4313742800, edge_length=33.2267204786, oid="Node4316250192")
+    nd_4316250192.edge.oid = "Edge4316250256"
+    nd_4316203600 = nd_4316229520.new_child(label="Node4316203600", taxon=None, edge_length=13.4306199458, oid="Node4316203600")
+    nd_4316203600.edge.oid = "Edge4316250384"
+    nd_4316250448 = nd_4316203600.new_child(label="Morelia viridisS", taxon=tax_4313759952, edge_length=19.7961005329, oid="Node4316250448")
+    nd_4316250448.edge.oid = "Edge4316250512"
+    nd_4316250320 = nd_4316203600.new_child(label="Morelia viridisN", taxon=tax_4313759888, edge_length=19.7961005329, oid="Node4316250320")
+    nd_4316250320.edge.oid = "Edge4316250640"
+    nd_4316250832 = nd_4316250576.new_child(label="Antaresia maculosa", taxon=tax_4313741328, edge_length=31.9976247603, oid="Node4316250832")
+    nd_4316250832.edge.oid = "Edge4316250896"
+    nd_4316250704 = nd_4316250576.new_child(label="Node4316250704", taxon=None, edge_length=4.71436528425, oid="Node4316250704")
+    nd_4316250704.edge.oid = "Edge4316251024"
+    nd_4316251088 = nd_4316250704.new_child(label="Node4316251088", taxon=None, edge_length=15.9285543528, oid="Node4316251088")
+    nd_4316251088.edge.oid = "Edge4316251152"
+    nd_4316251472 = nd_4316250704.new_child(label="Antaresia perthensis", taxon=tax_4313741584, edge_length=27.2832594761, oid="Node4316251472")
+    nd_4316251472.edge.oid = "Edge4316251536"
+    nd_4316251216 = nd_4316251088.new_child(label="Antaresia childreni", taxon=tax_4313741136, edge_length=11.3547051232, oid="Node4316251216")
+    nd_4316251216.edge.oid = "Edge4316251280"
+    nd_4316250960 = nd_4316251088.new_child(label="Antaresia stimsoni", taxon=tax_4313741840, edge_length=11.3547051232, oid="Node4316250960")
+    nd_4316250960.edge.oid = "Edge4316251408"
+    nd_4316251728 = nd_4316251600.new_child(label="Python timoriensis", taxon=tax_4313760464, edge_length=33.3905850116, oid="Node4316251728")
+    nd_4316251728.edge.oid = "Edge4316251792"
+    nd_4316251344 = nd_4316251600.new_child(label="Python reticulatus", taxon=tax_4313760272, edge_length=33.3905850116, oid="Node4316251344")
+    nd_4316251344.edge.oid = "Edge4316251920"
+    nd_4316252112 = nd_4316251856.new_child(label="Node4316252112", taxon=None, edge_length=11.1907198563, oid="Node4316252112")
+    nd_4316252112.edge.oid = "Edge4316252176"
+    nd_4316252624 = nd_4316251856.new_child(label="Python regius", taxon=tax_4313760144, edge_length=46.0088752426, oid="Node4316252624")
+    nd_4316252624.edge.oid = "Edge4316252816"
+    nd_4316252240 = nd_4316252112.new_child(label="Python curtus", taxon=tax_4313760016, edge_length=34.8181553863, oid="Node4316252240")
+    nd_4316252240.edge.oid = "Edge4316252304"
+    nd_4316251984 = nd_4316252112.new_child(label="Node4316251984", taxon=None, edge_length=7.89583224277, oid="Node4316251984")
+    nd_4316251984.edge.oid = "Edge4316252432"
+    nd_4316252496 = nd_4316251984.new_child(label="Python sebae", taxon=tax_4313760336, edge_length=26.9223231435, oid="Node4316252496")
+    nd_4316252496.edge.oid = "Edge4316252560"
+    nd_4316252368 = nd_4316251984.new_child(label="Python molurus", taxon=tax_4313760080, edge_length=26.9223231435, oid="Node4316252368")
+    nd_4316252368.edge.oid = "Edge4316252688"
+    tree_4316252752 = dendropy.Tree(label="Tree05", taxon_set=tree_list.taxon_set, oid="Tree4316252752")
+    tree_list.append(tree_4316252752, reindex_taxa=False)
+    tree_4316252752.seed_node.oid = 'Node4316253136'
+    nd_4316253264 = tree_4316252752.seed_node.new_child(label="Candola aspera", taxon=tax_4313742032, edge_length=117.405482731, oid="Node4316253264")
+    nd_4316253264.edge.oid = "Edge4316253328"
+    nd_4316253456 = tree_4316252752.seed_node.new_child(label="Node4316253456", taxon=None, edge_length=26.8517813278, oid="Node4316253456")
+    nd_4316253456.edge.oid = "Edge4316253520"
+    nd_4316253584 = nd_4316253456.new_child(label="Xenopeltis unicolor", taxon=tax_4313760592, edge_length=90.5537014032, oid="Node4316253584")
+    nd_4316253584.edge.oid = "Edge4316253648"
+    nd_4316253392 = nd_4316253456.new_child(label="Node4316253392", taxon=None, edge_length=16.5508683851, oid="Node4316253392")
+    nd_4316253392.edge.oid = "Edge4316253712"
+    nd_4316253776 = nd_4316253392.new_child(label="Node4316253776", taxon=None, edge_length=16.6353899137, oid="Node4316253776")
+    nd_4316253776.edge.oid = "Edge4316253840"
+    nd_4316302224 = nd_4316253392.new_child(label="Loxocemus bicolor", taxon=tax_4313742480, edge_length=74.0028330181, oid="Node4316302224")
+    nd_4316302224.edge.oid = "Edge4316302416"
+    nd_4316253904 = nd_4316253776.new_child(label="Node4316253904", taxon=None, edge_length=6.56321044476, oid="Node4316253904")
+    nd_4316253904.edge.oid = "Edge4316253968"
+    nd_4316301328 = nd_4316253776.new_child(label="Node4316301328", taxon=None, edge_length=18.1852453647, oid="Node4316301328")
+    nd_4316301328.edge.oid = "Edge4316301520"
+    nd_4316254032 = nd_4316253904.new_child(label="Node4316254032", taxon=None, edge_length=12.3993667148, oid="Node4316254032")
+    nd_4316254032.edge.oid = "Edge4316254096"
+    nd_4316301072 = nd_4316253904.new_child(label="Node4316301072", taxon=None, edge_length=23.3069353709, oid="Node4316301072")
+    nd_4316301072.edge.oid = "Edge4316301136"
+    nd_4316254160 = nd_4316254032.new_child(label="Node4316254160", taxon=None, edge_length=1.85501747057, oid="Node4316254160")
+    nd_4316254160.edge.oid = "Edge4316274768"
+    nd_4316276944 = nd_4316254032.new_child(label="Node4316276944", taxon=None, edge_length=2.5597754437, oid="Node4316276944")
+    nd_4316276944.edge.oid = "Edge4316277008"
+    nd_4316274832 = nd_4316254160.new_child(label="Morelia boeleni", taxon=tax_4313742672, edge_length=36.5498484742, oid="Node4316274832")
+    nd_4316274832.edge.oid = "Edge4316274896"
+    nd_4316275024 = nd_4316254160.new_child(label="Node4316275024", taxon=None, edge_length=1.04661210215, oid="Node4316275024")
+    nd_4316275024.edge.oid = "Edge4316275088"
+    nd_4316275152 = nd_4316275024.new_child(label="Node4316275152", taxon=None, edge_length=6.27408700912, oid="Node4316275152")
+    nd_4316275152.edge.oid = "Edge4316275216"
+    nd_4316276432 = nd_4316275024.new_child(label="Node4316276432", taxon=None, edge_length=15.4075337774, oid="Node4316276432")
+    nd_4316276432.edge.oid = "Edge4316276624"
+    nd_4316275280 = nd_4316275152.new_child(label="Node4316275280", taxon=None, edge_length=4.14502379891, oid="Node4316275280")
+    nd_4316275280.edge.oid = "Edge4316275344"
+    nd_4316276048 = nd_4316275152.new_child(label="Node4316276048", taxon=None, edge_length=17.4625828861, oid="Node4316276048")
+    nd_4316276048.edge.oid = "Edge4316276240"
+    nd_4316275408 = nd_4316275280.new_child(label="Node4316275408", taxon=None, edge_length=18.7911640437, oid="Node4316275408")
+    nd_4316275408.edge.oid = "Edge4316275472"
+    nd_4316275792 = nd_4316275280.new_child(label="Node4316275792", taxon=None, edge_length=4.65165886356, oid="Node4316275792")
+    nd_4316275792.edge.oid = "Edge4316275856"
+    nd_4316275536 = nd_4316275408.new_child(label="Liasis fuscus", taxon=tax_4313742224, edge_length=6.29296152027, oid="Node4316275536")
+    nd_4316275536.edge.oid = "Edge4316275600"
+    nd_4316274960 = nd_4316275408.new_child(label="Liasis mackloti", taxon=tax_4313742288, edge_length=6.29296152027, oid="Node4316274960")
+    nd_4316274960.edge.oid = "Edge4316275728"
+    nd_4316275920 = nd_4316275792.new_child(label="Apodora papuana", taxon=tax_4313741904, edge_length=20.4324667004, oid="Node4316275920")
+    nd_4316275920.edge.oid = "Edge4316275984"
+    nd_4316275664 = nd_4316275792.new_child(label="Liasis olivaceus", taxon=tax_4313742352, edge_length=20.4324667004, oid="Node4316275664")
+    nd_4316275664.edge.oid = "Edge4316276112"
+    nd_4316276304 = nd_4316276048.new_child(label="Antaresia melanocephalus", taxon=tax_4313741456, edge_length=11.7665664768, oid="Node4316276304")
+    nd_4316276304.edge.oid = "Edge4316276368"
+    nd_4316276176 = nd_4316276048.new_child(label="Antaresia ramsayi", taxon=tax_4313741712, edge_length=11.7665664768, oid="Node4316276176")
+    nd_4316276176.edge.oid = "Edge4316276496"
+    nd_4316276688 = nd_4316276432.new_child(label="Bothrochilus boa", taxon=tax_4313741968, edge_length=20.0957025946, oid="Node4316276688")
+    nd_4316276688.edge.oid = "Edge4316276752"
+    nd_4316276560 = nd_4316276432.new_child(label="Liasis albertisii", taxon=tax_4313742160, edge_length=20.0957025946, oid="Node4316276560")
+    nd_4316276560.edge.oid = "Edge4316276880"
+    nd_4316277072 = nd_4316276944.new_child(label="Node4316277072", taxon=None, edge_length=10.9999278199, oid="Node4316277072")
+    nd_4316277072.edge.oid = "Edge4316277136"
+    nd_4316299408 = nd_4316276944.new_child(label="Node4316299408", taxon=None, edge_length=4.77611939702, oid="Node4316299408")
+    nd_4316299408.edge.oid = "Edge4316299472"
+    nd_4316277200 = nd_4316277072.new_child(label="Morelia oenpelliensis", taxon=tax_4313743248, edge_length=24.8451626811, oid="Node4316277200")
+    nd_4316277200.edge.oid = "Edge4316277264"
+    nd_4316276816 = nd_4316277072.new_child(label="Node4316276816", taxon=None, edge_length=2.78884378851, oid="Node4316276816")
+    nd_4316276816.edge.oid = "Edge4316277328"
+    nd_4316277392 = nd_4316276816.new_child(label="Node4316277392", taxon=None, edge_length=7.72979171285, oid="Node4316277392")
+    nd_4316277392.edge.oid = "Edge4316277456"
+    nd_4316278352 = nd_4316276816.new_child(label="Node4316278352", taxon=None, edge_length=12.4767981898, oid="Node4316278352")
+    nd_4316278352.edge.oid = "Edge4316278544"
+    nd_4316277520 = nd_4316277392.new_child(label="Morelia tracyae", taxon=tax_4313759824, edge_length=14.3265271797, oid="Node4316277520")
+    nd_4316277520.edge.oid = "Edge4316253072"
+    nd_4316277584 = nd_4316277392.new_child(label="Node4316277584", taxon=None, edge_length=3.38770784397, oid="Node4316277584")
+    nd_4316277584.edge.oid = "Edge4316277648"
+    nd_4316277712 = nd_4316277584.new_child(label="Node4316277712", taxon=None, edge_length=5.65307392619, oid="Node4316277712")
+    nd_4316277712.edge.oid = "Edge4316277776"
+    nd_4316278224 = nd_4316277584.new_child(label="Morelia amethistina", taxon=tax_4313742608, edge_length=10.9388193358, oid="Node4316278224")
+    nd_4316278224.edge.oid = "Edge4316278416"
+    nd_4316277840 = nd_4316277712.new_child(label="Morelia clastolepis", taxon=tax_4313742928, edge_length=5.28574540958, oid="Node4316277840")
+    nd_4316277840.edge.oid = "Edge4316277904"
+    nd_4316253008 = nd_4316277712.new_child(label="Node4316253008", taxon=None, edge_length=2.55413552294, oid="Node4316253008")
+    nd_4316253008.edge.oid = "Edge4316278032"
+    nd_4316278096 = nd_4316253008.new_child(label="Morelia kinghorni", taxon=tax_4313743056, edge_length=2.73160988664, oid="Node4316278096")
+    nd_4316278096.edge.oid = "Edge4316278160"
+    nd_4316277968 = nd_4316253008.new_child(label="Morelia nauta", taxon=tax_4313743120, edge_length=2.73160988664, oid="Node4316277968")
+    nd_4316277968.edge.oid = "Edge4316278288"
+    nd_4316278608 = nd_4316278352.new_child(label="Morelia spilota", taxon=tax_4313743312, edge_length=9.57952070277, oid="Node4316278608")
+    nd_4316278608.edge.oid = "Edge4316278672"
+    nd_4316278480 = nd_4316278352.new_child(label="Morelia bredli", taxon=tax_4313742736, edge_length=9.57952070277, oid="Node4316278480")
+    nd_4316278480.edge.oid = "Edge4316278736"
+    nd_4316299536 = nd_4316299408.new_child(label="Node4316299536", taxon=None, edge_length=6.62946104565, oid="Node4316299536")
+    nd_4316299536.edge.oid = "Edge4316299600"
+    nd_4316300048 = nd_4316299408.new_child(label="Node4316300048", taxon=None, edge_length=3.07031045323, oid="Node4316300048")
+    nd_4316300048.edge.oid = "Edge4316300240"
+    nd_4316299664 = nd_4316299536.new_child(label="Morelia carinata", taxon=tax_4313742800, edge_length=24.4395100584, oid="Node4316299664")
+    nd_4316299664.edge.oid = "Edge4316299728"
+    nd_4316299344 = nd_4316299536.new_child(label="Node4316299344", taxon=None, edge_length=7.74158436759, oid="Node4316299344")
+    nd_4316299344.edge.oid = "Edge4316299856"
+    nd_4316299920 = nd_4316299344.new_child(label="Morelia viridisS", taxon=tax_4313759952, edge_length=16.6979256908, oid="Node4316299920")
+    nd_4316299920.edge.oid = "Edge4316299984"
+    nd_4316299792 = nd_4316299344.new_child(label="Morelia viridisN", taxon=tax_4313759888, edge_length=16.6979256908, oid="Node4316299792")
+    nd_4316299792.edge.oid = "Edge4316300112"
+    nd_4316300304 = nd_4316300048.new_child(label="Antaresia maculosa", taxon=tax_4313741328, edge_length=27.9986606508, oid="Node4316300304")
+    nd_4316300304.edge.oid = "Edge4316300368"
+    nd_4316300176 = nd_4316300048.new_child(label="Node4316300176", taxon=None, edge_length=4.88214307652, oid="Node4316300176")
+    nd_4316300176.edge.oid = "Edge4316300496"
+    nd_4316300560 = nd_4316300176.new_child(label="Node4316300560", taxon=None, edge_length=16.2064963991, oid="Node4316300560")
+    nd_4316300560.edge.oid = "Edge4316300624"
+    nd_4316300944 = nd_4316300176.new_child(label="Antaresia perthensis", taxon=tax_4313741584, edge_length=23.1165175743, oid="Node4316300944")
+    nd_4316300944.edge.oid = "Edge4316301008"
+    nd_4316300688 = nd_4316300560.new_child(label="Antaresia childreni", taxon=tax_4313741136, edge_length=6.91002117518, oid="Node4316300688")
+    nd_4316300688.edge.oid = "Edge4316300752"
+    nd_4316300432 = nd_4316300560.new_child(label="Antaresia stimsoni", taxon=tax_4313741840, edge_length=6.91002117518, oid="Node4316300432")
+    nd_4316300432.edge.oid = "Edge4316300880"
+    nd_4316301200 = nd_4316301072.new_child(label="Python timoriensis", taxon=tax_4313760464, edge_length=27.4972972887, oid="Node4316301200")
+    nd_4316301200.edge.oid = "Edge4316301264"
+    nd_4316300816 = nd_4316301072.new_child(label="Python reticulatus", taxon=tax_4313760272, edge_length=27.4972972887, oid="Node4316300816")
+    nd_4316300816.edge.oid = "Edge4316301392"
+    nd_4316301584 = nd_4316301328.new_child(label="Node4316301584", taxon=None, edge_length=6.08258726043, oid="Node4316301584")
+    nd_4316301584.edge.oid = "Edge4316301648"
+    nd_4316302096 = nd_4316301328.new_child(label="Python regius", taxon=tax_4313760144, edge_length=39.1821977396, oid="Node4316302096")
+    nd_4316302096.edge.oid = "Edge4316302288"
+    nd_4316301712 = nd_4316301584.new_child(label="Python curtus", taxon=tax_4313760016, edge_length=33.0996104792, oid="Node4316301712")
+    nd_4316301712.edge.oid = "Edge4316301776"
+    nd_4316301456 = nd_4316301584.new_child(label="Node4316301456", taxon=None, edge_length=14.293345062, oid="Node4316301456")
+    nd_4316301456.edge.oid = "Edge4316301904"
+    nd_4316301968 = nd_4316301456.new_child(label="Python sebae", taxon=tax_4313760336, edge_length=18.8062654172, oid="Node4316301968")
+    nd_4316301968.edge.oid = "Edge4316302032"
+    nd_4316301840 = nd_4316301456.new_child(label="Python molurus", taxon=tax_4313760080, edge_length=18.8062654172, oid="Node4316301840")
+    nd_4316301840.edge.oid = "Edge4316302160"
+    tree_4316302352 = dendropy.Tree(label="Tree06", taxon_set=tree_list.taxon_set, oid="Tree4316302352")
+    tree_list.append(tree_4316302352, reindex_taxa=False)
+    tree_4316302352.seed_node.oid = 'Node4316302608'
+    nd_4316302736 = tree_4316302352.seed_node.new_child(label="Candola aspera", taxon=tax_4313742032, edge_length=126.159749307, oid="Node4316302736")
+    nd_4316302736.edge.oid = "Edge4316302800"
+    nd_4316302928 = tree_4316302352.seed_node.new_child(label="Node4316302928", taxon=None, edge_length=29.5182899091, oid="Node4316302928")
+    nd_4316302928.edge.oid = "Edge4316302992"
+    nd_4316303056 = nd_4316302928.new_child(label="Node4316303056", taxon=None, edge_length=20.4272017262, oid="Node4316303056")
+    nd_4316303056.edge.oid = "Edge4316303120"
+    nd_4316347728 = nd_4316302928.new_child(label="Xenopeltis unicolor", taxon=tax_4313760592, edge_length=96.6414593981, oid="Node4316347728")
+    nd_4316347728.edge.oid = "Edge4316347792"
+    nd_4316303184 = nd_4316303056.new_child(label="Loxocemus bicolor", taxon=tax_4313742480, edge_length=76.2142576718, oid="Node4316303184")
+    nd_4316303184.edge.oid = "Edge4316303248"
+    nd_4316302864 = nd_4316303056.new_child(label="Node4316302864", taxon=None, edge_length=22.3340694246, oid="Node4316302864")
+    nd_4316302864.edge.oid = "Edge4316303312"
+    nd_4316323920 = nd_4316302864.new_child(label="Node4316323920", taxon=None, edge_length=7.33856679933, oid="Node4316323920")
+    nd_4316323920.edge.oid = "Edge4316323984"
+    nd_4316346704 = nd_4316302864.new_child(label="Node4316346704", taxon=None, edge_length=17.9081848887, oid="Node4316346704")
+    nd_4316346704.edge.oid = "Edge4316346896"
+    nd_4316324048 = nd_4316323920.new_child(label="Node4316324048", taxon=None, edge_length=8.24675869634, oid="Node4316324048")
+    nd_4316324048.edge.oid = "Edge4316324112"
+    nd_4316346448 = nd_4316323920.new_child(label="Node4316346448", taxon=None, edge_length=23.556392099, oid="Node4316346448")
+    nd_4316346448.edge.oid = "Edge4316346512"
+    nd_4316324176 = nd_4316324048.new_child(label="Node4316324176", taxon=None, edge_length=1.78294733026, oid="Node4316324176")
+    nd_4316324176.edge.oid = "Edge4316324240"
+    nd_4316326288 = nd_4316324048.new_child(label="Node4316326288", taxon=None, edge_length=3.26747919544, oid="Node4316326288")
+    nd_4316326288.edge.oid = "Edge4316326352"
+    nd_4316324304 = nd_4316324176.new_child(label="Morelia boeleni", taxon=tax_4313742672, edge_length=36.5119154213, oid="Node4316324304")
+    nd_4316324304.edge.oid = "Edge4316324368"
+    nd_4316324496 = nd_4316324176.new_child(label="Node4316324496", taxon=None, edge_length=1.38475127065, oid="Node4316324496")
+    nd_4316324496.edge.oid = "Edge4316324560"
+    nd_4316324624 = nd_4316324496.new_child(label="Node4316324624", taxon=None, edge_length=2.24740276648, oid="Node4316324624")
+    nd_4316324624.edge.oid = "Edge4316324688"
+    nd_4316326032 = nd_4316324496.new_child(label="Node4316326032", taxon=None, edge_length=12.9799500845, oid="Node4316326032")
+    nd_4316326032.edge.oid = "Edge4316326096"
+    nd_4316324752 = nd_4316324624.new_child(label="Node4316324752", taxon=None, edge_length=17.772328432, oid="Node4316324752")
+    nd_4316324752.edge.oid = "Edge4316324816"
+    nd_4316325136 = nd_4316324624.new_child(label="Node4316325136", taxon=None, edge_length=4.4885389798, oid="Node4316325136")
+    nd_4316325136.edge.oid = "Edge4316325200"
+    nd_4316324880 = nd_4316324752.new_child(label="Antaresia melanocephalus", taxon=tax_4313741456, edge_length=15.1074329521, oid="Node4316324880")
+    nd_4316324880.edge.oid = "Edge4316324944"
+    nd_4316324432 = nd_4316324752.new_child(label="Antaresia ramsayi", taxon=tax_4313741712, edge_length=15.1074329521, oid="Node4316324432")
+    nd_4316324432.edge.oid = "Edge4316325072"
+    nd_4316325264 = nd_4316325136.new_child(label="Node4316325264", taxon=None, edge_length=20.8200876951, oid="Node4316325264")
+    nd_4316325264.edge.oid = "Edge4316325328"
+    nd_4316325648 = nd_4316325136.new_child(label="Node4316325648", taxon=None, edge_length=4.37289319177, oid="Node4316325648")
+    nd_4316325648.edge.oid = "Edge4316325712"
+    nd_4316325392 = nd_4316325264.new_child(label="Liasis fuscus", taxon=tax_4313742224, edge_length=7.5711347092, oid="Node4316325392")
+    nd_4316325392.edge.oid = "Edge4316325456"
+    nd_4316325008 = nd_4316325264.new_child(label="Liasis mackloti", taxon=tax_4313742288, edge_length=7.5711347092, oid="Node4316325008")
+    nd_4316325008.edge.oid = "Edge4316325584"
+    nd_4316325776 = nd_4316325648.new_child(label="Apodora papuana", taxon=tax_4313741904, edge_length=24.0183292126, oid="Node4316325776")
+    nd_4316325776.edge.oid = "Edge4316325840"
+    nd_4316325520 = nd_4316325648.new_child(label="Liasis olivaceus", taxon=tax_4313742352, edge_length=24.0183292126, oid="Node4316325520")
+    nd_4316325520.edge.oid = "Edge4316325968"
+    nd_4316326160 = nd_4316326032.new_child(label="Bothrochilus boa", taxon=tax_4313741968, edge_length=22.1472140662, oid="Node4316326160")
+    nd_4316326160.edge.oid = "Edge4316302544"
+    nd_4316325904 = nd_4316326032.new_child(label="Liasis albertisii", taxon=tax_4313742160, edge_length=22.1472140662, oid="Node4316325904")
+    nd_4316325904.edge.oid = "Edge4316326224"
+    nd_4316326416 = nd_4316326288.new_child(label="Node4316326416", taxon=None, edge_length=12.2960670728, oid="Node4316326416")
+    nd_4316326416.edge.oid = "Edge4316326480"
+    nd_4316344784 = nd_4316326288.new_child(label="Node4316344784", taxon=None, edge_length=4.17834235089, oid="Node4316344784")
+    nd_4316344784.edge.oid = "Edge4316344848"
+    nd_4316326544 = nd_4316326416.new_child(label="Node4316326544", taxon=None, edge_length=1.62908011033, oid="Node4316326544")
+    nd_4316326544.edge.oid = "Edge4316326608"
+    nd_4316327184 = nd_4316326416.new_child(label="Node4316327184", taxon=None, edge_length=6.20414166284, oid="Node4316327184")
+    nd_4316327184.edge.oid = "Edge4316327248"
+    nd_4316326672 = nd_4316326544.new_child(label="Node4316326672", taxon=None, edge_length=11.7610480778, oid="Node4316326672")
+    nd_4316326672.edge.oid = "Edge4316326736"
+    nd_4316327056 = nd_4316326544.new_child(label="Morelia oenpelliensis", taxon=tax_4313743248, edge_length=21.1022363729, oid="Node4316327056")
+    nd_4316327056.edge.oid = "Edge4316327120"
+    nd_4316326800 = nd_4316326672.new_child(label="Morelia spilota", taxon=tax_4313743312, edge_length=9.34118829512, oid="Node4316326800")
+    nd_4316326800.edge.oid = "Edge4316326864"
+    nd_4316302480 = nd_4316326672.new_child(label="Morelia bredli", taxon=tax_4313742736, edge_length=9.34118829512, oid="Node4316302480")
+    nd_4316302480.edge.oid = "Edge4316326992"
+    nd_4316327312 = nd_4316327184.new_child(label="Morelia tracyae", taxon=tax_4313759824, edge_length=16.5271748204, oid="Node4316327312")
+    nd_4316327312.edge.oid = "Edge4316327376"
+    nd_4316326928 = nd_4316327184.new_child(label="Node4316326928", taxon=None, edge_length=4.27339647744, oid="Node4316326928")
+    nd_4316326928.edge.oid = "Edge4316327504"
+    nd_4316327568 = nd_4316326928.new_child(label="Node4316327568", taxon=None, edge_length=7.91289243511, oid="Node4316327568")
+    nd_4316327568.edge.oid = "Edge4316327632"
+    nd_4316344656 = nd_4316326928.new_child(label="Morelia amethistina", taxon=tax_4313742608, edge_length=12.253778343, oid="Node4316344656")
+    nd_4316344656.edge.oid = "Edge4316344720"
+    nd_4316327696 = nd_4316327568.new_child(label="Node4316327696", taxon=None, edge_length=1.89524872622, oid="Node4316327696")
+    nd_4316327696.edge.oid = "Edge4316327760"
+    nd_4316344528 = nd_4316327568.new_child(label="Morelia clastolepis", taxon=tax_4313742928, edge_length=4.34088590785, oid="Node4316344528")
+    nd_4316344528.edge.oid = "Edge4316344592"
+    nd_4316327824 = nd_4316327696.new_child(label="Morelia nauta", taxon=tax_4313743120, edge_length=2.44563718163, oid="Node4316327824")
+    nd_4316327824.edge.oid = "Edge4316327888"
+    nd_4316327440 = nd_4316327696.new_child(label="Morelia kinghorni", taxon=tax_4313743056, edge_length=2.44563718163, oid="Node4316327440")
+    nd_4316327440.edge.oid = "Edge4316344464"
+    nd_4316344912 = nd_4316344784.new_child(label="Node4316344912", taxon=None, edge_length=5.03710806168, oid="Node4316344912")
+    nd_4316344912.edge.oid = "Edge4316344976"
+    nd_4316345424 = nd_4316344784.new_child(label="Node4316345424", taxon=None, edge_length=4.09757269601, oid="Node4316345424")
+    nd_4316345424.edge.oid = "Edge4316345616"
+    nd_4316345040 = nd_4316344912.new_child(label="Morelia carinata", taxon=tax_4313742800, edge_length=25.8119331435, oid="Node4316345040")
+    nd_4316345040.edge.oid = "Edge4316345104"
+    nd_4316344400 = nd_4316344912.new_child(label="Node4316344400", taxon=None, edge_length=11.4337686931, oid="Node4316344400")
+    nd_4316344400.edge.oid = "Edge4316345232"
+    nd_4316345296 = nd_4316344400.new_child(label="Morelia viridisS", taxon=tax_4313759952, edge_length=14.3781644505, oid="Node4316345296")
+    nd_4316345296.edge.oid = "Edge4316345360"
+    nd_4316345168 = nd_4316344400.new_child(label="Morelia viridisN", taxon=tax_4313759888, edge_length=14.3781644505, oid="Node4316345168")
+    nd_4316345168.edge.oid = "Edge4316345488"
+    nd_4316345680 = nd_4316345424.new_child(label="Antaresia maculosa", taxon=tax_4313741328, edge_length=26.7514685092, oid="Node4316345680")
+    nd_4316345680.edge.oid = "Edge4316345744"
+    nd_4316345552 = nd_4316345424.new_child(label="Node4316345552", taxon=None, edge_length=2.33638652753, oid="Node4316345552")
+    nd_4316345552.edge.oid = "Edge4316345872"
+    nd_4316345936 = nd_4316345552.new_child(label="Node4316345936", taxon=None, edge_length=17.4436719435, oid="Node4316345936")
+    nd_4316345936.edge.oid = "Edge4316346000"
+    nd_4316346320 = nd_4316345552.new_child(label="Antaresia perthensis", taxon=tax_4313741584, edge_length=24.4150819817, oid="Node4316346320")
+    nd_4316346320.edge.oid = "Edge4316346384"
+    nd_4316346064 = nd_4316345936.new_child(label="Antaresia childreni", taxon=tax_4313741136, edge_length=6.97141003814, oid="Node4316346064")
+    nd_4316346064.edge.oid = "Edge4316346128"
+    nd_4316345808 = nd_4316345936.new_child(label="Antaresia stimsoni", taxon=tax_4313741840, edge_length=6.97141003814, oid="Node4316345808")
+    nd_4316345808.edge.oid = "Edge4316346256"
+    nd_4316346576 = nd_4316346448.new_child(label="Python timoriensis", taxon=tax_4313760464, edge_length=22.9852293488, oid="Node4316346576")
+    nd_4316346576.edge.oid = "Edge4316346640"
+    nd_4316346192 = nd_4316346448.new_child(label="Python reticulatus", taxon=tax_4313760272, edge_length=22.9852293488, oid="Node4316346192")
+    nd_4316346192.edge.oid = "Edge4316346768"
+    nd_4316346960 = nd_4316346704.new_child(label="Node4316346960", taxon=None, edge_length=6.75664224871, oid="Node4316346960")
+    nd_4316346960.edge.oid = "Edge4316347024"
+    nd_4316347472 = nd_4316346704.new_child(label="Python regius", taxon=tax_4313760144, edge_length=35.9720033585, oid="Node4316347472")
+    nd_4316347472.edge.oid = "Edge4316347664"
+    nd_4316347088 = nd_4316346960.new_child(label="Python curtus", taxon=tax_4313760016, edge_length=29.2153611098, oid="Node4316347088")
+    nd_4316347088.edge.oid = "Edge4316347152"
+    nd_4316346832 = nd_4316346960.new_child(label="Node4316346832", taxon=None, edge_length=8.15978945225, oid="Node4316346832")
+    nd_4316346832.edge.oid = "Edge4316347280"
+    nd_4316347344 = nd_4316346832.new_child(label="Python sebae", taxon=tax_4313760336, edge_length=21.0555716576, oid="Node4316347344")
+    nd_4316347344.edge.oid = "Edge4316347408"
+    nd_4316347216 = nd_4316346832.new_child(label="Python molurus", taxon=tax_4313760080, edge_length=21.0555716576, oid="Node4316347216")
+    nd_4316347216.edge.oid = "Edge4316347536"
+    tree_4316347600 = dendropy.Tree(label="Tree07", taxon_set=tree_list.taxon_set, oid="Tree4316347600")
+    tree_list.append(tree_4316347600, reindex_taxa=False)
+    tree_4316347600.seed_node.oid = 'Node4316347984'
+    nd_4316348112 = tree_4316347600.seed_node.new_child(label="Candola aspera", taxon=tax_4313742032, edge_length=124.564186516, oid="Node4316348112")
+    nd_4316348112.edge.oid = "Edge4316348176"
+    nd_4316348304 = tree_4316347600.seed_node.new_child(label="Node4316348304", taxon=None, edge_length=36.3676780441, oid="Node4316348304")
+    nd_4316348304.edge.oid = "Edge4316348368"
+    nd_4316368976 = nd_4316348304.new_child(label="Node4316368976", taxon=None, edge_length=11.1789504571, oid="Node4316368976")
+    nd_4316368976.edge.oid = "Edge4316369040"
+    nd_4316397200 = nd_4316348304.new_child(label="Xenopeltis unicolor", taxon=tax_4313760592, edge_length=88.196508472, oid="Node4316397200")
+    nd_4316397200.edge.oid = "Edge4316397264"
+    nd_4316369104 = nd_4316368976.new_child(label="Node4316369104", taxon=None, edge_length=20.3346663059, oid="Node4316369104")
+    nd_4316369104.edge.oid = "Edge4316369168"
+    nd_4316396944 = nd_4316368976.new_child(label="Loxocemus bicolor", taxon=tax_4313742480, edge_length=77.0175580149, oid="Node4316396944")
+    nd_4316396944.edge.oid = "Edge4316397136"
+    nd_4316369232 = nd_4316369104.new_child(label="Node4316369232", taxon=None, edge_length=10.7040090023, oid="Node4316369232")
+    nd_4316369232.edge.oid = "Edge4316369296"
+    nd_4316396048 = nd_4316369104.new_child(label="Node4316396048", taxon=None, edge_length=19.1477140595, oid="Node4316396048")
+    nd_4316396048.edge.oid = "Edge4316396240"
+    nd_4316369360 = nd_4316369232.new_child(label="Node4316369360", taxon=None, edge_length=7.28944403695, oid="Node4316369360")
+    nd_4316369360.edge.oid = "Edge4316369424"
+    nd_4316395664 = nd_4316369232.new_child(label="Node4316395664", taxon=None, edge_length=20.035415736, oid="Node4316395664")
+    nd_4316395664.edge.oid = "Edge4316395856"
+    nd_4316369488 = nd_4316369360.new_child(label="Node4316369488", taxon=None, edge_length=2.76745367097, oid="Node4316369488")
+    nd_4316369488.edge.oid = "Edge4316369552"
+    nd_4316372752 = nd_4316369360.new_child(label="Node4316372752", taxon=None, edge_length=1.09335779327, oid="Node4316372752")
+    nd_4316372752.edge.oid = "Edge4316393680"
+    nd_4316369616 = nd_4316369488.new_child(label="Node4316369616", taxon=None, edge_length=12.5842551962, oid="Node4316369616")
+    nd_4316369616.edge.oid = "Edge4316369680"
+    nd_4316371280 = nd_4316369488.new_child(label="Node4316371280", taxon=None, edge_length=7.66239308607, oid="Node4316371280")
+    nd_4316371280.edge.oid = "Edge4316371472"
+    nd_4316369744 = nd_4316369616.new_child(label="Node4316369744", taxon=None, edge_length=12.0191169658, oid="Node4316369744")
+    nd_4316369744.edge.oid = "Edge4316369808"
+    nd_4316370128 = nd_4316369616.new_child(label="Node4316370128", taxon=None, edge_length=2.25737379321, oid="Node4316370128")
+    nd_4316370128.edge.oid = "Edge4316370192"
+    nd_4316369872 = nd_4316369744.new_child(label="Morelia spilota", taxon=tax_4313743312, edge_length=11.3186128368, oid="Node4316369872")
+    nd_4316369872.edge.oid = "Edge4316369936"
+    nd_4316348240 = nd_4316369744.new_child(label="Morelia bredli", taxon=tax_4313742736, edge_length=11.3186128368, oid="Node4316348240")
+    nd_4316348240.edge.oid = "Edge4316370064"
+    nd_4316370256 = nd_4316370128.new_child(label="Morelia oenpelliensis", taxon=tax_4313743248, edge_length=21.0803560094, oid="Node4316370256")
+    nd_4316370256.edge.oid = "Edge4316370320"
+    nd_4316370000 = nd_4316370128.new_child(label="Node4316370000", taxon=None, edge_length=6.93019779087, oid="Node4316370000")
+    nd_4316370000.edge.oid = "Edge4316370448"
+    nd_4316370512 = nd_4316370000.new_child(label="Morelia tracyae", taxon=tax_4313759824, edge_length=14.1501582185, oid="Node4316370512")
+    nd_4316370512.edge.oid = "Edge4316370576"
+    nd_4316370384 = nd_4316370000.new_child(label="Node4316370384", taxon=None, edge_length=3.68709033509, oid="Node4316370384")
+    nd_4316370384.edge.oid = "Edge4316347920"
+    nd_4316347856 = nd_4316370384.new_child(label="Node4316347856", taxon=None, edge_length=4.34576715349, oid="Node4316347856")
+    nd_4316347856.edge.oid = "Edge4316370704"
+    nd_4316371152 = nd_4316370384.new_child(label="Morelia amethistina", taxon=tax_4313742608, edge_length=10.4630678834, oid="Node4316371152")
+    nd_4316371152.edge.oid = "Edge4316371344"
+    nd_4316370768 = nd_4316347856.new_child(label="Morelia nauta", taxon=tax_4313743120, edge_length=6.11730072991, oid="Node4316370768")
+    nd_4316370768.edge.oid = "Edge4316370832"
+    nd_4316370640 = nd_4316347856.new_child(label="Node4316370640", taxon=None, edge_length=2.07374196069, oid="Node4316370640")
+    nd_4316370640.edge.oid = "Edge4316370960"
+    nd_4316371024 = nd_4316370640.new_child(label="Morelia kinghorni", taxon=tax_4313743056, edge_length=4.04355876922, oid="Node4316371024")
+    nd_4316371024.edge.oid = "Edge4316371088"
+    nd_4316370896 = nd_4316370640.new_child(label="Morelia clastolepis", taxon=tax_4313742928, edge_length=4.04355876922, oid="Node4316370896")
+    nd_4316370896.edge.oid = "Edge4316371216"
+    nd_4316371536 = nd_4316371280.new_child(label="Node4316371536", taxon=None, edge_length=5.79725116231, oid="Node4316371536")
+    nd_4316371536.edge.oid = "Edge4316371600"
+    nd_4316372048 = nd_4316371280.new_child(label="Node4316372048", taxon=None, edge_length=3.71811515781, oid="Node4316372048")
+    nd_4316372048.edge.oid = "Edge4316372240"
+    nd_4316371664 = nd_4316371536.new_child(label="Morelia carinata", taxon=tax_4313742800, edge_length=22.4623407504, oid="Node4316371664")
+    nd_4316371664.edge.oid = "Edge4316371728"
+    nd_4316371408 = nd_4316371536.new_child(label="Node4316371408", taxon=None, edge_length=5.91246822929, oid="Node4316371408")
+    nd_4316371408.edge.oid = "Edge4316371856"
+    nd_4316371920 = nd_4316371408.new_child(label="Morelia viridisS", taxon=tax_4313759952, edge_length=16.5498725211, oid="Node4316371920")
+    nd_4316371920.edge.oid = "Edge4316371984"
+    nd_4316371792 = nd_4316371408.new_child(label="Morelia viridisN", taxon=tax_4313759888, edge_length=16.5498725211, oid="Node4316371792")
+    nd_4316371792.edge.oid = "Edge4316372112"
+    nd_4316372304 = nd_4316372048.new_child(label="Antaresia maculosa", taxon=tax_4313741328, edge_length=24.5414767549, oid="Node4316372304")
+    nd_4316372304.edge.oid = "Edge4316372368"
+    nd_4316372176 = nd_4316372048.new_child(label="Node4316372176", taxon=None, edge_length=5.68085904285, oid="Node4316372176")
+    nd_4316372176.edge.oid = "Edge4316372432"
+    nd_4316372496 = nd_4316372176.new_child(label="Node4316372496", taxon=None, edge_length=11.551508813, oid="Node4316372496")
+    nd_4316372496.edge.oid = "Edge4316372560"
+    nd_4316372944 = nd_4316372176.new_child(label="Antaresia perthensis", taxon=tax_4313741584, edge_length=18.8606177121, oid="Node4316372944")
+    nd_4316372944.edge.oid = "Edge4316393552"
+    nd_4316372624 = nd_4316372496.new_child(label="Antaresia childreni", taxon=tax_4313741136, edge_length=7.30910889905, oid="Node4316372624")
+    nd_4316372624.edge.oid = "Edge4316372688"
+    nd_4316372816 = nd_4316372496.new_child(label="Antaresia stimsoni", taxon=tax_4313741840, edge_length=7.30910889905, oid="Node4316372816")
+    nd_4316372816.edge.oid = "Edge4316372880"
+    nd_4316393744 = nd_4316372752.new_child(label="Morelia boeleni", taxon=tax_4313742672, edge_length=37.5960808765, oid="Node4316393744")
+    nd_4316393744.edge.oid = "Edge4316393808"
+    nd_4316393616 = nd_4316372752.new_child(label="Node4316393616", taxon=None, edge_length=2.73294846613, oid="Node4316393616")
+    nd_4316393616.edge.oid = "Edge4316393872"
+    nd_4316393936 = nd_4316393616.new_child(label="Node4316393936", taxon=None, edge_length=2.22916081797, oid="Node4316393936")
+    nd_4316393936.edge.oid = "Edge4316394000"
+    nd_4316395408 = nd_4316393616.new_child(label="Node4316395408", taxon=None, edge_length=13.2144705479, oid="Node4316395408")
+    nd_4316395408.edge.oid = "Edge4316395472"
+    nd_4316394064 = nd_4316393936.new_child(label="Node4316394064", taxon=None, edge_length=19.1660901297, oid="Node4316394064")
+    nd_4316394064.edge.oid = "Edge4316394128"
+    nd_4316394512 = nd_4316393936.new_child(label="Node4316394512", taxon=None, edge_length=7.55440984409, oid="Node4316394512")
+    nd_4316394512.edge.oid = "Edge4316394576"
+    nd_4316394192 = nd_4316394064.new_child(label="Antaresia melanocephalus", taxon=tax_4313741456, edge_length=13.4678814627, oid="Node4316394192")
+    nd_4316394192.edge.oid = "Edge4316394256"
+    nd_4316394384 = nd_4316394064.new_child(label="Antaresia ramsayi", taxon=tax_4313741712, edge_length=13.4678814627, oid="Node4316394384")
+    nd_4316394384.edge.oid = "Edge4316394448"
+    nd_4316394640 = nd_4316394512.new_child(label="Node4316394640", taxon=None, edge_length=18.9933631628, oid="Node4316394640")
+    nd_4316394640.edge.oid = "Edge4316394704"
+    nd_4316395024 = nd_4316394512.new_child(label="Node4316395024", taxon=None, edge_length=5.77339164759, oid="Node4316395024")
+    nd_4316395024.edge.oid = "Edge4316395088"
+    nd_4316394768 = nd_4316394640.new_child(label="Liasis fuscus", taxon=tax_4313742224, edge_length=6.08619858554, oid="Node4316394768")
+    nd_4316394768.edge.oid = "Edge4316394832"
+    nd_4316394320 = nd_4316394640.new_child(label="Liasis mackloti", taxon=tax_4313742288, edge_length=6.08619858554, oid="Node4316394320")
+    nd_4316394320.edge.oid = "Edge4316394960"
+    nd_4316395152 = nd_4316395024.new_child(label="Apodora papuana", taxon=tax_4313741904, edge_length=19.3061701007, oid="Node4316395152")
+    nd_4316395152.edge.oid = "Edge4316395216"
+    nd_4316394896 = nd_4316395024.new_child(label="Liasis olivaceus", taxon=tax_4313742352, edge_length=19.3061701007, oid="Node4316394896")
+    nd_4316394896.edge.oid = "Edge4316395344"
+    nd_4316395536 = nd_4316395408.new_child(label="Bothrochilus boa", taxon=tax_4313741968, edge_length=21.6486618625, oid="Node4316395536")
+    nd_4316395536.edge.oid = "Edge4316395600"
+    nd_4316395280 = nd_4316395408.new_child(label="Liasis albertisii", taxon=tax_4313742160, edge_length=21.6486618625, oid="Node4316395280")
+    nd_4316395280.edge.oid = "Edge4316395728"
+    nd_4316395920 = nd_4316395664.new_child(label="Python timoriensis", taxon=tax_4313760464, edge_length=25.9434669707, oid="Node4316395920")
+    nd_4316395920.edge.oid = "Edge4316395984"
+    nd_4316395792 = nd_4316395664.new_child(label="Python reticulatus", taxon=tax_4313760272, edge_length=25.9434669707, oid="Node4316395792")
+    nd_4316395792.edge.oid = "Edge4316396112"
+    nd_4316396304 = nd_4316396048.new_child(label="Node4316396304", taxon=None, edge_length=7.07244422644, oid="Node4316396304")
+    nd_4316396304.edge.oid = "Edge4316396368"
+    nd_4316396816 = nd_4316396048.new_child(label="Python regius", taxon=tax_4313760144, edge_length=37.5351776494, oid="Node4316396816")
+    nd_4316396816.edge.oid = "Edge4316397008"
+    nd_4316396432 = nd_4316396304.new_child(label="Python curtus", taxon=tax_4313760016, edge_length=30.462733423, oid="Node4316396432")
+    nd_4316396432.edge.oid = "Edge4316396496"
+    nd_4316396176 = nd_4316396304.new_child(label="Node4316396176", taxon=None, edge_length=14.4432592042, oid="Node4316396176")
+    nd_4316396176.edge.oid = "Edge4316396624"
+    nd_4316396688 = nd_4316396176.new_child(label="Python sebae", taxon=tax_4313760336, edge_length=16.0194742188, oid="Node4316396688")
+    nd_4316396688.edge.oid = "Edge4316396752"
+    nd_4316396560 = nd_4316396176.new_child(label="Python molurus", taxon=tax_4313760080, edge_length=16.0194742188, oid="Node4316396560")
+    nd_4316396560.edge.oid = "Edge4316396880"
+    tree_4316397072 = dendropy.Tree(label="Tree08", taxon_set=tree_list.taxon_set, oid="Tree4316397072")
+    tree_list.append(tree_4316397072, reindex_taxa=False)
+    tree_4316397072.seed_node.oid = 'Node4316397456'
+    nd_4316418128 = tree_4316397072.seed_node.new_child(label="Candola aspera", taxon=tax_4313742032, edge_length=95.8502441646, oid="Node4316418128")
+    nd_4316418128.edge.oid = "Edge4316418192"
+    nd_4316418320 = tree_4316397072.seed_node.new_child(label="Node4316418320", taxon=None, edge_length=21.8741644934, oid="Node4316418320")
+    nd_4316418320.edge.oid = "Edge4316418384"
+    nd_4316418448 = nd_4316418320.new_child(label="Xenopeltis unicolor", taxon=tax_4313760592, edge_length=73.9760796713, oid="Node4316418448")
+    nd_4316418448.edge.oid = "Edge4316418512"
+    nd_4316418256 = nd_4316418320.new_child(label="Node4316418256", taxon=None, edge_length=9.52951598189, oid="Node4316418256")
+    nd_4316418256.edge.oid = "Edge4316418640"
+    nd_4316418704 = nd_4316418256.new_child(label="Loxocemus bicolor", taxon=tax_4313742480, edge_length=64.4465636894, oid="Node4316418704")
+    nd_4316418704.edge.oid = "Edge4316418768"
+    nd_4316418576 = nd_4316418256.new_child(label="Node4316418576", taxon=None, edge_length=22.9882151659, oid="Node4316418576")
+    nd_4316418576.edge.oid = "Edge4316418896"
+    nd_4316418960 = nd_4316418576.new_child(label="Node4316418960", taxon=None, edge_length=6.43697452247, oid="Node4316418960")
+    nd_4316418960.edge.oid = "Edge4316419024"
+    nd_4316445776 = nd_4316418576.new_child(label="Node4316445776", taxon=None, edge_length=13.8002436509, oid="Node4316445776")
+    nd_4316445776.edge.oid = "Edge4316445968"
+    nd_4316419088 = nd_4316418960.new_child(label="Node4316419088", taxon=None, edge_length=6.7231540226, oid="Node4316419088")
+    nd_4316419088.edge.oid = "Edge4316419152"
+    nd_4316445392 = nd_4316418960.new_child(label="Node4316445392", taxon=None, edge_length=15.1871703268, oid="Node4316445392")
+    nd_4316445392.edge.oid = "Edge4316445584"
+    nd_4316397392 = nd_4316419088.new_child(label="Node4316397392", taxon=None, edge_length=1.03257897787, oid="Node4316397392")
+    nd_4316397392.edge.oid = "Edge4316397328"
+    nd_4316443088 = nd_4316419088.new_child(label="Node4316443088", taxon=None, edge_length=1.21568464049, oid="Node4316443088")
+    nd_4316443088.edge.oid = "Edge4316443408"
+    nd_4316419216 = nd_4316397392.new_child(label="Node4316419216", taxon=None, edge_length=7.52518318022, oid="Node4316419216")
+    nd_4316419216.edge.oid = "Edge4316419280"
+    nd_4316421136 = nd_4316397392.new_child(label="Node4316421136", taxon=None, edge_length=2.39608223465, oid="Node4316421136")
+    nd_4316421136.edge.oid = "Edge4316421200"
+    nd_4316419344 = nd_4316419216.new_child(label="Node4316419344", taxon=None, edge_length=2.42060556338, oid="Node4316419344")
+    nd_4316419344.edge.oid = "Edge4316419408"
+    nd_4316421008 = nd_4316419216.new_child(label="Morelia oenpelliensis", taxon=tax_4313743248, edge_length=19.7404578203, oid="Node4316421008")
+    nd_4316421008.edge.oid = "Edge4316421072"
+    nd_4316419472 = nd_4316419344.new_child(label="Node4316419472", taxon=None, edge_length=8.29264517113, oid="Node4316419472")
+    nd_4316419472.edge.oid = "Edge4316419536"
+    nd_4316419856 = nd_4316419344.new_child(label="Node4316419856", taxon=None, edge_length=6.70163613113, oid="Node4316419856")
+    nd_4316419856.edge.oid = "Edge4316419920"
+    nd_4316419600 = nd_4316419472.new_child(label="Morelia spilota", taxon=tax_4313743312, edge_length=9.02720708579, oid="Node4316419600")
+    nd_4316419600.edge.oid = "Edge4316419664"
+    nd_4316418832 = nd_4316419472.new_child(label="Morelia bredli", taxon=tax_4313742736, edge_length=9.02720708579, oid="Node4316418832")
+    nd_4316418832.edge.oid = "Edge4316419792"
+    nd_4316419984 = nd_4316419856.new_child(label="Morelia tracyae", taxon=tax_4313759824, edge_length=10.6182161258, oid="Node4316419984")
+    nd_4316419984.edge.oid = "Edge4316420048"
+    nd_4316419728 = nd_4316419856.new_child(label="Node4316419728", taxon=None, edge_length=3.47880840545, oid="Node4316419728")
+    nd_4316419728.edge.oid = "Edge4316420176"
+    nd_4316420240 = nd_4316419728.new_child(label="Node4316420240", taxon=None, edge_length=4.27223311967, oid="Node4316420240")
+    nd_4316420240.edge.oid = "Edge4316420304"
+    nd_4316420752 = nd_4316419728.new_child(label="Morelia amethistina", taxon=tax_4313742608, edge_length=7.13940772034, oid="Node4316420752")
+    nd_4316420752.edge.oid = "Edge4316420944"
+    nd_4316420368 = nd_4316420240.new_child(label="Morelia clastolepis", taxon=tax_4313742928, edge_length=2.86717460067, oid="Node4316420368")
+    nd_4316420368.edge.oid = "Edge4316420432"
+    nd_4316420112 = nd_4316420240.new_child(label="Node4316420112", taxon=None, edge_length=0.371215520464, oid="Node4316420112")
+    nd_4316420112.edge.oid = "Edge4316420560"
+    nd_4316420624 = nd_4316420112.new_child(label="Morelia nauta", taxon=tax_4313743120, edge_length=2.49595908021, oid="Node4316420624")
+    nd_4316420624.edge.oid = "Edge4316420688"
+    nd_4316420496 = nd_4316420112.new_child(label="Morelia kinghorni", taxon=tax_4313743056, edge_length=2.49595908021, oid="Node4316420496")
+    nd_4316420496.edge.oid = "Edge4316420816"
+    nd_4316421264 = nd_4316421136.new_child(label="Node4316421264", taxon=None, edge_length=3.24355281662, oid="Node4316421264")
+    nd_4316421264.edge.oid = "Edge4316421328"
+    nd_4316421776 = nd_4316421136.new_child(label="Node4316421776", taxon=None, edge_length=3.2027013644, oid="Node4316421776")
+    nd_4316421776.edge.oid = "Edge4316421968"
+    nd_4316421392 = nd_4316421264.new_child(label="Morelia carinata", taxon=tax_4313742800, edge_length=21.6260059492, oid="Node4316421392")
+    nd_4316421392.edge.oid = "Edge4316421456"
+    nd_4316420880 = nd_4316421264.new_child(label="Node4316420880", taxon=None, edge_length=9.1533399099, oid="Node4316420880")
+    nd_4316420880.edge.oid = "Edge4316421584"
+    nd_4316421648 = nd_4316420880.new_child(label="Morelia viridisS", taxon=tax_4313759952, edge_length=12.4726660393, oid="Node4316421648")
+    nd_4316421648.edge.oid = "Edge4316421712"
+    nd_4316421520 = nd_4316420880.new_child(label="Morelia viridisN", taxon=tax_4313759888, edge_length=12.4726660393, oid="Node4316421520")
+    nd_4316421520.edge.oid = "Edge4316421840"
+    nd_4316422032 = nd_4316421776.new_child(label="Antaresia maculosa", taxon=tax_4313741328, edge_length=21.6668574015, oid="Node4316422032")
+    nd_4316422032.edge.oid = "Edge4316422096"
+    nd_4316421904 = nd_4316421776.new_child(label="Node4316421904", taxon=None, edge_length=4.33602073619, oid="Node4316421904")
+    nd_4316421904.edge.oid = "Edge4316442768"
+    nd_4316442832 = nd_4316421904.new_child(label="Node4316442832", taxon=None, edge_length=11.5233229214, oid="Node4316442832")
+    nd_4316442832.edge.oid = "Edge4316442896"
+    nd_4316443216 = nd_4316421904.new_child(label="Antaresia perthensis", taxon=tax_4313741584, edge_length=17.3308366653, oid="Node4316443216")
+    nd_4316443216.edge.oid = "Edge4316443280"
+    nd_4316442960 = nd_4316442832.new_child(label="Antaresia childreni", taxon=tax_4313741136, edge_length=5.8075137439, oid="Node4316442960")
+    nd_4316442960.edge.oid = "Edge4316443024"
+    nd_4316442704 = nd_4316442832.new_child(label="Antaresia stimsoni", taxon=tax_4313741840, edge_length=5.8075137439, oid="Node4316442704")
+    nd_4316442704.edge.oid = "Edge4316443152"
+    nd_4316443472 = nd_4316443088.new_child(label="Morelia boeleni", taxon=tax_4313742672, edge_length=27.0825353379, oid="Node4316443472")
+    nd_4316443472.edge.oid = "Edge4316443536"
+    nd_4316443344 = nd_4316443088.new_child(label="Node4316443344", taxon=None, edge_length=1.37229916019, oid="Node4316443344")
+    nd_4316443344.edge.oid = "Edge4316443664"
+    nd_4316443728 = nd_4316443344.new_child(label="Node4316443728", taxon=None, edge_length=2.64946637554, oid="Node4316443728")
+    nd_4316443728.edge.oid = "Edge4316443792"
+    nd_4316445136 = nd_4316443344.new_child(label="Node4316445136", taxon=None, edge_length=11.4050202795, oid="Node4316445136")
+    nd_4316445136.edge.oid = "Edge4316445200"
+    nd_4316443856 = nd_4316443728.new_child(label="Node4316443856", taxon=None, edge_length=13.5545767859, oid="Node4316443856")
+    nd_4316443856.edge.oid = "Edge4316443920"
+    nd_4316444240 = nd_4316443728.new_child(label="Node4316444240", taxon=None, edge_length=4.67390676307, oid="Node4316444240")
+    nd_4316444240.edge.oid = "Edge4316444304"
+    nd_4316443984 = nd_4316443856.new_child(label="Antaresia melanocephalus", taxon=tax_4313741456, edge_length=9.50619301624, oid="Node4316443984")
+    nd_4316443984.edge.oid = "Edge4316444048"
+    nd_4316443600 = nd_4316443856.new_child(label="Antaresia ramsayi", taxon=tax_4313741712, edge_length=9.50619301624, oid="Node4316443600")
+    nd_4316443600.edge.oid = "Edge4316444176"
+    nd_4316444368 = nd_4316444240.new_child(label="Node4316444368", taxon=None, edge_length=12.8995814401, oid="Node4316444368")
+    nd_4316444368.edge.oid = "Edge4316444432"
+    nd_4316444752 = nd_4316444240.new_child(label="Node4316444752", taxon=None, edge_length=1.38849394051, oid="Node4316444752")
+    nd_4316444752.edge.oid = "Edge4316444816"
+    nd_4316444496 = nd_4316444368.new_child(label="Liasis fuscus", taxon=tax_4313742224, edge_length=5.48728159904, oid="Node4316444496")
+    nd_4316444496.edge.oid = "Edge4316444560"
+    nd_4316444112 = nd_4316444368.new_child(label="Liasis mackloti", taxon=tax_4313742288, edge_length=5.48728159904, oid="Node4316444112")
+    nd_4316444112.edge.oid = "Edge4316444688"
+    nd_4316444880 = nd_4316444752.new_child(label="Apodora papuana", taxon=tax_4313741904, edge_length=16.9983690986, oid="Node4316444880")
+    nd_4316444880.edge.oid = "Edge4316444944"
+    nd_4316444624 = nd_4316444752.new_child(label="Liasis olivaceus", taxon=tax_4313742352, edge_length=16.9983690986, oid="Node4316444624")
+    nd_4316444624.edge.oid = "Edge4316445072"
+    nd_4316445264 = nd_4316445136.new_child(label="Bothrochilus boa", taxon=tax_4313741968, edge_length=14.3052158982, oid="Node4316445264")
+    nd_4316445264.edge.oid = "Edge4316445328"
+    nd_4316445008 = nd_4316445136.new_child(label="Liasis albertisii", taxon=tax_4313742160, edge_length=14.3052158982, oid="Node4316445008")
+    nd_4316445008.edge.oid = "Edge4316445456"
+    nd_4316445648 = nd_4316445392.new_child(label="Python timoriensis", taxon=tax_4313760464, edge_length=19.8342036742, oid="Node4316445648")
+    nd_4316445648.edge.oid = "Edge4316445712"
+    nd_4316445520 = nd_4316445392.new_child(label="Python reticulatus", taxon=tax_4313760272, edge_length=19.8342036742, oid="Node4316445520")
+    nd_4316445520.edge.oid = "Edge4316445840"
+    nd_4316446032 = nd_4316445776.new_child(label="Node4316446032", taxon=None, edge_length=3.93234771773, oid="Node4316446032")
+    nd_4316446032.edge.oid = "Edge4316446096"
+    nd_4316446544 = nd_4316445776.new_child(label="Python regius", taxon=tax_4313760144, edge_length=27.6581048725, oid="Node4316446544")
+    nd_4316446544.edge.oid = "Edge4316467280"
+    nd_4316446160 = nd_4316446032.new_child(label="Python curtus", taxon=tax_4313760016, edge_length=23.7257571548, oid="Node4316446160")
+    nd_4316446160.edge.oid = "Edge4316446224"
+    nd_4316445904 = nd_4316446032.new_child(label="Node4316445904", taxon=None, edge_length=7.63118798191, oid="Node4316445904")
+    nd_4316445904.edge.oid = "Edge4316446352"
+    nd_4316446416 = nd_4316445904.new_child(label="Python sebae", taxon=tax_4313760336, edge_length=16.0945691729, oid="Node4316446416")
+    nd_4316446416.edge.oid = "Edge4316446480"
+    nd_4316446288 = nd_4316445904.new_child(label="Python molurus", taxon=tax_4313760080, edge_length=16.0945691729, oid="Node4316446288")
+    nd_4316446288.edge.oid = "Edge4316446608"
+    tree_4316446672 = dendropy.Tree(label="Tree09", taxon_set=tree_list.taxon_set, oid="Tree4316446672")
+    tree_list.append(tree_4316446672, reindex_taxa=False)
+    tree_4316446672.seed_node.oid = 'Node4316467472'
+    nd_4316467600 = tree_4316446672.seed_node.new_child(label="Candola aspera", taxon=tax_4313742032, edge_length=126.147943419, oid="Node4316467600")
+    nd_4316467600.edge.oid = "Edge4316467664"
+    nd_4316467344 = tree_4316446672.seed_node.new_child(label="Node4316467344", taxon=None, edge_length=40.5157695372, oid="Node4316467344")
+    nd_4316467344.edge.oid = "Edge4316467728"
+    nd_4316467792 = nd_4316467344.new_child(label="Node4316467792", taxon=None, edge_length=13.6608326978, oid="Node4316467792")
+    nd_4316467792.edge.oid = "Edge4316467856"
+    nd_4316512592 = nd_4316467344.new_child(label="Xenopeltis unicolor", taxon=tax_4313760592, edge_length=85.6321738818, oid="Node4316512592")
+    nd_4316512592.edge.oid = "Edge4316512656"
+    nd_4316467920 = nd_4316467792.new_child(label="Node4316467920", taxon=None, edge_length=17.1918011574, oid="Node4316467920")
+    nd_4316467920.edge.oid = "Edge4316467984"
+    nd_4316512336 = nd_4316467792.new_child(label="Loxocemus bicolor", taxon=tax_4313742480, edge_length=71.971341184, oid="Node4316512336")
+    nd_4316512336.edge.oid = "Edge4316512528"
+    nd_4316468048 = nd_4316467920.new_child(label="Node4316468048", taxon=None, edge_length=5.77299961102, oid="Node4316468048")
+    nd_4316468048.edge.oid = "Edge4316468112"
+    nd_4316490896 = nd_4316467920.new_child(label="Node4316490896", taxon=None, edge_length=21.166651853, oid="Node4316490896")
+    nd_4316490896.edge.oid = "Edge4316491088"
+    nd_4316468176 = nd_4316468048.new_child(label="Node4316468176", taxon=None, edge_length=13.7010200713, oid="Node4316468176")
+    nd_4316468176.edge.oid = "Edge4316468240"
+    nd_4316490576 = nd_4316468048.new_child(label="Node4316490576", taxon=None, edge_length=24.6978541753, oid="Node4316490576")
+    nd_4316490576.edge.oid = "Edge4316490704"
+    nd_4316468304 = nd_4316468176.new_child(label="Node4316468304", taxon=None, edge_length=0.617658990864, oid="Node4316468304")
+    nd_4316468304.edge.oid = "Edge4316468368"
+    nd_4316470480 = nd_4316468176.new_child(label="Node4316470480", taxon=None, edge_length=1.35670146604, oid="Node4316470480")
+    nd_4316470480.edge.oid = "Edge4316470544"
+    nd_4316468432 = nd_4316468304.new_child(label="Morelia boeleni", taxon=tax_4313742672, edge_length=34.6878613533, oid="Node4316468432")
+    nd_4316468432.edge.oid = "Edge4316468496"
+    nd_4316467408 = nd_4316468304.new_child(label="Node4316467408", taxon=None, edge_length=2.23641376685, oid="Node4316467408")
+    nd_4316467408.edge.oid = "Edge4316468624"
+    nd_4316468688 = nd_4316467408.new_child(label="Node4316468688", taxon=None, edge_length=10.5685372807, oid="Node4316468688")
+    nd_4316468688.edge.oid = "Edge4316468752"
+    nd_4316469072 = nd_4316467408.new_child(label="Node4316469072", taxon=None, edge_length=2.11685229318, oid="Node4316469072")
+    nd_4316469072.edge.oid = "Edge4316469136"
+    nd_4316468816 = nd_4316468688.new_child(label="Bothrochilus boa", taxon=tax_4313741968, edge_length=21.8829103058, oid="Node4316468816")
+    nd_4316468816.edge.oid = "Edge4316468880"
+    nd_4316468560 = nd_4316468688.new_child(label="Liasis albertisii", taxon=tax_4313742160, edge_length=21.8829103058, oid="Node4316468560")
+    nd_4316468560.edge.oid = "Edge4316469008"
+    nd_4316469200 = nd_4316469072.new_child(label="Node4316469200", taxon=None, edge_length=17.1757724208, oid="Node4316469200")
+    nd_4316469200.edge.oid = "Edge4316469264"
+    nd_4316469584 = nd_4316469072.new_child(label="Node4316469584", taxon=None, edge_length=3.96372676423, oid="Node4316469584")
+    nd_4316469584.edge.oid = "Edge4316469648"
+    nd_4316469328 = nd_4316469200.new_child(label="Antaresia melanocephalus", taxon=tax_4313741456, edge_length=13.1588228725, oid="Node4316469328")
+    nd_4316469328.edge.oid = "Edge4316469392"
+    nd_4316468944 = nd_4316469200.new_child(label="Antaresia ramsayi", taxon=tax_4313741712, edge_length=13.1588228725, oid="Node4316468944")
+    nd_4316468944.edge.oid = "Edge4316469520"
+    nd_4316469712 = nd_4316469584.new_child(label="Node4316469712", taxon=None, edge_length=19.5683902852, oid="Node4316469712")
+    nd_4316469712.edge.oid = "Edge4316469776"
+    nd_4316470096 = nd_4316469584.new_child(label="Node4316470096", taxon=None, edge_length=4.82785669688, oid="Node4316470096")
+    nd_4316470096.edge.oid = "Edge4316470160"
+    nd_4316469840 = nd_4316469712.new_child(label="Liasis fuscus", taxon=tax_4313742224, edge_length=6.80247824391, oid="Node4316469840")
+    nd_4316469840.edge.oid = "Edge4316469904"
+    nd_4316469456 = nd_4316469712.new_child(label="Liasis mackloti", taxon=tax_4313742288, edge_length=6.80247824391, oid="Node4316469456")
+    nd_4316469456.edge.oid = "Edge4316470032"
+    nd_4316470224 = nd_4316470096.new_child(label="Apodora papuana", taxon=tax_4313741904, edge_length=21.5430118322, oid="Node4316470224")
+    nd_4316470224.edge.oid = "Edge4316470288"
+    nd_4316469968 = nd_4316470096.new_child(label="Liasis olivaceus", taxon=tax_4313742352, edge_length=21.5430118322, oid="Node4316469968")
+    nd_4316469968.edge.oid = "Edge4316470416"
+    nd_4316470608 = nd_4316470480.new_child(label="Node4316470608", taxon=None, edge_length=10.3401216686, oid="Node4316470608")
+    nd_4316470608.edge.oid = "Edge4316470672"
+    nd_4316488848 = nd_4316470480.new_child(label="Node4316488848", taxon=None, edge_length=7.03488295134, oid="Node4316488848")
+    nd_4316488848.edge.oid = "Edge4316489040"
+    nd_4316470736 = nd_4316470608.new_child(label="Node4316470736", taxon=None, edge_length=2.31259127041, oid="Node4316470736")
+    nd_4316470736.edge.oid = "Edge4316470800"
+    nd_4316488592 = nd_4316470608.new_child(label="Node4316488592", taxon=None, edge_length=13.9826784484, oid="Node4316488592")
+    nd_4316488592.edge.oid = "Edge4316488656"
+    nd_4316470864 = nd_4316470736.new_child(label="Node4316470864", taxon=None, edge_length=7.79402846351, oid="Node4316470864")
+    nd_4316470864.edge.oid = "Edge4316470928"
+    nd_4316488336 = nd_4316470736.new_child(label="Morelia oenpelliensis", taxon=tax_4313743248, edge_length=21.2961059391, oid="Node4316488336")
+    nd_4316488336.edge.oid = "Edge4316488528"
+    nd_4316470992 = nd_4316470864.new_child(label="Morelia tracyae", taxon=tax_4313759824, edge_length=13.5020774756, oid="Node4316470992")
+    nd_4316470992.edge.oid = "Edge4316471056"
+    nd_4316470352 = nd_4316470864.new_child(label="Node4316470352", taxon=None, edge_length=3.5072599877, oid="Node4316470352")
+    nd_4316470352.edge.oid = "Edge4316471184"
+    nd_4316471248 = nd_4316470352.new_child(label="Node4316471248", taxon=None, edge_length=6.20487512451, oid="Node4316471248")
+    nd_4316471248.edge.oid = "Edge4316487760"
+    nd_4316488208 = nd_4316470352.new_child(label="Morelia amethistina", taxon=tax_4313742608, edge_length=9.99481748791, oid="Node4316488208")
+    nd_4316488208.edge.oid = "Edge4316488400"
+    nd_4316487824 = nd_4316471248.new_child(label="Morelia nauta", taxon=tax_4313743120, edge_length=3.78994236341, oid="Node4316487824")
+    nd_4316487824.edge.oid = "Edge4316487888"
+    nd_4316471120 = nd_4316471248.new_child(label="Node4316471120", taxon=None, edge_length=1.25204312348, oid="Node4316471120")
+    nd_4316471120.edge.oid = "Edge4316488016"
+    nd_4316488080 = nd_4316471120.new_child(label="Morelia clastolepis", taxon=tax_4313742928, edge_length=2.53789923993, oid="Node4316488080")
+    nd_4316488080.edge.oid = "Edge4316488144"
+    nd_4316487952 = nd_4316471120.new_child(label="Morelia kinghorni", taxon=tax_4313743056, edge_length=2.53789923993, oid="Node4316487952")
+    nd_4316487952.edge.oid = "Edge4316488272"
+    nd_4316488720 = nd_4316488592.new_child(label="Morelia spilota", taxon=tax_4313743312, edge_length=9.62601876119, oid="Node4316488720")
+    nd_4316488720.edge.oid = "Edge4316488784"
+    nd_4316488464 = nd_4316488592.new_child(label="Morelia bredli", taxon=tax_4313742736, edge_length=9.62601876119, oid="Node4316488464")
+    nd_4316488464.edge.oid = "Edge4316488912"
+    nd_4316489104 = nd_4316488848.new_child(label="Node4316489104", taxon=None, edge_length=4.39672345568, oid="Node4316489104")
+    nd_4316489104.edge.oid = "Edge4316489168"
+    nd_4316489616 = nd_4316488848.new_child(label="Node4316489616", taxon=None, edge_length=3.94778865925, oid="Node4316489616")
+    nd_4316489616.edge.oid = "Edge4316489808"
+    nd_4316489232 = nd_4316489104.new_child(label="Morelia carinata", taxon=tax_4313742800, edge_length=22.5172124711, oid="Node4316489232")
+    nd_4316489232.edge.oid = "Edge4316489296"
+    nd_4316488976 = nd_4316489104.new_child(label="Node4316488976", taxon=None, edge_length=11.9061835258, oid="Node4316488976")
+    nd_4316488976.edge.oid = "Edge4316489424"
+    nd_4316489488 = nd_4316488976.new_child(label="Morelia viridisS", taxon=tax_4313759952, edge_length=10.6110289453, oid="Node4316489488")
+    nd_4316489488.edge.oid = "Edge4316489552"
+    nd_4316489360 = nd_4316488976.new_child(label="Morelia viridisN", taxon=tax_4313759888, edge_length=10.6110289453, oid="Node4316489360")
+    nd_4316489360.edge.oid = "Edge4316489680"
+    nd_4316489872 = nd_4316489616.new_child(label="Antaresia maculosa", taxon=tax_4313741328, edge_length=22.9661472676, oid="Node4316489872")
+    nd_4316489872.edge.oid = "Edge4316489936"
+    nd_4316489744 = nd_4316489616.new_child(label="Node4316489744", taxon=None, edge_length=3.7713704432, oid="Node4316489744")
+    nd_4316489744.edge.oid = "Edge4316490064"
+    nd_4316490128 = nd_4316489744.new_child(label="Node4316490128", taxon=None, edge_length=11.9409692012, oid="Node4316490128")
+    nd_4316490128.edge.oid = "Edge4316490192"
+    nd_4316490512 = nd_4316489744.new_child(label="Antaresia perthensis", taxon=tax_4313741584, edge_length=19.1947768244, oid="Node4316490512")
+    nd_4316490512.edge.oid = "Edge4316490384"
+    nd_4316490256 = nd_4316490128.new_child(label="Antaresia childreni", taxon=tax_4313741136, edge_length=7.25380762314, oid="Node4316490256")
+    nd_4316490256.edge.oid = "Edge4316490320"
+    nd_4316490000 = nd_4316490128.new_child(label="Antaresia stimsoni", taxon=tax_4313741840, edge_length=7.25380762314, oid="Node4316490000")
+    nd_4316490000.edge.oid = "Edge4316490448"
+    nd_4316490768 = nd_4316490576.new_child(label="Python timoriensis", taxon=tax_4313760464, edge_length=24.3086862402, oid="Node4316490768")
+    nd_4316490768.edge.oid = "Edge4316490832"
+    nd_4316490640 = nd_4316490576.new_child(label="Python reticulatus", taxon=tax_4313760272, edge_length=24.3086862402, oid="Node4316490640")
+    nd_4316490640.edge.oid = "Edge4316490960"
+    nd_4316491152 = nd_4316490896.new_child(label="Node4316491152", taxon=None, edge_length=5.80983351578, oid="Node4316491152")
+    nd_4316491152.edge.oid = "Edge4316491216"
+    nd_4316491664 = nd_4316490896.new_child(label="Python regius", taxon=tax_4313760144, edge_length=33.6128881735, oid="Node4316491664")
+    nd_4316491664.edge.oid = "Edge4316512400"
+    nd_4316491280 = nd_4316491152.new_child(label="Python curtus", taxon=tax_4313760016, edge_length=27.8030546577, oid="Node4316491280")
+    nd_4316491280.edge.oid = "Edge4316491344"
+    nd_4316491024 = nd_4316491152.new_child(label="Node4316491024", taxon=None, edge_length=10.4395768579, oid="Node4316491024")
+    nd_4316491024.edge.oid = "Edge4316491472"
+    nd_4316491536 = nd_4316491024.new_child(label="Python sebae", taxon=tax_4313760336, edge_length=17.3634777999, oid="Node4316491536")
+    nd_4316491536.edge.oid = "Edge4316491600"
+    nd_4316491408 = nd_4316491024.new_child(label="Python molurus", taxon=tax_4313760080, edge_length=17.3634777999, oid="Node4316491408")
+    nd_4316491408.edge.oid = "Edge4316491728"
+    tree_4316512464 = dendropy.Tree(label="Tree10", taxon_set=tree_list.taxon_set, oid="Tree4316512464")
+    tree_list.append(tree_4316512464, reindex_taxa=False)
+    tree_4316512464.seed_node.oid = 'Node4316512848'
+    nd_4316512976 = tree_4316512464.seed_node.new_child(label="Candola aspera", taxon=tax_4313742032, edge_length=146.770054852, oid="Node4316512976")
+    nd_4316512976.edge.oid = "Edge4316513040"
+    nd_4316513168 = tree_4316512464.seed_node.new_child(label="Node4316513168", taxon=None, edge_length=49.9930471528, oid="Node4316513168")
+    nd_4316513168.edge.oid = "Edge4316513232"
+    nd_4316513296 = nd_4316513168.new_child(label="Node4316513296", taxon=None, edge_length=13.4634525107, oid="Node4316513296")
+    nd_4316513296.edge.oid = "Edge4316513360"
+    nd_4316558096 = nd_4316513168.new_child(label="Xenopeltis unicolor", taxon=tax_4313760592, edge_length=96.7770076997, oid="Node4316558096")
+    nd_4316558096.edge.oid = "Edge4316558160"
+    nd_4316513424 = nd_4316513296.new_child(label="Loxocemus bicolor", taxon=tax_4313742480, edge_length=83.313555189, oid="Node4316513424")
+    nd_4316513424.edge.oid = "Edge4316513488"
+    nd_4316513104 = nd_4316513296.new_child(label="Node4316513104", taxon=None, edge_length=30.4776798161, oid="Node4316513104")
+    nd_4316513104.edge.oid = "Edge4316513616"
+    nd_4316513680 = nd_4316513104.new_child(label="Node4316513680", taxon=None, edge_length=8.15039409252, oid="Node4316513680")
+    nd_4316513680.edge.oid = "Edge4316513744"
+    nd_4316536464 = nd_4316513104.new_child(label="Node4316536464", taxon=None, edge_length=14.4274535052, oid="Node4316536464")
+    nd_4316536464.edge.oid = "Edge4316536592"
+    nd_4316513808 = nd_4316513680.new_child(label="Node4316513808", taxon=None, edge_length=9.51023675819, oid="Node4316513808")
+    nd_4316513808.edge.oid = "Edge4316513872"
+    nd_4316512784 = nd_4316513680.new_child(label="Node4316512784", taxon=None, edge_length=25.3895116055, oid="Node4316512784")
+    nd_4316512784.edge.oid = "Edge4316536272"
+    nd_4316513936 = nd_4316513808.new_child(label="Node4316513936", taxon=None, edge_length=1.94845077373, oid="Node4316513936")
+    nd_4316513936.edge.oid = "Edge4316514000"
+    nd_4316534096 = nd_4316513808.new_child(label="Node4316534096", taxon=None, edge_length=1.20705242999, oid="Node4316534096")
+    nd_4316534096.edge.oid = "Edge4316534160"
+    nd_4316514064 = nd_4316513936.new_child(label="Node4316514064", taxon=None, edge_length=3.25905094181, oid="Node4316514064")
+    nd_4316514064.edge.oid = "Edge4316514128"
+    nd_4316515728 = nd_4316513936.new_child(label="Node4316515728", taxon=None, edge_length=10.0348009179, oid="Node4316515728")
+    nd_4316515728.edge.oid = "Edge4316515792"
+    nd_4316514192 = nd_4316514064.new_child(label="Node4316514192", taxon=None, edge_length=4.82232736143, oid="Node4316514192")
+    nd_4316514192.edge.oid = "Edge4316514256"
+    nd_4316514704 = nd_4316514064.new_child(label="Node4316514704", taxon=None, edge_length=4.58004825968, oid="Node4316514704")
+    nd_4316514704.edge.oid = "Edge4316514896"
+    nd_4316514320 = nd_4316514192.new_child(label="Morelia carinata", taxon=tax_4313742800, edge_length=25.1454154452, oid="Node4316514320")
+    nd_4316514320.edge.oid = "Edge4316514384"
+    nd_4316513552 = nd_4316514192.new_child(label="Node4316513552", taxon=None, edge_length=10.5788836702, oid="Node4316513552")
+    nd_4316513552.edge.oid = "Edge4316514512"
+    nd_4316514576 = nd_4316513552.new_child(label="Morelia viridisS", taxon=tax_4313759952, edge_length=14.566531775, oid="Node4316514576")
+    nd_4316514576.edge.oid = "Edge4316514640"
+    nd_4316514448 = nd_4316513552.new_child(label="Morelia viridisN", taxon=tax_4313759888, edge_length=14.566531775, oid="Node4316514448")
+    nd_4316514448.edge.oid = "Edge4316514768"
+    nd_4316514960 = nd_4316514704.new_child(label="Antaresia maculosa", taxon=tax_4313741328, edge_length=25.387694547, oid="Node4316514960")
+    nd_4316514960.edge.oid = "Edge4316515024"
+    nd_4316514832 = nd_4316514704.new_child(label="Node4316514832", taxon=None, edge_length=5.75635440071, oid="Node4316514832")
+    nd_4316514832.edge.oid = "Edge4316515152"
+    nd_4316515216 = nd_4316514832.new_child(label="Node4316515216", taxon=None, edge_length=12.7115868187, oid="Node4316515216")
+    nd_4316515216.edge.oid = "Edge4316515280"
+    nd_4316515600 = nd_4316514832.new_child(label="Antaresia perthensis", taxon=tax_4313741584, edge_length=19.6313401463, oid="Node4316515600")
+    nd_4316515600.edge.oid = "Edge4316515664"
+    nd_4316515344 = nd_4316515216.new_child(label="Antaresia childreni", taxon=tax_4313741136, edge_length=6.91975332756, oid="Node4316515344")
+    nd_4316515344.edge.oid = "Edge4316515408"
+    nd_4316515088 = nd_4316515216.new_child(label="Antaresia stimsoni", taxon=tax_4313741840, edge_length=6.91975332756, oid="Node4316515088")
+    nd_4316515088.edge.oid = "Edge4316515536"
+    nd_4316515856 = nd_4316515728.new_child(label="Node4316515856", taxon=None, edge_length=14.4811675935, oid="Node4316515856")
+    nd_4316515856.edge.oid = "Edge4316515920"
+    nd_4316516240 = nd_4316515728.new_child(label="Node4316516240", taxon=None, edge_length=0.795030531054, oid="Node4316516240")
+    nd_4316516240.edge.oid = "Edge4316516304"
+    nd_4316515984 = nd_4316515856.new_child(label="Morelia spilota", taxon=tax_4313743312, edge_length=8.71082523711, oid="Node4316515984")
+    nd_4316515984.edge.oid = "Edge4316516048"
+    nd_4316515472 = nd_4316515856.new_child(label="Morelia bredli", taxon=tax_4313742736, edge_length=8.71082523711, oid="Node4316515472")
+    nd_4316515472.edge.oid = "Edge4316516176"
+    nd_4316532816 = nd_4316516240.new_child(label="Node4316532816", taxon=None, edge_length=7.95009719313, oid="Node4316532816")
+    nd_4316532816.edge.oid = "Edge4316532880"
+    nd_4316533840 = nd_4316516240.new_child(label="Morelia oenpelliensis", taxon=tax_4313743248, edge_length=22.3969622995, oid="Node4316533840")
+    nd_4316533840.edge.oid = "Edge4316534032"
+    nd_4316532944 = nd_4316532816.new_child(label="Morelia tracyae", taxon=tax_4313759824, edge_length=14.4468651064, oid="Node4316532944")
+    nd_4316532944.edge.oid = "Edge4316533008"
+    nd_4316516112 = nd_4316532816.new_child(label="Node4316516112", taxon=None, edge_length=2.27822479328, oid="Node4316516112")
+    nd_4316516112.edge.oid = "Edge4316533136"
+    nd_4316533200 = nd_4316516112.new_child(label="Node4316533200", taxon=None, edge_length=6.98040063458, oid="Node4316533200")
+    nd_4316533200.edge.oid = "Edge4316533264"
+    nd_4316533648 = nd_4316516112.new_child(label="Morelia amethistina", taxon=tax_4313742608, edge_length=12.1686403131, oid="Node4316533648")
+    nd_4316533648.edge.oid = "Edge4316533904"
+    nd_4316533328 = nd_4316533200.new_child(label="Morelia clastolepis", taxon=tax_4313742928, edge_length=5.18823967855, oid="Node4316533328")
+    nd_4316533328.edge.oid = "Edge4316533392"
+    nd_4316533072 = nd_4316533200.new_child(label="Node4316533072", taxon=None, edge_length=1.71064757594, oid="Node4316533072")
+    nd_4316533072.edge.oid = "Edge4316533456"
+    nd_4316533520 = nd_4316533072.new_child(label="Morelia kinghorni", taxon=tax_4313743056, edge_length=3.47759210261, oid="Node4316533520")
+    nd_4316533520.edge.oid = "Edge4316533584"
+    nd_4316533712 = nd_4316533072.new_child(label="Morelia nauta", taxon=tax_4313743120, edge_length=3.47759210261, oid="Node4316533712")
+    nd_4316533712.edge.oid = "Edge4316533776"
+    nd_4316534224 = nd_4316534096.new_child(label="Morelia boeleni", taxon=tax_4313742672, edge_length=33.9681920922, oid="Node4316534224")
+    nd_4316534224.edge.oid = "Edge4316534288"
+    nd_4316533968 = nd_4316534096.new_child(label="Node4316533968", taxon=None, edge_length=1.28486469944, oid="Node4316533968")
+    nd_4316533968.edge.oid = "Edge4316534416"
+    nd_4316534480 = nd_4316533968.new_child(label="Node4316534480", taxon=None, edge_length=12.4520799939, oid="Node4316534480")
+    nd_4316534480.edge.oid = "Edge4316534544"
+    nd_4316534864 = nd_4316533968.new_child(label="Node4316534864", taxon=None, edge_length=1.68023264943, oid="Node4316534864")
+    nd_4316534864.edge.oid = "Edge4316534928"
+    nd_4316534608 = nd_4316534480.new_child(label="Bothrochilus boa", taxon=tax_4313741968, edge_length=20.2312473989, oid="Node4316534608")
+    nd_4316534608.edge.oid = "Edge4316534672"
+    nd_4316534352 = nd_4316534480.new_child(label="Liasis albertisii", taxon=tax_4313742160, edge_length=20.2312473989, oid="Node4316534352")
+    nd_4316534352.edge.oid = "Edge4316534800"
+    nd_4316534992 = nd_4316534864.new_child(label="Node4316534992", taxon=None, edge_length=19.0383478987, oid="Node4316534992")
+    nd_4316534992.edge.oid = "Edge4316535056"
+    nd_4316535376 = nd_4316534864.new_child(label="Node4316535376", taxon=None, edge_length=4.75943584051, oid="Node4316535376")
+    nd_4316535376.edge.oid = "Edge4316535440"
+    nd_4316535120 = nd_4316534992.new_child(label="Antaresia melanocephalus", taxon=tax_4313741456, edge_length=11.9647468446, oid="Node4316535120")
+    nd_4316535120.edge.oid = "Edge4316535184"
+    nd_4316534736 = nd_4316534992.new_child(label="Antaresia ramsayi", taxon=tax_4313741712, edge_length=11.9647468446, oid="Node4316534736")
+    nd_4316534736.edge.oid = "Edge4316535312"
+    nd_4316535504 = nd_4316535376.new_child(label="Node4316535504", taxon=None, edge_length=17.1180008393, oid="Node4316535504")
+    nd_4316535504.edge.oid = "Edge4316535568"
+    nd_4316535888 = nd_4316535376.new_child(label="Node4316535888", taxon=None, edge_length=2.6817531508, oid="Node4316535888")
+    nd_4316535888.edge.oid = "Edge4316535952"
+    nd_4316535632 = nd_4316535504.new_child(label="Liasis fuscus", taxon=tax_4313742224, edge_length=9.12565806357, oid="Node4316535632")
+    nd_4316535632.edge.oid = "Edge4316535696"
+    nd_4316535248 = nd_4316535504.new_child(label="Liasis mackloti", taxon=tax_4313742288, edge_length=9.12565806357, oid="Node4316535248")
+    nd_4316535248.edge.oid = "Edge4316535824"
+    nd_4316536016 = nd_4316535888.new_child(label="Apodora papuana", taxon=tax_4313741904, edge_length=23.561905752, oid="Node4316536016")
+    nd_4316536016.edge.oid = "Edge4316536080"
+    nd_4316512720 = nd_4316535888.new_child(label="Liasis olivaceus", taxon=tax_4313742352, edge_length=23.561905752, oid="Node4316512720")
+    nd_4316512720.edge.oid = "Edge4316535760"
+    nd_4316536336 = nd_4316512784.new_child(label="Python timoriensis", taxon=tax_4313760464, edge_length=19.2959696748, oid="Node4316536336")
+    nd_4316536336.edge.oid = "Edge4316536400"
+    nd_4316536208 = nd_4316512784.new_child(label="Python reticulatus", taxon=tax_4313760272, edge_length=19.2959696748, oid="Node4316536208")
+    nd_4316536208.edge.oid = "Edge4316536528"
+    nd_4316536656 = nd_4316536464.new_child(label="Node4316536656", taxon=None, edge_length=6.97033769, oid="Node4316536656")
+    nd_4316536656.edge.oid = "Edge4316536720"
+    nd_4316557776 = nd_4316536464.new_child(label="Python regius", taxon=tax_4313760144, edge_length=38.4084218677, oid="Node4316557776")
+    nd_4316557776.edge.oid = "Edge4316557968"
+    nd_4316536784 = nd_4316536656.new_child(label="Python curtus", taxon=tax_4313760016, edge_length=31.4380841777, oid="Node4316536784")
+    nd_4316536784.edge.oid = "Edge4316557392"
+    nd_4316557520 = nd_4316536656.new_child(label="Node4316557520", taxon=None, edge_length=13.5557299793, oid="Node4316557520")
+    nd_4316557520.edge.oid = "Edge4316557584"
+    nd_4316557648 = nd_4316557520.new_child(label="Python sebae", taxon=tax_4313760336, edge_length=17.8823541984, oid="Node4316557648")
+    nd_4316557648.edge.oid = "Edge4316557712"
+    nd_4316557456 = nd_4316557520.new_child(label="Python molurus", taxon=tax_4313760080, edge_length=17.8823541984, oid="Node4316557456")
+    nd_4316557456.edge.oid = "Edge4316557840"
+    tree_4316557904 = dendropy.Tree(label="Tree11", taxon_set=tree_list.taxon_set, oid="Tree4316557904")
+    tree_list.append(tree_4316557904, reindex_taxa=False)
+    tree_4316557904.seed_node.oid = 'Node4316558352'
+    nd_4316558480 = tree_4316557904.seed_node.new_child(label="Node4316558480", taxon=None, edge_length=71.3865451194, oid="Node4316558480")
+    nd_4316558480.edge.oid = "Edge4316558544"
+    nd_4316607440 = tree_4316557904.seed_node.new_child(label="Candola aspera", taxon=tax_4313742032, edge_length=211.46817309, oid="Node4316607440")
+    nd_4316607440.edge.oid = "Edge4316607632"
+    nd_4316558608 = nd_4316558480.new_child(label="Xenopeltis unicolor", taxon=tax_4313760592, edge_length=140.081627971, oid="Node4316558608")
+    nd_4316558608.edge.oid = "Edge4316558672"
+    nd_4316558800 = nd_4316558480.new_child(label="Node4316558800", taxon=None, edge_length=26.0234610563, oid="Node4316558800")
+    nd_4316558800.edge.oid = "Edge4316558864"
+    nd_4316558928 = nd_4316558800.new_child(label="Loxocemus bicolor", taxon=tax_4313742480, edge_length=114.058166915, oid="Node4316558928")
+    nd_4316558928.edge.oid = "Edge4316558992"
+    nd_4316558736 = nd_4316558800.new_child(label="Node4316558736", taxon=None, edge_length=40.1699176918, oid="Node4316558736")
+    nd_4316558736.edge.oid = "Edge4316559120"
+    nd_4316559184 = nd_4316558736.new_child(label="Node4316559184", taxon=None, edge_length=12.7558559915, oid="Node4316559184")
+    nd_4316559184.edge.oid = "Edge4316559248"
+    nd_4316606544 = nd_4316558736.new_child(label="Node4316606544", taxon=None, edge_length=17.7722054357, oid="Node4316606544")
+    nd_4316606544.edge.oid = "Edge4316606736"
+    nd_4316559312 = nd_4316559184.new_child(label="Node4316559312", taxon=None, edge_length=12.1691499629, oid="Node4316559312")
+    nd_4316559312.edge.oid = "Edge4316559376"
+    nd_4316585744 = nd_4316559184.new_child(label="Node4316585744", taxon=None, edge_length=28.055060848, oid="Node4316585744")
+    nd_4316585744.edge.oid = "Edge4316585808"
+    nd_4316559440 = nd_4316559312.new_child(label="Node4316559440", taxon=None, edge_length=4.4227398576, oid="Node4316559440")
+    nd_4316559440.edge.oid = "Edge4316559504"
+    nd_4316583696 = nd_4316559312.new_child(label="Node4316583696", taxon=None, edge_length=3.26334313874, oid="Node4316583696")
+    nd_4316583696.edge.oid = "Edge4316583760"
+    nd_4316559568 = nd_4316559440.new_child(label="Node4316559568", taxon=None, edge_length=5.98387013923, oid="Node4316559568")
+    nd_4316559568.edge.oid = "Edge4316559632"
+    nd_4316561232 = nd_4316559440.new_child(label="Node4316561232", taxon=None, edge_length=17.9619739892, oid="Node4316561232")
+    nd_4316561232.edge.oid = "Edge4316561296"
+    nd_4316559696 = nd_4316559568.new_child(label="Node4316559696", taxon=None, edge_length=7.53311752135, oid="Node4316559696")
+    nd_4316559696.edge.oid = "Edge4316559760"
+    nd_4316560208 = nd_4316559568.new_child(label="Node4316560208", taxon=None, edge_length=4.18557870369, oid="Node4316560208")
+    nd_4316560208.edge.oid = "Edge4316560400"
+    nd_4316559824 = nd_4316559696.new_child(label="Morelia carinata", taxon=tax_4313742800, edge_length=31.0235157502, oid="Node4316559824")
+    nd_4316559824.edge.oid = "Edge4316559888"
+    nd_4316559056 = nd_4316559696.new_child(label="Node4316559056", taxon=None, edge_length=12.7654788618, oid="Node4316559056")
+    nd_4316559056.edge.oid = "Edge4316560016"
+    nd_4316560080 = nd_4316559056.new_child(label="Morelia viridisS", taxon=tax_4313759952, edge_length=18.2580368884, oid="Node4316560080")
+    nd_4316560080.edge.oid = "Edge4316560144"
+    nd_4316559952 = nd_4316559056.new_child(label="Morelia viridisN", taxon=tax_4313759888, edge_length=18.2580368884, oid="Node4316559952")
+    nd_4316559952.edge.oid = "Edge4316560272"
+    nd_4316560464 = nd_4316560208.new_child(label="Antaresia maculosa", taxon=tax_4313741328, edge_length=34.3710545678, oid="Node4316560464")
+    nd_4316560464.edge.oid = "Edge4316560528"
+    nd_4316560336 = nd_4316560208.new_child(label="Node4316560336", taxon=None, edge_length=7.81168349566, oid="Node4316560336")
+    nd_4316560336.edge.oid = "Edge4316560656"
+    nd_4316560720 = nd_4316560336.new_child(label="Node4316560720", taxon=None, edge_length=15.350690271, oid="Node4316560720")
+    nd_4316560720.edge.oid = "Edge4316560784"
+    nd_4316561104 = nd_4316560336.new_child(label="Antaresia perthensis", taxon=tax_4313741584, edge_length=26.5593710722, oid="Node4316561104")
+    nd_4316561104.edge.oid = "Edge4316561168"
+    nd_4316560848 = nd_4316560720.new_child(label="Antaresia childreni", taxon=tax_4313741136, edge_length=11.2086808012, oid="Node4316560848")
+    nd_4316560848.edge.oid = "Edge4316560912"
+    nd_4316560592 = nd_4316560720.new_child(label="Antaresia stimsoni", taxon=tax_4313741840, edge_length=11.2086808012, oid="Node4316560592")
+    nd_4316560592.edge.oid = "Edge4316561040"
+    nd_4316561360 = nd_4316561232.new_child(label="Node4316561360", taxon=None, edge_length=1.39777518086, oid="Node4316561360")
+    nd_4316561360.edge.oid = "Edge4316581968"
+    nd_4316583312 = nd_4316561232.new_child(label="Node4316583312", taxon=None, edge_length=13.6008570384, oid="Node4316583312")
+    nd_4316583312.edge.oid = "Edge4316583376"
+    nd_4316582032 = nd_4316561360.new_child(label="Morelia oenpelliensis", taxon=tax_4313743248, edge_length=25.1807542407, oid="Node4316582032")
+    nd_4316582032.edge.oid = "Edge4316582096"
+    nd_4316560976 = nd_4316561360.new_child(label="Node4316560976", taxon=None, edge_length=7.6242060025, oid="Node4316560976")
+    nd_4316560976.edge.oid = "Edge4316582224"
+    nd_4316582288 = nd_4316560976.new_child(label="Morelia tracyae", taxon=tax_4313759824, edge_length=17.5565482382, oid="Node4316582288")
+    nd_4316582288.edge.oid = "Edge4316582352"
+    nd_4316582160 = nd_4316560976.new_child(label="Node4316582160", taxon=None, edge_length=3.73213849687, oid="Node4316582160")
+    nd_4316582160.edge.oid = "Edge4316582480"
+    nd_4316582544 = nd_4316582160.new_child(label="Node4316582544", taxon=None, edge_length=8.62088071739, oid="Node4316582544")
+    nd_4316582544.edge.oid = "Edge4316582608"
+    nd_4316583056 = nd_4316582160.new_child(label="Morelia amethistina", taxon=tax_4313742608, edge_length=13.8244097414, oid="Node4316583056")
+    nd_4316583056.edge.oid = "Edge4316583248"
+    nd_4316582672 = nd_4316582544.new_child(label="Morelia clastolepis", taxon=tax_4313742928, edge_length=5.20352902397, oid="Node4316582672")
+    nd_4316582672.edge.oid = "Edge4316582736"
+    nd_4316582416 = nd_4316582544.new_child(label="Node4316582416", taxon=None, edge_length=2.83199057731, oid="Node4316582416")
+    nd_4316582416.edge.oid = "Edge4316582864"
+    nd_4316582928 = nd_4316582416.new_child(label="Morelia kinghorni", taxon=tax_4313743056, edge_length=2.37153844665, oid="Node4316582928")
+    nd_4316582928.edge.oid = "Edge4316582992"
+    nd_4316582800 = nd_4316582416.new_child(label="Morelia nauta", taxon=tax_4313743120, edge_length=2.37153844665, oid="Node4316582800")
+    nd_4316582800.edge.oid = "Edge4316583120"
+    nd_4316583440 = nd_4316583312.new_child(label="Morelia spilota", taxon=tax_4313743312, edge_length=12.9776723832, oid="Node4316583440")
+    nd_4316583440.edge.oid = "Edge4316583504"
+    nd_4316583184 = nd_4316583312.new_child(label="Morelia bredli", taxon=tax_4313742736, edge_length=12.9776723832, oid="Node4316583184")
+    nd_4316583184.edge.oid = "Edge4316583632"
+    nd_4316583824 = nd_4316583696.new_child(label="Node4316583824", taxon=None, edge_length=3.5026210108, oid="Node4316583824")
+    nd_4316583824.edge.oid = "Edge4316583888"
+    nd_4316585104 = nd_4316583696.new_child(label="Node4316585104", taxon=None, edge_length=0.85376044557, oid="Node4316585104")
+    nd_4316585104.edge.oid = "Edge4316585168"
+    nd_4316583952 = nd_4316583824.new_child(label="Node4316583952", taxon=None, edge_length=23.3327851176, oid="Node4316583952")
+    nd_4316583952.edge.oid = "Edge4316584016"
+    nd_4316584336 = nd_4316583824.new_child(label="Node4316584336", taxon=None, edge_length=12.8697548268, oid="Node4316584336")
+    nd_4316584336.edge.oid = "Edge4316584400"
+    nd_4316584080 = nd_4316583952.new_child(label="Antaresia melanocephalus", taxon=tax_4313741456, edge_length=18.8644940012, oid="Node4316584080")
+    nd_4316584080.edge.oid = "Edge4316584144"
+    nd_4316583568 = nd_4316583952.new_child(label="Antaresia ramsayi", taxon=tax_4313741712, edge_length=18.8644940012, oid="Node4316583568")
+    nd_4316583568.edge.oid = "Edge4316584272"
+    nd_4316584464 = nd_4316584336.new_child(label="Node4316584464", taxon=None, edge_length=22.0000981488, oid="Node4316584464")
+    nd_4316584464.edge.oid = "Edge4316584528"
+    nd_4316558288 = nd_4316584336.new_child(label="Node4316558288", taxon=None, edge_length=5.24037108992, oid="Node4316558288")
+    nd_4316558288.edge.oid = "Edge4316584720"
+    nd_4316584592 = nd_4316584464.new_child(label="Liasis fuscus", taxon=tax_4313742224, edge_length=7.32742614319, oid="Node4316584592")
+    nd_4316584592.edge.oid = "Edge4316584656"
+    nd_4316584208 = nd_4316584464.new_child(label="Liasis mackloti", taxon=tax_4313742288, edge_length=7.32742614319, oid="Node4316584208")
+    nd_4316584208.edge.oid = "Edge4316584784"
+    nd_4316584848 = nd_4316558288.new_child(label="Apodora papuana", taxon=tax_4313741904, edge_length=24.0871532021, oid="Node4316584848")
+    nd_4316584848.edge.oid = "Edge4316584912"
+    nd_4316558224 = nd_4316558288.new_child(label="Liasis olivaceus", taxon=tax_4313742352, edge_length=24.0871532021, oid="Node4316558224")
+    nd_4316558224.edge.oid = "Edge4316585040"
+    nd_4316585232 = nd_4316585104.new_child(label="Node4316585232", taxon=None, edge_length=19.3585494438, oid="Node4316585232")
+    nd_4316585232.edge.oid = "Edge4316585296"
+    nd_4316585616 = nd_4316585104.new_child(label="Morelia boeleni", taxon=tax_4313742672, edge_length=44.846139684, oid="Node4316585616")
+    nd_4316585616.edge.oid = "Edge4316585680"
+    nd_4316585360 = nd_4316585232.new_child(label="Bothrochilus boa", taxon=tax_4313741968, edge_length=25.4875902402, oid="Node4316585360")
+    nd_4316585360.edge.oid = "Edge4316585424"
+    nd_4316584976 = nd_4316585232.new_child(label="Liasis albertisii", taxon=tax_4313742160, edge_length=25.4875902402, oid="Node4316584976")
+    nd_4316584976.edge.oid = "Edge4316585552"
+    nd_4316585872 = nd_4316585744.new_child(label="Python timoriensis", taxon=tax_4313760464, edge_length=33.0773323832, oid="Node4316585872")
+    nd_4316585872.edge.oid = "Edge4316585936"
+    nd_4316585488 = nd_4316585744.new_child(label="Python reticulatus", taxon=tax_4313760272, edge_length=33.0773323832, oid="Node4316585488")
+    nd_4316585488.edge.oid = "Edge4316606608"
+    nd_4316606800 = nd_4316606544.new_child(label="Node4316606800", taxon=None, edge_length=13.6364666177, oid="Node4316606800")
+    nd_4316606800.edge.oid = "Edge4316606864"
+    nd_4316607312 = nd_4316606544.new_child(label="Python regius", taxon=tax_4313760144, edge_length=56.1160437871, oid="Node4316607312")
+    nd_4316607312.edge.oid = "Edge4316607504"
+    nd_4316606928 = nd_4316606800.new_child(label="Python curtus", taxon=tax_4313760016, edge_length=42.4795771694, oid="Node4316606928")
+    nd_4316606928.edge.oid = "Edge4316606992"
+    nd_4316606672 = nd_4316606800.new_child(label="Node4316606672", taxon=None, edge_length=16.6495052056, oid="Node4316606672")
+    nd_4316606672.edge.oid = "Edge4316607120"
+    nd_4316607184 = nd_4316606672.new_child(label="Python sebae", taxon=tax_4313760336, edge_length=25.8300719638, oid="Node4316607184")
+    nd_4316607184.edge.oid = "Edge4316607248"
+    nd_4316607056 = nd_4316606672.new_child(label="Python molurus", taxon=tax_4313760080, edge_length=25.8300719638, oid="Node4316607056")
+    nd_4316607056.edge.oid = "Edge4316607376"
 
     # set labels of nodes with taxa to taxon label, else oid (for consistent
     # identification in debugging)
@@ -1869,6 +2313,7 @@ def reference_tree_list(taxon_set=None):
         t.assign_node_labels_from_taxon_or_oid()
 
     return tree_list
+
 
 def reference_continuous_dict():
     val_dict = {}
@@ -1905,75 +2350,83 @@ def reference_continuous_dict():
 
 def reference_dna_dict():
     dna_dict = {}
-    dna_dict['Python regius'] = 'ATGCCCCACCACTATATCCTAACCCTCTTCGGCCTTCTACCAGTAGCAACCAACATCTCAACATGATGAAACTTCGGCTCAATACTACTAACATGTCTAATGTTACAAGTACTTACCGGCTTCTTCCTAGCTGTCCACTATACAGCAAACATCAACCTAGCATTTTCATCCATTATCCATATTACCCGTGACGTCCCCTACGGCTGACTAATACAAAACCTACACGCCATCGGCGCATCGATATTCTTTATCTGCATCTACATTCACATCGCACGAGGACTATACTACGGCTCCCACCTCAATAAAGAAACCTGGATATCAGGTATTACACTTCTCATCACACTGATGGCAACCGCCTTCTTCGGGTATGTACTCCCATGAGGACAAATATCCTTCTGAGCCGCAACAGTAATTACCAACCTACTCACTGCTGTACCGTACCTAGGCGCAACCATAACCACCTGATTATGAGGAGGGTTCGCAATCAACGACCCCACCCTTACACGATTTTTCGCACTACACTTCATCCTACCATTCGAGATTATTTCCCTGTCATCATTACACATTATTTTACTTCACGAAGAAGGATCTAGCAACCCACTAGGAACCAACCCAGACATCGACAAAATCCCATTCCACCCGTATCACTCATACAAAGACCTCCTACTACTAACACTAATACTACTAACACTTATAATCACCGTCTCCTTCTTCCCAGATATCTTCAACGACCCAGACAACTTCTCAAAAGCCAACCCATTAGTCACCCCCCAACACATTAAACCAGAGTGATACTTCCTATTCGCCTATGGCATCCTACGATCAATCCGAAATAAGCTTGGAGGGGCCTTAGCTCTAGTAATATCAATTATAATTATACTAACAGCCCCACTCACACACACAGCCCACCTCCGCCCAATAACCTTCCGACCACTTTCACAACTAATATTTTGAACCCTAATTTCAACATTCATTACCATTACATGAGCCGCCATAAAACCAGTAGAACCCCCATACATCATTATCAGCCAAACAACTTCAACACTATACTTCACCTTCTTTATCTCAACACCCATCCTAGGGTGAGTT-------------------------'
-    dna_dict['Python sebae'] = 'ATGCCACACCATTATATCTTAACCCTATTCGGACTCCTACCAGTAGCAACCAACATTTCAACATGATGAAATTTCGGCTCAATACTACTAACATGTTTAGCCTTACAAACGCTCACAGGCTTCTTCCTAGCTGTCCACTACACAGCAAACATTAACCTAGCATTCTCATCTATCATTCACATCATCCGTGACGTCCCACATGGCTGAATAATACAAAACCTGCACGCCATCGGCGCATCTATATTCTTTATTTGCATTTACATCCACATCGCACGAGGCCTATACTATGGATCCTATCTTAACAAAGAAACCTGAATATCAGGTATCACACTCCTCATCATCCTAATAGCAACCGCGTTCTTCGGCTACGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCAACAGTAATCACCAACCTACTCACTGCTGTACCCTACCTAGGAACAACTCTAACAACCTGATTATGGGGAGGCTTCGCAATCAACGACCCAACCCTGACACGATTCTTCGCACTACACTTCATCTTACCATTCGCTATCATCTCTCTATCATCATTACACGTCATCCTACTACACGAAGAAGGCTCCAGCAACCCATTAGGTACCAACCCAGACATCGACAAAATCCCATTCCACCCCTACCACTCATACAAAGACCTCCTTCTACTAACACTAATGATCCTTTCCCTACTAATCATCGTCTCATTCTTTCCAGATATTTTCAACGACCCAGACAACTTCTCAAAAGCCAATCCACTAGTCACACCCCAGCATATTAAACCAGAATGATACTTCCTATTCGCCTACGGAATCCTACGATCAATCCCAAACAAACTAGGAGGCGCCCTAGCCCTAGTAATATCAATCATAATTCTATTAACCATCCCATTCACACACACATCCACTATACGATCAATAACATTCCGACCATTATCACAACTAATATTCTGAACATTAGTATCAACATTCATCACTATCACATGAGCCGCCACAAAACCAGTAGAACCACCATTCATTATCATCAGCCAAGTAACCGCAACACTATACTTCACATTCTTCATTTCAACCCCCATCCTAGGATGACTAGAAAACAAAATAACAAATCACCCAT'
-    dna_dict['Python brongersmai'] = '------------------------------------------------------------------------TTCGGTTCAATATTACTCACTTGCCTAGTCCTACAAGTACTAACCGGCTTCTTCCTAGCCGTCCACTACACAGCAAACATCAACCTAGCATTTTCCTCTATTATACACATCACCCGCGACGTCCCATACGGCTGAATAATACAAAACTTACACGCYATCGGCGCATCTATATTTTTCATCTGCATCTATATCCACATCGCACGAGGACTATATTACGGCTCCTATCTCAATAAAGAAACCTGAATGTCTGGCATTACACTCCTCATCACACTAATAGCAACCGCTTTTTTCGGATATGTCCTCCCATGAGGACAGATGTCATTCTGAGCCGCAACCGTAATCACCAATCTACTAACTGCTGTACCATACCTAGGCACAACCCTAACAACCTGATTATGAGGAGGGTTCGCAATCAACGACCCCACCCTCACACGATTCTTTGCACTACACTTCATCCTACCTTTCGCAATCATCTCTTTATCATCACTACACATTATTCTCCTTCATGAAGAAGGATCTAGCAATCCACTAGGAACCAACCCCGACATCGACAAAATCCCATTCCACCCATACCACTCTCACAAAGACTTCCTCCTACTCACACTATTAATCCTTTTCCTATTTATCATTGTCTCCTTCTTCCCAGACATTTTTAATGATCCAGATAACTTCTCAAAAGCTAACCCCCTTGTCACACCCCAACACATTAAACCAGAATGATACTTCTTATTCGCTTACGGAATCCTACGATCCATCCCAAACAAACTAGGTGGCGCATTAGCATTAGTAATATCAATCATAATCTTATTTACCATCCCATTCACACACACAGCCCATCTTCGCCCTATAACCTTCCGACCGTTCTCACAACTAATATTCTGAACACTAATCTCAACATTCATCACCATCACATGGGCCGCCACAAAACCAGTAGAACCCCCATATATTATCATCAGCCAAGCAACTGCAGCATTATACTTCACCTTCTTCATCTCTACACCCCTCCTGGGCTGAATAGAAAATAAAATAACAAACACTCCCT'
-    dna_dict['Antaresia maculosa'] = 'ATGCCCCACCACTACATTCTAACCCTATTTGGTCTTCTACCTGTAGCAACAAATATCTCAACATGATGAAACTTCGGCTCAATATTACTAACATGTCTGGCCCTACAAGTATTGACCGGATTCTTCTTAGCCATCCACTACACAGCAAACATCAACTTAGCATTCTCATCTATTATTCACATCACCCGAGATGTCCCATATGGCTGAATAATACAAAACCTACACGCCATCGGAGCCTCCATATTCTTCATTTGCATTTACATTCACATTGCACGAGGACTATACTACGGATCCTACCTCAATAAAGAAACCTGAATGTCTGGCATCACCCTTCTTATCACACTAATAGCAACAGCCTTCTTCGGTTACGTTCTCCCATGGGGACAGATATCATTCTGAGCCGCAACCGTAATCACAAACTTACTTACCGCCGTCCCATACCTAGGCRTATCACTAACAACATGATTATGGGGGGGCTTTGCAATCAATGATCCTACACTGACACGATTCTTCGCACTACATTTCATCCTACCATTCGCAATCATCTCCTTATCCTCACTACACATTATTTTACTTCACGAAGAAGGCTCTAGCAACCCATTAGGAACCAATCCAGACATCGACAAAATTCCATTCCACCCCTACCACTCTCACAAAGACCTGCTCCTACTCACATTTATAATTTTACTCTTATTCACTATCGTCTCATTTCTCCCAGACATTTTCAATGACCCAGACAACTTCTCAAAAGCTAATCCCCTAGTAACACCGCAACACATTAAACCAGAATGATATTTCCTATTCGCCTATGGCATCCTACGATCTATCCCTAATAAACTGGGAGGCGCACTAGCTCTAGTAATATCGATCATAATCCTATTCATCATTCCATTCACACACACAGCCCGCTTACGCCCCATAACCTTCCGCCCACTATCACAACTAATATTCTGAACATTAGTATCAACATTCGCCACCATTACATGAGCCGCCACAAAACCAGTAGAGCCACCATTTATCATCATCAGTCAAACAACTTCAATACTTTACTTCACATTCTTCCTATCTACCCCAATTCTAGGATGAATAGAAAACAAAATAATAAACATCTCCT'
-    dna_dict['Python timoriensis'] = '------------------------------------------------------------------------TTCGGCTCACTACTATTAACATGTCTAGCCCTACAAGTATTAACTGGTTTTTTCCTAGCCGTTCACTACACAGCAAACATTAACCTGGCATTTTCATCCATCATTCACATCACCCGAGACGTCCCATACGGTTGAATGATACAAAACCTCCACGCCATCGGAGCATCCATATTTTTCATTTGTATTTACATCCACATCGCACGAGGCCTATACTACGGATCATATYTTAACAAAGAAACTTGAATATCAGGCATCACCCTACTCATCACATTAATAGCTACTGCTTTCTTCGGATATGTTCTTCCATGAGGACAAATATCATTCTGRGCCGCAACTGTAATTACAAACCTACTTACAGCCGTACCATACCTGGGCACATCATTAACAACCTGACTCTGAGGCGGATTTGCAATCAACGACCCAACTCTAACACGATTCTTCGCACTACACTTTATCCTACCATTCGCAATCATCTCACTATCCTCACTACACATTATCTTACTCCATGAAGAAGGTTCTAGCAACCCCCTAGGAACTAACCCAGACATCGATAAAATCCCATTCCACCCCTATCATTCCCACAAAGACTTCCTCTTACTAATACTAATAATTCTATTTTTATTCATTATCGTTTCATTCTTCCCAGATATTTTCAACGACCCAGACAATTTCTCAAAAGCTAACCCACTAGTGACACCACAACACATTAAACCAGAATGATACTTCCTATTTGCCTATGGCATCCTACGATCTATTCCCAATAAACTAGGAGGAGCCCTAGCCCTAGTAATATCTATTATAATTCTATTCACCATCCCATTCACACACACAGCCTATCTTCGTCCAATAACCTTTCGCCCTTTCTCACAATTCATATTCTGAACACTAATCACTACATTCATCACCATCACATGAGCCGCTACAAAACCTGTAGAACCACCATTCATTATTATCAGCCAAGCGACATCAACACTATATTTCACCTTCTTCATTTCAATCCCTCTTCTAGGCTGAATAGAAAACAAAATAATACACCTCAATT'
-    dna_dict['Python molurus'] = 'ATGCCCCACCACTATATCCTAACCTTATTTGGCCTCCTACCAGTAGCAACCAACATCTCAACATGATGAAACTTCGGCTCAATACTATTAGCATGCTTAGCCCTACAAGTATTAACCGGATTCTTCCTAGCCGTCCACTACACAGCAAACATCAACCTAGCATTCTCATCTATCATTCACATCACCCGCGATGTTCCATACGGCTGAATAATACAAAACCTACACGCTATCGGCGCATCCATATTCTTCATCTGCATCTACATTCACATCGCACGAGGACTATACTACGGCTCCTATCTAAATAAAGAAACCTGAATATCCGGAATTACACTACTCATCACACTTATGGCAACCGCCTTCTTCGGATATGTCCTCCCATGAGGGCAAATATCATTCTGAGCTGCAACCGTAATTACCAACCTATTAACCGCCGTACCATACTTAGGCACAACCCTAACAACCTGGTTATGAGGAGGATTCGCAATCAATGATCCCACCCTCACACGATTTTTTGCACTACATTTCATCCTACCATTCGCAATCATCTCCATATCATCACTACACATCATCCTACTCCACGAAGAAGGATCTAGCAACCCACTAGGAACAAACCCAGACATCGACAAAATCCCATTCCACCCATACCACTCATACAAAGACCTACTCTTCCTGACCCTAATAATCCTATTTATACTCATCATCGTCTCATTCTTCCCTGATATCTTCAACGACCCAGACAACTTCTCAAAAGCCAATCCACTAGTTACACCCCAACACATTAAACCAGAGTGGTACTTCCTATTCGCCTATGGGATCCTACGATCCATCCCAAACAAACTAGGTGGCGCATTAGCCCTAGTAATATCAATCATAATCCTATTTATTATCCCATTCACACATACAGCCCACTTCCGCCCAATAACTTTCCGCCCACTATCACAACTAATGTTCTGAACACTAGTATCAACATTCATCACTATCACATGAGCCGCCACAAAACCAGTAGAACCTCCATATATCATCATTAGCCAAGTAACAGCAACACTATACTTTATCTTCTTCATCTCTATACCCCTCCTAGGATGAATTGAAAACAAAATAACAAACACCCCCT'
-    dna_dict['Morelia carinata'] = '-----------------------------------------------------------------------CTTCGGCTCGATACTATTAACATGTTTAGCCCTACAAGTATTAACCGGCTTCTTCTTAGCTGTTCACTACACAGCAAACATTAACCTAGCATTCTCATCCATCATTCACATCACCCGAGACGTCCCATACGGCTGAATAATACAAAATCTGCACGCCATCGGAGCATCCATATTCTTCATCTGCATTTACATTCATATTGCACGAGGACTATACTATGGGTCTTACCTCAACAAAGAAACCTGAATATCTGGTATCACCCTGCTAATTATCCTAATAGCAACCGCCTTCTTCGGCTATGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATCACAAACCTACTCACCGCCGTACCCTACTTAGGCACATCACTAACAACCTGGCTTTGAGGCGGATTCGCAATCAATGACCCAACTCTAACACGATTCTTCGCACTACACTTCATCCTACCATTCGCTATTATCTCCCTATCCTCACTACACATTATCTTGCTTCACGAAGAAGGTTCTAGCAACCCCTTAGGAACCAACCCGGACATCGACAAAATCCCATTCCACCCCTATCACACCTACAAAGATCTTCTTCTACTAACAGTAATAATCCTATTTTTATTCATTATCGTTTCATTCTTCCCAGACATTTTTAATGACCCAGACAACTTCTCAAAAGCCAACCCCCTAGTAACACCACAACACATCAAACCAGAATGATACTTTCTATTTGCCTACGGAATTCTACGATCCATCCCCAATAAACTGGGAGGAGCATTAGCCCTAGTAATATCAATTATAATCCTATTCACCATTCCATTTATACACACAGCCCATCTTCGCCCAATAACCTTCCGCCCACTATCMCAACTAATATTTTGAACACTAATCTCAACATTTATCACTATCACATGAGCTGCCACAAAACCAGTAGAACCCCCATTCATTACCATCAGCCAAGCAACTTCAGCGCTATACTTCACGTTCTTCCTAACCACCCCAATTCTAGGATGAGTAGAAAATAAAATARTAAACATTCCCT'
-    dna_dict['Morelia boeleni'] = '------------------------------------------------------------------------TTCGGCTCTATACTATTAACATGCTTAGGCTTACAAGTAATAACCGGCTTCTTCCTAGCCGTACACTACACAGCAAACATCAACTTAGCATTCTCATCCATCATCCACATCACCCGAGACGTCCCATACGGCTGAATAATACAAAACTTGCACGCTATCGGAGCATCTATATTCTTCATCTGCATTTACATCCACATCGCACGAGGGTTGTACTACGGATCATACCTTAACAAAGAAACCTGAATATCTGGCATTACCCTACTTATCACATTAATAGCAACTGCCTTCTTTGGATACGTTCTCCCATGAGGACAAATATCATTCTGAGSSGCWRCMGTWATCACAAACCTACTCACTGCCATCCCTTATCTAGGCACATCACTAACAACTTGACTATGAGGCGGATTCGCAATCAATGATCCTACACTAACACGATTTTTCGCACTACACTTCATCCTTCCATTCGCAATCATTTCCTTATCCTCACTACACATCATCCTACTCCACGAAGAAGGTTCCAGCAACCCATTAGGAACCAACCCAGACATCGACAAAATCCCATTCCACCCATACCACTCCTACAAAGATCTTCTCCTACTAACATTAATAACCCTGTTCTTATTTATCATCGTCTCATTCTTCCCAGATATTTTTAACGACCCAGACAACTTTTCAAAAGCTAATCCCCTAGTAACACCACAACACATCAAACCTGAGTGATACTTTCTATTCGCCTATGGCATCCTACGATCCATCCCCAACAAACTAGGAGGTGCATTAGCCCTAGTAATATCAATCATGATCCTGTTTACCATCCCGTTTACACATACAGCCCACCTCCGTCCTATAACCTTCCGTCCACTCTCACAACTAATATTCTGAATATTAGTATCAACATTCATCACCATCACATGAGCCGCCACAAAACCAGTAGAACCACCATTCATTACCATCAGTCAAGTAACCTCAACACTTTACTTCACATTCTTCTTATCCATCCCCATCCTAGGATGGATAGAAAACAAAATAATAGACATTCCAT'
-    dna_dict['Antaresia perthensis'] = '------------------------------------------------------------------------TTCGGMTCAATACTACTAACATGTTTAGCCTTACAAGTACTAACCGGCTTTTTTTTGGCCGTCCACTACACAGCAAACATCAACCTGGCATTTTCATCCATCATTCACATTACCCGAGACGTCCCATATGGCTGAATAATACAAAACCTGCACGCCATCGGAGCATCCATATTCTTCATTTGCATCTACATTCACATTGCACGCGGACTCTACTACGGATCCTACCTCAACAAAGAAACCTGGATATCGGGAATTACCCTCCTCATCACACTGATAGCTACCGCCTTCTTCGGCTACGTCCTCCCATGAGGACAGATATCATTCTGAGCCGCAACAGTAATCACCAACCTACTCACCGCTGTACCCTACCTAGGCACATCACTAACAACCTGACTATGAGGGGGGTTCGCAATCAACGATCCCACCCTGACGCGATTCTTCGCACTACACTTCATCCTACCATTCGCAATCATTTCTCTATCATCCTTACACATTATCTTACTACACGAAGAGGGCTCCAGCAACCCACTAGGAACCAACCCAGACATTGACAAAATCCCATTCCACCCATACCACTCCCACAAAGACCTGCTCCTACTAACACTTATAATTTTATTCTTATTCATTATCCTATCGTTCTCCCCGGACATCTTCAACGACCCAGATAACTTCTCAAAAGCTAACCCCCTAGTAACACCACAACACATTAAACCAGAATGGTACTTCCTGTTCGCCTACGGAATTCTACGATCCATTCCAAATAAATTAGGAGGCGCACTAGCCCTTGTGATATCAATCATAATCCTATTTACCATCCCATTCATACACACCGCCCACCTACGCCCAATAACCTTCCGCCCACTTTCACAACTTATATTCTGAACACTAGTCTCAACATTTGCCACCATTACATGAGCCGCCACAAAACCGGTAGAGCCCCCATACATCCTCATTAGCCAAGTGACCGCAACACTATACTTCACATTCTTTCTATCCATCCCAATCCTAGGATGAATAGAAAACAAAATAATAAACACCTCCT'
-    dna_dict['Morelia viridis'] = '------------------------------------------------------------------------TTCGGYTCAATACTATTAACATGCCTAGCCCTACAAGTATTAACCGGCTTCTTCCTAGCCGTTCACTACACAGSAAACATTAATCTAGCATTCTCATCCATCATCCACATCTCCCGAGATGTTCCATACGGTTGAATAATACAAAACCTACACGCCATCGGAGCATCCATATTCTTCATTTGCATCTACATCCATATTGCACGAGGATTATACTATGGATCCTACCTCAACAAAGAAACCTGAATATCCGGTATTACCCTACTCATCACACTAATAGCAACCGCCTTCTTCGGCTATGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATCACAAACCTACTTACCGCTGTACCCTACCTGGGTACATCACTAACAACCTGATTATGAGGCGGATTCGCAATCAACGACCCAACCCTAACACGATTTTTTGCACTGCACTTCATCCTACCATTCGCAATCATCTCTCTATCCTCACTTCATGTTATCCTACTCCACGAAGAAGGCTCCAGCAATCCACTAGGAACTAATCCAGATATCGATAAAATCCCATTTCATCCATACCACTCCTACAAAGACCTACTCCTACTAACACTAATAATCCTATTCTTATTCATCATCGTTTCATTCTTCCCAGACATTTTTAACGATCCGGACAACTTCTCAAAAGCTAACCCATTAGTAACACCACAACACATCAAACCAGAATGGTATTTCCTATTCGCCTACGGCATTCTACGATCCATCCCCAACAAACTAGGAGGCGCATTAGCCTTAGTAATATCAATCATAATCCTATTTACCATCCCATTTACACACACAGCCTACCTCCGCCCCATAACCTTTCGTCCACTATCACAATTAATATTTTGAACATTGGTTGCAACATTCGCCACTATTACATGGGCTGCCACAAAACCAGTAGAACCCCCATTTATCCTCATTAGCCAAGTAACTTCAACACTATATTTCACATTCTTCTTATCCATCCCAATTTTAGGATGAATGGAAAATAAAATAATAAACATCCCCT'
-    dna_dict['Aspidites ramsayi'] = '------------------------------------------------------------------------TTCGGCTCAATACTACTAACATGCTTAGGTYTACAAGTACTAACCGGCTTYTTCCTAGCCGTCCACTACACCGCAAACATTAACCTGGCATTCTCATCTATCGTTCACATCACCCGAGATGTCCCATACGGCTGAATAATACAAAACCTACACGCCATCGGAGCATCCATATTCTTCATTTGTATCTACATTCACATTGCACGAGGATTATACTACGGATCCTACCTTAACAAAGAAACCTGAATATCGGGTATTACATTACTCATTACACTAATAGCAACCGCCTTCTTCGGATATGTCCTTCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTCACCGCCGTACCATACCTAGGTACATCTCTAACAACCTGACTGTGAGGAGGATTCGCAATCAATGATCCCACCCTAACACGATTCTTTGCGCTACACTTCATCCTACCATTCGCAATCATCTCCTTGTCCTCACTACACATTATCTTACTTCACGAAGAAGGCTCCAGCAACCCATTAGGAACCAACCCAGACATTGACAAAATCCCGTTCCACCCGTACCACTCCCACAAAGACCTCCTCCTCCTAACGCTAATAATTATATCCTTATTTATTATCACCTCGTTCTTCCCAGACATCTTTAACGACCCCGACAATTTCTCAAAAGCCAACCCCCTAGTAACACCACAGCACATTAAACCAGAGTGGTACTTCCTATTTGCCTACGGCATCCTACGATCCATCCCCAACAAACTAGGAGGCGCACTAGCCCTAGTAATATCAATCATAATCCTATTTACCATTCCATTCACACACACAGCCTACCTTCGCCCTATAACCTTCCGCCCCCTATCACAACTAATATTCTGAACACTAGTCTCAACATTCATCACCATTACATGAGCCGCCACAAAACCAGTAGAACCACCATTCATTATAATTAGCCAAGTAACCTCAACACTATACTTCATATTCTTCTTATCAACACCCATCCTAGGATGAATAGAAAATAAAATAATAAACATTTCAT'
-    dna_dict['Aspidites melanocephalus'] = 'ATGCCCCACCACTACATCCTAACCCTATTTGGCCTTCTGCCTGTAGCAACTAACATCTCAACATGATGAAACTTCGGCTCAATACTACTAACATGTTTAGGCCTACAAGTACTAACCGGCTTCTTCCTAGCCGTCCACTACACCGCAAACATTAACCTGGCATTCTCATCTATCGTTCACATCTCCCGAGATGTCCCATACGGCTGAATAATACAAAACCTACATGCAATCGGAGCATCCATATTCTTCATCTGTATCTACATTCACATTGCACGAGGATTATACTACGGATCCTACCTTAACAAAGAAACCTGAATATCAGGCATCACACTACTCATCACACTAATAGCGACCGCTTTCTTCGGATATGTGCTTACATGAGGACAAATATCATTATGAGCCGCAACCGTAATCACAAACCTACTCACCGCCGTGCCCTACCTAGGCACATCTCTAACAACCTGACTATGAGGAGGATTCGCAATCAATGATCCTACCCTAACACGATTCTTCGCACTCCACTTCATTCTGCCATTCGCAATCATCTCCTTATCCTCACTACACATCATCCTACTTCACGAAGAAGGCTCCAGCAACCCATTAGGAACCAACCCAGACATTGACAAAATCCCATTCCACCCATACCACTCCCACAAAGATCTCCTCCTCCTAACACTAATAATCATAAGCCTATTCATCATCAGCTCGTTCTTCCCAGATATCTTCAACGACCCCGACAACTTCTCAAAAGCCAACCCCCTAGTAACACCACAGCACATTAAACCAGAATGATACTTCCTATTCGCCTACGGAATTCTACGATCCATTCCCAACAAACTAGGAGGCGCATTAGCATTAGTAATATCAATTATAATCCTATTTATTATCCCATTTACACACACAGCCCGCCTTCGCCCTATAACCTTCCGCCCTCTATCACAACTAATATTTTGAACACTAGTATCAACATTCATCACCATTACATGGGCCGCCACAAAACCAGTAGAACCACCATTCATTGTAATCAGCCAAGTAACCTCATCACTATACTTCACATTCTTCTTATCAACACCCATTCTGGGATGAGCAGAAAACAAAATAATAAACATTTCAT'
-    dna_dict['Morelia oenpelliensis'] = '------------------------------------------------------------------------TTCGGCTCAATACTATTAACATGCCTAGCCCTACAAGTACTAACCGGCTTCTTCCTAGCCGTCCACTACACAGCAAATATCAACCTAGCATTTTCATCCATTATCCACATCACCCGTGACGTCCCATACGGTTGAATAATACAAAACCTACACGCCATCGGAGCATCCATATTCTTCATTTGCATTTATATTCACATCGCTCGAGGACTATACTATGGGTCATACCTTAACAAAGAAACCTGAATATCCGGTATCACCCTACTCATTACACTAATAGCAACCGCCTTCTTCGGATATGTTCTTCCATGAGGACAGATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTTACCGCCGTACCATACCTAGGCACATCACTAACAACATGACTATGAGGCGGATTCGCAATCAATGACCCAACCCTAACCCGATTCTTTGCATTACACTTCATCCTACCATTTGCAATTATCTCTTTATCCTCACTACATATCATCCTACTCCATGAAGAAGGTTCCAGCAATCCATTAGGAACCAATCCTGACATTGACAAAATCCCATTCCACCCATACCACTCCCACAAAGACCTACTCCTATTAACACTAATAACCCTACTCCTATTCATTATTGTCTCATTCTTCCCAGATATTTTCAACGACCCAGACAACTTCTCAAAAGCCAATCCCATAGTAACACCACAACACATCAAACCAGAATGGTACTTCCTATTTGCCTACGGCATCCTACGATCCATCCCAAACAAACTAGGAGGCGCATTAGCCCTAGTAATATCAATTATAATTCTATTCACCGCCCCATTCACACATACAGCCTACCTACGCCCTATAACCTTTCGCCCACTTTCACAACTAATATTCTGAGCACTAGTATCAACATTCATCACCATTACATGAGCCGCCACAAAACCAGTAGAACCACCATTTATCATCATCAGCCAAACAACTGCAACACTATACTTCACATTCTTCTTATCCATCCCCATCACAGGATGAATTGAAAACAAAATAATAAACACCCACT'
-    dna_dict['Bothrochilus boa'] = '------------------------------------------------------------------------TTTGGCTCAATATTATTAACATGCCTGGCCCTACAAGTACTAACCGGCTTCTTCCTGGCCGTCCACTACACAGCAAACATCAACCTGGCATTCTCATCCATTATTCACATCACCCGAGATGTCCCATATGGCTGAATAATACAAAACCTGCACGCCATCGGAGCATCCATATTCTTCATTTGCGTATACATTCACATCGCACGAGGACTATACTACGGGTCATACCTAAACAAAGAAACCTGAATATCTGGCATTACCCTGCTCATCACACTAATAGCGACCGCCTTCTTTGGATATGTCCTCCCGTGAGGACAGATATCATTCTGAGCCGCAACCGTAATTACAAACCTGTTAACAGCAGTACCCTACCTGGGCACATCACTAACAACCTGGTTGTGAGGCGGGTTCGCAATCAATGACCCCACCCTAACACGATTCTTCGCACTACACTTCATCCTACCATTCGCAATCATCTCCCTATCCTCACTACACATCATCCTACTTCACGAGGAGGGCTCCAGCAACCCACTAGGAACCAACCCAGACATCGACAAAATCCCTTTCCACCCCTACCACTCCCACAAAGACTTTCTTCTTCTAACACTAATAACCCTATCCTTACTCATCATCGTCTTATTCTTCCCAGACATCTTTAACGACCCAGACAACTTCTCAAAAGCCAACCCCCTAGTAACACCACAACACATCAAACCAGAATGATACTTCCTATTCGCCTACGGCATCCTACGTTCAATCCCCAATAAACTAGGAGGCGCACTAGCCTTAGTAATATCAATCATAATCCTATTCACCATCCCATTCACACACACAGCCCACCTTCGCCCCATAACCTTCCGTCCACTATCACAACTAATATTCTGAACATTAGTGTCAACATTTATCACTATCACATGGGCCGCCACAAAACCAGTAGAACCACCATTTATCACTATCAGCCAAACAACCTCAACACTATATTTTACATTCTTTTTACTTACCCCCATCCTAGGCTGAATAGAAAACAAAATAATAAAAACTCCCT'
-    dna_dict['Morelia bredli'] = '------------------------------------------------------------------------TTCGGCTCAATACTATTAACATGCCTAGCCCTGCAAATCCTAACCGGCTTCTTTTTAGCGGTCCACTACACAGCAAACATCAACCTAGCATTCTCATCCATCATCCACATTACCCGAGACGTCCCATACGGCTGAATAATACAAAASCTACACGCCATCGGAGCATCCCTATTCTTCATCTGCATCTACATCCATATCGCACGTGGGTTATACTACGGATCCTATCTCAACAAAGAAACCTGAATATCCGGTATTACCCTACTCATCACACTAATAGCAACTGCCTTCTTCGGTTATGTCCTTCCATGAGGACAAATATCATTCTRRGCCGCAACTGTAATTACAAATCTACTCACCGCCGTACCATACCTGGGCACATCACTAACAACCTGACTATGAGGCGGATTCGCAATCAATGACCCCACCTTAACACGATTCTTCGCGCTACACTTCATCCTACCATTCGCAATCATCTCTCTCTCTTCACTACACATTATCTTACTTCACGAAGAAGGCTCTAGCAACCCATTAGGAACCAACCCAGACATCGACAAAATCCCATTCCACCCCTACCACACCCACAAAGACCTGCTCCTACTAACGCTCATAATCCTGTTCCTATTCATTATCGTCTCATTCCTCCCAGATATCTTCAATGACCCAGACAACTTCTCAAAAGCTAACCCCTTGGTAACACCACAACACATTAAACCAGAGTGGTACTTCCTATTTGCCTATGGCATTCTACGATCCATCCCCAATAAACTAGGAGGCGCACTAGCCCTAATAATATCGATCCTAATTCTATTCACGATCCCATTCATACACACAGCCTATCTCCGCCCTATAACCTTCCGCCCCCTGTCACAACTTATATTTTGAACACTAATCTCAACATTCGCCACCATTACATGAGCTGCCACAAAACCAGTAGAACCCCCATTCATCATCATTAGCCAAGTAACCTCAACACTATACTTCACATTCTTCCTAACCATCCCAATTCTAGGGTGAATAGAAAACAAAATAATAAACATCTCCT'
-    dna_dict['Morelia spilota'] = 'ATGCCCCACCACTACATCCTAACCTTATTTGGCCTTCTCCCCGTAGCAACCAATATCTCAACATGATGAAACTTCGGCTCAATACTATTAACATGCCTAGCCCTACAAGTTCTAACCGGCTTCTTCTTAGCTGTCCACTACACAGCAAACATTAACCTGGCATTCTCATCCATCATTCACATTACCCGAGACGTCCCATACGGCTGGATAATACAAAACCTACACGCCATCGGAGCATCTATATTCTTCATTTGCATCTACATCCATATTGCACGTGGATTATACTACGGATCCTATCTCAACAAAGAAACCTGAATATCCGGCATTACCCTACTCATCACACTAATAGCAACCGCCTTCTTCGGTTACGTCCTCCCATGAGGACAAATGTCATTCTAAGCCGCAACTGTAATTACAAACCTACTCACCGCCGTACCCTACCTAGGCACATCTCTAACAACCTGACTATGAGGCGGGTTCGCAATCAATGACCCCACCTTAACACGATTCTTCGCATTACACTTCATCCTACCATTCGCAATTATCTCTCTCTCCTCACTACACATTATTTTACTTCACGAAGAAGGCTCTAGCAACCCATTAGGAACCAACCCAGACATCGACAAAATCCCATTCCACCCTTACCACACCCACAAAGACCTACTCCTACTAACACTTATAATCCTGTTCTTATTCATTGTCGTCTCATTCCTCCCAGACATCTTTAATGACCCAGACAACTTCTCAAAAGCTAACCCTCTAGTAACACCACAGCACATTAAACCAGAGTGGTACTTCCTATTCGCCTATGGCATTCTACGATCCATCCCCAATAAATTAGGAGGCGCACTAGCCCTAGTAATATCAATCCTAATTCTATTCACAATCCCATTCATACACACAGCCTATCTCCGCCCCATAACCTTCCGCCCCCTGTCACAACTCATATTTTGAACACTAATCTCAACATTCGCCACCATTACATGAGCTGCCACAAAGCCAGTAGAACCCCCATTCATCATTATCAGCCAAGTAACCTCAACACTATACTTCACATTCTTCCTATCCATCCCTATTCTAGGGTGAATAGAAAACAAAATAATAAACATCTCCT'
-    dna_dict['Antaresia stimsoni'] = '------------------------------------------------------------------------TTCGGCTCAATACTATTAACATGTCTAGCCCTACAAGTATTAACCGGCTTTTTCCTAGCCGTTCATTATACAGCAAACATTAACCTAGCATTTTCATCCATCGTTCACATTACCCGAGACGTCCCATACGGCTGAATAATACAAAACCTACACGCCATCGGAGCATCCATATTCTTTATTTGTATTTATATTCACATCGCACGCGGACTATACTATGGATCCTACCTCAACAAAGAAACCTGAATATCCGGTATCACCCTGCTCATCACACTAATAGCAACCGCCTTCTTCGGCTATGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATCACAAACCTACTCACCGCCGTACCATACCTAGGCACATCGCTAACAACCTGACTGTGAGGGGGGTTCGCAATCAATGACCCCACCCTAACACGATTCTTCGCACTACACTTTATTCTACCATTCGCAATCATCTCCTTATCCTCCCTACACATTATCTTACTACACGAAGAAGGCTCAAGCAACCCACTAGGAACTAACCCAGACATCGACAAAATCCCATTCCACCCATACCACACCCACAAAGATCTACTCTTATTAACACTAATAGTTTTACTCCTATTCATTATCATTTCATTTTCCCCAGATATCTTTAATGACCCAGACAACTTCTCAAAAGCCAACCCCCTAGTAACACCACAACACATCAAACCAGAATGGTACTTCCTATTTGCCTACGGTATCCTACGATCCATTCCCAACAAACTAGGAGGCGCACTAGCCTTAGTAATATCTATCATAATCCTATTCACCATCCCATTCACACACACAGCCCACCTACGCCCAATAACCTTCCGCCCACTCTCACAACTAACATTCTGAACACTGGTCTCAACATTCGCCACCATCACATGAGCCGCCACAAAACCAGTAGAACCCCCATTTATCACCATCAGTCAAGTAACCTCAACACTATACTTCGCATTCTTCCTATCTATCCCAATTCTCGGATGAGTAGAAAACAAAATAATAAACATTTCAT'
-    dna_dict['Antaresia childreni'] = 'ATGCCCCACCACTACATTCTAACCCTATTCGGCCTTCTGCCTGTAGCAACCAACATCTCAACATGATGAAACTTCGGCTCAATACTATTAACATGTCTAGCCCTACAAGTATTAACCGGTTTTTTCTTAGCTGTTCACTATACAGCAAACATTAACCTAGCATTTTCATCCATCGTTCACATTACCCGAGACGTCCCATATGGCTGAATAATACAAAACCTACACGCCATCGGAGCATCCATATTCTTTATTTGTATTTATATTCACATCGCACGCGGACTATACTATGGATCCTACCTCAACAAAGAAACCTGAATATCCGGTATCACCCTGCTCATCACACTAATAGCAACCGCCTTCTTCGGCTATGTTCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATCACAAACCTACTCACCGCCGTACCATACCTGGGCACATCACTAACAACCTGACTGTGAGGAGGATTCGCAATCAATGACCCCACCCTAACGCGGTTCTTCGCGCTACACTTTATTCTACCATTCGCAATCATCTCCTTATCCTCCCTACACATTATTTTACTACACGAGGAAGGCTCCAGCAACCCACTAGGGACTAACCCAGACATCGATAAAATCCCATTCCACCCGTACCACACCCACAAAGACCTACTCCTACTAACACTAATAATTTTACTTCTATTAATTATCGTTTCATTTTCCCCGGACATCTTTCATGACCCAGACAACTTCTCAAAAGCCAACCCCCTAGTAACACCACAACACATTAAACCAGAATTATACTTCCTATTTGCCTACGGCATCCTACGATCTATCCCCAACAAACTAGGAGGCGCACTGGCCTTAGTAATATCCATCATAATCCTATTCACCATCCCATTCACACACACAGCCCACCTACGGCCAATAACCTTCCGCCCACTCTCACAACTAATATTTTGAGCACTAATTTCAACATTCGTCACCATCACATGGGCCGCCACAAAGCCAGTAGAACCCCCATTTATCATCATCAGTCAAGTAACCTCAACACTATACTTCACATTCTTCCTATCTATCCCAATTCTCGGATGAGTAGAAAACAAAATAATAAACATTTCAT'
-    dna_dict['Leiopython albertisii'] = 'ATGCCCCACCACTACATTTTAACCCTATTTGGCCTCCTACCCGTAGCAACCAACATCTCAACATGATGAAACTTTGGTTCAATACTATTAACATGCTTAGCTCTACAGGTACTAACCGGCTTCTTCCTAGCCGTCCACTACACAGCAAACATCAACCTAGCATTTTCATCCATCATCCACATTACCCGAGATGTCCCATTCGGCTGAATAATACAAAACCTACACGCCATCGGAGCATCCATATTCTTCATTTGCATCTACATTCACATCGCACGGGGGCTCTACTACGGATCATACCTAAACAAAGAAACCTGAATATCCGGCATTACCCTACTCATCACACTGATAGCAACCGCCTTCTTCGGATACGTCCTCCCATGAGGACAAATATCATTCTGAGCTGCAACCGTAATCACAAACCTACTAACCGCCGTACCCTACCTAGGCACATCACTAACAACCTGATTATGGGGCGGATTTGCAATCAACGACCCTACCCTAACACGATTCTTCGCACTACACTTCATCCTACCTTTCGCAATCATCTCCTTATCTTCACTACACATTATCCTTCTTCACGAAGAAGGCTCTAGCAACCCACTAGGAACCAATCCAGACATCGACAAAATCCCATTCCACCCCTATCACTCCCACAAAGATCTTCTCCTACTGACACTAATAATACTATCTCTGCTCATCATCGTCTCATTCTTCCCAGACATCTTTAATGACCCAGATAACTTCTCTAAAGCCAACCCATTAGTAACGCCACAACACATCAAACCAGAATGATACTTCCTATTCGCCTATGGTATCCTACGATCCATCCCCAATAAACTAGGAGGCGCACTAGCCCTAGTAATATCAATCATAATTTTATTCACCATCCCGTTCACACACACAGCCCATCTTCGCCCCATAACCTTCCGCCCATTCTCACAACTAATATTTTGAACACTAGTCTCAACATTTATCACCATCACATGAGCCGCCACAAAACCAGTAGAACCCCCATTTATCGTCATCAGCCAAGTAACTTCAACACTATACTTTACATTCTTCTTACTCATCCCCATTTTGGGCTGAACAGAAAATAAAATAATAAACACCCTCT'
-    dna_dict['Python reticulatus'] = 'ATGCCCCACCATTATATCCTAACCTTATTTGGCCTTCTACCAGTAGCAACCAACATCTCAACCTGATGAAACTTCGGCTCAATATTACTAACATGTCTAGCCTTACAAGTACTAACCGGCTTTTTCCTAGCCGTCCATTACACAGCAAACATTAACCTAGCATTTTCATCCATCATCCACATCACCCGAGACGTCCCATACGGCTGAATAATACAAAACCTTCACGCTATCGGAGCATCCATATTCTTCATCTGCATCTACATCCACATCGCACGAGGCCTATACTACGGATCATACCTCAACAAAGAAACCTGAATATCAGGCATCACCCTACTCATCACACTAATAGCCACCGCTTTTTTTGGTTACGTCCTTCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTCACTGCCGTACCATACCTAGGTACATCACTAACAACCTGGCTTTGAGGCGGATTCGCAATCAACGACCCCACCCTAACACGATTCTTTGCACTACATTTTATTTTACCATTCGCGATTATCTCATTATCCTCATTACACGTTATCTTACTCCACGAAGAAGGTTCTAGCAACCCCCTAGGAACCAACCCAGACATCGACAAAATCCCATTCCACCCATACCACTCTTACAAAGACTTCCTCTTACTAACATTAATAGTCCTATCTCTATTCATTATCGTCTCATTCTTCCCAGATATCTTCAACGACCCAGACAATTTCTCAAAAGCCAACCCCCTAGTAACACCACAACACATTAAACCAGAATGATACTTCCTATTCGCTTACGGTATTCTACGATCCATCCCCAACCAACTTGGAGGAGCATTAGCCTTAGTAATATCTATTATAATCTTATTCACTATCCCATTCACACACACAGCTAATCTTCGTCCCATAACCTTCCGACCACTCTATCAACTCATGTTCTGAACACTAGTCTCCACTTTTATTACTATCACATGAGCCGCTACAAAACCCGTAGAGCCCCCTTTTATCACTATTAGTCAAGTAACTTCAACACTTTATTTCACATTCTTCATCTCCATCCCATTCCTAGGCTGAATAGAAAACAAAATAATACATCTCAACT'
-    dna_dict['Morelia tracyae'] = '--------CCACTACATCCTAACCCTATTTGGCCTCCTACCAGTAGCAACCAACATTTCAACATGATGAAACTTCGGCTCAATACTACTAACATGTCTAGCTCTACAAGTACTAACCGGCTTCTTTCTAGCCGTACACTACACAGCAAACATTAACCTAGCATTTTCATCCATCATTCACATTACCCGAGACGTCCCATACGGCTGAATAATACAAAATCTACACGCTATCGGAGCATCCATATTCTTCATTTGCATTTACATCCACATCGCACGAGGACTATACTACGGATCTTACCTAAACAAAGAAACTTGAATATCAGGCATTACCCTACTCATCACACTAATAGCAACTGCCTTCTTTGGATACGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTTACCGCCATCCCATACCTAGGCACATCTCTAACAACCTGACTTTGAGGCGGATTCGCAATTAACGACCCTACCCTAACACGCTTTTTCGCATTACACTTCATCCTACCATTCGCAATCATTTCCCTATCCTCACTACACATCATTCTACTCCACGAAGAAGGTTCTAGCAACCCATTAGGAACCAACCCAGACATTGACAAAATCCCATTCCATCCGTACCACTCCCACAAAGACCTCCTTTTACTAACACTAATAATCTTATTTCTATTCATCATCGTTTCATTCTTTCCTGATATT-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
-    dna_dict['Morelia amethistina'] = '--------CCACTACATCCTAACCTTATTTGGCCTCCTACCGGTAGCAACCAACATTTCAACATGATGAAACTTCGGCTCAATACTACTAACATGCCTGGCACTACAAGTACTAACCGGCTTCTTCCTAGCCGTACACTACACAGCAAACATTAACCTAGCATTCTCATCCATCATCCACATCACCCGAGACGTCCCATATGGCTGAATAATACAAAACCTGCACGCTATTGGAGCATCCATATTCTTCATCTGCATCTACATTCATATCGCACGAGGACTATACTACGGATCATACCTCAACAAAGAAACCTGAATATCCGGCATTACCCTGCTCATCACACTAATAGCAACCGCTTTCTTCGGATACGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTTACCGCCATCCCATACCTAGGCACATCTCTAACAACCTGACTTTGAGGCGGATTTGCAATCAACGACCCCACCCTAACACGCTTTTTCGCATTACACTTCATTCTACCATTTGCAATCATTTCCTTATCCTCACTACATATCATCCTACTACACGAAGAAGGCTCTAGCAACCCATTAGGAACCAACCCAGATATTGACAAAATCCCGTTCCACCCATACCACTCCTACAAAGACCTCCTCTTACTAACACTAATAATCCTATTCCTATTCACCATCGTTTCATTCTTCCCTGATATC-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
-    dna_dict['Morelia nauta'] = '--------CCACTACATCTTAACCTTATTTGGCCTCCTACCGGTAGCAACCAACATTTCAACATGATGAAACTTCGGCTCAATACTACTAACATGCCTAGCGCTACAAGTACTAACCGGCTTCTTCCTAGCCGTACACTACACAGCGAACATTAACCTAGCATTTTCATCCATCATCCACATTACCCGAGACGTCCCATATGGCTGAATAATACAGAACCTACACGCTATCGGAGCATCCATATTCTTCATCTGCATTTACATCCACATCGCACGAGGACTATACTACGGATCATACCTAAACAAAGAAACCTGAATATCCGGCATCACCCTGCTCATCACACTAATAGCAACTACCTTCTTCGGATACGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTTACCGCTATTCCTTACCTAGGCACATCACTGACAACCTGACTTTGAGGCGGATTCGCAATCAACGACCCCACCTTAACACGTTTTTTCGCATTACACTTCATCCTACCATTCGCAATCATCTCCTTATCCTCACTACACGTCATCCTACTTCACGAAGAAGGCTCTAGCAACCCATTAGGAACCAACCCAGACATTGACAAAATCCCGTTCCACCCATACCACACCTACAAAGACCTCCTCTTACTAACACTAATAATCCTGTTCCTATTCATCATCGTTTCATTCTTCCCTGATATC-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
-    dna_dict['Morelia kinghorni'] = '--------CCACTACATCTTAACCTTATTTGGCCTCCTACCAGTAGCAACCAACATTTCAACATGATGAAACTCCGGCTCAATACTACTAACATGTCTAGCACTACAAGTACTAACCGGCTTCTCCCTAGCTGTACACTACACAGCGAACATTAACCTAGCATTTTCATCCATCATCCACATTACCCGAGACGTCCCATATGGCTGAATAATACAGAACCTACACGCTATCGGAGCATCCATATTCTTCATCTGCATTTACATCCACATCGCACGAGGACTATACTACGGATCATACCTAAACAAAGAAACCTGAATATCCGGCATCACCCTGCTCATCACACTAATAGCAACTGCCTTCTTCGGATACGTTCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTTACCGCTATTCCTTACCTAGGCACATCACTGACAACCTGACTTTGAGGCGGATTCGCAATCAACGACCCCACCCTAACACGTTTTTTCGCATTACACTTCATCCTACCATTCGCAATCATCTCCTTATCCTCACTACACGTCATCCTACTACACGAAGAAGGCTCTAGCAACCCATTAGGAACCAACCCAGACATTGACAAAATCCCGTTCCACCCATACCACACCTACAAAGACCTCCTCTTACTAACACTAATAGTCCTGTTCCTATTCATCATCGTTTCATTCTTCCCTGATATT-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
-    dna_dict['Morelia clastolepis'] = '--------CCACTACATCTTAACCCTATTTGGCCTCCTACCAGTAGCAACCAACATTTCAACATGATGAAACTTCGGCTCAATACTACTAACATGCCTAGCACTACAAGTACTAACCGGCTTCTTCCTAGCCGTACACTACACAGCGAACATTAACCTAGCATTCTCATCCATCATCCACATTACCCGAGACGTCCCATATGGCTGAATAATACAAAACCTACACGCTATCGGAGCATCCATATTCTTCATTTGCATTTACATTCACATCGCACGAGGACTATACTACGGATCTTACCTAAACAAAGAAACCTGAATATCCGGCATCACCCTGCTCATCACACTAATAGCAACTGCCTTCTTCGGATACGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTTACCGCTATTCCTTACCTAGGCACATCACTGACAACCTGACTTTGAGGCGGATTCGCAATCAACGACCCCACCCTTACACGTTTTTTCGCATTACACTTCATCCTACCATTCGCAATCATCTCCTTATCCTCACTACACGTCATCCTACTACACGAAGAAGGCTCTAGCAACCCATTAGGAACCAACCCAGACATTGACAAAATCCCGTTCCACCCATACCACACCTACAAAGACCTCCTCTTACTAACACTAATAGTCCTGTTCCTATTCATCATCGTTTCATTCTTCCCTGATATC-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
-    dna_dict['Liasis fuscus'] = '------------------------------------------------ACCAATATTTCAACATGATGAAACTTCGGCTCAATACTACTAACATGTTTAGCCCTACAAGTATTAACCGGATTCTTCCTGGCTGTCCACTATACAGCAAATATTGACCTGGCATTCTCATCCATCATCCACATCACTCGAGACGTCCCATACGGCTGAATAATACAAAACCTACACGCCATCGGAGCATCAATATTCTTCATTTGTATCTACATCCACATCGCCCGAGGCCTATACTACGGATCATACCTCAACAAAGAAACCTGAATATCCGGCATCACCCTACTTATCACACTAATAGCAACCGCCTTCTTCGGGTACGTCCTTCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATCACAAACCTTCTTACCGCCGTACCCTACCTAGGCACATCCTTGACAACCTGATTATGAGGCGGATTCGCAATCAACGACCCCACCCTAACACGATTCTTCGCATTACACTTCATCCTACCATTCGCAATCATCTCTTTATCCTCACTACACGTCATCCTCCTCCACGAGGAGGGGTCTAGCAACCCACTAGGGACTAACCCAGACATCGACAAAATCCCATTCCACCCTTACCACTCCCACAAAGACCTTCTCCTACTAACACTAATAATAATATCCCTACTCATTATTGTTTCCTTTTTCCCAGACATCTTCAACGACCCAGACAACTTCTCAAAAGCCAACCCCTTGGTAACACCACAACACATTAAACCAGAATGATACTTCCTGTTCGCCTACGGCATCCTACGATCTATTCCCAACAAACTTGGAGGAGCATTAGCTCTAGTAATATCAATCATAATCTTATTTTCTACCCCATTCACACACACAGCCCACCTCCGCCCTATAACTTTCCGCCCACTATCCCAACTAATATTCTGAACACTAATCTCAACATTCATCACCATCACATGAGCCGCCACAAAACCAGTAGAACCCCCATTCATCATCATCAGCCAAGTAACCTCAATACTATACTTCACATTTTTCCTATCCATCCCCATTCTAGGATGGGTAGAGAACAAAATTATAAACACCCCCT'
-    dna_dict['Liasis mackloti'] = 'ATGCCCCACCACTACGTTCTAACCCTATTTGGTCTCTTACCAGTAGCAACCAATATTTCAACATGATGAAACTTCGGCTCAATACTACTAACATGTTTAGCCCTACAAGTACTAACCGGATTCTTCCTGGCTGTCCACTACACAGCAAATATTAACCTGGCATTCTCATCCATCGTTCACATCACTCGAGATGTCCCATACGGCTGAATGATACAAAACCTACACGCCATCGGAGCATCTATATTCTTTATTTGTATCTACATCCACATCGCCCGAGGCCTATACTACGGATCATACCTTAACAAAGAAACCTGAATATCCGGTATTACCCTGCTTATCACACTAATAGCAACCGCCTTCTTCGGATACGTCCTTCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATTACAAACCTTCTCACCGCCGTACCCTACCTAGGCACATCCTTGACAACCTGGCTATGAGGGGGGTTCGCAATCAACGACCCCACCCTAACACGATTCTTAGCATTACACTTCATCCTACCATTCGCAATCATCTCTTTATCCTCCTCACACGTCATCCTCCTTCATGAAGAAGGGTCTAGCAACCCACTAGAAACTAACCCAGACATCGACAAAATCCCATTCCACCCCTACCACTCCCACAAAGACCTTCTCCTACTAACACTAATAATAATATTCCTATTCATTATTGTTTCCTTTTTCCCAGACATCTTCAACGACCCAGACAATTTCTCAAAAGCTAACCCTCTAGTAACACCACAACACATTAAACCAGAGTGGTACTTCCTATTCGCCTACGGCATCCTACGATCTATCCCCAACAAACTTGGAGGAGCATTAGCCCTAGTAATATCAATCATAATCTTATTTTCTACCCCATTCACACACACAGCCCACCTCCGCCCCATAACTTTCCGCCCACTATCCCAACTAATATTCTGAACACTAGTCTCAACATTCATCACCATCACATGAGCCGCCACAAAACCAGTAGAACCCCCATTCATCACCATTAGCCAAGTAACCTCAATTCTATACTTCACATTTTTCCTATCCATCCCTATTCTAGGATGAGTAGAGAACAAAATTATAAACGCCCCCT'
-    dna_dict['Liasis olivaceus'] = 'ATGCCCCACCACTACATTCTAACCCTGTTCGGCCTCTTACCAGTAGCAACCAACATTTCAACATGATGAAACTTCGGTTCAATACTACTAACATGCCTAGTCCTACAAGTATTAACCGGTTTCTTCCTAGCTGTCCACTACACAGCAAACATCAATCTAGCATTCTCATCCATCGTTCACATTACCCGAGACGTCCCATACGGCTGAATAATACAAAACCTACACGCTATCGGAGCATCTATATTCTTCATTTGCATCTACATCCATATCGCACGAGGTCTATACTACGGATCATACCTTAACAAAGAAACCTGAATATCTGGTATCACCCTACTCATCACACTAATAGCAACCGCTTTCTTCGGATATGTCCTTCCATGGGGACAAATATCATTCTGGGCCGCAACCGTAATCACAAACCTACTCACTGCCGTACCCTATCTAGGCACATCACTAACAACCTGACTTTGAGGCGGATTCGCAATCAACGACCCCACCCTAACACGATTCTTCGCACTACACTTCATCCTACCATTCGCAATCATCTCTTTATCCTCACTACACATCATCCTACTCCACGAAGAAGGATCTAGCAACCCATTAGGAACCAACCCAGACATCGACAAAATCCCATTCCACCCCTATCACTCACACAAAGACCTTCTCCTATTAACACTAATAATAATATTCCTATTCATTATCGTATCATTCTTCCCAGATATTTTCAACGACCCAGATAACTTCTCAAAAGCCAACCCCTTAGTAACACCACAACACATTAAACCAGAATGATACTTCCTATTCGCCTACGGCATTCTACGATCTATCCCCAACAAACTTGGAGGCGCATTAGCTCTAGTAGCATCAATCATAATCCTATTCACCACCCCATTCACACACACAGCCAACCTCCGCCCTATAACCTTCCGCCCCCTGTCACAACTAATATTCTGAACATTAGTCTCAACATTCATCACTATTACATGAGCCGCCACAAAACCAGTAGAACCCCCATTCATCGCTATCAGCCAAGTAACCTCAATACTCTATTTCACATTTTTCTTGTCCATCCCCATCCTAGGATGAATAGAAAACAAAATAATAAACACCCCCT'
-    dna_dict['Apodora papuana'] = 'ATGCCCCACCATTACATCCTAACCCTGTTCGGCCTCCTACCAGTAGCAACCAACATTTCAACATGATGAAACTTCGGCTCAATACTACTAACATGCCTAGCCCTACAAGTATTAACTGGCTTCTTCCTGGCCGTACACTACACAGCAAACATCAACCTAGCATTCTCATCCATCATTCACATCACCCGAGATGTCCCATACGGCTGAATAATACAAAACTTACACGCCATCGGAGCATCCATATTCTTCATCTGTATCTACATCCATATTGCACGGGGCCTATACTACGGATCGTACCTAAATAAAGAAACCTGAATATCTGGCATCACCCTACTCATCACACTAATAGCAACCGCCTTCTTCGGATATGTCCTTCCATGAGGACAAATGTCATTCTGAGCCGCAACTGTAATCACAAATCTGCTCACTGCAGTACCCTACCTGGGTACATCACTAACAACTTGATTATGAGGCGGCTTCGCAATCAATGACCCCACCCTGACACGATTCTTCGCACTACACTTCATCCTACCATTCGAAATCATCTCTTTATCCTCACTACACATCATCCTACTTCATGAAGAAGGCTCTAGTAACCCATTGGGAACTAACCCAGACATCGACAAAATCCCATTCCACCCCTACCACTCTCACAAAGACCTTCTCCTATTAACACTAATAATTCTACTCCTATTCATCACCATATCATTCTTCCCAGATATTTTCAACGACCCAGACAACTTCTCAAAAGCCAACCCACTAGTAACACCACAACACATCAAACCAGAATGATACTTCCTATTCGCCTATGGGATCCTACGATCCATCCCCAACAAACTAGGGGGCGCATTAGCCCTAGTAACATCGATCATAATCCTATTCACCATCCCATTTACACACACAGCTCACCTCCGACCTATAACCTTCCGCCCCCTATCACAACTGATATTCTGAACATTAGTATCAACATTTATCACCATTACATGGGCCGCCACAAAACCAGTAGAACCCCCATTCATCATCATTAGCCAAGCAACCTCATTATTATACTTCACATTCTTCTTATCCTTCCCTATCCTAGGGTGGACAGAAAACAAAATAATAAACACCCCCT'
+    dna_dict['Xenopeltis unicolor'] = '???????????????????????????????????????????????????????AAACT--AAAATTCCCATTT-CCCACATATAT----GGATATT--ACGAAG--AAAAAA---GGACTAAAAAAAG---TCCTCTCTCGACCCCCCCCCTACCCCCCCCC-ACAGTT---AGTACGGGT------TTTCC-ATATATGTAACTCTTATAGATTTGCCTATCAAGGC-ATACTATGTATAATCATACATTAATGGCTTGCCCCATGAATATTAAACAGGAATTTCCCTTTAAATATTTTAGCCTAAAAAAGCCTTCGTACAGAACTTTAATA----CCACATTTCT-CAGTCGTTCAATGAAGCACGGAT-ATAGTA--TTGTT-GATAACCATGACTATCC--ACATCCAACTTGTCTTACAGGATCTTGCTA-TTCACGTGAAATCCTCTATCCTTTCATAGCAGGCATACCATTCGACTTCTCACGTCCATAACTTGTTTTAACCTCCCTAATGGCTTTTTCCAAGGCCGCTGGTTACACCTTCAAGATCATCTCGACGGTCCGGAACCATCCCTCTATACTAGCTTTTTCCAAGGCCTTTGGTCGCACCCTTTATAGTGGTACATTTCTCCTCATGATCTGATCACCTATGCCAGTTCAACCACTGGTTTCCTTTTTTT-CTCTGTACCTTTCACCTGACACCCATATATGCACACA----GTCAATGCCCCACCACTACATTCTAATAATCTTCGGCCTACTACCAGTAGCAACAAACATCTCAACATGATGGAACTTCGGCTCAATATTACTAACTTGTCTCGCCATACAAGTACTAACCGGATTCTTTCTAGCCGTCCACTATACAGCCAACATCAATCTAGCATTCTCATCAATTGTACATATCACACGAGACGTCCCCTACGGCTGAATAATACAAAACATTCATGCAATCGGAGCATCCCTATTCTTCATCTGCATTTACATTCACATCGCACGTGGACTATACTATGGATCCTACCTTAACAAAGAAACCTGAATATCAGGCATCACACTTCTCATTACATTAATAGCCACTGCCTTCTTCGGATATGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCCACAGTCATCACAAACCTACTCACCGCAATACCATACCTAGGCACATCACTAACAACATGACTTTGAGGAGGATTTGCCATCAACGATCCAACATTAACCCGATTCTTTGCCCTACACTTCATTCTCCCATTCTTAATCATCTCCTTATCCTCACTTCATGTTATCCTTCTTCACGAAGAAGGATCCAGCAACCCTCTAGGAACAAACCCAGACATCGACAAAATCCCATTCCACCCATATCACACACACAAAGATCTCCTCCTACTAACACTTATAATTACCAGCCTATTTATCGTAGTTTCATTCTTCCCAGACATCTTCAACGACCCAGACAACTTCTCAAAAGCCAACCCCCTAGTCACACCACAACACATCAAACCAGAGTGATATTTTCTATTTGCCTACGGCATTCTCCGATCAATCCCAAATAAACTAGGAGGAGCACTAGCCCTAGTAATAGCGATCATAATCTTATTTACCCTACCATTCACACACACAGCCCACCTACGACCCATAACCTTCCGACCATTATCACAACTAATATTTTGAACATTAATTTCAACATTCGCAACCATCACATGAGCAGCCACAAAACCCGTAGAACCCCCATTTACCGCAATTAGCCAGGCAGCCTCAATCACCTACTTCACATATTTTGCCTCAAACCCAATTCTCGGCTGAACCGAAAACAAAAT????????????????????????????????????????ACTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACACTCAACCTAGAGGAGCCTGTCTACTAACCGATAATCCACGATTAACCCGACCACTTCTAGCCC-CCAGTCTATATACCGCCGTCGCCAGCCCACCTTGTGAAAGAAACAAAATGAGCTAAACAGTCATA-CACTAACACGACAGGTCGAGGTGTAACTAATGAAGTGGACCAAGATGGGCTACATTTTCTAACACAGACTATACGAATAAAGTCATGAAACTTACCTTAGAAGGTGGATTTAGCAGTAAGATGAGAACACAACACTCAGCTGAAACCATTGCAATATTAAAGGCAACGCCTGCCCAGTGAGA-TCTCTTTAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCTACATGAGAGTTGAACTGTCTCTTGTAATAAATCAATAAAACTGATCTCCTAGTCCAAAAGCTAGAATACCCATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTGCATTAAACCAATTAACAAGTACTTTCAGTTGGGGCGACTTTGGAACAAAACAAAACTTCCAAACACCATGAGCCTTACC-TCATACCT---AGGCCGACAAGCCATTATAAGACCCAGTCTTACTGATTAATGAACCAAGTTACTCCAGGGATAACAGCGCTATCTTCTTCAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCTAATGGTGCAGCCGCTATTAAAGGTTCGTTTGTTCAACG????????????'
+    dna_dict['Loxocemus bicolor'] = '????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????ATGCCCCACCACTATGTTTTAACATTATTCGGCCTACTGCCAGTAGCTACTAATATCTCTACCTGATGAAACTTCGGATCCATACTACTAACATGCCTAACATTACAAGTAGCGACTGGCTTTTTTCTAGCTGTCCACTACACAGCAAACATTAACCTAGCATTCTCATCCATCGTACATATTACCCGAGACGTCCCATATGGATG-AATGTACAAAACCTACATGCTATCGGAGCATCCATATTCTTTATCTGCATTTACATTCACATCGCACGCGGACTATACTATGGCTCCTACATGAACAAAGAAACATGAATATCAGGAATTACCCTCCTAATTACATTAATAGCAACCGCCTTCTTTGGCTATGTTCTTCCATGGGGACAAATATCATTCTGAGCCGCAACCGTTATTACAAACCTACTCACTGCTGTACCATACCTAGGCACATCACTCACTACCTGATTATGGGGGGGATTTGCAATTAATGACCCTACTCTAACACGATTCTTTGCACTACACTTTATTCTACCATTCCTAATTATTTCACTGTCATCACTACACATTATTTTACTTCATGAAGAAGGGTCAAGCAATCCACTAGGAACCAACCCAGACATCGATAAAATCCCATTCCATCCGTATCACTCCTACAAAGACTTTCTTATACTAACACTAATAATTATAATACTATTAATTATTATATCCTTCTTACCAAACATTTTTAATGACCCAGACAATTTCTCAAAAGCCAACCCACTAGTAACACCCCAACATATTAAACCAGAGTGATATTTCCTATTCGCCTACGGAATTCTACGATCTATCCCCAACAAACTCGGAGGCGCACTAGCACTAACAATATCCATCATAATTCTACTTACAACCCCATTTACACATACAGCCCTATTCCGACCAATAACATTCCGCCCTCTAGCACAACTAACATTCTGAACACTAATTTCAACATTTACAACCATTACATGAGTAGCCACAAAACCAGTAGAACCCCCATACATCGCCATCAGCCAAGTAACCACAGCCCTCTACTTCACATTCTTCATCTCTATCCCATTAACCGGATGAATAGAAAATAAAATAATAAAAATCTAA???????????????????????????GCTC---GCCAAATTACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACACTCAACCTAGAGGAGCCTGTCTACTAACCGATAATCCACGATTAACCCAGCCACTTCTAGCCA-TCAGTCTATATACCGCCGTCGCCAGCCTACCTTGCAAAAGAAACAAAGCGGGCATAATAGTGTCAGCACTAACACGACAGGTCGAGGTGTAACTAATGAAGTGGACCAAGATGGGCTACATTTTCTAACATAGACTATACGAACAAAGATATGAAATCATCTTTCAAAGGCGGATTTAGCAGTAAGCTGAGAACATAATACTCAACTGAAATCAATGCATTATTAAAGGCAACGCCTGCCCAGTGAGAATCTCTTTAACGGCCGCGGTATCCTAACCGTGCAAAGGTAGCGTAATCATTCGTCTATTAATTGTAGACCCGTATGAAAGGCTATATGAGAGTCGAACTGTCTCTTGTAATAAGTCAATTAAACTGATCTTCTAGTACAAAAGCTAGAATAATGATATAAGACCAGAAGACCCTGTGAAGCTTAAACTACTCTATTT-AAACCTATTAATAGATACTTTCAGTTGGGGCGACTTTGGAACAAAAAGAAACTTCCAAATACTACAAGCTATAAC-TCGTATTAA--AGGTTAACAAACCACTATAAGACCCAGTATTACTGATTATTGAACCAAGTTACTCCAGGGATAACAGCGCTATCTTCTTCAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACGCCCAAATGGTGCAGACGCTATTAAAGGTTCGTTTGTTCAACG????????????'
+    dna_dict['Morelia spilota'] = '?GCCACACCCCTCACTTCCTCC-------------------CAACCATAGTCTGTAA-TTTACAGACTATGGT--CCATGCCTTAATATA-AAGCCAAAAATCCATATAATTTACCACAAAATAAAG-----CTCTCTC-TCGGCCCCCCCCCTACCCCCCCCC---AARAA-CATTGGGGAR------ACCGGCACACAAAACCA--TTARAAAACTCTTAACAAACCT--CTCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTAAGCAGGAATTTCCCTTTTATTATTTTAGTCTAAAATGGCCTTTGTACAAAATATTCTG----TCCTCATTCTCTTGGTCGTTCTATGCAGCACGAGTT--AACTA-ATCTT-ATTAATCATGGATATTC-TCAAC-CTAAGGGTGTCTCTTAGTCTAGCG-CTTCCCGTGAAATCCTCTATCCTTCCATAGAATGCTAACCATTCGACTTCTCACGTCCATATCATGMTA-ATCCTCCCTACTAGCTCTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCCTTATA-TGGTACATATCACCTCATGTTCTGATCATCTATGTCTAT-CCACCATTGGTAGCTCTCTTTTT-TCTGTACCTTTCATCTGACCACCATATATGCACACACACAGTTAATGCCCCACCACTACATCCTAACCTTATTTGGCCTTCTCCCCGTAGCAACCAATATCTCAACATGATGAAACTTCGGCTCAATACTATTAACATGCCTAGCCCTACAAGTTCTAACCGGCTTCTTCTTAGCTGTCCACTACACAGCAAACATTAACCTGGCATTCTCATCCATCATTCACATTACCCGAGACGTCCCATACGGCTGGATAATACAAAACCTACACGCCATCGGAGCATCTATATTCTTCATTTGCATCTACATCCATATTGCACGTGGATTATACTACGGATCCTATCTCAACAAAGAAACCTGAATATCCGGCATTACCCTACTCATCACACTAATAGCAACCGCCTTCTTCGGTTACGTCCTCCCATGAGGACAAATGTCATTCT?AGCCGCAACTGTAATTACAAACCTACTCACCGCCGTACCCTACCTAGGCACATCTCTAACAACCTGACTATGAGGCGGGTTCGCAATCAATGACCCCACCTTAACACGATTCTTCGCATTACACTTCATCCTACCATTCGCAATTATCTCTCTCTCCTCACTACACATTATTTTACTTCACGAAGAAGGCTCTAGCAACCCATTAGGAACCAACCCAGACATCGACAAAATCCCATTCCACCCTTACCACACCCACAAAGACCTACTCCTACTAACACTTATAATCCTGTTCTTATTCATTGTCGTCTCATTCCTCCCAGACATCTTTAATGACCCAGACAACTTCTCAAAAGCTAACCCTCTAGTAACACCACAGCACATTAAACCAGAGTGGTACTTCCTATTCGCCTATGGCATTCTACGATCCATCCCCAATAAATTAGGAGGCGCACTAGCCCTAGTAATATCAATCCTAATTCTATTCACAATCCCATTCATACACACAGCCTATCTCCGCCCCATAACCTTCCGCCCCCTGTCACAACTCATATTTTGAACACTAATCTCAACATTCGCCACCATTACATGAGCTGCCACAAAGCCAGTAGAACCCCCATTCATCATTATCAGCCAAGTAACCTCAACACTATACTTCACATTCTTCCTATCCATCCCTATTCTAGGGTGAATAGAAAACAAAATAATAAACATCTCCTCCATAACACAGCAGTACAACC--ACTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGATAACCCACGTTTAATCCAACCACTTCTGGCCATCCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCCAAACAGTATT-ACACTAACACGACAGGTCGAGGTGTAACTCATGAAGTGGACAAAGATGGGCTACATTTTCTAACACAGACCATACAAACAAAGACATGAAATTGCCTTTCGAAGGTGGATTTAGCAGTAAGCTAAGGACACAATACCTAGCTGAAATCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACCTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATTAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGACTACCCATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCCTATAATAATTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAACATGAGTCATACC-TCATATCGC--AGGCCAACAAGCCACTATAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTAMGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGCTATTAAAGGTTCGTTTGTTCAAGSATTAACAGTC??'
+    dna_dict['Morelia bredli'] = '?GCCAC-CCCCTCACTTCCT---------------------TAACCATAGTCTGTAA-TTTACAGACTATGGT--CCATGCCTTAATATA-AAACCAAAAATCCATATAATTTACCACAAAATAAAG-----YTYTYTY-TYGGCCCCCCCCCTACMCCCCCCC--AAAGAA-CATTGGGAAA------ACCGGCACACAAAACTA--TTAGAAAACTCTTAACAAACCC--CTCTATGTATAATCTTACATTAATGGTTTGCCTCATGAATATTAAGCAGGAATTTCCCTTTTATTATTTTAGTCTAAAATGGCCTTTGTACAAAACATTCCG----TCCTCATTCTCCTGGTCGTTCTATGCAGCATGAGTT--AACCA-ATCTT-ATTGATCATGGATATTC-TTAAC-CTAAGGGTGTCTCTTATCCTAGCA-CTTCCCGTGAAATCCTCTATCCTTCCATAGAATGCTAACCATTCGACTTCTCACGTCCATATTATGCTA-ATCCTCCCTACTAGCCCTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACATATCACCTCATGTTCTGATCACTTATGTCTAT-CCACCATTGGTTGCTCTCTTTTT-TCTGTACCTTTCATCTGACCACCATATATGCACACACACAGTTA????????????????????????????????????????????????????????????????????????TTCGGCTCAATACTATTAACATGCCTAGCCCTGCAAATCCTAACCGGCTTCTTTTTAGCGGTCCACTACACAGCAAACATCAACCTAGCATTCTCATCCATCATCCACATTACCCGAGACGTCCCATACGGCTGAATAATACAAAASCTACACGCCATCGGAGCATCCCTATTCTTCATCTGCATCTACATCCATATCGCACGTGGGTTATACTACGGATCCTATCTCAACAAAGAAACCTGAATATCCGGTATTACCCTACTCATCACACTAATAGCAACTGCCTTCTTCGGTTATGTCCTTCCATGAGGACAAATATCATTCTRRGCCGCAACTGTAATTACAAATCTACTCACCGCCGTACCATACCTGGGCACATCACTAACAACCTGACTATGAGGCGGATTCGCAATCAATGACCCCACCTTAACACGATTCTTCGCGCTACACTTCATCCTACCATTCGCAATCATCTCTCTCTCTTCACTACACATTATCTTACTTCACGAAGAAGGCTCTAGCAACCCATTAGGAACCAACCCAGACATCGACAAAATCCCATTCCACCCCTACCACACCCACAAAGACCTGCTCCTACTAACGCTCATAATCCTGTTCCTATTCATTATCGTCTCATTCCTCCCAGATATCTTCAATGACCCAGACAACTTCTCAAAAGCTAACCCCTTGGTAACACCACAACACATTAAACCAGAGTGGTACTTCCTATTTGCCTATGGCATTCTACGATCCATCCCCAATAAACTAGGAGGCGCACTAGCCCTAATAATATCGATCCTAATTCTATTCACGATCCCATTCATACACACAGCCTATCTCCGCCCTATAACCTTCCGCCCCCTGTCACAACTTATATTTTGAACACTAATCTCAACATTCGCCACCATTACATGAGCTGCCACAAAACCAGTAGAACCCCCATTCATCATCATTAGCCAAGTAACCTCAACACTATACTTCACATTCTTCCTAACCATCCCAATTCTAGGGTGAATAGAAAACAAAATAATAAACATCTCCTCCATAACACGGCAATCAATC---ATTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATTAATCCAACCACTTCTGGCCACCCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCCTGACAGTACT-ACACTAACACGACAGGTCGAGGTGTAACTTATGAAGTGGACTAAGATGGGCTACATTTTCTAACCCAGACCACACGAACAAAGACATGAAACTACCTTTCGAAGGTGGATTTAGCAGTAAGCCAGGAACACAATACCTAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACCTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATCAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGAATACCCATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCTTATAATAATTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAACATGAATCATACC-TCATACCAC--AGGCCAACAAGCCACTATAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGCTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Morelia carinata'] = '?GCCACAACCCTCACTTCCT--------------------AAAACCATAGTCTGTAAA--TACAGACTATGGT--TCTTACCTCAATATA-AAGCCAAAAACCCATATAAAACGC-ACACAATAAAACG---CTCTC-C-TCGGCCCCCCCCCTACCCCCCCC--ATAATAAACATAGGAGAA------ATCAGCACACAAAACTA--CTGAAGATACCCCCTCATCTCT--CCCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTAAGCAGGAATTTCCCTTCAAATATTTTAGTCTAAATAAGCCTTCGTACAGAATATTTAG----TCCTCATTTTC-TGGTCGTTCAATGCAACACGGATT--AATGG-ATCTT-ACTAACCATGGCTATCC-TTGAT-CAAGKGGKGTCTYTTAATCTAGTA-CTTCCCGTGAAACCCTCTATCCTTCCATAGAATGCTAACCATTCGACTTYTCACGTCCATATACTGCCA-ATCCTCCCTTATAGCTTTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACATCTTGCCTCATGTTCTGATCACGTATGTTAGT-CCACCACTGGTTTCCCTTTTTTTCTCTGTACCTTTCATCTGACTACCATATATGCATACACACAGTTA???????????????????????????????????????????????????????????????????????CTTCGGCTCGATACTATTAACATGTTTAGCCCTACAAGTATTAACCGGCTTCTTCTTAGCTGTTCACTACACAGCAAACATTAACCTAGCATTCTCATCCATCATTCACATCACCCGAGACGTCCCATACGGCTGAATAATACAAAATCTGCACGCCATCGGAGCATCCATATTCTTCATCTGCATTTACATTCATATTGCACGAGGACTATACTATGGGTCTTACCTCAACAAAGAAACCTGAATATCTGGTATCACCCTGCTAATTATCCTAATAGCAACCGCCTTCTTCGGCTATGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATCACAAACCTACTCACCGCCGTACCCTACTTAGGCACATCACTAACAACCTGGCTTTGAGGCGGATTCGCAATCAATGACCCAACTCTAACACGATTCTTCGCACTACACTTCATCCTACCATTCGCTATTATCTCCCTATCCTCACTACACATTATCTTGCTTCACGAAGAAGGTTCTAGCAACCCCTTAGGAACCAACCCGGACATCGACAAAATCCCATTCCACCCCTATCACACCTACAAAGATCTTCTTCTACTAACAGTAATAATCCTATTTTTATTCATTATCGTTTCATTCTTCCCAGACATTTTTAATGACCCAGACAACTTCTCAAAAGCCAACCCCCTAGTAACACCACAACACATCAAACCAGAATGATACTTTCTATTTGCCTACGGAATTCTACGATCCATCCCCAATAAACTGGGAGGAGCATTAGCCCTAGTAATATCAATTATAATCCTATTCACCATTCCATTTATACACACAGCCCATCTTCGCCCAATAACCTTCCGCCCACTATCMCAACTAATATTTTGAACACTAATCTCAACATTTATCACTATCACATGAGCTGCCACAAAACCAGTAGAACCCCCATTCATTACCATCAGCCAAGCAACTTCAGCGCTATACTTCACGTTCTTCCTAACCACCCCAATTCTAGGATGAGTAGAAAATAAAATARTAAACATTCCCTCCATAACACAGCAGCACAACC--ACTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATCAATCCAACCACTTCTGGCCACCCAGTCTATATACCGCCGTCGCCAGCCCACCCTGCAAAAGAAACAAAGTGAGCCAAATAGTACT-ACACTAACACGACAGGTCGAGGTGTAACTTATGAAGTGGACCAAGATGGGCTACATTTTCTAACACAGACCATACGAACAAAGAAATGAAACCGTCTTTCAAAGGTGGATTTAGCAGTAAGCTAGGGACACAACACCTAACTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATCTATCAATTAAACTGATCTCCCAGTACAAAAGCTGGAATACTTATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCCTATAATAACTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAATAACATGAGCTATTTC-TCATAATAC--AGGCCAACAAGCCACTAAAAGACCCAGTAATACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCTATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGCTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Morelia amethistina'] = '?ACCACACCCCTCACTTCCTC--------------------CAACCATAGTCTGTAA-TTTACAGACTATGGT--CCATGCCTTAATATA-AAGCCAAAAATCCATATAATTTACCACAAAATAAAG-----CTCTCTC-TCGGCCCCCCCCCTACCCCCCCCC--AAAAAAACATTGGGGAA------ACCGGCACACAAAACCA--TTAAAAAACTCTTAACAAACCT--CTCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTAAGCAGGAATTTCCCTTTTATTATTTTAGTCTAAAATGGCCTTTGTACAAAATATTCTG----TCCTCATTTTCTTGGTCGTTCTATGCAGCATGAGCT--AACTA-ATCTT-ATTAATCATGGATATTC-TTAAC-CTARGGGTGTCTCTTAGTCTAGCG-CTTCCCGTGAAATCCTCTATCCTTCCATAGAATGCTAACCATTCGACTTCTCACGTCCATATCATGCTA-ATCCTCCCTACTAGCCCTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCCTTATA-TGGTACATATCACCTCATGTTCTGATCATCTATGTCTAC-CCACCATTGGTTGCTCTCTTTTT-TCTGTACCTTTCATCTGACCACCATATATGCACACACACAGTTAATGCCCCACCACTACATCTTAACCTTATTTGGCCTCCTACCGGTAGCAACCAACATTTCAACATGATGAAACTTCGGCTCAATACTACTAACATGCCTTGCACTACAAGTACTAACTGGCTTCTTCCTAGCCGTACACTACACAGCGAACATTAACCTAGCATTCTCATCCATCATTCACATCACCCGAGACGTCCCATATGGCTGAATAATACAAAACCTGCACGCTATTGGAGCATCCATATTCTTCATCTGCATCTACATTCACATCGCACGAGGACTATACTACGGATCATACCTTAACAAAGAAACCTGAATATCCGGCATTACCCTGCTCATCACACTAATAGCAACCGCTTTCTTCGGATACGTCCTCCCATGGGGACAAATATCATTCTGAGCCGCAACCGTAATCACAAACCTACTTACCGCCATCCCGTACCTAGGTACATCCCTAACAACCTGACTTTGGGGCGGATTTGCAATCAACGACCCCACCCTAACACGCTTTTTCGCATTACACTTCATTCTACCATTCGCAATCATCTCCTTATCCTCACTACACATCATCCTACTACACGAAGAAGGCTCTAGCAACCCATTAGGAACCAACCCAGATATTGACAAAATCCCATTCCACCCATACCACTCCTACAAAGACCTCCTCCTACTAACACTAATAATCTTATTCCTATTCATCATCGTTTCATTCTTCCCTGATATCTTCAACGACCCAGACAACTTCTCAAAAGCCAATCCTCTAGTAACACCACAGCACATTAAACCAGAATGATACTTCCTATTCGCCTACGGCATCCTACGATCCATTCCCAACAAACTCGGGGGCGCACTAGCCCTAGTGATATCAATCATAATCCTATTTACCATCCCATTCATACACACAGCCCACCTCCGCCCCATAACCTTCCGCCCACTTTCACAATTAATATTTTGAACACTAGTCTCAACATTTATCACCATCACATGAGCCGCCACAAAACCAGTAGAACCACCATACATTATAATCAGCCAAATAACCGCAACATTATACTTCACATTCTTCTTATCCATCCCCATCCTAGGATGAATAGAAAACAAAATAATAAATATCCCCTCCCAGCCATAACATGGCAAC--ATCTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAGTAACCGATAACCCACGATTAATCCAACCACTTCTGGCCWCCCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAMGTGAGCCAAACAGTACC-ACACTAACACGACAGGTCGAGGTGTAACTTATGAAGTGGATCAAGATGGGCTACATTTTCTAACCCAGACAATACGAACAAAGACWTGAAACCATCTTTCGAAGGTGGATTTAGCAGTAAGCCAGGAACACAATACCCAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATTAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGAATGCCCATATAAGACCAGAAGACCCTGTGAAGCTTAAACCAACCTATT--AAACCCTATAATAGCTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAA-ATGAGCTTTCCC-TCACACCTC--AGGCCAACAAGCCACTATAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTCAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAGTGGCGCAGCCGCTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Morelia oenpelliensis'] = '?GCCAC-MCCCTCACTTCCT---------------------TAACCATAGTCTGTAA-TTTACAGACTATGGT--CCATGCCTTAATATA-AAACCAGAAATCCATATAATTTACCACCAAATAAAG-----YTYTYTY-TYGGCCCCCCCCCTACCCCCCCCC--AAAGAA-CATTGGGAGA------ACCGGCACACAAAATTA--TTAGAAGACTTTTAACATACCC--CTCTATGGATAATTTTACATTAATGGTTTGCCTCATGRATATTAAGCAGGGAWTTCCCTTTTATTATTTTAGTCTAAAACGGCCCTTGTACCAGACATTCCG----TCCTCATTCTCCTGGTCGTTCTATGCAGCATGAGTT--AACCA-ATCTT-ATTGATCATGGATATTCCTTGAC-CTAAGGGTGTSTCTTATCCTAGCA-CTTCCCGTGAAATCCT-TATCCTTCCATAGAATGCTAACCATTCGACTTCTCACGTCCATATAATGCTA-ATCCTCCCTACTAGCCCTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACATATCACCTCATGTTCTGATCACTTATGTCTAT-CCACCATTGGTTGCTCTCTTTTT-TCTGTACCTTTCATCTGACCACCATATATGCACACACACAGTTA????????????????????????????????????????????????????????????????????????TTCGGCTCAATACTATTAACATGCCTAGCCCTACAAGTACTAACCGGCTTCTTCCTAGCCGTCCACTACACAGCAAATATCAACCTAGCATTTTCATCCATTATCCACATCACCCGTGACGTCCCATACGGTTGAATAATACAAAACCTACACGCCATCGGAGCATCCATATTCTTCATTTGCATTTATATTCACATCGCTCGAGGACTATACTATGGGTCATACCTTAACAAAGAAACCTGAATATCCGGTATCACCCTACTCATTACACTAATAGCAACCGCCTTCTTCGGATATGTTCTTCCATGAGGACAGATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTTACCGCCGTACCATACCTAGGCACATCACTAACAACATGACTATGAGGCGGATTCGCAATCAATGACCCAACCCTAACCCGATTCTTTGCATTACACTTCATCCTACCATTTGCAATTATCTCTTTATCCTCACTACATATCATCCTACTCCATGAAGAAGGTTCCAGCAATCCATTAGGAACCAATCCTGACATTGACAAAATCCCATTCCACCCATACCACTCCCACAAAGACCTACTCCTATTAACACTAATAACCCTACTCCTATTCATTATTGTCTCATTCTTCCCAGATATTTTCAACGACCCAGACAACTTCTCAAAAGCCAATCCCATAGTAACACCACAACACATCAAACCAGAATGGTACTTCCTATTTGCCTACGGCATCCTACGATCCATCCCAAACAAACTAGGAGGCGCATTAGCCCTAGTAATATCAATTATAATTCTATTCACCGCCCCATTCACACATACAGCCTACCTACGCCCTATAACCTTTCGCCCACTTTCACAACTAATATTCTGAGCACTAGTATCAACATTCATCACCATTACATGAGCCGCCACAAAACCAGTAGAACCACCATTTATCATCATCAGCCAAACAACTGCAACACTATACTTCACATTCTTCTTATCCATCCCCATCACAGGATGAATTGAAAACAAAATAATAAACACCCACTCC-TAACATGGCAACACACCG---TTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATTAATCCAACCACTTCTGGCCATCCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCCAAACAGTATT-ACACTAAAACGACAGGTCGAGGTGTAACTTATGAAGTGGACCAAGATGGGCTACATTTTCTAACACAGACCATACGAAAAAAGACATGAAAACGTCTCTCAAAGGTGGATTTAGCAGTAAGCTAAGAACACAATACCTAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATCAATCAATTAAACTGACCTCCCAGTACAAAGGCTGGGATACCCCTATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCCTATAATAGACACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAACATGAGCCATCCC-TCATACCAC--AGGCCAACAAGCCATTACAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTCAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGSTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Morelia boeleni'] = '??AAACAACCCTCACTTCCTT--------------------CAACCATAGTCTGGA---TTCCAGACTATGGT--TGTTACCTAAAAAACTAAAGAAAAAATCCATATAAAC----------TAAAAA----CTCTCTC-TCGGCCCCCCCCCTACMCCCCCC---GGGTCAGCACAAAAAC-------ATCAC---------------CCAAAAATCCCCCTTTTT-CC--CCCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATAATAAGCAGGAATTTCCCTTTAAATATTTTAGTCTAAAATAGCCTTT-TACATAAAATTATG----TCCTCATTTCT-TGGTCGTTCAATGCAGCACGGATT--AATAT-ATCTT-ATTGATCATGGATATCC-TTGGT-CTAATGGTGTCTCTTAGTCTAACA-CTTCCCGTGAAATCCTCTATCCTTCCATAGAATGCTAACCATTCGACTTCTCACGTCCATATAATGCCA-ATCCTCCCTATCAGCTTTTTCCAAGGCCGCTGGTTACACTCTCAARATCATCTCAATGGTCCGGAACCACCCCTCCATCCTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACATCTCACCTCATGTTCTGATCATCTATGTCAAC-CCACCACTGGTAGCTCTTTTTTTCTCTGTACCTTTCATCTGACTACCATATATGCATACACACAGTTA????????????????????????????????????????????????????????????????????????TTCGGCTCTATACTATTAACATGCTTAGGCTTACAAGTAATAACCGGCTTCTTCCTAGCCGTACACTACACAGCAAACATCAACTTAGCATTCTCATCCATCATCCACATCACCCGAGACGTCCCATACGGCTGAATAATACAAAACTTGCACGCTATCGGAGCATCTATATTCTTCATCTGCATTTACATCCACATCGCACGAGGGTTGTACTACGGATCATACCTTAACAAAGAAACCTGAATATCTGGCATTACCCTACTTATCACATTAATAGCAACTGCCTTCTTTGGATACGTTCTCCCATGAGGACAAATATCATTCTGAGSSGCWRCMGTWATCACAAACCTACTCACTGCCATCCCTTATCTAGGCACATCACTAACAACTTGACTATGAGGCGGATTCGCAATCAATGATCCTACACTAACACGATTTTTCGCACTACACTTCATCCTTCCATTCGCAATCATTTCCTTATCCTCACTACACATCATCCTACTCCACGAAGAAGGTTCCAGCAACCCATTAGGAACCAACCCAGACATCGACAAAATCCCATTCCACCCATACCACTCCTACAAAGATCTTCTCCTACTAACATTAATAACCCTGTTCTTATTTATCATCGTCTCATTCTTCCCAGATATTTTTAACGACCCAGACAACTTTTCAAAAGCTAATCCCCTAGTAACACCACAACACATCAAACCTGAGTGATACTTTCTATTCGCCTATGGCATCCTACGATCCATCCCCAACAAACTAGGAGGTGCATTAGCCCTAGTAATATCAATCATGATCCTGTTTACCATCCCGTTTACACATACAGCCCACCTCCGTCCTATAACCTTCCGTCCACTCTCACAACTAATATTCTGAATATTAGTATCAACATTCATCACCATCACATGAGCCGCCACAAAACCAGTAGAACCACCATTCATTACCATCAGTCAAGTAACCTCAACACTTTACTTCACATTCTTCTTATCCATCCCCATCCTAGGATGGATAGAAAACAAAATAATAGACATTCCATCCGTAACACGGCAGTACAATC-----GCTGCCCGCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATTAATCCAACCACTTCTGGCCATCCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCCAAACAGTATT-ACACTAACACGACAGGTCGAGGTGTAACTCATGAAGTGGACAAAGATGGGCTACATTTTCTAACACAGATCATACAAACAAAGACATGAAATTGCCTTTCGAAGGTGGATTTAGCAGTAAGCTAAGAACACAATACCTAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCAYTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATCAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGAATACCTATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCACATAATAACTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAACATGAGCCATTCC-TCATACCAC--AGGCCAACAAGCCACTATAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGCTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Morelia viridisS'] = '?A-ATCAACCCTCACTTCCTCC-------------------TAGCCATAGTCTGTAAG-TTACAGACTATGGCT--CATGCCTTAATATATAAACCAAAAACCCATATAAT-CACTGAACAATAAAA-----CTYTYTYCTCGGCCCCCCCCCTACCCCCCCC---GGAAAACCATAAAA---------ATCAGCACATAAATAAA--CCTACTAATCCCATTGCTTCCT---CCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTAAGCAGGAATTTCCCTTCAAATATTTTAGCCTAAATTAGCTTCCGTACAAAATATCTAG----CCCTCATTTTC-TGGTCGTTCAATGCAATCGGGGTT--AATAA-ATCTT-ACTAACCATGGATATCC-TTGAT-CAGGTGGTGTCTCTTAATTTAGTA-CTTCCCGTGAAATCCTCTATCCTTCCATAGAATGCTAACCATTCGACTTCTCACGTCCATATTATGTCA-ATCCTCCCTTCTAGCTTTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATCCTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACATCTTGTCTCATGTTCTGATCACCTATGCTAGT-CCACCACTGGTTTCCCTTTTTTTCTCGGTACCTTTCATCTGACTACCATATATGCACACACACAGTAA????????????????????????????????????????????????????????????????????????TTCGGYTCAATACTATTAACATGCCTAGCCCTACAAGTATTAACCGGCTTCTTCCTAGCCGTTCACTACACAGSAAACATTAATCTAGCATTCTCATCCATCATCCACATCTCCCGAGATGTTCCATACGGTTGAATAATACAAAACCTACACGCCATCGGAGCATCCATATTCTTCATTTGCATCTACATCCATATTGCACGAGGATTATACTATGGATCCTACCTCAACAAAGAAACCTGAATATCCGGTATTACCCTACTCATCACACTAATAGCAACCGCCTTCTTCGGCTATGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATCACAAACCTACTTACCGCTGTACCCTACCTGGGTACATCACTAACAACCTGATTATGAGGCGGATTCGCAATCAACGACCCAACCCTAACACGATTTTTTGCACTGCACTTCATCCTACCATTCGCAATCATCTCTCTATCCTCACTTCATGTTATCCTACTCCACGAAGAAGGCTCCAGCAATCCACTAGGAACTAATCCAGATATCGATAAAATCCCATTTCATCCATACCACTCCTACAAAGACCTACTCCTACTAACACTAATAATCCTATTCTTATTCATCATCGTTTCATTCTTCCCAGACATTTTTAACGATCCGGACAACTTCTCAAAAGCTAACCCATTAGTAACACCACAACACATCAAACCAGAATGGTATTTCCTATTCGCCTACGGCATTCTACGATCCATCCCCAACAAACTAGGAGGCGCATTAGCCTTAGTAATATCAATCATAATCCTATTTACCATCCCATTTACACACACAGCCTACCTCCGCCCCATAACCTTTCGTCCACTATCACAATTAATATTTTGAACATTGGTTGCAACATTCGCCACTATTACATGGGCTGCCACAAAACCAGTAGAACCCCCATTTATCCTCATTAGCCAAGTAACTTCAACACTATATTTCACATTCTTCTTATCCATCCCAATTTTAGGATGAATGGAAAATAAAATAATAAACATCCCCTCCATAACATGGCAGTACAATC--ACTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAGCCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATTAATCCAACCACTTCTGGCCACCCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCCAAATAGTACT-ACACTAAAACGACAGGTCGAGGTGTAACTTATGAAGTGGACCAAGATGGGCTACATTTTCTAACACAGACTATACGAACAAGGACYTGAAATAGTCTCTCAAAGGTGGATTTAGCAGTAAGCTAAGAACATAATACCTAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATCAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGTATATTCATATAAGACCAGAAGACCCTGTGAAGCTTAAATTAACCTATT--AAATCCCATAATAACTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAATAACATGAGCTATTCC-TCATTACAC--AGGCCAACAAGCCACTACAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGCTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Morelia viridisN'] = '?A-CTCAACCCTCACTTCCTTC-------------------CAGCCATAGTCTGTAAA-TTACAGGCTATGGCT--CATACCTTGATATATAAACCAAAAACCCATATAATTCACCACACAACAAAA-----CTCTCTCCTCGGCCCCCCCC-TACCCCCCCCC--GGAAAAACATAGAAGAA------GTCAGCACAATTAAACT--TACTGATAACCCCTTGCTTCCT--CCCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTAAGCAGGAATTTCCCTTCAAATATTTTAGCCTAAAATAGCCTTTGTACAAAATACCTTG----TCCTCATTTTC-TGGTCGTYCAATGCAATCGGGTCT--AACAA-ATCTT-ACTAACCATGGATATCC-TTGAT-CAAGTTGTGTCTCTTAATCTAGTAACTTCCCGTGAAATCCTCTATCCT-CCATAGAATGCTAACCATTCGACTTCTCACGTCCATATAATGCCA-ATCCTCCCTTTAAGCTTTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATCCTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACATCTTGTCTCATGTTCTGATCACCTATGTTAGT-CCGCCACTGGTTTCCCTTTTTTTCTCTGTACCTTTCATCTGACTACCATATATGCACACACACAGTAA????????????????????????????????????????????????????????????????????????TTCGGCTCAATATTATTAACATGTTTAGCCCTACAAGTACTAACCGGCTTCTTCTTAGCCGTCCACTACACAGCAAACATCAACCTAGCATTCTCATCCATTATCCATATCACTCGAGATGTCCCATACGGCTGAATAATACAAAACCTACACGCCATCGGAGCATCCATATTCTTCATTTGCATTTACATCCACATCGCACGAGGACTATACTACGGATCCTACCTCAACAAAGAGACTTGAATATCCGGTATCACCCTACTCATCACATTAATGGCAACCGCCTTCTTTGGCTATGTCCTCCCATGAGGACAAATATCATTCTGAGCTGCAACCGTAATCACAAACCTACTCACCGCCGTACCCTACCTGGGTACATCATTAACAACCTGGCTATGAGGCGGATTCGCAATCAACGACCCAACCCTCACACGATTCTTTGCACTACATTTCATCTTACCATTCGCAATCATCTCTCTATCCTCACTACACGTTATCCTTCTTCACGAAGAAGGCTCCAGCAACCCACTAGGAACTAACCCAGACATCGATAAAATTCCATTTCACCCATACCACTCCTACAAAGACCTGCTACTATTAACACTAATAATTTTATTCTTACTCATTATCGTTTCATTCTTCCCAGACATCTTTAACGACCCGGATAACTTCTCAAAAGCCAACCCCCTAGTCACACCACAACACATCAAACCAGAGTGGTATTTTCTATTCGCCTATGGCATCCTACGATCCATCCCCAACAAACTAGGAGGCGCATTAGCCCTAGTAATATCAATTATAATCCTATTTTCCACCCCATTCACACACACAGCCTACCTACGTCCAATAACTTTCCGTCCACTATCACAACTAATATTTTGAACATTAATCGCAACATTCGCCACCATTACATGAGCCGCCACAAAACCAGTAGAACCCCCATTCATCATCATTAGCCAAGTAACTTCAACACTATATTTCACATTCTTCTTATCCATCCCAATTCTAGGGTGGATAGAAAACAAAATAATAAACATCT???CCATAACATGGCAGTACAACC--ACTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATTAATCCAACCACTTCTGGCCATTCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCTAAACAGTACT-ACACTAACACGACAGGTCGAGGTGTAACTTATGAGGTGGACCAAGATGGGCTACATTTTCTAACACAGAMTATACGAACAAAGACATGAAACAGTCTCTCAAAGGTGGATTTAGCAGTAAGCTAAGAACACAATACCTAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAATTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATCAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGCATATCTATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAATCTTATAATAACTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAATAACATGAGCCATTCC-TCATCACAC--AGGCCAACAAGCCACTACAAGACCCAGTAAAACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGCTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Liasis olivaceus'] = '?GCCACAACCCTCACTTCCCC-----------------ACCTAACCATAGTCTGTAAA-TTACAGACTATGGT--TGATACCTTAATACA-AAGCCGAAACCCCATATAAACAGCACCACAACAAAA----CTCTACTC-TCGGCCCCCCCCCTACMCCCCCCC--ACAAAAACATAGGARAA------ATCAGCACAAACAATC---MCCTAAAATCCCCCCTTAACCC--CCCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTAAGCAGGAATTCCCCTTTAAATATTTTAGTCTGAATTAGCCCTTGTACAAAAAATCTTG----TCCTCATTTTC-TGGTCGTTCAATGCAGCACGGATT--AATAG-ATCTT-ATTAACCATGGCTATCC-TTGAT-CTAGTGGTGTCCCATGATCTAGTA-CTTCCCGTGAAATCCTCTATCCTTCCATTGAATGCTAACCATTCGACTTCTCACGTCCATATAATGCCA-ATCCTCCCTAACAGCTTTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACATTTCACCTCATGTTCTGATCAGCTATGTCAAT-CCACCACTGGTAGCTCTTTTTT-CTCTGTACCTTTCATCTGACTACCATATATGCACACACACAGTAAATGCCCCACCACTACATTCTAACCCTGTTCGGCCTCTTACCAGTAGCAACCAACATTTCAACATGATGAAACTTCGGTTCAATACTACTAACATGCCTAGTCCTACAAGTATTAACCGGTTTCTTCCTAGCTGTCCACTACACAGCAAACATCAATCTAGCATTCTCATCCATCGTTCACATTACCCGAGACGTCCCATACGGCTGAATAATACAAAACCTACACGCTATCGGAGCATCTATATTCTTCATTTGCATCTACATCCATATCGCACGAGGTCTATACTACGGATCATACCTTAACAAAGAAACCTGAATATCTGGTATCACCCTACTCATCACACTAATAGCAACCGCTTTCTTCGGATATGTCCTTCCATGGGGACAAATATCATTCTGGGCCGCAACCGTAATCACAAACCTACTCACTGCCGTACCCTATCTAGGCACATCACTAACAACCTGACTTTGAGGCGGATTCGCAATCAACGACCCCACCCTAACACGATTCTTCGCACTACACTTCATCCTACCATTCGCAATCATCTCTTTATCCTCACTACACATCATCCTACTCCACGAAGAAGGATCTAGCAACCCATTAGGAACCAACCCAGACATCGACAAAATCCCATTCCACCCCTATCACTCACACAAAGACCTTCTCCTATTAACACTAATAATAATATTCCTATTCATTATCGTATCATTCTTCCCAGATATTTTCAACGACCCAGATAACTTCTCAAAAGCCAACCCCTTAGTAACACCACAACACATTAAACCAGAATGATACTTCCTATTCGCCTACGGCATTCTACGATCTATCCCCAACAAACTTGGAGGCGCATTAGCTCTAGTAGCATCAATCATAATCCTATTCACCACCCCATTCACACACACAGCCAACCTCCGCCCTATAACCTTCCGCCCCCTGTCACAACTAATATTCTGAACATTAGTCTCAACATTCATCACTATTACATGAGCCGCCACAAAACCAGTAGAACCCCCATTCATCGCTATCAGCCAAGTAACCTCAATACTCTATTTCACATTTTTCTTGTCCATCCCCATCCTAGGATGAATAGAAAACAAAATAATAAACACCCCCTCCATAACACGGCAACACAACC--GTTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATTAATCCAACCACCCCTAGCCACTCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCCAAACAGTCAT-ACACTAACACGACAGGTCGAGGTGTAACTTATGGGGTGGACCAAGATGGGCTACATTTTCTAACATAGACCATACGAACAAAGACATGAAACCGTCTTTCAAAGGTGGATTTAGCAGTAAGCTAAGAACATAATACCTAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGTATTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATTAATCAATTAAACTGATCTTTCAGTACAAAAGCTGAAATACCCATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCTATTAATAACTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAACATGAGCTATTCC-TCATAACAC--AGGCCAACAAGCCACTACAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGCTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Liasis mackloti'] = '?ACCACAACCCTCACTTCCTT--------------------CAGCCATAGTCTGTAA-TTTACAGGCTATGGC--TGATACCTTAATATA-AAACCAAAATCCCATATAAATACCACCACAACAAAG-----CTCTCTC-TCGGCCCCCCCCCTACMCCCCCCC--ACCAAAACATAGAARAA------ATCAGCACAATAAATA---CTARAAGTATTTGCTTCCTTCC--CCCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTTAGCAGGAATTTCCCTTTAAATATTTTAGCCTAAAATAGCCTTTGTACACAAAACTATG----TCCTCATTTCT-TGGTCGTTCAATGCAGCACGGATT--AATAG-ATTTT-AATAACCATGACTATCC-TTGAT-CTAGTGGTGTCCCATGATTTAGTA-CTTCCCGTGAAATCCTCTATCCTTCCATTGAATGCTAACCATTCGACTTCTCACGTCCATATAATGCTA-ATCCTCCCTAACAGCTTTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACATTTCACCTCATGTTCTGATCAGCTATGTTACT-CCACCACTGGTATCCCTTTTTT-CTCTGTACCTTTCATCTGACTACCATATATGCACACACACAGTTAATGCCCCACCACTACGTTCTAACCCTGTTTGGTCTCTTACCAGTAGCAACCAATATTTCAACATGATGAAACTTCGGCTCAATACTACTAACATGTTTAGCCCTACAAGTACTAACCGGATTCTTCCTGGCTGTCCACTACACAGCAAATATTAACCTGGCATTCTCATCCATCGTTCACATCACTCGAGATGTCCCATACGGCTGAATAATACAAAACCTACACGCCATCGGAGCATCTATATTCTTCATTTGTATCTACATCCACATCGCCCGAGGCCTATACTACGGATCATACCTTAACAAAGAAACCTGAATATCCGGTATTACCCTGCTTATCACACTAATAGCAACCGCCTTCTTCGGATACGTCCTTCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATTACAAACCTTCTCACCGCCGTACCCTACCTAGGCACATCCTTGACAACCTGGCTATGAGGGGGGTTCGCAATCAACGACCCCACCCTAACACGATTCTTCGCATTACACTTCATCCTACCATTCGCAATCATCTCTTTATCCTCACTACACGTCATCCTCCTTCATGAAGAGGGGTCTAGCAACCCACTAGGAACTAACCCAGACATCGACAAAATCCCATTCCACCCCTACCACTCCCACAAAGACCTTCTCCTACTAACACTAATAATAATATTCCTATTCATTATTGTTTCCTTTTTCCCAGACATCTTCAACGACCCAGACAATTTCTCAAAAGCCAACCCTCTAGTAACACCACAACACATTAAACCAGAGTGGTACTTCCTATTCGCCTACGGCATCCTACGATCTATCCCCAACAAACTTGGAGGAGCATTAGCCCTAGTAATATCAATCATAATCTTATTTTGTACCCCATTCACACACACAGCCCACCTCCGCCCCATAACTTTCCGCCCACTATCCCAACTAATATTCTGAACACTAGTCTCAACATTCATCACCATCACATGAGCCGCCACAAAACCAGTAGAACCCCCATTCATCACCATTAGCCAAGTAACCTCAATTCTATACTTCACATTTTTTCTATCCATCCCTATTCTAGGATGAGTAGAGAACAAAATTATAAACGCCCCCTCCATAACACGGCAACACARC--CATTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATTAATCCAACCACCCCTGGCCATTCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCCAAACAGTCAT-ACACTAACACGACAGGTCGAGGTGTAACTTATGAGGTGGACCAAGATGGGCTACATTTTCTAACACAGACCACACGAACAAAGACATGAAACTGTCCTTCAAAGGTGGATTTAGCAGTAAGCTAAGAACACAATACCTAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATCAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGGATACCCCTATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCTTATAATAACTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAAAATGAGCCATCCC-TCATACCAA--AGGCCAACAAGCCACCACAAGACCCAGTAAGACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCTATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCCGATGGTGCAGCCGCTATCAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Liasis fuscus'] = '?ACCACAACCCTCACTTCCTC--------------------CAGCCATAGTCTGTAA-TTTACAGGCTATGGC--TGATACCTTAATATA-AAACCAAAATCCCATATAAATACCACCACAACAAAG-----CTCTCTY-TCGGCCCCCCCCCTACCCCCCCCC--ACCAAAACATAGAAGAA------ATCAGCACA-AAATAACA-CTAGAAGTATTACTTCCTTGCC--CCCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTTAGCAGGAATTTCCCTTCAAATATTTTAGCCTAAAATAGCCTTCATACATAAAATTATG----TCCTCATTTCT-TGGTCGTTCAATGCAGCACGGATT--AATGG-ATTTT-AATAACCATGACTATCC-TTGAT-CTAGTGGTGTCCCATGATTTAGTA-CTTCCCGTGAAATCCTCTATCCTTCCATTGAATGCTAACCATTCGACTTCTCACGTCCATATAATGCTA-ATCCTCCCTAACAGCTTTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACATTTCACCTCATGTTCTGATCAGCTATGTTATT-CCACCACTGGTATCCCTTTTTT-CTCTGTACCTTTCATCTGACTACCATATATGCACACACACAGTAA????????????????????????????????????????????????ACCAATATTTCAACATGATGAAACTTCGGCTCAATACTACTAACATGTTTAGCCCTACAAGTATTAACCGGATTCTTCCTGGCTGTCCACTATACAGCAAATATTGACCTGGCATTCTCATCCATCATCCACATCACTCGAGACGTCCCATACGGCTGAATAATACAAAACCTACACGCCATCGGAGCATCAATATTCTTCATTTGTATCTACATCCACATCGCCCGAGGCCTATACTACGGATCATACCTCAACAAAGAAACCTGAATATCCGGCATCACCCTACTTATCACACTAATAGCAACCGCCTTCTTCGGGTACGTCCTTCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATCACAAACCTTCTTACCGCCGTACCCTACCTAGGCACATCCTTGACAACCTGATTATGAGGCGGATTCGCAATCAACGACCCCACCCTAACACGATTCTTCGCATTACACTTCATCCTACCATTCGCAATCATCTCTTTATCCTCACTACACGTCATCCTCCTCCACGAGGAGGGGTCTAGCAACCCACTAGGGACTAACCCAGACATCGACAAAATCCCATTCCACCCTTACCACTCCCACAAAGACCTTCTCCTACTAACACTAATAATAATATCCCTACTCATTATTGTTTCCTTTTTCCCAGACATCTTCAACGACCCAGACAACTTCTCAAAAGCCAACCCCTTGGTAACACCACAACACATTAAACCAGAATGATACTTCCTGTTCGCCTACGGCATCCTACGATCTATTCCCAACAAACTTGGAGGAGCATTAGCTCTAGTAATATCAATCATAATCTTATTTTCTACCCCATTCACACACACAGCCCACCTCCGCCCTATAACTTTCCGCCCACTATCCCAACTAATATTCTGAACACTAATCTCAACATTCATCACCATCACATGAGCCGCCACAAAACCAGTAGAACCCCCATTCATCATCATCAGCCAAGTAACCTCAATACTATACTTCACATTTTTCCTATCCATCCCCATTCTAGGATGGGTAGAGAACAAAATTATAAACACCCCCTCTATAACACGGCAATACAAC--CATTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATTAATCCAACCACCCCTGGCCACCCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCCAAACAGTCAT-ACACTAACACGACAGGTCGAGGTGTAACTTATGAGGTGGACTAAGATGGGCTACATTTTCTAACACAGACCACACGAACAAAGACATGAAACTGTCCTTCAAAGGCGGATTTAGCAGTAAGCTAAGAACACAATACCTAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAATTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATCAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGAATACCCCTATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCTTATAATAACTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAAAATGAGCCATCCC-TCATACCAA--AGGCCAACAAGCCACCACAAGACCCAGTAAAACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCTATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCCGATGGTGCAACCGCTATCAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Liasis albertisii'] = '????GCTCCTCTCACTTCCTC--------------------AGACCACAGTCTGCAA---TGCAGACTGTGGTTTTGTGCCCAGAATATA--AACCAAAAAACCATATAAACAACACCRCGACAAAAAAGA--TCTCTC-TCGGCCCCCCCCMTACMCCCCCCC--AAAAAAACATARAGGAA------ATCAG--------------------TTCATARACT--------CTCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTAAGCAGGAATTCCCCTTTAAATATTTTAATCTAAATTAGCCTTCGTACACAAAATTCAG----TCCTCATTCTC-TGGTCGTTCAATGCAGCACGGATT--AATCA-GTCTT-ACTAACCATGGATATCC-TTGAT-CTAGTCGTCTCTCTTAGTCTAACA-CTTCCCGTGAAACCCTCTATCCTTCCACTGAATGCTAACCATTCGACTTCTCACGTCCATATAATGCTA-ATCCTCTCTACTGGCTCTTTCCAAGGSCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACACTTCACCTCATGTTCTGATCAGCTATGTCAAT-CCGCCTTTGGTTTCTCTTTTTTT-CCTGTACCTTTCATCTGACTACCATATATGCACACACACAGTT?ATGCCCCACCACTACATTTTAACCCTATTTGGCCTCCTACCCGTAGCAACCAACATCTCAACATGATGAAACTTTGGTTCAATACTATTAACATGCTTAGCTCTACAGGTACTAACCGGCTTCTTCCTAGCCGTCCACTACACAGCAAACATCAACCTAGCATTTTCATCCATCATCCACATTACCCGAGATGTCCCATTCGGCTGAATAATACAAAACCTACACGCCATCGGAGCATCCATATTCTTCATTTGCATCTACATTCACATCGCACGGGGGCTCTACTACGGATCATACCTAAACAAAGAAACCTGAATATCCGGCATTACCCTACTCATCACACTGATAGCAACCGCCTTCTTCGGATACGTCCTCCCATGAGGACAAATATCATTCTGAGCTGCAACCGTAATCACAAACCTACTAACCGCCGTACCCTACCTAGGCACATCACTAACAACCTGATTATGGGGCGGATTTGCAATCAACGACCCTACCCTAACACGATTCTTCGCACTACACTTCATCCTACCTTTCGCAATCATCTCCTTATCTTCACTACACATTATCCTTCTTCACGAAGAAGGCTCTAGCAACCCACTAGGAACCAATCCAGACATCGACAAAATCCCATTCCACCCCTATCACTCCCACAAAGATCTTCTCCTACTGACACTAATAATACTATCTCTGCTCATCATCGTCTCATTCTTCCCAGACATCTTTAATGACCCAGATAACTTCTCTAAAGCCAACCCATTAGTAACGCCACAACACATCAAACCAGAATGATACTTCCTATTCGCCTATGGTATCCTACGATCCATCCCCAATAAACTAGGAGGCGCACTAGCCCTAGTAATATCAATCATAATTTTATTCACCATCCCGTTCACACACACAGCCCATCTTCGCCCCATAACCTTCCGCCCATTCTCACAACTAATATTTTGAACACTAGTCTCAACATTTATCACCATCACATGAGCCGCCACAAAACCAGTAGAACCCCCATTTATCGTCATCAGCCAAGTAACTTCAACACTATACTTTACATTCTTCTTACTCATCCCCATTTTGGGCTGAACAGAAAATAAAATAATAAACACCCTCTTCCTAACATGGCAACACAAT--AACTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATTAATCCAACCACTTCTGGCCATTCAGTCTATATACCGCCGTCGCAAGCCCACCTTGCAAAAGAAACAAAGTGAGCCAAATAGTCCT-ACACTAACACGACAGGTCGAGGTGTAACTCATGAAGTGGACCAGGATGGGCTACATTTTCTAACACAGACCACACGAACAAAGATATGAAACTATCTTCCAAAGGTGGATTTAGCAGTAAGCTAAGAACACAATGCCTAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTYTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATAAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGAATACCAACATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCCCATAATAGCCACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAACATGAGCCATCCC-TCATACCTC--AGGCCAACAAGCCACTATAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGCTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Apodora papuana'] = '?GCCACAACCCTCAMTTCCTT--------------------CAGCCACAGTYTGTAA-TTTACAGACTGTGGC--CCATGCCTCAATATA-AAGCCGAAAATCCATATAAATAACACCAAAACAAAG-----CTYTCCC-TYGGCCCCCCCCCTACCCCCCCCC--AAAAAAATATAGAGAA------CTATAGAACAAATAACCA---CCAAGAAGTTCACTATCCCCC--TCCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTAAGCCGGAATTTCCCTTTAAATATTTTAGTCTAAATATGCCCTTGTACACAAAATTCAG----TCCTCATTTCT-TGGTCGTTCAATGCAGCCAGGAAT--AATCA-ATCTT-ATTAACCATGGATATCC-TTGAT-CTAGTGGTGTCTCTTGGTCTAGTA-CTTCCCGTGAAATCCTCTATCCTTCCATTGAATGCTAACCATTCGACTTCTCACGTCCATGTATTGCCA-ATCCTCCCTAACAGCTTTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATCCTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACACTTCACCTCATGTTCTGATCAGCTATGTCAAT-CCACCACTGGTAGCTCTCTTTT-CTCTGTACCTTTCATCTGACTACCATATATGCACACACACAGTAAATGCCCCACCATTACATCCTAACCCTGTTCGGCCTCCTACCAGTAGCAACCAACATTTCAACATGATGAAACTTCGGCTCAATACTACTAACATGCCTAGCCCTACAAGTATTAACTGGCTTCTTCCTGGCCGTACACTACACAGCAAACATCAACCTAGCATTCTCATCCATCATTCACATCACCCGAGATGTCCCATACGGCTGAATAATACAAAACTTACACGCCATCGGAGCATCCATATTCTTCATCTGTATCTACATCCATATTGCACGGGGCCTATACTACGGATCGTACCTAAATAAAGAAACCTGAATATCTGGCATCACCCTACTCATCACACTAATAGCAACCGCCTTCTTCGGATATGTCCTTCCATGAGGACAAATGTCATTCTGAGCCGCAACTGTAATCACAAATCTGCTCACTGCAGTACCCTACCTGGGTACATCACTAACAACTTGATTATGAGGCGGCTTCGCAATCAATGACCCCACCCTGACACGATTCTTCGCACTACACTTCATCCTACCATTCGAAATCATCTCTTTATCCTCACTACACATCATCCTACTTCATGAAGAAGGCTCTAGTAACCCATTGGGAACTAACCCAGACATCGACAAAATCCCATTCCACCCCTACCACTCTCACAAAGACCTTCTCCTATTAACACTAATAATTCTACTCCTATTCATCACCATATCATTCTTCCCAGATATTTTCAACGACCCAGACAACTTCTCAAAAGCCAACCCACTAGTAACACCACAACACATCAAACCAGAATGATACTTCCTATTCGCCTATGGGATCCTACGATCCATCCCCAACAAACTAGGGGGCGCATTAGCCCTAGTAACATCGATCATAATCCTATTCACCATCCCATTTACACACACAGCTCACCTCCGACCTATAACCTTCCGCCCCCTATCACAACTGATATTCTGAACATTAGTATCAACATTTATCACCATTACATGGGCCGCCACAAAACCAGTAGAACCCCCATTCATCATCATTAGCCAAGCAACCTCATTATTATACTTCACATTCTTCTTATCCTTCCCTATCCTAGGGTGGACAGAAAACAAAATAATAAACACCCCCTCCATAACATGGCAATACAACC-CATTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATTAATCCAACCACCCCTAGCCTCTCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCCAAATAGTTAT-ACACTAACACGACAGGTCGAGGTGTAGCTTATGGGGTGGCCCAAGATGGGCTACATTTTCTAACATAGACCATACGAACAAAGACATGAAACCGTCTTTAAAAGGTGGATTTAGCAGTAAGCTAAGAACACAATACCTAGCTGAAACCATTGCAATATTAAAGGCGATGCCTGCCCAGTGAGAATTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATCAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGAATACCCATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCTCATAATAACTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAATAACATGAGCCATCCC-TCATACCAA--AGGCCAACAAGCCACCACAAGACCCAGTAAGACTGATAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCCGATGGTGCAGCCGSTATCAAAGGTTCGTCTGTTCAACGATTAACASTCCT'
+    dna_dict['Bothrochilus boa'] = '??GCACCGCCCTCACTTCCTC--------------------CGACCGCAGTCTGCC----AGCAGGCTGCGGTC-GCATGCCCAAAAACACAAACCAAAAAACCATATAAACAACGCCGCAACAAAAGG----YCYCYC-TCGGCCCCCCCCCTAC-CCCCCCC-ACAAAAAACATAGAGAAA------ATCAG--------------------TTTTCACAC---------CCCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTAAGCAGGAATTTCCCTTCAAATATTTTAATCTAAAATAGCCTTTGTACATAAAATTTGC----CCCTCATTTCT-TGGTCGTTCAATGCAGCATGGATT--AATCA-GTCTT-ATTAACCATGGATATTC-TCAGT-CTAGTTGTGTCTCTTAGCCTAACA-CTTCCCGTGAAATCCTCTATCCTTCCACTGAATGCTAACCATTCGACTTCTCACGTCCATATAATGCTA-ATCCTCCCTACT-GGTTTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACATTTTGTCTCATGTTCTGATCATCTATGCCTAC-CCTCCATTGGTTTGTCTTTTTT-CTCTGTACCTTTCATCTGACTACCATATATGCACACACACAGTA?????????????????????????????????????????????????????????????????????????TTTGGCTCAATATTATTAACATGCCTGGCCCTACAAGTACTAACCGGCTTCTTCCTGGCCGTCCACTACACAGCAAACATCAACCTGGCATTCTCATCCATTATTCACATCACCCGAGATGTCCCATATGGCTGAATAATACAAAACCTGCACGCCATCGGAGCATCCATATTCTTCATTTGCGTATACATTCACATCGCACGAGGACTATACTACGGGTCATACCTAAACAAAGAAACCTGAATATCTGGCATTACCCTGCTCATCACACTAATAGCGACCGCCTTCTTTGGATATGTCCTCCCGTGAGGACAGATATCATTCTGAGCCGCAACCGTAATTACAAACCTGTTAACAGCAGTACCCTACCTGGGCACATCACTAACAACCTGGTTGTGAGGCGGGTTCGCAATCAATGACCCCACCCTAACACGATTCTTCGCACTACACTTCATCCTACCATTCGCAATCATCTCCCTATCCTCACTACACATCATCCTACTTCACGAGGAGGGCTCCAGCAACCCACTAGGAACCAACCCAGACATCGACAAAATCCCTTTCCACCCCTACCACTCCCACAAAGACTTTCTTCTTCTAACACTAATAACCCTATCCTTACTCATCATCGTCTTATTCTTCCCAGACATCTTTAACGACCCAGACAACTTCTCAAAAGCCAACCCCCTAGTAACACCACAACACATCAAACCAGAATGATACTTCCTATTCGCCTACGGCATCCTACGTTCAATCCCCAATAAACTAGGAGGCGCACTAGCCTTAGTAATATCAATCATAATCCTATTCACCATCCCATTCACACACACAGCCCACCTTCGCCCCATAACCTTCCGTCCACTATCACAACTAATATTCTGAACATTAGTGTCAACATTTATCACTATCACATGGGCCGCCACAAAACCAGTAGAACCACCATTTATCACTATCAGCCAAACAACCTCAACACTATATTTTACATTCTTTTTACTTACCCCCATCCTAGGCTGAATAGAAAACAAAATAATAAAAACTCCCTCCCTAACACGGCAACACTATC--ATTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATTAATCCAACCACTTCTGGCCATCCAGTCTATATACCGCCGTCGAAAGCCCACCTTGCAAAAGAAACAAAGTGAGCCAAATAGTTCT-ACACTAACACGACAGGTCGAGGTGTAACTCATGAAGTGGACCAGGATGGGCTACATTTTCTAACACAGACCATACGAACAAAGACATGAAACCGTCTTCCAAAGGTGGATTTAGCAGTAAGCTAAGAACACAATGCTTAGCTGAAAC--TTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATAAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGGATACCAACATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCCCATAATAGCTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAACATGAGCCATTCC-TCATATCCT--AGGCCAACAAGCCACTACAAGACCCAGTAACACTGATAACTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTCAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGCTATTAAAGGTTCGTTTRTTCAACGATTAACAGTCCT'
+    dna_dict['Antaresia maculosa'] = '?ACCACAACCCTCACTTCCTCC--------------------AGCCATAGTCTGTAAATTTACAGACTATGGC--TGATACCTCAACATA-CAGCCAAAATTCCATATAATAT-CCCCACAACAA-----CTYTYTYTCYTYGGCCCCCCCCCTACCCCCCCC---ATCCAAATATATAAGAA------ATCAGCACAATAAACCT--ACTAGGAATTGCCAATAACTCC--CCCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTAAGCAGGAATTCCCCTTCAAATATTTTAGTCTAAAATAGCCTTTGTACAGAATATTTAG----TCCTCATTTCT-TGGTCGTTCAATGCAACACGGATT---ATCAGTTCTT-ACTAACCATGGATATCC-TTGAT-CTAGTGGTGTCTCTTAATCTAGTA-CTTCCCGTGAAATCCTCTATCCTTCCATAGAATGCTAACCATTCGACTTCTCACGTCCATATAATGCCA-ATCCTCCCTATCAGCTTTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCTTACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTTCATTTTGTCTCATGTTCTGATCACCTATGCTTAT-CCACCACTGGTAGCTCTTTTTT-CTCTGTACCTTTCATCTGACTACCATATATGCACACACACAGTAA????????????????????????????????????????????????????????????????????????TTCGGCTCAATATTATTAACATGSCTGGSCCTGCAAGTATTAACCGGATTCTTCTTGGCCGTCCATTACACAGCAAATATCAACCTAGCATTTTCATCCATTATTCACATCACCCGAGATGTCCCATACGGCTGAATAATACAAAACCTACACGCCATYGGAGCCTCCATATTCTTCATTTGCATTTATATCCACATTKYACGAGGACTATACTACGGATCTTACCTCAATAAAGAAACCTGAATATCTGGTATCACCCTTCTTATCACACTAATAGCAACAGCCTTCTTCGGTTACGTTCTCCCATGAGGACARATATCATTCTGAGCCGCAACCGTAATCACAAACTTACTTACCGCCGTCCCATATCTAGGCACATCACTAACAACATGATTATGAGGGGGCTTTGCAATCAATGATCCCACCCTGACACGATTCTTCGCACTACACTTTATTCTACCATTCGCAATTATCTCCTTATCCTCACTACACATTATTTTACTTCACGAAGAGGGCTCCAGCAACCCACTAGGAACCAACCCAGACATTGACAAAATTCCATTTCACCCCTACCACTCTCATAAAGACCTGCTCCTACTCACACTAATAATTCTACTCTTACTCACTATCGTCTCATTTCTCCCAGACATCTTCAATGACCCAGACAACTTCTCAAAAGCTAATCCCCTAGTAACACCACAACACATCAAACCAGAGTGATATTTCCTATTCGCCTATGGCATTTTACGATCCATCCCTAATAAACTGGGAGGCGCACTAGCCCTAGTAATATCAATCATAATCCTATTTACCATTCCATTCACACACACAGCCCGCCTACGCCCCATAACCTTCCGCCCACTATCACAACTAATATTTTGAACATTAGTATCAACATTCGCCACCATTACATGAGCCGCCACAAAACCAGTAGAACCCCCATTTATCATCATCAGCCAAGCAACTTCAATTCTATACTTCACATTCTTCCTATCTACCCCAATTCTAGGGTGGGTGGAAAACAAAATAATAAATATCTCCTCCCTAACACGGCAGTATAAAC--ACTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATTAATCCAACCACTTCTGGCCATTCAGTCTATATACCACCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCTAAATAGTACT-ACACTAACACGACAGGTCGAGGTGTAACTTATGAAGTGGACCAAGATGGGCTACATTTTCTAACACAGACTATACGAACAAAGACGTGAAACCGCCTTTCAAAGGTGGATTTAGCAGTAAGYTAAGAACATAATACCTAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAAAACTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATCAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGAATACCCATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACTTATT--AAACCATATAATAGCTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAACGTAAGCTATTCC-TTACATCACC-AGGCCAACAAGCCACTACAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGCGCAGCCGCTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Antaresia stimsoni'] = '?ACCACAACCCTCAMTTCCTTTCAGCCATAGTCTGTAAATACAGCCATAGTCTGTAAA--TACAGACTATGGC--TGATACCGCCATATA-GAGCCGAAAACCCATATAATATGCCACACAATAAA------CTYTYTCCTYGGCCCCCCCCCTACCCCCCCCC--ATTAAAACATATGGGAA------AACAGCACAAATACATA--TTAAAGAATGTCCAATTAATCC--TCCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTAAGCAGGAATTCCCCTTTAAATATTTTAGCCTAAAATGTCCTTCGTACAGAATATTAAG----TCCTCATTTTC-TGGTCGTTCAATGCAATCAGGATT--AATCA-TTCTT-ACTAACCATGGCTATCC-TTGAT-CTAGTGGTGTCCCTTAATTTAGTA-CTTCCCGTGAAATCCTCTATCCTTCCATAGAATGCTAACCATTCGACTTCTCACGTCCATATAGTGTTG-ATCCTCTT-AATAGCTTTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTTCATTTAGTCTCATGTTCTGATCAGCTATGTCAAT-CCACCACTGGTAGCTCTTTTTT-CTCTGTACCTTTCATCTGACTACCATATATGCACACACACAGTAA????????????????????????????????????????????????????????????????????????TTCGGCTCAATACTATTAACATGTCTAGCCCTACAAGTATTAACCGGCTTTTTCCTAGCCGTTCATTATACAGCAAACATTAACCTAGCATTTTCATCCATCGTTCACATTACCCGAGACGTCCCATACGGCTGAATAATACAAAACCTACACGCCATCGGAGCATCCATATTCTTTATTTGTATTTATATTCACATCGCACGCGGACTATACTATGGATCCTACCTCAACAAAGAAACCTGAATATCCGGTATCACCCTGCTCATCACACTAATAGCAACCGCCTTCTTCGGCTATGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATCACAAACCTACTCACCGCCGTACCATACCTAGGCACATCGCTAACAACCTGACTGTGAGGGGGGTTCGCAATCAATGACCCCACCCTAACACGATTCTTCGCACTACACTTTATTCTACCATTCGCAATCATCTCCTTATCCTCCCTACACATTATCTTACTACACGAAGAAGGCTCAAGCAACCCACTAGGAACTAACCCAGACATCGACAAAATCCCATTCCACCCATACCACACCCACAAAGATCTACTCTTATTAACACTAATAGTTTTACTCCTATTCATTATCATTTCATTTTCCCCAGATATCTTTAATGACCCAGACAACTTCTCAAAAGCCAACCCCCTAGTAACACCACAACACATCAAACCAGAATGGTACTTCCTATTTGCCTACGGTATCCTACGATCCATTCCCAACAAACTAGGAGGCGCACTAGCCTTAGTAATATCTATCATAATCCTATTCACCATCCCATTCACACACACAGCCCACCTACGCCCAATAACCTTCCGCCCACTCTCACAACTAACATTCTGAACACTGGTCTCAACATTCGCCACCATCACATGAGCCGCCACAAAACCAGTAGAACCCCCATTTATCACCATCAGTCAAGTAACCTCAACACTATACTTCGCATTCTTCCTATCTATCCCAATTCTCGGATGAGTAGAAAACAAAATAATAAACATTTCATCCATAACACGGCAGTATTAAC---CTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGACAACCCACGATTAACCCAACCACTTCTAGCCACTCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCCAAACAGTACT-ACACTAACACGACAGGTCGAGGTGTAACTTATGAAGTGGACCAAGATGGGCTACATTTTCTAACACAGACTATACGAACAAAGACATGAAACTGTCTTTCAAAGGTGGATTTAGCAGTAAGCTAAGAACACAATACCTAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATTAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGAATACACCTATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCTAATAATAACTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAACATGAGCCTTCCC-TCATACCAA--AGGCCAACAAGCCATCACAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGSTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Antaresia childreni'] = '?GCCACAACCCTCACTTCCTTCCAGCCATAGTCTGTAAATACAGCCATAGTCTGTAAA--TACAGACTATGGC--TGATGCCGCCATATA-GAGCCGAAAAACCATATAATATACCACACAATAAA------CTCTCTCCTCGGCCCCCCCCCTACCCCCCCCC--ATTAAAACATATGGGAA------AGCAGCACAAATACATA--TTAAAGAATGTCCAATTAATCC--TCCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTAAGCAGGAATTCCCCTTTAAATATTTTAGTCTAAAATGTCCTTTGTACAGAATATTTAG----CCCTCATTCTC-TGGTCGTTCAATGCAATCGGGATT--AATCA-TTCTT-AATAACCATGACTATCC-TTGAT-CTAGTGGTGTCCCTTGATTTAGTA-CTTCCCGTGAAATCCTCTATCCTTTCATAGAATGCTAACCATTCGACTTCTCACGTCCATATAGTGTTG-ATCCTCTT-AATAGCTTTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTTCATTTAGTCTCATGTTCTGATCAGCTATGTCAAT-CCACCACTGGTAGCTCTTTTTT-CTCTGTACCTTTCATCTGACTACCATATATGCACACACACAGTAAATGCCCCACCACTACATTCTAACCCTATTCGGCCTTCTGCCTGTAGCAACCAACATCTCAACATGATGAAACTTCGGCTCAATACTATTAACATGTCTAGCCCTACAAGTATTAACCGGTTTTTTCTTAGCTGTTCACTATACAGCAAACATTAACCTAGCATTTTCATCCATCGTTCACATTACCCGAGACGTCCCATATGGCTGAATAATACAAAACCTACACGCCATCGGAGCATCCATATTCTTTATTTGTATTTATATTCACATCGCACGCGGACTATACTATGGATCCTACCTCAACAAAGAAACCTGAATATCCGGTATCACCCTGCTCATCACACTAATAGCAACCGCCTTCTTCGGCTATGTTCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATCACAAACCTACTCACCGCCGTACCATACCTGGGCACATCACTAACAACCTGACTGTGAGGAGGATTCGCAATCAATGACCCCACCCTAACGCGGTTCTTCGCGCTACACTTTATTCTACCATTCGCAATCATCTCCTTATCCTCCCTACACATTATTTTACTACACGAGGAAGGCTCCAGCAACCCACTAGGGACTAACCCAGACATCGATAAAATCCCATTCCACCCGTACCACACCCACAAAGACCTACTCCTACTAACACTAATAATTTTACTTCTATTAATTATCGTTTCATTTTCCCCGGACATCTTTCATGACCCAGACAACTTCTCAAAAGCCAACCCCCTAGTAACACCACAACACATTAAACCAGAATTATACTTCCTATTTGCCTACGGCATCCTACGATCTATCCCCAACAAACTAGGAGGCGCACTGGCCTTAGTAATATCCATCATAATCCTATTCACCATCCCATTCACACACACAGCCCACCTACGGCCAATAACCTTCCGCCCACTCTCACAACTAATATTTTGAGCACTAATTTCAACATTCGTCACCATCACATGGGCCGCCACAAAGCCAGTAGAACCCCCATTTATCATCATCAGTCAAGTAACCTCAACACTATACTTCACATTCTTCCTATCTATCCCAATTCTCGGATGAGTAGAAAACAAAATAATAAACATTTCATCCATAACACGGCAGTATTAAC---CTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATTAATCCAACCACTTCTAGCCACTCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCCAAACAGTACT-ACACTAACACGACAGGTCGAGGTGTAACTTATGAAGTGGGCCAAGATGGGCTACATTTTCTAACACAGACTATACGAACAAAGACATGAAACTGTCTTTCAAAGGTGGATTTAGCAGTAAGCTAAGAACACAATACCTAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATTAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGAACATTCATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCTCATAATAACTACTTTCAGTTGGGGCGASTTTGGAACAAAACAGAACTTCCAAACAACATGAGCCATCCCCTCATACAAC--AGGCCAACAAGCCACTACAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCTTATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGCTATTAACGGTACGTTTGTTCAACGATTACCAGTCCT'
+    dna_dict['Antaresia perthensis'] = '?ATCA-AACCC------------------------AAAACTAAGCCACAGCCTGTTT--AAACAGGCTGTGGC--TGATGCCGCCATACA-AAGCCGAAATTCCATATAACACACCACAATATAAA------CTYTYTCCTYGGCCCCCCCCCTACCCCCCCCC--AACCAAACATATAAGAA------AACAGAACAGTGAACAA--TTAGAGATTCTCCAATTAACTC--TCCTATGTATAATCTTACATTAATGGTTTGCCCCATGGATATTAAGCAGGAATTTCCCTTCAAATATTTTAGTCTAAAATAGCCTTTGTACAGTCTATTTAG----TCCTCATTTTC-TGGTCGTTCAATGCAGCATGGATT--AATCA-TTCTT-ACCGATCATGACTATCC-TTGAT-CTAGTGGTGTCTCTTAATTTAGTA-CTTCCCGTGAAATCCTCTATCCTTCCCTAGAATGCTAACCATTCGACTTCTCACGTCCATATAATGCTA-ATCCTCCCTAAAAGCTTTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTTCATTCTTTCTCATGTTCTGATCAGCTATGTCAAT-CCACCATTGGTTGCCCTTTTTT-CTCTGTACCTTTCATCTGACTACCATATATGCACACACACAGTAA????????????????????????????????????????????????????????????????????????TTCGGMTCAATACTACTAACATGTTTAGCCTTACAAGTACTAACCGGCTTTTTTTTGGCCGTCCACTACACAGCAAACATCAACCTGGCATTTTCATCCATCATTCACATTACCCGAGACGTCCCATATGGCTGAATAATACAAAACCTGCACGCCATCGGAGCATCCATATTCTTCATTTGCATCTACATTCACATTGCACGCGGACTCTACTACGGATCCTACCTCAACAAAGAAACCTGGATATCGGGAATTACCCTCCTCATCACACTGATAGCTACCGCCTTCTTCGGCTACGTCCTCCCATGAGGACAGATATCATTCTGAGCCGCAACAGTAATCACCAACCTACTCACCGCTGTACCCTACCTAGGCACATCACTAACAACCTGACTATGAGGGGGGTTCGCAATCAACGATCCCACCCTGACGCGATTCTTCGCACTACACTTCATCCTACCATTCGCAATCATTTCTCTATCATCCTTACACATTATCTTACTACACGAAGAGGGCTCCAGCAACCCACTAGGAACCAACCCAGACATTGACAAAATCCCATTCCACCCATACCACTCCCACAAAGACCTGCTCCTACTAACACTTATAATTTTATTCTTATTCATTATCCTATCGTTCTCCCCGGACATCTTCAACGACCCAGATAACTTCTCAAAAGCTAACCCCCTAGTAACACCACAACACATTAAACCAGAATGGTACTTCCTGTTCGCCTACGGAATTCTACGATCCATTCCAAATAAATTAGGAGGCGCACTAGCCCTTGTGATATCAATCATAATCCTATTTACCATCCCATTCATACACACCGCCCACCTACGCCCAATAACCTTCCGCCCACTTTCACAACTTATATTCTGAACACTAGTCTCAACATTTGCCACCATTACATGAGCCGCCACAAAACCGGTAGAGCCCCCATACATCCTCATTAGCCAAGTGACCGCAACACTATACTTCACATTCTTTCTATCCATCCCAATCCTAGGATGAATAGAAAACAAAATAATAAACACCTCCTCCATAACACGGCASTACAACC--ACTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCTAATAACCGATAACCCACGATTAATCCAACCACTTCTAGCCGCTCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCCAAACAGTAAT-ACACTAACACGACAGGTCGAGGTGTAACTTATGAAGTGGACCAAGATGGGCTACATTTTCTAACACAGACCATACGAACAAAGGCATGAAACCGCCTTTCGAAGGTGGATTTAGCAGTAAGCTAAGAACACAACACCTAGCTGAAACCRTTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATCAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGAATACCCATATAAGACCAGAAGACCCTGTGAAGCTTAAACCAACCTATT--AAACCCCATAATAGCTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAA-ATGAGCTCTCCC-TCACACCTC--AGGCCAACAAGCCACTATAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTCAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGCGCAGCCGCTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Antaresia melanocephalus'] = '?ACCACA----------CCTTCC-----------------CCAACCATAGTCTGTAACC--ACAGACTATGGT--CGATGTCTCAATATA-AAGCCAAAAATCTATATAAATAAA-ACACAATAAAG-----CTCTCTCCTCGGCCCCCCCC-TACMCCCCCC--ACAAGAAATATAGAAGAA------ACCAGCACATAAGACTA--TAAGGATTCCCCCCTTCTTTCC--CCCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTAAGCCGGAATTCCCATTTAAATATTTTAATCTAAATTTGCCTTTGTACTTAAAATTCAG----TCCTCATTTCT-TGGTCGTTCAATGCAGCACGGATT--AATAG-ATCTT-ATTAACCATGGCTATCC-TTGAT-CTAGTGGTGTCCCATGATCTAGCT-CTTCCCGTGAAATCCTCTATCCTTCCTCTGAATGCTAACCATTCGACTTCTCACGTCCATATTATGCCA-ATCCTCCCTAACAGCTTTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACATTTTGCCTCATGTTCTGATCAGCTATGTTATT-CCACCACTGGTATCCCTTTTTT-CTCTGTACCTTTCATCTGACTACCATATATGCACACACACAGTAAATGCCCCACCACTACATCCTAACCCTATTTGGCCTTCTGCCTGTAGCAACTAACATCTCAACATGATGAAACTTCGGCTCAATACTACTAACATGTTTAGGCCTACAAGTACTAACCGGCTTCTTCCTAGCCGTCCACTACACCGCAAACATTAACCTGGCATTCTCATCTATCGTTCACATCTCCCGAGATGTCCCATACGGCTGAATAATACAAAACCTACATGCAATCGGAGCATCCATATTCTTCATCTGTATCTACATTCACATTGCACGAGGATTATACTACGGATCCTACCTTAACAAAGAAACCTGAATATCAGGCATCACACTACTCATCACACTAATAGCGACCGCTTTCTTCGGATATGTGCTTACATGAGGACAAATATCATTATGAGCCGCAACCGTAATCACAAACCTACTCACCGCCGTGCCCTACCTAGGCACATCTCTAACAACCTGACTATGAGGAGGATTCGCAATCAATGATCCTACCCTAACACGATTCTTCGCACTCCACTTCATTCTGCCATTCGCAATCATCTCCTTATCCTCACTACACATCATCCTACTTCACGAAGAAGGCTCCAGCAACCCATTAGGAACCAACCCAGACATTGACAAAATCCCATTCCACCCATACCACTCCCACAAAGATCTCCTCCTCCTAACACTAATAATCATAAGCCTATTCATCATCAGCTCGTTCTTCCCAGATATCTTCAACGACCCCGACAACTTCTCAAAAGCCAACCCCCTAGTAACACCACAGCACATTAAACCAGAATGATACTTCCTATTCGCCTACGGAATTCTACGATCCATTCCCAACAAACTAGGAGGCGCATTAGCATTAGTAATATCAATTATAATCCTATTTATTATCCCATTTACACACACAGCCCGCCTTCGCCCTATAACCTTCCGCCCTCTATCACAACTAATATTTTGAACACTAGTATCAACATTCATCACCATTACATGGGCCGCCACAAAACCAGTAGAACCACCATTCATTGTAATCAGCCAAGTAACCTCATCACTATACTTCACATTCTTCTTATCAACACCCATTCTGGGATGAGCAGAAAACAAAATAATAAACATTTCATCCCAGCCATAACATGGCAACACACTTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATTAATCCAACCACTTCTGGCCACCCAGTCTATATACCGCCGTCACCAGCCCACCTTGCAAAAGAAACATAGTGAGCCAAATAGTCCT-ACACTAACACGACAGGTCGAGGTGTAACTTATGAAGTGGATCAAGATGGGCTACATTTTCTAACACAGACCATACGAACAAAGACATGAAAACATCTTTCAAAGGTGGATTTAGCAGTAAGCTAAGAACACAATACCTAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAGACTGTCTCTTGTAATCAATCAATTAAACTGATCTCCCAGTACAAAAGCCGGGATACCCATATAAGACCAGAAGACCCTGTGAAGCTTGAACTAACCTATT--AAACCACATAATAACTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAAAATGAGCCATCCC-TCATACCATTGAGGCCAACAAGCCACCACAAGACCCAGTAAAACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAGATGGTGCAGCCGCTATCAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Antaresia ramsayi'] = '?ACCACG----------CCTTCC-----------------CCA-CCATAGTCTGTAAA-TTACAGACTATGGT--CGTTGCCTCAACATA-AAGCCAAAAACCCATATAAACAAAAC--ATATAAA----CTCTCTCTCCTCGACCCCCCCC-TACCCCCCCC--ACAAGAAATATAGAAGAA------ACCAGCACATAAGACTA--TAAGGATTTCCCCCTCCTTTCC--CCCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTAAGCCGGAATTCCCATTTAAATATTTTAATCTAAATT-GCCTTCGTACCTAAAATTCAG----TCCTCATTTCT-TGGTCGTTCAATGCAGCACGGATT--AATAG-ATCTT-ATTAACCATGGCTATCC-TTGAT-CTAGTGGTGTCCCATGATCTAGCT-CTTCCCGTGAAATCCTCTATCCTTCCTCTGAATGCTAACCATTCGACTTCTCACGTCCACGTTATGCCA-ATCCTCCCTAACAGCTTTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCAATGGTCCGGAACCATCCCTCCATACTAGCCTTTTCCAACACCTTTGGTTGCACCCTTTATA-TGGTACACTCTGCCTCATGTTCTGATCAGCTATGTTATT-CCACCACTGGTATCCCTTTTTT-CTCTG-ACCTTTCATCTGANTACCATATATGCACACACACAGTAA????????????????????????????????????????????????????????????????????????TTCGGCTCAATACTACTAACATGCTTAGGTYTACAAGTACTAACCGGCTTYTTCCTAGCCGTCCACTACACCGCAAACATTAACCTGGCATTCTCATCTATCGTTCACATCACCCGAGATGTCCCATACGGCTGAATAATACAAAACCTACACGCCATCGGAGCATCCATATTCTTCATTTGTATCTACATTCACATTGCACGAGGATTATACTACGGATCCTACCTTAACAAAGAAACCTGAATATCGGGTATTACATTACTCATTACACTAATAGCAACCGCCTTCTTCGGATATGTCCTTCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTCACCGCCGTACCATACCTAGGTACATCTCTAACAACCTGACTGTGAGGAGGATTCGCAATCAATGATCCCACCCTAACACGATTCTTTGCGCTACACTTCATCCTACCATTCGCAATCATCTCCTTGTCCTCACTACACATTATCTTACTTCACGAAGAAGGCTCCAGCAACCCATTAGGAACCAACCCAGACATTGACAAAATCCCGTTCCACCCGTACCACTCCCACAAAGACCTCCTCCTCCTAACGCTAATAATTATATCCTTATTTATTATCACCTCGTTCTTCCCAGACATCTTTAACGACCCCGACAATTTCTCAAAAGCCAACCCCCTAGTAACACCACAGCACATTAAACCAGAGTGGTACTTCCTATTTGCCTACGGCATCCTACGATCCATCCCCAACAAACTAGGAGGCGCACTAGCCCTAGTAATATCAATCATAATCCTATTTACCATTCCATTCACACACACAGCCTACCTTCGCCCTATAACCTTCCGCCCCCTATCACAACTAATATTCTGAACACTAGTCTCAACATTCATCACCATTACATGAGCCGCCACAAAACCAGTAGAACCACCATTCATTATAATTAGCCAAGTAACCTCAACACTATACTTCATATTCTTCTTATCAACACCCATCCTAGGATGAATAGAAAATAAAATAATAAACATTTCATCCATAACATGGCAACGCAA----TTTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAGCCTAGAGGAGCCTGTCCAATAACCGATAACCCACGATTAATCCAACCACTTTTGGCCACCCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCCAAATAGTTTC-ACACTAACACGACAGGTCGAGGTGTAACTCATGAAGTGGATCAAGATGGGCTACATTTTCTAACACAGACCATACGAACAAAGACATGAAAACATCTTTTAAAGGTGGATTTAGCAGTAAGCTAAGAACACAATACCTAGCTGAAACCGTTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATCAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGAATATACATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCTTATAATAGGTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAACATGAGCCATCCC-TCATACCA---AGGCCAACAAGCCATTACAAGACCCAGTAACACTGATAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTCAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGCTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Python reticulatus'] = '??CCATCACCCTCACTTCCTCC--------------------AACCATAGCCAAATA-TTT---GGCTATGGTT-TCATGCCAAAATATATCAACCAAAAACCCATATTAATATAATGCTATAAAATGG-------TCCCTCGACCCCCCCCCTACCCCCCCC--AAAAAA--CATAAGGAAA------GTCCG-CACATCATAAACCTCGTACTTTTCCCTATTTTTT-GCTCCTATGTATAATCTTACATTAATGGCTTGCCCCATGGATAATAAGCAGGAATTTCCCTTTTAATATTTTAGTCTAAATTAGCCTTCGTACAGGTAATTCAGT----CCTCATTTTC-TGGTCGTTCAATGCAGCATGGATT--AATAA-TTGTT-GATAACCATGGATATCC-TTGAT-CTAGTTGTGTCCCTTGATTTAACA-CTTCCCGTGAAATCCTCTATCCTTCCGCGTAATGCTAACCATTCGACTTCTCACGTCCATTAATTGCTA-CTCCTCTTTACT-GGTTTTTCCAAGGCCGCTGGTTACACCTTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCCTTATA-TGGTACATATCACCTCATGTTCTGATCACCTATGCTAGA-CCACCACTGGTAGCTCTTTTTT-CTCTCTCCCTTTCACCTGACTACCATATATGCACACACACAGTAAATGCCCCACCATTATATCCTAACCTTATTTGGCCTTCTACCAGTAGCAACCAACATCTCAACCTGATGAAACTTCGGCTCAATATTACTAACATGTCTAGCCTTACAAGTACTAACCGGCTTTTTCCTAGCCGTCCATTACACAGCAAACATTAACCTAGCATTTTCATCCATCATCCACATCACCCGAGACGTCCCATACGGCTGAATAATACAAAACCTTCACGCTATCGGAGCATCCATATTCTTCATCTGCATCTACATCCACATCGCACGAGGCCTATACTACGGATCATACCTCAACAAAGAAACCTGAATATCAGGCATCACCCTACTCATCACACTAATAGCCACCGCTTTTTTCGGTTACGTCCTTCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTCACTGCCGTACCATACCTAGGTACATCACTAACAACCTGGCTTTGAGGCGGATTCGCAATCAACGACCCCACCCTAACACGATTCTTTGCACTACATTTTATTTTACCATTCGCGATTATCTCATTATCCTCATTACACGTTATCTTACTCCACGAAGAAGGTTCTAGCAACCCCCTAGGAACCAACCCAGACATCGACAAAATCCCATTCCACCCATACCACTCTTACAAAGACTTCCTCTTACTAACATTAATAGTCCTATCTCTATTCATTATCGTCTCATTCTTCCCAGATATCTTCAACGACCCAGACAATTTCTCAAAAGCCAACCCCCTAGTAACACCACAACACATTAAACCAGAATGATACTTCCTATTCGCTTACGGTATTCTACGATCCATCCCCAACCAACTTGGAGGAGCATTAGCCTTAGTAATATCTATTATAATCTTATTCACTATCCCATTCACACACACAGCTAATCTTCGTCCCATAACCTTCCGACCCCTCTATCAACTCATGTTCTGAACACTAGTCTCCACTTTTATTACTATCACATGAGCCGCTACAAAACCCGTAGAGCCCCCTTTTATCACTATTAGTCAAGTAACTTCAACACTTTATTTCACATTCTTCATCTCCATCCCATTCCTAGGATGAATAGAAAACAAAATAATACATCTCAACTCCATAACACGGCAATATAACCCA-TTGC?C---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCTAATAACCGATAACCCACGATTAACCCAACCACTTCTGGCCATCCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAAAGAAACAAAGTGAGCCAAACAGTACT-ACACTAATACGACAGGTCGAGGTGTAACTAATGAAGTGGACCAAGATGGGCTACATTTTCTAACACAGAACACACGAACAAAGACATGAAACTGCCTTCCAAAGGTGGATTTAGCAGTAAGCTAAGGACAAAATACCTAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAATTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAAAGTCAAACTGTCTCTTGTAATTAATCAATTAAACTGATCTCCCAGTACAAAAGCTGGAATATCCATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACTTATT--AAACCCACTAATAACTACTTTCAGTTGGGGCGACTTTGGAACAAAACAAAACTTCCAAATAATATGAATAATCCC-TCATACCAT--AGGCCAACAAGCCACCACAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGCTATTAAAGGTTCGTTTRTTCAACGATTAACAGTCCT'
+    dna_dict['Python timoriensis'] = 'TA-CACCACCA------------------------------AGACCATAGTCGGTAAATC----GACTATGGTCTTTTTACGCCAAAAATACAACCAAAAATCCATATTAATATAGCAATATAAAATAG-------CCCCTCGACCCCCCCCCTACCCCCCCCC-ACAAAAA-TATAAAGAAA------ACCCG-TATGTCATAAACTCCGAATTTTTCCCTATTTTT--GCCCCTATGTATAATCATACATTATTGGCTTGCCCCATGGATAATAAGCAAGAATTCCCTTTTTAATATTTTAGTCTAAAATTGCCTTT-TACAAAAAACTCAGT----CCTCATTTCT-TGGTCGTTCAATGCAGCATGGGCT--AATAA-TTATT-AATAACCATGACTATCC-TTGAT-CTAGTTGTGTCTCTTAGTTTGGTA-CTTCCCGTGAAATCCTCTATCCTTCCGCGTAATGCTAACCATTCGACTTCTCACGTCCATTAATTGCTA-TTCCTCTTTACT-GGTTTTTCCAAGGCCGCTGGTTACACCTTCAAGATCATCTCAATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCCTTATA-TGGTACATTTTGCCTCATGTTCTGATCACCTATGCTAGA-CCACCTCTGGTAGCTCTTTTTT-CTCTCTCCCTTTCACCTGACTACCATATATGCACACACACAGTAA????????????????????????????????????????????????????????????????????????TTCGGCTCACTACTATTAACATGTCTAGCCCTACAAGTATTAACTGGTTTTTTCCTAGCCGTTCACTACACAGCAAACATTAACCTGGCATTTTCATCCATCATTCACATCACCCGAGACGTCCCATACGGTTGAATGATACAAAACCTCCACGCCATCGGAGCATCCATATTTTTCATTTGTATTTACATCCACATCGCACGAGGCCTATACTACGGATCATATYTTAACAAAGAAACTTGAATATCAGGCATCACCCTACTCATCACATTAATAGCTACTGCTTTCTTCGGATATGTTCTTCCATGAGGACAAATATCATTCTGRGCCGCAACTGTAATTACAAACCTACTTACAGCCGTACCATACCTGGGCACATCATTAACAACCTGACTCTGAGGCGGATTTGCAATCAACGACCCAACTCTAACACGATTCTTCGCACTACACTTTATCCTACCATTCGCAATCATCTCACTATCCTCACTACACATTATCTTACTCCATGAAGAAGGTTCTAGCAACCCCCTAGGAACTAACCCAGACATCGATAAAATCCCATTCCACCCCTATCATTCCCACAAAGACTTCCTCTTACTAATACTAATAATTCTATTTTTATTCATTATCGTTTCATTCTTCCCAGATATTTTCAACGACCCAGACAATTTCTCAAAAGCTAACCCACTAGTGACACCACAACACATTAAACCAGAATGATACTTCCTATTTGCCTATGGCATCCTACGATCTATTCCCAATAAACTAGGAGGAGCCCTAGCCCTAGTAATATCTATTATAATTCTATTCACCATCCCATTCACACACACAGCCTATCTTCGTCCAATAACCTTTCGCCCTTTCTCACAATTCATATTCTGAACACTAATCACTACATTCATCACCATCACATGAGCCGCTACAAAACCTGTAGAACCACCATTCATTATTATCAGCCAAGCGACATCAACACTATATTTCACCTTCTTCATTTCAATCCCTCTTCTAGGCTGAATAGAAAACAAAATAATACACCTCAATTCCATAACATGGCAATAAAACC--ACTGCTC---GCCAAACAACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCTAATAACCGATAACCCACGATTAACCCAACCATTTCTGGCCACCCAGTCTATATACCGCCGTCGCCAGCCCACCTTGCAAGAGAAACAAAGTGAGCCAAACAGTACT-ACACTAACACGACAGGTCGAGGTGTAACTAATGAAATGGACTAAGATGGGCTACATTTTCTAGCACAGAACACACGAACAAAGATATGAAACTATCTTCCAAAGGTGGATTTAGCAGTAAGCTAAGGACAAAATACCTAGCTGAAACCATTGCAATATTAAAGGCAATGCCTGCCCAGTGAGTATTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATTAATCAATTAAACTGATCTTTCAGTACAAAAGCTGAAATACCCATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCTATTAATAACTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAACATGAGCTATTCC-TCATAACAC--AGGCCAACAAGCCACTACAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGCTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Python sebae'] = '?????????????????????????????????????????????????????????????????????????????CTTCCTCAGACAC-AAACTCA-ACCTCAAATAAAAATAAAAATAAT-----------CCTACCTCGGCCCCCCCCCTACCCCCCCC--ACTATTT-CATATGGAA-------TACAGGATATATAC-TTTGTTAGAAAAATCCATATTTTTTCTACCCTATGTATAATCTTACATTAATGGCTTGCCCCATGAATAATAAGCGGGAATTCCTAATAAAATATTTTAGCCTAAAATTGCCTTCGTACATAAAATT-AGC---TCCACATTTCTTTGGTCGTTCAATGCTGCANGGATTATAGTAC-TTCTT-AATACACATGACTATCC-TTGAT-CTAGTCGTCTCTCTTAACTTAACA-CTTCCCGTGAAATCCTCTATCCTTTCATA-CATGCTAACCATTCGACTTCTCACGTCCATAAGT-GCTA-CCCCTCTTCTCTTGCTCTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCGACGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACATTTTGCCGCATGTTCTGATCACCTATGCTAGT-CAACCACTGGTATCCCTTTTTT-CTCT-TCCCTTTCACCTGACTACCATATATGCACACACACAGTTAATGCCACACCATTATATCTTAACCCTATTCGGACTCCTACCAGTAGCAACCAACATTTCAACATGATGAAATTTCGGCTCAATACTACTAACATGTTTAGCCTTACAAACGCTCACAGGCTTCTTCCTAGCTGTCCACTACACAGCAAACATTAACCTAGCATTCTCATCTATCATTCACATCATCCGTGACGTCCCACATGGCTGAATAATACAAAACCTGCACGCCATCGGCGCATCTATATTCTTTATTTGCATTTACATCCACATCGCACGAGGCCTATACTATGGATCCTATCTTAACAAAGAAACCTGAATATCAGGTATCACACTCCTCATCATCCTAATAGCAACCGCGTTCTTCGGCTACGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCAACAGTAATCACCAACCTACTCACTGCTGTACCCTACCTAGGAACAACTCTAACAACCTGATTATGGGGAGGCTTCGCAATCAACGACCCAACCCTGACACGATTCTTCGCACTACACTTCATCTTACCATTCGCTATCATCTCTCTATCATCATTACACGTCATCCTACTACACGAAGAAGGCTCCAGCAACCCATTAGGTACCAACCCAGACATCGACAAAATCCCATTCCACCCCTACCACTCATACAAAGACCTCCTTCTACTAACACTAATGATCCTTTCCCTACTAATCATCGTCTCATTCTTTCCAGATATTTTCAACGACCCAGACAACTTCTCAAAAGCCAATCCACTAGTCACACCCCAGCATATTAAACCAGAATGATACTTCCTATTCGCCTACGGAATCCTACGATCAATCCCAAACAAACTAGGAGGCGCCCTAGCCCTAGTAATATCAATCATAATTCTATTAACCATCCCATTCACACACACATCCACTATACGATCAATAACATTCCGACCATTATCACAACTAATATTCTGAACATTAGTATCAACATTCATCACTATCACATGAGCCGCCACAAAACCAGTAGAACCACCATTCATTATCATCAGCCAAGTAACCGCAACACTATACTTCACATTCTTCATTTCAACCCCCATCCTAGGATGACTAGAAAACAAAATAACAAATCACCCATCCATAACACGGCAACACTAT--AGTTGCTC---GCCAAACCACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCTAATAACCGATAACCCACGATTAATCCAACCACTTCTAGCCACCCAGTCTATATACCGCCGTCGCCAGCTCACCTTGCAAAAGAAACAAAGTGAACCAAATAGTCAT-ACACTAACACGACAGGTCGAGGTGTAACTAATGAAGTGGACTATGATGGGCTACATTTTCTAATACAGACCATACGAATAAAGACATGAAACTTTCTTTTGAAGGTGGATTTAGCAGTAAGATGAGAACACAATACTCAACTGAAACCATTGCAATATTAAAGGCAACGCCTGCCCAGTGAGAATTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCACTTGTCTATTAATTGTAGACCCGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATCAATCAATTAAACTGATCTCCCAGTACAAAAGCTGAGATATACATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAAACTATT--AAACCCACTAATAGCTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAACATGAGCCATCCC-TCATATTAC--AGGCCAACAAGCCACCACAAGACCCAGTAACACTGATAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGCTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Python molurus'] = '?????????????????????????????????????????????????????????????????????????????CTTCCTCAGACAC-AAACTCA-ACCTCAAATAAAAATAAAAACAAT-----------CCTACCTCGGCCCCCCCCCTACCCCCCCCC-ACTATTT-CATATGGAA-------TACAGGATATATACATTTGTTAGAAAAATCCATATTTTTTCTACCCTATGTATAATCTTACATTAATGGCTTGCCCCATGAATAATAAGCGGGAATTCCTAATAAAATATTTTAGCCTAAAATTGCCTTCGTACATAAAATT-AGC---TCCACATTTCTTTGGTCGTTCAATGCTGCACGGATTATAGTAC-TTCTT-AATACACATGACTATCC-TTGAT-CTAGTCGTCTCTCTTAACTTAACA-CTTCCCGTGAAATCCTCTATCCTTTCATA-CATGCTAACCATTCGACTTCTCACGTCCATAAGT-GCTA-CCCCTCTTCTCTTGCTCTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCGACGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACATTTTGCCGCATGTTCTGATCACCTATGCTAGT-CAACCACTGGTATCCCTTTTTT-CTCTCTCCCTTTCACCTGACTACCATATATGCACACACACAGTTAATGCCCCACCACTATATCCTAACCTTATTTGGCCTCCTACCAGTAGCAACCAACATCTCAACATGATGAAACTTCGGCTCAATACTATTAGCATGCTTAGCCCTACAAGTATTAACCGGATTCTTCCTAGCCGTCCACTACACAGCAAACATCAACCTAGCATTCTCATCTATCATTCACATCACCCGCGATGTTCCATACGGCTGAATAATACAAAACCTACACGCTATCGGCGCATCCATATTCTTCATCTGCATCTACATTCACATCGCACGAGGACTATACTACGGCTCCTATCTAAATAAAGAAACCTGAATATCCGGAATTACACTACTCATCACACTTATGGCAACCGCCTTCTTCGGATATGTCCTCCCATGAGGGCAAATATCATTCTGAGCTGCAACCGTAATTACCAACCTATTAACCGCCGTACCATACTTAGGCACAACCCTAACAACCTGGTTATGAGGAGGATTCGCAATCAATGATCCCACCCTCACACGATTTTTTGCACTACATTTCATCCTACCATTCGCAATCATCTCCATATCATCACTACACATCATCCTACTCCACGAAGAAGGATCTAGCAACCCACTAGGAACAAACCCAGACATCGACAAAATCCCATTCCACCCATACCACTCATACAAAGACCTACTCTTCCTGACCCTAATAATCCTATTTATACTCATCATCGTCTCATTCTTCCCTGATATCTTCAACGACCCAGACAACTTCTCAAAAGCCAATCCACTAGTTACACCCCAACACATTAAACCAGAGTGGTACTTCCTATTCGCCTATGGGATCCTACGATCCATCCCAAACAAACTAGGTGGCGCATTAGCCCTAGTAATATCAATCATAATCCTATTTATTATCCCATTCACACATACAGCCCACTTCCGCCCAATAACTTTCCGCCCACTATCACAACTAATGTTCTGAACACTAGTATCAACATTCATCACTATCACATGAGCCGCCACAAAACCAGTAGAACCTCCATATATCATCATTAGCCAAGTAACAGCAACACTATACTTTATCTTCTTCATCTCTATACCCCTCCTAGGATGAATTGAAAACAAAATAACAAACACCCCCTCCATAACACGGCAACACTAT--AGTTGCTC---GCCAAACCA?TACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCTAATAACCGATAACCCACGATTAATCCAACCACTTCTAGCCACCCAGTCTATATACCGCCGTCGCCAGCTCACCTTGCAAAAGAAACAAAGTGAACCAAATAGTCAT-ACACTAACACGACAGGTCGAGGTGTAACTAATGAAGTGGACTATGATGGGCTACATTTTCTAATACAGACCATACGAATAAAGACATGAAACTTTCTTTTGAAGGTGGATTTAGCAGT?????????????????????????????????????TATTAAAGGCAATGCCTGCCCAGTGAGTATTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGTCAAACTGTCTCTTGTAATTAATCAATTAAACTGATCTTTCAGTACAAAAGCTGAAATACCCATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCTATTAATAACTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAACATGAGCTATTCC-TCATAACAC--AGGCCAACAAGCCACTACAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGCCGCTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Python curtus'] = '?CCACAAAA-----------------------------------CCAT-----------------ATTAATYTT--CCCACCTATAAYTA-AACCCGAAATTCCCTATAAA--CACAACAAAAAATA-----CTCCTTCYTCGCCCCCCCCC-TACCCCCCCCCCAC-ATTT-AATATAAGAT------TCTGG--AATATACACACATCGTTAATTTCCATATTTTTT--ATGCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATAATAAGCCGGAATTCCATATTAAATATTTTAGCCTAAAATTGCCTTAGTACCTAAAACT-AGTCCTTCCTCATTTTC-TGGTCGTTCAATGCTGCATGGATT--AATCA-TTCTTTAACAGATATGTCTATCC-TTGAT-CTAGTCGTCTCTCTTAACCTGGCG-CTTCCCGTGAAATCCTCTATCCTTTCATA-CATGCTAACCATTCGACTTCTCACGTCCACATTT-GCTA-CCCCTCTTCTCTTGCTCTTTCCAAGGCCGCTGGTTACACTCTCAAGATCATCTCGACGGTCCGGAACCACCCCTCCATACTAGCCTTTTCCAAGACCTTTGGTCGCACCCCTTATA-TGGTACATTTTGCTTCATGTTCTGGTCACCTATGCTAGT-CAACCACTGGTTTCCCTTTTTTTCTCTGTACCTTTCATCTGACCACCATATATGCACACACACAGTTA????????????????????????????????????????????????????????????????????????TTCGGTTCAATATTACTCACTTGCCTAGTCCTACAAGTACTAACCGGCTTCTTCCTAGCCGTCCACTACACAGCAAACATCAACCTAGCATTTTCCTCTATTATACACATCACCCGCGACGTCCCATACGGCTGAATAATACAAAACTTACACGCYATCGGCGCATCTATATTTTTCATCTGCATCTATATCCACATCGCACGAGGACTATATTACGGCTCCTATCTCAATAAAGAAACCTGAATGTCTGGCATTACACTCCTCATCACACTAATAGCAACCGCTTTTTTCGGATATGTCCTCCCATGAGGACAGATGTCATTCTGAGCCGCAACCGTAATCACCAATCTACTAACTGCTGTACCATACCTAGGCACAACCCTAACAACCTGATTATGAGGAGGGTTCGCAATCAACGACCCCACCCTCACACGATTCTTTGCACTACACTTCATCCTACCTTTCGCAATCATCTCTTTATCATCACTACACATTATTCTCCTTCATGAAGAAGGATCTAGCAATCCACTAGGAACCAACCCCGACATCGACAAAATCCCATTCCACCCATACCACTCTCACAAAGACTTCCTCCTACTCACACTATTAATCCTTTTCCTATTTATCATTGTCTCCTTCTTCCCAGACATTTTTAATGATCCAGATAACTTCTCAAAAGCTAACCCCCTTGTCACACCCCAACACATTAAACCAGAATGATACTTCTTATTCGCTTACGGAATCCTACGATCCATCCCAAACAAACTAGGTGGCGCATTAGCATTAGTAATATCAATCATAATCTTATTTACCATCCCATTCACACACACAGCCCATCTTCGCCCTATAACCTTCCGACCGTTCTCACAACTAATATTCTGAACACTAATCTCAACATTCATCACCATCACATGGGCCGCCACAAAACCAGTAGAACCCCCATATATTATCATCAGCCAAGCAACTGCAGCATTATACTTCACCTTCTTCATCTCTACACCCCTCCTGGGCTGAATAGAAAATAAAATAACAAACACTCCCT?CATAACACGGCAATACAA-----TTGCTC---GCCAAACCACTACGAGTGAAAACTTAAAACTTAAAGGACTTGACGGTACTTCACC--CAACCTAGAGGAGCCTGTCTAATAACCGATAACCCACGATTAATCCAACCACTTCTGGCCACCCAGTCTATATACCACCGTCGCCAGCTCACCTTGCAAAAGAAACAAAGTGAACAAAACAGTCATTACACTAACACGACAGGTCGAGGTGTAACTAATGAAGTGGACTAAGATGGGCTACATTTTCTAATACAGACCACACGAATAAAGACATGAAACTGTTCTCTGAAGGCGGATTTAGCAGTAAGCTAAGGACACAATACTCAACTGAAACCACTGCAATATTAAAGGCAATGCCTGCCCAGTGAGAACTCCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAAAGGCCACATGAGAGCCAAACTGTCTCTTGTAATCAATCAATTAAACTGATCTCCCAGTACAAAAGCTGAGATACTCATATAAGACCAGAAGACCCTGTGAAGCTTAAACCAACCTATT--AAACCTAATAATAGCTACTTTCAGTTGGGGCGACTTTGGAACAAAACAGAACTTCCAAACAACATGAGCAATTCC-TCATACCAC--AGGCCAACAAGCCACTACAAGACCCAGTAACACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTCAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGCGCAGCCGCTATTAAAGGKTCSTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Python regius'] = '?????????????????????????????????????????????????????????????????????????????TTACCTCAAT----AAACCCAAACCCACTATAAAAATATAA-----------------CCCCCTCGGCCCCCCCCCTTCCCCCCCCC-ACTTACA---TAGGAGGA------TTTAG-ATATATACACATATTAGGATTTTCCCTATCTTTTC-ACCCTATGTATAATCTTACATTAATGGTTTGCCCCATGAATATTAAACCAGAATTTCCAATTAAATATTTTAACCTAAAATTGCCTTCGTACACTACACC-AGT---CCCTCATTTCT-TGGTCGTTCAATGCTGCACGGATTATAGTAC-TTATT-AATGCTCATGTCTATCC-TTGGT-CTAGTGGTGTCTCTTAGTTTAACA-CTTCCCGTGAAATCCTCTATCCTTTCATA-CATGCTAACCATTCGACTTCTCACGTCCACAAGT-GCTA-CCCCTCCTCTCTTGCTCTTTCCAAGACCGCTGGTTACACTCTCAAGATCATCTCGATGGTCCGGAACCACCCCTCCATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATA-TGGTACAATTCACCTCATGTTCTGATCAGCTATGCCAGT-CCACCACTGGTATCCCTTTTTT-CTCTCTCCCTTTCACCTGACTACCATATATGCACACACACAGTTAATGCCCCACCACTATATCCTAACCCTCTTCGGCCTTCTACCAGTAGCAACCAACATCTCAACATGATGAAACTTCGGCTCAATACTACTAACATGTCTAATGTTACAAGTACTTACCGGCTTCTTCCTAGCTGTCCACTATACAGCAAACATCAACCTAGCATTTTCATCCATTATCCATATTACCCGTGACGTCCCCTACGGCTGACTAATACAAAACCTACACGCCATCGGCGCATCGATATTCTTTATCTGCATCTACATTCACATCGCACGAGGACTATACTACGGCTCCCACCTCAATAAAGAAACCTGGATATCAGGTATTACACTTCTCATCACACTGATGGCAACCGCCTTCTTCGGGTATGTACTCCCATGAGGACAAATATCCTTCTGAGCCGCAACAGTAATTACCAACCTACTCACTGCTGTACCGTACCTAGGCGCAACCATAACCACCTGATTATGAGGAGGGTTCGCAATCAACGACCCCACCCTTACACGATTTTTCGCACTACACTTCATCCTACCATTCGAGATTATTTCCCTGTCATCATTACACATTATTTTACTTCACGAAGAAGGATCTAGCAACCCACTAGGAACCAACCCAGACATCGACAAAATCCCATTCCACCCGTATCACTCATACAAAGACCTCCTACTACTAACACTAATACTACTAACACTTATAATCACCGTCTCCTTCTTCCCAGATATCTTCAACGACCCAGACAACTTCTCAAAAGCCAACCCATTAGTCACCCCCCAACACATTAAACCAGAGTGATACTTCCTATTCGCCTATGGCATCCTACGATCAATCCGAAATAAGCTTGGAGGGGCCTTAGCTCTAGTAATATCAATTATAATTATACTAACAGCCCCACTCACACACACAGCCCACCTCCGCCCAATAACCTTCCGACCACTTTCACAACTAATATTTTGAACCCTAATTTCAACATTCATTACCATTACATGAGCCGCCATAAAACCAGTAGAACCCCCATACATCATTATCAGCCAAACAACTTCAACACTATACTTCACCTTCTTTATCTCAACACCCATCCTAGGGTGAGTT?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????TATTAAAGGCAATGCCTGCCCAGTGAGAATTTCTTCAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTATTAATTGTAGACCAGTATGAA?GGCCACATGAAAGTCAAACTGTCTCTTGTAATTAATCAATTAAACTGATCTCCCAGTACAAAAGSTGGAATATCCATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACTTATT--AAACCCASTAATAACTACTTTCAGTTGGGGCRACTTTGGAACAAAACAAAACTTCCAAAYAAYATGAATAATCCC-TCATACCAT--AGGCCAACAAGCCACCACAAGACCCAGTAACACTGACANTTGANCCAAGTTACTCCAGGGATAACAGCGCCATCTTCTTTAARASCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCA?ATGG?????????????????????????????????????????????'
+    dna_dict['Candola aspera'] = '?????????????????????????????????????????????????????????????????????????????????????????????????AAA----CTA-------------------------CT-CTCTGG-GACCCCCCCC-TACCCCCCCC--AGATAAACTATACTAAAATTTACCTGAGTACACTATGTAAATATTGTACATTAGTCTATATTTC--ATGCTATGTATAATCATACATTAATGATCTGCCCCATGGATAATAAGCAGGAATTTCCCTATTAATATTTCAGCCTATTAATGCCTTAGTACAGTCAGTGTGTC---ACCACATCAT--GGGTCGTTTTATGCAGCAAGGATTA-ACTA--TTATT-GGTAATCATGCCTATCC--TGATCCAAGTTGTC-CTCTTAATCTACCTA-CTCACGTGAAATCCTCTATCCTTCCAAGAATGGCTAACAGTCCTGCTTTTCACGTCCATATAT-GCTA-CCCCTCCTTTATTGCACTTTCCAAGGCCACTGGTTACTCTTTCAAGTCCATCTCAACGGTCCGGAACCATCCCTCTATACTAGCTTTTTCCAAGACCTTTGGTCGCACCCTTTATATTGGCGCAC-TGATCTCATGATCTGATCACCTATGCCAGTTCAACCACTGGTAACCTTTTTTT-CTCTCTACCTTTCACCTGACACCCATATAT-----------GTTGATGCCCCACCAACAAATACTAATTCTATTTGGACTACTACCAGTAGCTACTAACATTTCAACATGATGAAACTTCGGATCAATATTACTAACCTGTTCAGCATTACAAGTAATAACAGGATTCTCCTTATCAATACATTACACAGCAAATATTAACCTAGCATTCTGCTCCATTATCCATATTACACGAGACGTCCCACATGGATGAGTAATACAAAACCTACACGCCATCGGAGCATCGATATTTTTTATCTGTATCTACATATATATTGCACGAGGACTATACTATGGCTCGTACTTAAACAAAGAGACATGACTATCAGGCACCACACTACTAATCATACTTATAGCAACCGCATTCTTCGGATATGTACTACCATGAGGCCAAATATCATTCTGAGCAGCAACTGTTATCACTAATCTACTAACTGCAATTCCATACCTTGGAACTACAATGACAACTTGACTATGAGGCGGATTCGCAATCAACGATCCAACCCTGACCCGATTCTTTGCACTACACTTCATTCTACCATTCGGAATTATTTCAGTATCATCAATTCATATTATACTTCTGCACGAAGACGGATCAGGCAACCCATTAGGAACCAACTCAGACATTGATAAAATTCCATTCCATCCATACCACACATATAAAGATATTTTAATAATCTCAATTATAATTATTACACTACTACTAACCGTATCATTCTTCCCTGACATTATAAATGACCCAGAAAACTTCTCAAAAGCTAACCCTCTTGTCACACCACAACACATTAAACCAGAATGATATTTCTTATTTGCCTACGGAATTCTACGATCAATCCCAAACAAGCTCGGAGGGGCCCTAGCCCTAGTAATATCAATCATAATTCTATTCACCATGCCATTCACACACACATCACCTATACGATCACTAACATTCCGACCATTAATACAATTTATATTCTGAACATTAGTGGCAACATTCGTAATCATCACCTGAACCGCCACAAAACCTGTAGAACCACCATTCACTACCATCAGCCAAGTAGCATCAATTATCTACTTCACATTCTTCATATCTAACCCAATCCTAGGGTGACTTGAAAATAAAATTACAAAACACAACTACAAGGCAGATAAATACAA---AACTGCTC---GCCAAATTACTACGAGTGAAAACTTAAAACTTAAAAGACTTGACGGTACTTCACACTCAACCTAGAGGAGCCTGTCTAATAACCGATAATCCACGATTAACCCAACCACTCCTGGCCCCACAGCCTATATACCGCCGTCGCCAGCCCACCTTGTGAAAGAAACTAAGTGGACAAAACAG-CATCACACTAACACGACAGGTCGAGGTGTAGCATATGAAGTGGTCAAAGATGGGCTACATTTTCTAACTTAGACCAAACGAACAAGACAATGAAATAAACCTTTAAAGGCGGATTTAGTAGTAAGATGAGAACACAATACTCAACTGATACAAATGCAATATTAAAGGCAATGCCTGCCCAGTGAGAATATCTTTAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCGTAATCATTTGTCTACTAATTATAGACCAGTATGAAAGGCCACATGAGAGCCAAACTGTCTCTTATAGTTAATCAATTAAACTGATCTACTAGTACAAAAGCTAGAATAAACATATAAGACCAGAAGACCCTGTGAAGCTTAAACTAACCTATT--AAACCAACTAATAGCTACTTTAGGTTGGGGCGACCTTGGAACAAAACAGAACTTCCAAATAAAATGAGCTATAAC-TCATACAAC--AGACCAACAAGCCAATTTACGACCCAGTATAACTGACAATTGAACCAAGTTACTCCAGGGATAACAGCGCTATCTTCTTTAAGAGCCCATATCAAAAAGAAGGTTTACGACCTCGATGTTGGATCAGGACACCCAAATGGTGCAGAAGCTATTAAAGGTTCGTTTGTTCAACGATTAACAGTCCT'
+    dna_dict['Morelia nauta'] = '????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????CCACTACATCTTAACCTTATTTGGCCTCCTACCGGTAGCAACCAACATTTCAACATGATGAAACTTCGGCTCAATACTACTAACATGCCTAGCGCTACAAGTACTAACCGGCTTCTTCCTAGCCGTACACTACACAGCGAACATTAACCTAGCATTTTCATCCATCATCCACATTACCCGAAACGTCCCATATGGCTGAATAATACAGAACCTACACGCTATCGGAGCATCCATATTCTTCATCTGCATTTACATCCACATCGCACGAGGACTATACTACGGATCATACCTAAACAAAGAAACCTGAATATCCGGCATCACCCTGCTCATCACACTAATAGCAACTGCCTTCTTCGGATACGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTTACCGCTATTCCTTACCTAGGCACATCACTGACAACCTGACTTTGAGGCGGATTCGCAATCAACGACCCCACCTTAACACGTTTTTTCGCATTACACTTCATCCTACCATTCGCAATCATCTCCTTATCCTCACTACACATCATCCTACTTCACGAAGAAGGCTCTAGCAACCCATTAGGAACCAACCCAGACATTGACAAAATCCCGTTCCACCCATACCACACCTACAAAGACCTCCTCTTACTAACACTAATAATCCTGTTCCTATTCATCATCGTTTCATTCTTCCCTGATATC?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????'
+    dna_dict['Morelia clastolepis'] = '????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????CCACTACATCTTAACCCTATTTGGCCTCCTACCAGTAGCAACCAACATTTCAACATGATGAAACTTCGGCTCAATACTACTAACATGCCTAGCACTACAAGTACTAACCGGCTTCTTCCTAGCCGTACACTACACAGCGAACATTAACCTAGCATTCTCATCCATCATCCACATTACCCGAGACGTCCCATATGGCTGAATAATACAAAACCTACACGCTATCGGAGCATCCATATTCTTCATTTGCATTTACATTCACATCGCACGAGGACTATACTACGGATCTTACCTAAACAAAGAAACCTGAATATCCGGCATCACCCTGCTCATCACACTAATAGCAACTGCCTTCTTCGGATACGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTTACCGCTATTCCTTACCTAGGCACATCACTGACAACCTGACTTTGAGGCGGATTCGCAATCAACGACCCCACCCTTACACGTTTTTTCGCATTACACTTCATCCTACCATTCGCAATCATCTCCTTATCCTCACTACACGTCATCCTACTACACGAAGAAGGCTCTAGCAACCCATTAGGAACCAACCCAGACATTGACAAAATCCCGTTCCACCCATACCACACCTACAAAGACCTCCTCTTACTAACACTAATAGTCCTGTTCCTATTCATCATCGTTTCATTCTTCCCTGATATC?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????'
+    dna_dict['Morelia tracyae'] = '????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????CCACTACATCCTAACCCTATTTGGCCTCCTACCAGTAGCAACCAACATTTCAACATGATGAAACTTCGGCTCAATACTACTAACATGTCTAGCTCTACAAGTACTAACCGGCTTCTTTCTAGCCGTACACTACACAGCAAACATTAACCTAGCATTTTCATCCATCATTCACATTACCCGAGACGTCCCATACGGCTGAATAATACAAAATCTACACGCTATCGGAGCATCCATATTCTTCATTTGCATTTACATCCACATCGCACGAGGACTATACTACGGATCTTACCTAAACAAAGAAACTTGAATATCAGGCATTACCCTACTCATCACACTAATAGCAACTGCCTTCTTTGGATACGTCCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTTACCGCCATCCCATACCTAGGCACATCTCTAACAACCTGACTTTGAGGCGGATTCGCAATTAACGACCCTACCCTAACACGCTTTTTCGCATTACACTTCATCCTACCATTCGCAATCATTTCCCTATCCTCACTACACATCATTCTACTCCACGAAGAAGGTTCTAGCAACCCATTAGGAACCAACCCAGACATTGACAAAATCCCATTCCATCCGTACCACTCCCACAAAGACCTCCTTTTACTAACACTAATAATCTTATTTCTATTCATCATCGTTTCATTCTTTCCTGATATT?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????'
+    dna_dict['Morelia kinghorni'] = '????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????CCACTACATCTTAACCTTATTTGGCCTCCTACCAGTAGCAACCAACATTTCAACATGATGAAACTCCGGCTCAATACTACTAACATGTCTAGCACTACAAGTACTAACCGGCTTCTCCCTAGCTGTACACTACACAGCGAACATTAACCTAGCATTTTCATCCATCATCCACATTACCCGAGACGTCCCATATGGCTGAATAATACAGAACCTACACGCTATCGGAGCATCCATATTCTTCATCTGCATTTACATCCACATCGCACGAGGACTATACTACGGATCATACCTAAACAAAGAAACCTGAATATCCGGCATCACCCTGCTCATCACACTAATAGCAACTGCCTTCTTCGGATACGTTCTCCCATGAGGACAAATATCATTCTGAGCCGCAACCGTAATTACAAACCTACTTACCGCTATTCCTTACCTAGGCACATCACTGACAACCTGACTTTGAGGCGGATTCGCAATCAACGACCCCACCCTAACACGTTTTTTCGCATTACACTTCATCCTACCATTCGCAATCATCTCCTTATCCTCACTACACGTCATCCTACTACACGAAGAAGGCTCTAGCAACCCATTAGGAACCAACCCAGACATTGACAAAATCCCGTTCCACCCATACCACACCTACAAAGACCTCCTCTTACTAACACTAATAGTCCTGTTCCTATTCATCATCGTTTCATTCTTCCCTGATATT?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????'
     return dna_dict
 
 def reference_taxon_set():
     taxon_set = dendropy.TaxonSet()
-    taxon_set.new_taxon(label="Antaresia childreni", oid="Taxon36960624")
-    taxon_set.new_taxon(label="Antaresia maculosa", oid="Taxon36960560")
-    taxon_set.new_taxon(label="Antaresia perthensis", oid="Taxon36960592")
-    taxon_set.new_taxon(label="Antaresia stimsoni", oid="Taxon36960432")
-    taxon_set.new_taxon(label="Aspidites melanocephalus", oid="Taxon36960656")
-    taxon_set.new_taxon(label="Aspidites ramsayi", oid="Taxon36960528")
-    taxon_set.new_taxon(label="Bothrochilus boa", oid="Taxon36960784")
-    taxon_set.new_taxon(label="Leiopython albertisii", oid="Taxon36960688")
-    taxon_set.new_taxon(label="Liasis fuscus", oid="Taxon36960720")
-    taxon_set.new_taxon(label="Liasis mackloti", oid="Taxon36960912")
-    taxon_set.new_taxon(label="Liasis olivaceus", oid="Taxon36960816")
-    taxon_set.new_taxon(label="Apodora papuana", oid="Taxon36960848")
-    taxon_set.new_taxon(label="Morelia amethistina", oid="Taxon36960880")
-    taxon_set.new_taxon(label="Morelia boeleni", oid="Taxon36960944")
-    taxon_set.new_taxon(label="Morelia bredli", oid="Taxon36961008")
-    taxon_set.new_taxon(label="Morelia carinata", oid="Taxon36961072")
-    taxon_set.new_taxon(label="Morelia clastolepis", oid="Taxon36961264")
-    taxon_set.new_taxon(label="Morelia kinghorni", oid="Taxon36960752")
-    taxon_set.new_taxon(label="Morelia nauta", oid="Taxon36961328")
-    taxon_set.new_taxon(label="Morelia oenpelliensis", oid="Taxon36961456")
-    taxon_set.new_taxon(label="Morelia spilota", oid="Taxon36961200")
-    taxon_set.new_taxon(label="Morelia tracyae", oid="Taxon36961392")
-    taxon_set.new_taxon(label="Morelia viridis", oid="Taxon36961136")
-    taxon_set.new_taxon(label="Python brongersmai", oid="Taxon36961584")
-    taxon_set.new_taxon(label="Python molurus", oid="Taxon36961648")
-    taxon_set.new_taxon(label="Python regius", oid="Taxon36961712")
-    taxon_set.new_taxon(label="Python reticulatus", oid="Taxon36961904")
-    taxon_set.new_taxon(label="Python sebae", oid="Taxon36961776")
-    taxon_set.new_taxon(label="Python timoriensis", oid="Taxon36961520")
+    taxon_set.new_taxon(label="Antaresia childreni", oid="Taxon4313741136")
+    taxon_set.new_taxon(label="Antaresia maculosa", oid="Taxon4313741328")
+    taxon_set.new_taxon(label="Antaresia melanocephalus", oid="Taxon4313741456")
+    taxon_set.new_taxon(label="Antaresia perthensis", oid="Taxon4313741584")
+    taxon_set.new_taxon(label="Antaresia ramsayi", oid="Taxon4313741712")
+    taxon_set.new_taxon(label="Antaresia stimsoni", oid="Taxon4313741840")
+    taxon_set.new_taxon(label="Apodora papuana", oid="Taxon4313741904")
+    taxon_set.new_taxon(label="Bothrochilus boa", oid="Taxon4313741968")
+    taxon_set.new_taxon(label="Candola aspera", oid="Taxon4313742032")
+    taxon_set.new_taxon(label="Liasis albertisii", oid="Taxon4313742160")
+    taxon_set.new_taxon(label="Liasis fuscus", oid="Taxon4313742224")
+    taxon_set.new_taxon(label="Liasis mackloti", oid="Taxon4313742288")
+    taxon_set.new_taxon(label="Liasis olivaceus", oid="Taxon4313742352")
+    taxon_set.new_taxon(label="Loxocemus bicolor", oid="Taxon4313742480")
+    taxon_set.new_taxon(label="Morelia amethistina", oid="Taxon4313742608")
+    taxon_set.new_taxon(label="Morelia boeleni", oid="Taxon4313742672")
+    taxon_set.new_taxon(label="Morelia bredli", oid="Taxon4313742736")
+    taxon_set.new_taxon(label="Morelia carinata", oid="Taxon4313742800")
+    taxon_set.new_taxon(label="Morelia clastolepis", oid="Taxon4313742928")
+    taxon_set.new_taxon(label="Morelia kinghorni", oid="Taxon4313743056")
+    taxon_set.new_taxon(label="Morelia nauta", oid="Taxon4313743120")
+    taxon_set.new_taxon(label="Morelia oenpelliensis", oid="Taxon4313743248")
+    taxon_set.new_taxon(label="Morelia spilota", oid="Taxon4313743312")
+    taxon_set.new_taxon(label="Morelia tracyae", oid="Taxon4313759824")
+    taxon_set.new_taxon(label="Morelia viridisN", oid="Taxon4313759888")
+    taxon_set.new_taxon(label="Morelia viridisS", oid="Taxon4313759952")
+    taxon_set.new_taxon(label="Python curtus", oid="Taxon4313760016")
+    taxon_set.new_taxon(label="Python molurus", oid="Taxon4313760080")
+    taxon_set.new_taxon(label="Python regius", oid="Taxon4313760144")
+    taxon_set.new_taxon(label="Python reticulatus", oid="Taxon4313760272")
+    taxon_set.new_taxon(label="Python sebae", oid="Taxon4313760336")
+    taxon_set.new_taxon(label="Python timoriensis", oid="Taxon4313760464")
+    taxon_set.new_taxon(label="Xenopeltis unicolor", oid="Taxon4313760592")
     return taxon_set
 
 def reference_dna_matrix(taxon_set=None):
     if taxon_set is None:
         taxon_set = reference_taxon_set()
     dna = dendropy.DnaCharacterMatrix(taxon_set=taxon_set)
-    assert len(dna.taxon_set) == 29
+    assert len(dna.taxon_set)== 33
     sa = dna.default_state_alphabet
     dna_dict = reference_dna_dict()
     for t in dna.taxon_set:
@@ -1984,7 +2437,7 @@ def reference_continuous_matrix(taxon_set=None):
     if taxon_set is None:
         taxon_set = reference_taxon_set()
     cvals = dendropy.ContinuousCharacterMatrix(taxon_set=taxon_set)
-    assert len(cvals.taxon_set) == 29
+    assert len(cvals.taxon_set)== 33
     val_dict = reference_continuous_dict()
     for t in cvals.taxon_set:
         cvals[t] = dendropy.CharacterDataVector([dendropy.CharacterDataCell(value=v) for v in val_dict[t.label]])
@@ -2009,7 +2462,7 @@ def reference_standard_binary_matrix(taxon_set=None):
     if taxon_set is None:
         taxon_set = reference_taxon_set()
     ca1 = dendropy.StandardCharacterMatrix(taxon_set=taxon_set)
-    assert len(ca1.taxon_set) == 29
+    assert len(ca1.taxon_set)== 33
     sa1 = _get_standard_state_alphabet("01")
     ca1.state_alphabets = [sa1]
     col_012 = dendropy.CharacterType(state_alphabet=sa1, label="COL_01")
@@ -2022,7 +2475,7 @@ def reference_standard_matrix(taxon_set=None):
     if taxon_set is None:
         taxon_set = reference_taxon_set()
     ca1 = dendropy.StandardCharacterMatrix(taxon_set=taxon_set)
-    assert len(ca1.taxon_set) == 29
+    assert len(ca1.taxon_set)== 33
     sa1 = _get_standard_state_alphabet("012")
     sa2 = _get_standard_state_alphabet("XYZ")
     sa3 = _get_standard_state_alphabet("JKL")
