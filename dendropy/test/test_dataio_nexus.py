@@ -512,5 +512,32 @@ class NexusInterleavedWhitespace(extendedtest.ExtendedTestCase):
             for j, c in enumerate(s1):
                 self.assertEqual(c, s2[j])
 
+class NexusInternalNodeLabelsAsNonTaxa(extendedtest.ExtendedTestCase):
+
+    def setUp(self):
+        self.trees_string = """\
+#NEXUS
+
+begin taxa;
+    dimensions ntax=5;
+    taxlabels aaa bbb ccc ddd eee;
+end;
+
+begin trees;
+    translate
+        1  aaa,
+        2  bbb,
+        3  ccc,
+        4  ddd,
+        5  eee
+    ;
+    tree 0 = (((1, 2)1,(3,4)1),5)1;
+end;
+"""
+
+    def testParseWithKeyword(self):
+        t = dendropy.TreeList.get_from_string(self.trees_string, 'nexus', suppress_internal_node_taxa=True)
+
+
 if __name__ == "__main__":
     unittest.main()
