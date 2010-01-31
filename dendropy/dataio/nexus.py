@@ -266,6 +266,7 @@ class NexusReader(iosys.DataReader):
         self.tree_translate_dict = {}
         self.taxa_blocks = {}
         self.preserve_underscores = False
+        self.suppress_internal_node_taxa = False
 
     def data_format_error(self, message):
         """
@@ -767,13 +768,16 @@ class NexusReader(iosys.DataReader):
         token = self.stream_tokenizer.read_next_token()
         if token != '=':
             raise self.data_format_error("Expecting '=' in definition of Tree '%s' but found '%s'" % (tree_name, token))
-        tree = nexustokenizer.parse_tree_from_stream(stream_tokenizer=self.stream_tokenizer,
-                taxon_set=taxon_set,
-                translate_dict=self.tree_translate_dict,
-                encode_splits=self.encode_splits,
-                rooting_interpreter=self.rooting_interpreter,
-                finish_node_func=self.finish_node_func,
-                suppress_internal_node_taxa=self.suppress_internal_node_taxa)
+        try:
+            tree = nexustokenizer.parse_tree_from_stream(stream_tokenizer=self.stream_tokenizer,
+                    taxon_set=taxon_set,
+                    translate_dict=self.tree_translate_dict,
+                    encode_splits=self.encode_splits,
+                    rooting_interpreter=self.rooting_interpreter,
+                    finish_node_func=self.finish_node_func,
+                    suppress_internal_node_taxa=self.suppress_internal_node_taxa)
+        except nexustokenizer.StrToTaxon.MultipleTaxonUseError, e:
+            raise self.data_format_error(e.msg)
         tree.label = tree_name
         if self.stream_tokenizer.current_token != ';':
             self.stream_tokenizer.skip_to_semicolon()

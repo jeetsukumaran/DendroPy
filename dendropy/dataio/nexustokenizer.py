@@ -138,6 +138,10 @@ class RootingInterpreter(object):
 
 class StrToTaxon(object):
 
+    class MultipleTaxonUseError(DataParseError):
+        def __init__(self, *args, **kwargs):
+            DataParseError.__init__(self, *args, **kwargs)
+
     def __init__(self, taxon_set, translate_dict=None, allow_repeated_use=False):
         """If `allow_repeated_use` is True, then get_taxon and require_taxon
         can be called multiple times to get the same taxon.  If it is false then
@@ -154,7 +158,7 @@ class StrToTaxon(object):
         #_LOG.debug("Checking if we can return %s" % str(t))
         if (self.returned_taxon_set is not None) and (t is not None):
             if t in self.returned_taxon_set:
-                raise DataParseError(message="Taxon %s used twice (it appears as %s the second time)" % (str(t), label))
+                raise StrToTaxon.MultipleTaxonUseError(message="Taxon %s used twice (it appears as %s the second time)" % (str(t), label))
             self.returned_taxon_set.add(t)
         return t
 
