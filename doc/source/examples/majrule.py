@@ -3,10 +3,10 @@
 import dendropy
 
 trees = dendropy.TreeList()
-for tree_file in ['pythonidae_cytb.mb.run1.t',
-        'pythonidae_cytb.mb.run2.t',
-        'pythonidae_cytb.mb.run3.t',
-        'pythonidae_cytb.mb.run4.t']:
+for tree_file in ['pythonidae.mb.run1.t',
+        'pythonidae.mb.run2.t',
+        'pythonidae.mb.run3.t',
+        'pythonidae.mb.run4.t']:
     trees.read_from_path(
             tree_file,
             'nexus',

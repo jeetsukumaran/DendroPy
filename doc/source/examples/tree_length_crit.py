@@ -2,7 +2,7 @@
 
 import dendropy
 
-trees = dendropy.TreeList.get_from_path("pythonidae.rand-trees.nex", "nexus")
+trees = dendropy.TreeList.get_from_path("pythonidae.random.bd0301.tre", "nexus")
 tree_lengths = [tree.length() for tree in trees]
 tree_lengths.sort()
 crit_index_95 = int(0.95 * len(tree_lengths))

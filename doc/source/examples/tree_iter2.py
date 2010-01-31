@@ -7,10 +7,10 @@ from dendropy import treecalc
 distances = []
 taxa = dendropy.TaxonSet()
 mle_tree = dendropy.Tree.get_from_path('pythonidae.mle.nex', 'nexus', taxon_set=taxa)
-mcmc_tree_file_paths = ['pythonidae_cytb.mb.run1.t',
-        'pythonidae_cytb.mb.run2.t',
-        'pythonidae_cytb.mb.run3.t',
-        'pythonidae_cytb.mb.run4.t']
+mcmc_tree_file_paths = ['pythonidae.mb.run1.t',
+        'pythonidae.mb.run2.t',
+        'pythonidae.mb.run3.t',
+        'pythonidae.mb.run4.t']
 for mcmc_tree in multi_tree_source_iter(
         mcmc_tree_file_paths,
         schema='nexus',
