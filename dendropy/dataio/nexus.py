@@ -262,7 +262,6 @@ class NexusReader(iosys.DataReader):
         self.missing_char = '?'
         self.match_char = '.'
         self.tree_translate_dict = {}
-        self.tax_label_lookup = {}
         self.taxa_blocks = {}
         self.preserve_underscores = False
 
@@ -739,19 +738,19 @@ class NexusReader(iosys.DataReader):
     ###########################################################################
     ## TREE / TREE BLOCK PARSERS
 
-    def _prepare_to_parse_trees(self, taxon_set):
-        self.tree_translate_dict = {}
-        self.tax_label_lookup = {}
-        for n, t in enumerate(taxon_set):
-            self.tree_translate_dict[str(n + 1)] = t
-        # add labels second so that labels have priority over number
-        for n, t in enumerate(taxon_set):
-            l = t.label
-            self.tree_translate_dict[l] = t
-            self.tax_label_lookup[l] = t
-            if self.encode_splits:
-                ti = taxon_set.index(t)
-                t.split_bitmask = (1 << ti)
+#    def _prepare_to_parse_trees(self, taxon_set):
+#        self.tree_translate_dict = {}
+#        self.tax_label_lookup = {}
+#        for n, t in enumerate(taxon_set):
+#            self.tree_translate_dict[str(n + 1)] = t
+#        # add labels second so that labels have priority over number
+#        for n, t in enumerate(taxon_set):
+#            l = t.label
+#            self.tree_translate_dict[l] = t
+#            self.tax_label_lookup[l] = t
+#            if self.encode_splits:
+#                ti = taxon_set.index(t)
+#                t.split_bitmask = (1 << ti)
 
     def _parse_tree_statement(self, taxon_set=None):
         """
@@ -783,14 +782,11 @@ class NexusReader(iosys.DataReader):
         positioned right after the "TRANSLATE" token in a TRANSLATE command.
         """
         token = self.stream_tokenizer.current_token
+        self.tree_translate_dict = {}
         while True:
             translation_token = self.stream_tokenizer.read_next_token()
             translation_label = self.stream_tokenizer.read_next_token()
-            t = self.tax_label_lookup.get(translation_label)
-            if t is None:
-                t = taxon_set.require_taxon(label=translation_label)
-            self.tree_translate_dict[translation_token] = t
-
+            self.tree_translate_dict[translation_token] = taxon_set.require_taxon(label=translation_label)
             token = self.stream_tokenizer.read_next_token() # ","
             if (not token) or (token == ';'):
                 break
