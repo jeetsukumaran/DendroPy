@@ -4,8 +4,8 @@ Change History
 Release 3.1.2
 -------------
 
-Fixes
-^^^^^
+New Features
+^^^^^^^^^^^^
 
     * '``--unrooted``' option added to SumTrees, forcing trees to be treated as unrooted (option '``--rooted``' is also still available, forcing trees to be treated as rooted).
 
