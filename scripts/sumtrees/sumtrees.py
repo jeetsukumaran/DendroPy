@@ -60,8 +60,8 @@ from dendropy.utility.cli import confirm_overwrite, show_splash
 
 _program_name = 'SumTrees'
 _program_subtitle = 'Phylogenetic Tree Split Support Summarization'
-_program_date = 'Nov 15 2009'
-_program_version = 'Version 2.0.0 (%s)' % _program_date
+_program_date = 'Feb 1 2010'
+_program_version = 'Version 2.0.1 (%s)' % _program_date
 _program_author = 'Jeet Sukumaran and Mark T. Holder'
 _program_contact = 'jeetsukumaran@gmail.com'
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
@@ -337,7 +337,7 @@ def main_cli():
                                          taxon_set=taxon_set,
                                          encode_splits=encode_splits)
     split_distribution = treesplit.SplitDistribution()
-    split_distribution.is_rooted = not opts.rooted_trees
+    split_distribution.is_rooted = opts.rooted_trees
     tsum.count_splits_on_trees(tree_source,
         split_distribution=split_distribution,
         trees_splits_encoded=encode_splits)
