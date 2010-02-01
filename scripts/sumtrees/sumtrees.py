@@ -61,7 +61,7 @@ from dendropy.utility.cli import confirm_overwrite, show_splash
 _program_name = 'SumTrees'
 _program_subtitle = 'Phylogenetic Tree Split Support Summarization'
 _program_date = 'Feb 1 2010'
-_program_version = 'Version 2.0.1 (%s)' % _program_date
+_program_version = 'Version 2.0.2 (%s)' % _program_date
 _program_author = 'Jeet Sukumaran and Mark T. Holder'
 _program_contact = 'jeetsukumaran@gmail.com'
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
@@ -117,6 +117,11 @@ def main_cli():
                       dest='rooted_trees',
                       default=False,
                       help="treat trees as rooted")
+    source_tree_optgroup.add_option('--unrooted',
+                      action='store_false',
+                      dest='rooted_trees',
+                      default=False,
+                      help="treat trees as unrooted")
     source_tree_optgroup.add_option('--from-newick-stream',
                       action='store_true',
                       dest='from_newick_stream',

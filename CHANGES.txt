@@ -1,13 +1,21 @@
 Change History
 ==============
 
+Release 3.1.2
+-------------
+
+Fixes
+^^^^^
+
+    * '``--unrooted``' option added to SumTrees, forcing trees to be treated as unrooted (option '``--rooted``' is also still available, forcing trees to be treated as rooted).
+
 Release 3.1.1
 -------------
 
 Fixes
 ^^^^^
 
-    * SumTrees now handles '``as_rooted``' keyword argument correctly; previously unrooted trees were treated as rooted, leading to incorrect split supports when structurally-equivalent trees of different rotations were used.
+    * SumTrees now handles '``--rooted``' option correctly; previously unrooted trees were treated as rooted, leading to incorrect split supports when structurally-equivalent trees of different rotations were used.
 
 
 Release 3.1
