@@ -39,7 +39,7 @@ New Features
         >>> import dendropy
         >>> cytb = dendropy.DnaCharacterMatrix.get_from_path("data.dat", "phylip")
         >>> cytb.write_to_path("data2.dat", "phylip", strict=True)
-        >>> cytb_ds = dendropy.DnaCharacterMatrix.get_from_path("data2.dat", "phylip", data_type="dna", strict=True)
+        >>> cytb_ds = dendropy.DataSet.get_from_path("data2.dat", "phylip", data_type="dna", strict=True)
 
     * Setup is now zipsafe by default.
 
