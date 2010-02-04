@@ -276,7 +276,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
                 event_rates[i] = event_rates[i]/rate_of_any_event
 
             # select node/event and process
-            nd, birth_event = probability.lengthed_choice(event_nodes, event_rates)
+            nd, birth_event = probability.weighted_choice(event_nodes, event_rates)
             if birth_event:
                 c1 = nd.new_child()
                 c2 = nd.new_child()

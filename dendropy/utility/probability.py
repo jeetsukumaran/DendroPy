@@ -107,32 +107,46 @@ def sample_multinomial(probs, rng=None):
             return n
     return len(probs) - 1
 
-def lengthed_choice(seq, lengths, rng=None):
+def weighted_choice(seq, weights, rng=None):
     """
     Selects an element out of seq, with probabilities of each element
-    given by the list `lengths` (which must be at least as long as the
+    given by the list `weights` (which must be at least as long as the
     length of `seq` - 1).
     """
     if rng is None:
         rng = GLOBAL_RNG
-    if lengths is None:
-        lengths = [1.0/len(seq) for count in range(len(seq))]
+    if weights is None:
+        weights = [1.0/len(seq) for count in range(len(seq))]
     else:
-        lengths = list(lengths)
-    if len(lengths) < len(seq) - 1:
-        raise Exception("Insufficient number of lengths specified")
-    if len(lengths) == len(seq) - 1:
-        lengths.append(1 - sum(lengths))
-    prob_thresholds = []
-    previous_break = 0.0
-    for index in range(len(lengths)):
-        prob_thresholds.append(previous_break + lengths[index])
-        previous_break = prob_thresholds[index]
-    pick = rng.random()
-    for index, prob_threshold in enumerate(prob_thresholds):
-        if pick <= prob_threshold:
-            return seq[index]
-    return seq[-1]
+        weights = list(weights)
+    if len(weights) < len(seq) - 1:
+        raise Exception("Insufficient number of weights specified")
+    if len(weights) == len(seq) - 1:
+        weights.append(1 - sum(weights))
+    return seq[weighted_index(weights, rng)]
+
+def weighted_index(weights, rng=None):
+    """
+    (From: http://eli.thegreenplace.net/2010/01/22/weighted-random-generation-in-python/)
+    The following is a simple function to implement weighted random choice in
+    Python. Given a list of weights, it returns an index randomly, according
+    to these weights [1].
+    For example, given [2, 3, 5] it returns 0 (the index of the first element)
+    with probability 0.2, 1 with probability 0.3 and 2 with probability 0.5.
+    The weights need not sum up to anything in particular, and can actually be
+    arbitrary Python floating point numbers.
+    If we manage to sort the weights in descending order before passing them
+    to weighted_choice_sub, it will run even faster, since the random call
+    returns a uniformly distributed value and larger chunks of the total
+    weight will be skipped in the beginning.
+    """
+    if rng is None:
+        rng = GLOBAL_RNG
+    rnd = rng.random() * sum(weights)
+    for i, w in enumerate(weights):
+        rnd -= w
+        if rnd < 0:
+            return i
 
 def chisqprob(chisq, df):
     """
