@@ -93,12 +93,13 @@ def num_poisson_events(rate, period, rng=None):
         period = period - time_to_next
     return events
 
-def poisson_prob(k, rate):
+def poisson_pdf(k, rate):
     """
     Returns the probability of a number, `k`, drawn from a Poisson distribution
-    with rate parameter, rate.
+    with rate parameter, `rate` (= 1/mean).
     """
-    return float((rate ** k) * math.exp(-rate))/factorial(k)
+    mean = 1.0/rate
+    return float((mean ** k) * math.exp(-mean))/factorial(k)
 
 def sample_multinomial(probs, rng=None):
     """Returns the index of the probability bin in `probs`.
