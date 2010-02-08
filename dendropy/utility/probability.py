@@ -131,9 +131,9 @@ def weighted_choice(seq, weights, rng=None):
         raise Exception("Insufficient number of weights specified")
     if len(weights) == len(seq) - 1:
         weights.append(1 - sum(weights))
-    return seq[weighted_index(weights, rng)]
+    return seq[weighted_index_choice(weights, rng)]
 
-def weighted_index(weights, rng=None):
+def weighted_index_choice(weights, rng=None):
     """
     (From: http://eli.thegreenplace.net/2010/01/22/weighted-random-generation-in-python/)
     The following is a simple function to implement weighted random choice in
