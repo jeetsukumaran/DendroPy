@@ -259,7 +259,7 @@ class NexusReader(iosys.DataReader):
     def reset(self):
         self.char_block_type = dataobject.StandardCharacterMatrix
         self.interleave = False
-        self.symbols = "01"
+        self.symbols = ""
         self.gap_char = '-'
         self.missing_char = '?'
         self.match_char = '.'
@@ -488,6 +488,8 @@ class NexusReader(iosys.DataReader):
                         self.char_block_type = dataobject.DnaCharacterMatrix
                     elif token == "RNA":
                         self.char_block_type = dataobject.RnaCharacterMatrix
+                    elif token == "NUCLEOTIDE":
+                        self.char_block_type = dataobject.NucleotideCharacterMatrix
                     elif token == "PROTEIN":
                         self.char_block_type = dataobject.ProteinCharacterMatrix
                     elif token == "CONTINUOUS":
@@ -1048,7 +1050,10 @@ class NexusWriter(iosys.DataWriter):
             format.append("DATATYPE=DNA")
             format.append("GAP=- MISSING=? MATCHCHAR=.")
         elif isinstance(char_matrix, dataobject.RnaCharacterMatrix):
-            format.append("datatype=rna")
+            format.append("DATATYPE=RNA")
+            format.append("GAP=- MISSING=? MATCHCHAR=.")
+        elif isinstance(char_matrix, dataobject.NucleotideCharacterMatrix):
+            format.append("DATATYPE=NUCLEOTIDE")
             format.append("GAP=- MISSING=? MATCHCHAR=.")
         elif isinstance(char_matrix, dataobject.ProteinCharacterMatrix):
             format.append("DATATYPE=PROTEIN")
@@ -1076,12 +1081,12 @@ class NexusWriter(iosys.DataWriter):
                         format.append("GAP=-")
                     else:
                         if a.symbol is not None:
-                            equates.append("%s={%s}" % (a.symbol, "".join(a.fundamental_symbols())))
+                            equates.add("%s={%s}" % (a.symbol, "".join(a.fundamental_symbols)))
 
             for state_alphabet in char_matrix.state_alphabets:
                 for p in state_alphabet.polymorphic_states():
                     if p.symbol is not None:
-                        equates.append("%s=(%s)" % (p.symbol, "".join(p.fundamental_symbols())))
+                        equates.add("%s=(%s)" % (p.symbol, "".join(p.fundamental_symbols)))
 
             if equates:
                 format.append('EQUATE="%s"' % equates)

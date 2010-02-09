@@ -109,12 +109,15 @@ class StateAlphabet(IdTagged, list):
         IdTagged.__init__(self, *args, **kwargs)
         list.__init__(self, *args)
         self.missing = None
+        self.symbol_synonyms = {}
 
     def get_state(self, attr_name, value):
         "Returns state in self in which attr_name equals value."
         for state in self:
             if getattr(state, attr_name) == value:
                 return state
+        if attr_name == "symbol" and value in self.symbol_synonyms:
+            return self.symbol_synonyms[value]
         raise Exception("State with %s of '%s' not defined" % (attr_name, str(value)))
 
     def state_index_for_symbol(self, symbol):
@@ -125,6 +128,8 @@ class StateAlphabet(IdTagged, list):
         for idx, state in enumerate(self):
             if state.symbol == symbol:
                 return idx
+        if value in self.symbol_synonyms:
+            return self.index(self.symbol_synonyms[value])
         raise Exception("State with symbol of '%s' not defined" % symbol)
 
     def state_for_symbol(self, symbol):
@@ -139,6 +144,7 @@ class StateAlphabet(IdTagged, list):
         map = {}
         for state in self:
             map[state.symbol] = state
+        map.update(self.symbol_synonyms)
         return map
 
     def get_legal_symbols_as_str(self):
@@ -274,6 +280,7 @@ class DnaStateAlphabet(FixedStateAlphabet):
             self.append(sae)
             if k == '?':
                 self.missing = sae
+                self.symbol_synonyms['X'] = sae
             elif k == 'N':
                 self.any_residue = sae
 
@@ -307,8 +314,15 @@ class RnaStateAlphabet(FixedStateAlphabet):
             self.append(sae)
             if k == '?':
                 self.missing = sae
+                self.symbol_synonyms['X'] = sae
             elif k == 'N':
                 self.any_residue = sae
+
+class NucleotideStateAlphabet(DnaStateAlphabet):
+
+    def __init__(self, *args, **kwargs):
+        DnaStateAlphabet.__init__(self, *args, **kwargs)
+        self.symbol_synonyms['U'] = self.state_for_symbol('T')
 
 class ProteinStateAlphabet(FixedStateAlphabet):
     _states = "ACDEFGHIKLMNPQRSTUVWY-"
@@ -370,6 +384,7 @@ class InfiniteSitesStateAlphabet(BinaryStateAlphabet):
 
 DNA_STATE_ALPHABET = DnaStateAlphabet()
 RNA_STATE_ALPHABET = RnaStateAlphabet()
+NUCLEOTIDE_STATE_ALPHABET = NucleotideStateAlphabet()
 PROTEIN_STATE_ALPHABET = ProteinStateAlphabet()
 RESTRICTION_SITES_STATE_ALPHABET = RestrictionSitesStateAlphabet()
 INFINITE_SITES_STATE_ALPHABET = InfiniteSitesStateAlphabet()
@@ -1040,6 +1055,17 @@ class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
         FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
         self.default_state_alphabet = RNA_STATE_ALPHABET
+        self.state_alphabets.append(self.default_state_alphabet)
+        if len(args) > 0:
+            self.clone_from(*args)
+
+class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
+    "Generic nucleotide data."
+
+    def __init__(self, *args, **kwargs):
+        "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
+        FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
+        self.default_state_alphabet = NUCLEOTIDE_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
         if len(args) > 0:
             self.clone_from(*args)
