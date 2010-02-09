@@ -78,7 +78,7 @@ class Revision(object):
             return ""
 
     def __repr__(self):
-        return "<%s: '%s'>" % (self.__class__.__name__, self.description)
+        return "<%s: '%s'>" % (self.__class__.__name__, self.__str__())
 
     @property
     def commit_id(self):
