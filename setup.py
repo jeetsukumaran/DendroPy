@@ -116,7 +116,12 @@ long_description = long_description.replace("DendroPy-3.x.x", "DendroPy-%s" % PR
 long_description = long_description.replace("""download the source code archive""",
     """`download the source code archive <http://pypi.python.org/packages/source/D/DendroPy/DendroPy-%s.tar.gz>`_""" % PROJECT_VERSION)
 changes = open('CHANGES.txt').read()
-long_description = long_description + changes
+long_description = long_description \
+                + """\
+Change History
+=============
+
+""" + changes
 
 setup(name='DendroPy',
       version=PROJECT_VERSION,

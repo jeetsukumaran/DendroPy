@@ -141,6 +141,12 @@ rst_epilog = """
 .. |CharacterDataCell| replace:: :class:`~dendropy.dataobject.char.CharacterDataCell`
 """
 
+_source_archive_url = """
+.. |source_archive_url| replace:: http://pypi.python.org/packages/source/D/DendroPy/DendroPy-%s.tar.gz
+""" % version
+
+rst_epilog += _source_archive_url
+
 # -- Options for HTML output ---------------------------------------------------
 
 if True:
