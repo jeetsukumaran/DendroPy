@@ -134,7 +134,7 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
             are edges. A normalized split_mask is where the split_bitmask
             is complemented if the right-most bit is not '1' (or just
             the split_bitmask otherwise).
-    If `delete_outdegree_one` is True then nodes with one 
+    If `delete_outdegree_one` is True then nodes with one
         will be deleted as they are encountered (this is required
         if the split_edges dictionary is to refer to all edges in the tree).
         Note this will mean that an unrooted tree like '(A,(B,C))' will
@@ -170,7 +170,7 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
             sn.remove_child(c)
             for gc in c.child_nodes():
                 sn.add_child(gc)
-                
+
     for edge in tree.postorder_edge_iter():
         cm = 0
         h = edge.head_node
@@ -198,6 +198,50 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
         edge.split_bitmask = cm
         if create_dict:
             split_map[cm] = edge
+
+
+def delete_outdegree_one(tree):
+    """This function mimics the tree changing operations `encode_splits` but
+    without creating the splits dictionary
+    """
+    if not tree.seed_node:
+        return
+
+    sn = tree.seed_node
+    if not tree.is_rooted:
+        if len(sn.child_nodes()) == 2:
+            tree.deroot()
+    while len(sn.child_nodes()) == 1:
+        c = sn.child_nodes()[0]
+        if len(c.child_nodes()) == 0:
+            break
+        try:
+            sn.edge.length += c.edge.length
+        except:
+            pass
+        sn.remove_child(c)
+        for gc in c.child_nodes():
+            sn.add_child(gc)
+
+    for edge in tree.postorder_edge_iter():
+        cm = 0
+        h = edge.head_node
+        child_nodes = h.child_nodes()
+        nc = len(child_nodes)
+        if nc > 0:
+            if nc == 1 and delete_outdegree_one and edge.tail_node:
+                p = edge.tail_node
+                assert(p)
+                c = child_nodes[0]
+                try:
+                    c.edge.length += edge.length
+                except:
+                    pass
+                pos = p.child_nodes().index(h)
+                p.add_child(c, pos=pos)
+                p.remove_child(h)
+
+
 
 def lowest_bit_only(s):
     m = s & (s - 1)

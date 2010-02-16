@@ -1281,6 +1281,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if not kwargs.get("taxon_set"):
                 kwargs["taxon_set"] = self.taxon_set
         self.seed_node.write_indented_form(out, **kwargs)
+
     def write_as_dot(self, out, **kwargs):
         """Writes the tree to `out` as a DOT formatted digraph"""
         if not kwargs.get("taxon_set"):
@@ -1302,7 +1303,9 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             except:
                 pass
             else:
-                out.write(' %s -> %s [label="%s"];\n' % (par_dot_nd, dot_nd, str(e)))
+                label = format_edge(e, **kwargs)
+                s = ' %s -> %s [label="%s"];\n' % (par_dot_nd, dot_nd, label)
+                out.write(s)
         out.write("}\n")
 
     def debug_check_tree(self, logger_obj=None, **kwargs):
@@ -1853,7 +1856,7 @@ class Node(TaxonLinked):
         """
         return [node for node in \
                 self.postorder_iter(self, \
-                                    lambda x: bool(len(node.child_nodes)==0))]
+                                    lambda x: bool(len(x.child_nodes())==0))]
 
     ###########################################################################
     ## Representation
@@ -2215,6 +2218,9 @@ def _preorder_list_manip(n, siblings, ancestors):
     return siblings.pop(0), levels_moved
 
 def format_node(nd, **kwargs):
+    nf = kwargs.get('node_formatter', None)
+    if nf:
+        return nf(nd)
     if nd.is_leaf():
         t = nd.taxon
         if t:
@@ -2224,6 +2230,12 @@ def format_node(nd, **kwargs):
     else:
         label = "* %s" % str(nd.oid)
     return label
+
+def format_edge(e, **kwargs):
+    ef = kwargs.get('edge_formatter', None)
+    if ef:
+        return ef(e)
+    return str(e)
 
 def format_split(split, width=None, **kwargs):
     from dendropy.treesplit import split_as_string
@@ -2237,16 +2249,27 @@ def convert_node_to_root_polytomy(nd):
     then it will be converted to an out-degree three node (with the edge length
     added as needed).
 
-    Returns the child node that was detached (or None if the tree was not
+    Returns a tuple of child nodes that were detached (or() if the tree was not
     modified). This can be useful for removing the deleted node from the split_edges
     dictionary.
     """
     nd_children = nd.child_nodes()
-    if len(nd_children) != 2:
-        return None
-    left_child = nd_children[0]
-    right_child = nd_children[1]
-    if right_child.is_internal():
+    if len(nd_children) > 2:
+        return ()
+    try:
+        left_child = nd_children[0]
+    except:
+        return ()
+    if not left_child:
+        return ()
+    if len(nd_children) == 1:
+        right_child = None
+        dest_edge_head = nd
+    else:
+        right_child = nd_children[1]
+        dest_edge_head = right_child
+    curr_add = None
+    if right_child and right_child.is_internal():
         try:
             left_child.edge.length += right_child.edge.length
         except:
@@ -2255,15 +2278,21 @@ def convert_node_to_root_polytomy(nd):
         grand_kids = right_child.child_nodes()
         for gc in grand_kids:
             nd.add_child(gc)
-        return right_child
-    if left_child.is_internal():
+        curr_add = right_child
+    elif left_child.is_internal():
         try:
-            right_child.edge.length += left_child.edge.length
+            dest_edge_head.edge.length += left_child.edge.length
         except:
             pass
         nd.remove_child(left_child)
         grand_kids = left_child.child_nodes()
         for gc in grand_kids:
             nd.add_child(gc)
-        return left_child
-    return None
+        curr_add = left_child
+    if curr_add:
+        ndl = [curr_add]
+        t = convert_node_to_root_polytomy(nd)
+        ndl.extend(t)
+        return tuple(ndl)
+
+    return ()

@@ -892,7 +892,7 @@ class NexusWriter(iosys.DataWriter):
 
         if self.is_write_block_titles == False \
                 and self.attached_taxon_set is None \
-                and len(self.dataset.taxon_sets > 1):
+                and (len(self.dataset.taxon_sets) > 1):
             _LOG.warn("Multiple taxon sets in data, but directed not to write block titles: data file may not be interpretable")
 
         stream.write('#NEXUS\n\n')
