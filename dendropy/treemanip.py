@@ -83,7 +83,7 @@ def prune_taxa(tree, taxa):
     """Removes terminal edges associated with taxa in `taxa` from `tree`."""
     nodes = []
     for taxon in taxa:
-        nd = tree.find_node(lambda x: x.taxon == taxon)
+        nd = tree.find_node(lambda x: x.taxon is taxon)
         if nd is not None:
             nd.edge.tail_node.remove_child(nd)
     prune_leaves_without_taxa(tree)
