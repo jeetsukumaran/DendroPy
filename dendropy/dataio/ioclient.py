@@ -116,6 +116,7 @@ def tree_source_iter(stream, schema, **kwargs):
     else:
         write_progress = None
     tree_iter = _GLOBAL_DATA_SCHEMA_REGISTRY.tree_source_iter(stream, schema, **kwargs)
+    count = 0
     for count, t in enumerate(tree_iter):
         if count >= tree_offset and t is not None:
             if write_progress is not None:
@@ -126,7 +127,7 @@ def tree_source_iter(stream, schema, **kwargs):
             if write_progress is not None:
                 write_progress("Skipping tree at index %d" % count)
     if count < tree_offset:
-        raise KeyError("0-based index out of attacheds: %d (trees=%d, tree_offset=[0, %d])" % (tree_offset, count, count-1))
+        raise KeyError("0-based index out of bounds: %d (trees=%d, tree_offset=[0, %d])" % (tree_offset, count, count-1))
 
 def multi_tree_source_iter(sources, schema, **kwargs):
     """
