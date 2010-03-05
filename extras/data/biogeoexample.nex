@@ -1,0 +1,20 @@
+#NEXUS
+BEGIN DATA;
+	DIMENSIONS ntax = 5 nchar = 1;
+	FORMAT datatype = standard symbols = "0a1345";
+
+MATRIX
+taxonA 1
+taxonB A
+taxonC {1A0}
+taxonD {1345}
+
+;
+
+
+END;
+
+
+BEGIN TREES;
+	TREE T = [&R] (taxonA,(taxonB,(taxonC,taxonD)));
+END;

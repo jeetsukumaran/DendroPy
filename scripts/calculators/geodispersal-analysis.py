@@ -3,7 +3,8 @@
 import sys
 from dendropy.utility.messaging import get_logger
 from dendropy.treecalc import fitch_down_pass, fitch_up_pass
-from dendropy import DataSet, DataParseError
+from dendropy import DataSet
+from dendropy.utility.error import DataParseError
 _DEBUGGING = True
 _LOG = get_logger('geodispersal')
 verbose = False
