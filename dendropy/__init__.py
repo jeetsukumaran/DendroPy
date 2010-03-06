@@ -42,13 +42,17 @@ from dendropy.dataio import get_reader, get_writer, tree_source_iter, multi_tree
 ###############################################################################
 ## PACKAGE METADATA
 
+__project__ = "DendroPy"
 __version__ = "3.1.3"
-PROJECT_NAME = "DendroPy"
-PROJECT_VERSION = __version__
-PACKAGE_VERSION = PROJECT_VERSION # for backwards compatibility (with sate)
-PROJECT_AUTHOR = "Jeet Sukumaran and Mark T. Holder"
-PROJECT_COPYRIGHT = "Copyright 2009 Jeet Sukumaran and Mark T. Holder."
-PROJECT_LICENSE = """
+try:
+    __source_path__ = os.path.dirname(os.path.abspath(__file__))
+    __revision__ = vcsinfo.Revision(repo_path=__source_path__)
+except OSError:
+    __source_path__ = None
+    __revision__ = vcsinfo.Revision(repo_path=None)
+__author__ = "Jeet Sukumaran and Mark T. Holder"
+__copyright__ = "Copyright 2009 Jeet Sukumaran and Mark T. Holder."
+__license__ = """
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 3 of the License, or
@@ -62,21 +66,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with this program. If not, see <http://www.gnu.org/licenses/>.
 """
+PACKAGE_VERSION = __version__ # for backwards compatibility (with sate)
 
-try:
-    source_path = os.path.dirname(os.path.abspath(__file__))
-    revision = vcsinfo.Revision(repo_path=source_path)
-except OSError:
-    source_path = None
-    revision = vcsinfo.Revision(repo_path=None)
-
-release = __version__
 def description():
-    if revision.is_available:
-        revision_text = " (%s)" % (revision)
+    if __revision__.is_available:
+        revision_text = " (%s)" % str(__revision__)
     else:
         revision_text = ""
-    return "%s %s%s" % (PROJECT_NAME, release, revision_text)
+    return "%s %s%s" % (__project__, __version__, revision_text)
 
 if __name__ == "__main__":
     sys.stdout.write("%s\n" % description())

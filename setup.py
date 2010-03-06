@@ -107,7 +107,7 @@ else:
 ###############################################################################
 # Main setup
 
-from dendropy import PROJECT_VERSION
+from dendropy import __version__ as PROJECT_VERSION
 EXTRA_KWARGS["zip_safe"] = True
 
 ### compose long description ###

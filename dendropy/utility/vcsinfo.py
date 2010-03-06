@@ -67,7 +67,7 @@ class Revision(object):
     def __str__(self):
         parts = []
         if self.branch_name:
-            parts.append("%s/" % self.branch_name)
+            parts.append("%s-" % self.branch_name)
         if self.commit_id:
             parts.append(self.commit_id[:10])
         if self.commit_date:
