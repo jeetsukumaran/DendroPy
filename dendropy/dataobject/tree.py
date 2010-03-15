@@ -36,6 +36,7 @@ from dendropy.utility import GLOBAL_RNG
 from dendropy.utility import iosys
 from dendropy.utility import error
 from dendropy.utility import texttools
+from dendropy.utility import termtools
 from dendropy.dataobject.base import IdTagged
 from dendropy.dataobject.taxon import TaxonSetLinked, TaxonLinked
 from dendropy import treesplit
@@ -1136,6 +1137,10 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
            returns the label to appear in the tree."""
         return self.seed_node.as_newick_string(**kwargs)
 
+    def as_ascii_plot(self, **kwargs):
+        ap = AsciiTreePlot(**kwargs)
+        return ap.compose(self)
+
     ###########################################################################
     ## Metrics
 
@@ -2145,6 +2150,177 @@ class Edge(IdTagged):
         if output is not None:
             output.write(s)
         return s
+
+###############################################################################
+## AsciiTreePlot
+
+class AsciiTreePlot(object):
+
+    class NullEdgeLengthError(ValueError):
+        def __init__(self, *args, **kwargs):
+            ValueError.__init__(self, *args, **kwargs)
+
+    def __init__(self, **kwargs):
+        self.plot_metric = kwargs.get('plot_metric', 'depth')
+        self.show_internal_node_labels = kwargs.get('show_internal_node_labels', False)
+        self.leaf_spacing_factor = kwargs.get('leaf_spacing_factor', 2)
+#        self.null_edge_length = kwargs.get('null_edge_length', 0)
+        self.display_width = kwargs.get('display_width', None)
+        self.reset()
+
+    def reset(self):
+        self.grid = []
+        self.node_row = {}
+        self.node_col = {}
+        self.node_offset = {}
+        self.current_leaf_row = 0
+
+    def _calc_node_offsets(self, tree):
+        if self.plot_metric == 'age' or self.plot_metric == 'depth':
+
+            ## for verification ...
+#            tree.add_ages_to_nodes(check_prec=False)
+#            for nd in tree.postorder_node_iter():
+#                self.node_offset[nd] = nd.age
+#            flipped_origin = max(self.node_offset.values())
+#            for nd in self.node_offset:
+#                self.node_offset[nd] = flipped_origin - self.node_offset[nd]
+#            return
+
+            for nd in tree.postorder_node_iter():
+                cnds = nd.child_nodes()
+                if self.plot_metric == 'depth': # 'number of branchings from root'
+                    if len(cnds) == 0:
+                        curr_node_offset = 0.0
+                    else:
+                        depths = [self.node_offset[v] for v in cnds]
+                        curr_node_offset = max(depths) + 1
+#                        print curr_node_offset, [self.node_offset[v] for v in cnds]
+                else: # 'age': 'sum of edge weights from root'
+                    # note: no enforcement of ultrametricity!
+                    if len(cnds) == 0:
+                        curr_node_offset = 0.0
+                    else:
+                        elen = cnds[0].edge.length if cnds[0].edge.length is not None else 0.0
+                        curr_node_offset = self.node_offset[cnds[0]] + elen
+#                        if len(elens) == 0:
+#                            curr_node_offset = self.node_offset[cnds[0]]
+#                        else:
+#                            curr_node_offset = max(elens) + self.node_offset[cnds[0]]
+                self.node_offset[nd] = curr_node_offset
+            flipped_origin = max(self.node_offset.values())
+            for nd in self.node_offset:
+                self.node_offset[nd] = flipped_origin - self.node_offset[nd]
+        else:
+            for nd in tree.preorder_node_iter():
+                if self.plot_metric == 'level': # 'number of branchings from root'
+                    curr_edge_len = 1
+                else: # 'height': 'sum of edge weights from root'
+                    curr_edge_len = nd.edge.length if nd.edge.length is not None else 0
+                if nd.parent_node is None:
+                    self.node_offset[nd] = curr_edge_len
+                else:
+                    self.node_offset[nd] =  curr_edge_len + self.node_offset[nd.parent_node]
+#        print "\n".join([str(k) for k in self.node_offset.values()])
+
+    def draw(self, tree, dest):
+        dest.write(self.compose(tree))
+
+    def compose(self, tree):
+        self.reset()
+        if self.display_width is None:
+            display_width = termtools.terminal_width() - 1
+        else:
+            display_width = self.display_width
+        max_label_len = max([len(str(i.taxon)) for i in tree.leaf_iter()])
+        if max_label_len <= 0:
+            max_label_len = 0
+        #effective_display_width = display_width - max_label_len - len(tree.internal_nodes) - 1
+        effective_display_width = display_width - max_label_len - 1
+        self._calc_node_offsets(tree)
+        widths = [self.node_offset[i] for i in tree.leaf_iter() if self.node_offset[i] is not None]
+        max_width = float(max(widths))
+        if max_width == 0:
+            raise AsciiTreePlot.NullEdgeLengthError("Tree cannot be plotted under metric '%s' due to zero or null edge lengths: '%s'" % (self.plot_metric, tree.as_newick_string()))
+        edge_scale_factor = float(effective_display_width) / max_width
+        self.calc_plot(tree.seed_node,
+                       edge_scale_factor=edge_scale_factor)
+        for i in range(len(tree.leaf_nodes())*self.leaf_spacing_factor + 1):
+            self.grid.append([' ' for i in range(0, display_width)])
+        self.draw_node(tree.seed_node)
+        display = '\n'.join([''.join(i) for i in self.grid])
+        return display
+
+    def calc_plot(self, node, edge_scale_factor):
+        """
+        First pass through tree, post-order traversal to calculate
+        coordinates of each node.
+        """
+        child_nodes = node.child_nodes()
+        if child_nodes:
+            for n in child_nodes:
+                self.calc_plot(n, edge_scale_factor)
+            ys = [self.node_row[n] for n in child_nodes]
+            self.node_row[node] = int(float((max(ys)-min(ys)) / 2) + min(ys))
+        else:
+            self.node_row[node] = self.current_leaf_row
+            self.current_leaf_row = self.current_leaf_row + self.leaf_spacing_factor
+        if node.edge.length is None:
+            self.node_col[node] = 1
+        else:
+            self.node_col[node] = int(float(self.node_offset[node]) * edge_scale_factor)
+        self.node_col[node] = int(float(self.node_offset[node]) * edge_scale_factor)
+
+    def draw_label(self, label, row, start_col):
+        if label:
+            for i in range(len(label)):
+                if start_col + i < len(self.grid[row]):
+                    self.grid[row][start_col+i] = label[i]
+
+    def draw_node(self, node):
+        """
+        Second pass through tree, plotting nodes onto given self.grid.
+        """
+        child_nodes = node.child_nodes()
+        if child_nodes:
+            for i, child_node in enumerate(child_nodes):
+                start_row = min([self.node_row[node], self.node_row[child_node]])
+                end_row = max([self.node_row[node], self.node_row[child_node]])
+                if i == 0:
+                    self.grid[self.node_row[child_node]][self.node_col[node]] = '/'
+                    start_row = start_row+1
+                    edge_row = self.node_row[child_node]
+                elif i == len(child_nodes)-1:
+                    self.grid[self.node_row[child_node]][self.node_col[node]] = '\\'
+                    edge_row = self.node_row[child_node]
+                else:
+                    self.grid[self.node_row[child_node]][self.node_col[node]] = '+'
+                    edge_row = self.node_row[child_node]
+                self.draw_node(child_node)
+                for x in range(self.node_col[node]+1, self.node_col[child_node]):
+                    self.grid[edge_row][x] = '-'
+                for y in range(start_row, end_row):
+                    self.grid[y][self.node_col[node]] = '|'
+            label = []
+            if self.show_internal_node_labels or self.show_internal_node_labels:
+                pass
+#                if self.show_internal_node_labels and node.taxon.label:
+#                    draw_label(node.taxon.label, self.grid, self.node_row[node], self.node_col[node]+1)
+#                if self.show_internal_node_labels and node.depth != None:
+#                    label = "%0.4f" % node.depth
+#                    if self.node_row[node] + 1 >= len(self.grid):
+#                        y = self.node_row[node]
+#                    else:
+#                        y = self.node_row[node] + 1
+#                    draw_label(label, self.grid, y, self.node_col[node] - len(label) - 1)
+            else:
+                self.grid[self.node_row[node]][self.node_col[node]]='+'
+        else:
+            if node.taxon and node.taxon.label:
+                label = node.taxon.label
+            else:
+                label = '@'
+            self.draw_label(label, self.node_row[node], self.node_col[node]+1)
 
 ###############################################################################
 ## NodeRelationship
