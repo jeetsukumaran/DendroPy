@@ -31,22 +31,25 @@ else:
     try:
         from elementtree import ElementTree
     except ImportError:
-        sys.stderr.write("""\
+        try:
+            from dendropy.utility import ElementTree
+        except ImportError:
+            sys.stderr.write("""\
 
-###############################################################################
-Failed to import the XML parsing module.
-If you are trying to install DendroPy, then the installation failed because
-Python versions of less than 2.5.0 require the ElementTrees package installed.
+    ###############################################################################
+    Failed to import the XML parsing module.
+    If you are trying to install DendroPy, then the installation failed because
+    Python versions of less than 2.5.0 require the ElementTrees package installed.
 
-Please either use a newer version of Python 2 (e.g., Python 2.5, 2.6 or 2.7) to
-install DendroPy, or install the ElementTrees package from:
+    Please either use a newer version of Python 2 (e.g., Python 2.5, 2.6 or 2.7) to
+    install DendroPy, or install the ElementTrees package from:
 
-    http://effbot.org/zone/element.htm
-    http://effbot.org/downloads/#elementtree
-###############################################################################
+        http://effbot.org/zone/element.htm
+        http://effbot.org/downloads/#elementtree
+    ###############################################################################
 
-""")
-        sys.exit(1)
+    """)
+            sys.exit(1)
 
 from dendropy.utility import containers
 
