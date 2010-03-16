@@ -48,7 +48,7 @@ else:
         elif isinstance(o, list) or isinstance(o, dendropy.TreeList):
             return [as_ete_object(t) for t in o]
         else:
-            raise ValueError("Object of type '%s' has not native ete2 representation" % type(o))
+            raise ValueError("Object of type '%s' does not have a native ete2 representation" % type(o))
 
     def as_dendropy_object(o, taxon_set=None):
         if isinstance(o, dendropy.Tree) or isinstance(o, dendropy.Node) or isinstance(o, dendropy.TreeList):
@@ -60,7 +60,7 @@ else:
         elif isinstance(o, list) or isinstance(o, dendropy.TreeList):
             return dendropy.TreeList([as_dendropy_object(t, taxon_set=taxon_set) for t in o], taxon_set=taxon_set)
         else:
-            raise ValueError("Object of type '%s' has not native DendroPy representation" % type(o))
+            raise ValueError("Object of type '%s' does not have a DendroPy representation" % type(o))
 
     def show(o):
         ete_o = as_ete_object(o)
