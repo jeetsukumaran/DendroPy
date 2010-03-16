@@ -1,7 +1,12 @@
 Copyright, License and Warranty
 ===============================
 
-The |DendroPy|_ library and the `DendroPy logo <_static/dendropy.png>`_ are: |dendropy_copyright|.
+DendroPy
+--------
+
+The |DendroPy|_ library and the `DendroPy logo <_static/dendropy.png>`_ are:
+
+    |dendropy_copyright|.
 
 The |DendroPy|_ library is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
@@ -17,4 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Usage of the `DendroPy logo <_static/dendropy.png>`_, either in whole or in part, is restricted to the authors of the |DendroPy|_ library, with limited usage granted to third parties exclusively for the acknowledgement of, or for linking or referring to, the |DendroPy|_ library.
 
-The ElementTree toolkit bundled with DendroPy is Copyright (c) 1999-2005 by Fredrik Lundh. Permission to use, copy, modify, and distribute this software and its associated documentation for any purpose and without fee is hereby granted, provided that the above copyright notice appears in all copies, and that both that copyright notice and this permission notice appear in supporting documentation, and that the name of Secret Labs AB or the author not be used in advertising or publicity pertaining to distribution of the software without specific, written prior permission.
+Supporting Components
+---------------------
+
+The ElementTree XML-parsing toolkit bundled with DendroPy is Copyright (c) 1999-2005 by Fredrik Lundh:
+
+    Permission to use, copy, modify, and distribute this software and its associated documentation for any purpose and without fee is hereby granted, provided that the above copyright notice appears in all copies, and that both that copyright notice and this permission notice appear in supporting documentation, and that the name of Secret Labs AB or the author not be used in advertising or publicity pertaining to distribution of the software without specific, written prior permission.
