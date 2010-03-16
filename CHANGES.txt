@@ -1,3 +1,13 @@
+Release 3.1.4
+-------------
+
+New Features
+^^^^^^^^^^^^
+
+    * DendroPy is now backwards-compatible with Python 2.4.
+    * Native ASCII tree plotting is available as the "``as_ascii_plot()``" method of a ``Tree`` object.
+    * Interoperability with the `ETE <http://ete.cgenomics.org/>`_ library via the ``dendropy.interop.ete`` module.
+
 Release 3.1.3
 -------------
 

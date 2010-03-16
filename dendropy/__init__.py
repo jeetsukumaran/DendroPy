@@ -43,7 +43,7 @@ from dendropy.dataio import get_reader, get_writer, tree_source_iter, multi_tree
 ## PACKAGE METADATA
 
 __project__ = "DendroPy"
-__version__ = "3.1.3"
+__version__ = "3.1.4"
 try:
     __source_path__ = os.path.dirname(os.path.abspath(__file__))
     __revision__ = vcsinfo.Revision(repo_path=__source_path__)

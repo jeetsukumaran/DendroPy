@@ -12,7 +12,7 @@ In addition, scripts for performing some useful phylogenetic computations are di
 Requirements and Installation
 =============================
 
-DendroPy runs under any version of **Python 2.x greater than Python 2.4 up to, but not including, Python 3.0**.
+DendroPy runs under any version of Python 2 from 2.4 upwards (i.e., Python 2.4, 2.5, 2.6, 2.7, etc.). At present, it does not run under Python 3.
 
 If you have `setuptools <http://pypi.python.org/pypi/setuptools>`_ installed, you can install the latest public release of DendroPy directly from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_ by running::
 
