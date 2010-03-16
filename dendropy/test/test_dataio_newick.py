@@ -123,7 +123,10 @@ class NewickEdgeLengthParsing(datatest.DataObjectVerificationTestCase):
             'root': 7.0
         }
         for nd in trees[0].postorder_node_iter():
-            label = nd.taxon.label if nd.taxon is not None else nd.label
+            if nd.taxon is not None:
+                label = nd.taxon.label
+            else:
+                label = nd.label
             self.assertAlmostEquals(nd.edge.length, expected[label])
 
     def testEdgeLengths2(self):
@@ -147,7 +150,10 @@ class NewickEdgeLengthParsing(datatest.DataObjectVerificationTestCase):
             'root': 7.0
         }
         for nd in trees[0].postorder_node_iter():
-            label = nd.taxon.label if nd.taxon is not None else nd.label
+            if nd.taxon is not None:
+                label = nd.taxon.label
+            else:
+                label = nd.label
             self.assertAlmostEquals(nd.edge.length, expected[label])
 
     def testQuotedLabels(self):
@@ -175,7 +181,10 @@ T4:4.4e+8)'this is an internal node called "i2"':4.0e+1)i3:4.0E-4,
             "this is the 'root'": 7.0
         }
         for nd in trees[0].postorder_node_iter():
-            label = nd.taxon.label if nd.taxon is not None else nd.label
+            if nd.taxon is not None:
+                label = nd.taxon.label
+            else:
+                label = nd.label
             self.assertAlmostEquals(nd.edge.length, expected[label])
 
 class NewickTreeListWriterTest(datatest.DataObjectVerificationTestCase):

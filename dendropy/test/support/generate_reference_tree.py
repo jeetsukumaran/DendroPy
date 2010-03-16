@@ -54,12 +54,20 @@ def main():
     for t in tlist:
         result.append("        {")
         for nd in t:
+            if nd.parent_node is not None:
+                pn_label = "'" + nd.parent_node.label + "'"
+            else:
+                pn_label = 'None'
+            if nd.taxon is not None:
+                t_label = "'" + nd.taxon.label + "'"
+            else:
+                t_label = 'None'
             result.append("            '%s' : NodeRelationship(parent_label=%s, child_labels=[%s], edge_length=%s, taxon_label=%s)," % \
                 (nd.label,
-                 ("'"+nd.parent_node.label+"'") if nd.parent_node is not None else 'None',
+                 pn_label,
                  ",".join(["'"+c.label+"'" for c in nd.child_nodes()]),
                  nd.edge.length,
-                 ("'"+nd.taxon.label+"'") if nd.taxon is not None else 'None'))
+                 t_label))
         result.append("        },")
     result.append("    ]")
     result.append("    return treelist_node_references")
