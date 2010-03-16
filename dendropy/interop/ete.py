@@ -63,6 +63,10 @@ else:
             raise ValueError("Object of type '%s' does not have a DendroPy representation" % type(o))
 
     def show(o):
+        if not isinstance(o, dendropy.Tree) \
+                and not isinstance(o, dendropy.Node)\
+                and not isinstance(o, ete2.Tree):
+            raise ValueError("Object of type '%s' cannot be rendered by ETE2" % type(o))
         ete_o = as_ete_object(o)
         ete_o.show()
 
