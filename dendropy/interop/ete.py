@@ -43,7 +43,7 @@ else:
             return o
         elif isinstance(o, dendropy.Tree) or isinstance(o, dendropy.Node):
             s = o.as_newick_string() + ";"
-            _LOG.debug(s)
+#            _LOG.debug(s)
             return ete2.Tree(s)
         elif isinstance(o, list) or isinstance(o, dendropy.TreeList):
             return [as_ete_object(t) for t in o]
@@ -55,7 +55,7 @@ else:
             return o
         elif isinstance(o, ete2.Tree):
             s = o.write()
-            _LOG.debug(s)
+#            _LOG.debug(s)
             return dendropy.Tree.get_from_string(s, 'newick', taxon_set=taxon_set)
         elif isinstance(o, list) or isinstance(o, dendropy.TreeList):
             return dendropy.TreeList([as_dendropy_object(t, taxon_set=taxon_set) for t in o], taxon_set=taxon_set)
