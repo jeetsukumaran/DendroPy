@@ -39,7 +39,9 @@ except ImportError:
 else:
 
     def as_ete_object(o):
-        if isinstance(o, dendropy.Tree) or isinstance(o, dendropy.Node):
+        if isinstance(o, ete2.Tree):
+            return o
+        elif isinstance(o, dendropy.Tree) or isinstance(o, dendropy.Node):
             s = o.as_newick_string() + ";"
             _LOG.debug(s)
             return ete2.Tree(s)
@@ -49,7 +51,9 @@ else:
             raise ValueError("Object of type '%s' has not native ete2 representation" % type(o))
 
     def as_dendropy_object(o, taxon_set=None):
-        if isinstance(o, ete2.Tree):
+        if isinstance(o, dendropy.Tree) or isinstance(o, dendropy.Node) or isinstance(o, dendropy.TreeList):
+            return o
+        elif isinstance(o, ete2.Tree):
             s = o.write()
             _LOG.debug(s)
             return dendropy.Tree.get_from_string(s, 'newick', taxon_set=taxon_set)
