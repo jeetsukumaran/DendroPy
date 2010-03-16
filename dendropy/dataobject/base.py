@@ -65,7 +65,8 @@ class Annotated(DataObject):
         Add an attribute to the list of attributes that need to be
         persisted as an annotation.
         """
-        annotate_as = attr_name if annotate_as is None else annotate_as
+        if annotate_as is None:
+            annotate_as = attr_name
         if attr_name not in self._annotations:
             if not hasattr(self, attr_name):
                 raise AttributeError(attr_name)

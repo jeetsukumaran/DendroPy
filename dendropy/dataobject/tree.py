@@ -360,43 +360,88 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if tree_list_name is None:
             tree_list_name = "tree_list_%s" % id(self)
 
+
+        if self.label is not None:
+            label = "'" + self.label + "'"
+        else:
+            label = "None"
+        if oids:
+            oid_str = ', oid="%s"' % self.oid
+        else:
+            oid_str = ""
+        if tree_list_args is None:
+            tree_list_args = ""
+        else:
+            tree_list_args = ", " + tree_list_args
         p.append("%s = dendropy.TreeList(label=%s%s%s)" \
             % (tree_list_name,
-               ('"' + self.label +'"') if self.label is not None else "None",
-               (', oid="%s"' % self.oid) if oids else "",
-               (", " + tree_list_args) if tree_list_args is not None else ""))
+               label,
+               oid_str,
+               tree_list_args))
 
         taxon_obj_namer = lambda x: "tax_%s" % id(x)
         taxon_map = {}
         for taxon in self.taxon_set:
             tobj_name = taxon_obj_namer(taxon)
+            if taxon.label is not None:
+                label = "'" + taxon.label + "'"
+            else:
+                label = "None"
+            if oids:
+                oid_str = ', oid="%s"' % taxon.oid
+            else:
+                oid_str = ""
             p.append("%s = %s.taxon_set.require_taxon(label=%s%s)" \
                 % (tobj_name,
                    tree_list_name,
-                   ('"' + taxon.label +'"') if taxon.label is not None else "None",
-                   (', oid="%s"' % taxon.oid) if oids else ""))
+                   label,
+                   oid_str))
             taxon_map[taxon] = tobj_name
 
         node_obj_namer = lambda x: "nd_%s" % id(x)
         for tree in self:
             tree_obj_name = "tree_%s" % id(tree)
+            if tree.label is not None:
+                label = "'" + tree.label + "'"
+            else:
+                label = "None"
+            if oids:
+                oid_str = ', oid="%s"' % tree.oid
+            else:
+                oid_str = ""
             p.append("%s = dendropy.Tree(label=%s, taxon_set=%s.taxon_set%s)" \
                 % (tree_obj_name,
-                   ('"' + tree.label +'"') if tree.label is not None else "None",
+                   label,
                    tree_list_name,
-                   (', oid="%s"' % tree.oid) if oids else ""))
+                   oid_str))
             p.append("%s.append(%s, reindex_taxa=False)" % (tree_list_name, tree_obj_name))
             if oids:
                 p.append("%s.seed_node.oid = '%s'" % (tree_obj_name, tree.seed_node.oid))
             for node in tree.preorder_node_iter():
                 for child in node.child_nodes():
+                    if node is tree.seed_node:
+                        nn = "%s.seed_node" % tree_obj_name
+                    else:
+                        nn = node_obj_namer(node)
+                    if child.label is not None:
+                        label = "'" + child.label + "'"
+                    else:
+                        label = "None"
+                    if child.taxon is not None:
+                        ct = taxon_obj_namer(child.taxon)
+                    else:
+                        ct = "None"
+                    if oids:
+                        oid_str = ', oid="%s"' % child.oid
+                    else:
+                        oid_str = ""
                     p.append("%s = %s.new_child(label=%s, taxon=%s, edge_length=%s%s)" %
                             (node_obj_namer(child),
-                             ("%s.seed_node" % tree_obj_name) if node is tree.seed_node else node_obj_namer(node),
-                             ('"' + child.label +'"') if child.label is not None else "None",
-                             taxon_obj_namer(child.taxon) if child.taxon is not None else "None",
+                             nn,
+                             label,
+                             ct,
                              child.edge.length,
-                         (', oid="%s"' % child.oid) if oids else ""))
+                             oid_str))
                     if oids:
                         p.append('%s.edge.oid = "%s"' % (node_obj_namer(child), child.edge.oid))
 
@@ -684,7 +729,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         taxon = self.taxon_set.get_taxon(label=label)
         if taxon is None:
             return None
-        return self.find_node_with_taxon(lambda x: True if x is taxon else False)
+        return self.find_node_with_taxon(lambda x: x is taxon)
 
     def find_edge(self, oid):
         "Finds the first edge with matching id."
@@ -1100,33 +1145,69 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
         if tree_obj_name is None:
             tree_obj_name = "tree_%s" % id(self)
+        if self.label is not None:
+            label = "'" + self.label + "'"
+        else:
+            label = "None"
+        if oids:
+            oid_str = ', oid="%s"' % self.oid
+        else:
+            oid_str = ""
+        if tree_args is None:
+            tree_args = ""
+        else:
+            tree_args = ", " + tree_args
         p.append("%s = dendropy.Tree(label=%s%s)" \
             % (tree_obj_name,
-               ('"' + self.label +'"') if self.label is not None else "None",
-               (', oid="%s"' % self.oid) if oids else "",
-               (", " + tree_args) if tree_args is not None else ""))
+               label,
+               oid_str,
+               tree_args))
         if oids:
             p.append("%s.seed_node.oid = '%s'" % (tree_obj_name, self.seed_node.oid))
 
         taxon_obj_namer = lambda x: "tax_%s" % id(x)
         for taxon in self.taxon_set:
             tobj_name = taxon_obj_namer(taxon)
+            if taxon.label is not None:
+                label = "'" + taxon.label + "'"
+            else:
+                label = "None"
+            if oids:
+                oid_str = ', oid="%s"' % taxon.oid
+            else:
+                oid_str = ""
             p.append("%s = %s.taxon_set.require_taxon(label=%s%s)" \
                 % (tobj_name,
                    tree_obj_name,
-                   ('"' + taxon.label +'"') if taxon.label is not None else "None",
-                   (', oid="%s"' % taxon.oid) if oids else ""))
+                   label,
+                   oid_str))
 
         node_obj_namer = lambda x: "nd_%s" % id(x)
         for node in self.preorder_node_iter():
             for child in node.child_nodes():
+                if node is tree.seed_node:
+                    nn = "%s.seed_node" % tree_obj_name
+                else:
+                    nn = node_obj_namer(node)
+                if child.label is not None:
+                    label = "'" + child.label + "'"
+                else:
+                    label = "None"
+                if child.taxon is not None:
+                    ct = taxon_obj_namer(child.taxon)
+                else:
+                    ct = "None"
+                if oids:
+                    oid_str = ', oid="%s"' % child.oid
+                else:
+                    oid_str = ""
                 p.append("%s = %s.new_child(label=%s, taxon=%s, edge_length=%s%s)" %
                         (node_obj_namer(child),
-                         ("%s.seed_node" % tree_obj_name) if node is self.seed_node else node_obj_namer(node),
-                         ('"' + node.label +'"') if child.label is not None else "None",
-                         taxon_obj_namer(child.taxon) if child.taxon is not None else "None",
+                         nn,
+                         label,
+                         cn,
                          child.edge.length,
-                         (', oid="%s"' % child.oid) if oids else ""))
+                         oid_str))
                 if oids:
                     p.append('%s.edge.oid = "%s"' % (node_obj_namer(child), child.edge.oid))
 
@@ -1188,7 +1269,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         total = 0
         for edge in self.postorder_edge_iter():
-            total += (edge.length if edge.length is not None else 0)
+            if edge.length is not None:
+                total += edge.length
         return total
 
     def coalescence_intervals(self):
@@ -1886,14 +1968,25 @@ class Node(TaxonLinked):
             leader1 = ' ' * (indent + 4)
             leader2 = ' ' * (indent + 8)
             output_strio.write('\n%s[Edge]' % leader1)
-            output_strio.write('\n%s%s' % (leader2,
-                    self.edge.description(0) if self.edge is not None else 'None'))
+            if self.edge is not None:
+                edge_desc = self.edge.description(0)
+            else:
+                edge_desc = 'None'
+            output_strio.write('\n%s%s' % (leader2, edge_desc))
+
             output_strio.write('\n%s[Taxon]' % leader1)
-            output_strio.write('\n%s%s' % (leader2,
-                    self.taxon.description(0) if self.taxon is not None else 'None'))
+            if self.taxon is not None:
+                taxon_desc = self.taxon.description(0)
+            else:
+                taxon_desc = 'None'
+            output_strio.write('\n%s%s' % (leader2, taxon_desc))
+
             output_strio.write('\n%s[Parent]' % leader1)
-            output_strio.write('\n%s%s' % (leader2,
-                    self.parent_node.description(0) if self.parent_node is not None else 'None'))
+            if self.parent_node is not None:
+                parent_node_desc = self.parent_node.description(0)
+            else:
+                parent_node_desc = 'None'
+            output_strio.write('\n%s%s' % (leader2, parent_node_desc))
             if hasattr(self.edge, 'split_bitmask'):
                 output_strio.write('\n%s[Clade Mask]' % leader1)
                 if taxon_set is None:
@@ -2132,14 +2225,23 @@ class Edge(IdTagged):
             leader1 = ' ' * (indent + 4)
             leader2 = ' ' * (indent + 8)
             output_strio.write('\n%s[Length]' % leader1)
-            output_strio.write('\n%s%s' % (leader2,
-                    self.length if self.length is not None else 'None'))
+            if self.length is not None:
+                length = self.length
+            else:
+                length = "None"
+            output_strio.write('\n%s%s' % (leader2, length))
             output_strio.write('\n%s[Tail Node]' % leader1)
-            output_strio.write('\n%s%s' % (leader2,
-                    self.tail_node.description(0) if self.tail_node is not None else 'None'))
+            if self.tail_node is not None:
+                tn = self.tail_node.description(0)
+            else:
+                tn = "None"
+            output_strio.write('\n%s%s' % (leader2, tn))
             output_strio.write('\n%s[Head Node]' % leader1)
-            output_strio.write('\n%s%s' % (leader2,
-                    self.head_node.description(0) if self.head_node is not None else 'None'))
+            if self.head_node is not None:
+                hn = self.head_node.description(0)
+            else:
+                hn = "None"
+            output_strio.write('\n%s%s' % (leader2, hn))
             if hasattr(self, 'split_bitmask'):
                 output_strio.write('\n%s[Clade Mask]' % leader1)
                 if taxon_set is None:
@@ -2201,8 +2303,8 @@ class AsciiTreePlot(object):
                     if len(cnds) == 0:
                         curr_node_offset = 0.0
                     else:
-                        elen = cnds[0].edge.length if cnds[0].edge.length is not None else 0.0
-                        curr_node_offset = self.node_offset[cnds[0]] + elen
+                        if cnds[0].edge.length is not None:
+                            curr_node_offset = self.node_offset[cnds[0]] + cnds[0].edge.length
 #                        if len(elens) == 0:
 #                            curr_node_offset = self.node_offset[cnds[0]]
 #                        else:
@@ -2216,7 +2318,10 @@ class AsciiTreePlot(object):
                 if self.plot_metric == 'level': # 'number of branchings from root'
                     curr_edge_len = 1
                 else: # 'height': 'sum of edge weights from root'
-                    curr_edge_len = nd.edge.length if nd.edge.length is not None else 0
+                    if nd.edge.length is not None:
+                        curr_edge_len = nd.edge.length
+                    else:
+                        curr_edge_len = 0
                 if nd.parent_node is None:
                     self.node_offset[nd] = curr_edge_len
                 else:
@@ -2333,10 +2438,16 @@ class NodeRelationship(object):
 
     def from_node(node):
         ndr = NodeRelationship(None, None, None, None)
-        ndr.parent_label = node.parent_node.label if node.parent_node is not None else 'None'
+        if node.parent_node is not None:
+            ndr.parent_label = node.parent_node.label
+        else:
+            ndr.parent_label = 'None'
         ndr.child_labels = [cnd.label for cnd in node.child_nodes()]
         ndr.edge_length = node.edge.length
-        ndr.taxon_label = node.taxon.label if node.taxon is not None else None
+        if node.taxon is not None:
+            ndr.taxon_label = node.taxon.label
+        else:
+            ndr.taxon_label = 'None'
         return ndr
     from_node = staticmethod(from_node)
 
