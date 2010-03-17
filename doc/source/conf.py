@@ -162,34 +162,34 @@ else:
     # further.  For a list of options available for each theme, see the
     # documentation.
     # orange =CB9832  green = 81916A,
-#    html_theme_options = {
-#
-#        #'bodyfont': '#000000',
-#        #'headfont': '#000000',
-#
-#        'relbarbgcolor': '#343430', #'#',
-#        'relbartextcolor': '#ffffff',
-#        'relbarlinkcolor': '#fff000',
-#
-#        'sidebarbgcolor': '#404040',
-#        'sidebartextcolor': '#ffffff',
-#        'sidebarlinkcolor': '#CB9832',
-#
-#        'bgcolor': '#eeeedd',
-#        'textcolor': '#000000',
-#        'linkcolor': '#0000ff',
-#
-#        'headbgcolor': '#ccccbb',
-#        'headtextcolor': '#006600',
-#        'headlinkcolor': '#fff000',
-#
-#        'codebgcolor': '#ffffff',
-#        'codetextcolor': '#000000',
-#
-#        'footerbgcolor': '#000000',
-#        'footertextcolor': '#ffffff',
-#
-#    }
+    html_theme_options = {
+
+        'bodyfont': '#000000',
+        'headfont': '#000000',
+
+        'relbarbgcolor': '#000000', # '#343430',
+        'relbartextcolor': '#ffffff',
+        'relbarlinkcolor': '#fff000',
+
+        'sidebarbgcolor': '#343430',
+        'sidebartextcolor': '#ffffff',
+        'sidebarlinkcolor': '#fff000',
+
+        'bgcolor': '#ffffff',
+        'textcolor': '#000000',
+        'linkcolor': '#0000ff',
+
+        'headbgcolor': '#ccccbb',
+        'headtextcolor': '#006600',
+        'headlinkcolor': '#fff000',
+
+        'codebgcolor': '#eeeedd',
+        'codetextcolor': '#000000',
+
+        'footerbgcolor': '#000000',
+        'footertextcolor': '#ffffff',
+
+    }
 
 #html_style = "dendropy.css"
 
