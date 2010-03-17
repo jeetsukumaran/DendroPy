@@ -164,26 +164,26 @@ else:
     # orange =CB9832  green = 81916A,
     html_theme_options = {
 
-        'bodyfont': '#000000',
-        'headfont': '#000000',
+#        'bodyfont': '#000000',
+#        'headfont': '#000000',
 
         'relbarbgcolor': '#000000', # '#343430',
         'relbartextcolor': '#ffffff',
         'relbarlinkcolor': '#fff000',
 
-        'sidebarbgcolor': '#343430',
+        'sidebarbgcolor': '#4863A0',
         'sidebartextcolor': '#ffffff',
         'sidebarlinkcolor': '#fff000',
 
-        'bgcolor': '#ffffff',
+        'bgcolor': '#eeeedd',
         'textcolor': '#000000',
         'linkcolor': '#0000ff',
 
-        'headbgcolor': '#ccccbb',
-        'headtextcolor': '#006600',
-        'headlinkcolor': '#fff000',
+        'headbgcolor':  '#eeeeee', #'#98AFC7', #'#E3E4FA',
+        'headtextcolor': '#153E7E',
+        'headlinkcolor': '#CB9832',
 
-        'codebgcolor': '#eeeedd',
+        'codebgcolor': '#FFFFEE',
         'codetextcolor': '#000000',
 
         'footerbgcolor': '#000000',
