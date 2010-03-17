@@ -171,9 +171,9 @@ else:
         'relbartextcolor': '#ffffff',
         'relbarlinkcolor': '#fff000',
 
-        'sidebarbgcolor': '#4863A0',
-        'sidebartextcolor': '#ffffff',
-        'sidebarlinkcolor': '#fff000',
+        'sidebarbgcolor': '#ADA96E',
+        'sidebartextcolor': '#000000',
+        'sidebarlinkcolor': '#15317E',
 
         'bgcolor': '#eeeedd',
         'textcolor': '#000000',
