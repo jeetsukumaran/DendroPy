@@ -183,7 +183,7 @@ else:
         'headtextcolor': '#153E7E',
         'headlinkcolor': '#CB9832',
 
-        'codebgcolor': '#FAFAFA',
+        'codebgcolor': '#fafaee',
         'codetextcolor': '#000000',
 
         'footerbgcolor': '#000000',
