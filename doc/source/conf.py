@@ -167,11 +167,11 @@ else:
 #        'bodyfont': '#000000',
 #        'headfont': '#000000',
 
-        'relbarbgcolor': '#000000', # '#343430',
+        'relbarbgcolor': '#000000',
         'relbartextcolor': '#ffffff',
         'relbarlinkcolor': '#fff000',
 
-        'sidebarbgcolor': '#cccc99', #'#ADA96E',
+        'sidebarbgcolor': '#cccc99',
         'sidebartextcolor': '#000000',
         'sidebarlinkcolor': '#15317E',
 
@@ -179,11 +179,11 @@ else:
         'textcolor': '#000000',
         'linkcolor': '#0000ff',
 
-        'headbgcolor': '#DDDDCC', #'#cccc99',
+        'headbgcolor': '#DDDDCC',
         'headtextcolor': '#153E7E',
         'headlinkcolor': '#CB9832',
 
-        'codebgcolor': '#FFFFEE',
+        'codebgcolor': '#FAFAFA',
         'codetextcolor': '#000000',
 
         'footerbgcolor': '#000000',
