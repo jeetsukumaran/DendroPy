@@ -167,7 +167,7 @@ else:
 #        'bodyfont': '#000000',
 #        'headfont': '#000000',
 
-        'relbarbgcolor': '#000000',
+        'relbarbgcolor': '#707066', #'#666600',
         'relbartextcolor': '#ffffff',
         'relbarlinkcolor': '#fff000',
 
@@ -186,7 +186,7 @@ else:
         'codebgcolor': '#fafaee',
         'codetextcolor': '#000000',
 
-        'footerbgcolor': '#000000',
+        'footerbgcolor': '#505050',
         'footertextcolor': '#ffffff',
 
     }
