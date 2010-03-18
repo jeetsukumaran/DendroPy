@@ -66,15 +66,15 @@ The :func:`~dendropy.treesim.star_tree()` generates a simply polytomy tree, with
 Population Genetic Tree
 =======================
 
-The :func:`pop_gen_tree()` function generates a tree with edges decorated with population sizes and leaf nodes decorated by the number of genes (samples or lineages) in each leaf.
+The :func:`~dendropy.treesim.pop_gen_tree()` function generates a tree with edges decorated with population sizes and leaf nodes decorated by the number of genes (samples or lineages) in each leaf.
 This tree is useful for coalescent-simulations (see below).
 
 Coalescent Tree
 ===============
-The :func:`pure_kingman()` function simulates a tree under Kingman's n-coalescent (i.e., the pure, unconstrained coalescent process).
+The :func:`~dendropy.treesim.pure_kingman()` function simulates a tree under Kingman's n-coalescent (i.e., the pure, unconstrained coalescent process).
 
 
 Censored Coalescent Tree
 ========================
-The :func:`constrained_kingman()` function simulates a tree under the censored coalescent, i.e., the coalescent conditional or constrained by a containing species or population tree.
+The :func:`~dendropy.treesim.constrained_kingman()` function simulates a tree under the censored coalescent, i.e., the coalescent conditional or constrained by a containing species or population tree.
 
