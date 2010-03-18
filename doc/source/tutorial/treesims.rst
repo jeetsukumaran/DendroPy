@@ -7,6 +7,9 @@ The :mod:`~dendropy.treesim` module provides functions for the simulation of tre
 Birth-Death Process Trees
 =========================
 
+Constant Birth and Death Rates
+------------------------------
+
 There are two different birth-death process tree simulation routines in DendroPy:
 
     :func:`~dendropy.treesim.birth_death()`
@@ -17,51 +20,70 @@ There are two different birth-death process tree simulation routines in DendroPy
 
 Both of these functions have identical interfaces, and will grow a tree under a branching process with the specified birth-date and death-rate until the termination condition (pre-specified number of leaves or maximum amount of time) is met.
 
-The birth rate is specified by the `birth_rate` argument, and death rate specified by the `death_rate` argument.
-A variable birth-rate or death-rate can be set by the `birth_rate_sd` or the `death_rate_sd`  arguments.
-`birth_rate_sd` is the standard deviation of the normally-distributed mutation
-added to the birth rate as it is inherited by daughter nodes; if 0, birth
-rate does not evolve on the tree.
-`death_rate_sd` is the standard deviation of the normally-distributed mutation
-added to the death rate as it is inherited by daughter nodes; if 0, death
-rate does not evolve on the tree.
+For example, return a continuous time tree with 10 leaves, generated under a birth rate of 1.0 and death rate of 0.5::
 
-Tree growth is controlled by one or more of the following arguments, of which
-at least one must be specified:
+    >>> from dendropy import treesim
+    >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, ntax=10)
 
-    - If `ntax` is given as a keyword argument, tree is grown until the number of
-      tips == ntax.
-    - If `taxon_set` is given as a keyword argument, tree is grown until the
-      number of tips == len(taxon_set), and the taxa are assigned randomly to the
-      tips.
-    - If 'max_time' is given as a keyword argument, tree is grown for
-      a maximum of `max_time`.
+While to return a continuous time tree generated under the same rates after 6 time units::
 
-If more than one of the above is given, then tree growth will terminate when
+    >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, max_time=6.0)
+
+If both conditions are given simultaneously, then tree growth will terminate when
 *any* of the termination conditions (i.e., number of tips == `ntax`, or number
 of tips == len(taxon_set) or maximum time = `max_time`) are met.
 
-These functions also accept a Tree object (with valid branch lengths) as an argument passed using the keyword `tree`: if given, then this tree will be used; otherwise
-a new one will be created.
+By default, a new |Taxon| object will be created and associated with each leaf (labeled "T1", "T2", etc.),  all belonging to a new |TaxonSet| object associated with the resulting tree.
 
-If `assign_taxa` is False, then taxa will *not* be assigned to the tips;
-otherwise (default), taxa will be assigned. If `taxon_set` is given
-(`tree.taxon_set`, if `tree` is given), and the final number of tips on the
-tree after the termination condition is reached is less then the number of
-taxa in `taxon_set` (as will be the case, for example, when
-`ntax` < len(`taxon_set`)), then a random subset of taxa in `taxon_set` will
-be assigned to the tips of tree. If the number of tips is more than the number
-of taxa in the `taxon_set`, new Taxon objects will be created and added
-to the `taxon_set` if the keyword argument `create_required_taxa` is not given as
-False.
+You can pass in an explicit |TaxonSet| object using the "``taxon_set``" keyword.
+For example, assuming "``ts``" is a pre-existing |TaxonSet|::
 
-In addition, a Random() object or equivalent can be passed using the `rng` keyword;
-otherwise a global random number generator will be used.
+    >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, taxon_set=ts)
+
+In this case, the branching process underlying the tree generation will terminate when the number of leaves in the tree equals the number of taxa in the |TaxonSet| "``ts``", and the |Taxon| objects in "``ts``" will be randomly assigned to the leaves.
+
+The "``taxon_set``" keyword can be combined with the "``ntax``" keyword::
+
+    >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, ntax=8, taxon_set=ts)
+
+Here, if the size of the |TaxonSet| object given by the ``taxon_set`` argument is greater than the specified target tree taxon number, then a random subset of |Taxon| object in the |TaxonSet| will be assigned to the leaves.
+If the size of the |TaxonSet| object is less than the target taxon number, then new |Taxon| objects will be created as needed and added to the |TaxonSet| object as well as associated with the leaves.
+
+With a non-zero death rate, it is possible for all lineages of a tree to go extinct before the termination conditions are reached.
+In this case, by default a :class:`~dendropy.treesim.TreeSimTotalExtinctionException` will be raised.
+If the keyword argument "``repeat_on_total_extinction``" is given, then instead of raising an exception, the process starts again and repeats until the termination condition is met.
+
+Variable Birth and Death Rates
+------------------------------
+
+The same functions can also produce trees generated under variable birth and death rates.
+The "``birth_rate_sd``" keyword argument specifies the standard deviation of the normally-distributed error of birth rates as they evolve from parent to child node, while the "``death_rate_sd``" keyword argument specifies the same of the the death rates.
+For example, to get a 10-taxon tree generated under a birth- and death-rate that evolves with a standard deviation of 0.1::
+
+    >>> t = treesim.birth_death(birth_rate=1.0,
+                death_rate=0.5,
+                birth_rate_sd=0.1,
+                death_rate_sd=0.1,
+                ntax=10)
+
+Extending an Existing Tree
+--------------------------
+
+Both these functions also accept a Tree object (with valid branch lengths) as an argument passed using the keyword `tree`.
+If given, then this tree will be used as the starting point; otherwise a new one will be created.
+
+
 
 Star Tree
 =========
 
 The :func:`~dendropy.treesim.star_tree()` generates a simply polytomy tree, with a single node as the immediate ancestor to a set of leaves, with one leaf per |Taxon| in the |TaxonSet| object given by the `taxon_set` argument.
+For example::
+
+    >>> from dendropy import treesim
+
+
+
 
 Population Genetic Tree
 =======================

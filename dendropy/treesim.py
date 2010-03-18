@@ -183,6 +183,9 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
                 elif not repeat_on_extinction:
                     # all lineages are extinct: raise exception
                     raise TreeSimTotalExtinctionException()
+                else:
+                    # all lineages are extinct: repeat
+                    total_time = 0
 
         leaf_nodes = tree.leaf_nodes()
 
@@ -319,6 +322,10 @@ def discrete_birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_s
                 elif not repeat_on_extinction:
                     # all lineages are extinct: raise exception
                     raise TreeSimTotalExtinctionException()
+                else:
+                    # all lineages are extinct: repeat
+                    num_gens = 0
+
         num_gens += 1
         leaf_nodes = tree.leaf_nodes()
 
