@@ -34,6 +34,11 @@ from dendropy import coalescent
 from dendropy import dataobject
 from dendropy import treemanip
 
+class TreeSimTotalExtinctionException(Exception):
+    """Exception to be raised when branching process results in all lineages going extinct."""
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)
+
 def star_tree(taxon_set):
     "Builds and returns a star tree from the given taxa block."
     star_tree = dataobject.Tree(taxon_set=taxon_set)
@@ -85,8 +90,14 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
     to the `taxon_set` if the keyword argument `create_required_taxa` is not given as
     False.
 
-    In addition, a Random() object or equivalent can be passed using the `rng` keyword;
+    Under some conditions, it is possible for all lineages on a tree to go extinct.
+    In this case, if the keyword argument `repeat_on_total_extinction` is `True`, then a new
+    branching process is initiated.
+    If `False` (default), then a TreeSimTotalExtinctionException is raised.
+
+    A Random() object or equivalent can be passed using the `rng` keyword;
     otherwise GLOBAL_RNG is used.
+
     """
     if 'ntax' not in kwargs \
         and 'taxon_set' not in kwargs \
@@ -102,6 +113,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
         target_num_taxa = kwargs['ntax']
     if taxon_set is None:
         taxon_set = dataobject.TaxonSet()
+    repeat_on_extinction = kwargs.get('repeat_on_total_extinction', False)
     rng = kwargs.get('rng', GLOBAL_RNG)
 
     # initialize tree
@@ -168,8 +180,9 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
             else:
                 if nd is not tree.seed_node:
                     treemanip.prune_subtree(tree, nd)
-                else:
-                    return tree
+                elif not repeat_on_extinction:
+                    # all lineages are extinct: raise exception
+                    raise TreeSimTotalExtinctionException()
 
         leaf_nodes = tree.leaf_nodes()
 
@@ -244,7 +257,12 @@ def discrete_birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_s
     to the `taxon_set` if the keyword argument `create_required_taxa` is not given as
     False.
 
-    In addition, a Random() object or equivalent can be passed using the `rng` keyword;
+    Under some conditions, it is possible for all lineages on a tree to go extinct.
+    In this case, if the keyword argument `repeat_on_total_extinction` is `True`, then a new
+    branching process is initiated.
+    If `False` (default), then a TreeSimTotalExtinctionException is raised.
+
+    A Random() object or equivalent can be passed using the `rng` keyword;
     otherwise GLOBAL_RNG is used.
     """
     if 'ntax' not in kwargs \
@@ -261,6 +279,7 @@ def discrete_birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_s
         target_num_taxa = kwargs['ntax']
     if taxon_set is None:
         taxon_set = dataobject.TaxonSet()
+    repeat_on_extinction = kwargs.get('repeat_on_total_extinction', False)
     rng = kwargs.get('rng', GLOBAL_RNG)
 
     # grow tree
@@ -297,8 +316,9 @@ def discrete_birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_s
             elif u > nd.birth_rate and u < (nd.birth_rate + nd.death_rate):
                 if nd is not tree.seed_node:
                     treemanip.prune_subtree(tree, nd)
-                else:
-                    return tree
+                elif not repeat_on_extinction:
+                    # all lineages are extinct: raise exception
+                    raise TreeSimTotalExtinctionException()
         num_gens += 1
         leaf_nodes = tree.leaf_nodes()
 
