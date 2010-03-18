@@ -41,127 +41,6 @@ def star_tree(taxon_set):
         star_tree.seed_node.new_child(taxon=taxon)
     return star_tree
 
-def discrete_birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **kwargs):
-    """
-    Returns a birth-death tree with birth rate specified by `birth_rate`, and
-    death rate specified by `death_rate`, with edge lengths in discrete (integer)
-    units.
-
-    `birth_rate_sd` is the standard deviation of the normally-distributed mutation
-    added to the birth rate as it is inherited by daughter nodes; if 0, birth
-    rate does not evolve on the tree.
-
-    `death_rate_sd` is the standard deviation of the normally-distributed mutation
-    added to the death rate as it is inherited by daughter nodes; if 0, death
-    rate does not evolve on the tree.
-
-    Tree growth is controlled by one or more of the following arguments, of which
-    at least one must be specified:
-
-        - If `ntax` is given as a keyword argument, tree is grown until the number of
-          tips == ntax.
-        - If `taxon_set` is given as a keyword argument, tree is grown until the
-          number of tips == len(taxon_set), and the taxa are assigned randomly to the
-          tips.
-        - If 'max_time' is given as a keyword argument, tree is grown for `max_time`
-          number of generations.
-
-    If more than one of the above is given, then tree growth will terminate when
-    *any* of the termination conditions (i.e., number of tips == `ntax`, or number
-    of tips == len(taxon_set) or number of generations = `max_time`) are met.
-
-    Also accepts a Tree object (with valid branch lengths) as an argument passed
-    using the keyword `tree`: if given, then this tree will be used; otherwise
-    a new one will be created.
-
-    If `assign_taxa` is False, then taxa will *not* be assigned to the tips;
-    otherwise (default), taxa will be assigned. If `taxon_set` is given
-    (`tree.taxon_set`, if `tree` is given), and the final number of tips on the
-    tree after the termination condition is reached is less then the number of
-    taxa in `taxon_set` (as will be the case, for example, when
-    `ntax` < len(`taxon_set`)), then a random subset of taxa in `taxon_set` will
-    be assigned to the tips of tree. If the number of tips is more than the number
-    of taxa in the `taxon_set`, new Taxon objects will be created and added
-    to the `taxon_set` if the keyword argument `create_required_taxa` is not given as
-    False.
-
-    In addition, a Random() object or equivalent can be passed using the `rng` keyword;
-    otherwise GLOBAL_RNG is used.
-    """
-    if 'ntax' not in kwargs \
-        and 'taxon_set' not in kwargs \
-        and 'max_time' not in kwargs:
-            raise ValueError("At least one of the following must be specified: 'ntax', 'taxon_set', or 'max_time'")
-    target_num_taxa = None
-    taxon_set = None
-    target_num_gens = kwargs.get('max_time', None)
-    if 'taxon_set' in kwargs:
-        taxon_set = kwargs.get('taxon_set')
-        target_num_taxa = kwargs.get('ntax', len(taxon_set))
-    elif 'ntax' in kwargs:
-        target_num_taxa = kwargs['ntax']
-    if taxon_set is None:
-        taxon_set = dataobject.TaxonSet()
-    rng = kwargs.get('rng', GLOBAL_RNG)
-
-    # grow tree
-    if "tree" in kwargs:
-        tree = kwargs['tree']
-        if "taxon_set" in kwargs and kwargs['taxon_set'] is not tree.taxon_set:
-            raise ValueError("Cannot specify both `tree` and `taxon_set`")
-    else:
-        tree = dataobject.Tree(taxon_set=taxon_set)
-        tree.is_rooted = True
-        tree.seed_node.edge.length = 0
-        tree.seed_node.birth_rate = birth_rate
-        tree.seed_node.death_rate = death_rate
-    leaf_nodes = tree.leaf_nodes()
-    num_gens = 0
-    while (target_num_taxa is None or len(leaf_nodes) < target_num_taxa) \
-            and (target_num_gens is None or num_gens < target_num_gens):
-        for nd in leaf_nodes:
-            if not hasattr(nd, 'birth_rate'):
-                nd.birth_rate = birth_rate
-            if not hasattr(nd, 'death_rate'):
-                nd.death_rate = death_rate
-            nd.edge.length += 1
-            u = rng.uniform(0, 1)
-            if u < nd.birth_rate:
-                c1 = nd.new_child()
-                c2 = nd.new_child()
-                c1.edge.length = 0
-                c2.edge.length = 0
-                c1.birth_rate = nd.birth_rate + rng.gauss(0, birth_rate_sd)
-                c1.death_rate = nd.death_rate + rng.gauss(0, death_rate_sd)
-                c2.birth_rate = nd.birth_rate + rng.gauss(0, birth_rate_sd)
-                c2.death_rate = nd.death_rate + rng.gauss(0, death_rate_sd)
-            elif u > nd.birth_rate and u < (nd.birth_rate + nd.death_rate):
-                if nd is not tree.seed_node:
-                    treemanip.prune_subtree(tree, nd)
-                else:
-                    return tree
-        num_gens += 1
-        leaf_nodes = tree.leaf_nodes()
-
-    # If termination condition specified by ntax or taxon_set, then the last
-    # split will have a daughter edges of length == 0;
-    # so we continue growing the edges until the next birth/death event *or*
-    # the max number of generations condition is given and met
-    gens_to_add = 0
-    while (target_num_gens is None or num_gens < target_num_gens):
-        u = rng.uniform(0, 1)
-        if u < (birth_rate + death_rate):
-            break
-        gens_to_add += 1
-    for nd in tree.leaf_nodes():
-        nd.edge.length += gens_to_add
-
-    if kwargs.get("assign_taxa", True):
-        tree.randomly_assign_taxa(create_required_taxa=True, rng=rng)
-
-    # return
-    return tree
-
 def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **kwargs):
     """
     Returns a birth-death tree with birth rate specified by `birth_rate`, and
@@ -321,9 +200,128 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
     # return
     return tree
 
-def uniform_pure_birth(taxon_set,
-                       birth_rate=1.0,
-                       rng=None):
+def discrete_birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **kwargs):
+    """
+    Returns a birth-death tree with birth rate specified by `birth_rate`, and
+    death rate specified by `death_rate`, with edge lengths in discrete (integer)
+    units.
+
+    `birth_rate_sd` is the standard deviation of the normally-distributed mutation
+    added to the birth rate as it is inherited by daughter nodes; if 0, birth
+    rate does not evolve on the tree.
+
+    `death_rate_sd` is the standard deviation of the normally-distributed mutation
+    added to the death rate as it is inherited by daughter nodes; if 0, death
+    rate does not evolve on the tree.
+
+    Tree growth is controlled by one or more of the following arguments, of which
+    at least one must be specified:
+
+        - If `ntax` is given as a keyword argument, tree is grown until the number of
+          tips == ntax.
+        - If `taxon_set` is given as a keyword argument, tree is grown until the
+          number of tips == len(taxon_set), and the taxa are assigned randomly to the
+          tips.
+        - If 'max_time' is given as a keyword argument, tree is grown for `max_time`
+          number of generations.
+
+    If more than one of the above is given, then tree growth will terminate when
+    *any* of the termination conditions (i.e., number of tips == `ntax`, or number
+    of tips == len(taxon_set) or number of generations = `max_time`) are met.
+
+    Also accepts a Tree object (with valid branch lengths) as an argument passed
+    using the keyword `tree`: if given, then this tree will be used; otherwise
+    a new one will be created.
+
+    If `assign_taxa` is False, then taxa will *not* be assigned to the tips;
+    otherwise (default), taxa will be assigned. If `taxon_set` is given
+    (`tree.taxon_set`, if `tree` is given), and the final number of tips on the
+    tree after the termination condition is reached is less then the number of
+    taxa in `taxon_set` (as will be the case, for example, when
+    `ntax` < len(`taxon_set`)), then a random subset of taxa in `taxon_set` will
+    be assigned to the tips of tree. If the number of tips is more than the number
+    of taxa in the `taxon_set`, new Taxon objects will be created and added
+    to the `taxon_set` if the keyword argument `create_required_taxa` is not given as
+    False.
+
+    In addition, a Random() object or equivalent can be passed using the `rng` keyword;
+    otherwise GLOBAL_RNG is used.
+    """
+    if 'ntax' not in kwargs \
+        and 'taxon_set' not in kwargs \
+        and 'max_time' not in kwargs:
+            raise ValueError("At least one of the following must be specified: 'ntax', 'taxon_set', or 'max_time'")
+    target_num_taxa = None
+    taxon_set = None
+    target_num_gens = kwargs.get('max_time', None)
+    if 'taxon_set' in kwargs:
+        taxon_set = kwargs.get('taxon_set')
+        target_num_taxa = kwargs.get('ntax', len(taxon_set))
+    elif 'ntax' in kwargs:
+        target_num_taxa = kwargs['ntax']
+    if taxon_set is None:
+        taxon_set = dataobject.TaxonSet()
+    rng = kwargs.get('rng', GLOBAL_RNG)
+
+    # grow tree
+    if "tree" in kwargs:
+        tree = kwargs['tree']
+        if "taxon_set" in kwargs and kwargs['taxon_set'] is not tree.taxon_set:
+            raise ValueError("Cannot specify both `tree` and `taxon_set`")
+    else:
+        tree = dataobject.Tree(taxon_set=taxon_set)
+        tree.is_rooted = True
+        tree.seed_node.edge.length = 0
+        tree.seed_node.birth_rate = birth_rate
+        tree.seed_node.death_rate = death_rate
+    leaf_nodes = tree.leaf_nodes()
+    num_gens = 0
+    while (target_num_taxa is None or len(leaf_nodes) < target_num_taxa) \
+            and (target_num_gens is None or num_gens < target_num_gens):
+        for nd in leaf_nodes:
+            if not hasattr(nd, 'birth_rate'):
+                nd.birth_rate = birth_rate
+            if not hasattr(nd, 'death_rate'):
+                nd.death_rate = death_rate
+            nd.edge.length += 1
+            u = rng.uniform(0, 1)
+            if u < nd.birth_rate:
+                c1 = nd.new_child()
+                c2 = nd.new_child()
+                c1.edge.length = 0
+                c2.edge.length = 0
+                c1.birth_rate = nd.birth_rate + rng.gauss(0, birth_rate_sd)
+                c1.death_rate = nd.death_rate + rng.gauss(0, death_rate_sd)
+                c2.birth_rate = nd.birth_rate + rng.gauss(0, birth_rate_sd)
+                c2.death_rate = nd.death_rate + rng.gauss(0, death_rate_sd)
+            elif u > nd.birth_rate and u < (nd.birth_rate + nd.death_rate):
+                if nd is not tree.seed_node:
+                    treemanip.prune_subtree(tree, nd)
+                else:
+                    return tree
+        num_gens += 1
+        leaf_nodes = tree.leaf_nodes()
+
+    # If termination condition specified by ntax or taxon_set, then the last
+    # split will have a daughter edges of length == 0;
+    # so we continue growing the edges until the next birth/death event *or*
+    # the max number of generations condition is given and met
+    gens_to_add = 0
+    while (target_num_gens is None or num_gens < target_num_gens):
+        u = rng.uniform(0, 1)
+        if u < (birth_rate + death_rate):
+            break
+        gens_to_add += 1
+    for nd in tree.leaf_nodes():
+        nd.edge.length += gens_to_add
+
+    if kwargs.get("assign_taxa", True):
+        tree.randomly_assign_taxa(create_required_taxa=True, rng=rng)
+
+    # return
+    return tree
+
+def uniform_pure_birth(taxon_set, birth_rate=1.0, rng=None):
     "Generates a uniform-rate pure-birth process tree. "
     if rng is None:
         rng = GLOBAL_RNG # use the global rng by default
