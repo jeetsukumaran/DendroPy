@@ -54,7 +54,7 @@ Repeating Failed Branching Processes
 
 With a non-zero death rate, it is possible for all lineages of a tree to go extinct before the termination conditions are reached.
 In this case, by default a :class:`~dendropy.treesim.TreeSimTotalExtinctionException` will be raised.
-If the keyword argument "``repeat_on_total_extinction``" is given, then instead of raising an exception the process starts again and repeats until the termination condition is met.
+If the keyword argument "``repeat_until_success``" is given, then instead of raising an exception the process starts again and repeats until the termination condition is met.
 
 Suppressing Taxon Assignment
 ----------------------------
