@@ -275,15 +275,17 @@ def false_positives_and_negatives(reference_tree, test_tree):
 
 def fitch_down_pass(postorder_node_list, attr_name="state_sets", weight_list=None, taxa_to_state_set_map=None):
     """Reads `attr_name` attribute of leaves as an iterable of state sets, and
-    sets that attribute for internal nodes using the ``preliminary phase'' of
+    sets that attribute for internal nodes using the "preliminary phase" of
     Fitch's (1971) unordered parsimony algorithm.
     Returns the parsimony score.
-    weight_list is an optional vector of weights for each pattern.
-
-    `taxa_to_state_set_map` if a child node does not have an attribute with name
-    `attr_name` then the nodes.taxon will be used as a key in taxa_to_state_set_map
-    to find the state set. This allows for the scoring of previously "undecorated"
-    trees.
+        `weight_list`
+            is an optional vector of weights for each pattern.
+        `taxa_to_state_set_map`
+            if a child node does not have an attribute with name
+        `attr_name`
+            then the nodes.taxon will be used as a key in taxa_to_state_set_map
+            to find the state set. This allows for the scoring of
+            previously undecorated trees.
 
     Currently this requires a bifurcating tree (even at the root)
     """
@@ -339,13 +341,15 @@ def fitch_down_pass(postorder_node_list, attr_name="state_sets", weight_list=Non
 
 def fitch_up_pass(preorder_node_list, attr_name="state_sets", taxa_to_state_set_map=None):
     """Reads `attr_name` attribute of nodes as an iterable of state sets, and
-    sets that attribute for internal nodes using the ``final phase'' of Fitch's
+    sets that attribute for internal nodes using the "final phase" of Fitch's
     (1971) unordered parsimony algorithm.
 
-    `taxa_to_state_set_map` if a child node does not have an attribute with name
-    `attr_name` then the nodes.taxon will be used as a key in taxa_to_state_set_map
-    to find the state set. This allows for the scoring of previously "undecorated"
-    trees.
+        `taxa_to_state_set_map`
+            if a child node does not have an attribute with name
+        `attr_name`
+            then the nodes.taxon will be used as a key in taxa_to_state_set_map
+            to find the state set. This allows for the scoring of
+            previously undecorated trees.
 
     Currently this requires a bifurcating tree (even at the root)
     """

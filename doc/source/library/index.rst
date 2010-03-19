@@ -5,9 +5,10 @@ DendroPy Library Reference
 .. toctree::
     :maxdepth: 2
 
-    datasets.rst
-    taxa.rst
-    trees.rst
-    characters.rst
-    treemanips.rst
-    treesims.rst
+    dataset.rst
+    taxon.rst
+    tree.rst
+    character.rst
+    treecalc.rst
+    treemanip.rst
+    treesim.rst
