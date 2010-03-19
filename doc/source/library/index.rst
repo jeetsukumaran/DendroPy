@@ -8,7 +8,7 @@ DendroPy Library Reference
     dataset.rst
     taxon.rst
     tree.rst
-    character.rst
+    char.rst
     treecalc.rst
     treemanip.rst
     treesim.rst
