@@ -60,7 +60,8 @@ You can pass in an explicit |TaxonSet| object using the "``taxon_set``" keyword:
     >>> import dendropy
     >>> from dendropy import treesim
     >>> taxa = dendropy.TaxonSet(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
-    >>> t = treesim.birth_death(0.4, 0.1, taxon_set=taxa)>>> print(t.as_ascii_plot())
+    >>> t = treesim.birth_death(0.4, 0.1, taxon_set=taxa)
+    >>> print(t.as_ascii_plot())
                 /-------------------------------------- h
                 |
     /-----------+                         /------------ c
