@@ -9,6 +9,7 @@ DendroPy Library Reference
     taxon.rst
     tree.rst
     char.rst
+    coalescent.rst
     treecalc.rst
     treemanip.rst
     treesim.rst

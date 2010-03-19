@@ -265,9 +265,7 @@ def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
     $N_e$ is distributed exponentially with a rate parameter of
     $\frac{{k \choose 2}}{N_e}$:
 
-    \begin{align}
          \Pr(T) =  \frac{{k \choose 2}}{N_e} \e{-  \frac{{k \choose 2}}{N_e} T},
-    \end{align}
 
     where $T$ is the length of  (chronological) time in which there are
     $k$ alleles in the sample (i.e., for $k$ alleles to coalesce into
@@ -301,9 +299,10 @@ def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
         523-536.
 
     Note that for correct results,
+
         (a) trees must be rooted (i.e., is_rooted = True)
         (b) split masks must have been added as rooted (i.e., when
-        encode_splits was called, is_rooted must have been set to True)
+            encode_splits was called, is_rooted must have been set to True)
 
     """
     taxa_mask = species_tree.taxon_set.all_taxa_bitmask()
