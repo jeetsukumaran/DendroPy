@@ -167,27 +167,27 @@ else:
 #        'bodyfont': '#000000',
 #        'headfont': '#000000',
 
-        'relbarbgcolor': '#707066', #'#666600',
-        'relbartextcolor': '#ffffff',
-        'relbarlinkcolor': '#fff000',
-
-        'sidebarbgcolor': '#cccc99',
-        'sidebartextcolor': '#000000',
-        'sidebarlinkcolor': '#15317E',
-
-        'bgcolor': '#eeeedd',
-        'textcolor': '#000000',
-        'linkcolor': '#0000ff',
-
-        'headbgcolor': '#DDDDCC',
-        'headtextcolor': '#153E7E',
-        'headlinkcolor': '#CB9832',
-
-        'codebgcolor': '#fafaee',
-        'codetextcolor': '#000000',
-
-        'footerbgcolor': '#505050',
-        'footertextcolor': '#ffffff',
+#        'relbarbgcolor': '#707066', #'#666600',
+#        'relbartextcolor': '#ffffff',
+#        'relbarlinkcolor': '#fff000',
+#
+#        'sidebarbgcolor': '#cccc99',
+#        'sidebartextcolor': '#000000',
+#        'sidebarlinkcolor': '#15317E',
+#
+#        'bgcolor': '#eeeedd',
+#        'textcolor': '#000000',
+#        'linkcolor': '#0000ff',
+#
+#        'headbgcolor': '#DDDDCC',
+#        'headtextcolor': '#153E7E',
+#        'headlinkcolor': '#CB9832',
+#
+#        'codebgcolor': '#fafaee',
+#        'codetextcolor': '#000000',
+#
+#        'footerbgcolor': '#505050',
+#        'footertextcolor': '#ffffff',
 
     }
 
