@@ -200,7 +200,7 @@ Another example draws birth and death rates from a normal distribution with the 
 Star Trees
 ==========
 
-The :func:`~dendropy.treesim.star_tree()` generates a simply polytomy tree, with a single node as the immediate ancestor to a set of leaves, with one leaf per |Taxon| in the |TaxonSet| object given by the `taxon_set` argument.
+The :func:`~dendropy.treesim.star_tree()` generates a simple polytomy tree, with a single node as the immediate ancestor to a set of leaves, with one leaf per |Taxon| in the |TaxonSet| object given by the `taxon_set` argument.
 For example::
 
     >>> from dendropy import treesim
