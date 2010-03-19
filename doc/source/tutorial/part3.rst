@@ -6,3 +6,4 @@ Working with Character Matrices
     :maxdepth: 2
 
     chars.rst
+    popgenstats.rst
