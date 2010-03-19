@@ -55,8 +55,7 @@ Specifying a |TaxonSet|
 
 By default, a new |Taxon| object will be created and associated with each leaf (labeled "T1", "T2", etc.),  all belonging to a new |TaxonSet| object associated with the resulting tree.
 
-You can pass in an explicit |TaxonSet| object using the "``taxon_set``" keyword.
-For example, assuming "``ts``" is a pre-existing |TaxonSet|::
+You can pass in an explicit |TaxonSet| object using the "``taxon_set``" keyword::
 
     >>> import dendropy
     >>> from dendropy import treesim
