@@ -21,6 +21,26 @@ For example, return a continuous time tree with 10 leaves, generated under a bir
 
     >>> from dendropy import treesim
     >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, ntax=10)
+    >>> print(t.as_ascii_plot())
+                  /-------------------------------------------- T1
+                  |
+    /-------------+                             /-------------- T2
+    |             |              /--------------+
+    |             \--------------+              \-------------- T3
+    |                            |
+    |                            \----------------------------- T4
+    +
+    |                            /----------------------------- T5
+    |             /--------------+
+    |             |              |              /-------------- T6
+    |             |              \--------------+
+    \-------------+                             \-------------- T7
+                  |
+                  |                             /-------------- T8
+                  |              /--------------+
+                  \--------------+              \-------------- T9
+                                 |
+                                 \----------------------------- T10
 
 While to return a continuous time tree generated under the same rates after 6 time units::
 
@@ -30,31 +50,112 @@ If both conditions are given simultaneously, then tree growth will terminate whe
 *any* of the termination conditions (i.e., number of tips == `ntax`, or number
 of tips == len(taxon_set) or maximum time = `max_time`) are met.
 
-Specifying the |TaxonSet|
--------------------------
+Specifying a |TaxonSet|
+-----------------------
 
 By default, a new |Taxon| object will be created and associated with each leaf (labeled "T1", "T2", etc.),  all belonging to a new |TaxonSet| object associated with the resulting tree.
 
 You can pass in an explicit |TaxonSet| object using the "``taxon_set``" keyword.
 For example, assuming "``ts``" is a pre-existing |TaxonSet|::
 
-    >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, taxon_set=ts)
+    >>> import dendropy
+    >>> from dendropy import treesim
+    >>> taxa = dendropy.TaxonSet(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
+    >>> t = treesim.birth_death(0.4, 0.1, taxon_set=taxa)>>> print(t.as_ascii_plot())
+                /-------------------------------------- h
+                |
+    /-----------+                         /------------ c
+    |           |            /------------+
+    |           \------------+            \------------ a
+    |                        |
+    +                        \------------------------- g
+    |
+    |                                     /------------ e
+    |                        /------------+
+    |                        |            \------------ f
+    \------------------------+
+                             |            /------------ d
+                             \------------+
+                                          \------------ b
 
-In this case, the branching process underlying the tree generation will terminate when the number of leaves in the tree equals the number of taxa in the |TaxonSet| "``ts``", and the |Taxon| objects in "``ts``" will be randomly assigned to the leaves.
 
-The "``taxon_set``" keyword can be combined with the "``ntax``" keyword::
+In this case, the branching process underlying the tree generation will terminate when the number of leaves in the tree equals the number of taxa in the |TaxonSet| "``taxa``", and the |Taxon| objects in "``taxa``" will be randomly assigned to the leaves.
 
-    >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, ntax=8, taxon_set=ts)
+The "``taxon_set``" keyword can be combined with the "``ntax``" keyword.
+If the size of the |TaxonSet| object given by the ``taxon_set`` argument is greater than the specified target tree taxon number, then a random subset of |Taxon| object in the |TaxonSet| will be assigned to the leaves::
 
-Here, if the size of the |TaxonSet| object given by the ``taxon_set`` argument is greater than the specified target tree taxon number, then a random subset of |Taxon| object in the |TaxonSet| will be assigned to the leaves.
-If the size of the |TaxonSet| object is less than the target taxon number, then new |Taxon| objects will be created as needed and added to the |TaxonSet| object as well as associated with the leaves.
+    >>> import dendropy
+    >>> from dendropy import treesim
+    >>> taxa = dendropy.TaxonSet(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
+    >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, ntax=5, taxon_set=taxa)
+    >>> print(t.as_ascii_plot())
+    /-------------------------------------------------- g
+    |
+    +                        /------------------------- a
+    |           /------------+
+    |           |            |            /------------ d
+    \-----------+            \------------+
+                |                         \------------ c
+                |
+                \-------------------------------------- f
+
+If the size of the |TaxonSet| object is less than the target taxon number, then new |Taxon| objects will be created as needed and added to the |TaxonSet| object as well as associated with the leaves::
+
+    >>> import dendropy
+    >>> from dendropy import treesim
+    >>> taxa = dendropy.TaxonSet(['a', 'b'])
+    >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, ntax=5, taxon_set=taxa)
+    >>> print(t.as_ascii_plot())
+                                     /---------------- a
+    /--------------------------------+
+    |                                \---------------- b
+    +
+    |               /--------------------------------- T3
+    \---------------+
+                    |                /---------------- T4
+                    \----------------+
+                                     \---------------- T5
+
 
 Repeating Failed Branching Processes
 ------------------------------------
 
 With a non-zero death rate, it is possible for all lineages of a tree to go extinct before the termination conditions are reached.
-In this case, by default a :class:`~dendropy.treesim.TreeSimTotalExtinctionException` will be raised.
-If the keyword argument "``repeat_until_success``" is given, then instead of raising an exception the process starts again and repeats until the termination condition is met.
+In this case, by default a :class:`~dendropy.treesim.TreeSimTotalExtinctionException` will be raised::
+
+    >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.9, ntax=10)
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+      File "/Users/jeet/Projects/DendroPy/dendropy/treesim.py", line 188, in birth_death
+        raise TreeSimTotalExtinctionException()
+    dendropy.treesim.TreeSimTotalExtinctionException
+
+If the keyword argument "``repeat_until_success``" is given, then instead of raising an exception the process starts again and repeats until the termination condition is met::
+
+    >>> t = treesim.birth_death(birth_rate=1.0,
+    ...                         death_rate=0.9,
+    ...                         ntax=10,
+    ...                         repeat_until_success=True)
+    >>> print(t.as_ascii_plot())
+                                           /------------------- T1
+    /--------------------------------------+
+    |                                      |         /--------- T2
+    |                                      \---------+
+    |                                                \--------- T3
+    +
+    |                                                /--------- T4
+    |        /---------------------------------------+
+    |        |                                       \--------- T5
+    |        |
+    \--------+                   /----------------------------- T6
+             |         /---------+
+             |         |         |         /------------------- T7
+             |         |         \---------+
+             \---------+                   |         /--------- T8
+                       |                   \---------+
+                       |                             \--------- T9
+                       |
+                       \--------------------------------------- T10
 
 Suppressing Taxon Assignment
 ----------------------------
