@@ -9,4 +9,5 @@ DendroPy Library Reference
     taxa.rst
     trees.rst
     characters.rst
+    treemanips.rst
     treesims.rst
