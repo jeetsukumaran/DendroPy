@@ -13,7 +13,7 @@ def generate(birth_rates, death_rates):
                                    max_time=random.randint(1,8),
                                    tree=tree,
                                    assign_taxa=False,
-                                   repeat_on_total_extinction=True)
+                                   repeat_until_success=True)
         print(tree.as_string('newick'))
     tree.randomly_assign_taxa(create_required_taxa=True)
     return tree

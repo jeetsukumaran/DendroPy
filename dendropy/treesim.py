@@ -91,7 +91,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
     False.
 
     Under some conditions, it is possible for all lineages on a tree to go extinct.
-    In this case, if the keyword argument `repeat_on_total_extinction` is `True`, then a new
+    In this case, if the keyword argument `repeat_until_success` is `True`, then a new
     branching process is initiated.
     If `False` (default), then a TreeSimTotalExtinctionException is raised.
 
@@ -113,7 +113,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
         target_num_taxa = kwargs['ntax']
     if taxon_set is None:
         taxon_set = dataobject.TaxonSet()
-    repeat_on_extinction = kwargs.get('repeat_on_total_extinction', False)
+    repeat_until_success = kwargs.get('repeat_until_success', False)
     rng = kwargs.get('rng', GLOBAL_RNG)
 
     # initialize tree
@@ -183,7 +183,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
             else:
                 if nd is not tree.seed_node:
                     treemanip.prune_subtree(tree, nd)
-                elif not repeat_on_extinction:
+                elif not repeat_until_success:
                     # all lineages are extinct: raise exception
                     raise TreeSimTotalExtinctionException()
                 else:
@@ -264,7 +264,7 @@ def discrete_birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_s
     False.
 
     Under some conditions, it is possible for all lineages on a tree to go extinct.
-    In this case, if the keyword argument `repeat_on_total_extinction` is `True`, then a new
+    In this case, if the keyword argument `repeat_until_success` is `True`, then a new
     branching process is initiated.
     If `False` (default), then a TreeSimTotalExtinctionException is raised.
 
@@ -285,7 +285,7 @@ def discrete_birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_s
         target_num_taxa = kwargs['ntax']
     if taxon_set is None:
         taxon_set = dataobject.TaxonSet()
-    repeat_on_extinction = kwargs.get('repeat_on_total_extinction', False)
+    repeat_until_success = kwargs.get('repeat_until_success', False)
     rng = kwargs.get('rng', GLOBAL_RNG)
 
     # grow tree
@@ -325,7 +325,7 @@ def discrete_birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_s
             elif u > nd.birth_rate and u < (nd.birth_rate + nd.death_rate):
                 if nd is not tree.seed_node:
                     treemanip.prune_subtree(tree, nd)
-                elif not repeat_on_extinction:
+                elif not repeat_until_success:
                     # all lineages are extinct: raise exception
                     raise TreeSimTotalExtinctionException()
                 else:

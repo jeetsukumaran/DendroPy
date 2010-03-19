@@ -12,7 +12,7 @@ def generate(mean, sd, num_periods):
                                    max_time=random.randint(1,5),
                                    tree=tree,
                                    assign_taxa=False,
-                                   repeat_on_total_extinction=True)
+                                   repeat_until_success=True)
     tree.randomly_assign_taxa(create_required_taxa=True)
     return tree
 
