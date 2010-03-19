@@ -406,9 +406,7 @@ class NexusTokenizer(object):
     def __init__(self, stream_handle=None, **kwargs):
         self._reset()
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
-        self.global_ignore_punctuation = []
-        if not kwargs.get('hyphens_as_tokens', True):
-            self.global_ignore_punctuation.append('-')
+        self.hyphens_as_tokens =  kwargs.get('hyphens_as_tokens', True)
         if stream_handle:
             self.stream_handle = stream_handle
 
@@ -424,7 +422,20 @@ class NexusTokenizer(object):
         self.tree_rooting_comment = None
         self.last_comment_parsed = None
         self.preserve_underscores = False
-        self.global_ignore_punctuation = []
+        self.global_ignore_punctuation = set()
+        self.hyphens_as_tokens = True
+
+    def _get_hyphens_as_tokens(self):
+        return self._hyphens_as_tokens
+
+    def _set_hyphens_as_tokens(self, val):
+        self._hyphens_as_tokens = val
+        if self._hyphens_as_tokens:
+            self.global_ignore_punctuation.discard('-')
+        else:
+            self.global_ignore_punctuation.add('-')
+
+    hyphens_as_tokens = property(_get_hyphens_as_tokens, _set_hyphens_as_tokens)
 
     def _get_current_file_char(self):
         "Returns the current character from the file stream."
@@ -510,6 +521,14 @@ class NexusTokenizer(object):
         return self.current_file_char
     noncomment_file_char = property(read_noncomment_character)
 
+    def compose_punctutation_to_be_ignored(self, ignore_punctuation=None):
+        if ignore_punctuation is None:
+            return self.global_ignore_punctuation
+        elif not self.global_ignore_punctuation:
+            return ignore_punctuation
+        else:
+            return set(ignore_punctutation) + self.global_ignore_punctuation
+
     def read_statement_tokens_till_eol(self, token_list=None, ignore_punctuation=None):
         """
         Reads all tokens in the file stream until EOL, EOF, or ';'
@@ -517,10 +536,7 @@ class NexusTokenizer(object):
         """
         _is_newline = lambda x: x == '\n' or x == '\r'
         self.comments = []
-        if ignore_punctuation == None:
-            ignore_punctuation = self.global_ignore_punctuation
-        else:
-            ignore_punctuation.extend(self.global_ignore_punctuation)
+        ignore_punctuation = self.compose_punctutation_to_be_ignored(ignore_punctuation)
         self.current_token = None
         if self.eof:
             return None
@@ -615,10 +631,7 @@ class NexusTokenizer(object):
         is any word or punctuation character outside of a comment block.
         """
         self.comments = []
-        if ignore_punctuation == None:
-            ignore_punctuation = self.global_ignore_punctuation
-        else:
-            ignore_punctuation.extend(self.global_ignore_punctuation)
+        ignore_punctuation = self.compose_punctutation_to_be_ignored(ignore_punctuation)
         self.current_token = None
         if self.eof:
             return None
