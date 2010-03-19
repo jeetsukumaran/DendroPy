@@ -7,9 +7,6 @@ The :mod:`~dendropy.treesim` module provides functions for the simulation of tre
 Birth-Death Process Trees
 =========================
 
-Constant Birth and Death Rates
-------------------------------
-
 There are two different birth-death process tree simulation routines in DendroPy:
 
     :func:`~dendropy.treesim.birth_death()`
@@ -52,8 +49,8 @@ The "``taxon_set``" keyword can be combined with the "``ntax``" keyword::
 Here, if the size of the |TaxonSet| object given by the ``taxon_set`` argument is greater than the specified target tree taxon number, then a random subset of |Taxon| object in the |TaxonSet| will be assigned to the leaves.
 If the size of the |TaxonSet| object is less than the target taxon number, then new |Taxon| objects will be created as needed and added to the |TaxonSet| object as well as associated with the leaves.
 
-Failed Branching Processes
---------------------------
+Repeating Failed Branching Processes
+------------------------------------
 
 With a non-zero death rate, it is possible for all lineages of a tree to go extinct before the termination conditions are reached.
 In this case, by default a :class:`~dendropy.treesim.TreeSimTotalExtinctionException` will be raised.
@@ -89,38 +86,15 @@ You might want to generate a tree under different condition in different stages.
 To do this, you would start with an empty tree and passing it to the birth-death function as an argument using the "``tree``" keyword argument, and at the same time suppress the automatic taxon assignment using the "``assign_taxa=False``" keyword argument to avoid taxa being assigned to what will eventually become internal nodes.
 When the tree is ready, you will call the :meth:`~dendropy.dataobject.Tree.randomly_assign_taxa()` function to assign taxa at random to the leaves.
 
-For example, the following generates a birth-death tree with equal birth and death rates, but both rates shifting for a short while to a temporarily higher (though equal) rates::
+For example, the following generates a birth-death tree with equal birth and death rates, but both rates shifting for a short while to a temporarily higher (though equal) rates:
 
-    >>> import random
-    >>> import dendropy
-    >>> from dendropy import treesim
-    >>> tree = dendropy.Tree()
-    >>> br = [0.1, 0.6, 0.1]
-    >>> dr = [0.1, 0.6, 0.1]
-    >>> for i in range(3):
-    ...     tree = treesim.birth_death(br[i],
-    ...                                dr[i],
-    ...                                max_time=random.randint(1,5),
-    ...                                tree=tree,
-    ...                                assign_taxa=False,
-    ...                                repeat_on_total_extinction=True)
-    >>> tree.randomly_assign_taxa(create_required_taxa=True)
+.. literalinclude:: /examples/bdtree_multi1.py
+    :linenos:
 
-Another example draws birth and death rates from a normal distribution with the same mean and standard deviation in multiple stages::
+Another example draws birth and death rates from a normal distribution with the same mean and standard deviation in multiple stages:
 
-    >>> import random
-    >>> import dendropy
-    >>> from dendropy import treesim
-    >>> tree = dendropy.Tree()
-    >>> for i in range(100):
-    ...     tree = treesim.birth_death(birth_rate=random.gauss(0.1, 0.01),
-    ...                                death_rate=random.gauss(0.1, 0.01),
-    ...                                max_time=random.randint(1,5),
-    ...                                tree=tree,
-    ...                                assign_taxa=False,
-    ...                                repeat_on_total_extinction=True)
-    >>> tree.randomly_assign_taxa(create_required_taxa=True)
-
+.. literalinclude:: /examples/bdtree_multi2.py
+    :linenos:
 
 Star Trees
 ==========

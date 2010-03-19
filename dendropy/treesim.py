@@ -156,7 +156,10 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
 
         # add waiting time to nodes
         for nd in tree.leaf_nodes():
-            nd.edge.length += waiting_time
+            try:
+                nd.edge.length += waiting_time
+            except TypeError:
+                nd.edge.length = waiting_time
         total_time += waiting_time
 
         # if event occurs within time constraints
@@ -305,7 +308,10 @@ def discrete_birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_s
                 nd.birth_rate = birth_rate
             if not hasattr(nd, 'death_rate'):
                 nd.death_rate = death_rate
-            nd.edge.length += 1
+            try:
+                nd.edge.length += 1
+            except TypeError:
+                nd.edge.length = 1
             u = rng.uniform(0, 1)
             if u < nd.birth_rate:
                 c1 = nd.new_child()
