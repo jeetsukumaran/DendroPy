@@ -107,10 +107,10 @@ def retain_taxa(tree, taxa):
     return prune_taxa(tree, to_prune)
 
 def randomly_reorient_tree(tree, rng=None, splits=False):
-    """Randomly picks a new rooting position and rotates the branches around all
-    internal nodes in the `tree`.
-    If `splits` is True, the the `split_bitmask` and `split_edges` attributes
-        kept valid.
+    """
+    Randomly picks a new rooting position and rotates the branches around all
+    internal nodes in the `tree`. If `splits` is True, the the `split_bitmask`
+    and `split_edges` attributes kept valid.
     """
     nd = rng.sample(tree.nodes(), 1)[0]
     if nd.is_leaf():
@@ -130,7 +130,8 @@ def randomly_rotate(tree, rng=None):
         nd.set_children(c)
 
 def collapse_conflicting(subtree_root, split, split_bitmask):
-    """Takes a node that is the root of a subtree.  Collapses every edge in the
+    """
+    Takes a node that is the root of a subtree.  Collapses every edge in the
     subtree that conflicts with split.  This can include the edge subtending
     subtree_root.
     """
