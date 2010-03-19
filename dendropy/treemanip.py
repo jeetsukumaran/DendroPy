@@ -34,11 +34,12 @@ from dendropy import treesplit
 from dendropy import dataobject
 
 def collapse_edge(edge):
-    '''Inserts all children of the head_node of edge as children of the
+    """
+    Inserts all children of the head_node of edge as children of the
     tail_node of edge in the same place in the child_node list that head_node
-    had occupied.
-
-    The edge length and head_node will no longer be part of the tree.'''
+    had occupied. The edge length and head_node will no longer be
+    part of the tree.
+    """
     to_del = edge.head_node
     p = edge.tail_node
     if not p:
@@ -70,6 +71,9 @@ def prune_subtree(tree, node):
     return tree
 
 def prune_leaves_without_taxa(tree):
+    """
+    Removes all terminal nodes that have their ``taxon`` attribute set to ``None``.
+    """
     for nd in tree.postorder_node_iter():
         if len(nd.child_nodes()) == 0:
             dnd = nd
@@ -80,7 +84,10 @@ def prune_leaves_without_taxa(tree):
     return tree
 
 def prune_taxa(tree, taxa):
-    """Removes terminal edges associated with taxa in `taxa` from `tree`."""
+    """
+    Removes terminal nodes associated with Taxon objects given by the container
+    `taxa` (which can be any iterable, including a TaxonSet object) from `tree`.
+    """
     nodes = []
     for taxon in taxa:
         nd = tree.find_node(lambda x: x.taxon is taxon)
@@ -91,14 +98,17 @@ def prune_taxa(tree, taxa):
     return tree
 
 def retain_taxa(tree, taxa):
-    """Removes all taxa *not* in `taxa` from the tree."""
+    """
+    Removes terminal nodes that are not associated with any
+    of the Taxon objects given by ``taxa`` (which can be any iterable, including a
+    TaxonSet object) from the ``tree``.
+    """
     to_prune = [t for t in tree.taxon_set if t not in taxa]
     return prune_taxa(tree, to_prune)
 
 def randomly_reorient_tree(tree, rng=None, splits=False):
     """Randomly picks a new rooting position and rotates the branches around all
     internal nodes in the `tree`.
-
     If `splits` is True, the the `split_bitmask` and `split_edges` attributes
         kept valid.
     """
