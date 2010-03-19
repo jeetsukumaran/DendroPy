@@ -49,14 +49,6 @@ Or import the names directly::
 Reading and Writing Phylogenetic Data
 =====================================
 
-DendroPy provides a rich set of tools for reading and writing phylogenetic data in various formats, such as NEXUS, Newick, PHYLIP, etc. These are covered in detail in the following chapters:
-
-.. toctree::
-    :maxdepth: 2
-
-    reading.rst
-    writing.rst
-    examining.rst
-    converting.rst
+DendroPy provides a rich set of tools for reading and writing phylogenetic data in various formats, such as NEXUS, Newick, PHYLIP, etc. These are covered in detail in the following ":doc:`/tutorial/reading`" and ":doc:`/tutorial/writing`" chapters respectively.
 
 
