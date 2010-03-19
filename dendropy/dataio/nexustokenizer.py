@@ -406,6 +406,9 @@ class NexusTokenizer(object):
     def __init__(self, stream_handle=None, **kwargs):
         self._reset()
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
+        self.global_ignore_punctuation = []
+        if not kwargs.get('hyphens_as_tokens', True):
+            self.global_ignore_punctuation.append('-')
         if stream_handle:
             self.stream_handle = stream_handle
 
@@ -421,6 +424,7 @@ class NexusTokenizer(object):
         self.tree_rooting_comment = None
         self.last_comment_parsed = None
         self.preserve_underscores = False
+        self.global_ignore_punctuation = []
 
     def _get_current_file_char(self):
         "Returns the current character from the file stream."
@@ -514,7 +518,9 @@ class NexusTokenizer(object):
         _is_newline = lambda x: x == '\n' or x == '\r'
         self.comments = []
         if ignore_punctuation == None:
-            ignore_punctuation = []
+            ignore_punctuation = self.global_ignore_punctuation
+        else:
+            ignore_punctuation.extend(self.global_ignore_punctuation)
         self.current_token = None
         if self.eof:
             return None
@@ -610,7 +616,9 @@ class NexusTokenizer(object):
         """
         self.comments = []
         if ignore_punctuation == None:
-            ignore_punctuation = []
+            ignore_punctuation = self.global_ignore_punctuation
+        else:
+            ignore_punctuation.extend(self.global_ignore_punctuation)
         self.current_token = None
         if self.eof:
             return None
