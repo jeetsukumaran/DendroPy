@@ -51,7 +51,7 @@ if ncl.DENDROPY_NCL_AVAILABILITY:
         DEFAULT_NEXUS_READER = nexus.NexusReader
 else:
     DEFAULT_NEXUS_READER = nexus.NexusReader
-ioclient.register("nexus", nexus.NexusReader, DEFAULT_NEXUS_READER, nexus.tree_source_iter)
+ioclient.register("nexus", DEFAULT_NEXUS_READER, nexus.NexusWriter, nexus.tree_source_iter)
 ioclient.register("nexus-native", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
 ioclient.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter)
 ioclient.register("nexus/newick", None, None, nexus.generalized_tree_source_iter)
