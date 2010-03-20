@@ -178,6 +178,7 @@ else:
             self._prev_taxa_block = None
             self.ncl_taxa_to_native = {}
             self._taxa_to_fill = None
+
         def _get_fp(self, file_obj):
             "Returns filepath and True if the file that `file_obj` refers to exists on the filesystem"
             try:
@@ -187,94 +188,44 @@ else:
             except AttributeError:
                 return "", False
 
-        def read_dataset(self, file_obj, dataset=None, **kwargs):
+        def update_directives(self, **kwargs):
+            """
+            Updates customization of reader.
+            """
+            self.dataset = kwargs.get("dataset", self.dataset)
+            self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
+            self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
+            self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
+            self.rooting_interpreter.update(**kwargs)
+            self.finish_node_func = kwargs.get("finish_node_func", self.finish_node_func)
+            self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", self.allow_duplicate_taxon_labels)
+            self.preserve_underscores = kwargs.get('preserve_underscores', self.preserve_underscores)
+            self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", self.suppress_internal_node_taxa)
+
+        def read(self, stream, **kwargs):
             """
             Instantiates and returns a DataSet object based on the
             NEXUS-formatted contents read from the file descriptor object
             `file_obj`.
             """
+            self.update_directives(**kwargs)
             n, use_ncl = self._get_fp(file_obj)
             if not use_ncl:
+                self.purePythonReader.update_directives(**kwargs)
                 self.purePythonReader.encode_splits = self.encode_splits
                 self.purePythonReader.rooting_interpreter = self.rooting_interpreter
                 self.purePythonReader.finish_node_func = self.finish_node_func
-                return self.purePythonReader.read_from_stream(file_obj, dataset=dataset, **kwargs)
-            return self.read_filepath_into_dataset(n, dataset=dataset, **kwargs)
-
-        def _ncl_characters_block_to_native(self, taxa_block, ncl_cb):
-            """
-            Processes a FORMAT command. Assumes that the file reader is
-            positioned right after the "FORMAT" token in a FORMAT command.
-            """
-            raw_matrix = ncl_cb.GetRawDiscreteMatrixRef()
-            if ncl_cb.IsMixedType():
-                _LOG.warn("Mixed datatype character blocks are not supported in Dendropy.  Skipping...")
-                return None
-            char_block_type = _ncl_datatype_enum_to_dendropy(ncl_cb.GetDataType())
-            mapper = ncl_cb.GetDatatypeMapperForCharRef(0)
-            symbols = mapper.GetSymbols()
-            state_codes_mapping = mapper.GetPythonicStateVectors()
-
-            char_block = char_block_type()
-            char_block.taxon_set = taxa_block
-            if isinstance(char_block, dendropy.StandardCharactersBlock):
-                char_block = self.build_state_alphabet(char_block, symbols, '?')
-            symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
-
-            ncl_numeric_code_to_state = []
-            for s in symbols:
-                ncl_numeric_code_to_state.append(symbol_state_map[s])
-            for sc in state_codes_mapping[len(symbols):-2]:
-                search = set()
-                for fundamental_state in sc:
-                    search.add(ncl_numeric_code_to_state[fundamental_state])
-                found = False
-                for sym, state in symbol_state_map.iteritems():
-                    ms = state.member_states
-                    if ms:
-                        possible = set(ms)
-                        if possible == search:
-                            found = True
-                            ncl_numeric_code_to_state.append(state)
-                            break
-                if not found:
-                    raise ValueError("NCL datatype cannot be coerced into datatype because ambiguity code for %s is missing " % str(search))
-            ncl_numeric_code_to_state[-2] = symbol_state_map['-']
-            ncl_numeric_code_to_state[-1] = symbol_state_map['?']
-
-            assert (len(raw_matrix) == len(taxa_block))
-            for row_ind, taxon in enumerate(taxa_block):
-                v = dendropy.CharacterDataVector(taxon=taxon)
-                raw_row = raw_matrix[row_ind]
-                char_block[taxon] = v
-                if self.include_characters:
-                    for c in raw_row:
-                        state = ncl_numeric_code_to_state[c]
-                        v.append(dendropy.CharacterDataCell(value=state))
-
-            #dataset.characters_blocks.append(char_block)
-            supporting_exsets = False
-            supporting_charset_exsets = False
-
-            if supporting_exsets:
-                s = ncl_cb.GetExcludedIndexSet()
-                print "Excluded chars =", str(nclwrapper.NxsSetReader.GetSetAsVector(s))
-            if supporting_charset_exsets:
-                nab = m.GetNumAssumptionsBlocks(ncl_cb)
-                for k in xrange(nab):
-                    a = m.GetAssumptionsBlock(ncl_cb, k)
-                    cs = a.GetCharSetNames()
-                    print "CharSets have the names " , str(cs)
-            return char_block
+                return self.purePythonReader.read(stream, **kwargs)
+            return self.read_filepath_into_dataset(n, **kwargs)
 
         def read_filepath_into_dataset(self, file_path, dataset=None, **kwargs):
-            if dataset is None:
-                dataset = dendropy.DataSet()
+            if self.dataset is None:
+                self.dataset = dendropy.DataSet()
             self._taxa_to_fill = None
             m = nclwrapper.MultiFormatReader()
             m.cullIdenticalTaxaBlocks(True)
 
-            self._register_taxa_context(m, dataset.taxa_blocks)
+            self._register_taxa_context(m, self.dataset.taxon_sets)
 
             m.ReadFilepath(file_path, self.format)
 
@@ -282,7 +233,7 @@ else:
             for i in xrange(num_taxa_blocks):
                 ncl_tb = m.GetTaxaBlock(i)
                 taxa_block = self._ncl_taxa_block_to_native(ncl_tb)
-                dataset.add(taxa_block)
+                self.dataset.add(taxa_block)
                 #nab = m.GetNumAssumptionsBlocks(ncl_tb)
                 #for k in xrange(nab):
                 #    a = m.GetAssumptionsBlock(ncl_tb, k)
@@ -293,7 +244,7 @@ else:
                     ncl_cb = m.GetCharactersBlock(ncl_tb, j)
                     char_block = self._ncl_characters_block_to_native(taxa_block, ncl_cb)
                     if char_block:
-                        dataset.add(char_block)
+                        self.dataset.add(char_block)
                 ntrb = m.GetNumTreesBlocks(ncl_tb)
                 for j in xrange(ntrb):
                     trees_block = dendropy.TreeList()
@@ -306,22 +257,25 @@ else:
                         t = self._ncl_tree_tokens_to_native_tree(ncl_tb, taxa_block, tokens, rooted_flag=rooted_flag)
                         if t:
                             trees_block.append(t)
-                    dataset.add(trees_block)
-            return dataset
+                    self.dataset.add(trees_block)
+            return self.dataset
 
 
-        def iterate_over_trees(self, file_obj=None, taxa_block=None, dataset=None):
+        def tree_source_iter(self, stream, **kwargs):
             """
             Generator to iterate over trees in data file.
             Primary goal is to be memory efficient, storing no more than one tree
             at a time. Speed might have to be sacrificed for this!
             """
+            self.update_directives(**kwargs)
+            taxa_block = self.attached_taxon_set
             if taxa_block is not None and len(taxa_block) == 0:
                 self._taxa_to_fill = taxa_block
             else:
                 self._taxa_to_fill = None
             n, use_ncl = self._get_fp(file_obj)
             if not use_ncl:
+                self.purePythonReader.update_directives(**kwargs)
                 self.purePythonReader.encode_splits = self.encode_splits
                 self.purePythonReader.rooting_interpreter = self.rooting_interpreter
                 self.purePythonReader.finish_node_func = self.finish_node_func
@@ -442,5 +396,71 @@ else:
                                             encode_splits=self.encode_splits,
                                             rooting_interpreter=self.rooting_interpreter,
                                             finish_node_func=self.finish_node_func)
+
+        def _ncl_characters_block_to_native(self, taxa_block, ncl_cb):
+            """
+            Processes a FORMAT command. Assumes that the file reader is
+            positioned right after the "FORMAT" token in a FORMAT command.
+            """
+            raw_matrix = ncl_cb.GetRawDiscreteMatrixRef()
+            if ncl_cb.IsMixedType():
+                _LOG.warn("Mixed datatype character blocks are not supported in Dendropy.  Skipping...")
+                return None
+            char_block_type = _ncl_datatype_enum_to_dendropy(ncl_cb.GetDataType())
+            mapper = ncl_cb.GetDatatypeMapperForCharRef(0)
+            symbols = mapper.GetSymbols()
+            state_codes_mapping = mapper.GetPythonicStateVectors()
+
+            char_block = char_block_type()
+            char_block.taxon_set = taxa_block
+            if isinstance(char_block, dendropy.StandardCharactersBlock):
+                char_block = self.build_state_alphabet(char_block, symbols, '?')
+            symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
+
+            ncl_numeric_code_to_state = []
+            for s in symbols:
+                ncl_numeric_code_to_state.append(symbol_state_map[s])
+            for sc in state_codes_mapping[len(symbols):-2]:
+                search = set()
+                for fundamental_state in sc:
+                    search.add(ncl_numeric_code_to_state[fundamental_state])
+                found = False
+                for sym, state in symbol_state_map.iteritems():
+                    ms = state.member_states
+                    if ms:
+                        possible = set(ms)
+                        if possible == search:
+                            found = True
+                            ncl_numeric_code_to_state.append(state)
+                            break
+                if not found:
+                    raise ValueError("NCL datatype cannot be coerced into datatype because ambiguity code for %s is missing " % str(search))
+            ncl_numeric_code_to_state[-2] = symbol_state_map['-']
+            ncl_numeric_code_to_state[-1] = symbol_state_map['?']
+
+            assert (len(raw_matrix) == len(taxa_block))
+            for row_ind, taxon in enumerate(taxa_block):
+                v = dendropy.CharacterDataVector(taxon=taxon)
+                raw_row = raw_matrix[row_ind]
+                char_block[taxon] = v
+                if self.include_characters:
+                    for c in raw_row:
+                        state = ncl_numeric_code_to_state[c]
+                        v.append(dendropy.CharacterDataCell(value=state))
+
+            #dataset.characters_blocks.append(char_block)
+            supporting_exsets = False
+            supporting_charset_exsets = False
+
+            if supporting_exsets:
+                s = ncl_cb.GetExcludedIndexSet()
+                print "Excluded chars =", str(nclwrapper.NxsSetReader.GetSetAsVector(s))
+            if supporting_charset_exsets:
+                nab = m.GetNumAssumptionsBlocks(ncl_cb)
+                for k in xrange(nab):
+                    a = m.GetAssumptionsBlock(ncl_cb, k)
+                    cs = a.GetCharSetNames()
+                    print "CharSets have the names " , str(cs)
+            return char_block
 
     NexusReader = NCLBasedReader
