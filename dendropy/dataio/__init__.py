@@ -26,19 +26,33 @@ Provides support for reading/parsing and formatting/writing phylogenetic data
 in various formats.
 """
 
+import os
+from dendropy.utility import messaging
+_LOG = messaging.get_logger(__name__)
 from dendropy.utility import error
-#from dendropy.dataobject.taxon import TaxonSet
 from dendropy.dataio import ioclient
 from dendropy.dataio import newick
 from dendropy.dataio import nexus
 from dendropy.dataio import fasta
 from dendropy.dataio import phylip
 from dendropy.dataio import nexml
+from dendropy.dataio import ncl
 
 # syntax is:
 #   dataschema.register(<FORMAT NAME>, <READER TYPE>, <WRITER TYPE>, <TREE ITERATOR>)
+
+if ncl.DENDROPY_NCL_AVAILABILITY:
+    ioclient.register("ncl-nexus", ncl.NexusReader, ncl.NexusWriter, ncl.tree_source_iter)
+    if "DENDROPY_BYPASS_NCL" not in os.environ or not os.environ["DENDROPY_BYPASS_NCL"]:
+        _LOG.debug("Using NCL as the default NEXUS parser")
+        ioclient.register("nexus", ncl.NexusReader, ncl.NexusWriter, ncl.tree_source_iter)
+    else:
+        _LOG.debug("NCL wrapper is available but not being used because 'DENDROPY_BYPASS_NCL' environmental variable is set")
+else:
+    ioclient.register("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
+ioclient.register("native-nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
+
 ioclient.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter)
-ioclient.register("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
 ioclient.register("nexus/newick", None, None, nexus.generalized_tree_source_iter)
 ioclient.register("fasta", fasta.FastaReader, fasta.FastaWriter, None)
 ioclient.register("dnafasta", fasta.DNAFastaReader, fasta.FastaWriter, None)
