@@ -599,6 +599,7 @@ class NexusTokenizer(object):
                                 token.write(next_token)
                                 next_token = self.read_next_token()
                             token.write(next_token)
+                            num_chars_read += len(next_token)
                             c = self.current_file_char
                             continue
                         elif quick_check(c):
@@ -609,10 +610,12 @@ class NexusTokenizer(object):
                             if quick_check(c) and not c in ignore_punctuation:
                                 if not NexusTokenizer.is_whitespace(c):
                                     token.write(c)
+                                    num_chars_read += 1
                                 break
                         if c == '_' and not self.preserve_underscores:
                             c = ' '
                         token.write(c)
+                        num_chars_read += 1
                         c = self.read_next_char()
                         if not c:
                             break
@@ -621,7 +624,6 @@ class NexusTokenizer(object):
                         raise self.BlockTerminatedException()
                     elif token:
                         token_list.append(token)
-                        num_chars_read += len(token)
                     c = self.read_next_char()
         except self.BlockTerminatedException:
             raise

@@ -267,6 +267,8 @@ class NexusReader(iosys.DataReader):
         self.taxa_blocks = {}
         self.preserve_underscores = False
         self.suppress_internal_node_taxa = False
+        self.file_specified_ntax = None
+        self.file_specified_nchar = None
 
     def data_format_error(self, message):
         """
@@ -679,7 +681,7 @@ class NexusReader(iosys.DataReader):
                         and char.upper() == self.match_char.upper():
                             state = char_block[0][len(char_block[taxon])].value
                     else:
-                        raise self.data_format_error("Unrecognized (single) state encountered: '%s' is not defined in %s" % (char, symbol_state_map.keys()))
+                        raise self.data_format_error("Unrecognized (single) state encountered in '%s': '%s' is not defined in %s" % ("".join(char_group), char, symbol_state_map.keys()))
             else:
                 if hasattr(char, "open_tag"):
                     state = self._get_state_for_multistate_char(char, char_block.default_state_alphabet)
