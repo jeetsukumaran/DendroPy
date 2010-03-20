@@ -60,7 +60,7 @@ def get_logger(name="dendropy"):
     Returns a logger with name set as given, and configured
     to the level given by the environment variable _LOGGING_LEVEL_ENVAR.
     """
-    logger_set = False
+
 #     package_dir = os.path.dirname(module_path)
 #     config_filepath = os.path.join(package_dir, _LOGGING_CONFIG_FILE)
 #     if os.path.exists(config_filepath):
@@ -70,7 +70,9 @@ def get_logger(name="dendropy"):
 #         except:
 #             logger_set = False
     logger = logging.getLogger(name)
-    if not logger_set:
+    if not hasattr(logger, 'is_configured'):
+        logger.is_configured = False
+    if not logger.is_configured:
         level = get_logging_level()
         rich_formatter = logging.Formatter("[%(asctime)s] %(filename)s (%(lineno)d): %(levelname) 8s: %(message)s")
         simple_formatter = logging.Formatter("%(levelname) 8s: %(message)s")
@@ -95,6 +97,7 @@ def get_logger(name="dendropy"):
         ch.setLevel(level)
         ch.setFormatter(logging_formatter)
         logger.addHandler(ch)
+        logger.is_configured = True
     return logger
 
 def deprecation(message, logger_obj=None, stacklevel=3):

@@ -33,11 +33,10 @@ import dendropy
 
 DENDROPY_NCL_AVAILABILITY = False
 try:
-    import nclwrapper
+    from ncl import nclwrapper
     DENDROPY_NCL_AVAILABILITY = True
-    _LOG.debug("NCL available")
 except ImportError:
-    _LOG.debug("NCL not available")
+    DENDROPY_NCL_AVAILABILITY = False
 else:
 
     class NCLTreeStream(nclwrapper.NxsTreeStream):

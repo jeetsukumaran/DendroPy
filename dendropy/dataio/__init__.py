@@ -50,6 +50,7 @@ if ncl.DENDROPY_NCL_AVAILABILITY:
         _LOG.debug("NCL wrapper is available but not being used because 'DENDROPY_BYPASS_NCL' environmental variable is set")
         DEFAULT_NEXUS_READER = nexus.NexusReader
 else:
+    _LOG.debug("NCL wrapper is not available: using native Python NEXUS parser")
     DEFAULT_NEXUS_READER = nexus.NexusReader
 ioclient.register("nexus", DEFAULT_NEXUS_READER, nexus.NexusWriter, nexus.tree_source_iter)
 ioclient.register("nexus-native", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
