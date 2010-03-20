@@ -42,16 +42,17 @@ from dendropy.dataio import ncl
 #   dataschema.register(<FORMAT NAME>, <READER TYPE>, <WRITER TYPE>, <TREE ITERATOR>)
 
 if ncl.DENDROPY_NCL_AVAILABILITY:
-    ioclient.register("ncl-nexus", ncl.NexusReader, ncl.NexusWriter, ncl.tree_source_iter)
+    ioclient.register("nexus-ncl", ncl.NexusReader, None, None)
     if "DENDROPY_BYPASS_NCL" not in os.environ or not os.environ["DENDROPY_BYPASS_NCL"]:
         _LOG.debug("Using NCL as the default NEXUS parser")
-        ioclient.register("nexus", ncl.NexusReader, ncl.NexusWriter, ncl.tree_source_iter)
+        DEFAULT_NEXUS_READER = ncl.NexusReader
     else:
         _LOG.debug("NCL wrapper is available but not being used because 'DENDROPY_BYPASS_NCL' environmental variable is set")
+        DEFAULT_NEXUS_READER = nexus.NexusReader
 else:
-    ioclient.register("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
-ioclient.register("native-nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
-
+    DEFAULT_NEXUS_READER = nexus.NexusReader
+ioclient.register("nexus", nexus.NexusReader, DEFAULT_NEXUS_READER, nexus.tree_source_iter)
+ioclient.register("nexus-native", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
 ioclient.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter)
 ioclient.register("nexus/newick", None, None, nexus.generalized_tree_source_iter)
 ioclient.register("fasta", fasta.FastaReader, fasta.FastaWriter, None)
