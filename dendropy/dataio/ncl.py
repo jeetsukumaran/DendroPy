@@ -26,6 +26,10 @@ Facultative use of NCL for NEXUS parsing.
 
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
+from dendropy.dataio import nexus
+from dendropy.dataio import nexustokenizer
+from dendropy.utility import iosys
+import dendropy
 
 DENDROPY_NCL_AVAILABILITY = False
 try:
@@ -115,13 +119,17 @@ else:
 
     def _ncl_datatype_enum_to_dendropy(d):
         e = nclwrapper.NxsCharactersBlock
-        if d == e.dna or d == e.nucleotide:
-            return characters.DnaCharactersBlock
+        if d == e.dna:
+            return dendropy.DnaCharactersBlock
+        if d == e.nucleotide:
+            return dendropy.NucleotideCharactersBlock
         if d == e.rna:
-            return characters.RnaCharactersBlock
+            return dendropy.RnaCharactersBlock
         if d == e.protein:
-            return characters.ProteinCharactersBlock
-        if (d == e.continuous) or (d == e.mixed) or (d == e.codon):
+            return dendropy.ProteinCharactersBlock
+        if (d == e.continuous):
+            return dendropy.ContinuousCharacterBlock
+        if (d == e.mixed) or (d == e.codon):
             s = d == e.continuous and "continuous" or (d == e.mixed and "mixed" or "codon")
             raise NotImplementedError("%s datatype not supported" % s)
 
@@ -153,16 +161,20 @@ else:
         def syntax_exception(self, msg):
             return SyntaxException(message=msg)
 
-    class NCLBasedReader(datasets.Reader):
+    class NCLBasedReader(iosys.DataReader):
         "Encapsulates loading and parsing of a NEXUS format file."
 
-        def __init__(self, format="NEXUS"):
-            datasets.Reader.__init__(self)
-            self.purePythonReader = PurePythonNexusReader()
+        def __init__(self, schema="NEXUS", **kwargs):
+            dendropy.Reader.__init__(self)
+            self.purePythonReader = nexus.NexusReader(**kwargs)
             self.encode_splits = False
-            self.default_rooting = RootingInterpretation.UNKNOWN_DEF_ROOTED
+            self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
+            self.finish_node_func = kwargs.get("finish_node_func", None)
+            self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", False)
+            self.preserve_underscores = kwargs.get('preserve_underscores', False)
+            self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
             self.finish_node_func = None
-            self.format = format
+            self.format = schema
             self._prev_taxa_block = None
             self.ncl_taxa_to_native = {}
             self._taxa_to_fill = None
@@ -184,9 +196,9 @@ else:
             n, use_ncl = self._get_fp(file_obj)
             if not use_ncl:
                 self.purePythonReader.encode_splits = self.encode_splits
-                self.purePythonReader.default_rooting = self.default_rooting
+                self.purePythonReader.rooting_interpreter = self.rooting_interpreter
                 self.purePythonReader.finish_node_func = self.finish_node_func
-                return self.purePythonReader.read_dataset(file_obj, dataset=dataset, **kwargs)
+                return self.purePythonReader.read_from_stream(file_obj, dataset=dataset, **kwargs)
             return self.read_filepath_into_dataset(n, dataset=dataset, **kwargs)
 
         def _ncl_characters_block_to_native(self, taxa_block, ncl_cb):
@@ -204,8 +216,8 @@ else:
             state_codes_mapping = mapper.GetPythonicStateVectors()
 
             char_block = char_block_type()
-            char_block.taxa_block = taxa_block
-            if isinstance(char_block, characters.StandardCharactersBlock):
+            char_block.taxon_set = taxa_block
+            if isinstance(char_block, dendropy.StandardCharactersBlock):
                 char_block = self.build_state_alphabet(char_block, symbols, '?')
             symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
 
@@ -230,17 +242,15 @@ else:
             ncl_numeric_code_to_state[-2] = symbol_state_map['-']
             ncl_numeric_code_to_state[-1] = symbol_state_map['?']
 
-
-
             assert (len(raw_matrix) == len(taxa_block))
             for row_ind, taxon in enumerate(taxa_block):
-                v = characters.CharacterDataVector(taxon=taxon)
+                v = dendropy.CharacterDataVector(taxon=taxon)
                 raw_row = raw_matrix[row_ind]
                 char_block[taxon] = v
                 if self.include_characters:
                     for c in raw_row:
                         state = ncl_numeric_code_to_state[c]
-                        v.append(characters.CharacterDataCell(value=state))
+                        v.append(dendropy.CharacterDataCell(value=state))
 
             #dataset.characters_blocks.append(char_block)
             supporting_exsets = False
@@ -259,7 +269,7 @@ else:
 
         def read_filepath_into_dataset(self, file_path, dataset=None, **kwargs):
             if dataset is None:
-                dataset = datasets.Dataset()
+                dataset = dendropy.DataSet()
             self._taxa_to_fill = None
             m = nclwrapper.MultiFormatReader()
             m.cullIdenticalTaxaBlocks(True)
@@ -272,7 +282,7 @@ else:
             for i in xrange(num_taxa_blocks):
                 ncl_tb = m.GetTaxaBlock(i)
                 taxa_block = self._ncl_taxa_block_to_native(ncl_tb)
-                dataset.add_taxa_block(taxa_block=taxa_block)
+                dataset.add(taxa_block)
                 #nab = m.GetNumAssumptionsBlocks(ncl_tb)
                 #for k in xrange(nab):
                 #    a = m.GetAssumptionsBlock(ncl_tb, k)
@@ -283,11 +293,11 @@ else:
                     ncl_cb = m.GetCharactersBlock(ncl_tb, j)
                     char_block = self._ncl_characters_block_to_native(taxa_block, ncl_cb)
                     if char_block:
-                        dataset.add_char_block(char_block=char_block)
+                        dataset.add(char_block)
                 ntrb = m.GetNumTreesBlocks(ncl_tb)
                 for j in xrange(ntrb):
-                    trees_block = trees.TreesBlock()
-                    trees_block.taxa_block = taxa_block
+                    trees_block = dendropy.TreeList()
+                    trees_block.taxon_set = taxa_block
                     ncl_trb = m.GetTreesBlock(ncl_tb, j)
                     for k in xrange(ncl_trb.GetNumTrees()):
                         ftd = ncl_trb.GetFullTreeDescription(k)
@@ -296,7 +306,7 @@ else:
                         t = self._ncl_tree_tokens_to_native_tree(ncl_tb, taxa_block, tokens, rooted_flag=rooted_flag)
                         if t:
                             trees_block.append(t)
-                    dataset.add_trees_block(trees_block=trees_block)
+                    dataset.add(trees_block)
             return dataset
 
 
@@ -313,17 +323,17 @@ else:
             n, use_ncl = self._get_fp(file_obj)
             if not use_ncl:
                 self.purePythonReader.encode_splits = self.encode_splits
-                self.purePythonReader.default_rooting = self.default_rooting
+                self.purePythonReader.rooting_interpreter = self.rooting_interpreter
                 self.purePythonReader.finish_node_func = self.finish_node_func
-                for tree in self.purePythonReader.iterate_over_trees(file_obj, taxa_block=taxa_block, dataset=dataset):
+                for tree in self.purePythonReader.tree_source_iter(file_obj, taxon_set=taxa_block, dataset=dataset):
                     yield tree
                 return
             if dataset is None:
-                dataset = datasets.Dataset()
+                dataset = dendropy.DataSet()
             if taxa_block is None:
-                taxa_block = taxa.TaxaBlock()
-            if taxa_block and not (taxa_block in dataset.taxa_blocks):
-                dataset.taxa_blocks.append(taxa_block)
+                taxa_block = dendropy.TaxonSet()
+            if taxa_block and not (taxa_block in dataset.taxon_sets):
+                dataset.add(taxa_block)
 
             need_tree_event = Event()
             tree_ready_event = Event()
@@ -402,11 +412,11 @@ else:
 
             labels = ncl_tb.GetAllLabels()
             if self._taxa_to_fill is None:
-                taxa_block =  taxa.TaxaBlock(labels)
+                taxa_block =  dendropy.TaxonSet(labels)
             else:
                 taxa_block = self._taxa_to_fill
                 self._taxa_to_fill = None
-                taxa_block.extend([taxa.Taxon(label=i) for i in labels])
+                taxa_block.extend([dendropy.Taxon(label=i) for i in labels])
             self.ncl_taxa_to_native[tbiid] = taxa_block
             return taxa_block
 
@@ -416,7 +426,6 @@ else:
             if taxa_block is None:
                 iid = ncl_tb.GetInstanceIdentifierString()
                 taxa_block = self._ncl_taxa_block_to_native(ncl_tb)
-
             self.taxa_block = taxa_block
             lti = ListOfTokenIterator(tree_tokens)
             lti.tree_rooted = rooted_flag
@@ -427,11 +436,11 @@ else:
                     if self.encode_splits:
                         t.clade_mask = (1 << n)
                 self._prev_taxa_block = taxa_block
-            return parse_newick_tree_stream(lti,
-                                            taxa_block=taxa_block,
+            return nexustokenizer.parse_tree_from_stream(lti,
+                                            taxon_set=taxa_block,
                                             translate_dict=self.tree_translate_dict,
                                             encode_splits=self.encode_splits,
-                                            rooted=self.default_rooting,
+                                            rooting_interpreter=self.rooting_interpreter,
                                             finish_node_func=self.finish_node_func)
 
     NexusReader = NCLBasedReader
