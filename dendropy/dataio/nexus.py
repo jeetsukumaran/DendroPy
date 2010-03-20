@@ -653,9 +653,12 @@ class NexusReader(iosys.DataReader):
                     char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
                 while len(char_block[taxon]) < self.file_specified_nchar \
                         and not self.stream_tokenizer.eof:
-                    char_group = self.stream_tokenizer.read_next_token(ignore_punctuation="{}()")
+                    char_group = self.stream_tokenizer.read_matrix_characters(self.file_specified_nchar)
                     if char_group is not None:
+                        char_group = "".join(char_group)
                         self._process_chars(char_group, char_block, symbol_state_map, taxon)
+                    else:
+                        break
                 if len(char_block[taxon]) < self.file_specified_nchar:
                     raise self.data_format_error("Insufficient characters given for taxon '%s': expecting %d but only found %d ('%s')" \
                         % (taxon.label, self.file_specified_nchar, len(char_block[taxon]), char_block[taxon].symbols_as_string()))

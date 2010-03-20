@@ -529,6 +529,104 @@ class NexusTokenizer(object):
         else:
             return set(ignore_punctutation) + self.global_ignore_punctuation
 
+    def read_matrix_characters(self, nchar):
+        """
+        Reads all tokens in the file stream until EOL, EOF, or ';'
+        is encountered.
+        """
+        _is_newline = lambda x: x == '\n' or x == '\r'
+        self.comments = []
+        ignore_punctuation = self.compose_punctutation_to_be_ignored('{}()')
+        self.current_token = None
+        if self.eof:
+            return None
+
+        # skip to first significant
+        while (NexusTokenizer.is_whitespace(self.current_file_char) \
+                or self.current_file_char=='[') \
+                and not self.eof:
+            if self.current_file_char == '[':
+                self.read_noncomment_character()
+            elif _is_newline(self.current_file_char):
+                return None
+            else:
+                self.read_next_char()
+        if self.eof:
+            self.data_format_error("Unexpected end of file before statement completion")
+        elif self.current_file_char == ';':
+            return None
+
+        c = self.current_file_char
+        token_list = []
+        num_chars_read = 0
+        try:
+            while num_chars_read < nchar and not self.eof:
+                if c == "'":
+                    token = StringIO()
+                    try:
+                        fastfunc = self._raw_read_next_char
+                        c = fastfunc()
+                        while True:
+                            if c == "'":
+                                c = self.read_next_char()
+                                if c == "'":
+                                    token.write("'")
+                                    c = fastfunc()
+                                else:
+                                    break
+                            else:
+                                token.write(c)
+                                c = fastfunc()
+                    except StopIteration:
+                        self.eof = True
+                        raise self.data_format_error("Unexpected end of file inside quoted token")
+                    x = token.getvalue()
+                    token_list.append(x)
+                    num_chars_read += len(x)
+                else:
+                    token = StringIO()
+                    quick_check = NexusTokenizer.is_whitespace_or_punctuation
+                    while True:
+                        if c == '{' or c == '(':
+#                            token.write(c)
+                            next_token = self.read_next_token()
+                            if c == '{':
+                                close_char = '}'
+                            else:
+                                close_char = ')'
+                            while next_token != close_char and not self.eof:
+                                num_chars_read += len(next_token)
+                                token.write(next_token)
+                                next_token = self.read_next_token()
+                            token.write(next_token)
+                            c = self.current_file_char
+                            continue
+                        elif quick_check(c):
+                            if c == '[':
+                                self.skip_comment()
+                                c = self.current_file_char
+                                continue
+                            if quick_check(c) and not c in ignore_punctuation:
+                                if not NexusTokenizer.is_whitespace(c):
+                                    token.write(c)
+                                break
+                        if c == '_' and not self.preserve_underscores:
+                            c = ' '
+                        token.write(c)
+                        c = self.read_next_char()
+                        if not c:
+                            break
+                    token = token.getvalue()
+                    if token == ";":
+                        raise self.BlockTerminatedException()
+                    elif token:
+                        token_list.append(token)
+                        num_chars_read += len(token)
+                    c = self.read_next_char()
+        except self.BlockTerminatedException:
+            raise
+        return token_list
+
     def read_statement_tokens_till_eol(self, token_list=None, ignore_punctuation=None):
         """
         Reads all tokens in the file stream until EOL, EOF, or ';'
