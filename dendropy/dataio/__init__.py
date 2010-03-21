@@ -31,6 +31,7 @@ from dendropy.utility import messaging
 from dendropy.dataio import ioclient
 from dendropy.dataio import newick
 from dendropy.dataio import nexus
+from dendropy.dataio import purepythonnexus
 from dendropy.dataio import fasta
 from dendropy.dataio import phylip
 from dendropy.dataio import nexml
@@ -43,8 +44,8 @@ _LOG = messaging.get_logger(__name__)
 ## Syntax is:
 ##   ioclient.register(<FORMAT NAME>, <READER TYPE>, <WRITER TYPE>, <TREE ITERATOR>)
 ##
-ioclient.register("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
-ioclient.register("nexus-native", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
+ioclient.register("nexus", purepythonnexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
+ioclient.register("nexus-native", purepythonnexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
 ioclient.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter)
 ioclient.register("nexus/newick", None, None, nexus.generalized_tree_source_iter)
 ioclient.register("fasta", fasta.FastaReader, fasta.FastaWriter, None)
@@ -59,7 +60,7 @@ ioclient.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None)
 
 def disable_ncl():
     _LOG.debug('Disabling Nexus Class Library bindings: using native Python NEXUS parser')
-    ioclient.register("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
+    ioclient.register("nexus", purepythonnexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
 
 def enable_ncl():
     from dendropy.dataio import ncl
