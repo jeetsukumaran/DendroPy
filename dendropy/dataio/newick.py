@@ -161,6 +161,7 @@ class NewickReader(iosys.DataReader):
         self.finish_node_func = kwargs.get("finish_node_func", None)
         self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
         self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', True)
+        self.encode_splits = kwargs.get('encode_splits', False)
 
     def read(self, stream):
         """
@@ -177,7 +178,8 @@ class NewickReader(iosys.DataReader):
         for t in tree_source_iter(stream=stream,
                 taxon_set=taxon_set,
                 rooting_interpreter=self.rooting_interpreter,
-                hyphens_as_tokens=self.hyphens_as_tokens):
+                hyphens_as_tokens=self.hyphens_as_tokens,
+                encode_splits=self.encode_splits):
             tree_list.append(t, reindex_taxa=False)
         return self.dataset
 
