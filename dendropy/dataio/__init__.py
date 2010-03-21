@@ -31,6 +31,7 @@ from dendropy.utility import messaging
 from dendropy.dataio import ioclient
 from dendropy.dataio import newick
 from dendropy.dataio import nexusreader_py
+from dendropy.dataio import nexustreeiter
 from dendropy.dataio import nexuswriter
 from dendropy.dataio import fasta
 from dendropy.dataio import phylip
@@ -45,10 +46,9 @@ _LOG = messaging.get_logger(__name__)
 ## Syntax is:
 ##   ioclient.register(<FORMAT NAME>, <READER TYPE>, <WRITER TYPE>, <TREE ITERATOR>)
 ##
-ioclient.register("nexus", nexusreader_py.NexusReader, nexuswriter.NexusWriter, nexusreader_py.tree_source_iter)
-ioclient.register("nexus-native", nexusreader_py.NexusReader, nexuswriter.NexusWriter, nexusreader_py.tree_source_iter)
+ioclient.register("nexus", nexusreader_py.NexusReader, nexuswriter.NexusWriter, nexustreeiter.tree_source_iter)
 ioclient.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter)
-ioclient.register("nexus/newick", None, None, nexusreader_py.generalized_tree_source_iter)
+ioclient.register("nexus/newick", None, None, nexustreeiter.generalized_tree_source_iter)
 ioclient.register("fasta", fasta.FastaReader, fasta.FastaWriter, None)
 ioclient.register("dnafasta", fasta.DNAFastaReader, fasta.FastaWriter, None)
 ioclient.register("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None)
@@ -63,17 +63,17 @@ ioclient.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None)
 def disable_ncl():
     _LOG.debug('Disabling Nexus Class Library bindings: using native Python NEXUS parser')
     from dendropy.dataio import nexusreader_py
-    ioclient.register("nexus", nexusreader_py.NexusReader, nexuswriter.NexusWriter, nexusreader_py.tree_source_iter)
+    ioclient.register("nexus", nexusreader_py.NexusReader, nexuswriter.NexusWriter, nexustreeiter.tree_source_iter)
 
 def enable_ncl():
     from dendropy.dataio import nexusreader_ncl
     if nexusreader_ncl.DENDROPY_NCL_AVAILABILITY:
         _LOG.debug('Enabling Nexus Class Library bindings: using NCL NEXUS parser')
-        ioclient.register("nexus", nexusreader_ncl.NexusReader, nexuswriter.NexusWriter, nexusreader_ncl.tree_source_iter)
+        ioclient.register("nexus", nexusreader_ncl.NexusReader, nexuswriter.NexusWriter, nexustreeiter.tree_source_iter)
     else:
         _LOG.debug('Nexus Class Library bindings are not available: using native Python NEXUS parser')
 
+## set default ##
 if "DENDROPY_ENABLE_NCL" in os.environ:
     enable_ncl()
-else:
-    disable_ncl()
+
