@@ -44,12 +44,20 @@ from dendropy.dataio import get_reader, get_writer, tree_source_iter, multi_tree
 
 __project__ = "DendroPy"
 __version__ = "3.1.4"
+
 try:
-    __source_path__ = os.path.dirname(os.path.abspath(__file__))
-    __revision__ = vcsinfo.Revision(repo_path=__source_path__)
+    try:
+        __root__ = __path__[0]
+    except AttributeError:
+        __root__ = os.path.dirname(os.path.abspath(__file__))
+    except IndexError:
+        __root__ = os.path.dirname(os.path.abspath(__file__))
 except OSError:
-    __source_path__ = None
-    __revision__ = vcsinfo.Revision(repo_path=None)
+    __root__ = None
+except:
+    __root__ = None
+
+__revision__ = vcsinfo.Revision(repo_path=__root__)
 __author__ = "Jeet Sukumaran and Mark T. Holder"
 __copyright__ = "Copyright 2009 Jeet Sukumaran and Mark T. Holder."
 __license__ = """

@@ -156,8 +156,7 @@ class Revision(object):
                 stderr=subprocess.PIPE)
             retcode = p.wait()
         except OSError, e:
-            sys.stderr.write(p.stderr.read())
-            raise VersionControlInfo.VcsUnavailable("Unable to execute '%s': '%s' not found" % (cmd, self.vcs_app_path))
+            return -999, "", str(e)
         stdout = p.stdout.read()
         stderr = p.stderr.read()
         return retcode, stdout, stderr
