@@ -40,6 +40,27 @@ else:
     from dendropy.utility import iosys
     import dendropy
 
+    def _ncl_datatype_enum_to_dendropy(d):
+        e = nclwrapper.NxsCharactersBlock
+        if d == e.dna:
+            return dendropy.DnaCharacterMatrix
+        if d == e.nucleotide:
+            return dendropy.NucleotideCharacterMatrix
+        if d == e.rna:
+            return dendropy.RnaCharacterMatrixk
+        if d == e.protein:
+            return dendropy.ProteinCharacterMatrix
+        if (d == e.continuous):
+            return dendropy.ContinuousCharacterMatrix
+        if d == e.standard:
+            return dendropy.StandardCharacterMatrix
+        if (d == e.mixed) or (d == e.codon):
+            s = d == e.continuous and "continuous" or (d == e.mixed and "mixed" or "codon")
+            raise NotImplementedError("%s datatype not supported" % s)
+        print d
+        print dict(e)
+        sys.exit(0)
+
     class NCLTreeStream(nclwrapper.NxsTreeStream):
         """Simple thread-safe class that waits for `need_tree_event', and signals the
         presence of a new tree by `ready_event`"""
@@ -116,27 +137,6 @@ else:
             self.nts.taxa_block = None
             self.rooted_flag = None
             self.nts.ready_event.set()
-
-    def _ncl_datatype_enum_to_dendropy(d):
-        e = nclwrapper.NxsCharactersBlock
-        if d == e.dna:
-            return dendropy.DnaCharacterMatrix
-        if d == e.nucleotide:
-            return dendropy.NucleotideCharacterMatrix
-        if d == e.rna:
-            return dendropy.RnaCharacterMatrixk
-        if d == e.protein:
-            return dendropy.ProteinCharacterMatrix
-        if (d == e.continuous):
-            return dendropy.ContinuousCharacterMatrix
-        if d == e.standard:
-            return dendropy.StandardCharacterMatrix
-        if (d == e.mixed) or (d == e.codon):
-            s = d == e.continuous and "continuous" or (d == e.mixed and "mixed" or "codon")
-            raise NotImplementedError("%s datatype not supported" % s)
-        print d
-        print dict(e)
-        sys.exit(0)
 
     class ListOfTokenIterator(object):
         def __init__(self, tokens):
