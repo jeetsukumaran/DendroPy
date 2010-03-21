@@ -68,7 +68,7 @@ def tree_source_iter(stream, **kwargs):
     tree blocks are handled by a full NEXUS data file read.
     """
     reader = NexusReader(**kwargs)
-    for i, tree in enumerate(reader.tree_source_iter(stream, **kwargs)):
+    for i, tree in enumerate(reader.tree_source_iter(stream)):
         yield tree
 
 def generalized_tree_source_iter(stream, **kwargs):
@@ -215,8 +215,6 @@ class NexusReader(iosys.DataReader):
         self.match_char = '.'
         self.tree_translate_dict = {}
         self.taxa_blocks = {}
-        self.preserve_underscores = False
-        self.suppress_internal_node_taxa = False
         self.file_specified_ntax = None
         self.file_specified_nchar = None
 
