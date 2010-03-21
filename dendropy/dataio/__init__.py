@@ -70,6 +70,7 @@ def enable_ncl():
         _LOG.debug('Nexus Class Library bindings are not available: using native Python NEXUS parser')
 
 #if "DENDROPY_DISABLE_NCL" not in os.environ:
-#    enable_ncl()
-#else:
-#    disable_ncl()
+if "DENDROPY_ENABLE_NCL" in os.environ:
+    enable_ncl()
+else:
+    disable_ncl()
