@@ -177,7 +177,7 @@ class NewickReader(iosys.DataReader):
         for t in tree_source_iter(stream=stream,
                 taxon_set=taxon_set,
                 rooting_interpreter=self.rooting_interpreter,
-                hyphens_as_tokens=hyphens_as_tokens):
+                hyphens_as_tokens=self.hyphens_as_tokens):
             tree_list.append(t, reindex_taxa=False)
         return self.dataset
 
