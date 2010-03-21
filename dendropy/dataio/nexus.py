@@ -460,18 +460,9 @@ class NexusReader(iosys.DataReader):
     ## CHARACTER/DATA BLOCK PARSERS AND SUPPORT
 
     def _build_state_alphabet(self, char_block, symbols):
-        sa = dataobject.StateAlphabet()
-        for symbol in symbols:
-            symbol = symbol.upper()
-            sa.append(dataobject.StateAlphabetElement(symbol=symbol))
-        if self.missing_char:
-            sa.append(dataobject.StateAlphabetElement(symbol=self.missing_char,
-                                           multistate=dataobject.StateAlphabetElement.AMBIGUOUS_STATE,
-                                           member_states=sa.get_states(symbols=symbols)))
-        if self.gap_char:
-            sa.append(dataobject.StateAlphabetElement(symbol=self.gap_char,
-                                           multistate=dataobject.StateAlphabetElement.AMBIGUOUS_STATE,
-                                           member_states=sa.get_states(symbols=symbols)))
+        sa = dataobject.get_state_alphabet_from_symbols(symbols,
+                gap_symbol=self.gap_char,
+                missing_symbol=self.missing_char)
         char_block.state_alphabets = [sa]
         char_block.default_state_alphabet = char_block.state_alphabets[0]
 

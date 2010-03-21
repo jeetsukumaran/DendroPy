@@ -24,20 +24,21 @@
 Facultative use of NCL for NEXUS parsing.
 """
 
-from dendropy.utility import messaging
-_LOG = messaging.get_logger(__name__)
-from dendropy.dataio import nexus
-from dendropy.dataio import nexustokenizer
-from dendropy.utility import iosys
-import dendropy
-
 DENDROPY_NCL_AVAILABILITY = False
 try:
-    from ncl import nclwrapper
+    from nexusclasslib import nclwrapper
     DENDROPY_NCL_AVAILABILITY = True
 except ImportError:
     DENDROPY_NCL_AVAILABILITY = False
 else:
+
+    import os
+    from threading import Thread, Event
+    from dendropy import dataobject
+    from dendropy.dataio import nexus
+    from dendropy.dataio import nexustokenizer
+    from dendropy.utility import iosys
+    import dendropy
 
     class NCLTreeStream(nclwrapper.NxsTreeStream):
         """Simple thread-safe class that waits for `need_tree_event', and signals the
@@ -119,18 +120,23 @@ else:
     def _ncl_datatype_enum_to_dendropy(d):
         e = nclwrapper.NxsCharactersBlock
         if d == e.dna:
-            return dendropy.DnaCharactersBlock
+            return dendropy.DnaCharacterMatrix
         if d == e.nucleotide:
-            return dendropy.NucleotideCharactersBlock
+            return dendropy.NucleotideCharacterMatrix
         if d == e.rna:
-            return dendropy.RnaCharactersBlock
+            return dendropy.RnaCharacterMatrixk
         if d == e.protein:
-            return dendropy.ProteinCharactersBlock
+            return dendropy.ProteinCharacterMatrix
         if (d == e.continuous):
-            return dendropy.ContinuousCharacterBlock
+            return dendropy.ContinuousCharacterMatrix
+        if d == e.standard:
+            return dendropy.StandardCharacterMatrix
         if (d == e.mixed) or (d == e.codon):
             s = d == e.continuous and "continuous" or (d == e.mixed and "mixed" or "codon")
             raise NotImplementedError("%s datatype not supported" % s)
+        print d
+        print dict(e)
+        sys.exit(0)
 
     class ListOfTokenIterator(object):
         def __init__(self, tokens):
@@ -138,6 +144,11 @@ else:
             self.eof = False
             self.queued = None
             self.tree_rooted = None
+            self.comments = None
+
+        def clear_comments(self):
+            self.tree_rooted = None
+            self.comments = None
 
         def tree_rooted_comment(self):
             "This is a hack, and only works if you have just one tree in the token stream"
@@ -164,7 +175,7 @@ else:
         "Encapsulates loading and parsing of a NEXUS format file."
 
         def __init__(self, schema="NEXUS", **kwargs):
-            dendropy.Reader.__init__(self)
+            iosys.DataReader.__init__(self)
             self.purePythonReader = nexus.NexusReader(**kwargs)
             self.encode_splits = False
             self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
@@ -208,7 +219,7 @@ else:
             `file_obj`.
             """
             self.update_directives(**kwargs)
-            n, use_ncl = self._get_fp(file_obj)
+            n, use_ncl = self._get_fp(stream)
             if not use_ncl:
                 self.purePythonReader.update_directives(**kwargs)
                 self.purePythonReader.encode_splits = self.encode_splits
@@ -412,8 +423,14 @@ else:
 
             char_block = char_block_type()
             char_block.taxon_set = taxa_block
-            if isinstance(char_block, dendropy.StandardCharactersBlock):
-                char_block = self.build_state_alphabet(char_block, symbols, '?')
+            if isinstance(char_block, dendropy.StandardCharacterMatrix):
+                sa = dataobject.get_state_alphabet_from_symbols(
+                        symbols=symbols,
+                        gap_symbol='-',
+                        missing_symbol='?'
+                )
+                char_block.state_alphabets = [sa]
+                char_block.default_state_alphabet = char_block.state_alphabets[0]
             symbol_state_map = char_block.default_state_alphabet.symbol_state_map()
 
             ncl_numeric_code_to_state = []
@@ -442,7 +459,7 @@ else:
                 v = dendropy.CharacterDataVector(taxon=taxon)
                 raw_row = raw_matrix[row_ind]
                 char_block[taxon] = v
-                if self.include_characters:
+                if not self.exclude_chars:
                     for c in raw_row:
                         state = ncl_numeric_code_to_state[c]
                         v.append(dendropy.CharacterDataCell(value=state))
