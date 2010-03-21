@@ -278,14 +278,12 @@ else:
                     self.dataset.add(trees_block)
             return self.dataset
 
-
-        def tree_source_iter(self, stream, **kwargs):
+        def tree_source_iter(self, stream):
             """
             Generator to iterate over trees in data file.
             Primary goal is to be memory efficient, storing no more than one tree
             at a time. Speed might have to be sacrificed for this!
             """
-            self.update_directives(**kwargs)
             taxa_block = self.get_default_taxon_set()
             if taxa_block is not None and len(taxa_block) == 0:
                 self._taxa_to_fill = taxa_block
@@ -293,10 +291,12 @@ else:
                 self._taxa_to_fill = None
             n, use_ncl = self._get_fp(file_obj)
             if not use_ncl:
-                self.purePythonReader.update_directives(**kwargs)
                 self.purePythonReader.encode_splits = self.encode_splits
                 self.purePythonReader.rooting_interpreter = self.rooting_interpreter
                 self.purePythonReader.finish_node_func = self.finish_node_func
+                self.purePythonReader.allow_duplicate_taxon_labels = self.allow_duplicate_taxon_labels
+                self.purePythonReader.preserve_underscores = self.preserve_underscores
+                self.purePythonReader.suppress_internal_node_taxa = self.suppress_internal_node_taxa
                 for tree in self.purePythonReader.tree_source_iter(file_obj, taxon_set=taxa_block, dataset=dataset):
                     yield tree
                 return

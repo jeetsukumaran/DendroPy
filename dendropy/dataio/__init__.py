@@ -36,6 +36,7 @@ from dendropy.dataio import fasta
 from dendropy.dataio import phylip
 from dendropy.dataio import nexml
 from dendropy.dataio.ioclient import get_reader, get_writer, tree_source_iter, multi_tree_source_iter
+
 _LOG = messaging.get_logger(__name__)
 
 ###############################################################################
@@ -54,3 +55,25 @@ ioclient.register("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None)
 ioclient.register("proteinfasta", fasta.ProteinFastaReader, fasta.FastaWriter, None)
 ioclient.register("phylip", phylip.PhylipReader, phylip.PhylipWriter, None)
 ioclient.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None)
+
+###############################################################################
+## NEXUS Parser Implementation Selection
+##
+
+def disable_ncl():
+    _LOG.debug('Disabling Nexus Class Library bindings: using native Python NEXUS parser')
+    from dendropy.dataio import nexusreader_py
+    ioclient.register("nexus", nexusreader_py.NexusReader, nexuswriter.NexusWriter, nexusreader_py.tree_source_iter)
+
+def enable_ncl():
+    from dendropy.dataio import nexusreader_ncl
+    if nexusreader_ncl.DENDROPY_NCL_AVAILABILITY:
+        _LOG.debug('Enabling Nexus Class Library bindings: using NCL NEXUS parser')
+        ioclient.register("nexus", nexusreader_ncl.NexusReader, nexuswriter.NexusWriter, nexusreader_ncl.tree_source_iter)
+    else:
+        _LOG.debug('Nexus Class Library bindings are not available: using native Python NEXUS parser')
+
+if "DENDROPY_ENABLE_NCL" in os.environ:
+    enable_ncl()
+else:
+    disable_ncl()
