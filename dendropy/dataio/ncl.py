@@ -22,34 +22,20 @@
 
 """
 Facultative use of NCL for NEXUS parsing.
-
-Note: that importing the name NexusReader from this file  will either return
-        an ncl-enabled NexusReader or the pure-python implementation.
-    The NCL based form will be imported if nexusclasslib is installed and
-        DENDROPY_ENABLE_NCL is defined in the environment.
 """
-
-
-import os
-from dendropy.utility.messaging import get_logger
-_LOG = get_logger(__name__)
-
 
 DENDROPY_NCL_AVAILABILITY = False
 try:
-    if "DENDROPY_ENABLE_NCL" in os.environ:
-        from nexusclasslib import nclwrapper
-        DENDROPY_NCL_AVAILABILITY = True
-    else:
-        from dendropy.dataio.purepythonnexus import NexusReader
+    from nexusclasslib import nclwrapper
+    DENDROPY_NCL_AVAILABILITY = True
 except ImportError:
-    from dendropy.dataio.purepythonnexus import NexusReader
+    DENDROPY_NCL_AVAILABILITY = False
+else:
 
-if DENDROPY_NCL_AVAILABILITY:
     import os
     from threading import Thread, Event
     from dendropy import dataobject
-    from dendropy.dataio import purepythonnexus
+    from dendropy.dataio import nexus
     from dendropy.dataio import nexustokenizer
     from dendropy.utility import iosys
     import dendropy
@@ -196,7 +182,7 @@ if DENDROPY_NCL_AVAILABILITY:
 
         def __init__(self, schema="NEXUS", **kwargs):
             iosys.DataReader.__init__(self)
-            self.purePythonReader = purepythonnexus.NexusReader(**kwargs)
+            self.purePythonReader = nexus.NexusReader(**kwargs)
             self.encode_splits = False
             self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
             self.finish_node_func = kwargs.get("finish_node_func", None)
@@ -238,7 +224,6 @@ if DENDROPY_NCL_AVAILABILITY:
             NEXUS-formatted contents read from the file descriptor object
             `file_obj`.
             """
-            _LOG.debug("Entering read...")
             self.update_directives(**kwargs)
             n, use_ncl = self._get_fp(stream)
             if not use_ncl:
@@ -250,7 +235,6 @@ if DENDROPY_NCL_AVAILABILITY:
             return self.read_filepath_into_dataset(n, **kwargs)
 
         def read_filepath_into_dataset(self, file_path, dataset=None, **kwargs):
-            _LOG.debug("Entering read_filepath_into_dataset...")
             if self.dataset is None:
                 self.dataset = dendropy.DataSet()
             self._taxa_to_fill = None
@@ -300,7 +284,6 @@ if DENDROPY_NCL_AVAILABILITY:
             Primary goal is to be memory efficient, storing no more than one tree
             at a time. Speed might have to be sacrificed for this!
             """
-            _LOG.debug("Entering tree_sourc_iter...")
             self.update_directives(**kwargs)
             taxa_block = self.attached_taxon_set
             if taxa_block is not None and len(taxa_block) == 0:
