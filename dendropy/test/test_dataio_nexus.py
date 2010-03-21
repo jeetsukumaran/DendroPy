@@ -34,18 +34,18 @@ from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
 from dendropy.test.support import datatest
 from dendropy.test.support import extendedtest
-import dendropy
-from dendropy.dataio import nexus
-from dendropy.dataio import multi_tree_source_iter
+from dendropy import dataio
 from dendropy.utility import error
 from dendropy.utility.messaging import get_logger
+import dendropy
+
 _LOG = get_logger(__name__)
 
 class NexusGeneralParseCharsTest(datatest.DataObjectVerificationTestCase):
 
     def check_chars_against_expected(self, data_filename, expected_filename, datatype):
         self.logger.info("Checking '%s' => %s" % (data_filename, datatype.__name__))
-        reader = nexus.NexusReader()
+        reader = dataio.get_reader('nexus')
         dataset = reader.read(stream=pathmap.char_source_stream(data_filename))
         expected_label_symbol_stream = pathmap.char_source_stream(expected_filename)
         self.assertEqual(len(dataset.char_matrices), 1)
@@ -54,7 +54,7 @@ class NexusGeneralParseCharsTest(datatest.DataObjectVerificationTestCase):
 
     def check_continuous_chars_against_expected(self, data_filename, expected_filename, datatype):
         self.logger.info("Checking '%s' => %s" % (data_filename, datatype.__name__))
-        reader = nexus.NexusReader()
+        reader = dataio.get_reader('nexus')
         dataset = reader.read(stream=pathmap.char_source_stream(data_filename))
         expected_label_symbol_stream = pathmap.char_source_stream(expected_filename)
         self.assertEqual(len(dataset.char_matrices), 1)
@@ -142,7 +142,7 @@ class NexusParseStandardCharsWithMultistateTest(datatest.DataObjectVerificationT
         return sae
 
     def check_parse_with_ambiguities(self, data_filename, expected_filename):
-        reader = nexus.NexusReader()
+        reader = dataio.get_reader('nexus')
         dataset = reader.read(stream=pathmap.char_source_stream(data_filename))
         self.assertEqual(len(dataset.char_matrices), 1)
         self.map_multistate_to_symbols(dataset.char_matrices[0])
@@ -187,7 +187,7 @@ class NexusTreeListReaderTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileNoTaxaBlockDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        reader = nexus.NexusReader()
+        reader = dataio.get_reader('nexus')
         dataset = reader.read(stream=pathmap.tree_source_stream("pythonidae.reference-trees.no-taxa-block.nexus"))
         self.assertEqual(len(dataset.tree_lists), 1)
         self.assertDistinctButEqualTreeList(
@@ -207,7 +207,7 @@ class NexusTreeListReaderTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileNoTaxaBlockNoTranslateBlockDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        reader = nexus.NexusReader()
+        reader = dataio.get_reader('nexus')
         dataset = reader.read(stream=pathmap.tree_source_stream("pythonidae.reference-trees.no-taxa-no-translate-block.nexus"))
         self.assertEqual(len(dataset.tree_lists), 1)
         self.assertDistinctButEqualTreeList(
@@ -272,14 +272,14 @@ end;
         self.assertEqual(len(tlist), 3)
 
     def testStr1Iter(self):
-        for t in dendropy.tree_source_iter(StringIO(self.str1), "nexus"):
+        for t in dendropy.dataio.tree_source_iter(StringIO(self.str1), "nexus"):
             _LOG.info(t.as_string("newick"))
 
     def testStr2AsDoc(self):
         self.assertRaises(error.DataParseError, dendropy.TreeList.get_from_string, self.str2, "nexus")
 
 #    def testStr2Iter(self):
-#        for t in dendropy.tree_source_iter(StringIO(self.str2), "nexus"):
+#        for t in dendropy.dataio.tree_source_iter(StringIO(self.str2), "nexus"):
 #            _LOG.info(t.as_string("newick"))
 
     def testStr3AsDoc(self):
@@ -288,7 +288,7 @@ end;
         _LOG.info(tlist.as_string("nexus"))
 
     def testStr3Iter(self):
-        for t in dendropy.tree_source_iter(StringIO(self.str3), "nexus"):
+        for t in dendropy.dataio.tree_source_iter(StringIO(self.str3), "nexus"):
             _LOG.info(t.as_string("newick"))
 
 class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
@@ -311,7 +311,7 @@ class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
                      datagen.reference_trees_filename(schema="nexus")]
         filepaths = [pathmap.tree_source_path(f) for f in filenames]
         taxon_set = dendropy.TaxonSet()
-        for idx, test_tree in enumerate(multi_tree_source_iter(filepaths, schema="nexus/newick", taxon_set=taxon_set)):
+        for idx, test_tree in enumerate(dataio.multi_tree_source_iter(filepaths, schema="nexus/newick", taxon_set=taxon_set)):
             self.assertDistinctButEqualTree(self.next_ref_tree(), test_tree, distinct_taxa=True, ignore_taxon_order=True)
         self.assertEqual(idx, 43)
 
@@ -322,7 +322,7 @@ class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
                      datagen.reference_trees_filename(schema="nexus")]
         filepaths = [pathmap.tree_source_path(f) for f in filenames]
         taxon_set = self.ref_tree_list.taxon_set
-        for idx, test_tree in enumerate(multi_tree_source_iter(filepaths, schema="nexus/newick", taxon_set=taxon_set)):
+        for idx, test_tree in enumerate(dataio.multi_tree_source_iter(filepaths, schema="nexus/newick", taxon_set=taxon_set)):
             self.assertDistinctButEqualTree(self.next_ref_tree(), test_tree, distinct_taxa=False, ignore_taxon_order=True)
         self.assertEqual(idx, 43)
 
@@ -334,7 +334,7 @@ class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
         filepaths = [pathmap.tree_source_path(f) for f in filenames]
         taxon_set = self.ref_tree_list.taxon_set
         self.ref_index = 5
-        for idx, test_tree in enumerate(multi_tree_source_iter(filepaths,
+        for idx, test_tree in enumerate(dataio.multi_tree_source_iter(filepaths,
                 schema="nexus/newick",
                 taxon_set=taxon_set,
                 tree_offset=5)):
@@ -349,29 +349,29 @@ class NexusOrNewickTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
 
     def testNexusDistinctTaxa(self):
         stream = pathmap.tree_source_stream(datagen.reference_trees_filename(schema="nexus"))
-        for idx, test_tree in enumerate(nexus.generalized_tree_source_iter(stream=stream)):
+        for idx, test_tree in enumerate(dataio.tree_source_iter(stream=stream, schema='nexus/newick')):
             self.assertDistinctButEqualTree(self.ref_tree_list[idx], test_tree, distinct_taxa=True)
 
     def testNexusSameTaxa(self):
         stream = pathmap.tree_source_stream(datagen.reference_trees_filename(schema="nexus"))
-        for idx, test_tree in enumerate(nexus.generalized_tree_source_iter(stream=stream, taxon_set=self.ref_tree_list.taxon_set)):
+        for idx, test_tree in enumerate(dataio.tree_source_iter(stream=stream, schema='nexus/newick', taxon_set=self.ref_tree_list.taxon_set)):
             self.assertDistinctButEqualTree(self.ref_tree_list[idx], test_tree, distinct_taxa=False)
 
     def testNewickDistinctTaxa(self):
         stream = pathmap.tree_source_stream(datagen.reference_trees_filename(schema="newick"))
-        for idx, test_tree in enumerate(nexus.generalized_tree_source_iter(stream=stream)):
+        for idx, test_tree in enumerate(dataio.tree_source_iter(stream=stream, schema='nexus/newick')):
             self.assertDistinctButEqualTree(self.ref_tree_list[idx], test_tree, distinct_taxa=True, ignore_taxon_order=True)
 
     def testNewickSameTaxa(self):
         stream = pathmap.tree_source_stream(datagen.reference_trees_filename(schema="newick"))
-        for idx, test_tree in enumerate(nexus.generalized_tree_source_iter(stream=stream, taxon_set=self.ref_tree_list.taxon_set)):
+        for idx, test_tree in enumerate(dataio.tree_source_iter(stream=stream, schema='nexus/newick', taxon_set=self.ref_tree_list.taxon_set)):
             self.assertDistinctButEqualTree(self.ref_tree_list[idx], test_tree, distinct_taxa=False)
 
 class NexusTreeDocumentReaderTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        reader = nexus.NexusReader()
+        reader = dataio.get_reader('nexus')
         dataset = reader.read(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(schema="nexus")))
         self.assertEqual(len(dataset.tree_lists), 1)
         self.assertDistinctButEqualTreeList(
@@ -382,7 +382,7 @@ class NexusTreeDocumentReaderTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileNoTaxaBlockSameTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        reader = nexus.NexusReader()
+        reader = dataio.get_reader('nexus')
         dataset = reader.read(stream=pathmap.tree_source_stream("pythonidae.reference-trees.no-taxa-block.nexus"),
                               taxon_set=ref_tree_list.taxon_set)
         self.assertEqual(len(dataset.tree_lists), 1)
@@ -394,7 +394,7 @@ class NexusTreeDocumentReaderTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileNoTaxaBlockDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        reader = nexus.NexusReader()
+        reader = dataio.get_reader('nexus')
         dataset = reader.read(stream=pathmap.tree_source_stream("pythonidae.reference-trees.no-taxa-block.nexus"))
         self.assertEqual(len(dataset.tree_lists), 1)
         self.assertDistinctButEqualTreeList(
@@ -405,7 +405,7 @@ class NexusTreeDocumentReaderTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileNoTaxaBlockNoTranslateBlockSameTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        reader = nexus.NexusReader()
+        reader = dataio.get_reader('nexus')
         dataset = reader.read(stream=pathmap.tree_source_stream("pythonidae.reference-trees.no-taxa-no-translate-block.nexus"),
                               taxon_set=ref_tree_list.taxon_set)
         self.assertEqual(len(dataset.tree_lists), 1)
@@ -417,7 +417,7 @@ class NexusTreeDocumentReaderTest(datatest.DataObjectVerificationTestCase):
 
     def testReferenceTreeFileNoTaxaBlockNoTranslateBlockDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
-        reader = nexus.NexusReader()
+        reader = dataio.get_reader('nexus')
         dataset = reader.read(stream=pathmap.tree_source_stream("pythonidae.reference-trees.no-taxa-no-translate-block.nexus"))
         self.assertEqual(len(dataset.tree_lists), 1)
         self.assertDistinctButEqualTreeList(
@@ -456,7 +456,7 @@ class NexusDocumentReadWriteTest(datatest.DataObjectVerificationTestCase):
 class MesquiteNexusMultiTaxaTest(datatest.ComplexMultiTaxonSetDataVerificationTest):
 
     def testParseMesquiteMultiTaxa(self):
-        reader = nexus.NexusReader()
+        reader = dataio.get_reader('nexus')
         dataset = reader.read(stream=pathmap.mixed_source_stream("multitaxa_mesquite.nex"))
         self.check_full_dataset_taxon_references(dataset)
 

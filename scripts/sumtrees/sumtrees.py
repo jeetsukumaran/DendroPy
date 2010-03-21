@@ -23,7 +23,6 @@
 """
 CLI wrapper for tree summarization.
 """
-__DEBUG__ = True
 
 import os
 import sys
@@ -40,21 +39,12 @@ except:
     pass
 import platform
 
-#import dendropy
-#from dendropy import nexus
-#from dendropy import splits
-#from dendropy import treesum
-#from dendropy import datasets
-#from dendropy import trees
-#from dendropy.cli import confirm_overwrite, show_splash, ConsoleMessenger
-#from dendropy.dataio import MultiFileTreeIterator
-
 import dendropy
 from dendropy import treesplit
 from dendropy import treesum
 from dendropy.dataio import tree_source_iter
 from dendropy.dataio import multi_tree_source_iter
-from dendropy.dataio import nexus
+from dendropy.dataio import newick
 from dendropy.utility.messaging import ConsoleMessenger
 from dendropy.utility.cli import confirm_overwrite, show_splash
 
@@ -427,7 +417,6 @@ def main_cli():
     if opts.to_newick_format:
         output_dataset.write(output_dest, "newick")
     else:
-        nexus_writer = nexus.NexusWriter(dataset=output_dataset)
         if opts.include_taxa_block:
             simple = False
         else:
@@ -440,7 +429,7 @@ def main_cli():
                 username = "a user"
             comment.append("%s %s by %s." % (_program_name, _program_version, _program_author))
             comment.append("Using DendroPy Version %s by Jeet Sukumaran and Mark T. Holder."
-                % dendropy.PACKAGE_VERSION)
+                % dendropy.__version__)
             python_version = sys.version.replace("\n", "").replace("[", "(").replace("]",")")
             comment.append("Running under Python %s on %s." % (python_version, sys.platform))
             comment.append("Executed on %s by %s@%s." % (platform.node(),  username, socket.gethostname()))
@@ -457,7 +446,7 @@ def main_cli():
     if split_edges_dest:
         for split in split_distribution.splits:
             row = []
-            row.append(nexus.split_to_newick(split, split_distribution.taxa_block))
+            row.append(newick.split_as_newick_string(split, split_distribution.taxa_block))
             for edge_length in split_distribution.split_edge_lengths[split]:
                 row.append("%s" % edge_length)
             split_edges_dest.write("%s\n" % ("\t".join(row)))

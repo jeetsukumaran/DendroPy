@@ -22,37 +22,26 @@
 
 """
 Facultative use of NCL for NEXUS parsing.
-
-Note: that importing the name NexusReader from this file  will either return
-        an ncl-enabled NexusReader or the pure-python implementation.
-    The NCL based form will be imported if nexusclasslib is installed and
-        DENDROPY_ENABLE_NCL is defined in the environment.
 """
-
 
 import os
 from dendropy.utility.messaging import get_logger
 _LOG = get_logger("dataio.ncl")
 
-
 DENDROPY_NCL_AVAILABILITY = False
 try:
-    if "DENDROPY_ENABLE_NCL" in os.environ:
-        from nexusclasslib import nclwrapper
-        DENDROPY_NCL_AVAILABILITY = True
-    else:
-        from dendropy.dataio.purepythonnexus import NexusReader
+    from nexusclasslib import nclwrapper
+    DENDROPY_NCL_AVAILABILITY = True
 except ImportError:
-    from dendropy.dataio.purepythonnexus import NexusReader
+    DENDROPY_NCL_AVAILABILITY = False
+else:
 
-if DENDROPY_NCL_AVAILABILITY:
     import os
     from threading import Thread, Event
     from dendropy import dataobject
-    from dendropy.dataio import purepythonnexus
+    from dendropy.dataio import nexusreader_py
     from dendropy.dataio import nexustokenizer
     from dendropy.utility import iosys
-    import dendropy
 
     if "DENDROPY_ENABLE_NCL_WARNINGS" in os.environ:
         DENDROPY_NCL_WARNING_LEVEL = nclwrapper.NxsReader.SKIPPING_CONTENT_WARNING
@@ -62,17 +51,17 @@ if DENDROPY_NCL_AVAILABILITY:
     def _ncl_datatype_enum_to_dendropy(d):
         e = nclwrapper.NxsCharactersBlock
         if d == e.dna:
-            return dendropy.DnaCharacterMatrix
+            return dataobject.DnaCharacterMatrix
         if d == e.nucleotide:
-            return dendropy.NucleotideCharacterMatrix
+            return dataobject.NucleotideCharacterMatrix
         if d == e.rna:
-            return dendropy.RnaCharacterMatrixk
+            return dataobject.RnaCharacterMatrixk
         if d == e.protein:
-            return dendropy.ProteinCharacterMatrix
+            return dataobject.ProteinCharacterMatrix
         if (d == e.continuous):
-            return dendropy.ContinuousCharacterMatrix
+            return dataobject.ContinuousCharacterMatrix
         if d == e.standard:
-            return dendropy.StandardCharacterMatrix
+            return dataobject.StandardCharacterMatrix
         if (d == e.mixed) or (d == e.codon):
             s = d == e.continuous and "continuous" or (d == e.mixed and "mixed" or "codon")
             raise NotImplementedError("%s datatype not supported" % s)
@@ -196,7 +185,7 @@ if DENDROPY_NCL_AVAILABILITY:
 
         def __init__(self, schema="NEXUS", **kwargs):
             iosys.DataReader.__init__(self)
-            self.purePythonReader = purepythonnexus.NexusReader(**kwargs)
+            self.purePythonReader = nexusreader_py.NexusReader(**kwargs)
             self.encode_splits = False
             self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
             self.finish_node_func = kwargs.get("finish_node_func", None)
@@ -238,7 +227,6 @@ if DENDROPY_NCL_AVAILABILITY:
             NEXUS-formatted contents read from the file descriptor object
             `file_obj`.
             """
-            _LOG.debug("Entering read...")
             self.update_directives(**kwargs)
             n, use_ncl = self._get_fp(stream)
             if not use_ncl:
@@ -250,9 +238,8 @@ if DENDROPY_NCL_AVAILABILITY:
             return self.read_filepath_into_dataset(n, **kwargs)
 
         def read_filepath_into_dataset(self, file_path, dataset=None, **kwargs):
-            _LOG.debug("Entering read_filepath_into_dataset...")
             if self.dataset is None:
-                self.dataset = dendropy.DataSet()
+                self.dataset = dataobject.DataSet()
             self._taxa_to_fill = None
             _LOG.debug("Creating MultiFormatReader")
             ncl_nxs_reader_handle = nclwrapper.MultiFormatReader()
@@ -290,7 +277,7 @@ if DENDROPY_NCL_AVAILABILITY:
                 _LOG.debug("Calling MultiFormatReader.GetNumTreesBlocks()")
                 ntrb = ncl_nxs_reader_handle.GetNumTreesBlocks(ncl_tb)
                 for j in xrange(ntrb):
-                    trees_block = dendropy.TreeList()
+                    trees_block = dataobject.TreeList()
                     trees_block.taxon_set = taxa_block
                     _LOG.debug("Calling MultiFormatReader.GetTreesBlock(%d)" % j)
                     ncl_trb = ncl_nxs_reader_handle.GetTreesBlock(ncl_tb, j)
@@ -311,7 +298,6 @@ if DENDROPY_NCL_AVAILABILITY:
             Primary goal is to be memory efficient, storing no more than one tree
             at a time. Speed might have to be sacrificed for this!
             """
-            _LOG.debug("Entering tree_sourc_iter...")
             self.update_directives(**kwargs)
             taxa_block = self.attached_taxon_set
             if taxa_block is not None and len(taxa_block) == 0:
@@ -328,9 +314,9 @@ if DENDROPY_NCL_AVAILABILITY:
                     yield tree
                 return
             if dataset is None:
-                dataset = dendropy.DataSet()
+                dataset = dataobject.DataSet()
             if taxa_block is None:
-                taxa_block = dendropy.TaxonSet()
+                taxa_block = dataobject.TaxonSet()
             if taxa_block and not (taxa_block in dataset.taxon_sets):
                 dataset.add(taxa_block)
 
@@ -421,11 +407,11 @@ if DENDROPY_NCL_AVAILABILITY:
             labels = ncl_tb.GetAllLabels()
             _LOG.debug("labels = %s" % ' '.join(labels))
             if self._taxa_to_fill is None:
-                taxa_block =  dendropy.TaxonSet(labels)
+                taxa_block =  dataobject.TaxonSet(labels)
             else:
                 taxa_block = self._taxa_to_fill
                 self._taxa_to_fill = None
-                taxa_block.extend([dendropy.Taxon(label=i) for i in labels])
+                taxa_block.extend([dataobject.Taxon(label=i) for i in labels])
             self.ncl_taxa_to_native[tbiid] = taxa_block
             return taxa_block
 
@@ -468,7 +454,7 @@ if DENDROPY_NCL_AVAILABILITY:
 
             char_block = char_block_type()
             char_block.taxon_set = taxa_block
-            if isinstance(char_block, dendropy.StandardCharacterMatrix):
+            if isinstance(char_block, dataobject.StandardCharacterMatrix):
                 sa = dataobject.get_state_alphabet_from_symbols(
                         symbols=symbols,
                         gap_symbol='-',
@@ -501,13 +487,13 @@ if DENDROPY_NCL_AVAILABILITY:
 
             assert (len(raw_matrix) == len(taxa_block))
             for row_ind, taxon in enumerate(taxa_block):
-                v = dendropy.CharacterDataVector(taxon=taxon)
+                v = dataobject.CharacterDataVector(taxon=taxon)
                 raw_row = raw_matrix[row_ind]
                 char_block[taxon] = v
                 if not self.exclude_chars:
                     for c in raw_row:
                         state = ncl_numeric_code_to_state[c]
-                        v.append(dendropy.CharacterDataCell(value=state))
+                        v.append(dataobject.CharacterDataCell(value=state))
 
             #dataset.characters_blocks.append(char_block)
             supporting_exsets = False

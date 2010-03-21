@@ -32,7 +32,7 @@ from dendropy.test.support import runlevel
 from dendropy.test.support.extendedtest import ExtendedTestCase
 from dendropy.utility import messaging
 from dendropy.interop import paup
-from dendropy.dataio import nexus
+from dendropy import dataio
 from dendropy import treesum
 from dendropy import treesplit
 import dendropy
@@ -73,8 +73,9 @@ else:
             taxa_mask = taxon_set.all_taxa_bitmask()
             taxon_set.lock()
             for tree_filepath in tree_filepaths:
-                for tree in nexus.tree_source_iter(
+                for tree in dataio.tree_source_iter(
                         stream=open(tree_filepath, "rU"),
+                        schema='nexus',
                         taxon_set=taxon_set,
                         as_rooted=is_rooted):
                     self.assertIs(tree.taxon_set, dp_sd.taxon_set)
