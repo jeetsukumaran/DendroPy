@@ -32,7 +32,7 @@ Note: that importing the name NexusReader from this file  will either return
 
 import os
 from dendropy.utility.messaging import get_logger
-_LOG = get_logger(__name__)
+_LOG = get_logger("dataio.ncl")
 
 
 DENDROPY_NCL_AVAILABILITY = False
@@ -128,7 +128,7 @@ if DENDROPY_NCL_AVAILABILITY:
             self.exception = None
             self.done = False
             self.reader = nclwrapper.MultiFormatReader()
-            self.reader.SetWarningOutputLevel(DENDROPY_NCL_WARNING_LEVEL)
+            #self.reader.SetWarningOutputLevel(DENDROPY_NCL_WARNING_LEVEL)
             self.reader.cullIdenticalTaxaBlocks(True)
             self.die_event = die_event
             Thread.__init__(self,
@@ -254,35 +254,46 @@ if DENDROPY_NCL_AVAILABILITY:
             if self.dataset is None:
                 self.dataset = dendropy.DataSet()
             self._taxa_to_fill = None
-            m = nclwrapper.MultiFormatReader()
-            m.SetWarningOutputLevel(DENDROPY_NCL_WARNING_LEVEL)
-            m.cullIdenticalTaxaBlocks(True)
+            _LOG.debug("Creating MultiFormatReader")
+            ncl_nxs_reader_handle = nclwrapper.MultiFormatReader()
+            _LOG.debug("Setting MultiFormatReader's WarningOutput Level")
+            ncl_nxs_reader_handle.SetWarningOutputLevel(DENDROPY_NCL_WARNING_LEVEL)
+            _LOG.debug("Calling MultiFormatReader.cullIdenticalTaxaBlocks(True)")
+            ncl_nxs_reader_handle.cullIdenticalTaxaBlocks(True)
 
-            self._register_taxa_context(m, self.dataset.taxon_sets)
+            self._register_taxa_context(ncl_nxs_reader_handle, self.dataset.taxon_sets)
+            _LOG.debug("Calling MultiFormatReader.ReadFilepath(%s, %s)" % (file_path, self.format))
+            ncl_nxs_reader_handle.ReadFilepath(file_path, self.format)
 
-            m.ReadFilepath(file_path, self.format)
-
-            num_taxa_blocks = m.GetNumTaxaBlocks()
+            _LOG.debug("Calling MultiFormatReader.GetNumTaxaBlocks()")
+            num_taxa_blocks = ncl_nxs_reader_handle.GetNumTaxaBlocks()
             for i in xrange(num_taxa_blocks):
-                ncl_tb = m.GetTaxaBlock(i)
+                _LOG.debug("Calling MultiFormatReader.GetTaxaBlock(%d)" % i)
+                ncl_tb = ncl_nxs_reader_handle.GetTaxaBlock(i)
                 taxa_block = self._ncl_taxa_block_to_native(ncl_tb)
                 self.dataset.add(taxa_block)
-                #nab = m.GetNumAssumptionsBlocks(ncl_tb)
+
+                #nab = ncl_nxs_reader_handle.GetNumAssumptionsBlocks(ncl_tb)
                 #for k in xrange(nab):
-                #    a = m.GetAssumptionsBlock(ncl_tb, k)
+                #    a = ncl_nxs_reader_handle.GetAssumptionsBlock(ncl_tb, k)
                 #    cs = a.GetTaxSetNames()
                 #    print "TaxSets have the names " , str(cs)
-                num_char_blocks = m.GetNumCharactersBlocks(ncl_tb)
+
+                _LOG.debug("Calling MultiFormatReader.GetNumCharactersBlocks()")
+                num_char_blocks = ncl_nxs_reader_handle.GetNumCharactersBlocks(ncl_tb)
                 for j in xrange(num_char_blocks):
-                    ncl_cb = m.GetCharactersBlock(ncl_tb, j)
-                    char_block = self._ncl_characters_block_to_native(taxa_block, ncl_cb)
+                    _LOG.debug("Calling MultiFormatReader.GetCharactersBlock(taxablock, %d)" % j)
+                    ncl_cb = ncl_nxs_reader_handle.GetCharactersBlock(ncl_tb, j)
+                    char_block = self._ncl_characters_block_to_native(taxa_block, ncl_cb, ncl_nxs_reader_handle)
                     if char_block:
                         self.dataset.add(char_block)
-                ntrb = m.GetNumTreesBlocks(ncl_tb)
+                _LOG.debug("Calling MultiFormatReader.GetNumTreesBlocks()")
+                ntrb = ncl_nxs_reader_handle.GetNumTreesBlocks(ncl_tb)
                 for j in xrange(ntrb):
                     trees_block = dendropy.TreeList()
                     trees_block.taxon_set = taxa_block
-                    ncl_trb = m.GetTreesBlock(ncl_tb, j)
+                    _LOG.debug("Calling MultiFormatReader.GetTreesBlock(%d)" % j)
+                    ncl_trb = ncl_nxs_reader_handle.GetTreesBlock(ncl_tb, j)
                     for k in xrange(ncl_trb.GetNumTrees()):
                         ftd = ncl_trb.GetFullTreeDescription(k)
                         tokens = ftd.GetTreeTokens()
@@ -367,7 +378,9 @@ if DENDROPY_NCL_AVAILABILITY:
         def _register_taxa_context(self, ncl_reader, incoming_taxa_blocks):
             if not incoming_taxa_blocks:
                 return
+
             num_taxa_blocks = ncl_reader.GetNumTaxaBlocks()
+            _LOG.debug("Registering previously read taxa blocks.  Currently %d.\nIncoming = %s" % (num_taxa_blocks, str(incoming_taxa_blocks)))
             existing_taxa_blocks = []
             for i in xrange(num_taxa_blocks):
                 ncl_tb = ncl_reader.GetTaxaBlock(i)
@@ -376,29 +389,37 @@ if DENDROPY_NCL_AVAILABILITY:
 
             to_add = []
             for tb in incoming_taxa_blocks:
-                found = False
-                l = [i.label for i in tb]
-                for k, v in existing_taxa_blocks:
-                    if l == v:
-                        found = True
-                        self.ncl_taxa_to_native[k.GetInstanceIdentifierString()] = tb
-                        break
-                if not found:
-                    to_add.append(tb)
+                if tb or True:
+                    found = False
+                    l = [i.label for i in tb]
+                    for k, v in existing_taxa_blocks:
+                        if l == v:
+                            found = True
+                            self.ncl_taxa_to_native[k.GetInstanceIdentifierString()] = tb
+                            break
+                    if not found:
+                        to_add.append(tb)
 
             for tb in to_add:
                 tn = tuple([i.label for i in tb])
+                _LOG.debug("RegisterTaxa(%s)" % str(tn))
                 ncl_tb = ncl_reader.RegisterTaxa(tn)
-                iid = ncl_tb.GetInstanceIdentifierString()
-                self.ncl_taxa_to_native[iid] = tb
+                if ncl_tb:
+                    iid = ncl_tb.GetInstanceIdentifierString()
+                    self.ncl_taxa_to_native[iid] = tb
 
         def _ncl_taxa_block_to_native(self, ncl_tb):
+            _LOG.debug("Converting NCL taxa block to native")
+            _LOG.debug("calling NxsTaxaBlock.GetInstanceIdentifierString()")
             tbiid = ncl_tb.GetInstanceIdentifierString()
+            _LOG.debug("got %s" % tbiid)
             taxa_block = self.ncl_taxa_to_native.get(tbiid)
             if taxa_block is not None:
                 return taxa_block
 
+            _LOG.debug("calling NxsTaxaBlock.GetAllLabels()")
             labels = ncl_tb.GetAllLabels()
+            _LOG.debug("labels = %s" % ' '.join(labels))
             if self._taxa_to_fill is None:
                 taxa_block =  dendropy.TaxonSet(labels)
             else:
@@ -431,7 +452,7 @@ if DENDROPY_NCL_AVAILABILITY:
                                             rooting_interpreter=self.rooting_interpreter,
                                             finish_node_func=self.finish_node_func)
 
-        def _ncl_characters_block_to_native(self, taxa_block, ncl_cb):
+        def _ncl_characters_block_to_native(self, taxa_block, ncl_cb, ncl_nxs_reader_handle):
             """
             Processes a FORMAT command. Assumes that the file reader is
             positioned right after the "FORMAT" token in a FORMAT command.
@@ -496,9 +517,11 @@ if DENDROPY_NCL_AVAILABILITY:
                 s = ncl_cb.GetExcludedIndexSet()
                 print "Excluded chars =", str(nclwrapper.NxsSetReader.GetSetAsVector(s))
             if supporting_charset_exsets:
-                nab = m.GetNumAssumptionsBlocks(ncl_cb)
+                _LOG.debug("Calling MultiFormatReader.GetNumTaxaBlocks()")
+                nab = ncl_nxs_reader_handle.GetNumAssumptionsBlocks(ncl_cb)
                 for k in xrange(nab):
-                    a = m.GetAssumptionsBlock(ncl_cb, k)
+                    _LOG.debug("Calling MultiFormatReader.GetNumTaxaBlocks()")
+                    a = ncl_nxs_reader_handle.GetAssumptionsBlock(ncl_cb, k)
                     cs = a.GetCharSetNames()
                     print "CharSets have the names " , str(cs)
             return char_block
