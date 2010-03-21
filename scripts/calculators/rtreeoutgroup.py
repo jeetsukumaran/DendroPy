@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 def rtree_outgroup_labels(tree):
-    """akes a tree (which will be treated as rooted), and returns a list of labels
+    """Takes a tree (which will be treated as rooted), and returns a list of labels
     of the nodes that would serve as the "outgroup" if you were to define the
     largest clade in the tree to be the "ingroup".
 
