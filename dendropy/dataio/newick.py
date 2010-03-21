@@ -201,21 +201,11 @@ class NewickWriter(iosys.DataWriter):
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
         self.quote_underscores = kwargs.get('quote_underscores', True)
 
-    def write(self, stream, **kwargs):
+    def write(self, stream):
         """
         Writes attached `DataSource` or `TaxonDomain` to a destination given
         by the file-like object `stream`.
         """
-
-        # update directives
-        self.dataset = kwargs.get("dataset", self.dataset)
-        self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
-        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
-        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
-        self.edge_lengths = kwargs.get("edge_lengths", self.edge_lengths)
-        self.internal_labels = kwargs.get("internal_labels", self.internal_labels)
-        self.preserve_spaces = kwargs.get("preserve_spaces", self.preserve_spaces)
-        self.quote_underscores = kwargs.get('quote_underscores', self.quote_underscores)
 
         if self.exclude_trees:
             return

@@ -166,15 +166,11 @@ class FastaWriter(iosys.DataWriter):
         iosys.DataWriter.__init__(self, **kwargs)
         self.wrap = kwargs.get("wrap", 0)
 
-    def write(self, stream, **kwargs):
+    def write(self, stream):
         """
         Writes attached `DataSource` or `TaxonDomain` in FASTA format to a
         file-like object `stream`.
         """
-        self.dataset = kwargs.get("dataset", self.dataset)
-        self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
-        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
-        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
         assert self.dataset is not None, \
             "FastaWriter instance is not attached to a DataSet: no source of data"
         if self.exclude_chars:

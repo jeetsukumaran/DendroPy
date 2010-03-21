@@ -835,7 +835,7 @@ class NexmlWriter(iosys.DataWriter):
 
     ### self.datasets.Writer interface  ###
 
-    def write(self, stream, **kwargs):
+    def write(self, stream):
         """
         Writes a list of DendroPy Tree objects to a full NEXML
         document.

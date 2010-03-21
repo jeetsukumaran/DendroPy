@@ -66,25 +66,11 @@ class NexusWriter(iosys.DataWriter):
         self.quote_underscores = kwargs.get('quote_underscores', True)
         self.comment = kwargs.get("comment", [])
 
-    def write(self, stream, **kwargs):
+    def write(self, stream):
         """
         Writes attached `DataSource` or `TaxonDomain` to the file-like object
         `stream`.
         """
-
-        # update directives
-        self.dataset = kwargs.get("dataset", self.dataset)
-        self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
-        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
-        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
-        self.simple = kwargs.get("simple", self.simple)
-        self.exclude_taxa = kwargs.get("exclude_taxa", self.exclude_taxa)
-        self.is_write_rooting = kwargs.get("write_rooting", self.is_write_rooting)
-        self.is_write_edge_lengths = kwargs.get("edge_lengths", self.is_write_edge_lengths)
-        self.is_write_internal_labels = kwargs.get("internal_labels", self.is_write_internal_labels)
-        self.is_write_block_titles = kwargs.get("block_titles", self.is_write_block_titles)
-        self.preserve_spaces = kwargs.get("preserve_spaces", self.preserve_spaces)
-        self.quote_underscores = kwargs.get('quote_underscores', self.quote_underscores)
 
         assert self.dataset is not None, \
             "NexusWriter instance is not attached to a DataSet: no source of data"

@@ -271,17 +271,8 @@ class PhylipWriter(iosys.DataWriter):
                     taxon_label_map[t] = label.ljust(STRICT_MODE_MAX_LABEL_LENGTH)
         return taxon_label_map
 
-    def write(self, stream, **kwargs):
+    def write(self, stream):
         "Writes dataset to a full PHYLIP document."
-
-        # update directives
-        self.dataset = kwargs.get("dataset", self.dataset)
-        self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
-        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
-        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
-        self.strict = kwargs.get("strict", False)
-        self.spaces_to_underscores = kwargs.get("spaces_to_underscores", self.spaces_to_underscores)
-        self.force_unique_taxon_labels = kwargs.get("force_unique_taxon_labels", self.force_unique_taxon_labels)
 
         if self.exclude_chars:
             return self.dataset
