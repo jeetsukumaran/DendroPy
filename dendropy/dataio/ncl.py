@@ -40,6 +40,11 @@ else:
     from dendropy.utility import iosys
     import dendropy
 
+    if "DENDROPY_ENABLE_NCL_WARNINGS" in os.environ:
+        DENDROPY_NCL_WARNING_LEVEL = nclwrapper.NxsReader.SKIPPING_CONTENT_WARNING
+    else:
+        DENDROPY_NCL_WARNING_LEVEL = nclwrapper.NxsReader.SUPPRESS_WARNINGS_LEVEL
+
     def _ncl_datatype_enum_to_dendropy(d):
         e = nclwrapper.NxsCharactersBlock
         if d == e.dna:
@@ -109,6 +114,7 @@ else:
             self.exception = None
             self.done = False
             self.reader = nclwrapper.MultiFormatReader()
+            self.reader.SetWarningOutputLevel(DENDROPY_NCL_WARNING_LEVEL)
             self.reader.cullIdenticalTaxaBlocks(True)
             self.die_event = die_event
             Thread.__init__(self,
@@ -233,6 +239,7 @@ else:
                 self.dataset = dendropy.DataSet()
             self._taxa_to_fill = None
             m = nclwrapper.MultiFormatReader()
+            m.SetWarningOutputLevel(DENDROPY_NCL_WARNING_LEVEL)
             m.cullIdenticalTaxaBlocks(True)
 
             self._register_taxa_context(m, self.dataset.taxon_sets)
