@@ -28,31 +28,22 @@ in various formats.
 
 import os
 from dendropy.utility import messaging
-_LOG = messaging.get_logger(__name__)
-from dendropy.utility import error
 from dendropy.dataio import ioclient
 from dendropy.dataio import newick
 from dendropy.dataio import nexus
 from dendropy.dataio import fasta
 from dendropy.dataio import phylip
 from dendropy.dataio import nexml
+from dendropy.dataio.ioclient import get_reader, get_writer, tree_source_iter, multi_tree_source_iter
+_LOG = messaging.get_logger(__name__)
 
-# syntax is:
-#   dataschema.register(<FORMAT NAME>, <READER TYPE>, <WRITER TYPE>, <TREE ITERATOR>)
-
-DEFAULT_NEXUS_READER = None
-
-if "DENDROPY_BYPASS_NCL" not in os.environ:
-    from dendropy.dataio import ncl
-    if ncl.DENDROPY_NCL_AVAILABILITY:
-        _LOG.debug("Using NCL as the default NEXUS parser")
-        DEFAULT_NEXUS_READER = ncl.NexusReader
-
-if DEFAULT_NEXUS_READER is None:
-    _LOG.debug("NCL wrapper is not available or disabled: using native Python NEXUS parser")
-    DEFAULT_NEXUS_READER = nexus.NexusReader
-
-ioclient.register("nexus", DEFAULT_NEXUS_READER, nexus.NexusWriter, nexus.tree_source_iter)
+###############################################################################
+## Data Schema Handlers
+##
+## Syntax is:
+##   ioclient.register(<FORMAT NAME>, <READER TYPE>, <WRITER TYPE>, <TREE ITERATOR>)
+##
+ioclient.register("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
 ioclient.register("nexus-native", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
 ioclient.register("newick", newick.NewickReader, newick.NewickWriter, newick.tree_source_iter)
 ioclient.register("nexus/newick", None, None, nexus.generalized_tree_source_iter)
@@ -63,5 +54,22 @@ ioclient.register("proteinfasta", fasta.ProteinFastaReader, fasta.FastaWriter, N
 ioclient.register("phylip", phylip.PhylipReader, phylip.PhylipWriter, None)
 ioclient.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None)
 
-from dendropy.dataio.ioclient import get_reader, get_writer, tree_source_iter, multi_tree_source_iter
+###############################################################################
+## NCL Interoperability
 
+def disable_ncl():
+    _LOG.debug('Disabling Nexus Class Library bindings: using native Python NEXUS parser')
+    ioclient.register("nexus", nexus.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
+
+def enable_ncl():
+    from dendropy.dataio import ncl
+    if ncl.DENDROPY_NCL_AVAILABILITY:
+        _LOG.debug('Enabling Nexus Class Library bindings: using NCL NEXUS parser')
+        ioclient.register("nexus", ncl.NexusReader, nexus.NexusWriter, nexus.tree_source_iter)
+    else:
+        _LOG.debug('Nexus Class Library bindings are not available: using native Python NEXUS parser')
+
+if "DENDROPY_DISABLE_NCL" not in os.environ:
+    enable_ncl()
+else:
+    disable_ncl()
