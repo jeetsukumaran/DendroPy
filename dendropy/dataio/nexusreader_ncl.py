@@ -35,10 +35,9 @@ else:
     import os
     from threading import Thread, Event
     from dendropy import dataobject
-    from dendropy.dataio import nexus
+    from dendropy.dataio import nexusreader_py
     from dendropy.dataio import nexustokenizer
     from dendropy.utility import iosys
-    import dendropy
 
     if "DENDROPY_ENABLE_NCL_WARNINGS" in os.environ:
         DENDROPY_NCL_WARNING_LEVEL = nclwrapper.NxsReader.SKIPPING_CONTENT_WARNING
@@ -48,17 +47,17 @@ else:
     def _ncl_datatype_enum_to_dendropy(d):
         e = nclwrapper.NxsCharactersBlock
         if d == e.dna:
-            return dendropy.DnaCharacterMatrix
+            return dataobject.DnaCharacterMatrix
         if d == e.nucleotide:
-            return dendropy.NucleotideCharacterMatrix
+            return dataobject.NucleotideCharacterMatrix
         if d == e.rna:
-            return dendropy.RnaCharacterMatrixk
+            return dataobject.RnaCharacterMatrixk
         if d == e.protein:
-            return dendropy.ProteinCharacterMatrix
+            return dataobject.ProteinCharacterMatrix
         if (d == e.continuous):
-            return dendropy.ContinuousCharacterMatrix
+            return dataobject.ContinuousCharacterMatrix
         if d == e.standard:
-            return dendropy.StandardCharacterMatrix
+            return dataobject.StandardCharacterMatrix
         if (d == e.mixed) or (d == e.codon):
             s = d == e.continuous and "continuous" or (d == e.mixed and "mixed" or "codon")
             raise NotImplementedError("%s datatype not supported" % s)
@@ -182,7 +181,7 @@ else:
 
         def __init__(self, schema="NEXUS", **kwargs):
             iosys.DataReader.__init__(self)
-            self.purePythonReader = nexus.NexusReader(**kwargs)
+            self.purePythonReader = nexusreader_py.NexusReader(**kwargs)
             self.encode_splits = False
             self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
             self.finish_node_func = kwargs.get("finish_node_func", None)
@@ -236,7 +235,7 @@ else:
 
         def read_filepath_into_dataset(self, file_path, dataset=None, **kwargs):
             if self.dataset is None:
-                self.dataset = dendropy.DataSet()
+                self.dataset = dataobject.DataSet()
             self._taxa_to_fill = None
             m = nclwrapper.MultiFormatReader()
             m.SetWarningOutputLevel(DENDROPY_NCL_WARNING_LEVEL)
@@ -264,7 +263,7 @@ else:
                         self.dataset.add(char_block)
                 ntrb = m.GetNumTreesBlocks(ncl_tb)
                 for j in xrange(ntrb):
-                    trees_block = dendropy.TreeList()
+                    trees_block = dataobject.TreeList()
                     trees_block.taxon_set = taxa_block
                     ncl_trb = m.GetTreesBlock(ncl_tb, j)
                     for k in xrange(ncl_trb.GetNumTrees()):
@@ -300,9 +299,9 @@ else:
                     yield tree
                 return
             if dataset is None:
-                dataset = dendropy.DataSet()
+                dataset = dataobject.DataSet()
             if taxa_block is None:
-                taxa_block = dendropy.TaxonSet()
+                taxa_block = dataobject.TaxonSet()
             if taxa_block and not (taxa_block in dataset.taxon_sets):
                 dataset.add(taxa_block)
 
@@ -383,11 +382,11 @@ else:
 
             labels = ncl_tb.GetAllLabels()
             if self._taxa_to_fill is None:
-                taxa_block =  dendropy.TaxonSet(labels)
+                taxa_block =  dataobject.TaxonSet(labels)
             else:
                 taxa_block = self._taxa_to_fill
                 self._taxa_to_fill = None
-                taxa_block.extend([dendropy.Taxon(label=i) for i in labels])
+                taxa_block.extend([dataobject.Taxon(label=i) for i in labels])
             self.ncl_taxa_to_native[tbiid] = taxa_block
             return taxa_block
 
@@ -430,7 +429,7 @@ else:
 
             char_block = char_block_type()
             char_block.taxon_set = taxa_block
-            if isinstance(char_block, dendropy.StandardCharacterMatrix):
+            if isinstance(char_block, dataobject.StandardCharacterMatrix):
                 sa = dataobject.get_state_alphabet_from_symbols(
                         symbols=symbols,
                         gap_symbol='-',
@@ -463,13 +462,13 @@ else:
 
             assert (len(raw_matrix) == len(taxa_block))
             for row_ind, taxon in enumerate(taxa_block):
-                v = dendropy.CharacterDataVector(taxon=taxon)
+                v = dataobject.CharacterDataVector(taxon=taxon)
                 raw_row = raw_matrix[row_ind]
                 char_block[taxon] = v
                 if not self.exclude_chars:
                     for c in raw_row:
                         state = ncl_numeric_code_to_state[c]
-                        v.append(dendropy.CharacterDataCell(value=state))
+                        v.append(dataobject.CharacterDataCell(value=state))
 
             #dataset.characters_blocks.append(char_block)
             supporting_exsets = False
