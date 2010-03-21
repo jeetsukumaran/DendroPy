@@ -117,7 +117,7 @@ else:
             self.exception = None
             self.done = False
             self.reader = nclwrapper.MultiFormatReader()
-            #self.reader.SetWarningOutputLevel(DENDROPY_NCL_WARNING_LEVEL)
+            self.reader.SetWarningOutputLevel(DENDROPY_NCL_WARNING_LEVEL)
             self.reader.cullIdenticalTaxaBlocks(True)
             self.die_event = die_event
             Thread.__init__(self,
