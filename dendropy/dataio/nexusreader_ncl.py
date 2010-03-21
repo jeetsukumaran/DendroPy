@@ -186,7 +186,7 @@ else:
         def __init__(self, schema="NEXUS", **kwargs):
             iosys.DataReader.__init__(self)
             self.purePythonReader = nexusreader_py.NexusReader(**kwargs)
-            self.encode_splits = False
+            self.encode_splits = kwargs.get("encode_splits", False)
             self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
             self.finish_node_func = kwargs.get("finish_node_func", None)
             self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", False)
@@ -207,37 +207,24 @@ else:
             except AttributeError:
                 return "", False
 
-        def update_directives(self, **kwargs):
-            """
-            Updates customization of reader.
-            """
-            self.dataset = kwargs.get("dataset", self.dataset)
-            self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
-            self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
-            self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
-            self.rooting_interpreter.update(**kwargs)
-            self.finish_node_func = kwargs.get("finish_node_func", self.finish_node_func)
-            self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", self.allow_duplicate_taxon_labels)
-            self.preserve_underscores = kwargs.get('preserve_underscores', self.preserve_underscores)
-            self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", self.suppress_internal_node_taxa)
-
-        def read(self, stream, **kwargs):
+        def read(self, stream):
             """
             Instantiates and returns a DataSet object based on the
             NEXUS-formatted contents read from the file descriptor object
             `file_obj`.
             """
-            self.update_directives(**kwargs)
             n, use_ncl = self._get_fp(stream)
             if not use_ncl:
-                self.purePythonReader.update_directives(**kwargs)
                 self.purePythonReader.encode_splits = self.encode_splits
                 self.purePythonReader.rooting_interpreter = self.rooting_interpreter
                 self.purePythonReader.finish_node_func = self.finish_node_func
-                return self.purePythonReader.read(stream, **kwargs)
-            return self.read_filepath_into_dataset(n, **kwargs)
+                self.purePythonReader.allow_duplicate_taxon_labels = self.allow_duplicate_taxon_labels
+                self.purePythonReader.preserve_underscores = self.preserve_underscores
+                self.purePythonReader.suppress_internal_node_taxa = self.suppress_internal_node_taxa
+                return self.purePythonReader.read(stream)
+            return self.read_filepath_into_dataset(n)
 
-        def read_filepath_into_dataset(self, file_path, dataset=None, **kwargs):
+        def read_filepath_into_dataset(self, file_path):
             if self.dataset is None:
                 self.dataset = dataobject.DataSet()
             self._taxa_to_fill = None
@@ -299,7 +286,7 @@ else:
             at a time. Speed might have to be sacrificed for this!
             """
             self.update_directives(**kwargs)
-            taxa_block = self.attached_taxon_set
+            taxa_block = self.get_default_taxon_set()
             if taxa_block is not None and len(taxa_block) == 0:
                 self._taxa_to_fill = taxa_block
             else:

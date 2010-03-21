@@ -128,63 +128,21 @@ class NexusReader(iosys.DataReader):
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
         self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
 
-    def update_directives(self, **kwargs):
-        """
-        Updates customization of reader.
-        """
-        self.dataset = kwargs.get("dataset", self.dataset)
-        self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
-        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
-        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
-        self.rooting_interpreter.update(**kwargs)
-        self.finish_node_func = kwargs.get("finish_node_func", self.finish_node_func)
-        self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", self.allow_duplicate_taxon_labels)
-        self.preserve_underscores = kwargs.get('preserve_underscores', self.preserve_underscores)
-        self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", self.suppress_internal_node_taxa)
-
-    def read(self, stream, **kwargs):
+    def read(self, stream):
         """
         Instantiates and returns a DataSet object based on the
         NEXUS-formatted contents given in the file-like object `stream`.
-
-            - `taxon_set`: TaxonSet object to use when reading data
-            - `as_rooted=True` (or `as_unrooted=False`): interprets trees as rooted
-            - `as_unrooted=True` (or `as_rooted=False`): interprets trees as unrooted
-            - `default_as_rooted=True` (or `default_as_unrooted=False`): interprets
-               all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
-            - `default_as_unrooted=True` (or `default_as_rooted=False`): interprets
-               all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
-
         """
-        # reset and update directives
         self.reset()
-        self.update_directives(**kwargs)
-
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
-        if "taxon_set" in kwargs:
-            self.attached_taxon_set = kwargs["taxon_set"]
-        if self.attached_taxon_set is not None and self.attached_taxon_set not in self.dataset.taxon_sets:
-            self.dataset.add(self.attached_taxon_set)
         self._prepare_to_read_from_stream(stream)
         self._parse_nexus_file()
-        self.reset()
         return self.dataset
 
-    def tree_source_iter(self, stream, **kwargs):
+    def tree_source_iter(self, stream):
         """
         Iterates over a NEXUS-formatted source of trees.
-
-        The following optional keyword arguments are recognized:
-
-            - `taxon_set`: TaxonSet object to use when reading data
-            - `as_rooted=True` (or `as_unrooted=False`): interprets trees as rooted
-            - `as_unrooted=True` (or `as_rooted=False`): interprets trees as unrooted
-            - `default_as_rooted=True` (or `default_as_unrooted=False`): interprets
-               all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
-            - `default_as_unrooted=True` (or `default_as_rooted=False`): interprets
-               all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
-
         Only trees will be returned, and any and all character data will
         be skipped. The iterator will span over multiple tree blocks,
         but, because our NEXUS data model implementation currently does
@@ -194,17 +152,9 @@ class NexusReader(iosys.DataReader):
         `taxon_set` argument). This behavior is similar to how multiple
         tree blocks are handled by a full NEXUS data file read.
         """
-
-        # reset and update directives
         self.reset()
-        self.update_directives(**kwargs)
-
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
-        if "taxon_set" in kwargs:
-            self.attached_taxon_set = kwargs["taxon_set"]
-        if self.attached_taxon_set is not None and self.attached_taxon_set not in self.dataset.taxon_sets:
-            self.dataset.add(self.attached_taxon_set)
         self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream, preserve_underscores=self.preserve_underscores)
         token = self.stream_tokenizer.read_next_token_ucase()
         if token != "#NEXUS":

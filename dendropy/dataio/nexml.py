@@ -204,7 +204,7 @@ class NexmlReader(iosys.DataReader):
 
     ## Implementation of the datasets.Reader interface ##
 
-    def read(self, stream, **kwargs):
+    def read(self, stream):
         """
         Instantiates and returns a DataSet object based on the
         NEXML-formatted contents read from the file descriptor object

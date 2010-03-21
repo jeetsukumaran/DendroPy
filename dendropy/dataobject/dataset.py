@@ -164,7 +164,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
                 raise TypeError("DataSet object is already attached to a TaxonSet, but different TaxonSet passed to using 'taxon_set' keyword argument")
         reader = get_reader(schema=schema, **kwargs)
         try:
-            reader.read(stream, **kwargs)
+            reader.read(stream)
 #        except error.DataParseError as x:
         except error.DataParseError, x:
             x.decorate_with_name(stream=stream)
@@ -194,7 +194,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
 #            elif kwargs["taxon_set"] is not self.attached_taxon_set:
 #                raise TypeError("DataSet object is already attached to a TaxonSet, but different TaxonSet passed using 'taxon_set' keyword argument")
         writer = get_writer(schema=schema, **kwargs)
-        writer.write(stream, **kwargs)
+        writer.write(stream)
 
     def _subdescription(self, name, objs, depth, indent, itemize, output, **kwargs):
         if len(objs) == 0:

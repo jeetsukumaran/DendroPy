@@ -49,6 +49,7 @@ class FastaReader(iosys.DataReader):
         is one of the `CharacterMatrix` types.
         """
         iosys.DataReader.__init__(self, **kwargs)
+        self.simple_rows = kwargs.get('row_type', 'rich').upper() == 'STR'
         if "char_matrix_type" in kwargs and "data_type" in kwargs:
             raise ValueError("Cannot specify both 'data_type' and 'char_matrix_type'")
         if "data_type" in kwargs:
@@ -65,21 +66,18 @@ class FastaReader(iosys.DataReader):
         if self.char_matrix_type not in FastaReader.supported_matrix_types:
             raise ValueError("'%s' is not a supported data type for FastaReader" % self.char_matrix_type.__name__)
 
-    def read(self, stream, **kwargs):
+    def read(self, stream):
         """
         Main file parsing driver.
         """
-        self.dataset = kwargs.get("dataset", self.dataset)
-        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
-        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
-        simple_rows = kwargs.get('row_type', 'rich').upper() == 'STR'
+
         if self.exclude_chars:
             return self.dataset
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
-        self.attached_taxon_set = self.get_default_taxon_set(**kwargs)
+        taxon_set = self.get_default_taxon_set()
         self.char_matrix = self.dataset.new_char_matrix(char_matrix_type=self.char_matrix_type,
-                taxon_set=self.attached_taxon_set)
+                taxon_set=taxon_set)
         if isinstance(self.char_matrix, dataobject.StandardCharacterMatrix) \
             and len(self.char_matrix.state_alphabets) == 0:
                 self.char_matrix.state_alphabets.append(dataobject.get_state_alphabet_from_symbols("0123456789"))
@@ -96,7 +94,7 @@ class FastaReader(iosys.DataReader):
         curr_vec = None
         curr_taxon = None
 
-        if simple_rows:
+        if self.simple_rows:
             legal_chars = self.char_matrix.default_state_alphabet.get_legal_symbols_as_str()
 
         for line_index, line in enumerate(stream):
@@ -104,15 +102,15 @@ class FastaReader(iosys.DataReader):
             if not s:
                 continue
             if s.startswith('>'):
-                if simple_rows and curr_taxon and curr_vec:
+                if self.simple_rows and curr_taxon and curr_vec:
                     self.char_matrix[curr_taxon] = "".join(curr_vec)
                 name = s[1:].strip()
-                curr_taxon = self.attached_taxon_set.require_taxon(label=name)
+                curr_taxon = taxon_set.require_taxon(label=name)
                 if curr_taxon in self.char_matrix:
                     raise DataParseError(message="Fasta error: Repeated sequence name (%s) found" % name, row=line_index + 1, stream=stream)
                 if curr_vec is not None and len(curr_vec) == 0:
                     raise DataParseError(message="Fasta error: Expected sequence, but found another sequence name (%s)" % name, row=line_index + 1, stream=stream)
-                if simple_rows:
+                if self.simple_rows:
                     curr_vec = []
                 else:
                     curr_vec = dataobject.CharacterDataVector(taxon=curr_taxon)
@@ -120,7 +118,7 @@ class FastaReader(iosys.DataReader):
             elif curr_vec is None:
                 raise DataParseError(message="Fasta error: Expecting a lines starting with > before sequences", row=line_index + 1, stream=stream)
             else:
-                if simple_rows:
+                if self.simple_rows:
                     for col_ind, c in enumerate(s):
                         c = c.strip()
                         if not c:
@@ -138,7 +136,7 @@ class FastaReader(iosys.DataReader):
                             curr_vec.append(dataobject.CharacterDataCell(value=state))
                         except:
                             raise DataParseError(message='Unrecognized sequence symbol "%s"' % c, row=line_index + 1, column=col_ind + 1, stream=stream)
-        if simple_rows and curr_taxon and curr_vec:
+        if self.simple_rows and curr_taxon and curr_vec:
             self.char_matrix[curr_taxon] = "".join(curr_vec)
         return self.dataset
 

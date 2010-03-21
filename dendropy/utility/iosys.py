@@ -111,7 +111,7 @@ class DataReader(IOService):
         IOService.__init__(self, **kwargs)
         self.encode_splits = kwargs.get("encode_splits", False)
 
-    def read(self, stream, **kwargs):
+    def read(self, stream):
         """
         Reads data from the file-like object `stream`, and populates
         and returns the attached `DataSet` object or a new `DataSet` object
@@ -156,7 +156,7 @@ class DataWriter(IOService):
         """
         IOService.__init__(self, **kwargs)
 
-    def write(self, stream, **kwargs):
+    def write(self, stream):
         """
         Writes data in the attached `DataSet` object to a destination given
         by the file-like object `stream`.

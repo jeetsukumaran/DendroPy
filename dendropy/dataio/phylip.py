@@ -100,23 +100,14 @@ class PhylipReader(iosys.DataReader):
             parts.append("sequential")
         return ", ".join(parts)
 
-    def read(self, stream, **kwargs):
-        self.dataset = kwargs.get("dataset", self.dataset)
-        self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
-        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
-        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
-        self.strict = kwargs.get("strict", self.strict)
-        self.interleaved = kwargs.get("interleaved", self.interleaved)
-        self.multispace_delimiter = kwargs.get("multispace_delimiter", self.multispace_delimiter)
-        self.underscores_to_spaces = kwargs.get("underscores_to_spaces", self.underscores_to_spaces)
-        self.ignore_invalid_chars = kwargs.get("ignore_invalid_chars", self.ignore_invalid_chars)
+    def read(self, stream):
         if self.exclude_chars:
             return self.dataset
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
-        self.attached_taxon_set = self.get_default_taxon_set(**kwargs)
+        taxon_set = self.get_default_taxon_set()
         self.char_matrix = self.dataset.new_char_matrix(char_matrix_type=self.char_matrix_type,
-                taxon_set=self.attached_taxon_set)
+                taxon_set=taxon_set)
         if isinstance(self.char_matrix, dataobject.StandardCharacterMatrix) \
             and len(self.char_matrix.state_alphabets) == 0:
                 self.char_matrix.state_alphabets.append(dataobject.get_state_alphabet_from_symbols("0123456789"))

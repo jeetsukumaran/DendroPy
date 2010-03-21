@@ -162,39 +162,22 @@ class NewickReader(iosys.DataReader):
         self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
         self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', True)
 
-    def read(self, stream, **kwargs):
+    def read(self, stream):
         """
         Instantiates and returns a `DataSet` object based on the
         NEWICK-formatted contents read from the file-like object source
         `stream`.
-
-            - `taxon_set`: TaxonSet object to use when reading data
-            - `as_rooted=True`: (or `as_unrooted=False`) interprets trees as rooted
-            - `as_unrooted=True`: (or `as_rooted=False`) interprets trees as rooted
-            - `default_as_rooted`: (or `default_as_unrooted=False`) interprets
-               all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
-            - `default_as_unrooted`: (or `default_as_rooted=False`) interprets
-               all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
-
         """
-
-        # update directives
-        self.dataset = kwargs.get("dataset", self.dataset)
-        self.attached_taxon_set = kwargs.get("taxon_set", self.attached_taxon_set)
-        self.exclude_trees = kwargs.get("exclude_trees", self.exclude_trees)
-        self.exclude_chars = kwargs.get("exclude_chars", self.exclude_chars)
-        self.finish_node_func = kwargs.get("finish_node_func", self.finish_node_func)
-        self.rooting_interpreter.update(**kwargs)
         if self.exclude_trees:
-            self.dataset
+            return self.dataset
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
-        taxon_set = self.get_default_taxon_set(**kwargs)
+        taxon_set = self.get_default_taxon_set()
         tree_list = self.dataset.new_tree_list(taxon_set=taxon_set)
-        kwargs["taxon_set"] = taxon_set
-        kwargs["rooting_interpreter"] = self.rooting_interpreter
-        kwargs["hyphens_as_tokens"] = kwargs.get('hyphens_as_tokens', self.hyphens_as_tokens)
-        for t in tree_source_iter(stream=stream, **kwargs):
+        for t in tree_source_iter(stream=stream,
+                taxon_set=taxon_set,
+                rooting_interpreter=self.rooting_interpreter,
+                hyphens_as_tokens=hyphens_as_tokens):
             tree_list.append(t, reindex_taxa=False)
         return self.dataset
 
