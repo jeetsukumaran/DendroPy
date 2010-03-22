@@ -65,8 +65,6 @@ else:
         if (d == e.mixed) or (d == e.codon):
             s = d == e.continuous and "continuous" or (d == e.mixed and "mixed" or "codon")
             raise NotImplementedError("%s datatype not supported" % s)
-        print d
-        print dict(e)
         sys.exit(0)
 
     class NCLTreeStream(nclwrapper.NxsTreeStream):
