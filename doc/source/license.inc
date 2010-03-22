@@ -1,12 +1,9 @@
 Copyright, License and Warranty
 ===============================
 
-DendroPy
---------
-
 The |DendroPy|_ library and the `DendroPy logo <_static/dendropy.png>`_ are:
 
-    |dendropy_copyright|.
+.. centered:: |dendropy_copyright|
 
 The |DendroPy|_ library is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
@@ -21,9 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Usage of the `DendroPy logo <_static/dendropy.png>`_, either in whole or in part, is restricted to the authors of the |DendroPy|_ library, with limited usage granted to third parties exclusively for the acknowledgement of, or for linking or referring to, the |DendroPy|_ library.
-
-Supporting Components
----------------------
 
 The ElementTree XML-parsing toolkit bundled with DendroPy is Copyright (c) 1999-2005 by Fredrik Lundh:
 

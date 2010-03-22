@@ -114,7 +114,7 @@ For example::
 Using the :mod:`~dendropy.treecalc` Module
 ------------------------------------------
 
-These operations are also available in the :mod:`~dendropy.treecalc` module provides as independent functions that take two |Tree| objects as arguments.
+The :mod:`~dendropy.treecalc` module provides for these operations as independent functions that take two |Tree| objects as arguments.
 These independent functions require that both trees have the same |TaxonSet| reference, otherwise an exception is raised::
 
         >>> import dendropy

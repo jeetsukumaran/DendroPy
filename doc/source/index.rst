@@ -7,6 +7,7 @@ DendroPy Phylogenetic Computing Library
     :hidden:
 
     Introduction <self>
+    downloading.rst
     tutorial/index.rst
     library/index.rst
     scripts/sumtrees.rst
@@ -19,42 +20,36 @@ In addition, scripts for performing some useful phylogenetic computations are di
 Prerequisites
 =============
 
-DendroPy runs under any version of Python 2 from 2.4 upwards (i.e., Python 2.4, 2.5, 2.6, 2.7, etc.). At present, it does not run under Python 3.
+DendroPy is a pure-Python library with no dependencies, and runs under any version of Python 2 from 2.4 upwards (i.e., Python 2.4, 2.5, 2.6, 2.7, etc.). At present, it does not run under Python 3.
 
 .. versionchanged:: 3.2
    Python 2.4 support added.
 
-.. _Installing_DendroPy:
+Installing
+==========
 
-Installation
-============
-
-If you have `pip <http://pypi.python.org/pypi/pip>`_ installed, you can install the latest release of DendroPy directly from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_ by running::
+DendroPy is fully easy-installable and can be installed using |pip|_::
 
     $ sudo pip install dendropy
 
-Alternatively, if you have `setuptools <http://pypi.python.org/pypi/setuptools>`_ installed, you can run::
+or |setuptools|_::
 
-    $ sudo easy_install -U dendropy
+    $ sudo easy_intall -U dendropy
 
-As a third alternative, you can download the source code archive directly from:
+if these are available on your system.
 
-    |source_archive_url|
-
-and then install it by running:
-
-.. parsed-literal::
-
-    $ tar -xvzf DendroPy-|version|.tar.gz
-    $ cd DendroPy-|version|
-    $ sudo python setup.py install
+This, and other ways of obtaining and installing DendroPy (e.g., by downloading the |dendropy_source_archive|_, or by cloning the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_), are discussed in detail in the ":doc:`downloading`" section.
 
 Documentation
 ==============
 
+    :doc:`Downloading and Installing DendroPy </downloading>`
+
+        The many ways to get DendroPy up and running on your system.
+
     :doc:`DendroPy Tutorial </tutorial/index>`
 
-        A detailed tutorial, consisting of annotated practical examples and code walk-throughs.
+        A detailed tutorial on how to use the DendroPy library, with lots of annotated practical examples and code walk-throughs.
 
     :doc:`DendroPy Library API Reference </library/index>`
 
@@ -62,35 +57,11 @@ Documentation
 
     :doc:`SumTrees User Manual </scripts/sumtrees>`
 
-        An application script bundled with DendroPy that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
+        How to use SumTrees, an application script bundled with DendroPy that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
 
     :doc:`Change History <changes>`
 
         A summary of major changes (new features, bug fixes, bug creations, etc.) of each release of DendroPy.
-
-Source Download
-===============
-
-The latest release of DendroPy is |version|, and the source code archive can be downloaded directly from here:
-
-    |source_archive_url|
-
-Repository Access
-=================
-
-The DendroPy source code is version-controlled using `Git <http://git-scm.com/>`_, and the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_ can be cloned by running::
-
-    $ git clone git://github.com/jeetsukumaran/DendroPy.git
-
-If you plan to use this repository code as you main library code, you probably want to install DendroPy in developer mode::
-
-    $ cd DendroPy
-    $ sudo python setup.py develop
-
-You will, of course, need to get yourself |Git|_ for the above to work:
-    - `Source <http://www.kernel.org/pub/software/scm/git/git-1.6.6.tar.gz>`_
-    - `OS X binaries <http://code.google.com/p/git-osx-installer/downloads/list?can=3>`_
-    - `Microsoft Windows <http://code.google.com/p/msysgit/downloads/list>`_
 
 Citation
 =========

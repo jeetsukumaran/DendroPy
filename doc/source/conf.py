@@ -112,6 +112,8 @@ rst_epilog = """
 .. _Python 2.6: http://www.python.org/download/releases/2.6/
 .. |setuptools| replace:: setuptools
 .. _setuptools: http://pypi.python.org/pypi/setuptools
+.. |pip| replace:: pip
+.. _pip: http://pypi.python.org/pypi/pip
 .. |Git| replace:: Git
 .. _Git: http://git-scm.com/
 
@@ -122,7 +124,7 @@ rst_epilog = """
 
 .. |sumtrees_citation| replace:: Sukumaran, J. and Mark T. Holder. 2009. *SumTrees: Summarization of Split Support on Phylogenetic Trees. Version 1.0.2*. Part of the *DendroPy Phylogenetic Computation Library Version 2.6.1* (|dendropy_homepage_url|).
 .. |dendropy_citation| replace:: Sukumaran, J. and Mark T. Holder. 2009. *DendroPy Phylogenetic Computing Library Version 3.0.0* (|dendropy_homepage_url|).
-.. |dendropy_copyright| replace:: **Copyright 2009 Jeet Sukumaran and Mark T. Holder**
+.. |dendropy_copyright| replace:: **Copyright 2009-2010 Jeet Sukumaran and Mark T. Holder**
 
 .. |Tree| replace:: :class:`~dendropy.dataobject.tree.Tree`
 .. |TreeList| replace:: :class:`~dendropy.dataobject.tree.TreeList`
@@ -142,8 +144,10 @@ rst_epilog = """
 """
 
 _source_archive_url = """
-.. |source_archive_url| replace:: http://pypi.python.org/packages/source/D/DendroPy/DendroPy-%s.tar.gz
-""" % version
+.. |dendropy_source_archive_url| replace:: http://pypi.python.org/packages/source/D/DendroPy/DendroPy-%s.tar.gz
+.. |dendropy_source_archive| replace:: DendroPy source code archive
+.. _dendropy_source_archive: http://pypi.python.org/packages/source/D/DendroPy/DendroPy-%s.tar.gz
+""" % (version, version)
 
 rst_epilog += _source_archive_url
 
