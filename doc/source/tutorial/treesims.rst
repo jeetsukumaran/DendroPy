@@ -159,7 +159,7 @@ If the keyword argument "``repeat_until_success``" is given, then instead of rai
 
 Suppressing Taxon Assignment
 ----------------------------
-You can specify "``assign_taxa``" to be `False`  to avoid taxa from being automatically assigned to a tree (for example, when you want to build a tree in stages -- see below).
+You can specify "``assign_taxa``" to be ``False``  to avoid taxa from being automatically assigned to a tree (for example, when you want to build a tree in stages -- see below).
 
 Extending an Existing Tree
 --------------------------
@@ -200,7 +200,7 @@ Another example draws birth and death rates from a normal distribution with the 
 Star Trees
 ==========
 
-The :func:`~dendropy.treesim.star_tree()` generates a simple polytomy tree, with a single node as the immediate ancestor to a set of leaves, with one leaf per |Taxon| in the |TaxonSet| object given by the `taxon_set` argument.
+The :func:`~dendropy.treesim.star_tree()` generates a simple polytomy tree, with a single node as the immediate ancestor to a set of leaves, with one leaf per |Taxon| in the |TaxonSet| object given by the ``taxon_set`` argument.
 For example::
 
     >>> from dendropy import treesim
