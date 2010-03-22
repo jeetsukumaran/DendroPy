@@ -194,6 +194,7 @@ else:
             self._prev_taxa_block = None
             self.ncl_taxa_to_native = {}
             self._taxa_to_fill = None
+            self.tree_translate_dicts = {}
 
         def _get_fp(self, stream):
             "Returns filepath and True if the file that `stream` refers to exists on the filesystem"
@@ -316,12 +317,12 @@ else:
 
             if self.dataset is None:
                 self.dataset = dataobject.DataSet()
-            if self.attached_taxon_set is not None and len(self.attached_taxon_set) == 0:
-                self._taxa_to_fill = self.attached_taxon_set
-            else:
-                self._taxa_to_fill = None
-            if self.attached_taxon_set is not None:
-                self._register_taxa_context(ntst.reader, [self.attached_taxon_set])
+#            if self.attached_taxon_set is not None and len(self.attached_taxon_set) == 0:
+#                self._taxa_to_fill = self.attached_taxon_set
+#            else:
+#                self._taxa_to_fill = None
+#            if self.attached_taxon_set is not None:
+#                self._register_taxa_context(ntst.reader, [self.attached_taxon_set])
 
             ncl_streamer = ntst.nts
             ntst.start()
@@ -342,7 +343,7 @@ else:
                     rooted_flag = ncl_streamer.rooted_flag
                     ncl_streamer.tree_tokens = None
                     need_tree_event.set()
-                    self.curr_tree = self._ncl_tree_tokens_to_native_tree(ncl_taxa_block, None, self.curr_tree_tokens, rooted_flag=rooted_flag)
+                    self.curr_tree = self._ncl_tree_tokens_to_native_tree(ncl_taxa_block, self.attached_taxon_set, self.curr_tree_tokens, rooted_flag=rooted_flag)
                     if self.curr_tree:
                         yield self.curr_tree
                 del self.curr_tree_tokens
@@ -413,22 +414,22 @@ else:
         def _ncl_tree_tokens_to_native_tree(self, ncl_tb, taxa_block, tree_tokens, rooted_flag=None):
             if not tree_tokens:
                 return None
+            iid = ncl_tb.GetInstanceIdentifierString()
             if taxa_block is None:
-                iid = ncl_tb.GetInstanceIdentifierString()
                 taxa_block = self._ncl_taxa_block_to_native(ncl_tb)
-            self.taxa_block = taxa_block
+#            self.taxa_block = taxa_block
             lti = ListOfTokenIterator(tree_tokens)
             lti.tree_rooted = rooted_flag
-            if not self._prev_taxa_block is taxa_block:
-                self.tree_translate_dict = {}
+
+            if iid not in self.tree_translate_dicts:
+                self.tree_translate_dicts[ncl_tb] = {}
                 for n, t in enumerate(taxa_block):
-                    self.tree_translate_dict[str(n + 1)] = t
+                    self.tree_translate_dicts[ncl_tb][str(n + 1)] = t
                     if self.encode_splits:
                         t.clade_mask = (1 << n)
-                self._prev_taxa_block = taxa_block
             return nexustokenizer.tree_from_token_stream(lti,
                                             taxon_set=taxa_block,
-                                            translate_dict=self.tree_translate_dict,
+                                            translate_dict=self.tree_translate_dicts[ncl_tb],
                                             encode_splits=self.encode_splits,
                                             rooting_interpreter=self.rooting_interpreter,
                                             finish_node_func=self.finish_node_func)
