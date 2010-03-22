@@ -1,0 +1,9 @@
+{% extends '!layout.html' %}
+
+{# relbar: extend to current #}
+{% block relbaritems %}
+  {{ super() }}
+  {% if current_page_name != 'index' %}
+  <li><a href="">{{ title }}</a></li>
+  {% endif %}
+{% endblock %}
