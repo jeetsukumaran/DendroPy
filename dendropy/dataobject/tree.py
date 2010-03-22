@@ -1440,7 +1440,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         from dendropy import treecalc
         if other_tree.taxon_set is not self.taxon_set:
             other_tree = Tree(other_tree, taxon_set=self.taxon_set)
-        return treecalc.robinson_foulds_distance(self, other_tree)
+        return treecalc.euclidean_distance(self, other_tree)
 
     ###########################################################################
     ## Debugging/Testing
