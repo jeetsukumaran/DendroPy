@@ -7,3 +7,30 @@
   <li><a href="">{{ title }}</a></li>
   {% endif %}
 {% endblock %}
+
+
+{% block sidebarsearch %}
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        {{ super() }}
+    </div>
+
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            {# <li><a href="{{pathto('index')}}">Introduction</a></li> #}
+            <li><a href="{{pathto('tutorial/index')}}">The DendroPy Tutorial</a></li>
+            <li><a href="{{pathto('library/index')}}">Library API Reference</a></li>
+            <li><a href="{{pathto('scripts/sumtrees')}}">SumTrees</a></li>
+        </ul>
+    </div>
+
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">From the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-{{version}}.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+{% endblock %}
