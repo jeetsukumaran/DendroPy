@@ -75,12 +75,15 @@ The following example shows how to calculate the frequency of a split defined by
 Tree Distances
 ==============
 
-*New in DendroPy 3.2:*
+Native |Tree| Methods
+---------------------
+
+.. versionadded:: 3.2
 
 The |Tree| class provides methods for calculating distances between two trees:
 
 
-    :meth:`~dendropy.dataobject.tree.Tree.symmetric_distance`
+    :meth:`~dendropy.dataobject.tree.Tree.symmetric_difference`
         This method returns the symmetric distance between two trees. The symmetric distance between two trees is the sum of the number of splits found in one of the trees but not the other. It is common to see this statistic called the "Robinson-Foulds distance", but in DendroPy we reserve this term to apply to the Robinson-Foulds distance in the strict sense, i.e., the weighted symmetric distance (see below).
 
     :meth:`~dendropy.dataobject.tree.Tree.false_positives_and_negatives`
@@ -107,6 +110,9 @@ For example::
     2.2232636377544162
     >>> tree1.robinson_foulds_distance(tree2)
     2.971031
+
+Using the :mod:`~dendropy.treecalc` Module
+------------------------------------------
 
 These operations are also available in the :mod:`~dendropy.treecalc` module provides as independent functions that take two |Tree| objects as arguments.
 These independent functions require that both trees have the same |TaxonSet| reference, otherwise an exception is raised::
