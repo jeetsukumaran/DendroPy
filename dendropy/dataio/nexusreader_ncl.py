@@ -185,23 +185,22 @@ else:
 
         def __init__(self, schema="NEXUS", **kwargs):
             iosys.DataReader.__init__(self)
-            self.purePythonReader = nexusreader_py.NexusReader(**kwargs)
             self.encode_splits = kwargs.get("encode_splits", False)
             self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
             self.finish_node_func = kwargs.get("finish_node_func", None)
             self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", False)
             self.preserve_underscores = kwargs.get('preserve_underscores', False)
-            self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
+            self.supure_python_readeress_internal_node_taxa = kwargs.get("supure_python_readeress_internal_node_taxa", False)
             self.finish_node_func = None
             self.format = schema
             self._prev_taxa_block = None
             self.ncl_taxa_to_native = {}
             self._taxa_to_fill = None
 
-        def _get_fp(self, file_obj):
-            "Returns filepath and True if the file that `file_obj` refers to exists on the filesystem"
+        def _get_fp(self, stream):
+            "Returns filepath and True if the file that `stream` refers to exists on the filesystem"
             try:
-                n = file_obj.name
+                n = stream.name
                 use_ncl = os.path.exists(n)
                 return n, use_ncl
             except AttributeError:
@@ -211,17 +210,21 @@ else:
             """
             Instantiates and returns a DataSet object based on the
             NEXUS-formatted contents read from the file descriptor object
-            `file_obj`.
+            `stream`.
             """
             n, use_ncl = self._get_fp(stream)
             if not use_ncl:
-                self.purePythonReader.encode_splits = self.encode_splits
-                self.purePythonReader.rooting_interpreter = self.rooting_interpreter
-                self.purePythonReader.finish_node_func = self.finish_node_func
-                self.purePythonReader.allow_duplicate_taxon_labels = self.allow_duplicate_taxon_labels
-                self.purePythonReader.preserve_underscores = self.preserve_underscores
-                self.purePythonReader.suppress_internal_node_taxa = self.suppress_internal_node_taxa
-                return self.purePythonReader.read(stream)
+                pure_python_reader = nexusreader_py.NexusReader(
+                    encode_splits = self.encode_splits,
+                    rooting_interpreter = self.rooting_interpreter,
+                    finish_node_func = self.finish_node_func,
+                    allow_duplicate_taxon_labels = self.allow_duplicate_taxon_labels,
+                    preserve_underscores = self.preserve_underscores,
+                    supure_python_readeress_internal_node_taxa = self.supure_python_readeress_internal_node_taxa,
+                    taxon_set = self.attached_taxon_set,
+                    dataset = self.dataset
+                )
+                return pure_python_reader.read(stream)
             return self.read_filepath_into_dataset(n)
 
         def read_filepath_into_dataset(self, file_path):
@@ -284,28 +287,27 @@ else:
             Primary goal is to be memory efficient, storing no more than one tree
             at a time. Speed might have to be sacrificed for this!
             """
-            taxa_block = self.get_default_taxon_set()
-            if taxa_block is not None and len(taxa_block) == 0:
-                self._taxa_to_fill = taxa_block
+            if self.dataset is None:
+                self.dataset = dataobject.DataSet()
+            if self.attached_taxon_set is not None and len(self.attached_taxon_set) == 0:
+                self._taxa_to_fill = self.attached_taxon_set
             else:
                 self._taxa_to_fill = None
-            n, use_ncl = self._get_fp(file_obj)
+            n, use_ncl = self._get_fp(stream)
             if not use_ncl:
-                self.purePythonReader.encode_splits = self.encode_splits
-                self.purePythonReader.rooting_interpreter = self.rooting_interpreter
-                self.purePythonReader.finish_node_func = self.finish_node_func
-                self.purePythonReader.allow_duplicate_taxon_labels = self.allow_duplicate_taxon_labels
-                self.purePythonReader.preserve_underscores = self.preserve_underscores
-                self.purePythonReader.suppress_internal_node_taxa = self.suppress_internal_node_taxa
-                for tree in self.purePythonReader.tree_source_iter(file_obj, taxon_set=taxa_block, dataset=dataset):
+                pure_python_reader = nexusreader_py.NexusReader(
+                    encode_splits = self.encode_splits,
+                    rooting_interpreter = self.rooting_interpreter,
+                    finish_node_func = self.finish_node_func,
+                    allow_duplicate_taxon_labels = self.allow_duplicate_taxon_labels,
+                    preserve_underscores = self.preserve_underscores,
+                    supure_python_readeress_internal_node_taxa = self.supure_python_readeress_internal_node_taxa,
+                    taxon_set = self.attached_taxon_set,
+                    dataset = self.dataset
+                )
+                for tree in pure_python_reader.tree_source_iter(stream):
                     yield tree
                 return
-            if dataset is None:
-                dataset = dataobject.DataSet()
-            if taxa_block is None:
-                taxa_block = dataobject.TaxonSet()
-            if taxa_block and not (taxa_block in dataset.taxon_sets):
-                dataset.add(taxa_block)
 
             need_tree_event = Event()
             tree_ready_event = Event()
@@ -314,7 +316,7 @@ else:
 
             ncl_streamer = ntst.nts
 
-            self._register_taxa_context(ntst.reader, dataset.taxa_blocks)
+            self._register_taxa_context(ntst.reader, self.dataset.taxon_sets)
 
             ntst.start()
             try:
