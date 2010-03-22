@@ -41,7 +41,7 @@ from dendropy.dataio import get_reader, get_writer, tree_source_iter, multi_tree
 ## PACKAGE METADATA
 
 __project__ = "DendroPy"
-__version__ = "3.1.4"
+__version__ = "3.2.0"
 
 try:
     try:
