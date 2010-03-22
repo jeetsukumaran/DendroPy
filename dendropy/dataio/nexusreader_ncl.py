@@ -244,7 +244,7 @@ else:
             else:
                 self._taxa_to_fill = None
             if self.attached_taxon_set is not None:
-                self._register_taxa_context(ntst.ncl_nxs_reader_handle, [self.attached_taxon_set])
+                self._register_taxa_context(ncl_nxs_reader_handle, [self.attached_taxon_set])
 
             _LOG.debug("Calling MultiFormatReader.ReadFilepath(%s, %s)" % (file_path, self.format))
             ncl_nxs_reader_handle.ReadFilepath(file_path, self.format)
