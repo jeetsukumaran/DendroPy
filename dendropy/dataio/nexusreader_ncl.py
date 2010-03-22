@@ -184,13 +184,13 @@ else:
         "Encapsulates loading and parsing of a NEXUS format file."
 
         def __init__(self, schema="NEXUS", **kwargs):
-            iosys.DataReader.__init__(self)
+            iosys.DataReader.__init__(self, **kwargs)
             self.encode_splits = kwargs.get("encode_splits", False)
             self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
             self.finish_node_func = kwargs.get("finish_node_func", None)
             self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", False)
             self.preserve_underscores = kwargs.get('preserve_underscores', False)
-            self.supure_python_readeress_internal_node_taxa = kwargs.get("supure_python_readeress_internal_node_taxa", False)
+            self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
             self.finish_node_func = None
             self.format = schema
             self._prev_taxa_block = None
@@ -220,7 +220,7 @@ else:
                     finish_node_func = self.finish_node_func,
                     allow_duplicate_taxon_labels = self.allow_duplicate_taxon_labels,
                     preserve_underscores = self.preserve_underscores,
-                    supure_python_readeress_internal_node_taxa = self.supure_python_readeress_internal_node_taxa,
+                    suppress_internal_node_taxa = self.suppress_internal_node_taxa,
                     taxon_set = self.attached_taxon_set,
                     dataset = self.dataset
                 )
@@ -301,7 +301,7 @@ else:
                     finish_node_func = self.finish_node_func,
                     allow_duplicate_taxon_labels = self.allow_duplicate_taxon_labels,
                     preserve_underscores = self.preserve_underscores,
-                    supure_python_readeress_internal_node_taxa = self.supure_python_readeress_internal_node_taxa,
+                    suppress_internal_node_taxa = self.suppress_internal_node_taxa,
                     taxon_set = self.attached_taxon_set,
                     dataset = self.dataset
                 )
