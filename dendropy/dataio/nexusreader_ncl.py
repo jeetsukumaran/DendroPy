@@ -471,8 +471,8 @@ else:
                             break
                 if not found:
                     raise ValueError("NCL datatype cannot be coerced into datatype because ambiguity code for %s is missing " % str(search))
-            ncl_numeric_code_to_state[-2] = symbol_state_map['-']
-            ncl_numeric_code_to_state[-1] = symbol_state_map['?']
+            ncl_numeric_code_to_state.append(symbol_state_map['-'])
+            ncl_numeric_code_to_state.append(symbol_state_map['?'])
 
             assert (len(raw_matrix) == len(taxa_block))
             for row_ind, taxon in enumerate(taxa_block):
