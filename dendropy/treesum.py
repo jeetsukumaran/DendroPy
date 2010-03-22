@@ -221,10 +221,10 @@ class TreeSummarizer(object):
 
 def reroot_on_lowest_common_index_path(t, common_mask):
     """This operation is only for unrooted trees that are being merged using
-    SCM. The path the separates the lowest index taxon in the leaf set 
+    SCM. The path the separates the lowest index taxon in the leaf set
     intersection is placed as the first descendant path of the "seed_node" for
     the tree.
-    This assures that all split representations are oriented in the same way 
+    This assures that all split representations are oriented in the same way
     for subsequent operations.
     The mask most contain more that 2 bits (there must be an internal node in
     the tree that is has degree > 2  wrt the common leafset).
@@ -250,7 +250,7 @@ def reroot_on_lowest_common_index_path(t, common_mask):
         t.to_outgroup_position(curr_n, splits=True, delete_deg_two=True)
         avoid = curr_n
         nd_source = iter(t.seed_node.child_nodes())
-        
+
         try:
             while True:
                 curr_n = nd_source.next()
@@ -290,12 +290,12 @@ def reroot_on_lowest_common_index_path(t, common_mask):
                     break
     except StopIteration:
         raise AssertionError("Reaching supposedly unreachable code")
-    
+
     if curr_n is not t.seed_node:
-        # We have found the first relevant internal node, we want to make it 
+        # We have found the first relevant internal node, we want to make it
         #   the root.  We can do this by putting one of its children into the
         #   "outgroup position" and then putting the path to lowest commond
-        #   leaf in the outgroup position (this last operation is just a 
+        #   leaf in the outgroup position (this last operation is just a
         #   rearrangement of the order of children in the root.
         children = curr_n.child_nodes()
         assert(len(children) > 1)
@@ -341,7 +341,7 @@ def add_to_scm(to_modify, to_consume, rooted=False, gordons_supertree=False):
     if n_common_leaves < 2:
         _LOG.error('trees must have at least 2 common leaves')
         raise ValueError('trees must have at least 2 common leaves')
-    if n_common_leaves == 2: 
+    if n_common_leaves == 2:
         # SCM with 2 leaves in common results in a polytomy
         collapse_clade(to_mod_root)
         collapse_clade(to_consume_root)
@@ -353,10 +353,10 @@ def add_to_scm(to_modify, to_consume, rooted=False, gordons_supertree=False):
         for child in to_mod_root.child_nodes():
             to_modify.split_edges[child.edge.split_bitmask] = child.edge
         return
-    
+
     # at least 3 leaves in common
     tmse = to_modify.split_edges
-    
+
     to_mod_relevant_splits = {}
     to_consume_relevant_splits = {}
     if not rooted:
@@ -407,12 +407,12 @@ def add_to_scm(to_modify, to_consume, rooted=False, gordons_supertree=False):
     if _IS_DEBUG_LOGGING:
         to_modify.debug_check_tree(splits=True, logger_obj=_LOG)
         to_consume.debug_check_tree(splits=True, logger_obj=_LOG)
-    
 
-    # first we'll collapse all paths in the common leafset in to_modify that 
+
+    # first we'll collapse all paths in the common leafset in to_modify that
     #   are not in to_consume
     _collapse_paths_not_found(to_mod_relevant_splits, to_consume_relevant_splits, tmse)
-    # Now we'll collapse all paths in the common leafset in to_consume that 
+    # Now we'll collapse all paths in the common leafset in to_consume that
     #   are not in to_modify
     _collapse_paths_not_found(to_consume_relevant_splits, to_mod_relevant_splits)
 
@@ -426,7 +426,7 @@ def add_to_scm(to_modify, to_consume, rooted=False, gordons_supertree=False):
     for child in to_steal:
         to_mod_root.add_child(child)
         to_mod_root.edge.split_bitmask |= child.edge.split_bitmask
-        
+
     for masked_split, to_consume_path in to_consume_relevant_splits.iteritems():
         to_mod_path = to_mod_relevant_splits.get(masked_split)
         if _IS_DEBUG_LOGGING and to_mod_path is None: #to_mod_path is None:
@@ -435,7 +435,7 @@ def add_to_scm(to_modify, to_consume, rooted=False, gordons_supertree=False):
             _LOG.debug("%s = raw" % format_split(to_consume_path[-1].split_bitmask, taxon_set=taxon_set))
             for k, v in to_mod_relevant_splits.iteritems():
                 _LOG.debug("%s in to_mod_relevant_splits" % format_split(k, taxon_set=taxon_set))
-                
+
         assert to_mod_path is not None
         to_mod_head = to_mod_path[-1].head_node
         to_mod_head_edge = to_mod_head.edge
@@ -492,13 +492,13 @@ def add_to_scm(to_modify, to_consume, rooted=False, gordons_supertree=False):
                 tipmost_edge_to_move = to_consume_path[-1]
                 tipmost_node_to_move = tipmost_edge_to_move.tail_node
                 prev_head = tipmost_edge_to_move.head_node
-                
+
                 to_mod_tail.add_child(deepest_node_to_move)
                 to_mod_tail.remove_child(to_mod_head)
                 tipmost_node_to_move.add_child(to_mod_head)
                 tipmost_node_to_move.remove_child(prev_head)
     encode_splits(to_modify)
-                
+
 def strict_consensus_merge(tree_list, rooted=False, gordons_supertree=False):
     tree_list = [copy.copy(i) for i in tree_list]
     return inplace_strict_consensus_merge(tree_list, rooted=rooted, gordons_supertree=gordons_supertree)
@@ -514,7 +514,7 @@ def inplace_strict_consensus_merge(trees_to_merge, rooted=False, gordons_supertr
         return tree_list[0]
     tree_iter = iter(tree_list)
     to_modify = tree_iter.next()
-    
+
     if rooted:
         raise NotImplementedError("Rooted SCM is not implemented")
     else:
