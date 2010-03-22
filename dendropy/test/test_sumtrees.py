@@ -60,11 +60,16 @@ class SumTreesTester(unittest.TestCase):
         if clean_stderr:
             self.assertEqual(stderr, "")
 
-class SumTreesOptionsTests(SumTreesTester):
+class SumTreeHelpAndVersionTests(SumTreesTester):
 
-    def testHelp(self):
+    def testVersion(self):
+        self.assertExecuteWithoutError("--version")
+
+    def testHelp1(self):
         self.assertExecuteWithoutError("-h")
 
+    def testHelp2(self):
+        self.assertExecuteWithoutError("--help")
 
 if __name__ == "__main__":
     unittest.main()
