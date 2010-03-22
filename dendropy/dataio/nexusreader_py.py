@@ -108,30 +108,22 @@ class NexusReader(iosys.DataReader):
                 self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
                 link_title = None
                 taxon_set = None
-#                trees_block = None
-#                block_title = None
-#                prepared_to_parse_trees = False
+                self.tree_translate_dict.clear()
                 while not (token == 'END' or token == 'ENDBLOCK') \
-                    and not self.stream_tokenizer.eof \
-                    and not token==None:
+                        and not self.stream_tokenizer.eof \
+                        and not token==None:
                     token = self.stream_tokenizer.read_next_token_ucase()
                     if token == 'LINK':
                         link_title = self._parse_link_statement()
-#                    if token == 'TITLE':
-#                        token = self.stream_tokenizer.read_next_token_ucase()
-#                        block_title = token
                     if token == 'TRANSLATE':
                         if not taxon_set:
                             taxon_set = self._get_taxon_set(link_title)
+                            self._prepopulate_translate_dict(taxon_set)
                         self._parse_translate_statement(taxon_set)
                     if token == 'TREE':
                         if not taxon_set:
                             taxon_set = self._get_taxon_set(link_title)
-#                        if not trees_block:
-#                            trees_block = self.dataset.new_tree_list(taxon_set=taxon_set, label=block_title)
-#                        if not prepared_to_parse_trees:
-#                            self._prepare_to_parse_trees(taxon_set)
-#                            prepared_to_parse_trees = True
+                            self._prepopulate_translate_dict(taxon_set)
                         tree = self._parse_tree_statement(taxon_set)
                         yield tree
                 self.stream_tokenizer.skip_to_semicolon() # move past END command
@@ -664,13 +656,20 @@ class NexusReader(iosys.DataReader):
             self.stream_tokenizer.skip_to_semicolon()
         return tree
 
+    def _prepopulate_translate_dict(self, taxon_set):
+        """
+        Get default mapping of numbers to taxon labels (to be overwritten by
+        a translate dictionary, if found.
+        """
+        for i, t in enumerate(taxon_set):
+            self.tree_translate_dict[i+1] = t
+
     def _parse_translate_statement(self, taxon_set):
         """
         Processes a TRANSLATE command. Assumes that the file reader is
         positioned right after the "TRANSLATE" token in a TRANSLATE command.
         """
         token = self.stream_tokenizer.current_token
-        self.tree_translate_dict = {}
         while True:
             translation_token = self.stream_tokenizer.read_next_token()
             translation_label = self.stream_tokenizer.read_next_token()
