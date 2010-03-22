@@ -6,8 +6,8 @@ What's New in the DendroPy Tutorial
 ==========
 
     * New content added to the :doc:`tree simulation section </tutorial/treesims>`.
+    * New content (minor) added to the :doc:`tree manipulation section </tutorial/treemanips>`.
     * Changed the documentation theme.
-
 
 2010-01-15
 ==========

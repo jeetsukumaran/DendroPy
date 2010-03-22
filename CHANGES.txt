@@ -1,4 +1,4 @@
-Release 3.1.4
+Release 3.2.0
 -------------
 
 New Features
@@ -6,6 +6,8 @@ New Features
 
     * DendroPy is now backwards-compatible with Python 2.4.
     * Native ASCII tree plotting is available as the "``as_ascii_plot()``" method of a ``Tree`` object.
+    * Some tree distance functions integrated as native methods of ``Tree``: ``symmetric_difference``, ``false_positives_and_negatives``, ``robinson_foulds_distance``, ``euclidean_distance``.
+    * ``Tree()`` objects can now be cloned with a custom ``TaxonSet`` object by passing it to the constructor via the ``taxon_set`` keyword argument.
     * Interoperability with the `ETE <http://ete.cgenomics.org/>`_ library via the ``dendropy.interop.ete`` module.
 
 Release 3.1.3

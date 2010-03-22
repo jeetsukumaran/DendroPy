@@ -75,13 +75,79 @@ The following example shows how to calculate the frequency of a split defined by
 Tree Distances
 ==============
 
-The :mod:`~dendropy.treecalc` module provides a number of functions to calculate the distance between two trees passed as arguments:
+*New in DendroPy 3.2:*
 
-    :func:`~dendropy.treecalc.symmetric_distance`
-        This function returns the symmetric distance between two trees. The symmetric distance between two trees is the sum of splits found in one of the trees but not the other. It is common to see this statistic called the "Robinson-Foulds distance", but in DendroPy we reserve this term to apply to the Robinson-Foulds distance in the strict sense, i.e., the weighted symmetric distance (see below).
+The |Tree| class provides methods for calculating distances between two trees:
 
-    :func:`~dendropy.treecalc.euclidean_distance`
-        This function returns the "branch length distance" of Felsenstein (2004), i.e. the sum of absolute differences in branch lengths for equivalent splits between two trees, with the branch length for a missing split taken to be 0.0.
 
-    :func:`~dendropy.treecalc.robinson_foulds_distance`
-        This function returns the Robinsons-Foulds distance between two trees, i.e., the sum of the square of differences in branch lengths for equivalent splits between two trees, with the branch length for a missing split taken to be 0.0.
+    :meth:`~dendropy.dataobject.tree.Tree.symmetric_distance`
+        This method returns the symmetric distance between two trees. The symmetric distance between two trees is the sum of the number of splits found in one of the trees but not the other. It is common to see this statistic called the "Robinson-Foulds distance", but in DendroPy we reserve this term to apply to the Robinson-Foulds distance in the strict sense, i.e., the weighted symmetric distance (see below).
+
+    :meth:`~dendropy.dataobject.tree.Tree.false_positives_and_negatives`
+        This method returns a tuple pair, with the first element the number of splits in the current |Tree| object *not* found in the |Tree| object to which it is being compared, while the second element is the number of splits in the second |Tree| object that are not in the current |Tree|. The sum of these two elements is exactly equal to the value reported by :meth:`~dendropy.dataobject.tree.Tree.symmetric_distance`.
+
+    :meth:`~dendropy.dataobject.tree.Tree.euclidean_distance`
+        This method returns the "branch length distance" of Felsenstein (2004), i.e. the sum of absolute differences in branch lengths for equivalent splits between two trees, with the branch length for a missing split taken to be 0.0.
+
+    :meth:`~dendropy.dataobject.tree.Tree.robinson_foulds_distance`
+        This method returns the Robinsons-Foulds distance between two trees, i.e., the sum of the square of differences in branch lengths for equivalent splits between two trees, with the branch length for a missing split taken to be 0.0.
+
+For example::
+
+    >>> import dendropy
+    >>> s1 = "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247)"
+    >>> s2 = "((t5:2.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247)"
+    >>> tree1 = dendropy.Tree.get_from_string(s1, 'newick')
+    >>> tree2 = dendropy.Tree.get_from_string(s2, 'newick')
+    >>> tree1.symmetric_difference(tree2)
+    0
+    >>> tree1.false_positives_and_negatives(tree2)
+    (0, 0)
+    >>> tree1.euclidean_distance(tree2)
+    2.2232636377544162
+    >>> tree1.robinson_foulds_distance(tree2)
+    2.971031
+
+These operations are also available in the :mod:`~dendropy.treecalc` module provides as independent functions that take two |Tree| objects as arguments.
+These independent functions require that both trees have the same |TaxonSet| reference, otherwise an exception is raised::
+
+        >>> import dendropy
+        >>> from dendropy import treecalc
+        >>> s1 = "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247)"
+        >>> s2 = "((t5:2.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):1):0.065840,t3:0.170221):0.383247)"
+        >>> tree1 = dendropy.Tree.get_from_string(s1, 'newick')
+        >>> tree2 = dendropy.Tree.get_from_string(s2, 'newick')
+        >>> treecalc.symmetric_difference(tree1, tree2)
+        Traceback (most recent call last):
+          File "<stdin>", line 1, in <module>
+          File "treecalc.py", line 240, in symmetric_difference
+            t = false_positives_and_negatives(tree1, tree2)
+          File "treecalc.py", line 254, in false_positives_and_negatives
+            % (hex(id(reference_tree.taxon_set)), hex(id(test_tree.taxon_set))))
+        TypeError: Trees have different TaxonSet objects: 0x10111ec00 vs. 0x10111eaa0
+        >>> treecalc.euclidean_distance(tree1, tree2)
+        Traceback (most recent call last):
+          File "<stdin>", line 1, in <module>
+          File "treecalc.py", line 236, in euclidean_distance
+            value_type=value_type)
+          File "treecalc.py", line 160, in splits_distance
+            % (hex(id(tree1.taxon_set)), hex(id(tree2.taxon_set))))
+        TypeError: Trees have different TaxonSet objects: 0x10111ec00 vs. 0x10111eaa0
+        >>> treecalc.robinson_foulds_distance(tree1, tree2)
+        Traceback (most recent call last):
+          File "<stdin>", line 1, in <module>
+          File "treecalc.py", line 223, in robinson_foulds_distance
+            value_type=float)
+          File "treecalc.py", line 160, in splits_distance
+            % (hex(id(tree1.taxon_set)), hex(id(tree2.taxon_set))))
+        TypeError: Trees have different TaxonSet objects: 0x10111ec00 vs. 0x10111eaa0
+        >>> tree3 = dendropy.Tree.get_from_string(s2, 'newick', taxon_set=tree1.taxon_set)
+        >>> treecalc.symmetric_difference(tree1, tree3)
+        0
+        >>> treecalc.euclidean_distance(tree1, tree3)
+        2.2232636377544162
+        >>> treecalc.robinson_foulds_distance(tree1, tree3)
+        2.971031
+
+
+
