@@ -1,20 +1,16 @@
-#######################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 DendroPy Phylogenetic Computing Library
-#######################################
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 .. toctree::
+    :maxdepth: 3
     :hidden:
-    :maxdepth: 2
 
-    <self>
+    Introduction <self>
     tutorial/index.rst
     library/index.rst
     scripts/sumtrees.rst
     changes.rst
-
-
-Introduction
-============
 
 DendroPy is a |Python|_ library for phylogenetic scripting, simulation, data processing and manipulation by |js|_ and |mth|_.
 DendroPy provides classes and functions for working with phylogenetic data such as trees and character matrices, and supports reading and writing of the data in a range of standard phylogenetic data formats, such as NEXUS, Newick, NeXML, PHYLIP, FASTA, etc.
