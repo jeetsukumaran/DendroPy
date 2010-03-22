@@ -267,7 +267,13 @@ htmlhelp_basename = 'DendroPydoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'DendroPy.tex', u'DendroPy Documentation',
+  ('index', 'DendroPy-Introduction.tex', u'DendroPy Introduction',
+   u'Jeet Sukumaran and Mark T. Holder', 'manual'),
+  ('tutorial/index', 'DendroPy-Tutorial.tex', u'DendroPy Tutorial',
+   u'Jeet Sukumaran and Mark T. Holder', 'manual'),
+  ('library/index', 'DendroPy-Library-API.tex', u'DendroPy Library API Reference',
+   u'Jeet Sukumaran and Mark T. Holder', 'manual'),
+  ('scripts/sumtrees', 'DendroPy-SumTrees.tex', u'SumTrees User Manual',
    u'Jeet Sukumaran and Mark T. Holder', 'manual'),
 ]
 
