@@ -52,32 +52,21 @@ and then install it by running:
 Documentation
 ==============
 
-DendroPy Tutorial
------------------
-
-A "cookbook"-style tutorial, consisting of annotated practical examples and code walk-throughs, and can be found here:
-
     :doc:`DendroPy Tutorial </tutorial/index>`
 
-DendroPy Library Reference
---------------------------
-The technical details of the modules, classes and methods of the DendroPy library are documented here:
+        A detailed tutorial, consisting of annotated practical examples and code walk-throughs.
 
-    :doc:`DendroPy Library Reference </library/index>`
+    :doc:`DendroPy Library API Reference </library/index>`
 
-Much of this information is also readily available from the |Python|_ interpreter by invoking ``help()`` on an object or name.
+        The technical details of the modules, classes and methods of the DendroPy library. Almost all of this information is also readily available from the |Python|_ interpreter by invoking ``help()`` on an object or name.
 
-Included Scripts and Utilities
-==============================
+    :doc:`SumTrees User Manual </scripts/sumtrees>`
 
-* :doc:`SumTrees </scripts/sumtrees>` is a script that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
+        An application script bundled with DendroPy that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
 
-Change History
-==============
+    :doc:`Change History <changes>`
 
-The change history for DendroPy can be seen here:
-
-    :doc:`DendroPy Change History <changes>`
+        A summary of major changes (new features, bug fixes, bug creations, etc.) of each release of DendroPy.
 
 Source Download
 ===============
