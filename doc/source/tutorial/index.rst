@@ -12,8 +12,8 @@ The DendroPy Tutorial
     :maxdepth: 3
     :numbered:
 
-    part1.rst
-    part2.rst
-    part3.rst
-    part4.rst
+    phylogenetic_data_overview.rst
+    working_with_trees.rst
+    working_with_characters.rst
+    working_with_datasets.rst
 
