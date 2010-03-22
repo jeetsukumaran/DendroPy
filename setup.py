@@ -107,24 +107,32 @@ else:
 ###############################################################################
 # Main setup
 
-from dendropy import __version__ as PROJECT_VERSION
+from dendropy import __version__
+from dendropy import description as dendropy_description
+
 EXTRA_KWARGS["zip_safe"] = True
 
 ### compose long description ###
 long_description = open('README.txt').read()
-long_description = long_description.replace("DendroPy-3.x.x", "DendroPy-%s" % PROJECT_VERSION)
+long_description = long_description.replace("DendroPy-3.x.x", "DendroPy-%s" % __version__)
 long_description = long_description.replace("""download the source code archive""",
-    """`download the source code archive <http://pypi.python.org/packages/source/D/DendroPy/DendroPy-%s.tar.gz>`_""" % PROJECT_VERSION)
+    """`download the source code archive <http://pypi.python.org/packages/source/D/DendroPy/DendroPy-%s.tar.gz>`_""" % __version__)
 changes = open('CHANGES.txt').read()
-long_description = long_description \
-                + """\
+long_description = long_description + """\
 Change History
 =============
 
 """ + changes
 
+long_description = long_description + """\
+Current Release
+===============
+
+The current release of DendroPy is: %s.
+""" % (dendropy_description())
+
 setup(name='DendroPy',
-      version=PROJECT_VERSION,
+      version=__version__,
       author='Jeet Sukumaran and Mark T. Holder',
       author_email='jeet@ku.edu and mtholder@ku.edu',
       url='http://packages.python.org/DendroPy/',
