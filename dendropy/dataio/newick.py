@@ -79,7 +79,7 @@ def tree_source_iter(stream, **kwargs):
                                                   preserve_underscores=preserve_underscores,
                                                   hyphens_as_tokens=hyphens_as_tokens)
     while not newick_stream.eof:
-        t = nexustokenizer.parse_tree_from_stream(newick_stream, taxon_set=taxon_set, **kwargs)
+        t = nexustokenizer.tree_from_token_stream(newick_stream, taxon_set=taxon_set, **kwargs)
         if t is not None:
             yield t
         else:
@@ -118,7 +118,7 @@ def split_as_newick_string(split, taxon_set, preserve_spaces=False):
 #     "Processes a (SINGLE) TREE statement string."
 #     stream_handle = StringIO(tree_statement)
 #     stream_tokenizer = NexusTokenizer(stream_handle)
-#     tree = nexustokenizer.parse_tree_from_stream(stream_tokenizer=stream_tokenizer,
+#     tree = nexustokenizer.tree_from_token_stream(stream_tokenizer=stream_tokenizer,
 #                                      taxon_set=taxon_set,
 #                                      **kwargs)
 #     return tree

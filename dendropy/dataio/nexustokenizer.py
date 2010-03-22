@@ -181,9 +181,9 @@ class StrToTaxon(object):
         return self.taxon_set.index(t)
 
 ###############################################################################
-## parse_tree_from_stream
+## tree_from_token_stream
 
-def parse_tree_from_stream(stream_tokenizer, **kwargs):
+def tree_from_token_stream(stream_tokenizer, **kwargs):
     """
     Processes a (SINGLE) TREE statement. Assumes that the input stream is
     located at the beginning of the statement (i.e., the first non-comment

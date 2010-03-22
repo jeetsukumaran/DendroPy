@@ -652,7 +652,7 @@ class NexusReader(iosys.DataReader):
         token = self.stream_tokenizer.read_next_token()
         if token != '=':
             raise self.data_format_error("Expecting '=' in definition of Tree '%s' but found '%s'" % (tree_name, token))
-        tree = nexustokenizer.parse_tree_from_stream(stream_tokenizer=self.stream_tokenizer,
+        tree = nexustokenizer.tree_from_token_stream(stream_tokenizer=self.stream_tokenizer,
                 taxon_set=taxon_set,
                 translate_dict=self.tree_translate_dict,
                 encode_splits=self.encode_splits,

@@ -428,7 +428,7 @@ else:
                     if self.encode_splits:
                         t.clade_mask = (1 << n)
                 self._prev_taxa_block = taxa_block
-            return nexustokenizer.parse_tree_from_stream(lti,
+            return nexustokenizer.tree_from_token_stream(lti,
                                             taxon_set=taxa_block,
                                             translate_dict=self.tree_translate_dict,
                                             encode_splits=self.encode_splits,
