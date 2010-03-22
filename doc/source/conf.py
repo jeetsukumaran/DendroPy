@@ -11,7 +11,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import sys, os, time
 from dendropy import __version__ as PROJECT_VERSION
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -44,7 +44,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'DendroPy'
-copyright = u'2009, Jeet Sukumaran and Mark T. Holder'
+copyright = u'2009-%s, Jeet Sukumaran and Mark T. Holder' % time.strftime('%Y')
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

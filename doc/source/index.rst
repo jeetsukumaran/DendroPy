@@ -6,6 +6,7 @@ DendroPy Phylogenetic Computing Library
     :hidden:
     :maxdepth: 2
 
+    <self>
     tutorial/index.rst
     library/index.rst
     scripts/sumtrees.rst
