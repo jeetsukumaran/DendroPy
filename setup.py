@@ -107,9 +107,7 @@ else:
 ###############################################################################
 # Main setup
 
-from dendropy import __version__
-from dendropy import description as dendropy_description
-
+from dendropy import __version__, __revision__
 EXTRA_KWARGS["zip_safe"] = True
 
 ### compose long description ###
@@ -117,19 +115,29 @@ long_description = open('README.txt').read()
 long_description = long_description.replace("DendroPy-3.x.x", "DendroPy-%s" % __version__)
 long_description = long_description.replace("""download the source code archive""",
     """`download the source code archive <http://pypi.python.org/packages/source/D/DendroPy/DendroPy-%s.tar.gz>`_""" % __version__)
-changes = open('CHANGES.txt').read()
-long_description = long_description + """\
-Change History
-=============
 
-""" + changes
+if __revision__.is_available:
+    revision_text = " (revision: %s, %s)" % (__revision__.commit_id, str(__revision__.commit_date))
+else:
+    revision_text = ""
+long_description = long_description + ("""\
 
-long_description = long_description + """\
 Current Release
 ===============
 
-The current release of DendroPy is: %s.
-""" % (dendropy_description())
+The current release of DendroPy is version %s%s.
+
+""" % (__version__, revision_text))
+
+changes = open('CHANGES.txt').read()
+long_description = long_description + ("""\
+
+Change History
+==============
+
+%s
+
+""" % changes)
 
 setup(name='DendroPy',
       version=__version__,
