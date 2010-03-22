@@ -228,9 +228,7 @@ else:
             return self.read_filepath_into_dataset(n)
 
         def read_filepath_into_dataset(self, file_path):
-            if self.dataset is None:
-                self.dataset = dataobject.DataSet()
-            self._taxa_to_fill = None
+
             _LOG.debug("Creating MultiFormatReader")
             ncl_nxs_reader_handle = nclwrapper.MultiFormatReader()
             _LOG.debug("Setting MultiFormatReader's WarningOutput Level")
@@ -238,7 +236,16 @@ else:
             _LOG.debug("Calling MultiFormatReader.cullIdenticalTaxaBlocks(True)")
             ncl_nxs_reader_handle.cullIdenticalTaxaBlocks(True)
 
-            self._register_taxa_context(ncl_nxs_reader_handle, self.dataset.taxon_sets)
+            if self.dataset is None:
+                self.dataset = dataobject.DataSet()
+
+            if self.attached_taxon_set is not None and len(self.attached_taxon_set) == 0:
+                self._taxa_to_fill = self.attached_taxon_set
+            else:
+                self._taxa_to_fill = None
+            if self.attached_taxon_set is not None:
+                self._register_taxa_context(ntst.ncl_nxs_reader_handle, [self.attached_taxon_set])
+
             _LOG.debug("Calling MultiFormatReader.ReadFilepath(%s, %s)" % (file_path, self.format))
             ncl_nxs_reader_handle.ReadFilepath(file_path, self.format)
 
@@ -287,12 +294,7 @@ else:
             Primary goal is to be memory efficient, storing no more than one tree
             at a time. Speed might have to be sacrificed for this!
             """
-            if self.dataset is None:
-                self.dataset = dataobject.DataSet()
-            if self.attached_taxon_set is not None and len(self.attached_taxon_set) == 0:
-                self._taxa_to_fill = self.attached_taxon_set
-            else:
-                self._taxa_to_fill = None
+
             n, use_ncl = self._get_fp(stream)
             if not use_ncl:
                 pure_python_reader = nexusreader_py.NexusReader(
@@ -314,10 +316,16 @@ else:
             die_event = Event()
             ntst = NCLTreeStreamThread(n, need_tree_event=need_tree_event, ready_event=tree_ready_event, die_event=die_event, format=self.format)
 
+            if self.dataset is None:
+                self.dataset = dataobject.DataSet()
+            if self.attached_taxon_set is not None and len(self.attached_taxon_set) == 0:
+                self._taxa_to_fill = self.attached_taxon_set
+            else:
+                self._taxa_to_fill = None
+            if self.attached_taxon_set is not None:
+                self._register_taxa_context(ntst.reader, [self.attached_taxon_set])
+
             ncl_streamer = ntst.nts
-
-            self._register_taxa_context(ntst.reader, self.dataset.taxon_sets)
-
             ntst.start()
             try:
                 need_tree_event.set()
