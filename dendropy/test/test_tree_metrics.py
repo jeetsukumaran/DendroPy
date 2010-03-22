@@ -121,8 +121,6 @@ class TreeCompareTests(extendedtest.ExtendedTestCase):
 #                if (i * i+j+1) % 6 == 0:
 #                    print
 
-
-
 class FrequencyOfSplitsTest(unittest.TestCase):
 
     def setUp(self):
