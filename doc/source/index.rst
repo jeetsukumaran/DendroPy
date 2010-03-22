@@ -22,7 +22,7 @@ Prerequisites
 
 DendroPy is a pure-Python library with no dependencies, and runs under any version of Python 2 from 2.4 upwards (i.e., Python 2.4, 2.5, 2.6, 2.7, etc.). At present, it does not run under Python 3.
 
-.. versionchanged:: 3.2
+.. versionchanged:: 3.2.0
    Python 2.4 support added.
 
 Installing
@@ -38,7 +38,7 @@ or |setuptools|_::
 
 if these are available on your system.
 
-This, and other ways of obtaining and installing DendroPy (e.g., by downloading the |dendropy_source_archive|_, or by cloning the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_), are discussed in detail in the ":doc:`downloading`" section.
+These, and other ways of obtaining and installing DendroPy (e.g., by downloading the |dendropy_source_archive|_, or by cloning the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_), are discussed in detail in the ":doc:`downloading`" section.
 
 Documentation
 ==============
