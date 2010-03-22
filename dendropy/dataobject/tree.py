@@ -65,12 +65,13 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
         shallow-copied). If the container is any other type of iterable, then
         the `Tree` objects will be **shallow**-copied.
 
-        TreeList objects can thus be instantiated in the following ways::
+        TreeList objects can directly thus be instantiated in the
+        following ways::
 
             # /usr/bin/env python
 
             import StringIO
-            import dendropy
+            from dendropy import TaxonSet, Tree, TreeList
 
             # empty tree
             tlst1 = TreeList()
@@ -95,11 +96,19 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             # same
             tls6 = TreeList([Tree(t) for t in tlst5])
 
-            # can also call `read()` on a TreeList object
-            tlst7 = TreeList()
-            tlst7.read(StringIO("((A,B),(C,D));((A,C),(B,D));"), "newick")
-            tlst7.read_from_string("((A,B),(C,D));((A,C),(B,D));", "newick")
-            tlst7.read_from_path("boot.tre", "newick")
+            # the canonical way to instantiate a TreeList from a data source
+            # is the use the `get_from_*` family of static factory methods
+            tlst7 = TreeList.get_from_stream(open('treefile.tre', 'rU'), "newick")
+            tlst8 = TreeList.get_from_path('sometrees.nexus', "nexus")
+            tlst9 = TreeList.get_from_string("((A,B),(C,D));((A,C),(B,D));", "newick")
+
+            # can also call `read()` on a TreeList object; each read adds the
+            # tree(s) found to the TreeList
+            tlst10 = TreeList()
+            tlst10.read(open('boot1.tre', 'rU'), "newick")
+            tlst10.read_from_stream(open('boot2.tre', 'rU'), "newick") # same as above
+            tlst10.read_from_string("((A,B),(C,D));((A,C),(B,D));", "newick")
+            tlst10.read_from_path("boot3.tre", "newick")
 
         """
         TaxonSetLinked.__init__(self,
@@ -502,7 +511,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             # /usr/bin/env python
 
             from cStringIO import StringIO
-            import dendropy
+            from dendropy import Tree, TaxonSet
 
             # empty tree
             t1 = Tree()
@@ -518,18 +527,63 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
             # tree structure deep-copied from another tree
             t4 = dendropy.Tree(t3)
-            assert t4.taxon_set == t3.taxon_set # True: taxa are not deep-copied
-            assert t4.oid != t3.oid # True: oid's will be different
+            assert t4 is not t3                             # Trees are distinct
+            assert t4.symmetric_difference(t3) == 0         # and structure is identical
+            assert t4.taxon_set is t3.taxon_set             # BUT taxa are not cloned.
+            nds3 = [nd for nd in t3.postorder_node_iter()]  # Nodes in the two trees
+            nds4 = [nd for nd in t4.postorder_node_iter()]  # are distinct objects,
+            for i, n in enumerate(nds3):                    # and can be manipulated
+                assert nds3[i] is not nds4[i]               # independentally.
+            egs3 = [eg for eg in t3.postorder_edge_iter()]  # Edges in the two trees
+            egs4 = [eg for eg in t4.postorder_edge_iter()]  # are also distinct objects,
+            for i, e in enumerate(egs3):                    # and can also be manipulated
+                assert egs3[i] is not egs4[i]               # independentally.
+            lves3 = t3.leaf_nodes()                         # Leaf nodes in the two trees
+            lves4 = t4.leaf_nodes()                         # are also distinct objects,
+            for i, lf in enumerate(lves3):                  # but order is the same,
+                assert lves3[i] is not lves4[i]             # and associated Taxon objects
+                assert lves3[i].taxon is lves4[i].taxon     # are the same.
 
-            # to create deep copy of a tree with an independent taxon set
-            t5 = dendropy.Tree(t3)
-            t5.reindex_taxa(taxon_set=dendropy.TaxonSet())
+            # to create deep copy of a tree with a different taxon set
+            taxa = TaxonSet()
+            t5 = dendropy.Tree(t3, taxon_set=taxa)
+            assert t5 is not t3                             # As above, the trees are distinct
+            assert t5.symmetric_difference(t3) == 0         # and the structures are identical,
+            assert t5.taxon_set is not t3.taxon_set         # but this time, the taxa *are* different
+            assert t5.taxon_set is taxa                     # as the given TaxonSet is used instead.
+            lves3 = t3.leaf_nodes()                         # Leaf nodes (and, for that matter other nodes
+            lves5 = t5.leaf_nodes()                         # as well as edges) are also distinct objects
+            for i, lf in enumerate(lves3):                  # and the order is the same, as above,
+                assert lves3[i] is not lves5[i]             # but this time the associated Taxon
+                assert lves3[i].taxon is not lves5[i].taxon # objects are distinct though the taxon
+                assert lves3[i].taxon.label == lves5[i].taxon.label # labels are the same.
 
-            # can also call `read()` on a Tree object
-            t6 = dendropy.Tree()
-            t6.read(StringIO("((A,B),(C,D));"), "newick")
-            t6.read_from_string("((A,B),(C,D));", "newick")
-            t6.read_from_path("mle.tre", "newick")
+            # the canonical way to instantiate a Tree from a data source
+            # is the use the `get_from_*` family of static factory methods
+            t6 = Tree.get_from_stream(open('treefile.tre', 'rU'), "newick", tree_offset=0)
+            t7 = Tree.get_from_path('sometrees.nexus',
+                    "nexus",
+                    collection_offset=2,
+                    tree_offset=1)
+            s = "((A,B),(C,D));((A,C),(B,D));"
+            t8 = Tree.get_from_string(s, "newick") # tree will be '((A,B),(C,D))'
+            t9 = Tree.get_from_string(s, "newick", tree_offset=1) # tree will be '((A,C),(B,D))'
+
+            # can also call `read()` on a Tree object; each read adds the
+            # *replaces* the current tree with the definition specified in the
+            # data source
+            t10 = Tree()
+            t10.read(open('boot1.tre', 'rU'), "newick", tree_offset=0)
+            t10.read_from_stream(open('boot2.tre', 'rU'), "newick") # same as above
+            t10.read_from_string("((A,B),(C,D));((A,C),(B,D));", "newick", tree_offset=0)
+            t10.read_from_path("mle.tre", "newick")
+
+            # to 'switch out' the TaxonSet of a tree, replace the reference and
+            # reindex the taxa:
+            t11 = Tree.get_from_string('((A,B),(C,D));', 'newick')
+            taxa = TaxonSet()
+            t11.taxon_set = taxa
+            t11.reindex_subcomponent_taxa()
 
         """
         TaxonSetLinked.__init__(self,
@@ -552,6 +606,9 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 self.seed_node = args[0]
             elif isinstance(args[0], Tree):
                 self.clone_from(args[0])
+                if "taxon_set" in kwargs:
+                    self.taxon_set = kwargs["taxon_set"]
+                    self.reindex_subcomponent_taxa()
             else:
                 raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         else:
@@ -1223,7 +1280,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         return ap.compose(self)
 
     ###########################################################################
-    ## Metrics
+    ## Metrics -- Internal
 
     def add_ages_to_nodes(self, attr_name='age', check_prec=0.0000001):
         """
@@ -1345,6 +1402,45 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         numerator = accum/nmt - T/2.0
         C = T*pow(1/(12*nmt), 0.5)
         return numerator/C
+
+    ###########################################################################
+    ## Metrics -- Comparative
+
+    def symmetric_difference(self, other_tree):
+        """
+        Returns the symmetric_distance between this tree and the tree given by
+        `other`, i.e. the sum of splits found in one but not in both trees.
+        """
+        t = self.false_positives_and_negatives(other_tree)
+        return t[0] + t[1]
+
+    def false_positives_and_negatives(self, other_tree):
+        """
+        Returns a tuple pair: all splits found in `other` but in self, and all
+        splits in self not found in other.
+        """
+        from dendropy import treecalc
+        if other_tree.taxon_set is not self.taxon_set:
+            other_tree = Tree(other_tree, taxon_set=self.taxon_set)
+        return treecalc.false_positives_and_negatives(self, other_tree)
+
+    def robinson_foulds_distance(self, other_tree):
+        """
+        Returns Robinson-Foulds distance between this tree and `other_tree`.
+        """
+        from dendropy import treecalc
+        if other_tree.taxon_set is not self.taxon_set:
+            other_tree = Tree(other_tree, taxon_set=self.taxon_set)
+        return treecalc.robinson_foulds_distance(self, other_tree)
+
+    def euclidean_distance(self, other_tree):
+        """
+        Returns Euclidean_distance distance between this tree and `other_tree`.
+        """
+        from dendropy import treecalc
+        if other_tree.taxon_set is not self.taxon_set:
+            other_tree = Tree(other_tree, taxon_set=self.taxon_set)
+        return treecalc.robinson_foulds_distance(self, other_tree)
 
     ###########################################################################
     ## Debugging/Testing

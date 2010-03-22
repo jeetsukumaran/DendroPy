@@ -48,6 +48,13 @@ class TreeCreateTest(datatest.DataObjectVerificationTestCase):
         self.assertEqual(tree2.label, "TREE2")
         self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=False, equal_oids=False)
 
+    def testTreeFromTreeDistinctTaxa(self):
+        taxa = dendropy.TaxonSet()
+        tree2 = dendropy.Tree(self.tree1, taxon_set=taxa)
+        self.assertIs(tree2.taxon_set, taxa)
+        self.assertIsNot(tree2.taxon_set, self.tree1.taxon_set)
+        self.assertDistinctButEqual(self.tree1, tree2, distinct_taxa=True, equal_oids=False)
+
     def testTreeFromTreeWithExtraPosArgs(self):
         self.assertRaises(TypeError, dendropy.Tree, self.tree1, "dummy")
 
