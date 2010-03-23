@@ -258,7 +258,7 @@ Primary purpose is for testing/profiling parsing operations in DendroPy."""
                 elif opts.rewrite_schema.lower() == "phylip-strict":
                     rewrite_schema = "phylip"
                     kwargs['strict'] = True
-                elif opts.rewrite_schema.lower() == "fasta-wrap":
+                elif opts.rewrite_schema.lower() == "fasta-wrapped":
                     rewrite_schema = "fasta"
                     kwargs['wrap'] = True
                 else:

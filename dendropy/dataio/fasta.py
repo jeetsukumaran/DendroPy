@@ -157,18 +157,18 @@ class FastaWriter(iosys.DataWriter):
     Implements the DataWriter interface for handling FASTA files.
     Additional keyword arguments:
 
-        -`wrap`: if non-zero, wraps text to this width; slows things down
-            quite a bit, so default is no wrap (=0).
+        -`wrap`: if True, wraps text; slows things down
+          quite a bit, so default is no wrap.
     """
 
     def __init__(self, **kwargs):
-        "Calls the base class constructor."
         iosys.DataWriter.__init__(self, **kwargs)
-        self.wrap = kwargs.get("wrap", 0)
+        self.wrap = kwargs.get("wrap", False)
+        self.wrap_width = kwargs.get("wrap_width", 70)
 
     def write(self, stream):
         """
-        Writes attached `DataSource` or `TaxonDomain` in FASTA format to a
+        Writes attached DataSet in FASTA format to a
         file-like object `stream`.
         """
         assert self.dataset is not None, \
@@ -176,6 +176,7 @@ class FastaWriter(iosys.DataWriter):
         if self.exclude_chars:
             return
 
+        tw = textwrap.TextWrapper(width=self.wrap_width, break_long_words=True, break_on_hyphens=False)
         for char_matrix in self.dataset.char_matrices:
             if self.attached_taxon_set is not None \
                     and char_matrix.taxon_set is not self.attached_taxon_set:
@@ -185,8 +186,8 @@ class FastaWriter(iosys.DataWriter):
                 seqs = char_matrix[taxon]
                 if isinstance(seqs, dataobject.CharacterDataVector):
                     seqs = seqs.symbols_as_string()
-                if self.wrap > 0:
-                    seqs = textwrap.fill(seqs, width=self.wrap, break_long_words=True)
+                if self.wrap:
+                    seqs = tw.fill(seqs)
                 stream.write("%s\n\n" % seqs)
 
 
