@@ -238,7 +238,7 @@ Primary purpose is for testing/profiling parsing operations in DendroPy."""
             else:
                 if not opts.passes_only and report_stream:
                     if opts.names_only:
-                        sys.report_stream.write("%s\n" % ipath)
+                        report_stream.write("%s\n" % ipath)
                     else:
                         report_stream.write("[%d/%d]: FAIL (#%d): %s\n" % (idx+1, total_args, fails, parse_target.fullpath))
                         if not opts.hide_error_messages:
