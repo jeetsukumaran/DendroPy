@@ -213,12 +213,13 @@ Primary purpose is for testing/profiling parsing operations in DendroPy."""
         report_stream = sys.stderr
 
     total_args = len(args)
-    results = []
     fails = 0
     passes = 0
+    parse_targets = []
     global_start_time = datetime.datetime.now()
     for idx, ipath in enumerate(args):
         parse_target = ParseTarget(ipath)
+        parse_targets.append(parse_target)
         input_stream = open(parse_target.fullpath, 'rU')
         parse_target.register_parse_start_time()
         try:
@@ -252,3 +253,12 @@ Primary purpose is for testing/profiling parsing operations in DendroPy."""
                     report_stream.write("[%d/%d]: PASS (#%d): %s\n" % (idx+1, total_args, passes, parse_target.fullpath))
                     report_stream.write("Parse time: %s\n" % (parse_target.parse_time))
                     report_stream.write("\n")
+    global_end_time = datetime.datetime.now()
+    if not opts.names_only:
+        report_stream.write('--\n')
+        report_stream.write('%d files processed: %s passes, %s fails\n' % (total_args, passes, fails))
+        report_stream.write('Total run time: %s\n' % (global_end_time-global_start_time))
+        total_parse_time = datetime.timedelta()
+        for p in parse_targets:
+            total_parse_time += p.parse_time
+        report_stream.write('Total parse time: %s\n' % total_parse_time)
