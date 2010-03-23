@@ -155,7 +155,7 @@ Primary purpose is for testing/profiling parsing operations in DendroPy."""
         help="rewrite data to FILEPATH")
 
     output_opts.add_option('--wo', '--write-stdout',
-        dest="rewrite_to_stdout",
+        dest="rewrite",
         action="store_const",
         const="&1",
         help="rewrite data to standard output")
@@ -164,14 +164,12 @@ Primary purpose is for testing/profiling parsing operations in DendroPy."""
         dest="rewrite",
         action="store_const",
         const="&2",
-        default=None,
         help="rewrite data to standard error")
 
-    output_opts.add_option('--rewrite-schema',
+    output_opts.add_option('-S', '--rewrite-schema',
         action="store",
         choices=output_schemas + [s.upper() for s in output_schemas],
         dest="rewrite_schema",
-        default=None,
         metavar="SCHEMA",
         help="schema to use if rewriting data (defaults to input schema)")
 
@@ -253,6 +251,19 @@ Primary purpose is for testing/profiling parsing operations in DendroPy."""
                     report_stream.write("[%d/%d]: PASS (#%d): %s\n" % (idx+1, total_args, passes, parse_target.fullpath))
                     report_stream.write("Parse time: %s\n" % (parse_target.parse_time))
                     report_stream.write("\n")
+            if rewrite_dest is not None:
+                kwargs = {}
+                if opts.rewrite_schema is None:
+                    rewrite_schema = opts.schema
+                elif opts.rewrite_schema.lower() == "phylip-strict":
+                    rewrite_schema = "phylip"
+                    kwargs['strict'] = True
+                elif opts.rewrite_schema.lower() == "fasta-wrap":
+                    rewrite_schema = "fasta"
+                    kwargs['wrap'] = True
+                else:
+                    rewrite_schema = opts.rewrite_schema
+                d.write_to_stream(rewrite_dest, schema=rewrite_schema, **kwargs)
     global_end_time = datetime.datetime.now()
     if not opts.names_only:
         report_stream.write('--\n')
