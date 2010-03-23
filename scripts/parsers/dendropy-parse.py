@@ -15,28 +15,32 @@ class ParseTarget(object):
     def __init__(self, filepath):
         self.filepath = filepath
         self.fullpath = os.path.expanduser(os.path.expandvars(ipath))
-        self.parse_start = None
-        self.parse_end = None
+        self.parse_start_time = None
+        self.parse_end_time = None
         self.parse_success = None
 
-    def register_parse_start(self):
-        self.parse_start = datetime.datetime.now()
+    def register_parse_start_time(self):
+        self.parse_start_time = datetime.datetime.now()
 
-    def register_parse_end(self, success):
-        self.parse_end = datetime.datetime.now()
+    def register_parse_end_time(self, success):
+        self.parse_end_time = datetime.datetime.now()
         self.parse_success = success
 
     def report(self, out):
         if not out:
             return
-        out.write("%s: " % self.filepath)
+        out.write("%s\n    " % self.filepath)
         if self.parse_success:
             out.write("PASS")
         elif self.parse_success is not None:
             out.write("FAIL")
         else:
             out.write("NONE")
-        out.write(" (%s)\n" % (self.parse_end-self.parse_start))
+        out.write(" (%s)\n" % (self.parse_end_time-self.parse_start_time))
+
+    @property
+    def parse_time(self):
+        return self.parse_end_time - self.parse_start_time
 
 if __name__ == "__main__":
 
@@ -74,6 +78,13 @@ Primary purpose is for testing/profiling parsing operations in DendroPy."""
                      'fasta-wrapped',
                      'nexml',]
 
+    datatypes = ['dna',
+                 'rna',
+                 'protein',
+                 'standard',
+                 'restriction',
+                 'infinite']
+
     input_opts = optparse.OptionGroup(parser, 'Input')
     parser.add_option_group(input_opts)
 
@@ -85,10 +96,7 @@ Primary purpose is for testing/profiling parsing operations in DendroPy."""
 
     input_opts.add_option('-d', '--datatype',
         action="store",
-        choices=['dna',
-                 'rna',
-                 'protein',
-                 'standard'],
+        choices=datatypes + [d.upper() for d in datatypes],
         default=None,
         help="type of data (required for FASTA  and PHYLIP formats)")
 
@@ -206,21 +214,24 @@ Primary purpose is for testing/profiling parsing operations in DendroPy."""
 
     total_args = len(args)
     results = []
+    fails = 0
+    passes = 0
     global_start_time = datetime.datetime.now()
     for idx, ipath in enumerate(args):
         parse_target = ParseTarget(ipath)
         input_stream = open(parse_target.fullpath, 'rU')
-        parse_target.register_parse_start()
+        parse_target.register_parse_start_time()
         try:
             d = dendropy.DataSet(
                     stream=input_stream,
                     schema=opts.schema,
-                    datatype=opts.datatype,
+                    data_type=opts.datatype,
                     interleaved=opts.interleaved_phylip,
                     strict=opts.strict_phylip)
-            parse_target.register_parse_end(True)
+            parse_target.register_parse_end_time(True)
         except Exception, e:
-            parse_target.register_parse_end(False)
+            parse_target.register_parse_end_time(False)
+            fails += 1
             if opts.exit_on_error:
                 raise
             else:
@@ -228,12 +239,17 @@ Primary purpose is for testing/profiling parsing operations in DendroPy."""
                     if opts.names_only:
                         sys.report_stream.write("%s\n" % ipath)
                     else:
-                        parse_target.report(report_stream)
+                        report_stream.write("[%d/%d]: %s\n" % (idx+1, total_args, parse_target.fullpath))
+                        report_stream.write("--- FAIL (#%d) ---\n" % fails)
                         if not opts.hide_error_messages:
-                            report_stream.write("    %s\n"  % str(e))
+                            report_stream.write("%s\n"  % str(e))
+                        report_stream.write("\n")
         else:
+            passes += 1
             if not opts.fails_only and report_stream:
                 if opts.names_only:
                     report_stream.write("%s\n" % ipath)
                 else:
-                    parse_target.report(report_stream)
+                    report_stream.write("[%d/%d]: %s\n" % (idx+1, total_args, parse_target.fullpath))
+                    report_stream.write("--- PASS (#%d) ---\nParse time: %s\n" % (passes, (parse_target.parse_time)))
+                    report_stream.write("\n")
