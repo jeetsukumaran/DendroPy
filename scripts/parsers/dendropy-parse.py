@@ -239,8 +239,7 @@ Primary purpose is for testing/profiling parsing operations in DendroPy."""
                     if opts.names_only:
                         sys.report_stream.write("%s\n" % ipath)
                     else:
-                        report_stream.write("[%d/%d]: %s\n" % (idx+1, total_args, parse_target.fullpath))
-                        report_stream.write("--- FAIL (#%d) ---\n" % fails)
+                        report_stream.write("[%d/%d]: FAIL (#%d): %s\n" % (idx+1, total_args, fails, parse_target.fullpath))
                         if not opts.hide_error_messages:
                             report_stream.write("%s\n"  % str(e))
                         report_stream.write("\n")
@@ -250,6 +249,6 @@ Primary purpose is for testing/profiling parsing operations in DendroPy."""
                 if opts.names_only:
                     report_stream.write("%s\n" % ipath)
                 else:
-                    report_stream.write("[%d/%d]: %s\n" % (idx+1, total_args, parse_target.fullpath))
-                    report_stream.write("--- PASS (#%d) ---\nParse time: %s\n" % (passes, (parse_target.parse_time)))
+                    report_stream.write("[%d/%d]: PASS (#%d): %s\n" % (idx+1, total_args, passes, parse_target.fullpath))
+                    report_stream.write("Parse time: %s\n" % (parse_target.parse_time))
                     report_stream.write("\n")
