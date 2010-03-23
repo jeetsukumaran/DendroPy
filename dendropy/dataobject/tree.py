@@ -594,7 +594,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         iosys.Readable.__init__(self)
         self.seed_node = Node(edge=Edge())
         self.length_type = None
-        self._is_rooted = False
+        self._is_rooted = None
 
         if len(args) > 1:
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
@@ -935,6 +935,10 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     ###########################################################################
     ## Structure
+
+    @property
+    def rooting_state_is_undefined(self):
+        return self._is_rooted is None
 
     def _get_is_rooted(self):
         return self._is_rooted

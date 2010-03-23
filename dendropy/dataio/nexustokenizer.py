@@ -207,6 +207,10 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
     if not token:
         return None
     tree.is_rooted = rooting_interpreter.interpret_as_rooted(stream_tokenizer.tree_rooting_comment)
+#    if stream_tokenizer.tree_rooting_comment is not None:
+#        tree.is_rooted = rooting_interpreter.interpret_as_rooted(stream_tokenizer.tree_rooting_comment)
+#    elif rooting_interpreter.interpret_as_rooted(stream_tokenizer.tree_rooting_comment):
+#        tree_is_rooted = True
     if encode_splits:
         if len(taxon_set) == 0:
             raise Exception("When encoding splits on a tree as it is being parsed, a "

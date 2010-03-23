@@ -199,6 +199,7 @@ class NewickWriter(iosys.DataWriter):
         """
         iosys.DataWriter.__init__(self, **kwargs)
         self.edge_lengths = kwargs.get("edge_lengths", True)
+        self.is_write_rooting = kwargs.get("write_rooting", True)
         self.internal_labels = kwargs.get("internal_labels", True)
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
         self.quote_underscores = kwargs.get('quote_underscores', True)
@@ -226,7 +227,15 @@ class NewickWriter(iosys.DataWriter):
         if self.exclude_trees:
             return
         for tree in tree_list:
-            stream.write(self.compose_node(tree.seed_node) + ';\n')
+            if tree.rooting_state_is_undefined or not self.is_write_rooting:
+                rooting = ""
+            elif tree.is_rooted:
+                rooting = "[&R] "
+            elif not tree.is_rooted:
+                rooting = "[&U] "
+            else:
+                rooting = ""
+            stream.write("%s%s;\n" % (rooting, self.compose_node(tree.seed_node)))
 
     def compose_tree(self, tree):
         "Convienience method.        "

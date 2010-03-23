@@ -168,9 +168,11 @@ class NexusWriter(iosys.DataWriter):
             else:
                 tree_name = str(treeidx)
             newick_str = newick_writer.compose_node(tree.seed_node)
-            if tree.is_rooted and self.is_write_rooting:
+            if tree.rooting_state_is_undefined or not self.is_write_rooting:
+                rooting = ""
+            elif tree.is_rooted:
                 rooting = "[&R] "
-            elif not tree.is_rooted and self.is_write_rooting:
+            elif not tree.is_rooted:
                 rooting = "[&U] "
             else:
                 rooting = ""
