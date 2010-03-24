@@ -5,6 +5,16 @@
 ###############################################################################
 ## POLYMORPHISM
 
+ Number of sequences: 23    Number of sequences used: 23
+ Selected region: 1-747   Number of sites: 747
+ Total number of sites (excluding sites with gaps / missing data): 747
+
+ Number of variable sites, S: 29
+ Total number of mutations, Eta: 29
+
+ ===================== G+C content =====================
+ G+C content, G+C: 0.025    (747.00 sites)
+
  ============ Haplotype/Nucleotide Diversity ============
  Number of Haplotypes, h: 12
  Haplotype (gene) diversity, Hd: 0.901
@@ -30,10 +40,25 @@
     (Probability that NHap <= 12)
  Probability that [NHap = 12]: 0.166
 
+
 ###############################################################################
 ## POLYMORPHISM / DIVERGENCE
 
-  ============ Haplotype/Nucleotide Diversity ============
+ Selected region: 1-747   Number of sites: 747
+ Total number of sites (excluding sites with gaps / missing data): 747
+ Intraspecific Data: EPAC
+    Number of sequences: 14
+ Interspecific Data: WPAC
+    Number of sequences: 9
+       Sequence used to polarize mutations: WPAC_JA1_A
+
+ Number of variable sites, S: 24
+ Total number of mutations, Eta: 24
+
+ ===================== G+C content =====================
+ G+C content, G+C: 0.027    (747.00 sites)
+
+ ============ Haplotype/Nucleotide Diversity ============
  Number of Haplotypes, h: 7
  Haplotype (gene) diversity, Hd: 0.802
     Variance of Haplotype diversity: 0.00876
@@ -67,10 +92,17 @@
  ================ Divergence ===============
  Nucleotide divergence with Jukes and Cantor, K(JC): 0.02189
 
+ Calculated using the total number of segregating sites
+
 ###############################################################################
 ## GENE FLOW / GENETIC DIFFERENTIATION
 
-Population 1: EPAC
+ Number of Populations Included: 2
+ Selected region: 1-747     Number of sites: 747
+ Sites with alignment gaps are: Excluded
+ Total sites (excluding alignment gaps): 747
+
+ Population 1: EPAC
    Number of sequences: 14
    Number of segregating sites, S: 24
    Number of haplotypes, h: 7
@@ -123,23 +155,27 @@ Population 1: EPAC
 ###############################################################################
 ## Fu and Li's and Other Tests
 
+ Number of sequences: 23    Number of sequences used: 23
+ Selected region: 1-747   Number of sites: 747
+ Total number of sites (excluding sites with gaps / missing data): 747
+
  Number of polymorphic (segregating) sites, S: 29
  Total number of mutations, Eta: 29
- Total number of singleton mutations, Eta(s): 6
+ Total number of singleton segregating sites, Eta(s): 6
 
  Average number of pairwise nucleotide differences, k: 11.281
  Nucleotide diversity, Pi: 0.01510
 
  Theta estimated from k: 11.281
  Theta estimated from Eta(s): 5.739
- Theta estimated from Eta: 7.857
+ Theta estimated from S: 7.857
 
  Fu and Li's D* test statistic: 0.45126
      Statistical significance: Not significant, P > 0.10
  Fu and Li's F* test statistic: 0.95798
      Statistical significance: Not significant, P > 0.10
 
- Calculated using the total number of mutations
+ Calculated using the total number of segregating sites
 
  Number of Haplotypes, h: 12
  Haplotype (gene) diversity, Hd: 0.901
@@ -153,15 +189,26 @@ Population 1: EPAC
 ###############################################################################
 ## Tajima's D
 
+ Number of sequences: 23    Number of sequences used: 23
+ Selected region: 1-747   Number of sites: 747
+ Total number of sites (excluding sites with gaps / missing data): 747
+
  Number of polymorphic (segregating) sites, S: 29
  Total number of mutations, Eta: 29
 
  Average number of nucleotide differences, k: 11.28063
     Nucleotide diversity, Pi: 0.01510
- Theta (per sequence) from Eta: 7.85735
-    Theta (per site) from Eta: 0.01052
+ Theta (per sequence) from S, Theta-W: 7.85735
+    Theta (per site) from S, Theta-W: 0.01052
 
  Tajima's D: 1.65319     Statistical significance: Not significant, P > 0.10
+
+
+ ============ Synonymous and NonSynonymous Substitutions ============
+
+ No coding region defined
+
+ Calculated using the total number of segregating sites
 
 ]
 
