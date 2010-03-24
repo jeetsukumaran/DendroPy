@@ -150,6 +150,16 @@ def nucleotide_diversity(char_matrix, ignore_uncertain=True):
     """
     return _nucleotide_diversity(char_matrix.vectors(), char_matrix.default_state_alphabet, ignore_uncertain)
 
+def tajimas_d(char_matrix, ignore_uncertain=True):
+    """
+    Returns Tajima's D.
+    """
+    vectors = char_matrix.vectors()
+    num_sequences = len(vectors)
+    avg_num_pairwise_differences = _average_number_of_pairwise_differences(vectors, char_matrix.default_state_alphabet, ignore_uncertain=ignore_uncertain)
+    num_segregating_sites = _num_segregating_sites(vectors, char_matrix.default_state_alphabet, ignore_uncertain=ignore_uncertain)
+    return _tajimas_d(num_sequences, avg_num_pairwise_differences, num_segregating_sites)
+
 class PopulationPairSummaryStatistics(object):
 
     def __init__(self, pop1_seqs, pop2_seqs, ignore_uncertain=True):
