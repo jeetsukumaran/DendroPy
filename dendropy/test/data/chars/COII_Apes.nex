@@ -8,6 +8,18 @@
 ###############################################################################
 ## POLYMORPHISM
 
+Number of sequences: 24    Number of sequences used: 24
+ Selected region: 1-684   Number of sites: 684
+ Total number of sites (excluding sites with gaps / missing data): 684
+
+ Number of variable sites, S: 183
+ Total number of mutations, Eta: 197
+
+ ===================== G+C content =====================
+ G+C content at noncoding positions, G+Cn: 0.153    (3.00 sites)
+ G+C content at coding positions, G+Cc: 0.456    (681.00 sites)
+ G+C content -Total-, G+C: 0.454    (684.00 sites)
+
  ============ Haplotype/Nucleotide Diversity ============
  Number of Haplotypes, h: 22
  Haplotype (gene) diversity, Hd: 0.989
@@ -18,23 +30,41 @@
     Sampling variance of Pi: 0.0000492
        Standard deviation of Pi: 0.00701
  Average number of nucleotide differences, k: 62.75000
- Theta (per sequence) from Eta: 52.75432
- Theta (per site) from Eta: 0.07713
+ Theta (per sequence) from S, Theta-W: 49.00528
+ Theta (per site) from S, Theta-W: 0.07165
 
  ================== Neutrality Tests ==================
- Tajima's D: 0.76047
+ Tajima's D: 1.12467
      Statistical significance: Not significant, P > 0.10
- Fu and Li's D* test statistic: 0.91888
+ Fu and Li's D* test statistic: 0.84479
      Statistical significance: Not significant, P > 0.10
- Fu and Li's F* test statistic: 1.02103
+ Fu and Li's F* test statistic: 1.09759
      Statistical significance: Not significant, P > 0.10
  Fu's Fs statistic: -0.923
  Strobeck's S statistic: 0.894
     (Probability that NHap <= 22)
  Probability that [NHap = 22]: 0.179
 
+ Calculated using the total number of segregating sites
+
 ###############################################################################
 ## POLYMORPHISM / DIVERGENCE
+
+ Selected region: 1-684   Number of sites: 684
+ Total number of sites (excluding sites with gaps / missing data): 684
+ Intraspecific Data: Human
+    Number of sequences: 6
+ Interspecific Data: Chimp
+    Number of sequences: 5
+       Sequence used to polarize mutations: Ptr1
+
+ Number of variable sites, S: 7
+ Total number of mutations, Eta: 7
+
+ ===================== G+C content =====================
+ G+C content at noncoding positions, G+Cn: 0.333    (3.00 sites)
+ G+C content at coding positions, G+Cc: 0.462    (681.00 sites)
+ G+C content -Total-, G+C: 0.462    (684.00 sites)
 
  ============ Haplotype/Nucleotide Diversity ============
  Number of Haplotypes, h: 4
@@ -70,10 +100,17 @@
  ================ Divergence ===============
  Nucleotide divergence with Jukes and Cantor, K(JC): 0.10105
 
+ Calculated using the total number of segregating sites
+
 ###############################################################################
 ## GENE FLOW / GENETIC DIFFERENTIATION
 
-Population 1: Human
+ Number of Populations Included: 5
+ Selected region: 1-684     Number of sites: 684
+ Sites with alignment gaps are: Excluded
+ Total sites (excluding alignment gaps): 684
+
+ Population 1: Human
    Number of sequences: 6
    Number of segregating sites, S: 7
    Number of haplotypes, h: 4
@@ -153,19 +190,27 @@ Population 1: Human
 ###############################################################################
 ## Fu and Li's and Other Tests
 
+Number of sequences: 24    Number of sequences used: 24
+ Selected region: 1-684   Number of sites: 684
+ Total number of sites (excluding sites with gaps / missing data): 684
+
+ Number of polymorphic (segregating) sites, S: 183
+ Total number of mutations, Eta: 197
+ Total number of singleton segregating sites, Eta(s): 28
+
  Average number of pairwise nucleotide differences, k: 62.750
  Nucleotide diversity, Pi: 0.09174
 
  Theta estimated from k: 62.750
  Theta estimated from Eta(s): 26.833
- Theta estimated from Eta: 52.754
+ Theta estimated from S: 49.005
 
- Fu and Li's D* test statistic: 0.91888
+ Fu and Li's D* test statistic: 0.84479
      Statistical significance: Not significant, P > 0.10
- Fu and Li's F* test statistic: 1.02103
+ Fu and Li's F* test statistic: 1.09759
      Statistical significance: Not significant, P > 0.10
 
- Calculated using the total number of mutations
+ Calculated using the total number of segregating sites
 
  Number of Haplotypes, h: 22
  Haplotype (gene) diversity, Hd: 0.989
@@ -179,12 +224,19 @@ Population 1: Human
 ###############################################################################
 ## Tajima's D
 
+ Number of sequences: 24    Number of sequences used: 24
+ Selected region: 1-684   Number of sites: 684
+ Total number of sites (excluding sites with gaps / missing data): 684
+
+ Number of polymorphic (segregating) sites, S: 183
+ Total number of mutations, Eta: 197
+
  Average number of nucleotide differences, k: 62.75000
     Nucleotide diversity, Pi: 0.09174
- Theta (per sequence) from Eta: 52.75432
-    Theta (per site) from Eta: 0.07713
+ Theta (per sequence) from S, Theta-W: 49.00528
+    Theta (per site) from S, Theta-W: 0.07165
 
- Tajima's D: 0.76047     Statistical significance: Not significant, P > 0.10
+ Tajima's D: 1.12467     Statistical significance: Not significant, P > 0.10
 
 
  ============ Synonymous and NonSynonymous Substitutions ============
@@ -194,16 +246,16 @@ Population 1: Human
     Total number of sites in other codons (complex codons) no analyzed: 6
  Total number of sites in noncoding regions: 3
 
- Coding region: Tajima's D: 0.74156     Not significant, P > 0.10
+ Coding region: Tajima's D: 1.08776     Not significant, P > 0.10
      Total number of polymorphic sites: 178 (Changes: 191)
- Synonymous sites: Tajima's D(Syn): 0.97090     Not significant, P > 0.10
+ Synonymous sites: Tajima's D(Syn): 1.35960     Not significant, P > 0.10
      Total number of polymorphic sites: 153 (Changes: 166; Syn. Changes: 165)
  NonSynonymous sites: Tajima's D(NonSyn): -0.54877     Not significant, P > 0.10
      Total number of polymorphic sites: 26 (Changes: 27; NonSyn. Changes: 26)
- Silent sites: Tajima's D(Sil): 0.98769     Not significant, P > 0.10
+ Silent sites: Tajima's D(Sil): 1.37519     Not significant, P > 0.10
      Total number of polymorphic sites: 154 (Changes: 167; Sil. Changes: 166)
 
- Tajima's D (NonSyn/Syn) ratio: -0.56521
+ Tajima's D (NonSyn/Syn) ratio: -0.40362
 
 
  Some codons with multiple evolutionary paths were detected.
@@ -211,7 +263,7 @@ Population 1: Human
     using the DnaSP conservative criteria (see the help file).
       Sites affected:  58 60 552
 
- Calculated using the total number of mutations
+ Calculated using the total number of segregating sites
 
 ]
 

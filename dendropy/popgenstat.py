@@ -28,6 +28,10 @@ import math
 import dendropy
 from dendropy.utility import probability
 
+###############################################################################
+## internal functions: generally taking lower-level data, such as vectors etc.
+###############################################################################
+
 def _count_differences(char_vectors, state_alphabet, ignore_uncertain=True):
     """
     Returns pair of values: total number of pairwise differences observed between
@@ -132,6 +136,10 @@ def _tajimas_d(num_sequences, avg_num_pairwise_differences, num_segregating_site
         )
     return D
 
+###############################################################################
+## friendlier-functions, generally taking a CharacterMatrix
+###############################################################################
+
 def num_segregating_sites(char_matrix, ignore_uncertain=True):
     """
     Returns the raw number of segregating sites (polymorphic sites).
@@ -159,6 +167,19 @@ def tajimas_d(char_matrix, ignore_uncertain=True):
     avg_num_pairwise_differences = _average_number_of_pairwise_differences(vectors, char_matrix.default_state_alphabet, ignore_uncertain=ignore_uncertain)
     num_segregating_sites = _num_segregating_sites(vectors, char_matrix.default_state_alphabet, ignore_uncertain=ignore_uncertain)
     return _tajimas_d(num_sequences, avg_num_pairwise_differences, num_segregating_sites)
+
+def wattersons_theta(char_matrix, ignore_uncertain=True):
+    """
+    Returns Watterson's Theta (per sequence)
+    """
+    vectors = char_matrix.vectors()
+    num_segregating_sites = _num_segregating_sites(vectors, char_matrix.default_state_alphabet, ignore_uncertain=ignore_uncertain)
+    a1 = sum([1.0/i for i in range(1, len(vectors))])
+    return float(num_segregating_sites) / a1
+
+###############################################################################
+## Classes
+###############################################################################
 
 class PopulationPairSummaryStatistics(object):
 

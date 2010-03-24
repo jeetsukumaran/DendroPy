@@ -65,12 +65,24 @@ class TajimasDTests(extendedtest.ExtendedTestCase):
     def testTajimasD(self):
         self.assertAlmostEqual(popgenstat.tajimas_d(self.matrix), -1.44617198561, 4)
 
-class NucDifferencesTests(extendedtest.ExtendedTestCase):
+class SinglePopTest(extendedtest.ExtendedTestCase):
 
-    def testNucDifferences(self):
-        d = dendropy.DnaCharacterMatrix.get_from_path(pathmap.char_source_path('COII_Apes.nex'), schema="nexus")
-        self.assertAlmostEqual(popgenstat.average_number_of_pairwise_differences(d, ignore_uncertain=True),  62.75000, 4)
-        self.assertAlmostEqual(popgenstat.nucleotide_diversity(d, ignore_uncertain=True), 0.09174, 4)
+    data = dendropy.DnaCharacterMatrix.get_from_path(pathmap.char_source_path('COII_Apes.nex'), schema="nexus")
+
+    def test_num_segregating_sites(self):
+        self.assertEqual(popgenstat.num_segregating_sites(self.data, ignore_uncertain=True), 183)
+
+    def test_average_number_of_pairwise_differences(self):
+        self.assertAlmostEqual(popgenstat.average_number_of_pairwise_differences(self.data, ignore_uncertain=True),  62.75000, 4)
+
+    def test_nucleotide_diversity(self):
+        self.assertAlmostEqual(popgenstat.nucleotide_diversity(self.data, ignore_uncertain=True), 0.09174, 4)
+
+    def test_tajimas_d(self):
+        self.assertAlmostEqual(popgenstat.tajimas_d(self.data, ignore_uncertain=True), 1.12467, 4)
+
+    def test_wattersons_theta(self):
+        self.assertAlmostEqual(popgenstat.wattersons_theta(self.data, ignore_uncertain=True), 49.00528, 4)
 
 class PopulationPairSummaryStatisticsTests(extendedtest.ExtendedTestCase):
 
