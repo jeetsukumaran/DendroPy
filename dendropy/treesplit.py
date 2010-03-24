@@ -28,7 +28,7 @@ from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
 from dendropy.utility import containers
-from dendropy.utility import texttools
+from dendropy.utility import textutils
 
 ###############################################################################
 ## TOOLS/UTILITIES FOR MANAGING SPLITS
@@ -81,7 +81,7 @@ def is_non_singleton_split(split, mask):
 
 def split_as_string(split_mask, width, symbol1=None, symbol2=None):
     "Returns a 'pretty' split representation."
-    s = texttools.int_to_bitstring(split_mask).rjust(width, '0')
+    s = textutils.int_to_bitstring(split_mask).rjust(width, '0')
     if symbol1 is not None:
         s = s.replace('0', symbol1)
     if symbol2 is not None:

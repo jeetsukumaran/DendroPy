@@ -28,7 +28,7 @@ import sys
 import math
 from cStringIO import StringIO
 from dendropy.dataobject import base
-from dendropy.utility import texttools
+from dendropy.utility import textutils
 from dendropy.utility import containers
 from dendropy.utility import error
 
@@ -345,7 +345,7 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
 
     def split_bitmask_string(self, split_bitmask):
         "Returns bitstring representation of split_bitmask."
-        return "%s" % texttools.int_to_bitstring(split_bitmask).rjust(len(self), "0")
+        return "%s" % textutils.int_to_bitstring(split_bitmask).rjust(len(self), "0")
 
     def split_taxa_list(self, split_bitmask, index=0):
         "Returns list of taxa represented by split."

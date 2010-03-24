@@ -28,7 +28,7 @@ from cStringIO import StringIO
 import re
 
 from dendropy import dataobject
-from dendropy.utility import texttools
+from dendropy.utility import textutils
 from dendropy.utility import iosys
 from dendropy.dataio import nexustokenizer
 
@@ -584,7 +584,7 @@ class NexusReader(iosys.DataReader):
         ambig = mpat.findall(seq)
         result = []
         for i in xrange(len(unambig)-1):
-            a = texttools.RichString(ambig[i][1:-1])
+            a = textutils.RichString(ambig[i][1:-1])
             a.open_tag = ambig[i][0]
             a.close_tag = ambig[i][-1]
             result.extend(unambig[i])

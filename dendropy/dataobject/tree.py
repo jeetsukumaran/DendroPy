@@ -35,8 +35,8 @@ _LOG = messaging.get_logger(__name__)
 from dendropy.utility import GLOBAL_RNG
 from dendropy.utility import iosys
 from dendropy.utility import error
-from dendropy.utility import texttools
-from dendropy.utility import termtools
+from dendropy.utility import textutils
+from dendropy.utility import termutils
 from dendropy.dataobject.base import IdTagged
 from dendropy.dataobject.taxon import TaxonSetLinked, TaxonLinked
 from dendropy import treesplit
@@ -2185,7 +2185,7 @@ class Node(TaxonLinked):
         raw_labels = kwargs.get("raw_labels", False)
         if raw_labels:
             return tag
-        return texttools.escape_nexus_token(tag, preserve_spaces=preserve_spaces)
+        return textutils.escape_nexus_token(tag, preserve_spaces=preserve_spaces)
 
     ###########################################################################
     ## alternate representation of tree structure for debugging
@@ -2434,7 +2434,7 @@ class AsciiTreePlot(object):
     def compose(self, tree):
         self.reset()
         if self.display_width is None:
-            display_width = termtools.terminal_width() - 1
+            display_width = termutils.terminal_width() - 1
         else:
             display_width = self.display_width
         max_label_len = max([len(str(i.taxon)) for i in tree.leaf_iter()])

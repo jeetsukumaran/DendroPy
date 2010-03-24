@@ -27,8 +27,8 @@ Implementation of PHYLIP-schema i/o client(s).
 from cStringIO import StringIO
 import re
 from dendropy.utility import iosys
-from dendropy.utility import texttools
-from dendropy.utility import filetools
+from dendropy.utility import textutils
+from dendropy.utility import fileutils
 from dendropy.utility import error
 from dendropy.utility.messaging import get_logger
 from dendropy import dataobject
@@ -122,7 +122,7 @@ class PhylipReader(iosys.DataReader):
             self.symbol_state_map = self.char_matrix.state_alphabets[0]
 
         self.stream = stream
-        lines = filetools.get_lines(self.stream)
+        lines = fileutils.get_lines(self.stream)
         if len(lines) == 0:
             raise error.DataSourceError("No data in source", stream=self.stream)
         elif len(lines) <= 2:
@@ -263,7 +263,7 @@ class PhylipWriter(iosys.DataWriter):
             if self.strict:
                 label = label[:max_label_len]
             taxon_label_map[taxon] = label
-        taxon_label_map = texttools.unique_taxon_label_map(taxon_set, taxon_label_map, max_label_len, _LOG)
+        taxon_label_map = textutils.unique_taxon_label_map(taxon_set, taxon_label_map, max_label_len, _LOG)
         if self.strict:
             for t in taxon_label_map:
                 label = taxon_label_map[t]

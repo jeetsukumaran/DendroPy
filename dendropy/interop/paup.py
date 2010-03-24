@@ -35,7 +35,7 @@ import unittest
 import dendropy.test
 from dendropy.utility import containers
 from dendropy.utility import messaging
-from dendropy.utility import filetools
+from dendropy.utility import fileutils
 _LOG = messaging.get_logger(__name__)
 
 import dendropy
@@ -45,7 +45,7 @@ DENDROPY_PAUP_INTEROPERABILITY = False
 if "PAUP_PATH" in os.environ:
     PAUP_PATH = os.environ["PAUP_PATH"]
 else:
-    PAUP_PATH = filetools.find_executable('paup')
+    PAUP_PATH = fileutils.find_executable('paup')
 if PAUP_PATH is None:
     _LOG.warn("PAUP not found: PAUP interoperability not available.")
     _LOG.warn("Set environmental variable 'PAUP_PATH' to correct path to enable.")

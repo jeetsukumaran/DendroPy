@@ -5,7 +5,7 @@ import sys
 import optparse
 import datetime
 import dendropy
-from dendropy.utility import texttools
+from dendropy.utility import textutils
 
 __version__ = "1.0.0"
 __title__ = "DENDROPY-PARSE v%s" % __version__

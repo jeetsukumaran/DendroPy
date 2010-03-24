@@ -27,7 +27,7 @@ from cStringIO import StringIO
 import re
 
 from dendropy.utility import containers
-from dendropy.utility import texttools
+from dendropy.utility import textutils
 from dendropy.utility import iosys
 from dendropy.dataio import nexustokenizer
 from dendropy import dataobject
@@ -92,7 +92,7 @@ def split_as_newick_string(split, taxon_set, preserve_spaces=False):
     """
     Represents a split as a newick string.
     """
-    taxlabels = [texttools.escape_nexus_token(label, preserve_spaces=preserve_spaces, quote_underscores=quote_underscores) for label in taxon_set.labels()]
+    taxlabels = [textutils.escape_nexus_token(label, preserve_spaces=preserve_spaces, quote_underscores=quote_underscores) for label in taxon_set.labels()]
 
     # do not do the root
     if split == 0 or (split == taxon_set.all_taxon_set_bitmask()):
@@ -256,7 +256,7 @@ class NewickWriter(iosys.DataWriter):
         else:
             tag = ""
         if tag:
-            tag = texttools.escape_nexus_token(tag, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores)
+            tag = textutils.escape_nexus_token(tag, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores)
         return tag
 
     def compose_node(self, node):
