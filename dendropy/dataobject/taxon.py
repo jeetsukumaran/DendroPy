@@ -470,11 +470,6 @@ class TaxonSetPartition(object):
         if "membership_lists" in kwargs:
             self.membership_lists = kwargs.get('membership_lists')
 
-    def _set_membership_func(self, func):
-        self._membership_func = func
-        self._membership_dict = None
-        self._membership_lists = None
-
     def _get_membership_func(self):
         if self._membership_func is not None:
             return self._membership_func
@@ -483,6 +478,11 @@ class TaxonSetPartition(object):
         elif self._membership_lists is not None:
             return self._membership_func_from_list()
 
+    def _set_membership_func(self, func):
+        self._membership_func = func
+        self._membership_dict = None
+        self._membership_lists = None
+
     membership_func = property(_get_membership_func, _set_membership_func)
 
     def _set_membership_dict(self, d):
@@ -490,20 +490,30 @@ class TaxonSetPartition(object):
         self._membership_dict = d
         self._membership_lists = None
 
-    def _get_membership_dict(self):
-        raise NotImplementedError()
-
-    membership_dict = property(_get_membership_dict, _set_membership_dict)
+    membership_dict = property(fset=_set_membership_dict)
 
     def _set_membership_lists(self, lst):
         self._membership_func = None
         self._membership_dict = None
         self._membership_lists = lst
 
-    def _get_membership_lists(self):
-        raise NotImplementedError()
+    membership_lists = property(fset=_set_membership_lists)
 
-    membership_lists = property(_get_membership_lists, _set_membership_lists)
+    def get_membership_dict(self):
+        if self._membership_func is not None:
+            return self._membership_dict_from_func()
+        elif self._membership_dict is not None:
+            return dict(self._membership_dict)
+        elif self._membership_lists is not None:
+            return self._membership_dict_from_lists()
+
+    def get_membership_lists(self):
+        if self._membership_func is not None:
+            return self._membership_lists_from_func()
+        elif self._membership_dict is not None:
+            return self._membership_lists_from_dict()
+        elif self._membership_lists is not None:
+            return list(self._membership_lists)
 
     def _membership_func_from_dict(self):
         assert self._membership_dict is not None
@@ -517,4 +527,14 @@ class TaxonSetPartition(object):
                     return i
         return __z
 
+    def _membership_dict_from_func(self):
+        raise NotImplementedError()
 
+    def _membership_dict_from_lists(self):
+        raise NotImplementedError()
+
+    def _membership_lists_from_func(self):
+        raise NotImplementedError()
+
+    def _membership_lists_from_dict(self):
+        raise NotImplementedError()
