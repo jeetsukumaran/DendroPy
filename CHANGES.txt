@@ -1,3 +1,14 @@
+Release 3.2.1
+-------------
+
+New Features
+^^^^^^^^^^^^
+
+    *  Taxon objects can now be accessed from a TaxonSet directly by their label::
+
+        >>> taxonset = TaxonSet(['a', 'b', 'c'])
+        >>> assert taxonset[0] is taxonset['a'] # True
+
 Release 3.2.0
 -------------
 
@@ -30,8 +41,8 @@ New Features
 Release 3.1.1
 -------------
 
-Fixes
-^^^^^
+Bug Fixes
+^^^^^^^^^
 
     * SumTrees now handles '``--rooted``' option correctly; previously unrooted trees were treated as rooted, leading to incorrect split supports when structurally-equivalent trees of different rotations were used.
 
@@ -61,8 +72,8 @@ New Features
 
     * Setup is now zipsafe by default.
 
-Fixes
-^^^^^
+Bug Fixes
+^^^^^^^^^
 
     * Fixed major bug in SumTrees when mapping support to target tree (support value did not get written to node label).
     * Fixed bug in handling trailing whitespaces in interleaved NEXUS data.
