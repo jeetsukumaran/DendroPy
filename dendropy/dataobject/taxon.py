@@ -433,3 +433,88 @@ class Taxon(base.IdTagged):
         if output is not None:
             output.write(s)
         return s
+
+class TaxonSetPartition(object):
+    """
+    Manages a partition of a TaxonSet (i.e., a set of mutually-exclusive
+    and exhaustive subsets of a TaxonSet).
+    """
+
+    def __init__(self, taxon_set, **kwargs):
+        """
+        Constructs based on one of the following keyword arguments:
+
+            ``membership_func``
+                A function that takes a ``Taxon`` object as an argument and
+                returns a a population membership identifier or flag
+                (e.g., a string, an integer) .
+
+            ``membership_dict``
+                A dictionary with ``Taxon`` objects as keys and population
+                membership identifier or flag as values (e.g., a string,
+                an integer).
+
+            ``membership_lists``
+                A container of containers of ``Taxon`` objects, with every
+                ``Taxon`` object in ``taxon_set`` represented once and only
+                once in the sub-containers.
+        """
+        self.taxon_set = None
+        self._membership_func = None
+        self._membership_dict = None
+        self._membership_lists = None
+        if "membership_func" in kwargs:
+            self.membership_func = kwargs.get('membership_func')
+        if "membership_dict" in kwargs:
+            self.membership_dict = kwargs.get('membership_dict')
+        if "membership_lists" in kwargs:
+            self.membership_lists = kwargs.get('membership_lists')
+
+    def _set_membership_func(self, func):
+        self._membership_func = func
+        self._membership_dict = None
+        self._membership_lists = None
+
+    def _get_membership_func(self):
+        if self._membership_func is not None:
+            return self._membership_func
+        elif self._membership_dict is not None:
+            return self._membership_func_from_dict()
+        elif self._membership_lists is not None:
+            return self._membership_func_from_list()
+
+    membership_func = property(_get_membership_func, _set_membership_func)
+
+    def _set_membership_dict(self, d):
+        self._membership_func = None
+        self._membership_dict = d
+        self._membership_lists = None
+
+    def _get_membership_dict(self):
+        raise NotImplementedError()
+
+    membership_dict = property(_get_membership_dict, _set_membership_dict)
+
+    def _set_membership_lists(self, lst):
+        self._membership_func = None
+        self._membership_dict = None
+        self._membership_lists = lst
+
+    def _get_membership_lists(self):
+        raise NotImplementedError()
+
+    membership_lists = property(_get_membership_lists, _set_membership_lists)
+
+    def _membership_func_from_dict(self):
+        assert self._membership_dict is not None
+        return lambda x: self._membership_dict[x]
+
+    def _membership_func_from_list(self):
+        assert self._membership_lists is not None
+        def __z(x):
+            for i, m in enumerate(self._membership_lists):
+                if x in m:
+                    return i
+        return __z
+
+

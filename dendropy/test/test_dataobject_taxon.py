@@ -28,6 +28,7 @@ import unittest
 from cStringIO import StringIO
 from dendropy.utility import error
 from dendropy.test.support import datatest
+from dendropy.test.support.extendedtest import ExtendedTestCase
 import dendropy
 
 class TaxaTest(datatest.DataObjectVerificationTestCase):
@@ -84,6 +85,47 @@ class TaxaTest(datatest.DataObjectVerificationTestCase):
         ts = dendropy.TaxonSet(self.labels)
         self.assertIs(ts.get_taxon(label="Q"), None)
         self.assertIs(ts.get_taxon(label="T1"), ts[0])
+
+class TaxonSetPartitionTest(ExtendedTestCase):
+
+    def setUp(self):
+        self.taxon_set = dendropy.TaxonSet([
+                'a1', 'a2', 'a3', 'a4',
+                'b1', 'b2', 'b3', 'b4',
+                'c1', 'c2', 'c2', 'c3',
+                'd1', 'a5', 'a6', 'd2',
+                'd3'])
+        self.membership_func = lambda x: x.label[0]
+        self.membership_dict = {}
+        for t in self.taxon_set:
+            self.membership_dict[t] = t.label[0]
+        self.membership_lists = [
+            [self.taxon_set[0], self.taxon_set[1], self.taxon_set[2], self.taxon_set[3],
+             self.taxon_set[13], self.taxon_set[14]],
+            [self.taxon_set[4], self.taxon_set[5], self.taxon_set[6], self.taxon_set[7]],
+            [self.taxon_set[8], self.taxon_set[9], self.taxon_set[10], self.taxon_set[11]],
+            [self.taxon_set[12], self.taxon_set[15], self.taxon_set[16]]
+        ]
+        self.list_index_to_label_map = ['a', 'b', 'c', 'd']
+
+    def testFromMembershipFunc(self):
+        tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_func=self.membership_func)
+        tsp_mfunc = tsp.membership_func
+        for t in self.taxon_set:
+            self.assertEqual(self.membership_func(t), tsp_mfunc(t))
+
+    def testFromMembershipDict(self):
+        tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_dict=self.membership_dict)
+        tsp_mfunc = tsp.membership_func
+        for t in self.taxon_set:
+            self.assertEqual(self.membership_func(t), tsp_mfunc(t))
+
+    def testFromMembershipLists(self):
+        tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_lists=self.membership_lists)
+        tsp_mfunc = tsp.membership_func
+        for t in self.taxon_set:
+            self.assertEqual(self.membership_func(t), self.list_index_to_label_map[tsp_mfunc(t)])
+
 
 if __name__ == "__main__":
     unittest.main()
