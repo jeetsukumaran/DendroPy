@@ -558,4 +558,16 @@ class TaxonSetPartition(object):
         return ml
 
     def _membership_lists_from_dict(self):
-        raise NotImplementedError()
+        assert self._membership_dict is not None
+        ml = []
+        labels = []
+        for t in self.taxon_set:
+            label = self._membership_dict[t]
+            if label not in labels:
+                idx = len(labels)
+                labels.append(label)
+                ml.append([])
+            else:
+                idx = labels.index(label)
+            ml[idx].append(t)
+        return ml

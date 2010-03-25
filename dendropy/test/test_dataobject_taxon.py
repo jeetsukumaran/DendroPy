@@ -132,7 +132,7 @@ class TaxonSetPartitionTest(ExtendedTestCase):
         tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_dict=self.membership_dict)
         self.verify_membership_func(tsp.membership_func)
         self.verify_membership_dict(tsp.get_membership_dict())
-#        self.verify_membership_lists(tsp.get_membership_lists())
+        self.verify_membership_lists(tsp.get_membership_lists())
 
     def testFromMembershipLists(self):
         tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_lists=self.membership_lists)
