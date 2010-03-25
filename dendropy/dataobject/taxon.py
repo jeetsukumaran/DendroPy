@@ -180,6 +180,15 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         self._is_mutable = bool(v)
     is_locked = property(get_is_locked, set_is_locked)
 
+    def __getitem__(self, i):
+        if isinstance(i, int):
+            return containers.OrderedSet.__getitem__(self, i)
+        else:
+            for t in self:
+                if t.label is i:
+                    return t
+        raise KeyError(i)
+
     def has_taxon(self, **kwargs):
         """
         Returns True if taxon `taxon`, or with `oid` or `label`,

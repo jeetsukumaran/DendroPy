@@ -41,6 +41,26 @@ class TaxaTest(datatest.DataObjectVerificationTestCase):
         for label in self.labels:
             self.taxon_set.new_taxon(label=label)
 
+    def testLabelsAsKeys(self):
+        for t in self.taxon_set:
+            self.assertIs(t, self.taxon_set[t.label])
+
+    def testPositiveIndexing(self):
+        for i, t in enumerate(self.taxon_set):
+            self.assertIs(t, self.taxon_set[i])
+
+    def testNegativeIndexing(self):
+        for i, t in enumerate(self.taxon_set):
+            self.assertIs(t, self.taxon_set[i])
+
+    def testRaisesKeyError(self):
+        self.assertRaises(KeyError, self.taxon_set.__getitem__, 'foo')
+        self.assertRaises(KeyError, self.taxon_set.__getitem__, 'T')
+
+    def testRaisesIndexError(self):
+        self.assertRaises(IndexError, self.taxon_set.__getitem__, 1000)
+        self.assertRaises(IndexError, self.taxon_set.__getitem__, -1000)
+
     def testCompositionFromStrings(self):
         ts = dendropy.TaxonSet(self.labels)
         self.assertDistinctButEqual(ts, self.taxon_set)
