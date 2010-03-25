@@ -108,28 +108,34 @@ class TaxonSetPartitionTest(ExtendedTestCase):
         ]
         self.list_index_to_label_map = ['a', 'b', 'c', 'd']
 
-    def testFromMembershipFunc(self):
-        tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_func=self.membership_func)
-        tsp_mfunc = tsp.membership_func
+    def verify_membership_func(self, tsp_mfunc):
         for t in self.taxon_set:
             self.assertEqual(self.membership_func(t), tsp_mfunc(t))
-        tsp_md = tsp.get_membership_dict()
+
+    def verify_membership_dict(self, tsp_md):
         for k, v in tsp_md.items():
             self.assertIn(k, self.membership_dict)
-            self.assertEqual(v, self.membership_dict[k])
+            self.assertEqual(self.membership_dict[k], v)
+
+    def testFromMembershipFunc(self):
+        tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_func=self.membership_func)
+        self.verify_membership_func(tsp.membership_func)
+        self.verify_membership_dict(tsp.get_membership_dict())
 
     def testFromMembershipDict(self):
         tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_dict=self.membership_dict)
-        tsp_mfunc = tsp.membership_func
-        for t in self.taxon_set:
-            self.assertEqual(self.membership_func(t), tsp_mfunc(t))
+        self.verify_membership_func(tsp.membership_func)
+        self.verify_membership_dict(tsp.get_membership_dict())
 
     def testFromMembershipLists(self):
         tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_lists=self.membership_lists)
         tsp_mfunc = tsp.membership_func
         for t in self.taxon_set:
             self.assertEqual(self.membership_func(t), self.list_index_to_label_map[tsp_mfunc(t)])
-
+        tsp_md = tsp.get_membership_dict()
+        for k, v in tsp_md.items():
+            self.assertIn(k, self.membership_dict)
+            self.assertEqual(self.membership_dict[k], self.list_index_to_label_map[v])
 
 if __name__ == "__main__":
     unittest.main()

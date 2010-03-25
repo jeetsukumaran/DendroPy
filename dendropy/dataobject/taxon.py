@@ -528,13 +528,19 @@ class TaxonSetPartition(object):
         return __z
 
     def _membership_dict_from_func(self):
+        assert self._membership_func is not None
         md = {}
         for t in self.taxon_set:
             md[t] = self._membership_func(t)
         return md
 
     def _membership_dict_from_lists(self):
-        raise NotImplementedError()
+        assert self._membership_lists is not None
+        md = {}
+        for i, k in enumerate(self._membership_lists):
+            for t in k:
+                md[t] = i
+        return md
 
     def _membership_lists_from_func(self):
         raise NotImplementedError()
