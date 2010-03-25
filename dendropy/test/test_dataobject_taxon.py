@@ -113,6 +113,10 @@ class TaxonSetPartitionTest(ExtendedTestCase):
         tsp_mfunc = tsp.membership_func
         for t in self.taxon_set:
             self.assertEqual(self.membership_func(t), tsp_mfunc(t))
+        tsp_md = tsp.get_membership_dict()
+        for k, v in tsp_md.items():
+            self.assertIn(k, self.membership_dict)
+            self.assertEqual(v, self.membership_dict[k])
 
     def testFromMembershipDict(self):
         tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_dict=self.membership_dict)

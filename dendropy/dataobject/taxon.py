@@ -459,7 +459,7 @@ class TaxonSetPartition(object):
                 ``Taxon`` object in ``taxon_set`` represented once and only
                 once in the sub-containers.
         """
-        self.taxon_set = None
+        self.taxon_set = taxon_set
         self._membership_func = None
         self._membership_dict = None
         self._membership_lists = None
@@ -528,7 +528,10 @@ class TaxonSetPartition(object):
         return __z
 
     def _membership_dict_from_func(self):
-        raise NotImplementedError()
+        md = {}
+        for t in self.taxon_set:
+            md[t] = self._membership_func(t)
+        return md
 
     def _membership_dict_from_lists(self):
         raise NotImplementedError()
