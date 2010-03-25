@@ -167,6 +167,15 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         memo[id(self._oid)] = o._oid
         return o
 
+    def __getitem__(self, i):
+        if isinstance(i, int):
+            return containers.OrderedSet.__getitem__(self, i)
+        else:
+            for t in self:
+                if t.label is i:
+                    return t
+        raise KeyError(i)
+
     def lock(self):
         self._is_mutable = False
 
@@ -179,15 +188,6 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
     def set_is_locked(self, v):
         self._is_mutable = bool(v)
     is_locked = property(get_is_locked, set_is_locked)
-
-    def __getitem__(self, i):
-        if isinstance(i, int):
-            return containers.OrderedSet.__getitem__(self, i)
-        else:
-            for t in self:
-                if t.label is i:
-                    return t
-        raise KeyError(i)
 
     def has_taxon(self, **kwargs):
         """
@@ -370,7 +370,7 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         return "TaxonSet(%s)" % (", ".join([str(taxon) for taxon in self]))
 
     def __repr__(self):
-        return "<TaxonSet object at %s>" % (hex(id(self)))
+        return "<%s object at %s>" % (self.__str__(), hex(id(self)))
 
     def description(self, depth=1, indent=0, itemize="", output=None, **kwargs):
         """

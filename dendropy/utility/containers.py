@@ -128,6 +128,15 @@ class OrderedSet(list):
     def __str__(self):
         return "[%s]" % ", ".join([str(i) for i in self])
 
+    def __repr__(self):
+        return "OrderedSet([%s])" % ", ".join([str(i) for i in self])
+
+    def __hash__(self):
+        return hash( (t for t in self) )
+
+    def __cmp__(self, o):
+        return list.__cmp__(self, o)
+
     def add(self, x):
         if x not in self:
             list.append(self, x)
