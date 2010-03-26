@@ -482,7 +482,7 @@ class TaxonSetPartition(TaxonSetLinked):
         a single subset with all the objects in ``taxon_set``.
         """
         TaxonSetLinked.__init__(self, taxon_set=taxon_set, **kwargs)
-        self.subset_map = None
+        self.subset_map = {}
         if taxon_set is not None:
             if len(kwargs) > 0:
                 self.apply(**kwargs)
@@ -495,6 +495,25 @@ class TaxonSetPartition(TaxonSetLinked):
         Return subsets of partition.
         """
         return set(self.subset_map.values())
+
+    def __len__(self):
+        """
+        Number of subsets.
+        """
+        return len(self.subset_map)
+
+    def __iter__(self):
+        """
+        Iterate over subsets.
+        """
+        for k, v in self.subset_map:
+            yield k
+
+    def __getitem__(self, label):
+        """
+        Get subset with specified label.
+        """
+        return self.subset_map[label]
 
     def apply(self, **kwargs):
         """
