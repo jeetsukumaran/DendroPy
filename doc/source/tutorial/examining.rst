@@ -155,3 +155,4 @@ It is also possible to get an ASCII text plot of a tree object::
     |                                \--- Candola aspera
     |
     \------------------------------------ Loxocemus bicolor
+

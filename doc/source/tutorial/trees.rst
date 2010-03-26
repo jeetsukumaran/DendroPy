@@ -222,7 +222,6 @@ So, for example, the following is logically identical to the previous::
     >>> mcmc2 = dendropy.TreeList(taxon_set=taxa)
     >>> mcmc2.read_from_path('pythonidae.mcmc2.nex', 'nexus')
 
-
 Efficiently Iterating Over Trees in a File
 ==========================================
 
@@ -258,6 +257,42 @@ For example:
 
 .. literalinclude:: /examples/tree_iter2.py
     :linenos:
+
+Viewing and Displaying Trees
+============================
+
+Sometimes it is useful to get a visual representation of a |Tree|.
+
+For quick inspection, the :meth:`~dendropy.dataobject.tree.Tree.print_plot()` will write an ASCII text plot to the standard output stream::
+
+    >>> t = dendropy.Tree.get_from_string("(A,(B,(C,D)))", "newick")
+    >>> t.print_plot()
+    /----------------------------------------------- A
+    +
+    |                /------------------------------ B
+    \----------------+
+                     |          /------------------- C
+                     \----------+
+                                \------------------- D
+
+If you need to store this representation as a string instead, you can use :meth:`~dendropy.dataobject.tree.Tree.as_ascii_plot()`::
+
+    >>> s = t.as_ascii_plot()
+    >>> print(s)
+    /----------------------------------------------- A
+    +
+    |                /------------------------------ B
+    \----------------+
+                     |          /------------------- C
+                     \----------+
+                                \------------------- D
+
+While the :meth:`~dendropy.dataobject.tree.Tree.write_to_path()`, :meth:`~dendropy.dataobject.tree.Tree.write_to_stream()` and :meth:`~dendropy.dataobject.tree.Tree.as_string()` methods provide for a rich and flexible way to write representations of a |Tree| in various formats to various destinations, the :meth:`~dendropy.dataobject.tree.Tree.print_newick()` provides a quick-and-dirty way to get a snapshot NEWICK string of the tree::
+
+    >>> t.print_newick()
+    (A,(B,(C,D)))
+
+
 
 
 
