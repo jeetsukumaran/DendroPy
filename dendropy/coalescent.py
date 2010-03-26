@@ -343,14 +343,15 @@ def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
 
     return dc
 
-def num_deep_coalescences_with_grouping(tree, tax_sets):
+def num_deep_coalescences_with_grouping(tree, taxon_set_partition):
     """
     Returns the number of deep coalescences on tree `tree` that would result
     if the taxa in `tax_sets` formed K mutually-exclusive monophyletic groups,
     where K = len(tax_sets)
-    `tax_sets` == partition of taxa: list of lists, with the inner lists
-    consisting of taxon objects forming a monophyletic group.
+    `taxon_set_partition` == TaxonSetPartition
     """
+
+    tax_sets = taxon_set_partition.subsets()
     dc_tree = dataobject.Tree()
     dc_tree.taxon_set = dataobject.TaxonSet()
 

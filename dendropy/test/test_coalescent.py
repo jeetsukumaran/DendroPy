@@ -104,16 +104,18 @@ class DeepCoalTest(unittest.TestCase):
                     }
         for src_tree, expected in src_trees.items():
             tree = dendropy.Tree.get_from_string(src_tree, "NEWICK")
-            groups = [[],[]]
-            for taxon in tree.taxon_set:
-                if taxon.label.startswith('a'):
-                    groups[0].append(taxon)
-                elif taxon.label.startswith('b'):
-                    groups[1].append(taxon)
-                elif taxon.label.startswith('c'):
-                    if len(groups) < 3:
-                        groups.append([])
-                    groups[2].append(taxon)
+            groups = dendropy.TaxonSetPartition(tree.taxon_set,
+                membership_func=lambda x: x.label[0])
+#            groups = [[],[]]
+#            for taxon in tree.taxon_set:
+#                if taxon.label.startswith('a'):
+#                    groups[0].append(taxon)
+#                elif taxon.label.startswith('b'):
+#                    groups[1].append(taxon)
+#                elif taxon.label.startswith('c'):
+#                    if len(groups) < 3:
+#                        groups.append([])
+#                    groups[2].append(taxon)
             dc = coalescent.num_deep_coalescences_with_grouping(tree, groups)
             assert dc == expected, \
                 "deep coalescences by groups: expecting %d, but found %d" % (expected, dc)
