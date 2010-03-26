@@ -1,6 +1,6 @@
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 Phylogenetic Data in DendroPy
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. toctree::
     :maxdepth: 2
@@ -10,4 +10,3 @@ Phylogenetic Data in DendroPy
     writing.rst
     examining.rst
     converting.rst
-    taxa.rst
