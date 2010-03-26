@@ -119,37 +119,48 @@ class TaxonSetPartitionTest(datatest.DataObjectVerificationTestCase):
         self.membership_dict = {}
         for t in self.taxon_set:
             self.membership_dict[t] = t.label[0]
-            self.membership_lists = [
+            t.subset_id = t.label[0]
+        self.membership_lists = [
             [self.taxon_set[0], self.taxon_set[1], self.taxon_set[2], self.taxon_set[3],
              self.taxon_set[13], self.taxon_set[14]],
             [self.taxon_set[4], self.taxon_set[5], self.taxon_set[6], self.taxon_set[7]],
             [self.taxon_set[8], self.taxon_set[9], self.taxon_set[10], self.taxon_set[11]],
-            [self.taxon_set[12], self.taxon_set[15], self.taxon_set[16]]
-        ]
-        self.list_index_to_label_map = ['a', 'b', 'c', 'd']
-        self.expected_sets = set([dendropy.TaxonSet(s, label=self.list_index_to_label_map[i]) \
+            [self.taxon_set[12], self.taxon_set[15], self.taxon_set[16]]]
+        self.label_map = ['a', 'b', 'c', 'd']
+        self.expected_sets = set([dendropy.TaxonSet(s, label=self.label_map[i]) \
                 for i, s in enumerate(self.membership_lists)])
         self.expected_dict = {}
         for s in self.expected_sets:
             self.expected_dict[self.membership_dict[s[0]]] = s
 
-    def verify_subsets(self, subsets):
+    def verify_subsets(self, subsets, use_label_indexes=False):
         for s in subsets:
+            if use_label_indexes:
+                key = self.label_map[s.label]
+            else:
+                key = s.label
             self.assertDistinctButEqual(
-                self.expected_dict[s.label],
-                s,
-                distinct_taxa=True,
-                distinct_taxon_objects=False)
+                    self.expected_dict[key],
+                    s,
+                    distinct_taxa=True,
+                    distinct_taxon_objects=False)
 
     def testFromMembershipFunc(self):
         tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_func=self.membership_func)
         self.verify_subsets(tsp.subsets())
 
+    def testFromMembershipAttr(self):
+        tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_attr_name='subset_id')
+        self.verify_subsets(tsp.subsets())
+
     def testFromMembershipDict(self):
         tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_dict=self.membership_dict)
+        self.verify_subsets(tsp.subsets())
 
     def testFromMembershipLists(self):
         tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_lists=self.membership_lists)
+        self.verify_subsets(tsp.subsets(), use_label_indexes=True)
 
 if __name__ == "__main__":
     unittest.main()
+

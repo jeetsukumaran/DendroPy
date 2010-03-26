@@ -468,6 +468,10 @@ class TaxonSetPartition(TaxonSetLinked):
                 returns a a population membership identifier or flag
                 (e.g., a string, an integer) .
 
+            ``membership_attr_name``
+                Name of an attribute of ``Taxon`` objects that serves as an
+                identifier for subset membership.
+
             ``membership_dict``
                 A dictionary with ``Taxon`` objects as keys and population
                 membership identifier or flag as values (e.g., a string,
@@ -525,6 +529,10 @@ class TaxonSetPartition(TaxonSetLinked):
                 returns a a population membership identifier or flag
                 (e.g., a string, an integer).
 
+            ``membership_attr_name``
+                Name of an attribute of ``Taxon`` objects that serves as an
+                identifier for subset membership.
+
             ``membership_dict``
                 A dictionary with ``Taxon`` objects as keys and population
                 membership identifier or flag as values (e.g., a string,
@@ -537,6 +545,8 @@ class TaxonSetPartition(TaxonSetLinked):
         """
         if "membership_func" in kwargs:
             self.apply_membership_func(kwargs["membership_func"])
+        elif  "membership_attr_name" in kwargs:
+            self.apply_membership_attr_name(kwargs["membership_attr_name"])
         elif  "membership_dict" in kwargs:
             self.apply_membership_dict(kwargs["membership_dict"])
         elif "membership_lists" in kwargs:
@@ -558,6 +568,13 @@ class TaxonSetPartition(TaxonSetLinked):
                 self.subset_map[subset_id] = TaxonSet(label=subset_id)
             self.subset_map[subset_id].add(t)
         return self.subsets()
+
+    def apply_membership_attr_name(self, attr_name):
+        """
+        Constructs subsets based on attribute ``attr_name`` of each
+        ``Taxon`` object.
+        """
+        return self.apply_membership_func(lambda x: getattr(x, attr_name))
 
     def apply_membership_dict(self, mdict):
         """
@@ -582,6 +599,8 @@ class TaxonSetPartition(TaxonSetLinked):
         for lidx, mlist in enumerate(mlists):
             subset_id = subset_labels[lidx]
             self.subset_map[subset_id] = TaxonSet(label=subset_id)
+            for i, t in enumerate(mlist):
+                self.subset_map[subset_id].add(t)
         return self.subsets()
 
 
