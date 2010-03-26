@@ -371,6 +371,32 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
             index += 1
         return taxa
 
+    def partition(self, **kwargs):
+        """
+        Returns a TaxonSetPartition object, corresponding to this object
+        partition according to criteria/values given in keyword arguments:
+
+            ``membership_func``
+                A function that takes a ``Taxon`` object as an argument and
+                returns a a population membership identifier or flag
+                (e.g., a string, an integer) .
+
+            ``membership_attr_name``
+                Name of an attribute of ``Taxon`` objects that serves as an
+                identifier for subset membership.
+
+            ``membership_dict``
+                A dictionary with ``Taxon`` objects as keys and population
+                membership identifier or flag as values (e.g., a string,
+                an integer).
+
+            ``membership_lists``
+                A container of containers of ``Taxon`` objects, with every
+                ``Taxon`` object in ``taxon_set`` represented once and only
+                once in the sub-containers.
+        """
+        return TaxonSetPartition(self, **kwargs)
+
     def __str__(self):
         return "TaxonSet(%s)" % (", ".join([str(taxon) for taxon in self]))
 
