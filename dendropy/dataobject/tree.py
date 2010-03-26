@@ -1279,9 +1279,37 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
            returns the label to appear in the tree."""
         return self.seed_node.as_newick_string(**kwargs)
 
+    def print_newick(self, **kwargs):
+        """
+        Convenience method to newick string representation of this tree
+        to the standard output stream.
+        """
+        import sys
+        sys.stdout.write(self.as_newick_string(**kwargs))
+        sys.stdout.write("\n")
+
     def as_ascii_plot(self, **kwargs):
+        """
+        Returns a string representation a graphic of this tree using ASCII
+        characters.
+        """
         ap = AsciiTreePlot(**kwargs)
         return ap.compose(self)
+
+    def write_ascii_plot(self, stream, **kwargs):
+        """
+        Writes an ASCII text graphic of this tree to `stream`.
+        """
+        return stream.write(self.as_ascii_plot(**kwargs))
+
+    def print_plot(self, **kwargs):
+        """
+        Convenience method to write an ASCII text graphic of this tree
+        to the standard output stream.
+        """
+        import sys
+        self.write_ascii_plot(sys.stdout, **kwargs)
+        sys.stdout.write("\n")
 
     ###########################################################################
     ## Metrics -- Internal
