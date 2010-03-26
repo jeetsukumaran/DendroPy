@@ -71,6 +71,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         objects in domain space.
         """
         distinct_taxa = kwargs.get("distinct_taxa", True)
+        distinct_taxon_objects = kwargs.get("distinct_taxon_objects", True)
         equal_oids = kwargs.get("equal_oids", None)
         if type(data_object1) != type(data_object2):
             raise ValueError("Objects to be compared must be of the same type, but was given %s and %s objects" \
@@ -78,9 +79,11 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         if isinstance(data_object1, dendropy.DataSet):
             self.assertDistinctButEqualDataSet(data_object1, data_object2, **kwargs)
         elif isinstance(data_object1, dendropy.Taxon):
-            self.assertDistinctButEqualTaxon(data_object1, data_object2, **kwargs)
+            if distinct_taxon_objects:
+                self.assertDistinctButEqualTaxon(data_object1, data_object2, **kwargs)
         elif isinstance(data_object1, dendropy.TaxonSet):
-            self.assertDistinctButEqualTaxonSet(data_object1, data_object2, **kwargs)
+            if distinct_taxa:
+                self.assertDistinctButEqualTaxonSet(data_object1, data_object2, **kwargs)
         elif isinstance(data_object1, dendropy.Tree):
             self.assertDistinctButEqualTree(data_object1, data_object2, **kwargs)
         elif isinstance(data_object1, dendropy.TreeList):
@@ -128,6 +131,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
 
     def assertDistinctButEqualTaxonSet(self, taxon_set1, taxon_set2, **kwargs):
         equal_oids = kwargs.get("equal_oids", None)
+        distinct_taxon_objects = kwargs.get("distinct_taxon_objects", True)
         ignore_underscore_substitution = kwargs.get("ignore_underscore_substitution", False)
         ignore_taxon_order = kwargs.get("ignore_taxon_order", False)
         self.logger.info("Comparing TaxonSet objects %d and %d" % (id(taxon_set1), id(taxon_set2)))
@@ -135,25 +139,28 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         self.assertEqual(len(taxon_set1), len(taxon_set2))
         if not kwargs.get("ignore_label", True):
             self.assertEqual(taxon_set1.label, taxon_set1.label)
-        if not ignore_taxon_order:
-            for tidx, taxon1 in enumerate(taxon_set1):
-                taxon2 = taxon_set2[tidx]
-                self.assertDistinctButEqualTaxon(taxon1, taxon2, **kwargs)
-        else:
-            if ignore_underscore_substitution:
-                get_label = lambda t: str(t.label).replace("_", " ")
+        if distinct_taxon_objects:
+            if not ignore_taxon_order:
+                for tidx, taxon1 in enumerate(taxon_set1):
+                    taxon2 = taxon_set2[tidx]
+                    self.assertDistinctButEqualTaxon(taxon1, taxon2, **kwargs)
             else:
-                get_label = lambda t: str(t.label)
-            labels1 = set([get_label(t) for t in taxon_set1])
-            labels2 = set([get_label(t) for t in taxon_set2])
-            self.assertEqual(labels1, labels2)
-            if equal_oids is not None:
-                oids1 = set([t.oid for t in taxon_set1])
-                oids2 = set([t.oid for t in taxon_set2])
-                if equal_oids:
-                    self.assertEqual(oids1, oids2)
+                if ignore_underscore_substitution:
+                    get_label = lambda t: str(t.label).replace("_", " ")
                 else:
-                    self.assertNotEqual(oids1, oids2)
+                    get_label = lambda t: str(t.label)
+                labels1 = set([get_label(t) for t in taxon_set1])
+                labels2 = set([get_label(t) for t in taxon_set2])
+                self.assertEqual(labels1, labels2)
+                if equal_oids is not None:
+                    oids1 = set([t.oid for t in taxon_set1])
+                    oids2 = set([t.oid for t in taxon_set2])
+                    if equal_oids:
+                        self.assertEqual(oids1, oids2)
+                    else:
+                        self.assertNotEqual(oids1, oids2)
+        else:
+            self.assertEqual(taxon_set1, taxon_set2)
 
     def assertDistinctButEqualTreeList(self, tree_list1, tree_list2, **kwargs):
         """

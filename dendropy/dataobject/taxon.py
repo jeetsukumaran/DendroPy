@@ -157,8 +157,13 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         if len(args) > 1:
             raise TypeError("TaxonSet() takes at most 1 non-keyword argument (%d given)" % len(args))
         elif len(args) == 1:
+            if isinstance(args[0], TaxonSet):
+                self.label = kwargs.get('label', args[0].label)
             for i in args[0]:
-                self.add(TaxonSet._to_taxon(i))
+                if isinstance(i, Taxon):
+                    self.add(i)
+                else:
+                    self.add(TaxonSet._to_taxon(i))
         self._is_mutable = kwargs.get('is_mutable', True) # immutable constraints not fully implemented -- only enforced at the add_taxon stage)
 
     def __deepcopy__(self, memo):
@@ -370,7 +375,7 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         return "TaxonSet(%s)" % (", ".join([str(taxon) for taxon in self]))
 
     def __repr__(self):
-        return "<%s object at %s>" % (self.__str__(), hex(id(self)))
+        return "<%s object at %s>" % ("TaxonSet", hex(id(self)))
 
     def description(self, depth=1, indent=0, itemize="", output=None, **kwargs):
         """
@@ -415,9 +420,14 @@ class Taxon(base.IdTagged):
 
     cmp = staticmethod(cmp)
 
-    def __init__(self, label=None, oid=None):
+    def __init__(self, *args, **kwargs):
         "Initializes by calling base class."
-        base.IdTagged.__init__(self, label=label, oid=oid)
+        if len(args) > 1:
+            raise TypeError("Taxon() takes at most 1 non-keyword argument (%d given)" % len(args))
+        elif len(args) == 1:
+            if isinstance(args[0], Taxon):
+                kwargs['label'] = args[0].label
+        base.IdTagged.__init__(self, **kwargs)
 
     def __str__(self):
         "String representation of self = taxon name."
@@ -443,7 +453,7 @@ class Taxon(base.IdTagged):
             output.write(s)
         return s
 
-class TaxonSetPartition(object):
+class TaxonSetPartition(TaxonSetLinked):
     """
     Manages a partition of a TaxonSet (i.e., a set of mutually-exclusive
     and exhaustive subsets of a TaxonSet).
@@ -451,7 +461,7 @@ class TaxonSetPartition(object):
 
     def __init__(self, taxon_set, **kwargs):
         """
-        Constructs based on one of the following keyword arguments:
+        Instantiates based on one of the following keyword arguments:
 
             ``membership_func``
                 A function that takes a ``Taxon`` object as an argument and
@@ -467,116 +477,94 @@ class TaxonSetPartition(object):
                 A container of containers of ``Taxon`` objects, with every
                 ``Taxon`` object in ``taxon_set`` represented once and only
                 once in the sub-containers.
+
+        If none of these are specified, defaults to a partition consisting of
+        a single subset with all the objects in ``taxon_set``.
         """
-        self.taxon_set = taxon_set
-        self._membership_func = None
-        self._membership_dict = None
-        self._membership_lists = None
+        TaxonSetLinked.__init__(self, taxon_set=taxon_set, **kwargs)
+        self.subset_map = None
+        if taxon_set is not None:
+            if len(kwargs) > 0:
+                self.apply(**kwargs)
+            else:
+                ss = TaxonSet(self.taxon_set)
+                self.subset_map = { self.taxon_set.label : ss}
+
+    def subsets(self):
+        """
+        Return subsets of partition.
+        """
+        return set(self.subset_map.values())
+
+    def apply(self, **kwargs):
+        """
+        Builds the subsets of the linked TaxonSet resulting from the
+        partitioning scheme specified by one of the following keyword arguments:
+
+            ``membership_func``
+                A function that takes a ``Taxon`` object as an argument and
+                returns a a population membership identifier or flag
+                (e.g., a string, an integer).
+
+            ``membership_dict``
+                A dictionary with ``Taxon`` objects as keys and population
+                membership identifier or flag as values (e.g., a string,
+                an integer).
+
+            ``membership_lists``
+                A container of containers of ``Taxon`` objects, with every
+                ``Taxon`` object in ``taxon_set`` represented once and only
+                once in the sub-containers.
+        """
         if "membership_func" in kwargs:
-            self.membership_func = kwargs.get('membership_func')
-        if "membership_dict" in kwargs:
-            self.membership_dict = kwargs.get('membership_dict')
-        if "membership_lists" in kwargs:
-            self.membership_lists = kwargs.get('membership_lists')
+            self.apply_membership_func(kwargs["membership_func"])
+        elif  "membership_dict" in kwargs:
+            self.apply_membership_dict(kwargs["membership_dict"])
+        elif "membership_lists" in kwargs:
+            self.apply_membership_lists(kwargs["membership_lists"])
+        else:
+            raise TypeError("Must specify partitioning scheme using one of: " \
+                + "'membership_func', 'membership_dict', or 'membership_lists'")
 
-    def _get_membership_func(self):
-        if self._membership_func is not None:
-            return self._membership_func
-        elif self._membership_dict is not None:
-            return self._membership_func_from_dict()
-        elif self._membership_lists is not None:
-            return self._membership_func_from_list()
-
-    def _set_membership_func(self, func):
-        self._membership_func = func
-        self._membership_dict = None
-        self._membership_lists = None
-
-    membership_func = property(_get_membership_func, _set_membership_func)
-
-    def _set_membership_dict(self, d):
-        self._membership_func = None
-        self._membership_dict = d
-        self._membership_lists = None
-
-    membership_dict = property(fset=_set_membership_dict)
-
-    def _set_membership_lists(self, lst):
-        self._membership_func = None
-        self._membership_dict = None
-        self._membership_lists = lst
-
-    membership_lists = property(fset=_set_membership_lists)
-
-    def get_membership_dict(self):
-        if self._membership_func is not None:
-            return self._membership_dict_from_func()
-        elif self._membership_dict is not None:
-            return dict(self._membership_dict)
-        elif self._membership_lists is not None:
-            return self._membership_dict_from_lists()
-
-    def get_membership_lists(self):
-        if self._membership_func is not None:
-            return self._membership_lists_from_func()
-        elif self._membership_dict is not None:
-            return self._membership_lists_from_dict()
-        elif self._membership_lists is not None:
-            return list(self._membership_lists)
-
-    def _membership_func_from_dict(self):
-        assert self._membership_dict is not None
-        return lambda x: self._membership_dict[x]
-
-    def _membership_func_from_list(self):
-        assert self._membership_lists is not None
-        def __z(x):
-            for i, m in enumerate(self._membership_lists):
-                if x in m:
-                    return i
-        return __z
-
-    def _membership_dict_from_func(self):
-        assert self._membership_func is not None
-        md = {}
+    def apply_membership_func(self, mfunc):
+        """
+        Constructs subsets based on function ``mfunc``, which should take a
+        ``Taxon`` object as an argument and return a population membership
+        identifier or flag (e.g., a string, an integer).
+        """
+        self.subset_map = {}
         for t in self.taxon_set:
-            md[t] = self._membership_func(t)
-        return md
+            subset_id = mfunc(t)
+            if subset_id not in self.subset_map:
+                self.subset_map[subset_id] = TaxonSet(label=subset_id)
+            self.subset_map[subset_id].add(t)
+        return self.subsets()
 
-    def _membership_dict_from_lists(self):
-        assert self._membership_lists is not None
-        md = {}
-        for i, k in enumerate(self._membership_lists):
-            for t in k:
-                md[t] = i
-        return md
+    def apply_membership_dict(self, mdict):
+        """
+        Constructs subsets based on dictionary ``mdict``, which should be
+        dictionary with ``Taxon`` objects as keys and population membership
+        identifier or flag as values (e.g., a string, an integer).
+        """
+        return self.apply_membership_func(lambda x: mdict[x])
 
-    def _membership_lists_from_func(self):
-        assert self._membership_func is not None
-        ml = []
-        labels = []
-        for t in self.taxon_set:
-            label = self._membership_func(t)
-            if label not in labels:
-                idx = len(labels)
-                labels.append(label)
-                ml.append([])
-            else:
-                idx = labels.index(label)
-            ml[idx].append(t)
-        return ml
+    def apply_membership_lists(self, mlists, subset_labels=None):
+        """
+        Constructs subsets based on list ``mlists``, which should be an interable
+        of iterables of ``Taxon`` objects, with every ``Taxon`` object in
+        ``taxon_set`` represented once and only once in the sub-containers.
+        """
+        if subset_labels is not None:
+            if len(subset_labels) != len(mlists):
+                raise ValueError('Length of subset label list must equal to number of subsets')
+        else:
+            subset_labels = range(len(mlists))
+        self.subset_map = {}
+        for lidx, mlist in enumerate(mlists):
+            subset_id = subset_labels[lidx]
+            self.subset_map[subset_id] = TaxonSet(label=subset_id)
+        return self.subsets()
 
-    def _membership_lists_from_dict(self):
-        assert self._membership_dict is not None
-        ml = []
-        labels = []
-        for t in self.taxon_set:
-            label = self._membership_dict[t]
-            if label not in labels:
-                idx = len(labels)
-                labels.append(label)
-                ml.append([])
-            else:
-                idx = labels.index(label)
-            ml[idx].append(t)
-        return ml
+
+
+

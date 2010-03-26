@@ -67,7 +67,7 @@ class TaxaTest(datatest.DataObjectVerificationTestCase):
 
     def testCompositionFromTaxa(self):
         ts = dendropy.TaxonSet(self.taxon_set)
-        self.assertDistinctButEqual(ts, self.taxon_set)
+        self.assertDistinctButEqual(ts, self.taxon_set, distinct_taxon_objects=False)
 
     def testTaxaQuerying(self):
         ts = dendropy.TaxonSet(self.labels)
@@ -106,7 +106,7 @@ class TaxaTest(datatest.DataObjectVerificationTestCase):
         self.assertIs(ts.get_taxon(label="Q"), None)
         self.assertIs(ts.get_taxon(label="T1"), ts[0])
 
-class TaxonSetPartitionTest(ExtendedTestCase):
+class TaxonSetPartitionTest(datatest.DataObjectVerificationTestCase):
 
     def setUp(self):
         self.taxon_set = dendropy.TaxonSet([
@@ -127,43 +127,29 @@ class TaxonSetPartitionTest(ExtendedTestCase):
             [self.taxon_set[12], self.taxon_set[15], self.taxon_set[16]]
         ]
         self.list_index_to_label_map = ['a', 'b', 'c', 'd']
+        self.expected_sets = set([dendropy.TaxonSet(s, label=self.list_index_to_label_map[i]) \
+                for i, s in enumerate(self.membership_lists)])
+        self.expected_dict = {}
+        for s in self.expected_sets:
+            self.expected_dict[self.membership_dict[s[0]]] = s
 
-    def verify_membership_func(self, tsp_mfunc):
-        for t in self.taxon_set:
-            self.assertEqual(self.membership_func(t), tsp_mfunc(t))
-
-    def verify_membership_dict(self, tsp_md):
-        for k, v in tsp_md.items():
-            self.assertIn(k, self.membership_dict)
-            self.assertEqual(self.membership_dict[k], v)
-
-    def verify_membership_lists(self, tsp_ml):
-        self.assertEqual(len(self.membership_lists), len(tsp_ml))
-        for i in tsp_ml:
-            self.assertIn(i, self.membership_lists)
+    def verify_subsets(self, subsets):
+        for s in subsets:
+            self.assertDistinctButEqual(
+                self.expected_dict[s.label],
+                s,
+                distinct_taxa=True,
+                distinct_taxon_objects=False)
 
     def testFromMembershipFunc(self):
         tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_func=self.membership_func)
-        self.verify_membership_func(tsp.membership_func)
-        self.verify_membership_dict(tsp.get_membership_dict())
-        self.verify_membership_lists(tsp.get_membership_lists())
+        self.verify_subsets(tsp.subsets())
 
     def testFromMembershipDict(self):
         tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_dict=self.membership_dict)
-        self.verify_membership_func(tsp.membership_func)
-        self.verify_membership_dict(tsp.get_membership_dict())
-        self.verify_membership_lists(tsp.get_membership_lists())
 
     def testFromMembershipLists(self):
         tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_lists=self.membership_lists)
-        tsp_mfunc = tsp.membership_func
-        for t in self.taxon_set:
-            self.assertEqual(self.membership_func(t), self.list_index_to_label_map[tsp_mfunc(t)])
-        tsp_md = tsp.get_membership_dict()
-        for k, v in tsp_md.items():
-            self.assertIn(k, self.membership_dict)
-            self.assertEqual(self.membership_dict[k], self.list_index_to_label_map[v])
-        self.verify_membership_lists(tsp.get_membership_lists())
 
 if __name__ == "__main__":
     unittest.main()
