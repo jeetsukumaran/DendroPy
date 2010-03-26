@@ -316,7 +316,7 @@ def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
             ssplit = 0
             for gn_child in gn_children:
                 ssplit = ssplit | gene_node_species_nodes[gn_child].edge.split_bitmask
-            sanc = treecalc.mrca(species_tree.seed_node, ssplit, taxa_mask)
+            sanc = species_tree.mrca(start_node=species_tree.seed_node, split_bitmask=ssplit)
             gene_node_species_nodes[gnd] = sanc
             if sanc not in species_node_gene_nodes:
                 species_node_gene_nodes[sanc] = []
