@@ -21,7 +21,7 @@ For example, return a continuous time tree with 10 leaves, generated under a bir
 
     >>> from dendropy import treesim
     >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, ntax=10)
-    >>> print(t.as_ascii_plot())
+    >>> t.print_plot()
                   /-------------------------------------------- T1
                   |
     /-------------+                             /-------------- T2
@@ -61,7 +61,7 @@ You can pass in an explicit |TaxonSet| object using the "``taxon_set``" keyword:
     >>> from dendropy import treesim
     >>> taxa = dendropy.TaxonSet(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
     >>> t = treesim.birth_death(0.4, 0.1, taxon_set=taxa)
-    >>> print(t.as_ascii_plot())
+    >>> t.print_plot()
                 /-------------------------------------- h
                 |
     /-----------+                         /------------ c
@@ -88,7 +88,7 @@ If the size of the |TaxonSet| object given by the ``taxon_set`` argument is grea
     >>> from dendropy import treesim
     >>> taxa = dendropy.TaxonSet(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
     >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, ntax=5, taxon_set=taxa)
-    >>> print(t.as_ascii_plot())
+    >>> t.print_plot()
     /-------------------------------------------------- g
     |
     +                        /------------------------- a
@@ -105,7 +105,7 @@ If the size of the |TaxonSet| object is less than the target taxon number, then 
     >>> from dendropy import treesim
     >>> taxa = dendropy.TaxonSet(['a', 'b'])
     >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, ntax=5, taxon_set=taxa)
-    >>> print(t.as_ascii_plot())
+    >>> t.print_plot()
                                      /---------------- a
     /--------------------------------+
     |                                \---------------- b
@@ -136,7 +136,7 @@ If the keyword argument "``repeat_until_success``" is given, then instead of rai
     ...                         death_rate=0.9,
     ...                         ntax=10,
     ...                         repeat_until_success=True)
-    >>> print(t.as_ascii_plot())
+    >>> t.print_plot()
                                            /------------------- T1
     /--------------------------------------+
     |                                      |         /--------- T2
