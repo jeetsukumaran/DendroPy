@@ -17,7 +17,7 @@ There are two different birth-death process tree simulation routines in DendroPy
 
 Both of these functions have identical interfaces, and will grow a tree under a branching process with the specified birth-date and death-rate until the termination condition (pre-specified number of leaves or maximum amount of time) is met.
 
-For example, return a continuous time tree with 10 leaves, generated under a birth rate of 1.0 and death rate of 0.5::
+For example, to get a continuous-time tree with 10 leaves, generated under a birth rate of 1.0 and death rate of 0.5::
 
     >>> from dendropy import treesim
     >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, ntax=10)
@@ -42,13 +42,13 @@ For example, return a continuous time tree with 10 leaves, generated under a bir
                                  |
                                  \----------------------------- T10
 
-While to return a continuous time tree generated under the same rates after 6 time units::
+While to get a continuous time tree generated under the same rates after 6 time units::
 
     >>> t = treesim.birth_death(birth_rate=1.0, death_rate=0.5, max_time=6.0)
 
 If both conditions are given simultaneously, then tree growth will terminate when
 *any* of the termination conditions (i.e., number of tips == `ntax`, or number
-of tips == len(taxon_set) or maximum time = `max_time`) are met.
+of tips == len(taxon_set) or maximum time == `max_time`) are met.
 
 Specifying a |TaxonSet|
 -----------------------
