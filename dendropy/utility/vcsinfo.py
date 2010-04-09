@@ -179,7 +179,10 @@ class Revision(object):
         cmd = "show --quiet --pretty=format:'%at' HEAD"
         retcode, stdout, stderr = self._run_vcs(cmd)
         if stdout:
-            return datetime.datetime.fromtimestamp(float(stdout.replace('\n', '')))
+            try:
+                return datetime.datetime.fromtimestamp(float(stdout.replace('\n', '').replace("'", "").replace('"','')))
+            except ValueError:
+                return None
         else:
             return None
 
