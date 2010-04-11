@@ -60,30 +60,30 @@ def collapse_clade(node):
     leaves = [i for i in dataobject.Node.leaf_iter(node)]
     node.set_children(leaves)
 
-def prune_subtree(tree, node):
+def prune_subtree(tree, node, suppress_outdegree_one=True):
     """Removes subtree starting at `node` from tree."""
     if not node:
         raise ValueError("Tried to remove an non-existing or null node")
     if node.parent_node is None:
         raise TypeError('Node has no parent and is implicit root: cannot be pruned')
     node.parent_node.remove_child(node)
-    tree.suppress_outdegree_one_nodes()
+    if suppress_outdegree_one:
+        tree.suppress_outdegree_one_nodes()
     return tree
 
-def prune_leaves_without_taxa(tree):
+def prune_leaves_without_taxa(tree, suppress_outdegree_one=True):
     """
-    Removes all terminal nodes that have their ``taxon`` attribute set to ``None``.
+    Removes all terminal nodes that have their ``taxon`` attribute set to
+    ``None``.
     """
-    for nd in tree.postorder_node_iter():
-        if len(nd.child_nodes()) == 0:
-            dnd = nd
-            while dnd.parent_node is not None and len(dnd.child_nodes()) == 0:
-                new_dnd = dnd.parent_node
-                new_dnd.remove_child(dnd)
-                dnd = new_dnd
+    for nd in tree.leaf_iter():
+        if nd.taxon is None:
+            nd.edge.tail_node.remove_child(nd)
+    if suppress_outdegree_one:
+        tree.suppress_outdegree_one_nodes()
     return tree
 
-def prune_taxa(tree, taxa):
+def prune_taxa(tree, taxa, suppress_outdegree_one=True):
     """
     Removes terminal nodes associated with Taxon objects given by the container
     `taxa` (which can be any iterable, including a TaxonSet object) from `tree`.
@@ -93,18 +93,19 @@ def prune_taxa(tree, taxa):
         nd = tree.find_node(lambda x: x.taxon is taxon)
         if nd is not None:
             nd.edge.tail_node.remove_child(nd)
-    prune_leaves_without_taxa(tree)
-    tree.suppress_outdegree_one_nodes()
+    prune_leaves_without_taxa(tree, suppress_outdegree_one=suppress_outdegree_one)
+    #if suppress_outdegree_one:
+    #    tree.suppress_outdegree_one_nodes()
     return tree
 
-def retain_taxa(tree, taxa):
+def retain_taxa(tree, taxa, suppress_outdegree_one=True):
     """
     Removes terminal nodes that are not associated with any
     of the Taxon objects given by ``taxa`` (which can be any iterable, including a
     TaxonSet object) from the ``tree``.
     """
     to_prune = [t for t in tree.taxon_set if t not in taxa]
-    return prune_taxa(tree, to_prune)
+    return prune_taxa(tree, to_prune, suppress_outdegree_one=suppress_outdegree_one)
 
 def randomly_reorient_tree(tree, rng=None, splits=False):
     """
