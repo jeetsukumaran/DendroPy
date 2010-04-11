@@ -9,6 +9,14 @@ New Features
         >>> taxonset = TaxonSet(['a', 'b', 'c'])
         >>> assert taxonset[0] is taxonset['a'] # True
 
+Bug Fixes
+^^^^^^^^^
+
+    * Fixed taxon-pruning clean-up resulting in all leaves being removed (!).
+
+    * Fixed improper value returned for latest commit date when running under Windows.
+
+
 Release 3.2.0
 -------------
 
