@@ -2060,7 +2060,7 @@ class Node(TaxonLinked):
     def level(self):
         "Number of nodes between self and root."
         if self.parent_node:
-            return self.parent_node.level + 1
+            return self.parent_node.level() + 1
         else:
             return 0
 
