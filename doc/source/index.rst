@@ -34,7 +34,7 @@ DendroPy is fully easy-installable and can be installed using |pip|_::
 
 or |setuptools|_::
 
-    $ sudo easy_intall -U dendropy
+    $ sudo easy_install -U dendropy
 
 if these are available on your system.
 
