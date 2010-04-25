@@ -129,22 +129,12 @@ The current release of DendroPy is version %s%s.
 
 """ % (__version__, revision_text))
 
-changes = open('CHANGES.txt').read()
-long_description = long_description + ("""\
-
-Change History
-==============
-
-%s
-
-""" % changes)
-
 setup(name='DendroPy',
       version=__version__,
       author='Jeet Sukumaran and Mark T. Holder',
       author_email='jeet@ku.edu and mtholder@ku.edu',
       url='http://packages.python.org/DendroPy/',
-      description="A Python library for phylogenetic computing: supporting the reading, writing, simulation, and manipulation of phylogenetic data.",
+      description="A Python library for phylogenetics and phylogenetic computing: reading, writing, simulation, processing and manipulation of phylogenetic trees (phylogenies) and characters.",
       license='GPL 3+',
       packages=PACKAGES,
       package_dir=dict(zip(PACKAGES, PACKAGE_DIRS)),

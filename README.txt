@@ -47,9 +47,16 @@ The DendroPy source code is version-controlled using `Git <http://git-scm.com/>`
 
     $ git clone git://github.com/jeetsukumaran/DendroPy.git
 
+Change History
+==============
+
+The major changes (new features and bug fixes) in the development history of DendroPy can be found here:
+
+    http://packages.python.org/DendroPy/changes.html
+
 More Information
 =================
-More information, including documentation, tutorials, citation, license, etc. can be found in the `DendroPy home page <http://packages.python.org/DendroPy/>`_:
+More information, including tutorials, library API references, citation, license, etc. can be found on the `DendroPy documentation website <http://packages.python.org/DendroPy/>`_:
 
     http://packages.python.org/DendroPy/
 
