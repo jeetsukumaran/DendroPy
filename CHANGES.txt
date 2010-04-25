@@ -1,3 +1,11 @@
+Release 3.2.2
+-------------
+
+Bug Fixes
+^^^^^^^^^
+
+    * ``Node.level()`` works correctly.
+
 Release 3.2.1
 -------------
 
