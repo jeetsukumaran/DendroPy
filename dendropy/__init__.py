@@ -41,21 +41,21 @@ from dendropy.dataio import get_reader, get_writer, tree_source_iter, multi_tree
 ## PACKAGE METADATA
 
 __project__ = "DendroPy"
-__version__ = "3.2.1"
+__version__ = "3.2.2"
 
 try:
     try:
-        __root__ = __path__[0]
+        __homedir__ = __path__[0]
     except AttributeError:
-        __root__ = os.path.dirname(os.path.abspath(__file__))
+        __homedir__ = os.path.dirname(os.path.abspath(__file__))
     except IndexError:
-        __root__ = os.path.dirname(os.path.abspath(__file__))
+        __homedir__ = os.path.dirname(os.path.abspath(__file__))
 except OSError:
-    __root__ = None
+    __homedir__ = None
 except:
-    __root__ = None
+    __homedir__ = None
 
-__revision__ = vcsinfo.Revision(repo_path=__root__)
+__revision__ = vcsinfo.Revision(repo_path=__homedir__)
 __author__ = "Jeet Sukumaran and Mark T. Holder"
 __copyright__ = "Copyright 2009 Jeet Sukumaran and Mark T. Holder."
 __license__ = """
