@@ -160,6 +160,6 @@ setup(name='DendroPy',
             "Programming Language :: Python",
             "Topic :: Scientific/Engineering :: Bio-Informatics",
             ],
-      keywords='phylogenetics evolution biology',
+      keywords='phylogenetics phylogeny phylogenies phylogeography evolution evolutionary biology systematics coalescent population genetics phyloinformatics bioinformatics',
       **EXTRA_KWARGS
       )
