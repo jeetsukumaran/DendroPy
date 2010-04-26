@@ -10,10 +10,14 @@
 
 
 {% block sidebarsearch %}
+
+    <!-- Standard Sidebar -->
     <div style="border-top: double 1px white; padding-top: 10px;">
         {{ super() }}
     </div>
 
+
+    <!-- Documentation -->
     <div style="border-top: double 1px white; padding-top: 10px;">
         <h3>Documentation</h3>
         <ul>
@@ -25,6 +29,8 @@
         </ul>
     </div>
 
+
+    <!-- Downloads -->
     <div style="border-top: double 1px white; padding-top: 10px;">
         <h3>Obtaining</h3>
         <ul>
@@ -33,5 +39,31 @@
             <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
         </ul>
     </div>
+
+
+    <!-- Discussion -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Subscribe</span><span style="position: absolute; right: 0; top: 10px "><img src="{{pathto('_static/google-groups-logo1.png', 1)}}" width="80" alt="Google Groups" /></span></h3>
+
+        <div style="margin-left: 8px; margin-top: 15px;">
+            <h4 style="margin-bottom: 0px;"><a href="http://groups.google.com/group/dendropy-announce?hl=en">DendroPy Announcements</a></h4>
+            <p style="font-style: italic; margin-top: 3px;">Announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%">Enter your e-mail to subscribe to the &quot;<a href="http://groups.google.com/group/dendropy-announce?hl=en">dendropy-announce</a>&quot; group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+
+
+        <div style="margin-left: 8px; margin-top: 15px;">
+            <h4 style="margin-bottom: 0px;"><a href="http://groups.google.com/group/dendropy-users?hl=en">DendroPy Users</a></h4>
+            <p style="font-style: italic; margin-top: 3px;">Discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%">Enter your e-mail to subscribe to the &quot;<a href="http://groups.google.com/group/dendropy-users?hl=en">dendropy-users</a>&quot; group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
 
 {% endblock %}
