@@ -71,11 +71,17 @@ If you use this library either in whole or in part in your analysis, or use any 
 
     |dendropy_citation|
 
-Bugs, Suggestions, Comments, etc.
-=================================
+Suggestions, Comments, Help, or Bug Reports
+===========================================
 
-If you encounter any problems, errors, crashes etc. while using this program, please let me know at jeet@ku.edu.
-Please feel free to contact me if you have any other questions, suggestions or comments as well.
+The |dendropy_users|_ discussion group is available for general discussion on the usage of the DendroPy library.
+If you want more information on how to use a particular feature or carry out specific task, would like to request a new feature or change an existing one, or even just want to make some general comments on the DendroPy library, you should post a message to the |dendropy_users|_ discussion group.
+I follow and respond to messages on this group fairly regularly, so you should get a response within 24 hours.
+If you prefer, you can also contact me directly via e-mail at jeet@ku.edu, but by posting to the |dendropy_users|_ group forum, you allow other users, current as well as future, to benefit from the discussion and results.
+
+The |dendropy_users|_ discussion group is also a suitable forum for the reporting of bugs or errors encountered with DendroPy, as most other users would also appreciate learning of problems and issues with library.
+However, again, if you prefer you can contact me directly via e-mail at jeet@ku.edu.
+
 
 .. include:: license.inc
 .. include:: acknowledgements.inc
