@@ -34,6 +34,10 @@ from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
 ###############################################################################
+## Should hyphens be treated as independent tokens by default?
+DEFAULT_HYPHENS_AS_TOKENS = False
+
+###############################################################################
 ## RootingInterpreter
 
 class RootingInterpreter(object):
@@ -410,7 +414,7 @@ class NexusTokenizer(object):
     def __init__(self, stream_handle=None, **kwargs):
         self._reset()
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
-        self.hyphens_as_tokens =  kwargs.get('hyphens_as_tokens', True)
+        self.hyphens_as_tokens =  kwargs.get('hyphens_as_tokens', DEFAULT_HYPHENS_AS_TOKENS)
         if stream_handle:
             self.stream_handle = stream_handle
 
@@ -427,7 +431,7 @@ class NexusTokenizer(object):
         self.last_comment_parsed = None
         self.preserve_underscores = False
         self.global_ignore_punctuation = set()
-        self.hyphens_as_tokens = True
+        self.hyphens_as_tokens = DEFAULT_HYPHENS_AS_TOKENS
 
     def _get_hyphens_as_tokens(self):
         return self._hyphens_as_tokens
@@ -531,7 +535,7 @@ class NexusTokenizer(object):
         elif not self.global_ignore_punctuation:
             return ignore_punctuation
         else:
-            return set(ignore_punctutation) + self.global_ignore_punctuation
+            return set(ignore_punctuation).union(self.global_ignore_punctuation)
 
     def read_matrix_characters(self, nchar):
         """

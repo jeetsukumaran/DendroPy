@@ -74,7 +74,7 @@ def tree_source_iter(stream, **kwargs):
             + "must be provided using the 'taxon_set' keyword to avoid taxon/split bitmask values "\
             + "changing as new Taxon objects are added to the set.")
     preserve_underscores = kwargs.get('preserve_underscores', False)
-    hyphens_as_tokens = kwargs.get('hyphens_as_tokens', True)
+    hyphens_as_tokens = kwargs.get('hyphens_as_tokens', nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS)
     newick_stream = nexustokenizer.NexusTokenizer(stream,
                                                   preserve_underscores=preserve_underscores,
                                                   hyphens_as_tokens=hyphens_as_tokens)
@@ -148,19 +148,19 @@ class NewickReader(iosys.DataReader):
                calculated and attached to the edges.
             - `finish_node_func`: is a function that will be applied to each node
                after it has been constructed.
-            - `hyphens_as_tokens`: if True [default], hyphens will be treates
+            - `hyphens_as_tokens`: if True, hyphens will be treated as special
                as special punctuation, as required by the NEXUS standard. If
                False, hyphens will not be treated as special punctuation which
-               means that they are allowed in unquoted labels, but this violates
-               the NEXUS standard, and will break NEXUS parsing (and many
-               in-the-wild NEWICK as well).
-
+               means that they are allowed in unquoted labels, but this
+               violates the NEXUS standard, and will break NEXUS parsing (and
+               many in-the-wild NEWICK as well). Default value is given by:
+               ``dendropy.dataio.nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS``.
         """
         iosys.DataReader.__init__(self, **kwargs)
         self.stream_tokenizer = nexustokenizer.NexusTokenizer()
         self.finish_node_func = kwargs.get("finish_node_func", None)
         self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
-        self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', True)
+        self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS)
         self.encode_splits = kwargs.get('encode_splits', False)
 
     def read(self, stream):
