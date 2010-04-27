@@ -161,3 +161,10 @@ def collapse_conflicting(subtree_root, split, split_bitmask):
     for nd in to_collapse_head_nodes:
         e = nd.edge
         e.collapse()
+
+def scale_edges(tree, edge_len_multiplier):
+    """Multiplies every edge length in the `tree` by `edge_len_multiplier`"""
+    for e in tree.postorder_edge_iter():
+        if e.length is not None:
+            e.length *= edge_len_multiplier
+
