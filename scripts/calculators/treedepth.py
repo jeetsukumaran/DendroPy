@@ -2,8 +2,7 @@
 #   Reports the root to tip distance for an ultrametric tree
 
 import sys
-from dendropy import datasets
-import dendropy
+from dendropy import DataSet
 import StringIO
 
 def simple_test_tree():
@@ -31,13 +30,14 @@ if __name__ == '__main__':
     if len(args) > 1:
         sys.exit("At most one argument (a newick tree string with branch lengths) can be specified")
     if len(args) == 1:
-        newick = args[0]
+        s = args[0]
     else:
         newick = sys.stdin.read()
+        s = StringIO.StringIO(newick)
 
     prec = options.prec
-    d = datasets.Dataset()
-    s = StringIO.StringIO(newick)
+    d = DataSet()
+    
     d.read(s, schema=options.schema, rooted=True)
     if len(d.trees_blocks) == 0:
         sys.exit("No trees found in file.")
