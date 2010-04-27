@@ -35,6 +35,39 @@ from dendropy.test.support.datagen import RepeatedRandom
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
+class ScaleTest(unittest.TestCase):
+
+    def testScaleEdgesNoLens(self):
+        newick_list = ['(5,((4,3),2),1);',
+            '(5,(4,3,2),1);',
+            '(5,((4,3),2),1);',
+            '(5,(4,3),2,1);',
+            '(5,((4,3),2),1);',
+            '(5,4,3,2,1);']
+        tree_list = dendropy.TreeList(
+                        stream=StringIO("""%s""" % "\n".join(newick_list)),
+                        schema="newick")
+        for n, tree in enumerate(tree_list):
+            treemanip.scale_edges(tree, 2.0)
+            self.assertEqual(newick_list[n], "%s;" % tree.as_newick_string())
+    def testScaleEdgesRealTest(self):
+        newick_list = ['(5:3,((4:1,3:1):1.5,2:3),1:0);',
+            '(5:7.5,4:1,3:-2,2:4,1:.1);']
+        doubled = ['(5:6.0,((4:2.0,3:2.0):3.0,2:6.0),1:0.0);',
+                    '(5:15.0,4:2.0,3:-4.0,2:8.0,1:0.2);']
+        as_f = ['(5:3.0,((4:1.0,3:1.0):1.5,2:3.0),1:0.0);',
+            '(5:7.5,4:1.0,3:-2.0,2:4.0,1:0.1);']
+        tree_list = dendropy.TreeList(
+                        stream=StringIO("""%s""" % "\n".join(newick_list)),
+                        schema="newick")
+        for n, tree in enumerate(tree_list):
+            treemanip.scale_edges(tree, 2)
+            self.assertEqual(doubled[n], "%s;" % tree.as_newick_string())
+        for n, tree in enumerate(tree_list):
+            treemanip.scale_edges(tree, .5)
+            self.assertEqual(as_f[n], "%s;" % tree.as_newick_string())
+    
+
 class RandomlyRotateTest(unittest.TestCase):
 
     def runTest(self):
@@ -125,6 +158,7 @@ class PruneTest(unittest.TestCase):
     def testPruneTaxa(self):
         """NOT IMPLEMENTED YET: PRIORITY TODO!!!"""
         pass
+
 
 if __name__ == "__main__":
     unittest.main()
