@@ -144,15 +144,19 @@ def format_dict_table(rows, column_names=None, max_column_width=None, border_sty
             # characters that make up the table rules
             border_style = int(border_style)
             #border_style = 0
-            if border_style >= 1:
-                vertical_rule = ' | '
-                horizontal_rule = '-'
-                rule_junction = '-+-'
-            else:
+            if border_style == 0:
                 vertical_rule = '  '
                 horizontal_rule = ''
                 rule_junction = ''
-            if border_style >= 2:
+            elif border_style == 1:
+                vertical_rule = ' '
+                horizontal_rule = '-'
+                rule_junction = '-'
+            else:
+                vertical_rule = ' | '
+                horizontal_rule = '-'
+                rule_junction = '-+-'
+            if border_style >= 3:
                 left_table_edge_rule = '| '
                 right_table_edge_rule = ' |'
                 left_table_edge_rule_junction = '+-'
