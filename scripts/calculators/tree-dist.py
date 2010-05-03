@@ -129,11 +129,11 @@ def main():
             if j == i:
                td_row.append('-')
             elif j < i:
-                td_row.append(td_mat[j][i] + opts.separator)
+                td_row.append(td_mat[j][i])
             else:
                 d = symmetric_difference(all_trees[i], all_trees[j])
                 td_row.append(str(d))
-
+        td_mat.append(td_row)
         output_dest.write("%s\n" % opts.separator.join(td_row))
         
 
