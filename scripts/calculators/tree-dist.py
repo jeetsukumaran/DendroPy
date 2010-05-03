@@ -81,9 +81,19 @@ def main():
         default=False,
         help="replace/overwrite output file without asking if it already exists ")
 
+    parser.add_option('-t', '--triangle',
+        dest='tri',
+        default="both",
+        help="Which triangle of the distance matrix to display: both|upper|lower (default is both).")
+
     (opts, args) = parser.parse_args()
     messenger = ConsoleMessenger(quiet=False)
     schema = opts.schema.lower()
+
+    tri = opts.tri.lower()
+    if tri not in ['both', 'upper', 'lower']:
+        sys.exit('Expecting the "triangle" setting to be "both", "upper", or "lower"')
+    full_mat = (tri == 'both')
 
     tree_filepaths = []
     if not args:
@@ -109,30 +119,61 @@ def main():
     dataset = DataSet()
     ts = dendropy.TaxonSet()
     
+    
     all_trees = []
     for tfile_idx, tfile in enumerate(tree_file_objs):
         curr_trees = dendropy.TreeList.get_from_stream(tfile, schema, taxon_set=ts)
         all_trees.extend(curr_trees)
 
     num_trees = len(all_trees)
+    if num_trees < 2:
+        sys.exit("Expecting more than one tree")
+
+    show_lower, show_upper = True, True
+    if full_mat:
+        c_range = range(num_trees)
+        r_range = range(num_trees)
+    elif tri == 'upper':
+        show_lower = False
+        c_range = range(1, num_trees)
+        r_range = range(num_trees - 1)
+    else:
+        show_upper = False
+        c_range = range(num_trees - 1)
+        r_range = range(1, num_trees)
+
     if opts.show_header_row:
-        x = ['-'] + [str(i+1) for i in range(num_trees)]
+        b = ['']
+        x = b + [str(i+1) for i in c_range]
         output_dest.write("%s\n" % opts.separator.join(x))
 
 
     td_mat = []
-    for i in xrange(num_trees):
+    
+    for i in r_range:
         if opts.show_header_row:
             output_dest.write(str(1+i) + opts.separator)
         td_row = []    
-        for j in xrange(num_trees):
+        for j in c_range:
+            s = ''
             if j == i:
-               td_row.append('-')
+                if full_mat:
+                    s = '-'
             elif j < i:
-                td_row.append(td_mat[j][i])
+                if show_lower:
+                    try:
+                        s = td_mat[j][i]
+                    except:
+                        pass
+                    if not s:
+                        d = symmetric_difference(all_trees[j], all_trees[i])
+                        s = str(d)
             else:
-                d = symmetric_difference(all_trees[i], all_trees[j])
-                td_row.append(str(d))
+                if show_upper:
+                    d = symmetric_difference(all_trees[i], all_trees[j])
+                    s = str(d)
+            td_row.append(s)
+
         td_mat.append(td_row)
         output_dest.write("%s\n" % opts.separator.join(td_row))
         
