@@ -1,6 +1,11 @@
 Release 3.2.2
 -------------
 
+Changes
+^^^^^^^
+
+    * An exception is thrown when branches with edge weights of "None" are encountered when calculating weighted Robinson-Foulds or Euclidean distances, EXCEPT if the edges are root edges (i.e., edges subtending the root node).
+
 Bug Fixes
 ^^^^^^^^^
 
