@@ -142,19 +142,20 @@ def brlen_dists_calc(length_diffs):
     """
     return sqrt(brlen_scores_calc(length_diffs))
 
-def splits_distance(tree1,
-                    tree2,
-                    dist_func=robinson_foulds_calc,
-                    edge_length_attr="length",
-                    value_type=float):
+def get_length_diffs(tree1,
+        tree2,
+        edge_length_attr="length",
+        value_type=float,
+        split_length_diff_map=False):
     """
-    Returns distance between two trees, each represented by a dictionary of
-    splits (as split_mask strings) to edges, using `dist_func` to calculate the
-    distance based on `edge_length_attr` of the edges. `dist_func` is a function
-    that takes a list of pairs of values, where the values correspond to the edge
-    lengths of a given split on tree1 and tree2 respectively.
+    Returns a list of tuples, with the first element of each tuple representing
+    the length of the branch subtending a particular split on ``tree1``, and
+    the second element the length of the same branch on ``tree2``. If a
+    particular split is found on one tree but not in the other, a value of zero
+    is used for the missing split.
     """
     length_diffs = []
+    split_length_diffs = {}
     if tree1.taxon_set is not tree2.taxon_set:
         raise TypeError("Trees have different TaxonSet objects: %s vs. %s" \
                 % (hex(id(tree1.taxon_set)), hex(id(tree2.taxon_set))))
@@ -175,9 +176,11 @@ def splits_distance(tree1,
         except KeyError: # excep
             elen2 = 0
         if elen2 is None:
-            elen2 = 0 # worst-case: bind
+            raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree2.oid, tree2.label, tree2.taxon_set.split_as_newick_string(split)))
+            #elen2 = 0 # worst-case: bind
         value2 = value_type(elen2) #  ctor + bind # best case
         length_diffs.append((value1,value2)) # ctor + listappend
+        split_length_diffs[split] = length_diffs[-1]
 
     for split, edge in split_edges2_copy.iteritems(): # best-case not executed, worst case O(n) : 2*bind
         elen2 = getattr(edge, edge_length_attr) # attr +  bind
@@ -190,9 +193,11 @@ def splits_distance(tree1,
         else:
             elen1 = getattr(e1, edge_length_attr) # attr  + bind
         if elen1 is None:
-            elen1 = 0
+            raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree1.oid, tree1.label, split))
+            #elen1 = 0
         value1 = value_type(elen1)
         length_diffs.append((value1,value2)) # ctor + listappend
+        split_length_diffs[split] = length_diffs[-1]
     # the numbers below do not reflect additions to the code to protect against
     #   edges with length None
     # loops
@@ -208,6 +213,24 @@ def splits_distance(tree1,
     #       O(n * (dict_lookup + 3*attr + 3*ctor + 8*bind + listappend + dict_item_cost))
     #  worst-case:
     #     O(2n*(2*dict_lookup + 4*attr + 3*ctor + 9*bind + listappend + 0.5*(dict_item_cost + excep))
+    if split_length_diff_map:
+        return length_diffs, split_length_diffs
+    else:
+        return length_diffs
+
+def splits_distance(tree1,
+                    tree2,
+                    dist_func=robinson_foulds_calc,
+                    edge_length_attr="length",
+                    value_type=float):
+    """
+    Returns distance between two trees, each represented by a dictionary of
+    splits (as split_mask strings) to edges, using `dist_func` to calculate the
+    distance based on `edge_length_attr` of the edges. `dist_func` is a function
+    that takes a list of pairs of values, where the values correspond to the edge
+    lengths of a given split on tree1 and tree2 respectively.
+    """
+    length_diffs = get_length_diffs(tree1, tree2, edge_length_attr=edge_length_attr, value_type=value_type)
     return dist_func(length_diffs)
 
 def robinson_foulds_distance(tree1, tree2, edge_length_attr="length"):

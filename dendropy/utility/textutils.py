@@ -29,10 +29,13 @@ import sys
 import time
 
 ###############################################################################
-## Properly protects a NEXUS token. Placed here instead of `nexustokenizer` so that
-## it is available to the entire library within needing to import `nexustokenizer`.
+## NEWICK/NEXUS format support. Placed here instead of `nexustokenizer` so that
+## it is available to the entire library without needing to import `nexustokenizer`.
 
 def escape_nexus_token(label, preserve_spaces=False, quote_underscores=True):
+    """
+    Properly protects a NEXUS token.
+    """
     if label is None:
         return ""
     if not preserve_spaces \
@@ -46,6 +49,29 @@ def escape_nexus_token(label, preserve_spaces=False, quote_underscores=True):
             return "'" + label + "'"
         return "'%s'" % "''".join(s)
     return label
+
+def split_as_newick_string(split, taxon_set, preserve_spaces=False, quote_underscores=True):
+    """
+    Represents a split as a newick string.
+    """
+    taxlabels = [escape_nexus_token(label, preserve_spaces=preserve_spaces, quote_underscores=quote_underscores) for label in taxon_set.labels()]
+
+    # do not do the root
+    if split == 0 or (split == taxon_set.all_taxa_bitmask()):
+        return "(%s)" % (",".join(taxlabels))
+
+    idx = 0
+    left = []
+    right = []
+    while split >= 0 and idx < len(taxlabels):
+        if split & 1:
+            left.append(taxlabels[idx])
+        else:
+            right.append(taxlabels[idx])
+        idx += 1
+        split = split >> 1
+    assert ( len(left) + len(right) ) == len(taxlabels)
+    return "((%s), (%s))" % (", ".join(left), ", ".join(right))
 
 ###############################################################################
 ## Allows string objects to be annotated/decorated with attributes.

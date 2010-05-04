@@ -86,32 +86,6 @@ def tree_source_iter(stream, **kwargs):
             raise StopIteration()
 
 ###############################################################################
-## split_as_newick_string
-
-def split_as_newick_string(split, taxon_set, preserve_spaces=False):
-    """
-    Represents a split as a newick string.
-    """
-    taxlabels = [textutils.escape_nexus_token(label, preserve_spaces=preserve_spaces, quote_underscores=quote_underscores) for label in taxon_set.labels()]
-
-    # do not do the root
-    if split == 0 or (split == taxon_set.all_taxon_set_bitmask()):
-        return "(%s)" % (",".join(taxlabels))
-
-    idx = 0
-    left = []
-    right = []
-    while split >= 0 and idx < len(taxlabels):
-        if split & 1:
-            left.append(taxlabels[idx])
-        else:
-            right.append(taxlabels[idx])
-        idx += 1
-        split = split >> 1
-    assert ( len(left) + len(right) ) == len(taxlabels)
-    return "((%s), (%s))" % (", ".join(left), ", ".join(right))
-
-###############################################################################
 ## parse_newick_string
 #
 # def parse_newick_string(tree_statement, taxon_set=None, **kwargs):

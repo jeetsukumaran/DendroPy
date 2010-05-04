@@ -371,6 +371,12 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
             index += 1
         return taxa
 
+    def split_as_newick_string(self, split, preserve_spaces=False, quote_underscores=True):
+        """
+        Represents a split as a newick string.
+        """
+        return textutils.split_as_newick_string(split, self, preserve_spaces=preserve_spaces, quote_underscores=quote_underscores)
+
     def partition(self, **kwargs):
         """
         Returns a TaxonSetPartition object, corresponding to this object
