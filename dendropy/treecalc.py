@@ -173,11 +173,14 @@ def get_length_diffs(tree1,
         try:
             e2 = split_edges2_copy.pop(split) # attr + dict_lookup + bind
             elen2 = getattr(e2, edge_length_attr) # attr + bind
+            if elen2 is None:
+                # allow root edge to have split with no value: raise error if not root edge
+                if e2.tail_node is None:
+                    elen2 = 0.0
+                else:
+                    raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree2.oid, tree2.label, tree2.taxon_set.split_as_newick_string(split)))
         except KeyError: # excep
-            elen2 = 0
-        if elen2 is None:
-            raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree2.oid, tree2.label, tree2.taxon_set.split_as_newick_string(split)))
-            #elen2 = 0 # worst-case: bind
+            elen2 = 0.0
         value2 = value_type(elen2) #  ctor + bind # best case
         length_diffs.append((value1,value2)) # ctor + listappend
         split_length_diffs[split] = length_diffs[-1]
@@ -189,12 +192,16 @@ def get_length_diffs(tree1,
         value2 = value_type(elen2) #  ctor + bind
         e1 = split_edges1_ref.get(split) # attr + dict_lookup + bind
         if e1 is None:
-            elen1 = 0
+            elen1 = 0.0
         else:
             elen1 = getattr(e1, edge_length_attr) # attr  + bind
-        if elen1 is None:
-            raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree1.oid, tree1.label, split))
-            #elen1 = 0
+            if elen1 is None:
+                # allow root edge to have split with no value: raise error if not root edge
+                if e1.tail_node is None:
+                    elen1 = 0.0
+                else:
+                    raise ValueError("Edge length attribute is 'None': Tree: %s ('%s'), Split: %s" % (tree1.oid, tree1.label, split))
+                #elen1 = 0
         value1 = value_type(elen1)
         length_diffs.append((value1,value2)) # ctor + listappend
         split_length_diffs[split] = length_diffs[-1]
