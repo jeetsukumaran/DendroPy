@@ -542,7 +542,7 @@ class TaxonSetPartition(TaxonSetLinked):
         """
         Iterate over subsets.
         """
-        for k, v in self.subset_map:
+        for k in self.subset_map:
             yield k
 
     def __getitem__(self, label):
