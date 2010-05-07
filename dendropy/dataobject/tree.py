@@ -2391,6 +2391,21 @@ class AsciiTreePlot(object):
             ValueError.__init__(self, *args, **kwargs)
 
     def __init__(self, **kwargs):
+        """
+        Keyword arguments:
+            ``plot_metric``
+                A string which specifies how branches should be scaled, one of:
+                'age' (distance from tips), 'depth' (distance from root),
+                'level' (number of branches from root) or 'height' (edge
+                length/weights).
+            ``show_internal_node_labels``
+                Boolean: whether or not to write out internal node labels.
+            ``leaf_spacing_factor``
+                Positive integer: number of rows between each leaf.
+            ``display_width``
+                Force a particular display width, in terms of number of columns.
+
+        """
         self.plot_metric = kwargs.get('plot_metric', 'depth')
         self.show_internal_node_labels = kwargs.get('show_internal_node_labels', False)
         self.leaf_spacing_factor = kwargs.get('leaf_spacing_factor', 2)
