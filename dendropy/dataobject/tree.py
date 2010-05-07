@@ -1292,6 +1292,19 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         Returns a string representation a graphic of this tree using ASCII
         characters.
+
+        Keyword arguments:
+            ``plot_metric``
+                A string which specifies how branches should be scaled, one of:
+                'age' (distance from tips), 'depth' (distance from root),
+                'level' (number of branches from root) or 'height' (edge
+                length/weights).
+            ``show_internal_node_labels``
+                Boolean: whether or not to write out internal node labels.
+            ``leaf_spacing_factor``
+                Positive integer: number of rows between each leaf.
+            ``display_width``
+                Force a particular display width, in terms of number of columns.
         """
         ap = AsciiTreePlot(**kwargs)
         return ap.compose(self)
@@ -1299,6 +1312,19 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     def write_ascii_plot(self, stream, **kwargs):
         """
         Writes an ASCII text graphic of this tree to `stream`.
+        Keyword arguments:
+            ``plot_metric``
+                A string which specifies how branches should be scaled, one of:
+                'age' (distance from tips), 'depth' (distance from root),
+                'level' (number of branches from root) or 'height' (edge
+                length/weights).
+            ``show_internal_node_labels``
+                Boolean: whether or not to write out internal node labels.
+            ``leaf_spacing_factor``
+                Positive integer: number of rows between each leaf.
+            ``display_width``
+                Force a particular display width, in terms of number of columns.
+
         """
         return stream.write(self.as_ascii_plot(**kwargs))
 
@@ -1306,6 +1332,18 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         Convenience method to write an ASCII text graphic of this tree
         to the standard output stream.
+        Keyword arguments:
+            ``plot_metric``
+                A string which specifies how branches should be scaled, one of:
+                'age' (distance from tips), 'depth' (distance from root),
+                'level' (number of branches from root) or 'height' (edge
+                length/weights).
+            ``show_internal_node_labels``
+                Boolean: whether or not to write out internal node labels.
+            ``leaf_spacing_factor``
+                Positive integer: number of rows between each leaf.
+            ``display_width``
+                Force a particular display width, in terms of number of columns.
         """
         import sys
         self.write_ascii_plot(sys.stdout, **kwargs)
