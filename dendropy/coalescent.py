@@ -354,7 +354,7 @@ def fit_gene_tree(gene_tree, pop_tree):
     return pop_tree
 
 
-def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
+def reconciliation_discordance(gene_tree, species_tree):
     """
     Given two trees (with splits encoded), this returns the number of gene
     duplications implied by the gene tree reconciled on the species tree, based
@@ -414,7 +414,7 @@ def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
 
     return dc
 
-def num_deep_coalescences_with_grouping(tree, taxon_set_partition):
+def monophyletic_partition_discordance(tree, taxon_set_partition):
     """
     Returns the number of deep coalescences on tree `tree` that would result
     if the taxa in `tax_sets` formed K mutually-exclusive monophyletic groups,

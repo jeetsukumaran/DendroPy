@@ -45,10 +45,10 @@ The :mod:`~dendropy.coalescent` module provides a range of methods for simulatio
 
 Numbers of Deep Coalescences
 ============================
-    :func:`~dendropy.coalescent.num_deep_coalescences_with_fitted_tree`
+    :func:`~dendropy.coalescent.reconciliation_discordance`
         Given two |Tree| objects, a gene tree and a species tree, sharing the same leaf-set, this returns the number of deep coalescences resulting from fitting the gene tree to the species tree.
 
-    :func:`~dendropy.coalescent.num_deep_coalescences_with_grouping`
+    :func:`~dendropy.coalescent.monophyletic_partition_discordance`
         Given a |Tree| object as the first argument, and a list of lists of
         |Taxon| objects representing the expected monophyletic partitioning of the |TaxonSet| of the |Tree| as the second argument, this returns the number of deep coalescences found in the relationships implied by the |Tree| object, conditional on the taxon groupings given by the second argument.
 

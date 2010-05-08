@@ -82,7 +82,7 @@ class DeepCoalTest(unittest.TestCase):
         _LOG.info("Species\t\tGene\t\tDC\t\tExp.DC\t\tDiff")
         for gt in gene_trees:
             for st in species_trees:
-                dc = coalescent.num_deep_coalescences_with_fitted_tree(gt, st)
+                dc = coalescent.reconciliation_discordance(gt, st)
                 _LOG.info("%s\t\t%s\t\t%s\t\t%s\t\t%s"
                     % (st.compose_newick(),
                        gt.compose_newick(),
@@ -116,7 +116,7 @@ class DeepCoalTest(unittest.TestCase):
 #                    if len(groups) < 3:
 #                        groups.append([])
 #                    groups[2].append(taxon)
-            dc = coalescent.num_deep_coalescences_with_grouping(tree, groups)
+            dc = coalescent.monophyletic_partition_discordance(tree, groups)
             assert dc == expected, \
                 "deep coalescences by groups: expecting %d, but found %d" % (expected, dc)
 
