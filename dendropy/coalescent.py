@@ -284,6 +284,76 @@ def log_probability_of_coalescent_tree(tree, haploid_pop_size):
     """
     return log_probability_of_coalescent_frames(extract_coalescent_frames(tree), haploid_pop_size)
 
+def fit_gene_tree(gene_tree, pop_tree):
+    """
+    Fits a gene tree into a containing population (or species) tree.
+    Adjusts the node ages of population tree, ``pop_tree``, to best explain the
+    contained ``gene_tree``.
+
+        ``gene_tree``
+            A DendroPy ``Tree`` object representing a genealogy, where the
+            ``taxon`` attribute of each leaf node is a sampled sequence.
+
+        ``pop_tree``
+            A DendroPy ``Tree`` object representing a containing tree, where
+            each leaf node has a ``gene_tree_nodes`` attribute, which should be a
+            list of nodes from the gene tree that belong to this population
+            leaf.
+
+    In addition to edge lengths being set, the nodes of ``pop_tree`` will have
+    two new or reassigned attributes:
+
+        ``age``
+            Age of the node, in terms of time units back from present.
+
+        ``gene_tree_nodes``
+            List of nodes of the gene tree that coalesce at this node.
+
+    """
+    gene_taxa_mrca = {}
+    gene_tree_leaf_nodes = gene_tree.leaf_nodes()
+    for gi1, gnd1 in enumerate(gene_tree_leaf_nodes[:-1]):
+        for gi2, gnd2 in enumerate(gene_tree_leaf_nodes[gi1:]):
+            gene_taxa_mrca[(gnd1.taxon, gnd2.taxon)] = gene_tree.ancestor(gnd1, gnd2)
+            gene_taxa_mrca[(gnd2.taxon, gnd1.taxon)] = gene_taxa_mrca[(gnd1.taxon, gnd2.taxon)]
+
+    gene_tree.add_ages_to_nodes()
+    for pop_node in pop_tree.preorder_node_iter():
+        pop_node_children = pop_node.child_nodes()
+        if not pop_node_children:
+            pop_node.age = 0
+            continue
+        pop_node_subtree_groups = [ cnd.leaf_nodes() for cnd in pop_node_children ]
+        youngest_coalescence_node = None
+        for xi, x in enumerate(pop_node_subtree_groups[:-1]):               # for each group of leaf nodes
+            for yi, y in enumerate(pop_node_subtree_groups[xi+1:]):         # for each other group of leaf nodes
+                gene_leaves1 = sum((i.gene_tree_nodes for i in x), [])      # collect gene leaves in group 1
+                gene_leaves2 = sum((i.gene_tree_nodes for i in y), [])      # collect gene leaves in group 2
+                for g1 in gene_leaves1:                                     # for each leaf in group 1
+                    for g2 in gene_leaves2:                                 # for each leaf in group 2
+                        mrca_node = gene_taxa_mrca[(g1.taxon, g2.taxon)]
+                        if youngest_coalescence_node is None or mrca_node.age < youngest_coalescence_node.age:
+                            youngest_coalescence_node = mrca_node
+        pop_node.age = youngest_coalescence_node.age
+        if not hasattr(pop_node, "gene_tree_nodes"):
+            pop_node.gene_tree_nodes = []
+        pop_node.gene_tree_nodes.append(youngest_coalescence_node)
+
+        parent_node = pop_node.parent_node
+        while parent_node is not None:
+            if parent_node.age < pop_node.age:
+                parent_node.age = pop_node.age
+            parent_node = parent_node.parent_node
+
+    for nd in pop_tree.preorder_node_iter():
+        if nd.parent_node is not None:
+            nd.edge.length = nd.parent_node.age - nd.age
+            if nd.edge.length < 0:
+                nd.edge.length = 0
+
+    return pop_tree
+
+
 def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
     """
     Given two trees (with splits encoded), this returns the number of gene
@@ -298,7 +368,8 @@ def num_deep_coalescences_with_fitted_tree(gene_tree, species_tree):
         Maddison, W. P. 1997. Gene trees in species dataobject. Syst. Biol. 46:
         523-536.
 
-    Note that for correct results,
+    This function requires that the gene tree and species tree *have the same
+    leaf set*. Note that for correct results,
 
         (a) trees must be rooted (i.e., is_rooted = True)
         (b) split masks must have been added as rooted (i.e., when
