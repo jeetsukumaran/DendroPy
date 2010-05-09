@@ -317,7 +317,7 @@ def fit_gene_tree(gene_tree, pop_tree):
             gene_taxa_mrca[(gnd1.taxon, gnd2.taxon)] = gene_tree.ancestor(gnd1, gnd2)
             gene_taxa_mrca[(gnd2.taxon, gnd1.taxon)] = gene_taxa_mrca[(gnd1.taxon, gnd2.taxon)]
 
-    gene_tree.add_ages_to_nodes()
+    gene_tree.add_ages_to_nodes(check_prec=False)
     for pop_node in pop_tree.preorder_node_iter():
         pop_node_children = pop_node.child_nodes()
         if not pop_node_children:
@@ -352,7 +352,6 @@ def fit_gene_tree(gene_tree, pop_tree):
                 nd.edge.length = 0
 
     return pop_tree
-
 
 def reconciliation_discordance(gene_tree, species_tree):
     """
