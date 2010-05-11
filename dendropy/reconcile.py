@@ -25,6 +25,8 @@ Classes and Methods for working with tree reconciliation, fitting, embedding,
 contained/containing etc.
 """
 
+from dendropy import dataobject
+
 def fit_gene_tree(gene_tree, containing_tree, gene_taxon_to_containing_taxon_map):
     """
     Fits a gene tree into a containing (population or species) tree.

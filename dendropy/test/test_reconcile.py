@@ -25,6 +25,8 @@ Tests reconciliation calculations.
 """
 import unittest
 import dendropy
+from dendropy.utility.messaging import get_logger
+_LOG = get_logger(__name__)
 from dendropy import reconcile
 
 class DeepCoalTest(unittest.TestCase):
