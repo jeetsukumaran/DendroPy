@@ -123,18 +123,23 @@ def fit_contained_tree(contained_tree, containing_tree, contained_taxon_to_conta
         if not hasattr(containing_edge, 'head_contained_edges'):
             containing_edge.head_contained_edges = {}
         if not hasattr(containing_edge, 'uncoalesced_edges'):
-            containing_edge.uncoalesced_edges = {}
+            containing_edge.num_uncoalesced_edges = {}
         child_nodes = containing_edge.head_node.child_nodes()
         if not child_nodes:
             containing_edge.head_contained_edges[contained_tree] = set([n.edge for n in containing_edge.head_node.contained_tree_nodes[contained_tree]])
         else:
             containing_edge.head_contained_edges[contained_tree] = set()
             for n in child_nodes:
-                containing_edge.head_contained_edges[contained_tree].union(n.edge.tail_contained_edges[contained_tree])
-            containing_edge.uncoalesced_edges[contained_tree] = len(containing_edge.head_contained_edges[contained_tree]) - len(child_nodes)
-            num_deep_coalescences += containing_edge.uncoalesced_edges[contained_tree]
+                containing_edge.head_contained_edges[contained_tree].update(n.edge.tail_contained_edges[contained_tree])
+            containing_edge.num_uncoalesced_edges[contained_tree] = len(containing_edge.head_contained_edges[contained_tree]) - len(child_nodes)
+            num_deep_coalescences += containing_edge.num_uncoalesced_edges[contained_tree]
+        if containing_edge.tail_node is None:
+            containing_edge.tail_contained_edges[contained_tree] = containing_edge.head_contained_edges[contained_tree]
+            continue
         containing_edge.tail_contained_edges[contained_tree] = set()
         for contained_edge in containing_edge.head_contained_edges[contained_tree]:
+            if contained_edge.tail_node is None:
+                break
             remaining = containing_edge.tail_node.age - contained_edge.tail_node.age
             while remaining > 0:
                 try:
