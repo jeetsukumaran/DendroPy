@@ -138,8 +138,8 @@ def fit_contained_tree(contained_tree, containing_tree, contained_taxon_to_conta
             continue
         containing_edge.tail_contained_edges[contained_tree] = set()
         for contained_edge in containing_edge.head_contained_edges[contained_tree]:
-            if contained_edge.tail_node is None:
-                break
+            #if contained_edge.tail_node is None:
+            #    break
             remaining = containing_edge.tail_node.age - contained_edge.tail_node.age
             while remaining > 0:
                 try:
