@@ -116,11 +116,14 @@ def fit_contained_tree(contained_tree, containing_tree, contained_taxon_to_conta
                 nd.edge.length = 0
 
     # Map the edges
+    num_deep_coalescences = 0
     for containing_edge in containing_tree.postorder_edge_iter():
         if not hasattr(containing_edge, 'tail_contained_edges'):
             containing_edge.tail_contained_edges = {}
         if not hasattr(containing_edge, 'head_contained_edges'):
             containing_edge.head_contained_edges = {}
+        if not hasattr(containing_edge, 'uncoalesced_edges'):
+            containing_edge.uncoalesced_edges = {}
         child_nodes = containing_edge.head_node.child_nodes()
         if not child_nodes:
             containing_edge.head_contained_edges[contained_tree] = set([n.edge for n in containing_edge.head_node.contained_tree_nodes[contained_tree]])
@@ -128,6 +131,8 @@ def fit_contained_tree(contained_tree, containing_tree, contained_taxon_to_conta
             containing_edge.head_contained_edges[contained_tree] = set()
             for n in child_nodes:
                 containing_edge.head_contained_edges[contained_tree].union(n.edge.tail_contained_edges[contained_tree])
+            containing_edge.uncoalesced_edges[contained_tree] = len(containing_edge.head_contained_edges[contained_tree]) - len(child_nodes)
+            num_deep_coalescences += containing_edge.uncoalesced_edges[contained_tree]
         containing_edge.tail_contained_edges[contained_tree] = set()
         for contained_edge in containing_edge.head_contained_edges[contained_tree]:
             remaining = containing_edge.tail_node.age - contained_edge.tail_node.age
@@ -140,6 +145,10 @@ def fit_contained_tree(contained_tree, containing_tree, contained_taxon_to_conta
                 remaining -= contained_edge.length
             if contained_edge is not None:
                 containing_edge.tail_contained_edges[contained_tree].add(contained_edge)
+
+    if not hasattr(containing_tree, 'num_deep_coalescences'):
+        containing_tree.num_deep_coalescences = {}
+    containing_tree.num_deep_coalescences[contained_tree] = num_deep_coalescences
 
     return containing_tree
 
