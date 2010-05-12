@@ -63,6 +63,8 @@ def fit_contained_tree(contained_tree, containing_tree, contained_taxon_to_conta
             containing_nd.contained_tree_nodes = {contained_tree: [contained_nd]}
         except KeyError:
             containing_nd.contained_tree_nodes[contained_tree] = [contained_nd]
+
+    # Optimize containing branch lengths to minimize numbers of deep coalescences.
     if optimize_containing_edge_lengths:
         # Pre-calculate MRCA's.
         contained_taxa_mrca = {}
