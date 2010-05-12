@@ -6,11 +6,11 @@ Changes
 
     * An exception is thrown when branches with edge weights of "None" are encountered when calculating weighted Robinson-Foulds or Euclidean distances, EXCEPT if the edges are root edges (i.e., edges subtending the root node).
 
-Buf Fixes
+Bug Fixes
 ---------
 
     * Fixed bug when iterating over partitions in ``TaxonSetPartition``.
-
+    * Fixed bug: When a ``Tree`` object is independently written, its ``TaxonSet`` no longer gets recreated.
 
 Release 3.2.2
 -------------

@@ -718,7 +718,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         from dendropy.dataobject.dataset import DataSet
         d = DataSet()
-        d.add(TreeList([self]))
+        d.add(TreeList([self], taxon_set=self.taxon_set))
         d.write(stream=stream, schema=schema, **kwargs)
 
     ###########################################################################
