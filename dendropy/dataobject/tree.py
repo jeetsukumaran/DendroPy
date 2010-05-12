@@ -38,7 +38,7 @@ from dendropy.utility import error
 from dendropy.utility import textutils
 from dendropy.utility import termutils
 from dendropy.dataobject.base import IdTagged
-from dendropy.dataobject.taxon import TaxonSetLinked, TaxonLinked
+from dendropy.dataobject.taxon import TaxonSet, TaxonSetLinked, TaxonLinked
 from dendropy import treesplit
 
 ##############################################################################
@@ -802,7 +802,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         or deleting elements from the set does not change the tree, but
         modifying the elements does).
         """
-        return set([i in self.preorder_edge_iter(filter_fn=filter_fn)])
+        return set([i for i in self.preorder_edge_iter(filter_fn=filter_fn)])
 
     def get_node_set(self, filter_fn=None):
         """Returns the set of nodes that are currently in the tree
@@ -811,7 +811,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         or deleting elements from the set does not change the tree, but
         modifying the elements does).
         """
-        return set([i in self.preorder_node_iter(filter_fn=filter_fn)])
+        return set([i for i in self.preorder_node_iter(filter_fn=filter_fn)])
 
     ###########################################################################
     ## Node iterators
@@ -871,7 +871,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         Returns a new TaxonSet object populated with taxa from this
         tree.
         """
-        taxon_set = taxon.TaxonSet()
+        taxon_set = TaxonSet()
         for node in self.postorder_node_iter():
             if node.taxon is not None and (node.taxon not in taxon_set):
                 taxon_set.add(node.taxon)
