@@ -27,7 +27,7 @@ contained/containing etc.
 
 from dendropy import dataobject
 
-def fit_contained_tree(contained_tree, containing_tree, contained_taxon_to_containing_taxon_map):
+def fit_contained_tree(contained_tree, containing_tree, contained_taxon_to_containing_taxon_map, optimize_containing_edge_lengths=True):
     """
     Fits a contained (gene) tree into a containing (population or species) tree.
     Adjusts the edge lengths / node ages of population/species tree,
@@ -63,57 +63,62 @@ def fit_contained_tree(contained_tree, containing_tree, contained_taxon_to_conta
             containing_nd.contained_tree_nodes = {contained_tree: [contained_nd]}
         except KeyError:
             containing_nd.contained_tree_nodes[contained_tree] = [contained_nd]
+    if optimize_containing_edge_lengths:
+        # Pre-calculate MRCA's.
+        contained_taxa_mrca = {}
+        contained_tree_leaf_nodes = contained_tree.leaf_nodes()
+        for gi1, gnd1 in enumerate(contained_tree_leaf_nodes[:-1]):
+            for gi2, gnd2 in enumerate(contained_tree_leaf_nodes[gi1:]):
+                contained_taxa_mrca[(gnd1.taxon, gnd2.taxon)] = contained_tree.ancestor(gnd1, gnd2)
+                contained_taxa_mrca[(gnd2.taxon, gnd1.taxon)] = contained_taxa_mrca[(gnd1.taxon, gnd2.taxon)]
 
-    # Pre-calculate MRCA's.
-    contained_taxa_mrca = {}
-    contained_tree_leaf_nodes = contained_tree.leaf_nodes()
-    for gi1, gnd1 in enumerate(contained_tree_leaf_nodes[:-1]):
-        for gi2, gnd2 in enumerate(contained_tree_leaf_nodes[gi1:]):
-            contained_taxa_mrca[(gnd1.taxon, gnd2.taxon)] = contained_tree.ancestor(gnd1, gnd2)
-            contained_taxa_mrca[(gnd2.taxon, gnd1.taxon)] = contained_taxa_mrca[(gnd1.taxon, gnd2.taxon)]
+        # For each split in the containing tree, find the youngest coalescent age
+        # of genes between each of the daughter species/populations, and set the
+        # containing node to that age.  e.g., if containing node 'A' has daughters
+        # 'a1' and 'a2', find the youngest coalescent age between any gene in 'a1'
+        # and 'a2', and set that as the age of A.
+        if not hasattr(contained_tree.seed_node, 'age'):
+            contained_tree.add_ages_to_nodes(check_prec=False)
+        for containing_node in containing_tree.preorder_node_iter():
+            containing_node_children = containing_node.child_nodes()
+            if not containing_node_children:
+                containing_node.age = 0
+                continue
+            containing_node_subtree_groups = [ cnd.leaf_nodes() for cnd in containing_node_children ]
+            youngest_coalescence_node = None
+            for xi, x in enumerate(containing_node_subtree_groups[:-1]):               # for each group of leaf nodes
+                for yi, y in enumerate(containing_node_subtree_groups[xi+1:]):         # for each other group of leaf nodes
+                    contained_leaves1 = sum((i.contained_tree_nodes[contained_tree] for i in x), [])      # collect gene leaves in group 1
+                    contained_leaves2 = sum((i.contained_tree_nodes[contained_tree] for i in y), [])      # collect gene leaves in group 2
+                    for g1 in contained_leaves1:                                     # for each leaf in group 1
+                        for g2 in contained_leaves2:                                 # for each leaf in group 2
+                            mrca_node = contained_taxa_mrca[(g1.taxon, g2.taxon)]
+                            if youngest_coalescence_node is None or mrca_node.age < youngest_coalescence_node.age:
+                                youngest_coalescence_node = mrca_node
+            containing_node.age = youngest_coalescence_node.age
+            #if not hasattr(containing_node, "contained_tree_nodes"):
+            #    containing_node.contained_tree_nodes = []
+            #containing_node.contained_tree_nodes.append(youngest_coalescence_node)
 
-    # For each split in the containing tree, find the youngest coalescent age
-    # of genes between each of the daughter species/populations, and set the
-    # containing node to that age.  e.g., if containing node 'A' has daughters
-    # 'a1' and 'a2', find the youngest coalescent age between any gene in 'a1'
-    # and 'a2', and set that as the age of A.
-    if not hasattr(contained_tree.seed_node, 'age'):
-        contained_tree.add_ages_to_nodes(check_prec=False)
-    for containing_node in containing_tree.preorder_node_iter():
-        containing_node_children = containing_node.child_nodes()
-        if not containing_node_children:
-            containing_node.age = 0
-            continue
-        containing_node_subtree_groups = [ cnd.leaf_nodes() for cnd in containing_node_children ]
-        youngest_coalescence_node = None
-        for xi, x in enumerate(containing_node_subtree_groups[:-1]):               # for each group of leaf nodes
-            for yi, y in enumerate(containing_node_subtree_groups[xi+1:]):         # for each other group of leaf nodes
-                contained_leaves1 = sum((i.contained_tree_nodes[contained_tree] for i in x), [])      # collect gene leaves in group 1
-                contained_leaves2 = sum((i.contained_tree_nodes[contained_tree] for i in y), [])      # collect gene leaves in group 2
-                for g1 in contained_leaves1:                                     # for each leaf in group 1
-                    for g2 in contained_leaves2:                                 # for each leaf in group 2
-                        mrca_node = contained_taxa_mrca[(g1.taxon, g2.taxon)]
-                        if youngest_coalescence_node is None or mrca_node.age < youngest_coalescence_node.age:
-                            youngest_coalescence_node = mrca_node
-        containing_node.age = youngest_coalescence_node.age
-        #if not hasattr(containing_node, "contained_tree_nodes"):
-        #    containing_node.contained_tree_nodes = []
-        #containing_node.contained_tree_nodes.append(youngest_coalescence_node)
+            # Make sure that the ancestors of this containing node are not younger
+            # than it.
+            parent_node = containing_node.parent_node
+            while parent_node is not None:
+                if parent_node.age < containing_node.age:
+                    parent_node.age = containing_node.age
+                parent_node = parent_node.parent_node
 
-        # Make sure that the ancestors of this containing node are not younger
-        # than it.
-        parent_node = containing_node.parent_node
-        while parent_node is not None:
-            if parent_node.age < containing_node.age:
-                parent_node.age = containing_node.age
-            parent_node = parent_node.parent_node
-
-    # Set the edge lengths.
-    for nd in containing_tree.preorder_node_iter():
-        if nd.parent_node is not None:
-            nd.edge.length = nd.parent_node.age - nd.age
-            if nd.edge.length < 0:
-                nd.edge.length = 0
+        # Set the edge lengths.
+        for nd in containing_tree.preorder_node_iter():
+            if nd.parent_node is not None:
+                nd.edge.length = nd.parent_node.age - nd.age
+                if nd.edge.length < 0:
+                    nd.edge.length = 0
+    else:
+        if not hasattr(contained_tree.seed_node, 'age'):
+            contained_tree.add_ages_to_nodes(check_prec=False)
+        if not hasattr(containing_tree.seed_node, 'age'):
+            containing_tree.add_ages_to_nodes(check_prec=False)
 
     # Map the edges
     num_deep_coalescences = 0
