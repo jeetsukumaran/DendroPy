@@ -37,7 +37,7 @@ try:
     ### By:
     ###     Michiel de Hoon
     ### From:
-    ###     http://bonsai.ims.u-tokyo.ac.jp/~mdehoon/software/python/
+    ###     http://bonsai.ims.u-tokyo.ac.jp/~mdehoon/software/python/Statistics
     ###
     ### Statistics for Python is an extension module, written in ANSI-C, for
     ### the Python scripting language. Currently, this extension module

@@ -4,13 +4,17 @@ Release 3.2.3
 Changes
 ^^^^^^^
 
-    * An exception is thrown when branches with edge weights of "None" are encountered when calculating weighted Robinson-Foulds or Euclidean distances, EXCEPT if the edges are root edges (i.e., edges subtending the root node).
+    * An exception is now thrown when branches with edge weights of "None" are encountered when calculating weighted Robinson-Foulds or Euclidean distances, EXCEPT if the edges are root edges (i.e., edges subtending the root node).
+    * Deep-coalescence counting methods now moved to a distinct module: ``dendropy.reconcile``.
+
 
 Bug Fixes
 ---------
 
     * Fixed bug when iterating over partitions in ``TaxonSetPartition``.
     * Fixed bug: When a ``Tree`` object is independently written, its ``TaxonSet`` no longer gets recreated.
+    * Fixed bug when inferring ``TaxonSet`` of a ``Tree`` object.
+    * Fixed bug when composing ``Node`` and ``Edge`` sets of a ``Tree`` object.
 
 Release 3.2.2
 -------------

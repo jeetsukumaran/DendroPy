@@ -39,9 +39,13 @@ Its constructor takes a |Tree| object as an argument, and the object return is c
 Probability Under the Coalescent Model
 =======================================
 
-The :mod:`~dendropy.coalescent` module provides a range of methods for simulations and calculations under Kingman's coalescent framework and related models:
+The :mod:`~dendropy.coalescent` module provides a range of methods for simulations and calculations under Kingman's coalescent framework and related models. For example:
+
     :func:`~dendropy.coalescent.log_probability_of_coalescent_tree`
         Given a |Tree| object as the first argument, and the haploid population size as the second, returns the log probability of the |Tree| under the neutral coalescent.
+
+    :func:`~dendropy.coalescent.kl_divergence_coalescent_trees`
+        Reports the Kullback-Leilber divergence of a list of trees from the theoretical distribution of neutral coalescent trees. Requires the `de Hoon statistics package <http://bonsai.ims.u-tokyo.ac.jp/~mdehoon/software/python/Statistics>`_ package to be installed.
 
 Numbers of Deep Coalescences
 ============================
@@ -49,9 +53,15 @@ Numbers of Deep Coalescences
     :func:`~dendropy.reconcile.reconciliation_discordance`
         Given two |Tree| objects *sharing the same leaf-set*, this returns the number of deep coalescences resulting from fitting the first tree (e.g., a gene tree) to the second (e.g., a species tree). This is based on the algorithm described `Goodman, et al. <bioinformatics.oxfordjournals.org/cgi/reprint/14/9/819.pdf>`_ (Goodman, et al., 1979. Fitting the gene lineage into its species lineage,a parsimony strategy illustrated by cladograms constructed from globin sequences. Syst. Zool. 19: 99-113).
 
+    .. versionchanged:: 3.3.0
+        Renamed and moved to :mod:`~dendropy.reconcile` module.
+
     :func:`~dendropy.reconcile.monophyletic_partition_discordance`
         Given a |Tree| object as the first argument, and a list of lists of
         |Taxon| objects representing the expected monophyletic partitioning of the |TaxonSet| of the |Tree| as the second argument, this returns the number of deep coalescences found in the relationships implied by the |Tree| object, conditional on the taxon groupings given by the second argument. This statistic corresponds to the Slatkin and Maddison (1989) **s** statistic, as described `here <http://mesquiteproject.org/Mesquite_Folder/docs/mesquite/popGen/popGen.html#s>`_.
+
+    .. versionchanged:: 3.3.0
+        Renamed and moved to :mod:`~dendropy.reconcile` module.
 
 Majority-Rule Consensus Tree from a Collection of Trees
 =======================================================
