@@ -11,7 +11,7 @@ Changes
         - ``dendropy.reconcile.monophyletic_partition_discordance``
 
 Bug Fixes
----------
+^^^^^^^^^
 
     * ``TaxonSetPartition`` iterator now iterates over partitions without crashing.
     * When a ``Tree`` object is independently written, its ``TaxonSet`` no longer gets re-created.
