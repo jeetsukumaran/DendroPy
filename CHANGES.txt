@@ -1,11 +1,14 @@
-Release 3.2.3
+Release 3.3.0
 -------------
 
 Changes
 ^^^^^^^
 
     * An exception is now thrown when branches with edge weights of "None" are encountered when calculating weighted Robinson-Foulds or Euclidean distances, EXCEPT if the edges are root edges (i.e., edges subtending the root node).
-    * Deep-coalescence counting methods now moved to a distinct module: ``dendropy.reconcile``.
+    * Deep-coalescence counting methods now moved to a distinct module: ``dendropy.reconcile``:
+
+        - ``dendropy.reconcile.reconciliation_discordance``
+        - ``dendropy.reconcile.monophyletic_partition_discordance``
 
 
 Bug Fixes
