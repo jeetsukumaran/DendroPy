@@ -10,6 +10,7 @@ DendroPy Library Reference
     tree.rst
     char.rst
     coalescent.rst
+    reconcile.rst
     treecalc.rst
     treemanip.rst
     treesim.rst
