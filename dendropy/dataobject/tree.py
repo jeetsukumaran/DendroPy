@@ -796,8 +796,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         return None
 
     def get_edge_set(self, filter_fn=None):
-        """Returns the set of edges that are currently in the tree.
-
+        """
+        Returns the set of edges that are currently in the tree.
         Note: the returned set acts like a shallow copy of the edge set (adding
         or deleting elements from the set does not change the tree, but
         modifying the elements does).
@@ -1052,9 +1052,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     def reroot_at(self, nd, splits=False, delete_deg_two=True):
         """Takes an internal node, `nd` that must already be in the tree and
         reroots the tree such that `nd` is the `seed_node` of the tree.
-
         If `splits` is True, then the edges' `split_bitmask` and the tree's
-            `split_edges` attributes will be updated."""
+        `split_edges` attributes will be updated."""
         old_par = nd.parent_node
         if old_par is None:
             return
@@ -1105,13 +1104,11 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """Reroots the tree at the parend of `nd` and makes `nd` the first child
         of the new root.  This is just a convenience function to make it easy
         to place a clade as the first child under the root.
-
-        Assumes that `nd` and `nd.parent_node` and are in the tree
-
+        Assumes that `nd` and `nd.parent_node` and are in the tree/
         If `splits` is True, then the edges' `split_bitmask` and the tree's
-            `split_edges` attributes will be updated.
+        `split_edges` attributes will be updated.
         If `delete_deg_two` is True and the old root of the tree has an
-            outdegree of 2, then the node will be removed from the tree.
+        outdegree of 2, then the node will be removed from the tree.
         """
         p = nd.parent_node
         assert p is not None
@@ -1626,6 +1623,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def compose_newick(self):
         return self.as_newick_string(preserve_spaces=True)
+
 ##############################################################################
 ## Node
 

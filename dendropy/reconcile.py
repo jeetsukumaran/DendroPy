@@ -172,10 +172,10 @@ def reconciliation_discordance(gene_tree, species_tree):
 
         Goodman, M. J. Czelnusiniak, G. W. Moore, A. E. Romero-Herrera, and
         G. Matsuda. 1979. Fitting the gene lineage into its species lineage,
-        a parsimony strategy illustrated bu cladograms constructed from globin
+        a parsimony strategy illustrated by cladograms constructed from globin
         sequences. Syst. Zool. 19: 99-113.
 
-        Maddison, W. P. 1997. Gene trees in species dataobject. Syst. Biol. 46:
+        Maddison, W. P. 1997. Gene trees in species trees. Syst. Biol. 46:
         523-536.
 
     This function requires that the gene tree and species tree *have the same
