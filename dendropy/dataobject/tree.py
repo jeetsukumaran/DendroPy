@@ -1272,8 +1272,10 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         return "\n".join(p)
 
     def as_newick_string(self, **kwargs):
-        """kwargs["reverse_translate"] can be function that takes a taxon and
-           returns the label to appear in the tree."""
+        """
+        kwargs["reverse_translate"] can be function that takes a taxon and
+        returns the label to appear in the tree.
+        """
         return self.seed_node.as_newick_string(**kwargs)
 
     def print_newick(self, **kwargs):
@@ -1291,6 +1293,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         characters.
 
         Keyword arguments:
+
             ``plot_metric``
                 A string which specifies how branches should be scaled, one of:
                 'age' (distance from tips), 'depth' (distance from root),
@@ -1302,6 +1305,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 Positive integer: number of rows between each leaf.
             ``display_width``
                 Force a particular display width, in terms of number of columns.
+
         """
         ap = AsciiTreePlot(**kwargs)
         return ap.compose(self)
@@ -1309,7 +1313,9 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     def write_ascii_plot(self, stream, **kwargs):
         """
         Writes an ASCII text graphic of this tree to `stream`.
+
         Keyword arguments:
+
             ``plot_metric``
                 A string which specifies how branches should be scaled, one of:
                 'age' (distance from tips), 'depth' (distance from root),
@@ -1327,9 +1333,10 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def print_plot(self, **kwargs):
         """
-        Convenience method to write an ASCII text graphic of this tree
-        to the standard output stream.
+        Writes an ASCII text graphic of this tree to standard output.
+
         Keyword arguments:
+
             ``plot_metric``
                 A string which specifies how branches should be scaled, one of:
                 'age' (distance from tips), 'depth' (distance from root),
@@ -1341,6 +1348,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 Positive integer: number of rows between each leaf.
             ``display_width``
                 Force a particular display width, in terms of number of columns.
+
         """
         import sys
         self.write_ascii_plot(sys.stdout, **kwargs)
