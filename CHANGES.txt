@@ -10,14 +10,13 @@ Changes
         - ``dendropy.reconcile.reconciliation_discordance``
         - ``dendropy.reconcile.monophyletic_partition_discordance``
 
-
 Bug Fixes
 ---------
 
-    * Fixed bug when iterating over partitions in ``TaxonSetPartition``.
-    * Fixed bug: When a ``Tree`` object is independently written, its ``TaxonSet`` no longer gets recreated.
-    * Fixed bug when inferring ``TaxonSet`` of a ``Tree`` object.
-    * Fixed bug when composing ``Node`` and ``Edge`` sets of a ``Tree`` object.
+    * ``TaxonSetPartition`` iterator now iterates over partitions without crashing.
+    * When a ``Tree`` object is independently written, its ``TaxonSet`` no longer gets re-created.
+    * Corrected variable reference when inferring ``TaxonSet`` of a ``Tree`` object.
+    * Correct list comprehension when composing ``Node`` and ``Edge`` sets of a ``Tree`` object.
 
 Release 3.2.2
 -------------
