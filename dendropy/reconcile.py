@@ -167,7 +167,6 @@ class ContainingTree(dataobject.Tree):
         """
         dc = {}
         for edge in self.postorder_edge_iter():
-            ndc = 0
             for tree in self.embedded_trees:
                 try:
                     dc[tree] += len(edge.tail_contained_edges[tree]) - 1
