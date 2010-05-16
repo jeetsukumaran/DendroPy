@@ -1694,8 +1694,8 @@ class Node(TaxonLinked):
 
     def preorder_iter(self, filter_fn=None):
         """
-        Preorder traversal of the node and its child_nodes.  Returns node
-        and all descendants such that node is returned before node's
+        Preorder traversal of self and its child_nodes.  Returns self
+        and all descendants such that a node is returned before its
         child_nodes (and their child_nodes). Filtered by filter_fn: node is
         only returned if no filter_fn is given or if filter_fn returns
         True.
@@ -1711,8 +1711,8 @@ class Node(TaxonLinked):
 
     def postorder_iter(self, filter_fn=None):
         """
-        Postorder traversal of the node and its child_nodes.  Returns node
-        and all descendants such that node's child_nodes (and their
+        Postorder traversal of the self and its child_nodes.  Returns self
+        and all descendants such that a node's child_nodes (and their
         child_nodes) are visited before node.  Filtered by filter_fn:
         node is only returned if no filter_fn is given or if filter_fn
         returns True.
@@ -1731,8 +1731,8 @@ class Node(TaxonLinked):
 
     def leaf_iter(self, filter_fn=None):
         """
-        Returns an iterator over the leaf_nodes that are descendants `of start_nd`
-        (order determined by postorder tree-traversal).
+        Returns an iterator over the leaf_nodes that are descendants of self
+        (with leaves returned in same order as a post-order traversal of the tree).
         """
         if filter_fn:
             filter_fn = lambda x: x.is_leaf() and filter_fn(x) or None
@@ -1743,7 +1743,7 @@ class Node(TaxonLinked):
 
     def level_order_iter(self, filter_fn=None):
         """
-        Level-order traversal of the node and its child_nodes. Filtered
+        Level-order traversal of self and its child_nodes. Filtered
         by filter_fn: node is only returned if no filter_fn is given
         or if filter_fn returns True
         """
@@ -1759,7 +1759,7 @@ class Node(TaxonLinked):
 
     def ancestor_iter(self, filter_fn=None, inclusive=True):
         """
-        Returns all ancestors of node. If `inclusive` is True, `node`
+        Iterates over all ancestors of self. If `inclusive` is True, self
         is returned as the first item of the sequence.
         """
         if inclusive:
