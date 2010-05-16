@@ -27,7 +27,45 @@ contained/containing etc.
 
 from dendropy import dataobject
 
-def fit_contained_tree(contained_tree, containing_tree, contained_taxon_to_containing_taxon_map, optimize_containing_edge_lengths=True):
+class ContainingTree(dataobject.Tree):
+    """
+    A "containing tree" is a (usually rooted) tree data structure within which
+    other trees are "embedded". For example, species trees and their embedded
+    gene trees; host trees and their embedded parasite trees; biogeographical
+    "area" trees and their embedded species or taxon trees.
+    """
+
+    def __init__(self, containing_tree, embedded_trees, embedded_to_containing_taxon_map, fit_containing_edge_lengths=True, **kwargs):
+        """
+        Converts and returns ``tree`` to ContainingTree class, embedding the trees
+        given in the list, ``embedded_trees.``
+
+            ``containing_tree``
+                A ``Tree`` or ``Tree``-like object that describes the topological
+                constraints or conditions of the containing tree (e.g., species,
+                host, or biogeographical area trees).
+
+            ``embedded_trees``
+                An iterable container of ``Tree`` or ``Tree``-like objects that
+                will be embedded into ``containing_tree``; e.g. gene or
+                parasite trees.
+
+            ``embedded_to_containing_taxon_map``
+                A dictionary with ``Taxon`` objects referenced in
+                ``embedded_trees`` as keys and the
+                populations/species/hosts/area ``Taxon` objects referenced in
+                ``containing_tree`` as values.
+
+            ``fit_containing_edge_lengths``
+                If ``False``, then the branch lengths of ``containing_tree``
+                will *not* be adjusted to fit the embedded trees.
+    """
+        if 'taxon_set' not in kwargs:
+            kwargs['taxon_set'] = containing_tree.taxon_set
+        dataobject.Tree.__init__(containing_tree, **kwargs)
+        self.embedded_trees = embedded_trees
+
+def __RETIRED__fit_contained_tree(contained_tree, containing_tree, contained_taxon_to_containing_taxon_map, optimize_containing_edge_lengths=True):
     """
     Fits a contained (gene) tree into a containing (population or species) tree.
     Adjusts the edge lengths / node ages of population/species tree,

@@ -25,9 +25,28 @@ Tests reconciliation calculations.
 """
 import unittest
 import dendropy
+from dendropy.test.support import pathmap
 from dendropy.utility.messaging import get_logger
 _LOG = get_logger(__name__)
+
 from dendropy import reconcile
+
+class ContainingTreeTest(unittest.TestCase):
+
+    def setUp(self):
+        dataset = dendropy.DataSet.get_from_path(pathmap.tree_source_path(filename="deepcoal1.nex"), "nexus")
+        self.species_tree = dataset.get_tree_list(label="SpeciesTrees")[0]
+        self.gene_trees = dataset.get_tree_list(label="GeneTrees")
+        self.species_tree.taxon_set.lock()
+        self.gene_taxon_to_population_taxon_map = {}
+        for gt in self.gene_trees.taxon_set:
+            st = self.species_tree.taxon_set.require_taxon(label=gt.label[0].upper())
+            self.gene_taxon_to_population_taxon_map[gt] = st
+
+    def testContaining1(self):
+        ct = reconcile.ContainingTree(self.species_tree, self.gene_trees, self.gene_taxon_to_population_taxon_map)
+        #print self.species_tree
+        #print self.gene_trees
 
 class DeepCoalTest(unittest.TestCase):
 
