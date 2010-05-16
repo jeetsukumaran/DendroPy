@@ -1781,6 +1781,13 @@ class Node(TaxonLinked):
 
     def age_order_iter(self, ascending=True, include_leaves=True, filter_fn=None):
         if ascending:
+            nds = [(nd.age, nd) for nd in self.preorder_iter()]
+            nds.sort()
+            for nd in nds:
+                if include_leaves or nd[1].is_internal():
+                    yield nd[1]
+            raise StopIteration()
+
             leaves = [nd for nd in self.leaf_iter()]
             queued_pairs = []
             in_queue = set()

@@ -204,21 +204,19 @@ class ContainingTree(dataobject.Tree):
         """
         if starting_min_age is None:
             starting_min_age = float('inf')
-        try:
-            for nd in embedded_tree.age_order_node_iter(include_leaves=False):
-                if nd.age > starting_min_age:
-                    break
-                prev_intersections = False
-                for bm in disjunct_leaf_set_list_split_bitmasks:
-                    if bm & nd.edge.split_bitmask:
-                        if prev_intersections:
-                            return nd.age
-                        prev_intersections = True
-        except AttributeError:
+        if not hasattr(embedded_tree.seed_node, 'age'):
             embedded_tree.add_ages_to_nodes(check_prec=False)
-            starting_min_age = self._find_youngest_intergroup_age(embedded_tree=embedded_tree,
-                    disjunct_leaf_set_list_split_bitmasks=disjunct_leaf_set_list_split_bitmasks,
-                    starting_min_age=starting_min_age)
+        if not hasattr(embedded_tree, 'split_edges'):
+            embedded_tree.update_splits()
+        for nd in embedded_tree.age_order_node_iter(include_leaves=False):
+            if nd.age > starting_min_age:
+                break
+            prev_intersections = False
+            for bm in disjunct_leaf_set_list_split_bitmasks:
+                if bm & nd.edge.split_bitmask:
+                    if prev_intersections:
+                        return nd.age
+                    prev_intersections = True
         return starting_min_age
 
 def __RETIRED__fit_contained_tree(contained_tree, containing_tree, contained_taxon_to_containing_taxon_map, optimize_containing_edge_lengths=True):
