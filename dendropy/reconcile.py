@@ -129,19 +129,19 @@ class ContainingTree(dataobject.Tree):
         taxon_to_contained = {}
         for nd in contained_leaves:
             containing_taxon = self.embedded_to_containing_taxon_map[nd.taxon]
-            x = taxon_to_contained.setdefault(containing_taxon, [])
-            x.append(nd.edge)
+            x = taxon_to_contained.setdefault(containing_taxon, set())
+            x.add(nd.edge)
         for containing_edge in self.postorder_edge_iter():
             if containing_edge.is_terminal():
                 containing_edge.head_contained_edges[embedded_tree] = taxon_to_contained[containing_edge.head_node.taxon]
             else:
-                containing_edge.head_contained_edges[embedded_tree] = list()
+                containing_edge.head_contained_edges[embedded_tree] = set()
                 for nd in containing_edge.head_node.child_nodes():
-                    containing_edge.head_contained_edges[embedded_tree].extend(nd.edge.head_contained_edges[embedded_tree])
+                    containing_edge.head_contained_edges[embedded_tree].update(nd.edge.head_contained_edges[embedded_tree])
             if containing_edge.tail_node is None:
                 containing_edge.tail_contained_edges[embedded_tree] = containing_edge.head_contained_edges[embedded_tree]
                 continue
-            containing_edge.tail_contained_edges[embedded_tree] = list()
+            containing_edge.tail_contained_edges[embedded_tree] = set()
             for contained_edge in containing_edge.head_contained_edges[embedded_tree]:
                 remaining = containing_edge.tail_node.age - contained_edge.tail_node.age
                 while remaining > 0:
@@ -152,7 +152,7 @@ class ContainingTree(dataobject.Tree):
                         break
                     remaining -= contained_edge.length
                 if contained_edge is not None:
-                    containing_edge.tail_contained_edges[embedded_tree].append(contained_edge)
+                    containing_edge.tail_contained_edges[embedded_tree].add(contained_edge)
 
     def num_deep_coalescences(self):
         """
