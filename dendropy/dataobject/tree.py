@@ -843,11 +843,11 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         for node in self.seed_node.leaf_iter(filter_fn):
             yield node
 
-    def age_order_node_iter(self, filter_fn=None):
+    def age_order_node_iter(self, ascending=True, include_leaves=True, filter_fn=None):
         """
         Returns an iterator over tree nodesd
         """
-        for node in self.seed_node.age_order_iter(filter_fn=filter_fn):
+        for node in self.seed_node.age_order_iter(ascending=ascending, include_leaves=include_leaves, filter_fn=filter_fn):
             yield node
 
     ###########################################################################

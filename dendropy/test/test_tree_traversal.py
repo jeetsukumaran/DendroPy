@@ -105,10 +105,15 @@ class TestAgeOrderNodeIterator(unittest.TestCase):
             else:
                 assert nd.label
 
-    def testAgeOrderIter(self):
+    def testAgeOrderIterIncludingLeaves(self):
         expected = ['T30', 'T19', 'T18', 'T29', 'T1', 'T7', 'T23', 'T13', 'T6', 'T28', 'T14', 'T15', 'T20', 'T26', 'T27', 'T21', 'T22', 'T4', 'T5', 'T8', 'T2', 'T3', 'T9', 'T10', 'T16', 'T17', 'T24', 'T25', 'T11', 'T12', 'I13', 'I27', 'I19', 'I12', 'I11', 'I05', 'I10', 'I07', 'I25', 'I28', 'I24', 'I15', 'I06', 'I14', 'I26', 'I04', 'I23', 'I09', 'I22', 'I29', 'I18', 'I21', 'I08', 'I20', 'I17', 'I03', 'I02', 'I16', 'I01']
         self.tree.add_ages_to_nodes()
-        results = [nd.label for nd in self.tree.age_order_node_iter()]
+        results = [nd.label for nd in self.tree.age_order_node_iter(include_leaves=True)]
+
+    def testAgeOrderIterNotIncludingLeaves(self):
+        expected = ['T17', 'T24', 'T25', 'T11', 'T12', 'I13', 'I27', 'I19', 'I12', 'I11', 'I05', 'I10', 'I07', 'I25', 'I28', 'I24', 'I15', 'I06', 'I14', 'I26', 'I04', 'I23', 'I09', 'I22', 'I29', 'I18', 'I21', 'I08', 'I20', 'I17', 'I03', 'I02', 'I16', 'I01']
+        self.tree.add_ages_to_nodes()
+        results = [nd.label for nd in self.tree.age_order_node_iter(include_leaves=True)]
 
 if __name__ == "__main__":
     unittest.main()
