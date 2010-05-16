@@ -27,6 +27,7 @@ as well as all the structural classes that make up a tree.
 
 from cStringIO import StringIO
 import copy
+import bisect
 import re
 
 from dendropy.utility import messaging
@@ -840,6 +841,13 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         postorder tree-traversal).
         """
         for node in self.seed_node.leaf_iter(filter_fn):
+            yield node
+
+    def age_order_node_iter(self, filter_fn=None):
+        """
+        Returns an iterator over tree nodesd
+        """
+        for node in self.seed_node.age_iter(filter_fn=filter_fn):
             yield node
 
     ###########################################################################
@@ -1770,6 +1778,28 @@ class Node(TaxonLinked):
             if node is not None \
                    and (filter_fn is None or filter_fn(node)):
                 yield node
+
+    def age_iter(self, ascending=True, include_leaves=True, filter_fn=None):
+        if ascending:
+            leaves = [nd for nd in self.leaf_iter()]
+            queued_pairs = []
+            in_queue = set()
+            for leaf in leaves:
+                age_nd_tuple = (leaf.age, leaf)
+                queued_pairs.insert(bisect.bisect(queued_pairs, age_nd_tuple), age_nd_tuple)
+                in_queue.add(leaf)
+            while queued_pairs:
+                next_el = queued_pairs.pop(0)
+                age, nd = next_el
+                in_queue.remove(nd)
+                p = nd.parent_node
+                if p and p not in in_queue:
+                    age_nd_tuple = (p.age, p)
+                    in_queue.add(p)
+                if include_leaves or nd.is_internal():
+                    yield nd
+        else:
+            raise NotImplementedError()
 
     ###########################################################################
     ## (Attribute) Accessors and Mutators
