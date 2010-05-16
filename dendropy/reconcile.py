@@ -109,10 +109,77 @@ class ContainingTree(dataobject.Tree):
     containing_to_embedded_taxa_map = property(get_containing_to_embedded_taxa_map)
 
     def rebuild(self, fit_containing_edge_lengths=True):
+        """
+        Recalculate node ages / edge lengths of containing tree, and embed
+        edges of embedded trees.
+        """
         if fit_containing_edge_lengths:
             self._fit_containing_edges()
+        for edge in self.postorder_edge_iter():
+            edge.head_contained_edges = {}
+            edge.tail_contained_edges = {}
+        for et in self.embedded_trees:
+            self.embed_edges(et)
+
+    def embed_edges(self, embedded_tree):
+        """
+        Map edges of embedded tree into containing tree (i.e., self).
+        """
+        contained_leaves = embedded_tree.leaf_nodes()
+        taxon_to_contained = {}
+        for nd in contained_leaves:
+            containing_taxon = self.embedded_to_containing_taxon_map[nd.taxon]
+            x = taxon_to_contained.setdefault(containing_taxon, [])
+            x.append(nd.edge)
+        for containing_edge in self.postorder_edge_iter():
+            if containing_edge.is_terminal():
+                containing_edge.head_contained_edges[embedded_tree] = taxon_to_contained[containing_edge.head_node.taxon]
+            else:
+                containing_edge.head_contained_edges[embedded_tree] = list()
+                for nd in containing_edge.head_node.child_nodes():
+                    containing_edge.head_contained_edges[embedded_tree].extend(nd.edge.head_contained_edges[embedded_tree])
+            if containing_edge.tail_node is None:
+                containing_edge.tail_contained_edges[embedded_tree] = containing_edge.head_contained_edges[embedded_tree]
+                continue
+            containing_edge.tail_contained_edges[embedded_tree] = list()
+            for contained_edge in containing_edge.head_contained_edges[embedded_tree]:
+                remaining = containing_edge.tail_node.age - contained_edge.tail_node.age
+                while remaining > 0:
+                    try:
+                        contained_edge = contained_edge.tail_node.edge
+                    except AttributeError:
+                        #contained_edge = None
+                        break
+                    remaining -= contained_edge.length
+                if contained_edge is not None:
+                    containing_edge.tail_contained_edges[embedded_tree].append(contained_edge)
+
+    def num_deep_coalescences(self):
+        """
+        Returns total number of deep coalescences of the embedded trees.
+        """
+        return sum(self.deep_coalescences().values())
+
+    def deep_coalescences(self):
+        """
+        Returns dictionary where the embedded trees are keys, and the number of
+        deep coalescences corresponding to the tree are values.
+        """
+        dc = {}
+        for edge in self.postorder_edge_iter():
+            ndc = 0
+            for tree in self.embedded_trees:
+                try:
+                    dc[tree] += len(edge.tail_contained_edges[tree]) - 1
+                except KeyError:
+                    dc[tree] = len(edge.tail_contained_edges[tree]) - 1
+        return dc
 
     def _fit_containing_edges(self):
+        """
+        Recalculate node ages / edge lengths of containing tree to accomodate
+        all embedded trees.
+        """
         # set the ages
         for node in self.postorder_node_iter():
             if node.is_internal():
@@ -133,6 +200,9 @@ class ContainingTree(dataobject.Tree):
                     nd.edge.length = 0
 
     def _find_youngest_intergroup_age(self, embedded_tree, disjunct_leaf_set_list_split_bitmasks, starting_min_age=None):
+        """
+        Find the age of the youngest MRCA of disjunct leaf sets.
+        """
         if starting_min_age is None:
             starting_min_age = float('inf')
         try:

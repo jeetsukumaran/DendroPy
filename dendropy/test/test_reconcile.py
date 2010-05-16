@@ -45,8 +45,8 @@ class ContainingTreeTest(unittest.TestCase):
 
     def testContaining1(self):
         ct = reconcile.ContainingTree(self.species_tree, self.gene_trees, self.gene_taxon_to_population_taxon_map)
-        #print self.species_tree
-        #print self.gene_trees
+        print ct.deep_coalescences()
+        print ct.num_deep_coalescences()
 
 class DeepCoalTest(unittest.TestCase):
 
