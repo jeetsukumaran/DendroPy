@@ -1916,8 +1916,8 @@ class Node(TaxonLinked):
         list with self as the only member if self is a leaf).
         """
         return [node for node in \
-                self.postorder_iter(self, \
-                                    lambda x: bool(len(x.child_nodes())==0))]
+                self.postorder_iter(lambda x: bool(len(x.child_nodes())==0))]
+
     def child_nodes(self):
         "Returns the a shallow-copy list of all child nodes."
         return list(self._child_nodes)
