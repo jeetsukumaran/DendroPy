@@ -60,10 +60,97 @@ class ContainingTree(dataobject.Tree):
                 If ``False``, then the branch lengths of ``containing_tree``
                 will *not* be adjusted to fit the embedded trees.
     """
-        if 'taxon_set' not in kwargs:
-            kwargs['taxon_set'] = containing_tree.taxon_set
-        dataobject.Tree.__init__(containing_tree, **kwargs)
+        dataobject.Tree.__init__(self, containing_tree, **kwargs)
         self.embedded_trees = embedded_trees
+        self._embedded_to_containing_taxon_map = None
+        self._containing_to_embedded_taxa_map = None
+        self._embedded_taxon_set = None
+        self.set_embedded_to_containing_taxon_map(embedded_to_containing_taxon_map)
+        self.rebuild(fit_containing_edge_lengths=fit_containing_edge_lengths)
+
+    def set_embedded_to_containing_taxon_map(self, embedded_to_containing_taxon_map):
+        """
+        Sets mapping of ``Taxon`` objects of the genes/parasite/etc. to that of
+        the population/species/host/etc.
+        Creates mapping (e.g., species to genes) and decorates edges of self
+        with sets of both containing ``Taxon`` objects and the embedded
+        ``Taxon`` objects that map to them.
+        """
+        self._embedded_to_containing_taxon_map = embedded_to_containing_taxon_map
+        self._containing_to_embedded_taxa_map = {}
+        for k, v in self._embedded_to_containing_taxon_map.items():
+            try:
+                self._containing_to_embedded_taxa_map[v].append(k)
+            except KeyError:
+                self._containing_to_embedded_taxa_map[v] = [k]
+        if hasattr(self.embedded_trees, 'taxon_set') and isinstance(self.embedded_trees.taxon_set, dataobject.TaxonSet):
+            self._embedded_taxon_set = self.embedded_trees.taxon_set
+        else:
+            self._embedded_taxon_set = dataobject.TaxonSet(self._embedded_to_containing_taxon_map.keys())
+        for edge in self.postorder_edge_iter():
+            if edge.is_terminal():
+                edge.containing_taxa = set([edge.head_node.taxon])
+            else:
+                edge.containing_taxa = set()
+                for i in edge.head_node.child_nodes():
+                    edge.containing_taxa.update(i.edge.containing_taxa)
+            edge.embedded_taxa = set()
+            for t in edge.containing_taxa:
+                edge.embedded_taxa.update(self._containing_to_embedded_taxa_map[t])
+
+    def get_embedded_to_containing_taxon_map(self):
+        return self._embedded_to_containing_taxon_map
+
+    embedded_to_containing_taxon_map = property(get_embedded_to_containing_taxon_map)
+
+    def get_containing_to_embedded_taxa_map(self):
+        return self._containing_to_embedded_taxa_map
+
+    containing_to_embedded_taxa_map = property(get_containing_to_embedded_taxa_map)
+
+    def rebuild(self, fit_containing_edge_lengths=True):
+        if fit_containing_edge_lengths:
+            self._fit_containing_edges()
+
+    def _fit_containing_edges(self):
+        # set the ages
+        for node in self.postorder_node_iter():
+            if node.is_internal():
+                disjunct_leaf_set_list_split_bitmasks = []
+                for i in node.child_nodes():
+                    disjunct_leaf_set_list_split_bitmasks.append(self.taxon_set.get_taxa_bitmask(taxa=i.edge.containing_taxa))
+                min_age = float('inf')
+                for et in self.embedded_trees:
+                    min_age = self._find_youngest_intergroup_age(et, disjunct_leaf_set_list_split_bitmasks, min_age)
+                node.age = min_age
+            else:
+                node.age = 0
+        # set the edge lengths
+        for nd in self.preorder_node_iter():
+            if nd.parent_node is not None:
+                nd.edge.length = nd.parent_node.age - nd.age
+                if nd.edge.length < 0:
+                    nd.edge.length = 0
+
+    def _find_youngest_intergroup_age(self, embedded_tree, disjunct_leaf_set_list_split_bitmasks, starting_min_age=None):
+        if starting_min_age is None:
+            starting_min_age = float('inf')
+        try:
+            for nd in embedded_tree.age_order_node_iter(include_leaves=False):
+                if nd.age > starting_min_age:
+                    break
+                prev_intersections = False
+                for bm in disjunct_leaf_set_list_split_bitmasks:
+                    if bm & nd.edge.split_bitmask:
+                        if prev_intersections:
+                            return nd.age
+                        prev_intersections = True
+        except AttributeError:
+            embedded_tree.add_ages_to_nodes(check_prec=False)
+            starting_min_age = self._find_youngest_intergroup_age(embedded_tree=embedded_tree,
+                    disjunct_leaf_set_list_split_bitmasks=disjunct_leaf_set_list_split_bitmasks,
+                    starting_min_age=starting_min_age)
+        return starting_min_age
 
 def __RETIRED__fit_contained_tree(contained_tree, containing_tree, contained_taxon_to_containing_taxon_map, optimize_containing_edge_lengths=True):
     """
