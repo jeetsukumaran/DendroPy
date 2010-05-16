@@ -206,7 +206,7 @@ def simulate_continuous(node, rng, **kwargs):
     at the endpoints.
 
     """
-    nd_iter = node.preorder_iter(node)
+    nd_iter = node.preorder_iter()
     # skip the first node -- it should already have a rate
     nd_iter.next()
     if kwargs.get("model", "KTB").upper() != "KTB":

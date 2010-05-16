@@ -146,7 +146,7 @@ def collapse_conflicting(subtree_root, split, split_bitmask):
         cropped_split = (~split) & split_bitmask
 
     to_collapse_head_nodes = []
-    for nd in subtree_root.postorder_iter(subtree_root):
+    for nd in subtree_root.postorder_iter():
         if not nd.is_leaf():
             ncm = nd.edge.split_bitmask
             if lb & ncm:

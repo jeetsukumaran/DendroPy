@@ -821,17 +821,17 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def preorder_node_iter(self, filter_fn=None):
         "Returns preorder iterator over tree nodes."
-        for node in self.seed_node.preorder_iter(self.seed_node, filter_fn):
+        for node in self.seed_node.preorder_iter(filter_fn):
             yield node
 
     def postorder_node_iter(self, filter_fn=None):
         "Returns postorder iterator over tree nodes."
-        for node in self.seed_node.postorder_iter(self.seed_node, filter_fn):
+        for node in self.seed_node.postorder_iter(filter_fn):
             yield node
 
     def level_order_node_iter(self, filter_fn=None):
         "Returns level-order iterator over tree nodes."
-        for node in self.seed_node.level_order_iter(self.seed_node, filter_fn):
+        for node in self.seed_node.level_order_iter(filter_fn):
             yield node
 
     def leaf_iter(self, filter_fn=None):
@@ -839,7 +839,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         Returns an iterator over tree leaf_nodes (order determined by
         postorder tree-traversal).
         """
-        for node in self.seed_node.leaf_iter(self.seed_node, filter_fn):
+        for node in self.seed_node.leaf_iter(filter_fn):
             yield node
 
     ###########################################################################
@@ -847,19 +847,25 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def preorder_edge_iter(self, filter_fn=None):
         "Returns preorder iterator over tree edges."
-        for node in self.seed_node.preorder_iter(self.seed_node):
+        for node in self.seed_node.preorder_iter():
             if node.edge and (filter_fn is None or filter_fn(node.edge)):
                 yield node.edge
 
     def postorder_edge_iter(self, filter_fn=None):
         "Returns postorder iterator over tree edges."
-        for node in self.seed_node.postorder_iter(self.seed_node):
+        for node in self.seed_node.postorder_iter():
             if node.edge and (filter_fn is None or filter_fn(node.edge)):
                 yield node.edge
 
     def level_order_edge_iter(self, filter_fn=None):
         "Returns level-order iterator over tree edges."
-        for node in self.seed_node.level_order_iter(self.seed_node):
+        for node in self.seed_node.level_order_iter():
+            if node.edge and (filter_fn is None or filter_fn(node.edge)):
+                yield node.edge
+
+    def leaf_edge_iter(self, filter_fn=None):
+        "Returns iterator over tree leaf edges."
+        for node in self.seed_node.leaf_iter():
             if node.edge and (filter_fn is None or filter_fn(node.edge)):
                 yield node.edge
 
@@ -1641,96 +1647,6 @@ class Node(TaxonLinked):
     properties.
     """
 
-    ### ITERATORS ############################################################
-
-    def preorder_iter(node, filter_fn=None):
-        """
-        Preorder traversal of the node and its child_nodes.  Returns node
-        and all descendants such that node is returned before node's
-        child_nodes (and their child_nodes). Filtered by filter_fn: node is
-        only returned if no filter_fn is given or if filter_fn returns
-        True.
-        """
-        if not node:
-            return
-        stack = [node]
-        while stack:
-            node = stack.pop(0)
-            if filter_fn is None or filter_fn(node):
-                yield node
-            child_nodes = node.child_nodes()
-            child_nodes.extend(stack)
-            stack = child_nodes
-    preorder_iter = staticmethod(preorder_iter)
-
-    def postorder_iter(node, filter_fn=None):
-        """
-        Postorder traversal of the node and its child_nodes.  Returns node
-        and all descendants such that node's child_nodes (and their
-        child_nodes) are visited before node.  Filtered by filter_fn:
-        node is only returned if no filter_fn is given or if filter_fn
-        returns True.
-        """
-        stack = [(node, False)]
-        while stack:
-            node, state = stack.pop(0)
-            if state:
-                if filter_fn is None or filter_fn(node):
-                    yield node
-            else:
-                stack.insert(0, (node, True))
-                child_nodes = [(n, False) for n in node.child_nodes()]
-                child_nodes.extend(stack)
-                stack = child_nodes
-    postorder_iter = staticmethod(postorder_iter)
-
-    def leaf_iter(start_nd, filter_fn=None):
-        """
-        Returns an iterator over the leaf_nodes that are descendants `of start_nd`
-        (order determined by postorder tree-traversal).
-        """
-        if filter_fn:
-            filter_fn = lambda x: x.is_leaf() and filter_fn(x) or None
-        else:
-            filter_fn = lambda x: x.is_leaf() and x or None
-        for node in start_nd.postorder_iter(start_nd, filter_fn):
-            yield node
-
-    leaf_iter = staticmethod(leaf_iter)
-
-    def level_order_iter(node, filter_fn=None):
-        """
-        Level-order traversal of the node and its child_nodes. Filtered
-        by filter_fn: node is only returned if no filter_fn is given
-        or if filter_fn returns True
-        """
-        if filter_fn is None or filter_fn(node):
-            yield node
-        remaining = node.child_nodes()
-        while len(remaining) > 0:
-            node = remaining.pop(0)
-            if filter_fn is None or filter_fn(node):
-                yield node
-            child_nodes = node.child_nodes()
-            remaining.extend(child_nodes)
-
-    level_order_iter = staticmethod(level_order_iter)
-
-    def ancestor_iter(node, filter_fn=None, inclusive=True):
-        """
-        Returns all ancestors of node. If `inclusive` is True, `node`
-        is returned as the first item of the sequence.
-        """
-        if inclusive:
-            yield node
-        while node is not None:
-            node = node.parent_node
-            if node is not None \
-                   and (filter_fn is None or filter_fn(node)):
-                yield node
-
-    ancestor_iter = staticmethod(ancestor_iter)
-
     ## UTILITIES #############################################################
 
     def nodeset_hash(nodes, attribute='oid'):
@@ -1773,19 +1689,90 @@ class Node(TaxonLinked):
         memo[id(self._oid)] = o._oid
         return o
 
-    def collapse_neighborhood(self, dist):
-        if dist < 1:
-            return
-        children = self.child_nodes()
-        for ch in children:
-            if not ch.is_leaf():
-                ch.edge.collapse()
-        if self.parent_node:
-            p = self.parent_node
-            self.edge.collapse()
-            p.collapse_neighborhood(dist -1)
+    ###########################################################################
+    ## Iterators
+
+    def preorder_iter(self, filter_fn=None):
+        """
+        Preorder traversal of the node and its child_nodes.  Returns node
+        and all descendants such that node is returned before node's
+        child_nodes (and their child_nodes). Filtered by filter_fn: node is
+        only returned if no filter_fn is given or if filter_fn returns
+        True.
+        """
+        stack = [self]
+        while stack:
+            node = stack.pop(0)
+            if filter_fn is None or filter_fn(node):
+                yield node
+            child_nodes = node.child_nodes()
+            child_nodes.extend(stack)
+            stack = child_nodes
+
+    def postorder_iter(self, filter_fn=None):
+        """
+        Postorder traversal of the node and its child_nodes.  Returns node
+        and all descendants such that node's child_nodes (and their
+        child_nodes) are visited before node.  Filtered by filter_fn:
+        node is only returned if no filter_fn is given or if filter_fn
+        returns True.
+        """
+        stack = [(self, False)]
+        while stack:
+            node, state = stack.pop(0)
+            if state:
+                if filter_fn is None or filter_fn(node):
+                    yield node
+            else:
+                stack.insert(0, (node, True))
+                child_nodes = [(n, False) for n in node.child_nodes()]
+                child_nodes.extend(stack)
+                stack = child_nodes
+
+    def leaf_iter(self, filter_fn=None):
+        """
+        Returns an iterator over the leaf_nodes that are descendants `of start_nd`
+        (order determined by postorder tree-traversal).
+        """
+        if filter_fn:
+            filter_fn = lambda x: x.is_leaf() and filter_fn(x) or None
         else:
-            self.collapse_neighborhood(dist - 1)
+            filter_fn = lambda x: x.is_leaf() and x or None
+        for node in self.postorder_iter(filter_fn):
+            yield node
+
+    def level_order_iter(self, filter_fn=None):
+        """
+        Level-order traversal of the node and its child_nodes. Filtered
+        by filter_fn: node is only returned if no filter_fn is given
+        or if filter_fn returns True
+        """
+        if filter_fn is None or filter_fn(self):
+            yield self
+        remaining = self.child_nodes()
+        while len(remaining) > 0:
+            node = remaining.pop(0)
+            if filter_fn is None or filter_fn(node):
+                yield node
+            child_nodes = node.child_nodes()
+            remaining.extend(child_nodes)
+
+    def ancestor_iter(self, filter_fn=None, inclusive=True):
+        """
+        Returns all ancestors of node. If `inclusive` is True, `node`
+        is returned as the first item of the sequence.
+        """
+        if inclusive:
+            yield self
+        node = self
+        while node is not None:
+            node = node.parent_node
+            if node is not None \
+                   and (filter_fn is None or filter_fn(node)):
+                yield node
+
+    ###########################################################################
+    ## (Attribute) Accessors and Mutators
 
     def is_leaf(self):
         "Returns True if the node has no child_nodes"
@@ -1824,6 +1811,83 @@ class Node(TaxonLinked):
     edge = property(_get_edge, _set_edge)
     edge_length = property(_get_edge_length, _set_edge_length)
 
+    ###########################################################################
+    ## Metrics
+
+    def level(self):
+        "Number of nodes between self and root."
+        if self.parent_node:
+            return self.parent_node.level() + 1
+        else:
+            return 0
+
+    def distance_from_root(self):
+        """
+        Sum of edge lengths from root. Right now, 'root' is taken to
+        be a node with no parent node.
+        """
+        if self.parent_node and self.edge.length != None:
+            if self.parent_node.distance_from_root == None:
+                return float(self.edge.length)
+            else:
+                distance_from_root = float(self.edge.length)
+                parent_node = self.parent_node
+                # The root is identified when a node with no
+                # parent is encountered. If we want to use some
+                # other criteria (e.g., where a is_root property
+                # is True), we modify it here.
+                while parent_node:
+                    if parent_node.edge.length != None:
+                        distance_from_root = distance_from_root + float(parent_node.edge.length)
+                    parent_node = parent_node.parent_node
+                return distance_from_root
+        elif not self.parent_node and self.edge.length != None:
+            return float(self.edge.length)
+        elif self.parent_node and self.edge.length == None:
+            # what do we do here: parent node exists, but my
+            # length does not?
+            return float(self.parent_node.edge.length)
+        elif not self.parent_node and self.edge.length == None:
+            # no parent node, and no edge length
+            return 0.0
+        else:
+            # WTF????
+            return 0.0
+
+    def distance_from_tip(self):
+        """
+        Sum of edge lengths from tip to node. If tree is not ultrametric
+        (i.e., descendent edges have different lengths), then count the
+        maximum of edge lengths. Note that the 'add_ages_to_nodes()' method
+        of dendropy.trees.Tree() is a more efficient way of doing this over
+        the whole tree.
+        """
+        if not self._child_nodes:
+            return 0.0
+        else:
+            distance_from_tips = []
+            for ch in self._child_nodes:
+                if ch.edge.length is not None:
+                    curr_edge_length = ch.edge_length
+                else:
+                    curr_edge_length = 0.0
+                if not hasattr(ch, "_distance_from_tip"):
+                    ch._distance_from_tip = ch.distance_from_tip()
+                distance_from_tips.append(ch._distance_from_tip + curr_edge_length)
+            self._distance_from_tip = float(max(distance_from_tips))
+            return self._distance_from_tip
+
+    ###########################################################################
+    ## Structural Infornation and Manipulation
+
+    def leaf_nodes(self):
+        """
+        Returns list of all leaf_nodes descended from this node (or just
+        list with self as the only member if self is a leaf).
+        """
+        return [node for node in \
+                self.postorder_iter(self, \
+                                    lambda x: bool(len(x.child_nodes())==0))]
     def child_nodes(self):
         "Returns the a shallow-copy list of all child nodes."
         return list(self._child_nodes)
@@ -2043,79 +2107,19 @@ class Node(TaxonLinked):
             if e is not None:
                 e.length -= n.edge.length
 
-    ## Basic node metrics ##
-
-    def distance_from_tip(self):
-        """
-        Sum of edge lengths from tip to node. If tree is not ultrametric
-        (i.e., descendent edges have different lengths), then count the
-        maximum of edge lengths. Note that the 'add_ages_to_nodes()' method
-        of dendropy.trees.Tree() is a more efficient way of doing this over
-        the whole tree.
-        """
-        if not self._child_nodes:
-            return 0.0
-        else:
-            distance_from_tips = []
-            for ch in self._child_nodes:
-                if ch.edge.length is not None:
-                    curr_edge_length = ch.edge_length
-                else:
-                    curr_edge_length = 0.0
-                if not hasattr(ch, "_distance_from_tip"):
-                    ch._distance_from_tip = ch.distance_from_tip()
-                distance_from_tips.append(ch._distance_from_tip + curr_edge_length)
-            self._distance_from_tip = float(max(distance_from_tips))
-            return self._distance_from_tip
-
-    def distance_from_root(self):
-        """
-        Sum of edge lengths from root. Right now, 'root' is taken to
-        be a node with no parent node.
-        """
-        if self.parent_node and self.edge.length != None:
-            if self.parent_node.distance_from_root == None:
-                return float(self.edge.length)
-            else:
-                distance_from_root = float(self.edge.length)
-                parent_node = self.parent_node
-                # The root is identified when a node with no
-                # parent is encountered. If we want to use some
-                # other criteria (e.g., where a is_root property
-                # is True), we modify it here.
-                while parent_node:
-                    if parent_node.edge.length != None:
-                        distance_from_root = distance_from_root + float(parent_node.edge.length)
-                    parent_node = parent_node.parent_node
-                return distance_from_root
-        elif not self.parent_node and self.edge.length != None:
-            return float(self.edge.length)
-        elif self.parent_node and self.edge.length == None:
-            # what do we do here: parent node exists, but my
-            # length does not?
-            return float(self.parent_node.edge.length)
-        elif not self.parent_node and self.edge.length == None:
-            # no parent node, and no edge length
-            return 0.0
-        else:
-            # WTF????
-            return 0.0
-
-    def level(self):
-        "Number of nodes between self and root."
+    def collapse_neighborhood(self, dist):
+        if dist < 1:
+            return
+        children = self.child_nodes()
+        for ch in children:
+            if not ch.is_leaf():
+                ch.edge.collapse()
         if self.parent_node:
-            return self.parent_node.level() + 1
+            p = self.parent_node
+            self.edge.collapse()
+            p.collapse_neighborhood(dist -1)
         else:
-            return 0
-
-    def leaf_nodes(self):
-        """
-        Returns list of all leaf_nodes descended from this node (or just
-        list with self as the only member if self is a leaf).
-        """
-        return [node for node in \
-                self.postorder_iter(self, \
-                                    lambda x: bool(len(x.child_nodes())==0))]
+            self.collapse_neighborhood(dist - 1)
 
     ###########################################################################
     ## Representation
