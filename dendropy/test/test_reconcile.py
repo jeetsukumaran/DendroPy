@@ -38,10 +38,8 @@ class ContainingTreeTest(unittest.TestCase):
         self.species_tree = dataset.get_tree_list(label="SpeciesTrees")[0]
         self.gene_trees = dataset.get_tree_list(label="GeneTrees")
         self.species_tree.taxon_set.lock()
-        self.gene_taxon_to_population_taxon_map = {}
-        for gt in self.gene_trees.taxon_set:
-            st = self.species_tree.taxon_set.require_taxon(label=gt.label[0].upper())
-            self.gene_taxon_to_population_taxon_map[gt] = st
+        self.gene_taxon_to_population_taxon_map = dendropy.TaxonSetMapping(domain_taxa=self.gene_trees.taxon_set,
+                mapping_func=lambda t: self.species_tree.taxon_set.require_taxon(label=t.label[0].upper()))
 
     def testContaining1(self):
         for gt in self.gene_trees:

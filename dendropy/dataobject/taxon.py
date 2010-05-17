@@ -669,18 +669,18 @@ class TaxonSetMapping(object):
             if "domain_taxa" not in kwargs:
                 raise TypeError("Must specify 'domain_taxa'")
             self.apply_mapping_func(kwargs["mapping_func"],
-                    kwargs["domain_taxa"],
-                    kwargs.get("range_taxa", None))
+                    domain_taxa=kwargs["domain_taxa"],
+                    range_taxa=kwargs.get("range_taxa", None))
         elif "mapping_attr_name" in kwargs:
             if "domain_taxa" not in kwargs:
                 raise TypeError("Must specify 'domain_taxa'")
             self.apply_mapping_attr_name(kwargs["mapping_attr_name"],
-                    kwargs["domain_taxa"],
-                    kwargs.get("range_taxa", None))
+                    domain_taxa=kwargs["domain_taxa"],
+                    range_taxa=kwargs.get("range_taxa", None))
         elif "mapping_dict" in kwargs:
             self.apply_mapping_dict(kwargs["mapping_dict"],
-                    kwargs.get("domain_taxa", None),
-                    kwargs.get("range_taxa", None))
+                    domain_taxa=kwargs.get("domain_taxa", None),
+                    range_taxa=kwargs.get("range_taxa", None))
         else:
             raise TypeError("Must specify at least one of: 'mapping_func', 'mapping_attr_name', or 'mapping_dict'")
 
@@ -696,6 +696,12 @@ class TaxonSetMapping(object):
         """
         for k in self.forward:
             yield k
+
+    def items(self):
+        return self.forward.items()
+
+    def keys(self):
+        return self.forward.keys()
 
     def __getitem__(self, taxon):
         """

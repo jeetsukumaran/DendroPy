@@ -51,10 +51,9 @@ class ContainingTree(dataobject.Tree):
                 parasite trees.
 
             ``embedded_to_containing_taxon_map``
-                A dictionary with ``Taxon`` objects referenced in
-                ``embedded_trees`` as keys and the
-                populations/species/hosts/area ``Taxon` objects referenced in
-                ``containing_tree`` as values.
+                A ``TaxonSetMapping`` object mapping ``Taxon`` objects in the
+                embedded trees to corresponding ``Taxon`` objects in the
+                containing tree.
 
             ``fit_containing_edge_lengths``
                 If ``False``, then the branch lengths of ``containing_tree``
@@ -63,8 +62,6 @@ class ContainingTree(dataobject.Tree):
         dataobject.Tree.__init__(self, containing_tree, **kwargs)
         self.embedded_trees = embedded_trees
         self._embedded_to_containing_taxon_map = None
-        self._containing_to_embedded_taxa_map = None
-        self._embedded_taxon_set = None
         self.set_embedded_to_containing_taxon_map(embedded_to_containing_taxon_map)
         self.rebuild(fit_containing_edge_lengths=fit_containing_edge_lengths)
 
@@ -76,17 +73,10 @@ class ContainingTree(dataobject.Tree):
         with sets of both containing ``Taxon`` objects and the embedded
         ``Taxon`` objects that map to them.
         """
-        self._embedded_to_containing_taxon_map = embedded_to_containing_taxon_map
-        self._containing_to_embedded_taxa_map = {}
-        for k, v in self._embedded_to_containing_taxon_map.items():
-            try:
-                self._containing_to_embedded_taxa_map[v].append(k)
-            except KeyError:
-                self._containing_to_embedded_taxa_map[v] = [k]
-        if hasattr(self.embedded_trees, 'taxon_set') and isinstance(self.embedded_trees.taxon_set, dataobject.TaxonSet):
-            self._embedded_taxon_set = self.embedded_trees.taxon_set
+        if isinstance(embedded_to_containing_taxon_map, dataobject.TaxonSetMapping):
+            self._embedded_to_containing_taxon_map = embedded_to_containing_taxon_map
         else:
-            self._embedded_taxon_set = dataobject.TaxonSet(self._embedded_to_containing_taxon_map.keys())
+            self._embedded_to_containing_taxon_map = dataobject.TaxonSetMapping(mapping_dict=embedded_to_containing_taxon_map, range_taxa=self.taxon_set)
         for edge in self.postorder_edge_iter():
             if edge.is_terminal():
                 edge.containing_taxa = set([edge.head_node.taxon])
@@ -96,7 +86,7 @@ class ContainingTree(dataobject.Tree):
                     edge.containing_taxa.update(i.edge.containing_taxa)
             edge.embedded_taxa = set()
             for t in edge.containing_taxa:
-                edge.embedded_taxa.update(self._containing_to_embedded_taxa_map[t])
+                edge.embedded_taxa.update(self.containing_to_embedded_taxa_map[t])
 
     def get_embedded_to_containing_taxon_map(self):
         return self._embedded_to_containing_taxon_map
@@ -104,7 +94,7 @@ class ContainingTree(dataobject.Tree):
     embedded_to_containing_taxon_map = property(get_embedded_to_containing_taxon_map)
 
     def get_containing_to_embedded_taxa_map(self):
-        return self._containing_to_embedded_taxa_map
+        return self._embedded_to_containing_taxon_map.reverse
 
     containing_to_embedded_taxa_map = property(get_containing_to_embedded_taxa_map)
 
