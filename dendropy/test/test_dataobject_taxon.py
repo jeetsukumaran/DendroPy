@@ -161,6 +161,67 @@ class TaxonSetPartitionTest(datatest.DataObjectVerificationTestCase):
         tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_lists=self.membership_lists)
         self.verify_subsets(tsp.subsets(), use_label_indexes=True)
 
+class TaxonSetMappingTest(datatest.DataObjectVerificationTestCase):
+
+    def setUp(self):
+        self.domain_taxa = dendropy.TaxonSet([
+                'a1', 'a2', 'a3', 'a4',
+                'b1', 'b2', 'b3', 'b4',
+                'c1', 'c2', 'c2', 'c3',
+                'd1', 'a5', 'a6', 'd2',
+                'd3'])
+        self.range_taxa = dendropy.TaxonSet([
+            'A', 'B', 'C', 'D',])
+        self.domain_taxa.lock()
+        self.range_taxa.lock()
+        self.mapping_func = lambda x: self.range_taxa.require_taxon(label=x.label[0].upper())
+        self.mapping_dict = {}
+        for t in self.domain_taxa:
+            self.mapping_dict[t] = self.mapping_func(t)
+            t.containing_taxa = self.mapping_dict[t]
+        self.expected_forward_label_map = {
+                'a1' : 'A',
+                'a2' : 'A',
+                'a3' : 'A',
+                'a4' : 'A',
+                'a5' : 'A',
+                'a6' : 'A',
+                'b1' : 'B',
+                'b2' : 'B',
+                'b3' : 'B',
+                'b4' : 'B',
+                'c1' : 'C',
+                'c2' : 'C',
+                'c3' : 'C',
+                'c4' : 'C',
+                'd1' : 'D',
+                'd2' : 'D',
+                'd3' : 'D',}
+        self.expected_backward_label_map = {
+                'A' : set(['a1', 'a2', 'a3', 'a4', 'a5', 'a6']),
+                'B' : set(['b1', 'b2', 'b3', 'b4',]),
+                'C' : set(['c1', 'c2', 'c2', 'c3',]),
+                'D' : set(['d1', 'd2', 'd3'])
+                }
+
+    def verifyMapping(self, tsm):
+        for t in self.domain_taxa:
+            self.assertEqual(tsm.forward[t].label, self.expected_forward_label_map[t.label])
+        for t in self.range_taxa:
+            self.assertEqual(set([i.label for i in tsm.reverse[t]]), self.expected_backward_label_map[t.label])
+
+    def testFromFunc(self):
+        tsm = dendropy.TaxonSetMapping(mapping_func=self.mapping_func, domain_taxa=self.domain_taxa)
+        self.verifyMapping(tsm)
+
+    def testFromAttr(self):
+        tsm = dendropy.TaxonSetMapping(mapping_attr_name='containing_taxa', domain_taxa=self.domain_taxa)
+        self.verifyMapping(tsm)
+
+    def testFromDict(self):
+        tsm = dendropy.TaxonSetMapping(mapping_dict=self.mapping_dict)
+        self.verifyMapping(tsm)
+
 if __name__ == "__main__":
     unittest.main()
 

@@ -635,6 +635,132 @@ class TaxonSetPartition(TaxonSetLinked):
                 self.subset_map[subset_id].add(t)
         return self.subsets()
 
+class TaxonSetMapping(object):
+    """
+    A many-to-one mapping of ``Taxon`` objects (e.g., gene taxa to population/species taxa).
+    """
 
+    def __init__(self, **kwargs):
+        """
+        Instantiates based on one of the following keyword arguments:
 
+            ``mapping_func``
+                A function that takes a ``Taxon`` object from the domain taxa
+                as an argument and returns the corresponding ``Taxon`` object
+                from the range taxa. If this argument is given, then a
+                ``TaxonSet`` or some other container of ``Taxon`` objects needs
+                to be passed using the ``taxon_set`` argument.
+
+            ``mapping_attr_name``
+                Name of an attribute of ``Taxon`` object of the domain taxa
+                that references the corresponding ``Taxon`` object from the
+                range taxa. If this argument is given, then a ``TaxonSet`` or
+                some other container of ``Taxon`` objects needs to be passed
+                using the ``taxon_set`` argument.
+
+            ``mapping_dict``
+                A dictionary with ``Taxon`` objects from the domain taxa as
+                keys, and the corresponding ``Taxon`` object from the range
+                taxa as values.
+        """
+        self.forward = {}
+        self.reverse = {}
+        if "mapping_func" in kwargs:
+            if "domain_taxa" not in kwargs:
+                raise TypeError("Must specify 'domain_taxa'")
+            self.apply_mapping_func(kwargs["mapping_func"],
+                    kwargs["domain_taxa"],
+                    kwargs.get("range_taxa", None))
+        elif "mapping_attr_name" in kwargs:
+            if "domain_taxa" not in kwargs:
+                raise TypeError("Must specify 'domain_taxa'")
+            self.apply_mapping_attr_name(kwargs["mapping_attr_name"],
+                    kwargs["domain_taxa"],
+                    kwargs.get("range_taxa", None))
+        elif "mapping_dict" in kwargs:
+            self.apply_mapping_dict(kwargs["mapping_dict"],
+                    kwargs.get("domain_taxa", None),
+                    kwargs.get("range_taxa", None))
+        else:
+            raise TypeError("Must specify at least one of: 'mapping_func', 'mapping_attr_name', or 'mapping_dict'")
+
+    def __len__(self):
+        """
+        Number of subsets.
+        """
+        return len(self.forward)
+
+    def __iter__(self):
+        """
+        Iterate over subsets.
+        """
+        for k in self.forward:
+            yield k
+
+    def __getitem__(self, taxon):
+        """
+        Get mapping for specified taxon.
+        """
+        return self.forward[taxon]
+
+    def _get_domain_taxa(self):
+        return self._domain_taxa
+
+    def _set_domain_taxa(self, taxa):
+        if taxa and not isinstance(taxa, TaxonSet):
+            self._domain_taxa = TaxonSet(taxa)
+        else:
+            self._domain_taxa = taxa
+
+    domain_taxa = property(_get_domain_taxa, _set_domain_taxa)
+
+    def _get_range_taxa(self):
+        return self._range_taxa
+
+    def _set_range_taxa(self, taxa):
+        if taxa and not isinstance(taxa, TaxonSet):
+            self._range_taxa = TaxonSet(taxa)
+        else:
+            self._range_taxa = taxa
+
+    range_taxa = property(_get_range_taxa, _set_range_taxa)
+
+    def apply_mapping_func(self, mfunc, domain_taxa, range_taxa=None):
+        """
+        Constructs forward and reverse mapping dictionaries based on ``mfunc``,
+        which should take a ``Taxon`` object in ``domain_taxa`` as an argument
+        and return another ``Taxon`` object.
+        """
+        self.forward = {}
+        self.reverse = {}
+        self.domain_taxa = domain_taxa
+        if range_taxa is None:
+            self.range_taxa = TaxonSet()
+        else:
+            self.range_taxa = TaxonSet()
+        for dt in self.domain_taxa:
+            rt = mfunc(dt)
+            if rt not in self.range_taxa:
+                self.range_taxa.add(rt)
+            self.forward[dt] = rt
+            try:
+                self.reverse[rt].add(dt)
+            except KeyError:
+                self.reverse[rt] = set([dt])
+
+    def apply_mapping_attr_name(self, attr_name, domain_taxa, range_taxa=None):
+        """
+        Constructs mapping based on attribute ``attr_name`` of each
+        ``Taxon`` object in ``domain_taxa``.
+        """
+        return self.apply_mapping_func(lambda x: getattr(x, attr_name), domain_taxa=domain_taxa, range_taxa=range_taxa)
+
+    def apply_mapping_dict(self, mdict, domain_taxa=None, range_taxa=None):
+        """
+        Constructs mapping based on dictionary ``mdict``, which should have
+        domain taxa as keys and range taxa as values.
+        """
+        if domain_taxa is None:
+            domain_taxa = TaxonSet(mdict.keys())
+        return self.apply_mapping_func(lambda x: mdict[x], domain_taxa=domain_taxa, range_taxa=range_taxa)
 
