@@ -771,6 +771,16 @@ class TaxonSetMapping(base.IdTagged):
             domain_taxa = TaxonSet(mdict.keys())
         return self.apply_mapping_func(lambda x: mdict[x], domain_taxa=domain_taxa, range_taxa=range_taxa)
 
+    def mesquite_association_rows(self):
+        rows = []
+        for rt in self.reverse:
+            x1 = textutils.escape_nexus_token(rt.label)
+            dt_labels = [dt.label for dt in self.reverse[rt]]
+            dt_labels.sort()
+            x2 = " ".join([textutils.escape_nexus_token(d) for d in dt_labels])
+            rows.append("        %s / %s" % (x1, x2))
+        return ",\n".join(rows)
+
     def write_mesquite_association_block(self, out, domain_taxa_title=None, range_taxa_title=None):
         """
         For debugging purposes ...
@@ -796,9 +806,6 @@ class TaxonSetMapping(base.IdTagged):
             textutils.escape_nexus_token(domain_taxa_title)
             ))
         out.write("    ASSOCIATES\n")
-        for rt in self.reverse:
-            x1 = textutils.escape_nexus_token(rt.label)
-            x2 = " ".join(textutils.escape_nexus_token(dt.label) for dt in self.reverse[rt])
-            out.write("        %s / %s,\n" % (x1, x2))
+        out.write(self.mesquite_association_rows() + "\n")
         out.write("    ;\n")
         out.write("END;\n")
