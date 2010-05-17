@@ -843,11 +843,11 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         for node in self.seed_node.leaf_iter(filter_fn):
             yield node
 
-    def age_order_node_iter(self, ascending=True, include_leaves=True, filter_fn=None):
+    def age_order_node_iter(self, include_leaves=True, filter_fn=None, descending=False):
         """
         Returns an iterator over tree nodesd
         """
-        for node in self.seed_node.age_order_iter(ascending=ascending, include_leaves=include_leaves, filter_fn=filter_fn):
+        for node in self.seed_node.age_order_iter(include_leaves=include_leaves, filter_fn=filter_fn, descending=descending):
             yield node
 
     ###########################################################################
@@ -1779,15 +1779,8 @@ class Node(TaxonLinked):
                    and (filter_fn is None or filter_fn(node)):
                 yield node
 
-    def age_order_iter(self, ascending=True, include_leaves=True, filter_fn=None):
-        if ascending:
-            #nds = [(nd.age, nd) for nd in self.preorder_iter()]
-            #nds.sort()
-            #for nd in nds:
-            #    if include_leaves or nd[1].is_internal():
-            #        yield nd[1]
-            #raise StopIteration()
-
+    def age_order_iter(self, include_leaves=True, filter_fn=None, descending=False):
+        if not descending:
             leaves = [nd for nd in self.leaf_iter()]
             queued_pairs = []
             in_queue = set()
@@ -1807,7 +1800,11 @@ class Node(TaxonLinked):
                 if include_leaves or nd.is_internal():
                     yield nd
         else:
-            raise NotImplementedError()
+            nds = [(nd.age, nd) for nd in self.preorder_iter()]
+            nds.sort(reverse=True)
+            for nd in nds:
+                if include_leaves or nd[1].is_internal():
+                    yield nd[1]
 
     ###########################################################################
     ## (Attribute) Accessors and Mutators
