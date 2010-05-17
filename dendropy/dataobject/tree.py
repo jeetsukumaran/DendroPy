@@ -847,6 +847,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         Returns an iterator over tree nodesd
         """
+        if not hasattr(self.seed_node, 'age'):
+            self.add_ages_to_nodes()
         for node in self.seed_node.age_order_iter(include_leaves=include_leaves, filter_fn=filter_fn, descending=descending):
             yield node
 
