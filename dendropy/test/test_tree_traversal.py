@@ -104,20 +104,22 @@ class TestAgeOrderNodeIterator(unittest.TestCase):
                 nd.label = nd.taxon.label
             else:
                 assert nd.label
+        self.expected_leaves = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12', 'T13', 'T14', 'T15', 'T16', 'T17', 'T18', 'T19', 'T20', 'T21', 'T22', 'T23', 'T24', 'T25', 'T26', 'T27', 'T28', 'T29', 'T30', 'T11', 'T12',]
+        self.expected_internal = ['I13', 'I27', 'I19', 'I12', 'I11', 'I05', 'I10', 'I07', 'I25', 'I28', 'I24', 'I15', 'I06', 'I14', 'I26', 'I04', 'I23', 'I09', 'I22', 'I29', 'I18', 'I21', 'I08', 'I20', 'I17', 'I03', 'I02', 'I16', 'I01']
+        self.expected_all = self.expected_leaves + self.expected_internal
 
-    def testAgeOrderIterIncludingLeaves(self):
-        expected = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12', 'T13', 'T14', 'T15', 'T16', 'T17', 'T18', 'T19', 'T20', 'T21', 'T22', 'T23', 'T24', 'T25', 'T26', 'T27', 'T28', 'T29', 'T30', 'T11', 'T12', 'I13', 'I27', 'I19', 'I12', 'I11', 'I05', 'I10', 'I07', 'I25', 'I28', 'I24', 'I15', 'I06', 'I14', 'I26', 'I04', 'I23', 'I09', 'I22', 'I29', 'I18', 'I21', 'I08', 'I20', 'I17', 'I03', 'I02', 'I16', 'I01']
+    def testAgeOrderIterAscendingIncludingLeaves(self):
         self.tree.add_ages_to_nodes()
         results = [nd.label for nd in self.tree.age_order_node_iter(include_leaves=True)]
-        expected = [i for i in expected if i.startswith('I')]
+        self.assertEqual(set(self.expected_all), set(results))
         results = [i for i in results if i.startswith('I')]
-        self.assertEqual(expected, results)
+        self.assertEqual(self.expected_internal, results)
 
-    def testAgeOrderIterNotIncludingLeaves(self):
+    def testAgeOrderIterAscendingNotIncludingLeaves(self):
         expected = ['I13', 'I27', 'I19', 'I12', 'I11', 'I05', 'I10', 'I07', 'I25', 'I28', 'I24', 'I15', 'I06', 'I14', 'I26', 'I04', 'I23', 'I09', 'I22', 'I29', 'I18', 'I21', 'I08', 'I20', 'I17', 'I03', 'I02', 'I16', 'I01']
         self.tree.add_ages_to_nodes()
         results = [nd.label for nd in self.tree.age_order_node_iter(include_leaves=False)]
-        self.assertEqual(expected, results)
+        self.assertEqual(self.expected_internal, results)
 
 if __name__ == "__main__":
     unittest.main()
