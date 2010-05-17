@@ -64,12 +64,10 @@ class ContainingTreeTest(unittest.TestCase):
                 range_taxa=self.species_tree.taxon_set,
                 mapping_func=lambda t: self.species_tree.taxon_set.require_taxon(label=t.label[0].upper()))
 
-    def write_mesquite(self, output_dir='.'):
+    def testDummy(self):
         for idx, gt in enumerate(self.gene_trees):
             ct = reconcile.ContainingTree(self.species_tree, [gt], self.gene_taxon_to_population_taxon_map)
-            out_fname = os.path.join(output_dir, "mesquite_gt%02d_dc%d.nex" %(idx, ct.num_deep_coalescences()))
-            out = open(out_fname, "w")
-            ct.write_as_mesquite()
+            print ct.num_deep_coalescences()
 
 class DeepCoalTest(unittest.TestCase):
 
