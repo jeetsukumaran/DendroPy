@@ -60,6 +60,7 @@ class ContainingTree(dataobject.Tree):
                 will *not* be adjusted to fit the embedded trees.
     """
         dataobject.Tree.__init__(self, containing_tree, **kwargs)
+        #self.is_rooted = True
         self.embedded_trees = embedded_trees
         self._embedded_to_containing_taxon_map = None
         self.set_embedded_to_containing_taxon_map(embedded_to_containing_taxon_map)
@@ -208,6 +209,40 @@ class ContainingTree(dataobject.Tree):
                         return nd.age
                     prev_intersections = True
         return starting_min_age
+
+    def write_as_mesquite(self, out, **kwargs):
+        """
+        For debugging purposes, write out a Mesquite-format file.
+        """
+        from dendropy.dataio import nexuswriter
+        nw = nexuswriter.NexusWriter(**kwargs)
+        nw.is_write_block_titles = True
+        out.write("#NEXUS\n\n")
+        nw.write_taxa_block(self.taxon_set, out)
+        out.write('\n')
+        if hasattr(self.embedded_trees, 'taxon_set'):
+            nw.write_taxa_block(self.embedded_trees.taxon_set, out)
+            if self.embedded_trees.taxon_set.label:
+                domain_title = self.embedded_trees.taxon_set.label
+            else:
+                domain_title = self.embedded_trees.taxon_set.oid
+            embedded_taxon_set = self.embedded_trees.taxon_set
+            embedded_label = self.embedded_trees.label
+        else:
+            nw.write_taxa_block(self._embedded_to_containing_taxon_map.domain_taxa, out)
+            if self._embedded_to_containing_taxon_map.domain_taxa.label:
+                domain_title = self._embedded_to_containing_taxon_map.domain_taxa.label
+            else:
+                domain_title = self._embedded_to_containing_taxon_map.domain_taxa.oid
+            embedded_taxon_set = self._embedded_to_containing_taxon_map.domain_taxa
+            embedded_label = "EmbeddedTrees"
+        out.write('\n')
+        self._embedded_to_containing_taxon_map.write_mesquite_association_block(out, domain_taxa_title=domain_title)
+        out.write('\n')
+        nw.write_trees_block(dataobject.TreeList([self], taxon_set=self.taxon_set), out)
+        out.write('\n')
+        nw.write_trees_block(dataobject.TreeList(self.embedded_trees, taxon_set=embedded_taxon_set, label=embedded_label), out)
+        out.write('\n')
 
 def __RETIRED__fit_contained_tree(contained_tree, containing_tree, contained_taxon_to_containing_taxon_map, optimize_containing_edge_lengths=True):
     """

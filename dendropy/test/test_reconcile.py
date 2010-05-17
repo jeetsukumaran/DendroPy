@@ -23,6 +23,8 @@
 """
 Tests reconciliation calculations.
 """
+
+import os
 import unittest
 import dendropy
 from dendropy.test.support import pathmap
@@ -30,6 +32,25 @@ from dendropy.utility.messaging import get_logger
 _LOG = get_logger(__name__)
 
 from dendropy import reconcile
+
+class ContainingTreeVerification(object):
+
+    def __init__(self):
+        dataset = dendropy.DataSet.get_from_path(pathmap.tree_source_path(filename="deepcoal1.nex"), "nexus")
+        self.species_tree = dataset.get_tree_list(label="SpeciesTrees")[0]
+        self.gene_trees = dataset.get_tree_list(label="GeneTrees")
+        self.species_tree.taxon_set.lock()
+        self.gene_taxon_to_population_taxon_map = dendropy.TaxonSetMapping(
+                domain_taxa=self.gene_trees.taxon_set,
+                range_taxa=self.species_tree.taxon_set,
+                mapping_func=lambda t: self.species_tree.taxon_set.require_taxon(label=t.label[0].upper()))
+
+    def write_mesquite(self, output_dir='.'):
+        for idx, gt in enumerate(self.gene_trees):
+            ct = reconcile.ContainingTree(self.species_tree, [gt], self.gene_taxon_to_population_taxon_map)
+            out_fname = os.path.join(output_dir, "mesquite_gt%02d_dc%d.nex" %(idx, ct.num_deep_coalescences()))
+            out = open(out_fname, "w")
+            ct.write_as_mesquite(out)
 
 class ContainingTreeTest(unittest.TestCase):
 
@@ -42,15 +63,13 @@ class ContainingTreeTest(unittest.TestCase):
                 domain_taxa=self.gene_trees.taxon_set,
                 range_taxa=self.species_tree.taxon_set,
                 mapping_func=lambda t: self.species_tree.taxon_set.require_taxon(label=t.label[0].upper()))
-        import sys
-        self.gene_taxon_to_population_taxon_map.write_mesquite_association_block(sys.stdout)
 
-    def testContaining1(self):
-        for gt in self.gene_trees:
+    def write_mesquite(self, output_dir='.'):
+        for idx, gt in enumerate(self.gene_trees):
             ct = reconcile.ContainingTree(self.species_tree, [gt], self.gene_taxon_to_population_taxon_map)
-            print "---"
-            print ct.as_string("newick")
-            print ct.num_deep_coalescences()
+            out_fname = os.path.join(output_dir, "mesquite_gt%02d_dc%d.nex" %(idx, ct.num_deep_coalescences()))
+            out = open(out_fname, "w")
+            ct.write_as_mesquite()
 
 class DeepCoalTest(unittest.TestCase):
 
