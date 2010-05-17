@@ -635,7 +635,7 @@ class TaxonSetPartition(TaxonSetLinked):
                 self.subset_map[subset_id].add(t)
         return self.subsets()
 
-class TaxonSetMapping(object):
+class TaxonSetMapping(base.IdTagged):
     """
     A many-to-one mapping of ``Taxon`` objects (e.g., gene taxa to population/species taxa).
     """
@@ -663,6 +663,7 @@ class TaxonSetMapping(object):
                 keys, and the corresponding ``Taxon`` object from the range
                 taxa as values.
         """
+        base.IdTagged.__init__(self, **kwargs)
         self.forward = {}
         self.reverse = {}
         if "mapping_func" in kwargs:
@@ -743,7 +744,7 @@ class TaxonSetMapping(object):
         if range_taxa is None:
             self.range_taxa = TaxonSet()
         else:
-            self.range_taxa = TaxonSet()
+            self.range_taxa = range_taxa
         for dt in self.domain_taxa:
             rt = mfunc(dt)
             if rt not in self.range_taxa:
@@ -770,3 +771,34 @@ class TaxonSetMapping(object):
             domain_taxa = TaxonSet(mdict.keys())
         return self.apply_mapping_func(lambda x: mdict[x], domain_taxa=domain_taxa, range_taxa=range_taxa)
 
+    def write_mesquite_association_block(self, out, domain_taxa_title=None, range_taxa_title=None):
+        """
+        For debugging purposes ...
+        """
+        out.write("BEGIN TaxaAssociation;\n")
+        if self.label:
+            title = self.label
+        else:
+            title = self.oid
+        out.write("    TITLE %s;\n"  % textutils.escape_nexus_token(title))
+        if domain_taxa_title is None:
+            if self.domain_taxa.label:
+                domain_taxa_title = self.domain_taxa.label
+            else:
+                domain_taxa_title = self.domain_taxa.oid
+        if range_taxa_title is None:
+            if self.range_taxa.label:
+                range_taxa_title = self.range_taxa.label
+            else:
+                range_taxa_title = self.range_taxa.oid
+        out.write("    TAXA %s, %s;\n" % (
+            textutils.escape_nexus_token(range_taxa_title),
+            textutils.escape_nexus_token(domain_taxa_title)
+            ))
+        out.write("    ASSOCIATES\n")
+        for rt in self.reverse:
+            x1 = textutils.escape_nexus_token(rt.label)
+            x2 = " ".join(textutils.escape_nexus_token(dt.label) for dt in self.reverse[rt])
+            out.write("        %s / %s,\n" % (x1, x2))
+        out.write("    ;\n")
+        out.write("END;\n")
