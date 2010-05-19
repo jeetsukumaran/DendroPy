@@ -174,6 +174,7 @@ class ContainingTree(dataobject.Tree):
         Recalculate node ages / edge lengths of containing tree to accomodate
         embedded trees.
         """
+
         # set the ages
         for node in self.postorder_node_iter():
             if node.is_internal():
@@ -183,9 +184,11 @@ class ContainingTree(dataobject.Tree):
                 min_age = float('inf')
                 for et in embedded_trees:
                     min_age = self._find_youngest_intergroup_age(et, disjunct_leaf_set_list_split_bitmasks, min_age)
-                node.age = min_age
+                node.age = max( [min_age] + [cn.age for cn in node.child_nodes()] )
             else:
                 node.age = 0
+
+        # set the corresponding edge lengths
         self.set_edge_lengths_from_node_ages()
 
     def rebuild(self, rebuild_taxa=True):

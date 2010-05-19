@@ -64,10 +64,10 @@ class ContainingTreeDeepCoalescenceSmall(unittest.TestCase):
                     embedded_trees=[gt],
                     fit_containing_edge_lengths=True,
                     )
-            #dc = ct.num_deep_coalescences()
-            #o = open('/Users/jeet/Scratch/dc/t%02d_dc%d.nex' % (idx+1, dc), "w")
+            dc = ct.num_deep_coalescences()
+            print dc
+            #o = open('/Users/jeet/Documents/Sandbox/deepcoal/set2/t%02d.nex' % (idx+1), "w")
             #ct.write_as_mesquite(o)
-            #print ct.as_ascii_plot(plot_metric="height")
 
 class DeepCoalTest(unittest.TestCase):
 
