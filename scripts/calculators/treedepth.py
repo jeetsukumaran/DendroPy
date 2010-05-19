@@ -42,7 +42,7 @@ if __name__ == '__main__':
     if len(d.trees_blocks) == 0:
         sys.exit("No trees found in file.")
     tree = d.trees_blocks[0][0]
-    tree.add_ages_to_nodes(attr_name='age', check_prec=options.prec)
+    tree.calc_node_ages(attr_name='age', check_prec=options.prec)
 
     sys.stdout.write("%f\n" % tree.seed_node.age)
 

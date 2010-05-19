@@ -830,8 +830,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         Returns an iterator over tree nodesd
         """
-        if not hasattr(self.seed_node, 'age'):
-            self.add_ages_to_nodes()
+        if self.seed_node.age is None:
+            self.calc_node_ages()
         for node in self.seed_node.age_order_iter(include_leaves=include_leaves, filter_fn=filter_fn, descending=descending):
             yield node
 
@@ -1141,28 +1141,37 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     ###########################################################################
     ## Ages, depths, branch lengths etc.
 
-    def add_ages_to_nodes(self, attr_name='age', check_prec=0.0000001):
+    def calc_node_ages(self, check_prec=0.0000001):
         """
-        Takes an ultrametric `tree` and adds a attribute named `attr` to
-        each node, with the value equal to the sum of edge lengths from the
-        node to the tips. If the lengths of different paths to the node
-        differ by more than `check_prec`, then a ValueError exception
-        will be raised indicating deviation from ultrametricity. If
-        `check_prec` is negative or False, then this check will be
-        skipped.
+        Adds an attribute called "age" to  each node, with the value equal to
+        the sum of edge lengths from the node to the tips. If the lengths of
+        different paths to the node differ by more than `check_prec`, then a
+        ValueError exception will be raised indicating deviation from
+        ultrametricity. If `check_prec` is negative or False, then this check
+        will be skipped.
         """
         for node in self.postorder_node_iter():
             ch = node.child_nodes()
             if len(ch) == 0:
-                setattr(node, attr_name, 0.0)
+               node.age = 0.0
             else:
                 first_child = ch[0]
-                setattr(node, attr_name, getattr(first_child, attr_name) + first_child.edge.length)
+                node.age = first_child.age + first_child.edge.length
                 if not (check_prec < 0 or check_prec == False):
                     for nnd in ch[1:]:
-                        ocnd = getattr(nnd, attr_name) + nnd.edge.length
-                        if abs(getattr(node, attr_name) - ocnd) > check_prec:
+                        ocnd = nnd.age + nnd.edge.length
+                        if abs(node.age - ocnd) > check_prec:
                             raise ValueError("Tree is not ultrametric")
+
+    def set_edge_lengths_from_node_ages(self):
+        """
+        Sets the edge lengths of this tree based on the 'age' attribute.
+        """
+        for nd in self.preorder_node_iter():
+            if nd.parent_node is not None:
+                nd.edge.length = nd.parent_node.age - nd.age
+                if nd.edge.length < 0:
+                    nd.edge.length = 0
 
     def node_ages(self, check_prec=0.0000001):
         """
@@ -1171,7 +1180,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         try:
             ages = [n.age for n in self.internal_nodes()]
         except AttributeError:
-            self.add_ages_to_nodes(attr_name='age', check_prec=check_prec)
+            self.calc_node_ages(check_prec=check_prec)
             ages = [n.age for n in self.internal_nodes()]
         ages.sort()
         return ages
@@ -1191,7 +1200,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def coalescence_intervals(self):
         """
-        Returns list of coalescence intervals on `tree`., i.e., the waiting
+        Returns list of coalescence intervals of self., i.e., the waiting
         times between successive coalescence events.
         """
         ages = self.node_ages()
@@ -1231,13 +1240,11 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         node = None
         speciation_ages = []
         n = 0
+        if self.seed_node.age is None:
+            self.calc_node_ages(check_prec=prec)
         for node in self.postorder_node_iter():
             if len(node.child_nodes()) == 2:
-                try:
-                    speciation_ages.append(node.age)
-                except AttributeError:
-                    self.add_ages_to_nodes(check_prec=prec)
-                    speciation_ages.append(node.age)
+                speciation_ages.append(node.age)
             else:
                 n += 1
         if node is None:
@@ -1667,6 +1674,7 @@ class Node(TaxonLinked):
                              taxon=kwargs.get("taxon", None),
                              label=kwargs.get("label", None),
                              oid=kwargs.get("oid", None))
+        self.age = None
         self._edge = None
         self._child_nodes = []
         self._parent_node = None
@@ -1881,7 +1889,7 @@ class Node(TaxonLinked):
         """
         Sum of edge lengths from tip to node. If tree is not ultrametric
         (i.e., descendent edges have different lengths), then count the
-        maximum of edge lengths. Note that the 'add_ages_to_nodes()' method
+        maximum of edge lengths. Note that the 'calc_node_ages()' method
         of dendropy.trees.Tree() is a more efficient way of doing this over
         the whole tree.
         """
@@ -2495,7 +2503,7 @@ class AsciiTreePlot(object):
         if self.plot_metric == 'age' or self.plot_metric == 'depth':
 
             ## for verification ...
-#            tree.add_ages_to_nodes(check_prec=False)
+#            tree.calc_node_ages(check_prec=False)
 #            for nd in tree.postorder_node_iter():
 #                self.node_offset[nd] = nd.age
 #            flipped_origin = max(self.node_offset.values())

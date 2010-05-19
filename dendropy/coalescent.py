@@ -236,7 +236,7 @@ def coalesce(nodes,
 def node_waiting_time_pairs(tree):
     """Returns list of tuples of (node, coalescent interval [= time between
     last coalescent event and current node age])"""
-    tree.add_ages_to_nodes(attr_name='age')
+    tree.calc_node_ages()
     ages = [(n, n.age) for n in tree.internal_nodes()]
     ages.sort(lambda x, y: int(x[1] - y[1]))
     intervals = []

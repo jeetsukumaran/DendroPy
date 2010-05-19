@@ -1,3 +1,12 @@
+
+Release 3.4.0
+-------------
+
+Changes
+^^^^^^^
+    - ``age`` is now a permanent attribute of ``Node`` objects from initialization (previously, this attribute was optionally added when ``add_ages_to_nodes()`` was called).
+    - ``Tree.add_ages_to_nodes()`` replaced by ``Tree.calc_node_ages()``: functioning is similar, but no longer offers the option for client code to select attribute name for the node age; this is now fixed to ``age`` (see above).
+
 Release 3.3.0
 -------------
 

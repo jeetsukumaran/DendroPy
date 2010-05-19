@@ -109,26 +109,26 @@ class TestAgeOrderNodeIterator(unittest.TestCase):
         self.expected_all = self.expected_leaves + self.expected_internal
 
     def testAgeOrderIterAscendingIncludingLeaves(self):
-        self.tree.add_ages_to_nodes()
+        self.tree.calc_node_ages()
         results = [nd.label for nd in self.tree.age_order_node_iter(include_leaves=True)]
         self.assertEqual(set(self.expected_all), set(results))
         results = [i for i in results if i.startswith('I')]
         self.assertEqual(self.expected_internal, results)
 
     def testAgeOrderIterAscendingNotIncludingLeaves(self):
-        self.tree.add_ages_to_nodes()
+        self.tree.calc_node_ages()
         results = [nd.label for nd in self.tree.age_order_node_iter(include_leaves=False)]
         self.assertEqual(self.expected_internal, results)
 
     def testAgeOrderIterDescendingIncludingLeaves(self):
-        self.tree.add_ages_to_nodes()
+        self.tree.calc_node_ages()
         results = [nd.label for nd in self.tree.age_order_node_iter(include_leaves=True, descending=True)]
         self.assertEqual(set(self.expected_all), set(results))
         results = [i for i in results if i.startswith('I')]
         self.assertEqual(self.expected_internal[-1::-1], results)
 
     def testAgeOrderIterDescendingNotIncludingLeaves(self):
-        self.tree.add_ages_to_nodes()
+        self.tree.calc_node_ages()
         results = [nd.label for nd in self.tree.age_order_node_iter(include_leaves=False, descending=True)]
         self.assertEqual(self.expected_internal[-1::-1], results)
 

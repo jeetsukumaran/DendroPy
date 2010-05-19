@@ -180,12 +180,7 @@ class ContainingTree(dataobject.Tree):
                 node.age = min_age
             else:
                 node.age = 0
-        # set the edge lengths
-        for nd in self.preorder_node_iter():
-            if nd.parent_node is not None:
-                nd.edge.length = nd.parent_node.age - nd.age
-                if nd.edge.length < 0:
-                    nd.edge.length = 0
+        self.set_edge_lengths_from_node_ages()
 
     def rebuild(self):
         """
@@ -278,8 +273,8 @@ class ContainingTree(dataobject.Tree):
         """
         if starting_min_age is None:
             starting_min_age = float('inf')
-        if not hasattr(embedded_tree.seed_node, 'age'):
-            embedded_tree.add_ages_to_nodes(check_prec=False)
+        if embedded_tree.seed_node.age is None:
+            embedded_tree.calc_node_ages(check_prec=False)
         if not hasattr(embedded_tree, 'split_edges'):
             embedded_tree.update_splits()
         for nd in embedded_tree.age_order_node_iter(include_leaves=False):
@@ -379,8 +374,8 @@ def __RETIRED__fit_contained_tree(contained_tree, containing_tree, contained_tax
         # containing node to that age.  e.g., if containing node 'A' has daughters
         # 'a1' and 'a2', find the youngest coalescent age between any gene in 'a1'
         # and 'a2', and set that as the age of A.
-        if not hasattr(contained_tree.seed_node, 'age'):
-            contained_tree.add_ages_to_nodes(check_prec=False)
+        if contained_tree.seed_node.age is None:
+            contained_tree.calc_node_ages(check_prec=False)
         for containing_node in containing_tree.preorder_node_iter():
             containing_node_children = containing_node.child_nodes()
             if not containing_node_children:
@@ -417,10 +412,10 @@ def __RETIRED__fit_contained_tree(contained_tree, containing_tree, contained_tax
                 if nd.edge.length < 0:
                     nd.edge.length = 0
     else:
-        if not hasattr(contained_tree.seed_node, 'age'):
-            contained_tree.add_ages_to_nodes(check_prec=False)
-        if not hasattr(containing_tree.seed_node, 'age'):
-            containing_tree.add_ages_to_nodes(check_prec=False)
+        if contained_tree.seed_node.age is None:
+            contained_tree.calc_node_ages(check_prec=False)
+        if containing_tree.seed_node.age is None:
+            containing_tree.calc_node_ages(check_prec=False)
 
     # Map the edges
     num_deep_coalescences = 0

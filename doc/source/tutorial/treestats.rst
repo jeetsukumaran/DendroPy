@@ -14,7 +14,7 @@ The following example shows how to identify the "critical" value for an `Archie-
 Node Ages
 =========
 
-The :meth:`~dendropy.dataobject.tree.Tree.add_ages_to_nodes()` method calculates the age of a node (i.e., the sum of edge lengths from the node to a tip) and assigns it to a new attribute of the node: :attr:`~dendropy.dataobject.tree.Node.age`. The following example iterates through the post-burn-in of an MCMC sample of ultrametric trees, calculating the age of the MRCA of two taxa, and reports the mean age of the node.
+The :meth:`~dendropy.dataobject.tree.Tree.calc_node_ages()` method calculates the age of a node (i.e., the sum of edge lengths from the node to a tip) and assigns it to the :attr:`~dendropy.dataobject.tree.Node.age` attribute. The following example iterates through the post-burn-in of an MCMC sample of ultrametric trees, calculating the age of the MRCA of two taxa, and reports the mean age of the node.
 
 .. literalinclude:: /examples/node_ages1.py
     :linenos:
