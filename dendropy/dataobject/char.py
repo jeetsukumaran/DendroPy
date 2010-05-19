@@ -110,7 +110,7 @@ class StateAlphabet(IdTagged, list):
         list.__init__(self, *args)
         self.missing = None
         self.symbol_synonyms = {}
-        self.case_sensitive = kwargs('case_sensitive', False)
+        self.case_sensitive = kwargs.get('case_sensitive', False)
 
     def get_state(self, attr_name, value):
         "Returns state in self in which attr_name equals value."
@@ -433,7 +433,7 @@ class CharacterType(IdTagged):
 class CharacterDataCell(Annotated):
     """
     A container for that holds the value for a particular cell in a matrix.
-    
+
     The attributes of CharacterDataCell are:
         'value' = an instnance of a StateAlphabetElement
         'character_type' isa CharacterType or None
@@ -461,7 +461,7 @@ class CharacterDataCell(Annotated):
 
 class CharacterDataVector(list, TaxonLinked):
     """A list of character data values for a taxon -- a row of a Character Matrix.
-    
+
     The CharacterDataVector typically contains elements that are instances of
     CharacterDataCell
     """
