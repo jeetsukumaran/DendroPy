@@ -41,7 +41,7 @@ class ContainingTree(dataobject.Tree):
             embedded_taxon_set,
             embedded_to_containing_taxon_map,
             embedded_trees=None,
-            fix_containing_edge_lengths=False,
+            fit_containing_edge_lengths=True,
             **kwargs):
         """
         Converts and returns ``tree`` to ContainingTree class, embedding the trees
@@ -71,8 +71,8 @@ class ContainingTree(dataobject.Tree):
                 will be embedded into ``containing_tree``; e.g. gene or
                 parasite trees.
 
-            ``fix_containing_edge_lengths``
-                If ``False`` [default], then the branch lengths of
+            ``fit_containing_edge_lengths``
+                If ``True`` [default], then the branch lengths of
                 ``containing_tree`` will be adjusted to fit the embedded tree
                 as they are added. Otherwise, the containing tree edge lengths
                 will not be changed.
@@ -92,7 +92,7 @@ class ContainingTree(dataobject.Tree):
         self._embedded_to_containing_taxon_map = None
         self._embedded_trees = None
         self._set_embedded_to_containing_taxon_map(embedded_to_containing_taxon_map)
-        self.fix_containing_edge_lengths = fix_containing_edge_lengths
+        self.fit_containing_edge_lengths = fit_containing_edge_lengths
         if embedded_trees:
             self._set_embedded_trees(embedded_trees)
         if self.embedded_trees:
@@ -195,7 +195,7 @@ class ContainingTree(dataobject.Tree):
         """
         if rebuild_taxa:
             self.build_edge_taxa_sets()
-        if not self.fix_containing_edge_lengths:
+        if self.fit_containing_edge_lengths:
             self.fit_edge_lengths(self.embedded_trees)
         self.clear_embedded_edges()
         for et in self.embedded_trees:
