@@ -149,6 +149,17 @@ class StateAlphabet(IdTagged, list):
         for state in self:
             map[state.symbol] = state
         map.update(self.symbol_synonyms)
+        if not self.case_sensitive:
+            for state in self:
+                if state.symbol.islower():
+                    map[state.symbol.upper()] = state
+                else:
+                    map[state.symbol.lower()] = state
+            for symbol, state in self.symbol_synonyms.items():
+                if symbol.islower():
+                    map[symbol.upper()] = state
+                else:
+                    map[symbol.lower()] = state
         return map
 
     def get_legal_symbols_as_str(self):
