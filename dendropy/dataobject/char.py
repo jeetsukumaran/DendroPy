@@ -110,14 +110,18 @@ class StateAlphabet(IdTagged, list):
         list.__init__(self, *args)
         self.missing = None
         self.symbol_synonyms = {}
+        self.case_sensitive = False
 
     def get_state(self, attr_name, value):
         "Returns state in self in which attr_name equals value."
         for state in self:
             if getattr(state, attr_name) == value:
                 return state
-        if attr_name == "symbol" and value in self.symbol_synonyms:
-            return self.symbol_synonyms[value]
+        if attr_name == "symbol":
+            if value in self.symbol_synonyms:
+                return self.symbol_synonyms[value]
+            if value.islower() and not self.case_sensitive:
+                return self.get_state('symbol', value.upper())
         raise Exception("State with %s of '%s' not defined" % (attr_name, str(value)))
 
     def state_index_for_symbol(self, symbol):
@@ -236,6 +240,15 @@ class StateAlphabet(IdTagged, list):
         to the `taxon` property of the CharacterDataVector.
         """
         return CharacterDataVector(self.get_states_as_cells(oids=oids, symbols=symbols, tokens=tokens), **kwargs)
+    def is_gap_state(self, el):
+        """
+        Returns True if the Alphabet has an element designated as the gap "state"
+            and `el` is this element.
+        """
+        try:
+            return el is self.gap
+        except:
+            return False
 
 ###############################################################################
 ## Pre-defined State Alphabets
@@ -249,6 +262,28 @@ class FixedStateAlphabet(StateAlphabet):
         o = self
         memo[id(self)] = o
         return o
+
+def _add_iupac(alphabet, states, ambig):
+    for sym in states:
+        sae = StateAlphabetElement(symbol=sym)
+        alphabet.append(sae)
+        if sym == '-':
+            alphabet.gap = sae
+        else:
+            setattr(alphabet, sym, sae)
+
+    for a in ambig:
+        k, v = a[0], a[1]
+        sae = StateAlphabetElement(symbol=k,
+                                   multistate=StateAlphabetElement.AMBIGUOUS_STATE,
+                                   member_states=alphabet.get_states(symbols=v))
+        alphabet.append(sae)
+        if k == '?':
+            alphabet.missing = sae
+        elif k == '*':
+            alphabet.stop = sae
+        else:
+            setattr(alphabet, k, sae)
 
 class DnaStateAlphabet(FixedStateAlphabet):
     _states = "ACGT-"
@@ -269,20 +304,9 @@ class DnaStateAlphabet(FixedStateAlphabet):
 
     def __init__(self, *args, **kwargs):
         FixedStateAlphabet.__init__(self, *args, **kwargs)
-        for sym in DnaStateAlphabet._states:
-            self.append(StateAlphabetElement(symbol=sym))
-        self.gap = self[-1]
-        for a in DnaStateAlphabet._ambig:
-            k, v = a[0], a[1]
-            sae = StateAlphabetElement(symbol=k,
-                                       multistate=StateAlphabetElement.AMBIGUOUS_STATE,
-                                       member_states=self.get_states(symbols=v))
-            self.append(sae)
-            if k == '?':
-                self.missing = sae
-                self.symbol_synonyms['X'] = sae
-            elif k == 'N':
-                self.any_residue = sae
+        _add_iupac(self, DnaStateAlphabet._states, DnaStateAlphabet._ambig)
+        self.any_residue = self.N
+        self.symbol_synonyms['X'] = self.missing
 
 class RnaStateAlphabet(FixedStateAlphabet):
     _states = "ACGU-"
@@ -303,20 +327,9 @@ class RnaStateAlphabet(FixedStateAlphabet):
 
     def __init__(self, *args, **kwargs):
         FixedStateAlphabet.__init__(self, *args, **kwargs)
-        for sym in RnaStateAlphabet._states:
-            self.append(StateAlphabetElement(symbol=sym))
-        self.gap = self[-1]
-        for a in RnaStateAlphabet._ambig:
-            k, v = a[0], a[1]
-            sae = StateAlphabetElement(symbol=k,
-                                       multistate=StateAlphabetElement.AMBIGUOUS_STATE,
-                                       member_states=self.get_states(symbols=v))
-            self.append(sae)
-            if k == '?':
-                self.missing = sae
-                self.symbol_synonyms['X'] = sae
-            elif k == 'N':
-                self.any_residue = sae
+        _add_iupac(self, RnaStateAlphabet._states, RnaStateAlphabet._ambig)
+        self.any_residue = self.N
+        self.symbol_synonyms['X'] = self.missing
 
 class NucleotideStateAlphabet(DnaStateAlphabet):
 
@@ -325,28 +338,17 @@ class NucleotideStateAlphabet(DnaStateAlphabet):
         self.symbol_synonyms['U'] = self.state_for_symbol('T')
 
 class ProteinStateAlphabet(FixedStateAlphabet):
-    _states = "ACDEFGHIKLMNPQRSTUVWY-"
+    _states = "ACDEFGHIKLMNPQRSTUVWY*-"
     _ambig = (('B', ('D', 'N')),
                ('Z', ('E', 'Q')),
-               ('X', ('A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y')),
-               ("?", ('A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y', '-')),
+               ('X', ('A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y', '*')),
+               ("?", ('A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y', '*', '-')),
               )
     unknown_state_symbol = 'X'
     def __init__(self, *args, **kwargs):
         FixedStateAlphabet.__init__(self, *args, **kwargs)
-        for sym in ProteinStateAlphabet._states:
-            self.append(StateAlphabetElement(symbol=sym))
-        self.gap = self[-1]
-        for a in ProteinStateAlphabet._ambig:
-            k, v = a[0], a[1]
-            sae = StateAlphabetElement(symbol=k,
-                                           multistate=StateAlphabetElement.AMBIGUOUS_STATE,
-                                           member_states=self.get_states(symbols=v))
-            self.append(sae)
-            if k == '?':
-                self.missing = sae
-            elif k == 'X':
-                self.any_residue = sae
+        _add_iupac(self, ProteinStateAlphabet._states, ProteinStateAlphabet._ambig)
+        self.any_residue = self.X
 
 class BinaryStateAlphabet(FixedStateAlphabet):
 
@@ -419,7 +421,11 @@ class CharacterType(IdTagged):
 
 class CharacterDataCell(Annotated):
     """
-    A container for the state / state value for a particular cell in a matrix.
+    A container for that holds the value for a particular cell in a matrix.
+    
+    The attributes of CharacterDataCell are:
+        'value' = an instnance of a StateAlphabetElement
+        'character_type' isa CharacterType or None
     """
 
     def __init__(self, value=None, character_type=None):
@@ -443,7 +449,11 @@ class CharacterDataCell(Annotated):
         return not result
 
 class CharacterDataVector(list, TaxonLinked):
-    "A list of character data values for a taxon -- a row of a Character Matrix"
+    """A list of character data values for a taxon -- a row of a Character Matrix.
+    
+    The CharacterDataVector typically contains elements that are instances of
+    CharacterDataCell
+    """
 
     def __init__(self, *args, **kwargs):
         if len(args) > 2:
