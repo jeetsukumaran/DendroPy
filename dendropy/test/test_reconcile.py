@@ -45,6 +45,8 @@ class ContainingTreeVerification(object):
                 range_taxon_set=self.species_tree.taxon_set,
                 mapping_func=lambda t: self.species_tree.taxon_set.require_taxon(label=t.label[0].upper()))
 
+
+
     def write_mesquite(self, output_dir='.'):
         for idx, gt in enumerate(self.gene_trees):
             ct = reconcile.ContainingTree(self.species_tree,

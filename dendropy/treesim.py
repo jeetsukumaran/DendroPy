@@ -590,7 +590,6 @@ def constrained_kingman(pop_tree,
     gene_tree = dataobject.Tree()
     gene_tree.taxon_set = gtaxa
     for edge in working_poptree.postorder_edge_iter():
-        edge.head_node.gene_nodes = edge.head_node.gene_nodes
 
         # if mrca root, run unconstrained coalescent
         if edge.head_node.parent_node is None:

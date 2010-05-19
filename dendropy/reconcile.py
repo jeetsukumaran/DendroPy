@@ -26,7 +26,7 @@ contained/containing etc.
 """
 
 from dendropy import dataobject
-from dendropy import treesim
+from dendropy import coalescent
 
 class ContainingTree(dataobject.Tree):
     """
@@ -81,7 +81,11 @@ class ContainingTree(dataobject.Tree):
 
     """
         dataobject.Tree.__init__(self, containing_tree, **kwargs)
-        self.clear_embedded_edges()
+        for edge in self.postorder_edge_iter():
+            edge.head_embedded_edges = {}
+            edge.tail_embedded_edges = {}
+            edge.containing_taxa = set()
+            edge.embedded_taxa = set()
         self._embedded_taxon_set = embedded_taxon_set
         self._embedded_to_containing_taxon_map = None
         self._embedded_trees = None
@@ -90,7 +94,7 @@ class ContainingTree(dataobject.Tree):
             self._set_embedded_trees(embedded_trees)
         self.fix_containing_edge_lengths = fix_containing_edge_lengths
         if self.embedded_trees:
-            self.rebuild()
+            self.rebuild(rebuild_taxa=False)
 
     def _set_embedded_taxon_set(self, taxon_set):
         self._embedded_taxon_set = taxon_set
@@ -117,16 +121,7 @@ class ContainingTree(dataobject.Tree):
                     mapping_dict=embedded_to_containing_taxon_map,
                     domain_taxon_set=self.embedded_taxon_set,
                     range_taxon_set=self.taxon_set)
-        for edge in self.postorder_edge_iter():
-            if edge.is_terminal():
-                edge.containing_taxa = set([edge.head_node.taxon])
-            else:
-                edge.containing_taxa = set()
-                for i in edge.head_node.child_nodes():
-                    edge.containing_taxa.update(i.edge.containing_taxa)
-            edge.embedded_taxa = set()
-            for t in edge.containing_taxa:
-                edge.embedded_taxa.update(self.containing_to_embedded_taxa_map[t])
+        self.build_edge_taxa_sets()
 
     embedded_taxon_set = property(_get_embedded_taxon_set)
 
@@ -156,9 +151,16 @@ class ContainingTree(dataobject.Tree):
     containing_to_embedded_taxa_map = property(_get_containing_to_embedded_taxa_map)
 
     def clear(self):
+        """
+        Clears all embedded trees and mapped edges.
+        """
         self.embedded_trees = dataobject.TreeList(taxon_set=self._embedded_to_containing_taxon_map.domain_taxa)
+        self.clear_embedded_edges()
 
     def clear_embedded_edges(self):
+        """
+        Clears all embedded mapped edges.
+        """
         for edge in self.postorder_edge_iter():
             edge.head_embedded_edges = {}
             edge.tail_embedded_edges = {}
@@ -182,11 +184,13 @@ class ContainingTree(dataobject.Tree):
                 node.age = 0
         self.set_edge_lengths_from_node_ages()
 
-    def rebuild(self):
+    def rebuild(self, rebuild_taxa=True):
         """
-        Recalculate node ages / edge lengths of containing tree, and embed
-        edges of embedded trees.
+        Recalculate edge taxa sets, node ages / edge lengths of containing
+        tree, and embed edges of embedded trees.
         """
+        if rebuild_taxa:
+            self.build_edge_taxa_sets()
         if not self.fix_containing_edge_lengths:
             self.fit_edge_lengths(self.embedded_trees)
         self.clear_embedded_edges()
@@ -228,6 +232,22 @@ class ContainingTree(dataobject.Tree):
                 if embedded_edge is not None:
                     containing_edge.tail_embedded_edges[embedded_tree].add(embedded_edge)
 
+    def build_edge_taxa_sets(self):
+        """
+        Rebuilds sets of containing and corresponding embedded taxa at each
+        edge.
+        """
+        for edge in self.postorder_edge_iter():
+            if edge.is_terminal():
+                edge.containing_taxa = set([edge.head_node.taxon])
+            else:
+                edge.containing_taxa = set()
+                for i in edge.head_node.child_nodes():
+                    edge.containing_taxa.update(i.edge.containing_taxa)
+            edge.embedded_taxa = set()
+            for t in edge.containing_taxa:
+                edge.embedded_taxa.update(self.containing_to_embedded_taxa_map[t])
+
     def num_deep_coalescences(self):
         """
         Returns total number of deep coalescences of the embedded trees.
@@ -248,24 +268,90 @@ class ContainingTree(dataobject.Tree):
                     dc[tree] = len(edge.tail_embedded_edges[tree]) - 1
         return dc
 
-    def simulate_kingman(self, rng=None, pop_size_attr='pop_size'):
+    def embed_contained_kingman(self, rng=None, pop_size_attr='pop_size'):
         """
-        Simulates and returns a "censored" (Kingman) neutral coalescence tree
+        Simulates, *embeds*, and returns a "censored" (Kingman) neutral coalescence tree
         conditional on self.
 
             ``rng``
-                Random number generator to use.
+                Random number generator to use. If ``None``, the default will
+                be used.
 
             ``pop_size_attr``
                 Name of attribute of self's edges that specify the population
                 size. If this attribute does not exist, then the population
                 size is taken to be 1.
+
+        Note that all edge-associated taxon sets must be up-to-date (otherwise,
+        ``build_edge_taxa_sets()`` should be called).
+        """
+        et = self.simulated_contained_kingman(rng=rng, pop_size_attr=pop_size_attr)
+        self.embed_tree(et)
+        return et
+
+    def simulate_contained_kingman(self, rng=None, pop_size_attr='pop_size'):
+        """
+        Simulates and returns a "censored" (Kingman) neutral coalescence tree
+        conditional on self.
+
+            ``rng``
+                Random number generator to use. If ``None``, the default will
+                be used.
+
+            ``pop_size_attr``
+                Name of attribute of self's edges that specify the population
+                size. If this attribute does not exist, then the population
+                size is taken to be 1.
+
+        Note that all edge-associated taxon sets must be up-to-date (otherwise,
+        ``build_edge_taxa_sets()`` should be called), and that the tree
+        is *not* added to the set of embedded trees. For the latter, call
+        ``embed_contained_kingman``.
         """
 
-        treesim.constrained_kingman(self,
-                rng=rng,
-                pop_size_attr=pop_size_attr,
-                decorate_original_tree=False)
+        # Dictionary that maps nodes of containing tree to list of
+        # corresponding nodes on gene tree, initially populated with leaf
+        # nodes.
+        embedded_nodes = {}
+        for nd in self.leaf_iter():
+            embedded_nodes[nd] = []
+            for gt in nd.edge.embedded_taxa:
+                gn = dataobject.Node(taxon=gt)
+                embedded_nodes[nd].append(gn)
+
+        # Build the tree structure
+        for edge in self.postorder_edge_iter():
+            if edge.head_node.parent_node is None:
+                # root: run unconstrained coalescence until just one gene node
+                # remaining
+                if len(embedded_nodes[edge.head_node]) > 1:
+                    final = coalescent.coalesce(nodes=embedded_nodes[edge.head_node],
+                            pop_size=pop_size,
+                            period=None,
+                            rng=rng)
+                else:
+                    final = embedded_nodes[edge.head_node]
+            else:
+                # run until next coalescence event, as determined by this edge
+                # size.
+                if hasattr(edge, pop_size_attr):
+                    pop_size = getattr(edge, pop_size_attr)
+                else:
+                    pop_size = 1
+                remaining = coalescent.coalesce(nodes=embedded_nodes[edge.head_node],
+                        pop_size=pop_size,
+                        period=edge.length,
+                        rng=rng)
+                try:
+                    embedded_nodes[edge.head_node].extend(remaining)
+                except KeyError:
+                    embedded_nodes[edge.head_node] = remaining
+
+        # Create and return the full tree
+        embedded_tree = dataobject.Tree(taxon_set=self.embedded_taxon_set)
+        embedded_tree.seed_node = final[0]
+        embedded_tree.is_rooted = True
+        return embedded_tree
 
     def _find_youngest_intergroup_age(self, embedded_tree, disjunct_leaf_set_list_split_bitmasks, starting_min_age=None):
         """
