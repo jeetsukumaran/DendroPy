@@ -411,7 +411,7 @@ class ContainingTree(dataobject.Tree):
             embedded_taxon_set = self._embedded_to_containing_taxon_map.domain_taxa
             embedded_label = "EmbeddedTrees"
         out.write('\n')
-        self._embedded_to_containing_taxon_map.write_mesquite_association_block(out, domain_taxa_title=domain_title)
+        self._embedded_to_containing_taxon_map.write_mesquite_association_block(out)
         out.write('\n')
         nw.write_trees_block(dataobject.TreeList([self], taxon_set=self.taxon_set), out)
         out.write('\n')
