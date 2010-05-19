@@ -110,7 +110,7 @@ class StateAlphabet(IdTagged, list):
         list.__init__(self, *args)
         self.missing = None
         self.symbol_synonyms = {}
-        self.case_sensitive = False
+        self.case_sensitive = kwargs('case_sensitive', False)
 
     def get_state(self, attr_name, value):
         "Returns state in self in which attr_name equals value."
