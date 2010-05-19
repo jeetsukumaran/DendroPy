@@ -33,25 +33,28 @@ _LOG = get_logger(__name__)
 
 from dendropy import reconcile
 
-class ContainingTreeTest(unittest.TestCase):
+class ContainingTreeDeepCoalescenceSmall(unittest.TestCase):
 
     def setUp(self):
         dataset = dendropy.DataSet.get_from_path(pathmap.tree_source_path(filename="deepcoal1.nex"), "nexus")
-        self.species_tree = dataset.get_tree_list(label="SpeciesTrees")[0]
-        self.gene_trees = dataset.get_tree_list(label="GeneTrees")
+        self.species_tree = dataset.get_tree_list(label="ContainingTree")[0]
+        self.gene_trees = dataset.get_tree_list(label="EmbeddedTrees")
         self.species_tree.taxon_set.lock()
         self.gene_taxon_to_population_taxon_map = dendropy.TaxonSetMapping(
                 domain_taxon_set=self.gene_trees.taxon_set,
                 range_taxon_set=self.species_tree.taxon_set,
                 mapping_func=lambda t: self.species_tree.taxon_set.require_taxon(label=t.label[0].upper()))
+        self.expected_under_original_brlens = [4, 6, 4, 2, 4, 3, 3, 4, 5, 4]
 
-    def testDummy(self):
+    def testDeepCoalCount(self):
         for idx, gt in enumerate(self.gene_trees):
             ct = reconcile.ContainingTree(containing_tree=self.species_tree,
                     embedded_taxon_set=self.gene_trees.taxon_set,
                     embedded_to_containing_taxon_map=self.gene_taxon_to_population_taxon_map,
-                    embedded_trees=[gt])
-            print ct.num_deep_coalescences()
+                    embedded_trees=[gt],
+                    fix_containing_edge_lengths=True,
+                    )
+            self.assertEqual(ct.num_deep_coalescences(), self.expected_under_original_brlens[idx])
 
 class DeepCoalTest(unittest.TestCase):
 
