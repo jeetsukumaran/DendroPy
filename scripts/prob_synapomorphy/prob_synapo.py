@@ -220,7 +220,11 @@ def invoke_garli(cf):
     g = subprocess.Popen(invok)
     g.wait()
     if g.returncode != 0:
-        sys.exit("Invocation:\n%s\nfrom %s failed! (note that scoreOnlyGarli is a special form of GARLI(Zwickl) available from Mark Holder on request; this program calculates likelihoods without changing any parameters of the model or branch lengths)"\n" % (" ".join(invok), os.path.abspath(os.curdir)))
+        sys.exit("""Invocation:\n%s\nfrom %s failed!
+
+Note that "scoreOnlyGarli" is a special form of GARLI(Zwickl) available from Mark Holder on request. 
+This program calculates likelihoods without changing any parameters of the model or branch lengths)
+""" % (" ".join(invok), os.path.abspath(os.curdir)))
     
 def parse_site_likes(file_obj):
     first_line = file_obj.next().strip()
@@ -464,4 +468,3 @@ if __name__ == "__main__":
             shutil.copyfile(posteriors, os.path.join(dest_dir, 'change_probs.txt'))
             split_tree = os.path.join(src_dir, 'split.tre')
             shutil.copyfile(split_tree, os.path.join(dest_dir, 'split.tre'))
-        
