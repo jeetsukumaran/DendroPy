@@ -1139,6 +1139,172 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         treesplit.encode_splits(self, **kwargs)
 
     ###########################################################################
+    ## Ages, depths, branch lengths etc.
+
+    def add_ages_to_nodes(self, attr_name='age', check_prec=0.0000001):
+        """
+        Takes an ultrametric `tree` and adds a attribute named `attr` to
+        each node, with the value equal to the sum of edge lengths from the
+        node to the tips. If the lengths of different paths to the node
+        differ by more than `check_prec`, then a ValueError exception
+        will be raised indicating deviation from ultrametricity. If
+        `check_prec` is negative or False, then this check will be
+        skipped.
+        """
+        for node in self.postorder_node_iter():
+            ch = node.child_nodes()
+            if len(ch) == 0:
+                setattr(node, attr_name, 0.0)
+            else:
+                first_child = ch[0]
+                setattr(node, attr_name, getattr(first_child, attr_name) + first_child.edge.length)
+                if not (check_prec < 0 or check_prec == False):
+                    for nnd in ch[1:]:
+                        ocnd = getattr(nnd, attr_name) + nnd.edge.length
+                        if abs(getattr(node, attr_name) - ocnd) > check_prec:
+                            raise ValueError("Tree is not ultrametric")
+
+    def node_ages(self, check_prec=0.0000001):
+        """
+        Returns list of ages of speciation events / coalescence times on tree.
+        """
+        try:
+            ages = [n.age for n in self.internal_nodes()]
+        except AttributeError:
+            self.add_ages_to_nodes(attr_name='age', check_prec=check_prec)
+            ages = [n.age for n in self.internal_nodes()]
+        ages.sort()
+        return ages
+
+    def length(self):
+        """
+        Returns sum of edge lengths of self. Edges with no lengths defined
+        (None) will be considered to have a length of 0.
+        Note that we do not overrride `__len__` as this requires an integer
+        return value.
+        """
+        total = 0
+        for edge in self.postorder_edge_iter():
+            if edge.length is not None:
+                total += edge.length
+        return total
+
+    def coalescence_intervals(self):
+        """
+        Returns list of coalescence intervals on `tree`., i.e., the waiting
+        times between successive coalescence events.
+        """
+        ages = self.node_ages()
+        intervals = []
+        intervals.append(ages[0])
+        for i, d in enumerate(ages[1:]):
+            intervals.append(d - ages[i])
+        return intervals
+
+    ###########################################################################
+    ## Metrics -- Internal
+
+    def pybus_harvey_gamma(self, prec=0.00001):
+        """Returns the gamma statistic of Pybus and Harvey (2000). This statistic
+        is used to test for constancy of birth and death rates over the course of
+        a phylogeny.  Under the pure-birth process, the statistic should follow
+        a standard Normal distibution: a Normal(mean=0, variance=1).
+
+        If the lengths of different paths to the node differ by more than `prec`,
+            then a ValueError exception will be raised indicating deviation from
+            ultrametricty.
+        Raises a Value Error if the tree is not ultrametric, is non-binary, or has
+            only 2 leaves.
+
+        As a side effect a `depth` attribute is added to the nodes of the self.
+
+        Pybus and Harvey. 2000. "Testing macro-evolutionary models using incomplete
+        molecular phylogenies." Proc. Royal Society Series B: Biological Sciences.
+        (267). 2267-2272
+        """
+        # the equation is given by:
+        #   T = \sum_{j=2}^n (jg_j)
+        #   C = T \sqrt{\frac{1}{12(n-2)}}
+        #   C gamma = \frac{1}{n-2}\sum_{i=2}^{n-1} (\sum_{k=2}^i kg_k) - \frac{T}{2}
+        # where n is the number of taxa, and g_2 ... g_n is the vector of waiting
+        #   times between consecutive (in time, not along a branch) speciation times.
+        node = None
+        speciation_ages = []
+        n = 0
+        for node in self.postorder_node_iter():
+            if len(node.child_nodes()) == 2:
+                try:
+                    speciation_ages.append(node.age)
+                except AttributeError:
+                    self.add_ages_to_nodes(check_prec=prec)
+                    speciation_ages.append(node.age)
+            else:
+                n += 1
+        if node is None:
+            raise ValueError("Empty tree encountered")
+        speciation_ages.sort(reverse=True)
+        g = []
+        older = speciation_ages[0]
+        for age in speciation_ages[1:]:
+            g.append(older - age)
+            older = age
+        g.append(older)
+        if not g:
+            raise ValueError("No internal nodes found (other than the root)")
+        assert(len(g) == (n - 1))
+        T = 0.0
+        accum = 0.0
+        for i in xrange(2, n):
+            list_index = i - 2
+            T += i * float(g[list_index])
+            accum += T
+        list_index = n - 2
+        T += (n) * g[list_index]
+        nmt = n - 2.0
+        numerator = accum/nmt - T/2.0
+        C = T*pow(1/(12*nmt), 0.5)
+        return numerator/C
+
+    ###########################################################################
+    ## Metrics -- Comparative
+
+    def symmetric_difference(self, other_tree):
+        """
+        Returns the symmetric_distance between this tree and the tree given by
+        `other`, i.e. the sum of splits found in one but not in both trees.
+        """
+        t = self.false_positives_and_negatives(other_tree)
+        return t[0] + t[1]
+
+    def false_positives_and_negatives(self, other_tree):
+        """
+        Returns a tuple pair: all splits found in `other` but in self, and all
+        splits in self not found in other.
+        """
+        from dendropy import treecalc
+        if other_tree.taxon_set is not self.taxon_set:
+            other_tree = Tree(other_tree, taxon_set=self.taxon_set)
+        return treecalc.false_positives_and_negatives(self, other_tree)
+
+    def robinson_foulds_distance(self, other_tree):
+        """
+        Returns Robinson-Foulds distance between this tree and `other_tree`.
+        """
+        from dendropy import treecalc
+        if other_tree.taxon_set is not self.taxon_set:
+            other_tree = Tree(other_tree, taxon_set=self.taxon_set)
+        return treecalc.robinson_foulds_distance(self, other_tree)
+
+    def euclidean_distance(self, other_tree):
+        """
+        Returns Euclidean_distance distance between this tree and `other_tree`.
+        """
+        from dendropy import treecalc
+        if other_tree.taxon_set is not self.taxon_set:
+            other_tree = Tree(other_tree, taxon_set=self.taxon_set)
+        return treecalc.euclidean_distance(self, other_tree)
+
+    ###########################################################################
     ## Representation
 
     def __str__(self):
@@ -1352,169 +1518,6 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         import sys
         self.write_ascii_plot(sys.stdout, **kwargs)
         sys.stdout.write("\n")
-
-    ###########################################################################
-    ## Metrics -- Internal
-
-    def add_ages_to_nodes(self, attr_name='age', check_prec=0.0000001):
-        """
-        Takes an ultrametric `tree` and adds a attribute named `attr` to
-        each node, with the value equal to the sum of edge lengths from the
-        node to the tips. If the lengths of different paths to the node
-        differ by more than `check_prec`, then a ValueError exception
-        will be raised indicating deviation from ultrametricity. If
-        `check_prec` is negative or False, then this check will be
-        skipped.
-        """
-        for node in self.postorder_node_iter():
-            ch = node.child_nodes()
-            if len(ch) == 0:
-                setattr(node, attr_name, 0.0)
-            else:
-                first_child = ch[0]
-                setattr(node, attr_name, getattr(first_child, attr_name) + first_child.edge.length)
-                if not (check_prec < 0 or check_prec == False):
-                    for nnd in ch[1:]:
-                        ocnd = getattr(nnd, attr_name) + nnd.edge.length
-                        if abs(getattr(node, attr_name) - ocnd) > check_prec:
-                            raise ValueError("Tree is not ultrametric")
-
-    def node_ages(self, check_prec=0.0000001):
-        """
-        Returns list of ages of speciation events / coalescence times on tree.
-        """
-        try:
-            ages = [n.age for n in self.internal_nodes()]
-        except AttributeError:
-            self.add_ages_to_nodes(attr_name='age', check_prec=check_prec)
-            ages = [n.age for n in self.internal_nodes()]
-        ages.sort()
-        return ages
-
-    def length(self):
-        """
-        Returns sum of edge lengths of self. Edges with no lengths defined
-        (None) will be considered to have a length of 0.
-        Note that we do not overrride `__len__` as this requires an integer
-        return value.
-        """
-        total = 0
-        for edge in self.postorder_edge_iter():
-            if edge.length is not None:
-                total += edge.length
-        return total
-
-    def coalescence_intervals(self):
-        """
-        Returns list of coalescence intervals on `tree`., i.e., the waiting
-        times between successive coalescence events.
-        """
-        ages = self.node_ages()
-        intervals = []
-        intervals.append(ages[0])
-        for i, d in enumerate(ages[1:]):
-            intervals.append(d - ages[i])
-        return intervals
-
-    def pybus_harvey_gamma(self, prec=0.00001):
-        """Returns the gamma statistic of Pybus and Harvey (2000). This statistic
-        is used to test for constancy of birth and death rates over the course of
-        a phylogeny.  Under the pure-birth process, the statistic should follow
-        a standard Normal distibution: a Normal(mean=0, variance=1).
-
-        If the lengths of different paths to the node differ by more than `prec`,
-            then a ValueError exception will be raised indicating deviation from
-            ultrametricty.
-        Raises a Value Error if the tree is not ultrametric, is non-binary, or has
-            only 2 leaves.
-
-        As a side effect a `depth` attribute is added to the nodes of the self.
-
-        Pybus and Harvey. 2000. "Testing macro-evolutionary models using incomplete
-        molecular phylogenies." Proc. Royal Society Series B: Biological Sciences.
-        (267). 2267-2272
-        """
-        # the equation is given by:
-        #   T = \sum_{j=2}^n (jg_j)
-        #   C = T \sqrt{\frac{1}{12(n-2)}}
-        #   C gamma = \frac{1}{n-2}\sum_{i=2}^{n-1} (\sum_{k=2}^i kg_k) - \frac{T}{2}
-        # where n is the number of taxa, and g_2 ... g_n is the vector of waiting
-        #   times between consecutive (in time, not along a branch) speciation times.
-        node = None
-        speciation_ages = []
-        n = 0
-        for node in self.postorder_node_iter():
-            if len(node.child_nodes()) == 2:
-                try:
-                    speciation_ages.append(node.age)
-                except AttributeError:
-                    self.add_ages_to_nodes(check_prec=prec)
-                    speciation_ages.append(node.age)
-            else:
-                n += 1
-        if node is None:
-            raise ValueError("Empty tree encountered")
-        speciation_ages.sort(reverse=True)
-        g = []
-        older = speciation_ages[0]
-        for age in speciation_ages[1:]:
-            g.append(older - age)
-            older = age
-        g.append(older)
-        if not g:
-            raise ValueError("No internal nodes found (other than the root)")
-        assert(len(g) == (n - 1))
-        T = 0.0
-        accum = 0.0
-        for i in xrange(2, n):
-            list_index = i - 2
-            T += i * float(g[list_index])
-            accum += T
-        list_index = n - 2
-        T += (n) * g[list_index]
-        nmt = n - 2.0
-        numerator = accum/nmt - T/2.0
-        C = T*pow(1/(12*nmt), 0.5)
-        return numerator/C
-
-    ###########################################################################
-    ## Metrics -- Comparative
-
-    def symmetric_difference(self, other_tree):
-        """
-        Returns the symmetric_distance between this tree and the tree given by
-        `other`, i.e. the sum of splits found in one but not in both trees.
-        """
-        t = self.false_positives_and_negatives(other_tree)
-        return t[0] + t[1]
-
-    def false_positives_and_negatives(self, other_tree):
-        """
-        Returns a tuple pair: all splits found in `other` but in self, and all
-        splits in self not found in other.
-        """
-        from dendropy import treecalc
-        if other_tree.taxon_set is not self.taxon_set:
-            other_tree = Tree(other_tree, taxon_set=self.taxon_set)
-        return treecalc.false_positives_and_negatives(self, other_tree)
-
-    def robinson_foulds_distance(self, other_tree):
-        """
-        Returns Robinson-Foulds distance between this tree and `other_tree`.
-        """
-        from dendropy import treecalc
-        if other_tree.taxon_set is not self.taxon_set:
-            other_tree = Tree(other_tree, taxon_set=self.taxon_set)
-        return treecalc.robinson_foulds_distance(self, other_tree)
-
-    def euclidean_distance(self, other_tree):
-        """
-        Returns Euclidean_distance distance between this tree and `other_tree`.
-        """
-        from dendropy import treecalc
-        if other_tree.taxon_set is not self.taxon_set:
-            other_tree = Tree(other_tree, taxon_set=self.taxon_set)
-        return treecalc.euclidean_distance(self, other_tree)
 
     ###########################################################################
     ## Debugging/Testing
