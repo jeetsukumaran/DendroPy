@@ -463,7 +463,7 @@ class Taxon(base.IdTagged):
 
     def __str__(self):
         "String representation of self = taxon name."
-        return "'%s'" % str(self.label)
+        return "%s" % str(self.label)
 
     def __repr__(self):
         return "<Taxon object at %s: %s>" % (hex(id(self)), str(self))
