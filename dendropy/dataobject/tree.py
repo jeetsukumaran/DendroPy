@@ -471,23 +471,6 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     """
 
     ###########################################################################
-    ## Static methods
-
-    def ancestor(node1, node2):
-        """
-        Returns the most-recent common ancestor node of node1 and
-        node2.
-        """
-        mrca_node = None
-        for node1_anc in Node.ancestor_iter(node1, inclusive=True):
-            for node2_anc in Node.ancestor_iter(node2, inclusive=True):
-                if node1_anc == node2_anc:
-                    return node1_anc
-        return None
-
-    ancestor = staticmethod(ancestor)
-
-    ###########################################################################
     ## Special/Lifecycle methods
 
     def __init__(self, *args, **kwargs):
