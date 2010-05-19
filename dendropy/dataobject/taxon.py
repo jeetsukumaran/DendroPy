@@ -466,7 +466,7 @@ class Taxon(base.IdTagged):
         return "'%s'" % str(self.label)
 
     def __repr__(self):
-        return "<Taxon object at %s>" % (hex(id(self)))
+        return "<Taxon object at %s: %s>" % (hex(id(self)), str(self))
 
     def description(self, depth=1, indent=0, itemize="", output=None, **kwargs):
         """

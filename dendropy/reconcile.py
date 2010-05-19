@@ -80,6 +80,8 @@ class ContainingTree(dataobject.Tree):
         Other Keyword Arguments: Will be passed to Tree().
 
     """
+        if "taxon_set" not in kwargs:
+            kwargs["taxon_set"] = containing_tree.taxon_set
         dataobject.Tree.__init__(self, containing_tree, **kwargs)
         for edge in self.postorder_edge_iter():
             edge.head_embedded_edges = {}
@@ -89,10 +91,10 @@ class ContainingTree(dataobject.Tree):
         self._embedded_taxon_set = embedded_taxon_set
         self._embedded_to_containing_taxon_map = None
         self._embedded_trees = None
-        if embedded_trees:
-            self._set_embedded_to_containing_taxon_map(embedded_to_containing_taxon_map)
-            self._set_embedded_trees(embedded_trees)
+        self._set_embedded_to_containing_taxon_map(embedded_to_containing_taxon_map)
         self.fix_containing_edge_lengths = fix_containing_edge_lengths
+        if embedded_trees:
+            self._set_embedded_trees(embedded_trees)
         if self.embedded_trees:
             self.rebuild(rebuild_taxa=False)
 
@@ -103,6 +105,8 @@ class ContainingTree(dataobject.Tree):
         if self._embedded_taxon_set is None:
             self._embedded_taxon_set = dataobject.TaxonSet()
         return self._embedded_taxon_set
+
+    embedded_taxon_set = property(_get_embedded_taxon_set)
 
     def _set_embedded_to_containing_taxon_map(self, embedded_to_containing_taxon_map):
         """
@@ -123,7 +127,10 @@ class ContainingTree(dataobject.Tree):
                     range_taxon_set=self.taxon_set)
         self.build_edge_taxa_sets()
 
-    embedded_taxon_set = property(_get_embedded_taxon_set)
+    def _get_embedded_to_containing_taxon_map(self):
+        return self._embedded_to_containing_taxon_map
+
+    embedded_to_containing_taxon_map = property(_get_embedded_to_containing_taxon_map)
 
     def _set_embedded_trees(self, trees):
         if hasattr(trees, 'taxon_set'):
@@ -136,14 +143,11 @@ class ContainingTree(dataobject.Tree):
             self._embedded_taxon_set = self._embedded_trees.taxon_set
 
     def _get_embedded_trees(self):
+        if self._embedded_trees is None:
+            self._embedded_trees = dataobject.TreeList(taxon_set=self._embedded_taxon_set)
         return self._embedded_trees
 
     embedded_trees = property(_get_embedded_trees)
-
-    def _get_embedded_to_containing_taxon_map(self):
-        return self._embedded_to_containing_taxon_map
-
-    embedded_to_containing_taxon_map = property(_get_embedded_to_containing_taxon_map)
 
     def _get_containing_to_embedded_taxa_map(self):
         return self._embedded_to_containing_taxon_map.reverse
@@ -201,8 +205,12 @@ class ContainingTree(dataobject.Tree):
         """
         Map edges of embedded tree into containing tree (i.e., self).
         """
+        if self.seed_node.age is None:
+            self.calc_node_ages()
         if embedded_tree not in self.embedded_trees:
             self.embedded_trees.append(embedded_tree)
+        if embedded_tree.seed_node.age is None:
+            embedded_tree.calc_node_ages()
         contained_leaves = embedded_tree.leaf_nodes()
         taxon_to_contained = {}
         for nd in contained_leaves:
@@ -268,7 +276,7 @@ class ContainingTree(dataobject.Tree):
                     dc[tree] = len(edge.tail_embedded_edges[tree]) - 1
         return dc
 
-    def embed_contained_kingman(self, rng=None, pop_size_attr='pop_size'):
+    def embed_contained_kingman(self, rng=None, pop_size_attr='pop_size', label=None):
         """
         Simulates, *embeds*, and returns a "censored" (Kingman) neutral coalescence tree
         conditional on self.
@@ -285,11 +293,13 @@ class ContainingTree(dataobject.Tree):
         Note that all edge-associated taxon sets must be up-to-date (otherwise,
         ``build_edge_taxa_sets()`` should be called).
         """
-        et = self.simulated_contained_kingman(rng=rng, pop_size_attr=pop_size_attr)
+        et = self.simulate_contained_kingman(rng=rng,
+                pop_size_attr=pop_size_attr,
+                label=label)
         self.embed_tree(et)
         return et
 
-    def simulate_contained_kingman(self, rng=None, pop_size_attr='pop_size'):
+    def simulate_contained_kingman(self, rng=None, pop_size_attr='pop_size', label=None):
         """
         Simulates and returns a "censored" (Kingman) neutral coalescence tree
         conditional on self.
@@ -319,7 +329,7 @@ class ContainingTree(dataobject.Tree):
                 gn = dataobject.Node(taxon=gt)
                 embedded_nodes[nd].append(gn)
 
-        # Build the tree structure
+        # Generate the tree structure
         for edge in self.postorder_edge_iter():
             if edge.head_node.parent_node is None:
                 # root: run unconstrained coalescence until just one gene node
@@ -343,12 +353,12 @@ class ContainingTree(dataobject.Tree):
                         period=edge.length,
                         rng=rng)
                 try:
-                    embedded_nodes[edge.head_node].extend(remaining)
+                    embedded_nodes[edge.tail_node].extend(remaining)
                 except KeyError:
-                    embedded_nodes[edge.head_node] = remaining
+                    embedded_nodes[edge.tail_node] = remaining
 
         # Create and return the full tree
-        embedded_tree = dataobject.Tree(taxon_set=self.embedded_taxon_set)
+        embedded_tree = dataobject.Tree(taxon_set=self.embedded_taxon_set, label=label)
         embedded_tree.seed_node = final[0]
         embedded_tree.is_rooted = True
         return embedded_tree
