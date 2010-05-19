@@ -95,7 +95,7 @@ class NexusReader(iosys.DataReader):
             self.dataset = dataobject.DataSet()
         self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream, preserve_underscores=self.preserve_underscores)
         token = self.stream_tokenizer.read_next_token_ucase()
-        if token != "#NEXUS":
+        if token.upper() != "#NEXUS":
             raise self.data_format_error("Expecting '#NEXUS', but found '%s'" % token)
         while not self.stream_tokenizer.eof:
             token = self.stream_tokenizer.read_next_token_ucase()
@@ -206,7 +206,7 @@ class NexusReader(iosys.DataReader):
         "Main file parsing driver."
         finish_node_func = self.finish_node_func
         token = self.stream_tokenizer.read_next_token()
-        if token != "#NEXUS":
+        if token.upper() != "#NEXUS":
             raise self.data_format_error("Expecting '#NEXUS', but found '%s'" % token)
         else:
             while not self.stream_tokenizer.eof:
