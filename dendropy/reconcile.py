@@ -234,7 +234,6 @@ class ContainingTree(dataobject.Tree):
                     try:
                         embedded_edge = embedded_edge.tail_node.edge
                     except AttributeError:
-                        #embedded_edge = None
                         break
                     remaining -= embedded_edge.length
                 if embedded_edge is not None:
@@ -269,6 +268,9 @@ class ContainingTree(dataobject.Tree):
         """
         dc = {}
         for edge in self.postorder_edge_iter():
+            if edge.tail_node is None:
+                # root edge: do not count deep coaelscences here
+                continue
             for tree in self.embedded_trees:
                 try:
                     dc[tree] += len(edge.tail_embedded_edges[tree]) - 1
@@ -394,22 +396,13 @@ class ContainingTree(dataobject.Tree):
         out.write("#NEXUS\n\n")
         nw.write_taxa_block(self.taxon_set, out)
         out.write('\n')
-        if hasattr(self.embedded_trees, 'taxon_set'):
-            nw.write_taxa_block(self.embedded_trees.taxon_set, out)
-            if self.embedded_trees.taxon_set.label:
-                domain_title = self.embedded_trees.taxon_set.label
-            else:
-                domain_title = self.embedded_trees.taxon_set.oid
-            embedded_taxon_set = self.embedded_trees.taxon_set
-            embedded_label = self.embedded_trees.label
+        nw.write_taxa_block(self.embedded_trees.taxon_set, out)
+        if self.embedded_trees.taxon_set.label:
+            domain_title = self.embedded_trees.taxon_set.label
         else:
-            nw.write_taxa_block(self._embedded_to_containing_taxon_map.domain_taxa, out)
-            if self._embedded_to_containing_taxon_map.domain_taxa.label:
-                domain_title = self._embedded_to_containing_taxon_map.domain_taxa.label
-            else:
-                domain_title = self._embedded_to_containing_taxon_map.domain_taxa.oid
-            embedded_taxon_set = self._embedded_to_containing_taxon_map.domain_taxa
-            embedded_label = "EmbeddedTrees"
+            domain_title = self.embedded_trees.taxon_set.oid
+        embedded_taxon_set = self.embedded_trees.taxon_set
+        embedded_label = self.embedded_trees.label
         out.write('\n')
         self._embedded_to_containing_taxon_map.write_mesquite_association_block(out)
         out.write('\n')
