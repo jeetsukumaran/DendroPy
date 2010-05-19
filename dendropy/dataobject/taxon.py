@@ -667,21 +667,21 @@ class TaxonSetMapping(base.IdTagged):
         self.forward = {}
         self.reverse = {}
         if "mapping_func" in kwargs:
-            if "domain_taxa" not in kwargs:
-                raise TypeError("Must specify 'domain_taxa'")
+            if "domain_taxon_set" not in kwargs:
+                raise TypeError("Must specify 'domain_taxon_set'")
             self.apply_mapping_func(kwargs["mapping_func"],
-                    domain_taxa=kwargs["domain_taxa"],
-                    range_taxa=kwargs.get("range_taxa", None))
+                    domain_taxon_set=kwargs["domain_taxon_set"],
+                    range_taxon_set=kwargs.get("range_taxon_set", None))
         elif "mapping_attr_name" in kwargs:
-            if "domain_taxa" not in kwargs:
-                raise TypeError("Must specify 'domain_taxa'")
+            if "domain_taxon_set" not in kwargs:
+                raise TypeError("Must specify 'domain_taxon_set'")
             self.apply_mapping_attr_name(kwargs["mapping_attr_name"],
-                    domain_taxa=kwargs["domain_taxa"],
-                    range_taxa=kwargs.get("range_taxa", None))
+                    domain_taxon_set=kwargs["domain_taxon_set"],
+                    range_taxon_set=kwargs.get("range_taxon_set", None))
         elif "mapping_dict" in kwargs:
             self.apply_mapping_dict(kwargs["mapping_dict"],
-                    domain_taxa=kwargs.get("domain_taxa", None),
-                    range_taxa=kwargs.get("range_taxa", None))
+                    domain_taxon_set=kwargs.get("domain_taxon_set", None),
+                    range_taxon_set=kwargs.get("range_taxon_set", None))
         else:
             raise TypeError("Must specify at least one of: 'mapping_func', 'mapping_attr_name', or 'mapping_dict'")
 
@@ -710,66 +710,66 @@ class TaxonSetMapping(base.IdTagged):
         """
         return self.forward[taxon]
 
-    def _get_domain_taxa(self):
-        return self._domain_taxa
+    def _get_domain_taxon_set(self):
+        return self._domain_taxon_set
 
-    def _set_domain_taxa(self, taxa):
+    def _set_domain_taxon_set(self, taxa):
         if taxa and not isinstance(taxa, TaxonSet):
-            self._domain_taxa = TaxonSet(taxa)
+            self._domain_taxon_set = TaxonSet(taxa)
         else:
-            self._domain_taxa = taxa
+            self._domain_taxon_set = taxa
 
-    domain_taxa = property(_get_domain_taxa, _set_domain_taxa)
+    domain_taxon_set = property(_get_domain_taxon_set, _set_domain_taxon_set)
 
-    def _get_range_taxa(self):
-        return self._range_taxa
+    def _get_range_taxon_set(self):
+        return self._range_taxon_set
 
-    def _set_range_taxa(self, taxa):
+    def _set_range_taxon_set(self, taxa):
         if taxa and not isinstance(taxa, TaxonSet):
-            self._range_taxa = TaxonSet(taxa)
+            self._range_taxon_set = TaxonSet(taxa)
         else:
-            self._range_taxa = taxa
+            self._range_taxon_set = taxa
 
-    range_taxa = property(_get_range_taxa, _set_range_taxa)
+    range_taxon_set = property(_get_range_taxon_set, _set_range_taxon_set)
 
-    def apply_mapping_func(self, mfunc, domain_taxa, range_taxa=None):
+    def apply_mapping_func(self, mfunc, domain_taxon_set, range_taxon_set=None):
         """
         Constructs forward and reverse mapping dictionaries based on ``mfunc``,
-        which should take a ``Taxon`` object in ``domain_taxa`` as an argument
+        which should take a ``Taxon`` object in ``domain_taxon_set`` as an argument
         and return another ``Taxon`` object.
         """
         self.forward = {}
         self.reverse = {}
-        self.domain_taxa = domain_taxa
-        if range_taxa is None:
-            self.range_taxa = TaxonSet()
+        self.domain_taxon_set = domain_taxon_set
+        if range_taxon_set is None:
+            self.range_taxon_set = TaxonSet()
         else:
-            self.range_taxa = range_taxa
-        for dt in self.domain_taxa:
+            self.range_taxon_set = range_taxon_set
+        for dt in self.domain_taxon_set:
             rt = mfunc(dt)
-            if rt not in self.range_taxa:
-                self.range_taxa.add(rt)
+            if rt not in self.range_taxon_set:
+                self.range_taxon_set.add(rt)
             self.forward[dt] = rt
             try:
                 self.reverse[rt].add(dt)
             except KeyError:
                 self.reverse[rt] = set([dt])
 
-    def apply_mapping_attr_name(self, attr_name, domain_taxa, range_taxa=None):
+    def apply_mapping_attr_name(self, attr_name, domain_taxon_set, range_taxon_set=None):
         """
         Constructs mapping based on attribute ``attr_name`` of each
-        ``Taxon`` object in ``domain_taxa``.
+        ``Taxon`` object in ``domain_taxon_set``.
         """
-        return self.apply_mapping_func(lambda x: getattr(x, attr_name), domain_taxa=domain_taxa, range_taxa=range_taxa)
+        return self.apply_mapping_func(lambda x: getattr(x, attr_name), domain_taxon_set=domain_taxon_set, range_taxon_set=range_taxon_set)
 
-    def apply_mapping_dict(self, mdict, domain_taxa=None, range_taxa=None):
+    def apply_mapping_dict(self, mdict, domain_taxon_set=None, range_taxon_set=None):
         """
         Constructs mapping based on dictionary ``mdict``, which should have
         domain taxa as keys and range taxa as values.
         """
-        if domain_taxa is None:
-            domain_taxa = TaxonSet(mdict.keys())
-        return self.apply_mapping_func(lambda x: mdict[x], domain_taxa=domain_taxa, range_taxa=range_taxa)
+        if domain_taxon_set is None:
+            domain_taxon_set = TaxonSet(mdict.keys())
+        return self.apply_mapping_func(lambda x: mdict[x], domain_taxon_set=domain_taxon_set, range_taxon_set=range_taxon_set)
 
     def mesquite_association_rows(self):
         rows = []
@@ -781,7 +781,7 @@ class TaxonSetMapping(base.IdTagged):
             rows.append("        %s / %s" % (x1, x2))
         return ",\n".join(rows)
 
-    def write_mesquite_association_block(self, out, domain_taxa_title=None, range_taxa_title=None):
+    def write_mesquite_association_block(self, out, domain_taxon_set_title=None, range_taxon_set_title=None):
         """
         For debugging purposes ...
         """
@@ -791,19 +791,19 @@ class TaxonSetMapping(base.IdTagged):
         else:
             title = self.oid
         out.write("    TITLE %s;\n"  % textutils.escape_nexus_token(title))
-        if domain_taxa_title is None:
-            if self.domain_taxa.label:
-                domain_taxa_title = self.domain_taxa.label
+        if domain_taxon_set_title is None:
+            if self.domain_taxon_set.label:
+                domain_taxon_set_title = self.domain_taxon_set.label
             else:
-                domain_taxa_title = self.domain_taxa.oid
-        if range_taxa_title is None:
-            if self.range_taxa.label:
-                range_taxa_title = self.range_taxa.label
+                domain_taxon_set_title = self.domain_taxon_set.oid
+        if range_taxon_set_title is None:
+            if self.range_taxon_set.label:
+                range_taxon_set_title = self.range_taxon_set.label
             else:
-                range_taxa_title = self.range_taxa.oid
+                range_taxon_set_title = self.range_taxon_set.oid
         out.write("    TAXA %s, %s;\n" % (
-            textutils.escape_nexus_token(range_taxa_title),
-            textutils.escape_nexus_token(domain_taxa_title)
+            textutils.escape_nexus_token(range_taxon_set_title),
+            textutils.escape_nexus_token(domain_taxon_set_title)
             ))
         out.write("    ASSOCIATES\n")
         out.write(self.mesquite_association_rows() + "\n")

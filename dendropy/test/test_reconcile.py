@@ -41,13 +41,17 @@ class ContainingTreeVerification(object):
         self.gene_trees = dataset.get_tree_list(label="GeneTrees")
         self.species_tree.taxon_set.lock()
         self.gene_taxon_to_population_taxon_map = dendropy.TaxonSetMapping(
-                domain_taxa=self.gene_trees.taxon_set,
-                range_taxa=self.species_tree.taxon_set,
+                domain_taxon_set=self.gene_trees.taxon_set,
+                range_taxon_set=self.species_tree.taxon_set,
                 mapping_func=lambda t: self.species_tree.taxon_set.require_taxon(label=t.label[0].upper()))
 
     def write_mesquite(self, output_dir='.'):
         for idx, gt in enumerate(self.gene_trees):
-            ct = reconcile.ContainingTree(self.species_tree, [gt], self.gene_taxon_to_population_taxon_map)
+            ct = reconcile.ContainingTree(self.species_tree,
+                   self.gene_trees.taxon_set,
+                   self.gene_taxon_to_population_taxon_map,
+                   [gt])
+
             out_fname = os.path.join(output_dir, "mesquite_gt%02d_dc%d.nex" %(idx, ct.num_deep_coalescences()))
             out = open(out_fname, "w")
             ct.write_as_mesquite(out)
@@ -60,13 +64,16 @@ class ContainingTreeTest(unittest.TestCase):
         self.gene_trees = dataset.get_tree_list(label="GeneTrees")
         self.species_tree.taxon_set.lock()
         self.gene_taxon_to_population_taxon_map = dendropy.TaxonSetMapping(
-                domain_taxa=self.gene_trees.taxon_set,
-                range_taxa=self.species_tree.taxon_set,
+                domain_taxon_set=self.gene_trees.taxon_set,
+                range_taxon_set=self.species_tree.taxon_set,
                 mapping_func=lambda t: self.species_tree.taxon_set.require_taxon(label=t.label[0].upper()))
 
     def testDummy(self):
         for idx, gt in enumerate(self.gene_trees):
-            ct = reconcile.ContainingTree(self.species_tree, [gt], self.gene_taxon_to_population_taxon_map)
+            ct = reconcile.ContainingTree(containing_tree=self.species_tree,
+                    embedded_taxon_set=self.gene_trees.taxon_set,
+                    embedded_to_containing_taxon_map=self.gene_taxon_to_population_taxon_map,
+                    embedded_trees=[gt])
             print ct.num_deep_coalescences()
 
 class DeepCoalTest(unittest.TestCase):

@@ -26,6 +26,7 @@ contained/containing etc.
 """
 
 from dendropy import dataobject
+from dendropy import treesim
 
 class ContainingTree(dataobject.Tree):
     """
@@ -37,47 +38,69 @@ class ContainingTree(dataobject.Tree):
 
     def __init__(self,
             containing_tree,
-            embedded_trees,
+            embedded_taxon_set,
             embedded_to_containing_taxon_map,
+            embedded_trees=None,
             fix_containing_edge_lengths=False,
             **kwargs):
         """
         Converts and returns ``tree`` to ContainingTree class, embedding the trees
         given in the list, ``embedded_trees.``
 
+
+        Mandatory Arguments:
+
             ``containing_tree``
                 A ``Tree`` or ``Tree``-like object that describes the topological
                 constraints or conditions of the containing tree (e.g., species,
                 host, or biogeographical area trees).
+
+            ``embedded_taxon_set``
+                A ``TaxonSet`` object that will be used to manage the taxa of
+                the embedded trees.
+
+            ``embedded_to_containing_taxon_map``
+                A ``TaxonSetMapping`` object mapping ``Taxon`` objects in the
+                embedded ``TaxonSet`` to corresponding ``Taxon`` objects in the
+                containing tree.
+
+        Optional Arguments:
 
             ``embedded_trees``
                 An iterable container of ``Tree`` or ``Tree``-like objects that
                 will be embedded into ``containing_tree``; e.g. gene or
                 parasite trees.
 
-            ``embedded_to_containing_taxon_map``
-                A ``TaxonSetMapping`` object mapping ``Taxon`` objects in the
-                embedded trees to corresponding ``Taxon`` objects in the
-                containing tree.
-
             ``fix_containing_edge_lengths``
                 If ``False`` [default], then the branch lengths of
                 ``containing_tree`` will be adjusted to fit the embedded tree
                 as they are added. Otherwise, the containing tree edge lengths
-                will not be changedV.
+                will not be changed.
+
+        Other Keyword Arguments: Will be passed to Tree().
+
     """
         dataobject.Tree.__init__(self, containing_tree, **kwargs)
-        #self.is_rooted = True
-        self.embedded_trees = []
-        self._embedded_to_containing_taxon_map = None
-        self.set_embedded_to_containing_taxon_map(embedded_to_containing_taxon_map)
-        self.fix_containing_edge_lengths = fix_containing_edge_lengths
         self.clear_embedded_edges()
+        self._embedded_taxon_set = embedded_taxon_set
+        self._embedded_to_containing_taxon_map = None
+        self._embedded_trees = None
         if embedded_trees:
-            self.embedded_trees.extend(embedded_trees)
+            self._set_embedded_to_containing_taxon_map(embedded_to_containing_taxon_map)
+            self._set_embedded_trees(embedded_trees)
+        self.fix_containing_edge_lengths = fix_containing_edge_lengths
+        if self.embedded_trees:
             self.rebuild()
 
-    def set_embedded_to_containing_taxon_map(self, embedded_to_containing_taxon_map):
+    def _set_embedded_taxon_set(self, taxon_set):
+        self._embedded_taxon_set = taxon_set
+
+    def _get_embedded_taxon_set(self):
+        if self._embedded_taxon_set is None:
+            self._embedded_taxon_set = dataobject.TaxonSet()
+        return self._embedded_taxon_set
+
+    def _set_embedded_to_containing_taxon_map(self, embedded_to_containing_taxon_map):
         """
         Sets mapping of ``Taxon`` objects of the genes/parasite/etc. to that of
         the population/species/host/etc.
@@ -86,9 +109,14 @@ class ContainingTree(dataobject.Tree):
         ``Taxon`` objects that map to them.
         """
         if isinstance(embedded_to_containing_taxon_map, dataobject.TaxonSetMapping):
+            if self._embedded_taxon_set is not embedded_to_containing_taxon_map.domain_taxon_set:
+                raise ValueError("Domain TaxonSet of TaxonSetMapping ('domain_taxon_set') not the same as 'embedded_taxon_set' TaxonSet")
             self._embedded_to_containing_taxon_map = embedded_to_containing_taxon_map
         else:
-            self._embedded_to_containing_taxon_map = dataobject.TaxonSetMapping(mapping_dict=embedded_to_containing_taxon_map, range_taxa=self.taxon_set)
+            self._embedded_to_containing_taxon_map = dataobject.TaxonSetMapping(
+                    mapping_dict=embedded_to_containing_taxon_map,
+                    domain_taxon_set=self.embedded_taxon_set,
+                    range_taxon_set=self.taxon_set)
         for edge in self.postorder_edge_iter():
             if edge.is_terminal():
                 edge.containing_taxa = set([edge.head_node.taxon])
@@ -100,19 +128,35 @@ class ContainingTree(dataobject.Tree):
             for t in edge.containing_taxa:
                 edge.embedded_taxa.update(self.containing_to_embedded_taxa_map[t])
 
-    def get_embedded_to_containing_taxon_map(self):
+    embedded_taxon_set = property(_get_embedded_taxon_set)
+
+    def _set_embedded_trees(self, trees):
+        if hasattr(trees, 'taxon_set'):
+            if self._embedded_taxon_set is None:
+                self._embedded_taxon_set = trees.taxon_set
+            elif self._embedded_taxon_set is not trees.taxon_set:
+                raise ValueError("'embedded_taxon_set' of ContainingTree is not the same TaxonSet object of 'embedded_trees'")
+        self._embedded_trees = dataobject.TreeList(trees, taxon_set=self._embedded_taxon_set)
+        if self._embedded_taxon_set is None:
+            self._embedded_taxon_set = self._embedded_trees.taxon_set
+
+    def _get_embedded_trees(self):
+        return self._embedded_trees
+
+    embedded_trees = property(_get_embedded_trees)
+
+    def _get_embedded_to_containing_taxon_map(self):
         return self._embedded_to_containing_taxon_map
 
-    embedded_to_containing_taxon_map = property(get_embedded_to_containing_taxon_map)
+    embedded_to_containing_taxon_map = property(_get_embedded_to_containing_taxon_map)
 
-    def get_containing_to_embedded_taxa_map(self):
+    def _get_containing_to_embedded_taxa_map(self):
         return self._embedded_to_containing_taxon_map.reverse
 
-    containing_to_embedded_taxa_map = property(get_containing_to_embedded_taxa_map)
+    containing_to_embedded_taxa_map = property(_get_containing_to_embedded_taxa_map)
 
     def clear(self):
-        self.embedded_trees = []
-        self.clear_embedded_edges()
+        self.embedded_trees = dataobject.TreeList(taxon_set=self._embedded_to_containing_taxon_map.domain_taxa)
 
     def clear_embedded_edges(self):
         for edge in self.postorder_edge_iter():
@@ -208,6 +252,25 @@ class ContainingTree(dataobject.Tree):
                 except KeyError:
                     dc[tree] = len(edge.tail_embedded_edges[tree]) - 1
         return dc
+
+    def simulate_kingman(self, rng=None, pop_size_attr='pop_size'):
+        """
+        Simulates and returns a "censored" (Kingman) neutral coalescence tree
+        conditional on self.
+
+            ``rng``
+                Random number generator to use.
+
+            ``pop_size_attr``
+                Name of attribute of self's edges that specify the population
+                size. If this attribute does not exist, then the population
+                size is taken to be 1.
+        """
+
+        treesim.constrained_kingman(self,
+                rng=rng,
+                pop_size_attr=pop_size_attr,
+                decorate_original_tree=False)
 
     def _find_youngest_intergroup_age(self, embedded_tree, disjunct_leaf_set_list_split_bitmasks, starting_min_age=None):
         """
