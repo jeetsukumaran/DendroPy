@@ -211,11 +211,11 @@ class TaxonSetMappingTest(datatest.DataObjectVerificationTestCase):
             self.assertEqual(set([i.label for i in tsm.reverse[t]]), self.expected_backward_label_map[t.label])
 
     def testFromFunc(self):
-        tsm = dendropy.TaxonSetMapping(mapping_func=self.mapping_func, domain_taxa=self.domain_taxa)
+        tsm = dendropy.TaxonSetMapping(mapping_func=self.mapping_func, domain_taxon_set=self.domain_taxa)
         self.verifyMapping(tsm)
 
     def testFromAttr(self):
-        tsm = dendropy.TaxonSetMapping(mapping_attr_name='containing_taxa', domain_taxa=self.domain_taxa)
+        tsm = dendropy.TaxonSetMapping(mapping_attr_name='containing_taxa', domain_taxon_set=self.domain_taxa)
         self.verifyMapping(tsm)
 
     def testFromDict(self):
