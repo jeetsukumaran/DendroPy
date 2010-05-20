@@ -1470,7 +1470,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             ``plot_metric``
                 A string which specifies how branches should be scaled, one of:
                 'age' (distance from tips), 'depth' (distance from root),
-                'level' (number of branches from root) or 'height' (edge
+                'level' (number of branches from root) or 'length' (edge
                 length/weights).
             ``show_internal_node_labels``
                 Boolean: whether or not to write out internal node labels.
@@ -1492,7 +1492,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             ``plot_metric``
                 A string which specifies how branches should be scaled, one of:
                 'age' (distance from tips), 'depth' (distance from root),
-                'level' (number of branches from root) or 'height' (edge
+                'level' (number of branches from root) or 'length' (edge
                 length/weights).
             ``show_internal_node_labels``
                 Boolean: whether or not to write out internal node labels.
@@ -1513,7 +1513,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             ``plot_metric``
                 A string which specifies how branches should be scaled, one of:
                 'age' (distance from tips), 'depth' (distance from root),
-                'level' (number of branches from root) or 'height' (edge
+                'level' (number of branches from root) or 'length' (edge
                 length/weights).
             ``show_internal_node_labels``
                 Boolean: whether or not to write out internal node labels.
@@ -2476,7 +2476,7 @@ class AsciiTreePlot(object):
             ``plot_metric``
                 A string which specifies how branches should be scaled, one of:
                 'age' (distance from tips), 'depth' (distance from root),
-                'level' (number of branches from root) or 'height' (edge
+                'level' (number of branches from root) or 'length' (edge
                 length/weights).
             ``show_internal_node_labels``
                 Boolean: whether or not to write out internal node labels.
@@ -2514,14 +2514,14 @@ class AsciiTreePlot(object):
 
             for nd in tree.postorder_node_iter():
                 cnds = nd.child_nodes()
-                if self.plot_metric == 'depth': # 'number of branchings from root'
+                if self.plot_metric == 'depth': # 'number of branchings from tip'
                     if len(cnds) == 0:
                         curr_node_offset = 0.0
                     else:
                         depths = [self.node_offset[v] for v in cnds]
                         curr_node_offset = max(depths) + 1
 #                        print curr_node_offset, [self.node_offset[v] for v in cnds]
-                else: # 'age': 'sum of edge weights from root'
+                elif self.plot_metric == 'age': # 'sum of edge weights from tip'
                     # note: no enforcement of ultrametricity!
                     if len(cnds) == 0:
                         curr_node_offset = 0.0
@@ -2532,6 +2532,8 @@ class AsciiTreePlot(object):
 #                            curr_node_offset = self.node_offset[cnds[0]]
 #                        else:
 #                            curr_node_offset = max(elens) + self.node_offset[cnds[0]]
+                else:
+                    raise ValueError("Unrecognized plot metric '%s' (must be one of: 'age', 'depth', 'level', or 'length')" % self.plot_metric)
                 self.node_offset[nd] = curr_node_offset
             flipped_origin = max(self.node_offset.values())
             for nd in self.node_offset:
@@ -2540,11 +2542,13 @@ class AsciiTreePlot(object):
             for nd in tree.preorder_node_iter():
                 if self.plot_metric == 'level': # 'number of branchings from root'
                     curr_edge_len = 1
-                else: # 'height': 'sum of edge weights from root'
+                elif self.plot_metric == 'length': # 'sum of edge weights from root'
                     if nd.edge.length is not None:
                         curr_edge_len = nd.edge.length
                     else:
                         curr_edge_len = 0
+                else:
+                    raise ValueError("Unrecognized plot metric '%s' (must be one of: 'age', 'depth', 'level', or 'length')" % self.plot_metric)
                 if nd.parent_node is None:
                     self.node_offset[nd] = curr_edge_len
                 else:
