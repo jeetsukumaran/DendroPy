@@ -245,7 +245,7 @@ class ContainingTree(dataobject.Tree):
             else:
                 containing_edge.head_embedded_edges[embedded_tree] = set()
                 for nd in containing_edge.head_node.child_nodes():
-                    containing_edge.head_embedded_edges[embedded_tree].update(nd.edge.head_embedded_edges[embedded_tree])
+                    containing_edge.head_embedded_edges[embedded_tree].update(nd.edge.tail_embedded_edges[embedded_tree])
             if containing_edge.tail_node is None:
                 containing_edge.tail_embedded_edges[embedded_tree] = containing_edge.head_embedded_edges[embedded_tree]
                 continue
@@ -253,10 +253,7 @@ class ContainingTree(dataobject.Tree):
             for embedded_edge in containing_edge.head_embedded_edges[embedded_tree]:
                 remaining = containing_edge.tail_node.age - embedded_edge.tail_node.age
                 while remaining > 0:
-                    try:
-                        embedded_edge = embedded_edge.tail_node.edge
-                    except AttributeError:
-                        break
+                    embedded_edge = embedded_edge.tail_node.edge
                     remaining -= embedded_edge.length
                 if embedded_edge is not None:
                     containing_edge.tail_embedded_edges[embedded_tree].add(embedded_edge)
@@ -289,11 +286,11 @@ class ContainingTree(dataobject.Tree):
         deep coalescences corresponding to the tree are values.
         """
         dc = {}
-        for edge in self.postorder_edge_iter():
-            if edge.tail_node is None:
-                # root edge: do not count deep coaelscences here
-                continue
-            for tree in self.embedded_trees:
+        for tree in self.embedded_trees:
+            for edge in self.postorder_edge_iter():
+                if edge.tail_node is None:
+                    # root edge: do not count deep coaelscences here
+                    continue
                 try:
                     dc[tree] += len(edge.tail_embedded_edges[tree]) - 1
                 except KeyError:

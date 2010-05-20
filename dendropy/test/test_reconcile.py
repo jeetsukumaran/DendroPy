@@ -58,7 +58,7 @@ class ContainingTreeDeepCoalescenceSmall(unittest.TestCase):
             results.append(ct.num_deep_coalescences())
         self.assertEqual(results, self.expected_under_original_brlens)
 
-    def testFittedEdgesDeepCoalCount(self):
+    def xtestFittedEdgesDeepCoalCount(self):
         for idx, gt in enumerate(self.gene_trees):
             ct = reconcile.ContainingTree(containing_tree=self.species_tree,
                     embedded_taxon_set=self.gene_trees.taxon_set,
