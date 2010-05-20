@@ -42,6 +42,7 @@ class ContainingTree(dataobject.Tree):
             embedded_to_containing_taxon_map,
             embedded_trees=None,
             fit_containing_edge_lengths=True,
+            ultrametricity_check_prec=False,
             **kwargs):
         """
         Converts and returns ``tree`` to ContainingTree class, embedding the trees
@@ -77,6 +78,11 @@ class ContainingTree(dataobject.Tree):
                 as they are added. Otherwise, the containing tree edge lengths
                 will not be changed.
 
+            ``ultrametricity_check_prec``
+                If ``False`` [default], then trees will not be checked for
+                ultrametricity. Otherwise this is the threshold within which
+                all node to tip distances for sister nodes must be equal.
+
         Other Keyword Arguments: Will be passed to Tree().
 
     """
@@ -93,6 +99,7 @@ class ContainingTree(dataobject.Tree):
         self._embedded_trees = None
         self._set_embedded_to_containing_taxon_map(embedded_to_containing_taxon_map)
         self.fit_containing_edge_lengths = fit_containing_edge_lengths
+        self.ultrametricity_check_prec = ultrametricity_check_prec
         if embedded_trees:
             self._set_embedded_trees(embedded_trees)
         if self.embedded_trees:
@@ -209,11 +216,11 @@ class ContainingTree(dataobject.Tree):
         Map edges of embedded tree into containing tree (i.e., self).
         """
         if self.seed_node.age is None:
-            self.calc_node_ages()
+            self.calc_node_ages(check_prec=self.ultrametricity_check_prec)
         if embedded_tree not in self.embedded_trees:
             self.embedded_trees.append(embedded_tree)
         if embedded_tree.seed_node.age is None:
-            embedded_tree.calc_node_ages()
+            embedded_tree.calc_node_ages(check_prec=self.ultrametricity_check_prec)
         contained_leaves = embedded_tree.leaf_nodes()
         taxon_to_contained = {}
         for nd in contained_leaves:
@@ -375,7 +382,7 @@ class ContainingTree(dataobject.Tree):
         if starting_min_age is None:
             starting_min_age = float('inf')
         if embedded_tree.seed_node.age is None:
-            embedded_tree.calc_node_ages(check_prec=False)
+            embedded_tree.calc_node_ages(check_prec=self.ultrametricity_check_prec)
         if not hasattr(embedded_tree, 'split_edges'):
             embedded_tree.update_splits()
         for nd in embedded_tree.age_order_node_iter(include_leaves=False):
