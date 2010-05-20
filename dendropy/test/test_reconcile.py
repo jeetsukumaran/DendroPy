@@ -47,6 +47,7 @@ class ContainingTreeDeepCoalescenceSmall(unittest.TestCase):
         self.expected_under_original_brlens = [4, 6, 4, 2, 4, 3, 3, 4, 5, 4]
 
     def testFixedEdgesDeepCoalCount(self):
+        results = []
         for idx, gt in enumerate(self.gene_trees):
             ct = reconcile.ContainingTree(containing_tree=self.species_tree,
                     embedded_taxon_set=self.gene_trees.taxon_set,
@@ -54,7 +55,8 @@ class ContainingTreeDeepCoalescenceSmall(unittest.TestCase):
                     embedded_trees=[gt],
                     fit_containing_edge_lengths=False,
                     )
-            self.assertEqual(ct.num_deep_coalescences(), self.expected_under_original_brlens[idx])
+            results.append(ct.num_deep_coalescences())
+        self.assertEqual(results, self.expected_under_original_brlens)
 
     def testFittedEdgesDeepCoalCount(self):
         for idx, gt in enumerate(self.gene_trees):
@@ -66,6 +68,8 @@ class ContainingTreeDeepCoalescenceSmall(unittest.TestCase):
                     )
             dc = ct.num_deep_coalescences()
             print dc
+            #print "###", idx+1, "###"
+            #print ct.as_ascii_plot(plot_metric="height")
             #o = open('/Users/jeet/Documents/Sandbox/deepcoal/set2/t%02d.nex' % (idx+1), "w")
             #ct.write_as_mesquite(o)
 
