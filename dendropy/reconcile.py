@@ -27,6 +27,7 @@ contained/containing etc.
 
 from dendropy import dataobject
 from dendropy import coalescent
+from dendropy import treemanip
 
 class ContainingTree(dataobject.Tree):
     """
@@ -42,6 +43,7 @@ class ContainingTree(dataobject.Tree):
             embedded_to_containing_taxon_map,
             embedded_trees=None,
             fit_containing_edge_lengths=True,
+            collapse_empty_edges=True,
             ultrametricity_check_prec=False,
             **kwargs):
         """
@@ -78,6 +80,10 @@ class ContainingTree(dataobject.Tree):
                 as they are added. Otherwise, the containing tree edge lengths
                 will not be changed.
 
+            ``collapse_empty_edges``
+                If ``True`` [default], after edge lengths are adjusted,
+                zero-length branches will be collapsed.
+
             ``ultrametricity_check_prec``
                 If ``False`` [default], then trees will not be checked for
                 ultrametricity. Otherwise this is the threshold within which
@@ -89,6 +95,7 @@ class ContainingTree(dataobject.Tree):
         if "taxon_set" not in kwargs:
             kwargs["taxon_set"] = containing_tree.taxon_set
         dataobject.Tree.__init__(self, containing_tree, **kwargs)
+        self.original_tree = containing_tree
         for edge in self.postorder_edge_iter():
             edge.head_embedded_edges = {}
             edge.tail_embedded_edges = {}
@@ -99,6 +106,7 @@ class ContainingTree(dataobject.Tree):
         self._embedded_trees = None
         self._set_embedded_to_containing_taxon_map(embedded_to_containing_taxon_map)
         self.fit_containing_edge_lengths = fit_containing_edge_lengths
+        self.collapse_empty_edges = collapse_empty_edges
         self.ultrametricity_check_prec = ultrametricity_check_prec
         if embedded_trees:
             self._set_embedded_trees(embedded_trees)
@@ -197,6 +205,10 @@ class ContainingTree(dataobject.Tree):
 
         # set the corresponding edge lengths
         self.set_edge_lengths_from_node_ages()
+
+        # collapse 0-length branches
+        if self.collapse_empty_edges:
+           self.collapse_unweighted_edges()
 
     def rebuild(self, rebuild_taxa=True):
         """

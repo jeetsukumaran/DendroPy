@@ -1132,6 +1132,15 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                     assert nd is self.seed_node
                     self.seed_node = children[0]
 
+    def collapse_unweighted_edges(self, threshold=0.0000001):
+        """
+        Collapse all edges with edge lengths less than or equal to
+        ``threshold``.
+        """
+        for e in self.postorder_edge_iter():
+            if e.length <= threshold:
+               e.collapse()
+
     def update_splits(self, **kwargs):
         """
         (Re-)decorates edges with split bitmasks.

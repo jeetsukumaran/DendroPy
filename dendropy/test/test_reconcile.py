@@ -69,7 +69,7 @@ class ContainingTreeDeepCoalescenceSmall(unittest.TestCase):
             dc = ct.num_deep_coalescences()
             print dc
             #print "###", idx+1, "###"
-            #print ct.as_ascii_plot(plot_metric="height")
+            #print ct.as_ascii_plot(plot_metric="length")
             #o = open('/Users/jeet/Documents/Sandbox/deepcoal/set2/t%02d.nex' % (idx+1), "w")
             #ct.write_as_mesquite(o)
 
