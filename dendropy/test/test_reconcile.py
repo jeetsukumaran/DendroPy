@@ -55,10 +55,13 @@ class ContainingTreeDeepCoalescenceSmall(unittest.TestCase):
                     embedded_trees=[gt],
                     fit_containing_edge_lengths=False,
                     )
-            results.append(ct.num_deep_coalescences())
+            dc = ct.num_deep_coalescences()
+            results.append(dc)
+            mesqf = pathmap.named_output_stream("ContainingTreeDeepCoalescence_Small_FixedEdges_t%02d_dc%02d.nex" % (idx+1, dc), False)
+            ct.write_as_mesquite(mesqf)
         self.assertEqual(results, self.expected_under_original_brlens)
 
-    def xtestFittedEdgesDeepCoalCount(self):
+    def testFittedEdgesDeepCoalCount(self):
         for idx, gt in enumerate(self.gene_trees):
             ct = reconcile.ContainingTree(containing_tree=self.species_tree,
                     embedded_taxon_set=self.gene_trees.taxon_set,
@@ -67,11 +70,8 @@ class ContainingTreeDeepCoalescenceSmall(unittest.TestCase):
                     fit_containing_edge_lengths=True,
                     )
             dc = ct.num_deep_coalescences()
-            print dc
-            #print "###", idx+1, "###"
-            #print ct.as_ascii_plot(plot_metric="length")
-            #o = open('/Users/jeet/Documents/Sandbox/deepcoal/set2/t%02d.nex' % (idx+1), "w")
-            #ct.write_as_mesquite(o)
+            mesqf = pathmap.named_output_stream("ContainingTreeDeepCoalescence_Small_FittedEdges_t%02d_dc%02d.nex" % (idx+1, dc), False)
+            ct.write_as_mesquite(mesqf)
 
 class DeepCoalTest(unittest.TestCase):
 

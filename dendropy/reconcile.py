@@ -45,6 +45,7 @@ class ContainingTree(dataobject.Tree):
             fit_containing_edge_lengths=True,
             collapse_empty_edges=True,
             ultrametricity_check_prec=False,
+            ignore_root_deep_coalescences=True,
             **kwargs):
         """
         Converts and returns ``tree`` to ContainingTree class, embedding the trees
@@ -89,6 +90,10 @@ class ContainingTree(dataobject.Tree):
                 ultrametricity. Otherwise this is the threshold within which
                 all node to tip distances for sister nodes must be equal.
 
+            ``ignore_root_deep_coalescences``
+                If ``True`` [default], then deep coalescences in the root will
+                not be counted.
+
         Other Keyword Arguments: Will be passed to Tree().
 
     """
@@ -108,6 +113,7 @@ class ContainingTree(dataobject.Tree):
         self.fit_containing_edge_lengths = fit_containing_edge_lengths
         self.collapse_empty_edges = collapse_empty_edges
         self.ultrametricity_check_prec = ultrametricity_check_prec
+        self.ignore_root_deep_coalescences = ignore_root_deep_coalescences
         if embedded_trees:
             self._set_embedded_trees(embedded_trees)
         if self.embedded_trees:
@@ -246,15 +252,38 @@ class ContainingTree(dataobject.Tree):
                 containing_edge.head_embedded_edges[embedded_tree] = set()
                 for nd in containing_edge.head_node.child_nodes():
                     containing_edge.head_embedded_edges[embedded_tree].update(nd.edge.tail_embedded_edges[embedded_tree])
+
             if containing_edge.tail_node is None:
-                containing_edge.tail_embedded_edges[embedded_tree] = containing_edge.head_embedded_edges[embedded_tree]
-                continue
+                if containing_edge.length is not None:
+                    target_age =  containing_edge.head_node.age + containing_edge.length
+                else:
+                    # assume all coalesce?
+                    containing_edge.tail_embedded_edges[embedded_tree] = set(embedded_tree.seed_node.edge)
+                    continue
+            else:
+                target_age = containing_edge.tail_node.age
+
             containing_edge.tail_embedded_edges[embedded_tree] = set()
             for embedded_edge in containing_edge.head_embedded_edges[embedded_tree]:
-                remaining = containing_edge.tail_node.age - embedded_edge.tail_node.age
+                if embedded_edge.tail_node is not None:
+                    remaining = target_age - embedded_edge.tail_node.age
+                elif embedded_edge.length is not None:
+                    remaining = target_age - (embedded_edge.head_node.age + embedded_age.length)
+                else:
+                    continue
                 while remaining > 0:
-                    embedded_edge = embedded_edge.tail_node.edge
-                    remaining -= embedded_edge.length
+                    if embedded_edge.tail_node is not None:
+                        embedded_edge = embedded_edge.tail_node.edge
+                    else:
+                        if embedded_edge.length is not None and (remaining - embedded_edge.length) <= 0:
+                            embedded_edge = None
+                            remaining = 0
+                            break
+                        else:
+                            remaining = 0
+                            break
+                    if embedded_edge and remaining > 0:
+                        remaining -= embedded_edge.length
                 if embedded_edge is not None:
                     containing_edge.tail_embedded_edges[embedded_tree].add(embedded_edge)
 
@@ -288,8 +317,7 @@ class ContainingTree(dataobject.Tree):
         dc = {}
         for tree in self.embedded_trees:
             for edge in self.postorder_edge_iter():
-                if edge.tail_node is None:
-                    # root edge: do not count deep coaelscences here
+                if edge.tail_node is None and self.ignore_root_deep_coalescences:
                     continue
                 try:
                     dc[tree] += len(edge.tail_embedded_edges[tree]) - 1
