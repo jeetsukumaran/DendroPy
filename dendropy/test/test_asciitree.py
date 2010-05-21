@@ -44,8 +44,8 @@ class TreePHGammTest(unittest.TestCase):
     def test_plot_by_age(self):
         _LOG.debug(self.tree.as_ascii_plot(plot_metric='age'))
 
-    def test_plot_by_height(self):
-        _LOG.debug(self.tree.as_ascii_plot(plot_metric='height'))
+    def test_plot_by_length(self):
+        _LOG.debug(self.tree.as_ascii_plot(plot_metric='length'))
 
 if __name__ == "__main__":
     unittest.main()

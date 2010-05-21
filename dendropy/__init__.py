@@ -37,6 +37,20 @@ from dendropy.dataobject.dataset import *
 
 from dendropy.dataio import get_reader, get_writer, tree_source_iter, multi_tree_source_iter
 
+from dendropy import coalescent
+from dendropy import continuous
+from dendropy import treecalc
+from dendropy import popgensim
+from dendropy import popgenstat
+from dendropy import reconcile
+from dendropy import seqmodel
+from dendropy import seqsim
+from dendropy import treecalc
+from dendropy import treemanip
+from dendropy import treesim
+from dendropy import treesplit
+from dendropy import treesum
+
 ###############################################################################
 ## PACKAGE METADATA
 
