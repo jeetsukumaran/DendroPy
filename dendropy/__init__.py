@@ -28,6 +28,11 @@ classes and methods for instantiating objects in the
 
 import sys
 import os
+
+###############################################################################
+## Populate the 'dendropy' namespace
+
+from dendropy.utility import messaging
 from dendropy.utility import vcsinfo
 from dendropy.dataobject.base import *
 from dendropy.dataobject.taxon import *
@@ -37,6 +42,7 @@ from dendropy.dataobject.dataset import *
 
 from dendropy.dataio import get_reader, get_writer, tree_source_iter, multi_tree_source_iter
 
+from dendropy.utility import probability
 from dendropy import coalescent
 from dendropy import continuous
 from dendropy import treecalc
