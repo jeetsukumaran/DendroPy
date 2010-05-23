@@ -1141,6 +1141,28 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if e.length <= threshold:
                e.collapse()
 
+    def resolve_polytomies(self):
+        """
+        Arbitrarily resolve polytomies using 0-length splits.
+        """
+        polytomies = []
+        for node in self.postorder_node_iter():
+            if len(node.child_nodes()) > 2:
+                polytomies.append(node)
+        for node in polytomies:
+            children = node.child_nodes()
+            while len(children) > 2:
+                nn1 = Node()
+                nn1.edge.length = 0
+                c1 = children[0]
+                c2 = children[1]
+                node.remove_child(c1)
+                node.remove_child(c2)
+                nn1.add_child(c1)
+                nn1.add_child(c2)
+                node.add_child(nn1)
+                children = node.child_nodes()
+
     def update_splits(self, **kwargs):
         """
         (Re-)decorates edges with split bitmasks.
