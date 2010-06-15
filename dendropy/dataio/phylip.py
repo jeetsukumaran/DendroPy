@@ -244,7 +244,13 @@ class PhylipWriter(iosys.DataWriter):
     "Implements the DataWriter interface for writing PHYLIP files."
 
     def __init__(self, **kwargs):
-        "Calls the base class constructor."
+        """
+        __init__ recognizes the following keywords (in addition to those of `DataWriter.__init__`):
+        
+            - `strict` (boolean)
+            - `spaces_to_underscores` (boolean)
+            - `force_unique_taxon_labels` (boolean)
+        """
         iosys.DataWriter.__init__(self, **kwargs)
         self.strict = kwargs.get("strict", False)
         self.spaces_to_underscores = kwargs.get("spaces_to_underscores", False)
@@ -316,3 +322,4 @@ class PhylipWriter(iosys.DataWriter):
         for taxon in char_matrix.taxon_set:
             label = taxon_label_map[taxon]
             stream.write("%s        %s\n" % ( label.ljust(maxlen), str(char_matrix[taxon].symbols_as_string()).replace(' ', '')))
+

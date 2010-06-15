@@ -195,8 +195,7 @@ class NexmlReader(iosys.DataReader):
 
     def __init__(self, **kwargs):
         """
-        `dendropy.Tree ` is a DendroPy TreeFactory class or derived
-        object.
+        See `iosys.IOService.__init__` and `iosys.DataReader.__init__` for kwargs.
         """
         iosys.DataReader.__init__(self, **kwargs)
         self.load_time = None
@@ -228,7 +227,7 @@ class NexmlReader(iosys.DataReader):
         taxon_set_elements = [i for i in xml_doc.getiterator('otus')]
         if len(taxon_set_elements) > 1:
             if self.dataset is None:
-                self.dataset = dendropy.DataSet(multi_taxon_set=True)
+                self.dataset = dendropy.DataSet()
             else:
                 if self.dataset.attached_taxon_set is not None:
                     raise TypeError('Multiple taxon sets in data source, but DataSet object is in attached (single) taxon set mode')
@@ -296,7 +295,6 @@ class _NexmlElementParser(object):
     "Base parser class: wraps around annotations/dictionary element handling."
 
     def __init__(self):
-        "Right now, does nothing ..."
         pass
 
     def parse_annotations(self, annotated, nxelement):
@@ -552,7 +550,6 @@ class _NexmlTaxaParser(_NexmlElementParser):
     "Parses an XmlElement representation of NEXML taxa blocks."
 
     def __init__(self):
-        "Does nothing too useful right now."
         super(_NexmlTaxaParser, self).__init__()
 
     def set_taxon_set_from_xml(self, nxtaxa, taxon_set=None):
@@ -583,7 +580,6 @@ class _NexmlCharBlockParser(_NexmlElementParser):
     "Parses an XmlElement representation of NEXML taxa blocks."
 
     def __init__(self):
-        "Does nothing too useful right now."
         super(_NexmlCharBlockParser, self).__init__()
 
     def parse_ambiguous_state(self, nxambiguous, state_alphabet):

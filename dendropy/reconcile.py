@@ -48,7 +48,7 @@ class ContainingTree(dataobject.Tree):
             ignore_root_deep_coalescences=True,
             **kwargs):
         """
-        Converts and returns ``tree`` to ContainingTree class, embedding the trees
+        __init__ converts `self` to ContainingTree class, embedding the trees
         given in the list, ``embedded_trees.``
 
 

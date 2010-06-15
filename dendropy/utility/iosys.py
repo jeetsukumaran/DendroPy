@@ -70,7 +70,7 @@ class IOService(object):
 
     def __init__(self, **kwargs):
         """
-        The following keyword arguments are recognized:
+        __init__ recognizes the following keyword arguments:
 
         - `dataset`:  A `DataSet` object. For input clients, all data read
                 from the source will be instantiated as objects within
@@ -103,7 +103,7 @@ class DataReader(IOService):
 
     def __init__(self, **kwargs):
         """
-        Instantiates a `DataReader` object. See `IOClient` for details on
+        __init__ creates a `DataReader` object. See `IOClient` for details on
         keyword arguments recognized. In addition, the keyword `encode_splits`
         specifies whether or not splits will be automatically-encoded upon
         a tree being read.
@@ -151,7 +151,7 @@ class DataWriter(IOService):
 
     def __init__(self, **kwargs):
         """
-        Instantiates a `DataWriter` object. See `IOClient` for details on
+        __init__ creates a `DataWriter` object. See `IOClient` for details on
         keyword arguments recognized.
         """
         IOService.__init__(self, **kwargs)
@@ -204,6 +204,13 @@ class Readable(object):
         pass
 
     def process_source_kwargs(self, **kwargs):
+    	"""
+    	If `stream` is specified, then 
+
+    		# checks that `schema` keyword argument is specified, and then
+    		# calls self.read()
+    		
+		"""
         if "stream" in kwargs:
             stream = kwargs["stream"]
             del(kwargs["stream"])

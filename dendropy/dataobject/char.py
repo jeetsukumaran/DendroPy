@@ -565,7 +565,14 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     "Character data container/manager manager."
 
     def __init__(self, *args, **kwargs):
-        "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
+        """__init__ calls TaxonSetLinked.__init__ for handling of `oid`, `label` and `taxon_set` keyword arguments.
+        
+        Can be initialized with:
+
+            - source keyword arguments (see Readable.process_source_kwargs), or
+            - a single unnamed CharacterMatrix instance (which will be deep-copied).
+        
+        """
         TaxonSetLinked.__init__(self,
                                 taxon_set=kwargs.get("taxon_set", None),
                                 label=kwargs.get("label", None),
@@ -617,13 +624,15 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         return taxon_to_state_indices
 
     def clone_from(self, *args):
+        "\TODO: may need to check that we are not overwriting oid"
         if len(args) > 1:
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
-        elif len(args) == 1 and (args[0].__class__ is self.__class__):
-            ca = copy.deepcopy(args[0])
-            self.__dict__ = ca.__dict__
         elif len(args) == 1:
-            raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
+            if isinstance(args[0],  self.__class__):
+                ca = copy.deepcopy(args[0])
+                self.__dict__ = ca.__dict__
+            else:
+                raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         return self
 
     def read(self, stream, schema, **kwargs):
@@ -907,7 +916,7 @@ class ContinuousCharacterMatrix(CharacterMatrix):
     "Character data container/manager manager."
 
     def __init__(self, *args, **kwargs):
-        "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
+        "See CharacterMatrix.__init__ documentation"
         CharacterMatrix.__init__(self, *args, **kwargs)
 
     def __deepcopy__(self, memo):
@@ -938,7 +947,10 @@ class DiscreteCharacterMatrix(CharacterMatrix):
     """
 
     def __init__(self, *args, **kwargs):
-        "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
+        """See CharacterMatrix.__init__ documentation for kwargs.
+        
+        Unnamed args are passed to clone_from.
+        """
         CharacterMatrix.__init__(self, **kwargs)
         self.state_alphabets = []
         self.default_state_alphabet = None
@@ -967,7 +979,10 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
     "`standard` data."
 
     def __init__(self, *args, **kwargs):
-        "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
+        """See CharacterMatrix.__init__ documentation for kwargs.
+        
+        Unnamed args are passed to clone_from.
+        """
         DiscreteCharacterMatrix.__init__(self, **kwargs)
         if len(args) > 0:
             self.clone_from(*args)
@@ -1022,7 +1037,10 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
 class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 
     def __init__(self, *args, **kwargs):
-        "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
+        """See CharacterMatrix.__init__ documentation for kwargs.
+        
+        Unnamed args are passed to clone_from.
+        """
         DiscreteCharacterMatrix.__init__(self, **kwargs)
         if len(args) > 0:
             self.clone_from(*args)
@@ -1062,7 +1080,10 @@ class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "DNA nucleotide data."
 
     def __init__(self, *args, **kwargs):
-        "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
+        """See CharacterMatrix.__init__ documentation for kwargs.
+        
+        Unnamed args are passed to clone_from.
+        """
         FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
         self.default_state_alphabet = DNA_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
@@ -1073,7 +1094,10 @@ class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "RNA nucleotide data."
 
     def __init__(self, *args, **kwargs):
-        "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
+        """See CharacterMatrix.__init__ documentation for kwargs.
+        
+        Unnamed args are passed to clone_from.
+        """
         FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
         self.default_state_alphabet = RNA_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
@@ -1108,7 +1132,10 @@ class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Restriction sites data."
 
     def __init__(self, *args, **kwargs):
-        "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
+        """See CharacterMatrix.__init__ documentation for kwargs.
+        
+        Unnamed args are passed to clone_from.
+        """
         FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
         self.default_state_alphabet = RESTRICTION_SITES_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)
@@ -1119,7 +1146,10 @@ class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Infinite sites data."
 
     def __init__(self, *args, **kwargs):
-        "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
+        """See CharacterMatrix.__init__ documentation for kwargs.
+        
+        Unnamed args are passed to clone_from.
+        """
         FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
         self.default_state_alphabet = INFINITE_SITES_STATE_ALPHABET
         self.state_alphabets.append(self.default_state_alphabet)

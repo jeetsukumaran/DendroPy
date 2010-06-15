@@ -272,7 +272,6 @@ class SplitDistribution(object):
     "Collects information regarding splits over multiple trees."
 
     def __init__(self, taxon_set=None, split_set=None):
-        "What else?"
         self.total_trees_counted = 0
         self.taxon_set = taxon_set
         self.splits = []

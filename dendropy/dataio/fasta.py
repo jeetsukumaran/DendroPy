@@ -45,23 +45,28 @@ class FastaReader(iosys.DataReader):
 
     def __init__(self, **kwargs):
         """
-        Keywords `row_type` kwarg can be RICH or STR, `char_matrix_type`
-        is one of the `CharacterMatrix` types.
+        __init__ requires either `char_matrix_type` or `data_type` kwargs. 
+        
+        The supported kwargs are:
+        
+            - `row_type` can be RICH or STR,
+            - `char_matrix_type` should be one of the `CharacterMatrix` types.
+            - `data_type` (should be in FastaReader.supported_data_types)
         """
         iosys.DataReader.__init__(self, **kwargs)
         self.simple_rows = kwargs.get('row_type', 'rich').upper() == 'STR'
-        if "char_matrix_type" in kwargs and "data_type" in kwargs:
-            raise ValueError("Cannot specify both 'data_type' and 'char_matrix_type'")
-        if "data_type" in kwargs:
-            data_type = kwargs["data_type"].lower()
+        
+        self.char_matrix_type = kwargs.get("char_matrix_type")
+        data_type = kwargs.get("data_type", '').lower()
+        if data_type:
+            if self.char_matrix_type is not None:
+                raise ValueError("Cannot specify both 'data_type' and 'char_matrix_type'")
             if data_type not in FastaReader.supported_data_types:
                 raise ValueError("'%s' is not a valid data type specification; must be one of: %s" \
                     % (", ".join([("'" + d + "'") for d in FastaReader.supported_data_types])))
             else:
                 self.char_matrix_type = dataobject.character_data_type_label_map[data_type]
-        elif "char_matrix_type" in kwargs:
-            self.char_matrix_type = kwargs.get("char_matrix_type")
-        else:
+        elif self.char_matrix_type is None:
             raise ValueError("Must specify 'data_type' for FASTA format, one of: %s" % (FastaReader.supported_data_types))
         if self.char_matrix_type not in FastaReader.supported_matrix_types:
             raise ValueError("'%s' is not a supported data type for FastaReader" % self.char_matrix_type.__name__)

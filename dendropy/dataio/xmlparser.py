@@ -73,7 +73,7 @@ class xml_document(object):
 
     def __init__(self, element=None, file_obj=None):
         """
-        Initializes reference to the ElementTree parser, passing it
+        __init__ initializes a reference to the ElementTree parser, passing it
         the a file descripter object to be read and parsed or the
         ElemenTree.Element object to be used as the root element.
         """
@@ -118,7 +118,7 @@ class XmlElement(object):
 
     def __init__(self, element):
         """
-        Initializes basic structure of object. `element` is an
+        __init__ initializes a basic structure of object. `element` is an
         ElementTree.Element object.
         """
         self.etree_element = element

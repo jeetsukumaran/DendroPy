@@ -53,7 +53,7 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def __init__(self, *args, **kwargs):
         """
-        Initializes a new TreeList object, populating it with any iterable
+        __init__ creates a new TreeList object, populating it with any iterable
         container with Tree object members passed as unnamed argument, or
         from a data source if `stream` and `schema` are passed.
 
@@ -475,7 +475,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def __init__(self, *args, **kwargs):
         """
-        Initializes a new Tree object, optionally constructing it by cloning
+        __init__ creates a new Tree object, optionally constructing it by cloning
         another Tree object if this is passed as the first argument, or
         out of a data source if `stream` and `schema` are keyword arguments are
         passed with a file-like object and a schema-specification string object
@@ -2373,7 +2373,7 @@ class Edge(IdTagged):
 
     def __init__(self, **kwargs):
         """
-        Creates an edge from tail_node to head_node.  Modified from
+        __init__ creates an edge from tail_node to head_node.  Modified from
         arbol.
         """
         IdTagged.__init__(self, oid=kwargs.get("oid", None), label=kwargs.get("label", None))
@@ -2503,17 +2503,17 @@ class AsciiTreePlot(object):
 
     def __init__(self, **kwargs):
         """
-        Keyword arguments:
-            ``plot_metric``
-                A string which specifies how branches should be scaled, one of:
+        __init__ takes the following kwargs:
+
+            - `plot_metric` A string which specifies how branches should be scaled, one of:
                 'age' (distance from tips), 'depth' (distance from root),
                 'level' (number of branches from root) or 'length' (edge
                 length/weights).
-            ``show_internal_node_labels``
+            - `show_internal_node_labels`
                 Boolean: whether or not to write out internal node labels.
-            ``leaf_spacing_factor``
+            - `leaf_spacing_factor`
                 Positive integer: number of rows between each leaf.
-            ``display_width``
+            - `display_width`
                 Force a particular display width, in terms of number of columns.
 
         """

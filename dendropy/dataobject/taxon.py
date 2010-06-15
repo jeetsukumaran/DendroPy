@@ -145,7 +145,7 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
 
     def __init__(self, *args, **kwargs):
         """
-        Handles keyword arguments: `oid`, `label` or "is_mutable".
+        __init__ handles keyword arguments: `oid`, `label` or "is_mutable".
         If an iterable is passed as the first argument, then for every
         string in the iterable a Taxon object with the string is
         constructed and added to the set, while for every Taxon object
@@ -453,12 +453,14 @@ class Taxon(base.IdTagged):
     cmp = staticmethod(cmp)
 
     def __init__(self, *args, **kwargs):
-        "Initializes by calling base class."
+        """
+        __init__ can take the kwargs needed by base.IdTagged, or the label keyword
+        can be inferred from the label of an unnamed argument
+        """
         if len(args) > 1:
             raise TypeError("Taxon() takes at most 1 non-keyword argument (%d given)" % len(args))
         elif len(args) == 1:
-            if isinstance(args[0], Taxon):
-                kwargs['label'] = args[0].label
+            kwargs['label'] = args[0].label
         base.IdTagged.__init__(self, **kwargs)
 
     def __str__(self):
@@ -493,23 +495,20 @@ class TaxonSetPartition(TaxonSetLinked):
 
     def __init__(self, taxon_set, **kwargs):
         """
-        Instantiates based on one of the following keyword arguments:
+        __init__ uses one of the following keyword arguments:
 
-            ``membership_func``
+            - `membership_func`
                 A function that takes a ``Taxon`` object as an argument and
                 returns a a population membership identifier or flag
                 (e.g., a string, an integer) .
-
-            ``membership_attr_name``
+            - `membership_attr_name`
                 Name of an attribute of ``Taxon`` objects that serves as an
                 identifier for subset membership.
-
-            ``membership_dict``
+            - `membership_dict`
                 A dictionary with ``Taxon`` objects as keys and population
                 membership identifier or flag as values (e.g., a string,
                 an integer).
-
-            ``membership_lists``
+            - `membership_lists`
                 A container of containers of ``Taxon`` objects, with every
                 ``Taxon`` object in ``taxon_set`` represented once and only
                 once in the sub-containers.
@@ -642,23 +641,21 @@ class TaxonSetMapping(base.IdTagged):
 
     def __init__(self, **kwargs):
         """
-        Instantiates based on one of the following keyword arguments:
+        __init__ uses one of the following keyword arguments:
 
-            ``mapping_func``
+            - `mapping_func`
                 A function that takes a ``Taxon`` object from the domain taxa
                 as an argument and returns the corresponding ``Taxon`` object
                 from the range taxa. If this argument is given, then a
                 ``TaxonSet`` or some other container of ``Taxon`` objects needs
                 to be passed using the ``taxon_set`` argument.
-
-            ``mapping_attr_name``
+            - `mapping_attr_name`
                 Name of an attribute of ``Taxon`` object of the domain taxa
                 that references the corresponding ``Taxon`` object from the
                 range taxa. If this argument is given, then a ``TaxonSet`` or
                 some other container of ``Taxon`` objects needs to be passed
                 using the ``taxon_set`` argument.
-
-            ``mapping_dict``
+            - `mapping_dict`
                 A dictionary with ``Taxon`` objects from the domain taxa as
                 keys, and the corresponding ``Taxon`` object from the range
                 taxa as values.

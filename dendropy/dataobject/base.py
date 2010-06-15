@@ -29,7 +29,7 @@ import re
 class Annotation(object):
     "Tracks the basic information need to serialize an attribute correctly."
     def __init__(self, attr_name=None, type_hint=None):
-        "Instantiates with optional initialization values."
+        "__init__ creates an Annotation with optional initialization values."
         self.attr_name = attr_name  # name of attribute
         self.type_hint = type_hint  # override introspective type determination
 
@@ -56,7 +56,7 @@ class Annotated(DataObject):
     """
 
     def __init__(self):
-        "Creates dictionary to track attributes that will be persisted."
+        "__init__ creates dictionary to track attributes that will be persisted."
         DataObject.__init__(self)
         self._annotations = {}
 
@@ -129,7 +129,7 @@ class Labelled(Annotated):
 
     def __init__(self, label=None):
         """
-        Initializes by calling base class, and then, if keyword
+        __init__ calls Annotated.__init__, and then, if keyword
         argument `label` is given, assigns it to self.label.
         """
         Annotated.__init__(self)
@@ -163,7 +163,7 @@ class IdTagged(Labelled):
 
     def __init__(self, **kwargs):
         """
-        Initializes by calling base classes, and assigns element id if
+        __init__ calls Labelled.__init__, and assigns element id if
         given.
         """
         Labelled.__init__(self, label=kwargs.get("label", None))

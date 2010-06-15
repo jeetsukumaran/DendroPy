@@ -38,6 +38,8 @@ class ItemAttributeProxyList(list):
 
     def __init__(self, attr_name, *args):
         """
+        __init__ calls the list.__init__ with all unnamed args.
+        
         `attr_name` is the name of the attribute or property that should be
         returned.
         """
@@ -75,6 +77,8 @@ class ItemSublistProxyList(list):
 
     def __init__(self, attr_name, *args):
         """
+       __init__ calls the list.__init__ with all unnamed args.
+        
         `attr_name` is the name of the attribute or property that should be
         returned.
         """
@@ -166,7 +170,7 @@ class NormalizedBitmaskDict(dict):
     normalize = staticmethod(normalize)
 
     def __init__(self, other=None, mask=None):
-        "Assigns mask, and then populates from `other`, if given."
+        "__init__ assigns `mask`, and then populates from `other`, if given."
         dict.__init__(self)
         self.mask = mask
         if other is not None:
@@ -254,7 +258,7 @@ class OrderedCaselessDict(dict):
 
     def __init__(self, other=None):
         """
-        Creates the local set of keys, and then initializes self with
+        __init__ creates the local set of keys, and then initializes self with
         arguments, if any, by using the superclass methods, keeping
         the ordered keys in sync.
         """

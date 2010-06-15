@@ -46,12 +46,15 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
 
     def __init__(self, *args, **kwargs):
         """
-        Initializes a new `DataSet` object. Arguments accepted include
-        another DataSet object (which will result in a deep copy of all
-        taxa, trees and characters), or a file-like object opened for reading
-        and a string specifying the schema of the data in the file-like object,
-        in which case the DataSet will be populated from data in the given
-        file.
+        __init__ takes a new `DataSet` object from another DataSet object or by 
+        parsing an input stream.
+        
+        Can be invoked with:
+
+            - a single unnamed argument that is an instance of a DataSet (which will result in a deep copy of all taxa, trees and characters),
+            - 1 or more unnamed TaxonSet, TreeList or CharacterMatrix (which is like calling DataSet.add with each argument)
+            - keyword arguments that supply a file-like object (`stream`) to be parsed and a string (`schema`) specifying the schema of the data in the file-like object.
+        
         """
         DataObject.__init__(self)
         iosys.Writeable.__init__(self)
@@ -60,21 +63,19 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
         self.tree_lists = containers.OrderedSet()
         self.char_matrices = containers.OrderedSet()
         self.attached_taxon_set = None
-        if kwargs.get("attach_taxon_set", False):
-            self.attach_taxon_set(kwargs.get("taxon_set", None))
-        elif kwargs.get("taxon_set", None) is not None:
-            self.attach_taxon_set(kwargs["taxon_set"])
+        taxa = kwargs.get("taxon_set", None)
+        attach_taxon_set = kwargs.get("attach_taxon_set", False)
+        if attach_taxon_set or (taxa is not None):
+            self.attach_taxon_set(taxa)
         else:
             self.attached_taxon_set = None
-#        if kwargs.get("multi_taxon_set", False):
-#            self.attached_taxon_set = None
-#        else:
-#            self.attach_taxon_set(kwargs.get("taxon_set", None))
+        stream = kwargs.get("stream")
         if len(args) > 0:
-            if ("stream" in kwargs and kwargs["stream"] is not None) \
-                    or ("schema" in kwargs and kwargs["schema"] is not None):
+            if (stream is not None) or (kwargs.get("schema") is not None):
                 raise error.MultipleInitializationSourceError(self.__class__.__name__, args[0])
             if len(args) == 1 and isinstance(args[0], DataSet):
+                if attach_taxon_set or (taxa is not None):
+                    raise error.MultipleInitializationSourceError("Cannot initialize DataSet from another DataSetobject taxon_set or attach_taxon_set are specified")
                 d = deepcopy(args[0])
                 self.__dict__ = d.__dict__
             else:
@@ -83,7 +84,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
                         raise error.MultipleInitializationSourceError("Cannot initialize DataSet from another DataSetobject when multiple other initialization objects are given")
                     else:
                         self.add(arg)
-        elif "stream" in kwargs:
+        elif stream is not None:
             if self.attached_taxon_set is not None:
                 kwargs["taxon_set"] = self.attached_taxon_set
             self.process_source_kwargs(**kwargs)
@@ -92,7 +93,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
     ## CLONING
 
     def __deepcopy__(self, memo):
-        o = self.__class__(multi_taxon_set=True)
+        o = self.__class__()
         for ts0 in self.taxon_sets:
             ts1 = o.new_taxon_set(label=ts0.label)
             memo[id(ts0)] = ts1

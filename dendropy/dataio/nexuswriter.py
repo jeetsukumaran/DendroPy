@@ -42,7 +42,7 @@ class NexusWriter(iosys.DataWriter):
 
     def __init__(self, **kwargs):
         """
-        Recognized keywords in addition to those of `DataReader` are:
+        __init__ recognizes the following keywords (in addition to those of `DataWriter.__init__`):
 
             - `simple` : if True, write in simple NEXUS format, i.e. in a
               single "DATA" block, instead of separate "TAXA" and "CHARACTER"

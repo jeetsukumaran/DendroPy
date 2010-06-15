@@ -60,15 +60,16 @@ class LineReadingThread(Thread):
                 subproc=None,
                 *args,
                 **kwargs):
-        """`lineCallback` is the callable that takes a string that is each line, and
-        returns False to stop reading.  This is a way of using the class without
-        sub-classing and overriding keep_going
+        """
+        __init__ processes the following arguments:
 
-        `stream` is in input file-like object
-        `filename` can be sent instead of `stream`, it should be the path to the file to read.
-        `stop_event` is an Event, that will kill the thread if it is triggered.
-        `sleep_interval` is the interval to sleep while waiting for a new tree to appear.
-        other arguments are passed to the Thread.__init__()
+            - `lineCallback` is the callable that takes a string that is each line, and returns False to stop reading.  This is a way of using the class without sub-classing and overriding keep_going
+            - `stream` is in input file-like object
+            - `filename` can be sent instead of `stream`, it should be the path to the file to read.
+            - `stop_event` is an Event, that will kill the thread if it is triggered.
+            - `sleep_interval` is the interval to sleep while waiting for a new tree to appear.
+
+        All other arguments are passed to the Thread.__init__()
         """
         self.stream = stream
         self.filename = filename

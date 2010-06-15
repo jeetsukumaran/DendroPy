@@ -216,7 +216,7 @@ class SeqEvolver(object):
      edge_length_attr="length",
      edge_rate_attr="mutation_rate",
      seq_label_attr='taxon'):
-        "Sets up meta-data dealing with object nomenclature and semantics."
+        "__init__ sets up meta-data dealing with object nomenclature and semantics."
         self.seq_model = seq_model
         self.mutation_rate = mutation_rate
         self.seq_attr = seq_attr

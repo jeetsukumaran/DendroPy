@@ -49,11 +49,13 @@ class FragmentedPopulations(object):
                  desc_pop_size=10000,
                  rng=GLOBAL_RNG):
         """
-        `div_time_gens` : generations since divergence,
-        `num_desc_pops` : number of descendent populations,
-        `mutrate_per_site_per_generation` : sequence mutation rate, per-site per-generation
-        `desc_diploid_pop_size` : descendent lineage population size (=N; ancestral pop size = num_desc_pops * N)
-        `rng` : random number generator
+        __init__ arguments:
+
+            - `div_time_gens` : generations since divergence,
+            - `num_desc_pops` : number of descendent populations,
+            - `mutrate_per_site_per_generation` : sequence mutation rate, per-site per-generation
+            - `desc_diploid_pop_size` : descendent lineage population size (=N; ancestral pop size = num_desc_pops * N)
+            - `rng` : random number generator
         """
         self.div_time_gens = div_time_gens
         self.num_desc_pops = num_desc_pops

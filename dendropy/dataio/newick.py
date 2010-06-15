@@ -106,7 +106,7 @@ class NewickReader(iosys.DataReader):
 
     def __init__(self, **kwargs):
         """
-        Recognized keywords are:
+        __init__ recognizes the following keywords arguments:
 
             - `dataset`: all data read from the source will be instantiated as
                objects within this `DataSet` object
@@ -165,7 +165,7 @@ class NewickWriter(iosys.DataWriter):
 
     def __init__(self, **kwargs):
         """
-        Recognized keywords in addition to those of `DataWriter` are:
+        __init__ recognizes the following keywords (in addition to those of `DataWriter.__init__`):
 
             - `dataset`: data to be written
             - `edge_lengths` : if False, edges will not write edge lengths [True]

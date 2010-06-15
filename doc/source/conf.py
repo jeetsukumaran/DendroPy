@@ -86,6 +86,9 @@ add_function_parentheses = False
 # output. They are ignored by default.
 #show_authors = False
 
+# 'class' for class docstring. 'init' for __init__ docstring. or 'both'
+autoclass_content = 'both'
+
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 

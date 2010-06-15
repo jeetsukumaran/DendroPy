@@ -2512,7 +2512,7 @@ class RepeatedRandom(Random):
     """
     def __init__(self, x=None):
         """
-        Initialize an instance. Optional argument x controls seeding,
+        __init__ creates an instance with the optional argument `x` controls seeding,
         as for Random.seed().
         """
         self.period = 1000

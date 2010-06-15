@@ -36,8 +36,8 @@ class SeqModel(object):
 
     def __init__(self, state_alphabet, rng=None):
         """
-        Initializes by defining character and sequence type on which
-        this model acts.
+        __init__ initializes the state_alphabet to define the character type on which
+        this model acts.  The objects random number generator will be `rng` or `GLOBAL_RNG`
         """
         self.state_alphabet = state_alphabet
         if rng is None:
@@ -75,7 +75,7 @@ class NucleotideSeqModel(SeqModel):
     "General nucleotide substitution model."
 
     def __init__(self, base_freqs=None, state_alphabet=None):
-        "Sets up character set and base frequencies."
+        "__init__ calls SeqModel.__init__ and sets the base_freqs field"
         if state_alphabet is None:
             state_alphabet = dendropy.DNA_STATE_ALPHABET
         SeqModel.__init__(self, state_alphabet)
@@ -150,7 +150,7 @@ class Hky85SeqModel(NucleotideSeqModel):
     """
 
     def __init__(self, kappa=1.0, base_freqs=None):
-        "If no arguments given, defaults to JC69."
+        "__init__: if no arguments given, defaults to JC69."
         NucleotideSeqModel.__init__(self, base_freqs=base_freqs)
         self.correct_rate = True
         self.kappa = kappa
@@ -258,7 +258,7 @@ class Jc69SeqModel(Hky85SeqModel):
     kappa = 1.0, and base frequencies = [0.25, 0.25, 0.25, 0.25].
     """
     def __init__(self):
-        "Sets up JC69 by setting Hky85 parameters."
+        "__init__: uses Hky85SeqModel.__init__"
         Hky85SeqModel.__init__(self,
                                      kappa=1.0,
                                      base_freqs=[0.25, 0.25, 0.25, 0.25])

@@ -106,9 +106,9 @@ else:
             return False
 
     class NCLTreeStreamThread(Thread):
+        """Subclass of thread ,that uses a NCLTreeStream to get trees
+        from NCL one at a time"""
         def __init__(self, file_path, need_tree_event, ready_event, die_event, format="NEXUS", **kwargs):
-            """Subclass of thread ,that uses a NCLTreeStream to get trees
-            from NCL one at a time"""
             self.nts = NCLTreeStream(need_tree_event, ready_event, die_event)
             self.file_path = file_path
             self.format = format

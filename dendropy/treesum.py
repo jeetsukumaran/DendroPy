@@ -47,7 +47,14 @@ class TreeSummarizer(object):
     "Summarizes a distribution of trees."
 
     def __init__(self, **kwargs):
-        "Initializes settings."
+        """
+        __init__ kwargs:
+        
+            - `support_as_labels` (boolean)
+            - `support_as_percentages` (boolean)
+            - `support_label_decimals` (integer)
+            - `ignore_node_ages` (boolean)
+        """
         self.support_as_labels = kwargs.get("support_as_labels", True)
         self.support_as_percentages = kwargs.get("support_as_percentages", False)
         self.default_support_label_decimals = 4

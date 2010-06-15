@@ -81,7 +81,7 @@ class DataSetCreateTest(datatest.DataObjectVerificationTestCase):
 class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
 
     def testMultiTaxonSet(self):
-        d = dendropy.DataSet(multi_taxon_set=True)
+        d = dendropy.DataSet()
         d.read_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
         self.assertEqual(len(d.taxon_sets), 1)
         self.assertEqual(len(d.taxon_sets[0]), 33)
@@ -132,7 +132,7 @@ class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
         self.assertEqual(len(d.taxon_sets[1]), 114)
 
     def testBindToSpecifiedTaxonSet(self):
-        d = dendropy.DataSet(multi_taxon_set=True)
+        d = dendropy.DataSet()
         t = dendropy.TaxonSet()
         d.attach_taxon_set(t)
         self.assertEqual(len(d.taxon_sets), 1)

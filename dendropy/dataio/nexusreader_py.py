@@ -40,7 +40,7 @@ class NexusReader(iosys.DataReader):
 
     def __init__(self, **kwargs):
         """
-        Recognized keywords in addition to those of `DataReader` are:
+        __init__ recognizes the following keywords (in addition to those of `DataReader.__init__`):
 
             - `taxon_set`: TaxonSet object to use when reading data
             - `as_rooted=True` (or `as_unrooted=False`): interprets trees as rooted

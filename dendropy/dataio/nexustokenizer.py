@@ -147,7 +147,11 @@ class StrToTaxon(object):
             DataParseError.__init__(self, *args, **kwargs)
 
     def __init__(self, taxon_set, translate_dict=None, allow_repeated_use=False):
-        """If `allow_repeated_use` is True, then get_taxon and require_taxon
+        """
+        __init__ creates a StrToTaxon object with the requested policy of taxon 
+        repitition.
+        
+        If `allow_repeated_use` is True, then get_taxon and require_taxon
         can be called multiple times to get the same taxon.  If it is false then
         calling the functions with the same label will generate a DataParseError
         indicating that the taxon has been used multiple times."""
