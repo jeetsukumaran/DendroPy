@@ -204,18 +204,32 @@ class Readable(object):
         pass
 
     def process_source_kwargs(self, **kwargs):
-    	"""
-    	If `stream` is specified, then 
+        """
+        If `stream` is specified, then process_source_kwargs:
 
-    		# checks that `schema` keyword argument is specified, and then
-    		# calls self.read()
-    		
-		"""
+            # checks that `schema` keyword argument is specified, and then
+            # calls self.read()
+        
+        If `stream` is not specified then `source_string` and `source_filepath`
+            kwarg arguments are checked. The effect of thes is similar to calling
+            read_from_string and read_from_path
+        """
         if "stream" in kwargs:
             stream = kwargs["stream"]
             del(kwargs["stream"])
             schema = require_format_from_kwargs(kwargs)
             self.read(stream=stream, schema=schema, **kwargs)
+        elif "source_string" in kwargs:
+            as_str = kwargs["source_string"]
+            del(kwargs["source_string"])
+            kwargs["stream"] = StringIO(as_str)
+            return self.process_source_kwargs(**kwargs)
+        elif "source_file" in kwargs:
+            fp = kwargs["source_filepath"]
+            fo = open(os.path.expandvars(os.path.expanduser(filepath)), "rU")
+            del(kwargs["source_filepath"])
+            kwargs["stream"] = fo
+            return self.process_source_kwargs(**kwargs)
 
     def read(self, stream, schema, **kwargs):
         """
