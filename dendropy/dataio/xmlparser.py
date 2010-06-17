@@ -60,7 +60,7 @@ diagnosed_tags = []
 def diagnose_namespace(tag, namespace):
     if tag not in diagnosed_tags:
         diagnosed_tags.append(tag)
-        sys.stderr.write("% 20s\t%s\n" % (tag, namespace))
+#        sys.stderr.write("% 20s\t%s\n" % (tag, namespace))
 
 
 def _getiterator(etree, tag, namespace_list=()):
@@ -76,7 +76,7 @@ def _getiterator(etree, tag, namespace_list=()):
         for n in namespace_list:
             d['ns'] = n
             decorated_tag = "{%(ns)s}%(tag)s" % d
-            print "decorated_tag = ", decorated_tag
+            #print "decorated_tag = ", decorated_tag
             i = etree.getiterator(decorated_tag)
             if i:
                 diagnose_namespace(tag, "decorated with namespace %(ns)s" % d)
@@ -96,7 +96,7 @@ def _invoke_method_for_namespaces(meth, tag, namespace_list=()):
         for n in namespace_list:
             d['ns'] = n
             decorated_tag = "{%(ns)s}%(tag)s" % d
-            print "decorated_tag = ", decorated_tag
+            #print "decorated_tag = ", decorated_tag
             i = meth(decorated_tag)
             if i:
                 diagnose_namespace(tag, "decorated with namespace %(ns)s" % d)
