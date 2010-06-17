@@ -60,7 +60,49 @@ diagnosed_tags = []
 def diagnose_namespace(tag, namespace):
     if tag not in diagnosed_tags:
         diagnosed_tags.append(tag)
-#         sys.stdout.write("% 20s\t%s\n" % (tag, namespace))
+        sys.stderr.write("% 20s\t%s\n" % (tag, namespace))
+
+
+def _getiterator(etree, tag, namespace_list=()):
+    """
+    Returns an iterator over all top-level elements from the root element
+    that have the matching tag.
+    """
+    i = etree.getiterator(tag)
+    if i:
+        diagnose_namespace(tag, "no namespace decoration")
+    elif namespace_list:
+        d = {'tag' : tag}
+        for n in namespace_list:
+            d['ns'] = n
+            decorated_tag = "{%(ns)s}%(tag)s" % d
+            print "decorated_tag = ", decorated_tag
+            i = etree.getiterator(decorated_tag)
+            if i:
+                diagnose_namespace(tag, "decorated with namespace %(ns)s" % d)
+                break
+    if not i:
+        diagnose_namespace(tag, "NOT FOUND")
+    recasting = lambda x: XmlElement(x, namespace_list=namespace_list)
+    return containers.RecastingIterator(i, recasting)
+
+
+def _invoke_method_for_namespaces(meth, tag, namespace_list=()):
+    i = meth(tag)
+    if i:
+        diagnose_namespace(tag, "no namespace decoration")
+    elif namespace_list:
+        d = {'tag' : tag}
+        for n in namespace_list:
+            d['ns'] = n
+            i = meth("{%(ns)s}$(tag)s" % d)
+            if i:
+                diagnose_namespace(tag, "decorated with namespace %(ns)s" % d)
+                break
+    if not i:
+        diagnose_namespace(tag, "NOT FOUND")
+    return i
+
 
 class xml_document(object):
     """
@@ -71,12 +113,13 @@ class xml_document(object):
     for messing with other sections of code.
     """
 
-    def __init__(self, element=None, file_obj=None):
+    def __init__(self, element=None, file_obj=None, namespace_list=()):
         """
         __init__ initializes a reference to the ElementTree parser, passing it
         the a file descripter object to be read and parsed or the
         ElemenTree.Element object to be used as the root element.
         """
+        self.namespace_list = list(namespace_list)
         self.etree = ElementTree.ElementTree(element=element, file=file_obj)
 
     def parse_string(self, source):
@@ -97,16 +140,7 @@ class xml_document(object):
         Returns an iterator over all top-level elements from the root element
         that have the matching tag.
         """
-        i = self.etree.getroot().getiterator(tag)
-        if not i:
-            i = self.etree.getroot().getiterator("{http://www.nexml.org/1.0}"+tag)
-            if i:
-                diagnose_namespace(tag, "decorated with NeXML namespace")
-            else:
-                diagnose_namespace(tag, "NOT FOUND")
-        else:
-            diagnose_namespace(tag, "no namespace decoration")
-        return containers.RecastingIterator(i, XmlElement)
+        return _getiterator(self.etree.getroot(), tag, self.namespace_list)
 
 class XmlElement(object):
     """
@@ -116,67 +150,32 @@ class XmlElement(object):
     interface that are needed for DendroPy.
     """
 
-    def __init__(self, element):
+    def __init__(self, element, namespace_list=()):
         """
         __init__ initializes a basic structure of object. `element` is an
         ElementTree.Element object.
         """
+        self.namespace_list = namespace_list
         self.etree_element = element
 
     def getiterator(self, tag):
         "Returns an iterator over child elements with tags that match `tag`."
-        i = self.etree_element.getiterator(tag)
-        if not i:
-            i = self.etree_element.getiterator("{http://www.nexml.org/1.0}"+tag)
-            if i:
-                diagnose_namespace(tag, "decorated with NeXML namespace")
-            else:
-                diagnose_namespace(tag, "NOT FOUND")
-        else:
-            diagnose_namespace(tag, "no namespace decoration")
-        return containers.RecastingIterator(i, XmlElement)
+        return _getiterator(self.etree_element, tag, self.namespace_list)
 
     def get(self, key, default=None):
         """
         Returns the attribute of this element with matching key, or
         substituting default if not found.
         """
-        i = self.etree_element.get(key, default)
+        i = _invoke_method_for_namespaces(self.etree_element.get, key, self.namespace_list)
         if not i:
-            i = self.etree_element.get("{http://www.nexml.org/1.0}"+key, default)
-            if i:
-                diagnose_namespace(key, "decorated with NeXML namespace")
-            else:
-                diagnose_namespace(key, "NOT FOUND")
-        else:
-            diagnose_namespace(key, "no namespace decoration")
+            return default
         return i
 
     def findtext(self, text):
         "Finds free text contained in element"
-        i = self.etree_element.findtext(text)
-        if not i:
-            i = self.etree_element.findtext("{http://www.nexml.org/1.0}"+text)
-            if i:
-                diagnose_namespace(text, "decorated with NeXML namespace")
-            else:
-                diagnose_namespace(text, "NOT FOUND")
-        else:
-            diagnose_namespace(text, "no namespace decoration")
-        return i
+        return _invoke_method_for_namespaces(self.etree_element.findtext, text, self.namespace_list)
 
     def find(self, path):
         "Finds all matching subelements, by tag name or path."
-        i = self.etree_element.find(path)
-        if not i:
-            i = self.etree_element.find("{http://www.nexml.org/1.0}"+path)
-            if i:
-                diagnose_namespace(path, "decorated with NeXML namespace")
-            else:
-                diagnose_namespace(path, "NOT FOUND")
-        else:
-            diagnose_namespace(path, "no namespace decoration")
-        if i:
-            return XmlElement(i)
-        else:
-            return None
+        return _invoke_method_for_namespaces(self.etree_element.find, path, self.namespace_list)

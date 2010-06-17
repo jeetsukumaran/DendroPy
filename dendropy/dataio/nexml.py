@@ -34,6 +34,7 @@ from dendropy.utility import error
 from dendropy.dataio import xmlparser
 import dendropy
 
+SUPPORTED_NEXML_NAMESPACES = ('http://www.nexml.org/1.0', 'http://www.nexml.org/2009')
 ############################################################################
 ## Local Module Methods
 
@@ -210,7 +211,7 @@ class NexmlReader(iosys.DataReader):
         `stream`.
         """
         start = time.clock()
-        xml_doc = xmlparser.xml_document(file_obj=stream)
+        xml_doc = xmlparser.xml_document(file_obj=stream, namespace_list=SUPPORTED_NEXML_NAMESPACES)
         self.load_time = time.clock() - start
         start = time.clock()
         dataset = self.parse_dataset(xml_doc)
@@ -278,7 +279,7 @@ class NexmlReader(iosys.DataReader):
 
     def iterate_over_trees(file_obj, taxon_set=None, dataset=None):
         "Generator to iterate over trees in file without retaining any in memory."
-        xml_doc = xmlparser.xml_document(file_obj=file_obj)
+        xml_doc = xmlparser.xml_document(file_obj=file_obj, namespace_list=SUPPORTED_NEXML_NAMESPACES)
         if dataset is None:
             dataset = datasets.DataSet() or dataset
         if taxon_set is None:
