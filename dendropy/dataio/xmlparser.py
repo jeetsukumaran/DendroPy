@@ -95,7 +95,9 @@ def _invoke_method_for_namespaces(meth, tag, namespace_list=()):
         d = {'tag' : tag}
         for n in namespace_list:
             d['ns'] = n
-            i = meth("{%(ns)s}$(tag)s" % d)
+            decorated_tag = "{%(ns)s}%(tag)s" % d
+            print "decorated_tag = ", decorated_tag
+            i = meth(decorated_tag)
             if i:
                 diagnose_namespace(tag, "decorated with namespace %(ns)s" % d)
                 break
