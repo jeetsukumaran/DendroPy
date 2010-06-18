@@ -23,7 +23,7 @@
 """
 Extensions of the unittest framework for data comparison and testing.
 """
-
+import os
 import unittest
 import dendropy
 from dendropy.test.support import pathmap
@@ -39,7 +39,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         self.logger.info("Writing DataSet object to file '%s' and back" % output_path)
         dataset.write(stream=open(output_path, "w"), schema=schema, **writer_kwargs)
         self.logger.info("Reading file '%s'" % output_path)
-        return dendropy.DataSet(stream=open(output_path, "rU"), schema=schema, **reader_kwargs)
+        return dendropy.DataSet(stream=open(output_path, "rU"), schema=schema, **reader_kwargs), output_path
 
     def roundTripDataSetTest(self,
                       dataset,
@@ -51,9 +51,10 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             writer_kwargs = {}
         if reader_kwargs is None:
             reader_kwargs = {}
-        rt_dataset = self.roundTripData(dataset, schema, writer_kwargs=writer_kwargs, reader_kwargs=reader_kwargs)
+        rt_dataset, output_path = self.roundTripData(dataset, schema, writer_kwargs=writer_kwargs, reader_kwargs=reader_kwargs)
         self.logger.info("Comparing original and round-tripped DataSet objects")
         self.assertDistinctButEqual(dataset, rt_dataset, **kwargs)
+        os.unlink(output_path)
 
     def assertDistinctButEqual(self, data_object1, data_object2, **kwargs):
         """

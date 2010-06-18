@@ -53,7 +53,6 @@ else:
 
 from dendropy.utility import containers
 
-nexml_namespace = "http://www.nexml.org/1.0"
 diagnosed_tags = []
 
 
@@ -103,8 +102,10 @@ def _invoke_method_for_namespaces(meth, tag, namespace_list=()):
                 break
     if not i:
         diagnose_namespace(tag, "NOT FOUND")
+        return i
+    if not isinstance(i, str) and not isinstance(i, unicode):
+        return XmlElement(i, namespace_list=namespace_list)
     return i
-
 
 class xml_document(object):
     """

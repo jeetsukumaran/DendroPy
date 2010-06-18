@@ -732,9 +732,9 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         else:
             id_chartype_map = {}
             chartypes = []
-
         for nxrow in matrix.getiterator('row'):
             row_id = nxrow.get('id', None)
+
             label = nxrow.get('label', None)
             taxon_id = nxrow.get('otu', None)
             try:
@@ -1164,11 +1164,11 @@ class NexmlWriter(iosys.DataWriter):
                      % (self.indent * (indent_level+1)))
         parts.append('%sxmlns:xml="http://www.w3.org/XML/1998/namespace"' \
                      % (self.indent * (indent_level+1)))
-        parts.append('%sxsi:schemaLocation="http://www.nexml.org/1.0 ../xsd/nexml.xsd"'
+        parts.append('%sxsi:schemaLocation="http://www.nexml.org/2009"'
                      % (self.indent * (indent_level+1)))
-        parts.append('%sxmlns="http://www.nexml.org/1.0"'
+        parts.append('%sxmlns="http://www.nexml.org/2009"'
                      % (self.indent * (indent_level+1)))
-        parts.append('%sxmlns:nex="http://www.nexml.org/1.0">\n'
+        parts.append('%sxmlns:nex="http://www.nexml.org/2009">\n'
                      % (self.indent * (indent_level+1)))
         dest.write('\n'.join(parts))
 

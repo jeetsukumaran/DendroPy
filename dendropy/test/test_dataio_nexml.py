@@ -54,6 +54,11 @@ class NexmlRoundTripTest(datatest.DataObjectVerificationTestCase):
         rfdist = treecalc.robinson_foulds_distance(tree1, tree2)
         self.assertAlmostEqual(rfdist, 0)
 
+    def testRoundTripProtein(self):
+        s = pathmap.char_source_stream("caenophidia_mos.chars.nexus")
+        d1 = dendropy.DataSet(stream=s, schema="nexus")
+        self.roundTripDataSetTest(d1, "nexml")
+
     def testRoundTreeJustTrees(self):
         ds = dendropy.DataSet(datagen.reference_tree_list())
         self.roundTripDataSetTest(ds, "nexml", ignore_taxon_order=True)
@@ -62,10 +67,6 @@ class NexmlRoundTripTest(datatest.DataObjectVerificationTestCase):
         reference_dataset = datagen.reference_single_taxonset_dataset()
         self.roundTripDataSetTest(reference_dataset, "nexml", ignore_taxon_order=True)
 
-    def testRoundTripProtein(self):
-        s = pathmap.char_source_stream("caenophidia_mos.chars.nexus")
-        d1 = dendropy.DataSet(stream=s, schema="nexus")
-        self.roundTripDataSetTest(d1, "nexml")
 
     def testRoundTripStandard1(self):
         s = pathmap.char_source_stream("angiosperms.chars.nexus")
