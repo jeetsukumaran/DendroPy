@@ -12,7 +12,7 @@ Every time a reference to a taxon is encountered in a data source, such as a tax
 
 DendroPy maps taxon definitions encountered in a data source to |Taxon| objects by the taxon label.
 The labels have to match **exactly** for the taxa to be correctly mapped, with the match being **case-sensitive**.
-Thus, "Python regius", "PYTHON REGIUS", "python regious", "P. regius", etc. will all be considered as referring to distinct and different taxa.
+Thus, "Python regius", "PYTHON REGIUS", "python regius", "P. regius", etc. will all be considered as referring to distinct and different taxa.
 
 Further quirks may arise due to some schema-specific idiosyncracies.
 For example, the NEXUS standard dictates that an underscore ("_") should be substituted for a space in all labels.
@@ -29,9 +29,9 @@ This is illustrated by the following:
 Which produces the following, almost certainly incorrect, result::
 
     TaxonSet object at 0x43b4e0 (TaxonSet4437216): 4 Taxa
-        [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python regious'
+        [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python regius'
         [1] Taxon object at 0x2286810 (Taxon36202512): 'Python sebae'
-        [2] Taxon object at 0x22867d0 (Taxon36202448): 'Python_regious'
+        [2] Taxon object at 0x22867d0 (Taxon36202448): 'Python_regius'
         [3] Taxon object at 0x2286830 (Taxon36202544): 'Python_sebae'
 
 Even more confusingly, if this file is written out in NEXUS schema, it would result in the space/underscore substitution taking place, resulting in two pairs of taxa with the same labels.
@@ -46,7 +46,7 @@ You could simply avoid underscores and use only spaces instead:
 Which results in::
 
     TaxonSet object at 0x43b4e0 (TaxonSet4437216): 2 Taxa
-        [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python_regious'
+        [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python_regius'
         [1] Taxon object at 0x2286810 (Taxon36202512): 'Python_sebae'
 
 Or use underscores in the NEXUS-formatted data, but spaces in the non-NEXUS data:
@@ -57,7 +57,7 @@ Or use underscores in the NEXUS-formatted data, but spaces in the non-NEXUS data
 Which results in the same as the preceding example::
 
     TaxonSet object at 0x43b4e0 (TaxonSet4437216): 2 Taxa
-        [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python regious'
+        [0] Taxon object at 0x22867b0 (Taxon36202416): 'Python regius'
         [1] Taxon object at 0x2286810 (Taxon36202512): 'Python sebae'
 
 You can also wrap the underscore-bearing labels in the NEXUS/Newick source in quotes, which preserves them from being substituted for spaces:
@@ -68,7 +68,7 @@ You can also wrap the underscore-bearing labels in the NEXUS/Newick source in qu
 Which will result in::
 
     TaxonSet object at 0x43c780 (TaxonSet4441984): 2 Taxa
-        [0] Taxon object at 0x2386770 (Taxon37250928): 'Python_regious'
+        [0] Taxon object at 0x2386770 (Taxon37250928): 'Python_regius'
         [1] Taxon object at 0x2386790 (Taxon37250960): 'Python_sebae'
 
 Finally, you can also override the default behavior of DendroPy's NEXUS/Newick parser by passing the keyword argument ``preserve_underscores=True`` to any :meth:`read_from_*`, :meth:`get_from_*` or stream-parsing constructor. For example:
@@ -79,7 +79,7 @@ Finally, you can also override the default behavior of DendroPy's NEXUS/Newick p
 will result in::
 
     TaxonSet object at 0x43c780 (TaxonSet4441984): 2 Taxa
-        [0] Taxon object at 0x2386770 (Taxon37250928): 'Python_regious'
+        [0] Taxon object at 0x2386770 (Taxon37250928): 'Python_regius'
         [1] Taxon object at 0x2386790 (Taxon37250960): 'Python_sebae'
 
 This may seem the simplest solution, in so far as it means that you need not maintain lexically-different taxon labels across files of different formats, but a gotcha here is that if writing to NEXUS/Newick schema, any label with underscores will be automatically quoted to preserve the underscores (again, as dictated by the NEXUS standard), which will mean that: (a) your output file will have quotes, and, as a result, (b) the underscores in the labels will be "hard" underscores if the file is read by PAUP* or DendroPy. So, for example, continuing from the previous example, the NEXUS-formatted output would look like::
@@ -91,7 +91,7 @@ This may seem the simplest solution, in so far as it means that you need not mai
         TITLE TaxonSet5736800;
         DIMENSIONS NTAX=2;
         TAXLABELS
-            'Python_regious'
+            'Python_regius'
             'Python_sebae'
       ;
     END;
@@ -102,7 +102,7 @@ This may seem the simplest solution, in so far as it means that you need not mai
         DIMENSIONS  NCHAR=5;
         FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;
         MATRIX
-    'Python_regious'    ACGTA
+    'Python_regius'    ACGTA
     'Python_sebae'      ACGTA
         ;
     END;
@@ -113,7 +113,7 @@ This may seem the simplest solution, in so far as it means that you need not mai
         DIMENSIONS  NCHAR=4;
         FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;
         MATRIX
-    'Python_regious'    AAAA
+    'Python_regius'    AAAA
     'Python_sebae'      ACGT
         ;
     END;
@@ -128,7 +128,7 @@ To control this, you can pass the keyword argument ``quote_underscores=False`` t
         TITLE TaxonSet5736800;
         DIMENSIONS NTAX=2;
         TAXLABELS
-            Python_regious
+            Python_regius
             Python_sebae
       ;
     END;
@@ -139,7 +139,7 @@ To control this, you can pass the keyword argument ``quote_underscores=False`` t
         DIMENSIONS  NCHAR=5;
         FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;
         MATRIX
-    Python_regious    ACGTA
+    Python_regius    ACGTA
     Python_sebae      ACGTA
         ;
     END;
@@ -150,7 +150,7 @@ To control this, you can pass the keyword argument ``quote_underscores=False`` t
         DIMENSIONS  NCHAR=4;
         FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;
         MATRIX
-    Python_regious    AAAA
+    Python_regius    AAAA
     Python_sebae      ACGT
         ;
     END;
