@@ -312,9 +312,11 @@ Please feel free to contact me if you have any other questions, suggestions or c
 How to Cite this Program
 =========================
 
-If you use this program in your analysis, please cite it as (replacing the version numbers with ones corresponding to the version that you used):
+If you use this program in your analysis, please cite it as:
 
-    |sumtrees_citation|
+    |dendropy_citation|
+
+In the text of your paper, if you want to look like you know what you are doing, you should probably mention explicitly that you specifically used the SumTrees program of the |DendroPy|_ package, as well as the particular version numbers of SumTrees and |DendroPy|_ that you used.
 
 .. include:: ../license.inc
 .. include:: ../acknowledgements.inc
