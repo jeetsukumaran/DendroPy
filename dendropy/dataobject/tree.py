@@ -1959,6 +1959,7 @@ class Node(TaxonLinked):
         """
         Sets the child_nodes for this node.
         Side effects:
+
             - sets the parent of each child node to this node
             - sets the tail node of each child to self
         """
