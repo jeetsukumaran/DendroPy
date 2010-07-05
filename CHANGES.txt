@@ -6,6 +6,8 @@ Changes
 ^^^^^^^
     - ``age`` is now a permanent attribute of ``Node`` objects from initialization (previously, this attribute was optionally added when ``add_ages_to_nodes()`` was called).
     - ``Tree.add_ages_to_nodes()`` replaced by ``Tree.calc_node_ages()``: functioning is similar, but no longer offers the option for client code to select attribute name for the node age; this is now fixed to ``age`` (see above).
+    - NeXML namespace has been updated to use modern NeXML instance docs.
+    - new ``ContainingTree`` class to manage operations with embedded trees (species tree with gene trees...)
 
 Release 3.3.0
 -------------
