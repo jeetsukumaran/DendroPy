@@ -30,7 +30,7 @@ The Pybus-Harvey Gamma statistic is given by the :meth:`~dendropy.dataobject.tre
 Patristic Distances
 ===================
 
-The :class:`~dendropy.treecalc.PatristicDistanceMatrix` is the most efficient way to calculate the patristic distances between any pair of taxa on a tree.
+The :class:`~dendropy.treecalc.PatristicDistanceMatrix` is the most efficient way to calculate the patristic distances between taxa or leaves on a tree, when doing multiple such calculations.
 Its constructor takes a |Tree| object as an argument, and the object return is callable, taking two |Taxon| objects as arguments and returning the sum of edge lengths between the two. The following example reports the pairwise distances between all taxa on the input tree:
 
 .. literalinclude:: /examples/pdm.py
