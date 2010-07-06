@@ -489,7 +489,7 @@ class _NexmlTreesParser(_NexmlElementParser):
     def parse_root_edge(self, tree_element, length_type):
         "Returns the edge subtending the root node, or None if not defined."
         rootedge = tree_element.find('rootedge')
-        if rootedge:
+        if rootedge is not None:
             edge = dendropy.Edge()
             edge.head_node_id = rootedge.get('target', None)
             edge.oid = rootedge.get('id', 'e' + str(id(edge)))

@@ -88,7 +88,7 @@ def _getiterator(etree, tag, namespace_list=()):
 
 def _invoke_method_for_namespaces(meth, tag, namespace_list=()):
     i = meth(tag)
-    if i:
+    if i is not None:
         diagnose_namespace(tag, "no namespace decoration")
     elif namespace_list:
         d = {'tag' : tag}
@@ -97,10 +97,10 @@ def _invoke_method_for_namespaces(meth, tag, namespace_list=()):
             decorated_tag = "{%(ns)s}%(tag)s" % d
             #print "decorated_tag = ", decorated_tag
             i = meth(decorated_tag)
-            if i:
+            if i is not None:
                 diagnose_namespace(tag, "decorated with namespace %(ns)s" % d)
                 break
-    if not i:
+    if i is None:
         diagnose_namespace(tag, "NOT FOUND")
         return i
     if not isinstance(i, str) and not isinstance(i, unicode):

@@ -566,12 +566,12 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def __init__(self, *args, **kwargs):
         """__init__ calls TaxonSetLinked.__init__ for handling of `oid`, `label` and `taxon_set` keyword arguments.
-        
+
         Can be initialized with:
 
             - source keyword arguments (see Readable.process_source_kwargs), or
             - a single unnamed CharacterMatrix instance (which will be deep-copied).
-        
+
         """
         TaxonSetLinked.__init__(self,
                                 taxon_set=kwargs.get("taxon_set", None),
@@ -948,7 +948,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
-        
+
         Unnamed args are passed to clone_from.
         """
         CharacterMatrix.__init__(self, **kwargs)
@@ -980,7 +980,7 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
-        
+
         Unnamed args are passed to clone_from.
         """
         DiscreteCharacterMatrix.__init__(self, **kwargs)
@@ -1038,7 +1038,7 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
-        
+
         Unnamed args are passed to clone_from.
         """
         DiscreteCharacterMatrix.__init__(self, **kwargs)
@@ -1081,7 +1081,7 @@ class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
-        
+
         Unnamed args are passed to clone_from.
         """
         FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
@@ -1095,7 +1095,7 @@ class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
-        
+
         Unnamed args are passed to clone_from.
         """
         FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
@@ -1133,7 +1133,7 @@ class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
-        
+
         Unnamed args are passed to clone_from.
         """
         FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
@@ -1147,7 +1147,7 @@ class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
-        
+
         Unnamed args are passed to clone_from.
         """
         FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
@@ -1182,3 +1182,15 @@ def get_state_alphabet_from_symbols(symbols, gap_symbol="-", missing_symbol="?")
                                            multistate=StateAlphabetElement.AMBIGUOUS_STATE,
                                            member_states=sa.get_states(symbols=symbols)))
     return sa
+
+###############################################################################
+## Specialized Matrices
+
+class SitePatterns(object):
+    """
+    Tracks distinct site patterns in a character matrix.
+    Useful for efficient computations.
+    """
+
+    def __init__(self, matrix=None):
+        pass
