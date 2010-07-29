@@ -87,7 +87,11 @@ def relabel_taxa_from_defline(taxon_set,
 
     """
     for taxon in taxon_set:
-        taxon.label = compose_taxon_label_from_gb_defline(taxon.label)
+        taxon.label = compose_taxon_label_from_gb_defline(
+                gb_defline=taxon.label,
+                num_desc_components=num_desc_components,
+                separator=separator,
+                gbnum_in_front=gbnum_in_front)
     return taxon_set
 
 class Entrez(object):
@@ -194,7 +198,10 @@ class Entrez(object):
         results = self._fetch(db='nucleotide', ids=ids, rettype='fasta')
         d = dendropy.DnaCharacterMatrix.get_from_stream(results, 'fasta', **kwargs)
         if self.transform_labels:
-            relabel_taxa_from_defline(d.taxon_set)
+            relabel_taxa_from_defline(d.taxon_set,
+                    num_desc_components=self.label_num_desc_components,
+                    separator=self.label_separator,
+                    gbnum_in_front=self.label_gbnum_in_front)
         if self.sort_taxa_by_label:
             d.taxon_set.sort(key=lambda x: x.label)
         return d
