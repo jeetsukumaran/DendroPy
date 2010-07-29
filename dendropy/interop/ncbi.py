@@ -100,7 +100,9 @@ class Entrez(object):
     Example usage::
 
         >>> from dendropy.interop import ncbi
-        >>> e = ncbi.Entrez(sort_taxa_by_label=True)
+        >>> e = ncbi.Entrez(transform_labels=True,
+        ... label_gbnum_in_front=False,
+        ... sort_taxa_by_label=True)
         >>> d = e.fetch_nucleotide_accession_range(105474, 106046, prefix="EU")
 
     """
@@ -157,7 +159,7 @@ class Entrez(object):
         ]
 
     def __init__(self,
-            transform_labels=True,
+            transform_labels=False,
             label_num_desc_components=3,
             label_separator='_',
             label_gbnum_in_front=True,
