@@ -4,8 +4,13 @@ Release 3.5.0
 New Features
 ^^^^^^^^^^^^
 
-    - Added new module for interacting with NCBI databases: ``dendropy.interop.ncbi``.
+    - Added new module for interacting with NCBI databases: ``dendropy.interop.ncbi``. Sequences can be downloaded individually, or by specifying ranges, and labels suitable for use in phylogenetic analyses can be automatically composed::
 
+        >>> from dendropy.interop import ncbi
+        >>> entrez = ncbi.Entrez(generate_labels=True, sort_taxa_by_label=True)
+        >>> data = entrez.fetch_nucleotide_accession_range(105474, 106046, prefix="EU")
+
+    - Added ``ladderize()`` method, to order nodes in ascending (default) or descending (``ladderize(right=True)``) order.
 
 Release 3.4.1
 -------------

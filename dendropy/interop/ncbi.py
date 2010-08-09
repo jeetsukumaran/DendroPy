@@ -100,7 +100,7 @@ class Entrez(object):
     Example usage::
 
         >>> from dendropy.interop import ncbi
-        >>> e = ncbi.Entrez(transform_labels=True,
+        >>> e = ncbi.Entrez(generate_labels=True,
         ... label_gbnum_in_front=False,
         ... sort_taxa_by_label=True)
         >>> d = e.fetch_nucleotide_accession_range(105474, 106046, prefix="EU")
@@ -159,12 +159,12 @@ class Entrez(object):
         ]
 
     def __init__(self,
-            transform_labels=False,
+            generate_labels=False,
             label_num_desc_components=3,
             label_separator='_',
             label_gbnum_in_front=True,
             sort_taxa_by_label=False):
-        self.transform_labels = transform_labels
+        self.generate_labels = generate_labels
         self.label_num_desc_components = label_num_desc_components
         self.label_separator = label_separator
         self.label_gbnum_in_front = label_gbnum_in_front
@@ -199,7 +199,7 @@ class Entrez(object):
             ids = ["%s%s" % (prefix,i) for i in ids]
         results = self._fetch(db='nucleotide', ids=ids, rettype='fasta')
         d = dendropy.DnaCharacterMatrix.get_from_stream(results, 'fasta', **kwargs)
-        if self.transform_labels:
+        if self.generate_labels:
             relabel_taxa_from_defline(d.taxon_set,
                     num_desc_components=self.label_num_desc_components,
                     separator=self.label_separator,
