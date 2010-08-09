@@ -16,3 +16,4 @@ The DendroPy Tutorial
     working_with_trees.rst
     working_with_characters.rst
     working_with_datasets.rst
+    interoperability.rst
