@@ -164,6 +164,17 @@ class Entrez(object):
             label_separator='_',
             label_gbnum_in_front=True,
             sort_taxa_by_label=False):
+        """
+        Instantiates a broker that queries NCBI and returns data.  If
+        ``generate_labels`` is ``True``, then appropriate labels for sequences
+        will be automatically composed for each sequence based on the GenBank
+        FASTA defline. ``label_num_desc_components`` specifies the number of
+        components from the defline to use. ``label_gbnum_in_front`` specifies
+        whether the GenBank accession number should form the beginning
+        (``True``) or tail (``False``) end of the label. ``sort_taxa_by_label``
+        specifies whether the sequences should be sorted by their final label
+        values.
+        """
         self.generate_labels = generate_labels
         self.label_num_desc_components = label_num_desc_components
         self.label_separator = label_separator
