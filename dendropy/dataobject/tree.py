@@ -1163,6 +1163,15 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 node.add_child(nn1)
                 children = node.child_nodes()
 
+    def ladderize(self, right=False):
+        """
+        Sorts child nodes in ascending (if ``right`` is ``False``) or
+        descending (if ``right`` is ``True``) order in terms of the number of
+        children each child node has.
+        """
+        for nd in self.postorder_node_iter():
+            nd._child_nodes.sort(key=lambda n: len(n._child_nodes), reverse=right)
+
     def update_splits(self, **kwargs):
         """
         (Re-)decorates edges with split bitmasks.
