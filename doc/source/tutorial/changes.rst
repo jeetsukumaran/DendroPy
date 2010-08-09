@@ -2,6 +2,11 @@
 What's New in the DendroPy Tutorial
 ***********************************
 
+2010-08-09
+==========
+
+    * Added documentation for new :doc:`NCBI </tutorial/ncbi>` interoperability module.
+
 2010-03-17
 ==========
 

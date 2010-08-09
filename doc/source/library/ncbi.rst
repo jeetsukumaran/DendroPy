@@ -2,7 +2,7 @@
 :mod:`dendropy.interop.ncbi` -- NCBI Database Querying
 ******************************************************
 
-.. module:: dendropy.dataobject.ncbi
+.. module:: dendropy.interop.ncbi
 
 .. toctree::
     :maxdepth: 2
