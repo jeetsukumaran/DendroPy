@@ -4,6 +4,9 @@ NCBI (National Center for Biotechnology Information) Databases
 
 The :mod:`~dendropy.interop.ncbi` module provides the :class:`~dendropy.interop.ncbi.Entrez` class, which wraps up some basic querying and retrieval of data from the NCBI (National Center for Biotechnology Information) life-sciences databases.
 
+Retrieving Nucleotide Data
+==========================
+
 At the moment, the only functionality supported is for fetching data from the nucleotide database by accession numbers, which will be returned in the form of a :class:`~dendropy.dataobject.char.DnaCharacterMatrix` object. For example::
 
     >>> from dendropy.interop import ncbi
@@ -14,6 +17,10 @@ At the moment, the only functionality supported is for fetching data from the nu
     ...
     gi|158930546|gb|EU105475.1| Homo sapiens Arara non-coding region T864 genomic sequence
     gi|158930545|gb|EU105474.1| Homo sapiens Ache non-coding region T864 genomic sequence
+
+The resulting :class:`~dendropy.dataobject.char.DnaCharacterMatrix` object can, of course, be written to a file or manipulated as needed::
+
+    >>> data.write_to_path('eu10574-10575.nex', 'nexus')
 
 Sometimes, it might be more convenient to specify the required accession numbers as a range::
 
@@ -26,8 +33,13 @@ Sometimes, it might be more convenient to specify the required accession numbers
     gi|158930547|gb|EU105476.1| Homo sapiens Bribri non-coding region T864 genomic sequence
     gi|158930546|gb|EU105475.1| Homo sapiens Arara non-coding region T864 genomic sequence
     gi|158930545|gb|EU105474.1| Homo sapiens Ache non-coding region T864 genomic sequence
+    >>> data.write_to_path('data2.fas', 'fasta')
 
 Note that, consistent with Python's native ``range`` function, the last or end value is **not** part of the range. So, the expanded list of accession numbers specified by the example immediately above is ``['EU10574', 'EU10575', 'EU10576']``; ``EU10577`` is not included.
+
+
+(Auto-)Generating Analysis-Friendly Sequence Labels
+===================================================
 
 You can request the :class:`~dendropy.interop.ncbi.Entrez` object to generate labels that are little more compact and analysis friendly by passing ``generate_label=True`` to the constructor. This will generate a new taxon label for sequence based on the GenBank FASTA defline value. By default, it will compose a label in the form of:
 
@@ -60,6 +72,7 @@ So, for example::
     EU105474_Homo_sapiens_Ache
     EU105475_Homo_sapiens_Arara
     EU105476_Homo_sapiens_Bribri
+    >>> data.write_to_path('gb2.nex', 'nexus')
 
 Or::
 
@@ -74,4 +87,5 @@ Or::
     Homo.sapiens.EU105476
     Homo.sapiens.EU105475
     Homo.sapiens.EU105474
+    >>> data.write_to_path('seqs.dat', 'phylip', strict=False)
 
