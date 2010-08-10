@@ -36,6 +36,7 @@ from dendropy.dataio import nexuswriter
 from dendropy.dataio import fasta
 from dendropy.dataio import phylip
 from dendropy.dataio import nexml
+from dendropy.dataio import beast
 from dendropy.dataio.ioclient import get_reader, get_writer, tree_source_iter, multi_tree_source_iter
 
 _LOG = messaging.get_logger(__name__)
@@ -55,6 +56,7 @@ ioclient.register("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None)
 ioclient.register("proteinfasta", fasta.ProteinFastaReader, fasta.FastaWriter, None)
 ioclient.register("phylip", phylip.PhylipReader, phylip.PhylipWriter, None)
 ioclient.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None)
+ioclient.register("beast-summary-tree", beast.BeastSummaryTreeReader, None, None)
 
 ###############################################################################
 ## NEXUS Parser Implementation Selection

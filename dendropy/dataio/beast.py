@@ -52,7 +52,8 @@ class BeastSummaryTreeReader(NexusReader):
     def parse_beast_tree_node_info(tree,
         set_node_attributes=True,
         value_type=float,
-        create_field_if_missing=True):
+        create_field_if_missing=True,
+        ignore_missing=False):
         """
         Parses the comment tokens associated with nodes in a BEAST summary tree,
         creating an attribute for each node on the tree, `beast_info`, which is a
@@ -65,26 +66,26 @@ class BeastSummaryTreeReader(NexusReader):
         found will be automatically created (and set to None).
         """
         for nd in tree.postorder_node_iter():
-            # grab comment
-            if nd.comments is None or len(nd.comments) == 0:
-                raise ValueError("No comments found associated with node '%s'" % (str(nd)))
-            node_comment = nd.comments[0][1:]
-            # populate info dictionary
             beast_info = {}
-            for match_group in BEAST_NODE_INFO_PATTERN.findall(node_comment):
-                key, val = match_group[:2]
-                if val.startswith('{'):
-                    if value_type is not None:
-                        val = [value_type(v) for v in val[1:-1].split(',')]
+            if nd.comments is None or len(nd.comments) == 0:
+                if not ignore_missing:
+                    raise ValueError("No comments found associated with node '%s'" % (str(nd)))
+            else:
+                # populate info dictionary
+                node_comment = nd.comments[0][1:]
+                for match_group in BEAST_NODE_INFO_PATTERN.findall(node_comment):
+                    key, val = match_group[:2]
+                    if val.startswith('{'):
+                        if value_type is not None:
+                            val = [value_type(v) for v in val[1:-1].split(',')]
+                        else:
+                            val = val[1:-1].split(',')
                     else:
-                        val = val[1:-1].split(',')
-                else:
-                    if value_type is not None:
-                        val = value_type(val)
-                beast_info[key] = val
+                        if value_type is not None:
+                            val = value_type(val)
+                    beast_info[key] = val
             # create missing fields
             if create_field_if_missing:
-
                 for k in BEAST_SUMMARY_TREE_NODE_FIELDS:
                     if k not in beast_info:
                         beast_info[k] = None
@@ -116,10 +117,13 @@ class BeastSummaryTreeReader(NexusReader):
                after it has been constructed
             - `allow_duplicate_taxon_labels` : if True, allow duplicate labels
                on trees
+            - `ignore_missing_node_info` : if True, then no errors will be thrown if
+               tree nodes do not have the the required information.
         """
         if 'edge_len_type' not in kwargs:
             kwargs['edge_len_type'] = float
         NexusReader.__init__(self, **kwargs)
+        self.is_ignore_missing_node_info = kwargs.get('ignore_missing_node_info', False)
 
     def read(self, stream):
         """
@@ -136,7 +140,8 @@ class BeastSummaryTreeReader(NexusReader):
                 BeastSummaryTreeReader.parse_beast_tree_node_info(tree,
                         set_node_attributes=True,
                         value_type=float,
-                        create_field_if_missing=True)
+                        create_field_if_missing=True,
+                        ignore_missing=self.is_ignore_missing_node_info)
         return self.dataset
 
     def tree_source_iter(self, stream):
