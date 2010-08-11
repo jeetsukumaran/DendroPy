@@ -211,30 +211,38 @@ class Entrez(object):
                 'rettype': rettype,
                 'retmode': 'text'}
         query_url = Entrez.BASE_URL + "/efetch.fcgi?" + urllib.urlencode(params)
+        print query_url
+
         query = urllib.urlopen(query_url)
         return query
 
-    def fetch_nucleotide_accessions(self, ids, prefix=None, verify=True, **kwargs):
+    def fetch_nucleotide_accessions(self,
+            ids,
+            prefix=None,
+            verify=True,
+            matrix_type=dendropy.DnaCharacterMatrix,
+            **kwargs):
         """
-        Returns a DnaCharacterMatrix object populated with sequences from the
-        Entrez nucleotide database with accession numbers given by `ids` (a
-        list of numbers). If `prefix` is given, it is pre-pended to all
-        values given in the id list. Any other keyword arguments given are
-        passed to the constructor of ``DnaCharacterMatrix``.
+        Returns a DnaCharacterMatrix object (or some other type, if specified
+        by ``matrix_type`` argument) populated with sequences from the Entrez
+        nucleotide database with accession numbers given by `ids` (a list of
+        accession numbers). If `prefix` is given, it is pre-pended to all values
+        given in the id list. Any other keyword arguments given are passed to
+        the constructor of ``DnaCharacterMatrix``.
         """
         if prefix is not None:
             ids = ["%s%s" % (prefix,i) for i in ids]
         results = self._fetch(db='nucleotide', ids=ids, rettype='fasta')
         results_str = results.read()
         try:
-            d = dendropy.DnaCharacterMatrix.get_from_string(results_str, 'fasta', **kwargs)
+            d = matrix_type.get_from_string(results_str, 'fasta', **kwargs)
         except DataParseError, e:
             sys.stderr.write("---\nNCBI Entrez Query returned:\n%s\n---\n" % results_str)
             raise
         for taxon in d.taxon_set:
-            taxon.ncbi_accession_id = parse_gbnum(taxon.label)
+            taxon.ncbi_accession = parse_gbnum(taxon.label)
         if verify:
-            found_ids = set([t.ncbi_accession_id for t in d.taxon_set])
+            found_ids = set([t.ncbi_accession for t in d.taxon_set])
             missing_ids = set(ids).difference(found_ids)
             if len(missing_ids) > 0:
                 raise Entrez.AccessionFetchError(missing_ids)
@@ -247,14 +255,21 @@ class Entrez(object):
             d.taxon_set.sort(key=lambda x: x.label)
         return d
 
-    def fetch_nucleotide_accession_range(self, first, last, prefix=None, verify=True, **kwargs):
+    def fetch_nucleotide_accession_range(self,
+            first,
+            last,
+            prefix=None,
+            verify=True,
+            matrix_type=dendropy.DnaCharacterMatrix,
+            **kwargs):
         """
-        Returns a DnaCharacterMatrix object populated with sequences from the
+        Returns a DnaCharacterMatrix object (or some other type, if specified
+        by the ``matrix_type`` argument) populated with sequences from the
         Entrez nucleotide database with accession numbers between ``start``
-        and, up to and *including* ``end``. If `prefix` is given, then it
-        is pre-pended to the ids. Any other keyword arguments given are passed
-        to thee constructor of ``DnaCharacterMatrix``.
+        and, up to and *including* ``end``. If `prefix` is given, then it is
+        pre-pended to the ids. Any other keyword arguments given are passed to
+        thee constructor of ``DnaCharacterMatrix``.
         """
         ids = range(first, last+1)
-        return self.fetch_nucleotide_accessions(ids=ids, prefix=prefix, verify=verify, **kwargs)
+        return self.fetch_nucleotide_accessions(ids=ids, prefix=prefix, verify=verify, matrix_type=matrix_type, **kwargs)
 
