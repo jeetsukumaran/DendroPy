@@ -10,11 +10,11 @@ Retrieving Nucleotide Data
 By Lists of Accession Identifiers
 ---------------------------------
 
-The :meth:`~dendropy.interop.ncbi.Entrez.fetch_nucleotide_accession_ids` method takes a list of nucleotide accession numbers as arguments::
+The :meth:`~dendropy.interop.ncbi.Entrez.fetch_nucleotide_accessions` method takes a list of nucleotide accession numbers as arguments::
 
     >>> from dendropy.interop import ncbi
     >>> entrez = ncbi.Entrez()
-    >>> data = entrez.fetch_nucleotide_accession_ids(['EU105474', 'EU105475'])
+    >>> data = entrez.fetch_nucleotide_accessions(['EU105474', 'EU105475'])
     >>> for t in data.taxon_set:
     ...     print(t)
     ...
@@ -52,25 +52,25 @@ Error Handling
 By default, if you were to give non-existing accession numbers, an exception will be thrown::
 
     >>> entrez = ncbi.Entrez()
-    >>> data = entrez.fetch_nucleotide_accession_ids(['zzz0', 'zzz1'])
+    >>> data = entrez.fetch_nucleotide_accessions(['zzz0', 'zzz1'])
     Traceback (most recent call last):
       File "<stdin>", line 1, in <module>
-      File "dendropy/interop/ncbi.py", line 232, in fetch_nucleotide_accession_ids
+      File "dendropy/interop/ncbi.py", line 232, in fetch_nucleotide_accessions
         raise Entrez.AccessionFetchError(missing_ids)
     dendropy.interop.ncbi.AccessionFetchError: Failed to retrieve accessions: zzz0, zzz1
 
-By default, an exception will be thrown even if some of the specified accessions are valid:::
+An exception will be thrown even if some of the specified accessions are valid:::
 
-    >>> data = entrez.fetch_nucleotide_accession_ids(['zzz0', 'zzz1', 'EU105475'])
+    >>> data = entrez.fetch_nucleotide_accessions(['zzz0', 'zzz1', 'EU105475'])
     Traceback (most recent call last):
       File "<stdin>", line 1, in <module>
-      File "dendropy/interop/ncbi.py", line 232, in fetch_nucleotide_accession_ids
+      File "dendropy/interop/ncbi.py", line 232, in fetch_nucleotide_accessions
         raise Entrez.AccessionFetchError(missing_ids)
     dendropy.interop.ncbi.AccessionFetchError: Failed to retrieve accessions: zzz0, zzz1
 
-By passing in ``verify=False`` to :meth:`~dendropy.interop.ncbi.Entrez.fetch_nucleotide_accession_ids` or :meth:`~dendropy.interop.ncbi.Entrez.fetch_nucleotide_accession_range`, you can request that data retrieval failures can be ignore, and only existing accessions be returned::
+By passing in ``verify=False`` to :meth:`~dendropy.interop.ncbi.Entrez.fetch_nucleotide_accessions` or :meth:`~dendropy.interop.ncbi.Entrez.fetch_nucleotide_accession_range`, you can request that data retrieval failures can be ignore, and only existing accessions be returned::
 
-    >>> data = entrez.fetch_nucleotide_accession_ids(['zzz0', 'zzz1', 'EU105475'], verify=False)
+    >>> data = entrez.fetch_nucleotide_accessions(['zzz0', 'zzz1', 'EU105475'], verify=False)
     >>> len(data)
     1
     >>> for t in data.taxon_set:
@@ -81,9 +81,23 @@ By passing in ``verify=False`` to :meth:`~dendropy.interop.ncbi.Entrez.fetch_nuc
 
 Note that specifying ``verify=False`` means that you might end up with empty :class:`~dendropy.dataobject.char.DnaCharacterMatrix`  objects::
 
-    >>> data = entrez.fetch_nucleotide_accession_ids(['zzz0', 'zzz1'], verify=False)
+    >>> data = entrez.fetch_nucleotide_accessions(['zzz0', 'zzz1'], verify=False)
     >>> len(data)
     0
+
+Also, perhaps more of a concern, turning off verification may lead to **wrong** sequences being retrieved.
+For example::
+
+    >>> data = entrez.fetch_nucleotide_accession_range(1000, 1001, verify=False)
+    >>> print(len(data))
+    2
+    >>> for t in data.taxon_set:
+    ...     print(t.genbank_id, ":  ", t.label)
+    ...
+    Z18639 :   gi|1000|emb|Z18639.1| D.leucas gene for large subunit rRNA
+    Z18638 :   gi|1001|emb|Z18638.1| D.leucas gene for small subunit rRNA
+
+Here, the sequences were retrieved based on matching GI numbers rather than the correct accession ids.
 
 (Auto-)Generating Analysis-Friendly Sequence Labels
 ===================================================
@@ -104,7 +118,7 @@ You can control details of the label construction by the following arguments to 
 
     - ``label_num_desc_components`` specifies the number of components from the defline to use. By default, this is 3, which usually corresponds (in a sensible defline) to the genus name, the species epithet, and either the sub-species or locality information.
     - ``label_separator`` specifies the string used in between different label components. By default, this is an underscore.
-    - ``label_gbnum_in_front`` specifies whether the GenBank accession number should form the beginning
+    - ``label_id_in_front`` specifies whether the GenBank accession number should form the beginning
         (``True``; default) or tail (``False``) end of the label.
 
 Furthermore, you can request that the data get sorted by label value by specifying ``sort_taxa_by_label=True``.
@@ -112,7 +126,7 @@ Furthermore, you can request that the data get sorted by label value by specifyi
 So, for example::
 
     >>> entrez = ncbi.Entrez(generate_labels=True, sort_taxa_by_label=True)
-    >>> data = entrez.fetch_nucleotide_accession_ids(['EU105474', 'EU105475', 'EU105476'])
+    >>> data = entrez.fetch_nucleotide_accessions(['EU105474', 'EU105475', 'EU105476'])
     >>> for t in data.taxon_set:
     ...     print(t)
     ...
@@ -125,9 +139,9 @@ Or::
 
     >>> entrez = ncbi.Entrez(generate_labels=True,
     ...         label_num_desc_components=2,
-    ...         label_gbnum_in_front=False,
+    ...         label_id_in_front=False,
     ...         label_separator='.')
-    >>> data = entrez.fetch_nucleotide_accession_ids(['EU105474', 'EU105475', 'EU105476'])
+    >>> data = entrez.fetch_nucleotide_accessions(['EU105474', 'EU105475', 'EU105476'])
     >>> for t in data.taxon_set:
     ...     print(t)
     ...

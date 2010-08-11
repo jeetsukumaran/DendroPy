@@ -8,9 +8,9 @@ New Features
 
         >>> from dendropy.interop import ncbi
         >>> entrez = ncbi.Entrez(generate_labels=True, sort_taxa_by_label=True)
-        >>> data1 = entrez.fetch_nucleotide_accession_range(105474, 106045, prefix="EU")
+        >>> data1 = entrez.fetch_nucelotide_accessions(['EU105474', 'EU105476'])
         >>> data1.write_to_path('seqs1.nex', 'nexus')
-        >>> data2 = entrez.fetch_nucelotide_accession_ids(['EU105474', 'EU105476'])
+        >>> data2 = entrez.fetch_nucleotide_accession_range(105474, 106045, prefix="EU")
         >>> data2.write_to_path('seqs2.nex', 'nexus')
 
       Note that unlike Python's native "``range``" command, here the last element **is included** in the range (i.e., a range specified as "*a*, *b*" => [a,b]), and thus ``entrez.fetch_nucleotide_accession_range(105474, 106045, prefix="EU")`` will result in the full range of sequences from "EU105474-106045" being retrieved.
