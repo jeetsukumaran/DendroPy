@@ -79,7 +79,7 @@ By passing in ``verify=False`` to :meth:`~dendropy.interop.ncbi.Entrez.fetch_nuc
     gi|158930546|gb|EU105475.1| Homo sapiens Arara non-coding region T864 genomic sequence
 
 
-Specifying ``verify=False`` means that you might end up with empty :class:`~dendropy.dataobject.char.DnaCharacterMatrix`  objects::
+Note that specifying ``verify=False`` means that you might end up with empty :class:`~dendropy.dataobject.char.DnaCharacterMatrix`  objects::
 
     >>> data = entrez.fetch_nucleotide_accession_ids(['zzz0', 'zzz1'], verify=False)
     >>> len(data)

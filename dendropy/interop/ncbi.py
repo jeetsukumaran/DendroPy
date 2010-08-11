@@ -254,5 +254,5 @@ class Entrez(object):
         to thee constructor of ``DnaCharacterMatrix``.
         """
         ids = range(first, last+1)
-        return self.fetch_nucleotide_accession_ids(ids=ids, prefix=prefix, verify=verify**kwargs)
+        return self.fetch_nucleotide_accession_ids(ids=ids, prefix=prefix, verify=verify, **kwargs)
 
