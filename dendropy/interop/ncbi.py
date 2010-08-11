@@ -103,7 +103,8 @@ class Entrez(object):
         >>> e = ncbi.Entrez(generate_labels=True,
         ... label_gbnum_in_front=False,
         ... sort_taxa_by_label=True)
-        >>> d = e.fetch_nucleotide_accession_range(105474, 106046, prefix="EU")
+        >>> d1 = e.fetch_nucleotide_accession_ids(['EU105474', 'EU105476'])
+        >>> d2 = e.fetch_nucleotide_accession_range(105474, 106045, prefix="EU")
 
     """
 
@@ -220,15 +221,14 @@ class Entrez(object):
             d.taxon_set.sort(key=lambda x: x.label)
         return d
 
-    def fetch_nucleotide_accession_range(self, start, stop, prefix=None, **kwargs):
+    def fetch_nucleotide_accession_range(self, first, last, prefix=None, **kwargs):
         """
         Returns a DnaCharacterMatrix object populated with sequences from the
         Entrez nucleotide database with accession numbers between ``start``
-        and, up to, but *not* including, ``end`` (i.e., behavior is identical
-        to Python's built-in ``range``). If `prefix` is given, then it
+        and, up to and *including* ``end``. If `prefix` is given, then it
         is pre-pended to the ids. Any other keyword arguments given are passed
         to thee constructor of ``DnaCharacterMatrix``.
         """
-        ids = range(start, stop)
+        ids = range(first, last+1)
         return self.fetch_nucleotide_accession_ids(ids=ids, prefix=prefix, **kwargs)
 

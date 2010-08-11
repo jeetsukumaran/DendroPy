@@ -7,36 +7,39 @@ The :mod:`~dendropy.interop.ncbi` module provides the :class:`~dendropy.interop.
 Retrieving Nucleotide Data
 ==========================
 
-At the moment, the only functionality supported is for fetching data from the nucleotide database by accession numbers, which will be returned in the form of a :class:`~dendropy.dataobject.char.DnaCharacterMatrix` object. For example::
+At the moment, the only functionality supported is for fetching data from the nucleotide database by accession numbers, which will be returned in the form of a :class:`~dendropy.dataobject.char.DnaCharacterMatrix` object.
+For example, the :meth:`~dendropy.interop.ncbi.Entrez.fetch_nucleotide_accession_ids` method takes a list of nucleotide accession numbers as arguments::
 
     >>> from dendropy.interop import ncbi
     >>> entrez = ncbi.Entrez()
-    >>> data = entrez.fetch_nucleotide_accession_ids(['EU10574', 'EU10575'])
+    >>> data = entrez.fetch_nucleotide_accession_ids(['EU105474', 'EU105475'])
     >>> for t in data.taxon_set:
     ...     print(t)
     ...
     gi|158930546|gb|EU105475.1| Homo sapiens Arara non-coding region T864 genomic sequence
     gi|158930545|gb|EU105474.1| Homo sapiens Ache non-coding region T864 genomic sequence
 
-The resulting :class:`~dendropy.dataobject.char.DnaCharacterMatrix` object can, of course, be written to a file or manipulated as needed::
+As can be seen, If successful, it returns a :class:`~dendropy.dataobject.char.DnaCharacterMatrix` object that consists of sequences corresponding to the requested accessions. This can, of course, be written to a file or manipulated as needed::
 
-    >>> data.write_to_path('eu10574-10575.nex', 'nexus')
+    >>> data.write_to_path('eu105474-105475.nex', 'nexus')
 
-Sometimes, it might be more convenient to specify the required accession numbers as a range::
+Sometimes, it might be more convenient to specify the required accession numbers as a range. For example, a publication may list sequences accessioned as "EU10574-106045". The :meth:`~dendropy.interop.ncbi.Entrez.fetch_nucleotide_accession_range` takes three arguments: a numeric value indicating the start of the range, a numeric value indicating the end of the range, and string giving a prefix to be added to each number within the range to yield the full accession identifier.
+Note that, unlike Python's native ``range`` function, the last or end value *is included* as part of the range.
+So, to get the all the sequences given in a publication as "EU10574-106045"::
 
     >>> from dendropy.interop import ncbi
     >>> entrez = ncbi.Entrez()
-    >>> data = entrez.fetch_nucleotide_accession_range(10574, 10577, prefix="EU")
+    >>> data = entrez.fetch_nucleotide_accession_range(105474, 106045, prefix="EU")
     >>> for t in data.taxon_set:
     ...     print(t)
     ...
-    gi|158930547|gb|EU105476.1| Homo sapiens Bribri non-coding region T864 genomic sequence
-    gi|158930546|gb|EU105475.1| Homo sapiens Arara non-coding region T864 genomic sequence
-    gi|158930545|gb|EU105474.1| Homo sapiens Ache non-coding region T864 genomic sequence
+    gi|158930636|gb|EU105565.1| Homo sapiens Arara non-coding region T946 genomic sequence
+    gi|158930635|gb|EU105564.1| Homo sapiens Ache non-coding region T946 genomic sequence
+    gi|158930638|gb|EU105567.1| Homo sapiens Guatuso non-coding region T946 genomic sequenc
+    .
+    .
+    .
     >>> data.write_to_path('data2.fas', 'fasta')
-
-Note that, consistent with Python's native ``range`` function, the last or end value is **not** part of the range. So, the expanded list of accession numbers specified by the example immediately above is ``['EU10574', 'EU10575', 'EU10576']``; ``EU10577`` is not included.
-
 
 (Auto-)Generating Analysis-Friendly Sequence Labels
 ===================================================

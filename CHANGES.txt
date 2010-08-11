@@ -4,11 +4,24 @@ Release 3.5.0
 New Features
 ^^^^^^^^^^^^
 
-    - Added new module for interacting with NCBI databases: ``dendropy.interop.ncbi``. Sequences can be downloaded individually, or by specifying ranges, and labels suitable for use in phylogenetic analyses can be automatically composed::
+    - Added new module for interacting with NCBI databases: ``dendropy.interop.ncbi``. Sequences can be downloaded individually or by specifying ranges. In addition, labels suitable for use in phylogenetic analyses can be automatically composed for each sequence. For example::
 
         >>> from dendropy.interop import ncbi
         >>> entrez = ncbi.Entrez(generate_labels=True, sort_taxa_by_label=True)
-        >>> data = entrez.fetch_nucleotide_accession_range(105474, 106046, prefix="EU")
+        >>> data1 = entrez.fetch_nucleotide_accession_range(105474, 106045, prefix="EU")
+        >>> data1.write_to_path('seqs1.nex', 'nexus')
+        >>> data2 = entrez.fetch_nucelotide_accession_ids(['EU105474', 'EU105476'])
+        >>> data2.write_to_path('seqs2.nex', 'nexus')
+
+      Note that unlike Python's native "``range``" command, here the last element **is included** in the range (i.e., a range specified as "*a*, *b*" => [a,b]), and thus ``entrez.fetch_nucleotide_accession_range(105474, 106045, prefix="EU")`` will result in the full range of sequences from "EU105474-106045" being retrieved.
+      Note also that error-checking and handling is *very* rudimentary at the moment, and you have to be especially careful to make sure that the accession id's or ranges are specified correctly.
+
+    - Added "``beast-summary-tree``" schema specification to process BEAST annotated consensus trees::
+
+        >>> import dendropy
+        >>> tree = dendropy.Tree.get_from_path('pythonidae.beast.tre', 'beast-summary-tree')
+
+      Each node on the resulting tree will have the following attributes: "``height``", "``height_median``", "``height_95hpd``", "``height_range``", "``length``", "``length_median``", "``length_95hpd``", "``length_range``", "``posterior'. Scalar values will be of ``float`` type, while ranges (e.g., "``height_95hpd``", "``height_range``", "``length_95hpd``", "``length_range``") will be two-element lists of ``float`` types.
 
     - Added ``ladderize()`` method, to order nodes in ascending (default) or descending (``ladderize(right=True)``) order.
 

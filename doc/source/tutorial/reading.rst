@@ -108,6 +108,10 @@ The string can be one of the following:
     "``phylip``"
         To read |CharacterMatrix| or |DataSet| objects from a PHYLIP-formatted source. PHYLIP-sources require the additional keyword, ``data_type``, that describes the type of data: "``dna``", "``rna``", "``protein``", "``standard``"" (discrete data represented as binary 0/1), "``restriction``" (restriction sites), or "``infinite``" (infinite sites).
 
+    "``beast-summary-tree``"
+        To read |Tree| or |TreeList| objects from a BEAST annotated consensus tree source.
+        Each node on the resulting tree(s) will have the following attributes: "``height``", "``height_median``", "``height_95hpd``", "``height_range``", "``length``", "``length_median``", "``length_95hpd``", "``length_range``", "``posterior'. Scalar values will be of ``float`` type, while ranges (e.g., "``height_95hpd``", "``height_range``", "``length_95hpd``", "``length_range``") will be two-element lists of ``float``.
+
 .. _Customizing_Data_Creation_and_Reading:
 
 Customizing Data Creation and Reading
@@ -190,4 +194,10 @@ PHYLIP
 
     ``underscores_to_spaces``
         In the default relaxed PHYLIP format mode, since the first occurrence of a space in the data format is taken to denote the end of the taxon label, spaces are not permitted within taxon labels. A common convention is to use underscores in place of spaces in cases like this. By specifying ``underscores_to_spaces=True``, the parser will automatically substitute any underscores found in taxon labels with spaces, thus allowing for correspondence with the same taxa represented in other formats that allow spaces, such as NEXUS or Newick.
+
+BEAST Summary Trees
+^^^^^^^^^^^^^^^^^^^
+
+    ``ignore_missing_node_info``
+        If any nodes are missing annotations (given as a NEXUS-style square-bracket wrapped comment string, with the first character of the comment string an ampersand), then by default the parser will throw an exception. If ``ignore_missing_node_info`` is ``True``, then missing annotations are silently ignored and all relevant attribute values will be set to to ``None``.
 
