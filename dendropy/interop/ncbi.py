@@ -110,9 +110,9 @@ class Entrez(object):
 
         >>> from dendropy.interop import ncbi
         >>> e = ncbi.Entrez(generate_labels=True,
-        ... label_gbnum_in_front=False,
+        ... label_id_in_front=False,
         ... sort_taxa_by_label=True)
-        >>> d1 = e.fetch_nucleotide_accession_ids(['EU105474', 'EU105476'])
+        >>> d1 = e.fetch_nucleotide_accessions(['EU105474', 'EU105476'])
         >>> d2 = e.fetch_nucleotide_accession_range(105474, 106045, prefix="EU")
 
     """
@@ -177,7 +177,7 @@ class Entrez(object):
             generate_labels=False,
             label_num_desc_components=3,
             label_separator='_',
-            label_gbnum_in_front=True,
+            label_id_in_front=True,
             sort_taxa_by_label=False):
         """
         Instantiates a broker that queries NCBI and returns data.  If
@@ -186,7 +186,7 @@ class Entrez(object):
         FASTA defline. ``label_num_desc_components`` specifies the number of
         components from the defline to use. ``label_separator`` specifies the
         string used to separate the different label components.
-        ``label_gbnum_in_front`` specifies whether the GenBank accession number
+        ``label_id_in_front`` specifies whether the GenBank accession number
         should form the beginning (``True``) or tail (``False``) end of the
         label. ``sort_taxa_by_label`` specifies whether the sequences should be
         sorted by their final label values.
@@ -194,7 +194,7 @@ class Entrez(object):
         self.generate_labels = generate_labels
         self.label_num_desc_components = label_num_desc_components
         self.label_separator = label_separator
-        self.label_gbnum_in_front = label_gbnum_in_front
+        self.label_id_in_front = label_id_in_front
         self.sort_taxa_by_label = sort_taxa_by_label
 
     def _fetch(self, db, ids, rettype):
@@ -214,7 +214,7 @@ class Entrez(object):
         query = urllib.urlopen(query_url)
         return query
 
-    def fetch_nucleotide_accession_ids(self, ids, prefix=None, verify=True, **kwargs):
+    def fetch_nucleotide_accessions(self, ids, prefix=None, verify=True, **kwargs):
         """
         Returns a DnaCharacterMatrix object populated with sequences from the
         Entrez nucleotide database with accession numbers given by `ids` (a
@@ -232,16 +232,17 @@ class Entrez(object):
             sys.stderr.write("---\nNCBI Entrez Query returned:\n%s\n---\n" % results_str)
             raise
         for taxon in d.taxon_set:
-            taxon.genbank_id = parse_gbnum(taxon.label)
+            taxon.ncbi_accession_id = parse_gbnum(taxon.label)
         if verify:
-            found_ids = set([t.genbank_id for t in d.taxon_set])
+            found_ids = set([t.ncbi_accession_id for t in d.taxon_set])
             missing_ids = set(ids).difference(found_ids)
-            raise Entrez.AccessionFetchError(missing_ids)
+            if len(missing_ids) > 0:
+                raise Entrez.AccessionFetchError(missing_ids)
         if self.generate_labels:
             relabel_taxa_from_defline(d.taxon_set,
                     num_desc_components=self.label_num_desc_components,
                     separator=self.label_separator,
-                    gbnum_in_front=self.label_gbnum_in_front)
+                    gbnum_in_front=self.label_id_in_front)
         if self.sort_taxa_by_label:
             d.taxon_set.sort(key=lambda x: x.label)
         return d
@@ -255,5 +256,5 @@ class Entrez(object):
         to thee constructor of ``DnaCharacterMatrix``.
         """
         ids = range(first, last+1)
-        return self.fetch_nucleotide_accession_ids(ids=ids, prefix=prefix, verify=verify, **kwargs)
+        return self.fetch_nucleotide_accessions(ids=ids, prefix=prefix, verify=verify, **kwargs)
 
