@@ -25,9 +25,53 @@ Readers/writers for BEAST data.
 """
 
 import re
+from dendropy.dataio import ioclient
 from dendropy.dataio.nexusreader_py import NexusReader
 
+###############################################################################
+## Constants
+
 BEAST_NODE_INFO_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(,|$)')
+
+###############################################################################
+## tree_source_iter
+
+def summary_tree_source_iter(stream, **kwargs):
+    """
+    Iterates over a NEXUS-formatted source of trees given by file-like object
+    `stream`
+
+    The following optional keyword arguments are recognized:
+
+        - `taxon_set`: TaxonSet object to use when reading data
+        - `as_rooted=True` (or `as_unrooted=False`): interprets trees as rooted
+        - `as_unrooted=True` (or `as_rooted=False`): interprets trees as unrooted
+        - `default_as_rooted=True` (or `default_as_unrooted=False`): interprets
+           all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
+        - `default_as_unrooted=True` (or `default_as_rooted=False`): interprets
+           all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
+        - `edge_len_type`: specifies the type of the edge lengths (int or float)
+        - `encode_splits`: specifies whether or not split bitmasks will be
+           calculated and attached to the edges.
+        - `finish_node_func`: is a function that will be applied to each node
+           after it has been constructed
+        - `allow_duplicate_taxon_labels` : if True, allow duplicate labels
+           on trees
+        - `ignore_missing_node_info` : if True, then no errors will be thrown if
+           tree nodes do not have the the required information.
+
+    Only trees will be returned, and any and all character data will
+    be skipped. The iterator will span over multiple tree blocks,
+    but, because our NEXUS data model implementation currently does
+    not recognize multiple taxon collection definnitions, taxa in
+    those tree blocks will be aggregated into the same `TaxonSet` (a
+    new one created, or the one passed to this method via the
+    `taxon_set` argument). This behavior is similar to how multiple
+    tree blocks are handled by a full NEXUS data file read.
+    """
+    reader = ioclient.get_reader('beast-summary-tree', **kwargs)
+    for i, tree in enumerate(reader.tree_source_iter(stream)):
+        yield tree
 
 ###############################################################################
 ## BeastNexusReader
@@ -156,5 +200,10 @@ class BeastSummaryTreeReader(NexusReader):
         `taxon_set` argument). This behavior is similar to how multiple
         tree blocks are handled by a full NEXUS data file read.
         """
-        for tree in NexusReader.tree_source_iter(source):
+        for tree in NexusReader.tree_source_iter(self, stream):
+            BeastSummaryTreeReader.parse_beast_tree_node_info(tree,
+                    set_node_attributes=True,
+                    value_type=float,
+                    create_field_if_missing=True,
+                    ignore_missing=self.is_ignore_missing_node_info)
             yield tree

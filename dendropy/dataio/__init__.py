@@ -56,7 +56,7 @@ ioclient.register("rnafasta", fasta.RNAFastaReader, fasta.FastaWriter, None)
 ioclient.register("proteinfasta", fasta.ProteinFastaReader, fasta.FastaWriter, None)
 ioclient.register("phylip", phylip.PhylipReader, phylip.PhylipWriter, None)
 ioclient.register("nexml", nexml.NexmlReader, nexml.NexmlWriter, None)
-ioclient.register("beast-summary-tree", beast.BeastSummaryTreeReader, None, None)
+ioclient.register("beast-summary-tree", beast.BeastSummaryTreeReader, None, beast.summary_tree_source_iter)
 
 ###############################################################################
 ## NEXUS Parser Implementation Selection

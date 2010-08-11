@@ -59,6 +59,24 @@ class BeastSummaryTreeTests(datatest.DataObjectVerificationTestCase):
         #    print('length_range    = %s' % nd.length_range)
         #    print('posterior       = %s' % nd.posterior)
 
+    def testSummaryTreeIter(self):
+        stream = pathmap.tree_source_stream('pythonidae.beast-summary.tre')
+        for tree in dendropy.tree_source_iter(stream, 'beast-summary-tree'):
+            pass
+            #for nd in tree:
+                #print('---')
+                #print('Node: %s' % nd.oid)
+                ##print nd.comments[0]
+                #print('height          = %s' % nd.height)
+                #print('height_median   = %s' % nd.height_median)
+                #print('height_95hpd    = %s' % nd.height_95hpd)
+                #print('height_range    = %s' % nd.height_range)
+                #print('length          = %s' % nd.length)
+                #print('length_median   = %s' % nd.length_median)
+                #print('length_95hpd    = %s' % nd.length_95hpd)
+                #print('length_range    = %s' % nd.length_range)
+                #print('posterior       = %s' % nd.posterior)
+
 if __name__ == "__main__":
     unittest.main()
 
