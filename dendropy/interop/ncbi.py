@@ -42,6 +42,13 @@ def parse_gbnum(gb_defline):
     else:
         return None
 
+def parse_ncbi_curation_info(gb_defline):
+    m = GB_FASTA_DEFLINE_PATTERN.match(gb_defline)
+    if m is not None:
+        return m.groups()[0], m.groups()[2], m.groups()[2] + '.' + m.groups()[3]
+    else:
+        return None
+
 def compose_taxon_label_from_gb_defline(gb_defline,
         num_desc_components=3,
         separator='_',
@@ -240,7 +247,8 @@ class Entrez(object):
             sys.stderr.write("---\nNCBI Entrez Query returned:\n%s\n---\n" % results_str)
             raise
         for taxon in d.taxon_set:
-            taxon.ncbi_accession = parse_gbnum(taxon.label)
+            taxon.ncbi_defline = taxon.label
+            taxon.ncbi_gi, taxon.ncbi_accession, taxon.ncbi_version = parse_ncbi_curation_info(taxon.ncbi_defline)
         if verify:
             found_ids = set([t.ncbi_accession for t in d.taxon_set])
             missing_ids = set(ids).difference(found_ids)
