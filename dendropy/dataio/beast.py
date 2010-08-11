@@ -33,6 +33,22 @@ from dendropy.dataio.nexusreader_py import NexusReader
 
 BEAST_NODE_INFO_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(,|$)')
 
+BEAST_SUMMARY_TREE_NODE_FIELDS = [
+        'height',
+        'height_median',
+        'height_95hpd',
+        'height_range',
+        'length',
+        'length_median',
+        'length_95hpd',
+        'length_range',
+        'posterior']
+
+BEAST_SUMMARY_FIELDS_TO_ATTR_MAP = {
+        'height_95%_HPD' : 'height_95hpd',
+        'length_95%_HPD' : 'length_95hpd',
+        }
+
 ###############################################################################
 ## tree_source_iter
 
@@ -76,17 +92,6 @@ def summary_tree_source_iter(stream, **kwargs):
 ###############################################################################
 ## BeastNexusReader
 
-BEAST_SUMMARY_TREE_NODE_FIELDS = [
-        'height',
-        'height_median',
-        'height_95hpd',
-        'height_range',
-        'length',
-        'length_median',
-        'length_95hpd',
-        'length_range',
-        'posterior']
-
 class BeastSummaryTreeReader(NexusReader):
     """
     Encapsulates parsing of BEAST summary trees (NEXUS with supplementary
@@ -119,6 +124,7 @@ class BeastSummaryTreeReader(NexusReader):
                 node_comment = nd.comments[0][1:]
                 for match_group in BEAST_NODE_INFO_PATTERN.findall(node_comment):
                     key, val = match_group[:2]
+                    key = BEAST_SUMMARY_FIELDS_TO_ATTR_MAP.get(key, key)
                     if val.startswith('{'):
                         if value_type is not None:
                             val = [value_type(v) for v in val[1:-1].split(',')]
@@ -138,7 +144,6 @@ class BeastSummaryTreeReader(NexusReader):
             # set attributes
             if set_node_attributes:
                 for k,v in nd.beast_info.items():
-                    k = k.replace('95%_HPD', '95hpd')
                     setattr(nd, k, v)
         return tree
     parse_beast_tree_node_info = staticmethod(parse_beast_tree_node_info)
