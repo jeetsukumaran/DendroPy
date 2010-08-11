@@ -28,10 +28,18 @@ from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
 import urllib
+import sys
 import dendropy
 import re
 
 GB_FASTA_DEFLINE_PATTERN = re.compile(r'^gi\|(\d+)\|gb\|([\w\d]+).(\d+)\|(.*)$')
+
+def parse_gbnum(gb_defline):
+    m = GB_FASTA_DEFLINE_PATTERN.match(gb_defline)
+    if m is not None:
+        return m.groups()[1]
+    else:
+        return None
 
 def compose_taxon_label_from_gb_defline(gb_defline,
         num_desc_components=3,
@@ -159,6 +167,11 @@ class Entrez(object):
         'linkoutother',
         ]
 
+    class AccessionFetchError(Exception):
+
+        def __init__(self, accession_ids):
+            Exception.__init__(self, "Failed to retrieve accessions: %s" % (", ".join(accession_ids)))
+
     def __init__(self,
             generate_labels=False,
             label_num_desc_components=3,
@@ -200,7 +213,7 @@ class Entrez(object):
         query = urllib.urlopen(query_url)
         return query
 
-    def fetch_nucleotide_accession_ids(self, ids, prefix=None, **kwargs):
+    def fetch_nucleotide_accession_ids(self, ids, prefix=None, verify=True, **kwargs):
         """
         Returns a DnaCharacterMatrix object populated with sequences from the
         Entrez nucleotide database with accession numbers given by `ids` (a
@@ -211,7 +224,18 @@ class Entrez(object):
         if prefix is not None:
             ids = ["%s%s" % (prefix,i) for i in ids]
         results = self._fetch(db='nucleotide', ids=ids, rettype='fasta')
-        d = dendropy.DnaCharacterMatrix.get_from_stream(results, 'fasta', **kwargs)
+        results_str = results.read()
+        try:
+            d = dendropy.DnaCharacterMatrix.get_from_string(results_str, 'fasta', **kwargs)
+        except DataParseError, e:
+            sys.stderr.write("---\nNCBI Entrez Query returned:\n%s\n---\n" % results_str)
+            raise
+        for taxon in d.taxon_set:
+            taxon.genbank_id = parse_gbnum(taxon.label)
+        if verify:
+            found_ids = set([t.genbank_id for t in d.taxon_set])
+            missing_ids = set(ids).difference(found_ids)
+            raise Entrez.AccessionFetchError(missing_ids)
         if self.generate_labels:
             relabel_taxa_from_defline(d.taxon_set,
                     num_desc_components=self.label_num_desc_components,
@@ -221,7 +245,7 @@ class Entrez(object):
             d.taxon_set.sort(key=lambda x: x.label)
         return d
 
-    def fetch_nucleotide_accession_range(self, first, last, prefix=None, **kwargs):
+    def fetch_nucleotide_accession_range(self, first, last, prefix=None, verify=True, **kwargs):
         """
         Returns a DnaCharacterMatrix object populated with sequences from the
         Entrez nucleotide database with accession numbers between ``start``
@@ -230,5 +254,5 @@ class Entrez(object):
         to thee constructor of ``DnaCharacterMatrix``.
         """
         ids = range(first, last+1)
-        return self.fetch_nucleotide_accession_ids(ids=ids, prefix=prefix, **kwargs)
+        return self.fetch_nucleotide_accession_ids(ids=ids, prefix=prefix, verify=verify**kwargs)
 
