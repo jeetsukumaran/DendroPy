@@ -31,13 +31,14 @@ import urllib
 import sys
 import dendropy
 import re
+from dendropy.utility.error import DataParseError
 
-GB_FASTA_DEFLINE_PATTERN = re.compile(r'^gi\|(\d+)\|gb\|([\w\d]+).(\d+)\|(.*)$')
+GB_FASTA_DEFLINE_PATTERN = re.compile(r'^gi\|(\d+)\|(\w+)\|([\w\d]+).(\d+)\|(.*)$')
 
 def parse_gbnum(gb_defline):
     m = GB_FASTA_DEFLINE_PATTERN.match(gb_defline)
     if m is not None:
-        return m.groups()[1]
+        return m.groups()[2]
     else:
         return None
 
@@ -67,9 +68,9 @@ def compose_taxon_label_from_gb_defline(gb_defline,
         groups = m.groups()
         desc_parts = [s.strip() for s in groups[-1].split() if s]
         if gbnum_in_front:
-            label_parts = [groups[1]] + desc_parts[:num_desc_components]
+            label_parts = [groups[2]] + desc_parts[:num_desc_components]
         else:
-            label_parts = desc_parts[:num_desc_components] + [groups[1]]
+            label_parts = desc_parts[:num_desc_components] + [groups[2]]
         return separator.join(label_parts)
     else:
         return gb_defline
@@ -170,7 +171,7 @@ class Entrez(object):
     class AccessionFetchError(Exception):
 
         def __init__(self, accession_ids):
-            Exception.__init__(self, "Failed to retrieve accessions: %s" % (", ".join(accession_ids)))
+            Exception.__init__(self, "Failed to retrieve accessions: %s" % (", ".join([str(s) for s in accession_ids])))
 
     def __init__(self,
             generate_labels=False,
