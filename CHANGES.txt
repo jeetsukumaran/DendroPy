@@ -14,7 +14,6 @@ New Features
         >>> data2.write_to_path('seqs2.nex', 'nexus')
 
       Note that unlike Python's native "``range``" command, here the last element **is included** in the range (i.e., a range specified as "*a*, *b*" => [a,b]), and thus ``entrez.fetch_nucleotide_accession_range(105474, 106045, prefix="EU")`` will result in the full range of sequences from "EU105474-106045" being retrieved.
-      Note also that error-checking and handling is *very* rudimentary at the moment, and you have to be especially careful to make sure that the accession id's or ranges are specified correctly.
 
     - Added "``beast-summary-tree``" schema specification to process BEAST annotated consensus trees::
 
