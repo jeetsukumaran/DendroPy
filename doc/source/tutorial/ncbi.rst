@@ -46,6 +46,25 @@ So, to get the all the sequences given in a publication as "EU10574-106045"::
     .
     >>> data.write_to_path('data2.fas', 'fasta')
 
+Tracking NCBI Curation Information
+----------------------------------
+
+The :class:`~dendropy.dataobject.taxon.Taxon` objects associated with each sequence downloaded will have three additional attributes: ``ncbi_accession``, ``ncbi_version``, and ``ncbi_gi``. These track the accession, sequence version, and GI numbers, respectively, of the sequence::
+
+    >>> from dendropy.interop import ncbi
+    >>> entrez = ncbi.Entrez()
+    >>> data = entrez.fetch_nucleotide_accessions(['EU105474', 'EU105475'])
+    >>> for taxon in data1.taxon_set:
+    ...     print(taxon.ncbi_accession, taxon.ncbi_version, taxon.ncbi_gi)
+    ...
+    ('EU105476', 'EU105476.1', '158930547')
+    ('EU105474', 'EU105474.1', '158930545')
+
+RNA vs. DNA
+-----------
+
+As noted, it is assumed that the data is DNA, and thus the query will result in a :class:`~dendropy.dataobject.char.DnaCharacterMatrix` object. By specifying ``matrix_type=RnaCharacterMatrix`` to :meth:`~dendropy.interop.ncbi.Entrez.fetch_nucleotide_accessions` or :meth:`~dendropy.interop.ncbi.Entrez.fetch_nucleotide_accession_range`, you can retrieve RNA data as well.
+
 Error Handling
 --------------
 
@@ -86,7 +105,7 @@ Note that specifying ``verify=False`` means that you might end up with empty :cl
     0
 
 Also, perhaps more of a concern, turning off verification may lead to **wrong** sequences being retrieved.
-For example::
+For example, when trying to download a range of accessions, but inadvertently omitting to specify a ``prefix`` value to be pre-pended to identifiers might result in matching the wrong sequences, based on GI values::
 
     >>> data = entrez.fetch_nucleotide_accession_range(1000, 1001, verify=False)
     >>> print(len(data))
@@ -97,7 +116,33 @@ For example::
     Z18639 :   gi|1000|emb|Z18639.1| D.leucas gene for large subunit rRNA
     Z18638 :   gi|1001|emb|Z18638.1| D.leucas gene for small subunit rRNA
 
-Here, the sequences were retrieved based on matching GI numbers rather than the correct accession ids.
+Here, the sequences were retrieved based on matching GI numbers (1000, 1001) rather than the accession ids (e.g., "AY1000", "AY1001").
+
+Switching off verification can also lead to some confusing errors. For example::
+
+    >>> data = entrez.fetch_nucleotide_accession_range(1000, 1003, verify=False)
+    ---
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+      File ":dendropy/interop/ncbi.py", line 282, in fetch_nucleotide_accession_range
+
+      File "dendropy/interop/ncbi.py", line 245, in fetch_nucleotide_accessions
+        sys.stderr.write("---\nNCBI Entrez Query returned:\n%s\n---\n" % results_str)
+      File "dendropy/utility/iosys.py", line 199, in get_from_string
+        readable.read_from_string(src, schema, **kwargs)
+      File "dendropy/utility/iosys.py", line 260, in read_from_string
+        return self.read(stream=s, schema=schema, **kwargs)
+      File "dendropy/dataobject/char.py", line 653, in read
+        d = DataSet(stream=stream, schema=schema, **kwargs)
+      File "dendropy/dataobject/dataset.py", line 90, in __init__
+        self.process_source_kwargs(**kwargs)
+      File "dendropy/utility/iosys.py", line 221, in process_source_kwargs
+        self.read(stream=stream, schema=schema, **kwargs)
+      File "dendropy/dataobject/dataset.py", line 172, in read
+        raise x
+    dendropy.utility.error.DataParseError: Error parsing data source on line 42 at column 3: Unrecognized sequence symbol "P"
+
+Here, the sequence with GI number of "1003" was a protein sequence, so it included characters not part of the DNA alphabet, resulting in the :class:`~dendropy.utility.error.DataParseError` exception being raised.
 
 (Auto-)Generating Analysis-Friendly Sequence Labels
 ===================================================
