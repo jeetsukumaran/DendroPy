@@ -309,6 +309,23 @@ class SplitDistribution(object):
             self.split_counts[split] = 0
         self.split_counts[split] += count
 
+    def update(self, split_dist):
+        self.total_trees_counted += split_dist.total_trees_counted
+        for split in split_dist.splits:
+            if split not in self.split_counts:
+                self.splits.append(split)
+                self.split_counts[split] = split_dist.split_counts[split]
+            else:
+                self.split_counts[split] += split_dist.split_counts[split]
+            if split in self.split_edge_lengths:
+                self.split_edge_lengths[split].extend(split_dist.split_edge_lengths[split])
+            elif split in split_dist.split_edge_lengths:
+                self.split_edge_lengths[split] = split_dist.split_edge_lengths[split]
+            if split in self.split_node_ages:
+                self.split_node_ages[split].extend(split_dist.split_node_ages[split])
+            elif split in split_dist.split_node_ages:
+                self.split_node_ages[split] = split_dist.split_node_ages[split]
+
     def splits_considered(self):
         """
         Returns 4 values:
