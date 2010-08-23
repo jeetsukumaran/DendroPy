@@ -409,7 +409,7 @@ def main_cli():
         tree_source = multi_tree_source_iter(sources=sources,
                                              schema=file_format,
                                              tree_offset=opts.burnin,
-                                             write_progress=messenger.write,
+                                             write_progress=messenger.write_info,
                                              taxon_set=taxon_set,
                                              encode_splits=encode_splits)
         tsum.count_splits_on_trees(tree_source,
@@ -476,7 +476,6 @@ def main_cli():
         report.append(support_indication + ".")
         messenger.send_info_lines(report)
         comments.extend(report)
-    messenger.send_info("")
 
     end_time = datetime.datetime.now()
 
@@ -535,11 +534,10 @@ def main_cli():
         pass
     else:
         messenger.send_info('Results written to: "%s".' % (output_fpath))
-    messenger.send_info("")
 
     ###################################################
     #  WRAP UP
-    messenger.send_info("### DONE ###")
+    messenger.send_info("Summarization completed.")
     messenger.send_info_lines(final_run_report)
 
 if __name__ == '__main__':

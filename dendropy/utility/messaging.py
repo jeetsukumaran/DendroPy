@@ -172,5 +172,6 @@ class ConsoleMessenger(object):
         for line in msg:
             self.send(msg=prefix+line, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
 
-    def write(self, msg):
-        self.primary_out.write(self.info_leader() + msg)
+    def write_info(self, msg):
+        if self.messaging_level <= ConsoleMessenger.INFO_MESSAGING_LEVEL:
+            self.primary_out.write(self.info_leader() + msg)
