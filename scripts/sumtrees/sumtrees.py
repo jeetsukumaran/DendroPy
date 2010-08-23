@@ -86,6 +86,8 @@ class SplitCountingThread(threading.Thread):
         self.messenger = messenger
         self.messenger_lock = messenger_lock
         self.log_frequency = log_frequency
+        self.kill_received = False
+
 
     def send_info(self, msg):
         msg = "Thread %d: %s" % (self.thread_idx+1, msg)
@@ -96,11 +98,11 @@ class SplitCountingThread(threading.Thread):
             self.messenger_lock.release()
 
     def run(self):
-        while True:
+        while not self.kill_received:
             try:
                 source = self.job_queue.get_nowait()
-                fsrc = open(source, "rU")
                 self.send_info('Starting processing tree source: "%s"' % source)
+                fsrc = open(source, "rU")
                 for tidx, tree in enumerate(tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set)):
                     if self.log_frequency > 0 and tidx % self.log_frequency == 0:
                         self.send_info('Processing tree at offset %d' % (tidx))
@@ -110,6 +112,8 @@ class SplitCountingThread(threading.Thread):
                 self.job_queue.task_done()
             except Queue.Empty:
                 break
+        if self.kill_received:
+            self.send_info("Terminating in response to kill request.")
 
 def main_cli():
 
@@ -409,9 +413,24 @@ def main_cli():
             sct.start()
             sc_threads.append(sct)
 
-        # wait for all threads to complete
-        for sct in sc_threads:
-            sct.join()
+        # wait for all threads to complete (does not respond to Ctrl-C)
+        #for sct in sc_threads:
+        #    sct.join()
+
+        # responds to Ctrl-C
+        live_threads = list(sc_threads)
+        while len(live_threads) > 0:
+            try:
+                # Join all threads using a timeout so it doesn't block
+                # Filter out threads which have been joined or are None
+                live_threads = [t.join(1) for t in live_threads if t is not None and t.isAlive()]
+            except KeyboardInterrupt:
+                messenger.send_warning("Keyboard interrupt received: sending termination request to threads ...")
+                for t in live_threads:
+                    t.kill_received = True
+                    t.join()
+                messenger.send_info("--- Terminated (keyboard interrupt) ---")
+                sys.exit(1)
 
         # collate results
         for sct in sc_threads:
