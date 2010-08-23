@@ -118,18 +118,18 @@ class SplitCountingThread(multiprocessing.Process):
                 source = self.work_queue.get_nowait()
             except Queue.Empty:
                 break
-            self.send_info('Starting processing tree source: "%s"' % source)
+            self.send_info('Received task: "%s".' % source)
             fsrc = open(source, "rU")
             for tidx, tree in enumerate(tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set)):
                 if tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0:
-                    self.send_info('Processing tree at offset %d' % (tidx))
+                    self.send_info('(processing) "%s": tree offset %d' % (source, tidx))
                 treesplit.encode_splits(tree)
                 self.split_distribution.count_splits_on_tree(tree)
                 if self.kill_received:
                     break
             if self.kill_received:
                 break
-            self.send_info('Completed processing tree source: "%s"' % (source))
+            self.send_info('Completed task: "%s".' % (source))
         if self.kill_received:
             self.send_warning("Terminating in response to kill request.")
         else:
