@@ -394,7 +394,7 @@ def main_cli():
             time.sleep(1)
             is_running = False
             for sct in sc_threads:
-                if sct.is_alive():
+                if sct.isAlive():
                     is_running = True
                 break
             #is_running = any([sct.is_alive() for sct in sc_threads]) # much more elegant, but unfortunately >= Python 2.6 only
