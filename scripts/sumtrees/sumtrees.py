@@ -88,14 +88,26 @@ class SplitCountingThread(threading.Thread):
         self.log_frequency = log_frequency
         self.kill_received = False
 
-
-    def send_info(self, msg):
+    def send_message(self, msg, level):
+        if self.messenger is None:
+            return
+        if self.messenger.messaging_level > level:
+            return
         msg = "Thread %d: %s" % (self.thread_idx+1, msg)
         self.messenger_lock.acquire()
         try:
-            self.messenger.send_info(msg)
+            self.messenger.send(msg, level=level)
         finally:
             self.messenger_lock.release()
+
+    def send_info(self, msg):
+        self.send_message(msg, ConsoleMessenger.INFO_MESSAGING_LEVEL)
+
+    def send_warning(self, msg):
+        self.send_message(msg, ConsoleMessenger.WARNING_MESSAGING_LEVEL)
+
+    def send_error(self, msg):
+        self.send_message(msg, ConsoleMessenger.ERROR_MESSAGING_LEVEL)
 
     def run(self):
         while not self.kill_received:
@@ -108,12 +120,16 @@ class SplitCountingThread(threading.Thread):
                         self.send_info('Processing tree at offset %d' % (tidx))
                     treesplit.encode_splits(tree)
                     self.split_distribution.count_splits_on_tree(tree)
+                    if self.kill_received:
+                        break
+                if self.kill_received:
+                    break
                 self.send_info('Completed processing trees source: "%s"' % (source))
                 self.job_queue.task_done()
             except Queue.Empty:
                 break
         if self.kill_received:
-            self.send_info("Terminating in response to kill request.")
+            self.send_warning("Terminating in response to kill request.")
 
 def main_cli():
 
@@ -429,7 +445,7 @@ def main_cli():
                 for t in live_threads:
                     t.kill_received = True
                     t.join()
-                messenger.send_info("--- Terminated (keyboard interrupt) ---")
+                messenger.send_info("Terminated: keyboard interrupt.")
                 sys.exit(1)
 
         # collate results
