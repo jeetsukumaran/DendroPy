@@ -147,6 +147,7 @@ class SplitCountingThread(multiprocessing.Process):
                     self.split_distribution.split_edge_lengths,
                     self.split_distribution.split_node_ages)
             #result = self.split_distribution.split_edge_lengths
+            #result = self.split_distribution
             self.result_queue.put(result)
 
 def main_cli():
