@@ -150,6 +150,99 @@ class SplitCountingThread(multiprocessing.Process):
             #result = self.split_distribution
             self.result_queue.put(result)
 
+def discover_taxa(treefile, schema):
+    """
+    Reads first tree in treefile, and assumes that is sufficient to populate a
+    taxon set object fully, which it then returns.
+    """
+    if isinstance(treefile, str):
+        tdf = open(treefile, "rU")
+    else:
+        tdf = treefile
+    tt = None
+    for tree in tree_source_iter(tdf, schema=schema):
+        tt = tree
+        break
+    taxon_set = tt.taxon_set
+    return taxon_set
+
+def process_sources_parallel(
+        num_threads,
+        support_filepaths,
+        schema,
+        is_rooted,
+        encode_splits,
+        log_frequency,
+        messenger):
+    """
+    Returns a SplitDistribution object summarizing all trees found in
+    `support_filepaths`.
+    """
+
+    # pre-discover taxa
+    tdfpath = support_filepaths[0]
+    messenger.send_info('Discovering taxa based on "%s" ...' % tdfpath)
+    taxon_set = discover_taxa(tdfpath, schema)
+    taxon_labels = [str(t) for t in taxon_set]
+    messenger.send_info('Found %d taxa: [%s]' % (len(taxon_labels), (", ".join(["'%s'" % t for t in taxon_labels]))))
+
+    # load up queue
+    messenger.send_info('Creating work queue ...')
+    work_queue = multiprocessing.Queue()
+    for f in support_filepaths:
+        work_queue.put(f)
+
+    # launch threads
+    messenger.send_info('Launching %d worker threads ...' % num_threads)
+    result_queue = multiprocessing.Queue()
+    messenger_lock = multiprocessing.Lock()
+    for idx in range(num_threads):
+        sct = SplitCountingThread(work_queue,
+                result_queue,
+                schema=schema,
+                taxon_labels=taxon_labels,
+                is_rooted=is_rooted,
+                thread_idx=idx,
+                messenger=messenger,
+                messenger_lock=messenger_lock,
+                log_frequency=log_frequency)
+        sct.start()
+
+    # collate results
+    thread_result_count = 0
+    split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
+    split_distribution.is_rooted = is_rooted
+    while thread_result_count < num_threads:
+        result = result_queue.get()
+        split_distribution.total_trees_counted += result[0]
+        for split in result[1]:
+            if split not in split_distribution.splits:
+                split_distribution.splits.append(split)
+                if split in result[2]:
+                    split_distribution.split_counts[split] = 0
+                if split in result[3]:
+                    split_distribution.split_edge_lengths[split] = []
+                if split in result[4]:
+                   split_distribution.split_node_ages[split] = []
+        for s, c in result[2].items():
+            split_distribution.split_counts[s] += c
+        for s, c in result[3].items():
+            split_distribution.split_edge_lengths[s].extend(c)
+        for s, c in result[4].items():
+            split_distribution.node_ages[s].extend(c)
+        thread_result_count += 1
+    messenger.send_info("Recovered results from %d worker threads." % thread_result_count)
+    return split_distribution
+
+def process_sources_serial(
+        support_filepaths,
+        schema,
+        is_rooted,
+        encode_splits,
+        log_frequency,
+        messenger):
+    pass
+
 def main_cli():
 
     description =  '%s %s %s' % (_program_name, _program_version, _program_subtitle)
@@ -425,82 +518,15 @@ def main_cli():
     split_distribution.is_rooted = opts.rooted_trees
 
     if _MP and opts.num_processes > 1:
-
-        tdfpath = support_filepaths[0]
-        messenger.send_info('Discovering taxa from "%s" ...' % tdfpath)
-        tt = None
-        for tree in tree_source_iter(open(tdfpath, "rU"), schema=file_format):
-            tt = tree
-            break
-        taxon_set = tt.taxon_set
-        split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
-        split_distribution.is_rooted = opts.rooted_trees
-        taxon_labels = [str(t) for t in taxon_set]
-        messenger.send_info('Found %d taxa: [%s]' % (len(taxon_labels), (", ".join(["'%s'" % t for t in taxon_labels]))))
-
         messenger.send_info("Counting splits (%d sources to be processed in %d threads) ..." % (len(support_filepaths), opts.num_processes))
-
-        # load up queue
-        work_queue = multiprocessing.Queue()
-        for f in support_filepaths:
-            work_queue.put(f)
-
-        # launch threads
-        result_queue = multiprocessing.Queue()
-        messenger_lock = multiprocessing.Lock()
-        for idx in range(opts.num_processes):
-            sct = SplitCountingThread(work_queue,
-                    result_queue,
-                    schema=file_format,
-                    taxon_labels=taxon_labels,
-                    is_rooted=opts.rooted_trees,
-                    thread_idx=idx,
-                    messenger=messenger,
-                    messenger_lock=messenger_lock,
-                    log_frequency=opts.log_frequency)
-            sct.start()
-
-        # responds to Ctrl-C
-        # loop infinitely until all threads expire or kill signal received
-        #live_threads = True
-        #while live_threads:
-        #    try:
-        #        live_threads = False
-        #        for sct in sc_threads:
-        #            if sct.is_alive():
-        #                live_threads = True
-        #                break
-        #        if live_threads:
-        #            time.sleep(5)
-        #    except KeyboardInterrupt:
-        #        messenger.send_warning("Keyboard interrupt received: sending termination request to threads ...")
-        #        for t in sc_threads:
-        #            t.kill_received = True
-        #            t.join()
-        #        messenger.send_info("Terminated (keyboard interrupt).")
-        #        sys.exit(1)
-
-        # collate results
-        thread_result_count = 0
-        while thread_result_count < opts.num_processes:
-            result = result_queue.get()
-            split_distribution.total_trees_counted += result[0]
-            for split in result[1]:
-                if split not in split_distribution.splits:
-                    split_distribution.splits.append(split)
-                    if split in result[2]:
-                        split_distribution.split_counts[split] = 0
-                    if split in result[3]:
-                        split_distribution.split_edge_lengths[split] = []
-                    if split in result[4]:
-                       split_distribution.split_node_ages[split] = []
-            for s, c in result[2].items():
-                split_distribution.split_counts[s] += c
-            for s, c in result[3].items():
-                split_distribution.split_edge_lengths[s].extend(c)
-            for s, c in result[4].items():
-                split_distribution.node_ages[s].extend(c)
-            thread_result_count += 1
+        split_distribution = process_sources_parallel(
+                num_threads=opts.num_processes,
+                support_filepaths=support_filepaths,
+                schema=file_format,
+                is_rooted=opts.rooted_trees,
+                encode_splits=encode_splits,
+                log_frequency=opts.log_frequency,
+                messenger=messenger)
     else:
         if opts.from_newick_stream or opts.from_nexus_stream:
             messenger.send_info("(reading from standard input)")
