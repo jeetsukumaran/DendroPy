@@ -130,10 +130,10 @@ class ConsoleMessenger(object):
                 ConsoleMessenger.WARNING_MESSAGING_LEVEL : self.warning_leader,
                 ConsoleMessenger.INFO_MESSAGING_LEVEL : self.info_leader
                 }
+        self.silent = False
 
     def error_leader(self):
         return self.name + ": /// ERROR /// "
-
 
     def warning_leader(self):
         return self.name + ": [[[ WARNING ]]] "
@@ -147,9 +147,9 @@ class ConsoleMessenger(object):
             msg = self.text_wrapper.fill(msg)
         return msg
 
-    def send(self, msg, level, wrap=True, newline=True):
-        if level is None:
-            level = ConsoleMessenger.INFO_MESSAGING_LEVEL
+    def send(self, msg, level=0, wrap=True, newline=True):
+        if self.silent:
+            return
         if level >= self.messaging_level:
             msg = self.format_message(msg, level, wrap=wrap)
             self.primary_out.write(msg)

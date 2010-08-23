@@ -91,7 +91,7 @@ class SplitCountingThread(threading.Thread):
     def send_message(self, msg, level):
         if self.messenger is None:
             return
-        if self.messenger.messaging_level > level:
+        if self.messenger.messaging_level > level or self.messenger.silent:
             return
         msg = "Thread %d: %s" % (self.thread_idx+1, msg)
         self.messenger_lock.acquire()
@@ -113,21 +113,21 @@ class SplitCountingThread(threading.Thread):
         while not self.kill_received:
             try:
                 source = self.job_queue.get_nowait()
-                self.send_info('Starting processing tree source: "%s"' % source)
-                fsrc = open(source, "rU")
-                for tidx, tree in enumerate(tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set)):
-                    if self.log_frequency > 0 and tidx % self.log_frequency == 0:
-                        self.send_info('Processing tree at offset %d' % (tidx))
-                    treesplit.encode_splits(tree)
-                    self.split_distribution.count_splits_on_tree(tree)
-                    if self.kill_received:
-                        break
-                if self.kill_received:
-                    break
-                self.send_info('Completed processing trees source: "%s"' % (source))
-                self.job_queue.task_done()
             except Queue.Empty:
                 break
+            self.send_info('Starting processing tree source: "%s"' % source)
+            fsrc = open(source, "rU")
+            for tidx, tree in enumerate(tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set)):
+                if self.log_frequency > 0 and tidx % self.log_frequency == 0:
+                    self.send_info('Processing tree at offset %d' % (tidx))
+                treesplit.encode_splits(tree)
+                self.split_distribution.count_splits_on_tree(tree)
+                if self.kill_received:
+                    break
+            if self.kill_received:
+                break
+            self.send_info('Completed processing tree source: "%s"' % (source))
+            self.job_queue.task_done()
         if self.kill_received:
             self.send_warning("Terminating in response to kill request.")
 
@@ -592,6 +592,7 @@ def main_cli():
     #  WRAP UP
     messenger.send_info("Summarization completed.")
     messenger.send_info_lines(final_run_report)
+    messenger.silent = True
 
 if __name__ == '__main__':
     try:
