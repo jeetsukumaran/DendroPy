@@ -40,7 +40,7 @@ except:
 import platform
 try:
     import Queue
-    import threading
+    import multiprocessing
     _MP = True
 except ImportError:
     _MP = False
@@ -65,7 +65,7 @@ _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
                  "There is NO WARRANTY,\nto the extent permitted by law."
 
-class SplitCountingThread(threading.Thread):
+class SplitCountingThread(multiprocessing.Process):
 
     def __init__(self,
             job_queue,
@@ -76,7 +76,7 @@ class SplitCountingThread(threading.Thread):
             messenger,
             messenger_lock,
             log_frequency=1000):
-        threading.Thread.__init__(self)
+        multiprocessing.Process.__init__(self)
         self.job_queue = job_queue
         self.schema = schema
         self.taxon_set = taxon_set
@@ -127,7 +127,6 @@ class SplitCountingThread(threading.Thread):
             if self.kill_received:
                 break
             self.send_info('Completed processing tree source: "%s"' % (source))
-            self.job_queue.task_done()
         if self.kill_received:
             self.send_warning("Terminating in response to kill request.")
 
@@ -410,13 +409,13 @@ def main_cli():
         messenger.send_info("Counting splits (%d sources to be processed in %d threads) ..." % (len(support_filepaths), opts.num_processes))
 
         # load up queue
-        work_queue = Queue.Queue()
+        work_queue = multiprocessing.Queue()
         for f in support_filepaths:
             work_queue.put(f)
 
         # launch threads
         sc_threads = []
-        messenger_lock = threading.Lock()
+        messenger_lock = multiprocessing.Lock()
         for idx in range(opts.num_processes):
             sct = SplitCountingThread(work_queue,
                     taxon_set=taxon_set,
@@ -440,7 +439,7 @@ def main_cli():
             try:
                 live_threads = False
                 for sct in sc_threads:
-                    if sct.isAlive():
+                    if sct.is_alive():
                         live_threads = True
                         break
                 if live_threads:
