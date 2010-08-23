@@ -68,18 +68,21 @@ _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
 class SplitCountingThread(multiprocessing.Process):
 
     def __init__(self,
-            job_queue,
-            taxon_set,
+            work_queue,
+            result_queue,
             schema,
+            taxon_labels,
             is_rooted,
             thread_idx,
             messenger,
             messenger_lock,
             log_frequency=1000):
         multiprocessing.Process.__init__(self)
-        self.job_queue = job_queue
+        self.work_queue = work_queue
+        self.result_queue = result_queue
         self.schema = schema
-        self.taxon_set = taxon_set
+        self.taxon_labels = list(taxon_labels)
+        self.taxon_set = dendropy.TaxonSet(self.taxon_labels)
         self.split_distribution = treesplit.SplitDistribution(taxon_set=self.taxon_set)
         self.split_distribution.is_rooted = is_rooted
         self.thread_idx = thread_idx
@@ -112,13 +115,13 @@ class SplitCountingThread(multiprocessing.Process):
     def run(self):
         while not self.kill_received:
             try:
-                source = self.job_queue.get_nowait()
+                source = self.work_queue.get_nowait()
             except Queue.Empty:
                 break
             self.send_info('Starting processing tree source: "%s"' % source)
             fsrc = open(source, "rU")
             for tidx, tree in enumerate(tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set)):
-                if self.log_frequency > 0 and tidx % self.log_frequency == 0:
+                if tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0:
                     self.send_info('Processing tree at offset %d' % (tidx))
                 treesplit.encode_splits(tree)
                 self.split_distribution.count_splits_on_tree(tree)
@@ -129,6 +132,22 @@ class SplitCountingThread(multiprocessing.Process):
             self.send_info('Completed processing tree source: "%s"' % (source))
         if self.kill_received:
             self.send_warning("Terminating in response to kill request.")
+        else:
+            #result = self.split_distribution.total_trees_counted
+            #result = (self.split_distribution.total_trees_counted,
+            #        self.split_distribution.splits,
+            #        self.split_distribution.split_counts)
+            #result = (self.split_distribution.total_trees_counted,
+            #        self.split_distribution.splits,
+            #        self.split_distribution.split_counts,
+            #        self.split_distribution.split_edge_lengths)
+            result = (self.split_distribution.total_trees_counted,
+                    self.split_distribution.splits,
+                    self.split_distribution.split_counts,
+                    self.split_distribution.split_edge_lengths,
+                    self.split_distribution.split_node_ages)
+            #result = self.split_distribution.split_edge_lengths
+            self.result_queue.put(result)
 
 def main_cli():
 
@@ -406,6 +425,18 @@ def main_cli():
 
     if _MP and opts.num_processes > 1:
 
+        tdfpath = support_filepaths[0]
+        messenger.send_info('Discovering taxa from "%s" ...' % tdfpath)
+        tt = None
+        for tree in tree_source_iter(open(tdfpath, "rU"), schema=file_format):
+            tt = tree
+            break
+        taxon_set = tt.taxon_set
+        split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
+        split_distribution.is_rooted = opts.rooted_trees
+        taxon_labels = [str(t) for t in taxon_set]
+        messenger.send_info('Found %d taxa: [%s]' % (len(taxon_labels), (", ".join(["'%s'" % t for t in taxon_labels]))))
+
         messenger.send_info("Counting splits (%d sources to be processed in %d threads) ..." % (len(support_filepaths), opts.num_processes))
 
         # load up queue
@@ -414,47 +445,61 @@ def main_cli():
             work_queue.put(f)
 
         # launch threads
-        sc_threads = []
+        result_queue = multiprocessing.Queue()
         messenger_lock = multiprocessing.Lock()
         for idx in range(opts.num_processes):
             sct = SplitCountingThread(work_queue,
-                    taxon_set=taxon_set,
+                    result_queue,
                     schema=file_format,
+                    taxon_labels=taxon_labels,
                     is_rooted=opts.rooted_trees,
                     thread_idx=idx,
                     messenger=messenger,
                     messenger_lock=messenger_lock,
                     log_frequency=opts.log_frequency)
             sct.start()
-            sc_threads.append(sct)
-
-        # wait for all threads to complete (does not respond to Ctrl-C)
-        #for sct in sc_threads:
-        #    sct.join()
 
         # responds to Ctrl-C
         # loop infinitely until all threads expire or kill signal received
-        live_threads = True
-        while live_threads:
-            try:
-                live_threads = False
-                for sct in sc_threads:
-                    if sct.is_alive():
-                        live_threads = True
-                        break
-                if live_threads:
-                    time.sleep(5)
-            except KeyboardInterrupt:
-                messenger.send_warning("Keyboard interrupt received: sending termination request to threads ...")
-                for t in sc_threads:
-                    t.kill_received = True
-                    t.join()
-                messenger.send_info("Terminated (keyboard interrupt).")
-                sys.exit(1)
+        #live_threads = True
+        #while live_threads:
+        #    try:
+        #        live_threads = False
+        #        for sct in sc_threads:
+        #            if sct.is_alive():
+        #                live_threads = True
+        #                break
+        #        if live_threads:
+        #            time.sleep(5)
+        #    except KeyboardInterrupt:
+        #        messenger.send_warning("Keyboard interrupt received: sending termination request to threads ...")
+        #        for t in sc_threads:
+        #            t.kill_received = True
+        #            t.join()
+        #        messenger.send_info("Terminated (keyboard interrupt).")
+        #        sys.exit(1)
 
         # collate results
-        for sct in sc_threads:
-            split_distribution.update(sct.split_distribution)
+        thread_result_count = 0
+        while thread_result_count < opts.num_processes:
+            result = result_queue.get()
+            split_distribution.total_trees_counted += result[0]
+            for split in result[1]:
+                if split not in split_distribution.splits:
+                    split_distribution.splits.append(split)
+                    if split in result[2]:
+                        split_distribution.split_counts[split] = 0
+                    if split in result[3]:
+                        split_distribution.split_edge_lengths[split] = []
+                    if split in result[4]:
+                       split_distribution.split_node_ages[split] = []
+            for s, c in result[2].items():
+                split_distribution.split_counts[s] += c
+            for s, c in result[3].items():
+                split_distribution.split_edge_lengths[s].extend(c)
+            for s, c in result[4].items():
+                split_distribution.node_ages[s].extend(c)
+            thread_result_count += 1
     else:
         if opts.from_newick_stream or opts.from_nexus_stream:
             messenger.send_info("(reading from standard input)")
