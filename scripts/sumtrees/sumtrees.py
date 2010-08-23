@@ -39,6 +39,7 @@ except:
     pass
 import platform
 try:
+    import Queue
     import threading
     _MP = True
 except ImportError:
@@ -75,22 +76,26 @@ def distribute_jobs(sources, num_procs):
                 break
     return [j for j in jobs if len(j) > 0]
 
-class SplitCounterThread(threading.Thread):
+class SplitCountingThread(threading.Thread):
 
-    def __init__(self, sources, taxon_set, schema, is_rooted):
+    def __init__(self, job_queue, taxon_set, schema, is_rooted):
         threading.Thread.__init__(self)
-        self.sources = sources
+        self.job_queue = job_queue
         self.schema = schema
         self.taxon_set = taxon_set
         self.split_distribution = treesplit.SplitDistribution(taxon_set=self.taxon_set)
         self.split_distribution.is_rooted = is_rooted
 
     def run(self):
-        for source in self.sources:
-            fsrc = open(source, "rU")
-            for tree in tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set):
-                treesplit.encode_splits(tree)
-                self.split_distribution.count_splits_on_tree(tree)
+        while True:
+            try:
+                source = self.job_queue.get_nowait()
+                fsrc = open(source, "rU")
+                for tree in tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set):
+                    treesplit.encode_splits(tree)
+                    self.split_distribution.count_splits_on_tree(tree)
+            except Queue.Empty:
+                break
 
 def main_cli():
 
@@ -272,9 +277,7 @@ def main_cli():
     # Support file idiot checking
 
     support_filepaths = []
-    if len(args) == 0:
-        process_jobs = []
-    else:
+    if len(args) > 0:
         for fpath in args:
             fpath = os.path.expanduser(os.path.expandvars(fpath))
             if not os.path.exists(fpath):
@@ -293,20 +296,6 @@ def main_cli():
             + "containing tree samples "
             + "to summarize.")
             sys.exit(1)
-
-        # multi-processing
-        if _MP:
-            if opts.num_processes <= 0:
-                messenger.send_error("Number of processes requested (%d) is less than the minimum (1)" % opts.num_processes)
-                sys.exit(1)
-            elif opts.num_processes > len(support_filepaths):
-                messenger.send_warning("Number of processes allocated will be limited to number of sources to be processed (%d)" % (len(support_filepaths)))
-            process_jobs = distribute_jobs(support_filepaths, opts.num_processes)
-            opts.num_processes = len(process_jobs)
-            if len(support_filepaths) % len(process_jobs) != 0:
-                messenger.send_warning("%d sources cannot be distributed evenly over  %d processes" % (len(support_filepaths), opts.num_processes))
-        else:
-            process_jobs = [[support_filepaths]]
 
     ###################################################
     # Lots of other idiot-checking ...
@@ -377,20 +366,21 @@ def main_cli():
     split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
     split_distribution.is_rooted = opts.rooted_trees
 
-    if _MP and len(process_jobs) > 1:
-        job_desc = ", ".join([str(len(job)) for job in process_jobs])
-        num_sources = sum([len(job) for job in process_jobs])
-        messenger.send_info("Counting splits (%d sources to be processed in %d threads) ..." % (num_sources, len(process_jobs)))
+    if _MP and opts.num_processes > 1:
+
+        messenger.send_info("Counting splits (%d sources to be processed in %d threads) ..." % (len(support_filepaths), opts.num_processes))
+
+        # load up queue
+        work_queue = Queue.Queue()
+        for f in support_filepaths:
+            work_queue.put(f)
 
         # launch threads
         sc_threads = []
-        for jidx, job in enumerate(process_jobs):
-            sct = SplitCounterThread(job, taxon_set=taxon_set, schema=file_format, is_rooted=opts.rooted_trees)
+        for idx in range(opts.num_processes):
+            sct = SplitCountingThread(work_queue, taxon_set=taxon_set, schema=file_format, is_rooted=opts.rooted_trees)
             sct.start()
             sc_threads.append(sct)
-            #if jidx == 0:
-            #    while sct.is_alive():
-            #        pass
 
         # wait for all threads to complete
         for sct in sc_threads:
@@ -404,8 +394,8 @@ def main_cli():
             messenger.send_info("(reading from standard input)")
             sources = [sys.stdin]
         else:
-            messenger.send_info("Counting splits (%d sources to be processed serially) ..." % len(process_jobs[0]))
-            sources = [open(f, "rU") for f in process_jobs[0]]
+            messenger.send_info("Counting splits (%d sources to be processed serially) ..." % len(support_filepaths))
+            sources = [open(f, "rU") for f in support_filepaths]
         tree_source = multi_tree_source_iter(sources=sources,
                                              schema=file_format,
                                              tree_offset=opts.burnin,
