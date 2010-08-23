@@ -110,52 +110,63 @@ def deprecation(message, logger_obj=None, stacklevel=3):
 
 class ConsoleMessenger(object):
 
-    def __init__(self, name, verbosity):
-        self.name = name
-        self.verbosity = verbosity
-        self.dest1 = sys.stderr
-        self.dest2 = None
-        if self.name is None:
-            initial_indent = ""
-        else:
-            initial_indent = self.name + ": "
-        subsequent_indent = " " * len(initial_indent)
-        self.text_wrapper = textwrap.TextWrapper(width=70,
-                initial_indent=initial_indent,
-                subsequent_indent=subsequent_indent,
-                drop_whitespace=True)
+    ERROR_MESSAGING_LEVEL = 2000
+    WARNING_MESSAGING_LEVEL = 1000
+    INFO_MESSAGING_LEVEL = 100
 
-    def compose_message(self, msg, wrap=0, newline=True, force=False, prefix=None):
-        pass
+    def __init__(self,
+            name="DendroPy",
+            messaging_level=None,
+            dest=sys.stderr):
+        self.name = name
+        if messaging_level is None:
+            self.messaging_level = ConsoleMessenger.INFO_MESSAGING_LEVEL
+        else:
+            self.messaging_level = messaging_level
+        self.primary_out = dest
+        self.text_wrapper = textwrap.TextWrapper(width=78)
+        self.message_leader = {
+                ConsoleMessenger.ERROR_MESSAGING_LEVEL : self.error_leader,
+                ConsoleMessenger.WARNING_MESSAGING_LEVEL : self.warning_leader,
+                ConsoleMessenger.INFO_MESSAGING_LEVEL : self.info_leader
+                }
+
+    def error_leader(self):
+        return self.name + ": ERROR: "
+
+    def warning_leader(self):
+        return self.name + ": WARNING: "
+
+    def info_leader(self):
+        return ""
+
+    def format_message(self, msg, level, wrap=True):
+        msg = self.message_leader[level]() + msg
+        if wrap:
+            msg = self.text_wrapper.fill(msg)
+        return msg
+
+    def send_lines(self, msg, level=None, wrap=True):
+        for line in msg:
+            self.send(msg=line, level=level, wrap=wrap)
+
+    def send(self, msg, level, wrap=True, newline=True):
+        if level is None:
+            level = ConsoleMessenger.INFO_MESSAGING_LEVEL
+        if level >= self.messaging_level:
+            msg = self.format_message(msg, level, wrap=wrap)
+            self.primary_out.write(msg)
+            if newline:
+                self.primary_out.write("\n")
+
+    def send_error(self, msg, wrap=True):
+        self.send(msg, level=ConsoleMessenger.ERROR_MESSAGING_LEVEL, wrap=wrap)
+
+    def send_warning(self, msg, wrap=True):
+        self.send(msg, level=ConsoleMessenger.WARNING_MESSAGING_LEVEL, wrap=wrap)
+
+    def send_info(self, msg, wrap=True):
+        self.send(msg, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
 
     def write(self, msg):
-        self.send(msg, newline=False)
-
-    def send_multi(self, msg, wrap=0, newline=True, force=False):
-        for line in msg:
-            self.send(msg=line, wrap=wrap, newline=newline, force=force)
-
-    def send(self, msg, wrap=0, newline=True, force=False, prefix=None):
-
-        if wrap:
-            msg = textwrap.fill(msg, width=70)
-        if newline:
-            suffix = "\n"
-        else:
-            suffix = ""
-        msg = msg + suffix
-        if prefix is not None:
-            msg = prefix + msg
-        if self.dest1:
-            self.dest1.write(msg)
-        if self.dest2:
-            self.dest2.write(msg)
-
-    def send_formatted(self, msg, force=False):
-        self.send(msg, wrap=True, force=force)
-
-    def send_error(self, msg, wrap=False):
-        self.send(msg, wrap=wrap, force=True)
-
-    def send_warning(self, msg, wrap=False):
-        self.send(msg, wrap=wrap, force=True)
+        self.send(msg, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=False, newline=False)

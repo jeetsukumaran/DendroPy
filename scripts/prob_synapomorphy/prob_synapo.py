@@ -34,7 +34,6 @@ from cStringIO import StringIO
 from optparse import OptionGroup, OptionParser
 
 from dendropy.utility.cli import confirm_overwrite
-from dendropy.utility.messaging import ConsoleMessenger
 from dendropy import DataSet
 from dendropy.treecalc import symmetric_difference
 import subprocess
@@ -297,7 +296,6 @@ if __name__ == "__main__":
         help="Data file (NEXUS)")
 
     (opts, args) = parser.parse_args()
-    messenger = ConsoleMessenger(name='prob_synapo.py', verbosity=3)
 
     scratch_dir = 'tmp_dir_prob_syn'
     if not os.path.exists(scratch_dir):

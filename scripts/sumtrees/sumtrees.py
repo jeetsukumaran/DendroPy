@@ -54,7 +54,7 @@ from dendropy.utility.messaging import ConsoleMessenger
 from dendropy.utility.cli import confirm_overwrite, show_splash
 
 _program_name = 'SumTrees'
-_program_subtitle = 'Phylogenetic Tree Split Support Summarization'
+_program_subtitle = 'Phylogenetic Tree Split Summarization'
 _program_date = 'Aug 22 2010'
 _program_version = 'Version 3.0.0 (%s)' % _program_date
 _program_author = 'Jeet Sukumaran and Mark T. Holder'
@@ -253,10 +253,10 @@ def main_cli():
 
     (opts, args) = parser.parse_args()
     if opts.quiet:
-        verbosity = 0
+        messaging_level = ConsoleMessenger.ERROR_MESSAGING_LEVEL
     else:
-        verbosity = 2
-    messenger = ConsoleMessenger(name='sumtrees.py', verbosity=verbosity)
+        messaging_level = ConsoleMessenger.INFO_MESSAGING_LEVEL
+    messenger = ConsoleMessenger(name='sumtrees.py', messaging_level=messaging_level)
 
     # splash
     if not opts.quiet:
@@ -275,37 +275,32 @@ def main_cli():
     if len(args) == 0:
         process_jobs = []
     else:
-        missing = False
         for fpath in args:
             fpath = os.path.expanduser(os.path.expandvars(fpath))
             if not os.path.exists(fpath):
-                messenger.send_error('Support file not found: "%s"' % fpath)
-                missing = True
+                if opts.ignore_missing_support:
+                    messenger.send_warning('Support file not found: "%s"' % fpath)
+                else:
+                    messenger.send_error('Terminating due to missing support files. '
+                           + 'Use the "--ignore-missing-support" option to continue even '
+                           + 'if some files are missing.')
+                    sys.exit(1)
             else:
                 support_filepaths.append(fpath)
-        if missing:
-            messenger.send("")
-            if opts.ignore_missing_support:
-                pass
-            else:
-                messenger.send_formatted('Terminating due to missing support files. '
-                       + 'Use the "--ignore-missing-support" option to continue even '
-                       + 'if some files are missing.', force=True)
-                sys.exit(1)
         if len(support_filepaths) == 0:
-            messenger.send_formatted("No sources of support specified or could be found. "
+            messenger.send_error("No sources of support specified or could be found. "
             + "Please provide the path to at least one (valid and existing) file "
             + "containing tree samples "
-            + "to summarize.", force=True)
+            + "to summarize.")
             sys.exit(1)
 
         # multi-processing
         if _MP:
             if opts.num_processes <= 0:
-                messenger.send_formatted("Number of processes specified (%d) is less than the minimum (1)" % opts.num_processes, force=True)
+                messenger.send_error("Number of processes specified (%d) is less than the minimum (1)" % opts.num_processes)
                 sys.exit(1)
             if len(support_filepaths) % opts.num_processes != 0:
-                messenger.send_error("WARNING: %d sources cannot be distributed evenly over number of %d processes" % (len(support_filepaths), opts.num_processes))
+                messenger.send_warning("%d sources cannot be distributed evenly over number of %d processes" % (len(support_filepaths), opts.num_processes))
             process_jobs = distribute_jobs(support_filepaths, opts.num_processes)
         else:
             process_jobs = [[support_filepaths]]
@@ -317,10 +312,10 @@ def main_cli():
     if opts.target_tree_filepath is not None:
         target_tree_filepath = os.path.expanduser(os.path.expandvars(opts.target_tree_filepath))
         if not os.path.exists(target_tree_filepath):
-            messenger.send_error('Target tree file not found: "%s"\n' % target_tree_filepath)
+            messenger.send_error('Target tree file not found: "%s"' % target_tree_filepath)
             if opts.ignore_missing_target:
                 if not opts.quiet:
-                    messenger.send('Will construct and use majority-rule consensus tree instead.\n')
+                    messenger.send_info('Will construct and use majority-rule consensus tree instead.')
                 target_tree_filepath = None
             else:
                 sys.exit(1)
@@ -382,8 +377,8 @@ def main_cli():
     if _MP and len(process_jobs) > 1:
         job_desc = ", ".join([str(len(job)) for job in process_jobs])
         num_sources = sum([len(job) for job in process_jobs])
-        messenger.send("%d sources to be handled by %d processes: {%s}\n" % (num_sources, opts.num_processes, job_desc))
-        messenger.send("### COUNTING SPLITS ###\n")
+        messenger.send_info("%d sources to be handled by %d processes: {%s}" % (num_sources, opts.num_processes, job_desc))
+        messenger.send_info("### COUNTING SPLITS ###")
 
         # launch threads
         sc_threads = []
@@ -404,12 +399,12 @@ def main_cli():
             split_distribution.update(sct.split_distribution)
     else:
         if opts.from_newick_stream or opts.from_nexus_stream:
-            messenger.send("(reading from standard input)")
+            messenger.send_info("(reading from standard input)")
             sources = [sys.stdin]
         else:
-            messenger.send("%d sources to be handled by a single process\n" % len(process_jobs[0]))
+            messenger.send_info("%d sources to be handled by a single process" % len(process_jobs[0]))
             sources = [open(f, "rU") for f in process_jobs[0]]
-        messenger.send("### COUNTING SPLITS ###\n")
+        messenger.send_info("### COUNTING SPLITS ###")
         tree_source = multi_tree_source_iter(sources=sources,
                                              schema=file_format,
                                              tree_offset=opts.burnin,
@@ -440,9 +435,9 @@ def main_cli():
     report.append("%d unique non-trivial splits out of %d total non-trivial splits counted." % (num_nt_unique_splits, num_nt_splits))
 
     comments.extend(report)
-    messenger.send("---")
-    messenger.send_multi(report)
-    messenger.send("")
+    messenger.send_info("---")
+    messenger.send_lines(report)
+    messenger.send_info("")
 
     ###################################################
     #  Target tree and mapping
@@ -459,17 +454,17 @@ def main_cli():
 
     tt_trees = []
     if target_tree_filepath is not None:
-        messenger.send("### MAPPING SUPPORT TO TARGET TREE(S) ###\n")
+        messenger.send_info("### MAPPING SUPPORT TO TARGET TREE(S) ###")
         for tree in tree_source_iter(stream=open(target_tree_filepath, 'r'), schema="nexus/newick", taxon_set=taxon_set):
             tt_trees.append(tsum.map_split_support_to_tree(tree, split_distribution))
-        messenger.send('Parsed "%s": %d tree(s) in file' % (target_tree_filepath, len(tt_trees)))
+        messenger.send_info('Parsed "%s": %d tree(s) in file' % (target_tree_filepath, len(tt_trees)))
         comments.append('Split support mapped to trees in:')
         comments.append('  - "%s" (%d trees)' % (os.path.abspath(target_tree_filepath), len(tt_trees)))
         comments.append(support_indication + ".")
     else:
-        messenger.send("### CONSTRUCTING CLADE CONSENSUS TREE ###\n")
+        messenger.send_info("### CONSTRUCTING CLADE CONSENSUS TREE ###")
         if opts.min_clade_freq > 1.0:
-            messenger.send("Maximum frequency threshold for clade inclusion is 1.0: reset to 1.0.", force=True)
+            messenger.send_warning("Maximum frequency threshold for clade inclusion is 1.0: reset to 1.0.")
             min_freq = 1.0
         else:
             min_freq = opts.min_clade_freq
@@ -479,16 +474,16 @@ def main_cli():
         report = []
         report.append('Consensus tree (%f clade frequency threshold) constructed from splits.' % min_freq)
         report.append(support_indication + ".")
-        messenger.send_multi(report)
+        messenger.send_lines(report)
         comments.extend(report)
-    messenger.send("")
+    messenger.send_info("")
 
     end_time = datetime.datetime.now()
 
     ###################################################
     #  RESULTS
 
-    messenger.send("### RESULTS ###\n")
+    messenger.send_info("### RESULTS ###")
 
     final_run_report = []
     final_run_report.append("Began at: %s." % (start_time.isoformat(' ')))
@@ -539,13 +534,13 @@ def main_cli():
     if not opts.output_filepath:
         pass
     else:
-        messenger.send('Results written to: "%s".' % (output_fpath))
-    messenger.send("")
+        messenger.send_info('Results written to: "%s".' % (output_fpath))
+    messenger.send_info("")
 
     ###################################################
     #  WRAP UP
-    messenger.send("### DONE ###\n")
-    messenger.send_multi(final_run_report)
+    messenger.send_info("### DONE ###")
+    messenger.send_lines(final_run_report)
 
 if __name__ == '__main__':
     try:

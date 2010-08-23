@@ -120,10 +120,10 @@ def main_cli():
 
     (opts, args) = parser.parse_args()
     if opts.quiet:
-        verbosity = 0
+        messaging_level = ConsoleMessenger.ERROR_MESSAGING_LEVEL
     else:
-        verbosity = 2
-    messenger = ConsoleMessenger(name='cattrees.py', verbosity=verbosity)
+        messaging_level = ConsoleMessenger.INFO_MESSAGING_LEVEL
+    messenger = ConsoleMessenger(name='cattrees.py', messaging_level=messaging_level)
 
     # splash
     if not opts.quiet:
@@ -139,26 +139,22 @@ def main_cli():
     # Tree file idiot checking
 
     tree_filepaths = []
-    missing = False
     for fpath in args:
         fpath = os.path.expanduser(os.path.expandvars(fpath))
         if not os.path.exists(fpath):
-            messenger.send_error('File not found: "%s"' % fpath)
-            missing = True
+            if opts.ignore_missing_support:
+                messenger.send_warning('Tree file not found: "%s"' % fpath)
+            else:
+                messenger.send_error('Terminating due to missing tree files. '
+                       + 'Use the "--ignore-missing-support" option to continue even '
+                       + 'if some files are missing.')
+                sys.exit(1)
         else:
             tree_filepaths.append(fpath)
-    if missing:
-        messenger.send("")
-        if opts.ignore_missing_support:
-            pass
-        else:
-            messenger.send_formatted('Terminating due to missing tree files. '
-                   + 'Use the "--ignore-missing-support" option to continue even '
-                   + 'if some files are missing.', force=True)
-            sys.exit(1)
-    if len(tree_filepaths) == 0:
-        messenger.send_formatted("No sources of trees specified or could be found. "
-        + "Please specify path(s) to tree files to concatenate.", force=True)
+    if len(support_filepaths) == 0:
+        messenger.send_error("No sources of trees specified or could be found. "
+        + "Please provide the path to at least one (valid and existing) file "
+        + "containing trees.")
         sys.exit(1)
 
     tree_file_objs = [open(f, "r") for f in tree_filepaths]
@@ -191,7 +187,7 @@ def main_cli():
     report = []
     total_trees_added = 0
     for tree_filepath_idx, tree_filepath in enumerate(tree_filepaths):
-        messenger.send("-- Reading tree source %d of %d: %s" \
+        messenger.send_info("-- Reading tree source %d of %d: %s" \
             % (tree_filepath_idx+1, len(tree_filepaths), tree_filepath))
         trees_added = 0
         for tree_count, tree in enumerate(tree_source_iter(stream=open(tree_filepath, "rU"), schema='nexus/newick')):
@@ -205,7 +201,7 @@ def main_cli():
         message = ("%s: %d trees in file, sampling 1 tree of every %d trees after %d tree burn-in: %d trees added (current total = %d trees)" \
             % (tree_filepath, tree_count+1, opts.stride, opts.burnin, trees_added, total_trees_added))
         report.append(message)
-        messenger.send("   " + message)
+        messenger.send_info("   " + message)
 
     if opts.phylip_format:
         pass

@@ -51,7 +51,9 @@ def show_splash(prog_name,
         prog_author,
         prog_copyright,
         dest=sys.stderr,
-        extended=False):
+        extended=False,
+        width=70):
+
     lines = []
     lines.append("%s - %s" % (prog_name, prog_subtitle))
     lines.append("%s" % prog_version)
@@ -60,8 +62,9 @@ def show_splash(prog_name,
     if extended:
         lines.append('')
         lines.extend(prog_copyright.split('\n'))
-    header_max = max([len(i) for i in lines]) + 1
-    sbars = '=' * header_max
+    if width is None or width <= 0:
+        width = max([len(i) for i in lines]) + 1
+    sbars = '=' * width
     dest.write("%s\n" % sbars)
     dest.write("%s\n" % ('\n'.join(lines)))
     dest.write("%s\n\n" % sbars)
