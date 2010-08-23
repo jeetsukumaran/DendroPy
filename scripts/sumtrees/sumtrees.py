@@ -102,7 +102,7 @@ class SplitCountingThread(threading.Thread):
                 fsrc = open(source, "rU")
                 self.send_info('Starting processing tree source: "%s"' % source)
                 for tidx, tree in enumerate(tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set)):
-                    if self.log_frequency >= 0 and tidx % self.log_frequency == 0:
+                    if self.log_frequency > 0 and tidx % self.log_frequency == 0:
                         self.send_info('Processing tree at offset %d' % (tidx))
                     treesplit.encode_splits(tree)
                     self.split_distribution.count_splits_on_tree(tree)
@@ -404,7 +404,8 @@ def main_cli():
                     is_rooted=opts.rooted_trees,
                     thread_idx=idx,
                     messenger=messenger,
-                    messenger_lock=messenger_lock)
+                    messenger_lock=messenger_lock,
+                    log_frequency=opts.log_frequency)
             sct.start()
             sc_threads.append(sct)
 
