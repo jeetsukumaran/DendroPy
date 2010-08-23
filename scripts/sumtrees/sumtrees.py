@@ -269,7 +269,7 @@ def main_cli():
     run_optgroup = OptionGroup(parser, 'Program Run Options')
     parser.add_option_group(run_optgroup)
     if _MP:
-        run_optgroup.add_option('-n', '--np', '--num-processes',
+        run_optgroup.add_option('-x', '-#', '--num-processes',
                           dest='num_processes',
                           type='int',
                           default=1,
