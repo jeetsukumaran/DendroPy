@@ -124,7 +124,7 @@ class ConsoleMessenger(object):
         else:
             self.messaging_level = messaging_level
         self.primary_out = dest
-        self.text_wrapper = textwrap.TextWrapper(width=78)
+        self.text_wrapper = textwrap.TextWrapper(width=78, subsequent_indent=" " * (len(self.name) + 2))
         self.message_leader = {
                 ConsoleMessenger.ERROR_MESSAGING_LEVEL : self.error_leader,
                 ConsoleMessenger.WARNING_MESSAGING_LEVEL : self.warning_leader,
@@ -132,23 +132,19 @@ class ConsoleMessenger(object):
                 }
 
     def error_leader(self):
-        return self.name + ": ERROR: "
+        return self.name + ": <<< ERROR >>> "
 
     def warning_leader(self):
-        return self.name + ": WARNING: "
+        return self.name + ": [[[ WARNING ]]] "
 
     def info_leader(self):
-        return ""
+        return self.name + ": "
 
     def format_message(self, msg, level, wrap=True):
         msg = self.message_leader[level]() + msg
         if wrap:
             msg = self.text_wrapper.fill(msg)
         return msg
-
-    def send_lines(self, msg, level=None, wrap=True):
-        for line in msg:
-            self.send(msg=line, level=level, wrap=wrap)
 
     def send(self, msg, level, wrap=True, newline=True):
         if level is None:
@@ -159,6 +155,10 @@ class ConsoleMessenger(object):
             if newline:
                 self.primary_out.write("\n")
 
+    def send_lines(self, msg, level=None, wrap=True, prefix=""):
+        for line in msg:
+            self.send(msg=prefix+line, level=level, wrap=wrap)
+
     def send_error(self, msg, wrap=True):
         self.send(msg, level=ConsoleMessenger.ERROR_MESSAGING_LEVEL, wrap=wrap)
 
@@ -168,5 +168,9 @@ class ConsoleMessenger(object):
     def send_info(self, msg, wrap=True):
         self.send(msg, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
 
+    def send_info_lines(self, msg, wrap=True, prefix=""):
+        for line in msg:
+            self.send(msg=prefix+line, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
+
     def write(self, msg):
-        self.send(msg, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=False, newline=False)
+        self.primary_out.write(self.info_leader() + msg)
