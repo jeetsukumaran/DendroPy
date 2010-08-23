@@ -38,6 +38,11 @@ try:
 except:
     pass
 import platform
+try:
+    import threading
+    _MP = True
+except ImportError:
+    _MP = False
 
 import dendropy
 from dendropy import treesplit
@@ -50,8 +55,8 @@ from dendropy.utility.cli import confirm_overwrite, show_splash
 
 _program_name = 'SumTrees'
 _program_subtitle = 'Phylogenetic Tree Split Support Summarization'
-_program_date = 'Feb 1 2010'
-_program_version = 'Version 2.0.2 (%s)' % _program_date
+_program_date = 'Aug 22 2010'
+_program_version = 'Version 3.0.0 (%s)' % _program_date
 _program_author = 'Jeet Sukumaran and Mark T. Holder'
 _program_contact = 'jeetsukumaran@gmail.com'
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
@@ -59,10 +64,38 @@ _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
                  "There is NO WARRANTY,\nto the extent permitted by law."
 
+def distribute_jobs(sources, num_procs):
+    jobs = [[] for i in range(num_procs)]
+    sources = list(sources)
+    while len(sources) > 0:
+        for job_batch in jobs:
+            try:
+                job_batch.append(sources.pop(0))
+            except IndexError:
+                break
+    return [j for j in jobs if len(j) > 0]
+
+class SplitCounterThread(threading.Thread):
+
+    def __init__(self, sources, taxon_set, schema, is_rooted):
+        threading.Thread.__init__(self)
+        self.sources = sources
+        self.schema = schema
+        self.taxon_set = taxon_set
+        self.split_distribution = treesplit.SplitDistribution(taxon_set=self.taxon_set)
+        self.split_distribution.is_rooted = is_rooted
+
+    def run(self):
+        for source in self.sources:
+            fsrc = open(source, "rU")
+            for tree in tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set):
+                treesplit.encode_splits(tree)
+                self.split_distribution.count_splits_on_tree(tree)
+
 def main_cli():
 
     description =  '%s %s %s' % (_program_name, _program_version, _program_subtitle)
-    usage = "%prog [options] <TREES FILE> [<TREES FILE> [<TREES FILE> [...]]"
+    usage = "%prog [options] TREES-FILE [TREES-FILE [TREES-FILE [...]]"
 
     parser = OptionParser(usage=usage, add_help_option=True, version = _program_version, description=description)
 
@@ -162,7 +195,7 @@ def main_cli():
                       action='store_false',
                       dest='include_meta_comments',
                       default=True,
-                      help="include initial file comment annotating details of scoring operation")
+                      help="do not include initial file comment annotating details of scoring operation")
     output_filepath_optgroup.add_option('-m', '--additional_comments',
                       action='store',
                       dest='additional_comments',
@@ -196,6 +229,12 @@ def main_cli():
 
     run_optgroup = OptionGroup(parser, 'Program Run Options')
     parser.add_option_group(run_optgroup)
+    if _MP:
+        run_optgroup.add_option('-n', '--np', '--num-processes',
+                          dest='num_processes',
+                          type='int',
+                          default=1,
+                          help="number of processes to run (default=%default)")
     run_optgroup.add_option('-q', '--quiet',
                       action='store_true',
                       dest='quiet',
@@ -222,21 +261,19 @@ def main_cli():
     # splash
     if not opts.quiet:
         show_splash(prog_name=_program_name,
-        prog_subtitle=_program_subtitle,
-        prog_version=_program_version,
-        prog_author=_program_author,
-        prog_copyright=_program_copyright,
-        dest=sys.stderr,
-        extended=False)
+                prog_subtitle=_program_subtitle,
+                prog_version=_program_version,
+                prog_author=_program_author,
+                prog_copyright=_program_copyright,
+                dest=sys.stderr,
+                extended=False)
 
     ###################################################
     # Support file idiot checking
 
     support_filepaths = []
-    if len(args) == 0 and (opts.from_newick_stream or opts.from_nexus_stream):
-        if not opts.quiet:
-            sys.stderr.write("(reading trees from standard input)")
-        support_file_objs = [sys.stdin]
+    if len(args) == 0:
+        process_jobs = []
     else:
         missing = False
         for fpath in args:
@@ -262,7 +299,16 @@ def main_cli():
             + "to summarize.", force=True)
             sys.exit(1)
 
-        support_file_objs = [open(f, "r") for f in support_filepaths]
+        # multi-processing
+        if _MP:
+            if opts.num_processes <= 0:
+                messenger.send_formatted("Number of processes specified (%d) is less than the minimum (1)" % opts.num_processes, force=True)
+                sys.exit(1)
+            if len(support_filepaths) % opts.num_processes != 0:
+                messenger.send_error("WARNING: %d sources cannot be distributed evenly over number of %d processes" % (len(support_filepaths), opts.num_processes))
+            process_jobs = distribute_jobs(support_filepaths, opts.num_processes)
+        else:
+            process_jobs = [[support_filepaths]]
 
     ###################################################
     # Lots of other idiot-checking ...
@@ -307,6 +353,19 @@ def main_cli():
     start_time = datetime.datetime.now()
 
     comments = []
+
+    if opts.from_newick_stream:
+        file_format = "newick"
+    elif opts.from_nexus_stream:
+        file_format = "nexus"
+    else:
+        file_format = 'nexus/newick'
+
+    if file_format == "nexus":
+        encode_splits = True
+    else:
+        encode_splits = False # cannot encode while parsing newick
+
     tsum = treesum.TreeSummarizer()
     tsum.support_as_labels = opts.support_as_labels
     tsum.support_as_percentages = opts.support_as_percentages
@@ -316,33 +375,55 @@ def main_cli():
     tsum.support_label_decimals = opts.support_label_decimals
     tsum.ignore_node_ages = True # until a more efficient implementation is developed
 
-    messenger.send("### COUNTING SPLITS ###\n")
-    if opts.from_newick_stream:
-        file_format = "newick"
-    elif opts.from_nexus_stream:
-        file_format = "nexus"
-    else:
-        file_format = 'nexus/newick'
-
     taxon_set = dendropy.TaxonSet()
-    if file_format == "nexus":
-        encode_splits = True
-    else:
-        encode_splits = False # cannot encode while parsing newick
-    tree_source = multi_tree_source_iter(sources=support_file_objs,
-                                         schema=file_format,
-                                         tree_offset=opts.burnin,
-                                         write_progress=messenger.write,
-                                         taxon_set=taxon_set,
-                                         encode_splits=encode_splits)
-    split_distribution = treesplit.SplitDistribution()
+    split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
     split_distribution.is_rooted = opts.rooted_trees
-    tsum.count_splits_on_trees(tree_source,
-        split_distribution=split_distribution,
-        trees_splits_encoded=encode_splits)
+
+    if _MP and len(process_jobs) > 1:
+        job_desc = ", ".join([str(len(job)) for job in process_jobs])
+        num_sources = sum([len(job) for job in process_jobs])
+        messenger.send("%d sources to be handled by %d processes: {%s}\n" % (num_sources, opts.num_processes, job_desc))
+        messenger.send("### COUNTING SPLITS ###\n")
+
+        # launch threads
+        sc_threads = []
+        for jidx, job in enumerate(process_jobs):
+            sct = SplitCounterThread(job, taxon_set=taxon_set, schema=file_format, is_rooted=opts.rooted_trees)
+            sct.start()
+            sc_threads.append(sct)
+            #if jidx == 0:
+            #    while sct.is_alive():
+            #        pass
+
+        # wait for all threads to complete
+        for sct in sc_threads:
+            sct.join()
+
+        # collate results
+        for sct in sc_threads:
+            split_distribution.update(sct.split_distribution)
+    else:
+        if opts.from_newick_stream or opts.from_nexus_stream:
+            messenger.send("(reading from standard input)")
+            sources = [sys.stdin]
+        else:
+            messenger.send("%d sources to be handled by a single process\n" % len(process_jobs[0]))
+            sources = [open(f, "rU") for f in process_jobs[0]]
+        messenger.send("### COUNTING SPLITS ###\n")
+        tree_source = multi_tree_source_iter(sources=sources,
+                                             schema=file_format,
+                                             tree_offset=opts.burnin,
+                                             write_progress=messenger.write,
+                                             taxon_set=taxon_set,
+                                             encode_splits=encode_splits)
+        tsum.count_splits_on_trees(tree_source,
+            split_distribution=split_distribution,
+            trees_splits_encoded=encode_splits)
+
     if split_distribution.taxon_set is None:
         assert(tsum.total_trees_counted == 0)
         split_distribution.taxon_set = dendropy.TaxonSet() # we just produce an empty block so we don't crash as we report nothing of interest
+
     report = []
 #    report.append("%d trees read from %d files." % (tree_source.total_trees_read, len(support_filepaths)))
 #    report.append("%d trees from each file requested to be ignored for burn-in." % (opts.burnin))
