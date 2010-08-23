@@ -61,7 +61,7 @@ def convert_data_vec(v, s):
     nc = len(v)
     for i in xrange(nc):
         v[i].value = s
-    
+
 def garli_safe_add_child(par, child):
     "Adds an extra node so that the tree stays binary"
     attacher_nd = dendropy.Node()
@@ -74,14 +74,14 @@ def garli_safe_add_child(par, child):
     par.remove_child(r_anc)
     attacher_nd.add_child(r_anc, edge_length=r_anc_e_len)
     return attacher_nd, r_anc, r_anc_e_len
-    
-    
+
+
 def write_garli_tree_file(tree, e, anc_taxon, des_taxon, filename, model_string):
     anc_attach = e.tail_node
     assert anc_attach
     anc_nd = dendropy.Node(taxon=anc_taxon)
     anc_extra, old_a_child, old_a_child_e_len = garli_safe_add_child(anc_attach, anc_nd)
-    
+
 
     if e.is_terminal():
         des_attach = anc_attach
@@ -90,7 +90,7 @@ def write_garli_tree_file(tree, e, anc_taxon, des_taxon, filename, model_string)
         assert des_attach
     des_nd = dendropy.Node(taxon=des_taxon)
     des_extra, old_d_child, old_d_child_e_len = garli_safe_add_child(des_attach, des_nd)
-        
+
     try:
         o = open(filename, 'w')
         o.write('''#NEXUS
@@ -222,10 +222,10 @@ def invoke_garli(cf):
     if g.returncode != 0:
         sys.exit("""Invocation:\n%s\nfrom %s failed!
 
-Note that "scoreOnlyGarli" is a special form of GARLI(Zwickl) available from Mark Holder on request. 
+Note that "scoreOnlyGarli" is a special form of GARLI(Zwickl) available from Mark Holder on request.
 This program calculates likelihoods without changing any parameters of the model or branch lengths)
 """ % (" ".join(invok), os.path.abspath(os.curdir)))
-    
+
 def parse_site_likes(file_obj):
     first_line = file_obj.next().strip()
     assert first_line == 'Tree	-lnL	Site	-lnL'
@@ -297,8 +297,8 @@ if __name__ == "__main__":
         help="Data file (NEXUS)")
 
     (opts, args) = parser.parse_args()
-    messenger = ConsoleMessenger(quiet=False)
-    
+    messenger = ConsoleMessenger(name='prob_synapo.py', verbosity=3)
+
     scratch_dir = 'tmp_dir_prob_syn'
     if not os.path.exists(scratch_dir):
         os.mkdir(scratch_dir)
@@ -321,10 +321,10 @@ if __name__ == "__main__":
         output_dest = sys.stdout
     else:
         output_fpath = os.path.expanduser(os.path.expandvars(opts.output_filepath))
-        if not confirm_overwrite(output_fpath, messenger, opts.replace):
+        if not confirm_overwrite(output_fpath, opts.replace):
             sys.exit(1)
         output_dest = open(output_fpath, "w")
-            
+
 
     dataset = DataSet()
     ts = dendropy.TaxonSet()
@@ -334,7 +334,7 @@ if __name__ == "__main__":
     if len(dataset.tree_lists) > 0:
         sys.exit("Currently the script does not support trees in the data file")
     dataset.read(stream=open(opts.tree, 'rU'), schema='NEXUS', taxon_set=ts)
-    if (len(dataset.tree_lists) != 1) or len(dataset.tree_lists[0]) != 1: 
+    if (len(dataset.tree_lists) != 1) or len(dataset.tree_lists[0]) != 1:
         sys.exit("Currently the script only not tree files with a single tree")
 
     if ts.get_taxon(label=BOGUS_TAXON_LABELS[0]) or ts.get_taxon(label=BOGUS_TAXON_LABELS[1]):
@@ -347,20 +347,20 @@ if __name__ == "__main__":
     if os.path.exists('results'):
         sys.exit('The filepath "results" already exists. Move this file or directory out of the way before running this script.')
     state_alphabet = matrix.state_alphabets[0]
-    
+
     a_taxon = ts[0]
     data_for_a_taxon = matrix.get(a_taxon)
     num_char = len(data_for_a_taxon)
 
     all_missing = '?' * num_char # TEMP! should get this from the data type
     data_type = 'dna' # TEMP! should get this from the datafile
-    
+
 
     fake_data = StringIO('2 %d\n%-9s %s\n%-9s %s\n' % (num_char, BOGUS_TAXON_LABELS[0], all_missing, BOGUS_TAXON_LABELS[1], all_missing))
     fake_dataset = DataSet()
     fake_dataset.read(stream=fake_data, schema='phylip', data_type=data_type)
     fd = fake_dataset.char_matrices[0]
-    
+
     matrix.extend(fd)
 
     fn = MY_PREFIX + 'missing.nex'
@@ -369,7 +369,7 @@ if __name__ == "__main__":
     o = open(os.path.join(scratch_dir, fn), 'w')
     matrix.write_to_stream(o, schema='nexus')
     o.close()
-    
+
     fundamental_states = [i for i in state_alphabet.fundamental_states() if i is not state_alphabet.gap]
     anc_taxon = ts.get_taxon(label=BOGUS_TAXON_LABELS[0])
     assert(anc_taxon)
@@ -417,18 +417,18 @@ if __name__ == "__main__":
             to_state_label = to_state.symbol
             ti_order.append((from_state_label, to_state_label))
 
-    
+
     edge_list = [i for i in tree.preorder_edge_iter()]
     for nd in tree.preorder_node_iter():
         if (nd.parent_node and len(nd.child_nodes()) > 2) or ((nd.parent_node is None) and len(nd.child_nodes()) > 3):
             sys.exit('oops! polytomy in tree. GARLI will not behave correctly!')
-        
+
     for n, e in enumerate(edge_list):
         if not e.tail_node:
             continue
         sub_dir = os.path.join(scratch_dir, 'split%d' %n)
         os.mkdir(sub_dir)
-        
+
         os.chdir(sub_dir)
         move_files(to_move, scratch_dir)
         try:

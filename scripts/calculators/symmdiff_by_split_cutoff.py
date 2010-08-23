@@ -64,39 +64,6 @@ _program_copyright = "Copyright (C) 2008 Mark T. Holder.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
                  "There is NO WARRANTY,\nto the extent permitted by law."
 
-def confirm_overwrite(filepath,
-                      messenger,
-                      replace_without_asking=False,
-                      file_desc="Output"):
-    if os.path.exists(filepath):
-        if replace_without_asking:
-            overwrite = 'y'
-        else:
-            messenger.send_error('%s file already exists: "%s"' % (file_desc, filepath))
-            overwrite = raw_input("Overwrite (y/N)? ")
-            messenger.send('')
-        if not overwrite.lower().startswith("y"):
-            return False
-        else:
-            return True
-    else:
-        return True
-
-def show_splash(dest=sys.stderr, extended=False):
-    lines = []
-    lines.append("%s" % (_program_name))
-    lines.append("%s" % _program_version)
-    lines.append("By %s" % _program_author)
-    lines.append("(using the DendroPy Phylogenetic Computing Library Version %s)" % (dendropy.PACKAGE_VERSION))
-    if extended:
-        lines.append('')
-        lines.extend(_program_copyright.split('\n'))
-    header_max = max([len(i) for i in lines]) + 1
-    sbars = '=' * header_max
-    dest.write("%s\n" % sbars)
-    dest.write("%s\n" % ('\n'.join(lines)))
-    dest.write("%s\n\n" % sbars)
-
 def main_cli():
 
     description =  '%s %s ' % (_program_name, _program_version)

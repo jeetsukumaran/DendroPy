@@ -213,7 +213,11 @@ def main_cli():
                       help="ignore missing target tree file (will construct majority rule consensus tree if missing)")
 
     (opts, args) = parser.parse_args()
-    messenger = ConsoleMessenger(quiet=opts.quiet)
+    if opts.quiet:
+        verbosity = 0
+    else:
+        verbosity = 2
+    messenger = ConsoleMessenger(name='sumtrees.py', verbosity=verbosity)
 
     # splash
     if not opts.quiet:
@@ -282,14 +286,14 @@ def main_cli():
         output_dest = sys.stdout
     else:
         output_fpath = os.path.expanduser(os.path.expandvars(opts.output_filepath))
-        if confirm_overwrite(output_fpath, messenger, opts.replace):
+        if confirm_overwrite(filepath=output_fpath, replace_without_asking=opts.replace):
             output_dest = open(output_fpath, "w")
         else:
             sys.exit(1)
 
     if opts.split_edges_filepath:
         split_edges_filepath = os.path.expanduser(os.path.expandvars(opts.split_edges_filepath))
-        if confirm_overwrite(split_edges_filepath, messenger, opts.replace):
+        if confirm_overwrite(filepath=output_fpath, replace_without_asking=opts.replace):
             split_edges_dest = open(split_edges_filepath, "w")
         else:
             sys.exit(1)

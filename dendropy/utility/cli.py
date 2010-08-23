@@ -29,16 +29,15 @@ import sys
 import dendropy
 
 def confirm_overwrite(filepath,
-                      messenger,
                       replace_without_asking=False,
-                      file_desc="Output"):
+                      file_desc="Output",
+                      out=sys.stdout):
     if os.path.exists(filepath):
         if replace_without_asking:
             overwrite = 'y'
         else:
-            messenger.send_error('%s file already exists: "%s"' % (file_desc, filepath))
+            out.write('%s file already exists: "%s"\n' % (file_desc, filepath))
             overwrite = raw_input("Overwrite (y/N)? ")
-            messenger.send('')
         if not overwrite.lower().startswith("y"):
             return False
         else:

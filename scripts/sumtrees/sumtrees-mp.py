@@ -95,7 +95,7 @@ class SplitCounterThread(threading.Thread):
 def main_cli():
 
     description =  '%s %s %s' % (_program_name, _program_version, _program_subtitle)
-    usage = "%prog [options] <TREES FILE> [<TREES FILE> [<TREES FILE> [...]]"
+    usage = "%prog [options] TREES-FILE [TREES-FILE [TREES-FILE [...]]"
 
     parser = OptionParser(usage=usage, add_help_option=True, version = _program_version, description=description)
 
@@ -230,7 +230,7 @@ def main_cli():
     run_optgroup = OptionGroup(parser, 'Program Run Options')
     parser.add_option_group(run_optgroup)
     if _MP:
-        run_optgroup.add_option('-n', '--num-processes',
+        run_optgroup.add_option('-n', '--np', '--num-processes',
                           dest='num_processes',
                           type='int',
                           default=1,
@@ -252,17 +252,21 @@ def main_cli():
                       help="ignore missing target tree file (will construct majority rule consensus tree if missing)")
 
     (opts, args) = parser.parse_args()
-    messenger = ConsoleMessenger(quiet=opts.quiet)
+    if opts.quiet:
+        verbosity = 0
+    else:
+        verbosity = 2
+    messenger = ConsoleMessenger(name='sumtrees.py', verbosity=verbosity)
 
     # splash
     if not opts.quiet:
         show_splash(prog_name=_program_name,
-        prog_subtitle=_program_subtitle,
-        prog_version=_program_version,
-        prog_author=_program_author,
-        prog_copyright=_program_copyright,
-        dest=sys.stderr,
-        extended=False)
+                prog_subtitle=_program_subtitle,
+                prog_version=_program_version,
+                prog_author=_program_author,
+                prog_copyright=_program_copyright,
+                dest=sys.stderr,
+                extended=False)
 
     ###################################################
     # Support file idiot checking
@@ -328,14 +332,14 @@ def main_cli():
         output_dest = sys.stdout
     else:
         output_fpath = os.path.expanduser(os.path.expandvars(opts.output_filepath))
-        if confirm_overwrite(output_fpath, messenger, opts.replace):
+        if confirm_overwrite(filepath=output_fpath, replace_without_asking=opts.replace):
             output_dest = open(output_fpath, "w")
         else:
             sys.exit(1)
 
     if opts.split_edges_filepath:
         split_edges_filepath = os.path.expanduser(os.path.expandvars(opts.split_edges_filepath))
-        if confirm_overwrite(split_edges_filepath, messenger, opts.replace):
+        if confirm_overwrite(filepath=output_fpath, replace_without_asking=opts.replace):
             split_edges_dest = open(split_edges_filepath, "w")
         else:
             sys.exit(1)

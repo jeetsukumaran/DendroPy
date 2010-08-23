@@ -110,10 +110,23 @@ def deprecation(message, logger_obj=None, stacklevel=3):
 
 class ConsoleMessenger(object):
 
-    def __init__(self, quiet=False, dest1=sys.stderr, dest2=None):
-        self.quiet = quiet
-        self.dest1 = dest1
-        self.dest2 = dest2
+    def __init__(self, name, verbosity):
+        self.name = name
+        self.verbosity = verbosity
+        self.dest1 = sys.stderr
+        self.dest2 = None
+        if self.name is None:
+            initial_indent = ""
+        else:
+            initial_indent = self.name + ": "
+        subsequent_indent = " " * len(initial_indent)
+        self.text_wrapper = textwrap.TextWrapper(width=70,
+                initial_indent=initial_indent,
+                subsequent_indent=subsequent_indent,
+                drop_whitespace=True)
+
+    def compose_message(self, msg, wrap=0, newline=True, force=False, prefix=None):
+        pass
 
     def write(self, msg):
         self.send(msg, newline=False)
@@ -122,21 +135,27 @@ class ConsoleMessenger(object):
         for line in msg:
             self.send(msg=line, wrap=wrap, newline=newline, force=force)
 
-    def send(self, msg, wrap=0, newline=True, force=False):
+    def send(self, msg, wrap=0, newline=True, force=False, prefix=None):
+
         if wrap:
             msg = textwrap.fill(msg, width=70)
         if newline:
             suffix = "\n"
         else:
             suffix = ""
-        if force or not self.quiet:
-            if self.dest1:
-                self.dest1.write(msg + suffix)
+        msg = msg + suffix
+        if prefix is not None:
+            msg = prefix + msg
+        if self.dest1:
+            self.dest1.write(msg)
         if self.dest2:
-            self.dest2.write(msg + suffix)
+            self.dest2.write(msg)
 
     def send_formatted(self, msg, force=False):
         self.send(msg, wrap=True, force=force)
 
     def send_error(self, msg, wrap=False):
+        self.send(msg, wrap=wrap, force=True)
+
+    def send_warning(self, msg, wrap=False):
         self.send(msg, wrap=wrap, force=True)

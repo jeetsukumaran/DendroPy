@@ -87,7 +87,7 @@ def main():
         help="Which triangle of the distance matrix to display: both|upper|lower (default is both).")
 
     (opts, args) = parser.parse_args()
-    messenger = ConsoleMessenger(quiet=False)
+    messenger = ConsoleMessenger(name='tree-dist.py', verbosity=3)
     schema = opts.schema.lower()
 
     tri = opts.tri.lower()
@@ -111,15 +111,15 @@ def main():
         output_dest = sys.stdout
     else:
         output_fpath = os.path.expanduser(os.path.expandvars(opts.output_filepath))
-        if not confirm_overwrite(output_fpath, messenger, opts.replace):
+        if not confirm_overwrite(output_fpath, opts.replace):
             sys.exit(1)
         output_dest = open(output_fpath, "w")
-            
+
 
     dataset = DataSet()
     ts = dendropy.TaxonSet()
-    
-    
+
+
     all_trees = []
     for tfile_idx, tfile in enumerate(tree_file_objs):
         curr_trees = dendropy.TreeList.get_from_stream(tfile, schema, taxon_set=ts)
@@ -149,11 +149,11 @@ def main():
 
 
     td_mat = []
-    
+
     for i in r_range:
         if opts.show_header_row:
             output_dest.write(str(1+i) + opts.separator)
-        td_row = []    
+        td_row = []
         for j in c_range:
             s = ''
             if j == i:
@@ -176,7 +176,7 @@ def main():
 
         td_mat.append(td_row)
         output_dest.write("%s\n" % opts.separator.join(td_row))
-        
+
 
 if __name__ == "__main__":
     main()

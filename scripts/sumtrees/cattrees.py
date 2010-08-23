@@ -119,7 +119,11 @@ def main_cli():
                       help="ignore missing support tree files (at least one must exist!)")
 
     (opts, args) = parser.parse_args()
-    messenger = ConsoleMessenger(quiet=opts.quiet)
+    if opts.quiet:
+        verbosity = 0
+    else:
+        verbosity = 2
+    messenger = ConsoleMessenger(name='cattrees.py', verbosity=verbosity)
 
     # splash
     if not opts.quiet:
@@ -167,7 +171,7 @@ def main_cli():
         output_dest = sys.stdout
     else:
         output_fpath = os.path.expanduser(os.path.expandvars(opts.output_filepath))
-        if confirm_overwrite(output_fpath, messenger, opts.replace):
+        if confirm_overwrite(filepath=output_fpath, replace_without_asking=opts.replace):
             output_dest = open(output_fpath, "w")
         else:
             sys.exit(1)
