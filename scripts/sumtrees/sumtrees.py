@@ -430,23 +430,28 @@ def main_cli():
             sc_threads.append(sct)
 
         # wait for all threads to complete (does not respond to Ctrl-C)
-        for sct in sc_threads:
-            sct.join()
+        #for sct in sc_threads:
+        #    sct.join()
 
         # responds to Ctrl-C
-        #live_threads = list(sc_threads)
-        #while len(live_threads) > 0:
-        #    try:
-        #        # Join all threads using a timeout so it doesn't block
-        #        # Filter out threads which have been joined or are None
-        #        live_threads = [t.join(1) for t in live_threads if t is not None and t.isAlive()]
-        #    except KeyboardInterrupt:
-        #        messenger.send_warning("Keyboard interrupt received: sending termination request to threads ...")
-        #        for t in live_threads:
-        #            t.kill_received = True
-        #            t.join()
-        #        messenger.send_info("Terminated: keyboard interrupt.")
-        #        sys.exit(1)
+        # loop infinitely until all threads expire or kill signal received
+        live_threads = True
+        while live_threads:
+            try:
+                live_threads = False
+                for sct in sc_threads:
+                    if sct.isAlive():
+                        live_threads = True
+                        break
+                if live_threads:
+                    time.sleep(5)
+            except KeyboardInterrupt:
+                messenger.send_warning("Keyboard interrupt received: sending termination request to threads ...")
+                for t in sc_threads:
+                    t.kill_received = True
+                    t.join()
+                messenger.send_info("Terminated (keyboard interrupt).")
+                sys.exit(1)
 
         # collate results
         for sct in sc_threads:
