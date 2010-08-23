@@ -379,6 +379,9 @@ def main_cli():
         job_desc = ", ".join([str(len(job)) for job in process_jobs])
         num_sources = sum([len(job) for job in process_jobs])
         messenger.send("%d sources to be handled by %d processes: {%s}\n" % (num_sources, opts.num_processes, job_desc))
+        messenger.send("### COUNTING SPLITS ###\n")
+
+        # launch threads
         sc_threads = []
         for jidx, job in enumerate(process_jobs):
             sct = SplitCounterThread(job, taxon_set=taxon_set, schema=file_format, is_rooted=opts.rooted_trees)
@@ -388,16 +391,11 @@ def main_cli():
             #    while sct.is_alive():
             #        pass
 
+        # wait for all threads to complete
+        for sct in sc_threads:
+            sct.join()
 
-        is_running = True
-        while is_running:
-            time.sleep(1)
-            is_running = False
-            for sct in sc_threads:
-                if sct.isAlive():
-                    is_running = True
-                break
-            #is_running = any([sct.is_alive() for sct in sc_threads]) # much more elegant, but unfortunately >= Python 2.6 only
+        # collate results
         for sct in sc_threads:
             split_distribution.update(sct.split_distribution)
     else:
