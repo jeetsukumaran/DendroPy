@@ -49,7 +49,7 @@ class TreeSummarizer(object):
     def __init__(self, **kwargs):
         """
         __init__ kwargs:
-        
+
             - `support_as_labels` (boolean)
             - `support_as_percentages` (boolean)
             - `support_label_decimals` (integer)

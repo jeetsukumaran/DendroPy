@@ -115,16 +115,23 @@ def tree_source_iter(stream, schema, **kwargs):
         del(kwargs["write_progress"])
     else:
         write_progress = None
+    if "log_frequency" in kwargs:
+        log_frequency = kwargs["log_frequency"]
+        del(kwargs["log_frequency"])
+    else:
+        log_frequency = 1
+    if log_frequency <= 0:
+        write_progress = None
     tree_iter = _GLOBAL_DATA_SCHEMA_REGISTRY.tree_source_iter(stream, schema, **kwargs)
     count = 0
     for count, t in enumerate(tree_iter):
         if count >= tree_offset and t is not None:
-            if write_progress is not None:
+            if write_progress is not None and (count % log_frequency == 0):
                 write_progress("Processing tree at index %d" % count)
             count += 1
             yield t
         else:
-            if write_progress is not None:
+            if write_progress is not None and (count % log_frequency == 0):
                 write_progress("Skipping tree at index %d" % count)
     if count < tree_offset:
         raise KeyError("0-based index out of bounds: %d (trees=%d, tree_offset=[0, %d])" % (tree_offset, count, count-1))

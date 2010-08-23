@@ -151,7 +151,7 @@ def main_cli():
                 sys.exit(1)
         else:
             tree_filepaths.append(fpath)
-    if len(support_filepaths) == 0:
+    if len(tree_filepaths) == 0:
         messenger.send_error("No sources of trees specified or could be found. "
         + "Please provide the path to at least one (valid and existing) file "
         + "containing trees.")

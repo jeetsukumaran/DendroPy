@@ -65,35 +65,49 @@ _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
                  "There is NO WARRANTY,\nto the extent permitted by law."
 
-def distribute_jobs(sources, num_procs):
-    jobs = [[] for i in range(num_procs)]
-    sources = list(sources)
-    while len(sources) > 0:
-        for job_batch in jobs:
-            try:
-                job_batch.append(sources.pop(0))
-            except IndexError:
-                break
-    return [j for j in jobs if len(j) > 0]
-
 class SplitCountingThread(threading.Thread):
 
-    def __init__(self, job_queue, taxon_set, schema, is_rooted):
+    def __init__(self,
+            job_queue,
+            taxon_set,
+            schema,
+            is_rooted,
+            thread_idx,
+            messenger,
+            messenger_lock,
+            log_frequency=1000):
         threading.Thread.__init__(self)
         self.job_queue = job_queue
         self.schema = schema
         self.taxon_set = taxon_set
         self.split_distribution = treesplit.SplitDistribution(taxon_set=self.taxon_set)
         self.split_distribution.is_rooted = is_rooted
+        self.thread_idx = thread_idx
+        self.messenger = messenger
+        self.messenger_lock = messenger_lock
+        self.log_frequency = log_frequency
+
+    def send_info(self, msg):
+        msg = "Thread %d: %s" % (self.thread_idx+1, msg)
+        self.messenger_lock.acquire()
+        try:
+            self.messenger.send_info(msg)
+        finally:
+            self.messenger_lock.release()
 
     def run(self):
         while True:
             try:
                 source = self.job_queue.get_nowait()
                 fsrc = open(source, "rU")
-                for tree in tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set):
+                self.send_info('Starting processing tree source: "%s"' % source)
+                for tidx, tree in enumerate(tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set)):
+                    if self.log_frequency >= 0 and tidx % self.log_frequency == 0:
+                        self.send_info('Processing tree at offset %d' % (tidx))
                     treesplit.encode_splits(tree)
                     self.split_distribution.count_splits_on_tree(tree)
+                self.send_info('Completed processing trees source: "%s"' % (source))
+                self.job_queue.task_done()
             except Queue.Empty:
                 break
 
@@ -245,6 +259,11 @@ def main_cli():
                       dest='quiet',
                       default=False,
                       help="suppress progress messages")
+    run_optgroup.add_option('-g', '--log-frequency',
+                      type='int',
+                      dest='log_frequency',
+                      default=500,
+                      help="tree processing progress logging frequency (default=%default; set to 0 to suppress)")
     run_optgroup.add_option('--ignore-missing-support',
                       action='store_true',
                       dest='ignore_missing_support',
@@ -377,8 +396,15 @@ def main_cli():
 
         # launch threads
         sc_threads = []
+        messenger_lock = threading.Lock()
         for idx in range(opts.num_processes):
-            sct = SplitCountingThread(work_queue, taxon_set=taxon_set, schema=file_format, is_rooted=opts.rooted_trees)
+            sct = SplitCountingThread(work_queue,
+                    taxon_set=taxon_set,
+                    schema=file_format,
+                    is_rooted=opts.rooted_trees,
+                    thread_idx=idx,
+                    messenger=messenger,
+                    messenger_lock=messenger_lock)
             sct.start()
             sc_threads.append(sct)
 
@@ -401,20 +427,21 @@ def main_cli():
                                              tree_offset=opts.burnin,
                                              write_progress=messenger.write_info,
                                              taxon_set=taxon_set,
-                                             encode_splits=encode_splits)
+                                             encode_splits=encode_splits,
+                                             log_frequency=opts.log_frequency)
         tsum.count_splits_on_trees(tree_source,
             split_distribution=split_distribution,
             trees_splits_encoded=encode_splits)
 
     if split_distribution.taxon_set is None:
-        assert(tsum.total_trees_counted == 0)
+        assert(split_distribution.total_trees_counted == 0)
         split_distribution.taxon_set = dendropy.TaxonSet() # we just produce an empty block so we don't crash as we report nothing of interest
 
     report = []
 #    report.append("%d trees read from %d files." % (tree_source.total_trees_read, len(support_filepaths)))
 #    report.append("%d trees from each file requested to be ignored for burn-in." % (opts.burnin))
 #    report.append("%d trees ignored in total." % (tree_source.total_trees_ignored))
-    report.append("%d trees considered in total for split support assessment." % (tsum.total_trees_counted))
+    report.append("%d trees considered in total for split support assessment." % (split_distribution.total_trees_counted))
     if opts.rooted_trees:
         report.append("Trees treated as rooted.")
     else:
