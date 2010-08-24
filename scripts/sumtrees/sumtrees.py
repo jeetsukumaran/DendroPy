@@ -521,7 +521,7 @@ def main_cli():
     # Main work begins here: Count the splits
 
     start_time = datetime.datetime.now()
-    split_distribution = None
+    master_split_distribution = None
     if _MP and (opts.num_processes > 1 or opts.auto_multi_process):
         if opts.auto_multi_process:
             num_threads = len(support_filepaths)
@@ -529,7 +529,7 @@ def main_cli():
             num_threads = opts.num_processes
         messenger.send_info("Running in multi-threaded mode (%d threads)." % num_threads)
         messenger.send_info("%d sources to be processed." % (len(support_filepaths)))
-        split_distribution = process_sources_parallel(
+        master_split_distribution = process_sources_parallel(
                 num_threads=num_threads,
                 support_filepaths=support_filepaths,
                 schema=schema,
@@ -543,7 +543,7 @@ def main_cli():
             support_filepaths = None
         else:
             messenger.send_info("%d sources to be processed." % len(support_filepaths))
-        split_distribution = process_sources_serial(
+        master_split_distribution = process_sources_serial(
                 support_filepaths=support_filepaths,
                 schema=schema,
                 is_rooted=opts.rooted_trees,
@@ -555,19 +555,22 @@ def main_cli():
 
     # if not splits counted or the taxon set was not populated for any reason,
     # we just produce an empty block so we don't crash as we report nothing of interest
-    if split_distribution.taxon_set is None:
-        assert(split_distribution.total_trees_counted == 0)
-        split_distribution.taxon_set = dendropy.TaxonSet()
+    if master_split_distribution.taxon_set is None:
+        assert(master_split_distribution.total_trees_counted == 0)
+        master_split_distribution.taxon_set = dendropy.TaxonSet()
+
+    # taxon set to handle target trees
+    master_taxon_set = master_split_distribution.taxon_set
 
     report = []
-    report.append("%d trees considered in total for split support assessment." % (split_distribution.total_trees_counted))
+    report.append("%d trees considered in total for split support assessment." % (master_split_distribution.total_trees_counted))
     if opts.rooted_trees:
         report.append("Trees treated as rooted.")
     else:
         report.append("Trees treated as unrooted.")
-    n_taxa = len(split_distribution.taxon_set)
+    n_taxa = len(master_taxon_set)
     report.append("%d unique taxa across all trees." % n_taxa)
-    num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = split_distribution.splits_considered()
+    num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = master_split_distribution.splits_considered()
     report.append("%d unique splits out of %d total splits counted." % (num_unique_splits, num_splits))
     report.append("%d unique non-trivial splits out of %d total non-trivial splits counted." % (num_nt_unique_splits, num_nt_splits))
 
@@ -604,8 +607,8 @@ def main_cli():
         messenger.send_info("Mapping support to target tree ...")
         for tree in tree_source_iter(stream=open(target_tree_filepath, 'r'),
                 schema="nexus/newick",
-                taxon_set=split_distribution.taxon_set.taxon_set):
-            tt_trees.append(tsum.map_split_support_to_tree(tree, split_distribution))
+                taxon_set=master_taxon_set):
+            tt_trees.append(tsum.map_split_support_to_tree(tree, master_split_distribution))
         messenger.send_info('Parsed "%s": %d tree(s) in file' % (target_tree_filepath, len(tt_trees)))
         comments.append('Split support mapped to trees in:')
         comments.append('  - "%s" (%d trees)' % (os.path.abspath(target_tree_filepath), len(tt_trees)))
@@ -617,7 +620,7 @@ def main_cli():
             min_freq = 1.0
         else:
             min_freq = opts.min_clade_freq
-        tt_trees.append(tsum.tree_from_splits(split_distribution,
+        tt_trees.append(tsum.tree_from_splits(master_split_distribution,
                                               min_freq=min_freq,
                                               include_edge_lengths=not opts.no_branch_lengths))
         report = []
@@ -640,7 +643,7 @@ def main_cli():
     run_time = "Run time: %s hour(s), %s minute(s), %s second(s)." % (hours, mins, secs)
     final_run_report.append(run_time)
 
-    output_dataset = dendropy.DataSet(dendropy.TreeList(tt_trees, taxon_set=split_distribution.taxon_set))
+    output_dataset = dendropy.DataSet(dendropy.TreeList(tt_trees, taxon_set=master_taxon_set))
 
     if opts.to_newick_format:
         output_dataset.write(output_dest, "newick")
@@ -675,10 +678,10 @@ def main_cli():
         output_dataset.write(output_dest, "nexus", simple=simple, comment=comment)
 
     if split_edges_dest:
-        for split in split_distribution.splits:
+        for split in master_split_distribution.splits:
             row = []
-            row.append(split_distribution.taxa_block.split_as_newick_string(split))
-            for edge_length in split_distribution.split_edge_lengths[split]:
+            row.append(master_taxa_block.split_as_newick_string(split))
+            for edge_length in master_split_distribution.split_edge_lengths[split]:
                 row.append("%s" % edge_length)
             split_edges_dest.write("%s\n" % ("\t".join(row)))
 
