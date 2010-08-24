@@ -181,7 +181,7 @@ def process_sources_parallel(
 
     # pre-discover taxa
     tdfpath = support_filepaths[0]
-    messenger.send_info('Discovering taxa based on "%s" ...' % tdfpath)
+    messenger.send_info('Pre-loading taxa based on "%s" ...' % tdfpath)
     taxon_set = discover_taxa(tdfpath, schema)
     taxon_labels = [str(t) for t in taxon_set]
     messenger.send_info('Found %d taxa: [%s]' % (len(taxon_labels), (", ".join(["'%s'" % t for t in taxon_labels]))))
@@ -248,7 +248,7 @@ def process_sources_serial(
     taxon_set = dendropy.TaxonSet()
     split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
     if support_filepaths is None or len(support_filepaths) == 0:
-        srcs = sys.stdin
+        srcs = [sys.stdin]
     else:
         srcs = [open(f, "rU") for f in support_filepaths]
     for sidx, src in enumerate(srcs):
@@ -537,8 +537,8 @@ def main_cli():
     split_distribution.is_rooted = opts.rooted_trees
 
     if _MP and opts.num_processes > 1:
-        messenger.send_info("Running SumTrees in multi-threaded mode.")
-        messenger.send_info("Counting splits (%d sources to be processed in %d threads) ..." % (len(support_filepaths), opts.num_processes))
+        messenger.send_info("Running in multi-threaded mode (%d threads)." % opts.num_processes)
+        messenger.send_info("%d sources to be processed." % (len(support_filepaths)))
         split_distribution = process_sources_parallel(
                 num_threads=opts.num_processes,
                 support_filepaths=support_filepaths,
@@ -548,12 +548,12 @@ def main_cli():
                 log_frequency=opts.log_frequency,
                 messenger=messenger)
     else:
-        messenger.send_info("Running SumTrees in single-thread mode.")
+        messenger.send_info("Running in single-threaded mode.")
         if opts.from_newick_stream or opts.from_nexus_stream:
-            messenger.send_info("Counting splits (reading trees from standard input)")
+            messenger.send_info("Reading trees from standard input.")
             support_filepaths = None
         else:
-            messenger.send_info("Counting splits (%d sources to be processed serially) ..." % len(support_filepaths))
+            messenger.send_info("%d sources to be processed." % len(support_filepaths))
         split_distribution = process_sources_serial(
                 support_filepaths=support_filepaths,
                 schema=file_format,
@@ -658,9 +658,12 @@ def main_cli():
             python_version = sys.version.replace("\n", "").replace("[", "(").replace("]",")")
             comment.append("Running under Python %s on %s." % (python_version, sys.platform))
             comment.append("Executed on %s by %s@%s." % (platform.node(),  username, socket.gethostname()))
-            comment.append("Basis of split support:")
-            for support_file in support_filepaths:
-                comment.append('  - "%s"' % os.path.abspath(support_file))
+            if support_filepaths is not None and len(support_filepaths) > 0:
+                comment.append("Basis of split support:")
+                for support_file in support_filepaths:
+                    comment.append('  - "%s"' % os.path.abspath(support_file))
+            else:
+                comment.append('Basis of split support: trees read from standard input.')
             comment.extend(final_run_report)
             comment.extend(comments)
         if opts.additional_comments:
