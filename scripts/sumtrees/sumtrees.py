@@ -67,6 +67,37 @@ _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
 
 class SplitCountingThread(multiprocessing.Process):
 
+    def pickle_result(split_distribution):
+        result = (split_distribution.total_trees_counted,
+                split_distribution.splits,
+                split_distribution.split_counts,
+                split_distribution.split_edge_lengths,
+                split_distribution.split_node_ages)
+        return result
+    pickle_result = staticmethod(pickle_result)
+
+    def unpickle_result(pickled_result, split_distribution=None):
+        if split_distribution is None:
+            split_distribution = treesplit.SplitDistribution()
+        split_distribution.total_trees_counted += pickled_result[0]
+        for split in pickled_result[1]:
+            if split not in split_distribution.splits:
+                split_distribution.splits.append(split)
+                if split in pickled_result[2]:
+                    split_distribution.split_counts[split] = 0
+                if split in pickled_result[3]:
+                    split_distribution.split_edge_lengths[split] = []
+                if split in pickled_result[4]:
+                   split_distribution.split_node_ages[split] = []
+        for s, c in pickled_result[2].items():
+            split_distribution.split_counts[s] += c
+        for s, c in pickled_result[3].items():
+            split_distribution.split_edge_lengths[s].extend(c)
+        for s, c in pickled_result[4].items():
+            split_distribution.node_ages[s].extend(c)
+        return split_distribution
+    unpickle_result = staticmethod(unpickle_result)
+
     def __init__(self,
             work_queue,
             result_queue,
@@ -133,21 +164,7 @@ class SplitCountingThread(multiprocessing.Process):
         if self.kill_received:
             self.send_warning("Terminating in response to kill request.")
         else:
-            #result = self.split_distribution.total_trees_counted
-            #result = (self.split_distribution.total_trees_counted,
-            #        self.split_distribution.splits,
-            #        self.split_distribution.split_counts)
-            #result = (self.split_distribution.total_trees_counted,
-            #        self.split_distribution.splits,
-            #        self.split_distribution.split_counts,
-            #        self.split_distribution.split_edge_lengths)
-            result = (self.split_distribution.total_trees_counted,
-                    self.split_distribution.splits,
-                    self.split_distribution.split_counts,
-                    self.split_distribution.split_edge_lengths,
-                    self.split_distribution.split_node_ages)
-            #result = self.split_distribution.split_edge_lengths
-            #result = self.split_distribution
+            result = SplitCountingThread.pickle_result(self.split_distribution)
             self.result_queue.put(result)
 
 def discover_taxa(treefile, schema):
@@ -214,22 +231,7 @@ def process_sources_parallel(
     split_distribution.is_rooted = is_rooted
     while thread_result_count < num_threads:
         result = result_queue.get()
-        split_distribution.total_trees_counted += result[0]
-        for split in result[1]:
-            if split not in split_distribution.splits:
-                split_distribution.splits.append(split)
-                if split in result[2]:
-                    split_distribution.split_counts[split] = 0
-                if split in result[3]:
-                    split_distribution.split_edge_lengths[split] = []
-                if split in result[4]:
-                   split_distribution.split_node_ages[split] = []
-        for s, c in result[2].items():
-            split_distribution.split_counts[s] += c
-        for s, c in result[3].items():
-            split_distribution.split_edge_lengths[s].extend(c)
-        for s, c in result[4].items():
-            split_distribution.node_ages[s].extend(c)
+        SplitCountingThread.unpickle_result(result, split_distribution)
         thread_result_count += 1
     messenger.send_info("Recovered results from all worker threads.")
     return split_distribution
@@ -400,7 +402,7 @@ def main_cli():
     run_optgroup = OptionGroup(parser, 'Program Run Options')
     parser.add_option_group(run_optgroup)
     if _MP:
-        run_optgroup.add_option('-x', '-#', '--num-processes',
+        run_optgroup.add_option('-x', '--num-processes',
                           dest='num_processes',
                           type='int',
                           default=1,
@@ -508,17 +510,20 @@ def main_cli():
     # Main work begins here: Count the splits
 
     start_time = datetime.datetime.now()
-
     comments = []
 
     if opts.from_newick_stream:
-        file_format = "newick"
+        schema = "newick"
     elif opts.from_nexus_stream:
-        file_format = "nexus"
+        schema = "nexus"
     else:
-        file_format = 'nexus/newick'
+        schema = 'nexus/newick'
 
-    if file_format == "nexus":
+
+    ##### TODO: clean-up/remove #####
+
+
+    if schema == "nexus":
         encode_splits = True
     else:
         encode_splits = False # cannot encode while parsing newick
@@ -536,13 +541,17 @@ def main_cli():
     split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
     split_distribution.is_rooted = opts.rooted_trees
 
+    ###################################
+
+
+
     if _MP and opts.num_processes > 1:
         messenger.send_info("Running in multi-threaded mode (%d threads)." % opts.num_processes)
         messenger.send_info("%d sources to be processed." % (len(support_filepaths)))
         split_distribution = process_sources_parallel(
                 num_threads=opts.num_processes,
                 support_filepaths=support_filepaths,
-                schema=file_format,
+                schema=schema,
                 is_rooted=opts.rooted_trees,
                 encode_splits=encode_splits,
                 log_frequency=opts.log_frequency,
@@ -556,7 +565,7 @@ def main_cli():
             messenger.send_info("%d sources to be processed." % len(support_filepaths))
         split_distribution = process_sources_serial(
                 support_filepaths=support_filepaths,
-                schema=file_format,
+                schema=schema,
                 is_rooted=opts.rooted_trees,
                 encode_splits=encode_splits,
                 log_frequency=opts.log_frequency,
