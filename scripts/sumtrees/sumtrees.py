@@ -104,6 +104,7 @@ class SplitCountingThread(multiprocessing.Process):
             schema,
             taxon_labels,
             is_rooted,
+            tree_offset,
             thread_idx,
             messenger,
             messenger_lock,
@@ -116,6 +117,7 @@ class SplitCountingThread(multiprocessing.Process):
         self.taxon_set = dendropy.TaxonSet(self.taxon_labels)
         self.split_distribution = treesplit.SplitDistribution(taxon_set=self.taxon_set)
         self.split_distribution.is_rooted = is_rooted
+        self.tree_offset = tree_offset
         self.thread_idx = thread_idx
         self.messenger = messenger
         self.messenger_lock = messenger_lock
@@ -152,10 +154,14 @@ class SplitCountingThread(multiprocessing.Process):
             self.send_info('Received task: "%s".' % source)
             fsrc = open(source, "rU")
             for tidx, tree in enumerate(tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set)):
-                if tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0:
-                    self.send_info('(processing) "%s": tree at offset %d' % (source, tidx))
-                treesplit.encode_splits(tree)
-                self.split_distribution.count_splits_on_tree(tree)
+                if tidx >= self.tree_offset:
+                    if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
+                        self.send_info('(processing) "%s": tree at offset %d' % (source, tidx))
+                    treesplit.encode_splits(tree)
+                    self.split_distribution.count_splits_on_tree(tree)
+                else:
+                    if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
+                        self.send_info('(processing) "%s": tree at offset %d (skipping)' % (source, tidx))
                 if self.kill_received:
                     break
             if self.kill_received:
@@ -188,6 +194,7 @@ def process_sources_parallel(
         support_filepaths,
         schema,
         is_rooted,
+        tree_offset,
         log_frequency,
         messenger):
     """
@@ -218,6 +225,7 @@ def process_sources_parallel(
                 schema=schema,
                 taxon_labels=taxon_labels,
                 is_rooted=is_rooted,
+                tree_offset=tree_offset,
                 thread_idx=idx,
                 messenger=messenger,
                 messenger_lock=messenger_lock,
@@ -239,6 +247,7 @@ def process_sources_serial(
         support_filepaths,
         schema,
         is_rooted,
+        tree_offset,
         log_frequency,
         messenger):
     """
@@ -255,10 +264,14 @@ def process_sources_serial(
         name = getattr(src, "name", "<stdin>")
         messenger.send_info('Processing %d of %d: "%s"' % (sidx+1, len(srcs), name))
         for tidx, tree in enumerate(tree_source_iter(src, schema=schema, taxon_set=taxon_set, is_rooted=is_rooted)):
-            if tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0:
-                messenger.send_info('(processing) "%s": tree at offset %d' % (name, tidx))
-            treesplit.encode_splits(tree)
-            split_distribution.count_splits_on_tree(tree)
+            if tidx >= tree_offset:
+                if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
+                    messenger.send_info('(processing) "%s": tree at offset %d' % (name, tidx))
+                treesplit.encode_splits(tree)
+                split_distribution.count_splits_on_tree(tree)
+            else:
+                if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
+                    messenger.send_info('(processing) "%s": tree at offset %d (skipping)' % (name, tidx))
     messenger.send_info("Serial processing of %d source(s) completed.")
     return split_distribution
 
@@ -534,6 +547,7 @@ def main_cli():
                 support_filepaths=support_filepaths,
                 schema=schema,
                 is_rooted=opts.rooted_trees,
+                tree_offset=opts.burnin,
                 log_frequency=opts.log_frequency,
                 messenger=messenger)
     else:
@@ -547,6 +561,7 @@ def main_cli():
                 support_filepaths=support_filepaths,
                 schema=schema,
                 is_rooted=opts.rooted_trees,
+                tree_offset=opts.burnin,
                 log_frequency=opts.log_frequency,
                 messenger=messenger)
 
