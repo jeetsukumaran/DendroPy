@@ -122,7 +122,7 @@ class SplitCountingThread(multiprocessing.Process):
             fsrc = open(source, "rU")
             for tidx, tree in enumerate(tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set)):
                 if tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0:
-                    self.send_info('(processing) "%s": tree offset %d' % (source, tidx))
+                    self.send_info('(processing) "%s": tree at offset %d' % (source, tidx))
                 treesplit.encode_splits(tree)
                 self.split_distribution.count_splits_on_tree(tree)
                 if self.kill_received:
@@ -231,7 +231,7 @@ def process_sources_parallel(
         for s, c in result[4].items():
             split_distribution.node_ages[s].extend(c)
         thread_result_count += 1
-    messenger.send_info("Recovered results from %d worker threads." % thread_result_count)
+    messenger.send_info("Recovered results from all worker threads.")
     return split_distribution
 
 def process_sources_serial(
@@ -241,7 +241,26 @@ def process_sources_serial(
         encode_splits,
         log_frequency,
         messenger):
-    pass
+    """
+    Returns a SplitDistribution object summarizing all trees found in
+    `support_filepaths`.
+    """
+    taxon_set = dendropy.TaxonSet()
+    split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
+    if support_filepaths is None or len(support_filepaths) == 0:
+        srcs = sys.stdin
+    else:
+        srcs = [open(f, "rU") for f in support_filepaths]
+    for sidx, src in enumerate(srcs):
+        name = getattr(src, "name", "<stdin>")
+        messenger.send_info('Processing %d of %d: "%s"' % (sidx+1, len(srcs), name))
+        for tidx, tree in enumerate(tree_source_iter(src, schema=schema, taxon_set=taxon_set, is_rooted=is_rooted)):
+            if tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0:
+                messenger.send_info('(processing) "%s": tree at offset %d' % (name, tidx))
+            treesplit.encode_splits(tree)
+            split_distribution.count_splits_on_tree(tree)
+    messenger.send_info("Serial processing of %d source(s) completed.")
+    return split_distribution
 
 def main_cli():
 
@@ -518,6 +537,7 @@ def main_cli():
     split_distribution.is_rooted = opts.rooted_trees
 
     if _MP and opts.num_processes > 1:
+        messenger.send_info("Running SumTrees in multi-threaded mode.")
         messenger.send_info("Counting splits (%d sources to be processed in %d threads) ..." % (len(support_filepaths), opts.num_processes))
         split_distribution = process_sources_parallel(
                 num_threads=opts.num_processes,
@@ -528,22 +548,19 @@ def main_cli():
                 log_frequency=opts.log_frequency,
                 messenger=messenger)
     else:
+        messenger.send_info("Running SumTrees in single-thread mode.")
         if opts.from_newick_stream or opts.from_nexus_stream:
-            messenger.send_info("(reading from standard input)")
-            sources = [sys.stdin]
+            messenger.send_info("Counting splits (reading trees from standard input)")
+            support_filepaths = None
         else:
             messenger.send_info("Counting splits (%d sources to be processed serially) ..." % len(support_filepaths))
-            sources = [open(f, "rU") for f in support_filepaths]
-        tree_source = multi_tree_source_iter(sources=sources,
-                                             schema=file_format,
-                                             tree_offset=opts.burnin,
-                                             write_progress=messenger.write_info,
-                                             taxon_set=taxon_set,
-                                             encode_splits=encode_splits,
-                                             log_frequency=opts.log_frequency)
-        tsum.count_splits_on_trees(tree_source,
-            split_distribution=split_distribution,
-            trees_splits_encoded=encode_splits)
+        split_distribution = process_sources_serial(
+                support_filepaths=support_filepaths,
+                schema=file_format,
+                is_rooted=opts.rooted_trees,
+                encode_splits=encode_splits,
+                log_frequency=opts.log_frequency,
+                messenger=messenger)
 
     if split_distribution.taxon_set is None:
         assert(split_distribution.total_trees_counted == 0)
