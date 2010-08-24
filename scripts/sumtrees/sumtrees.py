@@ -274,159 +274,166 @@ def main_cli():
     sum_tree_optgroup = OptionGroup(parser, 'Summarization Options')
     parser.add_option_group(sum_tree_optgroup)
     sum_tree_optgroup.add_option('-b', '--burnin',
-                        action='store',
-                        dest='burnin',
-                        type='int', # also 'float', 'string' etc.
-                        default=0,
-                        help='number of trees to skip from the beginning of *each tree file* when counting support [default=%default]')
+            action='store',
+            dest='burnin',
+            type='int', # also 'float', 'string' etc.
+            default=0,
+            help='number of trees to skip from the beginning of *each tree file* when counting support [default=%default]')
 
     target_tree_optgroup = OptionGroup(parser, 'Target Tree Options')
     parser.add_option_group(target_tree_optgroup)
     target_tree_optgroup.add_option('-t','--target',
-                  dest='target_tree_filepath',
-                  default=None,
-                  help="path to optional target, model or best topology tree file (Newick or NEXUS format) "
-                       + "to which support will be mapped; "
-                       + "if not given, then a majority-rule clade consensus tree will be constructed based on the "
-                       + "all the trees given in the support tree files (except for those discarded as burn-ins), "
-                       + "and this will be used as the target tree")
+            dest='target_tree_filepath',
+            default=None,
+            help="path to optional target, model or best topology tree file (Newick or NEXUS format) "
+            + "to which support will be mapped; "
+            + "if not given, then a majority-rule clade consensus tree will be constructed based on the "
+            + "all the trees given in the support tree files (except for those discarded as burn-ins), "
+            + "and this will be used as the target tree")
     target_tree_optgroup.add_option('-f', '--min-clade-freq',
-                      dest='min_clade_freq',
-                      type='float',
-                      default=0.50,
-                      metavar='#.##',
-                      help="minimum frequency or probability for a clade or a split to be included in the consensus tree, if used [default=%default]")
+            dest='min_clade_freq',
+            type='float',
+            default=0.50,
+            metavar='#.##',
+            help="minimum frequency or probability for a clade or a split to be "\
+                    + "included in the consensus tree, if used [default=%default]")
     target_tree_optgroup.add_option('--no-branch-lengths',
-                      action='store_true',
-                      dest='no_branch_lengths',
-                      default=False,
-                      help="by default, if using a consensus tree as the target tree, branch lengths will be the mean of the lengths " \
-                          + "of the given branch across all trees considered; this option forces branch " \
-                          + "lengths to be unspecified (obviously, this is only applicable if you do not ask the support to be mapped as "  \
-                          + "branch lengths)")
+            action='store_true',
+            dest='no_branch_lengths',
+            default=False,
+            help="by default, if using a consensus tree as the target tree, branch lengths will be the mean of the lengths " \
+                    + "of the given branch across all trees considered; this option forces branch " \
+                    + "lengths to be unspecified (obviously, this is only applicable if you do not ask the support to be mapped as "  \
+                    + "branch lengths)")
 
     source_tree_optgroup = OptionGroup(parser, 'Source Tree Options')
     parser.add_option_group(source_tree_optgroup)
     source_tree_optgroup.add_option('--rooted',
-                      action='store_true',
-                      dest='rooted_trees',
-                      default=False,
-                      help="treat trees as rooted")
+            action='store_true',
+            dest='rooted_trees',
+            default=False,
+            help="treat trees as rooted")
     source_tree_optgroup.add_option('--unrooted',
-                      action='store_false',
-                      dest='rooted_trees',
-                      default=False,
-                      help="treat trees as unrooted")
+            action='store_false',
+            dest='rooted_trees',
+            default=False,
+            help="treat trees as unrooted")
     source_tree_optgroup.add_option('--from-newick-stream',
-                      action='store_true',
-                      dest='from_newick_stream',
-                      default=False,
-                      help="support trees will be streamed in Newick format")
+            action='store_true',
+            dest='from_newick_stream',
+            default=False,
+            help="support trees will be streamed in Newick format")
     source_tree_optgroup.add_option('--from-nexus-stream',
-                      action='store_true',
-                      dest='from_nexus_stream',
-                      default=False,
-                      help="support trees will be streamed in NEXUS format")
+            action='store_true',
+            dest='from_nexus_stream',
+            default=False,
+            help="support trees will be streamed in NEXUS format")
 
     output_tree_optgroup = OptionGroup(parser, 'Output Tree Options')
     parser.add_option_group(output_tree_optgroup)
     output_tree_optgroup.add_option('-l','--support-as-labels',
-                      action='store_true',
-                      dest='support_as_labels',
-                      default=True,
-                      help="indicate branch support as internal node labels [default=%default]")
+            action='store_true',
+            dest='support_as_labels',
+            default=True,
+            help="indicate branch support as internal node labels [default=%default]")
     output_tree_optgroup.add_option('-v','--support-as-lengths',
-                      action='store_false',
-                      dest='support_as_labels',
-                      default=True,
-                      help="indicate branch support as branch lengths (otherwise support will be indicated by internal node labels)")
+            action='store_false',
+            dest='support_as_labels',
+            default=True,
+            help="indicate branch support as branch lengths (otherwise support will be indicated by internal node labels)")
     output_tree_optgroup.add_option('-p', '--percentages',
-                      action='store_true',
-                      dest='support_as_percentages',
-                      default=False,
-                      help="indicate branch support as percentages (otherwise, will report as proportions by default)")
+            action='store_true',
+            dest='support_as_percentages',
+            default=False,
+            help="indicate branch support as percentages (otherwise, will report as proportions by default)")
     output_tree_optgroup.add_option('-d', '--decimals',
-                      dest='support_label_decimals',
-                      type='int',
-                      metavar='#',
-                      default=2,
-                      help="number of decimal places in indication of support values [default=%default]")
+            dest='support_label_decimals',
+            type='int',
+            metavar='#',
+            default=2,
+            help="number of decimal places in indication of support values [default=%default]")
 
     output_filepath_optgroup = OptionGroup(parser, 'Output File Options')
     parser.add_option_group(output_filepath_optgroup)
     output_filepath_optgroup.add_option('-o','--output',
-                  dest='output_filepath',
-                  default=None,
-                  help="path to output file (if not given, will print to standard output)")
+            dest='output_filepath',
+            default=None,
+            help="path to output file (if not given, will print to standard output)")
     output_filepath_optgroup.add_option('--no-taxa-block',
-                      action='store_false',
-                      dest='include_taxa_block',
-                      default=True,
-                      help="do not include a taxa block in the output treefile (otherwise will create taxa block by default)")
+            action='store_false',
+            dest='include_taxa_block',
+            default=True,
+            help="do not include a taxa block in the output treefile (otherwise will create taxa block by default)")
     output_filepath_optgroup.add_option('--no-meta-comments',
-                      action='store_false',
-                      dest='include_meta_comments',
-                      default=True,
-                      help="do not include initial file comment annotating details of scoring operation")
+            action='store_false',
+            dest='include_meta_comments',
+            default=True,
+            help="do not include initial file comment annotating details of scoring operation")
     output_filepath_optgroup.add_option('-m', '--additional_comments',
-                      action='store',
-                      dest='additional_comments',
-                      default=None,
-                      help="additional comments to be added to the summary file")
+            action='store',
+            dest='additional_comments',
+            default=None,
+            help="additional comments to be added to the summary file")
     output_filepath_optgroup.add_option('--to-newick',
-                      action='store_true',
-                      dest='to_newick_format',
-                      default=False,
-                      help="save results in NEWICK (PHYLIP) format (default is to save in NEXUS format)")
+            action='store_true',
+            dest='to_newick_format',
+            default=False,
+            help="save results in NEWICK (PHYLIP) format (default is to save in NEXUS format)")
     output_filepath_optgroup.add_option('--to-phylip',
-                      action='store_true',
-                      dest='to_newick_format',
-                      default=False,
-                      help="same as --newick")
+            action='store_true',
+            dest='to_newick_format',
+            default=False,
+            help="same as --newick")
     output_filepath_optgroup.add_option('-r', '--replace',
-                      action='store_true',
-                      dest='replace',
-                      default=False,
-                      help="replace/overwrite output file without asking if it already exists ")
+            action='store_true',
+            dest='replace',
+            default=False,
+            help="replace/overwrite output file without asking if it already exists ")
 
     other_optgroup = OptionGroup(parser, 'Other Options')
     parser.add_option_group(other_optgroup)
 
     other_optgroup.add_option('-e','--split-edges',
-                  dest='split_edges_filepath',
-                  default=None,
-                  metavar='FILEPATH',
-                  help="if specified, a tab-delimited file of splits and their edge " \
+            dest='split_edges_filepath',
+            default=None,
+            metavar='FILEPATH',
+            help="if specified, a tab-delimited file of splits and their edge " \
                     + "lengths across runs will be saved to FILEPATH")
 
     run_optgroup = OptionGroup(parser, 'Program Run Options')
     parser.add_option_group(run_optgroup)
     if _MP:
         run_optgroup.add_option('-x', '--num-processes',
-                          dest='num_processes',
-                          type='int',
-                          default=1,
-                          help="number of processes to run (default=%default)")
-    run_optgroup.add_option('-q', '--quiet',
-                      action='store_true',
-                      dest='quiet',
-                      default=False,
-                      help="suppress progress messages")
-    run_optgroup.add_option('-g', '--log-frequency',
-                      type='int',
-                      dest='log_frequency',
-                      default=500,
-                      help="tree processing progress logging frequency (default=%default; set to 0 to suppress)")
-    run_optgroup.add_option('--ignore-missing-support',
-                      action='store_true',
-                      dest='ignore_missing_support',
-                      default=False,
-                      help="ignore missing support tree files (at least one must exist!)")
-    run_optgroup.add_option('--ignore-missing-target',
-                      action='store_true',
-                      dest='ignore_missing_target',
-                      default=False,
-                      help="ignore missing target tree file (will construct majority rule consensus tree if missing)")
+                dest='num_processes',
+                type='int',
+                default=1,
+                help="number of threads or processes to run in parallel (default=%default)")
+        run_optgroup.add_option('-#', '--auto-multi-process',
+                action='store_true',
+                dest='auto_multi_process',
+                default=False,
+                help="assign an separate process or thread for each tree source " \
+                        + "(will override number of processes specified by '-x' or '--num-processes' option)")
+        run_optgroup.add_option('-q', '--quiet',
+                action='store_true',
+                dest='quiet',
+                default=False,
+                help="suppress progress messages")
+        run_optgroup.add_option('-g', '--log-frequency',
+                type='int',
+                dest='log_frequency',
+                default=500,
+                help="tree processing progress logging frequency (default=%default; set to 0 to suppress)")
+        run_optgroup.add_option('--ignore-missing-support',
+                action='store_true',
+                dest='ignore_missing_support',
+                default=False,
+                help="ignore missing support tree files (at least one must exist!)")
+        run_optgroup.add_option('--ignore-missing-target',
+                action='store_true',
+                dest='ignore_missing_target',
+                default=False,
+                help="ignore missing target tree file (will construct majority rule consensus tree if missing)")
 
     (opts, args) = parser.parse_args()
     if opts.quiet:
@@ -545,11 +552,15 @@ def main_cli():
 
 
 
-    if _MP and opts.num_processes > 1:
-        messenger.send_info("Running in multi-threaded mode (%d threads)." % opts.num_processes)
+    if _MP and (opts.num_processes > 1 or opts.auto_multi_process):
+        if opts.auto_multi_process:
+            num_threads = len(support_filepaths)
+        else:
+            num_threads = opts.num_processes
+        messenger.send_info("Running in multi-threaded mode (%d threads)." % num_threads)
         messenger.send_info("%d sources to be processed." % (len(support_filepaths)))
         split_distribution = process_sources_parallel(
-                num_threads=opts.num_processes,
+                num_threads=num_threads,
                 support_filepaths=support_filepaths,
                 schema=schema,
                 is_rooted=opts.rooted_trees,
