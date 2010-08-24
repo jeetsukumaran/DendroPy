@@ -188,7 +188,6 @@ def process_sources_parallel(
         support_filepaths,
         schema,
         is_rooted,
-        encode_splits,
         log_frequency,
         messenger):
     """
@@ -240,7 +239,6 @@ def process_sources_serial(
         support_filepaths,
         schema,
         is_rooted,
-        encode_splits,
         log_frequency,
         messenger):
     """
@@ -529,12 +527,6 @@ def main_cli():
 
     ##### TODO: clean-up/remove #####
 
-
-    if schema == "nexus":
-        encode_splits = True
-    else:
-        encode_splits = False # cannot encode while parsing newick
-
     tsum = treesum.TreeSummarizer()
     tsum.support_as_labels = opts.support_as_labels
     tsum.support_as_percentages = opts.support_as_percentages
@@ -564,7 +556,6 @@ def main_cli():
                 support_filepaths=support_filepaths,
                 schema=schema,
                 is_rooted=opts.rooted_trees,
-                encode_splits=encode_splits,
                 log_frequency=opts.log_frequency,
                 messenger=messenger)
     else:
@@ -578,7 +569,6 @@ def main_cli():
                 support_filepaths=support_filepaths,
                 schema=schema,
                 is_rooted=opts.rooted_trees,
-                encode_splits=encode_splits,
                 log_frequency=opts.log_frequency,
                 messenger=messenger)
 
