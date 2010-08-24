@@ -510,13 +510,6 @@ def main_cli():
     else:
         split_edges_dest = None
 
-
-    ###################################################
-    # Main work begins here: Count the splits
-
-    start_time = datetime.datetime.now()
-    comments = []
-
     if opts.from_newick_stream:
         schema = "newick"
     elif opts.from_nexus_stream:
@@ -524,26 +517,11 @@ def main_cli():
     else:
         schema = 'nexus/newick'
 
+    ###################################################
+    # Main work begins here: Count the splits
 
-    ##### TODO: clean-up/remove #####
-
-    tsum = treesum.TreeSummarizer()
-    tsum.support_as_labels = opts.support_as_labels
-    tsum.support_as_percentages = opts.support_as_percentages
-    if not opts.support_as_percentages and opts.support_label_decimals < 2:
-        messenger.send_warning("Reporting support by proportions require that support will be reported to at least 2 decimal places")
-        opts.support_label_decimals = 2
-    tsum.support_label_decimals = opts.support_label_decimals
-    tsum.ignore_node_ages = True # until a more efficient implementation is developed
-
-    taxon_set = dendropy.TaxonSet()
-    split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
-    split_distribution.is_rooted = opts.rooted_trees
-
-    ###################################
-
-
-
+    start_time = datetime.datetime.now()
+    split_distribution = None
     if _MP and (opts.num_processes > 1 or opts.auto_multi_process):
         if opts.auto_multi_process:
             num_threads = len(support_filepaths)
@@ -572,14 +550,16 @@ def main_cli():
                 log_frequency=opts.log_frequency,
                 messenger=messenger)
 
+    ###################################################
+    # Compose post-counting report
+
+    # if not splits counted or the taxon set was not populated for any reason,
+    # we just produce an empty block so we don't crash as we report nothing of interest
     if split_distribution.taxon_set is None:
         assert(split_distribution.total_trees_counted == 0)
-        split_distribution.taxon_set = dendropy.TaxonSet() # we just produce an empty block so we don't crash as we report nothing of interest
+        split_distribution.taxon_set = dendropy.TaxonSet()
 
     report = []
-#    report.append("%d trees read from %d files." % (tree_source.total_trees_read, len(support_filepaths)))
-#    report.append("%d trees from each file requested to be ignored for burn-in." % (opts.burnin))
-#    report.append("%d trees ignored in total." % (tree_source.total_trees_ignored))
     report.append("%d trees considered in total for split support assessment." % (split_distribution.total_trees_counted))
     if opts.rooted_trees:
         report.append("Trees treated as rooted.")
@@ -591,12 +571,23 @@ def main_cli():
     report.append("%d unique splits out of %d total splits counted." % (num_unique_splits, num_splits))
     report.append("%d unique non-trivial splits out of %d total non-trivial splits counted." % (num_nt_unique_splits, num_nt_splits))
 
+    comments = []
     comments.extend(report)
     messenger.send_info("Split counting completed:")
     messenger.send_info_lines(report, prefix=" - ")
 
     ###################################################
     #  Target tree and mapping
+
+    if not opts.support_as_percentages and opts.support_label_decimals < 2:
+        messenger.send_warning("Reporting support by proportions require that support will be reported to at least 2 decimal places")
+        opts.support_label_decimals = 2
+
+    tsum = treesum.TreeSummarizer()
+    tsum.support_as_labels = opts.support_as_labels
+    tsum.support_as_percentages = opts.support_as_percentages
+    tsum.support_label_decimals = opts.support_label_decimals
+    tsum.ignore_node_ages = True # until a more efficient implementation is developed
 
     if opts.support_as_percentages:
         support_units = "Percentage"
@@ -611,7 +602,9 @@ def main_cli():
     tt_trees = []
     if target_tree_filepath is not None:
         messenger.send_info("Mapping support to target tree ...")
-        for tree in tree_source_iter(stream=open(target_tree_filepath, 'r'), schema="nexus/newick", taxon_set=taxon_set):
+        for tree in tree_source_iter(stream=open(target_tree_filepath, 'r'),
+                schema="nexus/newick",
+                taxon_set=split_distribution.taxon_set.taxon_set):
             tt_trees.append(tsum.map_split_support_to_tree(tree, split_distribution))
         messenger.send_info('Parsed "%s": %d tree(s) in file' % (target_tree_filepath, len(tt_trees)))
         comments.append('Split support mapped to trees in:')
@@ -647,7 +640,7 @@ def main_cli():
     run_time = "Run time: %s hour(s), %s minute(s), %s second(s)." % (hours, mins, secs)
     final_run_report.append(run_time)
 
-    output_dataset = dendropy.DataSet(dendropy.TreeList(tt_trees, taxon_set=taxon_set))
+    output_dataset = dendropy.DataSet(dendropy.TreeList(tt_trees, taxon_set=split_distribution.taxon_set))
 
     if opts.to_newick_format:
         output_dataset.write(output_dest, "newick")
