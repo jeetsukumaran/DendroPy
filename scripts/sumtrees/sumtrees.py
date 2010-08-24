@@ -414,17 +414,17 @@ def main_cli():
     run_optgroup = OptionGroup(parser, 'Program Run Options')
     parser.add_option_group(run_optgroup)
     if _MP:
-        run_optgroup.add_option('-x', '--num-processes',
-                dest='num_processes',
+        run_optgroup.add_option('-X', '--multithreaded',
+                action='store_true',
+                dest='full_multi_threaded',
+                default=False,
+                help="assign a separate thread for each tree source " \
+                        + "(will override number of threads specified by '-x' or '--num-threads' option)")
+        run_optgroup.add_option('-x', '--num-threads',
+                dest='num_threads',
                 type='int',
                 default=1,
                 help="number of threads or processes to run in parallel (default=%default)")
-        run_optgroup.add_option('-#', '--auto-multi-process',
-                action='store_true',
-                dest='auto_multi_process',
-                default=False,
-                help="assign an separate process or thread for each tree source " \
-                        + "(will override number of processes specified by '-x' or '--num-processes' option)")
         run_optgroup.add_option('-q', '--quiet',
                 action='store_true',
                 dest='quiet',
@@ -535,11 +535,11 @@ def main_cli():
 
     start_time = datetime.datetime.now()
     master_split_distribution = None
-    if _MP and (opts.num_processes > 1 or opts.auto_multi_process):
-        if opts.auto_multi_process:
+    if _MP and (opts.num_threads > 1 or opts.full_multi_threaded):
+        if opts.full_multi_threaded:
             num_threads = len(support_filepaths)
         else:
-            num_threads = opts.num_processes
+            num_threads = opts.num_threads
         messenger.send_info("Running in multi-threaded mode (%d threads)." % num_threads)
         messenger.send_info("%d sources to be processed." % (len(support_filepaths)))
         master_split_distribution = process_sources_parallel(
