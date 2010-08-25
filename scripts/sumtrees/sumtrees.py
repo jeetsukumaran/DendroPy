@@ -54,12 +54,12 @@ from dendropy.dataio import newick
 from dendropy.utility.messaging import ConsoleMessenger
 from dendropy.utility.cli import confirm_overwrite, show_splash
 
-_program_name = 'SumTrees'
-_program_subtitle = 'Phylogenetic Tree Split Summarization'
-_program_date = 'Aug 22 2010'
-_program_version = 'Version 3.0.0 (%s)' % _program_date
-_program_author = 'Jeet Sukumaran and Mark T. Holder'
-_program_contact = 'jeetsukumaran@gmail.com'
+_program_name = "SumTrees"
+_program_subtitle = "Phylogenetic Tree Split Summarization"
+_program_date = "Aug 22 2010"
+_program_version = "Version 3.0.0 (%s)" % _program_date
+_program_author = "Jeet Sukumaran and Mark T. Holder"
+_program_contact = "jeetsukumaran@gmail.com"
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
                  "License GPLv3+: GNU GPL version 3 or later.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
@@ -151,22 +151,22 @@ class SplitCountingThread(multiprocessing.Process):
                 source = self.work_queue.get_nowait()
             except Queue.Empty:
                 break
-            self.send_info('Received task: "%s".' % source)
+            self.send_info("Received task: '%s'." % source)
             fsrc = open(source, "rU")
             for tidx, tree in enumerate(tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set)):
                 if tidx >= self.tree_offset:
                     if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
-                        self.send_info('(processing) "%s": tree at offset %d' % (source, tidx))
+                        self.send_info("(processing) '%s': tree at offset %d" % (source, tidx))
                     treesplit.encode_splits(tree)
                     self.split_distribution.count_splits_on_tree(tree)
                 else:
                     if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
-                        self.send_info('(processing) "%s": tree at offset %d (skipping)' % (source, tidx))
+                        self.send_info("(processing) '%s': tree at offset %d (skipping)" % (source, tidx))
                 if self.kill_received:
                     break
             if self.kill_received:
                 break
-            self.send_info('Completed task: "%s".' % (source))
+            self.send_info("Completed task: '%s'." % (source))
         if self.kill_received:
             self.send_warning("Terminating in response to kill request.")
         else:
@@ -204,19 +204,19 @@ def process_sources_parallel(
 
     # pre-discover taxa
     tdfpath = support_filepaths[0]
-    messenger.send_info('Pre-loading taxa based on "%s" ...' % tdfpath)
+    messenger.send_info("Pre-loading taxa based on '%s' ..." % tdfpath)
     taxon_set = discover_taxa(tdfpath, schema)
     taxon_labels = [str(t) for t in taxon_set]
-    messenger.send_info('Found %d taxa: [%s]' % (len(taxon_labels), (", ".join(["'%s'" % t for t in taxon_labels]))))
+    messenger.send_info("Found %d taxa: [%s]" % (len(taxon_labels), (', '.join(["'%s'" % t for t in taxon_labels]))))
 
     # load up queue
-    messenger.send_info('Creating work queue ...')
+    messenger.send_info("Creating work queue ...")
     work_queue = multiprocessing.Queue()
     for f in support_filepaths:
         work_queue.put(f)
 
     # launch threads
-    messenger.send_info('Launching %d worker threads ...' % num_threads)
+    messenger.send_info("Launching %d worker threads ..." % num_threads)
     result_queue = multiprocessing.Queue()
     messenger_lock = multiprocessing.Lock()
     for idx in range(num_threads):
@@ -262,196 +262,197 @@ def process_sources_serial(
         srcs = [open(f, "rU") for f in support_filepaths]
     for sidx, src in enumerate(srcs):
         name = getattr(src, "name", "<stdin>")
-        messenger.send_info('Processing %d of %d: "%s"' % (sidx+1, len(srcs), name))
+        messenger.send_info("Processing %d of %d: '%s'" % (sidx+1, len(srcs), name))
         for tidx, tree in enumerate(tree_source_iter(src, schema=schema, taxon_set=taxon_set, is_rooted=is_rooted)):
             if tidx >= tree_offset:
                 if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
-                    messenger.send_info('(processing) "%s": tree at offset %d' % (name, tidx))
+                    messenger.send_info("(processing) '%s': tree at offset %d" % (name, tidx))
                 treesplit.encode_splits(tree)
                 split_distribution.count_splits_on_tree(tree)
             else:
                 if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
-                    messenger.send_info('(processing) "%s": tree at offset %d (skipping)' % (name, tidx))
+                    messenger.send_info("(processing) '%s': tree at offset %d (skipping)" % (name, tidx))
     messenger.send_info("Serial processing of %d source(s) completed.")
     return split_distribution
 
 def main_cli():
 
-    description =  '%s %s %s' % (_program_name, _program_version, _program_subtitle)
+    description =  "%s %s %s" % (_program_name, _program_version, _program_subtitle)
     usage = "%prog [options] TREES-FILE [TREES-FILE [TREES-FILE [...]]"
 
     parser = OptionParser(usage=usage, add_help_option=True, version = _program_version, description=description)
 
-    sum_tree_optgroup = OptionGroup(parser, 'Summarization Options')
+    sum_tree_optgroup = OptionGroup(parser, "Summarization Options")
     parser.add_option_group(sum_tree_optgroup)
-    sum_tree_optgroup.add_option('-b', '--burnin',
-            action='store',
-            dest='burnin',
-            type='int', # also 'float', 'string' etc.
+    sum_tree_optgroup.add_option("-b", "--burnin",
+            action="store",
+            dest="burnin",
+            type="int",
             default=0,
             help='number of trees to skip from the beginning of *each tree file* when counting support [default=%default]')
 
     target_tree_optgroup = OptionGroup(parser, 'Target Tree Options')
     parser.add_option_group(target_tree_optgroup)
-    target_tree_optgroup.add_option('-t','--target',
-            dest='target_tree_filepath',
+    target_tree_optgroup.add_option("-t","--target",
+            dest="target_tree_filepath",
             default=None,
             help="path to optional target, model or best topology tree file (Newick or NEXUS format) "
             + "to which support will be mapped; "
             + "if not given, then a majority-rule clade consensus tree will be constructed based on the "
             + "all the trees given in the support tree files (except for those discarded as burn-ins), "
             + "and this will be used as the target tree")
-    target_tree_optgroup.add_option('-f', '--min-clade-freq',
-            dest='min_clade_freq',
-            type='float',
+    target_tree_optgroup.add_option("-f", "--min-clade-freq",
+            dest="min_clade_freq",
+            type="float",
             default=0.50,
-            metavar='#.##',
+            metavar="#.##",
             help="minimum frequency or probability for a clade or a split to be "\
                     + "included in the consensus tree, if used [default=%default]")
-    target_tree_optgroup.add_option('--no-branch-lengths',
-            action='store_true',
-            dest='no_branch_lengths',
+    target_tree_optgroup.add_option("--no-branch-lengths",
+            action="store_true",
+            dest="no_branch_lengths",
             default=False,
             help="by default, if using a consensus tree as the target tree, branch lengths will be the mean of the lengths " \
                     + "of the given branch across all trees considered; this option forces branch " \
                     + "lengths to be unspecified (obviously, this is only applicable if you do not ask the support to be mapped as "  \
                     + "branch lengths)")
 
-    source_tree_optgroup = OptionGroup(parser, 'Source Tree Options')
+    source_tree_optgroup = OptionGroup(parser, "Source Tree Options")
     parser.add_option_group(source_tree_optgroup)
-    source_tree_optgroup.add_option('--rooted',
-            action='store_true',
-            dest='rooted_trees',
+    source_tree_optgroup.add_option("--rooted",
+            action="store_true",
+            dest="rooted_trees",
             default=False,
             help="treat trees as rooted")
-    source_tree_optgroup.add_option('--unrooted',
-            action='store_false',
-            dest='rooted_trees',
+    source_tree_optgroup.add_option("--unrooted",
+            action="store_false",
+            dest="rooted_trees",
             default=False,
             help="treat trees as unrooted")
-    source_tree_optgroup.add_option('--from-newick-stream',
-            action='store_true',
-            dest='from_newick_stream',
+    source_tree_optgroup.add_option("--from-newick-stream",
+            action="store_true",
+            dest="from_newick_stream",
             default=False,
             help="support trees will be streamed in Newick format")
-    source_tree_optgroup.add_option('--from-nexus-stream',
-            action='store_true',
-            dest='from_nexus_stream',
+    source_tree_optgroup.add_option("--from-nexus-stream",
+            action="store_true",
+            dest="from_nexus_stream",
             default=False,
             help="support trees will be streamed in NEXUS format")
 
-    output_tree_optgroup = OptionGroup(parser, 'Output Tree Options')
+    output_tree_optgroup = OptionGroup(parser, "Output Tree Options")
     parser.add_option_group(output_tree_optgroup)
-    output_tree_optgroup.add_option('-l','--support-as-labels',
-            action='store_true',
-            dest='support_as_labels',
+    output_tree_optgroup.add_option("-l","--support-as-labels",
+            action="store_true",
+            dest="support_as_labels",
             default=True,
             help="indicate branch support as internal node labels [default=%default]")
-    output_tree_optgroup.add_option('-v','--support-as-lengths',
-            action='store_false',
-            dest='support_as_labels',
+    output_tree_optgroup.add_option("-v","--support-as-lengths",
+            action="store_false",
+            dest="support_as_labels",
             default=True,
             help="indicate branch support as branch lengths (otherwise support will be indicated by internal node labels)")
-    output_tree_optgroup.add_option('-p', '--percentages',
-            action='store_true',
-            dest='support_as_percentages',
+    output_tree_optgroup.add_option("-p", "--percentages",
+            action="store_true",
+            dest="support_as_percentages",
             default=False,
             help="indicate branch support as percentages (otherwise, will report as proportions by default)")
-    output_tree_optgroup.add_option('-d', '--decimals',
-            dest='support_label_decimals',
-            type='int',
-            metavar='#',
+    output_tree_optgroup.add_option("-d", "--decimals",
+            dest="support_label_decimals",
+            type="int",
+            metavar="#",
             default=2,
             help="number of decimal places in indication of support values [default=%default]")
 
-    output_filepath_optgroup = OptionGroup(parser, 'Output File Options')
+    output_filepath_optgroup = OptionGroup(parser, "Output File Options")
     parser.add_option_group(output_filepath_optgroup)
-    output_filepath_optgroup.add_option('-o','--output',
-            dest='output_filepath',
+    output_filepath_optgroup.add_option("-o","--output",
+            dest="output_filepath",
             default=None,
             help="path to output file (if not given, will print to standard output)")
-    output_filepath_optgroup.add_option('--no-taxa-block',
-            action='store_false',
-            dest='include_taxa_block',
+    output_filepath_optgroup.add_option("--no-taxa-block",
+            action="store_false",
+            dest="include_taxa_block",
             default=True,
             help="do not include a taxa block in the output treefile (otherwise will create taxa block by default)")
-    output_filepath_optgroup.add_option('--no-meta-comments',
-            action='store_false',
-            dest='include_meta_comments',
+    output_filepath_optgroup.add_option("--no-meta-comments",
+            action="store_false",
+            dest="include_meta_comments",
             default=True,
             help="do not include initial file comment annotating details of scoring operation")
-    output_filepath_optgroup.add_option('-m', '--additional_comments',
-            action='store',
-            dest='additional_comments',
+    output_filepath_optgroup.add_option("-c", "--additional-comments",
+            action="store",
+            dest="additional_comments",
             default=None,
             help="additional comments to be added to the summary file")
-    output_filepath_optgroup.add_option('--to-newick',
-            action='store_true',
-            dest='to_newick_format',
+    output_filepath_optgroup.add_option("--to-newick",
+            action="store_true",
+            dest="to_newick_format",
             default=False,
             help="save results in NEWICK (PHYLIP) format (default is to save in NEXUS format)")
-    output_filepath_optgroup.add_option('--to-phylip',
-            action='store_true',
-            dest='to_newick_format',
+    output_filepath_optgroup.add_option("--to-phylip",
+            action="store_true",
+            dest="to_newick_format",
             default=False,
             help="same as --newick")
-    output_filepath_optgroup.add_option('-r', '--replace',
-            action='store_true',
-            dest='replace',
+    output_filepath_optgroup.add_option("-r", "--replace",
+            action="store_true",
+            dest="replace",
             default=False,
             help="replace/overwrite output file without asking if it already exists ")
 
-    other_optgroup = OptionGroup(parser, 'Other Options')
+    other_optgroup = OptionGroup(parser, "Other Options")
     parser.add_option_group(other_optgroup)
 
-    other_optgroup.add_option('-e','--split-edges',
-            dest='split_edges_filepath',
+    other_optgroup.add_option("-e","--split-edges",
+            dest="split_edges_filepath",
             default=None,
-            metavar='FILEPATH',
+            metavar="FILEPATH",
             help="if specified, a tab-delimited file of splits and their edge " \
                     + "lengths across runs will be saved to FILEPATH")
 
-    run_optgroup = OptionGroup(parser, 'Program Run Options')
+    run_optgroup = OptionGroup(parser, "Program Run Options")
     parser.add_option_group(run_optgroup)
     if _MP:
-        run_optgroup.add_option('-X', '--multithreaded',
-                action='store_true',
-                dest='full_multi_threaded',
+        run_optgroup.add_option("-m", "--multithreaded",
+                action="store_true",
+                dest="multithreaded",
                 default=False,
-                help="assign a separate thread for each tree source " \
-                        + "(will override number of threads specified by '-x' or '--num-threads' option)")
-        run_optgroup.add_option('-x', '--num-threads',
-                dest='num_threads',
-                type='int',
-                default=1,
-                help="number of threads or processes to run in parallel (default=%default)")
-        run_optgroup.add_option('-q', '--quiet',
-                action='store_true',
-                dest='quiet',
-                default=False,
-                help="suppress progress messages")
-        run_optgroup.add_option('-g', '--log-frequency',
-                type='int',
-                dest='log_frequency',
-                default=500,
-                help="tree processing progress logging frequency (default=%default; set to 0 to suppress)")
-        run_optgroup.add_option('--ignore-missing-support',
-                action='store_true',
-                dest='ignore_missing_support',
-                default=False,
-                help="ignore missing support tree files (at least one must exist!)")
-        run_optgroup.add_option('--ignore-missing-target',
-                action='store_true',
-                dest='ignore_missing_target',
-                default=False,
-                help="ignore missing target tree file (will construct majority rule consensus tree if missing)")
+                help="run in multithreaded (parallel) mode: process each tree source using a separate thread")
+        run_optgroup.add_option("-x", "--max-threads",
+                dest="max_threads",
+                metavar="MAX-THREADS",
+                type="int",
+                default=None,
+                help="limit number of threads launched to MAX-THREADS (implies '-m'/'--multithreaded')")
+    run_optgroup.add_option("-q", "--quiet",
+            action="store_true",
+            dest="quiet",
+            default=False,
+            help="suppress progress messages")
+    run_optgroup.add_option("-g", "--log-frequency",
+            type="int",
+            metavar="LOG-FREQUENCY",
+            dest="log_frequency",
+            default=500,
+            help="tree processing progress logging frequency (default=%default; set to 0 to suppress)")
+    run_optgroup.add_option("--ignore-missing-support",
+            action="store_true",
+            dest="ignore_missing_support",
+            default=False,
+            help="ignore missing support tree files (at least one must exist!)")
+    run_optgroup.add_option("--ignore-missing-target",
+            action="store_true",
+            dest="ignore_missing_target",
+            default=False,
+            help="ignore missing target tree file (will construct majority rule consensus tree if missing)")
 
     (opts, args) = parser.parse_args()
     if opts.quiet:
         messaging_level = ConsoleMessenger.ERROR_MESSAGING_LEVEL
     else:
         messaging_level = ConsoleMessenger.INFO_MESSAGING_LEVEL
-    messenger = ConsoleMessenger(name='SumTrees', messaging_level=messaging_level)
+    messenger = ConsoleMessenger(name="SumTrees", messaging_level=messaging_level)
 
     # splash
     if not opts.quiet:
@@ -472,19 +473,19 @@ def main_cli():
             fpath = os.path.expanduser(os.path.expandvars(fpath))
             if not os.path.exists(fpath):
                 if opts.ignore_missing_support:
-                    messenger.send_warning('Support file not found: "%s"' % fpath)
+                    messenger.send_warning("Support file not found: '%s'" % fpath)
                 else:
-                    messenger.send_error('Terminating due to missing support files. '
-                           + 'Use the "--ignore-missing-support" option to continue even '
-                           + 'if some files are missing.')
+                    messenger.send_error("Terminating due to missing support files. "
+                           + "Use the '--ignore-missing-support' option to continue even "
+                           + "if some files are missing.")
                     sys.exit(1)
             else:
                 support_filepaths.append(fpath)
         if len(support_filepaths) == 0:
-            messenger.send_error("No sources of support specified or could be found. "
-            + "Please provide the path to at least one (valid and existing) file "
-            + "containing tree samples "
-            + "to summarize.")
+            messenger.send_error('No sources of support specified or could be found. '
+            + 'Please provide the path to at least one (valid and existing) file '
+            + 'containing tree samples '
+            + 'to summarize.')
             sys.exit(1)
 
     ###################################################
@@ -496,10 +497,10 @@ def main_cli():
         if not os.path.exists(target_tree_filepath):
             if opts.ignore_missing_target:
                 if not opts.quiet:
-                    messenger.send_warning('Target tree file not found: "%s": using majority-rule consensus tree instead.' % target_tree_filepath)
+                    messenger.send_warning("Target tree file not found: '%s': using majority-rule consensus tree instead." % target_tree_filepath)
                 target_tree_filepath = None
             else:
-                messenger.send_error('Target tree file not found: "%s"' % target_tree_filepath)
+                messenger.send_error("Target tree file not found: '%s'" % target_tree_filepath)
                 sys.exit(1)
     else:
         target_tree_filepath = None
@@ -535,12 +536,20 @@ def main_cli():
 
     start_time = datetime.datetime.now()
     master_split_distribution = None
-    if _MP and (opts.num_threads > 1 or opts.full_multi_threaded):
-        if opts.full_multi_threaded:
-            num_threads = len(support_filepaths)
-        else:
-            num_threads = opts.num_threads
-        messenger.send_info("Running in multi-threaded mode (%d threads)." % num_threads)
+    if _MP and (opts.multithreaded or opts.max_threads is not None):
+        num_threads = len(support_filepaths)
+        if opts.max_threads is not None:
+            try:
+                num_threads = int(opts.max_threads)
+            except ValueError:
+                messenger.send_error("'%s' is not a valid number of threads (must be a positive integer)")
+                sys.exit(1)
+            if num_threads <= 0:
+                messenger.send_error("Maximum number of threads set to %d: cannot run SumTrees with less than 1 thread" % num_threads)
+                sys.exit(1)
+            if num_threads == 1:
+                messenger.send_warning("Running in multithreaded mode but limited to only 1 thread: probably more efficient to run in serial mode!")
+        messenger.send_info("Running in multithreaded mode (%d threads)." % num_threads)
         messenger.send_info("%d sources to be processed." % (len(support_filepaths)))
         master_split_distribution = process_sources_parallel(
                 num_threads=num_threads,
@@ -624,10 +633,10 @@ def main_cli():
                 schema="nexus/newick",
                 taxon_set=master_taxon_set):
             tt_trees.append(tsum.map_split_support_to_tree(tree, master_split_distribution))
-        messenger.send_info('Parsed "%s": %d tree(s) in file' % (target_tree_filepath, len(tt_trees)))
-        comments.append('Split support mapped to trees in:')
-        comments.append('  - "%s" (%d trees)' % (os.path.abspath(target_tree_filepath), len(tt_trees)))
-        comments.append(support_indication + ".")
+        messenger.send_info("Parsed '%s': %d tree(s) in file" % (target_tree_filepath, len(tt_trees)))
+        comments.append("Split support mapped to trees in:")
+        comments.append("  - '%s' (%d trees)" % (os.path.abspath(target_tree_filepath), len(tt_trees)))
+        comments.append(support_indication + '.')
     else:
         messenger.send_info("Constructing clade consensus tree ...")
         if opts.min_clade_freq > 1.0:
@@ -639,7 +648,7 @@ def main_cli():
                                               min_freq=min_freq,
                                               include_edge_lengths=not opts.no_branch_lengths))
         report = []
-        report.append('Consensus tree (%f clade frequency threshold) constructed from splits.' % min_freq)
+        report.append("Consensus tree (%f clade frequency threshold) constructed from splits." % min_freq)
         report.append(support_indication + ".")
         messenger.send_info_lines(report)
         comments.extend(report)
@@ -682,9 +691,9 @@ def main_cli():
             if support_filepaths is not None and len(support_filepaths) > 0:
                 comment.append("Basis of split support:")
                 for support_file in support_filepaths:
-                    comment.append('  - "%s"' % os.path.abspath(support_file))
+                    comment.append("  - '%s'" % os.path.abspath(support_file))
             else:
-                comment.append('Basis of split support: trees read from standard input.')
+                comment.append("Basis of split support: trees read from standard input.")
             comment.extend(final_run_report)
             comment.extend(comments)
         if opts.additional_comments:
@@ -703,7 +712,7 @@ def main_cli():
     if not opts.output_filepath:
         pass
     else:
-        messenger.send_info('Results written to: "%s".' % (output_fpath))
+        messenger.send_info("Results written to: '%s'." % (output_fpath))
 
     ###################################################
     #  WRAP UP
@@ -715,8 +724,8 @@ if __name__ == '__main__':
     try:
         main_cli()
     except (KeyboardInterrupt, EOFError), e:
-        sys.stderr.write("Terminating (user-abort).\n")
+        sys.stderr.write("SumTrees: Terminating (user-abort).\n")
         sys.exit(1)
     except Exception, e:
-        sys.stderr.write("Error encountered: %s : %s.\n" % (str(type(e)), str(e)))
+        sys.stderr.write("SumTrees: Error encountered: %s : %s.\n" % (str(type(e)), str(e)))
         raise # reraise exception, with correct traceback

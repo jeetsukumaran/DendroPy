@@ -133,7 +133,7 @@ class ConsoleMessenger(object):
         self.silent = False
 
     def error_leader(self):
-        return self.name + ": /// ERROR /// "
+        return self.name + ": !!! ERROR !!! "
 
     def warning_leader(self):
         return self.name + ": [[[ WARNING ]]] "

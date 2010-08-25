@@ -121,6 +121,34 @@ Summarize a set of tree files using a 95% rule consensus tree, with support for 
     $ sumtrees.py --min-clade-freq=0.95 --burn-in=200 --support-as-labels --output=results.sumtrees treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -f0.95 -b200 -l -o results.sumtrees treefile1.tre treefile2.tre treefile3.tre
 
+Running in Multi-Threaded (Parallel) Mode
+-----------------------------------------
+
+.. versionadded:: 3.6
+
+.. note::
+
+    This feature is only available when running under Python 2.6 of greater.
+
+Starting with DendroPy version 3.6 (SumTrees version 3.0), and when running Python 2.6 or greater, you can run SumTrees in multi-threaded mode by specifying the "``-X``" (note: **upper-case** "X") or "``--max-threads``"  flag::
+
+    $ sumtrees.py --max-threads --decimals=0 --percentages --target=best.tre treefile1.tre treefile2.tre treefile3.atre
+    $ sumtrees.py -X -d0 -p -t best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --max-threads --min-clade-freq=0.95 --burn-in=200 --support-as-labels --output=results.sumtrees treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -X -f0.95 -b200 -l -o results.sumtrees treefile1.tre treefile2.tre treefile3.tre
+
+This will run a separate analysis thread for every support file that needs to be analyzed. So, for each of the above examples, 3 threads will be executed. If you have, for example 40 support files to be summarized, then using the "``-X``" flag will result in 40 independent threads.
+
+
+If you want to run SumTrees in multi-threaded mode, but limit the number of threads, you can use the "``-x``" flag (note: **lower-case**; in contrast to the upper-case "``-X``" described previously that *maximizes* the number of threads, the *lower-case* "``-x``" flag *limits* the number of threads) or the "``limit-threads``" flag, and pass in the the upper-limit of the number of threads::
+
+    $ sumtrees.py --limit-threads=2 --decimals=0 --percentages --target=best.tre treefile1.tre treefile2.tre treefile3.atre
+    $ sumtrees.py -x2 -d0 -p -t best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --limit-threads --min-clade-freq=0.95 --burn-in=200 --support-as-labels --output=results.sumtrees treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -x2 -f0.95 -b200 -l -o results.sumtrees treefile1.tre treefile2.tre treefile3.tre
+
+Empirically, I have found it is always faster to maximize the number of threads (which is what the "``-X``"/"``--max-threads``" flag does), even if the number of threads exceeds the number of processors: the operating system will manage the fine art of cycling each of the threads through the available processors.
+Thus, the *only* reason to limit the number of threads (i.e., using the lower-case "``-x``"/"``--num-threads``" flag is if you want to keep one or more processors of your machine free to let you work on other things while running the SumTrees analysis.
 
 Tutorials and Examples
 ======================
@@ -238,6 +266,22 @@ To do this, we would supply the Mr. Bayes ``.run.t``" files as the tree samples 
 Thus, assuming that our Mr. Bayes runs are is in the files "``phylo.nex.run1.t``" and "``phylo.nex.run2.t``", and the BEAST summarized MCCT tree is in the file "``phylo.beast.tree``" we could type the following::
 
     $ sumtrees.py --target=phylo.beast.tree --output=phylo.mb-beast.sumtrees --burnin=200 phylo.nex.run1.t phylo2.nex.run2.t
+
+Parallelizing SumTrees
+----------------------
+
+.. versionadded:: 3.6
+
+.. note::
+
+    This feature is only available when running under Python 2.6 of greater.
+
+DendroPy version 3.6 (SumTrees version 3.0) added support for running multiple parallel when running under Python 2.6 or greater.
+
+If you have multiple input (support) files, you can greatly increase the performance of SumTrees by running it in multi-threaded mode.
+
+
+
 
 Troubleshooting
 ===============
