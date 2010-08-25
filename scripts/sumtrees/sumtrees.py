@@ -422,16 +422,18 @@ def main_cli():
     parser.add_option_group(run_optgroup)
     if _MP:
         run_optgroup.add_option("-m", "--multithreaded",
-                action="store_true",
+                action="store",
                 dest="multithreaded",
-                default=False,
-                help="run in multithreaded (parallel) mode: process each tree source using a separate thread")
-        run_optgroup.add_option("-x", "--max-threads",
-                dest="max_threads",
-                metavar="MAX-THREADS",
-                type="int",
+                metavar="NUM-THREADS",
                 default=None,
-                help="limit number of threads launched to MAX-THREADS (implies '-m'/'--multithreaded')")
+                help="run in multithreaded (parallel) mode: process each tree source using a separate " \
+                        + "thread, with up to a maximum of NUM-THREADS parallel threads")
+        #run_optgroup.add_option("-x", "--max-threads",
+        #        dest="max_threads",
+        #        metavar="MAX-THREADS",
+        #        type="int",
+        #        default=None,
+        #        help="limit number of threads launched to MAX-THREADS (implies '-m'/'--multithreaded')")
     run_optgroup.add_option("-q", "--quiet",
             action="store_true",
             dest="quiet",
@@ -550,14 +552,16 @@ def main_cli():
     master_split_distribution = None
     if (support_filepaths is not None and len(support_filepaths) > 1) \
             and _MP \
-            and (opts.multithreaded or opts.max_threads is not None):
-        num_threads = len(support_filepaths)
-        if opts.max_threads is not None:
-            try:
-                num_threads = int(opts.max_threads)
-            except ValueError:
-                messenger.send_error("'%s' is not a valid number of threads (must be a positive integer).")
-                sys.exit(1)
+            and opts.multithreaded:
+        if opts.multithreaded is not None:
+            if opts.multithreaded.lower() == "x":
+                num_threads = len(support_filepaths)
+            else:
+                try:
+                    num_threads = int(opts.multithreaded)
+                except ValueError:
+                    messenger.send_error("'%s' is not a valid number of threads (must be a positive integer)." % opts.multithreaded)
+                    sys.exit(1)
             if num_threads <= 0:
                 messenger.send_error("Maximum number of threads set to %d: cannot run SumTrees with less than 1 thread" % num_threads)
                 sys.exit(1)

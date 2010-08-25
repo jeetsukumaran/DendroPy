@@ -139,27 +139,18 @@ Running in Multi-Threaded (Parallel) Mode
 
     This feature is only available when running under Python 2.6 of greater.
 
-Starting with DendroPy version 3.6 (SumTrees version 3.0), and when running Python 2.6 or greater, you can run SumTrees in multithreaded mode by adding the "``-m``" or "``--multithreaded``"  flag to the SumTrees command::
+Starting with DendroPy version 3.6 (SumTrees version 3.0), and when running Python 2.6 or greater, you can run SumTrees in multithreaded mode.
+This will analyze each input source in its own independent thread or process, with multiple threads running in parallel or simultaneously.
+Multithreaded analysis is invoked by adding the "``-m``" or "``--multithreaded``"  flag to the SumTrees command, and passing in the maximum number of threads to run in parallel.
+For example, if your machine has two cores, and you want to run the previous analyses using both of them, you would specify that SumTrees run in multithreaded mode with two threads by adding "``-m2``" or "``--multithreadedi=2``" to the SumTrees command invocation::
 
-    $ sumtrees.py --multithreaded --decimals=0 --percentages --target=best.tre treefile1.tre treefile2.tre treefile3.atre
-    $ sumtrees.py -m -d0 -p -t best.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py --multithreaded --min-clade-freq=0.95 --burn-in=200 --support-as-labels --output=results.sumtrees treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -m -f0.95 -b200 -l -o results.sumtrees treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --multithreaded=2 --decimals=0 --percentages --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -m2 -d0 -p -t best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --multithreaded=2 --min-clade-freq=0.95 --burn-in=200 --support-as-labels --output=results.sumtrees treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -m2 -f0.95 -b200 -l -o results.sumtrees treefile1.tre treefile2.tre treefile3.tre
 
-This will run a separate analysis thread for every support file that needs to be analyzed. So, for each of the above examples, 3 threads will be executed. If you have, for example 40 support files to be summarized, then using the "``-m``" flag will result in 40 independent threads.
-
-If you launch more threads than there are processors available (for example, if you launch SumTrees with on 40 files with the "``-m``" flag, resulting in 40 threads, but your machine is a 4-core machine), then the operating system will take care of cycling the threads through the available processors.
-There *is* a slight performance hit in doing this as opposed to, for example, limiting the number of threads (see below) to the number of processors available.
-However, in most cases the performance hit is so slight to not be of any practical significance (e.g., on the order of a few minutes).
-
-If you want to run SumTrees in multithreaded mode on a large number of files, but limit the number of threads, you can use the "``-x``" flag  or the "``--max-threads``" flag, and pass in the the upper-limit of the number of threads::
-
-    $ sumtrees.py --max-threads=2 --decimals=0 --percentages --target=best.tre treefile1.tre treefile2.tre treefile3.atre
-    $ sumtrees.py -x2 -d0 -p -t best.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py --max-threads=2 --min-clade-freq=0.95 --burn-in=200 --support-as-labels --output=results.sumtrees treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -x2 -f0.95 -b200 -l -o results.sumtrees treefile1.tre treefile2.tre treefile3.tre
-
-Note that "``-x``"/"``--max-threads`` flags imply the "``-m``"/"``--multithreaded``" flag, so the latter does not need to be explicitly specified if you are specifying the maximum number of threads.
+You can specify as many threads as you want, up to the total number of tree support files passed as input sources.
+If you specify fewer threads than input sources, then the files will be cycled through the processing threads.
 
 Tutorials and Examples
 ======================
@@ -287,50 +278,101 @@ Parallelizing SumTrees
 
     This feature is only available when running under Python 2.6 of greater.
 
+Basics
+^^^^^^
+
 DendroPy version 3.6 (SumTrees version 3.0) added support for running multiple parallel when running under Python 2.6 or greater.
 
 If you have multiple input (support) files, you can greatly increase the performance of SumTrees by running it in multithreaded mode.
-At its most basic, running in multithreaded mode involves nothing more than adding the "``-m``" or "``--multithreaded`` option to the SumTrees invocation.
-So, for example, if you have four tree files that you want to summarize::
+In multithreaded mode, each input source will be handled in a separate *thread* or process, resulting in a speed-up linearly proportional to the total number of threads running in parallel or simultaneously (all other things being equal, assuming an even distribution of workload over threads, and given sufficient processor or cores available).
+At its most basic, running in multithreaded mode involves nothing more than adding the "``-m``" or "``--multithreaded`` option to the SumTrees invocation, and passing in the number of parallel threads to run.
+So, for example, if you have four tree files that you want to summarize, and you want to run these using two threads in parallel::
 
-    $ sumtrees.py --multithreaded phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-    $ sumtrees.py -m phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py --multithreaded=2 -o result.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py -m 2 -o result.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+
+Or, to run in four threads simultaneously::
+
+    $ sumtrees.py --multithreaded=4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py -m 4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
 Other options as described above, can, of course be added as needed::
 
-    $ sumtrees.py --multithreaded --burnin=200 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-    $ sumtrees.py -m -b 200 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py --multithreaded=4 --burnin=200 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py -m 4 -b 200 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
-    $ sumtrees.py --multithreaded --burnin=200 --min-clade-freq=0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-    $ sumtrees.py -m -b 200 -f0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py --multithreaded=4 --burnin=200 --min-clade-freq=0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py -m 4 -b 200 -f0.75 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
-    $ sumtrees.py --multithreaded --burnin=200 --min-clade-freq=0.75 --output=con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-    $ sumtrees.py -m -b 200 -f0.75 -o con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py --multithreaded=4 --burnin=200 --min-clade-freq=0.75 --output=con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py -m 4 -b 200 -f0.75 -o con.tre phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
-In multithreaded mode, by default, a separate *thread* or analysis process is launched for *every* tree file passed as input.
-This means that if you have four support tree files as input sources, as in the above example ("``phylo.run1.tre``", "``phylo.run2.tre``","``phylo.run3.tre``", and "``phylo.run4.tre``"), then four threads will be launched.
-If you happen to have 40 support tree files as input sources, then 40 threads will be launched.
+Parallelization Strategy: Deciding on the Number of Threads
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Note that there is a difference between the number of *threads* launched, and the number of *cores* (or CPU's, or processors) available.
-With most modern operating systems, there is no harm in running SumTrees with a large number of threads, even if the number of threads greatly outnumber the number of cores, you might still see some performance improvement by running the maximum number of possible threads (the default when using the "``-m``" or "``--multithreaded``" option).
-This is because the operating system will take care of cycling the various threads rapidly through whatever processors are available, taking advantage of the tiny nanosecond gaps between computations etc.
-There *is* a performance hit with this of course, but all my practical experience thus far suggests to me that this performance hit is not very significant --- perhaps on the order of several minutes extra on runs that are on the order of a couple of hours.
-So, whether you have two cores or two hundred available, chances are you would not want to limit the number of threads that will be run as long as you do not mind that SumTrees uses up all the computing power available.
+Multithreaded-mode SumTrees parallelizes by input files, which means that the maximum number of threads that can be run is limited to the number of input files.
+If you have four support tree files as input sources, as in the above example ("``phylo.run1.tre``", "``phylo.run2.tre``","``phylo.run3.tre``", and "``phylo.run4.tre``"), then you can run from 2 up to 4 threads in parallel.
+If you have 40 tree source or support files, then you can run from 2 up to 40 threads in parallel.
 
-However, in a stand-alone or desktop computing context, if you do not want SumTrees to dominate computation cycles on your local machine (and thus allow you to work on other things on the computer), then you might want to use the "``-x``" or "``--max-threads``" option to limit the number of threads launched.
-For example, if your machine has 4 cores, and you only want SumTrees to run on 3 of them, you would::
+Note that there is a difference between the number of *threads* or processes that SumTrees runs, and the number of *processors* or cores available on your machine or in your given hardware context.
+When running SumTrees in multithreaded mode, you can specify *any* number of *threads* up to the number of support files, even if the number threads greatly exceeds the number *processors* available.
+For example, you might have an octo-core machine available, which means that you have 8 processors available.
+If your analysis has 40 independent support files, you can invoke SumTrees with 40 parallel threads::
 
-    $ sumtrees.py --max-threads=3 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-    $ sumtrees.py -x3 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+    $ sumtrees.py --multithreaded=40 -o result.tre t1.tre ... t40.tre
 
-Note that you do not need to specify "``-m``" or "``--multithreaded`` when setting a limit on the number of threads, as the latter implies that you will be running in multi-threaded mode.
+SumTrees will indeed launch 40 parallel threads to process the files, and it will seem like 40 threads are being executed in parallel.
+But this is not actually what is happening.
+In reality, the operating system is actually cycling the threads through the available processors in rapid succession.
+So, while it seems like they are all running in parallel, on a nanosecond time-scale, only 8 threads are actually executing simultaneously.
+While your run should complete without problems when oversubscribing the hardware (processors) in this way, there is going to be some degree of performance hit due to the overhead involved in managing the cycling of threads through the processors.
+On some operating systems and hardware contexts, depending on the magnitude of oversubscription, this may not have that much of an impact, while on others it might.
+So, in general, it probably is a good idea to match the number of threads to the number of processors available.
+
+You can, of course, request fewer threads than you have processors available.
+So, for example, on your octocore machine you might run SumTrees with only four parallel threads ("``-m 4``" or "``--multithreaded=4``").
+SumTrees will then not launch more than four threads.
+However, the actual number of processors used on the machine is dependent operating system and context: if your machine is otherwise idle, the operating system might decide to cycle the four threads through all 8 processors equally, while if you are doing something else at the same time that is computationally-intensive, the operating system might restrict those threads to 4 processors or even less.
+
+Another issue to consider is an even distribution of workload.
+Assuming that each of your input support files have the same number of trees, then it makes sense to specify a number of threads that is a factor of the number of input files.
+So, for example, if you have 8 input files to be summarized, you will get the best performance out of SumTrees by specifying 2, 4, or 8 threads, with the actual number given by the maximum number of processors available or that you want to dedicate to this task.
+
+Running Multithreaded SumTrees in a Parallel Environment on a High-Performance Computing (HPC) Cluster
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Unfortunately, there is so much variation and idiosyncracies in HPC configurations and set-ups that it is very difficult to provide detailed and universal instructions on how to run multithreaded SumTrees in a parallel environment on an HPC cluster.
+However, in principal all you need to do is to set up to a parallel execution environment on the cluster, requesting a specific number of proessors from the cluster scheduler, and then telling SumTrees to run the same number of threads.
+
+For example, if your cluster uses the `Sun Grid Engine <http://gridengine.sunsource.net/>`_ as its scheduler, then you might use a job script such as the following:
+
+    .. parsed-literal::
+
+        # /bin/sh
+        #$ -cwd
+        #$ -V
+        #$ -pe mpi 4
+        sumtrees.py -m4 -o result.con.tre -burnin 100 mcmc1.tre mcmc2.tre mcmc3.tre mcmc4.tre
+
+The "``#$ -pe mpi 4``" line tells the SGE scheduler to allocate four processors to the job, while the "``-m4``" part of the SumTrees command tells SumTrees to run 4 threads in parallel.
+
+If you are using PBS/Torque as a scheduler, the equivalent job script might be:
+
+    .. parsed-literal::
+
+        # /bin/sh
+        #PBS -l nodes=2:ncpus=2
+        cd $PBS_O_WORKDIR
+        sumtrees.py -m4 -o result.con.tre -burnin 100 mcmc1.tre mcmc2.tre mcmc3.tre mcmc4.tre
+
+Here, the "``#PBS -l nodes=2:ncpus=2``" requests two processors on two nodes, while the "``-m4``" part of the SumTrees command, as before, tells SumTrees to run 4 threads in parallel.
 
 Improving Performance
 =====================
 
     * Run SumTrees in multithreaded mode (see "`Running in Multi-Threaded (Parallel) Mode`_" or "`Parallelizing SumTrees`_")::
 
-        $ sumtrees.py -m phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
+        $ sumtrees.py -m 4 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
     * Reduce the tree-processing logging frequency.
       By default, SumTrees will report back every 500th tree in a tree file, just to let you know where it is and to give you a sense of how long it will take. You can use the "``-g``"  or "``--log-frequency``" flag to control this behavior. If you have very large files, you may be content to have SumTrees report back every 5000th or even every 10000th tree instead::
@@ -342,8 +384,6 @@ Improving Performance
 
         $ sumtrees.py --log-frequency=0 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
         $ sumtrees.py -g0 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
-
-
 
 Troubleshooting
 ===============
