@@ -202,6 +202,10 @@ def process_sources_parallel(
     `support_filepaths`.
     """
 
+    # describe
+    messenger.send_info("Running in multithreaded mode (up to %d threads)." % num_threads)
+    messenger.send_info("%d sources to be processed." % (len(support_filepaths)))
+
     # pre-discover taxa
     tdfpath = support_filepaths[0]
     messenger.send_info("Pre-loading taxa based on '%s' ..." % tdfpath)
@@ -216,7 +220,7 @@ def process_sources_parallel(
         work_queue.put(f)
 
     # launch threads
-    messenger.send_info("Launching %d worker threads ..." % num_threads)
+    messenger.send_info("Launching worker threads ...")
     result_queue = multiprocessing.Queue()
     messenger_lock = multiprocessing.Lock()
     for idx in range(num_threads):
@@ -254,11 +258,14 @@ def process_sources_serial(
     Returns a SplitDistribution object summarizing all trees found in
     `support_filepaths`.
     """
+    messenger.send_info("Running in single-threaded mode.")
     taxon_set = dendropy.TaxonSet()
     split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
     if support_filepaths is None or len(support_filepaths) == 0:
+        messenger.send_info("Reading trees from standard input.")
         srcs = [sys.stdin]
     else:
+        messenger.send_info("%d sources to be processed." % len(support_filepaths))
         srcs = [open(f, "rU") for f in support_filepaths]
     for sidx, src in enumerate(srcs):
         name = getattr(src, "name", "<stdin>")
@@ -482,10 +489,15 @@ def main_cli():
             else:
                 support_filepaths.append(fpath)
         if len(support_filepaths) == 0:
-            messenger.send_error('No sources of support specified or could be found. '
-            + 'Please provide the path to at least one (valid and existing) file '
-            + 'containing tree samples '
-            + 'to summarize.')
+            messenger.send_error("No valid sources of input trees specified. "
+                    + "Please provide the path to at least one (valid and existing) file "
+                    + "containing tree samples to summarize.")
+            sys.exit(1)
+    else:
+        if not opts.from_newick_stream and not opts.from_nexus_stream:
+            messenger.send_error("No sources of input trees specified. "
+                    + "Please provide the path to at least one (valid and existing) file "
+                    + "containing tree samples to summarize.")
             sys.exit(1)
 
     ###################################################
@@ -536,21 +548,22 @@ def main_cli():
 
     start_time = datetime.datetime.now()
     master_split_distribution = None
-    if _MP and (opts.multithreaded or opts.max_threads is not None):
+    if (support_filepaths is not None and len(support_filepaths) > 1) \
+            and _MP \
+            and (opts.multithreaded or opts.max_threads is not None):
         num_threads = len(support_filepaths)
         if opts.max_threads is not None:
             try:
                 num_threads = int(opts.max_threads)
             except ValueError:
-                messenger.send_error("'%s' is not a valid number of threads (must be a positive integer)")
+                messenger.send_error("'%s' is not a valid number of threads (must be a positive integer).")
                 sys.exit(1)
             if num_threads <= 0:
                 messenger.send_error("Maximum number of threads set to %d: cannot run SumTrees with less than 1 thread" % num_threads)
                 sys.exit(1)
             if num_threads == 1:
                 messenger.send_warning("Running in multithreaded mode but limited to only 1 thread: probably more efficient to run in serial mode!")
-        messenger.send_info("Running in multithreaded mode (up to %d threads)." % num_threads)
-        messenger.send_info("%d sources to be processed." % (len(support_filepaths)))
+
         master_split_distribution = process_sources_parallel(
                 num_threads=num_threads,
                 support_filepaths=support_filepaths,
@@ -560,12 +573,10 @@ def main_cli():
                 log_frequency=opts.log_frequency,
                 messenger=messenger)
     else:
-        messenger.send_info("Running in single-threaded mode.")
+        if (opts.multithreaded or opts.max_threads is not None):
+            messenger.send_warning("Multithreaded mode requested but only one source specified: defaulting to single-threaded mode.")
         if opts.from_newick_stream or opts.from_nexus_stream:
-            messenger.send_info("Reading trees from standard input.")
             support_filepaths = None
-        else:
-            messenger.send_info("%d sources to be processed." % len(support_filepaths))
         master_split_distribution = process_sources_serial(
                 support_filepaths=support_filepaths,
                 schema=schema,

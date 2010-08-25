@@ -48,45 +48,54 @@ Alternatively, you can install |DendroPy|_ yourself, by following these steps.
 
 1.  Download the latest release of |DendroPy|_ from:
 
-    |dendropy_download_url|
-
-    Note that you might end up downloading a newer version of |DendroPy|_, in which case the version numbers in the file and directory names may not correspond exactly to those given in the examples. For instance, you may end up with "``DendroPy-3.0.3.tar.gz``" rather than "``DendroPy-3.0.3.tar.gz``". However, as long as you substitute the correct archive and directory name in the examples and discussion below, everything else should remain the same.
+    |dendropy_source_archive_url|
 
 #.  Expand the downloaded archive
 
     This step varies depending on the operating system and the particular programs that you have installed.
     In most cases, simply double-clicking on the file that you have downloaded should kick off the process.
-    Otherwise, open a terminal shell window and go to the directory in which you have downloaded the archive, and type "``tar -xvzf DendroPy-3.0.3.tar.gz``".
+    Otherwise, open a terminal shell window and go to the directory in which you have downloaded the archive, and type:
+
+        .. parsed-literal::
+
+            tar -xvzf DendroPy-|version|.tar.gz
+
     For example, say you saved the downloaded file on your desktop.
-    Then, opening up the terminal and entering the following commands will take you to your Desktop and expand the archive::
+    Then, opening up the terminal and entering the following commands will take you to your Desktop and expand the archive:
 
-        $ cd ~/Desktop
-        $ tar -xvzf DendroPy-3.0.3.tar.gz
+        .. parsed-literal::
 
-    One way or another, you should end up with a directory called "``DendroPy-2.1.3``" or something similar, which contains the entire Dendropy package.
+            $ cd ~/Desktop
+            $ tar -xvzf DendroPy-|version|.tar.gz
+
+    One way or another, you should end up with a directory called "DendroPy-|version|" or something similar, which contains the entire Dendropy package.
 
 #.  Install the library
 
     In the terminal shell, go to the directory of the package that you have just archived and type "``sudo python setup.py install``".
-    Continuing the example from above::
+    Continuing the example from above:
 
-        $ cd DendroPy-3.0.3
-        $ sudo python setup.py install
+        .. parsed-literal::
+
+            $ cd DendroPy-|version|
+            $ sudo python setup.py install
 
     The library installation will automatically create an executable script called "``sumtrees.py``" and place it on your system path for you, so that you can call it from anywhere.
 
-#.  If the installation was successful, you should be able to type     "``sumtrees.py``" in the terminal window and see something like the following (with possibly a different date or version number)::
+#.  If the installation was successful, you should be able to type "``sumtrees.py``" in the terminal window and see something like the following (with possibly a different date or version number):
 
-        ====================================================================
-        SumTrees - Phylogenetic Tree Split Support Summarization
-        Version 2.0.0 (Nov 15 2009)
-        By Jeet Sukumaran and Mark T. Holder
-        (using the DendroPy Phylogenetic Computing Library Version 3.0.3)
-        ====================================================================
+        .. parsed-literal::
 
-        No sources of support specified or could be found. Please provide the
-        path to at least one (valid and existing) file containing non-
-        parametric or MCMC tree samples to summarize.
+            ===========================================================================
+            SumTrees - Phylogenetic Tree Split Support Summarization
+            Version 3.0.0 (Aug 22 2009)
+            By Jeet Sukumaran and Mark T. Holder
+            (using the DendroPy Phylogenetic Computing Library Version |version|)
+            ===========================================================================
+
+            No sources of support specified or could be found. Please provide the
+            path to at least one (valid and existing) file containing non-
+            parametric or MCMC tree samples to summarize.
 
     You can now delete the original downloaded archive and unpacked directory if you want.
 
@@ -303,9 +312,10 @@ This means that if you have four support tree files as input sources, as in the 
 If you happen to have 40 support tree files as input sources, then 40 threads will be launched.
 
 Note that there is a difference between the number of *threads* launched, and the number of *cores* (or CPU's, or processors) available.
-With most modern operating systems, even if the number of threads greatly outnumber the number of cores, you might still see some performance improvement by running the maximum number of possible threads (the default when using the "``-m``" or "``--multithreaded``" option).
+With most modern operating systems, there is no harm in running SumTrees with a large number of threads, even if the number of threads greatly outnumber the number of cores, you might still see some performance improvement by running the maximum number of possible threads (the default when using the "``-m``" or "``--multithreaded``" option).
 This is because the operating system will take care of cycling the various threads rapidly through whatever processors are available, taking advantage of the tiny nanosecond gaps between computations etc.
-So, whether you have two cores or two hundred available, chances are you would not want to maximize the number of threads that will be run.
+There *is* a performance hit with this of course, but all my practical experience thus far suggests to me that this performance hit is not very significant --- perhaps on the order of several minutes extra on runs that are on the order of a couple of hours.
+So, whether you have two cores or two hundred available, chances are you would not want to limit the number of threads that will be run as long as you do not mind that SumTrees uses up all the computing power available.
 
 However, in a stand-alone or desktop computing context, if you do not want SumTrees to dominate computation cycles on your local machine (and thus allow you to work on other things on the computer), then you might want to use the "``-x``" or "``--max-threads``" option to limit the number of threads launched.
 For example, if your machine has 4 cores, and you only want SumTrees to run on 3 of them, you would::
