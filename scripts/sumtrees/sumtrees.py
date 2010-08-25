@@ -549,7 +549,7 @@ def main_cli():
                 sys.exit(1)
             if num_threads == 1:
                 messenger.send_warning("Running in multithreaded mode but limited to only 1 thread: probably more efficient to run in serial mode!")
-        messenger.send_info("Running in multithreaded mode (%d threads)." % num_threads)
+        messenger.send_info("Running in multithreaded mode (up to %d threads)." % num_threads)
         messenger.send_info("%d sources to be processed." % (len(support_filepaths)))
         master_split_distribution = process_sources_parallel(
                 num_threads=num_threads,
