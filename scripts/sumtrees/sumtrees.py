@@ -55,7 +55,7 @@ from dendropy.utility.messaging import ConsoleMessenger
 from dendropy.utility.cli import confirm_overwrite, show_splash
 
 _program_name = "SumTrees"
-_program_subtitle = "Phylogenetic Tree Split Summarization"
+_program_subtitle = "Phylogenetic Tree Split Support Summarization"
 _program_date = "Aug 22 2010"
 _program_version = "Version 3.0.0 (%s)" % _program_date
 _program_author = "Jeet Sukumaran and Mark T. Holder"
@@ -497,9 +497,9 @@ def main_cli():
             sys.exit(1)
     else:
         if not opts.from_newick_stream and not opts.from_nexus_stream:
-            messenger.send_error("No sources of input trees specified. "
+            messenger.send_info("No sources of input trees specified. "
                     + "Please provide the path to at least one (valid and existing) file "
-                    + "containing tree samples to summarize.")
+                    + "containing tree samples to summarize. See '--help' for other options.")
             sys.exit(1)
 
     ###################################################
