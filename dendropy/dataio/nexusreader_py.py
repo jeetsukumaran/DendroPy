@@ -50,6 +50,8 @@ class NexusReader(iosys.DataReader):
             - `default_as_unrooted=True` (or `default_as_rooted=False`): interprets
                all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
             - `edge_len_type`: specifies the type of the edge lengths (int or float)
+            - `store_tree_weights`: if True, process the tree weight ("[&W 1/2]")
+               comment associated with each tree, if any.
             - `encode_splits`: specifies whether or not split bitmasks will be
                calculated and attached to the edges.
             - `finish_node_func`: is a function that will be applied to each node
@@ -65,6 +67,8 @@ class NexusReader(iosys.DataReader):
         self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", False)
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
         self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
+        self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS)
+        self.store_tree_weights = kwargs.get('store_tree_weights', False)
 
     def read(self, stream):
         """
@@ -93,7 +97,9 @@ class NexusReader(iosys.DataReader):
         self.reset()
         if self.dataset is None:
             self.dataset = dataobject.DataSet()
-        self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream, preserve_underscores=self.preserve_underscores)
+        self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream,
+                preserve_underscores=self.preserve_underscores,
+                hyphens_as_tokens=self.hyphens_as_tokens)
         token = self.stream_tokenizer.read_next_token_ucase()
         if token.upper() != "#NEXUS":
             raise self.data_format_error("Expecting '#NEXUS', but found '%s'" % token)
@@ -160,7 +166,8 @@ class NexusReader(iosys.DataReader):
 
     def _prepare_to_read_from_stream(self, file_obj):
         self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream_handle=file_obj,
-                preserve_underscores=self.preserve_underscores)
+                preserve_underscores=self.preserve_underscores,
+                hyphens_as_tokens=self.hyphens_as_tokens)
 
     def _consume_to_end_of_block(self, token):
         while not (token == 'END' or token == 'ENDBLOCK') \
@@ -650,6 +657,8 @@ class NexusReader(iosys.DataReader):
                 encode_splits=self.encode_splits,
                 rooting_interpreter=self.rooting_interpreter,
                 finish_node_func=self.finish_node_func,
+                store_tree_weights=self.store_tree_weights,
+                preserve_underscores=self.preserve_underscores,
                 suppress_internal_node_taxa=self.suppress_internal_node_taxa)
         tree.label = tree_name
         if self.stream_tokenizer.current_token != ';':

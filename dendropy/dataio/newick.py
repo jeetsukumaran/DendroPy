@@ -60,6 +60,8 @@ def tree_source_iter(stream, **kwargs):
         - `edge_len_type`: specifies the type of the edge lengths (int or float)
         - `encode_splits`: specifies whether or not split bitmasks will be
            calculated and attached to the edges.
+        - `store_tree_weights`: if True, process the tree weight ("[&W 1/2]")
+           comment associated with each tree, if any.
         - `finish_node_func`: is a function that will be applied to each node
            after it has been constructed.
 
@@ -129,6 +131,8 @@ class NewickReader(iosys.DataReader):
                violates the NEXUS standard, and will break NEXUS parsing (and
                many in-the-wild NEWICK as well). Default value is given by:
                ``dendropy.dataio.nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS``.
+            - `store_tree_weights`: if True, process the tree weight ("[&W 1/2]")
+               comment associated with each tree, if any.
         """
         iosys.DataReader.__init__(self, **kwargs)
         self.stream_tokenizer = nexustokenizer.NexusTokenizer()
@@ -136,6 +140,8 @@ class NewickReader(iosys.DataReader):
         self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
         self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS)
         self.encode_splits = kwargs.get('encode_splits', False)
+        self.store_tree_weights = kwargs.get('store_tree_weights', False)
+        self.preserve_underscores = kwargs.get('preserve_underscores', False)
 
     def read(self, stream):
         """
@@ -153,7 +159,9 @@ class NewickReader(iosys.DataReader):
                 taxon_set=taxon_set,
                 rooting_interpreter=self.rooting_interpreter,
                 hyphens_as_tokens=self.hyphens_as_tokens,
-                encode_splits=self.encode_splits):
+                store_tree_weights=self.store_tree_weights,
+                encode_splits=self.encode_splits,
+                preserve_underscores=self.preserve_underscores):
             tree_list.append(t, reindex_taxa=False)
         return self.dataset
 
@@ -170,6 +178,9 @@ class NewickWriter(iosys.DataWriter):
             - `dataset`: data to be written
             - `edge_lengths` : if False, edges will not write edge lengths [True]
             - `internal_labels` : if False, internal labels will not be written [True]
+            - `preserve_spaces` : spaces not mapped to underscores in labels [False]
+            - `quote_underscores` : labels with underscores are quoted, for "hard" underscores [True]
+            - `store_tree_weights` : tree weights are stored
         """
         iosys.DataWriter.__init__(self, **kwargs)
         self.edge_lengths = kwargs.get("edge_lengths", True)
@@ -177,6 +188,7 @@ class NewickWriter(iosys.DataWriter):
         self.internal_labels = kwargs.get("internal_labels", True)
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
         self.quote_underscores = kwargs.get('quote_underscores', True)
+        self.store_tree_weights = kwargs.get("store_tree_weights", False)
 
     def write(self, stream):
         """
@@ -209,7 +221,11 @@ class NewickWriter(iosys.DataWriter):
                 rooting = "[&U] "
             else:
                 rooting = ""
-            stream.write("%s%s;\n" % (rooting, self.compose_node(tree.seed_node)))
+            if self.store_tree_weights and tree.weight is not None:
+                weight = "[&W %s] " % tree.weight
+            else:
+                weight = ""
+            stream.write("%s%s%s;\n" % (rooting, weight, self.compose_node(tree.seed_node)))
 
     def compose_tree(self, tree):
         "Convienience method.        "

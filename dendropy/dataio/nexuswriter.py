@@ -44,21 +44,23 @@ class NexusWriter(iosys.DataWriter):
         """
         __init__ recognizes the following keywords (in addition to those of `DataWriter.__init__`):
 
-            - `simple` : if True, write in simple NEXUS format, i.e. in a
-              single "DATA" block, instead of separate "TAXA" and "CHARACTER"
-              blocks. [False]
-            - `taxa_block` : if False, do not write a "TAXA" block [True]
-            - `write_rooting` : if False, do not write a comment before each
-              tree indicating its rooting state [True]
-            - `edge_lengths` : if False, edges will not write edge lengths [True]
-            - `internal_labels` : if False, internal labels will not be written [True]
-            - `comment` : list of lines of text to be added as comments to the
-              file
+           - `simple` : if True, write in simple NEXUS format, i.e. in a
+             single "DATA" block, instead of separate "TAXA" and "CHARACTER"
+             blocks. [False]
+           - `taxa_block` : if False, do not write a "TAXA" block [True]
+           - `write_rooting` : if False, do not write a comment before each
+             tree indicating its rooting state [True]
+           - `store_tree_weights` : tree weights are store
+           - `edge_lengths` : if False, edges will not write edge lengths [True]
+           - `internal_labels` : if False, internal labels will not be written [True]
+           - `comment` : list of lines of text to be added as comments to the
+             file
         """
         iosys.DataWriter.__init__(self, **kwargs)
         self.simple = kwargs.get("simple", False)
         self.exclude_taxa = kwargs.get("exclude_taxa", False)
         self.is_write_rooting = kwargs.get("write_rooting", True)
+        self.store_tree_weights = kwargs.get('store_tree_weights', False)
         self.is_write_edge_lengths = kwargs.get("edge_lengths", True)
         self.is_write_internal_labels = kwargs.get("internal_labels", True)
         self.is_write_block_titles = kwargs.get("block_titles", None)
@@ -176,8 +178,13 @@ class NexusWriter(iosys.DataWriter):
                 rooting = "[&U] "
             else:
                 rooting = ""
-            block.append('    TREE %s = %s%s;' % (textutils.escape_nexus_token(tree_name, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores),
+            if self.store_tree_weights and tree.weight is not None:
+                weight = "[&W %s] " % tree.weight
+            else:
+                weight = ""
+            block.append('    TREE %s = %s%s%s;' % (textutils.escape_nexus_token(tree_name, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores),
                 rooting,
+                weight,
                 newick_str))
         block.append('END;\n\n')
         stream.write('\n'.join(block))

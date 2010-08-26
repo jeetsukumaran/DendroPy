@@ -148,9 +148,9 @@ class StrToTaxon(object):
 
     def __init__(self, taxon_set, translate_dict=None, allow_repeated_use=False):
         """
-        __init__ creates a StrToTaxon object with the requested policy of taxon 
+        __init__ creates a StrToTaxon object with the requested policy of taxon
         repitition.
-        
+
         If `allow_repeated_use` is True, then get_taxon and require_taxon
         can be called multiple times to get the same taxon.  If it is false then
         calling the functions with the same label will generate a DataParseError
@@ -206,6 +206,7 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
     edge_len_type = kwargs.get("edge_len_type", float)
     taxon_set = kwargs.get("taxon_set", None)
     suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
+    store_tree_weights = kwargs.get("store_tree_weights", False)
     if taxon_set is None:
         taxon_set = dataobject.TaxonSet()
     tree = dataobject.Tree(taxon_set=taxon_set)
@@ -219,6 +220,18 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
 #        tree.is_rooted = rooting_interpreter.interpret_as_rooted(stream_tokenizer.tree_rooting_comment)
 #    elif rooting_interpreter.interpret_as_rooted(stream_tokenizer.tree_rooting_comment):
 #        tree_is_rooted = True
+
+    if store_tree_weights and stream_tokenizer.tree_weight_comment is not None:
+        try:
+            weight_expression = stream_tokenizer.tree_weight_comment.split(' ')[1]
+            tree.weight = eval("/".join(["float(%s)" % cv for cv in weight_expression.split('/')]))
+        except IndexError:
+            pass
+        except ValueError:
+            pass
+        finally:
+            stream_tokenizer.tree_weight_comment = None
+
     if encode_splits:
         if len(taxon_set) == 0:
             raise Exception("When encoding splits on a tree as it is being parsed, a "
@@ -247,7 +260,10 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
         if stream_tokenizer.comments:
             active_node.comments.extend(stream_tokenizer.comments)
 
+    # store and clear comments
+    tree.comments = stream_tokenizer.comments
     stream_tokenizer.clear_comments()
+
     while True:
         if not token or token == ';':
             if curr_node is not tree.seed_node:
@@ -432,6 +448,7 @@ class NexusTokenizer(object):
         self.previous_file_char = None
         self.comments = []
         self.tree_rooting_comment = None
+        self.tree_weight_comment = None
         self.last_comment_parsed = None
         self.preserve_underscores = False
         self.global_ignore_punctuation = set()
@@ -517,10 +534,13 @@ class NexusTokenizer(object):
         comment = cmt_body.getvalue()
         self.comments.append(comment)
         self.last_comment_parsed = comment
-        if comment.strip().upper() == "&R":
+        comment = comment.strip().upper()
+        if comment == "&R":
             self.tree_rooting_comment = "&R"
-        elif comment.strip().upper() == "&U":
+        elif comment == "&U":
             self.tree_rooting_comment = "&U"
+        elif comment.startswith("&W"):
+            self.tree_weight_comment = comment
         self.read_next_char()
 
     def read_noncomment_character(self):
