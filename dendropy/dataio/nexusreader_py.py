@@ -651,6 +651,7 @@ class NexusReader(iosys.DataReader):
         token = self.stream_tokenizer.read_next_token()
         if token != '=':
             raise self.data_format_error("Expecting '=' in definition of Tree '%s' but found '%s'" % (tree_name, token))
+        tree_comments = self.stream_tokenizer.comments
         tree = nexustokenizer.tree_from_token_stream(stream_tokenizer=self.stream_tokenizer,
                 taxon_set=taxon_set,
                 translate_dict=self.tree_translate_dict,
@@ -661,6 +662,8 @@ class NexusReader(iosys.DataReader):
                 preserve_underscores=self.preserve_underscores,
                 suppress_internal_node_taxa=self.suppress_internal_node_taxa)
         tree.label = tree_name
+        if tree_comments is not None and len(tree_comments) > 0:
+            tree.comments.extend(tree_comments)
         if self.stream_tokenizer.current_token != ';':
             self.stream_tokenizer.skip_to_semicolon()
         return tree
