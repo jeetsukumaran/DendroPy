@@ -322,10 +322,8 @@ If your analysis has 40 independent support files, you can invoke SumTrees with 
     $ sumtrees.py --multithreaded=40 -o result.tre t1.tre ... t40.tre
 
 SumTrees will indeed launch 40 parallel threads to process the files, and it will seem like 40 threads are being executed in parallel.
-But this is not actually what is happening.
-In reality, the operating system is actually cycling the threads through the available processors in rapid succession.
-So, while it seems like they are all running in parallel, on a nanosecond time-scale, only 8 threads are actually executing simultaneously.
-While your run should complete without problems when oversubscribing the hardware (processors) in this way, there is going to be some degree of performance hit due to the overhead involved in managing the cycling of threads through the processors.
+In reality, the operating system is actually cycling the threads through the available processors in rapid succession, such that, on a nanosecond time-scale, only 8 threads are actually executing simultaneously.
+While your run should complete without problems when oversubscribing the hardware (processors) in this way, there is going to be some degree of performance hit due to the overhead involved in cycling of threads through the processors.
 On some operating systems and hardware contexts, depending on the magnitude of oversubscription, this may not have that much of an impact, while on others it might.
 So, in general, it probably is a good idea to match the number of threads to the number of processors available.
 
@@ -385,7 +383,7 @@ Improving Performance
         $ sumtrees.py --log-frequency=10000 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
         $ sumtrees.py -g10000 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
 
-      If you are content to let SumTrees run without reporting its progress *within* each file (SumTrees will still report back whenever it begins or ends working on a file), then you can switch of tree processing logging altogether by specifying a logging frequency of 0::
+      If you are content to let SumTrees run without reporting its progress *within* each file (SumTrees will still report back whenever it begins or ends working on a file), then you can switch off tree processing logging altogether by specifying a logging frequency of 0::
 
         $ sumtrees.py --log-frequency=0 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
         $ sumtrees.py -g0 phylo.run1.tre phylo.run2.tre phylo.run3.tre phylo.run4.tre
@@ -408,7 +406,7 @@ SumTrees, and the |DendroPy|_ library that it is part of, works out-of-the-box w
 SumTrees will not work with versions of |Python|_ prior to 2.4, such as |Python|_ 2.3. It can probably be made to work pretty easily, and if you have strong enough motiviation to use Python 2.3, it might be worth the effort for you.
 It is not for me.
 
-SumTrees (and |DendroPy|_, and, for that matter, most existing |Python|_ code) is flat-out broken under Python 3.0.
+SumTrees (and |DendroPy|) is currently not compatible with Python 3.
 
 My Computer Does Not Know What a Python Is
 -------------------------------------------
@@ -443,9 +441,9 @@ Manual Installation
 The |DendroPy|_ library is actually quite straightforward to install manually, especially if you have any familiarity with Python and how Python files are organized.
 There are a couple of different things you could do:
 
-* Add the current location of the "``dendropy``" subdirectory to your Python path environmental variable, "``$PYTHONPATH``", and place the file "``scripts\sumtrees.py``" on your system path.
+* Add the current location of the "``dendropy``" subdirectory to your Python path environmental variable, "``$PYTHONPATH``", and place the file "``scripts/sumtrees.py``" on your system path.
 
-* Copy (or symlink) the "``dendropy``" directory to the "``site-packages``" directory of your Python installation, and place the file "``scripts\sumtrees.py``" on your system path.
+* Copy (or symlink) the "``dendropy``" directory to the "``site-packages``" directory of your Python installation, and place the file "``scripts/sumtrees.py``" on your system path.
 
 Repository Access
 =================
