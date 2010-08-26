@@ -86,16 +86,16 @@ Alternatively, you can install |DendroPy|_ yourself, by following these steps.
 
         .. parsed-literal::
 
-            ===========================================================================
+            ======================================================================
             SumTrees - Phylogenetic Tree Split Support Summarization
-            Version 3.0.0 (Aug 22 2009)
+            Version 3.0.0 (Aug 22 2010)
             By Jeet Sukumaran and Mark T. Holder
             (using the DendroPy Phylogenetic Computing Library Version |version|)
-            ===========================================================================
+            ======================================================================
 
-            No sources of support specified or could be found. Please provide the
-            path to at least one (valid and existing) file containing non-
-            parametric or MCMC tree samples to summarize.
+            SumTrees: No sources of input trees specified. Please provide the path to at
+                      least one (valid and existing) file containing tree samples to
+                      summarize. See '--help' for other options.
 
     You can now delete the original downloaded archive and unpacked directory if you want.
 
