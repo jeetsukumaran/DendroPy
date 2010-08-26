@@ -436,17 +436,18 @@ def main_cli():
         #        type="int",
         #        default=None,
         #        help="limit number of threads launched to MAX-THREADS (implies '-m'/'--multithreaded')")
-    run_optgroup.add_option("-q", "--quiet",
-            action="store_true",
-            dest="quiet",
-            default=False,
-            help="suppress progress messages")
+
     run_optgroup.add_option("-g", "--log-frequency",
             type="int",
             metavar="LOG-FREQUENCY",
             dest="log_frequency",
             default=500,
             help="tree processing progress logging frequency (default=%default; set to 0 to suppress)")
+    run_optgroup.add_option("-q", "--quiet",
+            action="store_true",
+            dest="quiet",
+            default=False,
+            help="suppress ALL logging, progress and feedback messages")
     run_optgroup.add_option("--ignore-missing-support",
             action="store_true",
             dest="ignore_missing_support",
