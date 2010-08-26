@@ -315,7 +315,7 @@ If you have four support tree files as input sources, as in the above example ("
 If you have 40 tree source or support files, then you can run from 2 up to 40 threads in parallel.
 
 Note that there is a difference between the number of *threads* or processes that SumTrees runs, and the number of *processors* or cores available on your machine or in your given hardware context.
-When running SumTrees in multithreaded mode, you can specify *any* number of *threads* up to the number of support files, even if the number threads greatly exceeds the number *processors* available.
+When running SumTrees in multithreaded mode, you can specify *any* number of *threads* up to the number of support files, even if the number of threads greatly exceeds the number *processors* available.
 For example, you might have an octo-core machine available, which means that you have 8 processors available.
 If your analysis has 40 independent support files, you can invoke SumTrees with 40 parallel threads::
 
@@ -341,8 +341,8 @@ So, for example, if you have 8 input files to be summarized, you will get the be
 Running Multithreaded SumTrees in a Parallel Environment on a High-Performance Computing (HPC) Cluster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Unfortunately, there is so much variation and idiosyncracies in HPC configurations and set-ups that it is very difficult to provide detailed and universal instructions on how to run multithreaded SumTrees in a parallel environment on an HPC cluster.
-However, in principal all you need to do is to set up to a parallel execution environment on the cluster, requesting a specific number of proessors from the cluster scheduler, and then telling SumTrees to run the same number of threads.
+Unfortunately, there the diversity and diversity of idiosyncracies in HPC configurations and set-ups are so great that it is very difficult to provide explicit general recipes on how to run multithreaded SumTrees in a parallel environment on an HPC cluster.
+However, in all cases, in principal all you really need to do is to set up an appropriate parallel execution environment on the cluster, requesting a specific number of processors from the cluster scheduler software, and then tell SumTrees to run the same number of threads.
 
 For example, if your cluster uses the `Sun Grid Engine <http://gridengine.sunsource.net/>`_ as its scheduler, then you might use a job script such as the following:
 
@@ -354,7 +354,7 @@ For example, if your cluster uses the `Sun Grid Engine <http://gridengine.sunsou
         #$ -pe mpi 4
         sumtrees.py -m4 -o result.con.tre -burnin 100 mcmc1.tre mcmc2.tre mcmc3.tre mcmc4.tre
 
-The "``#$ -pe mpi 4``" line tells the SGE scheduler to allocate four processors to the job, while the "``-m4``" part of the SumTrees command tells SumTrees to run 4 threads in parallel.
+The "``#$ -pe mpi 4``" line tells the SGE scheduler to allocate four processors to the job in the "``mpi``" parallel environment, while the "``-m4``" part of the SumTrees command tells SumTrees to run 4 threads in parallel.
 
 If you are using PBS/Torque as a scheduler, the equivalent job script might be:
 
@@ -366,6 +366,11 @@ If you are using PBS/Torque as a scheduler, the equivalent job script might be:
         sumtrees.py -m4 -o result.con.tre -burnin 100 mcmc1.tre mcmc2.tre mcmc3.tre mcmc4.tre
 
 Here, the "``#PBS -l nodes=2:ncpus=2``" requests two processors on two nodes, while the "``-m4``" part of the SumTrees command, as before, tells SumTrees to run 4 threads in parallel.
+
+The particular job scripts you use will almost certainly be different, varying with the cluster job/load management software, scheduler and computing resources.
+Apart from the parallel environment name, number of processors and/or machine configuration, you might also need to provide a queue name, a maximum run time limit, and a soft or hard memory limit.
+None of it should make any difference to how SumTrees is actually invoked: you would still just use the "``-m``" or "``--multithreaded``" flags to specify that SumTrees runs in multithreaded mode with a particular number of parallel threads).
+You just need to check with your cluster administrators or documentation to make sure your job script or execution context provides sufficient processors to match the number of threads that you want run (as well as other resources, e.g. wall time limit and memory limit, that SumTrees needs to finish its job).
 
 Improving Performance
 =====================
