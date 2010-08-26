@@ -267,7 +267,10 @@ else:
                                  is_rooted=False):
         """
         Returns a populated SplitDistribution object based on the given
-        bipartition info.
+        bipartition info, ``bipartition_counts``.
+        ``bipartition_counts`` is a dictionary, where the keys are PAUP split
+        info (e.g. '.*****.*.*.**************************************') and the
+        value are the frequency of the split.
         """
         sd = treesplit.SplitDistribution(taxon_set=taxon_set)
         sd.is_rooted = is_rooted
@@ -301,6 +304,7 @@ else:
                      tree_filepath,
                      min_clade_freq=0.5,
                      burnin=0,
+                     use_tree_weights=False,
                      paup_path=PAUP_PATH):
         """
         Given a set of trees (and data file), this uses PAUP*'s contree
@@ -315,19 +319,24 @@ else:
               percentage of trees with the bipartition occurence as values.
         """
 
+        if use_tree_weights:
+            treewts = "yes"
+        else:
+            treewts = "no"
         paup_args = {
             'data_filepath': data_filepath,
             'tree_filepath': tree_filepath,
             'percent': min_clade_freq * 100,
             'burnin': burnin+1,
+            'treewts': treewts
         }
         paup_template = """\
         set warnreset=no;
         set increase=auto;
         exe %(data_filepath)s;
-        gett file=%(tree_filepath)s storebrlens=yes warntree=no unrooted=yes;
+        gett file=%(tree_filepath)s storebrlens=yes warntree=no unrooted=yes StoreTreeWts=%(treewts)s;
         tstatus / full;
-        contree %(burnin)d-. / strict=no showtree=no grpfreq=yes majrule=yes percent=%(percent)d;
+        contree %(burnin)d-. / strict=no showtree=no grpfreq=yes majrule=yes percent=%(percent)d UseTreeWts=%(treewts)s;
     """
         paup_run = subprocess.Popen(['%s -n' % paup_path],
                                     shell=True,
