@@ -124,7 +124,7 @@ class SplitCountingThread(multiprocessing.Process):
         self.log_frequency = log_frequency
         self.kill_received = False
 
-    def send_message(self, msg, level):
+    def send_message(self, msg, level, wrap=True):
         if self.messenger is None:
             return
         if self.messenger.messaging_level > level or self.messenger.silent:
@@ -132,18 +132,18 @@ class SplitCountingThread(multiprocessing.Process):
         msg = "Thread %d: %s" % (self.thread_idx+1, msg)
         self.messenger_lock.acquire()
         try:
-            self.messenger.send(msg, level=level)
+            self.messenger.send(msg, level=level, wrap=wrap)
         finally:
             self.messenger_lock.release()
 
-    def send_info(self, msg):
-        self.send_message(msg, ConsoleMessenger.INFO_MESSAGING_LEVEL)
+    def send_info(self, msg, wrap=True):
+        self.send_message(msg, ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
 
-    def send_warning(self, msg):
-        self.send_message(msg, ConsoleMessenger.WARNING_MESSAGING_LEVEL)
+    def send_warning(self, msg, wrap=True):
+        self.send_message(msg, ConsoleMessenger.WARNING_MESSAGING_LEVEL, wrap=wrap)
 
-    def send_error(self, msg):
-        self.send_message(msg, ConsoleMessenger.ERROR_MESSAGING_LEVEL)
+    def send_error(self, msg, wrap=True):
+        self.send_message(msg, ConsoleMessenger.ERROR_MESSAGING_LEVEL, wrap=wrap)
 
     def run(self):
         while not self.kill_received:
@@ -151,22 +151,22 @@ class SplitCountingThread(multiprocessing.Process):
                 source = self.work_queue.get_nowait()
             except Queue.Empty:
                 break
-            self.send_info("Received task: '%s'." % source)
+            self.send_info("Received task: '%s'." % source, wrap=False)
             fsrc = open(source, "rU")
             for tidx, tree in enumerate(tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set)):
                 if tidx >= self.tree_offset:
                     if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
-                        self.send_info("(processing) '%s': tree at offset %d" % (source, tidx))
+                        self.send_info("(processing) '%s': tree at offset %d" % (source, tidx), wrap=False)
                     treesplit.encode_splits(tree)
                     self.split_distribution.count_splits_on_tree(tree)
                 else:
                     if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
-                        self.send_info("(processing) '%s': tree at offset %d (skipping)" % (source, tidx))
+                        self.send_info("(processing) '%s': tree at offset %d (skipping)" % (source, tidx), wrap=False)
                 if self.kill_received:
                     break
             if self.kill_received:
                 break
-            self.send_info("Completed task: '%s'." % (source))
+            self.send_info("Completed task: '%s'." % (source), wrap=False)
         if self.kill_received:
             self.send_warning("Terminating in response to kill request.")
         else:
@@ -265,21 +265,21 @@ def process_sources_serial(
         messenger.send_info("Reading trees from standard input.")
         srcs = [sys.stdin]
     else:
-        messenger.send_info("%d sources to be processed." % len(support_filepaths))
+        messenger.send_info("%d source(s) to be processed." % len(support_filepaths))
         srcs = [open(f, "rU") for f in support_filepaths]
     for sidx, src in enumerate(srcs):
         name = getattr(src, "name", "<stdin>")
-        messenger.send_info("Processing %d of %d: '%s'" % (sidx+1, len(srcs), name))
+        messenger.send_info("Processing %d of %d: '%s'" % (sidx+1, len(srcs), name), wrap=False)
         for tidx, tree in enumerate(tree_source_iter(src, schema=schema, taxon_set=taxon_set, is_rooted=is_rooted)):
             if tidx >= tree_offset:
                 if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
-                    messenger.send_info("(processing) '%s': tree at offset %d" % (name, tidx))
+                    messenger.send_info("(processing) '%s': tree at offset %d" % (name, tidx), wrap=False)
                 treesplit.encode_splits(tree)
                 split_distribution.count_splits_on_tree(tree)
             else:
                 if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
-                    messenger.send_info("(processing) '%s': tree at offset %d (skipping)" % (name, tidx))
-    messenger.send_info("Serial processing of %d source(s) completed.")
+                    messenger.send_info("(processing) '%s': tree at offset %d (skipping)" % (name, tidx), wrap=False)
+    messenger.send_info("Serial processing of %d source(s) completed." % len(srcs))
     return split_distribution
 
 def main_cli():
@@ -426,8 +426,10 @@ def main_cli():
                 dest="multithreaded",
                 metavar="NUM-THREADS",
                 default=None,
-                help="run in multithreaded (parallel) mode: process each tree source using a separate " \
-                        + "thread, with up to a maximum of NUM-THREADS parallel threads")
+                help="run in multithreaded (parallel) mode: process tree sources in separate " \
+                        + "threads, with up to a maximum of NUM-THREADS parallel threads " \
+                        + "(specify '*' to run in as many threads as there are cores on the "\
+                        + "local machine)")
         #run_optgroup.add_option("-x", "--max-threads",
         #        dest="max_threads",
         #        metavar="MAX-THREADS",
@@ -554,7 +556,9 @@ def main_cli():
             and _MP \
             and opts.multithreaded:
         if opts.multithreaded is not None:
-            if opts.multithreaded.lower() == "x":
+            if opts.multithreaded == "*":
+                num_threads = multiprocessing.cpu_count()
+            elif  opts.multithreaded == "@":
                 num_threads = len(support_filepaths)
             else:
                 try:
@@ -577,7 +581,7 @@ def main_cli():
                 log_frequency=opts.log_frequency,
                 messenger=messenger)
     else:
-        if (opts.multithreaded or opts.max_threads is not None):
+        if (_MP and opts.multithreaded is not None and len(support_filepaths) == 1):
             messenger.send_warning("Multithreaded mode requested but only one source specified: defaulting to single-threaded mode.")
         if opts.from_newick_stream or opts.from_nexus_stream:
             support_filepaths = None
