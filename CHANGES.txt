@@ -8,6 +8,8 @@ New Features
 
         $ sumtrees.py -m 4 mb.run1.t mb.run2.t mb.run3.t mb.run4.t > consensus.tre
 
+    - Tree comments now parsed and stored with trees (NEXUS and NEWICK formats), allowing for processing of annotations such as tree weights and calculated likelihoods.
+
 Release 3.5.0
 -------------
 
