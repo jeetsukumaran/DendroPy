@@ -1,3 +1,13 @@
+Release 3.6.0
+-------------
+
+New Features
+^^^^^^^^^^^^
+
+    - SumTrees now can can run in multithreaded (parallel) mode, with each input source tree file processed in a separate thread. The number of threads can be specified by the '-m' or '--multithreaded' flag::
+
+        $ sumtrees.py -m 4 mb.run1.t mb.run2.t mb.run3.t mb.run4.t > consensus.tre
+
 Release 3.5.0
 -------------
 
