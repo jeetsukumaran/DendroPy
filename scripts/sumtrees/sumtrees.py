@@ -67,37 +67,6 @@ _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
 
 class SplitCountingThread(multiprocessing.Process):
 
-    def pickle_result(split_distribution):
-        result = (split_distribution.total_trees_counted,
-                split_distribution.splits,
-                split_distribution.split_counts,
-                split_distribution.split_edge_lengths,
-                split_distribution.split_node_ages)
-        return result
-    pickle_result = staticmethod(pickle_result)
-
-    def unpickle_result(pickled_result, split_distribution=None):
-        if split_distribution is None:
-            split_distribution = treesplit.SplitDistribution()
-        split_distribution.total_trees_counted += pickled_result[0]
-        for split in pickled_result[1]:
-            if split not in split_distribution.splits:
-                split_distribution.splits.append(split)
-                if split in pickled_result[2]:
-                    split_distribution.split_counts[split] = 0
-                if split in pickled_result[3]:
-                    split_distribution.split_edge_lengths[split] = []
-                if split in pickled_result[4]:
-                   split_distribution.split_node_ages[split] = []
-        for s, c in pickled_result[2].items():
-            split_distribution.split_counts[s] += c
-        for s, c in pickled_result[3].items():
-            split_distribution.split_edge_lengths[s].extend(c)
-        for s, c in pickled_result[4].items():
-            split_distribution.node_ages[s].extend(c)
-        return split_distribution
-    unpickle_result = staticmethod(unpickle_result)
-
     def __init__(self,
             work_queue,
             result_queue,
@@ -170,8 +139,7 @@ class SplitCountingThread(multiprocessing.Process):
         if self.kill_received:
             self.send_warning("Terminating in response to kill request.")
         else:
-            result = SplitCountingThread.pickle_result(self.split_distribution)
-            self.result_queue.put(result)
+            self.result_queue.put(self.split_distribution)
 
 def discover_taxa(treefile, schema):
     """
@@ -242,7 +210,7 @@ def process_sources_parallel(
     split_distribution.is_rooted = is_rooted
     while thread_result_count < num_threads:
         result = result_queue.get()
-        SplitCountingThread.unpickle_result(result, split_distribution)
+        split_distribution.update(result)
         thread_result_count += 1
     messenger.send_info("Recovered results from all worker threads.")
     return split_distribution
