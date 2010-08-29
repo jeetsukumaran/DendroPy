@@ -402,7 +402,7 @@ def main_cli():
                 metavar="NUM-PROCESSES",
                 default=None,
                 help="run in parallel mode with up to a maximum of NUM-PROCESSES processes " \
-                        + "(specify '*' to run in as many threads as there are cores on the "\
+                        + "(specify '*' to run in as many processes as there are cores on the "\
                         + "local machine)")
         #run_optgroup.add_option("-x", "--max-threads",
         #        dest="max_threads",
