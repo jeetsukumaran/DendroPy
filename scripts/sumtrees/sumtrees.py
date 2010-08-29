@@ -65,7 +65,7 @@ _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
                  "There is NO WARRANTY,\nto the extent permitted by law."
 
-class SplitCountingThread(multiprocessing.Process):
+class SplitCountingWorker(multiprocessing.Process):
 
     def __init__(self,
             work_queue,
@@ -196,7 +196,7 @@ def process_sources_parallel(
     result_queue = multiprocessing.Queue()
     messenger_lock = multiprocessing.Lock()
     for idx in range(num_processes):
-        sct = SplitCountingThread(work_queue,
+        sct = SplitCountingWorker(work_queue,
                 result_queue,
                 schema=schema,
                 taxon_labels=taxon_labels,
@@ -396,7 +396,7 @@ def main_cli():
     run_optgroup = OptionGroup(parser, "Program Run Options")
     parser.add_option_group(run_optgroup)
     if _MP:
-        run_optgroup.add_option("-m", "--multiprocess",
+        run_optgroup.add_option("-m", "--multiprocessing",
                 action="store",
                 dest="multiprocess",
                 metavar="NUM-PROCESSES",
