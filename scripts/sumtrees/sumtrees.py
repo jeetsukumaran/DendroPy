@@ -86,6 +86,7 @@ class SplitCountingThread(multiprocessing.Process):
         self.taxon_set = dendropy.TaxonSet(self.taxon_labels)
         self.split_distribution = treesplit.SplitDistribution(taxon_set=self.taxon_set)
         self.split_distribution.is_rooted = is_rooted
+        self.is_rooted = is_rooted
         self.tree_offset = tree_offset
         self.thread_idx = thread_idx
         self.messenger = messenger
@@ -125,7 +126,7 @@ class SplitCountingThread(multiprocessing.Process):
             for tidx, tree in enumerate(tree_source_iter(fsrc,
                     schema=self.schema,
                     taxon_set=self.taxon_set,
-                    as_rooted=is_rooted)):
+                    as_rooted=self.is_rooted)):
                 if tidx >= self.tree_offset:
                     if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
                         self.send_info("(processing) '%s': tree at offset %d" % (source, tidx), wrap=False)
@@ -161,7 +162,7 @@ def discover_taxa(treefile, schema):
     return taxon_set
 
 def process_sources_parallel(
-        num_threads,
+        num_processes,
         support_filepaths,
         schema,
         is_rooted,
@@ -174,7 +175,7 @@ def process_sources_parallel(
     """
 
     # describe
-    messenger.send_info("Running in multithreaded mode (up to %d threads)." % num_threads)
+    messenger.send_info("Running in multiprocessing mode (up to %d processes)." % num_processes)
     messenger.send_info("%d sources to be processed." % (len(support_filepaths)))
 
     # pre-discover taxa
@@ -191,10 +192,10 @@ def process_sources_parallel(
         work_queue.put(f)
 
     # launch threads
-    messenger.send_info("Launching worker threads ...")
+    messenger.send_info("Launching worker processes ...")
     result_queue = multiprocessing.Queue()
     messenger_lock = multiprocessing.Lock()
-    for idx in range(num_threads):
+    for idx in range(num_processes):
         sct = SplitCountingThread(work_queue,
                 result_queue,
                 schema=schema,
@@ -211,11 +212,11 @@ def process_sources_parallel(
     thread_result_count = 0
     split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
     split_distribution.is_rooted = is_rooted
-    while thread_result_count < num_threads:
+    while thread_result_count < num_processes:
         result = result_queue.get()
         split_distribution.update(result)
         thread_result_count += 1
-    messenger.send_info("Recovered results from all worker threads.")
+    messenger.send_info("Recovered results from all worker processes.")
     return split_distribution
 
 def process_sources_serial(
@@ -395,13 +396,12 @@ def main_cli():
     run_optgroup = OptionGroup(parser, "Program Run Options")
     parser.add_option_group(run_optgroup)
     if _MP:
-        run_optgroup.add_option("-m", "--multithreaded",
+        run_optgroup.add_option("-m", "--multiprocess",
                 action="store",
-                dest="multithreaded",
-                metavar="NUM-THREADS",
+                dest="multiprocess",
+                metavar="NUM-PROCESSES",
                 default=None,
-                help="run in multithreaded (parallel) mode: process tree sources in separate " \
-                        + "threads, with up to a maximum of NUM-THREADS parallel threads " \
+                help="run in parallel mode with up to a maximum of NUM-PROCESSES processes " \
                         + "(specify '*' to run in as many threads as there are cores on the "\
                         + "local machine)")
         #run_optgroup.add_option("-x", "--max-threads",
@@ -529,26 +529,26 @@ def main_cli():
     master_split_distribution = None
     if (support_filepaths is not None and len(support_filepaths) > 1) \
             and _MP \
-            and opts.multithreaded:
-        if opts.multithreaded is not None:
-            if opts.multithreaded == "*":
-                num_threads = multiprocessing.cpu_count()
-            elif  opts.multithreaded == "@":
-                num_threads = len(support_filepaths)
+            and opts.multiprocess:
+        if opts.multiprocess is not None:
+            if opts.multiprocess == "*":
+                num_processes = multiprocessing.cpu_count()
+            elif  opts.multiprocess == "@":
+                num_processes = len(support_filepaths)
             else:
                 try:
-                    num_threads = int(opts.multithreaded)
+                    num_processes = int(opts.multiprocess)
                 except ValueError:
-                    messenger.send_error("'%s' is not a valid number of threads (must be a positive integer)." % opts.multithreaded)
+                    messenger.send_error("'%s' is not a valid number of processes (must be a positive integer)." % opts.multiprocess)
                     sys.exit(1)
-            if num_threads <= 0:
-                messenger.send_error("Maximum number of threads set to %d: cannot run SumTrees with less than 1 thread" % num_threads)
+            if num_processes <= 0:
+                messenger.send_error("Maximum number of processes set to %d: cannot run SumTrees with less than 1 process" % num_processes)
                 sys.exit(1)
-            if num_threads == 1:
-                messenger.send_warning("Running in multithreaded mode but limited to only 1 thread: probably more efficient to run in serial mode!")
+            if num_processes == 1:
+                messenger.send_warning("Running in parallel processing mode but limited to only 1 process: probably more efficient to run in serial mode!")
 
         master_split_distribution = process_sources_parallel(
-                num_threads=num_threads,
+                num_processes=num_processes,
                 support_filepaths=support_filepaths,
                 schema=schema,
                 is_rooted=opts.rooted_trees,
@@ -556,8 +556,8 @@ def main_cli():
                 log_frequency=opts.log_frequency,
                 messenger=messenger)
     else:
-        if (_MP and opts.multithreaded is not None and len(support_filepaths) == 1):
-            messenger.send_warning("Multithreaded mode requested but only one source specified: defaulting to single-threaded mode.")
+        if (_MP and opts.multiprocess is not None and len(support_filepaths) == 1):
+            messenger.send_warning("Parallel processing mode requested but only one source specified: defaulting to single-threaded mode.")
         if opts.from_newick_stream or opts.from_nexus_stream:
             support_filepaths = None
         master_split_distribution = process_sources_serial(
