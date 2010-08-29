@@ -4,9 +4,10 @@ Release 3.6.0
 New Features
 ^^^^^^^^^^^^
 
-    - SumTrees now can can run in multithreaded (parallel) mode, with each input source tree file processed in a separate thread. The number of threads can be specified by the '-m' or '--multithreaded' flag::
+    - SumTrees now can can run in parallel mode, with each input source tree file handled in a separate process. The maximum number of parallel processes can be specified by the '-m' or '--multiprocessing' flag::
 
         $ sumtrees.py -m 4 mb.run1.t mb.run2.t mb.run3.t mb.run4.t > consensus.tre
+        $ sumtrees.py -multiprocessing=4 mb.run1.t mb.run2.t mb.run3.t mb.run4.t > consensus.tre
 
     - Tree comments now parsed and stored with trees (NEXUS and NEWICK formats), allowing for processing of annotations such as tree weights and calculated likelihoods.
 
