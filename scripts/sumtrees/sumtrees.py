@@ -122,7 +122,10 @@ class SplitCountingThread(multiprocessing.Process):
                 break
             self.send_info("Received task: '%s'." % source, wrap=False)
             fsrc = open(source, "rU")
-            for tidx, tree in enumerate(tree_source_iter(fsrc, schema=self.schema, taxon_set=self.taxon_set)):
+            for tidx, tree in enumerate(tree_source_iter(fsrc,
+                    schema=self.schema,
+                    taxon_set=self.taxon_set,
+                    as_rooted=is_rooted)):
                 if tidx >= self.tree_offset:
                     if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
                         self.send_info("(processing) '%s': tree at offset %d" % (source, tidx), wrap=False)
@@ -238,7 +241,10 @@ def process_sources_serial(
     for sidx, src in enumerate(srcs):
         name = getattr(src, "name", "<stdin>")
         messenger.send_info("Processing %d of %d: '%s'" % (sidx+1, len(srcs), name), wrap=False)
-        for tidx, tree in enumerate(tree_source_iter(src, schema=schema, taxon_set=taxon_set, is_rooted=is_rooted)):
+        for tidx, tree in enumerate(tree_source_iter(src,
+                schema=schema,
+                taxon_set=taxon_set,
+                as_rooted=is_rooted)):
             if tidx >= tree_offset:
                 if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
                     messenger.send_info("(processing) '%s': tree at offset %d" % (name, tidx), wrap=False)
