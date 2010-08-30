@@ -1430,7 +1430,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             tree_args = ""
         else:
             tree_args = ", " + tree_args
-        p.append("%s = dendropy.Tree(label=%s%s)" \
+        p.append("%s = dendropy.Tree(label=%s%s%s)" \
             % (tree_obj_name,
                label,
                oid_str,
@@ -1458,7 +1458,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         node_obj_namer = lambda x: "nd_%s" % id(x)
         for node in self.preorder_node_iter():
             for child in node.child_nodes():
-                if node is tree.seed_node:
+                if node is self.seed_node:
                     nn = "%s.seed_node" % tree_obj_name
                 else:
                     nn = node_obj_namer(node)
@@ -1478,7 +1478,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                         (node_obj_namer(child),
                          nn,
                          label,
-                         cn,
+                         ct,
                          child.edge.length,
                          oid_str))
                 if oids:
