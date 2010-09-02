@@ -327,12 +327,6 @@ While your run should complete without problems when oversubscribing the hardwar
 On some operating systems and hardware contexts, depending on the magnitude of oversubscription, this can be considerable.
 Thus it probably is a good idea to match the number of processes to the number of processors available.
 
-    ..scratch:
-        You can, of course, request fewer processes than you have processors available.
-        So, for example, on your octocore machine you might run SumTrees with only four parallel processes ("``-m 4``" or "``--multiprocessing=4``").
-        SumTrees will then not launch more than four processes.
-        However, the actual number of processors used on the machine is dependent on the operating system and context: if your machine is otherwise idle, the operating system might decide to cycle the four processes through all 8 processors equally, while if you are doing something else at the same time that is computationally-intensive, the operating system might restrict those processes to 4 processors or even less.
-
 Another issue to consider is an even distribution of workload.
 Assuming that each of your input support files have the same number of trees, then it makes sense to specify a number of processes that is a factor of the number of input files.
 So, for example, if you have 8 input files to be summarized, you will get the best performance out of SumTrees by specifying 2, 4, or 8 processes, with the actual number given by the maximum number of processors available or that you want to dedicate to this task.
