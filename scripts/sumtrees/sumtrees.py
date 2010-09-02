@@ -64,86 +64,86 @@ _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
                  "License GPLv3+: GNU GPL version 3 or later.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
                  "There is NO WARRANTY,\nto the extent permitted by law."
+if _MP:
+    class SplitCountingWorker(multiprocessing.Process):
 
-class SplitCountingWorker(multiprocessing.Process):
+        def __init__(self,
+                work_queue,
+                result_queue,
+                schema,
+                taxon_labels,
+                is_rooted,
+                tree_offset,
+                process_idx,
+                messenger,
+                messenger_lock,
+                log_frequency=1000):
+            multiprocessing.Process.__init__(self)
+            self.work_queue = work_queue
+            self.result_queue = result_queue
+            self.schema = schema
+            self.taxon_labels = list(taxon_labels)
+            self.taxon_set = dendropy.TaxonSet(self.taxon_labels)
+            self.split_distribution = treesplit.SplitDistribution(taxon_set=self.taxon_set)
+            self.split_distribution.is_rooted = is_rooted
+            self.is_rooted = is_rooted
+            self.tree_offset = tree_offset
+            self.process_idx = process_idx
+            self.messenger = messenger
+            self.messenger_lock = messenger_lock
+            self.log_frequency = log_frequency
+            self.kill_received = False
 
-    def __init__(self,
-            work_queue,
-            result_queue,
-            schema,
-            taxon_labels,
-            is_rooted,
-            tree_offset,
-            process_idx,
-            messenger,
-            messenger_lock,
-            log_frequency=1000):
-        multiprocessing.Process.__init__(self)
-        self.work_queue = work_queue
-        self.result_queue = result_queue
-        self.schema = schema
-        self.taxon_labels = list(taxon_labels)
-        self.taxon_set = dendropy.TaxonSet(self.taxon_labels)
-        self.split_distribution = treesplit.SplitDistribution(taxon_set=self.taxon_set)
-        self.split_distribution.is_rooted = is_rooted
-        self.is_rooted = is_rooted
-        self.tree_offset = tree_offset
-        self.process_idx = process_idx
-        self.messenger = messenger
-        self.messenger_lock = messenger_lock
-        self.log_frequency = log_frequency
-        self.kill_received = False
-
-    def send_message(self, msg, level, wrap=True):
-        if self.messenger is None:
-            return
-        if self.messenger.messaging_level > level or self.messenger.silent:
-            return
-        msg = "Thread %d: %s" % (self.process_idx+1, msg)
-        self.messenger_lock.acquire()
-        try:
-            self.messenger.send(msg, level=level, wrap=wrap)
-        finally:
-            self.messenger_lock.release()
-
-    def send_info(self, msg, wrap=True):
-        self.send_message(msg, ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
-
-    def send_warning(self, msg, wrap=True):
-        self.send_message(msg, ConsoleMessenger.WARNING_MESSAGING_LEVEL, wrap=wrap)
-
-    def send_error(self, msg, wrap=True):
-        self.send_message(msg, ConsoleMessenger.ERROR_MESSAGING_LEVEL, wrap=wrap)
-
-    def run(self):
-        while not self.kill_received:
+        def send_message(self, msg, level, wrap=True):
+            if self.messenger is None:
+                return
+            if self.messenger.messaging_level > level or self.messenger.silent:
+                return
+            msg = "Thread %d: %s" % (self.process_idx+1, msg)
+            self.messenger_lock.acquire()
             try:
-                source = self.work_queue.get_nowait()
-            except Queue.Empty:
-                break
-            self.send_info("Received task: '%s'." % source, wrap=False)
-            fsrc = open(source, "rU")
-            for tidx, tree in enumerate(tree_source_iter(fsrc,
-                    schema=self.schema,
-                    taxon_set=self.taxon_set,
-                    as_rooted=self.is_rooted)):
-                if tidx >= self.tree_offset:
-                    if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
-                        self.send_info("(processing) '%s': tree at offset %d" % (source, tidx), wrap=False)
-                    treesplit.encode_splits(tree)
-                    self.split_distribution.count_splits_on_tree(tree)
-                else:
-                    if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
-                        self.send_info("(processing) '%s': tree at offset %d (skipping)" % (source, tidx), wrap=False)
+                self.messenger.send(msg, level=level, wrap=wrap)
+            finally:
+                self.messenger_lock.release()
+
+        def send_info(self, msg, wrap=True):
+            self.send_message(msg, ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
+
+        def send_warning(self, msg, wrap=True):
+            self.send_message(msg, ConsoleMessenger.WARNING_MESSAGING_LEVEL, wrap=wrap)
+
+        def send_error(self, msg, wrap=True):
+            self.send_message(msg, ConsoleMessenger.ERROR_MESSAGING_LEVEL, wrap=wrap)
+
+        def run(self):
+            while not self.kill_received:
+                try:
+                    source = self.work_queue.get_nowait()
+                except Queue.Empty:
+                    break
+                self.send_info("Received task: '%s'." % source, wrap=False)
+                fsrc = open(source, "rU")
+                for tidx, tree in enumerate(tree_source_iter(fsrc,
+                        schema=self.schema,
+                        taxon_set=self.taxon_set,
+                        as_rooted=self.is_rooted)):
+                    if tidx >= self.tree_offset:
+                        if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
+                            self.send_info("(processing) '%s': tree at offset %d" % (source, tidx), wrap=False)
+                        treesplit.encode_splits(tree)
+                        self.split_distribution.count_splits_on_tree(tree)
+                    else:
+                        if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
+                            self.send_info("(processing) '%s': tree at offset %d (skipping)" % (source, tidx), wrap=False)
+                    if self.kill_received:
+                        break
                 if self.kill_received:
                     break
+                self.send_info("Completed task: '%s'." % (source), wrap=False)
             if self.kill_received:
-                break
-            self.send_info("Completed task: '%s'." % (source), wrap=False)
-        if self.kill_received:
-            self.send_warning("Terminating in response to kill request.")
-        else:
-            self.result_queue.put(self.split_distribution)
+                self.send_warning("Terminating in response to kill request.")
+            else:
+                self.result_queue.put(self.split_distribution)
 
 def discover_taxa(treefile, schema):
     """
