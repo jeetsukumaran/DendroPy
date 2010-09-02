@@ -229,8 +229,7 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
             pass
         except ValueError:
             pass
-        finally:
-            stream_tokenizer.tree_weight_comment = None
+        stream_tokenizer.tree_weight_comment = None
 
     if encode_splits:
         if len(taxon_set) == 0:
