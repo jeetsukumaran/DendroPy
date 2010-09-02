@@ -5,6 +5,7 @@ Bug Fixes
 ^^^^^^^^^
 
     - SumTrees now works (in serial mode) under older Python versions (i.e. < 2.6).
+    - Fixes for compatibility with Python 2.4.x.
 
 Release 3.6.0
 -------------

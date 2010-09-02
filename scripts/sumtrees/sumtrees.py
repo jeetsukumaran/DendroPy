@@ -709,11 +709,4 @@ def main_cli():
     messenger.silent = True
 
 if __name__ == '__main__':
-    try:
-        main_cli()
-    except (KeyboardInterrupt, EOFError), e:
-        sys.stderr.write("SumTrees: Terminating (user-abort).\n")
-        sys.exit(1)
-    except Exception, e:
-        sys.stderr.write("SumTrees: Error encountered: %s : %s.\n" % (str(type(e)), str(e)))
-        raise # reraise exception, with correct traceback
+    main_cli()
