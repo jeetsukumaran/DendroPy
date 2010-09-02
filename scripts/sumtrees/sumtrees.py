@@ -74,7 +74,7 @@ class SplitCountingWorker(multiprocessing.Process):
             taxon_labels,
             is_rooted,
             tree_offset,
-            thread_idx,
+            process_idx,
             messenger,
             messenger_lock,
             log_frequency=1000):
@@ -88,7 +88,7 @@ class SplitCountingWorker(multiprocessing.Process):
         self.split_distribution.is_rooted = is_rooted
         self.is_rooted = is_rooted
         self.tree_offset = tree_offset
-        self.thread_idx = thread_idx
+        self.process_idx = process_idx
         self.messenger = messenger
         self.messenger_lock = messenger_lock
         self.log_frequency = log_frequency
@@ -99,7 +99,7 @@ class SplitCountingWorker(multiprocessing.Process):
             return
         if self.messenger.messaging_level > level or self.messenger.silent:
             return
-        msg = "Thread %d: %s" % (self.thread_idx+1, msg)
+        msg = "Thread %d: %s" % (self.process_idx+1, msg)
         self.messenger_lock.acquire()
         try:
             self.messenger.send(msg, level=level, wrap=wrap)
@@ -191,7 +191,7 @@ def process_sources_parallel(
     for f in support_filepaths:
         work_queue.put(f)
 
-    # launch threads
+    # launch processes
     messenger.send_info("Launching worker processes ...")
     result_queue = multiprocessing.Queue()
     messenger_lock = multiprocessing.Lock()
@@ -202,20 +202,20 @@ def process_sources_parallel(
                 taxon_labels=taxon_labels,
                 is_rooted=is_rooted,
                 tree_offset=tree_offset,
-                thread_idx=idx,
+                process_idx=idx,
                 messenger=messenger,
                 messenger_lock=messenger_lock,
                 log_frequency=log_frequency)
         sct.start()
 
     # collate results
-    thread_result_count = 0
+    result_count = 0
     split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
     split_distribution.is_rooted = is_rooted
-    while thread_result_count < num_processes:
+    while result_count < num_processes:
         result = result_queue.get()
         split_distribution.update(result)
-        thread_result_count += 1
+        result_count += 1
     messenger.send_info("Recovered results from all worker processes.")
     return split_distribution
 
@@ -230,7 +230,7 @@ def process_sources_serial(
     Returns a SplitDistribution object summarizing all trees found in
     `support_filepaths`.
     """
-    messenger.send_info("Running in single-threaded mode.")
+    messenger.send_info("Running in serial mode.")
     taxon_set = dendropy.TaxonSet()
     split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
     if support_filepaths is None or len(support_filepaths) == 0:
@@ -404,12 +404,6 @@ def main_cli():
                 help="run in parallel mode with up to a maximum of NUM-PROCESSES processes " \
                         + "(specify '*' to run in as many processes as there are cores on the "\
                         + "local machine)")
-        #run_optgroup.add_option("-x", "--max-threads",
-        #        dest="max_threads",
-        #        metavar="MAX-THREADS",
-        #        type="int",
-        #        default=None,
-        #        help="limit number of threads launched to MAX-THREADS (implies '-m'/'--multithreaded')")
 
     run_optgroup.add_option("-g", "--log-frequency",
             type="int",
@@ -557,7 +551,7 @@ def main_cli():
                 messenger=messenger)
     else:
         if (_MP and opts.multiprocess is not None and len(support_filepaths) == 1):
-            messenger.send_warning("Parallel processing mode requested but only one source specified: defaulting to single-threaded mode.")
+            messenger.send_warning("Parallel processing mode requested but only one source specified: defaulting to serial mode.")
         if opts.from_newick_stream or opts.from_nexus_stream:
             support_filepaths = None
         master_split_distribution = process_sources_serial(
