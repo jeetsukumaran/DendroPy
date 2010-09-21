@@ -1058,8 +1058,13 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         old_par = nd.parent_node
         if old_par is None:
             return
+        full_encode = False
         if splits:
-            taxa_mask = self.seed_node.edge.split_bitmask
+            try:
+                taxa_mask = self.seed_node.edge.split_bitmask
+            except:
+                full_encode = True
+                splits = False
         to_edge_dict = None
         if splits:
             to_edge_dict = getattr(self, "split_edges", None)
@@ -1100,6 +1105,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         old_par.remove_child(nd)
         nd.add_child(old_par, edge_length=e.length)
         self.seed_node = nd
+        if full_encode:
+            treesplit.encode_splits(self, delete_outdegree_one=delete_deg_two)
 
     def to_outgroup_position(self, nd, splits=False, delete_deg_two=True):
         """Reroots the tree at the parend of `nd` and makes `nd` the first child
