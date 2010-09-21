@@ -51,6 +51,32 @@ def binomial_coefficient(population, sample):
         denominator *= (i - s)
     return numerator/denominator
 
+def binomial_rv(n, p, rng=None):
+    """
+    Returns the number of successes in a sample of ``n`` trials, with the
+    probability of success given by ``p``.  Using the BINV algorithm, as given
+    by Kachitvicyanukul, V. and B. Schmeiser. 1988. Binomial random variate
+    generation. Communications of the ACM 31: 216-222.
+    Note: *NOT* the best algorithm according to the authors of the paper (who
+    present their own as an alternative). Apart from rounding errors
+    accumulating in the loop, it may also take a long time to return a value as
+    ``n`` * ``p`` become large or even moderate (e.g., n=380 and p=0.8 still).
+    """
+    if rng is None:
+        rng = GLOBAL_RNG
+    q = 1 - p
+    s = float(p) / q
+    a = (n + 1) * s
+    r = q ** n
+    x = 0
+    u = rng.random()
+    while True:
+        if u <= r:
+            return x
+        u = u - r
+        x = x + 1
+        r = (float(a)/x - s) * r
+
 def exp_pdf(value, rate):
     """
     Returns the probability density for an exponential distribution
