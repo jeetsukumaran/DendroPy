@@ -66,6 +66,7 @@ class NexusWriter(iosys.DataWriter):
         self.is_write_block_titles = kwargs.get("block_titles", None)
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
         self.quote_underscores = kwargs.get('quote_underscores', True)
+        self.nhx_key_to_func = kwargs.get("nhx_key_to_func_dict")
         self.comment = kwargs.get("comment", [])
 
     def write(self, stream):
@@ -156,7 +157,8 @@ class NexusWriter(iosys.DataWriter):
         newick_writer = newick.NewickWriter(
                 edge_lengths=self.is_write_edge_lengths,
                 internal_labels=self.is_write_internal_labels,
-                preserve_spaces=self.preserve_spaces)
+                preserve_spaces=self.preserve_spaces,
+                nhx_key_to_func_dict=self.nhx_key_to_func)
         block.append('BEGIN TREES;')
         if self._link_blocks():
             title = self.compose_block_title(tree_list)

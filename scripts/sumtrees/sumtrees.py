@@ -298,7 +298,11 @@ def main_cli():
                     + "of the given branch across all trees considered; this option forces branch " \
                     + "lengths to be unspecified (obviously, this is only applicable if you do not ask the support to be mapped as "  \
                     + "branch lengths)")
-
+    target_tree_optgroup.add_option("--branch-length-variance",
+            action="store_true",
+            dest="branch_length_var",
+            default=False,
+            help="if using a consensus tree as the target tree, this option forces the sample variance of the branch lengths to be calculated and added to the tree description")
     source_tree_optgroup = OptionGroup(parser, "Source Tree Options")
     parser.add_option_group(source_tree_optgroup)
     source_tree_optgroup.add_option("--rooted",
@@ -634,7 +638,8 @@ def main_cli():
             min_freq = opts.min_clade_freq
         tt_trees.append(tsum.tree_from_splits(master_split_distribution,
                                               min_freq=min_freq,
-                                              include_edge_lengths=not opts.no_branch_lengths))
+                                              include_edge_lengths=not opts.no_branch_lengths,  
+                                              include_edge_length_var=opts.branch_length_var))
         report = []
         report.append("Consensus tree (%f clade frequency threshold) constructed from splits." % min_freq)
         report.append(support_indication + ".")
@@ -657,8 +662,17 @@ def main_cli():
 
     output_dataset = dendropy.DataSet(dendropy.TreeList(tt_trees, taxon_set=master_taxon_set))
 
+    if opts.branch_length_var:
+        def get_length_var(x):
+            try:
+                return x.length_var
+            except:
+                return None
+        nhx_key_to_func = {"VAR" : get_length_var}
+    else:
+        nhx_key_to_func = None
     if opts.to_newick_format:
-        output_dataset.write(output_dest, "newick")
+        output_dataset.write(output_dest, "newick", nhx_key_to_func_dict=nhx_key_to_func)
     else:
         if opts.include_taxa_block:
             simple = False
@@ -687,7 +701,7 @@ def main_cli():
         if opts.additional_comments:
             comment.append("\n")
             comment.append(opts.additional_comments)
-        output_dataset.write(output_dest, "nexus", simple=simple, comment=comment)
+        output_dataset.write(output_dest, "nexus", simple=simple, comment=comment, nhx_key_to_func_dict=nhx_key_to_func)
 
     if split_edges_dest:
         for split in master_split_distribution.splits:

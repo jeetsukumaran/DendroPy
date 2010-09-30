@@ -181,6 +181,7 @@ class NewickWriter(iosys.DataWriter):
             - `preserve_spaces` : spaces not mapped to underscores in labels [False]
             - `quote_underscores` : labels with underscores are quoted, for "hard" underscores [True]
             - `store_tree_weights` : tree weights are stored
+            - `nhx_key_to_func_dict` : a dict of NHX "key" to a function that takes an edge and returns the string that is the value of the NHX key (or None to omit that key for that edge)
         """
         iosys.DataWriter.__init__(self, **kwargs)
         self.edge_lengths = kwargs.get("edge_lengths", True)
@@ -189,6 +190,7 @@ class NewickWriter(iosys.DataWriter):
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
         self.quote_underscores = kwargs.get('quote_underscores', True)
         self.store_tree_weights = kwargs.get("store_tree_weights", False)
+        self.nhx_key_to_func = kwargs.get("nhx_key_to_func_dict")
 
     def write(self, stream):
         """
@@ -262,9 +264,15 @@ class NewickWriter(iosys.DataWriter):
                 statement = statement + self.choose_display_tag(node)
             if node.edge and node.edge.length != None and self.edge_lengths:
                 statement =  "%s:%s" % (statement, node.edge.length)
-            return statement
         else:
             statement = self.choose_display_tag(node)
             if node.edge and node.edge.length != None and self.edge_lengths:
                 statement =  "%s:%s" % (statement, node.edge.length)
-            return statement
+        if self.nhx_key_to_func:
+            nhx_to_print = []
+            for k, v in self.nhx_key_to_func.items():
+                r = v(node.edge)
+                if r is not None:
+                    nhx_to_print.append("%s=%s" % (k, str(r)))
+                    statement = statement + ('[&&NHX:%s]' % ':'.join(nhx_to_print))
+        return statement

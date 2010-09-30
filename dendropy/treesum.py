@@ -42,6 +42,7 @@ from dendropy.treesplit import encode_splits, count_bits, lowest_bit_only
 from dendropy.treemanip import collapse_clade, collapse_edge
 from dendropy.dataobject.tree import format_split
 from dendropy.utility.containers import NormalizedBitmaskDict
+from dendropy.utility.probability import calc_mean_and_sample_variance
 
 class TreeSummarizer(object):
     "Summarizes a distribution of trees."
@@ -109,8 +110,14 @@ class TreeSummarizer(object):
     def tree_from_splits(self,
                          split_distribution,
                          min_freq=0.5,
-                         include_edge_lengths=True):
-        "Returns a consensus tree from splits in `split_distribution`."
+                         include_edge_lengths=True,
+                         include_edge_length_var=False):
+        """Returns a consensus tree from splits in `split_distribution`.
+        
+        If include_edge_length_var is True, then the sample variance of the
+            edge length will also be calculated and will be stored as
+            a length_var attribute.
+        """
         leaf_to_root_search = True
 
         taxon_set = split_distribution.taxon_set
@@ -179,9 +186,14 @@ class TreeSummarizer(object):
                 if include_edge_lengths:
                     elen = split_distribution.split_edge_lengths[split_in_dict]
                     if len(elen) > 0:
-                        new_edge.length = float(sum(elen)) / len(elen)
+                        mean, var = calc_mean_and_sample_variance(elen)
+                        new_edge.length = mean
+                        if include_edge_length_var:
+                            new_edge.length_var = var
                     else:
                         new_edge.length = None
+                        if include_edge_length_var:
+                            new_edge.length_var = None
                 for child in new_node_children:
                     parent_node.remove_child(child)
                     new_node.add_child(child)
@@ -198,9 +210,14 @@ class TreeSummarizer(object):
             if include_edge_lengths:
                 elen = split_distribution.split_edge_lengths.get(split, [0.0])
                 if len(elen) > 0:
-                    node.edge.length = float(sum(elen)) / len(elen)
+                    mean, var = calc_mean_and_sample_variance(elen)
+                    node.edge.length = mean
+                    if include_edge_length_var:
+                        node.edge.length_var = var
                 else:
                     node.edge.length = None
+                    if include_edge_length_var:
+                        node.edge.length_var = None
         return con_tree
 
     def count_splits_on_trees(self, tree_iterator, split_distribution=None, trees_splits_encoded=False):
