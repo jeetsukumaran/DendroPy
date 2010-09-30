@@ -59,7 +59,7 @@ class TestLevel:
         if l == "SLOW":
             return SLOW
         if l == "EXHAUSTIVE":
-            return TEXHAUSTIVE
+            return EXHAUSTIVE
         raise ValueError("Test run level %s unrecognized" % l)
 
     name_to_int = staticmethod(name_to_int)
