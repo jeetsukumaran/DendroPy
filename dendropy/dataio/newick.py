@@ -274,5 +274,6 @@ class NewickWriter(iosys.DataWriter):
                 r = v(node.edge)
                 if r is not None:
                     nhx_to_print.append("%s=%s" % (k, str(r)))
-                    statement = statement + ('[&&NHX:%s]' % ':'.join(nhx_to_print))
+            if nhx_to_print:
+                statement = statement + ('[&&NHX:%s]' % ':'.join(nhx_to_print))
         return statement
