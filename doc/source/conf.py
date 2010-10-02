@@ -201,7 +201,7 @@ else:
 
     }
 
-#html_style = "dendropy.css"
+html_style = "dendropy.css"
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []

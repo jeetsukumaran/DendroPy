@@ -1,24 +1,20 @@
 #! /usr/bin/env python
 
-###############################################################################
+##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2009 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  All rights reserved.
 ##
-##  This program is free software; you can redistribute it and/or modify
-##  it under the terms of the GNU General Public License as published by
-##  the Free Software Foundation; either version 3 of the License, or
-##  (at your option) any later version.
+##  See "LICENSE.txt" for terms and conditions of usage.
 ##
-##  This program is distributed in the hope that it will be useful,
-##  but WITHOUT ANY WARRANTY; without even the implied warranty of
-##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##  GNU General Public License for more details.
+##  If you use this work or any portion thereof in published work,
+##  please cite it as:
 ##
-##  You should have received a copy of the GNU General Public License along
-##  with this program. If not, see <http://www.gnu.org/licenses/>.
+##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library
+##     for phylogenetic computing. Bioinformatics 26: 1569-1571.
 ##
-###############################################################################
+##############################################################################
 
 """
 Readers/writers for BEAST data.
