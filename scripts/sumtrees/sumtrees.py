@@ -1,24 +1,20 @@
 #! /usr/bin/env python
 
-############################################################################
-##  sumtrees.py
+##############################################################################
+##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2008 Jeet Sukumaran.
+##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  All rights reserved.
 ##
-##  This program is free software; you can redistribute it and/or modify
-##  it under the terms of the GNU General Public License as published by
-##  the Free Software Foundation; either version 3 of the License, or
-##  (at your option) any later version.
+##  See "LICENSE.txt" for terms and conditions of usage.
 ##
-##  This program is distributed in the hope that it will be useful,
-##  but WITHOUT ANY WARRANTY; without even the implied warranty of
-##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##  GNU General Public License for more details.
+##  If you use this work or any portion thereof in published work,
+##  please cite it as:
 ##
-##  You should have received a copy of the GNU General Public License along
-##  with this program. If not, see <http://www.gnu.org/licenses/>.
+##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library
+##     for phylogenetic computing. Bioinformatics 26: 1569-1571.
 ##
-############################################################################
+##############################################################################
 
 """
 CLI wrapper for tree summarization.
@@ -56,8 +52,8 @@ from dendropy.utility.cli import confirm_overwrite, show_splash
 
 _program_name = "SumTrees"
 _program_subtitle = "Phylogenetic Tree Split Support Summarization"
-_program_date = "Aug 22 2010"
-_program_version = "Version 3.0.0 (%s)" % _program_date
+_program_date = "Oct 02 2010"
+_program_version = "Version 3.1.0 (%s)" % _program_date
 _program_author = "Jeet Sukumaran and Mark T. Holder"
 _program_contact = "jeetsukumaran@gmail.com"
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
@@ -638,7 +634,7 @@ def main_cli():
             min_freq = opts.min_clade_freq
         tt_trees.append(tsum.tree_from_splits(master_split_distribution,
                                               min_freq=min_freq,
-                                              include_edge_lengths=not opts.no_branch_lengths,  
+                                              include_edge_lengths=not opts.no_branch_lengths,
                                               include_edge_length_var=opts.branch_length_var))
         report = []
         report.append("Consensus tree (%f clade frequency threshold) constructed from splits." % min_freq)
