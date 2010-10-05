@@ -114,11 +114,18 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
     elif taxon_set is None:
         taxon_set = dataobject.TaxonSet()
     gsa_ntax = kwargs.get('gsa_ntax')
+    terminate_at_full_tree = False
     if target_num_taxa is None:
         if gsa_ntax is not None:
             raise ValueError("When 'gsa_ntax' is used, either 'ntax' or 'taxon_set' must be used")
         if max_time is None:
             raise ValueError("At least one of the following must be specified: 'ntax', 'taxon_set', or 'max_time'")
+    else:
+        if gsa_ntax is None:
+            terminate_at_full_tree = True
+            gsa_ntax = 1 + target_num_taxa
+        elif gsa_ntax < target_num_taxa:
+            raise ValueError("gsa_ntax must be greater than target_num_taxa")
     repeat_until_success = kwargs.get('repeat_until_success', False)
     rng = kwargs.get('rng', GLOBAL_RNG)
 
@@ -147,20 +154,14 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
     #   targetted number of taxa.
     
     targetted_time_slices = []
-
+    extinct_tips = []
     while True:
-        if target_num_taxa is None:
+        if gsa_ntax is None:
             assert (max_time is not None)
             if total_time >= max_time:
                 break
-        else:
-            _LOG.debug("curr # leaves = %d, target_num_taxa = %d" % (curr_num_leaves, target_num_taxa))
-            if gsa_ntax is None:
-                if curr_num_leaves >= target_num_taxa:
-                    break
-            else:
-                if curr_num_leaves >= gsa_ntax:
-                    break
+        elif curr_num_leaves >= gsa_ntax:
+            break
 
         # get vector of birth/death probabilities, and
         # associate with nodes/events
@@ -181,14 +182,16 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
 
         # waiting time based on above probability
         waiting_time = rng.expovariate(rate_of_any_event)
-        _LOG.debug("Drew waiting time of %f from hazard parameter of %f" % (waiting_time, rate_of_any_event))
+        #_LOG.debug("Drew waiting time of %f from hazard parameter of %f" % (waiting_time, rate_of_any_event))
 
-        if (gsa_ntax is not None) and (gsa_ntax == target_num_taxa):
+        if (gsa_ntax is not None) and (curr_num_leaves == target_num_taxa):
             edge_and_start_length = []
             for nd in leaf_nodes:
                 e = nd.edge
                 edge_and_start_length.append((e, e.length))
             targetted_time_slices.append((waiting_time, edge_and_start_length))
+            if terminate_at_full_tree:
+                break
 
         # add waiting time to nodes
         for nd in leaf_nodes:
@@ -226,7 +229,10 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
                 curr_num_leaves += 2
             else:
                 if nd is not tree.seed_node:
-                    treemanip.prune_subtree(tree, nd)
+                    extinct_tips.append(nd)
+                    if curr_num_leaves == 1:
+                        tree.seed_node = leaf_nodes[0]
+                        tree.seed_node.parent_node = None
                 elif not repeat_until_success:
                     # all lineages are extinct: raise exception
                     if (gsa_ntax is None) or (len(targetted_time_slices) == 0):
@@ -238,32 +244,14 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
                         nd.length = None
                     else:
                         break
-    if gsa_ntax is None:
-        # If termination condition specified by ntax or taxon_set, then the last
-        # split will have a daughter edges of length == 0;
-        # so we continue growing the edges until the next birth/death event *or*
-        # the max time is reached
-        if max_time is None or total_time < max_time:
-            for nd in tree.leaf_nodes():
-                if not hasattr(nd, 'birth_rate'):
-                    nd.birth_rate = birth_rate
-                if not hasattr(nd, 'death_rate'):
-                    nd.death_rate = death_rate
-                event_rates.append(nd.birth_rate)
-                event_rates.append(nd.death_rate)
-                waiting_time = rng.expovariate(sum(event_rates))
-                if max_time is None or (waiting_time + total_time) < max_time:
-                    remaining_time = waiting_time
-                else:
-                    remaining_time = total_time - max_time
-    
-            for nd in tree.leaf_nodes():
-                nd.edge.length += remaining_time
-    else:
+
+    if gsa_ntax is not None:
+        _LOG.debug(str(targetted_time_slices))
         total_duration_at_target_n_tax = 0.0
         for i in targetted_time_slices:
             total_duration_at_target_n_tax += i[0]
         r = rng.random()*total_duration_at_target_n_tax
+        _LOG.debug("Selected rng = %f out of (0, %f)" % (r, total_duration_at_target_n_tax))
         selected_slice = None
         for i in targetted_time_slices:
             r -= i[0]
@@ -274,13 +262,15 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
         last_waiting_time = selected_slice[0]
         for e, prev_length in edges_at_slice:
             daughter_nd = e.head_node
-            for nd in daughter_nd.child_nodes:
-                treemanip.prune_subtree(tree, nd)
+            for nd in daughter_nd.child_nodes():
+                treemanip.prune_subtree(tree, nd, suppress_outdegree_one=False)
             e.length = prev_length + last_waiting_time
-        
+    
+
     if kwargs.get("assign_taxa", True):
         tree.randomly_assign_taxa(create_required_taxa=True, rng=rng)
-
+    for nd in extinct_tips:
+        treemanip.prune_subtree(tree, nd)
     # return
     return tree
 
