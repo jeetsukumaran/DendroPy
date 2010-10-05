@@ -31,6 +31,16 @@ from dendropy import treesim
 
 _LOG = messaging.get_logger(__name__)
 
+class BirthDeathTreeTest(unittest.TestCase):
+    def testYule(self):
+        """PureCoalescentTreeTest -- tree generation without checking [TODO: checks]"""
+        for num_leaves in range(2, 20):
+            t = treesim.birth_death(birth_rate=1.0, death_rate=0.0, ntax=num_leaves)
+            self.assertTrue(t._debug_tree_is_valid())
+            self.assertEquals(num_leaves, len(t.leaf_nodes()))
+
+    
+
 class TruncatedCoalescentTreeTest(unittest.TestCase):
 
     def get_species_tree(self, ntax=10):
