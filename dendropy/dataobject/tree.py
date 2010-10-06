@@ -1136,6 +1136,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 else:
                     assert nd is self.seed_node
                     self.seed_node = children[0]
+                    self.seed_node.parent_node = None
 
     def collapse_unweighted_edges(self, threshold=0.0000001):
         """
@@ -2604,13 +2605,20 @@ class AsciiTreePlot(object):
     def draw(self, tree, dest):
         dest.write(self.compose(tree))
 
+    def get_label_for_node(self, nd):
+        if nd.taxon and nd.taxon.label:
+            return nd.taxon.label
+        if self.show_internal_node_labels: #@TODO: we should have a separate setting for labeling nodes with an id, but thus far when I want to see this, I want internal_nodes_labels too...
+            return '@' + str(id(nd))
+        return '@'
+        
     def compose(self, tree):
         self.reset()
         if self.display_width is None:
             display_width = termutils.terminal_width() - 1
         else:
             display_width = self.display_width
-        max_label_len = max([len(str(i.taxon)) for i in tree.leaf_iter()])
+        max_label_len = max([len(self.get_label_for_node(i)) for i in tree.leaf_iter()])
         if max_label_len <= 0:
             max_label_len = 0
         #effective_display_width = display_width - max_label_len - len(tree.internal_nodes) - 1
@@ -2681,24 +2689,21 @@ class AsciiTreePlot(object):
                     self.grid[y][self.node_col[node]] = '|'
             label = []
             if self.show_internal_node_labels or self.show_internal_node_labels:
-                pass
-#                if self.show_internal_node_labels and node.taxon.label:
-#                    draw_label(node.taxon.label, self.grid, self.node_row[node], self.node_col[node]+1)
-#                if self.show_internal_node_labels and node.depth != None:
-#                    label = "%0.4f" % node.depth
-#                    if self.node_row[node] + 1 >= len(self.grid):
-#                        y = self.node_row[node]
-#                    else:
-#                        y = self.node_row[node] + 1
-#                    draw_label(label, self.grid, y, self.node_col[node] - len(label) - 1)
+                label = self.get_label_for_node(node)
+                self.draw_internal_text(label, self.node_row[node], self.node_col[node])
             else:
                 self.grid[self.node_row[node]][self.node_col[node]]='+'
         else:
-            if node.taxon and node.taxon.label:
-                label = node.taxon.label
-            else:
-                label = '@'
+            label = self.get_label_for_node(node)
             self.draw_label(label, self.node_row[node], self.node_col[node]+1)
+
+    def draw_internal_text(self, label, r, c):
+        row = self.grid[r]
+        try:
+            for n, letter in enumerate(label):
+                row[c + n] = letter
+        except:
+            pass
 
 ###############################################################################
 ## NodeRelationship

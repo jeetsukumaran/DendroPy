@@ -28,28 +28,39 @@ import random
 from dendropy.utility import messaging
 import dendropy
 from dendropy import treesim
-
+from dendropy.test.support.datagen import RepeatedRandom
 _LOG = messaging.get_logger(__name__)
-
 class BirthDeathTreeTest(unittest.TestCase):
+    def testGSABD(self):
+        """test that the birth-death process produces the correct number of tips with GSA."""
+        _RNG = RepeatedRandom()
+        for num_leaves in range(2, 15):
+            _LOG.debug("Generating tree with %d leaves" % num_leaves)
+            t = treesim.birth_death(birth_rate=1.0, death_rate=0.2, ntax=num_leaves, gsa_ntax=3*num_leaves, rng=_RNG)
+            self.assertTrue(t._debug_tree_is_valid())
+            self.assertEquals(num_leaves, len(t.leaf_nodes()))
+
     def testYule(self):
         """test that the pure-birth process produces the correct number of tips."""
+        _RNG = RepeatedRandom()
         for num_leaves in range(2, 20):
-            t = treesim.birth_death(birth_rate=1.0, death_rate=0.0, ntax=num_leaves)
+            t = treesim.birth_death(birth_rate=1.0, death_rate=0.0, ntax=num_leaves, rng=_RNG)
             self.assertTrue(t._debug_tree_is_valid())
             self.assertEquals(num_leaves, len(t.leaf_nodes()))
 
     def testGSA(self):
-        """test that the pure-birth process produces the correct number of tips."""
+        """test that the pure-birth process produces the correct number of tips with GSA."""
+        _RNG = RepeatedRandom()
         for num_leaves in range(2, 20):
-            t = treesim.birth_death(birth_rate=1.0, death_rate=0.0, ntax=num_leaves, gsa_ntax=4*num_leaves)
+            t = treesim.birth_death(birth_rate=1.0, death_rate=0.0, ntax=num_leaves, gsa_ntax=4*num_leaves, rng=_RNG)
             self.assertTrue(t._debug_tree_is_valid())
             self.assertEquals(num_leaves, len(t.leaf_nodes()))
 
     def testBDTree(self):
         """PureCoalescentTreeTest -- tree generation without checking [TODO: checks]"""
+        _RNG = RepeatedRandom()
         for num_leaves in range(2, 20):
-            t = treesim.birth_death(birth_rate=1.0, death_rate=0.0, ntax=num_leaves)
+            t = treesim.birth_death(birth_rate=1.0, death_rate=0.2, ntax=num_leaves, rng=_RNG)
             self.assertTrue(t._debug_tree_is_valid())
             self.assertEquals(num_leaves, len(t.leaf_nodes()))
 
@@ -58,6 +69,7 @@ class BirthDeathTreeTest(unittest.TestCase):
 class TruncatedCoalescentTreeTest(unittest.TestCase):
 
     def get_species_tree(self, ntax=10):
+        _RNG = RepeatedRandom()
         ages = [random.randint(1000,10000) for age in range(ntax)]
         ages.sort()
         pop_sizes = [random.randint(1000,10000) for pop in range(2*ntax+1)]
@@ -65,7 +77,8 @@ class TruncatedCoalescentTreeTest(unittest.TestCase):
         species_tree = treesim.pop_gen_tree(taxon_set=taxon_set,
                                                  ages=ages,
                                                  num_genes=4,
-                                                 pop_sizes=pop_sizes)
+                                                 pop_sizes=pop_sizes,
+                                                 rng=_RNG)
         ages2 = []
         for node in species_tree.postorder_node_iter():
             distance_from_tip = node.distance_from_tip()
@@ -93,7 +106,8 @@ class PureCoalescentTreeTest(unittest.TestCase):
 
     def runTest(self):
         """PureCoalescentTreeTest -- tree generation without checking [TODO: checks]"""
-        t = treesim.pure_kingman(dendropy.new_taxon_set(100))
+        _RNG = RepeatedRandom()
+        t = treesim.pure_kingman(dendropy.new_taxon_set(100), rng=_RNG)
         assert t._debug_tree_is_valid()
 
 if __name__ == "__main__":

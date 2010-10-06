@@ -96,8 +96,8 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
     False.
 
     Under some conditions, it is possible for all lineages on a tree to go extinct.
-    In this case, if the keyword argument `repeat_until_success` is `True`, then a new
-    branching process is initiated.
+    In this case, if the keyword argument `repeat_until_success` is `True` (the 
+    default), then a new branching process is initiated.
     If `False` (default), then a TreeSimTotalExtinctionException is raised.
 
     A Random() object or equivalent can be passed using the `rng` keyword;
@@ -126,7 +126,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
             gsa_ntax = 1 + target_num_taxa
         elif gsa_ntax < target_num_taxa:
             raise ValueError("gsa_ntax must be greater than target_num_taxa")
-    repeat_until_success = kwargs.get('repeat_until_success', False)
+    repeat_until_success = kwargs.get('repeat_until_success', True)
     rng = kwargs.get('rng', GLOBAL_RNG)
 
     # initialize tree
@@ -143,6 +143,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
 
     # grow tree
     leaf_nodes = tree.leaf_nodes()
+    #_LOG.debug("Will generate a tree with no more than %s leaves to get a tree of %s leaves" % (str(gsa_ntax), str(target_num_taxa)))
     curr_num_leaves = len(leaf_nodes)
     total_time = 0
     # for the GSA simulations targetted_time_slices is a list of tuple
@@ -181,6 +182,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
         rate_of_any_event = sum(event_rates)
 
         # waiting time based on above probability
+        #_LOG.debug("rate_of_any_event = %f" % (rate_of_any_event))
         waiting_time = rng.expovariate(rate_of_any_event)
         #_LOG.debug("Drew waiting time of %f from hazard parameter of %f" % (waiting_time, rate_of_any_event))
 
@@ -190,6 +192,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
                 e = nd.edge
                 edge_and_start_length.append((e, e.length))
             targetted_time_slices.append((waiting_time, edge_and_start_length))
+            #_LOG.debug("Recording slice with %d edges" % len(edge_and_start_length))
             if terminate_at_full_tree:
                 break
 
@@ -199,9 +202,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
                 nd.edge.length += waiting_time
             except TypeError:
                 nd.edge.length = waiting_time
-                
-            
-            
+        #_LOG.debug("Next waiting_time = %f" % waiting_time)
         total_time += waiting_time
         
         # if event occurs within time constraints
@@ -212,10 +213,11 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
                 event_rates[i] = event_rates[i]/rate_of_any_event
 
             # select node/event and process
-            nd, birth_event = probability.weighted_choice(event_nodes, event_rates)
+            nd, birth_event = probability.weighted_choice(event_nodes, event_rates, rng=rng)
             leaf_nodes.remove(nd)
             curr_num_leaves -= 1
             if birth_event:
+                #_LOG.debug("Speciation")
                 c1 = nd.new_child()
                 c2 = nd.new_child()
                 c1.edge.length = 0
@@ -228,49 +230,87 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
                 leaf_nodes.append(c2)
                 curr_num_leaves += 2
             else:
-                if nd is not tree.seed_node:
+                #_LOG.debug("Extinction")
+                if curr_num_leaves > 0:
+                    #_LOG.debug("Will delete " + str(id(nd)) + " with parent = " + str(id(nd.parent_node)))
                     extinct_tips.append(nd)
-                    if curr_num_leaves == 1:
-                        tree.seed_node = leaf_nodes[0]
-                        tree.seed_node.parent_node = None
-                elif not repeat_until_success:
-                    # all lineages are extinct: raise exception
-                    if (gsa_ntax is None) or (len(targetted_time_slices) == 0):
-                        raise TreeSimTotalExtinctionException()
                 else:
-                    # all lineages are extinct: repeat
-                    if (gsa_ntax is None) or (len(targetted_time_slices) == 0):
-                        total_time = 0
-                        nd.length = None
-                    else:
-                        break
-
+                    if (gsa_ntax is not None):
+                        if (len(targetted_time_slices) > 0):
+                            break
+                    if not repeat_until_success:
+                        raise TreeSimTotalExtinctionException()
+                    # We are going to basically restart the simulation because the tree has gone extinct (without reaching the specified ntax)
+                    leaf_nodes = [tree.seed_node]
+                    curr_num_leaves = 1
+                    for nd in tree.seed_node.child_nodes():
+                        treemanip.prune_subtree(tree, nd, suppress_outdegree_one=False)
+                    extinct_tips = []
+                    total_time = 0
+            assert(curr_num_leaves == len(leaf_nodes))
+            #_LOG.debug("Current tree \n%s" % (tree.as_ascii_plot(plot_metric='length', show_internal_node_labels=True)))
+    #tree._debug_tree_is_valid()
+    #_LOG.debug("Terminated with %d leaves (%d, %d  according to len(leaf_nodes))" % (curr_num_leaves, len(leaf_nodes), len(tree.leaf_nodes())))
     if gsa_ntax is not None:
-        _LOG.debug(str(targetted_time_slices))
         total_duration_at_target_n_tax = 0.0
         for i in targetted_time_slices:
             total_duration_at_target_n_tax += i[0]
         r = rng.random()*total_duration_at_target_n_tax
-        _LOG.debug("Selected rng = %f out of (0, %f)" % (r, total_duration_at_target_n_tax))
+        #_LOG.debug("Selected rng = %f out of (0, %f)" % (r, total_duration_at_target_n_tax))
         selected_slice = None
-        for i in targetted_time_slices:
+        for n, i in enumerate(targetted_time_slices):
             r -= i[0]
             if r < 0.0:
                 selected_slice = i
         assert(selected_slice is not None)
+        #_LOG.debug("Selected time slice index %d" % n)
         edges_at_slice = selected_slice[1]
         last_waiting_time = selected_slice[0]
         for e, prev_length in edges_at_slice:
             daughter_nd = e.head_node
             for nd in daughter_nd.child_nodes():
                 treemanip.prune_subtree(tree, nd, suppress_outdegree_one=False)
+                #_LOG.debug("After pruning %s:\n%s" % (str(id(nd)), tree.as_ascii_plot(plot_metric='length', show_internal_node_labels=True)))
+                try:
+                    extinct_tips.remove(nd)
+                except:
+                    pass
+            try:
+                extinct_tips.remove(daughter_nd)
+            except:
+                pass
             e.length = prev_length + last_waiting_time
     
 
+
+#     tree._debug_tree_is_valid()
+#     for nd in extinct_tips:
+#         _LOG.debug("Will be deleting " + str(id(nd)))
+
+    for nd in extinct_tips:
+        bef = len(tree.leaf_nodes())
+        while (nd.parent_node is not None) and (len(nd.parent_node.child_nodes()) == 1):
+            _LOG.debug("Will be pruning %d rather than its only child (%d)" % (id(nd.parent_node), id(nd)))
+            nd = nd.parent_node
+#         _LOG.debug("Deleting " + str(nd.__dict__) + '\n' + str(nd.edge.__dict__))
+#         for n, pnd in enumerate(tree.postorder_node_iter()):
+#             _LOG.debug("%d %s" % (n, repr(pnd)))
+#        _LOG.debug("Before prune of %s:\n%s" % (str(id(nd)), tree.as_ascii_plot(plot_metric='length', show_internal_node_labels=True)))
+        if nd.parent_node:
+            treemanip.prune_subtree(tree, nd, suppress_outdegree_one=False)
+        _LOG.debug("After prune (went from %d to %d leaves):\n%s" % (bef, len(tree.leaf_nodes()), tree.as_ascii_plot(plot_metric='length', show_internal_node_labels=True)))
+#         _LOG.debug("Deleted " + str(nd.__dict__))
+#         for n, pnd in enumerate(tree.postorder_node_iter()):
+#             _LOG.debug("%d %s" % (n, repr(pnd)))
+#         tree._debug_tree_is_valid()
+    tree.suppress_outdegree_one_nodes()
+#    tree._debug_tree_is_valid()
+#    _LOG.debug("After deg2suppression:\n%s" % (tree.as_ascii_plot(plot_metric='length', show_internal_node_labels=True)))
+
     if kwargs.get("assign_taxa", True):
         tree.randomly_assign_taxa(create_required_taxa=True, rng=rng)
-    for nd in extinct_tips:
-        treemanip.prune_subtree(tree, nd)
+
+
     # return
     return tree
 

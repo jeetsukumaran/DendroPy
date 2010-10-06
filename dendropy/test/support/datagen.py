@@ -23,6 +23,8 @@ Data and value generation
 from random import Random
 from dendropy.test.support import pathmap
 from dendropy.dataobject.tree import NodeRelationship
+from dendropy.utility.messaging import get_logger
+_LOG = get_logger(__name__)
 import dendropy
 
 def four_taxon_tree1():
@@ -2886,4 +2888,5 @@ class RepeatedRandom(Random):
         self.index += 1
         if self.index >= self.period:
             self.index = 0
+        #_LOG.debug("RepeatedRandom returning %f" % r)
         return r
