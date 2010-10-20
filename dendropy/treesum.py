@@ -38,7 +38,7 @@ from dendropy.treesplit import encode_splits, count_bits, lowest_bit_only
 from dendropy.treemanip import collapse_clade, collapse_edge
 from dendropy.dataobject.tree import format_split
 from dendropy.utility.containers import NormalizedBitmaskDict
-from dendropy.utility.probability import calc_mean_and_sample_variance
+from dendropy.utility.statistics import calc_mean_and_sample_variance
 
 class TreeSummarizer(object):
     "Summarizes a distribution of trees."
@@ -109,7 +109,7 @@ class TreeSummarizer(object):
                          include_edge_lengths=True,
                          include_edge_length_var=False):
         """Returns a consensus tree from splits in `split_distribution`.
-        
+
         If include_edge_length_var is True, then the sample variance of the
             edge length will also be calculated and will be stored as
             a length_var attribute.

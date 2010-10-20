@@ -298,31 +298,3 @@ def geometric_rv(p, rng=None):
     return G
 
 
-# the next three functions are summary stats. They don't really belong in the probability module...
-def _calc_mean_and_variance_pop_n(values):
-    n = 0
-    s = 0.0
-    ss = 0.0
-    for v in values:
-        n += 1
-        s += v
-        ss += v*v
-    if n == 0:
-        raise IndexError("values in calc_mean_and_variance cannot be empty")
-    mean = float(s)/n
-    var = (ss - mean*s)/n
-    return mean, var, n
-
-def calc_mean_and_population_variance(values):
-    """Returns the mean and population variance while only passing over the
-    elements in values once."""
-    return _calc_mean_and_variance_pop_n(values)[:2]
-
-def calc_mean_and_sample_variance(values):
-    """Returns the mean and sample variance while only passing over the
-    elements in values once."""
-    mean, pop_var, n = _calc_mean_and_variance_pop_n(values)
-    if n == 1:
-        return mean, float('inf')
-    samp_var = n*pop_var/(n-1)
-    return mean, samp_var
