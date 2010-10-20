@@ -1,5 +1,5 @@
-Release (Upcoming)
-------------------
+Release 3.7.1
+--------------
 
 New Features
 ^^^^^^^^^^^^
@@ -10,6 +10,12 @@ Changes
 ^^^^^^^
 
     - Correct/consistent names for some probability functions.
+
+Bug Fixes
+^^^^^^^^^
+
+    - Bug in confirming overwriting of output file when using SumTrees '-e'/'--split-edges' option.
+    - Ancient and grizzled semi-fossilized reference to 'taxa_block' corrected to 'taxon_set'.
 
 Release 3.7.0
 -------------

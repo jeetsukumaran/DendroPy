@@ -502,7 +502,7 @@ def main_cli():
 
     if opts.split_edges_filepath:
         split_edges_filepath = os.path.expanduser(os.path.expandvars(opts.split_edges_filepath))
-        if confirm_overwrite(filepath=output_fpath, replace_without_asking=opts.replace):
+        if confirm_overwrite(filepath=split_edges_filepath, replace_without_asking=opts.replace):
             split_edges_dest = open(split_edges_filepath, "w")
         else:
             sys.exit(1)
@@ -702,7 +702,7 @@ def main_cli():
     if split_edges_dest:
         for split in master_split_distribution.splits:
             row = []
-            row.append(master_taxa_block.split_as_newick_string(split))
+            row.append(master_split_distribution.taxon_set.split_as_newick_string(split))
             for edge_length in master_split_distribution.split_edge_lengths[split]:
                 row.append("%s" % edge_length)
             split_edges_dest.write("%s\n" % ("\t".join(row)))
