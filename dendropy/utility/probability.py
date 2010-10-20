@@ -115,7 +115,7 @@ def num_poisson_events(rate, period, rng=None):
         period = period - time_to_next
     return events
 
-def poisson_pdf(k, rate):
+def poisson_pmf(k, rate):
     """
     Returns the probability of a number, `k`, drawn from a Poisson distribution
     with rate parameter, `rate` (= 1/mean).
@@ -178,7 +178,7 @@ def weighted_index_choice(weights, rng=None):
         if rnd < 0:
             return i
 
-def chisqprob(chisq, df):
+def chisq_pdf(chisq, df):
     """
     Returns the probability value associated with the provided chi-square
     value and df.  Adapted from chisq.c in Gary Perlman's |Stat.
@@ -236,7 +236,7 @@ def chisqprob(chisq, df):
     else:
         return s
 
-def zprob(z):
+def z_pmf(z):
     """
     Returns the probability value associated with the provided z-score.
     Adapted from z.c in Gary Perlman's |Stat.
@@ -314,12 +314,12 @@ def _calc_mean_and_variance_pop_n(values):
     return mean, var, n
 
 def calc_mean_and_population_variance(values):
-    """Returns the mean and population variance while only passing over the 
+    """Returns the mean and population variance while only passing over the
     elements in values once."""
     return _calc_mean_and_variance_pop_n(values)[:2]
 
 def calc_mean_and_sample_variance(values):
-    """Returns the mean and sample variance while only passing over the 
+    """Returns the mean and sample variance while only passing over the
     elements in values once."""
     mean, pop_var, n = _calc_mean_and_variance_pop_n(values)
     if n == 1:

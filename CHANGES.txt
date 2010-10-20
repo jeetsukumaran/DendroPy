@@ -1,4 +1,17 @@
-Reelase 3.7.0
+Release (Upcoming)
+------------------
+
+New Features
+^^^^^^^^^^^^
+
+    - Implementation of the 'General Sampling Approach' (Hartman et al. 2010: Sampling Trees from Evolutionary Models; Syst. Biol. 49, 465-476) method of simulating trees from the birth-death model.
+
+Changes
+^^^^^^^
+
+    - Correct/consistent names for some probability functions.
+
+Release 3.7.0
 -------------
 
 Migrated to BSD-style license.
