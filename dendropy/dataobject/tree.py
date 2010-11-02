@@ -1209,16 +1209,6 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                         if abs(node.age - ocnd) > check_prec:
                             raise ValueError("Tree is not ultrametric")
 
-    def nodes_by_ages(self, check_prec=0.0000001):
-        """
-        Returns list of nodes on tree, sorted in ascending order (i.e., with
-        youngest nodes first).
-        """
-        self.calc_node_ages(check_prec=check_prec)
-        nodes = [nd for nd in self.postorder_node_iter()]
-        nodes.sort(key=lambda n: n.age)
-        return nodes
-
     def set_edge_lengths_from_node_ages(self):
         """
         Sets the edge lengths of this tree based on the 'age' attribute.
@@ -2621,7 +2611,7 @@ class AsciiTreePlot(object):
         if self.show_internal_node_labels: #@TODO: we should have a separate setting for labeling nodes with an id, but thus far when I want to see this, I want internal_nodes_labels too...
             return '@' + str(id(nd))
         return '@'
-
+        
     def compose(self, tree):
         self.reset()
         if self.display_width is None:
