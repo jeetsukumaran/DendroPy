@@ -154,6 +154,7 @@ class NexusWriter(iosys.DataWriter):
                 edge_lengths=self.is_write_edge_lengths,
                 internal_labels=self.is_write_internal_labels,
                 preserve_spaces=self.preserve_spaces,
+                quote_underscores = self.quote_underscores,
                 nhx_key_to_func_dict=self.nhx_key_to_func)
         block.append('BEGIN TREES;')
         if self._link_blocks():
