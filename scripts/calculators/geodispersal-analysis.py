@@ -165,13 +165,9 @@ if __name__ == '__main__':
             
             node_list.reverse()
             fitch_down_pass(node_list, taxa_to_state_set_map=taxon_to_state_indices)
-
-
             node_list.reverse()
-
             root.state_sets = list(outgroup.state_sets)
             fitch_up_pass(node_list, taxa_to_state_set_map=taxon_to_state_indices)
-
             node_list.remove(outgroup)
             num_areas = len(state_alphabet.fundamental_states())
             vp = vicariance_patterns(node_list, num_areas)
