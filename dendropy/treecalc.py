@@ -22,7 +22,8 @@ Tree metrics/statistics calculations.
 from itertools import izip
 from math import sqrt
 from dendropy import treesplit
-
+from dendropy.utility.messaging import get_logger
+_LOG = get_logger(__name__)
 class PatristicDistanceMatrix(object):
     """
     Calculates and maintains patristic distance information of taxa on a tree.
@@ -358,6 +359,8 @@ def fitch_down_pass(postorder_node_list, attr_name="state_sets", weight_list=Non
                         wt = weight_list[n]
                     score += wt
                     result.append(set.union(left_ss, right_ss))
+                #_LOG.debug("left = %s, right = %s, nd= %s" % 
+                #                (str(left_ss), str(right_ss), str(result)))
             if remaining:
                 right_c = remaining.pop(0)
                 left_ssl = result
@@ -412,11 +415,13 @@ def fitch_up_pass(preorder_node_list, attr_name="state_sets", taxa_to_state_set_
                 final_ss = down_parup_inter
             else:
                 rl_inter = set.intersection(left_ss, right_ss)
-                if rl_inter:
+                if not rl_inter:
                     final_ss = set.union(par_ss, curr_ss)
                 else:
                     in_par_and_left = set.intersection(par_ss, left_ss)
                     in_par_and_right = set.intersection(par_ss, right_ss)
                     final_ss = set.union(in_par_and_left, in_par_and_right, curr_ss)
+            #_LOG.debug("downpass = %s, par = %s, left = %s, right = %s, final_ss= %s" % 
+            #                    (str(curr_ss), str(par_ss), str(left_ss), str(right_ss), str(final_ss)))
             result.append(final_ss)
         setattr(nd, attr_name, result)
