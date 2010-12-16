@@ -30,7 +30,9 @@ class RAxML(object):
             replace=None,
             postclean=None,
             name=None,
-            verbosity=1):
+            verbosity=1,
+            raxml_path="raxmlHPC",
+            output_dest=None):
         self.dirs_to_clean = []
         self.files_to_clean = []
         if working_dir_path is None:
@@ -46,7 +48,8 @@ class RAxML(object):
         self.messenger = get_messenger(self.verbosity)
         self.input_format = "nexus"
         self.output_format = "nexus"
-        self.output_dest = sys.stdout
+        self.output_dest = output_dest if output_dest is not None else sys.stdout
+        self.raxml_path = raxml_path
 
     @property
     def name(self):
@@ -176,7 +179,7 @@ class RAxML(object):
             os.remove(raxml_info_fpath)
 
         # run RAxML
-        cmd = ['raxmlHPC', '-f', 'b',
+        cmd = [self.raxml_path, '-f', 'b',
                 '-t', os.path.basename(raxml_target_tree_filepath),
                 '-z', os.path.basename(raxml_bootstrap_trees_filepath),
                 '-s', os.path.basename(raxml_seqs_filepath),
@@ -285,7 +288,8 @@ def main():
             replace=args.replace,
             postclean=not args.no_clean,
             name=args.name,
-            verbosity=args.verbosity)
+            verbosity=args.verbosity,
+            raxml_path=args.raxml_path)
 
     rx.map_bipartitions(target_tree_fpath=args.target_tree_file,
             bootstrap_trees_fpaths=args.bootstrap_files)
