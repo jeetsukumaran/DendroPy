@@ -65,7 +65,7 @@ class StateAlphabetElement(IdTagged):
         return str(self.symbol)
 
     def _is_single_state(self):
-        return self.multistates == StateAlphabetElement.SINGLE_STATE
+        return self.multistate == StateAlphabetElement.SINGLE_STATE
     is_single_state = property(_is_single_state)
 
     def _get_fundamental_states(self):
