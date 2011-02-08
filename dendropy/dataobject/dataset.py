@@ -42,15 +42,15 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
 
     def __init__(self, *args, **kwargs):
         """
-        __init__ takes a new `DataSet` object from another DataSet object or by 
+        __init__ takes a new `DataSet` object from another DataSet object or by
         parsing an input stream.
-        
+
         Can be invoked with:
 
             - a single unnamed argument that is an instance of a DataSet (which will result in a deep copy of all taxa, trees and characters),
             - 1 or more unnamed TaxonSet, TreeList or CharacterMatrix (which is like calling DataSet.add with each argument)
             - keyword arguments that supply a file-like object (`stream`) to be parsed and a string (`schema`) specifying the schema of the data in the file-like object.
-        
+
         """
         DataObject.__init__(self)
         iosys.Writeable.__init__(self)

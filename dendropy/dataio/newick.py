@@ -138,6 +138,7 @@ class NewickReader(iosys.DataReader):
         self.encode_splits = kwargs.get('encode_splits', False)
         self.store_tree_weights = kwargs.get('store_tree_weights', False)
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
+        self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
 
     def read(self, stream):
         """
@@ -157,7 +158,8 @@ class NewickReader(iosys.DataReader):
                 hyphens_as_tokens=self.hyphens_as_tokens,
                 store_tree_weights=self.store_tree_weights,
                 encode_splits=self.encode_splits,
-                preserve_underscores=self.preserve_underscores):
+                preserve_underscores=self.preserve_underscores,
+                suppress_internal_node_taxa=self.suppress_internal_node_taxa):
             tree_list.append(t, reindex_taxa=False)
         return self.dataset
 

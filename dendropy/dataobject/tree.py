@@ -2611,7 +2611,7 @@ class AsciiTreePlot(object):
         if self.show_internal_node_labels: #@TODO: we should have a separate setting for labeling nodes with an id, but thus far when I want to see this, I want internal_nodes_labels too...
             return '@' + str(id(nd))
         return '@'
-        
+
     def compose(self, tree):
         self.reset()
         if self.display_width is None:
