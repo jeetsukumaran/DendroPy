@@ -57,7 +57,7 @@ from dendropy import treesum
 ## PACKAGE METADATA
 
 __project__ = "DendroPy"
-__version__ = "3.7.1"
+__version__ = "3.7.2"
 
 try:
     try:
