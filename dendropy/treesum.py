@@ -131,8 +131,9 @@ class TreeSummarizer(object):
         is_rooted = split_distribution.is_rooted
 
         to_try_to_add = []
+        _almost_one = lambda x: abs(x - 1.0) <= 0.0000001
         for s, f in split_freqs.iteritems():
-            if (min_freq is None) or (f > min_freq):
+            if (min_freq is None) or (f > min_freq) or (_almost_one(min_freq) and _almost_one(f)):
                 m = s & taxa_mask
                 if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
                     if not is_rooted:
