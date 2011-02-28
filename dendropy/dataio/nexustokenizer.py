@@ -432,6 +432,7 @@ class NexusTokenizer(object):
         self.hyphens_as_tokens =  kwargs.get('hyphens_as_tokens', DEFAULT_HYPHENS_AS_TOKENS)
         if stream_handle:
             self.stream_handle = stream_handle
+        self.allow_eof = True
 
     def _reset(self):
         self.stream_handle = None
@@ -484,6 +485,8 @@ class NexusTokenizer(object):
             read_char = self.stream_handle.read(1) # returns empty string if EOF
             if read_char == '':
                 self.eof = True
+                if not self.allow_eof:
+                    raise self.data_format_error("Unexpected end of file")
             else:
                 if self.previous_file_char == '\n':
                     self.current_line_number = self.current_line_number + 1
@@ -761,10 +764,16 @@ class NexusTokenizer(object):
         ignore_punctuation = self.compose_punctutation_to_be_ignored(ignore_punctuation)
         self.current_token = None
         if self.eof:
-            return None
+            if not self.allow_eof:
+                raise self.data_format_error("Unexpected end of file while trying to read next token")
+            else:
+                return None
         c = self.skip_to_significant_character()
         if self.eof:
-            return None
+            if not self.allow_eof:
+                raise self.data_format_error("Unexpected end of file while trying to read next significant character")
+            else:
+                return None
         if c == "'":
             token = StringIO()
             try:

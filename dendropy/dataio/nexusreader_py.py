@@ -278,12 +278,14 @@ class NexusReader(iosys.DataReader):
 
     def _parse_taxa_block(self):
         token = ''
+        self.stream_tokenizer.allow_eof = False
         self.stream_tokenizer.skip_to_semicolon() # move past BEGIN statement
         title = None
         taxon_set = None
-        while not (token == 'END' or token == 'ENDBLOCK') \
-            and not self.stream_tokenizer.eof \
-            and not token==None:
+        #while not (token == 'END' or token == 'ENDBLOCK') \
+        #    and not self.stream_tokenizer.eof \
+        #    and not token==None:
+        while not (token == 'END' or token == 'ENDBLOCK'):
             token = self.stream_tokenizer.read_next_token_ucase()
             if token == "TITLE":
                 token = self.stream_tokenizer.read_next_token()
@@ -295,6 +297,7 @@ class NexusReader(iosys.DataReader):
                     taxon_set = self._new_taxon_set()
                 self._parse_taxlabels_statement(taxon_set)
         self.stream_tokenizer.skip_to_semicolon() # move past END statement
+        self.stream_tokenizer.allow_eof = True
 
     def _parse_taxlabels_statement(self, taxon_set=None):
         """
