@@ -319,7 +319,7 @@ def main_cli():
             dest="rooted_trees",
             default=False,
             help="treat trees as unrooted")
-    source_tree_optgroup.add_option("--weighted_trees",
+    source_tree_optgroup.add_option("--weighted-trees",
             action="store_true",
             dest="weighted_trees",
             default=False,
