@@ -69,6 +69,7 @@ if _MP:
                 schema,
                 taxon_labels,
                 is_rooted,
+                weighted_trees,
                 tree_offset,
                 process_idx,
                 messenger,
@@ -83,6 +84,7 @@ if _MP:
             self.split_distribution = treesplit.SplitDistribution(taxon_set=self.taxon_set)
             self.split_distribution.is_rooted = is_rooted
             self.is_rooted = is_rooted
+            self.weighted_trees = weighted_trees
             self.tree_offset = tree_offset
             self.process_idx = process_idx
             self.messenger = messenger
@@ -122,7 +124,8 @@ if _MP:
                 for tidx, tree in enumerate(tree_source_iter(fsrc,
                         schema=self.schema,
                         taxon_set=self.taxon_set,
-                        as_rooted=self.is_rooted)):
+                        as_rooted=self.is_rooted,
+                        weighted_trees=self.weighted_trees)):
                     if tidx >= self.tree_offset:
                         if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
                             self.send_info("(processing) '%s': tree at offset %d" % (source, tidx), wrap=False)
@@ -162,6 +165,7 @@ def process_sources_parallel(
         support_filepaths,
         schema,
         is_rooted,
+        weighted_trees,
         tree_offset,
         log_frequency,
         messenger):
@@ -197,6 +201,7 @@ def process_sources_parallel(
                 schema=schema,
                 taxon_labels=taxon_labels,
                 is_rooted=is_rooted,
+                weighted_trees=weighted_trees,
                 tree_offset=tree_offset,
                 process_idx=idx,
                 messenger=messenger,
@@ -219,6 +224,7 @@ def process_sources_serial(
         support_filepaths,
         schema,
         is_rooted,
+        weighted_trees,
         tree_offset,
         log_frequency,
         messenger):
@@ -241,6 +247,7 @@ def process_sources_serial(
         for tidx, tree in enumerate(tree_source_iter(src,
                 schema=schema,
                 taxon_set=taxon_set,
+                weighted_trees=weighted_trees,
                 as_rooted=is_rooted)):
             if tidx >= tree_offset:
                 if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
@@ -299,6 +306,7 @@ def main_cli():
             dest="branch_length_var",
             default=False,
             help="if using a consensus tree as the target tree, this option forces the sample variance of the branch lengths to be calculated and added to the tree description")
+
     source_tree_optgroup = OptionGroup(parser, "Source Tree Options")
     parser.add_option_group(source_tree_optgroup)
     source_tree_optgroup.add_option("--rooted",
@@ -311,11 +319,16 @@ def main_cli():
             dest="rooted_trees",
             default=False,
             help="treat trees as unrooted")
+    source_tree_optgroup.add_option("--weighted_trees",
+            action="store_true",
+            dest="weighted_trees",
+            default=False,
+            help="use weights of trees as indicated by '[&W m/n]' comment to weight contribution of splits found on each tree to overall split frequencies")
     source_tree_optgroup.add_option("--from-newick-stream",
             action="store_true",
             dest="from_newick_stream",
             default=False,
-            help="support trees will be streamed in Newick format")
+            help="support trees will be streamed in newick format")
     source_tree_optgroup.add_option("--from-nexus-stream",
             action="store_true",
             dest="from_nexus_stream",
@@ -546,6 +559,7 @@ def main_cli():
                 support_filepaths=support_filepaths,
                 schema=schema,
                 is_rooted=opts.rooted_trees,
+                weighted_trees=opts.weighted_trees,
                 tree_offset=opts.burnin,
                 log_frequency=opts.log_frequency,
                 messenger=messenger)
@@ -558,6 +572,7 @@ def main_cli():
                 support_filepaths=support_filepaths,
                 schema=schema,
                 is_rooted=opts.rooted_trees,
+                weighted_trees=opts.weighted_trees,
                 tree_offset=opts.burnin,
                 log_frequency=opts.log_frequency,
                 messenger=messenger)
