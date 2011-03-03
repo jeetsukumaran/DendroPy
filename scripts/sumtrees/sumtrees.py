@@ -52,8 +52,8 @@ from dendropy.utility.cli import confirm_overwrite, show_splash
 
 _program_name = "SumTrees"
 _program_subtitle = "Phylogenetic Tree Split Support Summarization"
-_program_date = "Oct 02 2010"
-_program_version = "Version 3.1.0 (%s)" % _program_date
+_program_date = "Mar 03 2011"
+_program_version = "Version 3.2.0 (%s)" % _program_date
 _program_author = "Jeet Sukumaran and Mark T. Holder"
 _program_contact = "jeetsukumaran@gmail.com"
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
@@ -125,7 +125,7 @@ if _MP:
                         schema=self.schema,
                         taxon_set=self.taxon_set,
                         as_rooted=self.is_rooted,
-                        weighted_trees=self.weighted_trees)):
+                        store_tree_weights=self.weighted_trees)):
                     if tidx >= self.tree_offset:
                         if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
                             self.send_info("(processing) '%s': tree at offset %d" % (source, tidx), wrap=False)
@@ -247,7 +247,7 @@ def process_sources_serial(
         for tidx, tree in enumerate(tree_source_iter(src,
                 schema=schema,
                 taxon_set=taxon_set,
-                weighted_trees=weighted_trees,
+                store_tree_weights=weighted_trees,
                 as_rooted=is_rooted)):
             if tidx >= tree_offset:
                 if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
@@ -595,6 +595,10 @@ def main_cli():
         report.append("Trees treated as rooted.")
     else:
         report.append("Trees treated as unrooted.")
+    if opts.weighted_trees:
+        report.append("Trees treated as weighted (default weight = 1.0).")
+    else:
+        report.append("Trees treated as unweighted.")
     n_taxa = len(master_taxon_set)
     report.append("%d unique taxa across all trees." % n_taxa)
     num_splits, num_unique_splits, num_nt_splits, num_nt_unique_splits = master_split_distribution.splits_considered()
@@ -617,6 +621,7 @@ def main_cli():
     tsum.support_as_labels = opts.support_as_labels
     tsum.support_as_percentages = opts.support_as_percentages
     tsum.support_label_decimals = opts.support_label_decimals
+    tsum.weighted_splits = opts.weighted_trees
     tsum.ignore_node_ages = True # until a more efficient implementation is developed
 
     if opts.support_as_percentages:

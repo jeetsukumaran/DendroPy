@@ -58,6 +58,7 @@ class TreeSummarizer(object):
         self.support_label_decimals = kwargs.get("support_label_decimals", self.default_support_label_decimals)
         self.ignore_node_ages = kwargs.get("ignore_node_ages", True)
         self.total_trees_counted = 0
+        self.weighted_splits = False
 
     def compose_support_label(self, split_support_freq):
         "Returns an appropriately composed and formatted support label."
@@ -91,13 +92,16 @@ class TreeSummarizer(object):
 
     def map_split_support_to_tree(self, tree, split_distribution):
         "Maps splits support to the given tree."
-        split_frequencies = split_distribution.split_frequencies
+        if self.weighted_splits:
+            split_freqs = split_distribution.weighted_split_frequencies
+        else:
+            split_freqs = split_distribution.split_frequencies
         tree.reindex_taxa(taxon_set=split_distribution.taxon_set)
         assert tree.taxon_set is split_distribution.taxon_set
         treesplit.encode_splits(tree)
         for split in tree.split_edges:
-            if split in split_frequencies:
-                split_support = split_frequencies[split]
+            if split in split_freqs:
+                split_support = split_freqs[split]
             else:
                 split_support = 0.0
             self.map_split_support_to_node(tree.split_edges[split].head_node, split_support)
@@ -118,7 +122,10 @@ class TreeSummarizer(object):
 
         taxon_set = split_distribution.taxon_set
         con_tree = treesim.star_tree(taxon_set)
-        split_freqs = split_distribution.split_frequencies
+        if self.weighted_splits:
+            split_freqs = split_distribution.weighted_split_frequencies
+        else:
+            split_freqs = split_distribution.split_frequencies
         taxa_mask = taxon_set.all_taxa_bitmask()
         treesplit.encode_splits(con_tree)
         leaves = con_tree.leaf_nodes()
