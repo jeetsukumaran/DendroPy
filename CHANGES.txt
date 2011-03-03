@@ -1,8 +1,18 @@
+Release 3.8.0
+-------------
+
+New Features
+^^^^^^^^^^^^
+
+    - Tree weights will now be interpreted and handled by SumTrees if the '--weighed-trees' option is specified.
+
+
 Release 3.7.2
 -------------
 
 Bug Fixes
 ^^^^^^^^^
+
     - "1.0" threshold special-cased to correctly recover strict consensus tre "1.0" threshold special-cased to correctly recover strict consensus tree.
 
 Release 3.7.1
