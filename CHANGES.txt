@@ -4,7 +4,7 @@ Release 3.8.0
 New Features
 ^^^^^^^^^^^^
 
-    - Tree weights will now be interpreted and handled by SumTrees if the '--weighed-trees' option is specified.
+    - Tree weights will now be interpreted and handled by SumTrees if the '--weighted-trees' option is specified.
 
 
 Release 3.7.2
