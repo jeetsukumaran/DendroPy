@@ -6,6 +6,11 @@ New Features
 
     - Tree weights will now be interpreted and handled by SumTrees if the '--weighted-trees' option is specified.
 
+Bug Fixes
+^^^^^^^^^
+
+    - SumTrees can now handle arbitrarily-large numbers of files
+
 
 Release 3.7.2
 -------------
