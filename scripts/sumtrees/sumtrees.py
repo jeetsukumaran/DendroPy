@@ -235,13 +235,27 @@ def process_sources_serial(
     messenger.send_info("Running in serial mode.")
     taxon_set = dendropy.TaxonSet()
     split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
+
     if support_filepaths is None or len(support_filepaths) == 0:
         messenger.send_info("Reading trees from standard input.")
         srcs = [sys.stdin]
     else:
         messenger.send_info("%d source(s) to be processed." % len(support_filepaths))
-        srcs = [open(f, "rU") for f in support_filepaths]
+
+        # do not want to have all files open at the same time
+        #srcs = [open(f, "rU") for f in support_filepaths]
+
+        # store filepaths, to open individually in loop
+        srcs = support_filepaths
+
     for sidx, src in enumerate(srcs):
+
+        # hack needed because we do not want to open all input files at the
+        # same time; if not a file object, assume it is a file path and create
+        # corresponding file object
+        if not isinstance(src, file):
+            src = open(src, "rU")
+
         name = getattr(src, "name", "<stdin>")
         messenger.send_info("Processing %d of %d: '%s'" % (sidx+1, len(srcs), name), wrap=False)
         for tidx, tree in enumerate(tree_source_iter(src,
@@ -257,6 +271,12 @@ def process_sources_serial(
             else:
                 if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
                     messenger.send_info("(processing) '%s': tree at offset %d (skipping)" % (name, tidx), wrap=False)
+        try:
+            src.close()
+        except ValueError:
+            # "I/O operation on closed file" if we try to close sys.stdin
+            pass
+
     messenger.send_info("Serial processing of %d source(s) completed." % len(srcs))
     return split_distribution
 
