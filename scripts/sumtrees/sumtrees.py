@@ -69,6 +69,7 @@ if _MP:
                 schema,
                 taxon_labels,
                 is_rooted,
+                ignore_node_ages,
                 weighted_trees,
                 tree_offset,
                 process_idx,
@@ -83,6 +84,7 @@ if _MP:
             self.taxon_set = dendropy.TaxonSet(self.taxon_labels)
             self.split_distribution = treesplit.SplitDistribution(taxon_set=self.taxon_set)
             self.split_distribution.is_rooted = is_rooted
+            self.split_distribution.ignore_node_ages = ignore_node_ages
             self.is_rooted = is_rooted
             self.weighted_trees = weighted_trees
             self.tree_offset = tree_offset
@@ -165,6 +167,7 @@ def process_sources_parallel(
         support_filepaths,
         schema,
         is_rooted,
+        ignore_node_ages,
         weighted_trees,
         tree_offset,
         log_frequency,
@@ -213,6 +216,7 @@ def process_sources_parallel(
     result_count = 0
     split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
     split_distribution.is_rooted = is_rooted
+    split_distribution.ignore_node_ages = ignore_node_ages
     while result_count < num_processes:
         result = result_queue.get()
         split_distribution.update(result)
@@ -224,6 +228,7 @@ def process_sources_serial(
         support_filepaths,
         schema,
         is_rooted,
+        ignore_node_ages,
         weighted_trees,
         tree_offset,
         log_frequency,
@@ -235,6 +240,7 @@ def process_sources_serial(
     messenger.send_info("Running in serial mode.")
     taxon_set = dendropy.TaxonSet()
     split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
+    split_distribution.ignore_node_ages = ignore_node_ages
 
     if support_filepaths is None or len(support_filepaths) == 0:
         messenger.send_info("Reading trees from standard input.")
@@ -355,29 +361,44 @@ def main_cli():
             default=False,
             help="support trees will be streamed in NEXUS format")
 
-    output_tree_optgroup = OptionGroup(parser, "Output Tree Options")
-    parser.add_option_group(output_tree_optgroup)
-    output_tree_optgroup.add_option("-l","--support-as-labels",
+    support_summarization_optgroup = OptionGroup(parser, "Support Summarization Options")
+    parser.add_option_group(support_summarization_optgroup)
+    support_summarization_optgroup.add_option("-l","--support-as-labels",
             action="store_true",
             dest="support_as_labels",
             default=True,
             help="indicate branch support as internal node labels [default=%default]")
-    output_tree_optgroup.add_option("-v","--support-as-lengths",
+    support_summarization_optgroup.add_option("-v","--support-as-lengths",
             action="store_false",
             dest="support_as_labels",
             default=True,
             help="indicate branch support as branch lengths (otherwise support will be indicated by internal node labels)")
-    output_tree_optgroup.add_option("-p", "--percentages",
+    support_summarization_optgroup.add_option("-p", "--percentages",
             action="store_true",
             dest="support_as_percentages",
             default=False,
             help="indicate branch support as percentages (otherwise, will report as proportions by default)")
-    output_tree_optgroup.add_option("-d", "--decimals",
+    support_summarization_optgroup.add_option("-d", "--decimals",
             dest="support_label_decimals",
             type="int",
             metavar="#",
             default=2,
             help="number of decimal places in indication of support values [default=%default]")
+
+    edge_summarization_optgroup = OptionGroup(parser, "Edge Summarization Options")
+    parser.add_option_group(edge_summarization_optgroup)
+    edge_summarization_optgroup.add_option("--mean-edge-lengths",
+            action="store_const",
+            dest="edge_summarization",
+            const="mean_edge_lengths",
+            default=None,
+            help="edge lengths of output tree set to mean length of corresponding edges of input trees (default if support summarized as labels)")
+    edge_summarization_optgroup.add_option("--mean-node-ages",
+            action="store_const",
+            dest="edge_summarization",
+            const="mean_node_ages",
+            default=None,
+            help="edge lengths of output tree set such that node ages on the output tree are equal to the mean length of corresponding nodes of input trees (requires all input trees to be ultrametric, and will treat all trees as rooted)")
 
     output_filepath_optgroup = OptionGroup(parser, "Output File Options")
     parser.add_option_group(output_filepath_optgroup)
@@ -419,7 +440,7 @@ def main_cli():
     other_optgroup = OptionGroup(parser, "Other Options")
     parser.add_option_group(other_optgroup)
 
-    other_optgroup.add_option("-e","--split-edges",
+    other_optgroup.add_option("--split-edges",
             dest="split_edges_filepath",
             default=None,
             metavar="FILEPATH",
@@ -523,6 +544,14 @@ def main_cli():
     else:
         target_tree_filepath = None
 
+    ### TODO: idiot-check edge length summarization
+    # edge lengths
+    if opts.edge_summarization == "mean_node_ages":
+        ignore_node_ages = False
+        opts.rooted_trees = True
+    else:
+        ignore_node_ages = True
+
     # output
     if opts.output_filepath is None:
         output_dest = sys.stdout
@@ -579,6 +608,7 @@ def main_cli():
                 support_filepaths=support_filepaths,
                 schema=schema,
                 is_rooted=opts.rooted_trees,
+                ignore_node_ages=ignore_node_ages,
                 weighted_trees=opts.weighted_trees,
                 tree_offset=opts.burnin,
                 log_frequency=opts.log_frequency,
@@ -592,6 +622,7 @@ def main_cli():
                 support_filepaths=support_filepaths,
                 schema=schema,
                 is_rooted=opts.rooted_trees,
+                ignore_node_ages=ignore_node_ages,
                 weighted_trees=opts.weighted_trees,
                 tree_offset=opts.burnin,
                 log_frequency=opts.log_frequency,
@@ -642,7 +673,6 @@ def main_cli():
     tsum.support_as_percentages = opts.support_as_percentages
     tsum.support_label_decimals = opts.support_label_decimals
     tsum.weighted_splits = opts.weighted_trees
-    tsum.ignore_node_ages = True # until a more efficient implementation is developed
 
     if opts.support_as_percentages:
         support_units = "Percentage"
@@ -652,7 +682,7 @@ def main_cli():
         support_show = "node labels"
     else:
         support_show = "branch lengths"
-    support_indication = "%s of support for each split indicated by %s" % (support_units, support_show)
+    support_summarization = "%s of support for each split indicated by %s" % (support_units, support_show)
 
     tt_trees = []
     if target_tree_filepath is not None:
@@ -660,11 +690,13 @@ def main_cli():
         for tree in tree_source_iter(stream=open(target_tree_filepath, 'r'),
                 schema="nexus/newick",
                 taxon_set=master_taxon_set):
-            tt_trees.append(tsum.map_split_support_to_tree(tree, master_split_distribution))
+            stree = tsum.map_split_support_to_tree(tree,
+                    master_split_distribution)
+            tt_trees.append(stree)
         messenger.send_info("Parsed '%s': %d tree(s) in file" % (target_tree_filepath, len(tt_trees)))
         comments.append("Split support mapped to trees in:")
         comments.append("  - '%s' (%d trees)" % (os.path.abspath(target_tree_filepath), len(tt_trees)))
-        comments.append(support_indication + '.')
+        comments.append(support_summarization + '.')
     else:
         messenger.send_info("Constructing clade consensus tree ...")
         if opts.min_clade_freq > 1.0:
@@ -672,15 +704,34 @@ def main_cli():
             min_freq = 1.0
         else:
             min_freq = opts.min_clade_freq
-        tt_trees.append(tsum.tree_from_splits(master_split_distribution,
-                                              min_freq=min_freq,
-                                              include_edge_lengths=not opts.no_branch_lengths,
-                                              include_edge_length_var=opts.branch_length_var))
+        stree = tsum.tree_from_splits(master_split_distribution,
+                min_freq=min_freq,
+                include_edge_lengths=not opts.no_branch_lengths,
+                include_edge_length_var=opts.branch_length_var)
+        tt_trees.append(stree)
         report = []
         report.append("Consensus tree (%f clade frequency threshold) constructed from splits." % min_freq)
-        report.append(support_indication + ".")
+        report.append(support_summarization + ".")
         messenger.send_info_lines(report)
         comments.extend(report)
+
+    if opts.edge_summarization == "mean_node_ages":
+        messenger.send_info("Summarizing node ages ...")
+        report.append("Setting node ages of output tree(s) to mean of node age of input tree(s)")
+        for stree in tt_trees:
+            tsum.summarize_node_ages_on_tree(tree=stree,
+                    split_distribution=master_split_distribution,
+                    set_edge_lengths=True,
+                    set_extended_attr=True,
+                    summarization_func=None)
+    elif opts.edge_summarization == "mean_edge_lengths":
+        messenger.send_info("Summarizing edge lengths ...")
+        report.append("Setting edge lengths of output tree(s) to mean of node age of input tree(s)")
+        for stree in tt_trees:
+            tsum.summarize_edge_lengths_on_tree(tree=stree,
+                    split_distribution=master_split_distribution,
+                    set_extended_attr=True,
+                    summarization_func=None)
 
     end_time = datetime.datetime.now()
 

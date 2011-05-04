@@ -411,6 +411,8 @@ class SplitDistribution(object):
         else:
             assert tree.taxon_set is self.taxon_set
         self.total_trees_counted += 1
+        if not self.ignore_node_ages:
+            tree.calc_node_ages()
         for split, edge in tree.split_edges.iteritems():
             if self.is_rooted:
                 split = edge.split_bitmask
@@ -438,5 +440,5 @@ class SplitDistribution(object):
             if not self.ignore_node_ages:
                 sna = self.split_node_ages.setdefault(split, [])
                 if edge.head_node is not None:
-                    sna.append(edge.head_node.distance_from_tip())
+                    sna.append(edge.head_node.age)
 

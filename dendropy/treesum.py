@@ -50,13 +50,11 @@ class TreeSummarizer(object):
             - `support_as_labels` (boolean)
             - `support_as_percentages` (boolean)
             - `support_label_decimals` (integer)
-            - `ignore_node_ages` (boolean)
         """
         self.support_as_labels = kwargs.get("support_as_labels", True)
         self.support_as_percentages = kwargs.get("support_as_percentages", False)
         self.default_support_label_decimals = 4
         self.support_label_decimals = kwargs.get("support_label_decimals", self.default_support_label_decimals)
-        self.ignore_node_ages = kwargs.get("ignore_node_ages", True)
         self.total_trees_counted = 0
         self.weighted_splits = False
 
@@ -105,6 +103,57 @@ class TreeSummarizer(object):
             else:
                 split_support = 0.0
             self.map_split_support_to_node(tree.split_edges[split].head_node, split_support)
+        return tree
+
+    def summarize_node_ages_on_tree(self,
+            tree,
+            split_distribution,
+            set_edge_lengths=True,
+            set_extended_attr=True,
+            summarization_func=None):
+        """
+        Sets the `age` attribute of nodes on `tree` (a `Tree` object) to the
+        result of `summarization_func` applied to the vector of ages of the
+        same node on the input trees (in `split_distribution`, a
+        `SplitDistribution` object) being summarized.
+        `summarization_func` should take an iterable of floats, and return a float. If `None`, it
+        defaults to calculating the mean (`lambda x: float(sum(x))/len(x)`).
+        If `set_edge_lengths` is `True`, then edge lengths will be set to so that the actual node ages
+        correspond to the `age` attribute value.
+        """
+        if summarization_func is None:
+            summarization_func = lambda x: float(sum(x))/len(x)
+        #'height',
+        #'height_median',
+        #'height_95hpd',
+        #'height_range',
+        #'length',
+        #'length_median',
+        #'length_95hpd',
+        #'length_range',
+        for split, edge in tree.split_edges.items():
+            ages = split_distribution.split_node_ages.get(split, [0.0])
+            nd = edge.head_node
+            nd.age = summarization_func(ages)
+        if set_edge_lengths:
+            tree.set_edge_lengths_from_node_ages()
+        return tree
+
+    def summarize_edge_lengths_on_tree(self,
+            tree,
+            split_distribution,
+            set_extended_attr=True,
+            summarization_func=None):
+        """
+        Sets the lengths of edges on `tree` (a `Tree` object) to the mean
+        lengths of the corresponding edges on the input trees (in
+        `split_distribution`, a `SplitDistribution` object) being
+        summarized.
+        `summarization_func` should take an iterable of floats, and return a float. If `None`, it
+        defaults to calculating the mean (`lambda x: float(sum(x))/len(x)`).
+        """
+        if summarization_func is None:
+            summarization_func = lambda x: float(sum(x))/len(x)
         return tree
 
     def tree_from_splits(self,
@@ -222,6 +271,11 @@ class TreeSummarizer(object):
                     node.edge.length = None
                     if include_edge_length_var:
                         node.edge.length_var = None
+        #if include_edge_lengths:
+            #self.map_edge_lengths_to_tree(tree=con_tree,
+            #        split_distribution=split_distribution,
+            #        summarization_func=summarization_func,
+            #        include_edge_length_var=False)
         return con_tree
 
     def count_splits_on_trees(self, tree_iterator, split_distribution=None, trees_splits_encoded=False):
