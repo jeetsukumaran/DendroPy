@@ -1216,9 +1216,19 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         for nd in self.preorder_node_iter():
             if nd.parent_node is not None:
                 if nd.parent_node.age < nd.age:
-                    raise ValueError('Parent node age (%s: %s) is younger than descendent (%s: %s)'
-                            % (nd.parent_node.oid, nd.parent_node.age, nd.oid, nd.age))
-                nd.edge.length = nd.parent_node.age - nd.age
+                    nd.edge.length = 0.0
+                else:
+                    nd.edge.length = nd.parent_node.age - nd.age
+                #if nd.parent_node.age < nd.age:
+                #    #if nd.parent_node is self.seed_node:
+                #    #    # special case seed node
+                #    #    nd.parent_node.age = nd.age + nd.edge_length
+                #    #else:
+                #    #    raise ValueError('Parent node age (%s: %s) is younger than descendent (%s: %s)'
+                #    #            % (nd.parent_node.oid, nd.parent_node.age, nd.oid, nd.age))
+                #    raise ValueError('Parent node age (%s: %s) is younger than descendent (%s: %s)'
+                #            % (nd.parent_node.oid, nd.parent_node.age, nd.oid, nd.age))
+                #nd.edge.length = nd.parent_node.age - nd.age
 
     def node_ages(self, check_prec=0.0000001):
         """

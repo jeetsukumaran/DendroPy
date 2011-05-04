@@ -131,10 +131,24 @@ class TreeSummarizer(object):
         #'length_median',
         #'length_95hpd',
         #'length_range',
-        for split, edge in tree.split_edges.items():
-            ages = split_distribution.split_node_ages.get(split, [0.0])
+        #for split, edge in tree.split_edges.items():
+        for edge in tree.postorder_edge_iter():
+            split = edge.split_bitmask
             nd = edge.head_node
-            nd.age = summarization_func(ages)
+            if split in split_distribution.split_node_ages:
+                ages = split_distribution.split_node_ages[split]
+                nd.age = summarization_func(ages)
+            else:
+                children = nd.child_nodes()
+                if len(children) == 0:
+                    nd.age = 0
+                else:
+                    child_ages = [c.age for c in children]
+                    child_edge_lens = [c.edge.length for c in children]
+                    max_age = max(child_ages)
+                    max_len = max(child_edge_lens)
+                    nd.age = max_age + max_len
+
         if set_edge_lengths:
             tree.set_edge_lengths_from_node_ages()
         return tree
@@ -154,6 +168,13 @@ class TreeSummarizer(object):
         """
         if summarization_func is None:
             summarization_func = lambda x: float(sum(x))/len(x)
+        for split, edge in tree.split_edges.items():
+            if (split in split_distribution.split_edge_lengths
+                    and split_distribution.split_edge_lengths[split]):
+                lengths = split_distribution.split_edge_lengths[split]
+                edge.length = summarization_func(lengths)
+            else:
+                edge.length = 0.0
         return tree
 
     def tree_from_splits(self,
