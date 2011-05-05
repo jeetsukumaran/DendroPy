@@ -1,0 +1,42 @@
+#NEXUS
+
+[ SumTrees Version 3.3.0 (May 05 2011) by Jeet Sukumaran and Mark T. Holder. ]
+[ Using DendroPy Version 3.7.2 by Jeet Sukumaran and Mark T. Holder. ]
+[ Running under Python 2.7 (r27:82500, Jul  4 2010, 16:21:17) (GCC 4.2.1 (Apple Inc. build 5659)) on darwin. ]
+[ Executed on glyphoglossus.local by jeet@glyphoglossus.local. ]
+[ Basis of split support: ]
+[   - '/Users/jeet/Documents/Projects/Phyloinformatics/DendroPy/dendropy/dendropy/test/data/trees/primates.beast-mcmc.trees' ]
+[ Began at: 2011-05-05 17:38:59.195719. ]
+[ Ended at: 2011-05-05 17:39:22.924158. ]
+[ Run time: 0 hour(s), 00 minute(s), 23.728439 second(s). ]
+[ 3201 trees considered in total for split support assessment. ]
+[ Tree rooting as given by tree statement (defaults to unrooted). ]
+[ Trees treated as unweighted. ]
+[ 12 unique taxa across all trees. ]
+[ 30 unique splits out of 73623 total splits counted. ]
+[ 16 unique non-trivial splits out of 28809 total non-trivial splits counted. ]
+[ Consensus tree (0.500000 clade frequency threshold) constructed from splits. ]
+[ Proportion (frequency or probability) of support for each split indicated by node labels. ]
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=12;
+    TAXLABELS
+        Gorilla
+        Homo_sapiens
+        Hylobates
+        Lemur_catta
+        M_fascicularis
+        M_mulatta
+        M_sylvanus
+        Macaca_fuscata
+        Pan
+        Pongo
+        Saimiri_sciureus
+        Tarsius_syrichta
+  ;
+END;
+
+BEGIN TREES;
+    TREE 0 = (Gorilla:0.0,(Pongo:17.3829702349,(Hylobates:23.4506473467,((M_sylvanus:10.0078992479,(M_fascicularis:6.1742124048,(M_mulatta:2.18927127979,Macaca_fuscata:2.18927127979)1.00:3.98486758197)1.00:3.83495843627)1.00:28.8973301593,(Saimiri_sciureus:51.3980205539,(Lemur_catta:76.5957919689,Tarsius_syrichta:73.6935428041)1.00:22.2919407412)1.00:12.5144837037)1.00:15.4512830046)1.00:6.07831465472)1.00:9.01874481105,(Homo_sapiens:5.8949334104,Pan:5.89463199484)1.00:2.472050545);
+END;
+
