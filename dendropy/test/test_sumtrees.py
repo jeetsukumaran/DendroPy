@@ -63,37 +63,37 @@ class SumTreesTester(extendedtest.ExtendedTestCase):
 class SumTreesNodeAgesTester(SumTreesTester):
 
 
-        def testSummarizeNodeAgesOnMCCT(self):
-            """
-            SumTrees: summarizing node ages on MCCT topology.
-            """
-            if runlevel.is_test_enabled(runlevel.EXHAUSTIVE, _LOG, self.__class__.__name__):
-                path_to_src = pathmap.tree_source_path("primates.beast-mcmc.trees")
-                path_to_target = pathmap.tree_source_path("primates.beast-mcct.noedgelens.tree")
-                args = ["-b",
-                        "40",
-                        "--mean-node-ages",
-                        "-t",
-                        path_to_target,
-                        path_to_src]
-                retcode, stdout, stderr = self.execute_sumtrees(args)
-                self.assertEqual(retcode, 0)
+    def testSummarizeNodeAgesOnMCCT(self):
+        """
+        SumTrees: summarizing node ages on MCCT topology.
+        """
+        if runlevel.is_test_enabled(runlevel.EXHAUSTIVE, _LOG, self.__class__.__name__):
+            path_to_src = pathmap.tree_source_path("primates.beast-mcmc.trees")
+            path_to_target = pathmap.tree_source_path("primates.beast-mcct.noedgelens.tree")
+            args = ["-b",
+                    "40",
+                    "--mean-node-ages",
+                    "-t",
+                    path_to_target,
+                    path_to_src]
+            retcode, stdout, stderr = self.execute_sumtrees(args)
+            self.assertEqual(retcode, 0)
 
-                taxa = dendropy.TaxonSet()
-                exp_tree = dendropy.Tree.get_from_path(pathmap.tree_source_path("primates.beast-mcct.tree"), "nexus", taxon_set=taxa)
-                obs_tree = dendropy.Tree.get_from_string(stdout, "nexus", taxon_set=taxa)
-                exp_tree.update_splits()
-                exp_tree.calc_node_ages()
-                obs_tree.update_splits()
-                obs_tree.calc_node_ages()
-                self.assertEqual(exp_tree.split_edges.keys(), obs_tree.split_edges.keys())
-                splits = exp_tree.split_edges.keys()
-                for split in splits:
-                    exp_edge = exp_tree.split_edges[split]
-                    obs_edge = obs_tree.split_edges[split]
-                    self.assertAlmostEqual(obs_edge.head_node.age, exp_edge.head_node.age)
-            else:
-                _LOG.info("Skipping test (set 'DENDROPY_TESTING_LEVEL=EXHAUSTIVE' to run)")
+            taxa = dendropy.TaxonSet()
+            exp_tree = dendropy.Tree.get_from_path(pathmap.tree_source_path("primates.beast-mcct.tree"), "nexus", taxon_set=taxa)
+            obs_tree = dendropy.Tree.get_from_string(stdout, "nexus", taxon_set=taxa)
+            exp_tree.update_splits()
+            exp_tree.calc_node_ages()
+            obs_tree.update_splits()
+            obs_tree.calc_node_ages()
+            self.assertEqual(exp_tree.split_edges.keys(), obs_tree.split_edges.keys())
+            splits = exp_tree.split_edges.keys()
+            for split in splits:
+                exp_edge = exp_tree.split_edges[split]
+                obs_edge = obs_tree.split_edges[split]
+                self.assertAlmostEqual(obs_edge.head_node.age, exp_edge.head_node.age)
+        else:
+            _LOG.info("Skipping test (set 'DENDROPY_TESTING_LEVEL=EXHAUSTIVE' to run)")
 
 
 class SumTreeHelpAndVersionTests(SumTreesTester):
