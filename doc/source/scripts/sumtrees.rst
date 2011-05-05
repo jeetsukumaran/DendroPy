@@ -130,6 +130,16 @@ Summarize a set of tree files using a 95% rule consensus tree, with support for 
     $ sumtrees.py --min-clade-freq=0.95 --burn-in=200 --support-as-labels --output=results.sumtrees treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -f0.95 -b200 -l -o results.sumtrees treefile1.tre treefile2.tre treefile3.tre
 
+Summarization of Node Ages of Ultrametric Tree by Setting the Node Ages of the Consensus Tree
+---------------------------------------------------------------------------------------------
+
+.. versionadded:: 3.8
+
+Summarize a set of ultrametric tree files using a 95% rule consensus tree, with support for clades indicated as proportions (posterior probabilities) and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, with node ages of the consensus tree set to the mean node ages of the input trees:
+
+    $ sumtrees.py --min-clade-freq=0.95 --burn-in=200 --support-as-labels --mean-node-ages treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -f0.95 -b200 -l --mean-node-ages treefile1.tre treefile2.tre treefile3.tre
+
 Running in Parallel Mode
 ------------------------
 
@@ -263,11 +273,15 @@ We can ask SumTrees to summarize posterior probability from across all these run
 
     $ sumtrees.py --output=phylo.trees.sumtrees --burnin=200 phylo1.trees phylo2.trees phylo3.trees
 
+By default, SumTrees sets the edge lengths of the consensus tree to be equal to the mean of the lengths of the corresponding edges on the input trees. We can request SumTrees to set the edge lengths of the consensus tree such that the node ages of the consensus tree are equal to the mean of the ages of the corresponding nodes of the input trees using the "``--mean-node-ages``" flag::
+
+    $ sumtrees.py --mean-node-ages --burnin=200 phylo1.trees phylo2.trees phylo3.trees
+
 Alternatively, we might be quite happy with the MCCT tree produced by BEAST, and in fact we want to see how the MCMC samples produced by Mr. Bayes map onto this tree (i.e., the posterior probability of the splits on the MCCT as given by the Mr. Bayes samples).
 To do this, we would supply the Mr. Bayes ``.run.t``" files as the tree samples to be summarized, and use the "``-t``" or "``--target``" option to instruct SumTrees to map the posterior probabilities onto the BEAST MCMCT tree.
 Thus, assuming that our Mr. Bayes runs are is in the files "``phylo.nex.run1.t``" and "``phylo.nex.run2.t``", and the BEAST summarized MCCT tree is in the file "``phylo.beast.tree``" we could type the following::
 
-    $ sumtrees.py --target=phylo.beast.tree --output=phylo.mb-beast.sumtrees --burnin=200 phylo.nex.run1.t phylo2.nex.run2.t
+    $ sumtrees.py --target=phylo.beast.tree --output=phylo.mb-beast.sumtrees --burnin=200 phylo.nex.run1.t phylo2.nex.run2.
 
 Parallelizing SumTrees
 ----------------------

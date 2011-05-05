@@ -5,6 +5,7 @@ New Features
 ^^^^^^^^^^^^
 
     - Tree weights will now be interpreted and handled by SumTrees if the '--weighted-trees' option is specified.
+    - SumTrees can now summarize node ages of input trees (given a set of ultrametric input trees).
 
 Bug Fixes
 ^^^^^^^^^
