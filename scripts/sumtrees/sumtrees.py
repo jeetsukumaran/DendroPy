@@ -52,8 +52,8 @@ from dendropy.utility.cli import confirm_overwrite, show_splash
 
 _program_name = "SumTrees"
 _program_subtitle = "Phylogenetic Tree Split Support Summarization"
-_program_date = "Mar 03 2011"
-_program_version = "Version 3.2.0 (%s)" % _program_date
+_program_date = "May 05 2011"
+_program_version = "Version 3.3.0 (%s)" % _program_date
 _program_author = "Jeet Sukumaran and Mark T. Holder"
 _program_contact = "jeetsukumaran@gmail.com"
 _program_copyright = "Copyright (C) 2008 Jeet Sukumaran.\n" \
