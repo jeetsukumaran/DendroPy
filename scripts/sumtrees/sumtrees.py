@@ -399,6 +399,11 @@ def main_cli():
             const="mean_node_ages",
             default=None,
             help="edge lengths of output tree set such that node ages on the output tree are equal to the mean length of corresponding nodes of input trees (requires all input trees to be ultrametric, and will treat all trees as rooted)")
+    edge_summarization_optgroup.add_option("--collapse-negative-edges",
+            action="store_true",
+            dest="collapse_negative_edges",
+            default=False,
+            help="force parent node ages to be at least as old as its oldest child when summarizing node ages")
 
     output_filepath_optgroup = OptionGroup(parser, "Output File Options")
     parser.add_option_group(output_filepath_optgroup)
@@ -721,10 +726,20 @@ def main_cli():
     if opts.edge_summarization == "mean_node_ages":
         messenger.send_info("Summarizing node ages ...")
         report.append("Setting node ages of output tree(s) to mean of node age of input tree(s)")
+        if opts.collapse_negative_edges:
+            report.append("Parent node age coerced to be at least as old as oldest daughter node age")
+            collapse_negative_edges = True
+            allow_negative_edges = False
+        else:
+            report.append("Parent node ages not adjusted: negative edge lengths allowed")
+            collapse_negative_edges = False
+            allow_negative_edges = True
         for stree in tt_trees:
             tsum.summarize_node_ages_on_tree(tree=stree,
                     split_distribution=master_split_distribution,
                     set_edge_lengths=True,
+                    collapse_negative_edges=collapse_negative_edges,
+                    allow_negative_edges=allow_negative_edges,
                     set_extended_attr=True,
                     summarization_func=None)
     elif opts.edge_summarization == "mean_edge_lengths":

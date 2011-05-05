@@ -1209,7 +1209,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                         if abs(node.age - ocnd) > check_prec:
                             raise ValueError("Tree is not ultrametric")
 
-    def set_edge_lengths_from_node_ages(self):
+    def set_edge_lengths_from_node_ages(self, allow_negative_edges=False):
         """
         Sets the edge lengths of this tree based on the 'age' attribute.
         """
@@ -1219,7 +1219,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 #    nd.edge.length = 0.0
                 #else:
                 #    nd.edge.length = nd.parent_node.age - nd.age
-                if nd.parent_node.age < nd.age:
+                if not allow_negative_edges and nd.parent_node.age < nd.age:
                     #if nd.parent_node is self.seed_node:
                     #    # special case seed node
                     #    nd.parent_node.age = nd.age + nd.edge_length

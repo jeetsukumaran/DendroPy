@@ -108,8 +108,10 @@ class TreeSummarizer(object):
     def summarize_node_ages_on_tree(self,
             tree,
             split_distribution,
-            set_edge_lengths=True,
             set_extended_attr=True,
+            set_edge_lengths=True,
+            collapse_negative_edges=False,
+            allow_negative_edges=False,
             summarization_func=None):
         """
         Sets the `age` attribute of nodes on `tree` (a `Tree` object) to the
@@ -142,11 +144,12 @@ class TreeSummarizer(object):
                 # default to age of parent if split not found
                 nd.age = nd.parent_node.age
             ## force parent nodes to be at least as old as their oldest child
-            for child in nd.child_nodes():
-                if child.age > nd.age:
-                    nd.age = child.age
+            if collapse_negative_edges:
+                for child in nd.child_nodes():
+                    if child.age > nd.age:
+                        nd.age = child.age
         if set_edge_lengths:
-            tree.set_edge_lengths_from_node_ages()
+            tree.set_edge_lengths_from_node_ages(allow_negative_edges=allow_negative_edges)
         return tree
 
     def summarize_edge_lengths_on_tree(self,
