@@ -1,0 +1,25 @@
+#NEXUS
+
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=12;
+    TAXLABELS
+        Gorilla
+        Homo_sapiens
+        Hylobates
+        Lemur_catta
+        M_fascicularis
+        M_mulatta
+        M_sylvanus
+        Macaca_fuscata
+        Pan
+        Pongo
+        Saimiri_sciureus
+        Tarsius_syrichta
+  ;
+END;
+
+BEGIN TREES;
+    TREE TREE1 = [&R] (((((((Macaca_fuscata,M_mulatta),M_fascicularis),M_sylvanus),(Hylobates,(((Homo_sapiens,Pan),Gorilla),Pongo))),Saimiri_sciureus),Tarsius_syrichta),Lemur_catta);
+END;
+

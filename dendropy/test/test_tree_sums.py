@@ -55,5 +55,10 @@ class TestConsensusTree(unittest.TestCase):
                 s2 = round(float(edge2.head_node.label), 2)
                 self.assertAlmostEqual(s1, s2, 2)
 
+#class TestTreeEdgeSummarization(unittest.TestCase):
+#
+#    def setUp(self):
+#        self.support_trees = dendropy.TreeList.get_from_path("primates.beast-mcmc.trees", "nexus")
+
 if __name__ == "__main__":
     unittest.main()
