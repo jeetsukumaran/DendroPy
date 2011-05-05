@@ -338,12 +338,12 @@ def main_cli():
     source_tree_optgroup.add_option("--rooted",
             action="store_true",
             dest="rooted_trees",
-            default=False,
+            default=None,
             help="treat trees as rooted")
     source_tree_optgroup.add_option("--unrooted",
             action="store_false",
             dest="rooted_trees",
-            default=False,
+            default=None,
             help="treat trees as unrooted")
     source_tree_optgroup.add_option("--weighted-trees",
             action="store_true",
@@ -642,7 +642,9 @@ def main_cli():
 
     report = []
     report.append("%d trees considered in total for split support assessment." % (master_split_distribution.total_trees_counted))
-    if opts.rooted_trees:
+    if opts.rooted_trees is None:
+        report.append("Tree rooting as given by tree statement (defaults to unrooted).")
+    elif opts.rooted_trees:
         report.append("Trees treated as rooted.")
     else:
         report.append("Trees treated as unrooted.")
@@ -689,7 +691,8 @@ def main_cli():
         messenger.send_info("Mapping support to target tree ...")
         for tree in tree_source_iter(stream=open(target_tree_filepath, 'r'),
                 schema="nexus/newick",
-                taxon_set=master_taxon_set):
+                taxon_set=master_taxon_set,
+                as_rooted=opts.rooted_trees):
             stree = tsum.map_split_support_to_tree(tree,
                     master_split_distribution)
             tt_trees.append(stree)
