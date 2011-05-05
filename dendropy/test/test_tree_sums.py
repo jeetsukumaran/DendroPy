@@ -55,10 +55,45 @@ class TestConsensusTree(unittest.TestCase):
                 s2 = round(float(edge2.head_node.label), 2)
                 self.assertAlmostEqual(s1, s2, 2)
 
-#class TestTreeEdgeSummarization(unittest.TestCase):
-#
-#    def setUp(self):
-#        self.support_trees = dendropy.TreeList.get_from_path("primates.beast-mcmc.trees", "nexus")
+class TestTreeEdgeSummarization(unittest.TestCase):
+
+    def setUp(self):
+        self.taxon_set = dendropy.TaxonSet()
+        self.support_trees = dendropy.TreeList.get_from_path(pathmap.tree_source_path("primates.beast-mcmc.trees"),
+                "nexus",
+                taxon_set=self.taxon_set,
+                tree_offset=40)
+        self.split_distribution = treesplit.SplitDistribution(taxon_set=self.taxon_set)
+        self.split_distribution.is_rooted = True
+        self.split_distribution.ignore_node_ages = False
+        for tree in self.support_trees:
+            tree.update_splits()
+            self.split_distribution.count_splits_on_tree(tree)
+
+    def testMeanNodeAgeSummarizationOnMCCT(self):
+        path_to_target = pathmap.tree_source_path("primates.beast-mcct.noedgelens.tree")
+        obs_tree = dendropy.Tree.get_from_path(path_to_target, "nexus")
+        obs_tree.update_splits()
+        ts = treesum.TreeSummarizer(support_as_labels=True,
+                support_as_percentages=False,
+                support_label_decimals=4)
+        ts.summarize_node_ages_on_tree(tree=obs_tree,
+                split_distribution=self.split_distribution,
+                set_edge_lengths=True,
+                set_extended_attr=True,
+                summarization_func=None)
+        obs_tree.calc_node_ages()
+        exp_tree = dendropy.Tree.get_from_path(pathmap.tree_source_path("primates.beast-mcct.tree"),
+                "nexus",
+                taxon_set=self.taxon_set)
+        exp_tree.update_splits()
+        exp_tree.calc_node_ages()
+        self.assertEqual(exp_tree.split_edges.keys(), obs_tree.split_edges.keys())
+        splits = exp_tree.split_edges.keys()
+        for split in splits:
+            exp_edge = exp_tree.split_edges[split]
+            obs_edge = obs_tree.split_edges[split]
+            self.assertAlmostEqual(obs_edge.head_node.age, exp_edge.head_node.age)
 
 if __name__ == "__main__":
     unittest.main()
