@@ -1,0 +1,63 @@
+#NEXUS
+
+[ SumTrees Version 3.3.0 (May 05 2011) by Jeet Sukumaran and Mark T. Holder. ]
+[ Using DendroPy Version 3.7.2 by Jeet Sukumaran and Mark T. Holder. ]
+[ Running under Python 2.7 (r27:82500, Jul  4 2010, 16:21:17) (GCC 4.2.1 (Apple Inc. build 5659)) on darwin. ]
+[ Executed on glyphoglossus.local by jeet@glyphoglossus.local. ]
+[ Basis of split support: ]
+[   - '/Users/jeet/Documents/Projects/Phyloinformatics/DendroPy/dendropy/dendropy/test/data/trees/pythonidae.beast-mcmc.trees' ]
+[ Began at: 2011-05-05 16:41:06.120328. ]
+[ Ended at: 2011-05-05 16:41:24.715095. ]
+[ Run time: 0 hour(s), 00 minute(s), 18.594767 second(s). ]
+[ 501 trees considered in total for split support assessment. ]
+[ Trees treated as rooted. ]
+[ Trees treated as unweighted. ]
+[ 33 unique taxa across all trees. ]
+[ 92 unique splits out of 32565 total splits counted. ]
+[ 55 unique non-trivial splits out of 15033 total non-trivial splits counted. ]
+[ Consensus tree (0.500000 clade frequency threshold) constructed from splits. ]
+[ Proportion (frequency or probability) of support for each split indicated by node labels. ]
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=33;
+    TAXLABELS
+        Antaresia_childreni
+        Antaresia_maculosa
+        Antaresia_melanocephalus
+        Antaresia_perthensis
+        Antaresia_ramsayi
+        Antaresia_stimsoni
+        Apodora_papuana
+        Bothrochilus_boa
+        Candola_aspera
+        Liasis_albertisii
+        Liasis_fuscus
+        Liasis_mackloti
+        Liasis_olivaceus
+        Loxocemus_bicolor
+        Morelia_amethistina
+        Morelia_boeleni
+        Morelia_bredli
+        Morelia_carinata
+        Morelia_clastolepis
+        Morelia_kinghorni
+        Morelia_nauta
+        Morelia_oenpelliensis
+        Morelia_spilota
+        Morelia_tracyae
+        Morelia_viridisN
+        Morelia_viridisS
+        Python_curtus
+        Python_molurus
+        Python_regius
+        Python_reticulatus
+        Python_sebae
+        Python_timoriensis
+        Xenopeltis_unicolor
+  ;
+END;
+
+BEGIN TREES;
+    TREE 0 = (Antaresia_childreni:139.571161503,Antaresia_stimsoni:139.571161503,(Antaresia_perthensis:139.571161503,(Antaresia_maculosa:139.571161503,((((Morelia_bredli:10.7622450251,Morelia_spilota:10.7622450251)1.00:13.2982906512,(Morelia_oenpelliensis:22.2369854171,(Morelia_tracyae:13.7450850747,(Morelia_amethistina:10.3516361811,(Morelia_clastolepis:4.0225517442,(Morelia_kinghorni:2.92744006551,Morelia_nauta:2.92744006551)0.67:1.09511167869)1.00:6.32908443694)0.98:3.39344889356)1.00:8.49190034235)0.67:1.82355025923)1.00:115.510625827,((((Loxocemus_bicolor:139.571161503,(Candola_aspera:106.159244516,Xenopeltis_unicolor:106.159244516)0.75:33.4119169876)1.00:0.0,(Python_regius:42.0606094804,(Python_curtus:34.5450594758,(Python_molurus:21.5145627833,Python_sebae:21.5145627833)1.00:13.0304966925)1.00:7.51555000458)1.00:97.5105520228)1.00:0.0,(Python_reticulatus:26.026739639,Python_timoriensis:26.026739639)1.00:113.544421864)1.00:0.0,(Morelia_boeleni:38.0473585095,((Bothrochilus_boa:22.1475316325,Liasis_albertisii:22.1475316325)1.00:14.6811082108,(((Liasis_fuscus:6.76898725627,Liasis_mackloti:6.76898725627)1.00:20.480824491,(Apodora_papuana:21.9948813944,Liasis_olivaceus:21.9948813944)0.64:5.25493035283)1.00:5.89305776511,(Antaresia_melanocephalus:14.3877291693,Antaresia_ramsayi:14.3877291693)1.00:18.7551403431)0.90:3.685770331)0.89:1.21871866616)0.81:101.523802994)1.00:0.0)1.00:0.0,(Morelia_carinata:26.7613916529,(Morelia_viridisN:16.1506765301,Morelia_viridisS:16.1506765301)1.00:10.6107151227)1.00:112.80976985)1.00:0.0)1.00:0.0)1.00:0.0);
+END;
+
