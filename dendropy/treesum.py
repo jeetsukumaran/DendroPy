@@ -148,7 +148,10 @@ class TreeSummarizer(object):
                     max_age = max(child_ages)
                     max_len = max(child_edge_lens)
                     nd.age = max_age + max_len
-
+            ## force parent nodes to be at least as old as their oldest child
+            for child in nd.child_nodes():
+                if child.age > nd.age:
+                    nd.age = child.age
         if set_edge_lengths:
             tree.set_edge_lengths_from_node_ages()
         return tree
