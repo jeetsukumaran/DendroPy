@@ -1,5 +1,7 @@
 #NEXUS
 
+[treeannotator -burnin 500 -heights mean -target pythonidae.beast-mcmc.con.tre pythonidae.beast-mcmc.trees pythonidae.beast-mcmc.con.annotated.tre]
+
 Begin taxa;
 	Dimensions ntax=33;
 	Taxlabels
