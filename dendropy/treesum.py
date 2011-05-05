@@ -132,22 +132,15 @@ class TreeSummarizer(object):
         #'length_95hpd',
         #'length_range',
         #for split, edge in tree.split_edges.items():
-        for edge in tree.postorder_edge_iter():
+        for edge in tree.preorder_edge_iter():
             split = edge.split_bitmask
             nd = edge.head_node
             if split in split_distribution.split_node_ages:
                 ages = split_distribution.split_node_ages[split]
                 nd.age = summarization_func(ages)
             else:
-                children = nd.child_nodes()
-                if len(children) == 0:
-                    nd.age = 0
-                else:
-                    child_ages = [c.age for c in children]
-                    child_edge_lens = [c.edge.length for c in children]
-                    max_age = max(child_ages)
-                    max_len = max(child_edge_lens)
-                    nd.age = max_age + max_len
+                # default to age of parent if split not found
+                nd.age = nd.parent_node.age
             ## force parent nodes to be at least as old as their oldest child
             for child in nd.child_nodes():
                 if child.age > nd.age:
