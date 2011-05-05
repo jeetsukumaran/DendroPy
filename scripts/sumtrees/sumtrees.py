@@ -725,7 +725,7 @@ def main_cli():
 
     if opts.edge_summarization == "mean_node_ages":
         messenger.send_info("Summarizing node ages ...")
-        comments.append("Setting node ages of output tree(s) to mean of age of corresponding nodes on input tree(s).")
+        comments.append("Setting node ages of output tree(s) to mean age of corresponding nodes on input tree(s).")
         if opts.collapse_negative_edges:
             comments.append("Parent node ages coerced to be at least as old as oldest daughter node age.")
             collapse_negative_edges = True
