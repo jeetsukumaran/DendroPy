@@ -109,6 +109,8 @@ def randomly_reorient_tree(tree, rng=None, splits=False):
     internal nodes in the `tree`. If `splits` is True, the the `split_bitmask`
     and `split_edges` attributes kept valid.
     """
+    if rng is None:
+        rng = GLOBAL_RNG # use the global rng by default
     nd = rng.sample(tree.nodes(), 1)[0]
     if nd.is_leaf():
         tree.to_outgroup_position(nd, splits=splits)
