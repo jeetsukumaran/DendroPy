@@ -114,7 +114,7 @@ def find_edge_from_split(root, split_to_find, mask=-1):
             return r
     return None
 
-def encode_splits(tree, create_dict=True, delete_outdegree_one=None):
+def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
     """
     Processes splits on a tree, encoding them as bitmask on each edge.
     Adds the following to each edge:
@@ -136,11 +136,6 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=None):
         Note this will mean that an unrooted tree like '(A,(B,C))' will
         be changed to '(A,B,C)' after this operation!
     """
-    if delete_outdegree_one is None:
-        if tree.is_rooted:
-            delete_outdegree_one = False
-        else:
-            delete_outdegree_one = True
     taxon_set = tree.taxon_set
     if taxon_set is None:
         taxon_set = tree.infer_taxa()
