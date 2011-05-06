@@ -23,7 +23,6 @@ from itertools import izip
 from math import sqrt
 from dendropy import treesplit
 from dendropy.utility.messaging import get_logger
-import dendropy
 _LOG = get_logger(__name__)
 
 class PatristicDistanceMatrix(object):

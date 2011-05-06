@@ -1101,6 +1101,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         old_par.remove_child(nd)
         nd.add_child(old_par, edge_length=e.length)
         self.seed_node = nd
+        self.is_rooted = True
         if full_encode:
             treesplit.encode_splits(self, delete_outdegree_one=delete_deg_two)
 
@@ -1119,6 +1120,9 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         self.reroot_at(p, splits=splits)
         p.remove_child(nd)
         p.add_child(nd, edge_length=nd.edge.length, pos=0)
+        self.is_rooted = True
+        if splits:
+            self.update_splits()
 
     def reroot_at_midpoint(self, splits=False, delete_deg_two=True):
         """
@@ -1127,7 +1131,19 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         If `splits` is True, then the edges' `split_bitmask` and the tree's
         `split_edges` attributes will be updated.
         """
-        pass
+        from dendropy import treecalc
+        pdm = treecalc.PatristicDistanceMatrix(self)
+        target_edge, head_node_edge_len = pdm.max_midpoint_edge
+        tail_node_edge_len = target_edge.length - head_node_edge_len
+        self.to_outgroup_position(target_edge.head_node, splits=splits, delete_deg_two=delete_deg_two)
+        new_seed_node = Node()
+        self.seed_node.remove_child(target_edge.head_node)
+        new_seed_node.add_child(target_edge.head_node, edge_length=head_node_edge_len)
+        new_seed_node.add_child(self.seed_node, edge_length=tail_node_edge_len)
+        self.seed_node = new_seed_node
+        self.is_rooted = True
+        if splits:
+            self.update_splits()
 
     def suppress_outdegree_one_nodes(self):
         for nd in self.postorder_node_iter():
