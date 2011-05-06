@@ -60,8 +60,10 @@ class TreeMidpointRootingTest(extendedtest.ExtendedTestCase):
             tree2 = chk_trees[idx]
             tree1.reroot_at_midpoint(splits=True)
             self.assertEqual(tree1.symmetric_difference(tree2), 0)
-            #for split in tree1.split_edges:
-            #    self.assertAlmostEqual(tree1.split_edges[split].length, tree2.split_edges[split].length, 3)
+            for split in tree1.split_edges:
+                if tree1.split_edges[split].head_node is tree1.seed_node:
+                    continue
+                self.assertAlmostEqual(tree1.split_edges[split].length, tree2.split_edges[split].length, 3)
         src_trees.write_to_path("x.tre", "nexus")
 
 if __name__ == "__main__":

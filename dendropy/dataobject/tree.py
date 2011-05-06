@@ -1148,7 +1148,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         while cur_node is not mrca_node:
             if cur_node.edge.length > plen:
                 target_edge = cur_node.edge
-                head_node_edge_len = cur_node.edge.length - plen
+                head_node_edge_len = plen #cur_node.edge.length - plen
                 plen = 0
                 break
             elif cur_node.edge.length < plen:
