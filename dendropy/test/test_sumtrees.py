@@ -68,7 +68,7 @@ class SumTreesNodeAgesTester(SumTreesTester):
         SumTrees: summarizing node ages on MCCT topology.
         """
         if runlevel.is_test_enabled(runlevel.EXHAUSTIVE, _LOG, self.__class__.__name__):
-            path_to_src = pathmap.tree_source_path("primates.beast-mcmc.trees")
+            path_to_src = pathmap.tree_source_path("primates.beast.mcmc.trees")
             path_to_target = pathmap.tree_source_path("primates.beast.mcct.noedgelens.tree")
             args = ["-b",
                     "40",

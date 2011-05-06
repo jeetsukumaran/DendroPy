@@ -59,7 +59,7 @@ class TestTreeEdgeSummarization(unittest.TestCase):
 
     def setUp(self):
         self.taxon_set = dendropy.TaxonSet()
-        self.support_trees = dendropy.TreeList.get_from_path(pathmap.tree_source_path("primates.beast-mcmc.trees"),
+        self.support_trees = dendropy.TreeList.get_from_path(pathmap.tree_source_path("primates.beast.mcmc.trees"),
                 "nexus",
                 taxon_set=self.taxon_set,
                 tree_offset=40)

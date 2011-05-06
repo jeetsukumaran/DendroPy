@@ -776,7 +776,7 @@ class BeastSummaryTreeTests(datatest.DataObjectVerificationTestCase):
                     self.assertAlmostEqual(ref_val, node_val)
 
     def testReadSummaryTree(self):
-        tree = dendropy.Tree.get_from_stream(pathmap.tree_source_stream('pythonidae.beast-summary.tre'), 'beast-summary-tree')
+        tree = dendropy.Tree.get_from_stream(pathmap.tree_source_stream('pythonidae.beast.summary.tre'), 'beast-summary-tree')
         self.verify_node_info(tree)
         #for nd in tree:
         #    print('%s: {' % nd.edge.split_bitmask)
@@ -785,7 +785,7 @@ class BeastSummaryTreeTests(datatest.DataObjectVerificationTestCase):
         #    print("    },")
 
     def testSummaryTreeIter(self):
-        stream = pathmap.tree_source_stream('pythonidae.beast-summary.tre')
+        stream = pathmap.tree_source_stream('pythonidae.beast.summary.tre')
         for tree in dendropy.tree_source_iter(stream, 'beast-summary-tree'):
             self.verify_node_info(tree)
 
