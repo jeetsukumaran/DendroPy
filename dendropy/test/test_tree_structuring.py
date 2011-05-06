@@ -64,7 +64,6 @@ class TreeMidpointRootingTest(extendedtest.ExtendedTestCase):
                 if tree1.split_edges[split].head_node is tree1.seed_node:
                     continue
                 self.assertAlmostEqual(tree1.split_edges[split].length, tree2.split_edges[split].length, 3)
-        src_trees.write_to_path("x.tre", "nexus")
 
 if __name__ == "__main__":
     unittest.main()
