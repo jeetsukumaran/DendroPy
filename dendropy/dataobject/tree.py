@@ -1134,16 +1134,26 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         from dendropy import treecalc
         pdm = treecalc.PatristicDistanceMatrix(self)
         target_edge, head_node_edge_len = pdm.max_midpoint_edge
+
         tail_node_edge_len = target_edge.length - head_node_edge_len
-        self.to_outgroup_position(target_edge.head_node, splits=splits, delete_deg_two=delete_deg_two)
+        old_head_node = target_edge.head_node
+        old_tail_node = target_edge.tail_node
+        old_tail_node.remove_child(old_head_node)
         new_seed_node = Node()
-        self.seed_node.remove_child(target_edge.head_node)
-        new_seed_node.add_child(target_edge.head_node, edge_length=head_node_edge_len)
-        new_seed_node.add_child(self.seed_node, edge_length=tail_node_edge_len)
-        self.seed_node = new_seed_node
-        self.is_rooted = True
-        if splits:
-            self.update_splits()
+        new_seed_node.add_child(old_head_node, edge_length=head_node_edge_len)
+        old_tail_node.add_child(new_seed_node, edge_length=tail_node_edge_len)
+        self.reroot_at(new_seed_node, splits=splits, delete_deg_two=delete_deg_two)
+
+        #tail_node_edge_len = target_edge.length - head_node_edge_len
+        #self.to_outgroup_position(target_edge.head_node, splits=splits, delete_deg_two=delete_deg_two)
+        #new_seed_node = Node()
+        #self.seed_node.remove_child(target_edge.head_node)
+        #new_seed_node.add_child(target_edge.head_node, edge_length=head_node_edge_len)
+        #new_seed_node.add_child(self.seed_node, edge_length=tail_node_edge_len)
+        #self.seed_node = new_seed_node
+        #self.is_rooted = True
+        #if splits:
+        #    self.update_splits()
 
     def suppress_outdegree_one_nodes(self):
         for nd in self.postorder_node_iter():

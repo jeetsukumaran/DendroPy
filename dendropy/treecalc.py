@@ -99,9 +99,14 @@ class PatristicDistanceMatrix(object):
                             for desc2, desc2_plen in c2.desc_paths.items():
                                 pat_dist = node.desc_paths[desc1] + desc2_plen + c2.edge.length
                                 self._pat_dists[desc1.taxon][desc2.taxon] = pat_dist
-                                midpoint_path_len =  float(self._pat_dists[desc1.taxon][desc2.taxon]) / 2
-                                edge_div_len = midpoint_path_len - desc2_plen
-                                midpoint_edge = (c2.edge, edge_div_len)
+                                midpoint_path_len =  float(pat_dist) / 2
+                                r = midpoint_path_len - node.desc_paths[desc1]
+                                if  r > 0:
+                                    edge_div_len = c2.edge.length - r
+                                    midpoint_edge = (c2.edge, edge_div_len)
+                                else:
+                                    edge_div_len = c1.edge.length + r
+                                    midpoint_edge = (c1.edge, edge_div_len)
                                 self._midpoint_edges[desc1.taxon][desc2.taxon] = midpoint_edge
                                 if pat_dist > self.max_dist:
                                     self.max_dist = pat_dist
