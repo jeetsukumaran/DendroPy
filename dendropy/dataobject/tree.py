@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env pytho:
 
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
@@ -1101,7 +1101,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         old_par.remove_child(nd)
         nd.add_child(old_par, edge_length=e.length)
         self.seed_node = nd
-        self.is_rooted = True
+        #self.is_rooted = True
         if full_encode:
             treesplit.encode_splits(self, delete_outdegree_one=delete_deg_two)
 
@@ -1120,9 +1120,6 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         self.reroot_at(p, splits=splits)
         p.remove_child(nd)
         p.add_child(nd, edge_length=nd.edge.length, pos=0)
-        self.is_rooted = True
-        if splits:
-            self.update_splits()
 
     def reroot_at_midpoint(self, splits=False, delete_deg_two=True):
         """
