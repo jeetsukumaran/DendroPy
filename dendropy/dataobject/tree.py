@@ -1160,7 +1160,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         assert break_on_node is not None or target_edge is not None
 
         if break_on_node:
-            self.reroot_at(break_on_node, splits=splits, delete_deg_two=delete_deg_two)
+            self.reroot_at(break_on_node, splits=False, delete_deg_two=delete_deg_two)
         else:
             tail_node_edge_len = target_edge.length - head_node_edge_len
             old_head_node = target_edge.head_node
@@ -1169,7 +1169,9 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             new_seed_node = Node()
             new_seed_node.add_child(old_head_node, edge_length=head_node_edge_len)
             old_tail_node.add_child(new_seed_node, edge_length=tail_node_edge_len)
-            self.reroot_at(new_seed_node, splits=splits, delete_deg_two=delete_deg_two)
+            self.reroot_at(new_seed_node, splits=False, delete_deg_two=delete_deg_two)
+        if splits:
+            self.update_splits()
 
             #tail_node_edge_len = target_edge.length - head_node_edge_len
             #self.to_outgroup_position(target_edge.head_node, splits=splits, delete_deg_two=delete_deg_two)

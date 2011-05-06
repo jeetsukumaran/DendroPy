@@ -23,11 +23,12 @@ Tests native tree structuring routines.
 import unittest
 from dendropy.test.support import pathmap
 from dendropy.utility import messaging
+from dendropy.test.support import extendedtest
 import dendropy
 
 _LOG = messaging.get_logger(__name__)
 
-class TestTreeRestructures(unittest.TestCase):
+class TestTreeLadderization(unittest.TestCase):
 
     def testLadderizeLeft(self):
         """
@@ -42,6 +43,26 @@ class TestTreeRestructures(unittest.TestCase):
         """
         tree = dendropy.Tree.get_from_path(pathmap.tree_source_path('pythonidae.mle.nex'), "nexus")
         tree.ladderize(right=True)
+
+class TreeMidpointRootingTest(extendedtest.ExtendedTestCase):
+
+    def testMidpointRooting(self):
+        taxa = dendropy.TaxonSet()
+        src_trees = dendropy.TreeList.get_from_path(pathmap.tree_source_path('pythonidae.random.bd0301.randomly-rooted.tre'),
+                "nexus",
+                taxon_set=taxa,
+                as_rooted=True)
+        chk_trees = dendropy.TreeList.get_from_path(pathmap.tree_source_path('pythonidae.random.bd0301.midpoint-rooted.tre'),
+                "nexus",
+                taxon_set=taxa,
+                as_rooted=True)
+        for idx, tree1 in enumerate(src_trees):
+            tree2 = chk_trees[idx]
+            tree1.reroot_at_midpoint(splits=True)
+            self.assertEqual(tree1.symmetric_difference(tree2), 0)
+            #for split in tree1.split_edges:
+            #    self.assertAlmostEqual(tree1.split_edges[split].length, tree2.split_edges[split].length, 3)
+        src_trees.write_to_path("x.tre", "nexus")
 
 if __name__ == "__main__":
     unittest.main()
