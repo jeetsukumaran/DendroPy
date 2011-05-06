@@ -23,7 +23,9 @@ from itertools import izip
 from math import sqrt
 from dendropy import treesplit
 from dendropy.utility.messaging import get_logger
+import dendropy
 _LOG = get_logger(__name__)
+
 class PatristicDistanceMatrix(object):
     """
     Calculates and maintains patristic distance information of taxa on a tree.
@@ -33,6 +35,9 @@ class PatristicDistanceMatrix(object):
         self.tree = None
         self.taxon_set = None
         self._pat_dists = {}
+        self._midpoint_edges = {}
+        self.max_midpoint_edge = None
+        self.max_dist = None
         if tree is not None:
             self.calc(tree)
 
@@ -44,20 +49,43 @@ class PatristicDistanceMatrix(object):
             return 0.0
         try:
             return self._pat_dists[taxon1][taxon2]
-        except KeyError, e:
+        except KeyError:
             return self._pat_dists[taxon2][taxon1]
 
-    def calc(self, tree):
+    def midpoint_edge(self, taxon1, taxon2):
+        """
+        Returns a pair (edge, remainder_dist) indicating the middle point on the tree between the two taxa, `taxon1` and `taxon2`.
+        `edge` is the Edge object on which the midpoint occurs, and
+        `remainder_dist` is the distance between the midpoint and the edge's
+        *head* node.
+        Thus, if the edge were to be split at the midpoint, the edge's head (or
+        child) node would have an edge of length `remainder_dist`,
+        while the edge's previous tail (or parent) node would have a length of
+        the edge's current length minus `remainder_dist`an edge of length
+        `remainder_dist`, while the edge's previous tail (or parent) node would
+        have a length of the edge's current length minus `remainder_dist`.
+        """
+        try:
+            return self._midpoint_edges[taxon1][taxon2]
+        except KeyError:
+            return self._midpoint_edges[taxon2][taxon1]
+
+    def calc(self, tree=None, create_midpoints=None):
         """
         Calculates the distances.
         """
-        self.tree = tree
+        if tree is not None:
+            self.tree = tree
+        assert tree is not None
         if not hasattr(self.tree, "split_edges"):
             treesplit.encode_splits(self.tree)
         self.taxon_set = tree.taxon_set
         self._pat_dists = {}
         for i1, t1 in enumerate(self.taxon_set):
             self._pat_dists[t1] = {}
+            self._midpoint_edges[t1] = {}
+            self.max_midpoint = None
+            self.max_dist = None
 
         for node in tree.postorder_node_iter():
             children = node.child_nodes()
@@ -70,8 +98,15 @@ class PatristicDistanceMatrix(object):
                         node.desc_paths[desc1] = desc1_plen + c1.edge.length
                         for c2 in children[cidx1+1:]:
                             for desc2, desc2_plen in c2.desc_paths.items():
-                                self._pat_dists[desc1.taxon][desc2.taxon] = \
-                                    node.desc_paths[desc1] + desc2_plen + c2.edge.length
+                                pat_dist = node.desc_paths[desc1] + desc2_plen + c2.edge.length
+                                self._pat_dists[desc1.taxon][desc2.taxon] = pat_dist
+                                midpoint_path_len =  float(self._pat_dists[desc1.taxon][desc2.taxon]) / 2
+                                edge_div_len = midpoint_path_len - desc2_plen
+                                midpoint_edge = (c2.edge, edge_div_len)
+                                self._midpoint_edges[desc1.taxon][desc2.taxon] = midpoint_edge
+                                if pat_dist > self.max_dist:
+                                    self.max_dist = pat_dist
+                                    self.max_midpoint_edge = midpoint_edge
                     del(c1.desc_paths)
 
     def distances(self):
@@ -359,7 +394,7 @@ def fitch_down_pass(postorder_node_list, attr_name="state_sets", weight_list=Non
                         wt = weight_list[n]
                     score += wt
                     result.append(set.union(left_ss, right_ss))
-                #_LOG.debug("left = %s, right = %s, nd= %s" % 
+                #_LOG.debug("left = %s, right = %s, nd= %s" %
                 #                (str(left_ss), str(right_ss), str(result)))
             if remaining:
                 right_c = remaining.pop(0)
@@ -421,7 +456,7 @@ def fitch_up_pass(preorder_node_list, attr_name="state_sets", taxa_to_state_set_
                     in_par_and_left = set.intersection(par_ss, left_ss)
                     in_par_and_right = set.intersection(par_ss, right_ss)
                     final_ss = set.union(in_par_and_left, in_par_and_right, curr_ss)
-            #_LOG.debug("downpass = %s, par = %s, left = %s, right = %s, final_ss= %s" % 
+            #_LOG.debug("downpass = %s, par = %s, left = %s, right = %s, final_ss= %s" %
             #                    (str(curr_ss), str(par_ss), str(left_ss), str(right_ss), str(final_ss)))
             result.append(final_ss)
         setattr(nd, attr_name, result)
