@@ -28,15 +28,20 @@ _LOG = get_logger(__name__)
 class PatristicDistanceMatrix(object):
     """
     Calculates and maintains patristic distance information of taxa on a tree.
+    `max_dist_taxa` and `max_dist_nodes` will return a tuple of taxon objects
+    and corresponding nodes, respectively, that span the greatest path distance
+    in the tree. The mid-point between the two is *guaranteed* to be on the
+    closer to the first item of each pair.
     """
 
     def __init__(self, tree=None):
         self.tree = None
         self.taxon_set = None
         self._pat_dists = {}
-        self._midpoint_edges = {}
-        self.max_midpoint_edge = None
         self.max_dist = None
+        self.max_dist_taxa = None
+        self.max_dist_nodes = None
+        self._mrca = {}
         if tree is not None:
             self.calc(tree)
 
@@ -51,23 +56,16 @@ class PatristicDistanceMatrix(object):
         except KeyError:
             return self._pat_dists[taxon2][taxon1]
 
-    def midpoint_edge(self, taxon1, taxon2):
+    def mrca(self, taxon1, taxon2):
         """
-        Returns a pair (edge, remainder_dist) indicating the middle point on the tree between the two taxa, `taxon1` and `taxon2`.
-        `edge` is the Edge object on which the midpoint occurs, and
-        `remainder_dist` is the distance between the midpoint and the edge's
-        *head* node.
-        Thus, if the edge were to be split at the midpoint, the edge's head (or
-        child) node would have an edge of length `remainder_dist`,
-        while the edge's previous tail (or parent) node would have a length of
-        the edge's current length minus `remainder_dist`an edge of length
-        `remainder_dist`, while the edge's previous tail (or parent) node would
-        have a length of the edge's current length minus `remainder_dist`.
+        Returns MRCA of two taxon objects.
         """
+        if taxon1 is taxon2:
+            return taxon1
         try:
-            return self._midpoint_edges[taxon1][taxon2]
+            return self._mrca[taxon1][taxon2]
         except KeyError:
-            return self._midpoint_edges[taxon2][taxon1]
+            return self._mrca[taxon2][taxon1]
 
     def calc(self, tree=None, create_midpoints=None):
         """
@@ -82,9 +80,10 @@ class PatristicDistanceMatrix(object):
         self._pat_dists = {}
         for i1, t1 in enumerate(self.taxon_set):
             self._pat_dists[t1] = {}
-            self._midpoint_edges[t1] = {}
-            self.max_midpoint = None
+            self._mrca[t1] = {}
             self.max_dist = None
+            self.max_dist_taxa = None
+            self.max_dist_nodes = None
 
         for node in tree.postorder_node_iter():
             children = node.child_nodes()
@@ -99,18 +98,16 @@ class PatristicDistanceMatrix(object):
                             for desc2, desc2_plen in c2.desc_paths.items():
                                 pat_dist = node.desc_paths[desc1] + desc2_plen + c2.edge.length
                                 self._pat_dists[desc1.taxon][desc2.taxon] = pat_dist
-                                midpoint_path_len =  float(pat_dist) / 2
-                                r = midpoint_path_len - node.desc_paths[desc1]
-                                if  r > 0:
-                                    edge_div_len = c2.edge.length - r
-                                    midpoint_edge = (c2.edge, edge_div_len)
-                                else:
-                                    edge_div_len = c1.edge.length + r
-                                    midpoint_edge = (c1.edge, edge_div_len)
-                                self._midpoint_edges[desc1.taxon][desc2.taxon] = midpoint_edge
+                                self._mrca[desc1.taxon][desc2.taxon] = c1.parent_node
                                 if pat_dist > self.max_dist:
                                     self.max_dist = pat_dist
-                                    self.max_midpoint_edge = midpoint_edge
+                                    midpoint = float(pat_dist) / 2
+                                    if midpoint - node.desc_paths[desc1] <= 0:
+                                        self.max_dist_nodes = (desc1, desc2)
+                                        self.max_dist_taxa = (desc1.taxon, desc2.taxon)
+                                    else:
+                                        self.max_dist_nodes = (desc2, desc1)
+                                        self.max_dist_taxa = (desc2.taxon, desc1.taxon)
                     del(c1.desc_paths)
 
     def distances(self):

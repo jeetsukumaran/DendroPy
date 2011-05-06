@@ -1133,27 +1133,54 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         from dendropy import treecalc
         pdm = treecalc.PatristicDistanceMatrix(self)
-        target_edge, head_node_edge_len = pdm.max_midpoint_edge
+        n1, n2 = pdm.max_dist_nodes
+        plen = float(pdm.max_dist) / 2
+        mrca_node = pdm.mrca(n1.taxon, n2.taxon)
+        #assert mrca_node is self.mrca(taxa=[n1.taxon, n2.taxon])
+        #mrca_node = self.mrca(taxa=[n1.taxon, n2.taxon])
+        cur_node = n1
 
-        tail_node_edge_len = target_edge.length - head_node_edge_len
-        old_head_node = target_edge.head_node
-        old_tail_node = target_edge.tail_node
-        old_tail_node.remove_child(old_head_node)
-        new_seed_node = Node()
-        new_seed_node.add_child(old_head_node, edge_length=head_node_edge_len)
-        old_tail_node.add_child(new_seed_node, edge_length=tail_node_edge_len)
-        self.reroot_at(new_seed_node, splits=splits, delete_deg_two=delete_deg_two)
+        break_on_node = None # populated *iff* midpoint is exactly at an existing node
+        target_edge = None
+        head_node_edge_len = None
 
-        #tail_node_edge_len = target_edge.length - head_node_edge_len
-        #self.to_outgroup_position(target_edge.head_node, splits=splits, delete_deg_two=delete_deg_two)
-        #new_seed_node = Node()
-        #self.seed_node.remove_child(target_edge.head_node)
-        #new_seed_node.add_child(target_edge.head_node, edge_length=head_node_edge_len)
-        #new_seed_node.add_child(self.seed_node, edge_length=tail_node_edge_len)
-        #self.seed_node = new_seed_node
-        #self.is_rooted = True
-        #if splits:
-        #    self.update_splits()
+        # going up ...
+        while cur_node is not mrca_node:
+            if cur_node.edge.length > plen:
+                target_edge = cur_node.edge
+                head_node_edge_len = cur_node.edge.length - plen
+                plen = 0
+                break
+            elif cur_node.edge.length < plen:
+                plen -= cur_node.edge.length
+                cur_node = cur_node.parent_node
+            else:
+                break_on_node = cur_node
+
+        assert break_on_node is not None or target_edge is not None
+
+        if break_on_node:
+            self.reroot_at(break_on_node, splits=splits, delete_deg_two=delete_deg_two)
+        else:
+            tail_node_edge_len = target_edge.length - head_node_edge_len
+            old_head_node = target_edge.head_node
+            old_tail_node = target_edge.tail_node
+            old_tail_node.remove_child(old_head_node)
+            new_seed_node = Node()
+            new_seed_node.add_child(old_head_node, edge_length=head_node_edge_len)
+            old_tail_node.add_child(new_seed_node, edge_length=tail_node_edge_len)
+            self.reroot_at(new_seed_node, splits=splits, delete_deg_two=delete_deg_two)
+
+            #tail_node_edge_len = target_edge.length - head_node_edge_len
+            #self.to_outgroup_position(target_edge.head_node, splits=splits, delete_deg_two=delete_deg_two)
+            #new_seed_node = Node()
+            #self.seed_node.remove_child(target_edge.head_node)
+            #new_seed_node.add_child(target_edge.head_node, edge_length=head_node_edge_len)
+            #new_seed_node.add_child(self.seed_node, edge_length=tail_node_edge_len)
+            #self.seed_node = new_seed_node
+            #self.is_rooted = True
+            #if splits:
+            #    self.update_splits()
 
     def suppress_outdegree_one_nodes(self):
         for nd in self.postorder_node_iter():
