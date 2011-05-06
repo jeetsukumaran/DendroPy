@@ -4,7 +4,7 @@ Release 3.8.0
 New Features
 ^^^^^^^^^^^^
 
-    - Tree weights will now be interpreted and handled by SumTrees if the '--weighted-trees' option is specified.
+    - Tree weights will now be interpreted and handled by SumTrees if the `--weighted-trees` option is specified.
     - SumTrees can now summarize node ages of input trees (given a set of ultrametric input trees).
     - Tree objects can now be rerooted at midpoint (see `Tree.reroot_at_midpoint()`).
     - SumTrees can now summarize node ages on ultrametric tree:
@@ -14,6 +14,7 @@ Bug Fixes
 ^^^^^^^^^
 
     - SumTrees can now handle arbitrarily-large numbers of files
+    - SumTrees creates a rooted consensus tree if input trees are specified to be rooted using the `--rooted-trees` flag
 
 
 Release 3.7.2
