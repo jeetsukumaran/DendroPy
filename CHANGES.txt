@@ -6,6 +6,9 @@ New Features
 
     - Tree weights will now be interpreted and handled by SumTrees if the '--weighted-trees' option is specified.
     - SumTrees can now summarize node ages of input trees (given a set of ultrametric input trees).
+    - Tree objects can now be rerooted at midpoint (see `Tree.reroot_at_midpoint()`).
+    - SumTrees can now summarize node ages on ultrametric tree:
+        - `--mean-node-ages`: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the mean age of corresponding nodes on the input tree.
 
 Bug Fixes
 ^^^^^^^^^
