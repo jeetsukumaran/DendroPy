@@ -241,6 +241,7 @@ def process_sources_serial(
     taxon_set = dendropy.TaxonSet()
     split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
     split_distribution.ignore_node_ages = ignore_node_ages
+    split_distribution.is_rooted = is_rooted
 
     if support_filepaths is None or len(support_filepaths) == 0:
         messenger.send_info("Reading trees from standard input.")
@@ -561,8 +562,6 @@ def main_cli():
     if opts.edge_summarization == "mean_node_ages":
         ignore_node_ages = False
         opts.rooted_trees = True
-        if target_tree_filepath is None:
-            opts.root_target = True
     else:
         ignore_node_ages = True
 
