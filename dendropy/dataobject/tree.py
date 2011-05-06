@@ -1168,7 +1168,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             old_tail_node.add_child(new_seed_node, edge_length=tail_node_edge_len)
             self.reroot_at(new_seed_node, splits=False, delete_deg_two=delete_deg_two)
         if splits:
-            self.update_splits()
+            self.update_splits(delete_outdegree_one=False)
 
             #tail_node_edge_len = target_edge.length - head_node_edge_len
             #self.to_outgroup_position(target_edge.head_node, splits=splits, delete_deg_two=delete_deg_two)

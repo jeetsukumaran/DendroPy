@@ -44,16 +44,16 @@ class RootingInterpreter(object):
             raise TypeError("Conflict rooting specification: 'as_rooted'=%s and 'as_unrooted'=%s" \
                     % (kwdict["as_rooted"], kwdict["as_unrooted"]))
         if "as_rooted" in kwdict:
-            #if kwdict["as_rooted"] is None:
-            #    return default
+            if kwdict["as_rooted"] is None:
+                return default
             if kwdict["as_rooted"] is True or kwdict["as_rooted"] is False:
                 return kwdict["as_rooted"]
             else:
                 raise ValueError("Invalid value for 'as_rooted' (expecting True/False, but received '%s')" \
                         % kwdict["as_rooted"])
         elif "as_unrooted" in kwdict:
-            #if kwdict["as_unrooted"] is None:
-            #    return default
+            if kwdict["as_unrooted"] is None:
+                return default
             if kwdict["as_unrooted"] is True or kwdict["as_unrooted"] is False:
                 return not kwdict["as_unrooted"]
             else:

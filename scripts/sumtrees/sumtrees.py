@@ -711,7 +711,7 @@ def main_cli():
                 if opts.outgroup:
                     pass
                 else:
-                    tree.root_at_midpoint()
+                    tree.root_at_midpoint(splits=True)
             if opts.rooted_trees and not tree.is_rooted:
                 messenger.send_error("Support trees are treated as rooted, but target tree is unrooted. Root target tree(s) and re-run, or run using the '--root-target' flag.")
                 sys.exit(1)
@@ -739,7 +739,7 @@ def main_cli():
                 include_edge_lengths=not opts.no_branch_lengths,
                 include_edge_length_var=opts.branch_length_var)
         if opts.root_target:
-            stree.reroot_at_midpoint()
+            stree.reroot_at_midpoint(splits=True)
         tt_trees.append(stree)
         report = []
         report.append("Consensus tree (%f clade frequency threshold) constructed from splits." % min_freq)

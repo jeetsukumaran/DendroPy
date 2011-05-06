@@ -125,6 +125,8 @@ class TreeSummarizer(object):
         """
         if summarization_func is None:
             summarization_func = lambda x: float(sum(x))/len(x)
+        if not hasattr(tree, "split_edges"):
+            tree.update_splits()
         #'height',
         #'height_median',
         #'height_95hpd',
@@ -167,6 +169,8 @@ class TreeSummarizer(object):
         """
         if summarization_func is None:
             summarization_func = lambda x: float(sum(x))/len(x)
+        if not hasattr(tree, "split_edges"):
+            tree.update_splits()
         for split, edge in tree.split_edges.items():
             if (split in split_distribution.split_edge_lengths
                     and split_distribution.split_edge_lengths[split]):
@@ -180,8 +184,7 @@ class TreeSummarizer(object):
                          split_distribution,
                          min_freq=0.5,
                          include_edge_lengths=True,
-                         include_edge_length_var=False,
-                         root=False):
+                         include_edge_length_var=False):
         """Returns a consensus tree from splits in `split_distribution`.
 
         If include_edge_length_var is True, then the sample variance of the
@@ -192,6 +195,7 @@ class TreeSummarizer(object):
 
         taxon_set = split_distribution.taxon_set
         con_tree = treesim.star_tree(taxon_set)
+        con_tree.is_rooted = split_distribution.is_rooted
         if self.weighted_splits:
             split_freqs = split_distribution.weighted_split_frequencies
         else:
