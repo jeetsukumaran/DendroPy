@@ -69,7 +69,7 @@ class SumTreesNodeAgesTester(SumTreesTester):
         """
         if runlevel.is_test_enabled(runlevel.EXHAUSTIVE, _LOG, self.__class__.__name__):
             path_to_src = pathmap.tree_source_path("primates.beast-mcmc.trees")
-            path_to_target = pathmap.tree_source_path("primates.beast-mcct.noedgelens.tree")
+            path_to_target = pathmap.tree_source_path("primates.beast.mcct.noedgelens.tree")
             args = ["-b",
                     "40",
                     "--mean-node-ages",
@@ -80,7 +80,7 @@ class SumTreesNodeAgesTester(SumTreesTester):
             self.assertEqual(retcode, 0)
 
             taxa = dendropy.TaxonSet()
-            exp_tree = dendropy.Tree.get_from_path(pathmap.tree_source_path("primates.beast-mcct.tree"), "nexus", taxon_set=taxa)
+            exp_tree = dendropy.Tree.get_from_path(pathmap.tree_source_path("primates.beast.mcct.meanh.tre"), "nexus", taxon_set=taxa)
             obs_tree = dendropy.Tree.get_from_string(stdout, "nexus", taxon_set=taxa)
             exp_tree.update_splits()
             exp_tree.calc_node_ages()

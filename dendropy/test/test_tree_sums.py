@@ -71,7 +71,7 @@ class TestTreeEdgeSummarization(unittest.TestCase):
             self.split_distribution.count_splits_on_tree(tree)
 
     def testMeanNodeAgeSummarizationOnMCCT(self):
-        path_to_target = pathmap.tree_source_path("primates.beast-mcct.noedgelens.tree")
+        path_to_target = pathmap.tree_source_path("primates.beast.mcct.noedgelens.tree")
         obs_tree = dendropy.Tree.get_from_path(path_to_target, "nexus")
         obs_tree.update_splits()
         ts = treesum.TreeSummarizer(support_as_labels=True,
@@ -83,7 +83,7 @@ class TestTreeEdgeSummarization(unittest.TestCase):
                 set_extended_attr=True,
                 summarization_func=None)
         obs_tree.calc_node_ages()
-        exp_tree = dendropy.Tree.get_from_path(pathmap.tree_source_path("primates.beast-mcct.tree"),
+        exp_tree = dendropy.Tree.get_from_path(pathmap.tree_source_path("primates.beast.mcct.meanh.tre"),
                 "nexus",
                 taxon_set=self.taxon_set)
         exp_tree.update_splits()
