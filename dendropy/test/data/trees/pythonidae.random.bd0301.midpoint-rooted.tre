@@ -1,8 +1,8 @@
 #NEXUS 
 
-Begin trees;  [Treefile saved Thu May  5 20:02:12 2011]
+Begin trees;  [Treefile saved Thu May  5 23:20:35 2011]
 [!
->Data file = /Users/jeet/Testing/midpoint-rooting/pythonidae.random.bd0301.tre
+>Data file = /Users/jeet/Testing/midpoint-rooting/r1.tre
 >
 >Processing TREES block from file "pythonidae.random.bd0301.tre":
 >   Keeping: trees from file (replacing trees in memory)
