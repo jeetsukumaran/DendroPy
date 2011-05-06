@@ -1120,6 +1120,15 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         p.remove_child(nd)
         p.add_child(nd, edge_length=nd.edge.length, pos=0)
 
+    def reroot_at_midpoint(self, splits=False, delete_deg_two=True):
+        """
+        Reroots the tree at the the mid-point of the longest distance between
+        two taxa in a tree.
+        If `splits` is True, then the edges' `split_bitmask` and the tree's
+        `split_edges` attributes will be updated.
+        """
+        pass
+
     def suppress_outdegree_one_nodes(self):
         for nd in self.postorder_node_iter():
             children = nd.child_nodes()
