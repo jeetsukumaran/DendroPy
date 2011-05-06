@@ -549,11 +549,20 @@ def main_cli():
     else:
         target_tree_filepath = None
 
+    ### TODO: these will be command-line options in the future
+    ### here we just set it
+    assert not hasattr(opts, 'outgroup')
+    opts.outgroup = None
+    assert not hasattr(opts, 'root_target')
+    opts.root_target = None
+
     ### TODO: idiot-check edge length summarization
     # edge lengths
     if opts.edge_summarization == "mean_node_ages":
         ignore_node_ages = False
         opts.rooted_trees = True
+        if target_tree_filepath is None:
+            opts.root_target = True
     else:
         ignore_node_ages = True
 
@@ -698,12 +707,25 @@ def main_cli():
                 schema="nexus/newick",
                 taxon_set=master_taxon_set,
                 as_rooted=opts.rooted_trees):
+            if opts.root_target:
+                if opts.outgroup:
+                    pass
+                else:
+                    tree.root_at_midpoint()
+            if opts.rooted_trees and not tree.is_rooted:
+                messenger.send_error("Support trees are treated as rooted, but target tree is unrooted. Root target tree(s) and re-run, or run using the '--root-target' flag.")
+                sys.exit(1)
             stree = tsum.map_split_support_to_tree(tree,
                     master_split_distribution)
             tt_trees.append(stree)
         messenger.send_info("Parsed '%s': %d tree(s) in file" % (target_tree_filepath, len(tt_trees)))
         comments.append("Split support mapped to trees in:")
         comments.append("  - '%s' (%d trees)" % (os.path.abspath(target_tree_filepath), len(tt_trees)))
+        if opts.root_target:
+            if opts.outgroup:
+                comments.append("Target tree(s) rooted using outgroup: %s." % opts.outgroup)
+            else:
+                comments.append("Target tree(s) rooted at midpoint.")
         comments.append(support_summarization + '.')
     else:
         messenger.send_info("Constructing clade consensus tree ...")
@@ -716,9 +738,16 @@ def main_cli():
                 min_freq=min_freq,
                 include_edge_lengths=not opts.no_branch_lengths,
                 include_edge_length_var=opts.branch_length_var)
+        if opts.root_target:
+            stree.reroot_at_midpoint()
         tt_trees.append(stree)
         report = []
         report.append("Consensus tree (%f clade frequency threshold) constructed from splits." % min_freq)
+        if opts.root_target:
+            if opts.outgroup:
+                report.append("Consensus tree rooted using outgroup: %s." % opts.outgroup)
+            else:
+                report.append("Consensus tree rooted at midpoint.")
         report.append(support_summarization + ".")
         messenger.send_info_lines(report)
         comments.extend(report)

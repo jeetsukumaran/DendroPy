@@ -180,7 +180,8 @@ class TreeSummarizer(object):
                          split_distribution,
                          min_freq=0.5,
                          include_edge_lengths=True,
-                         include_edge_length_var=False):
+                         include_edge_length_var=False,
+                         root=False):
         """Returns a consensus tree from splits in `split_distribution`.
 
         If include_edge_length_var is True, then the sample variance of the
