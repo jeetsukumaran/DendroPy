@@ -9,6 +9,7 @@ New Features
     - Tree objects can now be rerooted at midpoint (see `Tree.reroot_at_midpoint()`).
     - SumTrees can now summarize node ages on ultrametric tree:
         - `--mean-node-ages`: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the mean age of corresponding nodes on the input tree.
+    - When writing in NEXUS or NEWICK formats, the `node_comments` keyword argument (`True` or `False`) can control whether extended comments associated with nodes on trees will be written or not.
 
 Bug Fixes
 ^^^^^^^^^

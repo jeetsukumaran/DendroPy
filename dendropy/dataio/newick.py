@@ -189,6 +189,7 @@ class NewickWriter(iosys.DataWriter):
         self.quote_underscores = kwargs.get('quote_underscores', True)
         self.store_tree_weights = kwargs.get("store_tree_weights", False)
         self.nhx_key_to_func = kwargs.get("nhx_key_to_func_dict")
+        self.write_node_comments = kwargs.get("node_comments", False)
 
     def write(self, stream):
         """
@@ -274,4 +275,9 @@ class NewickWriter(iosys.DataWriter):
                     nhx_to_print.append("%s=%s" % (k, str(r)))
             if nhx_to_print:
                 statement = statement + ('[&&NHX:%s]' % ':'.join(nhx_to_print))
+        if self.write_node_comments:
+            comments = []
+            for comment in node.comments:
+                comments.append("[%s]" % comment)
+            statement += "".join(comments)
         return statement

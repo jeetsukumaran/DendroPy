@@ -49,6 +49,7 @@ class NexusWriter(iosys.DataWriter):
            - `store_tree_weights` : tree weights are store
            - `edge_lengths` : if False, edges will not write edge lengths [True]
            - `internal_labels` : if False, internal labels will not be written [True]
+           - `write_node_comments` : if True, comments associated with (tree) nodes will be written [False]
            - `comment` : list of lines of text to be added as comments to the
              file
         """
@@ -63,6 +64,7 @@ class NexusWriter(iosys.DataWriter):
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
         self.quote_underscores = kwargs.get('quote_underscores', True)
         self.nhx_key_to_func = kwargs.get("nhx_key_to_func_dict")
+        self.is_write_node_comments = kwargs.get("node_comments", self.simple)
         self.comment = kwargs.get("comment", [])
 
     def write(self, stream):
@@ -155,7 +157,8 @@ class NexusWriter(iosys.DataWriter):
                 internal_labels=self.is_write_internal_labels,
                 preserve_spaces=self.preserve_spaces,
                 quote_underscores = self.quote_underscores,
-                nhx_key_to_func_dict=self.nhx_key_to_func)
+                nhx_key_to_func_dict=self.nhx_key_to_func,
+                node_comments=self.is_write_node_comments)
         block.append('BEGIN TREES;')
         if self._link_blocks():
             title = self.compose_block_title(tree_list)
