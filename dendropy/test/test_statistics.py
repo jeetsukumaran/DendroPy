@@ -165,6 +165,14 @@ class HpdCalculationTests(extendedtest.ExtendedTestCase):
         self.assertAlmostEqual(c1, 0.02099306)
         self.assertAlmostEqual(c2, 0.09889312)
 
+class TestMedian(unittest.TestCase):
+    """
+    Test from: http://wiki.python.org/moin/SimplePrograms.
+    """
+
+    def testMedian(self):
+        self.assertEqual(statistics.median([2, 9, 9, 7, 9, 2, 4, 5, 8]), 7)
+
 if __name__ == "__main__":
     unittest.main()
 
