@@ -106,15 +106,32 @@ def empirical_hpd(values, conf=0.05):
     #print "nnn=", n
     return (x[nnn], x[n-nn+nnn])
 
-def summarize_sample(values):
+def quantile_5_95(values):
     """
-    Summarizes a sample of values, returing a dictionary with:
+    Returns 5% and 95% quantiles.
+    """
+    size = len(values)
+    idx5 = int(math.round(size * 0.05))
+    idx95 = int(math.round(size * 0.95))
+    return values[idx5], values[idx95]
+
+def summarize(values):
+    """
+    Summarizes a sample of values:
 
         - `range`       : tuple pair representing minimum and maximum values
         - `mean`        : mean of sample
         - `median`      : median of sample
-        - `quart_5_95`  : tuple pair representing 5% and 95% quartile
+        - `var`         : (sample) variance
+        - `sd`          : (sample) standard deviation
         - `hpd95`       : tuple pair representing 5% and 95% HPD
+        - `quant_5_95`  : tuple pair representing 5% and 95% quantile
 
     """
-    pass
+    summary = {}
+    summary['range'] = (min(values), max(values))
+    summary['mean'], summary['var'] = mean_and_sample_variance(values)
+    summary['sd'] = math.sqrt(summary['var'])
+    summary['hpd95'] = empirical_hpd(values, conf=0.95)
+    summary['quant_5_95'] = quantile_5_95(values)
+    return summary
