@@ -20,7 +20,7 @@
 Functions to calculate some general statistics.
 """
 
-import math
+from operator import itemgetter
 
 def _mean_and_variance_pop_n(values):
     n = 0
@@ -50,6 +50,36 @@ def mean_and_sample_variance(values):
     samp_var = n*pop_var/(n-1)
     return mean, samp_var
 
+def mode(values, bin_size=0.1):
+    """
+    Returns the mode of a set of values.
+    """
+    bins = {}
+    for v in values:
+        if bin_size is not None:
+            idx = int(round(float(v)/bin_size))
+        else:
+            idx = v
+        if idx in bins:
+            bins[idx] += 1
+        else:
+            bins[idx] = 1
+    sorted_bins = sorted(bins.items(), key=itemgetter(1), reverse=True)
+    max_count = sorted_bins[0][1]
+    results = [(sorted_bins[i][0] * bin_size) for i in xrange(len(sorted_bins)) if sorted_bins[i][1] >= max_count]
+    return results
+
+def median(pool):
+    """
+    Returns median of sample. From: http://wiki.python.org/moin/SimplePrograms
+    """
+    copy = sorted(pool)
+    size = len(copy)
+    if size % 2 == 1:
+        return copy[(size - 1) / 2]
+    else:
+        return (copy[size/2 - 1] + copy[size/2]) / 2
+
 def empirical_hpd(values, conf=0.05):
     """
     Assuming a **unimodal** distribution, returns the 0.95 highest posterior
@@ -75,17 +105,6 @@ def empirical_hpd(values, conf=0.05):
     #print "m=", m
     #print "nnn=", n
     return (x[nnn], x[n-nn+nnn])
-
-def median(pool):
-    """
-    Returns median of sample. From: http://wiki.python.org/moin/SimplePrograms
-    """
-    copy = sorted(pool)
-    size = len(copy)
-    if size % 2 == 1:
-        return copy[(size - 1) / 2]
-    else:
-        return (copy[size/2 - 1] + copy[size/2]) / 2
 
 def summarize_sample(values):
     """
