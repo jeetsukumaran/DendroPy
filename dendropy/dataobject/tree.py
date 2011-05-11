@@ -803,17 +803,17 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def preorder_node_iter(self, filter_fn=None):
         "Returns preorder iterator over tree nodes."
-        for node in self.seed_node.preorder_iter(filter_fn):
+        for node in self.seed_node.preorder_iter(filter_fn=filter_fn):
             yield node
 
     def postorder_node_iter(self, filter_fn=None):
         "Returns postorder iterator over tree nodes."
-        for node in self.seed_node.postorder_iter(filter_fn):
+        for node in self.seed_node.postorder_iter(filter_fn=filter_fn):
             yield node
 
     def level_order_node_iter(self, filter_fn=None):
         "Returns level-order iterator over tree nodes."
-        for node in self.seed_node.level_order_iter(filter_fn):
+        for node in self.seed_node.level_order_iter(filter_fn=filter_fn):
             yield node
 
     def leaf_iter(self, filter_fn=None):
@@ -821,16 +821,33 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         Returns an iterator over tree leaf_nodes (order determined by
         postorder tree-traversal).
         """
-        for node in self.seed_node.leaf_iter(filter_fn):
+        for node in self.seed_node.leaf_iter(filter_fn=filter_fn):
             yield node
 
     def age_order_node_iter(self, include_leaves=True, filter_fn=None, descending=False):
         """
-        Returns an iterator over tree nodesd
+        Iterates over nodes in order of age. If `include_leaves` is False, will
+        skip leaves (default is not to skip leaves). If `descending` is True,
+        will go from oldest nodes to youngest (default is asecending: youngest
+        nodes to oldest).
         """
         if self.seed_node.age is None:
             self.calc_node_ages()
         for node in self.seed_node.age_order_iter(include_leaves=include_leaves, filter_fn=filter_fn, descending=descending):
+            yield node
+
+    def postorder_internal_node_iter(self, filter_fn=None):
+        """
+        Iterates over all internal nodes in post-order.
+        """
+        for node in self.seed_node.postorder_internal_node_iter(filter_fn=filter_fn):
+            yield node
+
+    def preorder_internal_node_iter(self, filter_fn=None):
+        """
+        Iterates over all internal nodes in pre-order.
+        """
+        for node in self.seed_node.preorder_internal_node_iter(filter_fn=filter_fn):
             yield node
 
     ###########################################################################
@@ -1925,6 +1942,28 @@ class Node(TaxonLinked):
             for nd in nds:
                 if include_leaves or nd[1].is_internal():
                     yield nd[1]
+
+    def postorder_internal_node_iter(self, filter_fn=None):
+        """
+        Iterates over all internal nodes in post-order.
+        """
+        if filter_fn:
+            filter_fn = lambda x: (not x.is_leaf() and filter_fn(x)) or None
+        else:
+            filter_fn = lambda x: (x and not x.is_leaf()) or None
+        for node in self.postorder_iter(filter_fn):
+            yield node
+
+    def preorder_internal_node_iter(self, filter_fn=None):
+        """
+        Iterates over all internal nodes in pre-order.
+        """
+        if filter_fn:
+            filter_fn = lambda x: (not x.is_leaf() and filter_fn(x)) or None
+        else:
+            filter_fn = lambda x: (x and not x.is_leaf()) or None
+        for node in self.preorder_iter(filter_fn):
+            yield node
 
     ###########################################################################
     ## (Attribute) Accessors and Mutators
