@@ -20,6 +20,8 @@
 Functions to calculate some general statistics.
 """
 
+import math
+
 def _calc_mean_and_variance_pop_n(values):
     n = 0
     s = 0.0
@@ -48,3 +50,41 @@ def calc_mean_and_sample_variance(values):
     samp_var = n*pop_var/(n-1)
     return mean, samp_var
 
+def calc_unimodal_emp_hpd(values, conf=0.05):
+    """
+    Assuming a **unimodal** distribution, returns the 0.95 highest posterior
+    density (HPD) interval for a set of samples from a posterior distribution.
+    Adapted from `emp.hpd` in the "TeachingDemos" R package (Copyright Greg
+    Snow; licensed under the Artistic License).
+    """
+    conf = min([conf, 1.0 - conf])
+    n = len(values)
+    nn = int(round(n * conf))
+    x = sorted(values)
+    xx = []
+    for i in range(nn):
+        Z1 = x[n-(nn-i)]
+        Z2 = x[i]
+        #print "==>", Z1, Z2
+        xx.append(Z1 - Z2)
+    m = min(xx)
+    nnn = xx.index(m)
+    #print "n=", n
+    #print "nn=", nn
+    #print "xx=", xx
+    #print "m=", m
+    #print "nnn=", n
+    return (x[nnn], x[n-nn+nnn])
+
+def summarize_sample(values):
+    """
+    Summarizes a sample of values, returing a dictionary with:
+
+        - `range`       : tuple pair representing minimum and maximum values
+        - `mean`        : mean of sample
+        - `median`      : median of sample
+        - `quart_5_95`  : tuple pair representing 5% and 95% quartile
+        - `hpd95`       : tuple pair representing 5% and 95% HPD
+
+    """
+    pass
