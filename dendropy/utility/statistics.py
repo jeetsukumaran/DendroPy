@@ -76,6 +76,17 @@ def calc_unimodal_emp_hpd(values, conf=0.05):
     #print "nnn=", n
     return (x[nnn], x[n-nn+nnn])
 
+def median(pool):
+    """
+    Returns median of sample. From: http://wiki.python.org/moin/SimplePrograms
+    """
+    copy = sorted(pool)
+    size = len(copy)
+    if size % 2 == 1:
+        return copy[(size - 1) / 2]
+    else:
+        return (copy[size/2 - 1] + copy[size/2]) / 2
+
 def summarize_sample(values):
     """
     Summarizes a sample of values, returing a dictionary with:
