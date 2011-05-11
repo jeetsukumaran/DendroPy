@@ -38,7 +38,7 @@ from dendropy.treesplit import encode_splits, count_bits, lowest_bit_only
 from dendropy.treemanip import collapse_clade, collapse_edge
 from dendropy.dataobject.tree import format_split
 from dendropy.utility.containers import NormalizedBitmaskDict
-from dendropy.utility.statistics import calc_mean_and_sample_variance
+from dendropy.utility.statistics import mean_and_sample_variance
 
 class TreeSummarizer(object):
     "Summarizes a distribution of trees."
@@ -264,7 +264,7 @@ class TreeSummarizer(object):
                 if include_edge_lengths:
                     elen = split_distribution.split_edge_lengths[split_in_dict]
                     if len(elen) > 0:
-                        mean, var = calc_mean_and_sample_variance(elen)
+                        mean, var = mean_and_sample_variance(elen)
                         new_edge.length = mean
                         if include_edge_length_var:
                             new_edge.length_var = var
@@ -288,7 +288,7 @@ class TreeSummarizer(object):
             if include_edge_lengths:
                 elen = split_distribution.split_edge_lengths.get(split, [0.0])
                 if len(elen) > 0:
-                    mean, var = calc_mean_and_sample_variance(elen)
+                    mean, var = mean_and_sample_variance(elen)
                     node.edge.length = mean
                     if include_edge_length_var:
                         node.edge.length_var = var

@@ -22,7 +22,7 @@ Functions to calculate some general statistics.
 
 import math
 
-def _calc_mean_and_variance_pop_n(values):
+def _mean_and_variance_pop_n(values):
     n = 0
     s = 0.0
     ss = 0.0
@@ -31,20 +31,20 @@ def _calc_mean_and_variance_pop_n(values):
         s += v
         ss += v*v
     if n == 0:
-        raise IndexError("values in calc_mean_and_variance cannot be empty")
+        raise IndexError("values in mean_and_variance cannot be empty")
     mean = float(s)/n
     var = (ss - mean*s)/n
     return mean, var, n
 
-def calc_mean_and_population_variance(values):
+def mean_and_population_variance(values):
     """Returns the mean and population variance while only passing over the
     elements in values once."""
-    return _calc_mean_and_variance_pop_n(values)[:2]
+    return _mean_and_variance_pop_n(values)[:2]
 
-def calc_mean_and_sample_variance(values):
+def mean_and_sample_variance(values):
     """Returns the mean and sample variance while only passing over the
     elements in values once."""
-    mean, pop_var, n = _calc_mean_and_variance_pop_n(values)
+    mean, pop_var, n = _mean_and_variance_pop_n(values)
     if n == 1:
         return mean, float('inf')
     samp_var = n*pop_var/(n-1)
