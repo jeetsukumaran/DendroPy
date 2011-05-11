@@ -50,7 +50,7 @@ def mean_and_sample_variance(values):
     samp_var = n*pop_var/(n-1)
     return mean, samp_var
 
-def calc_unimodal_emp_hpd(values, conf=0.05):
+def empirical_hpd(values, conf=0.05):
     """
     Assuming a **unimodal** distribution, returns the 0.95 highest posterior
     density (HPD) interval for a set of samples from a posterior distribution.

@@ -63,7 +63,7 @@ class HpdCalculationTests(extendedtest.ExtendedTestCase):
         #m= 4.07214
         #nnn= 100
         #(97.85931, 101.93145)
-        c1, c2 = statistics.calc_unimodal_emp_hpd(v)
+        c1, c2 = statistics.empirical_hpd(v)
         self.assertAlmostEqual(c1, 97.85931)
         self.assertAlmostEqual(c2, 101.93145)
 
@@ -112,7 +112,7 @@ class HpdCalculationTests(extendedtest.ExtendedTestCase):
         #  nnn= 1
         #  FINAL =  0.02730827 15.33657
         #  [1]  0.02730827 15.33656772
-        c1, c2 = statistics.calc_unimodal_emp_hpd(v)
+        c1, c2 = statistics.empirical_hpd(v)
         self.assertAlmostEqual(c1, 0.02730827)
         self.assertAlmostEqual(c2, 15.33656772)
 
@@ -161,7 +161,7 @@ class HpdCalculationTests(extendedtest.ExtendedTestCase):
         #  nnn= 3
         #  FINAL =  0.02099306 0.09889312
         #  [1] 0.02099306 0.09889312
-        c1, c2 = statistics.calc_unimodal_emp_hpd(v)
+        c1, c2 = statistics.empirical_hpd(v)
         self.assertAlmostEqual(c1, 0.02099306)
         self.assertAlmostEqual(c2, 0.09889312)
 
