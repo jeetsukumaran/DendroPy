@@ -1894,6 +1894,12 @@ class Node(TaxonLinked):
                 yield node
 
     def age_order_iter(self, include_leaves=True, filter_fn=None, descending=False):
+        """
+        Iterates over nodes in order of age. If `include_leaves` is False, will
+        skip leaves (default is not to skip leaves). If `descending` is True,
+        will go from oldest nodes to youngest (default is asecending: youngest
+        nodes to oldest).
+        """
         if not descending:
             leaves = [nd for nd in self.leaf_iter()]
             queued_pairs = []
