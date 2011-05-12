@@ -113,9 +113,10 @@ def quantile_5_95(values):
     """
     Returns 5% and 95% quantiles.
     """
+    values = sorted(values)
     size = len(values)
-    idx5 = int(math.round(size * 0.05))
-    idx95 = int(math.round(size * 0.95))
+    idx5 = int(round(size * 0.05)) - 1
+    idx95 = int(round(size * 0.95)) - 1
     if idx5 == 0:
         raise ValueError("Sample size too small: %s" % len(values))
     return values[idx5], values[idx95]
@@ -136,7 +137,10 @@ def summarize(values):
     summary = {}
     summary['range'] = (min(values), max(values))
     summary['mean'], summary['var'] = mean_and_sample_variance(values)
-    summary['sd'] = math.sqrt(summary['var'])
+    try:
+        summary['sd'] = math.sqrt(summary['var'])
+    except ValueError:
+        summary['sd'] = 0.0
     summary['hpd95'] = empirical_hpd(values, conf=0.95)
     summary['quant_5_95'] = quantile_5_95(values)
     return summary

@@ -34,6 +34,34 @@ _LOG = messaging.get_logger(__name__)
 DEFAULT_HYPHENS_AS_TOKENS = False
 
 ###############################################################################
+## convert annotations to comments
+
+def format_annotation_as_comments(annotated, nhx=False):
+    parts = []
+    annotes_dict = annotated.annotations()
+    if not annotes_dict:
+        return ""
+    for key, value in annotes_dict.items():
+        if isinstance(value, list):
+            items = ",".join(str(i) for i in values)
+            parts.append("%s={%s}" % (key, items))
+        elif isinstance(value, dict):
+            ### TODO ###
+            pass
+        else:
+            parts.append("%s=%s" % (key, value))
+    if nhx:
+        prefix = "[&&NHX:"
+        separator = ":"
+        suffix = "]"
+    else:
+        prefix = "[&"
+        separator = ","
+        suffix = "]"
+    body = separator.join(parts)
+    return prefix + body + suffix
+
+###############################################################################
 ## RootingInterpreter
 
 class RootingInterpreter(object):

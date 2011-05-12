@@ -180,6 +180,9 @@ class NewickWriter(iosys.DataWriter):
             - `quote_underscores` : labels with underscores are quoted, for "hard" underscores [True]
             - `store_tree_weights` : tree weights are stored
             - `nhx_key_to_func_dict` : a dict of NHX "key" to a function that takes an edge and returns the string that is the value of the NHX key (or None to omit that key for that edge)
+            - `annotations_as_comments` : if True, will write annotations as comments
+            - `annotations_as_nhx` : if True, will write annotation as NHX statements
+            - `node_comments` : if True, will write any additional comments
         """
         iosys.DataWriter.__init__(self, **kwargs)
         self.edge_lengths = kwargs.get("edge_lengths", True)
@@ -189,6 +192,8 @@ class NewickWriter(iosys.DataWriter):
         self.quote_underscores = kwargs.get('quote_underscores', True)
         self.store_tree_weights = kwargs.get("store_tree_weights", False)
         self.nhx_key_to_func = kwargs.get("nhx_key_to_func_dict")
+        self.annotations_as_comments = kwargs.get("annotations_as_comments", False)
+        self.annotations_as_nhx = kwargs.get("annotations_as_nhx", False)
         self.write_node_comments = kwargs.get("node_comments", False)
 
     def write(self, stream):
@@ -226,7 +231,14 @@ class NewickWriter(iosys.DataWriter):
                 weight = "[&W %s] " % tree.weight
             else:
                 weight = ""
-            stream.write("%s%s%s;\n" % (rooting, weight, self.compose_node(tree.seed_node)))
+            if self.annotations_as_comments or self.annotations_as_nhx:
+                annotation_comments = nexustokenizer.format_annotation_as_comments(node, nhx=self.annotations_as_nhx)
+            else:
+                annotation_comments = ""
+            stream.write("%s%s%s%s;\n" % (rooting,
+                    weight,
+                    annotation_comments,
+                    self.compose_node(tree.seed_node)))
 
     def compose_tree(self, tree):
         "Convienience method.        "
@@ -267,6 +279,9 @@ class NewickWriter(iosys.DataWriter):
             statement = self.choose_display_tag(node)
             if node.edge and node.edge.length != None and self.edge_lengths:
                 statement =  "%s:%s" % (statement, node.edge.length)
+        if self.annotations_as_comments or self.annotations_as_nhx:
+            annotation_comments = nexustokenizer.format_annotation_as_comments(node, nhx=self.annotations_as_nhx)
+            statement = statement + annotation_comments
         if self.nhx_key_to_func:
             nhx_to_print = []
             for k, v in self.nhx_key_to_func.items():

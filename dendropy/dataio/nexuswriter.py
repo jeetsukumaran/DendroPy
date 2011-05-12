@@ -29,6 +29,7 @@ from dendropy import dataobject
 from dendropy.utility import textutils
 from dendropy.utility import iosys
 from dendropy.dataio import newick
+from dendropy.dataio import nexustokenizer
 
 ###############################################################################
 ## NexusWriter
@@ -49,6 +50,8 @@ class NexusWriter(iosys.DataWriter):
            - `store_tree_weights` : tree weights are store
            - `edge_lengths` : if False, edges will not write edge lengths [True]
            - `internal_labels` : if False, internal labels will not be written [True]
+            - `annotations_as_comments` : if True, will write annotations as comments
+            - `annotations_as_nhx` : if True, will write annotation as NHX statements
            - `write_node_comments` : if True, comments associated with (tree) nodes will be written [False]
            - `comment` : list of lines of text to be added as comments to the
              file
@@ -63,6 +66,8 @@ class NexusWriter(iosys.DataWriter):
         self.is_write_block_titles = kwargs.get("block_titles", None)
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
         self.quote_underscores = kwargs.get('quote_underscores', True)
+        self.annotations_as_comments = kwargs.get("annotations_as_comments", True)
+        self.annotations_as_nhx = kwargs.get("annotations_as_nhx", False)
         self.nhx_key_to_func = kwargs.get("nhx_key_to_func_dict")
         self.is_write_node_comments = kwargs.get("node_comments", self.simple)
         self.comment = kwargs.get("comment", [])
@@ -156,7 +161,9 @@ class NexusWriter(iosys.DataWriter):
                 edge_lengths=self.is_write_edge_lengths,
                 internal_labels=self.is_write_internal_labels,
                 preserve_spaces=self.preserve_spaces,
-                quote_underscores = self.quote_underscores,
+                quote_underscores=self.quote_underscores,
+                annotations_as_comments=self.annotations_as_comments,
+                annotations_as_nhx=self.annotations_as_nhx,
                 nhx_key_to_func_dict=self.nhx_key_to_func,
                 node_comments=self.is_write_node_comments)
         block.append('BEGIN TREES;')
