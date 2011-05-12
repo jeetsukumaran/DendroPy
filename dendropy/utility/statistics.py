@@ -137,6 +137,7 @@ def summarize(values):
     summary = {}
     summary['range'] = (min(values), max(values))
     summary['mean'], summary['var'] = mean_and_sample_variance(values)
+    summary['median'] = median(values)
     try:
         summary['sd'] = math.sqrt(summary['var'])
     except ValueError:

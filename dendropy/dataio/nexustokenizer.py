@@ -41,9 +41,9 @@ def format_annotation_as_comments(annotated, nhx=False):
     annotes_dict = annotated.annotations()
     if not annotes_dict:
         return ""
-    for key, value in annotes_dict.items():
-        if isinstance(value, list):
-            items = ",".join(str(i) for i in values)
+    for key, (value, type_hint) in annotes_dict.items():
+        if isinstance(value, list) or isinstance(value, tuple):
+            items = ",".join(str(i) for i in value)
             parts.append("%s={%s}" % (key, items))
         elif isinstance(value, dict):
             ### TODO ###

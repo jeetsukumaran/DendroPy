@@ -152,7 +152,7 @@ class TreeSummarizer(object):
                     for field in fields:
                         attr_name = summary_name + "_" + field
                         setattr(nd, attr_name, None)
-                        nd.annotate(attr_name)
+                        #nd.annotate(attr_name)
 
     def summarize_node_ages_on_tree(self,
             tree,
