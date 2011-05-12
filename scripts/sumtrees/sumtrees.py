@@ -791,7 +791,7 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
             summarization_func = lambda x: statistics.mean_and_sample_variance(x)[0]
         else:
             summary_func_desc = "desc"
-            summarization_func = lambda x: statistics.mode
+            summarization_func = lambda x: statistics.median
         if opts.edge_summarization.endswith("age"):
             messenger.send_info("Mapping node ages ...")
             comments.append("Setting node ages of output tree(s) to %s age of corresponding nodes on input tree(s)." % summary_func_desc)
