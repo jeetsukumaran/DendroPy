@@ -49,6 +49,7 @@ from dendropy.dataio import multi_tree_source_iter
 from dendropy.dataio import newick
 from dendropy.utility.messaging import ConsoleMessenger
 from dendropy.utility.cli import confirm_overwrite, show_splash
+from dendropy.utility import statistics
 
 _program_name = "SumTrees"
 _program_subtitle = "Phylogenetic Tree Split Support Summarization"
@@ -346,11 +347,6 @@ def main_cli():
             dest="rooted_trees",
             default=None,
             help="treat trees as unrooted")
-    source_tree_optgroup.add_option("--calc-node-ages",
-            action="store_true",
-            dest="calc_node_ages",
-            default=False,
-            help="summarize node ages as well as edge lengths (implies rooted trees and requires all trees to be ultrametric)")
     source_tree_optgroup.add_option("--weighted-trees",
             action="store_true",
             dest="weighted_trees",
@@ -393,18 +389,35 @@ def main_cli():
 
     edge_summarization_optgroup = OptionGroup(parser, "Edge Summarization Options")
     parser.add_option_group(edge_summarization_optgroup)
-    edge_summarization_optgroup.add_option("--mean-edge-lengths",
-            action="store_const",
+    edge_summarization_optgroup.add_option("--with-node-ages",
+            action="store_true",
+            dest="calc_node_ages",
+            default=False,
+            help="summarize node ages as well as edge lengths (implies rooted trees and requires all trees to be ultrametric)")
+    edge_summarization_choices = ["mean-length", "median-length", "mean-age", "median-age", "keep"]
+    edge_summarization_optgroup.add_option("-e", "--edges",
+            type="choice",
             dest="edge_summarization",
-            const="mean_edge_lengths",
+            metavar="<%s>" % ("|".join(edge_summarization_choices)),
+            choices=edge_summarization_choices,
             default=None,
-            help="edge lengths of output tree set to mean length of corresponding edges of input trees (default if support summarized as labels)")
-    edge_summarization_optgroup.add_option("--mean-node-ages",
-            action="store_const",
-            dest="edge_summarization",
-            const="mean_node_ages",
-            default=None,
-            help="edge lengths of output tree set such that node ages on the output tree are equal to the mean length of corresponding nodes of input trees (requires all input trees to be ultrametric, and will treat all trees as rooted)")
+            help="""\
+one of: %s; set edge lengths of target tree(s) to mean/median lengths/ages of
+corresponding splits or edges of input trees (note that using 'mean-age' or
+'median-age' require rooted ultrametric input trees")""" % (str(edge_summarization_choices)))
+
+    #edge_summarization_optgroup.add_option("--mean-edge-lengths",
+    #        action="store_const",
+    #        dest="edge_summarization",
+    #        const="mean_edge_lengths",
+    #        default=None,
+    #        help="edge lengths of output tree set to mean length of corresponding edges of input trees (default if support summarized as labels)")
+    #edge_summarization_optgroup.add_option("--mean-node-ages",
+    #        action="store_const",
+    #        dest="edge_summarization",
+    #        const="mean_node_ages",
+    #        default=None,
+    #        help="edge lengths of output tree set such that node ages on the output tree are equal to the mean length of corresponding nodes of input trees (requires all input trees to be ultrametric, and will treat all trees as rooted)")
     edge_summarization_optgroup.add_option("--collapse-negative-edges",
             action="store_true",
             dest="collapse_negative_edges",
@@ -569,7 +582,12 @@ def main_cli():
 
     ### TODO: idiot-check edge length summarization
     # edge lengths
-    if opts.edge_summarization == "mean_node_ages":
+    if opts.edge_summarization:
+        opts.edge_summarization = opts.edge_summarization.lower()
+        if opts.edge_summarization not in edge_summarization_choices:
+            messenger.send_error("'%s' is not a valid edge summarization choice; must be one of: %s" % (opts.edge_summarization, edge_summarization_choices))
+            sys.exit(1)
+    if opts.edge_summarization == "mean-age" or opts.edge_summarization == "median-age":
         opts.calc_node_ages = True
         opts.rooted_trees = True
     else:
@@ -767,33 +785,40 @@ def main_cli():
         for stree in tt_trees:
             tsum.annotate_nodes_and_edges(tree=stree, split_distribution=master_split_distribution)
 
-    if opts.edge_summarization == "mean_node_ages":
-        messenger.send_info("Mapping node ages ...")
-        comments.append("Setting node ages of output tree(s) to mean age of corresponding nodes on input tree(s).")
-        if opts.collapse_negative_edges:
-            comments.append("Parent node ages coerced to be at least as old as oldest daughter node age.")
-            collapse_negative_edges = True
-            allow_negative_edges = False
+    if opts.edge_summarization is not None:
+        if opts.edge_summarization.startswith('mean'):
+            summary_func_desc = "mean"
+            summarization_func = lambda x: statistics.mean_and_sample_variance(x)[0]
         else:
-            comments.append("Parent node ages not adjusted: negative edge lengths allowed.")
-            collapse_negative_edges = False
-            allow_negative_edges = True
-        for stree in tt_trees:
-            tsum.summarize_node_ages_on_tree(tree=stree,
-                    split_distribution=master_split_distribution,
-                    set_edge_lengths=True,
-                    collapse_negative_edges=collapse_negative_edges,
-                    allow_negative_edges=allow_negative_edges,
-                    set_extended_attr=True,
-                    summarization_func=None)
-    elif opts.edge_summarization == "mean_edge_lengths":
-        messenger.send_info("Mapping edge lengths ...")
-        comments.append("Setting edge lengths of output tree(s) to mean length of corresponding edges of input tree(s).")
-        for stree in tt_trees:
-            tsum.summarize_edge_lengths_on_tree(tree=stree,
-                    split_distribution=master_split_distribution,
-                    set_extended_attr=True,
-                    summarization_func=None)
+            summary_func_desc = "desc"
+            summarization_func = lambda x: statistics.mode
+        if opts.edge_summarization.endswith("age"):
+            messenger.send_info("Mapping node ages ...")
+            comments.append("Setting node ages of output tree(s) to %s age of corresponding nodes on input tree(s)." % summary_func_desc)
+            if opts.collapse_negative_edges:
+                comments.append("Parent node ages coerced to be at least as old as oldest daughter node age.")
+                collapse_negative_edges = True
+                allow_negative_edges = False
+            else:
+                comments.append("Parent node ages not adjusted: negative edge lengths allowed.")
+                collapse_negative_edges = False
+                allow_negative_edges = True
+            for stree in tt_trees:
+                tsum.summarize_node_ages_on_tree(tree=stree,
+                        split_distribution=master_split_distribution,
+                        set_edge_lengths=True,
+                        collapse_negative_edges=collapse_negative_edges,
+                        allow_negative_edges=allow_negative_edges,
+                        set_extended_attr=True,
+                        summarization_func=summarization_func)
+        elif opts.edge_summarization.endswith("length"):
+            messenger.send_info("Mapping edge lengths ...")
+            comments.append("Setting edge lengths of output tree(s) to %s length of corresponding edges of input tree(s)." % summary_func_desc)
+            for stree in tt_trees:
+                tsum.summarize_edge_lengths_on_tree(tree=stree,
+                        split_distribution=master_split_distribution,
+                        set_extended_attr=True,
+                        summarization_func=summarization_func)
 
     end_time = datetime.datetime.now()
 
