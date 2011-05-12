@@ -112,7 +112,7 @@ class TreeSummarizer(object):
             self.map_split_support_to_node(tree.split_edges[split].head_node, split_support)
         return tree
 
-    def annotate_nodes(self,
+    def annotate_nodes_and_edges(self,
             tree,
             split_distribution):
         """
@@ -124,6 +124,7 @@ class TreeSummarizer(object):
             `age_sd`,
             `age_hpd95`,
             `age_range`,
+        And each edge in `tree` being decorated with the following attributes:
             `length_mean`,
             `length_median`,
             `length_sd`,
@@ -140,18 +141,18 @@ class TreeSummarizer(object):
         for edge in tree.preorder_edge_iter():
             split = edge.split_bitmask
             nd = edge.head_node
-            for summary_name, summary_src in [ ('length', split_edge_length_summaries),
-                                               ('age', split_node_age_summaries) ]:
+            for summary_name, summary_target, summary_src in [ ('length', edge, split_edge_length_summaries),
+                                               ('age', nd, split_node_age_summaries) ]:
                 if split in summary_src:
                     summary = summary_src[split]
                     for field in fields:
                         attr_name = summary_name + "_" + field
-                        setattr(nd, attr_name, summary[field])
-                        nd.annotate(attr_name)
+                        setattr(summary_target, attr_name, summary[field])
+                        summary_target.annotate(attr_name)
                 else:
                     for field in fields:
                         attr_name = summary_name + "_" + field
-                        setattr(nd, attr_name, None)
+                        setattr(summary_target, attr_name, None)
                         #nd.annotate(attr_name)
 
     def summarize_node_ages_on_tree(self,

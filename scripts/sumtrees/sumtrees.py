@@ -346,6 +346,11 @@ def main_cli():
             dest="rooted_trees",
             default=None,
             help="treat trees as unrooted")
+    source_tree_optgroup.add_option("--calc-node-ages",
+            action="store_true",
+            dest="calc_node_ages",
+            default=False,
+            help="summarize node ages as well as edge lengths (implies rooted trees and requires all trees to be ultrametric)")
     source_tree_optgroup.add_option("--weighted-trees",
             action="store_true",
             dest="weighted_trees",
@@ -565,10 +570,11 @@ def main_cli():
     ### TODO: idiot-check edge length summarization
     # edge lengths
     if opts.edge_summarization == "mean_node_ages":
-        ignore_node_ages = False
+        opts.calc_node_ages = True
         opts.rooted_trees = True
     else:
-        ignore_node_ages = True
+        if opts.calc_node_ages:
+            opts.rooted_trees = True
 
     # output
     if opts.output_filepath is None:
@@ -626,7 +632,7 @@ def main_cli():
                 support_filepaths=support_filepaths,
                 schema=schema,
                 is_rooted=opts.rooted_trees,
-                ignore_node_ages=ignore_node_ages,
+                ignore_node_ages=not opts.calc_node_ages,
                 weighted_trees=opts.weighted_trees,
                 tree_offset=opts.burnin,
                 log_frequency=opts.log_frequency,
@@ -640,7 +646,7 @@ def main_cli():
                 support_filepaths=support_filepaths,
                 schema=schema,
                 is_rooted=opts.rooted_trees,
-                ignore_node_ages=ignore_node_ages,
+                ignore_node_ages=not opts.calc_node_ages,
                 weighted_trees=opts.weighted_trees,
                 tree_offset=opts.burnin,
                 log_frequency=opts.log_frequency,
@@ -759,7 +765,7 @@ def main_cli():
     if not opts.suppress_extended_summary:
         messenger.send_info("Summarizing node ages and lengths ...")
         for stree in tt_trees:
-            tsum.annotate_nodes(tree=stree, split_distribution=master_split_distribution)
+            tsum.annotate_nodes_and_edges(tree=stree, split_distribution=master_split_distribution)
 
     if opts.edge_summarization == "mean_node_ages":
         messenger.send_info("Mapping node ages ...")
