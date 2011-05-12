@@ -280,8 +280,9 @@ class NewickWriter(iosys.DataWriter):
             if node.edge and node.edge.length != None and self.edge_lengths:
                 statement =  "%s:%s" % (statement, node.edge.length)
         if self.annotations_as_comments or self.annotations_as_nhx:
-            annotation_comments = nexustokenizer.format_annotation_as_comments(node, nhx=self.annotations_as_nhx)
-            statement = statement + annotation_comments
+            node_annotation_comments = nexustokenizer.format_annotation_as_comments(node, nhx=self.annotations_as_nhx)
+            edge_annotation_comments = nexustokenizer.format_annotation_as_comments(node.edge, nhx=self.annotations_as_nhx)
+            statement = statement + node_annotation_comments + edge_annotation_comments
         if self.nhx_key_to_func:
             nhx_to_print = []
             for k, v in self.nhx_key_to_func.items():
