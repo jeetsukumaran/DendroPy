@@ -20,6 +20,7 @@
 Functions to calculate some general statistics.
 """
 
+import math
 from operator import itemgetter
 
 def _mean_and_variance_pop_n(values):
@@ -92,6 +93,8 @@ def empirical_hpd(values, conf=0.05):
     nn = int(round(n * conf))
     x = sorted(values)
     xx = []
+    if nn == 0:
+        raise ValueError("Sample size too small: %s" % len(values))
     for i in range(nn):
         Z1 = x[n-(nn-i)]
         Z2 = x[i]
@@ -113,6 +116,8 @@ def quantile_5_95(values):
     size = len(values)
     idx5 = int(math.round(size * 0.05))
     idx95 = int(math.round(size * 0.95))
+    if idx5 == 0:
+        raise ValueError("Sample size too small: %s" % len(values))
     return values[idx5], values[idx95]
 
 def summarize(values):
