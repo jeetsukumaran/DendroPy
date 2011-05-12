@@ -284,8 +284,8 @@ class SplitDistribution(object):
         self._weighted_split_freqs = None
         self._trees_counted_for_freqs = 0
         self._trees_counted_for_weighted_freqs = 0
-        self._edge_length_summaries = None
-        self._node_age_summaries = None
+        self._split_edge_length_summaries = None
+        self._split_node_age_summaries = None
         self._trees_counted_for_summaries = 0
         if split_set:
             for split in split_set:
@@ -322,8 +322,8 @@ class SplitDistribution(object):
     def update(self, split_dist):
         self.total_trees_counted += split_dist.total_trees_counted
         self.sum_of_weights += split_dist.sum_of_weights
-        self._edge_length_summaries = None
-        self._node_age_summaries = None
+        self._split_edge_length_summaries = None
+        self._split_node_age_summaries = None
         self._trees_counted_for_summaries = 0
         for split in split_dist.splits:
             if split not in self.split_counts:
@@ -379,8 +379,8 @@ class SplitDistribution(object):
             for split in self.split_counts:
                 self._split_freqs[split] = float(self.split_counts[split]) / total
         self._trees_counted_for_freqs = self.total_trees_counted
-        self._edge_length_summaries = None
-        self._node_age_summaries = None
+        self._split_edge_length_summaries = None
+        self._split_node_age_summaries = None
         return self._split_freqs
 
     def calc_weighted_freqs(self):
@@ -412,30 +412,36 @@ class SplitDistribution(object):
     weighted_split_frequencies = property(_get_weighted_split_frequencies)
 
     def summarize_edge_lengths(self):
-        self._edge_length_summaries = {}
-        for split, elens in self.split_edge_lengths:
-            self._edge_length_summaries[split] = statistics.summarize(elens)
-        return self._edge_length_summaries
+        self._split_edge_length_summaries = {}
+        for split, elens in self.split_edge_lengths.items():
+            try:
+                self._split_edge_length_summaries[split] = statistics.summarize(elens)
+            except ValueError:
+                pass
+        return self._split_edge_length_summaries
 
     def summarize_node_ages(self):
-        self._node_age_summaries = {}
-        for split, elens in self.split_node_ages:
-            self._node_age_summaries[split] = statistics.summarize(elens)
-        return self._node_age_summaries
+        self._split_node_age_summaries = {}
+        for split, elens in self.split_node_ages.items():
+            try:
+                self._split_node_age_summaries[split] = statistics.summarize(elens)
+            except ValueError:
+                pass
+        return self._split_node_age_summaries
 
-    def _get_edge_length_summaries(self):
-        if self._edge_length_summaries is None \
+    def _get_split_edge_length_summaries(self):
+        if self._split_edge_length_summaries is None \
                 or self._trees_counted_for_summaries != self.total_trees_counted:
             self.summarize_edge_lengths()
-        return dict(self._edge_length_summaries)
-    edge_length_summaries = property(_get_edge_length_summaries)
+        return dict(self._split_edge_length_summaries)
+    split_edge_length_summaries = property(_get_split_edge_length_summaries)
 
-    def _get_node_age_summaries(self):
-        if self._node_age_summaries is None \
+    def _get_split_node_age_summaries(self):
+        if self._split_node_age_summaries is None \
                 or self._trees_counted_for_summaries != self.total_trees_counted:
             self.summarize_node_ages()
-        return dict(self._node_age_summaries)
-    node_age_summaries = property(_get_node_age_summaries)
+        return dict(self._split_node_age_summaries)
+    split_node_age_summaries = property(_get_split_node_age_summaries)
 
     def count_splits_on_tree(self, tree):
         """
