@@ -405,6 +405,11 @@ def main_cli():
             dest="collapse_negative_edges",
             default=False,
             help="force parent node ages to be at least as old as its oldest child when summarizing node ages")
+    edge_summarization_optgroup.add_option("--no-extended-summary",
+            action="store_true",
+            dest="suppress_extended_summary",
+            default=False,
+            help="do not calculate ranges, 5%/95 quartiles, 95% HPD's etc.")
 
     output_filepath_optgroup = OptionGroup(parser, "Output File Options")
     parser.add_option_group(output_filepath_optgroup)
@@ -751,8 +756,13 @@ def main_cli():
         messenger.send_info_lines(report)
         comments.extend(report)
 
+    if not opts.suppress_extended_summary:
+        messenger.send_info("Summarizing node ages and lengths ...")
+        for stree in tt_trees:
+            tsum.annotate_nodes(tree=stree, split_distribution=master_split_distribution)
+
     if opts.edge_summarization == "mean_node_ages":
-        messenger.send_info("Summarizing node ages ...")
+        messenger.send_info("Mapping node ages ...")
         comments.append("Setting node ages of output tree(s) to mean age of corresponding nodes on input tree(s).")
         if opts.collapse_negative_edges:
             comments.append("Parent node ages coerced to be at least as old as oldest daughter node age.")
@@ -771,7 +781,7 @@ def main_cli():
                     set_extended_attr=True,
                     summarization_func=None)
     elif opts.edge_summarization == "mean_edge_lengths":
-        messenger.send_info("Summarizing edge lengths ...")
+        messenger.send_info("Mapping edge lengths ...")
         comments.append("Setting edge lengths of output tree(s) to mean length of corresponding edges of input tree(s).")
         for stree in tt_trees:
             tsum.summarize_edge_lengths_on_tree(tree=stree,

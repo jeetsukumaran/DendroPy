@@ -112,34 +112,47 @@ class TreeSummarizer(object):
             self.map_split_support_to_node(tree.split_edges[split].head_node, split_support)
         return tree
 
-    def summarize_edges(self,
+    def annotate_nodes(self,
             tree,
-            split_distribution,
-            set_edge_lengths=None,
-            collapse_negative_edges=False,
-            allow_negative_edges=False):
+            split_distribution):
         """
-        Summarizes edge/branch length information as given by
-        `split_distribution` on target tree `tree`.
+        Summarizes edge length and age information in `split_distribution` for
+        each node on target tree `tree`.
         This will result in each node in `tree` being decorated with the following attributes:
-            `age`,
+            `age_mean`,
             `age_median`,
-            `age_95hpd`,
+            `age_sd`,
+            `age_hpd95`,
             `age_range`,
-            `length`,
+            `length_mean`,
             `length_median`,
-            `length_95hpd`,
+            `length_sd`,
+            `length_hpd95`,
             `length_range`,
         These attributes will be added to the annotations dictionary to be persisted.
-        If `set_edge_lengths` is not None, it can be one of: "mean-age",
-        "median-age", "mean-length", "median-length"; target tree edge lengths
-        will be adjusted to the specified summarization.
-        If `collapse_negative_edges` is True, then edge lengths with negative values will be set to 0.
-        If `allow_negative_edges` is True, then no error will be raised if edges have negative lengths.
         """
         assert tree.taxon_set is split_distribution.taxon_set
         if not hasattr(tree, "split_edges"):
             tree.update_splits()
+        split_edge_length_summaries = split_distribution.split_edge_length_summaries
+        split_node_age_summaries = split_distribution.split_node_age_summaries
+        fields = ['mean', 'median', 'sd', 'hpd95', 'quant_5_95', 'range']
+        for edge in tree.preorder_edge_iter():
+            split = edge.split_bitmask
+            nd = edge.head_node
+            for summary_name, summary_src in [ ('length', split_edge_length_summaries),
+                                               ('age', split_node_age_summaries) ]:
+                if split in summary_src:
+                    summary = summary_src[split]
+                    for field in fields:
+                        attr_name = summary_name + "_" + field
+                        setattr(nd, attr_name, summary[field])
+                        nd.annotate(attr_name)
+                else:
+                    for field in fields:
+                        attr_name = summary_name + "_" + field
+                        setattr(nd, attr_name, None)
+                        nd.annotate(attr_name)
 
     def summarize_node_ages_on_tree(self,
             tree,
@@ -158,6 +171,8 @@ class TreeSummarizer(object):
         defaults to calculating the mean (`lambda x: float(sum(x))/len(x)`).
         If `set_edge_lengths` is `True`, then edge lengths will be set to so that the actual node ages
         correspond to the `age` attribute value.
+        If `collapse_negative_edges` is True, then edge lengths with negative values will be set to 0.
+        If `allow_negative_edges` is True, then no error will be raised if edges have negative lengths.
         """
         if summarization_func is None:
             summarization_func = lambda x: float(sum(x))/len(x)
