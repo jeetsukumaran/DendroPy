@@ -414,6 +414,8 @@ class SplitDistribution(object):
     def summarize_edge_lengths(self):
         self._split_edge_length_summaries = {}
         for split, elens in self.split_edge_lengths.items():
+            if not elens:
+                continue
             try:
                 self._split_edge_length_summaries[split] = statistics.summarize(elens)
             except ValueError:
@@ -422,9 +424,11 @@ class SplitDistribution(object):
 
     def summarize_node_ages(self):
         self._split_node_age_summaries = {}
-        for split, elens in self.split_node_ages.items():
+        for split, ages in self.split_node_ages.items():
+            if not ages:
+                continue
             try:
-                self._split_node_age_summaries[split] = statistics.summarize(elens)
+                self._split_node_age_summaries[split] = statistics.summarize(ages)
             except ValueError:
                 pass
         return self._split_node_age_summaries
