@@ -317,14 +317,14 @@ However, if the "``--with-node-ages``" flag is given (which requires the input t
 
 You can explicitly request an alternate edge summarization strategy using the "``-e``"/"``--edges``" flag. This will result in the edge lengths of all target trees being adjusted, whether the target tree is the consensus tree constructed by SumTrees, or one or more trees specified by the "``-t``"/"``--target``" flag.
 
-The "``-e``"/"``--edges``" flag can take one of the following values::
+The "``-e``"/"``--edges``" flag can take one of the following values:
 
-        - `-e mean-length`: sets the edge lengths of the target/consensus tree(s) to the mean of the lengths of the corresponding edges of the input trees.
-        - `-e median-length`: sets the edge lengths of the target/consensus tree(s) to the median of the lengths of the corresponding edges of the input trees.
-        - `-e median-age`: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the median age of corresponding nodes of the input trees [requires rooted ultrametric trees].
-        - `-e mean-age`: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the mean age of corresponding nodes of the input trees [requires rooted ultrametric trees].
+        - ``mean-length``: sets the edge lengths of the target/consensus tree(s) to the mean of the lengths of the corresponding edges of the input trees.
+        - ``median-length``: sets the edge lengths of the target/consensus tree(s) to the median of the lengths of the corresponding edges of the input trees.
+        - ``median-age``: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the median age of corresponding nodes of the input trees [requires rooted ultrametric trees].
+        - ``mean-age``: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the mean age of corresponding nodes of the input trees [requires rooted ultrametric trees].
 
-So, for example, to construct a consensus tree of a set of ultrametric trees, with the node ages set to the *mean* instead of the median node age::
+So, for example, to construct a consensus tree of a post-burnin set of ultrametric trees, with the node ages set to the *mean* instead of the median node age::
 
     $ sumtrees.py --edges=mean-age --burnin=200 beast1.trees beast2.trees beast3.trees
     $ sumtrees.py --e mean-age --b 200 beast1.trees beast2.trees beast3.trees
