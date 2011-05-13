@@ -310,6 +310,8 @@ If the trees are rooted **and** ultrametric, the "``--with-node-ages``" flag wil
 Summarizing Edge Lengths and Node Ages
 --------------------------------------
 
+.. versionadded:: DendroPy 3.8.0 / SumTrees 3.3.0
+
 When constructing a consensus tree onto which to map support, by default SumTrees sets the edge lengths of the consensus tree to the mean of the lengths of corresponding edges of the input trees.
 However, if the "``--with-node-ages``" flag is given (which requires the input trees to be rooted and ultrametric), then by default SumTrees adjusts the edge lengths of the consensus tree such that the ages of the subtended nodes are equal to the median of the ages of the corresponding nodes of the input trees.
 
