@@ -4,11 +4,15 @@ Release 3.8.0
 New Features
 ^^^^^^^^^^^^
 
-    - Tree weights will now be interpreted and handled by SumTrees if the `--weighted-trees` option is specified.
-    - SumTrees can now summarize node ages of input trees (given a set of ultrametric input trees).
+    - SumTrees can now summarize edge lengths on target trees in different ways:
+        - `-e mean-length`: sets the edge lengths of the taget/consensus tree(s) to the mean of the lengths of the corresponding edges of the input trees.
+        - `-e median-length`: sets the edge lengths of the taget/consensus tree(s) to the median of the lengths of the corresponding edges of the input trees.
+        - `-e median-age`: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the median age of corresponding nodes of the input trees [requires rooted ultrametric trees].
+        - `-e mean-age`: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the mean age of corresponding nodes of the input trees [requires rooted ultrametric trees].
+    - SumTrees will now annotate nodes with summaries (mean, median, standard deviation, range, 95% highest posterior density, 5% and 95% quantiles, etc.) of the distribution of ages across across input trees if the "``--with-node-ages``" flag is specified [requires rooted ultrametric trees].
+    - SumTrees will now annotate edges with summaries (mean, median, standard deviation, range, 95% highest posterior density, 5% and 95% quantiles, etc.) of the distribution of edge lengths across across input trees.
+    - SumTrees will now be interpret and handle tree weights if the `--weighted-trees` option is specified.
     - Tree objects can now be rerooted at midpoint (see `Tree.reroot_at_midpoint()`).
-    - SumTrees can now summarize node ages on ultrametric tree:
-        - `--mean-node-ages`: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the mean age of corresponding nodes on the input tree.
     - When writing in NEXUS or NEWICK formats, the `node_comments` keyword argument (`True` or `False`) can control whether extended comments associated with nodes on trees will be written or not.
 
 Bug Fixes
