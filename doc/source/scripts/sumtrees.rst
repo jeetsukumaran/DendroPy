@@ -130,20 +130,25 @@ Summarize a set of tree files using a 95% rule consensus tree, with support for 
     $ sumtrees.py --min-clade-freq=0.95 --burn-in=200 --support-as-labels --output=results.sumtrees treefile1.tre treefile2.tre treefile3.tre
     $ sumtrees.py -f0.95 -b200 -l -o results.sumtrees treefile1.tre treefile2.tre treefile3.tre
 
-Summarization of Node Ages of Ultrametric Tree by Setting the Node Ages of the Consensus Tree
----------------------------------------------------------------------------------------------
+Set Node Ages of Consensus or Target Tree(s) to Mean/Median Node Age of Input Tree
+----------------------------------------------------------------------------------
 
-.. versionadded:: 3.8
+.. versionadded:: DendroPy 3.8.0 / SumTrees 3.3.0
 
-Summarize a set of ultrametric tree files using a 95% rule consensus tree, with support for clades indicated as proportions (posterior probabilities) and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, with node ages of the consensus tree set to the mean node ages of the input trees:
+Summarize a set of ultrametric tree files using a 95% rule consensus tree, with support for clades indicated as proportions (posterior probabilities) and branch lengths the mean across all trees, dropping the first 200 trees in each file as a burn-in, with node ages of the consensus tree set to the mean node ages of the input trees::
 
-    $ sumtrees.py --min-clade-freq=0.95 --burn-in=200 --support-as-labels --mean-node-ages treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -f0.95 -b200 -l --mean-node-ages treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --min-clade-freq=0.95 --burn-in=200 --support-as-labels --edges=mean-age treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -f0.95 -b200 -l -e mean-age treefile1.tre treefile2.tre treefile3.tre
+
+To use the median age instead::
+
+    $ sumtrees.py --min-clade-freq=0.95 --burn-in=200 --support-as-labels --edges=median-age treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -f0.95 -b200 -l -e median-age treefile1.tre treefile2.tre treefile3.tre
 
 Running in Parallel Mode
 ------------------------
 
-.. versionadded:: 3.6
+.. versionadded:: DendroPy 3.6.0 / SumTrees 3.0.0
 
 .. note::
 
@@ -253,35 +258,79 @@ You can use SumTrees to construct a majority-rule clade consensus tree out of yo
 
 This command will construct a 50% majority rule clade consensus tree out of the all the trees found in "``phylo.trees``", label each node with its posterior probability and output the resulting tree in NEXUS format to the terminal.
 
+However as, this is a BEAST analysis, the trees are going to be rooted. We can tell SumTrees this by passing it the "``--rooted``" flag::
+
+    $ sumtrees.py --rooted phylo.trees
+
+Furthermore, we can ask SumTrees to summarize node age information by passing it the "``--with-node-ages``" flag::
+
+    $ sumtrees.py --with-node-ages phylo.trees
+
+We do not need the "``--rooted``" flag, as the "``--with-node-ages``" flag assumes (and requires) that the trees are rooted **and** ultrametric.
+
 Of course, we want to discard the first few samples of trees, as these were probably not drawn in frequencies in proportion to the stationary distribution of the chain.
 To do this::
 
-    $ sumtrees.py --burnin=200 phylo.trees
+    $ sumtrees.py --with-node-ages --burnin=200 phylo.trees
 
 The above command will cause SumTrees to ignore the first 200 trees it finds in the file for all its calculations.
 
 Again, instead of displaying the tree to the screen we can save it directly to a file, either by redirecting the screen output to a file::
 
-    $ sumtrees.py --burnin=200 phylo.trees > phylo.trees.sumtrees
+    $ sumtrees.py --with-node-ages --burnin=200 phylo.trees > phylo.trees.sumtrees
 
 or by using the "``-o``" or "``--output``" option::
 
-    $ sumtrees.py --output=phylo.trees.sumtrees --burnin=200 phylo.trees
+    $ sumtrees.py --with-node-ages --output=phylo.trees.sumtrees --burnin=200 phylo.trees
 
 We might also have split up our analysis into multiple independent runs, resulting in multiple MCMC tree sample files (e.g., "``phylo1.trees``", "``phylo2.trees``" and "``phylo3.trees``").
 We can ask SumTrees to summarize posterior probability from across all these runs, treating the first 200 trees in *each* sample file as a burn-in by typing the following::
 
-    $ sumtrees.py --output=phylo.trees.sumtrees --burnin=200 phylo1.trees phylo2.trees phylo3.trees
-
-By default, SumTrees sets the edge lengths of the consensus tree to be equal to the mean of the lengths of the corresponding edges on the input trees. We can request SumTrees to set the edge lengths of the consensus tree such that the node ages of the consensus tree are equal to the mean of the ages of the corresponding nodes of the input trees using the "``--mean-node-ages``" flag::
-
-    $ sumtrees.py --mean-node-ages --burnin=200 phylo1.trees phylo2.trees phylo3.trees
+    $ sumtrees.py --with-node-ages --output=phylo.trees.sumtrees --burnin=200 phylo1.trees phylo2.trees phylo3.trees
 
 Alternatively, we might be quite happy with the MCCT tree produced by BEAST, and in fact we want to see how the MCMC samples produced by Mr. Bayes map onto this tree (i.e., the posterior probability of the splits on the MCCT as given by the Mr. Bayes samples).
 To do this, we would supply the Mr. Bayes ``.run.t``" files as the tree samples to be summarized, and use the "``-t``" or "``--target``" option to instruct SumTrees to map the posterior probabilities onto the BEAST MCMCT tree.
 Thus, assuming that our Mr. Bayes runs are is in the files "``phylo.nex.run1.t``" and "``phylo.nex.run2.t``", and the BEAST summarized MCCT tree is in the file "``phylo.beast.tree``" we could type the following::
 
     $ sumtrees.py --target=phylo.beast.tree --output=phylo.mb-beast.sumtrees --burnin=200 phylo.nex.run1.t phylo2.nex.run2.
+
+Summarizing Rooted and Ultrametric Trees
+----------------------------------------
+
+.. versionadded:: DendroPy 3.8.0 / SumTrees 3.3.0
+
+SumTrees treats all trees as unrooted unless specified otherwise. You can force SumTrees to treat all trees as rooted by passing it the "``--rooted``" flag::
+
+    $ sumtrees.py --rooted phylo.trees
+
+If the trees are rooted **and** ultrametric, the "``--with-node-ages``" flag will result in SumTrees summarizing node age information as well::
+
+    $ sumtrees.py --with-node-ages phylo.trees
+
+Summarizing Edge Lengths and Node Ages
+--------------------------------------
+
+When constructing a consensus tree onto which to map support, by default SumTrees sets the edge lengths of the consensus tree to the mean of the lengths of corresponding edges of the input trees.
+However, if the "``--with-node-ages``" flag is given (which requires the input trees to be rooted and ultrametric), then by default SumTrees adjusts the edge lengths of the consensus tree such that the ages of the subtended nodes are equal to the median of the ages of the corresponding nodes of the input trees.
+
+You can explicitly request an alternate edge summarization strategy using the "``-e``"/"``--edges``" flag. This will result in the edge lengths of all target trees being adjusted, whether the target tree is the consensus tree constructed by SumTrees, or one or more trees specified by the "``-t``"/"``--target``" flag.
+
+The "``-e``"/"``--edges``" flag can take one of the following values::
+
+        - `-e mean-length`: sets the edge lengths of the target/consensus tree(s) to the mean of the lengths of the corresponding edges of the input trees.
+        - `-e median-length`: sets the edge lengths of the target/consensus tree(s) to the median of the lengths of the corresponding edges of the input trees.
+        - `-e median-age`: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the median age of corresponding nodes of the input trees [requires rooted ultrametric trees].
+        - `-e mean-age`: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the mean age of corresponding nodes of the input trees [requires rooted ultrametric trees].
+
+So, for example, to construct a consensus tree of a set of ultrametric trees, with the node ages set to the *mean* instead of the median node age::
+
+    $ sumtrees.py --edges=mean-age --burnin=200 beast1.trees beast2.trees beast3.trees
+    $ sumtrees.py --e mean-age --b 200 beast1.trees beast2.trees beast3.trees
+
+Or to set the edges of a user-specifed tree to the median edge length of the input trees::
+
+    $ sumtrees.py --edges=median-length --target=mle.tre boots1.tre boots2.tre
+    $ sumtrees.py --e median-length -t mle.tre boots1.tre boots2.tre
 
 Parallelizing SumTrees
 ----------------------
