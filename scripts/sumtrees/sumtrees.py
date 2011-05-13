@@ -768,9 +768,20 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
                 include_edge_length_var=opts.branch_length_var)
         if opts.root_target:
             stree.reroot_at_midpoint(splits=True)
-        tt_trees.append(stree)
         report = []
         report.append("Consensus tree (%f clade frequency threshold) constructed from splits." % min_freq)
+        if not opts.edge_summarization:
+            if opts.calc_node_ages:
+                tsum.summarize_node_ages_on_tree(tree=stree,
+                        split_distribution=master_split_distribution,
+                        set_edge_lengths=True,
+                        collapse_negative_edges=opts.collapse_negative_edges,
+                        allow_negative_edges=not opts.collapse_negative_edges,
+                        summarization_func=statistics.median)
+                report.append("Consensus tree node ages set to median ages of corresponding nodes of input trees.")
+            else:
+                report.append("Consensus tree edge lengths set to mean of corresponding edges of input trees.")
+        tt_trees.append(stree)
         if opts.root_target:
             if opts.outgroup:
                 report.append("Consensus tree rooted using outgroup: %s." % opts.outgroup)
@@ -794,7 +805,7 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
             summarization_func = statistics.median
         if opts.edge_summarization.endswith("age"):
             messenger.send_info("Mapping node ages ...")
-            comments.append("Setting node ages of output tree(s) to %s age of corresponding nodes on input tree(s)." % summary_func_desc)
+            comments.append("Setting node ages of output tree(s) to %s ages of corresponding nodes of input trees." % summary_func_desc)
             if opts.collapse_negative_edges:
                 comments.append("Parent node ages coerced to be at least as old as oldest daughter node age.")
                 collapse_negative_edges = True
@@ -809,15 +820,13 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
                         set_edge_lengths=True,
                         collapse_negative_edges=collapse_negative_edges,
                         allow_negative_edges=allow_negative_edges,
-                        set_extended_attr=True,
                         summarization_func=summarization_func)
         elif opts.edge_summarization.endswith("length"):
             messenger.send_info("Mapping edge lengths ...")
-            comments.append("Setting edge lengths of output tree(s) to %s length of corresponding edges of input tree(s)." % summary_func_desc)
+            comments.append("Setting edge lengths of output tree(s) to %s length of corresponding edges of input trees." % summary_func_desc)
             for stree in tt_trees:
                 tsum.summarize_edge_lengths_on_tree(tree=stree,
                         split_distribution=master_split_distribution,
-                        set_extended_attr=True,
                         summarization_func=summarization_func)
 
     end_time = datetime.datetime.now()

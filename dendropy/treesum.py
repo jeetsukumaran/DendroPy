@@ -158,7 +158,6 @@ class TreeSummarizer(object):
     def summarize_node_ages_on_tree(self,
             tree,
             split_distribution,
-            set_extended_attr=True,
             set_edge_lengths=True,
             collapse_negative_edges=False,
             allow_negative_edges=False,
@@ -209,7 +208,6 @@ class TreeSummarizer(object):
     def summarize_edge_lengths_on_tree(self,
             tree,
             split_distribution,
-            set_extended_attr=True,
             summarization_func=None):
         """
         Sets the lengths of edges on `tree` (a `Tree` object) to the mean
