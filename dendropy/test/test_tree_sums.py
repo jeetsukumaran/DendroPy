@@ -26,6 +26,7 @@ from dendropy import treecalc
 from dendropy import treesum
 from dendropy import treesplit
 from dendropy.test.support import pathmap
+from dendropy.utility import statistics
 
 class TestConsensusTree(unittest.TestCase):
 
@@ -80,10 +81,9 @@ class TestTreeEdgeSummarization(unittest.TestCase):
         ts.summarize_node_ages_on_tree(tree=obs_tree,
                 split_distribution=self.split_distribution,
                 set_edge_lengths=True,
-                set_extended_attr=True,
-                summarization_func=None)
+                summarization_func=statistics.median)
         obs_tree.calc_node_ages()
-        exp_tree = dendropy.Tree.get_from_path(pathmap.tree_source_path("primates.beast.mcct.meanh.tre"),
+        exp_tree = dendropy.Tree.get_from_path(pathmap.tree_source_path("primates.beast.mcct.medianh.tre"),
                 "nexus",
                 taxon_set=self.taxon_set)
         exp_tree.update_splits()

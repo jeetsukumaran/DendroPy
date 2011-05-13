@@ -72,7 +72,8 @@ class SumTreesNodeAgesTester(SumTreesTester):
             path_to_target = pathmap.tree_source_path("primates.beast.mcct.noedgelens.tree")
             args = ["-b",
                     "40",
-                    "--mean-node-ages",
+                    "-e",
+                    "mean-age",
                     "-t",
                     path_to_target,
                     path_to_src]
