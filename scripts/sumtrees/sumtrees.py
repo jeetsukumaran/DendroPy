@@ -295,7 +295,7 @@ def main_cli():
 
     parser = OptionParser(usage=usage, add_help_option=True, version = _program_version, description=description)
 
-    sum_tree_optgroup = OptionGroup(parser, "Summarization Options")
+    sum_tree_optgroup = OptionGroup(parser, "Source Treatment Options")
     parser.add_option_group(sum_tree_optgroup)
     sum_tree_optgroup.add_option("-b", "--burnin",
             action="store",
@@ -303,37 +303,6 @@ def main_cli():
             type="int",
             default=0,
             help='number of trees to skip from the beginning of *each tree file* when counting support [default=%default]')
-
-    target_tree_optgroup = OptionGroup(parser, 'Target Tree Options')
-    parser.add_option_group(target_tree_optgroup)
-    target_tree_optgroup.add_option("-t","--target",
-            dest="target_tree_filepath",
-            default=None,
-            help="path to optional target, model or best topology tree file (Newick or NEXUS format) "
-            + "to which support will be mapped; "
-            + "if not given, then a majority-rule clade consensus tree will be constructed based on the "
-            + "all the trees given in the support tree files (except for those discarded as burn-ins), "
-            + "and this will be used as the target tree")
-    target_tree_optgroup.add_option("-f", "--min-clade-freq",
-            dest="min_clade_freq",
-            type="float",
-            default=0.50,
-            metavar="#.##",
-            help="minimum frequency or probability for a clade or a split to be "\
-                    + "included in the consensus tree, if used [default=%default]")
-    target_tree_optgroup.add_option("--no-branch-lengths",
-            action="store_true",
-            dest="no_branch_lengths",
-            default=False,
-            help="by default, if using a consensus tree as the target tree, branch lengths will be the mean of the lengths " \
-                    + "of the given branch across all trees considered; this option forces branch " \
-                    + "lengths to be unspecified (obviously, this is only applicable if you do not ask the support to be mapped as "  \
-                    + "branch lengths)")
-    target_tree_optgroup.add_option("--branch-length-variance",
-            action="store_true",
-            dest="branch_length_var",
-            default=False,
-            help="if using a consensus tree as the target tree, this option forces the sample variance of the branch lengths to be calculated and added to the tree description")
 
     source_tree_optgroup = OptionGroup(parser, "Source Tree Options")
     parser.add_option_group(source_tree_optgroup)
@@ -405,29 +374,47 @@ def main_cli():
 one of: %s; set edge lengths of target tree(s) to mean/median lengths/ages of
 corresponding splits or edges of input trees (note that using 'mean-age' or
 'median-age' require rooted ultrametric input trees")""" % (str(edge_summarization_choices)))
-
-    #edge_summarization_optgroup.add_option("--mean-edge-lengths",
-    #        action="store_const",
-    #        dest="edge_summarization",
-    #        const="mean_edge_lengths",
-    #        default=None,
-    #        help="edge lengths of output tree set to mean length of corresponding edges of input trees (default if support summarized as labels)")
-    #edge_summarization_optgroup.add_option("--mean-node-ages",
-    #        action="store_const",
-    #        dest="edge_summarization",
-    #        const="mean_node_ages",
-    #        default=None,
-    #        help="edge lengths of output tree set such that node ages on the output tree are equal to the mean length of corresponding nodes of input trees (requires all input trees to be ultrametric, and will treat all trees as rooted)")
     edge_summarization_optgroup.add_option("--collapse-negative-edges",
             action="store_true",
             dest="collapse_negative_edges",
             default=False,
-            help="force parent node ages to be at least as old as its oldest child when summarizing node ages")
+            help="(if setting edge lengths) force parent node ages to be at least as old as its oldest child when summarizing node ages")
     edge_summarization_optgroup.add_option("--no-extended-summary",
             action="store_true",
             dest="suppress_extended_summary",
             default=False,
-            help="do not calculate ranges, 5%/95 quartiles, 95% HPD's etc.")
+            help="do not calculate ranges, 5%/95 quartiles, 95% HPD's etc. of edge lengths and node ages")
+
+    target_tree_optgroup = OptionGroup(parser, 'Target Tree Options')
+    parser.add_option_group(target_tree_optgroup)
+    target_tree_optgroup.add_option("-t","--target",
+            dest="target_tree_filepath",
+            default=None,
+            help="path to optional target, model or best topology tree file (Newick or NEXUS format) "
+            + "to which support will be mapped; "
+            + "if not given, then a majority-rule clade consensus tree will be constructed based on the "
+            + "all the trees given in the support tree files (except for those discarded as burn-ins), "
+            + "and this will be used as the target tree")
+    target_tree_optgroup.add_option("-f", "--min-clade-freq",
+            dest="min_clade_freq",
+            type="float",
+            default=0.50,
+            metavar="#.##",
+            help="minimum frequency or probability for a clade or a split to be "\
+                    + "included in the consensus tree, if used [default=%default]")
+    target_tree_optgroup.add_option("--no-branch-lengths",
+            action="store_true",
+            dest="no_branch_lengths",
+            default=False,
+            help="by default, if using a consensus tree as the target tree, branch lengths will be the mean of the lengths " \
+                    + "of the given branch across all trees considered; this option forces branch " \
+                    + "lengths to be unspecified (obviously, this is only applicable if you do not ask the support to be mapped as "  \
+                    + "branch lengths)")
+    target_tree_optgroup.add_option("--branch-length-variance",
+            action="store_true",
+            dest="branch_length_var",
+            default=False,
+            help="if using a consensus tree as the target tree, this option forces the sample variance of the branch lengths to be calculated and added to the tree description")
 
     output_filepath_optgroup = OptionGroup(parser, "Output File Options")
     parser.add_option_group(output_filepath_optgroup)
