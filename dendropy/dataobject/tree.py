@@ -1294,7 +1294,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         to_prune = [t for t in self.taxon_set if t not in taxa]
         self.prune_taxa(self, to_prune, suppress_outdegree_one=suppress_outdegree_one)
 
-    def randomly_reorient_self(self, rng=None, splits=False):
+    def randomly_reorient_tree(self, rng=None, splits=False):
         """
         Randomly picks a new rooting position and rotates the branches around all
         internal nodes in the `self`. If `splits` is True, the the `split_bitmask`
