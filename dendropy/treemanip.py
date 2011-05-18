@@ -39,6 +39,7 @@ def collapse_edge(edge):
     edge.collapse()
 
 def collapse_clade(node):
+    """Collapses all internal edges that are descendants of node."""
     node.collapse_clade()
 
 def prune_subtree(tree, node, suppress_outdegree_one=True):

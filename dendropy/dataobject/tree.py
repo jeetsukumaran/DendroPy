@@ -1307,7 +1307,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             self.to_outgroup_position(nd, splits=splits)
         else:
             self.reroot_at(nd, splits=splits)
-        self.randomly_rotate(self, rng=rng)
+        self.randomly_rotate(rng=rng)
 
     def randomly_rotate(self, rng=None):
         "Randomly rotates the branches around all internal nodes in `self`"
