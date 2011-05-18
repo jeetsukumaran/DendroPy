@@ -70,8 +70,8 @@ def retain_taxa(tree, taxa, suppress_outdegree_one=True):
     of the Taxon objects given by ``taxa`` (which can be any iterable, including a
     TaxonSet object) from the ``tree``.
     """
-    to_prune = [t for t in tree.taxon_set if t not in taxa]
-    return prune_taxa(tree, to_prune, suppress_outdegree_one=suppress_outdegree_one)
+    tree.retain_taxa(taxa=taxa,
+            suppress_outdegree_one=suppress_outdegree_one)
 
 def randomly_reorient_tree(tree, rng=None, splits=False):
     """
