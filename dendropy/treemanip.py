@@ -36,35 +36,14 @@ def collapse_edge(edge):
     had occupied. The edge length and head_node will no longer be
     part of the tree.
     """
-    to_del = edge.head_node
-    p = edge.tail_node
-    if not p:
-        return
-    children = to_del.child_nodes()
-    if not children:
-        raise ValueError('collapse_edge called with a terminal.')
-    pos = p.child_nodes().index(to_del)
-    p.remove_child(to_del)
-    for child in children:
-        p.add_child(child, pos=pos)
-        pos += 1
+    edge.collapse()
 
 def collapse_clade(node):
-    """Collapses all internal edges that are descendants of node."""
-    if node.is_leaf():
-        return
-    leaves = [i for i in dataobject.Node.leaf_iter(node)]
-    node.set_children(leaves)
+    node.collapse_clade()
 
 def prune_subtree(tree, node, suppress_outdegree_one=True):
-    """Removes subtree starting at `node` from tree."""
-    if not node:
-        raise ValueError("Tried to remove an non-existing or null node")
-    if node.parent_node is None:
-        raise TypeError('Node has no parent and is implicit root: cannot be pruned')
-    node.parent_node.remove_child(node)
-    if suppress_outdegree_one:
-        tree.suppress_outdegree_one_nodes()
+    tree.prune_subtree(node=node,
+            suppress_outdegree_one=suppress_outdegree_one)
     return tree
 
 def prune_leaves_without_taxa(tree, suppress_outdegree_one=True):
@@ -72,11 +51,7 @@ def prune_leaves_without_taxa(tree, suppress_outdegree_one=True):
     Removes all terminal nodes that have their ``taxon`` attribute set to
     ``None``.
     """
-    for nd in tree.leaf_iter():
-        if nd.taxon is None:
-            nd.edge.tail_node.remove_child(nd)
-    if suppress_outdegree_one:
-        tree.suppress_outdegree_one_nodes()
+    tree.prune_leaves_without_taxa(suppress_outdegree_one=suppress_outdegree_one)
     return tree
 
 def prune_taxa(tree, taxa, suppress_outdegree_one=True):
@@ -84,14 +59,8 @@ def prune_taxa(tree, taxa, suppress_outdegree_one=True):
     Removes terminal nodes associated with Taxon objects given by the container
     `taxa` (which can be any iterable, including a TaxonSet object) from `tree`.
     """
-    nodes = []
-    for taxon in taxa:
-        nd = tree.find_node(lambda x: x.taxon is taxon)
-        if nd is not None:
-            nd.edge.tail_node.remove_child(nd)
-    prune_leaves_without_taxa(tree, suppress_outdegree_one=suppress_outdegree_one)
-    #if suppress_outdegree_one:
-    #    tree.suppress_outdegree_one_nodes()
+    tree.prune_taxa(taxa=taxa,
+            suppress_outdegree_one=suppress_outdegree_one)
     return tree
 
 def retain_taxa(tree, taxa, suppress_outdegree_one=True):
@@ -109,24 +78,11 @@ def randomly_reorient_tree(tree, rng=None, splits=False):
     internal nodes in the `tree`. If `splits` is True, the the `split_bitmask`
     and `split_edges` attributes kept valid.
     """
-    if rng is None:
-        rng = GLOBAL_RNG # use the global rng by default
-    nd = rng.sample(tree.nodes(), 1)[0]
-    if nd.is_leaf():
-        tree.to_outgroup_position(nd, splits=splits)
-    else:
-        tree.reroot_at(nd, splits=splits)
-    randomly_rotate(tree, rng=rng)
+    tree.randomly_reorient_tree(rng=rng, splits=splits)
 
 def randomly_rotate(tree, rng=None):
     "Randomly rotates the branches around all internal nodes in the `tree`"
-    if rng is None:
-        rng = GLOBAL_RNG # use the global rng by default
-    internal_nodes = tree.internal_nodes()
-    for nd in internal_nodes:
-        c = nd.child_nodes()
-        rng.shuffle(c)
-        nd.set_children(c)
+    tree.randomly_rotate(rng=rng)
 
 def collapse_conflicting(subtree_root, split, split_bitmask):
     """
@@ -161,8 +117,5 @@ def collapse_conflicting(subtree_root, split, split_bitmask):
         e.collapse()
 
 def scale_edges(tree, edge_len_multiplier):
-    """Multiplies every edge length in the `tree` by `edge_len_multiplier`"""
-    for e in tree.postorder_edge_iter():
-        if e.length is not None:
-            e.length *= edge_len_multiplier
+    tree.scale_edges(edge_len_multiplier=edge_len_multiplier)
 

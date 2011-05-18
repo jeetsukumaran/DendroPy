@@ -1247,6 +1247,78 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 node.add_child(nn1)
                 children = node.child_nodes()
 
+    def prune_subtree(self, node, suppress_outdegree_one=True):
+        """
+        Removes subtree starting at `node` from tree.
+        """
+        if not node:
+            raise ValueError("Tried to remove an non-existing or null node")
+        if node.parent_node is None:
+            raise TypeError('Node has no parent and is implicit root: cannot be pruned')
+        node.parent_node.remove_child(node)
+        if suppress_outdegree_one:
+            self.suppress_outdegree_one_nodes()
+
+    def prune_leaves_without_taxa(self, suppress_outdegree_one=True):
+        """
+        Removes all terminal nodes that have their ``taxon`` attribute set to
+        ``None``.
+        """
+        for nd in self.leaf_iter():
+            if nd.taxon is None:
+                nd.edge.tail_node.remove_child(nd)
+        if suppress_outdegree_one:
+            self.suppress_outdegree_one_nodes()
+
+    def prune_taxa(self, taxa, suppress_outdegree_one=True):
+        """
+        Removes terminal nodes associated with Taxon objects given by the container
+        `taxa` (which can be any iterable, including a TaxonSet object) from `self`.
+        """
+        nodes = []
+        for taxon in taxa:
+            nd = self.find_node(lambda x: x.taxon is taxon)
+            if nd is not None:
+                nd.edge.tail_node.remove_child(nd)
+        self.prune_leaves_without_taxa(self,
+                suppress_outdegree_one=suppress_outdegree_one)
+        #if self.suppress_outdegree_one:
+        #    self.suppress_outdegree_one_nodes()
+
+    def retain_taxa(self, taxa, suppress_outdegree_one=True):
+        """
+        Removes terminal nodes that are not associated with any
+        of the Taxon objects given by ``taxa`` (which can be any iterable, including a
+        TaxonSet object) from the ``self``.
+        """
+        to_prune = [t for t in self.taxon_set if t not in taxa]
+        self.prune_taxa(self, to_prune, suppress_outdegree_one=suppress_outdegree_one)
+
+    def randomly_reorient_self(self, rng=None, splits=False):
+        """
+        Randomly picks a new rooting position and rotates the branches around all
+        internal nodes in the `self`. If `splits` is True, the the `split_bitmask`
+        and `split_edges` attributes kept valid.
+        """
+        if rng is None:
+            rng = GLOBAL_RNG # use the global rng by default
+        nd = rng.sample(self.nodes(), 1)[0]
+        if nd.is_leaf():
+            self.to_outgroup_position(nd, splits=splits)
+        else:
+            self.reroot_at(nd, splits=splits)
+        self.randomly_rotate(self, rng=rng)
+
+    def randomly_rotate(self, rng=None):
+        "Randomly rotates the branches around all internal nodes in `self`"
+        if rng is None:
+            rng = GLOBAL_RNG # use the global rng by default
+        internal_nodes = self.internal_nodes()
+        for nd in internal_nodes:
+            c = nd.child_nodes()
+            rng.shuffle(c)
+            nd.set_children(c)
+
     def ladderize(self, right=False):
         """
         Sorts child nodes in ascending (if ``right`` is ``False``) or
@@ -1263,7 +1335,37 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         treesplit.encode_splits(self, **kwargs)
 
     ###########################################################################
-    ## Ages, depths, branch lengths etc.
+    ## Ages, depths, branch lengths etc. (mutation)
+
+    def scale_edges(self, edge_len_multiplier):
+        """Multiplies every edge length in `self` by `edge_len_multiplier`"""
+        for e in self.postorder_edge_iter():
+            if e.length is not None:
+                e.length *= edge_len_multiplier
+
+    def set_edge_lengths_from_node_ages(self, allow_negative_edges=False):
+        """
+        Sets the edge lengths of this tree based on the 'age' attribute.
+        """
+        for nd in self.preorder_node_iter():
+            if nd.parent_node is not None:
+                #if nd.parent_node.age < nd.age:
+                #    nd.edge.length = 0.0
+                #else:
+                #    nd.edge.length = nd.parent_node.age - nd.age
+                if not allow_negative_edges and nd.parent_node.age < nd.age:
+                    #if nd.parent_node is self.seed_node:
+                    #    # special case seed node
+                    #    nd.parent_node.age = nd.age + nd.edge_length
+                    #else:
+                    #    raise ValueError('Parent node age (%s: %s) is younger than descendent (%s: %s)'
+                    #            % (nd.parent_node.oid, nd.parent_node.age, nd.oid, nd.age))
+                    raise ValueError('Parent node age (%s: %s) is younger than descendent (%s: %s)'
+                            % (nd.parent_node.oid, nd.parent_node.age, nd.oid, nd.age))
+                nd.edge.length = nd.parent_node.age - nd.age
+
+    ###########################################################################
+    ## Ages, depths, branch lengths etc. (calculation)
 
     def calc_node_ages(self, check_prec=0.0000001):
         """
@@ -1286,27 +1388,6 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                         ocnd = nnd.age + nnd.edge.length
                         if abs(node.age - ocnd) > check_prec:
                             raise ValueError("Tree is not ultrametric")
-
-    def set_edge_lengths_from_node_ages(self, allow_negative_edges=False):
-        """
-        Sets the edge lengths of this tree based on the 'age' attribute.
-        """
-        for nd in self.preorder_node_iter():
-            if nd.parent_node is not None:
-                #if nd.parent_node.age < nd.age:
-                #    nd.edge.length = 0.0
-                #else:
-                #    nd.edge.length = nd.parent_node.age - nd.age
-                if not allow_negative_edges and nd.parent_node.age < nd.age:
-                    #if nd.parent_node is self.seed_node:
-                    #    # special case seed node
-                    #    nd.parent_node.age = nd.age + nd.edge_length
-                    #else:
-                    #    raise ValueError('Parent node age (%s: %s) is younger than descendent (%s: %s)'
-                    #            % (nd.parent_node.oid, nd.parent_node.age, nd.oid, nd.age))
-                    raise ValueError('Parent node age (%s: %s) is younger than descendent (%s: %s)'
-                            % (nd.parent_node.oid, nd.parent_node.age, nd.oid, nd.age))
-                nd.edge.length = nd.parent_node.age - nd.age
 
     def node_ages(self, check_prec=0.0000001):
         """
@@ -2316,6 +2397,13 @@ class Node(TaxonLinked):
         else:
             self.collapse_neighborhood(dist - 1)
 
+    def collapse_clade(self):
+        """Collapses all internal edges that are descendants of self."""
+        if self.is_leaf():
+            return
+        leaves = [i for i in self.leaf_iter()]
+        self.set_children(leaves)
+
     ###########################################################################
     ## Representation
 
@@ -2572,6 +2660,29 @@ class Edge(IdTagged):
         he.extend(te)
         return he
     adjacent_edges = property(get_adjacent_edges)
+
+    ###########################################################################
+    ## Structural
+
+    def collapse(self):
+        """
+        Inserts all children of the head_node of self as children of the
+        tail_node of self in the same place in the child_node list that head_node
+        had occupied. The edge length and head_node will no longer be
+        part of the tree.
+        """
+        to_del = self.head_node
+        p = self.tail_node
+        if not p:
+            return
+        children = to_del.child_nodes()
+        if not children:
+            raise ValueError('collapse_self called with a terminal.')
+        pos = p.child_nodes().index(to_del)
+        p.remove_child(to_del)
+        for child in children:
+            p.add_child(child, pos=pos)
+            pos += 1
 
     ###########################################################################
     ## Representation
