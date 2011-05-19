@@ -1280,10 +1280,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             nd = self.find_node(lambda x: x.taxon is taxon)
             if nd is not None:
                 nd.edge.tail_node.remove_child(nd)
-        self.prune_leaves_without_taxa(self,
-                suppress_outdegree_one=suppress_outdegree_one)
-        #if self.suppress_outdegree_one:
-        #    self.suppress_outdegree_one_nodes()
+        self.prune_leaves_without_taxa(suppress_outdegree_one=suppress_outdegree_one)
 
     def retain_taxa(self, taxa, suppress_outdegree_one=True):
         """
