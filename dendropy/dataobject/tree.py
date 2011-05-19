@@ -1292,7 +1292,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         TaxonSet object) from the ``self``.
         """
         to_prune = [t for t in self.taxon_set if t not in taxa]
-        self.prune_taxa(self, to_prune, suppress_outdegree_one=suppress_outdegree_one)
+        self.prune_taxa(to_prune, suppress_outdegree_one=suppress_outdegree_one)
 
     def randomly_reorient_tree(self, rng=None, splits=False):
         """
