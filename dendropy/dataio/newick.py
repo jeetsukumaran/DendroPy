@@ -232,7 +232,7 @@ class NewickWriter(iosys.DataWriter):
             else:
                 weight = ""
             if self.annotations_as_comments or self.annotations_as_nhx:
-                annotation_comments = nexustokenizer.format_annotation_as_comments(node, nhx=self.annotations_as_nhx)
+                annotation_comments = nexustokenizer.format_annotation_as_comments(tree, nhx=self.annotations_as_nhx)
             else:
                 annotation_comments = ""
             stream.write("%s%s%s%s;\n" % (rooting,

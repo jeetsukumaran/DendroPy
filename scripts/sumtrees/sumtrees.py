@@ -930,7 +930,6 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
             tree.annotate('probability')
             tree.annotate('cumulative_probability')
             tree.label = "Tree%d" % (idx+1)
-            tree_list.append(tree)
         tree_list.write_to_stream(trprobs_dest,
                 'nexus',
                 edge_lengths=False,

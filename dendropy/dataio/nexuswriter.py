@@ -191,9 +191,14 @@ class NexusWriter(iosys.DataWriter):
                 weight = "[&W %s] " % tree.weight
             else:
                 weight = ""
-            block.append('    TREE %s = %s%s%s;' % (textutils.escape_nexus_token(tree_name, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores),
+            if self.annotations_as_comments or self.annotations_as_nhx:
+                annotation_comments = nexustokenizer.format_annotation_as_comments(tree, nhx=self.annotations_as_nhx)
+            else:
+                annotation_comments = ""
+            block.append('    TREE %s = %s%s%s%s;' % (textutils.escape_nexus_token(tree_name, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores),
                 rooting,
                 weight,
+                annotation_comments,
                 newick_str))
         block.append('END;\n\n')
         stream.write('\n'.join(block))
