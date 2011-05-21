@@ -66,7 +66,8 @@ if _MP:
 
         def __init__(self,
                 work_queue,
-                result_queue,
+                result_split_dist_queue,
+                result_topology_hash_map_queue,
                 schema,
                 taxon_labels,
                 is_rooted,
@@ -80,7 +81,8 @@ if _MP:
                 log_frequency=1000):
             multiprocessing.Process.__init__(self)
             self.work_queue = work_queue
-            self.result_queue = result_queue
+            self.result_split_dist_queue = result_split_dist_queue
+            self.result_topology_hash_map_queue = result_topology_hash_map_queue
             self.schema = schema
             self.taxon_labels = list(taxon_labels)
             self.taxon_set = dendropy.TaxonSet(self.taxon_labels)
@@ -89,7 +91,8 @@ if _MP:
             self.split_distribution.ignore_node_ages = ignore_node_ages
             self.is_rooted = is_rooted
             self.calc_tree_probs = calc_tree_probs
-            self.topology_counter = treesum.TopologyCounter()
+            self.topology_counter = treesum.TopologyCounter(tree_store_func=\
+                    treesum.TopologyCounter.normalized_newick_topology_hash)
             self.weighted_trees = weighted_trees
             self.tree_offset = tree_offset
             self.process_idx = process_idx
@@ -151,7 +154,8 @@ if _MP:
             if self.kill_received:
                 self.send_warning("Terminating in response to kill request.")
             else:
-                self.result_queue.put(self.split_distribution)
+                self.result_split_dist_queue.put(self.split_distribution)
+                self.result_topology_hash_map_queue.put(self.topology_counter.topology_hash_map)
 
 def discover_taxa(treefile, schema):
     """
@@ -204,11 +208,13 @@ def process_sources_parallel(
 
     # launch processes
     messenger.send_info("Launching worker processes ...")
-    result_queue = multiprocessing.Queue()
+    result_split_dist_queue = multiprocessing.Queue()
+    result_topology_hash_map_queue = multiprocessing.Queue()
     messenger_lock = multiprocessing.Lock()
     for idx in range(num_processes):
         sct = SplitCountingWorker(work_queue,
-                result_queue,
+                result_split_dist_queue=result_split_dist_queue,
+                result_topology_hash_map_queue=result_topology_hash_map_queue,
                 schema=schema,
                 taxon_labels=taxon_labels,
                 is_rooted=is_rooted,
@@ -229,9 +235,10 @@ def process_sources_parallel(
     split_distribution.ignore_node_ages = ignore_node_ages
     topology_counter = treesum.TopologyCounter()
     while result_count < num_processes:
-        result = result_queue.get()
-        split_distribution.update(result[0])
-        topology_counter.update(result[1])
+        result_split_dist = result_split_dist_queue.get()
+        split_distribution.update(result_split_dist)
+        result_topology_hash_map = result_topology_hash_map_queue.get()
+        topology_counter.update_topology_hash_map(result_topology_hash_map)
         result_count += 1
     messenger.send_info("Recovered results from all worker processes.")
     return split_distribution, topology_counter
@@ -912,6 +919,11 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
         tree_freqs = master_topology_counter.calc_freqs(raw_counts=False)
         cumulative_prob = 0.0
         for idx, (tree, freq) in enumerate(tree_freqs.items()):
+            if isinstance(tree, str):
+                tree_list.read_from_string(tree, 'newick')
+                tree = tree_list[-1]
+            else:
+                tree_list.append(tree)
             cumulative_prob += freq
             tree.probability = freq
             tree.cumulative_probability = cumulative_prob

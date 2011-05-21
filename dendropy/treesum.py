@@ -389,12 +389,29 @@ class TopologyCounter(object):
     Tracks frequency of occurrences of topologies.
     """
 
-    def split_sets(tree):
+    def split_sets_topology_hash(tree):
         """
         Set of all splits on tree: default topology hash.
         """
         return frozenset(tree.split_edges.keys())
-    split_sets = staticmethod(split_sets)
+    split_sets_topology_hash = staticmethod(split_sets_topology_hash)
+
+    def normalized_newick_topology_hash(tree):
+        """
+        Returns simple and normalized newick string corresponding to topology.
+        """
+        tree.ladderize()
+        newick_str = tree.as_string(
+                'newick',
+                edge_lengths=False,
+                write_rooting=True,
+                intenral_labels=False,
+                annotations_as_comments=False,
+                annotations_as_nhx=False,
+                node_comments=False)
+        newick_str.replace("\n", "")
+        return newick_str
+    normalized_newick_topology_hash = staticmethod(normalized_newick_topology_hash)
 
     def __init__(self,
             topology_hash_func=None,
@@ -417,13 +434,26 @@ class TopologyCounter(object):
         self.topology_hash_map = {}
         self.total_trees_counted = 0
         if topology_hash_func is None:
-            self.topology_hash_func = TopologyCounter.split_sets
+            self.topology_hash_func = TopologyCounter.split_sets_topology_hash
         else:
             self.topology_hash_func = topology_hash_func
         if tree_store_func is None:
             self.tree_store_func = lambda x: x
         else:
             self.tree_store_func = tree_store_func
+
+    def update_topology_hash_map(self,
+            src_map):
+        """
+        Imports data from another counter.
+        """
+        trees_counted = 0
+        for topology_hash in src_map:
+            if topology_hash not in self.topology_hash_map:
+                self.topology_hash_map[topology_hash] = list(src_map[topology_hash])
+            else:
+                self.topology_hash_map[topology_hash][0] = self.topology_hash_map[topology_hash][0] + src_map[topology_hash][0]
+            self.total_trees_counted += src_map[topology_hash][0]
 
     def count(self,
             tree,
