@@ -35,7 +35,7 @@ class ItemAttributeProxyList(list):
     def __init__(self, attr_name, *args):
         """
         __init__ calls the list.__init__ with all unnamed args.
-        
+
         `attr_name` is the name of the attribute or property that should be
         returned.
         """
@@ -74,7 +74,7 @@ class ItemSublistProxyList(list):
     def __init__(self, attr_name, *args):
         """
        __init__ calls the list.__init__ with all unnamed args.
-        
+
         `attr_name` is the name of the attribute or property that should be
         returned.
         """
@@ -397,6 +397,159 @@ class OrderedCaselessDict(dict):
             if key.lower() not in self:
                 self[key] = value
         return ocd
+###############################################################################
+## OrderedDict
+
+try:
+    from collections import OrderedDict
+    #from collections import DUMMY_FOR_TESTING
+except ImportError:
+
+    class OrderedDict(dict):
+
+        def __init__(self, other=None):
+            """
+            __init__ creates the local set of keys, and then initializes self with
+            arguments, if any, by using the superclass methods, keeping
+            the ordered keys in sync.
+            """
+            super(OrderedDict, self).__init__()
+            self._ordered_keys = []
+            if other is not None:
+                if isinstance(other, dict):
+                    for key, val in other.items():
+                        if key.lower() not in self:
+                            self._ordered_keys.append(key)
+                        super(OrderedDict, self).__setitem__(key, val)
+                else:
+                    for key, val in other:
+                        if key.lower() not in self:
+                            self._ordered_keys.append(key)
+                        super(OrderedDict, self).__setitem__(key, val)
+
+        def copy(self):
+            "Returns a shallow copy of self."
+            return self.__class__(self)
+
+        def iterkeys(self):
+            "Returns an iterator over self's ordered keys."
+            return iter(self._ordered_keys)
+
+        def itervalues(self):
+            "Returns an iterator over self's key, value pairs."
+            for key in self.iterkeys():
+                yield self[key]
+
+        def iteritems(self):
+            "Returns an iterator over self's values."
+            for key in self.iterkeys():
+                yield (key, self[key])
+
+        def items(self):
+            "Returns key, value pairs in key-order."
+            return [(key, self[key]) for key in self.iterkeys()]
+
+        def values(self):
+            "Returns list of key, value pairs."
+            return [v for v in self.itervalues()]
+
+        def __iter__(self):
+            "Returns an iterator over self's ordered keys."
+            return self.iterkeys()
+
+        def __getitem__(self, key):
+            "Gets an item using a case-insensitive key."
+            return super(OrderedDict, self).__getitem__(key)
+
+        def __setitem__(self, key, value):
+            "Sets an item using a case-insensitive key,"
+            if key not in self:
+                self._ordered_keys.append(key)
+            super(OrderedDict, self).__setitem__(key, value)
+
+        def __delitem__(self, key):
+            "Remove item with specified key."
+            del(self._ordered_keys[self.index(key)])
+            super(OrderedDict, \
+                self).__delitem__(key)
+
+        def __contains__(self, key):
+            "Returns true if has key, regardless of case."
+            return super(OrderedDict, self).__contains__(key)
+
+        def pop(self, key, alt_val=None):
+            "a.pop(k[, x]):  a[k] if k in a, else x (and remove k)"
+            if key in self:
+                val = self[key]
+                self.__delitem__(key)
+                return val
+            else:
+                return alt_val
+
+        def popitem(self):
+            "a.popitem()  remove and last (key, value) pair"
+            key = self._ordered_keys[-1]
+            item = (key, self[key])
+            self.__delitem__(key)
+            return item
+
+        def caseless_keys(self):
+            "Returns a copy of the ordered list of keys."
+            return [k.lower() for k in self._ordered_keys]
+
+        def index(self, key):
+            """
+            Return the index of (caseless) key.
+            Raise KeyError if not found.
+            """
+            count = 0
+            for k in self._ordered_keys:
+                if k.lower() == key:
+                    return count
+                count = count + 1
+            raise KeyError(key)
+
+        def keys(self):
+            "Returns a copy of the ordered list of keys."
+            return list(self._ordered_keys)
+
+        def clear(self):
+            "Deletes all items from the dictionary."
+            self._ordered_keys = []
+            super(OrderedDict, self).clear()
+
+        def has_key(self, key):
+            "Returns true if has key, regardless of case."
+            return key in self
+
+        def get(self, key, def_val=None):
+            "Gets an item by its key, returning default if key not present."
+            return super(OrderedDict, self).get(key, def_val)
+
+        def setdefault(self, key, def_val=None):
+            "Sets the default value to return if key not present."
+            return super(OrderedDict, self).setdefault(key, def_val)
+
+        def update(self, other):
+            """
+            updates (and overwrites) key/value pairs:
+            k = { 'a':'A', 'b':'B', 'c':'C'}
+            q = { 'c':'C', 'd':'D', 'f':'F'}
+            k.update(q)
+            {'a': 'A', 'c': 'C', 'b': 'B', 'd': 'D', 'f': 'F'}
+            """
+            for key, val in other.items():
+                if key not in self:
+                    self._ordered_keys.append(key)
+                super(OrderedDict, self).__setitem__(key, val)
+
+        def fromkeys(self, iterable, value=None):
+            "Creates a new dictionary with keys from seq and values set to value."
+            ocd = OrderedDict()
+            for key in iterable:
+                if key not in self:
+                    self[key] = value
+            return ocd
 
 ###############################################################################
 ## Generic Container Interace (for reference)

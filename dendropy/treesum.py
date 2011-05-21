@@ -31,6 +31,7 @@ from dendropy import treesplit
 from dendropy import dataobject
 from dendropy import treecalc
 from dendropy import treesim
+from dendropy.utility.containers import OrderedDict
 
 # the following imports are for the strict consensus merger
 _IS_DEBUG_LOGGING = _LOG.isEnabledFor(logging.DEBUG)
@@ -39,6 +40,9 @@ from dendropy.treemanip import collapse_clade, collapse_edge
 from dendropy.dataobject.tree import format_split
 from dendropy.utility.containers import NormalizedBitmaskDict
 from dendropy.utility.statistics import mean_and_sample_variance
+
+##############################################################################
+## TreeSummarizer
 
 class TreeSummarizer(object):
     "Summarizes a distribution of trees."
@@ -374,7 +378,64 @@ class TreeSummarizer(object):
             split_distribution.count_splits_on_tree(tree)
         return split_distribution
 
+## TreeSummarizer
+##############################################################################
 
+##############################################################################
+## TreeCounter
+
+class TopologyCounter(object):
+    """
+    Tracks frequency of occurrences of topologies.
+    """
+
+    def __init__(self):
+        self.split_set_counts = {}
+        self.total_trees_counted = 0
+
+    def count(self,
+            tree,
+            trees_splits_encoded=False):
+        """
+        Logs/registers a tree.
+        """
+        if not trees_splits_encoded:
+            treesplit.encode_splits(tree)
+        split_set = frozenset(tree.split_edges.keys())
+        if split_set not in self.split_set_counts:
+            self.split_set_counts[split_set] = [1, tree]
+        else:
+            self.split_set_counts[split_set][0] = self.split_set_counts[split_set][0] + 1
+        self.total_trees_counted += 1
+
+    def calc_freqs(self,
+            repr_func=None,
+            raw_counts=False):
+        """
+        Returns an ordered dictionary (OrderedDict) of topologies mapped to
+        proportion or numbers of occurrences, in (descending) order of the
+        proportion of occurrence.
+        If `repr_func` is not None, then it should be a function that takes
+        a DendroPy Tree as an argument and returns the representation of that
+        tree that should be used as a key for the dictionary; otherwise, by
+        default, the Tree object will be used directly as keys.
+        If `raw_counts` is True, then the values will be the actual counts of
+        occurrences; otherwise, by default, the values will be the proportions.
+        """
+        freqs = OrderedDict()
+        split_sets = self.split_set_counts.keys()
+        split_sets.sort(reverse=True)
+        for split_set in split_sets:
+            count, tree = self.split_set_counts[split_set]
+            freq = float(count) / self.total_trees_counted
+            if repr_func is not None:
+                freqs[repr_func(tree)] = freq
+            else:
+                freqs[tree] = freq
+        return freqs
+
+## TreeCounter
+##############################################################################
 
 def reroot_on_lowest_common_index_path(t, common_mask):
     """This operation is only for unrooted trees that are being merged using

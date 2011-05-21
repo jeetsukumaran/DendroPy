@@ -27,6 +27,7 @@ from dendropy import treesum
 from dendropy import treesplit
 from dendropy.test.support import pathmap
 from dendropy.utility import statistics
+from dendropy.test.support import extendedtest
 
 class TestConsensusTree(unittest.TestCase):
 
@@ -94,6 +95,26 @@ class TestTreeEdgeSummarization(unittest.TestCase):
             exp_edge = exp_tree.split_edges[split]
             obs_edge = obs_tree.split_edges[split]
             self.assertAlmostEqual(obs_edge.head_node.age, exp_edge.head_node.age)
+
+class TestTopologyCounter(extendedtest.ExtendedTestCase):
+
+    def testSimple(self):
+        tree1_str = "[&U] (A,(B,(C,(D,E))));"
+        tree2_str = "[&U] (B,(C,(D,(A,E))));"
+        tree3_str = "[&U] (D,(A,(B,(C,E))));"
+        tree4_str = "[&U] (C,(D,(A,(B,E))));"
+        tree5_str = "[&U] (A,(E,(B,(C,D))));"
+        all_tree_strs = [tree1_str, tree2_str, tree3_str, tree4_str, tree5_str]
+        weights = [4, 2, 2, 1, 1]
+        tree_strs = []
+        for idx, tree_str in enumerate(all_tree_strs):
+            tree_strs.extend([tree_str] * weights[idx])
+        expected_freq_values = [float(i)/sum(weights) for i in weights]
+        trees = dendropy.TreeList.get_from_string("\n".join(tree_strs), 'newick')
+        tc = treesum.TopologyCounter()
+        for tree in trees:
+            tc.count(tree)
+        result_freqs = tc.calc_freqs(repr_func=lambda x: x.as_string('newick'))
 
 if __name__ == "__main__":
     unittest.main()
