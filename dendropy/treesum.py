@@ -427,11 +427,11 @@ class TopologyCounter(object):
 
     def count(self,
             tree,
-            trees_splits_encoded=False):
+            tree_splits_encoded=False):
         """
         Logs/registers a tree.
         """
-        if not trees_splits_encoded:
+        if not tree_splits_encoded:
             treesplit.encode_splits(tree)
         topology = self.topology_hash_func(tree)
         if topology not in self.topology_hash_map:

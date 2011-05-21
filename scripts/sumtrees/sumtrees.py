@@ -71,6 +71,7 @@ if _MP:
                 taxon_labels,
                 is_rooted,
                 ignore_node_ages,
+                calc_tree_probs,
                 weighted_trees,
                 tree_offset,
                 process_idx,
@@ -87,6 +88,8 @@ if _MP:
             self.split_distribution.is_rooted = is_rooted
             self.split_distribution.ignore_node_ages = ignore_node_ages
             self.is_rooted = is_rooted
+            self.calc_tree_probs = calc_tree_probs
+            self.topology_counter = treesum.TopologyCounter()
             self.weighted_trees = weighted_trees
             self.tree_offset = tree_offset
             self.process_idx = process_idx
@@ -134,6 +137,9 @@ if _MP:
                             self.send_info("(processing) '%s': tree at offset %d" % (source, tidx), wrap=False)
                         treesplit.encode_splits(tree)
                         self.split_distribution.count_splits_on_tree(tree)
+                        if self.calc_tree_probs:
+                            self.topology_counter.count(tree,
+                                    tree_splits_encoded=True)
                     else:
                         if (self.log_frequency == 1) or (tidx > 0 and self.log_frequency > 0 and tidx % self.log_frequency == 0):
                             self.send_info("(processing) '%s': tree at offset %d (skipping)" % (source, tidx), wrap=False)
@@ -169,6 +175,7 @@ def process_sources_parallel(
         schema,
         is_rooted,
         ignore_node_ages,
+        calc_tree_probs,
         weighted_trees,
         tree_offset,
         log_frequency,
@@ -205,6 +212,8 @@ def process_sources_parallel(
                 schema=schema,
                 taxon_labels=taxon_labels,
                 is_rooted=is_rooted,
+                ignore_node_ages=ignore_node_ages,
+                calc_tree_probs=calc_tree_probs,
                 weighted_trees=weighted_trees,
                 tree_offset=tree_offset,
                 process_idx=idx,
@@ -218,18 +227,21 @@ def process_sources_parallel(
     split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
     split_distribution.is_rooted = is_rooted
     split_distribution.ignore_node_ages = ignore_node_ages
+    topology_counter = treesum.TopologyCounter()
     while result_count < num_processes:
         result = result_queue.get()
-        split_distribution.update(result)
+        split_distribution.update(result[0])
+        topology_counter.update(result[1])
         result_count += 1
     messenger.send_info("Recovered results from all worker processes.")
-    return split_distribution
+    return split_distribution, topology_counter
 
 def process_sources_serial(
         support_filepaths,
         schema,
         is_rooted,
         ignore_node_ages,
+        calc_tree_probs,
         weighted_trees,
         tree_offset,
         log_frequency,
@@ -243,6 +255,7 @@ def process_sources_serial(
     split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
     split_distribution.ignore_node_ages = ignore_node_ages
     split_distribution.is_rooted = is_rooted
+    topology_counter = treesum.TopologyCounter()
 
     if support_filepaths is None or len(support_filepaths) == 0:
         messenger.send_info("Reading trees from standard input.")
@@ -276,6 +289,7 @@ def process_sources_serial(
                     messenger.send_info("(processing) '%s': tree at offset %d" % (name, tidx), wrap=False)
                 treesplit.encode_splits(tree)
                 split_distribution.count_splits_on_tree(tree)
+                topology_counter.count(tree, tree_splits_encoded=True)
             else:
                 if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
                     messenger.send_info("(processing) '%s': tree at offset %d (skipping)" % (name, tidx), wrap=False)
@@ -286,7 +300,7 @@ def process_sources_serial(
             pass
 
     messenger.send_info("Serial processing of %d source(s) completed." % len(srcs))
-    return split_distribution
+    return split_distribution, topology_counter
 
 def main_cli():
 
@@ -456,12 +470,18 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
     other_optgroup = OptionGroup(parser, "Other Options")
     parser.add_option_group(other_optgroup)
 
-    other_optgroup.add_option("--split-edges",
+    other_optgroup.add_option("--trprobs", "--calc-tree-probabilities",
+            dest="trprobs_filepath",
+            default=None,
+            metavar="FILEPATH",
+            help="if specified, a file listing tree (topologies) and the " \
+                    + "frequencies of their occurrences will be saved to FILEPATH")
+    other_optgroup.add_option("--extract-edges",
             dest="split_edges_filepath",
             default=None,
             metavar="FILEPATH",
             help="if specified, a tab-delimited file of splits and their edge " \
-                    + "lengths across runs will be saved to FILEPATH")
+                    + "lengths across input trees will be saved to FILEPATH")
 
     run_optgroup = OptionGroup(parser, "Program Run Options")
     parser.add_option_group(run_optgroup)
@@ -591,6 +611,17 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
         else:
             sys.exit(1)
 
+    if opts.trprobs_filepath:
+        trprobs_filepath = os.path.expanduser(os.path.expandvars(opts.trprobs_filepath))
+        if confirm_overwrite(filepath=trprobs_filepath, replace_without_asking=opts.replace):
+            trprobs_dest = open(trprobs_filepath, "w")
+        else:
+            sys.exit(1)
+        opts.calc_tree_probs = True
+    else:
+        trprobs_dest = None
+        opts.calc_tree_probs = False
+
     if opts.split_edges_filepath:
         split_edges_filepath = os.path.expanduser(os.path.expandvars(opts.split_edges_filepath))
         if confirm_overwrite(filepath=split_edges_filepath, replace_without_asking=opts.replace):
@@ -632,12 +663,13 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
             if num_processes == 1:
                 messenger.send_warning("Running in parallel processing mode but limited to only 1 process: probably more efficient to run in serial mode!")
 
-        master_split_distribution = process_sources_parallel(
+        master_split_distribution, master_topology_counter = process_sources_parallel(
                 num_processes=num_processes,
                 support_filepaths=support_filepaths,
                 schema=schema,
                 is_rooted=opts.rooted_trees,
                 ignore_node_ages=not opts.calc_node_ages,
+                calc_tree_probs=opts.calc_tree_probs,
                 weighted_trees=opts.weighted_trees,
                 tree_offset=opts.burnin,
                 log_frequency=opts.log_frequency,
@@ -647,11 +679,12 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
             messenger.send_warning("Parallel processing mode requested but only one source specified: defaulting to serial mode.")
         if opts.from_newick_stream or opts.from_nexus_stream:
             support_filepaths = None
-        master_split_distribution = process_sources_serial(
+        master_split_distribution, master_topology_counter = process_sources_serial(
                 support_filepaths=support_filepaths,
                 schema=schema,
                 is_rooted=opts.rooted_trees,
                 ignore_node_ages=not opts.calc_node_ages,
+                calc_tree_probs=opts.calc_tree_probs,
                 weighted_trees=opts.weighted_trees,
                 tree_offset=opts.burnin,
                 log_frequency=opts.log_frequency,
@@ -873,6 +906,30 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
             comment.append(opts.additional_comments)
         output_dataset.write(output_dest, "nexus", simple=simple, comment=comment, nhx_key_to_func_dict=nhx_key_to_func)
 
+    messenger.send_info("Writing tree probabilities ...")
+    if trprobs_dest:
+        tree_list = dendropy.TreeList(taxon_set=master_split_distribution.taxon_set)
+        tree_freqs = master_topology_counter.calc_freqs(raw_counts=False)
+        cumulative_prob = 0.0
+        for idx, (tree, freq) in enumerate(tree_freqs.items()):
+            cumulative_prob += freq
+            tree.probability = freq
+            tree.cumulative_probability = cumulative_prob
+            tree.annotate('probability')
+            tree.annotate('cumulative_probability')
+            tree.label = "Tree%d" % (idx+1)
+            tree_list.append(tree)
+        tree_list.write_to_stream(trprobs_dest,
+                'nexus',
+                edge_lengths=False,
+                write_rooting=False,
+                intenral_labels=False,
+                annotations_as_comments=True,
+                annotations_as_nhx=False,
+                node_comments=False
+                )
+
+    messenger.send_info("Writing split edge lengths ...")
     if split_edges_dest:
         for split in master_split_distribution.splits:
             row = []
