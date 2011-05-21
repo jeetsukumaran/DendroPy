@@ -99,22 +99,35 @@ class TestTreeEdgeSummarization(unittest.TestCase):
 class TestTopologyCounter(extendedtest.ExtendedTestCase):
 
     def testSimple(self):
+        taxa = dendropy.TaxonSet()
         tree1_str = "[&U] (A,(B,(C,(D,E))));"
         tree2_str = "[&U] (B,(C,(D,(A,E))));"
         tree3_str = "[&U] (D,(A,(B,(C,E))));"
         tree4_str = "[&U] (C,(D,(A,(B,E))));"
         tree5_str = "[&U] (A,(E,(B,(C,D))));"
         all_tree_strs = [tree1_str, tree2_str, tree3_str, tree4_str, tree5_str]
-        weights = [4, 2, 2, 1, 1]
-        tree_strs = []
+        weights = [8, 5, 4, 2, 1]
+        test_tree_strs = []
         for idx, tree_str in enumerate(all_tree_strs):
-            tree_strs.extend([tree_str] * weights[idx])
-        expected_freq_values = [float(i)/sum(weights) for i in weights]
-        trees = dendropy.TreeList.get_from_string("\n".join(tree_strs), 'newick')
+            test_tree_strs.extend([tree_str] * weights[idx])
+        test_trees = dendropy.TreeList.get_from_string("\n".join(test_tree_strs),
+                'newick',
+                taxon_set=taxa)
         tc = treesum.TopologyCounter()
-        for tree in trees:
+        expected_freq_values = [float(i)/sum(weights) for i in weights]
+        expected_trees = dendropy.TreeList.get_from_string("\n".join(all_tree_strs),
+                'newick',
+                taxon_set=taxa)
+        for tree in test_trees:
             tc.count(tree)
-        result_freqs = tc.calc_freqs()
+        result_tree_freqs = tc.calc_freqs()
+        for idx, (result_tree, result_freq) in enumerate(result_tree_freqs.items()):
+            expected_tree = expected_trees[idx]
+            expected_tree.update_splits()
+            expected_freq = expected_freq_values[idx]
+            self.assertEqual(result_tree.symmetric_difference(expected_tree), 0,
+                    "%s != %s" % (result_tree.as_string('newick'), expected_tree.as_string('newick')))
+            self.assertAlmostEqual(result_freq, expected_freq)
 
 if __name__ == "__main__":
     unittest.main()

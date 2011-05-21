@@ -414,7 +414,7 @@ class TopologyCounter(object):
         garbage-collected after being processed, as well as avoiding the need to store
         large collections of splits.
         """
-        self.topology_counts = {}
+        self.topology_hash_map = {}
         self.total_trees_counted = 0
         if topology_hash_func is None:
             self.topology_hash_func = TopologyCounter.split_sets
@@ -434,10 +434,10 @@ class TopologyCounter(object):
         if not trees_splits_encoded:
             treesplit.encode_splits(tree)
         topology = self.topology_hash_func(tree)
-        if topology not in self.topology_counts:
-            self.topology_counts[topology] = [1, self.tree_store_func(tree)]
+        if topology not in self.topology_hash_map:
+            self.topology_hash_map[topology] = [1, self.tree_store_func(tree)]
         else:
-            self.topology_counts[topology][0] = self.topology_counts[topology][0] + 1
+            self.topology_hash_map[topology][0] = self.topology_hash_map[topology][0] + 1
         self.total_trees_counted += 1
 
     def calc_freqs(self,
@@ -450,10 +450,9 @@ class TopologyCounter(object):
         occurrences; otherwise, by default, the values will be the proportions.
         """
         freqs = OrderedDict()
-        topologies = self.topology_counts.keys()
-        topologies.sort(reverse=True)
-        for topology in topologies:
-            count, tree = self.topology_counts[topology]
+        topology_counts = self.topology_hash_map.values()
+        topology_counts.sort(reverse=True)
+        for count, tree in topology_counts:
             freq = float(count) / self.total_trees_counted
             freqs[tree] = freq
         return freqs
