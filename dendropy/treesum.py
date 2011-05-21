@@ -389,9 +389,41 @@ class TopologyCounter(object):
     Tracks frequency of occurrences of topologies.
     """
 
-    def __init__(self):
-        self.split_set_counts = {}
+    def split_sets(tree):
+        """
+        Set of all splits on tree: default topology hash.
+        """
+        return frozenset(tree.split_edges.keys())
+    split_sets = staticmethod(split_sets)
+
+    def __init__(self,
+            topology_hash_func=None,
+            tree_store_func=None):
+        """
+        `topology_hash_func`, if not None, should be function that takes a DendroPy tree
+        object as an argument and returns an object to be used to represent the topology
+        in the count-tracking dictonary. If `None` (default), then the set of all
+        splits on the tree is used.
+        `tree_store_func` should be a function that takes a DendroPy tree
+        object as an argument and returns an object to be used to represent the
+        tree in the results. If `None` (default), the DendroPy tree object will be
+        stored directly.
+        The defaults for `topology_hash_func` and `tree_store_func` should be fine in most cases.
+        However, when, for example, memory is a concern, but passing in
+        normalized NEWICK string composition functions to both of these, references to trees can be
+        garbage-collected after being processed, as well as avoiding the need to store
+        large collections of splits.
+        """
+        self.topology_counts = {}
         self.total_trees_counted = 0
+        if topology_hash_func is None:
+            self.topology_hash_func = TopologyCounter.split_sets
+        else:
+            self.topology_hash_func = topology_hash_func
+        if tree_store_func is None:
+            self.tree_store_func = lambda x: x
+        else:
+            self.tree_store_func = tree_store_func
 
     def count(self,
             tree,
@@ -401,37 +433,29 @@ class TopologyCounter(object):
         """
         if not trees_splits_encoded:
             treesplit.encode_splits(tree)
-        split_set = frozenset(tree.split_edges.keys())
-        if split_set not in self.split_set_counts:
-            self.split_set_counts[split_set] = [1, tree]
+        topology = self.topology_hash_func(tree)
+        if topology not in self.topology_counts:
+            self.topology_counts[topology] = [1, self.tree_store_func(tree)]
         else:
-            self.split_set_counts[split_set][0] = self.split_set_counts[split_set][0] + 1
+            self.topology_counts[topology][0] = self.topology_counts[topology][0] + 1
         self.total_trees_counted += 1
 
     def calc_freqs(self,
-            repr_func=None,
             raw_counts=False):
         """
         Returns an ordered dictionary (OrderedDict) of topologies mapped to
         proportion or numbers of occurrences, in (descending) order of the
         proportion of occurrence.
-        If `repr_func` is not None, then it should be a function that takes
-        a DendroPy Tree as an argument and returns the representation of that
-        tree that should be used as a key for the dictionary; otherwise, by
-        default, the Tree object will be used directly as keys.
         If `raw_counts` is True, then the values will be the actual counts of
         occurrences; otherwise, by default, the values will be the proportions.
         """
         freqs = OrderedDict()
-        split_sets = self.split_set_counts.keys()
-        split_sets.sort(reverse=True)
-        for split_set in split_sets:
-            count, tree = self.split_set_counts[split_set]
+        topologies = self.topology_counts.keys()
+        topologies.sort(reverse=True)
+        for topology in topologies:
+            count, tree = self.topology_counts[topology]
             freq = float(count) / self.total_trees_counted
-            if repr_func is not None:
-                freqs[repr_func(tree)] = freq
-            else:
-                freqs[tree] = freq
+            freqs[tree] = freq
         return freqs
 
 ## TreeCounter

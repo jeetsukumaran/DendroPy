@@ -114,7 +114,7 @@ class TestTopologyCounter(extendedtest.ExtendedTestCase):
         tc = treesum.TopologyCounter()
         for tree in trees:
             tc.count(tree)
-        result_freqs = tc.calc_freqs(repr_func=lambda x: x.as_string('newick'))
+        result_freqs = tc.calc_freqs()
 
 if __name__ == "__main__":
     unittest.main()
