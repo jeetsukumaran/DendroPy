@@ -16,6 +16,7 @@ New Features
     - SumTrees creates a rooted consensus tree if input trees are specified to be rooted using the `--rooted-trees` flag.
     - Tree objects can now be rerooted at midpoint (see `Tree.reroot_at_midpoint()`).
     - When writing in NEXUS or NEWICK formats, the `node_comments` keyword argument (`True` or `False`) can control whether extended comments associated with nodes on trees will be written or not.
+    - TopologyCounter class added to dendropy.treesum.
 
 Release 3.7.2
 -------------
