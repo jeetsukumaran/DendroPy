@@ -153,16 +153,40 @@ class CommentReadingTests(unittest.TestCase):
 
 class CommentMetaDataTests(unittest.TestCase):
 
-    def testFigtreeStyleBasic(self):
-        s = """(([xxx]A[&A1=1,A2=2,A3={1,2,3},  ,][A]:[A][A]1[A][A],
+    nexus_skeleton = """\
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=4;
+    TAXLABELS
+        A
+        B
+        C
+        D
+  ;
+END;
+
+BEGIN TREES;
+    TREE 0 = %s ;
+END;
+"""
+    figtree_metadata_str = """(([xxx]A[&A1=1,A2=2,A3={1,2,3},  ,][A]:[A][A]1[A][A],
                  [xxx]B[&B1=1,B2=2,B3={1,2,3}][B]:[B][B]1[B][B])
                  [xxx]AB[&AB1=1,AB2=2,AB3={1,2,3}][AB]:[AB][AB]1[AB][AB],
                 ([xxx]C[&C1=1,C2=2,C3={1,2,3}][C]:[C][C]1[C][C],
                  [xxx]D[&D1=1,D2=2,D3={1,2,3}][D]:[D][D]1[D][D])
                  [xxx]CD[&CD1=1, CD2=2, CD3={1,2,3}][CD]:[CD][CD]1[CD][CD])
                  [xxx]Root[&Root1=1, Root2=2, Root3={1,2,3}][Root]:[Root][Root]1[Root][Root]"""
-        _LOG.info("Tree = %s" % s)
-        tree = dendropy.Tree.get_from_string(s, 'newick')
+
+    nhx_metadata_str = """(([xxx]A[&&A1=1:A2=2:A3={1,2,3}][A]:[A][A]1[A][A],
+                 [xxx]B[&&B1=1:B2=2:B3={1,2,3}][B]:[B][B]1[B][B])
+                 [xxx]AB[&&AB1=1:AB2=2:AB3={1,2,3}][AB]:[AB][AB]1[AB][AB],
+                ([xxx]C[&&C1=1:C2=2:C3={1,2,3}][C]:[C][C]1[C][C],
+                 [xxx]D[&&D1=1:D2=2:D3={1,2,3}][D]:[D][D]1[D][D])
+                 [xxx]CD[&&CD1=1: CD2=2: CD3={1,2,3}][CD]:[CD][CD]1[CD][CD])
+                 [xxx]Root[&&Root1=1: Root2=2: Root3={1,2,3}][Root]:[Root][Root]1[Root][Root]"""
+
+    def check_results(self, tree):
         tree.assign_node_labels_from_taxon_or_oid()
         for nd in tree.postorder_node_iter():
             metadata = nexustokenizer.parse_comment_metadata(nd.comments)
@@ -174,26 +198,31 @@ class CommentMetaDataTests(unittest.TestCase):
                 self.assertTrue(key in metadata)
                 self.assertEqual(metadata[key], values[i])
 
-    def testNHXBasic(self):
-        s = """(([xxx]A[&&A1=1:A2=2:A3={1,2,3}][A]:[A][A]1[A][A],
-                 [xxx]B[&&B1=1:B2=2:B3={1,2,3}][B]:[B][B]1[B][B])
-                 [xxx]AB[&&AB1=1:AB2=2:AB3={1,2,3}][AB]:[AB][AB]1[AB][AB],
-                ([xxx]C[&&C1=1:C2=2:C3={1,2,3}][C]:[C][C]1[C][C],
-                 [xxx]D[&&D1=1:D2=2:D3={1,2,3}][D]:[D][D]1[D][D])
-                 [xxx]CD[&&CD1=1: CD2=2: CD3={1,2,3}][CD]:[CD][CD]1[CD][CD])
-                 [xxx]Root[&&Root1=1: Root2=2: Root3={1,2,3}][Root]:[Root][Root]1[Root][Root]"""
+    def testFigtreeStyleBasic(self):
+        s = self.figtree_metadata_str
         _LOG.info("Tree = %s" % s)
         tree = dendropy.Tree.get_from_string(s, 'newick')
-        tree.assign_node_labels_from_taxon_or_oid()
-        for nd in tree.postorder_node_iter():
-            metadata = nexustokenizer.parse_comment_metadata(nd.comments)
-            self.assertEqual(len(metadata), 3)
-            values = ["1", "2", ["1","2","3"]]
-            for i in range(3):
-                key = "%s%d" % (nd.label, i+1)
-                self.assertTrue(key in metadata)
-                self.assertEqual(metadata[key], values[i])
+        self.check_results(tree)
 
+    def testNHXBasic(self):
+        s = self.nhx_metadata_str
+        _LOG.info("Tree = %s" % s)
+        tree = dendropy.Tree.get_from_string(s, 'newick')
+        self.check_results(tree)
+
+    def testNHXStyleNexusReader(self):
+        s = self.nexus_skeleton % self.nhx_metadata_str
+        tree = dendropy.Tree.get_from_string(s,
+                'nexus',
+                store_metadata_comments=True)
+        self.check_results(tree)
+
+    def testFigtreeStyleNexusReader(self):
+        s = self.nexus_skeleton % self.figtree_metadata_str
+        tree = dendropy.Tree.get_from_string(s,
+                'nexus',
+                store_metadata_comments=True)
+        self.check_results(tree)
 
 if __name__ == "__main__":
     unittest.main()
