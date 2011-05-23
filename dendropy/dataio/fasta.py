@@ -41,17 +41,17 @@ class FastaReader(iosys.DataReader):
 
     def __init__(self, **kwargs):
         """
-        __init__ requires either `char_matrix_type` or `data_type` kwargs. 
-        
+        __init__ requires either `char_matrix_type` or `data_type` kwargs.
+
         The supported kwargs are:
-        
+
             - `row_type` can be RICH or STR,
             - `char_matrix_type` should be one of the `CharacterMatrix` types.
             - `data_type` (should be in FastaReader.supported_data_types)
         """
         iosys.DataReader.__init__(self, **kwargs)
         self.simple_rows = kwargs.get('row_type', 'rich').upper() == 'STR'
-        
+
         self.char_matrix_type = kwargs.get("char_matrix_type")
         data_type = kwargs.get("data_type", '').lower()
         if data_type:
@@ -183,12 +183,16 @@ class FastaWriter(iosys.DataWriter):
                     and char_matrix.taxon_set is not self.attached_taxon_set:
                 continue
             for taxon in char_matrix.taxon_set:
-                stream.write(">%s\n" % taxon.label)
-                seqs = char_matrix[taxon]
-                if isinstance(seqs, dataobject.CharacterDataVector):
-                    seqs = seqs.symbols_as_string()
-                if self.wrap:
-                    seqs = tw.fill(seqs)
-                stream.write("%s\n\n" % seqs)
+                try:
+                    seqs = char_matrix[taxon]
+                    stream.write(">%s\n" % taxon.label)
+                    if isinstance(seqs, dataobject.CharacterDataVector):
+                        seqs = seqs.symbols_as_string()
+                    if self.wrap:
+                        seqs = tw.fill(seqs)
+                    stream.write("%s\n\n" % seqs)
+                except KeyError:
+                    # if no sequences found associated with this taxa: skip
+                    pass
 
 

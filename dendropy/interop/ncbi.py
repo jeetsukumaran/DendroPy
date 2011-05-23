@@ -48,7 +48,8 @@ def parse_ncbi_curation_info(gb_defline):
 def compose_taxon_label_from_gb_defline(gb_defline,
         num_desc_components=3,
         separator='_',
-        gbnum_in_front=True):
+        gbnum_in_front=True,
+        exclude_gbnum=False):
     """
     If `gb_defline` matches a GenBank FASTA-format defline structure, then this returns a
     label:
@@ -70,7 +71,9 @@ def compose_taxon_label_from_gb_defline(gb_defline,
     if m is not None:
         groups = m.groups()
         desc_parts = [s.strip() for s in groups[-1].split() if s]
-        if gbnum_in_front:
+        if exclude_gbnum:
+            label_parts = desc_parts[:num_desc_components]
+        elif gbnum_in_front:
             label_parts = [groups[2]] + desc_parts[:num_desc_components]
         else:
             label_parts = desc_parts[:num_desc_components] + [groups[2]]
@@ -81,7 +84,8 @@ def compose_taxon_label_from_gb_defline(gb_defline,
 def relabel_taxa_from_defline(taxon_set,
         num_desc_components=3,
         separator='_',
-        gbnum_in_front=True):
+        gbnum_in_front=True,
+        exclude_gbnum=False):
     """
     Examines the labels of each `Taxon` object in `taxon_set`, and if
     conforming to a GenBank pattern, translates the labels to a standard
@@ -103,7 +107,8 @@ def relabel_taxa_from_defline(taxon_set,
                 gb_defline=taxon.label,
                 num_desc_components=num_desc_components,
                 separator=separator,
-                gbnum_in_front=gbnum_in_front)
+                gbnum_in_front=gbnum_in_front,
+                exclude_gbnum=exclude_gbnum)
     return taxon_set
 
 class Entrez(object):
@@ -181,6 +186,7 @@ class Entrez(object):
             label_num_desc_components=3,
             label_separator='_',
             label_id_in_front=True,
+            exclude_gbnum_from_label=False,
             sort_taxa_by_label=False):
         """
         Instantiates a broker that queries NCBI and returns data.  If
@@ -198,6 +204,7 @@ class Entrez(object):
         self.label_num_desc_components = label_num_desc_components
         self.label_separator = label_separator
         self.label_id_in_front = label_id_in_front
+        self.exclude_gbnum_from_label = exclude_gbnum_from_label
         self.sort_taxa_by_label = sort_taxa_by_label
 
     def _fetch(self, db, ids, rettype):
@@ -252,7 +259,8 @@ class Entrez(object):
             relabel_taxa_from_defline(d.taxon_set,
                     num_desc_components=self.label_num_desc_components,
                     separator=self.label_separator,
-                    gbnum_in_front=self.label_id_in_front)
+                    gbnum_in_front=self.label_id_in_front,
+                    exclude_gbnum=self.exclude_gbnum_from_label)
         if self.sort_taxa_by_label:
             d.taxon_set.sort(key=lambda x: x.label)
         return d
