@@ -69,7 +69,7 @@ class NexusWriter(iosys.DataWriter):
         self.annotations_as_comments = kwargs.get("annotations_as_comments", True)
         self.annotations_as_nhx = kwargs.get("annotations_as_nhx", False)
         self.nhx_key_to_func = kwargs.get("nhx_key_to_func_dict")
-        self.is_write_node_comments = kwargs.get("node_comments", not self.simple)
+        self.is_write_item_comments = kwargs.get("node_comments", not self.simple)
         self.comment = kwargs.get("comment", [])
 
     def write(self, stream):
@@ -165,7 +165,7 @@ class NexusWriter(iosys.DataWriter):
                 annotations_as_comments=self.annotations_as_comments,
                 annotations_as_nhx=self.annotations_as_nhx,
                 nhx_key_to_func_dict=self.nhx_key_to_func,
-                node_comments=self.is_write_node_comments)
+                node_comments=self.is_write_item_comments)
         block.append('BEGIN TREES;')
         if self._link_blocks():
             title = self.compose_block_title(tree_list)
