@@ -192,7 +192,7 @@ class NewickWriter(iosys.DataWriter):
             - `nhx_key_to_func_dict` : a dict of NHX "key" to a function that takes an edge and returns the string that is the value of the NHX key (or None to omit that key for that edge)
             - `annotations_as_comments` : if True, will write annotations as comments
             - `annotations_as_nhx` : if True, will write annotation as NHX statements
-            - `node_comments` : if True, will write any additional comments
+            - `write_item_comments` : if True, will write any additional comments
         """
         iosys.DataWriter.__init__(self, **kwargs)
         self.edge_lengths = kwargs.get("edge_lengths", True)
