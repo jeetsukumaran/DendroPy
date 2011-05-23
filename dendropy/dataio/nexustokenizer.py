@@ -63,7 +63,7 @@ def format_annotation_as_comments(annotated, nhx=False):
 
 FIGTREE_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(,|$)')
 NHX_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(:|$)')
-def parse_metadata(comments,
+def parse_comment_metadata(comments,
         field_name_map=None,
         field_value_types=None,
         strip_leading_trailing_spaces=True):
@@ -288,6 +288,7 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
     edge_len_type = kwargs.get("edge_len_type", float)
     taxon_set = kwargs.get("taxon_set", None)
     suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
+    store_comment_metadata = kwargs.get('store_comment_metadata', False)
     store_tree_weights = kwargs.get("store_tree_weights", False)
     if taxon_set is None:
         taxon_set = dataobject.TaxonSet()
@@ -344,6 +345,8 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
     # store and clear comments
     tree.comments = stream_tokenizer.comments
     stream_tokenizer.clear_comments()
+    if store_comment_metadata:
+        tree.comment_metadata = parse_comment_metadata(tree.comments)
 
     while True:
         if not token or token == ';':
@@ -384,6 +387,8 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
             curr_node = tmp_node
             token = stream_tokenizer.read_next_token()
             store_node_comments(curr_node)
+            if store_comment_metadata:
+                curr_node.comment_metadata = parse_comment_metadata(curr_node.comments)
         else:
             if token == ')':
                 if curr_node.is_leaf() and not curr_node.taxon:
@@ -444,8 +449,9 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
                     curr_node.edge.length = edge_length_str
                 token = stream_tokenizer.read_next_token()
                 store_node_comments(curr_node)
+            if store_comment_metadata:
+                curr_node.comment_metadata = parse_comment_metadata(curr_node.comments)
     return tree
-
 
 ###############################################################################
 ## NexusTokenizer

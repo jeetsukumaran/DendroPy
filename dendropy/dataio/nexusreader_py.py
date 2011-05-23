@@ -46,6 +46,10 @@ class NexusReader(iosys.DataReader):
             - `default_as_unrooted=True` (or `default_as_rooted=False`): interprets
                all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
             - `edge_len_type`: specifies the type of the edge lengths (int or float)
+            - `store_comment_metadata`: if True, any 'hot comments' (i.e.,
+               comments that begin with '&') or NHX comments associated with
+               items will be processed and stored as a dictionary attribute of the
+               object: "comment_metadata".
             - `store_tree_weights`: if True, process the tree weight ("[&W 1/2]")
                comment associated with each tree, if any.
             - `encode_splits`: specifies whether or not split bitmasks will be
@@ -65,6 +69,7 @@ class NexusReader(iosys.DataReader):
         self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
         self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS)
         self.store_tree_weights = kwargs.get('store_tree_weights', False)
+        self.store_comment_metadata = kwargs.get('store_comment_metadata', False)
 
     def read(self, stream):
         """
@@ -657,6 +662,7 @@ class NexusReader(iosys.DataReader):
                 encode_splits=self.encode_splits,
                 rooting_interpreter=self.rooting_interpreter,
                 finish_node_func=self.finish_node_func,
+                store_comment_metadata=self.store_comment_metadata,
                 store_tree_weights=self.store_tree_weights,
                 preserve_underscores=self.preserve_underscores,
                 suppress_internal_node_taxa=self.suppress_internal_node_taxa)

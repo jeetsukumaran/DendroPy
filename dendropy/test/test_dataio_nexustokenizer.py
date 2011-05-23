@@ -165,7 +165,7 @@ class CommentMetaDataTests(unittest.TestCase):
         tree = dendropy.Tree.get_from_string(s, 'newick')
         tree.assign_node_labels_from_taxon_or_oid()
         for nd in tree.postorder_node_iter():
-            metadata = nexustokenizer.parse_metadata(nd.comments)
+            metadata = nexustokenizer.parse_comment_metadata(nd.comments)
             #print("%s: %s => %s" % (nd.label, nd.comments, metadata))
             self.assertEqual(len(metadata), 3)
             values = ["1", "2", ["1","2","3"]]
@@ -186,7 +186,7 @@ class CommentMetaDataTests(unittest.TestCase):
         tree = dendropy.Tree.get_from_string(s, 'newick')
         tree.assign_node_labels_from_taxon_or_oid()
         for nd in tree.postorder_node_iter():
-            metadata = nexustokenizer.parse_metadata(nd.comments)
+            metadata = nexustokenizer.parse_comment_metadata(nd.comments)
             self.assertEqual(len(metadata), 3)
             values = ["1", "2", ["1","2","3"]]
             for i in range(3):

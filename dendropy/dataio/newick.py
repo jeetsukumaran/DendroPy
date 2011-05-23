@@ -56,6 +56,10 @@ def tree_source_iter(stream, **kwargs):
         - `edge_len_type`: specifies the type of the edge lengths (int or float)
         - `encode_splits`: specifies whether or not split bitmasks will be
            calculated and attached to the edges.
+        - `store_comment_metadata`: if True, any 'hot comments' (i.e.,
+            comments that begin with '&') or NHX comments associated with
+            items will be processed and stored as a dictionary attribute of the
+            object: "comment_metadata".
         - `store_tree_weights`: if True, process the tree weight ("[&W 1/2]")
            comment associated with each tree, if any.
         - `finish_node_func`: is a function that will be applied to each node
@@ -127,6 +131,10 @@ class NewickReader(iosys.DataReader):
                violates the NEXUS standard, and will break NEXUS parsing (and
                many in-the-wild NEWICK as well). Default value is given by:
                ``dendropy.dataio.nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS``.
+            - `store_comment_metadata`: if True, any 'hot comments' (i.e.,
+               comments that begin with '&') or NHX comments associated with
+               items will be processed and stored as a dictionary attribute of the
+               object: "comment_metadata".
             - `store_tree_weights`: if True, process the tree weight ("[&W 1/2]")
                comment associated with each tree, if any.
         """
@@ -136,6 +144,7 @@ class NewickReader(iosys.DataReader):
         self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
         self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS)
         self.encode_splits = kwargs.get('encode_splits', False)
+        self.store_comment_metadata = kwargs.get('store_comment_metadata', False)
         self.store_tree_weights = kwargs.get('store_tree_weights', False)
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
         self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
@@ -156,6 +165,7 @@ class NewickReader(iosys.DataReader):
                 taxon_set=taxon_set,
                 rooting_interpreter=self.rooting_interpreter,
                 hyphens_as_tokens=self.hyphens_as_tokens,
+                store_comment_metadata=self.store_comment_metadata,
                 store_tree_weights=self.store_tree_weights,
                 encode_splits=self.encode_splits,
                 preserve_underscores=self.preserve_underscores,
