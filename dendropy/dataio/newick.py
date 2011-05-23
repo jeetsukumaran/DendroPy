@@ -204,7 +204,7 @@ class NewickWriter(iosys.DataWriter):
         self.nhx_key_to_func = kwargs.get("nhx_key_to_func_dict")
         self.annotations_as_comments = kwargs.get("annotations_as_comments", False)
         self.annotations_as_nhx = kwargs.get("annotations_as_nhx", False)
-        self.write_item_comments = kwargs.get("node_comments", False)
+        self.write_item_comments = kwargs.get("write_item_comments", False)
 
     def write(self, stream):
         """

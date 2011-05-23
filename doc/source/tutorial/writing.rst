@@ -73,7 +73,7 @@ NEXUS/Newick
     ``internal_labels``
         If :keyword:`False`, then labels for internal nodes (if given) will not be written as part of the tree statements. By default, this is :keyword:`True`, i.e., internal node labels will be written.
 
-    ``node_comments``
+    ``write_item_comments``
         If :keyword:`True`, then comments associated with nodes on trees will be written. When writing NEXUS formats, this defaults to :keyword:`True` for NEXUS formats, *unless* ``simple=True`` (see above) is specified, in which case it defaults to :keyword:`False` unless explicitly overridden by calling code. When writing NEWICK formats, this defaults to :keyword:`False`.
 
     ``block_titles``
