@@ -166,6 +166,10 @@ NEXUS/Newick
         Conversely, if ``default_as_rooted`` is :keyword:`False`, all trees will be interpreted as unrooted if the ``[&R]``/``[&U]`` comment tags are not given.
         Again, for semantic clarity, you can also specify ``default_as_unrooted`` to be :keyword:`True` to assume all trees are unrooted if not explicitly specified, though, as this is default behavior, this should not be neccessary.
 
+    ``store_comment_metadata``
+
+        If :keyword:`True`, then any FigTree-style "hot comments" (e.g. "[&age_mean=2.01,age_range={0.1,3.4}]") or NHX-style comments will be parsed and stored as a dictionary attribute of trees/nodes, ``comment_metadata``).
+
     ``preserve_underscores``
 
         With NEXUS and Newick data sources, you can also specify ``preserve_underscores=True``.

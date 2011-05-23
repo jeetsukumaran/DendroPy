@@ -12,6 +12,7 @@ New Features
     - SumTrees will now annotate nodes with summaries (mean, median, standard deviation, range, 95% highest posterior density, 5% and 95% quantiles, etc.) of the distribution of ages across across input trees if the "``--with-node-ages``" flag is specified [requires rooted ultrametric trees].
     - SumTrees will now annotate edges with summaries (mean, median, standard deviation, range, 95% highest posterior density, 5% and 95% quantiles, etc.) of the distribution of edge lengths across across input trees.
     - SumTrees will now be interpret and handle tree weights if the `--weighted-trees` option is specified.
+    - SumTrees will now report topology frequencies/probabilities, if given the `--trprobs` option.
     - SumTrees can now handle arbitrarily-large numbers of files.
     - SumTrees creates a rooted consensus tree if input trees are specified to be rooted using the `--rooted-trees` flag.
     - Tree objects can now be rerooted at midpoint (see `Tree.reroot_at_midpoint()`).
