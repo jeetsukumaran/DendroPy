@@ -34,7 +34,7 @@ _LOG = messaging.get_logger(__name__)
 DEFAULT_HYPHENS_AS_TOKENS = False
 
 ###############################################################################
-## convert annotations to comments
+## annotations to comments and vice versa
 
 def format_annotation_as_comments(annotated, nhx=False):
     parts = []
@@ -60,6 +60,60 @@ def format_annotation_as_comments(annotated, nhx=False):
         suffix = "]"
     body = separator.join(parts)
     return prefix + body + suffix
+
+FIGTREE_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(,|$)')
+NHX_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(:|$)')
+def parse_metadata(comments,
+        field_name_map=None,
+        field_value_types=None,
+        strip_leading_trailing_spaces=True):
+    """
+    Returns dictionary consisting of fields/values found
+    in comments.
+    `field_name_map` should be a dictionary mapping field names (as given in
+    the comment string) to strings that should be used to represent the
+    field in the metadata dictionary; if not given, no mapping is done (i.e.,
+    the comment string field name is used directly).
+    `field_value_types` should be a dictionary mapping field names (as given in
+    the comment string) to the value type (e.g. {"node-age" : float}.
+    """
+    metadata = {}
+    if isinstance(comments, str):
+        comments = [comments]
+    if field_name_map is None:
+        field_name_map = {}
+    if field_value_types is None:
+        field_value_types = {}
+    for comment in comments:
+        if comment.startswith("&&"):
+            pattern = NHX_COMMENT_FIELD_PATTERN
+            comment = comment[2:]
+        elif comment.startswith("&"):
+            pattern = FIGTREE_COMMENT_FIELD_PATTERN
+            comment = comment[1:]
+        else:
+            continue
+        for match_group in pattern.findall(comment):
+            key, val = match_group[:2]
+            if strip_leading_trailing_spaces:
+                key = key.strip()
+                val = val.strip()
+            if key in field_value_types:
+                value_type = field_value_types[key]
+            else:
+                value_type = None
+            if val.startswith('{'):
+                if value_type is not None:
+                    val = [value_type(v) for v in val[1:-1].split(',')]
+                else:
+                    val = val[1:-1].split(',')
+            else:
+                if value_type is not None:
+                    val = value_type(val)
+            if key in field_name_map:
+                key = field_name_map[key]
+            metadata[key] = val
+    return metadata
 
 ###############################################################################
 ## RootingInterpreter
