@@ -229,30 +229,46 @@ class NewickWriter(iosys.DataWriter):
         if self.exclude_trees:
             return
         for tree in tree_list:
-            if tree.rooting_state_is_undefined or not self.is_write_rooting:
-                rooting = ""
-            elif tree.is_rooted:
-                rooting = "[&R] "
-            elif not tree.is_rooted:
-                rooting = "[&U] "
-            else:
-                rooting = ""
-            if self.store_tree_weights and tree.weight is not None:
-                weight = "[&W %s] " % tree.weight
-            else:
-                weight = ""
-            if self.annotations_as_comments or self.annotations_as_nhx:
-                annotation_comments = nexustokenizer.format_annotation_as_comments(tree, nhx=self.annotations_as_nhx)
-            else:
-                annotation_comments = ""
-            stream.write("%s%s%s%s;\n" % (rooting,
-                    weight,
-                    annotation_comments,
-                    self.compose_node(tree.seed_node)))
+            self.write_tree(tree, stream)
+
+    def write_tree(self, tree, stream):
+        """
+        Composes and writes `tree` to `stream`.
+        """
+        if tree.rooting_state_is_undefined or not self.is_write_rooting:
+            rooting = ""
+        elif tree.is_rooted:
+            rooting = "[&R] "
+        elif not tree.is_rooted:
+            rooting = "[&U] "
+        else:
+            rooting = ""
+        if self.store_tree_weights and tree.weight is not None:
+            weight = "[&W %s] " % tree.weight
+        else:
+            weight = ""
+        if self.annotations_as_comments or self.annotations_as_nhx:
+            annotation_comments = nexustokenizer.format_annotation_as_comments(tree, nhx=self.annotations_as_nhx)
+        else:
+            annotation_comments = ""
+        if self.write_node_comments:
+            tree_comments = []
+            for comment in tree.comments:
+                tree_comments.append("[%s]" % comment)
+            tree_comments += "".join(tree_comments)
+        else:
+            tree_comments = ""
+        stream.write("%s%s%s%s%s;\n" % (rooting,
+                weight,
+                annotation_comments,
+                tree_comments,
+                self.compose_node(tree.seed_node)))
 
     def compose_tree(self, tree):
-        "Convienience method.        "
-        return self.compose_node(tree.seed_node)
+        """Convienience method."""
+        stream = StringIO()
+        self.write_tree(tree, stream)
+        return stream.getvalue()
 
     def choose_display_tag(self, node):
         """

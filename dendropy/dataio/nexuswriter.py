@@ -178,27 +178,8 @@ class NexusWriter(iosys.DataWriter):
                 tree_name = tree.label
             else:
                 tree_name = str(treeidx)
-            newick_str = newick_writer.compose_node(tree.seed_node)
-            if tree.rooting_state_is_undefined or not self.is_write_rooting:
-                rooting = ""
-            elif tree.is_rooted:
-                rooting = "[&R] "
-            elif not tree.is_rooted:
-                rooting = "[&U] "
-            else:
-                rooting = ""
-            if self.store_tree_weights and tree.weight is not None:
-                weight = "[&W %s] " % tree.weight
-            else:
-                weight = ""
-            if self.annotations_as_comments or self.annotations_as_nhx:
-                annotation_comments = nexustokenizer.format_annotation_as_comments(tree, nhx=self.annotations_as_nhx)
-            else:
-                annotation_comments = ""
-            block.append('    TREE %s = %s%s%s%s;' % (textutils.escape_nexus_token(tree_name, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores),
-                rooting,
-                weight,
-                annotation_comments,
+            newick_str = newick_writer.compose_tree(tree)
+            block.append('    TREE %s = %s;' % (textutils.escape_nexus_token(tree_name, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores),
                 newick_str))
         block.append('END;\n\n')
         stream.write('\n'.join(block))
