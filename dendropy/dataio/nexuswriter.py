@@ -50,9 +50,9 @@ class NexusWriter(iosys.DataWriter):
            - `store_tree_weights` : tree weights are store
            - `edge_lengths` : if False, edges will not write edge lengths [True]
            - `internal_labels` : if False, internal labels will not be written [True]
-            - `annotations_as_comments` : if True, will write annotations as comments
-            - `annotations_as_nhx` : if True, will write annotation as NHX statements
-           - `write_node_comments` : if True, comments associated with (tree) nodes will be written [False]
+           - `annotations_as_comments` : if True, will write annotations as comments
+           - `annotations_as_nhx` : if True, will write annotation as NHX statements
+           - `node_comments` : if True, comments associated with (tree) nodes will be written [False]
            - `comment` : list of lines of text to be added as comments to the
              file
         """
