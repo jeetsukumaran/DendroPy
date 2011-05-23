@@ -69,7 +69,7 @@ class NexusWriter(iosys.DataWriter):
         self.annotations_as_comments = kwargs.get("annotations_as_comments", True)
         self.annotations_as_nhx = kwargs.get("annotations_as_nhx", False)
         self.nhx_key_to_func = kwargs.get("nhx_key_to_func_dict")
-        self.is_write_node_comments = kwargs.get("node_comments", self.simple)
+        self.is_write_node_comments = kwargs.get("node_comments", not self.simple)
         self.comment = kwargs.get("comment", [])
 
     def write(self, stream):
