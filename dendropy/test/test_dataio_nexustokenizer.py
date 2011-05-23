@@ -170,7 +170,7 @@ BEGIN TREES;
     TREE 0 = %s ;
 END;
 """
-    figtree_metadata_str = """(([xxx]A[&A1=1,A2=2,A3={1,2,3},  ,][A]:[A][A]1[A][A],
+    figtree_metadata_str = """[&Tree1=1,Tree2=2, Tree3={1,2,3}](([xxx]A[&A1=1,A2=2,A3={1,2,3},  ,][A]:[A][A]1[A][A],
                  [xxx]B[&B1=1,B2=2,B3={1,2,3}][B]:[B][B]1[B][B])
                  [xxx]AB[&AB1=1,AB2=2,AB3={1,2,3}][AB]:[AB][AB]1[AB][AB],
                 ([xxx]C[&C1=1,C2=2,C3={1,2,3}][C]:[C][C]1[C][C],
@@ -178,7 +178,7 @@ END;
                  [xxx]CD[&CD1=1, CD2=2, CD3={1,2,3}][CD]:[CD][CD]1[CD][CD])
                  [xxx]Root[&Root1=1, Root2=2, Root3={1,2,3}][Root]:[Root][Root]1[Root][Root]"""
 
-    nhx_metadata_str = """(([xxx]A[&&A1=1:A2=2:A3={1,2,3}][A]:[A][A]1[A][A],
+    nhx_metadata_str = """[&Tree1=1,Tree2=2, Tree3={1,2,3}](([xxx]A[&&A1=1:A2=2:A3={1,2,3}][A]:[A][A]1[A][A],
                  [xxx]B[&&B1=1:B2=2:B3={1,2,3}][B]:[B][B]1[B][B])
                  [xxx]AB[&&AB1=1:AB2=2:AB3={1,2,3}][AB]:[AB][AB]1[AB][AB],
                 ([xxx]C[&&C1=1:C2=2:C3={1,2,3}][C]:[C][C]1[C][C],
@@ -188,8 +188,9 @@ END;
 
     def check_results(self, tree):
         tree.assign_node_labels_from_taxon_or_oid()
+        self.assertEqual(tree.comment_metadata, {'Tree1': '1', 'Tree2': '2', 'Tree3':['1','2','3']})
         for nd in tree.postorder_node_iter():
-            metadata = nexustokenizer.parse_comment_metadata(nd.comments)
+            metadata = nd.comment_metadata
             #print("%s: %s => %s" % (nd.label, nd.comments, metadata))
             self.assertEqual(len(metadata), 3)
             values = ["1", "2", ["1","2","3"]]
@@ -202,26 +203,32 @@ END;
         s = self.figtree_metadata_str
         _LOG.info("Tree = %s" % s)
         tree = dendropy.Tree.get_from_string(s, 'newick')
+        tree.comment_metadata = nexustokenizer.parse_comment_metadata(tree.comments)
+        for nd in tree.postorder_node_iter():
+            nd.comment_metadata = nexustokenizer.parse_comment_metadata(nd.comments)
         self.check_results(tree)
 
     def testNHXBasic(self):
         s = self.nhx_metadata_str
         _LOG.info("Tree = %s" % s)
         tree = dendropy.Tree.get_from_string(s, 'newick')
+        tree.comment_metadata = nexustokenizer.parse_comment_metadata(tree.comments)
+        for nd in tree.postorder_node_iter():
+            nd.comment_metadata = nexustokenizer.parse_comment_metadata(nd.comments)
         self.check_results(tree)
 
     def testNHXStyleNexusReader(self):
         s = self.nexus_skeleton % self.nhx_metadata_str
         tree = dendropy.Tree.get_from_string(s,
                 'nexus',
-                store_metadata_comments=True)
+                store_comment_metadata=True)
         self.check_results(tree)
 
     def testFigtreeStyleNexusReader(self):
         s = self.nexus_skeleton % self.figtree_metadata_str
         tree = dendropy.Tree.get_from_string(s,
                 'nexus',
-                store_metadata_comments=True)
+                store_comment_metadata=True)
         self.check_results(tree)
 
 if __name__ == "__main__":
