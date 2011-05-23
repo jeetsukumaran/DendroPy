@@ -154,7 +154,7 @@ class CommentReadingTests(unittest.TestCase):
 class CommentMetaDataTests(unittest.TestCase):
 
     def testFigtreeStyleBasic(self):
-        s = """(([xxx]A[&A1=1,A2=2,A3={1,2,3}][A]:[A][A]1[A][A],
+        s = """(([xxx]A[&A1=1,A2=2,A3={1,2,3},  ,][A]:[A][A]1[A][A],
                  [xxx]B[&B1=1,B2=2,B3={1,2,3}][B]:[B][B]1[B][B])
                  [xxx]AB[&AB1=1,AB2=2,AB3={1,2,3}][AB]:[AB][AB]1[AB][AB],
                 ([xxx]C[&C1=1,C2=2,C3={1,2,3}][C]:[C][C]1[C][C],
