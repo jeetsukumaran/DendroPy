@@ -251,7 +251,7 @@ class NewickWriter(iosys.DataWriter):
             annotation_comments = nexustokenizer.format_annotation_as_comments(tree, nhx=self.annotations_as_nhx)
         else:
             annotation_comments = ""
-        if self.write_node_comments:
+        if self.write_node_comments and tree.comments:
             tree_comments = []
             for comment in tree.comments:
                 tree_comments.append("[%s]" % comment)
@@ -317,7 +317,7 @@ class NewickWriter(iosys.DataWriter):
                     nhx_to_print.append("%s=%s" % (k, str(r)))
             if nhx_to_print:
                 statement = statement + ('[&&NHX:%s]' % ':'.join(nhx_to_print))
-        if self.write_node_comments:
+        if self.write_node_comments and node.comments:
             comments = []
             for comment in node.comments:
                 comments.append("[%s]" % comment)
