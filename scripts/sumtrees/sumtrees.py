@@ -954,7 +954,7 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
                 intenral_labels=False,
                 annotations_as_comments=True,
                 annotations_as_nhx=False,
-                node_comments=False
+                write_item_comments=False
                 )
 
     messenger.send_info("Writing split edge lengths ...")
