@@ -559,6 +559,26 @@ class CharacterDataMap(dict, Annotated):
                 self[other_taxon] = other_map[other_taxon]
 
 ###############################################################################
+## Subset of Character (Columns)
+
+class CharacterSubset(IdTagged):
+    """
+    Tracks definition of a subset of characters.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """
+        Keyword arguments:
+
+            - `label`: name of this subset
+            - `character_indexes`: list of 0-based (integer) indexes
+               of column positions that constitute this subset.
+
+        """
+        IdTagged.__init__(self, *args, **kwargs)
+        self.character_indexes = kwargs.get("character_indexes", [])
+
+###############################################################################
 ## Base Character Matrix
 
 class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
@@ -579,6 +599,7 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                                 oid=kwargs.get("oid", None))
         self.taxon_seq_map = CharacterDataMap()
         self.character_types = []
+        self.character_subsets = {}
         self.markup_as_sequences = True
         if len(args) > 1:
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
@@ -596,6 +617,15 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             self.oid = kwargs["oid"]
         if "label" in kwargs:
             self.label = kwargs["label"]
+
+    def new_character_subset(self, label, character_indexes):
+        """
+        Defines a set of character (columns) that make up a character set.
+        Column indexes are 0-based.
+        """
+        self.character_subsets[label] = CharacterSubset(label=label,
+                character_indexes=character_indexes)
+        return self.character_subsets[label]
 
     def create_taxon_to_state_set_map(self, char_indices=None):
         """Returns a dictionary that maps taxon objects to lists of sets of state

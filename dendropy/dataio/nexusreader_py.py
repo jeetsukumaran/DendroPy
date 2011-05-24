@@ -190,6 +190,25 @@ class NexusReader(iosys.DataReader):
         self.taxa_blocks[title] = taxon_set
         return taxon_set
 
+    def _get_char_matrix(self, title=None):
+        if title is None:
+            if len(self.dataset.char_matrices) == 1:
+                return self.dataset.char_matrices[0]
+            elif len(self.dataset.char_matrices) == 0:
+                raise self.data_format_error("No character matrices defined")
+            else:
+                raise self.data_format_error("Multiple character matrices defined: require 'LINK' statement")
+        else:
+            target_matrix = None
+            for char_matrix in self.dataset.char_matrices:
+                if char_matrix.label == title:
+                    if target_matrix is not None:
+                        raise self.data_format_error("Multiple character matrices with title '%s'" % title)
+                    target_matrix = char_matrix
+            if target_matrix is None:
+                raise self.data_format_error("Character matrix with title '%s' not defined" % title)
+            return target_matrix
+
     def _get_taxon_set(self, title=None):
         if self.attached_taxon_set is not None:
             return self.attached_taxon_set
@@ -281,8 +300,14 @@ class NexusReader(iosys.DataReader):
                                 and not self.stream_tokenizer.eof \
                                 and not token==None:
                             token = self.stream_tokenizer.read_next_token_ucase()
+                            if token == 'TITLE':
+                                token = self.stream_tokenizer.read_next_token()
+                                block_title = token
+                            if token == "LINK":
+                                link_title = self._parse_link_statement()
                             if token == 'CHARSET':
-                                self._parse_charset_statement()
+                                self._parse_charset_statement(block_title=block_title, link_title=link_title)
+                        self.stream_tokenizer.skip_to_semicolon() # move past END command
                 else:
                     # unknown block
                     token = self._consume_to_end_of_block(token)
@@ -746,10 +771,11 @@ class NexusReader(iosys.DataReader):
         else:
             token = self._consume_to_end_of_block(token)
 
-    def _parse_charset_statement(self):
+    def _parse_charset_statement(self, block_title=None, link_title=None):
         """
         Parses a character set description. Assumes token stream is positioned right after 'charset' command.
         """
+        char_matrix = self._get_char_matrix(title=link_title)
         keyword = self.stream_tokenizer.current_token
         token = self.stream_tokenizer.read_next_token()
         if self.stream_tokenizer.eof or not token:
@@ -765,10 +791,11 @@ class NexusReader(iosys.DataReader):
                 elif token != '=':
                     raise self.data_format_error('Expecting "=" after character set name "%s", but instead found "%s"' % (charset_name, token))
                 else:
-                    positions = self._parse_positions()
+                    positions = self._parse_positions(adjust_to_zero_based=True)
+                char_matrix.new_character_subset(charset_name, positions)
                 #self.dataset.define_charset(charset_name, positions)
 
-    def _parse_positions(self):
+    def _parse_positions(self, adjust_to_zero_based=True, verify=True):
         """
         Parses a character position list. Expects next character read to be the first item in a position list.
         """
@@ -834,6 +861,12 @@ class NexusReader(iosys.DataReader):
         self.stream_tokenizer.hyphens_as_tokens = hyphens_as_tokens
         positions = list(set(positions))
         positions.sort()
+        if verify:
+            for position in positions:
+                if position > max_positions:
+                    raise self.data_format_error("Specified position %d, but maximum position is %d" % (position, max_positions))
+        if adjust_to_zero_based:
+            positions = [position - 1 for position in positions]
         return positions # make unique and return
 
 
