@@ -288,7 +288,7 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
     edge_len_type = kwargs.get("edge_len_type", float)
     taxon_set = kwargs.get("taxon_set", None)
     suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
-    store_comment_metadata = kwargs.get('store_comment_metadata', False)
+    extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
     store_tree_weights = kwargs.get("store_tree_weights", False)
     if taxon_set is None:
         taxon_set = dataobject.TaxonSet()
@@ -345,7 +345,7 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
     # store and clear comments
     tree.comments = stream_tokenizer.comments
     stream_tokenizer.clear_comments()
-    if store_comment_metadata:
+    if extract_comment_metadata:
         tree.comment_metadata = parse_comment_metadata(tree.comments)
 
     while True:
@@ -387,7 +387,7 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
             curr_node = tmp_node
             token = stream_tokenizer.read_next_token()
             store_node_comments(curr_node)
-            if store_comment_metadata:
+            if extract_comment_metadata:
                 curr_node.comment_metadata = parse_comment_metadata(curr_node.comments)
         else:
             if token == ')':
@@ -449,7 +449,7 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
                     curr_node.edge.length = edge_length_str
                 token = stream_tokenizer.read_next_token()
                 store_node_comments(curr_node)
-            if store_comment_metadata:
+            if extract_comment_metadata:
                 curr_node.comment_metadata = parse_comment_metadata(curr_node.comments)
     return tree
 

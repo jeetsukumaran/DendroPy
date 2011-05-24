@@ -221,14 +221,14 @@ END;
         s = self.nexus_skeleton % self.nhx_metadata_str
         tree = dendropy.Tree.get_from_string(s,
                 'nexus',
-                store_comment_metadata=True)
+                extract_comment_metadata=True)
         self.check_results(tree)
 
     def testFigtreeStyleNexusReader(self):
         s = self.nexus_skeleton % self.figtree_metadata_str
         tree = dendropy.Tree.get_from_string(s,
                 'nexus',
-                store_comment_metadata=True)
+                extract_comment_metadata=True)
         self.check_results(tree)
 
 if __name__ == "__main__":
