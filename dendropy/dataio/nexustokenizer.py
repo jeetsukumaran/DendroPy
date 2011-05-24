@@ -930,11 +930,13 @@ class NexusTokenizer(object):
         self.current_token = tokenstr
         return tokenstr
 
-    def read_next_token_ucase(self, ignore_punctuation=()):
+    def read_next_token_ucase(self, ignore_punctuation=None):
         """
         Reads the next token in the file stream, upper-casing it
         before returning it.
         """
+        if ignore_punctuation is None:
+            ignore_punctuation = ()
         t = self.read_next_token(ignore_punctuation=ignore_punctuation)
         if t != None:
             return t.upper()

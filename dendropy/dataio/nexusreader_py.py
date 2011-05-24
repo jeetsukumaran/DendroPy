@@ -272,6 +272,17 @@ class NexusReader(iosys.DataReader):
                         token = self._consume_to_end_of_block(token)
                 elif token == 'TREES':
                     self._parse_trees_block()
+                elif token == 'SETS':
+                    if not self.exclude_chars:
+                        self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
+                        link_title = None
+                        block_title = None
+                        while not (token == 'END' or token == 'ENDBLOCK') \
+                                and not self.stream_tokenizer.eof \
+                                and not token==None:
+                            token = self.stream_tokenizer.read_next_token_ucase()
+                            if token == 'CHARSET':
+                                self._parse_charset_statement()
                 else:
                     # unknown block
                     token = self._consume_to_end_of_block(token)
@@ -734,4 +745,98 @@ class NexusReader(iosys.DataReader):
             self.stream_tokenizer.skip_to_semicolon() # move past END command
         else:
             token = self._consume_to_end_of_block(token)
+
+    def _parse_charset_statement(self):
+        """
+        Parses a character set description. Assumes token stream is positioned right after 'charset' command.
+        """
+        keyword = self.stream_tokenizer.current_token
+        token = self.stream_tokenizer.read_next_token()
+        if self.stream_tokenizer.eof or not token:
+            raise self.data_format_error('Unexpected end of file or null token')
+        else:
+            if not token:
+                raise self.data_format_error("Unexpected end of file or null token")
+            else:
+                charset_name = token
+                token = self.stream_tokenizer.read_next_token()
+                if not token:
+                    raise self.data_format_error("Unexpected end of file or null token")
+                elif token != '=':
+                    raise self.data_format_error('Expecting "=" after character set name "%s", but instead found "%s"' % (charset_name, token))
+                else:
+                    positions = self._parse_positions()
+                #self.dataset.define_charset(charset_name, positions)
+                print "---"
+                print charset_name
+                print positions
+
+    def _parse_positions(self):
+        """
+        Parses a character position list. Expects next character read to be the first item in a position list.
+        """
+        positions = []
+        hyphens_as_tokens = self.stream_tokenizer.hyphens_as_tokens
+        self.stream_tokenizer.hyphens_as_tokens = True
+        token = self.stream_tokenizer.read_next_token()
+        max_positions = self.file_specified_nchar
+
+        if self.stream_tokenizer.eof or not token:
+            raise self.data_format_error('Unexpected end of file or null token')
+
+        while token != ';' and token != ',' and not self.stream_tokenizer.eof:
+            if token:
+                if token.upper() == 'ALL':
+                    positions = range(1, max_positions + 1)
+                    break
+                elif token.isdigit():
+                    start = int(token)
+                    token = self.stream_tokenizer.read_next_token()
+                    if token:
+                        if token == ',' or token.isdigit() or token == ';':
+                            positions.append(start)
+                        elif token == '-':
+                            token = self.stream_tokenizer.read_next_token()
+                            if token:
+                                if token.isdigit() or token == '.':
+                                    if token == '.':
+                                        end = max_positions
+                                        #token = self.stream_tokenizer.read_next_token()
+                                    else:
+                                        end = int(token)
+                                        #token = self.stream_tokenizer.read_next_token()
+                                    token = self.stream_tokenizer.read_next_token()
+                                    if token:
+                                        if token == '\\' or token == '/': # (NEXUS standard only accepts '\')
+                                            token = self.stream_tokenizer.read_next_token()
+                                            if token:
+                                                if token.isdigit():
+                                                    step = int(token)
+                                                    #token = self.stream_tokenizer.read_next_token()
+                                                else:
+                                                    raise self.data_format_error('Expecting digit but found "%s".' % (token))
+                                            else:
+                                                raise self.data_format_error('Expecting other tokens after "\\", but no more found.')
+                                            token = self.stream_tokenizer.read_next_token()
+                                        else:
+                                            step = 1
+                                    else:
+                                        step = 1
+                                    for q in range(start, end+1, step):
+                                        if q <= max_positions:
+                                            positions.append(q)
+                                else:
+                                    raise self.data_format_error('Expecting digit or ".", but found "%s".' % (token))
+                            else:
+                                raise self.data_format_error('Expecting other tokens after "-", but no more found.')
+                        else:
+                            raise self.data_format_error('Expecting digit or "all", but found "%s".' % (token))
+                    else:
+                        positions.append(start)
+
+        self.stream_tokenizer.hyphens_as_tokens = hyphens_as_tokens
+        positions = list(set(positions))
+        positions.sort()
+        return positions # make unique and return
+
 
