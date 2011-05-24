@@ -125,9 +125,11 @@ class TestTopologyCounter(extendedtest.ExtendedTestCase):
             expected_tree = expected_trees[idx]
             expected_tree.update_splits()
             expected_freq = expected_freq_values[idx]
+            expected_count = weights[idx]
             self.assertEqual(result_tree.symmetric_difference(expected_tree), 0,
                     "%s != %s" % (result_tree.as_string('newick'), expected_tree.as_string('newick')))
-            self.assertAlmostEqual(result_freq, expected_freq)
+            self.assertAlmostEqual(result_freq[0], expected_count)
+            self.assertAlmostEqual(result_freq[1], expected_freq)
 
 if __name__ == "__main__":
     unittest.main()

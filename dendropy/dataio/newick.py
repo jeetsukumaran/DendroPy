@@ -232,6 +232,18 @@ class NewickWriter(iosys.DataWriter):
         for tree in tree_list:
             self.write_tree(tree, stream)
 
+    def compose_comment_string(self, item):
+        if self.write_item_comments and item.comments:
+            item_comments = []
+            if isinstance(item.comments, str):
+                item.comments = [item.comments]
+            for comment in item.comments:
+                item_comments.append("[%s]" % comment)
+            item_comment_str = "".join(item_comments)
+        else:
+            item_comment_str = ""
+        return item_comment_str
+
     def write_tree(self, tree, stream):
         """
         Composes and writes `tree` to `stream`.
@@ -252,13 +264,7 @@ class NewickWriter(iosys.DataWriter):
             annotation_comments = nexustokenizer.format_annotation_as_comments(tree, nhx=self.annotations_as_nhx)
         else:
             annotation_comments = ""
-        if self.write_item_comments and tree.comments:
-            tree_comments = []
-            for comment in tree.comments:
-                tree_comments.append("[%s]" % comment)
-            tree_comments += "".join(tree_comments)
-        else:
-            tree_comments = ""
+        tree_comments = self.compose_comment_string(tree)
         stream.write("%s%s%s%s%s;\n" % (rooting,
                 weight,
                 annotation_comments,
@@ -318,9 +324,6 @@ class NewickWriter(iosys.DataWriter):
                     nhx_to_print.append("%s=%s" % (k, str(r)))
             if nhx_to_print:
                 statement = statement + ('[&&NHX:%s]' % ':'.join(nhx_to_print))
-        if self.write_item_comments and node.comments:
-            comments = []
-            for comment in node.comments:
-                comments.append("[%s]" % comment)
-            statement += "".join(comments)
+        node_comment_str = self.compose_comment_string(node)
+        statement += node_comment_str
         return statement
