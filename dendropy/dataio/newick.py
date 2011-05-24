@@ -77,9 +77,11 @@ def tree_source_iter(stream, **kwargs):
             + "changing as new Taxon objects are added to the set.")
     preserve_underscores = kwargs.get('preserve_underscores', False)
     hyphens_as_tokens = kwargs.get('hyphens_as_tokens', nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS)
+    extract_comment_metadata = kwargs.get("extract_comment_metadata", False)
     newick_stream = nexustokenizer.NexusTokenizer(stream,
                                                   preserve_underscores=preserve_underscores,
-                                                  hyphens_as_tokens=hyphens_as_tokens)
+                                                  hyphens_as_tokens=hyphens_as_tokens,
+                                                  extract_comment_metadata=extract_comment_metadata)
     while not newick_stream.eof:
         t = nexustokenizer.tree_from_token_stream(newick_stream, taxon_set=taxon_set, **kwargs)
         if t is not None:
@@ -139,7 +141,6 @@ class NewickReader(iosys.DataReader):
                comment associated with each tree, if any.
         """
         iosys.DataReader.__init__(self, **kwargs)
-        self.stream_tokenizer = nexustokenizer.NexusTokenizer()
         self.finish_node_func = kwargs.get("finish_node_func", None)
         self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
         self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS)

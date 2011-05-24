@@ -100,7 +100,8 @@ class NexusReader(iosys.DataReader):
             self.dataset = dataobject.DataSet()
         self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream,
                 preserve_underscores=self.preserve_underscores,
-                hyphens_as_tokens=self.hyphens_as_tokens)
+                hyphens_as_tokens=self.hyphens_as_tokens,
+                extract_comment_metadata=self.extract_comment_metadata)
         token = self.stream_tokenizer.read_next_token_ucase()
         if token.upper() != "#NEXUS":
             raise self.data_format_error("Expecting '#NEXUS', but found '%s'" % token)
@@ -168,7 +169,8 @@ class NexusReader(iosys.DataReader):
     def _prepare_to_read_from_stream(self, file_obj):
         self.stream_tokenizer = nexustokenizer.NexusTokenizer(stream_handle=file_obj,
                 preserve_underscores=self.preserve_underscores,
-                hyphens_as_tokens=self.hyphens_as_tokens)
+                hyphens_as_tokens=self.hyphens_as_tokens,
+                extract_comment_metadata=self.extract_comment_metadata)
 
     def _consume_to_end_of_block(self, token):
         while not (token == 'END' or token == 'ENDBLOCK') \

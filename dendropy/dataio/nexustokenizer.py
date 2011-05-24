@@ -288,13 +288,16 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
     edge_len_type = kwargs.get("edge_len_type", float)
     taxon_set = kwargs.get("taxon_set", None)
     suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
-    extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
     store_tree_weights = kwargs.get("store_tree_weights", False)
+    extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
+    stream_tokenizer_extract_comment_metadata_setting = stream_tokenizer.extract_comment_metadata
+    stream_tokenizer.extract_comment_metadata = extract_comment_metadata
     if taxon_set is None:
         taxon_set = dataobject.TaxonSet()
     tree = dataobject.Tree(taxon_set=taxon_set)
 
     stream_tokenizer.tree_rooting_comment = None # clear previous comment
+    stream_tokenizer.clear_comment_metadata()
     token = stream_tokenizer.read_next_token()
     if not token:
         return None
@@ -341,12 +344,19 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
     def store_node_comments(active_node):
         if stream_tokenizer.comments:
             active_node.comments.extend(stream_tokenizer.comments)
+    def store_comment_metadata(target):
+        if extract_comment_metadata:
+            comment_metadata = stream_tokenizer.comment_metadata
+            try:
+                target.comment_metadata.update(comment_metadata)
+            except AttributeError:
+                target.comment_metadata = comment_metadata
+            stream_tokenizer.clear_comment_metadata()
 
     # store and clear comments
     tree.comments = stream_tokenizer.comments
     stream_tokenizer.clear_comments()
-    if extract_comment_metadata:
-        tree.comment_metadata = parse_comment_metadata(tree.comments)
+    store_comment_metadata(tree)
 
     while True:
         if not token or token == ';':
@@ -387,8 +397,7 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
             curr_node = tmp_node
             token = stream_tokenizer.read_next_token()
             store_node_comments(curr_node)
-            if extract_comment_metadata:
-                curr_node.comment_metadata = parse_comment_metadata(curr_node.comments)
+            store_comment_metadata(curr_node)
         else:
             if token == ')':
                 if curr_node.is_leaf() and not curr_node.taxon:
@@ -449,8 +458,8 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
                     curr_node.edge.length = edge_length_str
                 token = stream_tokenizer.read_next_token()
                 store_node_comments(curr_node)
-            if extract_comment_metadata:
-                curr_node.comment_metadata = parse_comment_metadata(curr_node.comments)
+                store_comment_metadata(curr_node)
+    stream_tokenizer.extract_comment_metadata = stream_tokenizer_extract_comment_metadata_setting
     return tree
 
 ###############################################################################
@@ -522,6 +531,7 @@ class NexusTokenizer(object):
         self._reset()
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
         self.hyphens_as_tokens =  kwargs.get('hyphens_as_tokens', DEFAULT_HYPHENS_AS_TOKENS)
+        self.extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
         if stream_handle:
             self.stream_handle = stream_handle
         self.allow_eof = True
@@ -541,6 +551,7 @@ class NexusTokenizer(object):
         self.preserve_underscores = False
         self.global_ignore_punctuation = set()
         self.hyphens_as_tokens = DEFAULT_HYPHENS_AS_TOKENS
+        self._comment_metadata = {}
 
     def _get_hyphens_as_tokens(self):
         return self._hyphens_as_tokens
@@ -564,6 +575,20 @@ class NexusTokenizer(object):
         self._current_file_char = new_char
 
     current_file_char = property(_get_current_file_char, _set_current_file_char)
+
+    def _get_comment_metadata(self):
+        return dict(self._comment_metadata)
+
+    def _set_comment_metadata(self, val):
+        if val is None:
+            self._comment_metadata = {}
+        else:
+            self._comment_metadata = dict(val)
+
+    comment_metadata = property(_get_comment_metadata, _set_comment_metadata)
+
+    def clear_comment_metadata(self):
+        self._comment_metadata = {}
 
     def clear_comments(self):
         self.comments = []
@@ -630,6 +655,8 @@ class NexusTokenizer(object):
             self.tree_rooting_comment = "&U"
         elif normalized_comment.startswith("&W"):
             self.tree_weight_comment = comment
+        elif self.extract_comment_metadata and comment.startswith("&"):
+            self._comment_metadata.update(parse_comment_metadata([comment]))
         else:
             # only add comments if none of the above
             self.comments.append(comment)
