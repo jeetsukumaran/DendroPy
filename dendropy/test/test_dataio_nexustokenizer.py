@@ -151,6 +151,18 @@ class CommentReadingTests(unittest.TestCase):
             for i in xrange(1,7):
                 self.assertEqual(nd.comments[i], nd.label)
 
+    def testIncompleteMetadata(self):
+        s = """[&color=blue](A[&region=Asia,id=00012][cryptic],(B[&region=Africa],C[&region=Madagascar,id=19391][two of three]))"""
+        tree = dendropy.Tree.get_from_string(s, 'newick', extract_comment_metadata=True)
+        self.assertEqual(tree.comment_metadata, {'color': 'blue'})
+        expected = [ {'region': 'Asia', 'id': '00012'},
+                {'region': 'Africa'},
+                {'region': 'Madagascar', 'id': '19391'},
+                {},
+                {},]
+        for idx, nd in enumerate(tree.postorder_node_iter()):
+            self.assertEqual(nd.comment_metadata, expected[idx])
+
 class CommentMetaDataTests(unittest.TestCase):
 
     nexus_skeleton = """\

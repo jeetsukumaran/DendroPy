@@ -344,14 +344,18 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
     def store_node_comments(active_node):
         if stream_tokenizer.comments:
             active_node.comments.extend(stream_tokenizer.comments)
+
     def store_comment_metadata(target):
         if extract_comment_metadata:
-            comment_metadata = stream_tokenizer.comment_metadata
-            try:
-                target.comment_metadata.update(comment_metadata)
-            except AttributeError:
-                target.comment_metadata = comment_metadata
-            stream_tokenizer.clear_comment_metadata()
+            if stream_tokenizer.has_comment_metadata():
+                comment_metadata = stream_tokenizer.comment_metadata
+                try:
+                    target.comment_metadata.update(comment_metadata)
+                except AttributeError:
+                    target.comment_metadata = comment_metadata
+                stream_tokenizer.clear_comment_metadata()
+            elif not hasattr(target, "comment_metadata"):
+                target.comment_metadata = {}
 
     # store and clear comments
     tree.comments = stream_tokenizer.comments
@@ -376,6 +380,7 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
             curr_node = tmp_node
             token = stream_tokenizer.read_next_token()
             store_node_comments(curr_node)
+            store_comment_metadata(curr_node)
         elif token == ',':
             tmp_node = dataobject.Node()
             if curr_node.is_leaf() and not curr_node.taxon:
@@ -447,9 +452,11 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
 
             token = stream_tokenizer.read_next_token()
             store_node_comments(curr_node)
+            store_comment_metadata(curr_node)
             if token == ':':
                 edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-+.')
                 store_node_comments(curr_node)
+                store_comment_metadata(curr_node)
                 if not edge_length_str:
                     raise stream_tokenizer.data_format_error("Expecting a branch length after : but encountered the end of the tree description" )
                 try:
@@ -586,6 +593,9 @@ class NexusTokenizer(object):
             self._comment_metadata = dict(val)
 
     comment_metadata = property(_get_comment_metadata, _set_comment_metadata)
+
+    def has_comment_metadata(self):
+        return len(self._comment_metadata) > 0
 
     def clear_comment_metadata(self):
         self._comment_metadata = {}
