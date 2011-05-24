@@ -470,21 +470,18 @@ class TopologyCounter(object):
             self.topology_hash_map[topology][0] = self.topology_hash_map[topology][0] + 1
         self.total_trees_counted += 1
 
-    def calc_freqs(self,
-            raw_counts=False):
+    def calc_freqs(self):
         """
-        Returns an ordered dictionary (OrderedDict) of topologies mapped to
-        proportion or numbers of occurrences, in (descending) order of the
-        proportion of occurrence.
-        If `raw_counts` is True, then the values will be the actual counts of
-        occurrences; otherwise, by default, the values will be the proportions.
+        returns an ordered dictionary (ordereddict) of topologies mapped to a
+        tuple, (raw numbers of occurrences, proportion of total trees counted)
+        in (descending) order of the proportion of occurrence.
         """
         freqs = OrderedDict()
         topology_counts = self.topology_hash_map.values()
         topology_counts.sort(reverse=True)
         for count, tree in topology_counts:
             freq = float(count) / self.total_trees_counted
-            freqs[tree] = freq
+            freqs[tree] = (count, freq)
         return freqs
 
 ## TreeCounter

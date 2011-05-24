@@ -920,7 +920,7 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
     messenger.send_info("Writing tree probabilities ...")
     if trprobs_dest:
         tree_list = dendropy.TreeList(taxon_set=master_split_distribution.taxon_set)
-        tree_freqs = master_topology_counter.calc_freqs(raw_counts=False)
+        tree_freqs = master_topology_counter.calc_freqs()
         cumulative_prob = 0.0
         for idx, (tree, freq) in enumerate(tree_freqs.items()):
             # in parallel mode, the topology is stored as a normalized newick string;
@@ -937,9 +937,13 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
                 tree = tree_list[-1]
             else:
                 tree_list.append(tree)
-            cumulative_prob += freq
-            tree.probability = freq
+            count = freq[0]
+            prop = freq[1]
+            cumulative_prob += prop
+            tree.probability = prop
+            tree.count = count
             tree.cumulative_probability = cumulative_prob
+            tree.annotate('count')
             tree.annotate('probability')
             tree.annotate('cumulative_probability')
             tree.label = "Tree%d" % (idx+1)
