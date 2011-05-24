@@ -767,9 +767,6 @@ class NexusReader(iosys.DataReader):
                 else:
                     positions = self._parse_positions()
                 #self.dataset.define_charset(charset_name, positions)
-                print "---"
-                print charset_name
-                print positions
 
     def _parse_positions(self):
         """
