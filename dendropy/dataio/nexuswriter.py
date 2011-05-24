@@ -55,6 +55,8 @@ class NexusWriter(iosys.DataWriter):
            - `write_item_comments` : if True, comments associated with (tree) nodes will be written [False]
            - `comment` : list of lines of text to be added as comments to the
              file
+           - `supplemental_blocks` : list of strings to be written after data
+           	 (e.g., PAUP blocks, MrBayes blocks etc.)
         """
         iosys.DataWriter.__init__(self, **kwargs)
         self.simple = kwargs.get("simple", False)
@@ -71,6 +73,7 @@ class NexusWriter(iosys.DataWriter):
         self.nhx_key_to_func = kwargs.get("nhx_key_to_func_dict")
         self.is_write_item_comments = kwargs.get("write_item_comments", not self.simple)
         self.comment = kwargs.get("comment", [])
+        self.supplemental_blocks = kwargs.get("supplemental_blocks", [])
 
     def write(self, stream):
         """
@@ -112,6 +115,10 @@ class NexusWriter(iosys.DataWriter):
             for tree_list in self.dataset.tree_lists:
                 if self.attached_taxon_set is None or tree_list.taxon_set is self.attached_taxon_set:
                     self.write_trees_block(tree_list=tree_list, stream=stream)
+        if self.supplemental_blocks:
+            for block in self.supplemental_blocks:
+                stream.write(block)
+                stream.write("\n")
 
     def _link_blocks(self):
         """
