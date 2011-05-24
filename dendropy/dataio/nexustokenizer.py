@@ -622,15 +622,17 @@ class NexusTokenizer(object):
             cmt_body.write(c)
             c = self.read_next_char()
         comment = cmt_body.getvalue()
-        self.comments.append(comment)
         self.last_comment_parsed = comment
-        comment = comment.strip().upper()
-        if comment == "&R":
+        normalized_comment = comment.strip().upper()
+        if normalized_comment == "&R":
             self.tree_rooting_comment = "&R"
-        elif comment == "&U":
+        elif normalized_comment == "&U":
             self.tree_rooting_comment = "&U"
-        elif comment.startswith("&W"):
+        elif normalized_comment.startswith("&W"):
             self.tree_weight_comment = comment
+        else:
+            # only add comments if none of the above
+            self.comments.append(comment)
         self.read_next_char()
 
     def read_noncomment_character(self):
