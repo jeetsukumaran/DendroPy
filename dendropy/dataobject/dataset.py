@@ -295,7 +295,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
 
     def unify_taxa(self, taxon_set=None, bind=True):
         """
-        Reindexes taxa across all subcomponents, mapping to single taxon set.
+        Reindices taxa across all subcomponents, mapping to single taxon set.
         """
         if len(self.taxon_sets) or len(self.tree_lists) or len(self.char_matrices):
             self.taxon_sets.clear()

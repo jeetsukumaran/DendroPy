@@ -120,7 +120,7 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
     Processes splits on a tree, encoding them as bitmask on each edge.
     Adds the following to each edge:
         - `split_bitmask` : a rooted split representation, i.e. a long/bitmask
-            where bits corresponding to indexes of taxa descended from this
+            where bits corresponding to indices of taxa descended from this
             edge are turned on
     If `create_dict` is True, then the following is added to the tree:
         - `split_edges`:

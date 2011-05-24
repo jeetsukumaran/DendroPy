@@ -571,12 +571,12 @@ class CharacterSubset(IdTagged):
         Keyword arguments:
 
             - `label`: name of this subset
-            - `character_indexes`: list of 0-based (integer) indexes
+            - `character_indices`: list of 0-based (integer) indices
                of column positions that constitute this subset.
 
         """
         IdTagged.__init__(self, *args, **kwargs)
-        self.character_indexes = kwargs.get("character_indexes", [])
+        self.character_indices = kwargs.get("character_indices", [])
 
 ###############################################################################
 ## Base Character Matrix
@@ -618,13 +618,13 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if "label" in kwargs:
             self.label = kwargs["label"]
 
-    def new_character_subset(self, label, character_indexes):
+    def new_character_subset(self, label, character_indices):
         """
         Defines a set of character (columns) that make up a character set.
-        Column indexes are 0-based.
+        Column indices are 0-based.
         """
         self.character_subsets[label] = CharacterSubset(label=label,
-                character_indexes=character_indexes)
+                character_indices=character_indices)
         return self.character_subsets[label]
 
     def create_taxon_to_state_set_map(self, char_indices=None):

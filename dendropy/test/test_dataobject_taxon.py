@@ -129,9 +129,9 @@ class TaxonSetPartitionTest(datatest.DataObjectVerificationTestCase):
         for s in self.expected_sets:
             self.expected_dict[self.membership_dict[s[0]]] = s
 
-    def verify_subsets(self, subsets, use_label_indexes=False):
+    def verify_subsets(self, subsets, use_label_indices=False):
         for s in subsets:
-            if use_label_indexes:
+            if use_label_indices:
                 key = self.label_map[s.label]
             else:
                 key = s.label
@@ -155,7 +155,7 @@ class TaxonSetPartitionTest(datatest.DataObjectVerificationTestCase):
 
     def testFromMembershipLists(self):
         tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_lists=self.membership_lists)
-        self.verify_subsets(tsp.subsets(), use_label_indexes=True)
+        self.verify_subsets(tsp.subsets(), use_label_indices=True)
 
 class TaxonSetMappingTest(datatest.DataObjectVerificationTestCase):
 

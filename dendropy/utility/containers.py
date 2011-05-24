@@ -594,15 +594,15 @@ class _ContainerInterface(list):
         """
         Called to implement evaluation of self[key]. For sequence types, the accepted keys
         should be integers and slice objects. Note that the special interpretation of
-        negative indexes (if the class wishes to emulate a sequence type) is up to the
+        negative indices (if the class wishes to emulate a sequence type) is up to the
         __getitem__() method. If key is of an inappropriate type, TypeError may be raised; if
-        of a value outside the set of indexes for the sequence (after any special
+        of a value outside the set of indices for the sequence (after any special
         interpretation of negative values), IndexError should be raised. For mapping types,
         if key is missing (not in the container), KeyError should be raised.
 
         Note
 
-        for loops expect that an IndexError will be raised for illegal indexes to allow proper
+        for loops expect that an IndexError will be raised for illegal indices to allow proper
         detection of the end of the sequence.
         """
         pass

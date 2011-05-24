@@ -87,8 +87,8 @@ class NucleotideSeqModel(SeqModel):
         stationary distribution.
         """
         probs = self.base_freqs
-        char_state_indexes = [probability.sample_multinomial(probs, rng) for i in range(seq_len)]
-        return [self.state_alphabet[idx] for idx in char_state_indexes]
+        char_state_indices = [probability.sample_multinomial(probs, rng) for i in range(seq_len)]
+        return [self.state_alphabet[idx] for idx in char_state_indices]
 
     def is_purine(self, state_index):
         """

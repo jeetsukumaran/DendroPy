@@ -1011,7 +1011,7 @@ class NexmlWriter(iosys.DataWriter):
                         else:
                             chartype = dendropy.CharacterType(state_alphabet=cell.character_type.state_alphabet, oid="c%d" % col_idx)
                     else:
-                        if col_idx not in chartype_indexes:
+                        if col_idx not in column_chartype_map:
                             chartype = dendropy.CharacterType(oid="c%d" % col_idx)
                         else:
                             chartype = column_chartype_map[col_idx]
