@@ -397,10 +397,10 @@ class TopologyCounter(object):
         trees_counted = 0
         for topology_hash in src_map:
             if topology_hash not in self.topology_hash_map:
-                self.topology_hash_map[topology_hash] = list(src_map[topology_hash])
+                self.topology_hash_map[topology_hash] = src_map[topology_hash]
             else:
-                self.topology_hash_map[topology_hash][0] = self.topology_hash_map[topology_hash][0] + src_map[topology_hash][0]
-            self.total_trees_counted += src_map[topology_hash][0]
+                self.topology_hash_map[topology_hash] = self.topology_hash_map[topology_hash] + src_map[topology_hash]
+            self.total_trees_counted += src_map[topology_hash]
 
     def count(self,
             tree,
