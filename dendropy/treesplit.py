@@ -34,18 +34,16 @@ import dendropy
 ## Build tree from splits
 
 def tree_from_splits(splits,
-        taxon_set=None,
+        taxon_set,
         is_rooted=False):
     """
-    Builds a tree from a set of splits, `splits`.
-    Taxon references from `taxon_set`.
+    Builds a tree from a set of splits, `splits`, using taxon references from
+    `taxon_set`.
     If `is_rooted` is True, then tree will be rooted.
     If `split_edge_lengths` is not None, it should be a dictionary mapping
     splits to edge lengths.
     """
     leaf_to_root_search = True
-    if taxon_set is None:
-        taxon_set = dendropy.TaxonSet()
     con_tree = dendropy.Tree(taxon_set=taxon_set)
     con_tree.is_rooted = is_rooted
     for taxon in taxon_set:

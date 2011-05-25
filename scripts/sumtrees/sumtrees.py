@@ -91,12 +91,7 @@ if _MP:
             self.split_distribution.ignore_node_ages = ignore_node_ages
             self.is_rooted = is_rooted
             self.calc_tree_probs = calc_tree_probs
-            # we do not store the tree directly in the topology hash map, because it cannot be
-            # pickled (yet); instead, we store the normalized newick string; if memory usage
-            # is a concern (and not speed), we might be try to use the normalized newick topology
-            # hash as the primary topology hash function as well, instead of the default split sets
-            self.topology_counter = treesum.TopologyCounter(tree_store_func=\
-                    treesum.TopologyCounter.normalized_newick_topology_hash)
+            self.topology_counter = treesum.TopologyCounter()
             self.weighted_trees = weighted_trees
             self.tree_offset = tree_offset
             self.process_idx = process_idx
@@ -904,25 +899,10 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
     messenger.send_info("Writing tree probabilities ...")
     if trprobs_dest:
         tree_list = dendropy.TreeList(taxon_set=master_split_distribution.taxon_set)
-        tree_freqs = master_topology_counter.calc_freqs()
+        tree_freqs = master_topology_counter.calc_tree_freqs(tree_list.taxon_set)
         cumulative_prob = 0.0
-        for idx, (tree, freq) in enumerate(tree_freqs.items()):
-            # in parallel mode, the topology is stored as a normalized newick string;
-            # in serial mode, we store the tree directly
-            # here, we deal with either possibility
-            ### TODO: check to see if there are any performance gains in using
-            ### the normalized newick string approach; we are currently forced to use
-            ### the normalized newick string tree store function in parallel mode
-            ### due to the fact that Tree objects cannot be pickled. If this is actually
-            ### advantageous in other ways (e.g. memory usage), and the negatives (e.g.,
-            ### loss of speed) are not too bad, we should use this for serial mode as well
-            if isinstance(tree, str):
-                tree_list.read_from_string(tree, 'newick')
-                tree = tree_list[-1]
-            else:
-                tree_list.append(tree)
-            count = freq[0]
-            prop = freq[1]
+        for idx, (tree, (count, prop)) in enumerate(tree_freqs.items()):
+            tree_list.append(tree)
             cumulative_prob += prop
             tree.probability = prop
             tree.count = count

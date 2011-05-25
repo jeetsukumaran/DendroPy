@@ -120,7 +120,7 @@ class TestTopologyCounter(extendedtest.ExtendedTestCase):
                 taxon_set=taxa)
         for tree in test_trees:
             tc.count(tree)
-        result_tree_freqs = tc.calc_freqs()
+        result_tree_freqs = tc.calc_tree_freqs(taxon_set=taxa)
         for idx, (result_tree, result_freq) in enumerate(result_tree_freqs.items()):
             expected_tree = expected_trees[idx]
             expected_tree.update_splits()

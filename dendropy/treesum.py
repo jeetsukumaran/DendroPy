@@ -378,58 +378,16 @@ class TopologyCounter(object):
     Tracks frequency of occurrences of topologies.
     """
 
-    def split_sets_topology_hash(tree):
+    def hash_topology(tree):
         """
         Set of all splits on tree: default topology hash.
         """
         return frozenset(tree.split_edges.keys())
-    split_sets_topology_hash = staticmethod(split_sets_topology_hash)
+    hash_topology = staticmethod(hash_topology)
 
-    def normalized_newick_topology_hash(tree):
-        """
-        Returns simple and normalized newick string corresponding to topology.
-        """
-        tree.ladderize()
-        newick_str = tree.as_string(
-                'newick',
-                edge_lengths=False,
-                write_rooting=True,
-                intenral_labels=False,
-                annotations_as_comments=False,
-                annotations_as_nhx=False,
-                node_comments=False)
-        newick_str.replace("\n", "")
-        return newick_str
-    normalized_newick_topology_hash = staticmethod(normalized_newick_topology_hash)
-
-    def __init__(self,
-            topology_hash_func=None,
-            tree_store_func=None):
-        """
-        `topology_hash_func`, if not None, should be function that takes a DendroPy tree
-        object as an argument and returns an object to be used to represent the topology
-        in the count-tracking dictonary. If `None` (default), then the set of all
-        splits on the tree is used.
-        `tree_store_func` should be a function that takes a DendroPy tree
-        object as an argument and returns an object to be used to represent the
-        tree in the results. If `None` (default), the DendroPy tree object will be
-        stored directly.
-        The defaults for `topology_hash_func` and `tree_store_func` should be fine in most cases.
-        However, when, for example, memory is a concern, but passing in
-        normalized NEWICK string composition functions to both of these, references to trees can be
-        garbage-collected after being processed, as well as avoiding the need to store
-        large collections of splits.
-        """
+    def __init__(self):
         self.topology_hash_map = {}
         self.total_trees_counted = 0
-        if topology_hash_func is None:
-            self.topology_hash_func = TopologyCounter.split_sets_topology_hash
-        else:
-            self.topology_hash_func = topology_hash_func
-        if tree_store_func is None:
-            self.tree_store_func = lambda x: x
-        else:
-            self.tree_store_func = tree_store_func
 
     def update_topology_hash_map(self,
             src_map):
@@ -452,26 +410,41 @@ class TopologyCounter(object):
         """
         if not tree_splits_encoded:
             treesplit.encode_splits(tree)
-        topology = self.topology_hash_func(tree)
+        topology = self.hash_topology(tree)
         if topology not in self.topology_hash_map:
-            self.topology_hash_map[topology] = [1, self.tree_store_func(tree)]
+            self.topology_hash_map[topology] = 1
         else:
-            self.topology_hash_map[topology][0] = self.topology_hash_map[topology][0] + 1
+            self.topology_hash_map[topology] = self.topology_hash_map[topology] + 1
         self.total_trees_counted += 1
 
-    def calc_freqs(self):
+    def calc_hash_freqs(self):
         """
-        returns an ordered dictionary (ordereddict) of topologies mapped to a
-        tuple, (raw numbers of occurrences, proportion of total trees counted)
-        in (descending) order of the proportion of occurrence.
+        Returns an ordered dictionary (OrderedDict) of topology hashes mapped
+        to a tuple, (raw numbers of occurrences, proportion of total trees
+        counted) in (descending) order of the proportion of occurrence.
         """
-        freqs = OrderedDict()
-        topology_counts = self.topology_hash_map.values()
-        topology_counts.sort(reverse=True)
-        for count, tree in topology_counts:
+        t_freqs = OrderedDict()
+        count_topology = [(v, k) for k, v in self.topology_hash_map.items()]
+        count_topology.sort(reverse=True)
+        for count, topology_hash in count_topology:
             freq = float(count) / self.total_trees_counted
-            freqs[tree] = (count, freq)
-        return freqs
+            t_freqs[topology_hash] = (count, freq)
+        return t_freqs
+
+    def calc_tree_freqs(self, taxon_set, is_rooted=False):
+        """
+        Returns an ordered dictionary (OrderedDict) of DendroPy trees mapped
+        to a tuple, (raw numbers of occurrences, proportion of total trees
+        counted) in (descending) order of the proportion of occurrence.
+        """
+        hash_freqs = self.calc_hash_freqs()
+        tree_freqs = OrderedDict()
+        for topology_hash, (count, freq) in hash_freqs.items():
+            tree = treesplit.tree_from_splits(splits=topology_hash,
+                taxon_set=taxon_set,
+                is_rooted=is_rooted)
+            tree_freqs[tree] = (count, freq)
+        return tree_freqs
 
 ## TreeCounter
 ##############################################################################
