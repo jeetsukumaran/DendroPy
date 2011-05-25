@@ -42,82 +42,6 @@ from dendropy.utility.containers import NormalizedBitmaskDict
 from dendropy.utility.statistics import mean_and_sample_variance
 
 ##############################################################################
-## Build tree from splits
-
-def tree_from_splits(splits,
-        taxon_set=None,
-        is_rooted=False,
-        split_edge_lengths=None):
-    """
-    Builds a tree from a set of splits, `splits`.
-    Taxon references from `taxon_set`.
-    If `is_rooted` is True, then tree will be rooted.
-    If `split_edge_lengths` is not None, it should be a dictionary mapping
-    splits to edge lengths.
-    """
-    leaf_to_root_search = True
-    if taxon_set is None:
-        taxon_set = dendropy.TaxonSet()
-    con_tree = treesim.star_tree(taxon_set)
-    con_tree.is_rooted = is_rooted
-    taxa_mask = taxon_set.all_taxa_bitmask()
-    treesplit.encode_splits(con_tree)
-    leaves = con_tree.leaf_nodes()
-
-    if leaf_to_root_search:
-        to_leaf_dict = {}
-        for leaf in leaves:
-            to_leaf_dict[leaf.edge.split_bitmask] = leaf
-
-    root = con_tree.seed_node
-    root_edge = root.edge
-    # Now when we add splits in order, we will do a greedy, extended majority-rule consensus tree
-    #for freq, split_to_add, split_in_dict in to_try_to_add:
-    for split_to_add in splits:
-        if (split_to_add & root_edge.split_bitmask) != split_to_add:
-            continue
-        elif leaf_to_root_search:
-            lb = treesplit.lowest_bit_only(split_to_add)
-            one_leaf = to_leaf_dict[lb]
-            parent_node = one_leaf
-            while (split_to_add & parent_node.edge.split_bitmask) != split_to_add:
-                parent_node = parent_node.parent_node
-        else:
-            parent_node = con_tree.mrca(split_bitmask=split_to_add)
-        if parent_node is None or parent_node.edge.split_bitmask == split_to_add:
-            continue # split is not in tree, or already in tree.
-        new_node = dendropy.Node()
-        #self.map_split_support_to_node(node=new_node, split_support=freq)
-        new_node_children = []
-        new_edge = new_node.edge
-        new_edge.split_bitmask = 0
-        for child in parent_node.child_nodes():
-            # might need to modify the following if rooted splits
-            # are used
-            cecm = child.edge.split_bitmask
-            if (cecm & split_to_add ):
-                assert cecm != split_to_add
-                new_edge.split_bitmask |= cecm
-                new_node_children.append(child)
-
-        # Check to see if we have accumulated all of the bits that we
-        #   needed, but none that we don't need.
-        if new_edge.split_bitmask == split_to_add:
-            if split_edge_lengths:
-                elen = split_edge_lengths[split_to_add]
-                if len(elen) > 0:
-                    mean, var = mean_and_sample_variance(elen)
-                    new_edge.length = mean
-                else:
-                    new_edge.length = None
-            for child in new_node_children:
-                parent_node.remove_child(child)
-                new_node.add_child(child)
-            parent_node.add_child(new_node)
-            con_tree.split_edges[split_to_add] = new_edge
-    return con_tree
-
-##############################################################################
 ## TreeSummarizer
 
 class TreeSummarizer(object):
@@ -185,7 +109,7 @@ class TreeSummarizer(object):
         if not include_edge_lengths:
             split_edge_lengths = None
 
-        con_tree = tree_from_splits(splits=splits_for_tree,
+        con_tree = treesplit.tree_from_splits(splits=splits_for_tree,
                 taxon_set=taxon_set,
                 is_rooted=is_rooted,
                 split_edge_lengths=split_edge_lengths)
