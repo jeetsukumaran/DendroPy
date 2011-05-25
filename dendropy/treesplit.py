@@ -35,8 +35,7 @@ import dendropy
 
 def tree_from_splits(splits,
         taxon_set=None,
-        is_rooted=False,
-        split_edge_lengths=None):
+        is_rooted=False):
     """
     Builds a tree from a set of splits, `splits`.
     Taxon references from `taxon_set`.
@@ -113,10 +112,10 @@ def tree_from_splits(splits,
         # Check to see if we have accumulated all of the bits that we
         #   needed, but none that we don't need.
         if new_edge.split_bitmask == split_to_add:
-            if split_edge_lengths:
+            #if split_edge_lengths:
                 #old_split = new_old_split_map[split_to_add]
                 #new_edge.length = split_edge_lengths[old_split]
-                new_edge.length = split_edge_lengths[split_to_add]
+                #new_edge.length = split_edge_lengths[split_to_add]
             for child in new_node_children:
                 parent_node.remove_child(child)
                 new_node.add_child(child)

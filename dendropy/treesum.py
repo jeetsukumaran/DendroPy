@@ -117,6 +117,11 @@ class TreeSummarizer(object):
         #if not include_edge_lengths:
         #    split_edge_lengths = None
 
+        con_tree = treesplit.tree_from_splits(splits=splits_for_tree,
+                taxon_set=taxon_set,
+                is_rooted=is_rooted)
+        treesplit.encode_splits(con_tree)
+
         if include_edge_lengths:
             split_edge_lengths = {}
             for split, edges in split_distribution.split_edge_lengths.items():
@@ -128,16 +133,19 @@ class TreeSummarizer(object):
                 split_edge_lengths[split] = elen
         else:
             split_edge_lengths = None
-        con_tree = treesplit.tree_from_splits(splits=splits_for_tree,
-                taxon_set=taxon_set,
-                is_rooted=is_rooted,
-                split_edge_lengths=split_edge_lengths)
-        treesplit.encode_splits(con_tree)
 
         for node in con_tree.postorder_node_iter():
             split = node.edge.split_bitmask
             if split in split_freqs:
                 self.map_split_support_to_node(node=node, split_support=split_freqs[split])
+            if include_edge_lengths and split in split_distribution.split_edge_lengths:
+                edges = split_distribution.split_edge_lengths[split]
+                if len(edges) > 0:
+                    mean, var = mean_and_sample_variance(edges)
+                    elen = mean
+                else:
+                    elen = None
+                node.edge.length = elen
 
         return con_tree
 
