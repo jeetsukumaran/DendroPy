@@ -177,16 +177,26 @@ class TreeSummarizer(object):
 
         splits_for_tree = []
         split_edge_lengths = {}
-        split_freqs = {}
+        new_split_freq_map = {}
         for item in to_try_to_add:
+            print item[1], item[2]
             splits_for_tree.append(item[1])
             split_edge_lengths[item[1]] = split_distribution.split_edge_lengths[item[2]]
-            split_freqs[item[1]] = item[0]
+            new_split_freq_map[item[1]] = item[0]
+        if not include_edge_lengths:
+            split_edge_lengths = None
 
         con_tree = tree_from_splits(splits=splits_for_tree,
                 taxon_set=taxon_set,
                 is_rooted=is_rooted,
                 split_edge_lengths=split_edge_lengths)
+        treesplit.encode_splits(con_tree)
+
+        for node in con_tree.postorder_node_iter():
+            split = node.edge.split_bitmask
+            if split in split_freqs:
+                self.map_split_support_to_node(node=node, split_support=split_freqs[split])
+
         return con_tree
 
     def compose_support_label(self, split_support_freq):
