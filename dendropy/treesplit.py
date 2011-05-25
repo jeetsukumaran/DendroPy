@@ -62,9 +62,28 @@ def tree_from_splits(splits,
 
     root = con_tree.seed_node
     root_edge = root.edge
+
+    splits_to_add = []
+    #new_old_split_map = {}
+    for s in splits:
+        m = s & taxa_mask
+        if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
+            if not is_rooted:
+                c = (~m) & taxa_mask
+                if (c-1) & c: # not singleton (i.e., one "0")
+                    if 1 & m:
+                        k = c
+                    else:
+                        k = m
+                    splits_to_add.append(k)
+                    #new_old_split_map[k] = m
+            else:
+                splits_to_add.append(m)
+                #new_old_split_map[m] = m
+
     # Now when we add splits in order, we will do a greedy, extended majority-rule consensus tree
     #for freq, split_to_add, split_in_dict in to_try_to_add:
-    for split_to_add in splits:
+    for split_to_add in splits_to_add:
         if (split_to_add & root_edge.split_bitmask) != split_to_add:
             continue
         elif leaf_to_root_search:
@@ -95,12 +114,9 @@ def tree_from_splits(splits,
         #   needed, but none that we don't need.
         if new_edge.split_bitmask == split_to_add:
             if split_edge_lengths:
-                elen = split_edge_lengths[split_to_add]
-                if len(elen) > 0:
-                    mean, var = statistics.mean_and_sample_variance(elen)
-                    new_edge.length = mean
-                else:
-                    new_edge.length = None
+                #old_split = new_old_split_map[split_to_add]
+                #new_edge.length = split_edge_lengths[old_split]
+                new_edge.length = split_edge_lengths[split_to_add]
             for child in new_node_children:
                 parent_node.remove_child(child)
                 new_node.add_child(child)

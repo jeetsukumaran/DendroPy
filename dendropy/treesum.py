@@ -83,32 +83,51 @@ class TreeSummarizer(object):
 
         to_try_to_add = []
         _almost_one = lambda x: abs(x - 1.0) <= 0.0000001
-        for s, f in split_freqs.iteritems():
-            if (min_freq is None) or (f > min_freq) or (_almost_one(min_freq) and _almost_one(f)):
-                m = s & taxa_mask
-                if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
-                    if not is_rooted:
-                        c = (~m) & taxa_mask
-                        if (c-1) & c: # not singleton (i.e., one "0")
-                            if 1 & m:
-                                k = c
-                            else:
-                                k = m
-                            to_try_to_add.append((f, k, m))
-                    else:
-                        to_try_to_add.append((f, m, m))
+        for s, freq in split_freqs.iteritems():
+            if (min_freq is None) or (freq > min_freq) or (_almost_one(min_freq) and _almost_one(freq)):
+                to_try_to_add.append((freq, s))
         to_try_to_add.sort(reverse=True)
+        splits_for_tree = [i[1] for i in to_try_to_add]
 
-        splits_for_tree = []
-        split_edge_lengths = {}
-        new_split_freq_map = {}
-        for item in to_try_to_add:
-            splits_for_tree.append(item[1])
-            split_edge_lengths[item[1]] = split_distribution.split_edge_lengths[item[2]]
-            new_split_freq_map[item[1]] = item[0]
-        if not include_edge_lengths:
+        #to_try_to_add = []
+        #_almost_one = lambda x: abs(x - 1.0) <= 0.0000001
+        #for s, freq in split_freqs.iteritems():
+        #    if (min_freq is None) or (freq > min_freq) or (_almost_one(min_freq) and _almost_one(freq)):
+        #        m = s & taxa_mask
+        #        if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
+        #            if not is_rooted:
+        #                c = (~m) & taxa_mask
+        #                if (c-1) & c: # not singleton (i.e., one "0")
+        #                    if 1 & m:
+        #                        k = c
+        #                    else:
+        #                        k = m
+        #                    to_try_to_add.append((freq, k, m))
+        #            else:
+        #                to_try_to_add.append((freq, m, m))
+        #to_try_to_add.sort(reverse=True)
+
+        #splits_for_tree = []
+        #split_edge_lengths = {}
+        #new_split_freq_map = {}
+        #for item in to_try_to_add:
+        #    splits_for_tree.append(item[1])
+        #    split_edge_lengths[item[1]] = split_distribution.split_edge_lengths[item[2]]
+        #    new_split_freq_map[item[1]] = item[0]
+        #if not include_edge_lengths:
+        #    split_edge_lengths = None
+
+        if include_edge_lengths:
+            split_edge_lengths = {}
+            for split, edges in split_distribution.split_edge_lengths.items():
+                if len(edges) > 0:
+                    mean, var = mean_and_sample_variance(edges)
+                    elen = mean
+                else:
+                    elen = None
+                split_edge_lengths[split] = elen
+        else:
             split_edge_lengths = None
-
         con_tree = treesplit.tree_from_splits(splits=splits_for_tree,
                 taxon_set=taxon_set,
                 is_rooted=is_rooted,
