@@ -74,8 +74,8 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
           intervals which corresond to times at which the tree had exactly `ntax`
           leaves (or len(taxon_set) tips). This allows for simulations according to
           the "General Sampling Approach" of [citeHartmannWS2010]_
-          
-    
+
+
     If more than one of the above is given, then tree growth will terminate when
     *any* of the termination conditions (i.e., number of tips == `ntax`, or number
     of tips == len(taxon_set) or maximum time = `max_time`) are met.
@@ -96,7 +96,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
     False.
 
     Under some conditions, it is possible for all lineages on a tree to go extinct.
-    In this case, if the keyword argument `repeat_until_success` is `True` (the 
+    In this case, if the keyword argument `repeat_until_success` is `True` (the
     default), then a new branching process is initiated.
     If `False` (default), then a TreeSimTotalExtinctionException is raised.
 
@@ -110,7 +110,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
     max_time = kwargs.get('max_time')
     taxon_set = kwargs.get('taxon_set')
     if (target_num_taxa is None) and (taxon_set is not None):
-        target_num_taxa = len(taxon_set)    
+        target_num_taxa = len(taxon_set)
     elif taxon_set is None:
         taxon_set = dataobject.TaxonSet()
     gsa_ntax = kwargs.get('gsa_ntax')
@@ -151,9 +151,9 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
     #   that the simulation spent at the (targetted) number of taxa
     #   and a list of edge information. The list of edge information includes
     #   a list of terminal edges in the tree and the length for that edge
-    #   that marks the beginning of the time slice that corresponds to the 
+    #   that marks the beginning of the time slice that corresponds to the
     #   targetted number of taxa.
-    
+
     targetted_time_slices = []
     extinct_tips = []
     while True:
@@ -204,7 +204,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
                 nd.edge.length = waiting_time
         #_LOG.debug("Next waiting_time = %f" % waiting_time)
         total_time += waiting_time
-        
+
         # if event occurs within time constraints
         if max_time is None or total_time <= max_time:
 
@@ -280,7 +280,7 @@ def birth_death(birth_rate, death_rate, birth_rate_sd=0.0, death_rate_sd=0.0, **
             except:
                 pass
             e.length = prev_length + last_waiting_time
-    
+
 
 
 #     tree._debug_tree_is_valid()

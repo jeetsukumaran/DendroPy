@@ -42,6 +42,86 @@ from dendropy.utility.containers import NormalizedBitmaskDict
 from dendropy.utility.statistics import mean_and_sample_variance
 
 ##############################################################################
+## Build tree from splits
+
+def tree_from_splits(splits,
+        taxon_set=None,
+        is_rooted=False):
+    """
+    Builds a tree from a set of splits, `splits`.
+    Taxon references from `taxon_set`.
+    If `is_rooted` is True, then tree will be rooted.
+    If `split_edge_lengths` is not None, it should be a dictionary mapping
+    splits to edge lengths.
+    """
+    leaf_to_root_search = True
+    if taxon_set is None:
+        taxon_set = dendropy.TaxonSet()
+    con_tree = treesim.star_tree(taxon_set)
+    con_tree.is_rooted = is_rooted
+    taxa_mask = taxon_set.all_taxa_bitmask()
+    treesplit.encode_splits(con_tree)
+    leaves = con_tree.leaf_nodes()
+
+    if leaf_to_root_search:
+        to_leaf_dict = {}
+        for leaf in leaves:
+            to_leaf_dict[leaf.edge.split_bitmask] = leaf
+    #include_edge_lengths = self.support_as_labels and include_edge_lengths
+
+    root = con_tree.seed_node
+    root_edge = root.edge
+    # Now when we add splits in order, we will do a greedy, extended majority-rule consensus tree
+    #for freq, split_to_add, split_in_dict in to_try_to_add:
+    for split_to_add in splits:
+        if (split_to_add & root_edge.split_bitmask) != split_to_add:
+            continue
+        elif leaf_to_root_search:
+            lb = treesplit.lowest_bit_only(split_to_add)
+            one_leaf = to_leaf_dict[lb]
+            parent_node = one_leaf
+            while (split_to_add & parent_node.edge.split_bitmask) != split_to_add:
+                parent_node = parent_node.parent_node
+        else:
+            parent_node = con_tree.mrca(split_bitmask=split_to_add)
+        if parent_node is None or parent_node.edge.split_bitmask == split_to_add:
+            continue # split is not in tree, or already in tree.
+        new_node = dendropy.Node()
+        #self.map_split_support_to_node(node=new_node, split_support=freq)
+        new_node_children = []
+        new_edge = new_node.edge
+        new_edge.split_bitmask = 0
+        for child in parent_node.child_nodes():
+            # might need to modify the following if rooted splits
+            # are used
+            cecm = child.edge.split_bitmask
+            if (cecm & split_to_add ):
+                assert cecm != split_to_add
+                new_edge.split_bitmask |= cecm
+                new_node_children.append(child)
+
+        # Check to see if we have accumulated all of the bits that we
+        #   needed, but none that we don't need.
+        if new_edge.split_bitmask == split_to_add:
+            #if include_edge_lengths:
+            #    elen = split_distribution.split_edge_lengths[split_in_dict]
+            #    if len(elen) > 0:
+            #        mean, var = mean_and_sample_variance(elen)
+            #        new_edge.length = mean
+            #        if include_edge_length_var:
+            #            new_edge.length_var = var
+            #    else:
+            #        new_edge.length = None
+            #        if include_edge_length_var:
+            #            new_edge.length_var = None
+            for child in new_node_children:
+                parent_node.remove_child(child)
+                new_node.add_child(child)
+            parent_node.add_child(new_node)
+            con_tree.split_edges[split_to_add] = new_edge
+    return con_tree
+
+##############################################################################
 ## TreeSummarizer
 
 class TreeSummarizer(object):
@@ -61,6 +141,57 @@ class TreeSummarizer(object):
         self.support_label_decimals = kwargs.get("support_label_decimals", self.default_support_label_decimals)
         self.total_trees_counted = 0
         self.weighted_splits = False
+
+    def tree_from_splits(self,
+            split_distribution,
+            min_freq=0.5,
+            include_edge_lengths=True,
+            include_edge_length_var=False):
+        """Returns a consensus tree from splits in `split_distribution`.
+
+        If include_edge_length_var is True, then the sample variance of the
+            edge length will also be calculated and will be stored as
+            a length_var attribute.
+        """
+        taxon_set = split_distribution.taxon_set
+        taxa_mask = taxon_set.all_taxa_bitmask()
+        if self.weighted_splits:
+            split_freqs = split_distribution.weighted_split_frequencies
+        else:
+            split_freqs = split_distribution.split_frequencies
+        is_rooted = split_distribution.is_rooted
+
+        to_try_to_add = []
+        _almost_one = lambda x: abs(x - 1.0) <= 0.0000001
+        for s, f in split_freqs.iteritems():
+            if (min_freq is None) or (f > min_freq) or (_almost_one(min_freq) and _almost_one(f)):
+                m = s & taxa_mask
+                if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
+                    if not is_rooted:
+                        c = (~m) & taxa_mask
+                        if (c-1) & c: # not singleton (i.e., one "0")
+                            if 1 & m:
+                                k = c
+                            else:
+                                k = m
+                            to_try_to_add.append((f, k, m))
+                    else:
+                        to_try_to_add.append((f, m, m))
+        to_try_to_add.sort(reverse=True)
+
+        splits_for_tree = []
+        splits_in_dict = {}
+        split_freqs = {}
+        for item in to_try_to_add:
+            splits_for_tree.append(item[1])
+            splits_in_dict[item[1]] = item[2]
+            split_freqs[item[1]] = item[0]
+
+        con_tree = tree_from_splits(splits=splits_for_tree,
+                taxon_set=taxon_set,
+                is_rooted=is_rooted)
+        return con_tree
+
 
     def compose_support_label(self, split_support_freq):
         "Returns an appropriately composed and formatted support label."
@@ -233,104 +364,6 @@ class TreeSummarizer(object):
             else:
                 edge.length = 0.0
         return tree
-
-    def tree_from_splits(self,
-                         split_distribution,
-                         min_freq=0.5,
-                         include_edge_lengths=True,
-                         include_edge_length_var=False):
-        """Returns a consensus tree from splits in `split_distribution`.
-
-        If include_edge_length_var is True, then the sample variance of the
-            edge length will also be calculated and will be stored as
-            a length_var attribute.
-        """
-        leaf_to_root_search = True
-
-        taxon_set = split_distribution.taxon_set
-        con_tree = treesim.star_tree(taxon_set)
-        con_tree.is_rooted = split_distribution.is_rooted
-        if self.weighted_splits:
-            split_freqs = split_distribution.weighted_split_frequencies
-        else:
-            split_freqs = split_distribution.split_frequencies
-        taxa_mask = taxon_set.all_taxa_bitmask()
-        treesplit.encode_splits(con_tree)
-        leaves = con_tree.leaf_nodes()
-
-        if leaf_to_root_search:
-            to_leaf_dict = {}
-            for leaf in leaves:
-                to_leaf_dict[leaf.edge.split_bitmask] = leaf
-        include_edge_lengths = self.support_as_labels and include_edge_lengths
-        is_rooted = split_distribution.is_rooted
-
-        to_try_to_add = []
-        _almost_one = lambda x: abs(x - 1.0) <= 0.0000001
-        for s, f in split_freqs.iteritems():
-            if (min_freq is None) or (f > min_freq) or (_almost_one(min_freq) and _almost_one(f)):
-                m = s & taxa_mask
-                if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
-                    if not is_rooted:
-                        c = (~m) & taxa_mask
-                        if (c-1) & c: # not singleton (i.e., one "0")
-                            if 1 & m:
-                                k = c
-                            else:
-                                k = m
-                            to_try_to_add.append((f, k, m))
-                    else:
-                        to_try_to_add.append((f, m, m))
-        to_try_to_add.sort(reverse=True)
-
-        root = con_tree.seed_node
-        root_edge = root.edge
-        # Now when we add splits in order, we will do a greedy, extended majority-rule consensus tree
-        for freq, split_to_add, split_in_dict in to_try_to_add:
-            if (split_to_add & root_edge.split_bitmask) != split_to_add:
-                continue
-            elif leaf_to_root_search:
-                lb = treesplit.lowest_bit_only(split_to_add)
-                one_leaf = to_leaf_dict[lb]
-                parent_node = one_leaf
-                while (split_to_add & parent_node.edge.split_bitmask) != split_to_add:
-                    parent_node = parent_node.parent_node
-            else:
-                parent_node = con_tree.mrca(split_bitmask=split_to_add)
-            if parent_node is None or parent_node.edge.split_bitmask == split_to_add:
-                continue # split is not in tree, or already in tree.
-            new_node = dendropy.Node()
-            self.map_split_support_to_node(node=new_node, split_support=freq)
-            new_node_children = []
-            new_edge = new_node.edge
-            new_edge.split_bitmask = 0
-            for child in parent_node.child_nodes():
-                # might need to modify the following if rooted splits
-                # are used
-                cecm = child.edge.split_bitmask
-                if (cecm & split_to_add ):
-                    assert cecm != split_to_add
-                    new_edge.split_bitmask |= cecm
-                    new_node_children.append(child)
-            # Check to see if we have accumulated all of the bits that we
-            #   needed, but none that we don't need.
-            if new_edge.split_bitmask == split_to_add:
-                if include_edge_lengths:
-                    elen = split_distribution.split_edge_lengths[split_in_dict]
-                    if len(elen) > 0:
-                        mean, var = mean_and_sample_variance(elen)
-                        new_edge.length = mean
-                        if include_edge_length_var:
-                            new_edge.length_var = var
-                    else:
-                        new_edge.length = None
-                        if include_edge_length_var:
-                            new_edge.length_var = None
-                for child in new_node_children:
-                    parent_node.remove_child(child)
-                    new_node.add_child(child)
-                parent_node.add_child(new_node)
-                con_tree.split_edges[split_to_add] = new_edge
 
         ## here we add the support values and/or edge lengths for the terminal taxa ##
         for node in leaves:
