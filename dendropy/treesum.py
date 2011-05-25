@@ -46,7 +46,8 @@ from dendropy.utility.statistics import mean_and_sample_variance
 
 def tree_from_splits(splits,
         taxon_set=None,
-        is_rooted=False):
+        is_rooted=False,
+        split_edge_lengths=None):
     """
     Builds a tree from a set of splits, `splits`.
     Taxon references from `taxon_set`.
@@ -67,7 +68,6 @@ def tree_from_splits(splits,
         to_leaf_dict = {}
         for leaf in leaves:
             to_leaf_dict[leaf.edge.split_bitmask] = leaf
-    #include_edge_lengths = self.support_as_labels and include_edge_lengths
 
     root = con_tree.seed_node
     root_edge = root.edge
@@ -103,17 +103,13 @@ def tree_from_splits(splits,
         # Check to see if we have accumulated all of the bits that we
         #   needed, but none that we don't need.
         if new_edge.split_bitmask == split_to_add:
-            #if include_edge_lengths:
-            #    elen = split_distribution.split_edge_lengths[split_in_dict]
-            #    if len(elen) > 0:
-            #        mean, var = mean_and_sample_variance(elen)
-            #        new_edge.length = mean
-            #        if include_edge_length_var:
-            #            new_edge.length_var = var
-            #    else:
-            #        new_edge.length = None
-            #        if include_edge_length_var:
-            #            new_edge.length_var = None
+            if split_edge_lengths:
+                elen = split_edge_lengths[split_to_add]
+                if len(elen) > 0:
+                    mean, var = mean_and_sample_variance(elen)
+                    new_edge.length = mean
+                else:
+                    new_edge.length = None
             for child in new_node_children:
                 parent_node.remove_child(child)
                 new_node.add_child(child)
@@ -145,8 +141,7 @@ class TreeSummarizer(object):
     def tree_from_splits(self,
             split_distribution,
             min_freq=0.5,
-            include_edge_lengths=True,
-            include_edge_length_var=False):
+            include_edge_lengths=True):
         """Returns a consensus tree from splits in `split_distribution`.
 
         If include_edge_length_var is True, then the sample variance of the
@@ -160,6 +155,7 @@ class TreeSummarizer(object):
         else:
             split_freqs = split_distribution.split_frequencies
         is_rooted = split_distribution.is_rooted
+        include_edge_lengths = self.support_as_labels and include_edge_lengths
 
         to_try_to_add = []
         _almost_one = lambda x: abs(x - 1.0) <= 0.0000001
@@ -180,18 +176,18 @@ class TreeSummarizer(object):
         to_try_to_add.sort(reverse=True)
 
         splits_for_tree = []
-        splits_in_dict = {}
+        split_edge_lengths = {}
         split_freqs = {}
         for item in to_try_to_add:
             splits_for_tree.append(item[1])
-            splits_in_dict[item[1]] = item[2]
+            split_edge_lengths[item[1]] = split_distribution.split_edge_lengths[item[2]]
             split_freqs[item[1]] = item[0]
 
         con_tree = tree_from_splits(splits=splits_for_tree,
                 taxon_set=taxon_set,
-                is_rooted=is_rooted)
+                is_rooted=is_rooted,
+                split_edge_lengths=split_edge_lengths)
         return con_tree
-
 
     def compose_support_label(self, split_support_freq):
         "Returns an appropriately composed and formatted support label."

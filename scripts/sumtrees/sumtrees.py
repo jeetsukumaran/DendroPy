@@ -435,11 +435,6 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
                     + "of the given branch across all trees considered; this option forces branch " \
                     + "lengths to be unspecified (obviously, this is only applicable if you do not ask the support to be mapped as "  \
                     + "branch lengths)")
-    target_tree_optgroup.add_option("--branch-length-variance",
-            action="store_true",
-            dest="branch_length_var",
-            default=False,
-            help="if using a consensus tree as the target tree, this option forces the sample variance of the branch lengths to be calculated and added to the tree description")
 
     output_filepath_optgroup = OptionGroup(parser, "Output File Options")
     parser.add_option_group(output_filepath_optgroup)
@@ -795,8 +790,7 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
             min_freq = opts.min_clade_freq
         stree = tsum.tree_from_splits(master_split_distribution,
                 min_freq=min_freq,
-                include_edge_lengths=not opts.no_branch_lengths,
-                include_edge_length_var=opts.branch_length_var)
+                include_edge_lengths=not opts.no_branch_lengths)
         if opts.root_target:
             stree.reroot_at_midpoint(splits=True)
         report = []
@@ -875,18 +869,8 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
     final_run_report.append(run_time)
 
     output_dataset = dendropy.DataSet(dendropy.TreeList(tt_trees, taxon_set=master_taxon_set))
-
-    if opts.branch_length_var:
-        def get_length_var(x):
-            try:
-                return x.length_var
-            except:
-                return None
-        nhx_key_to_func = {"VAR" : get_length_var}
-    else:
-        nhx_key_to_func = None
     if opts.to_newick_format:
-        output_dataset.write(output_dest, "newick", nhx_key_to_func_dict=nhx_key_to_func)
+        output_dataset.write(output_dest, "newick")
     else:
         if opts.include_taxa_block:
             simple = False
@@ -915,7 +899,7 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
         if opts.additional_comments:
             comment.append("\n")
             comment.append(opts.additional_comments)
-        output_dataset.write(output_dest, "nexus", simple=simple, comment=comment, nhx_key_to_func_dict=nhx_key_to_func)
+        output_dataset.write(output_dest, "nexus", simple=simple, comment=comment)
 
     messenger.send_info("Writing tree probabilities ...")
     if trprobs_dest:
