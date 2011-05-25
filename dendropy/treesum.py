@@ -179,7 +179,6 @@ class TreeSummarizer(object):
         split_edge_lengths = {}
         new_split_freq_map = {}
         for item in to_try_to_add:
-            print item[1], item[2]
             splits_for_tree.append(item[1])
             split_edge_lengths[item[1]] = split_distribution.split_edge_lengths[item[2]]
             new_split_freq_map[item[1]] = item[0]
