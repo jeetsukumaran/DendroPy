@@ -389,7 +389,7 @@ def main_cli():
             default=1,
             const=2,
             help="in addition to node metadata, indicate branch support as branch lengths")
-    support_summarization_optgroup.add_option("-x","--no-support-data",
+    support_summarization_optgroup.add_option("-x","--no-support",
             action="store_const",
             dest="support_annotation_target",
             default=1,
