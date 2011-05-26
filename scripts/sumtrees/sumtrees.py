@@ -357,6 +357,24 @@ def main_cli():
             default=False,
             help="support trees will be streamed in NEXUS format")
 
+    target_tree_optgroup = OptionGroup(parser, 'Target Tree Options')
+    parser.add_option_group(target_tree_optgroup)
+    target_tree_optgroup.add_option("-t","--target",
+            dest="target_tree_filepath",
+            default=None,
+            help="path to optional target, model or best topology tree file (Newick or NEXUS format) "
+            + "to which support will be mapped; "
+            + "if not given, then a majority-rule clade consensus tree will be constructed based on the "
+            + "all the trees given in the support tree files (except for those discarded as burn-ins), "
+            + "and this will be used as the target tree")
+    target_tree_optgroup.add_option("-f", "--min-clade-freq",
+            dest="min_clade_freq",
+            type="float",
+            default=0.50,
+            metavar="#.##",
+            help="minimum frequency or probability for a clade or a split to be "\
+                    + "included in the consensus tree, if used [default=%default]")
+
     support_summarization_optgroup = OptionGroup(parser, "Support Summarization Options")
     parser.add_option_group(support_summarization_optgroup)
     support_summarization_optgroup.add_option("-l","--support-as-labels",
@@ -371,12 +389,15 @@ def main_cli():
             default=1,
             const=2,
             help="in addition to node metadata, indicate branch support as branch lengths")
-    support_summarization_optgroup.add_option("-x","--support-as-metainfo",
+    support_summarization_optgroup.add_option("-x","--no-support-data",
             action="store_const",
             dest="support_annotation_target",
             default=1,
             const=0,
-            help="indicate branch support *only* as metadata")
+            help="""\
+do not indicate support with internal node labels or edge lengths
+(support will still be indicated as node metadata unless
+'--no-summary-metadata' is specified)""")
     support_summarization_optgroup.add_option("-p", "--percentages",
             action="store_true",
             dest="support_as_percentages",
@@ -418,21 +439,11 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
 
     other_summarization_optgroup = OptionGroup(parser, "Other Summarization Options")
     parser.add_option_group(other_summarization_optgroup)
-    source_tree_optgroup.add_option("--with-node-ages",
-            action="store_true",
-            dest="calc_node_ages",
-            default=None,
-            help="summarize node ages as well as edge lengths (implies '--rooted' and '--ultrametric'; automatically enabled if '--ultrametric' is specified; will result in error if trees are not ultrametric)")
-    source_tree_optgroup.add_option("--no-node-ages",
-            action="store_false",
-            dest="calc_node_ages",
-            default=None,
-            help="do not summarize node ages, even if '--ultrametric' is specified")
-    other_summarization_optgroup.add_option("--no-summary-metadata",
-            action="store_true",
-            dest="suppress_summary_metadata",
-            default=False,
-            help="do not annotate nodes with ranges, 5%/95 quartiles, 95% HPD's etc. of edge lengths and node ages")
+    #other_summarization_optgroup.add_option("--with-node-ages",
+    #        action="store_true",
+    #        dest="calc_node_ages",
+    #        default=None,
+    #        help="summarize node ages as well as edge lengths (implies '--rooted' and '--ultrametric'; automatically enabled if '--ultrametric' is specified; will result in error if trees are not ultrametric)")
     other_summarization_optgroup.add_option("--trprobs", "--calc-tree-probabilities",
             dest="trprobs_filepath",
             default=None,
@@ -445,24 +456,16 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
             metavar="FILEPATH",
             help="if specified, a tab-delimited file of splits and their edge " \
                     + "lengths across input trees will be saved to FILEPATH")
-
-    target_tree_optgroup = OptionGroup(parser, 'Target Tree Options')
-    parser.add_option_group(target_tree_optgroup)
-    target_tree_optgroup.add_option("-t","--target",
-            dest="target_tree_filepath",
+    other_summarization_optgroup.add_option("--no-node-ages",
+            action="store_false",
+            dest="calc_node_ages",
             default=None,
-            help="path to optional target, model or best topology tree file (Newick or NEXUS format) "
-            + "to which support will be mapped; "
-            + "if not given, then a majority-rule clade consensus tree will be constructed based on the "
-            + "all the trees given in the support tree files (except for those discarded as burn-ins), "
-            + "and this will be used as the target tree")
-    target_tree_optgroup.add_option("-f", "--min-clade-freq",
-            dest="min_clade_freq",
-            type="float",
-            default=0.50,
-            metavar="#.##",
-            help="minimum frequency or probability for a clade or a split to be "\
-                    + "included in the consensus tree, if used [default=%default]")
+            help="do not calculate/summarize node ages, even if '--ultrametric' is specified")
+    other_summarization_optgroup.add_option("--no-summary-metadata",
+            action="store_true",
+            dest="suppress_summary_metadata",
+            default=False,
+            help="do not annotate nodes with ranges, 5%/95 quartiles, 95% HPD's etc. of edge lengths and node ages")
 
     output_filepath_optgroup = OptionGroup(parser, "Output File Options")
     parser.add_option_group(output_filepath_optgroup)
