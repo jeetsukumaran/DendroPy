@@ -7,7 +7,7 @@ from dendropy.utility.messaging import get_logger
 _LOG = get_logger(__name__)
 from dendropy import DataSet, TaxonSet
 verbose = False
-from dendropy.treesum import inplace_strict_consensus_merge
+from dendropy.scm import inplace_strict_consensus_merge
 
 if __name__ == '__main__':
     from optparse import OptionParser

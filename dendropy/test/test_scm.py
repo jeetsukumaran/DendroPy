@@ -52,7 +52,7 @@ IS_DEBUG_LOGGING = _LOG.isEnabledFor(logging.DEBUG)
 
 
 ### MODULE THAT WE ARE TESTING ###
-from dendropy.treesum import inplace_strict_consensus_merge
+from dendropy.scm import inplace_strict_consensus_merge
 ### MODULE THAT WE ARE TESTING ###
 
 def trees_from_newick_str_list(newick_list):
