@@ -1061,8 +1061,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             to_keep.edge.length += to_del_edge.length
         except:
             pass
-        from dendropy.treemanip import collapse_edge
-        collapse_edge(to_del_edge)
+        to_del_edge.collapse()
+        self.is_rooted = False
 
     def reroot_at(self, nd, splits=False, delete_deg_two=True):
         """Takes an internal node, `nd` that must already be in the tree and
