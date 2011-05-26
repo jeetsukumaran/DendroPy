@@ -386,7 +386,7 @@ def main_cli():
 
     edge_summarization_optgroup = OptionGroup(parser, "Edge Summarization Options")
     parser.add_option_group(edge_summarization_optgroup)
-    edge_summarization_optgroup.add_option("--with-node-ages",
+    edge_summarization_optgroup.add_option("-u", "--with-node-ages", "--ultrametric",
             action="store_true",
             dest="calc_node_ages",
             default=False,
@@ -399,9 +399,15 @@ def main_cli():
             choices=edge_summarization_choices,
             default=None,
             help="""\
-one of: %s; set edge lengths of target tree(s) to mean/median lengths/ages of
+set edge lengths of target tree(s) to mean/median lengths/ages of
 corresponding splits or edges of input trees (note that using 'mean-age' or
-'median-age' require rooted ultrametric input trees")""" % (str(edge_summarization_choices)))
+'median-age' require rooted ultrametric input trees"); default is to 'keep' if target trees are specified
+(i.e., target trees will have their branch lengths preserved by default),
+'median-age' if no target trees are specified but the '--with-node-ages'/'--ultrametric' directive is given
+(a consensus tree should be constructed to summarize support and input trees are ultrametric),
+and 'mean-length' if no target trees are specified and the '--with-node-ages'/'--ultrametric' directive is *not* given
+(a consensus tree should be constructed to summarize support and input trees are *not* assumed to be ultrametric),
+""")
     edge_summarization_optgroup.add_option("--collapse-negative-edges",
             action="store_true",
             dest="collapse_negative_edges",
@@ -430,14 +436,6 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
             metavar="#.##",
             help="minimum frequency or probability for a clade or a split to be "\
                     + "included in the consensus tree, if used [default=%default]")
-    target_tree_optgroup.add_option("--no-branch-lengths",
-            action="store_true",
-            dest="no_branch_lengths",
-            default=False,
-            help="by default, if using a consensus tree as the target tree, branch lengths will be the mean of the lengths " \
-                    + "of the given branch across all trees considered; this option forces branch " \
-                    + "lengths to be unspecified (obviously, this is only applicable if you do not ask the support to be mapped as "  \
-                    + "branch lengths)")
 
     output_filepath_optgroup = OptionGroup(parser, "Output File Options")
     parser.add_option_group(output_filepath_optgroup)
@@ -742,18 +740,26 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
         opts.support_label_decimals = 2
 
     tsum = treesum.TreeSummarizer()
+    tsum.add_node_metadata = not opts.suppress_extended_summary
     if opts.support_annotation_target == 1:
         tsum.support_as_labels = True
         tsum.support_as_edge_lengths = False
-        support_show = "node labels"
+        support_show = "indicated by node labels"
+        if tsum.add_node_metadata:
+            support_show += " and node metadata"
     elif opts.support_annotation_target == 2:
         tsum.support_as_labels = False
         tsum.support_as_edge_lengths = True
-        support_show = "branch lengths"
+        support_show = "indicated by branch lengths"
+        if tsum.add_node_metadata:
+            support_show += " and node metadata"
     elif opts.support_annotation_target == 0:
         tsum.support_as_labels = False
-        tsum.support_as_edge_lengths = True
-        support_show = "node metadata (only)"
+        tsum.support_as_edge_lengths = False
+        if tsum.add_node_metadata:
+            support_show = "indicated by node metadata (only)"
+        else:
+            support_show = "not indicated"
     else:
         raise Exception("Unexpected value for support annotation target: %s" % opts.support_annotation_target)
     tsum.support_as_percentages = opts.support_as_percentages
@@ -764,7 +770,7 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
         support_units = "Percentage"
     else:
         support_units = "Proportion (frequency or probability)"
-    support_summarization = "%s of support for each split indicated by %s" % (support_units, support_show)
+    support_summarization = "%s of support for each split %s" % (support_units, support_show)
 
     tt_trees = []
     if target_tree_filepath is not None:
@@ -802,22 +808,23 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
             min_freq = opts.min_clade_freq
         stree = tsum.tree_from_splits(master_split_distribution,
                 min_freq=min_freq,
-                include_edge_lengths=not opts.no_branch_lengths)
+                include_edge_lengths=False)
+                #include_edge_lengths=not opts.no_branch_lengths)
         if opts.root_target:
             stree.reroot_at_midpoint(splits=True)
         report = []
         report.append("Consensus tree (%f clade frequency threshold) constructed from splits." % min_freq)
-        if not opts.edge_summarization:
-            if opts.calc_node_ages:
-                tsum.summarize_node_ages_on_tree(tree=stree,
-                        split_distribution=master_split_distribution,
-                        set_edge_lengths=True,
-                        collapse_negative_edges=opts.collapse_negative_edges,
-                        allow_negative_edges=not opts.collapse_negative_edges,
-                        summarization_func=statistics.median)
-                report.append("Consensus tree node ages set to median ages of corresponding nodes of input trees.")
-            else:
-                report.append("Consensus tree edge lengths set to mean of corresponding edges of input trees.")
+        #if not opts.edge_summarization:
+        #    if opts.calc_node_ages:
+        #        tsum.summarize_node_ages_on_tree(tree=stree,
+        #                split_distribution=master_split_distribution,
+        #                set_edge_lengths=True,
+        #                collapse_negative_edges=opts.collapse_negative_edges,
+        #                allow_negative_edges=not opts.collapse_negative_edges,
+        #                summarization_func=statistics.median)
+        #        report.append("Consensus tree node ages set to median ages of corresponding nodes of input trees.")
+        #    else:
+        #        report.append("Consensus tree edge lengths set to mean of corresponding edges of input trees.")
         tt_trees.append(stree)
         if opts.root_target:
             if opts.outgroup:
@@ -833,12 +840,20 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
         for stree in tt_trees:
             tsum.annotate_nodes_and_edges(tree=stree, split_distribution=master_split_distribution)
 
-    if opts.edge_summarization is not None:
+    if opts.edge_summarization is None:
+        if target_tree_filepath is not None:
+            opts.edge_summarization = 'keep'
+        else:
+            if opts.calc_node_ages:
+                opts.edge_summarization = 'median-age'
+            else:
+                opts.edge_summarization = 'mean-length'
+    if opts.edge_summarization is not None and opts.edge_summarization != 'keep':
         if opts.edge_summarization.startswith('mean'):
             summary_func_desc = "mean"
             summarization_func = lambda x: statistics.mean_and_sample_variance(x)[0]
         else:
-            summary_func_desc = "desc"
+            summary_func_desc = "median"
             summarization_func = statistics.median
         if opts.edge_summarization.endswith("age"):
             messenger.send_info("Mapping node ages ...")
@@ -865,6 +880,8 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
                 tsum.summarize_edge_lengths_on_tree(tree=stree,
                         split_distribution=master_split_distribution,
                         summarization_func=summarization_func)
+    else:
+        comments.append("Not setting edge lengths on output tree(s).")
 
     end_time = datetime.datetime.now()
 

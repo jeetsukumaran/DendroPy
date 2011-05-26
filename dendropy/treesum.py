@@ -46,6 +46,7 @@ class TreeSummarizer(object):
         self.support_as_labels = kwargs.get("support_as_labels", True)
         self.support_as_edge_lengths = kwargs.get("support_as_edge_lengths", False)
         self.support_as_percentages = kwargs.get("support_as_percentages", False)
+        self.add_node_metadata = kwargs.get("add_node_metadata", True)
         self.default_support_label_decimals = 4
         self.support_label_decimals = kwargs.get("support_label_decimals", self.default_support_label_decimals)
         self.total_trees_counted = 0
@@ -144,7 +145,7 @@ class TreeSummarizer(object):
             node.label = self.compose_support_label(split_support)
         if self.support_as_edge_lengths:
             node.edge.length = support_value
-        if attr_name:
+        if self.add_node_metadata and attr_name:
             setattr(node, attr_name, support_value)
             node.annotate(attr_name)
         return node
