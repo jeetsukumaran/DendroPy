@@ -336,6 +336,11 @@ def main_cli():
             dest="rooted_trees",
             default=None,
             help="treat trees as unrooted")
+    source_tree_optgroup.add_option("--ultrametric",
+            action="store_true",
+            dest="ultrametric_trees",
+            default=False,
+            help="assume trees are ultrametric (implies '--rooted' and '--with-node-ages'; will result in node ages being summarized; will result in error if trees are not ultrametric)")
     source_tree_optgroup.add_option("--weighted-trees",
             action="store_true",
             dest="weighted_trees",
@@ -386,11 +391,6 @@ def main_cli():
 
     edge_summarization_optgroup = OptionGroup(parser, "Edge Summarization Options")
     parser.add_option_group(edge_summarization_optgroup)
-    edge_summarization_optgroup.add_option("-u", "--with-node-ages", "--ultrametric",
-            action="store_true",
-            dest="calc_node_ages",
-            default=False,
-            help="summarize node ages as well as edge lengths (implies rooted trees and requires all trees to be ultrametric)")
     edge_summarization_choices = ["mean-length", "median-length", "mean-age", "median-age", "keep"]
     edge_summarization_optgroup.add_option("-e", "--edges",
             type="choice",
@@ -401,11 +401,13 @@ def main_cli():
             help="""\
 set edge lengths of target tree(s) to mean/median lengths/ages of
 corresponding splits or edges of input trees (note that using 'mean-age' or
-'median-age' require rooted ultrametric input trees"); default is to 'keep' if target trees are specified
+'median-age' require rooted ultrametric input trees, and will behave as
+if '--ultrametric' and '--with-node-ages' are specified");
+default is to 'keep' if target trees are specified
 (i.e., target trees will have their branch lengths preserved by default),
-'median-age' if no target trees are specified but the '--with-node-ages'/'--ultrametric' directive is given
+'median-age' if no target trees are specified but the '--ultrametric' directive is given
 (a consensus tree should be constructed to summarize support and input trees are ultrametric),
-and 'mean-length' if no target trees are specified and the '--with-node-ages'/'--ultrametric' directive is *not* given
+and 'mean-length' if no target trees are specified and the '--ultrametric' directive is *not* given
 (a consensus tree should be constructed to summarize support and input trees are *not* assumed to be ultrametric),
 """)
     edge_summarization_optgroup.add_option("--collapse-negative-edges",
@@ -413,11 +415,36 @@ and 'mean-length' if no target trees are specified and the '--with-node-ages'/'-
             dest="collapse_negative_edges",
             default=False,
             help="(if setting edge lengths) force parent node ages to be at least as old as its oldest child when summarizing node ages")
-    edge_summarization_optgroup.add_option("--no-extended-summary",
+
+    other_summarization_optgroup = OptionGroup(parser, "Other Summarization Options")
+    parser.add_option_group(other_summarization_optgroup)
+    source_tree_optgroup.add_option("--with-node-ages",
             action="store_true",
-            dest="suppress_extended_summary",
+            dest="calc_node_ages",
+            default=None,
+            help="summarize node ages as well as edge lengths (implies '--rooted' and '--ultrametric'; automatically enabled if '--ultrametric' is specified; will result in error if trees are not ultrametric)")
+    source_tree_optgroup.add_option("--no-node-ages",
+            action="store_false",
+            dest="calc_node_ages",
+            default=None,
+            help="do not summarize node ages, even if '--ultrametric' is specified")
+    other_summarization_optgroup.add_option("--no-summary-metadata",
+            action="store_true",
+            dest="suppress_summary_metadata",
             default=False,
-            help="do not calculate ranges, 5%/95 quartiles, 95% HPD's etc. of edge lengths and node ages")
+            help="do not annotate nodes with ranges, 5%/95 quartiles, 95% HPD's etc. of edge lengths and node ages")
+    other_summarization_optgroup.add_option("--trprobs", "--calc-tree-probabilities",
+            dest="trprobs_filepath",
+            default=None,
+            metavar="FILEPATH",
+            help="if specified, a file listing tree (topologies) and the " \
+                    + "frequencies of their occurrences will be saved to FILEPATH")
+    other_summarization_optgroup.add_option("--extract-edges",
+            dest="split_edges_filepath",
+            default=None,
+            metavar="FILEPATH",
+            help="if specified, a tab-delimited file of splits and their edge " \
+                    + "lengths across input trees will be saved to FILEPATH")
 
     target_tree_optgroup = OptionGroup(parser, 'Target Tree Options')
     parser.add_option_group(target_tree_optgroup)
@@ -473,22 +500,6 @@ and 'mean-length' if no target trees are specified and the '--with-node-ages'/'-
             dest="replace",
             default=False,
             help="replace/overwrite output file without asking if it already exists ")
-
-    other_optgroup = OptionGroup(parser, "Other Options")
-    parser.add_option_group(other_optgroup)
-
-    other_optgroup.add_option("--trprobs", "--calc-tree-probabilities",
-            dest="trprobs_filepath",
-            default=None,
-            metavar="FILEPATH",
-            help="if specified, a file listing tree (topologies) and the " \
-                    + "frequencies of their occurrences will be saved to FILEPATH")
-    other_optgroup.add_option("--extract-edges",
-            dest="split_edges_filepath",
-            default=None,
-            metavar="FILEPATH",
-            help="if specified, a tab-delimited file of splits and their edge " \
-                    + "lengths across input trees will be saved to FILEPATH")
 
     run_optgroup = OptionGroup(parser, "Program Run Options")
     parser.add_option_group(run_optgroup)
@@ -602,11 +613,21 @@ and 'mean-length' if no target trees are specified and the '--with-node-ages'/'-
             messenger.send_error("'%s' is not a valid edge summarization choice; must be one of: %s" % (opts.edge_summarization, edge_summarization_choices))
             sys.exit(1)
     if opts.edge_summarization == "mean-age" or opts.edge_summarization == "median-age":
-        opts.calc_node_ages = True
+        opts.ultrametric_trees = True
         opts.rooted_trees = True
+        if opts.calc_node_ages is None:
+            opts.calc_node_ages = True
     else:
-        if opts.calc_node_ages:
+        if opts.ultrametric_trees:
             opts.rooted_trees = True
+            if opts.calc_node_ages is None:
+                opts.calc_node_ages = True
+        else:
+            if opts.calc_node_ages is True:
+                opts.ultrametric_trees = True
+                opts.rooted_trees = True
+            else:
+                opts.calc_node_ages = False
 
     # output
     if opts.output_filepath is None:
@@ -717,6 +738,8 @@ and 'mean-length' if no target trees are specified and the '--with-node-ages'/'-
         report.append("Trees treated as rooted.")
     else:
         report.append("Trees treated as unrooted.")
+    if opts.ultrametric_trees:
+        report.append("Trees are expected to be ultrametric.")
     if opts.weighted_trees:
         report.append("Trees treated as weighted (default weight = 1.0).")
     else:
@@ -740,7 +763,7 @@ and 'mean-length' if no target trees are specified and the '--with-node-ages'/'-
         opts.support_label_decimals = 2
 
     tsum = treesum.TreeSummarizer()
-    tsum.add_node_metadata = not opts.suppress_extended_summary
+    tsum.add_node_metadata = not opts.suppress_summary_metadata
     if opts.support_annotation_target == 1:
         tsum.support_as_labels = True
         tsum.support_as_edge_lengths = False
@@ -814,17 +837,6 @@ and 'mean-length' if no target trees are specified and the '--with-node-ages'/'-
             stree.reroot_at_midpoint(splits=True)
         report = []
         report.append("Consensus tree (%f clade frequency threshold) constructed from splits." % min_freq)
-        #if not opts.edge_summarization:
-        #    if opts.calc_node_ages:
-        #        tsum.summarize_node_ages_on_tree(tree=stree,
-        #                split_distribution=master_split_distribution,
-        #                set_edge_lengths=True,
-        #                collapse_negative_edges=opts.collapse_negative_edges,
-        #                allow_negative_edges=not opts.collapse_negative_edges,
-        #                summarization_func=statistics.median)
-        #        report.append("Consensus tree node ages set to median ages of corresponding nodes of input trees.")
-        #    else:
-        #        report.append("Consensus tree edge lengths set to mean of corresponding edges of input trees.")
         tt_trees.append(stree)
         if opts.root_target:
             if opts.outgroup:
@@ -835,7 +847,7 @@ and 'mean-length' if no target trees are specified and the '--with-node-ages'/'-
         messenger.send_info_lines(report)
         comments.extend(report)
 
-    if not opts.suppress_extended_summary:
+    if not opts.suppress_summary_metadata:
         messenger.send_info("Summarizing node ages and lengths ...")
         for stree in tt_trees:
             tsum.annotate_nodes_and_edges(tree=stree, split_distribution=master_split_distribution)
@@ -844,7 +856,7 @@ and 'mean-length' if no target trees are specified and the '--with-node-ages'/'-
         if target_tree_filepath is not None:
             opts.edge_summarization = 'keep'
         else:
-            if opts.calc_node_ages:
+            if opts.ultrametric_trees:
                 opts.edge_summarization = 'median-age'
             else:
                 opts.edge_summarization = 'mean-length'
