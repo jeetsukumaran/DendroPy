@@ -2,6 +2,12 @@
 What's New in the DendroPy Tutorial
 ***********************************
 
+2011-05-26
+==========
+
+    * Major update to the :doc:`tree manipulation section </tutorial/treemanips>` section.
+
+
 2010-08-09
 ==========
 

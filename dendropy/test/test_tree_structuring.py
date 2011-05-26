@@ -58,7 +58,7 @@ class TreeMidpointRootingTest(extendedtest.ExtendedTestCase):
                 as_rooted=True)
         for idx, tree1 in enumerate(src_trees):
             tree2 = chk_trees[idx]
-            tree1.reroot_at_midpoint(splits=True)
+            tree1.reroot_at_midpoint(update_splits=True)
             self.assertEqual(tree1.symmetric_difference(tree2), 0)
             for split in tree1.split_edges:
                 if tree1.split_edges[split].head_node is tree1.seed_node:

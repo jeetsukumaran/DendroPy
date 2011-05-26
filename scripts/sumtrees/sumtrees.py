@@ -837,7 +837,7 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 include_edge_lengths=False)
                 #include_edge_lengths=not opts.no_branch_lengths)
         if opts.root_target:
-            stree.reroot_at_midpoint(splits=True)
+            stree.reroot_at_midpoint(update_splits=True)
         report = []
         report.append("Consensus tree (%f clade frequency threshold) constructed from splits." % min_freq)
         tt_trees.append(stree)

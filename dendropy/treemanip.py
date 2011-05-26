@@ -79,7 +79,7 @@ def randomly_reorient_tree(tree, rng=None, splits=False):
     internal nodes in the `tree`. If `splits` is True, the the `split_bitmask`
     and `split_edges` attributes kept valid.
     """
-    tree.randomly_reorient_tree(rng=rng, splits=splits)
+    tree.randomly_reorient_tree(rng=rng, update_splits=splits)
 
 def randomly_rotate(tree, rng=None):
     "Randomly rotates the branches around all internal nodes in the `tree`"

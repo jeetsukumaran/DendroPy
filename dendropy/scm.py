@@ -59,7 +59,7 @@ def reroot_on_lowest_common_index_path(t, common_mask):
     taxa_mask = t.seed_node.edge.split_bitmask
     if (curr_n.edge.split_bitmask & common_mask) == l:
         # we did not make it to the root.  Make curr_n, the first_child of the root
-        t.to_outgroup_position(curr_n, splits=True, delete_deg_two=True)
+        t.to_outgroup_position(curr_n, update_splits=True, delete_deg_two=True)
         avoid = curr_n
         nd_source = iter(t.seed_node.child_nodes())
 
@@ -72,8 +72,8 @@ def reroot_on_lowest_common_index_path(t, common_mask):
                         if cm == without_lowest:
                             r = t.seed_node
                             assert curr_n.parent_node is r
-                            t.reroot_at(curr_n, splits=True, delete_deg_two=True)
-                            t.to_outgroup_position(r, splits=True, delete_deg_two=True)
+                            t.reroot_at(curr_n, update_splits=True, delete_deg_two=True)
+                            t.to_outgroup_position(r, update_splits=True, delete_deg_two=True)
                             nd_source = iter(curr_n.child_nodes())
                             avoid = r
                         else:
@@ -112,12 +112,12 @@ def reroot_on_lowest_common_index_path(t, common_mask):
         children = curr_n.child_nodes()
         assert(len(children) > 1)
         p = curr_n.parent
-        t.to_outgroup_position(children[0], splits=True, delete_deg_two=True)
-        t.to_outgroup_position(p, splits=True, delete_deg_two=True)
+        t.to_outgroup_position(children[0], update_splits=True, delete_deg_two=True)
+        t.to_outgroup_position(p, update_splits=True, delete_deg_two=True)
     else:
         # if the root first relevant, node then we just make the path leading
         #   to the lowest index node the first child of the root
-        t.to_outgroup_position(lowest_on_path_to_l, splits=True, delete_deg_two=True)
+        t.to_outgroup_position(lowest_on_path_to_l, update_splits=True, delete_deg_two=True)
 
 def _collapse_paths_not_found(f, s, other_dict=None):
     to_del = []
@@ -173,15 +173,15 @@ def add_to_scm(to_modify, to_consume, rooted=False, gordons_supertree=False):
     to_consume_relevant_splits = {}
     if not rooted:
         if _IS_DEBUG_LOGGING:
-            to_modify.debug_check_tree(splits=True, logger_obj=_LOG)
-            to_consume.debug_check_tree(splits=True, logger_obj=_LOG)
+            to_modify.debug_check_tree(check_splits=True, logger_obj=_LOG)
+            to_consume.debug_check_tree(check_splits=True, logger_obj=_LOG)
 
         reroot_on_lowest_common_index_path(to_modify, leaf_intersection)
         reroot_on_lowest_common_index_path(to_consume, leaf_intersection)
 
         if _IS_DEBUG_LOGGING:
-            to_modify.debug_check_tree(splits=True, logger_obj=_LOG)
-            to_consume.debug_check_tree(splits=True, logger_obj=_LOG)
+            to_modify.debug_check_tree(check_splits=True, logger_obj=_LOG)
+            to_consume.debug_check_tree(check_splits=True, logger_obj=_LOG)
 
         to_mod_root = to_modify.seed_node
         assert(to_mod_root.edge.split_bitmask == to_mod_split)
@@ -217,8 +217,8 @@ def add_to_scm(to_modify, to_consume, rooted=False, gordons_supertree=False):
         del path[:]
         path.extend(t)
     if _IS_DEBUG_LOGGING:
-        to_modify.debug_check_tree(splits=True, logger_obj=_LOG)
-        to_consume.debug_check_tree(splits=True, logger_obj=_LOG)
+        to_modify.debug_check_tree(check_splits=True, logger_obj=_LOG)
+        to_consume.debug_check_tree(check_splits=True, logger_obj=_LOG)
 
 
     # first we'll collapse all paths in the common leafset in to_modify that
@@ -333,16 +333,16 @@ def inplace_strict_consensus_merge(trees_to_merge, rooted=False, gordons_supertr
         to_modify.deroot()
     encode_splits(to_modify)
     if _IS_DEBUG_LOGGING:
-        assert to_modify._debug_tree_is_valid(splits=False)
+        assert to_modify._debug_tree_is_valid(check_splits=False)
     for to_consume in tree_iter:
         if not rooted:
             to_consume.deroot()
         encode_splits(to_consume)
         if _IS_DEBUG_LOGGING:
-            assert to_consume._debug_tree_is_valid(splits=True)
+            assert to_consume._debug_tree_is_valid(check_splits=True)
         add_to_scm(to_modify, to_consume, rooted, gordons_supertree=gordons_supertree)
         if _IS_DEBUG_LOGGING:
-            assert to_modify._debug_tree_is_valid(splits=False)
+            assert to_modify._debug_tree_is_valid(check_splits=False)
 
     return to_modify
 
