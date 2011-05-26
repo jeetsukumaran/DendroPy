@@ -109,7 +109,7 @@ To deroot a rooted |Tree|, you can also call the :meth:`~dendropy.dataobject.tre
 Rerooting
 ---------
 
-To reroot a |Tree| along an existing edge, you can use the :meth:`~dendropy.dataobject.tree.Tree.reroot_at_node()` method. This method takes an |Edge| object as as its first argument. This rerooting is a structural change that will require the splits hashes to be updated before performing any tree comparisons or calculating tree metrics. You can do this yourself by calling :meth:`~dendropy.dataobject.tree.Tree.update_splits()` later, or you can pass in :keyword:`True` as the second argument to the  :meth:`~dendropy.dataobject.tree.Tree.reroot_at_edge()` method call, which instructs DendroPy to automatically update the splits for you. For example, the following reroots the tree along an internal edge:
+To reroot a |Tree| along an existing edge, you can use the :meth:`~dendropy.dataobject.tree.Tree.reroot_at_edge()` method. This method takes an |Edge| object as as its first argument. This rerooting is a structural change that will require the splits hashes to be updated before performing any tree comparisons or calculating tree metrics. You can do this yourself by calling :meth:`~dendropy.dataobject.tree.Tree.update_splits()` later, or you can pass in :keyword:`True` as the second argument to the  :meth:`~dendropy.dataobject.tree.Tree.reroot_at_edge()` method call, which instructs DendroPy to automatically update the splits for you. For example, the following reroots the tree along an internal edge:
 
 .. literalinclude:: /examples/reroot_at_internal_edge.py
 
