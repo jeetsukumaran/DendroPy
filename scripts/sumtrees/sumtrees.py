@@ -899,7 +899,15 @@ and 'mean-length' if no target trees are specified and the '--with-node-ages'/'-
 
     output_dataset = dendropy.DataSet(dendropy.TreeList(tt_trees, taxon_set=master_taxon_set))
     if opts.to_newick_format:
-        output_dataset.write(output_dest, "newick")
+        output_dataset.write(output_dest,
+                "newick",
+                edge_lengths=True,
+                write_rooting=True,
+                internal_labels=True,
+                annotations_as_comments=True,
+                annotations_as_nhx=False,
+                write_item_comments=False,
+                )
     else:
         if opts.include_taxa_block:
             simple = False
@@ -928,7 +936,16 @@ and 'mean-length' if no target trees are specified and the '--with-node-ages'/'-
         if opts.additional_comments:
             comment.append("\n")
             comment.append(opts.additional_comments)
-        output_dataset.write(output_dest, "nexus", simple=simple, comment=comment)
+        output_dataset.write(output_dest,
+                "nexus",
+                simple=simple,
+                edge_lengths=True,
+                write_rooting=True,
+                internal_labels=True,
+                annotations_as_comments=True,
+                annotations_as_nhx=False,
+                write_item_comments=False,
+                comment=comment)
 
     messenger.send_info("Writing tree probabilities ...")
     if trprobs_dest:
@@ -949,7 +966,7 @@ and 'mean-length' if no target trees are specified and the '--with-node-ages'/'-
                 'nexus',
                 edge_lengths=False,
                 write_rooting=False,
-                intenral_labels=False,
+                internal_labels=False,
                 annotations_as_comments=True,
                 annotations_as_nhx=False,
                 write_item_comments=False

@@ -113,6 +113,12 @@ class Annotated(DataObject):
         """
         return self.annotations(), None
 
+    def clear_annotations(self):
+        """
+        Clears registry of annotations to be persisted.
+        """
+        self._annotations.clear()
+
     def has_annotations(self):
         """
         Returns True if there are attributes to be persisted as
