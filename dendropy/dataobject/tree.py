@@ -1064,7 +1064,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         to_del_edge.collapse()
         self.is_rooted = False
 
-    def reseed_at(self, new_seed_node, update_splits=False, collapse_root_bifurcation=False):
+    def reseed_at(self, new_seed_node, update_splits=False, suppress_old_root_if_outdegree_one=True):
         """
         Takes an internal node, `new_seed_node` that must already be in the tree and
         rotates the tree such that `new_seed_node` is the `seed_node` of the tree.
@@ -1073,6 +1073,10 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         it does not actually change the tree's rooting state.  If
         `update_splits` is True, then the edges' `split_bitmask` and the tree's
         `split_edges` attributes will be updated.
+        If the *old* root of the tree had an outdegree of 2, then after this
+        operation, it will have an outdegree of one. In this case, unless
+        `suppress_old_root_if_outdegree_one` is False, then the it will be
+        removed from the tree.
         """
         old_par = new_seed_node.parent_node
         if old_par is None:
@@ -1090,7 +1094,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
         if old_par is self.seed_node:
             root_children = old_par.child_nodes()
-            if len(root_children) == 2 and collapse_root_bifurcation:
+            if len(root_children) == 2 and suppress_old_root_if_outdegree_one:
                 # root (old_par) was of degree 2, thus we need to suppress the
                 #   node
                 fc = root_children[0]
@@ -1113,7 +1117,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         else:
             self.reseed_at(old_par,
                     update_splits=update_splits,
-                    collapse_root_bifurcation=collapse_root_bifurcation)
+                    suppress_old_root_if_outdegree_one=suppress_old_root_if_outdegree_one)
         old_par.edge, new_seed_node.edge = new_seed_node.edge, old_par.edge
         e = old_par.edge
         if update_splits:
@@ -1127,25 +1131,27 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         new_seed_node.add_child(old_par, edge_length=e.length)
         self.seed_node = new_seed_node
         if full_encode:
-            treesplit.encode_splits(self, delete_outdegree_one=collapse_root_bifurcation)
+            treesplit.encode_splits(self, delete_outdegree_one=suppress_old_root_if_outdegree_one)
 
-    def to_outgroup_position(self, outgroup_node, update_splits=False, collapse_root_bifurcation=False):
+    def to_outgroup_position(self, outgroup_node, update_splits=False, suppress_old_root_if_outdegree_one=True):
         """Reroots the tree at the parent of `outgroup_node` and makes `outgroup_node` the first child
         of the new root.  This is just a convenience function to make it easy
         to place a clade as the first child under the root.
         Assumes that `outgroup_node` and `outgroup_node.parent_node` and are in the tree/
         If `update_splits` is True, then the edges' `split_bitmask` and the tree's
         `split_edges` attributes will be updated.
-        If `collapse_root_bifurcation` is True and the old root of the tree has an
-        outdegree of 2, then the node will be removed from the tree.
+        If the *old* root of the tree had an outdegree of 2, then after this
+        operation, it will have an outdegree of one. In this case, unless
+        `suppress_old_root_if_outdegree_one` is False, then the it will be
+        removed from the tree.
         """
         p = outgroup_node.parent_node
         assert p is not None
-        self.reseed_at(p, update_splits=update_splits)
+        self.reseed_at(p, update_splits=update_splits, suppress_old_root_if_outdegree_one=suppress_old_root_if_outdegree_one)
         p.remove_child(outgroup_node)
         p.add_child(outgroup_node, edge_length=outgroup_node.edge.length, pos=0)
 
-    def reroot_at_node(self, new_root_node, update_splits=False):
+    def reroot_at_node(self, new_root_node, update_splits=False, suppress_old_root_if_outdegree_one=True):
         """
         Takes an internal node, `new_seed_node` that must already be in the tree and
         roots the tree at that node.
@@ -1154,19 +1160,57 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         'new_seed_node', *and* changes the tree's rooting state.
         If `update_splits` is True, then the edges' `split_bitmask` and the tree's
         `split_edges` attributes will be updated.
+        If the *old* root of the tree had an outdegree of 2, then after this
+        operation, it will have an outdegree of one. In this case, unless
+        `suppress_old_root_if_outdegree_one` is False, then the it will be
+        removed from the tree.
         """
         self.reseed_at(new_seed_node=new_root_node,
-                update_splits=update_splits,
-                collapse_root_bifurcation=False)
+                update_splits=False,
+                suppress_old_root_if_outdegree_one=suppress_old_root_if_outdegree_one)
         self.is_rooted = True
+        if update_splits:
+            self.update_splits(delete_outdegree_one=suppress_old_root_if_outdegree_one)
 
-    def reroot_at_midpoint(self, update_splits=False):
+    def reroot_at_edge(self,
+            edge,
+            length1=None,
+            length2=None,
+            update_splits=False,
+            suppress_old_root_if_outdegree_one=True):
+        """
+        Takes an internal edge, `edge`, adds a new node to it, and then roots
+        the tree on the new node.
+        `length1` and `length2` will be assigned to the new (sub-)edge leading
+        to the old parent of the original edge, while `length2` will be
+        assigned to the old child of the original edge.
+        If `update_splits` is True, then the edges' `split_bitmask` and the tree's
+        `split_edges` attributes will be updated.
+        If the *old* root of the tree had an outdegree of 2, then after this
+        operation, it will have an outdegree of one. In this case, unless
+        `suppress_old_root_if_outdegree_one` is False, then the it will be
+        removed from the tree.
+        """
+        old_tail = edge.tail_node
+        old_head = edge.head_node
+        new_seed_node = old_tail.new_child(edge_length=length1)
+        old_tail.remove_child(old_head)
+        new_seed_node.add_child(old_head, edge_length=length2)
+        self.reroot_at_node(new_seed_node,
+                update_splits=update_splits,
+                suppress_old_root_if_outdegree_one=suppress_old_root_if_outdegree_one)
+
+    def reroot_at_midpoint(self, update_splits=False, suppress_old_root_if_outdegree_one=True):
         """
         Reroots the tree at the the mid-point of the longest distance between
         two taxa in a tree.
         Sets the rooted flag on the tree to True.
         If `update_splits` is True, then the edges' `split_bitmask` and the tree's
         `split_edges` attributes will be updated.
+        If the *old* root of the tree had an outdegree of 2, then after this
+        operation, it will have an outdegree of one. In this case, unless
+        `suppress_old_root_if_outdegree_one` is False, then the it will be
+        removed from the tree.
         """
         from dendropy import treecalc
         pdm = treecalc.PatristicDistanceMatrix(self)
@@ -1197,7 +1241,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         assert break_on_node is not None or target_edge is not None
 
         if break_on_node:
-            self.reseed_at(break_on_node, update_splits=False, collapse_root_bifurcation=True)
+            self.reseed_at(break_on_node, update_splits=False, suppress_old_root_if_outdegree_one=suppress_old_root_if_outdegree_one)
         else:
             tail_node_edge_len = target_edge.length - head_node_edge_len
             old_head_node = target_edge.head_node
@@ -1206,7 +1250,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             new_seed_node = Node()
             new_seed_node.add_child(old_head_node, edge_length=head_node_edge_len)
             old_tail_node.add_child(new_seed_node, edge_length=tail_node_edge_len)
-            self.reseed_at(new_seed_node, update_splits=False, collapse_root_bifurcation=True)
+            self.reseed_at(new_seed_node, update_splits=False, suppress_old_root_if_outdegree_one=suppress_old_root_if_outdegree_one)
         self.is_rooted = True
         if update_splits:
             self.update_splits(delete_outdegree_one=False)
