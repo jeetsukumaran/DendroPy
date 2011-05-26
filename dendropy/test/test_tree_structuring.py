@@ -48,22 +48,22 @@ class TreeMidpointRootingTest(extendedtest.ExtendedTestCase):
 
     def testMidpointRooting(self):
         taxa = dendropy.TaxonSet()
-        src_trees = dendropy.TreeList.get_from_path(pathmap.tree_source_path('pythonidae.random.bd0301.randomly-rooted.tre'),
+        test_trees = dendropy.TreeList.get_from_path(pathmap.tree_source_path('pythonidae.random.bd0301.randomly-rooted.tre'),
                 "nexus",
                 taxon_set=taxa,
                 as_rooted=True)
-        chk_trees = dendropy.TreeList.get_from_path(pathmap.tree_source_path('pythonidae.random.bd0301.midpoint-rooted.tre'),
+        expected_trees = dendropy.TreeList.get_from_path(pathmap.tree_source_path('pythonidae.random.bd0301.midpoint-rooted.tre'),
                 "nexus",
                 taxon_set=taxa,
                 as_rooted=True)
-        for idx, tree1 in enumerate(src_trees):
-            tree2 = chk_trees[idx]
-            tree1.reroot_at_midpoint(update_splits=True)
-            self.assertEqual(tree1.symmetric_difference(tree2), 0)
-            for split in tree1.split_edges:
-                if tree1.split_edges[split].head_node is tree1.seed_node:
+        for idx, test_tree in enumerate(test_trees):
+            expected_tree = expected_trees[idx]
+            test_tree.reroot_at_midpoint(update_splits=True)
+            self.assertEqual(test_tree.symmetric_difference(expected_tree), 0)
+            for split in test_tree.split_edges:
+                if test_tree.split_edges[split].head_node is test_tree.seed_node:
                     continue
-                self.assertAlmostEqual(tree1.split_edges[split].length, tree2.split_edges[split].length, 3)
+                self.assertAlmostEqual(test_tree.split_edges[split].length, expected_tree.split_edges[split].length, 3)
 
 if __name__ == "__main__":
     unittest.main()

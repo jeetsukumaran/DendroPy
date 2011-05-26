@@ -1064,12 +1064,17 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         to_del_edge.collapse()
         self.is_rooted = False
 
-    def reroot_at(self, nd, update_splits=False, delete_deg_two=True):
-        """Takes an internal node, `nd` that must already be in the tree and
-        reroots the tree such that `nd` is the `seed_node` of the tree.
-        If `update_splits` is True, then the edges' `split_bitmask` and the tree's
-        `split_edges` attributes will be updated."""
-        old_par = nd.parent_node
+    def reseed_at(self, new_seed_node, update_splits=False, collapse_root_bifurcation=False):
+        """
+        Takes an internal node, `new_seed_node` that must already be in the tree and
+        rotates the tree such that `new_seed_node` is the `seed_node` of the tree.
+        This is a 'soft' rerooting -- i.e., changes the tree representation so
+        tree traversal behaves as if the tree is rooted at 'new_seed_node', but
+        it does not actually change the tree's rooting state.  If
+        `update_splits` is True, then the edges' `split_bitmask` and the tree's
+        `split_edges` attributes will be updated.
+        """
+        old_par = new_seed_node.parent_node
         if old_par is None:
             return
         full_encode = False
@@ -1085,29 +1090,31 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
         if old_par is self.seed_node:
             root_children = old_par.child_nodes()
-            if len(root_children) == 2 and delete_deg_two:
+            if len(root_children) == 2 and collapse_root_bifurcation:
                 # root (old_par) was of degree 2, thus we need to suppress the
                 #   node
                 fc = root_children[0]
-                if fc is nd:
+                if fc is new_seed_node:
                     sister = root_children[1]
                 else:
-                    assert root_children[1] is nd
+                    assert root_children[1] is new_seed_node
                     sister = fc
-                if nd.edge.length:
-                    sister.edge.length += nd.edge.length
-                edge_to_del = nd.edge
-                nd.edge = old_par.edge
+                if new_seed_node.edge.length:
+                    sister.edge.length += new_seed_node.edge.length
+                edge_to_del = new_seed_node.edge
+                new_seed_node.edge = old_par.edge
                 if update_splits:
-                    assert nd.edge.split_bitmask == taxa_mask
+                    assert new_seed_node.edge.split_bitmask == taxa_mask
                 if to_edge_dict:
                     del to_edge_dict[edge_to_del.split_bitmask]
-                nd.add_child(sister, edge_length=sister.edge.length)
-                self.seed_node = nd
+                new_seed_node.add_child(sister, edge_length=sister.edge.length)
+                self.seed_node = new_seed_node
                 return
         else:
-            self.reroot_at(old_par, update_splits=update_splits, delete_deg_two=delete_deg_two)
-        old_par.edge, nd.edge = nd.edge, old_par.edge
+            self.reseed_at(old_par,
+                    update_splits=update_splits,
+                    collapse_root_bifurcation=collapse_root_bifurcation)
+        old_par.edge, new_seed_node.edge = new_seed_node.edge, old_par.edge
         e = old_par.edge
         if update_splits:
             if to_edge_dict:
@@ -1115,34 +1122,49 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             e.split_bitmask = (~(e.split_bitmask)) & taxa_mask
             if to_edge_dict:
                 to_edge_dict[e.split_bitmask] = e
-            assert nd.edge.split_bitmask == taxa_mask
-        old_par.remove_child(nd)
-        nd.add_child(old_par, edge_length=e.length)
-        self.seed_node = nd
-        #self.is_rooted = True
+            assert new_seed_node.edge.split_bitmask == taxa_mask
+        old_par.remove_child(new_seed_node)
+        new_seed_node.add_child(old_par, edge_length=e.length)
+        self.seed_node = new_seed_node
         if full_encode:
-            treesplit.encode_splits(self, delete_outdegree_one=delete_deg_two)
+            treesplit.encode_splits(self, delete_outdegree_one=collapse_root_bifurcation)
 
-    def to_outgroup_position(self, nd, update_splits=False, delete_deg_two=True):
-        """Reroots the tree at the parend of `nd` and makes `nd` the first child
+    def to_outgroup_position(self, outgroup_node, update_splits=False, collapse_root_bifurcation=False):
+        """Reroots the tree at the parent of `outgroup_node` and makes `outgroup_node` the first child
         of the new root.  This is just a convenience function to make it easy
         to place a clade as the first child under the root.
-        Assumes that `nd` and `nd.parent_node` and are in the tree/
+        Assumes that `outgroup_node` and `outgroup_node.parent_node` and are in the tree/
         If `update_splits` is True, then the edges' `split_bitmask` and the tree's
         `split_edges` attributes will be updated.
-        If `delete_deg_two` is True and the old root of the tree has an
+        If `collapse_root_bifurcation` is True and the old root of the tree has an
         outdegree of 2, then the node will be removed from the tree.
         """
-        p = nd.parent_node
+        p = outgroup_node.parent_node
         assert p is not None
-        self.reroot_at(p, update_splits=update_splits)
-        p.remove_child(nd)
-        p.add_child(nd, edge_length=nd.edge.length, pos=0)
+        self.reseed_at(p, update_splits=update_splits)
+        p.remove_child(outgroup_node)
+        p.add_child(outgroup_node, edge_length=outgroup_node.edge.length, pos=0)
 
-    def reroot_at_midpoint(self, update_splits=False, delete_deg_two=True):
+    def reroot_at_node(self, new_root_node, update_splits=False):
+        """
+        Takes an internal node, `new_seed_node` that must already be in the tree and
+        roots the tree at that node.
+        This is a 'hard' rerooting -- i.e., changes the tree
+        representation so tree traversal behaves as if the tree is rooted at
+        'new_seed_node', *and* changes the tree's rooting state.
+        If `update_splits` is True, then the edges' `split_bitmask` and the tree's
+        `split_edges` attributes will be updated.
+        """
+        self.reseed_at(new_seed_node=new_root_node,
+                update_splits=update_splits,
+                collapse_root_bifurcation=False)
+        self.is_rooted = True
+
+    def reroot_at_midpoint(self, update_splits=False):
         """
         Reroots the tree at the the mid-point of the longest distance between
         two taxa in a tree.
+        Sets the rooted flag on the tree to True.
         If `update_splits` is True, then the edges' `split_bitmask` and the tree's
         `split_edges` attributes will be updated.
         """
@@ -1175,7 +1197,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         assert break_on_node is not None or target_edge is not None
 
         if break_on_node:
-            self.reroot_at(break_on_node, update_splits=False, delete_deg_two=delete_deg_two)
+            self.reseed_at(break_on_node, update_splits=False, collapse_root_bifurcation=True)
         else:
             tail_node_edge_len = target_edge.length - head_node_edge_len
             old_head_node = target_edge.head_node
@@ -1184,7 +1206,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             new_seed_node = Node()
             new_seed_node.add_child(old_head_node, edge_length=head_node_edge_len)
             old_tail_node.add_child(new_seed_node, edge_length=tail_node_edge_len)
-            self.reroot_at(new_seed_node, update_splits=False, delete_deg_two=delete_deg_two)
+            self.reseed_at(new_seed_node, update_splits=False, collapse_root_bifurcation=True)
         self.is_rooted = True
         if update_splits:
             self.update_splits(delete_outdegree_one=False)
@@ -1294,7 +1316,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if nd.is_leaf():
             self.to_outgroup_position(nd, update_splits=update_splits)
         else:
-            self.reroot_at(nd, update_splits=update_splits)
+            self.reseed_at(nd, update_splits=update_splits)
         self.randomly_rotate(rng=rng)
 
     def randomly_rotate(self, rng=None):
