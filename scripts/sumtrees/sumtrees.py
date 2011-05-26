@@ -355,15 +355,23 @@ def main_cli():
     support_summarization_optgroup = OptionGroup(parser, "Support Summarization Options")
     parser.add_option_group(support_summarization_optgroup)
     support_summarization_optgroup.add_option("-l","--support-as-labels",
-            action="store_true",
-            dest="support_as_labels",
-            default=True,
-            help="indicate branch support as internal node labels [default=%default]")
+            action="store_const",
+            dest="support_annotation_target",
+            default=1,
+            const=1,
+            help="in addition to node metadata, indicate branch support as internal node labels [default]")
     support_summarization_optgroup.add_option("-v","--support-as-lengths",
-            action="store_false",
-            dest="support_as_labels",
-            default=True,
-            help="indicate branch support as branch lengths (otherwise support will be indicated by internal node labels)")
+            action="store_const",
+            dest="support_annotation_target",
+            default=1,
+            const=2,
+            help="in addition to node metadata, indicate branch support as branch lengths")
+    support_summarization_optgroup.add_option("-x","--support-as-metainfo",
+            action="store_const",
+            dest="support_annotation_target",
+            default=1,
+            const=0,
+            help="indicate branch support *only* as metadata")
     support_summarization_optgroup.add_option("-p", "--percentages",
             action="store_true",
             dest="support_as_percentages",
@@ -734,7 +742,20 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
         opts.support_label_decimals = 2
 
     tsum = treesum.TreeSummarizer()
-    tsum.support_as_labels = opts.support_as_labels
+    if opts.support_annotation_target == 1:
+        tsum.support_as_labels = True
+        tsum.support_as_edge_lengths = False
+        support_show = "node labels"
+    elif opts.support_annotation_target == 2:
+        tsum.support_as_labels = False
+        tsum.support_as_edge_lengths = True
+        support_show = "branch lengths"
+    elif opts.support_annotation_target == 0:
+        tsum.support_as_labels = False
+        tsum.support_as_edge_lengths = True
+        support_show = "node metadata (only)"
+    else:
+        raise Exception("Unexpected value for support annotation target: %s" % opts.support_annotation_target)
     tsum.support_as_percentages = opts.support_as_percentages
     tsum.support_label_decimals = opts.support_label_decimals
     tsum.weighted_splits = opts.weighted_trees
@@ -743,10 +764,6 @@ corresponding splits or edges of input trees (note that using 'mean-age' or
         support_units = "Percentage"
     else:
         support_units = "Proportion (frequency or probability)"
-    if opts.support_as_labels:
-        support_show = "node labels"
-    else:
-        support_show = "branch lengths"
     support_summarization = "%s of support for each split indicated by %s" % (support_units, support_show)
 
     tt_trees = []

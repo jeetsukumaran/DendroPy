@@ -39,10 +39,12 @@ class TreeSummarizer(object):
         __init__ kwargs:
 
             - `support_as_labels` (boolean)
+            - `support_as_edge_lengths` (boolean)
             - `support_as_percentages` (boolean)
             - `support_label_decimals` (integer)
         """
         self.support_as_labels = kwargs.get("support_as_labels", True)
+        self.support_as_edge_lengths = kwargs.get("support_as_edge_lengths", False)
         self.support_as_percentages = kwargs.get("support_as_percentages", False)
         self.default_support_label_decimals = 4
         self.support_label_decimals = kwargs.get("support_label_decimals", self.default_support_label_decimals)
@@ -66,7 +68,9 @@ class TreeSummarizer(object):
         else:
             split_freqs = split_distribution.split_frequencies
         is_rooted = split_distribution.is_rooted
-        include_edge_lengths = self.support_as_labels and include_edge_lengths
+        #include_edge_lengths = self.support_as_labels and include_edge_lengths
+        if self.support_as_edge_lengths and include_edge_lengths:
+            raise Exception("Cannot map support as edge lengths if edge lengths are to be set on consensus tree")
 
         to_try_to_add = []
         _almost_one = lambda x: abs(x - 1.0) <= 0.0000001
@@ -75,34 +79,6 @@ class TreeSummarizer(object):
                 to_try_to_add.append((freq, s))
         to_try_to_add.sort(reverse=True)
         splits_for_tree = [i[1] for i in to_try_to_add]
-
-        #to_try_to_add = []
-        #_almost_one = lambda x: abs(x - 1.0) <= 0.0000001
-        #for s, freq in split_freqs.iteritems():
-        #    if (min_freq is None) or (freq > min_freq) or (_almost_one(min_freq) and _almost_one(freq)):
-        #        m = s & taxa_mask
-        #        if (m != taxa_mask) and ((m-1) & m): # if not root (i.e., all "1's") and not singleton (i.e., one "1")
-        #            if not is_rooted:
-        #                c = (~m) & taxa_mask
-        #                if (c-1) & c: # not singleton (i.e., one "0")
-        #                    if 1 & m:
-        #                        k = c
-        #                    else:
-        #                        k = m
-        #                    to_try_to_add.append((freq, k, m))
-        #            else:
-        #                to_try_to_add.append((freq, m, m))
-        #to_try_to_add.sort(reverse=True)
-
-        #splits_for_tree = []
-        #split_edge_lengths = {}
-        #new_split_freq_map = {}
-        #for item in to_try_to_add:
-        #    splits_for_tree.append(item[1])
-        #    split_edge_lengths[item[1]] = split_distribution.split_edge_lengths[item[2]]
-        #    new_split_freq_map[item[1]] = item[0]
-        #if not include_edge_lengths:
-        #    split_edge_lengths = None
 
         con_tree = treesplit.tree_from_splits(splits=splits_for_tree,
                 taxon_set=taxon_set,
@@ -166,7 +142,7 @@ class TreeSummarizer(object):
             support_value = split_support
         if self.support_as_labels:
             node.label = self.compose_support_label(split_support)
-        else:
+        if self.support_as_edge_lengths:
             node.edge.length = support_value
         if attr_name:
             setattr(node, attr_name, support_value)
