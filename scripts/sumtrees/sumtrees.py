@@ -340,7 +340,7 @@ def main_cli():
             action="store_true",
             dest="ultrametric_trees",
             default=False,
-            help="assume trees are ultrametric (implies '--rooted' and '--with-node-ages'; will result in node ages being summarized; will result in error if trees are not ultrametric)")
+            help="assume trees are ultrametric (implies '--rooted' ; will result in node ages being summarized; will result in error if trees are not ultrametric)")
     source_tree_optgroup.add_option("--weighted-trees",
             action="store_true",
             dest="weighted_trees",
