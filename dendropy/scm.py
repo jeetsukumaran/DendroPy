@@ -59,7 +59,7 @@ def reroot_on_lowest_common_index_path(t, common_mask):
     taxa_mask = t.seed_node.edge.split_bitmask
     if (curr_n.edge.split_bitmask & common_mask) == l:
         # we did not make it to the root.  Make curr_n, the first_child of the root
-        t.to_outgroup_position(curr_n, update_splits=True, suppress_old_root_if_outdegree_one=True)
+        t.to_outgroup_position(curr_n, update_splits=True, suppress_outdegree_one=True)
         avoid = curr_n
         nd_source = iter(t.seed_node.child_nodes())
 
@@ -72,8 +72,8 @@ def reroot_on_lowest_common_index_path(t, common_mask):
                         if cm == without_lowest:
                             r = t.seed_node
                             assert curr_n.parent_node is r
-                            t.reseed_at(curr_n, update_splits=True, suppress_old_root_if_outdegree_one=True)
-                            t.to_outgroup_position(r, update_splits=True, suppress_old_root_if_outdegree_one=True)
+                            t.reseed_at(curr_n, update_splits=True, suppress_outdegree_one=True)
+                            t.to_outgroup_position(r, update_splits=True, suppress_outdegree_one=True)
                             nd_source = iter(curr_n.child_nodes())
                             avoid = r
                         else:
@@ -112,12 +112,12 @@ def reroot_on_lowest_common_index_path(t, common_mask):
         children = curr_n.child_nodes()
         assert(len(children) > 1)
         p = curr_n.parent
-        t.to_outgroup_position(children[0], update_splits=True, suppress_old_root_if_outdegree_one=True)
-        t.to_outgroup_position(p, update_splits=True, suppress_old_root_if_outdegree_one=True)
+        t.to_outgroup_position(children[0], update_splits=True, suppress_outdegree_one=True)
+        t.to_outgroup_position(p, update_splits=True, suppress_outdegree_one=True)
     else:
         # if the root first relevant, node then we just make the path leading
         #   to the lowest index node the first child of the root
-        t.to_outgroup_position(lowest_on_path_to_l, update_splits=True, suppress_old_root_if_outdegree_one=True)
+        t.to_outgroup_position(lowest_on_path_to_l, update_splits=True, suppress_outdegree_one=True)
 
 def _collapse_paths_not_found(f, s, other_dict=None):
     to_del = []
