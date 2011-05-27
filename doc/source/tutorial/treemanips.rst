@@ -242,6 +242,38 @@ which will result in::
     \-------------------------+
                               \-------------------------- A
 
+If you have a tree with edge lengths specified, you can reroot it at the midpoint, using the :meth:`~dendropy.dataobject.tree.Tree.reroot_at_midpoint()` method::
+
+.. literalinclude:: /examples/reroot_at_midpoint.py
+
+which results in::
+
+    Before:
+    [&R] (A:0.55,(B:0.82,(C:0.74,(D:0.42,E:0.64):0.24):0.15):0.2):0.3;
+
+              /------------------- A
+              +
+              |      /---------------------------- B
+              \------+
+                     |    /-------------------------- C
+                     \----+
+                          |        /-------------- D
+                          \--------+
+                                   \---------------------- E
+
+
+    After:
+    [&R] ((C:0.74,(D:0.42,E:0.64):0.24):0.045,(B:0.82,A:0.75):0.105):0.3;
+
+                   /------------------------------- C
+                 /-+
+                 | |         /------------------ D
+                 | \---------+
+                 +           \---------------------------- E
+                 |
+                 |   /------------------------------------ B
+                 \---+
+                     \-------------------------------- A
 
 
 
@@ -322,3 +354,4 @@ which results in::
     |
     \----------------------------------------------------- G
 
+Again, it should be noted that, as these operations modify the structure of the tree, you need to call :meth:`~dendropy.dataobject.tree.Tree.update_splits()` to update the internal splits hashes, before carrying out any calculations, comparisons, or metrics.
