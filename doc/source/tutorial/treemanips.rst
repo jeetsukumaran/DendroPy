@@ -356,8 +356,8 @@ which results in::
 
 Again, it should be noted that, as these operations modify the structure of the tree, you need to call :meth:`~dendropy.dataobject.tree.Tree.update_splits()` to update the internal splits hashes, before carrying out any calculations, comparisons, or metrics.
 
-Rotating Trees
-==============
+Rotating
+========
 
 You can ladderize (sort the child nodes in order of the number of children the have) trees by calling the :meth:`~dendropy.dataobject.tree.Tree.ladderize()` method. This method takes one argument, ``right``: if :keyword:`False`, which is the default, then the nodes are sorted in ascending order (i.e., nodes with fewer children sort before nodes with more children); if :keyword:`True`, then the nodes are sorted in descending order (i.e., nodes with fewer children sorting before nodes with more children). For example:
 
