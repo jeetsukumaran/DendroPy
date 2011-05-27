@@ -359,7 +359,7 @@ Again, it should be noted that, as these operations modify the structure of the 
 Rotating
 ========
 
-You can ladderize (sort the child nodes in order of the number of children the have) trees by calling the :meth:`~dendropy.dataobject.tree.Tree.ladderize()` method. This method takes one argument, ``right``: if :keyword:`False`, which is the default, then the nodes are sorted in ascending order (i.e., nodes with fewer children sort before nodes with more children); if :keyword:`True`, then the nodes are sorted in descending order (i.e., nodes with fewer children sorting before nodes with more children). For example:
+You can ladderize (sort the child nodes in order of the number of children the have) trees by calling the :meth:`~dendropy.dataobject.tree.Tree.ladderize()` method. This method takes one argument, ``ascending``. If ``ascending=True``, which is the default, then the nodes are sorted in ascending order (i.e., nodes with fewer children sort before nodes with more children). If ``ascending=False``, then the nodes are sorted in descending order (i.e., nodes with fewer children sorting before nodes with more children). For example:
 
 .. literalinclude:: /examples/ladderize.py
 
@@ -386,27 +386,27 @@ results in::
                                                \---------- H
 
 
-    Ladderize Left:
-    [&R] ((A,(B,(C,(D,E)))),(F,(G,H)));
+    Ladderize, ascending=True:
+    [&R] ((F,(G,H)),(A,(B,(C,(D,E)))));
 
-              /------------------------------------------- A
-    /---------+
-    |         |          /-------------------------------- B
-    |         \----------+
-    |                    |          /--------------------- C
-    |                    \----------+
-    +                               |          /---------- D
+                                    /--------------------- F
+    /-------------------------------+
+    |                               |          /---------- G
     |                               \----------+
-    |                                          \---------- E
+    +                                          \---------- H
     |
-    |                               /--------------------- F
-    \-------------------------------+
-                                    |          /---------- G
+    |         /------------------------------------------- A
+    \---------+
+              |          /-------------------------------- B
+              \----------+
+                         |          /--------------------- C
+                         \----------+
+                                    |          /---------- D
                                     \----------+
-                                               \---------- H
+                                               \---------- E
 
 
-    Ladderize Right:
+    Ladderize, ascending=False:
     [&R] (((((D,E),C),B),A),((G,H),F));
 
                                                /---------- D
@@ -424,4 +424,5 @@ results in::
     \-------------------------------+          \---------- H
                                     |
                                     \--------------------- F
+
 

@@ -1420,14 +1420,23 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             rng.shuffle(c)
             nd.set_children(c)
 
-    def ladderize(self, right=False):
+    def ladderize(self, ascending=True):
         """
-        Sorts child nodes in ascending (if ``right`` is ``False``) or
-        descending (if ``right`` is ``True``) order in terms of the number of
+        Sorts child nodes in ascending (if ``ascending`` is ``False``) or
+        descending (if ``ascending`` is ``False``) order in terms of the number of
         children each child node has.
         """
+        node_desc_counts = {}
         for nd in self.postorder_node_iter():
-            nd._child_nodes.sort(key=lambda n: len(n._child_nodes), reverse=right)
+            if len(nd._child_nodes) == 0:
+                node_desc_counts[nd] = 0
+            else:
+                total = 0
+                for child in nd._child_nodes:
+                    total += node_desc_counts[child]
+                total += len(nd._child_nodes)
+                node_desc_counts[nd] = total
+                nd._child_nodes.sort(key=lambda n: node_desc_counts[n], reverse=not ascending)
 
     def update_splits(self, **kwargs):
         """
