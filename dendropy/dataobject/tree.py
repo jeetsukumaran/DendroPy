@@ -1064,7 +1064,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         to_del_edge.collapse()
         self.is_rooted = False
 
-    def reseed_at(self, new_seed_node, update_splits=False, suppress_outdegree_one=True):
+    def reseed_at(self, new_seed_node, update_splits=False, delete_outdegree_one=True):
         """
         Takes an internal node, `new_seed_node` that must already be in the tree and
         rotates the tree such that `new_seed_node` is the `seed_node` of the tree.
@@ -1075,7 +1075,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         `split_edges` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
-        `suppress_outdegree_one` is False, then it will be
+        `delete_outdegree_one` is False, then it will be
         removed from the tree.
         """
         old_par = new_seed_node.parent_node
@@ -1094,7 +1094,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
         if old_par is self.seed_node:
             root_children = old_par.child_nodes()
-            if len(root_children) == 2 and suppress_outdegree_one:
+            if len(root_children) == 2 and delete_outdegree_one:
                 # root (old_par) was of degree 2, thus we need to suppress the
                 #   node
                 fc = root_children[0]
@@ -1117,7 +1117,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         else:
             self.reseed_at(old_par,
                     update_splits=update_splits,
-                    suppress_outdegree_one=suppress_outdegree_one)
+                    delete_outdegree_one=delete_outdegree_one)
         old_par.edge, new_seed_node.edge = new_seed_node.edge, old_par.edge
         e = old_par.edge
         if update_splits:
@@ -1131,9 +1131,9 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         new_seed_node.add_child(old_par, edge_length=e.length)
         self.seed_node = new_seed_node
         if full_encode:
-            treesplit.encode_splits(self, delete_outdegree_one=suppress_outdegree_one)
+            treesplit.encode_splits(self, delete_outdegree_one=delete_outdegree_one)
 
-    def to_outgroup_position(self, outgroup_node, update_splits=False, suppress_outdegree_one=True):
+    def to_outgroup_position(self, outgroup_node, update_splits=False, delete_outdegree_one=True):
         """Reroots the tree at the parent of `outgroup_node` and makes `outgroup_node` the first child
         of the new root.  This is just a convenience function to make it easy
         to place a clade as the first child under the root.
@@ -1142,16 +1142,16 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         `split_edges` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
-        `suppress_outdegree_one` is False, then it will be
+        `delete_outdegree_one` is False, then it will be
         removed from the tree.
         """
         p = outgroup_node.parent_node
         assert p is not None
-        self.reseed_at(p, update_splits=update_splits, suppress_outdegree_one=suppress_outdegree_one)
+        self.reseed_at(p, update_splits=update_splits, delete_outdegree_one=delete_outdegree_one)
         p.remove_child(outgroup_node)
         p.add_child(outgroup_node, edge_length=outgroup_node.edge.length, pos=0)
 
-    def reroot_at_node(self, new_root_node, update_splits=False, suppress_outdegree_one=True):
+    def reroot_at_node(self, new_root_node, update_splits=False, delete_outdegree_one=True):
         """
         Takes an internal node, `new_seed_node` that must already be in the tree and
         roots the tree at that node.
@@ -1162,22 +1162,22 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         `split_edges` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
-        `suppress_outdegree_one` is False, then it will be
+        `delete_outdegree_one` is False, then it will be
         removed from the tree.
         """
         self.reseed_at(new_seed_node=new_root_node,
                 update_splits=False,
-                suppress_outdegree_one=suppress_outdegree_one)
+                delete_outdegree_one=delete_outdegree_one)
         self.is_rooted = True
         if update_splits:
-            self.update_splits(delete_outdegree_one=suppress_outdegree_one)
+            self.update_splits(delete_outdegree_one=delete_outdegree_one)
 
     def reroot_at_edge(self,
             edge,
             length1=None,
             length2=None,
             update_splits=False,
-            suppress_outdegree_one=True):
+            delete_outdegree_one=True):
         """
         Takes an internal edge, `edge`, adds a new node to it, and then roots
         the tree on the new node.
@@ -1188,7 +1188,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         `split_edges` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
-        `suppress_outdegree_one` is False, then it will be
+        `delete_outdegree_one` is False, then it will be
         removed from the tree.
         """
         old_tail = edge.tail_node
@@ -1198,9 +1198,9 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         new_seed_node.add_child(old_head, edge_length=length2)
         self.reroot_at_node(new_seed_node,
                 update_splits=update_splits,
-                suppress_outdegree_one=suppress_outdegree_one)
+                delete_outdegree_one=delete_outdegree_one)
 
-    def reroot_at_midpoint(self, update_splits=False, suppress_outdegree_one=True):
+    def reroot_at_midpoint(self, update_splits=False, delete_outdegree_one=True):
         """
         Reroots the tree at the the mid-point of the longest distance between
         two taxa in a tree.
@@ -1209,7 +1209,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         `split_edges` attributes will be updated.
         If the *old* root of the tree had an outdegree of 2, then after this
         operation, it will have an outdegree of one. In this case, unless
-        `suppress_outdegree_one` is False, then it will be
+        `delete_outdegree_one` is False, then it will be
         removed from the tree.
         """
         from dendropy import treecalc
@@ -1241,7 +1241,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         assert break_on_node is not None or target_edge is not None
 
         if break_on_node:
-            self.reseed_at(break_on_node, update_splits=False, suppress_outdegree_one=suppress_outdegree_one)
+            self.reseed_at(break_on_node, update_splits=False, delete_outdegree_one=delete_outdegree_one)
         else:
             tail_node_edge_len = target_edge.length - head_node_edge_len
             old_head_node = target_edge.head_node
@@ -1250,12 +1250,12 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             new_seed_node = Node()
             new_seed_node.add_child(old_head_node, edge_length=head_node_edge_len)
             old_tail_node.add_child(new_seed_node, edge_length=tail_node_edge_len)
-            self.reseed_at(new_seed_node, update_splits=False, suppress_outdegree_one=suppress_outdegree_one)
+            self.reseed_at(new_seed_node, update_splits=False, delete_outdegree_one=delete_outdegree_one)
         self.is_rooted = True
         if update_splits:
             self.update_splits(delete_outdegree_one=False)
 
-    def suppress_outdegree_one_nodes(self):
+    def delete_outdegree_one_nodes(self):
         for nd in self.postorder_node_iter():
             children = nd.child_nodes()
             if len(children) == 1:
@@ -1313,7 +1313,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     def prune_subtree(self,
             node,
             update_splits=False,
-            suppress_outdegree_one=True):
+            delete_outdegree_one=True):
         """
         Removes subtree starting at `node` from tree.
         """
@@ -1322,14 +1322,14 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if node.parent_node is None:
             raise TypeError('Node has no parent and is implicit root: cannot be pruned')
         node.parent_node.remove_child(node)
-        if suppress_outdegree_one:
-            self.suppress_outdegree_one_nodes()
+        if delete_outdegree_one:
+            self.delete_outdegree_one_nodes()
         if update_splits:
             self.update_splits()
 
     def prune_leaves_without_taxa(self,
             update_splits=False,
-            suppress_outdegree_one=True):
+            delete_outdegree_one=True):
         """
         Removes all terminal nodes that have their ``taxon`` attribute set to
         ``None``.
@@ -1337,12 +1337,12 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         for nd in self.leaf_iter():
             if nd.taxon is None:
                 nd.edge.tail_node.remove_child(nd)
-        if suppress_outdegree_one:
-            self.suppress_outdegree_one_nodes()
+        if delete_outdegree_one:
+            self.delete_outdegree_one_nodes()
         if update_splits:
             self.update_splits()
 
-    def prune_taxa(self, taxa, update_splits=False, suppress_outdegree_one=True):
+    def prune_taxa(self, taxa, update_splits=False, delete_outdegree_one=True):
         """
         Removes terminal nodes associated with Taxon objects given by the container
         `taxa` (which can be any iterable, including a TaxonSet object) from `self`.
@@ -1353,12 +1353,12 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if nd is not None:
                 nd.edge.tail_node.remove_child(nd)
         self.prune_leaves_without_taxa(update_splits=update_splits,
-                suppress_outdegree_one=suppress_outdegree_one)
+                delete_outdegree_one=delete_outdegree_one)
 
     def prune_taxa_with_labels(self,
             labels,
             update_splits=False,
-            suppress_outdegree_one=True):
+            delete_outdegree_one=True):
         """
         Removes terminal nodes that are associated with Taxon objects with
         labels given by `labels`.
@@ -1366,12 +1366,12 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         taxa = self.taxon_set.get_taxa(labels=labels)
         self.prune_taxa(taxa=taxa,
                 update_splits=update_splits,
-                suppress_outdegree_one=suppress_outdegree_one)
+                delete_outdegree_one=delete_outdegree_one)
 
     def retain_taxa(self,
             taxa,
             update_splits=False,
-            suppress_outdegree_one=True):
+            delete_outdegree_one=True):
         """
         Removes terminal nodes that are not associated with any
         of the Taxon objects given by ``taxa`` (which can be any iterable, including a
@@ -1380,12 +1380,12 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         to_prune = [t for t in self.taxon_set if t not in taxa]
         self.prune_taxa(to_prune,
                 update_splits=update_splits,
-                suppress_outdegree_one=suppress_outdegree_one)
+                delete_outdegree_one=delete_outdegree_one)
 
     def retain_taxa_with_labels(self,
             labels,
             update_splits=False,
-            suppress_outdegree_one=True):
+            delete_outdegree_one=True):
         """
         Removes terminal nodes that are not associated with Taxon objects with
         labels given by `labels`.
@@ -1393,7 +1393,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         taxa = self.taxon_set.get_taxa(labels=labels)
         self.retain_taxa(taxa=taxa,
                 update_splits=update_splits,
-                suppress_outdegree_one=suppress_outdegree_one)
+                delete_outdegree_one=delete_outdegree_one)
 
     def randomly_reorient_tree(self, rng=None, update_splits=False):
         """

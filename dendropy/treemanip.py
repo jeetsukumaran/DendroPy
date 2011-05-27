@@ -42,36 +42,36 @@ def collapse_clade(node):
     """Collapses all internal edges that are descendants of node."""
     node.collapse_clade()
 
-def prune_subtree(tree, node, suppress_outdegree_one=True):
+def prune_subtree(tree, node, delete_outdegree_one=True):
     tree.prune_subtree(node=node,
-            suppress_outdegree_one=suppress_outdegree_one)
+            delete_outdegree_one=delete_outdegree_one)
     return tree
 
-def prune_leaves_without_taxa(tree, suppress_outdegree_one=True):
+def prune_leaves_without_taxa(tree, delete_outdegree_one=True):
     """
     Removes all terminal nodes that have their ``taxon`` attribute set to
     ``None``.
     """
-    tree.prune_leaves_without_taxa(suppress_outdegree_one=suppress_outdegree_one)
+    tree.prune_leaves_without_taxa(delete_outdegree_one=delete_outdegree_one)
     return tree
 
-def prune_taxa(tree, taxa, suppress_outdegree_one=True):
+def prune_taxa(tree, taxa, delete_outdegree_one=True):
     """
     Removes terminal nodes associated with Taxon objects given by the container
     `taxa` (which can be any iterable, including a TaxonSet object) from `tree`.
     """
     tree.prune_taxa(taxa=taxa,
-            suppress_outdegree_one=suppress_outdegree_one)
+            delete_outdegree_one=delete_outdegree_one)
     return tree
 
-def retain_taxa(tree, taxa, suppress_outdegree_one=True):
+def retain_taxa(tree, taxa, delete_outdegree_one=True):
     """
     Removes terminal nodes that are not associated with any
     of the Taxon objects given by ``taxa`` (which can be any iterable, including a
     TaxonSet object) from the ``tree``.
     """
     tree.retain_taxa(taxa=taxa,
-            suppress_outdegree_one=suppress_outdegree_one)
+            delete_outdegree_one=delete_outdegree_one)
 
 def randomly_reorient_tree(tree, rng=None, splits=False):
     """
