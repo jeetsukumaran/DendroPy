@@ -9,6 +9,8 @@ Low-level methods are associated with |Node| objects, and allow to restructure t
 In most cases, however, you will be using high-level methods to restructure |Tree| objects.
 
 In all cases, if any part of the |Tree| object's structural relations change, *and* you are interested in calculating any metrics or statistics on the tree or comparing the tree to another tree, you need to call :meth:`~dendropy.dataobject.tree.Tree.update_splits()` on the object to update the internal splits hash representation.
+This is not done for you automatically because there is a computational cost associated with the operation, and the splits hashes are not always needed. Furthermore, even when needed, if there are a number of structural changes to be made to a |Tree| object before calculations/comparisions, it makes sense to postpone the splits rehashing until there all the tree manipulations are completed.
+Most methods that affect the tree structure that require the splits hashes to updated take a ``update_splits`` argument. By specifying :keyword:`True` for this, the |Tree| object will recalculate the splits hashes after the changes have been made.
 
 Rooting, Derooting and Rerooting
 ================================
@@ -18,7 +20,7 @@ Setting the Rooting State
 
 All |Tree| objects have a boolean property, :attr:`~dendropy.dataobject.tree.Tree.is_rooted` that DendroPy uses to track whether or not the tree should be treated as rooted. The property :attr:`~dendropy.dataobject.tree.Tree.is_unrooted` is also defined, and these two properties are synchronized. Thus setting :attr:`~dendropy.dataobject.tree.Tree.is_rooted` to :keyword:`True` will result in :attr:`~dendropy.dataobject.tree.Tree.is_rooted` being set to :keyword:`False` and vice versa.
 
-The state of a |Tree| object's rootedness flag does not modify any internal structural relationship between nodes. It simply determines how its splits hashes are calculated, which in turn affects a broad range of comparison and metric operations. Thus you probably want to update the splits hashes after modifying the :attr:`~dendropy.dataobject.tree.Tree.is_rooted` property by calling the :meth:`~dendropy.dataobject.tree.Tree.update_splits()`. Note that calling :meth:`~dendropy.dataobject.tree.Tree.update_splits()` on an unrooted tree will force the basal split to be a trifurcation. So if the original tree was bifurcating, the end result will be a tree with a trifurcation at the root. This can be prevented by passing in the keyword argument ``delete_outdegree_one=False`` to :meth:`~dendropy.dataobject.tree.Tree.update_splits()`.
+The state of a |Tree| object's rootedness flag does not modify any internal structural relationship between nodes. It simply determines how its splits hashes are calculated, which in turn affects a broad range of comparison and metric operations. Thus you need to update the splits hashes after modifying the :attr:`~dendropy.dataobject.tree.Tree.is_rooted` property by calling the :meth:`~dendropy.dataobject.tree.Tree.update_splits()` before carrying out any calculations on or with the |Tree| object. Note that calling :meth:`~dendropy.dataobject.tree.Tree.update_splits()` on an unrooted tree will force the basal split to be a trifurcation. So if the original tree was bifurcating, the end result will be a tree with a trifurcation at the root. This can be prevented by passing in the keyword argument ``delete_outdegree_one=False`` to :meth:`~dendropy.dataobject.tree.Tree.update_splits()`.
 
 ::
 
@@ -109,7 +111,9 @@ To deroot a rooted |Tree|, you can also call the :meth:`~dendropy.dataobject.tre
 Rerooting
 ---------
 
-To reroot a |Tree| along an existing edge, you can use the :meth:`~dendropy.dataobject.tree.Tree.reroot_at_edge()` method. This method takes an |Edge| object as as its first argument. This rerooting is a structural change that will require the splits hashes to be updated before performing any tree comparisons or calculating tree metrics. You can do this yourself by calling :meth:`~dendropy.dataobject.tree.Tree.update_splits()` later, or you can pass in :keyword:`True` as the second argument to the  :meth:`~dendropy.dataobject.tree.Tree.reroot_at_edge()` method call, which instructs DendroPy to automatically update the splits for you. For example, the following reroots the tree along an internal edge:
+To reroot a |Tree| along an existing edge, you can use the :meth:`~dendropy.dataobject.tree.Tree.reroot_at_edge()` method. This method takes an |Edge| object as as its first argument. This rerooting is a structural change that will require the splits hashes to be updated before performing any tree comparisons or calculating tree metrics. If needed, you can do this yourself by calling :meth:`~dendropy.dataobject.tree.Tree.update_splits()` later, or you can pass in :keyword:`True` as the second argument to the  :meth:`~dendropy.dataobject.tree.Tree.reroot_at_edge()` method call, which instructs DendroPy to automatically update the splits for you.
+
+As an example, the following reroots the tree along an internal edge (note that we do not recalculate the splits hashes, as we are not carrying out any calculations or comparisons with the |Tree|):
 
 .. literalinclude:: /examples/reroot_at_internal_edge.py
 
@@ -209,7 +213,7 @@ which results in::
                                        \----------------- A
 
 
-You can also reroot the tree such that a particular node is moved to the outgroup position using the :meth:`~dendropy.dataobject.tree.Tree.to_outgroup_position()`, which takes a |Node| as the first argument. Again, you can update the splits hashes *in situ* by passing :keyword:`True` to the second argument. For example:
+You can also reroot the tree such that a particular node is moved to the outgroup position using the :meth:`~dendropy.dataobject.tree.Tree.to_outgroup_position()`, which takes a |Node| as the first argument. Again, you can update the splits hashes *in situ* by passing :keyword:`True` to the second argument, and again, here we do not because we are not carrying out any calculations. For example:
 
 .. literalinclude:: /examples/to_outgroup_position.py
 
@@ -425,4 +429,4 @@ results in::
                                     |
                                     \--------------------- F
 
-
+Tree rotation operations do not actually change the tree structure, at least in so far as splits are concerned, so it is not neccessary to update the splits hashes.
