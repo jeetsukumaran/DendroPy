@@ -25,24 +25,33 @@ from dendropy.test.support import pathmap
 from dendropy.utility import messaging
 from dendropy.test.support import extendedtest
 import dendropy
+import re
 
 _LOG = messaging.get_logger(__name__)
 
 class TestTreeLadderization(unittest.TestCase):
 
+    def setUp(self):
+        self.tree_str = "[&R] ((A, (B, (C, (D, E)))),(F, (G, H)));"
+
+    def clean_newick_str(self, s):
+        """
+        Strips out everything but the core tree statement characters from a
+        NEWICK string.
+        """
+        return re.sub(r'[^()A-H,]', '', s)
+
     def testLadderizeLeft(self):
-        """
-        Dummy test!
-        """
-        tree = dendropy.Tree.get_from_path(pathmap.tree_source_path('pythonidae.mle.nex'), "nexus")
-        tree.ladderize()
+        tree = dendropy.Tree.get_from_string(self.tree_str, "newick")
+        tree.ladderize(ascending=True)
+        self.assertEqual(self.clean_newick_str(tree.as_string("newick")),
+                self.clean_newick_str("[&R] ((F,(G,H)),(A,(B,(C,(D,E)))));"))
 
     def testLadderizeRight(self):
-        """
-        Dummy test!
-        """
-        tree = dendropy.Tree.get_from_path(pathmap.tree_source_path('pythonidae.mle.nex'), "nexus")
-        tree.ladderize(right=True)
+        tree = dendropy.Tree.get_from_string(self.tree_str, "newick")
+        tree.ladderize(ascending=False)
+        self.assertEqual(self.clean_newick_str(tree.as_string("newick")),
+               self.clean_newick_str("[&R] (((((D,E),C),B),A),((G,H),F));"))
 
 class TreeMidpointRootingTest(extendedtest.ExtendedTestCase):
 
