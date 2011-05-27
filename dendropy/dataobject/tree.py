@@ -1339,6 +1339,15 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 nd.edge.tail_node.remove_child(nd)
         self.prune_leaves_without_taxa(suppress_outdegree_one=suppress_outdegree_one)
 
+    def prune_taxa_with_labels(self, labels, suppress_outdegree_one=True):
+        """
+        Removes terminal nodes that are associated with Taxon objects with
+        labels given by `labels`.
+        """
+        taxa = self.taxon_set.get_taxa(labels=labels)
+        self.prune_taxa(taxa=taxa,
+                suppress_outdegree_one=suppress_outdegree_one)
+
     def retain_taxa(self, taxa, suppress_outdegree_one=True):
         """
         Removes terminal nodes that are not associated with any
@@ -1347,6 +1356,15 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         to_prune = [t for t in self.taxon_set if t not in taxa]
         self.prune_taxa(to_prune, suppress_outdegree_one=suppress_outdegree_one)
+
+    def retain_taxa_with_labels(self, labels, suppress_outdegree_one=True):
+        """
+        Removes terminal nodes that are not associated with Taxon objects with
+        labels given by `labels`.
+        """
+        taxa = self.taxon_set.get_taxa(labels=labels)
+        self.retain_taxa(taxa=taxa,
+                suppress_outdegree_one=suppress_outdegree_one)
 
     def randomly_reorient_tree(self, rng=None, update_splits=False):
         """
