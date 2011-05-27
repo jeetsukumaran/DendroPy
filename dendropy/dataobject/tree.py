@@ -1410,7 +1410,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             self.reseed_at(nd, update_splits=update_splits)
         self.randomly_rotate(rng=rng)
 
-    def randomly_rotate(self, rng=None):
+    def randomly_rotate(self, rng=None, update_splits=False):
         "Randomly rotates the branches around all internal nodes in `self`"
         if rng is None:
             rng = GLOBAL_RNG # use the global rng by default
@@ -1419,6 +1419,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             c = nd.child_nodes()
             rng.shuffle(c)
             nd.set_children(c)
+        if update_splits:
+            self.update_splits()
 
     def ladderize(self, right=False):
         """
@@ -1431,7 +1433,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def update_splits(self, **kwargs):
         """
-        (Re-)decorates edges with split bitmasks.
+        Recalculates split hashes for tree.
         """
         treesplit.encode_splits(self, **kwargs)
 
@@ -1446,7 +1448,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def set_edge_lengths_from_node_ages(self, allow_negative_edges=False):
         """
-        Sets the edge lengths of this tree based on the 'age' attribute.
+        Sets the edge lengths of the tree so that the path lengths from the
+        tips equal the value of the `age` attribute of the nodes.
         """
         for nd in self.preorder_node_iter():
             if nd.parent_node is not None:
