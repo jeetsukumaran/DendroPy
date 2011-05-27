@@ -359,7 +359,7 @@ Again, it should be noted that, as these operations modify the structure of the 
 Rotating
 ========
 
-You can ladderize (sort the child nodes in order of the number of children the have) trees by calling the :meth:`~dendropy.dataobject.tree.Tree.ladderize()` method. This method takes one argument, ``ascending``. If ``ascending=True``, which is the default, then the nodes are sorted in ascending order (i.e., nodes with fewer children sort before nodes with more children). If ``ascending=False``, then the nodes are sorted in descending order (i.e., nodes with fewer children sorting before nodes with more children). For example:
+You can ladderize (sort the child nodes in order of the number of children the have) trees by calling the :meth:`~dendropy.dataobject.tree.Tree.ladderize()` method. This method takes one argument, ``ascending``. If ``ascending=True``, which is the default, then the nodes are sorted in ascending order (i.e., nodes with fewer children sort before nodes with more children). If ``ascending=False``, then the nodes are sorted in descending order (i.e., nodes with more children sorting before nodes with fewer children). For example:
 
 .. literalinclude:: /examples/ladderize.py
 
