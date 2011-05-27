@@ -1410,7 +1410,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             self.reseed_at(nd, update_splits=update_splits)
         self.randomly_rotate(rng=rng)
 
-    def randomly_rotate(self, rng=None, update_splits=False):
+    def randomly_rotate(self, rng=None):
         "Randomly rotates the branches around all internal nodes in `self`"
         if rng is None:
             rng = GLOBAL_RNG # use the global rng by default
@@ -1419,8 +1419,6 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             c = nd.child_nodes()
             rng.shuffle(c)
             nd.set_children(c)
-        if update_splits:
-            self.update_splits()
 
     def ladderize(self, right=False):
         """
