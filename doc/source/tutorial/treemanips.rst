@@ -242,7 +242,7 @@ which will result in::
     \-------------------------+
                               \-------------------------- A
 
-If you have a tree with edge lengths specified, you can reroot it at the midpoint, using the :meth:`~dendropy.dataobject.tree.Tree.reroot_at_midpoint()` method::
+If you have a tree with edge lengths specified, you can reroot it at the midpoint, using the :meth:`~dendropy.dataobject.tree.Tree.reroot_at_midpoint()` method:
 
 .. literalinclude:: /examples/reroot_at_midpoint.py
 
@@ -280,7 +280,7 @@ which results in::
 Pruning Subtrees and Tips
 =========================
 
-To remove a set of tips from a |Tree|, you cna use either the :meth:`~dendropy.dataobject.tree.Tree.prune_taxa()` or the :meth:`~dendropy.dataobject.tree.Tree.prune_taxa_with_labels()` methods. The first takes a container of |TaxonSet| objects as an argument, while the second takes container of strings. In both cases, nodes associated with the specified taxa (as given by the |TaxonSet| objects directly in the first case, or |TaxonSet| objects with labels given in the list of string in the second case) will e removed from the tree. For example::
+To remove a set of tips from a |Tree|, you cna use either the :meth:`~dendropy.dataobject.tree.Tree.prune_taxa()` or the :meth:`~dendropy.dataobject.tree.Tree.prune_taxa_with_labels()` methods. The first takes a container of |TaxonSet| objects as an argument, while the second takes container of strings. In both cases, nodes associated with the specified taxa (as given by the |TaxonSet| objects directly in the first case, or |TaxonSet| objects with labels given in the list of string in the second case) will e removed from the tree. For example:
 
 .. literalinclude:: /examples/prune_taxa_with_labels.py
 
@@ -319,7 +319,7 @@ which results in::
     \-----------------------------------+
                                         \----------------- H
 
-Alternatively, the tree can be pruned based on a set of taxa that you want to *keep*. This can be affected through the use of the counterpart "retain" methods, :meth:`~dendropy.dataobject.tree.Tree.retain_taxa()` and :meth:`~dendropy.dataobject.tree.Tree.retain_taxa_with_labels()`. For example::
+Alternatively, the tree can be pruned based on a set of taxa that you want to *keep*. This can be affected through the use of the counterpart "retain" methods, :meth:`~dendropy.dataobject.tree.Tree.retain_taxa()` and :meth:`~dendropy.dataobject.tree.Tree.retain_taxa_with_labels()`. For example:
 
 .. literalinclude:: /examples/retain_taxa_with_labels.py
 
