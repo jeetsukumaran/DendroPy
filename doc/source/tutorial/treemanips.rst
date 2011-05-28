@@ -4,6 +4,10 @@ Tree Manipulation and Restructuring
 
 The |Tree| class provides both low-level and high-level methods for manipulating tree structure.
 
+.. note::
+
+    In versions of DendroPy prior to 3.8.0, some of the functionality described here were available as standalone functions in the :mod:`~dendropy.treemanip` module. With version 3.8.0, this functionality has been refactored into native instance methods of the :class:`~dendropy.dataobject.tree.Tree` class. The functions are still available in the :mod:`~dendropy.treemanip` module, but these will soon be deprecated. All new code carrying out any of the operations described below should be written using native :class:`~dendropy.dataobject.tree.Tree` methods, rather than the standalone functions in the :mod:`~dendropy.treemanip` module.
+
 Low-level methods are associated with |Node| objects, and allow to restructure the relationships between nodes at a fine level: :meth:`~dendropy.dataobject.tree.Node.add_child`, :meth:`~dendropy.dataobject.tree.Node.new_child`, :meth:`~dendropy.dataobject.tree.Node.remove_child`, etc.
 
 In most cases, however, you will be using high-level methods to restructure |Tree| objects.
