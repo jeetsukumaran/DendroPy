@@ -566,7 +566,7 @@ class CharacterSubset(IdTagged):
     Tracks definition of a subset of characters.
     """
 
-    def __init__(self, source_matrix, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         Keyword arguments:
 
@@ -576,7 +576,7 @@ class CharacterSubset(IdTagged):
 
         """
         IdTagged.__init__(self, *args, **kwargs)
-        self.source_matrix = source_matrix
+        self.source_matrix = kwargs.get("source_matrix", None)
         self.character_indices = set(kwargs.get("character_indices", []))
 
     def __len__(self):
@@ -584,20 +584,6 @@ class CharacterSubset(IdTagged):
 
     def __iter__(self):
         return iter(self.character_indices)
-
-    def export(self):
-        """
-        Returns a new CharacterMatrix (of the same type) consisting only
-        of columns given by the CharacterSubset, `character_subset`.
-        Note that this new matrix will still reference the same taxon set.
-        """
-        clone = self.source_matrix.__class__()
-        clone.clone_from(self.source_matrix)
-        for vec in clone.taxon_seq_map.values():
-            for cell_idx in range(len(vec)-1, -1, -1):
-                if cell_idx not in self.character_indices:
-                    del(vec[cell_idx])
-        return clone
 
 ###############################################################################
 ## Base Character Matrix
@@ -646,8 +632,8 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         self.character_subsets[label] = CharacterSubset(
                 source_matrix=self,
-                label=label,
-                character_indices=character_indices)
+                character_indices=character_indices,
+                label=label)
         return self.character_subsets[label]
 
     def create_taxon_to_state_set_map(self, char_indices=None):
@@ -777,15 +763,32 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             extend_existing=extend_existing)
         self.update_taxon_set()
 
-    def split_characters(self, character_subset):
+    def export_character_subset(self, character_subset):
         """
         Returns a new CharacterMatrix (of the same type) consisting only
         of columns given by the CharacterSubset, `character_subset`.
         Note that this new matrix will still reference the same taxon set.
         """
-        if character_subset.source_matrix is not self:
-            raise ValueError("CharacterSubset references different data source")
-        return character_subset.export()
+        if isinstance(character_subset, str):
+            if character_subset not in self.character_subsets:
+                raise KeyError(character_subset)
+            else:
+                character_subset = self.character_subsets[character_subset]
+        return self.export_character_indices(character_subset.character_indices)
+
+    def export_character_indices(self, indices):
+        """
+        Returns a new CharacterMatrix (of the same type) consisting only
+        of columns given by the 0-based indices in `indices`.
+        Note that this new matrix will still reference the same taxon set.
+        """
+        clone = self.__class__()
+        clone.clone_from(self)
+        for vec in clone.taxon_seq_map.values():
+            for cell_idx in range(len(vec)-1, -1, -1):
+                if cell_idx not in indices:
+                    del(vec[cell_idx])
+        return clone
 
     def reindex_subcomponent_taxa(self):
         """

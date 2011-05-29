@@ -545,14 +545,21 @@ class NexusCharsSubsetsTest(datatest.DataObjectVerificationTestCase):
                 "2ndpos" : "primates.chars.subsets-2ndpos.nexus",
                 "3rdpos" : "primates.chars.subsets-3rdpos.nexus",
                 }
+        state_alphabet = src_data.default_state_alphabet
         self.assertEqual(len(src_data.character_subsets), len(expected_sets))
         for label, expected_data_file in expected_sets.items():
             self.assertTrue(label in src_data.character_subsets)
-            result_subset = src_data.character_subsets[label].export()
+            result_subset = src_data.export_character_subset(label)
             expected_subset = dendropy.DnaCharacterMatrix.get_from_path(
                 pathmap.char_source_path(expected_data_file),
                 'nexus')
+            # confirm subset is correct
             self.assertDistinctButEqualDiscreteCharMatrix(result_subset, expected_subset)
+
+            # mutate new and confirm that old remains unchanged
+            #r1 = result_subset[0]
+            #for idx in range(len(r1)):
+
 
 if __name__ == "__main__":
     unittest.main()
