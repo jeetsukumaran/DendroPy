@@ -566,7 +566,7 @@ class CharacterSubset(IdTagged):
     Tracks definition of a subset of characters.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, source_matrix, *args, **kwargs):
         """
         Keyword arguments:
 
@@ -576,7 +576,21 @@ class CharacterSubset(IdTagged):
 
         """
         IdTagged.__init__(self, *args, **kwargs)
+        self.source_matrix = source_matrix
         self.character_indices = kwargs.get("character_indices", [])
+
+    def export(self):
+        """
+        Returns a new CharacterMatrix (of the same type) consisting only
+        of columns given by the CharacterSubset, `character_subset`.
+        """
+        clone = self.source_matrix.__class__()
+        clone.clone_from(self.source_matrix)
+        for vec in clone.taxon_seq_map.values():
+            for cell_idx in range(len(vec)-1, -1, -1):
+                if cell_idx not in character_subset.character_indices:
+                    del(vec[cell_idx])
+        return clone
 
 ###############################################################################
 ## Base Character Matrix
@@ -623,7 +637,9 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         Defines a set of character (columns) that make up a character set.
         Column indices are 0-based.
         """
-        self.character_subsets[label] = CharacterSubset(label=label,
+        self.character_subsets[label] = CharacterSubset(
+                source_matrix=self,
+                label=label,
                 character_indices=character_indices)
         return self.character_subsets[label]
 
@@ -753,6 +769,15 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             overwrite_existing=overwrite_existing,
             extend_existing=extend_existing)
         self.update_taxon_set()
+
+    def split_characters(self, character_subset):
+        """
+        Returns a new CharacterMatrix (of the same type) consisting only
+        of columns given by the CharacterSubset, `character_subset`.
+        """
+        if character_subset.source_matrix is not self:
+            raise ValueError("CharacterSubset references different data source")
+        return character_subset.export()
 
     def reindex_subcomponent_taxa(self):
         """
