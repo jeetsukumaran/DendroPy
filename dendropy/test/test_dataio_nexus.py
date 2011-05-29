@@ -549,16 +549,31 @@ class NexusCharsSubsetsTest(datatest.DataObjectVerificationTestCase):
         self.assertEqual(len(src_data.character_subsets), len(expected_sets))
         for label, expected_data_file in expected_sets.items():
             self.assertTrue(label in src_data.character_subsets)
+
             result_subset = src_data.export_character_subset(label)
+
             expected_subset = dendropy.DnaCharacterMatrix.get_from_path(
                 pathmap.char_source_path(expected_data_file),
                 'nexus')
+
             # confirm subset is correct
             self.assertDistinctButEqualDiscreteCharMatrix(result_subset, expected_subset)
 
             # mutate new and confirm that old remains unchanged
-            #r1 = result_subset[0]
-            #for idx in range(len(r1)):
+            e1_symbols = src_data[0].symbols_as_string()
+            r1 = result_subset[0]
+            dummy_state = state_alphabet.state_for_symbol('A')
+            for idx in range(len(r1)):
+                r1[idx].value = dummy_state
+            self.assertEqual(e1_symbols, src_data[0].symbols_as_string())
+
+            # mutate old and confirm that new remains unchanged
+            r2_symbols = result_subset[1].symbols_as_string()
+            e2 = src_data[1]
+            dummy_state = state_alphabet.state_for_symbol('A')
+            for idx in range(len(e2)):
+                e2[idx].value = dummy_state
+            self.assertEqual(r2_symbols, result_subset[1].symbols_as_string())
 
 
 if __name__ == "__main__":
