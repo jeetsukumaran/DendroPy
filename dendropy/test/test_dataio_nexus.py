@@ -532,6 +532,27 @@ end;
     def testParseWithKeyword(self):
         t = dendropy.TreeList.get_from_string(self.trees_string, 'nexus', suppress_internal_node_taxa=True)
 
+class NexusCharsSubsetsTest(datatest.DataObjectVerificationTestCase):
+
+    def testSubsets(self):
+        src_data = dendropy.DnaCharacterMatrix.get_from_path(
+                pathmap.char_source_path('primates.chars.subsets-all.nexus'),
+                'nexus')
+        expected_sets = {
+                "coding" : "primates.chars.subsets-coding.nexus",
+                "noncoding" : "primates.chars.subsets-noncoding.nexus",
+                "1stpos" : "primates.chars.subsets-1stpos.nexus",
+                "2ndpos" : "primates.chars.subsets-2ndpos.nexus",
+                "3rdpos" : "primates.chars.subsets-3rdpos.nexus",
+                }
+        self.assertEqual(len(src_data.character_subsets), len(expected_sets))
+        for label, expected_data_file in expected_sets.items():
+            self.assertTrue(label in src_data.character_subsets)
+            result_subset = src_data.character_subsets[label].export()
+            expected_subset = dendropy.DnaCharacterMatrix.get_from_path(
+                pathmap.char_source_path(expected_data_file),
+                'nexus')
+            self.assertDistinctButEqualDiscreteCharMatrix(result_subset, expected_subset)
 
 if __name__ == "__main__":
     unittest.main()

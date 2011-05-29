@@ -577,18 +577,25 @@ class CharacterSubset(IdTagged):
         """
         IdTagged.__init__(self, *args, **kwargs)
         self.source_matrix = source_matrix
-        self.character_indices = kwargs.get("character_indices", [])
+        self.character_indices = set(kwargs.get("character_indices", []))
+
+    def __len__(self):
+        return len(self.character_indices)
+
+    def __iter__(self):
+        return iter(self.character_indices)
 
     def export(self):
         """
         Returns a new CharacterMatrix (of the same type) consisting only
         of columns given by the CharacterSubset, `character_subset`.
+        Note that this new matrix will still reference the same taxon set.
         """
         clone = self.source_matrix.__class__()
         clone.clone_from(self.source_matrix)
         for vec in clone.taxon_seq_map.values():
             for cell_idx in range(len(vec)-1, -1, -1):
-                if cell_idx not in character_subset.character_indices:
+                if cell_idx not in self.character_indices:
                     del(vec[cell_idx])
         return clone
 
@@ -774,6 +781,7 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         Returns a new CharacterMatrix (of the same type) consisting only
         of columns given by the CharacterSubset, `character_subset`.
+        Note that this new matrix will still reference the same taxon set.
         """
         if character_subset.source_matrix is not self:
             raise ValueError("CharacterSubset references different data source")
