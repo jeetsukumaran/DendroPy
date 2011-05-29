@@ -22,7 +22,8 @@ DendroPy Library
         - Tree objects can now be rerooted at midpoint (see `Tree.reroot_at_midpoint()`).
         - Annotations (i.e., attributes of Tree, Node or Edge objects that have had "annotate()" called on them) can now be written as metadata comments ("[&field=value]") when writing NEXUS/NEWICK format if the keyword argument `annotations_as_comments` is used.
         - When reading in NEXUS/NEWICK format trees, specifying `extract_comment_metadata=True` will result in metadata comments being pulled into dictionary, with keys being fieldnames and values being the field values.
-        - When reading NEXUS/NEWICK format data, SETS blocks will be processed, and character sets parsed into the relevant CharacterDataMatrix.
+        - When reading NEXUS format data, SETS blocks will be processed, and character sets parsed into the relevant CharacterDataMatrix.
+        - Character sets (as, for example, parsed out of NEXUS SETS blocks: see above) can be exported as new CharacterDataMatrix objects, and be saved/manipulated/etc. independentally.
         - When writing in NEXUS or NEWICK formats, the `write_item_comments` keyword argument (`True` or `False`) can control whether extended comments associated with nodes on trees will be written or not.
         - TopologyCounter class added to dendropy.treesum: allows for tracking of topology frequencies.
         - `treesplits.tree_from_splits()` allows constructing of (topology-only) trees from a set of splits.
