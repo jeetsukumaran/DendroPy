@@ -576,7 +576,6 @@ class CharacterSubset(IdTagged):
 
         """
         IdTagged.__init__(self, *args, **kwargs)
-        self.source_matrix = kwargs.get("source_matrix", None)
         self.character_indices = set(kwargs.get("character_indices", []))
 
     def __len__(self):
@@ -631,7 +630,6 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         Column indices are 0-based.
         """
         self.character_subsets[label] = CharacterSubset(
-                source_matrix=self,
                 character_indices=character_indices,
                 label=label)
         return self.character_subsets[label]
