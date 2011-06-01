@@ -122,7 +122,7 @@ class NexusReader(iosys.DataReader):
                         and not token==None:
                     token = self.stream_tokenizer.read_next_token_ucase()
                     if token == 'LINK':
-                        link_title = self._parse_link_statement()
+                        link_title = self._parse_link_statement().get('taxa')
                     if token == 'TRANSLATE':
                         if not taxon_set:
                             taxon_set = self._get_taxon_set(link_title)
@@ -258,7 +258,7 @@ class NexusReader(iosys.DataReader):
                                 token = self.stream_tokenizer.read_next_token()
                                 block_title = token
                             if token == "LINK":
-                                link_title = self._parse_link_statement()
+                                link_title = self._parse_link_statement().get('taxa')
                             if token == 'DIMENSIONS':
                                 self._parse_dimensions_statement()
                             if token == 'FORMAT':
@@ -281,7 +281,7 @@ class NexusReader(iosys.DataReader):
                                 token = self.stream_tokenizer.read_next_token()
                                 block_title = token
                             if token == "LINK":
-                                link_title = self._parse_link_statement()
+                                link_title = self._parse_link_statement().get('taxa')
                             if token == 'DIMENSIONS':
                                 self._parse_dimensions_statement()
                             if token == 'FORMAT':
@@ -293,7 +293,7 @@ class NexusReader(iosys.DataReader):
                         token = self._consume_to_end_of_block(token)
                 elif token == 'TREES':
                     self._parse_trees_block()
-                elif token == 'SETS':
+                elif token in ['SETS', 'ASSUMPTIONS', 'CODONS']:
                     if not self.exclude_chars:
                         self.stream_tokenizer.skip_to_semicolon() # move past BEGIN command
                         link_title = None
@@ -306,7 +306,7 @@ class NexusReader(iosys.DataReader):
                                 token = self.stream_tokenizer.read_next_token()
                                 block_title = token
                             if token == "LINK":
-                                link_title = self._parse_link_statement()
+                                link_title = self._parse_link_statement().get('characters')
                             if token == 'CHARSET':
                                 self._parse_charset_statement(block_title=block_title, link_title=link_title)
                         self.stream_tokenizer.skip_to_semicolon() # move past END command
@@ -366,22 +366,28 @@ class NexusReader(iosys.DataReader):
         """
         Processes a MESQUITE 'LINK' statement.
         """
-        link_type = None
-        link_title = None
+        # TODO: this is now pretty ugly
+        # need to refactor with more abstraction
+        links = {}
         token = self.stream_tokenizer.read_next_token_ucase()
         while token != ';':
             if token == 'TAXA':
                 token = self.stream_tokenizer.read_next_token()
                 if token != "=":
-                    raise self.data_format_error("Expecting '=' after LINK TAXA")
+                    raise self.data_format_error("expecting '=' after link taxa")
                 token = self.stream_tokenizer.read_next_token()
-                link_title = token
-                break
-            else:
-                break
+                links['taxa'] = token
+                token = self.stream_tokenizer.read_next_token()
+            if token == 'CHARACTERS':
+                token = self.stream_tokenizer.read_next_token()
+                if token != "=":
+                    raise self.data_format_error("expecting '=' after link characters")
+                token = self.stream_tokenizer.read_next_token()
+                links['characters'] = token
+                token = self.stream_tokenizer.read_next_token()
         if token != ";":
             self.stream_tokenizer.skip_to_semicolon()
-        return link_title
+        return links
 
     ###########################################################################
     ## CHARACTER/DATA BLOCK PARSERS AND SUPPORT
@@ -749,7 +755,7 @@ class NexusReader(iosys.DataReader):
                     and not token==None:
                 token = self.stream_tokenizer.read_next_token_ucase()
                 if token == 'LINK':
-                    link_title = self._parse_link_statement()
+                    link_title = self._parse_link_statement().get("taxa")
                 if token == 'TITLE':
                     token = self.stream_tokenizer.read_next_token()
                     block_title = token
