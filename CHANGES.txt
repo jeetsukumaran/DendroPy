@@ -4,7 +4,8 @@ Release 3.8.1
 New Features
 ^^^^^^^^^^^^
 
-    - SumTrees now allows `e remove` / `edges=remove` to strip edge length information from output trees.
+    - SumTrees now allows ``e remove`` / ``edges=unweighted`` to strip edge length information from output trees.
+    - NexusReader now processing "ASSUMPTIONS" and "CODONS" blocks in addtion to "SETS" blocks for character set information.
 
 Changes
 ^^^^^^^
