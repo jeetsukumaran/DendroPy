@@ -410,7 +410,7 @@ do not indicate support with internal node labels or edge lengths
             default=2,
             help="number of decimal places in indication of support values [default=%default]")
 
-    edge_summarization_optgroup = OptionGroup(parser, "Edge Summarization Options")
+    edge_summarization_optgroup = OptionGroup(parser, "Edge Length Summarization Options")
     parser.add_option_group(edge_summarization_optgroup)
     edge_summarization_choices = ["mean-length", "median-length", "mean-age", "median-age", "keep", "remove"]
     edge_summarization_optgroup.add_option("-e", "--edges",
