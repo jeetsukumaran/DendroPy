@@ -1,3 +1,16 @@
+Release 3.8.1
+-------------
+
+Bug Fixes
+^^^^^^^^^
+
+    - NexusWriter (and hence SumTrees) does not write an extra-semicolon after each tree statement (which confuses some applications, e.g. FigTree).
+
+New Features
+^^^^^^^^^^^^
+
+    - SumTrees now allows `e remove` / `edges=remove` to strip edge length information from output trees.
+
 Release 3.8.0
 -------------
 
