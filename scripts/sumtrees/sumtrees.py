@@ -412,7 +412,7 @@ do not indicate support with internal node labels or edge lengths
 
     edge_summarization_optgroup = OptionGroup(parser, "Edge Summarization Options")
     parser.add_option_group(edge_summarization_optgroup)
-    edge_summarization_choices = ["mean-length", "median-length", "mean-age", "median-age", "keep"]
+    edge_summarization_choices = ["mean-length", "median-length", "mean-age", "median-age", "keep", "remove"]
     edge_summarization_optgroup.add_option("-e", "--edges",
             type="choice",
             dest="edge_summarization",
@@ -863,7 +863,11 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 opts.edge_summarization = 'median-age'
             else:
                 opts.edge_summarization = 'mean-length'
-    if opts.edge_summarization is not None and opts.edge_summarization != 'keep':
+    if opts.edge_summarization is not None and opts.edge_summarization == 'remove':
+        for stree in tt_trees:
+            for edge in stree.postorder_edge_iter():
+                edge.length = None
+    elif opts.edge_summarization is not None and opts.edge_summarization != 'keep':
         if opts.edge_summarization.startswith('mean'):
             summary_func_desc = "mean"
             summarization_func = lambda x: statistics.mean_and_sample_variance(x)[0]
@@ -954,7 +958,7 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
         output_dataset.write(output_dest,
                 "nexus",
                 simple=simple,
-                edge_lengths=True,
+                edge_lengths=opts.edge_summarization != 'remove',
                 write_rooting=True,
                 internal_labels=True,
                 annotations_as_comments=True,
