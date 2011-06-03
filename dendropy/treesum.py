@@ -280,8 +280,17 @@ class TreeSummarizer(object):
             if (split in split_distribution.split_edge_lengths
                     and split_distribution.split_edge_lengths[split]):
                 lengths = split_distribution.split_edge_lengths[split]
+                #if len(lengths) != split_distribution.total_trees_counted:
+                #    # not all input trees had edge lengths (at least, for this split)
+                #    pass
                 edge.length = summarization_func(lengths)
+            elif (split in split_distribution.split_edge_lengths
+                    and not split_distribution.split_edge_lengths[split]):
+                # no input trees had any edge lengths for this split
+                edge.length = None
             else:
+                # split on target tree that was not found in any of the input
+                # trees
                 edge.length = 0.0
         return tree
 
