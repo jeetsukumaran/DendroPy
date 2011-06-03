@@ -1,15 +1,21 @@
 Release 3.8.1
 -------------
 
+New Features
+^^^^^^^^^^^^
+
+    - SumTrees now allows `e remove` / `edges=remove` to strip edge length information from output trees.
+
+Changes
+^^^^^^^
+
+    - SumTrees now will not write edge lengths if none of the input trees have length information for that edge (previously, SumTrees would write "0.0" for the edge).
+
 Bug Fixes
 ^^^^^^^^^
 
     - NexusWriter (and hence SumTrees) does not write an extra-semicolon after each tree statement (which confuses some applications, e.g. FigTree).
 
-New Features
-^^^^^^^^^^^^
-
-    - SumTrees now allows `e remove` / `edges=remove` to strip edge length information from output trees.
 
 Release 3.8.0
 -------------
