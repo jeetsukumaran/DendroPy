@@ -966,8 +966,9 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 write_item_comments=False,
                 comment=comment)
 
-    messenger.send_info("Writing tree probabilities ...")
+
     if trprobs_dest:
+        messenger.send_info("Writing tree probabilities ...")
         tree_list = dendropy.TreeList(taxon_set=master_split_distribution.taxon_set)
         tree_freqs = master_topology_counter.calc_tree_freqs(tree_list.taxon_set)
         cumulative_prob = 0.0
@@ -991,8 +992,8 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 write_item_comments=False
                 )
 
-    messenger.send_info("Writing split edge lengths ...")
     if split_edges_dest:
+        messenger.send_info("Writing split edge lengths ...")
         for split in master_split_distribution.splits:
             row = []
             row.append(master_split_distribution.taxon_set.split_as_newick_string(split))
