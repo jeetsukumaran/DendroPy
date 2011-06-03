@@ -186,7 +186,7 @@ class NexusWriter(iosys.DataWriter):
             else:
                 tree_name = str(treeidx)
             newick_str = newick_writer.compose_tree(tree)
-            block.append('    TREE %s = %s;' % (textutils.escape_nexus_token(tree_name, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores),
+            block.append('    TREE %s = %s' % (textutils.escape_nexus_token(tree_name, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores),
                 newick_str))
         block.append('END;\n\n')
         stream.write('\n'.join(block))
