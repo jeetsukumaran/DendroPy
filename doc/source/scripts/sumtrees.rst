@@ -120,8 +120,8 @@ Non-parametric Bootstrap Support of a Model Tree
 ------------------------------------------------
 Calculate support for nodes on a specific tree, "``best.tre``" as given by a set of tree files, with support reported as percentages rounded to integers, and saving the result to "``results.sumtree``"::
 
-    $ sumtrees.py --decimals=0 --percentages --target=best.tre treefile1.tre treefile2.tre treefile3.tre
-    $ sumtrees.py -d0 -p -t best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py --decimals=0 --percentages --output=results.sumtrees --target=best.tre treefile1.tre treefile2.tre treefile3.tre
+    $ sumtrees.py -d0 -p -o results.sumtrees -t best.tre treefile1.tre treefile2.tre treefile3.tre
 
 Summarization of Posterior Probabilities of Clades with a Consensus Tree
 ------------------------------------------------------------------------
