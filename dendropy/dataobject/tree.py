@@ -1559,7 +1559,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         Raises a Value Error if the tree is not ultrametric, is non-binary, or has
             only 2 leaves.
 
-        As a side effect a `depth` attribute is added to the nodes of the self.
+        As a side effect a `age` attribute is added to the nodes of the self.
 
         Pybus and Harvey. 2000. "Testing macro-evolutionary models using incomplete
         molecular phylogenies." Proc. Royal Society Series B: Biological Sciences.
