@@ -5,7 +5,7 @@ New Features
 ^^^^^^^^^^^^
 
     - SumTrees now allows ``e unweighted`` / ``edges=unweighted`` to strip edge length information from output trees.
-    - NexusReader now processing "ASSUMPTIONS" and "CODONS" blocks in addtion to "SETS" blocks for character set information.
+    - NexusReader now processes "ASSUMPTIONS" and "CODONS" blocks in addtion to "SETS" blocks for character set information.
 
 Changes
 ^^^^^^^
