@@ -17,7 +17,7 @@
 ##############################################################################
 
 """
-Tests the interaction with APE.
+Tests the interaction with Biopython.
 """
 
 import unittest
