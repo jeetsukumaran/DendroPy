@@ -29,7 +29,7 @@ FAST, NORMAL, SLOW, EXHAUSTIVE = 0, 10, 20, 30
 ###############################################################################
 ## TESTING LEVELS
 
-class TestLevel:
+class TestLevel(object):
 
     def level_name(i):
         if i <= FAST:
