@@ -32,6 +32,7 @@ def long_branch_symmdiff(trees_to_compare, edge_len_threshold, copy_trees=False,
     f_r = []
     for tree in tree_list:
         to_collapse = []
+        encode_splits(tree)
         for edge in tree.preorder_edge_iter(filter_fn=Edge.is_internal):
             elen = edge.length
             if elen is not None and elen < edge_len_threshold:

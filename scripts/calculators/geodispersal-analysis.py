@@ -92,7 +92,7 @@ def dispersal_patterns(node_list, num_areas):
         curr_pat = [0]*num_areas
         for i in twos:
             curr_pat[i] = 2
-        for i in set.intersection(child_area, par_area):
+        for i in par_area: #BRUCE's EMAIL mod...  par_area instead of: set.intersection(child_area, par_area):        for i in set.intersection(child_area, par_area):
             curr_pat[i] = 1
         _LOG.debug("dispersal: count = %d Par = %s, Des = %s, twos = %s, pattern= %s" % 
                     (node.biogeo_number, str(par_area), str(child_area), str(twos), str(curr_pat)))

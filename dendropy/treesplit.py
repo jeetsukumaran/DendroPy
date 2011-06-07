@@ -290,6 +290,23 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
         if create_dict:
             split_map[cm] = edge
 
+def is_compatible(split1, split2, mask):
+    """
+    Mask should have 1 for every leaf in the leaf_set
+    """
+    m1 = mask & split1
+    m2 = mask & split2
+    if 0 == (m1 & m2):
+        return True
+    c2 = mask ^ split2
+    if 0 == (m1 & c2):
+        return True
+    c1 = mask ^ split1
+    if 0 == (c1 & m2):
+        return True
+    if 0 == (c1 & c2):
+        return True
+    return False
 
 def delete_outdegree_one(tree):
     """This function mimics the tree changing operations `encode_splits` but
