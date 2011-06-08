@@ -173,6 +173,8 @@ class NexusReader(iosys.DataReader):
                 extract_comment_metadata=self.extract_comment_metadata)
 
     def _consume_to_end_of_block(self, token):
+        if token:
+            token = token.upper()
         while not (token == 'END' or token == 'ENDBLOCK') \
             and not self.stream_tokenizer.eof \
             and not token==None:
@@ -567,7 +569,6 @@ class NexusReader(iosys.DataReader):
                     else:
                         break
                     token = self.stream_tokenizer.read_next_token()
-                token = self.stream_tokenizer.read_next_token()
             except nexustokenizer.NexusTokenizer.BlockTerminatedException:
                 if tokens is not None:
                     self._process_chars(''.join(tokens), char_block, symbol_state_map, taxon)
