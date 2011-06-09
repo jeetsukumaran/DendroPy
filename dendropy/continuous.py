@@ -332,7 +332,7 @@ def independent_contrasts(tree,
     return tree
 
 if __name__ == "__main__":
-    tree_str = "(E:6,((C:4,D:4):1,(A:2,B:2):3):1);"
+    tree_str = "[&R] (E:6,((C:4,D:4):1,(A:2,B:2):3):1);"
     data_str = """
 #NEXUS
 BEGIN DATA;
