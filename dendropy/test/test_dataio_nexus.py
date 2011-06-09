@@ -534,24 +534,26 @@ end;
 
 class NexusCharsSubsetsTest(datatest.DataObjectVerificationTestCase):
 
-    def testSubsets(self):
+    def verify_subsets(self, src_filename, expected_sets):
+        """
+        `src_filename` -- name of file containing full data and charsets
+                          statement
+        `expected_sets` -- dictionary with keys = label of charset, and values
+                           = name of file with subset of characters correspond
+                           to the charset.
+        """
+        _LOG.debug(src_filename)
         src_data = dendropy.DnaCharacterMatrix.get_from_path(
-                pathmap.char_source_path('primates.chars.subsets-all.nexus'),
+                pathmap.char_source_path(src_filename),
                 'nexus')
-        expected_sets = {
-                "coding" : "primates.chars.subsets-coding.nexus",
-                "noncoding" : "primates.chars.subsets-noncoding.nexus",
-                "1stpos" : "primates.chars.subsets-1stpos.nexus",
-                "2ndpos" : "primates.chars.subsets-2ndpos.nexus",
-                "3rdpos" : "primates.chars.subsets-3rdpos.nexus",
-                }
         state_alphabet = src_data.default_state_alphabet
         self.assertEqual(len(src_data.character_subsets), len(expected_sets))
         for label, expected_data_file in expected_sets.items():
+
+            _LOG.debug(label)
+
             self.assertTrue(label in src_data.character_subsets)
-
             result_subset = src_data.export_character_subset(label)
-
             expected_subset = dendropy.DnaCharacterMatrix.get_from_path(
                 pathmap.char_source_path(expected_data_file),
                 'nexus')
@@ -575,6 +577,34 @@ class NexusCharsSubsetsTest(datatest.DataObjectVerificationTestCase):
                 e2[idx].value = dummy_state
             self.assertEqual(r2_symbols, result_subset[1].symbols_as_string())
 
+    def testNonInterleaved(self):
+        """
+        Charsets here go through all forms of position specification.
+        """
+        expected_sets = {
+                "coding" : "primates.chars.subsets-coding.nexus",
+                "noncoding" : "primates.chars.subsets-noncoding.nexus",
+                "1stpos" : "primates.chars.subsets-1stpos.nexus",
+                "2ndpos" : "primates.chars.subsets-2ndpos.nexus",
+                "3rdpos" : "primates.chars.subsets-3rdpos.nexus",
+                }
+        self.verify_subsets('primates.chars.subsets-all.nexus', expected_sets)
+
+    def testInterleaved(self):
+        """
+        A bug in DendroPy resulted in the block immediately following an
+        interleaved character matrix DATA or CHARACTERS block being skipped.
+        This tests for it by ensuring that the ASSUMPTIONS block following an
+        interleaved CHARACTERS block is parsed. A better test would approach
+        the issue more directly, by checking to see if block parsing left the
+        stream reader in the correct position.
+        """
+        expected_sets = {
+                "c1" : "interleaved-charsets-c1.nex",
+                "c2" : "interleaved-charsets-c2.nex",
+                "c3" : "interleaved-charsets-c3.nex",
+                }
+        self.verify_subsets('interleaved-charsets-all.nex', expected_sets)
 
 if __name__ == "__main__":
     unittest.main()
