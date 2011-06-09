@@ -316,7 +316,10 @@ def independent_contrasts(tree,
             nd_results['pic_contrast_variance'] = sum_of_child_edges
             nd_results['pic_contrast_standardized'] = nd_results['pic_contrast_raw'] / (sum_of_child_edges ** 0.5)
             nd_results['pic_edge_length_error'] = nd_results['pic_state_variance']
-            nd_results['pic_corrected_edge_length'] = nd.edge.length + nd_results['pic_edge_length_error']
+            if nd.edge.length is not None:
+                nd_results['pic_corrected_edge_length'] = nd.edge.length + nd_results['pic_edge_length_error']
+            else:
+                nd_results['pic_corrected_edge_length'] = None
         else:
             raise NotImplementedError("Only bifurcating trees supported at this time")
         all_results[nd] = nd_results
@@ -327,5 +330,27 @@ def independent_contrasts(tree,
                 setattr(nd, k, v)
                 nd.annotate(k)
     return tree
+
+if __name__ == "__main__":
+    tree_str = "(E:6,((C:4,D:4):1,(A:2,B:2):3):1);"
+    data_str = """
+#NEXUS
+BEGIN DATA;
+	DIMENSIONS  NTAX=5 NCHAR=2;
+	FORMAT DATATYPE = CONTINUOUS GAP = - MISSING = ?;
+	MATRIX
+        A 3 1
+        B 2 1.5
+        C 9 6
+        D 5 4
+        E 2 3
+    ;
+END;
+"""
+    taxa = dendropy.TaxonSet()
+    tree = dendropy.Tree.get_from_string(tree_str, 'newick', taxon_set=taxa)
+    data = dendropy.ContinuousCharacterMatrix.get_from_string(data_str, 'nexus', taxon_set=taxa)
+    pic_tree = independent_contrasts(tree, data, 0)
+    print pic_tree.as_string('nexus')
 
 
