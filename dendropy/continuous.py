@@ -21,6 +21,7 @@ Simulates and calculates statistics for various continuous characters on trees.
 """
 
 import math
+import dendropy
 
 def _calc_TKP_rate(starting_rate, duration, roeotroe, rng):
     """Returns a simulated rate for the head node of a tree when:
@@ -253,5 +254,78 @@ def simulate_continuous(node, rng, **kwargs):
         if mean_val_attr:
             setattr(nd, mean_val_attr, mr)
 
+def independent_contrasts(tree,
+        char_matrix,
+        column_index,
+        annotate=True):
+    """
+    Phylogenetic Independent Contrasts.
+
+    Arguments:
+
+        `tree`
+            Tree to use
+
+        `character_matrix`
+            ContinuousCharacterMatrix that is the source of the data
+
+        `column_indices`
+            0-based indexes column (character) in ContinuousCharacterMatrix to
+            use.
+
+    Returns:
+        `tree`, with the following modifications:
+
+            - each node on the tree has the following attributes added (and annotated):
+                    - `pic_state_value`
+                    - `pic_state_variance`
+                    - `pic_contrast_raw`
+                    - `pic_contrast_variance`
+                    - `pic_contrast_standardized`
+
+            - each edge on the tree has the following attributes added (and annotated):
+                    - `pic_corrected_length`
+
+    References:
+
+        Felsenstein, J. 1985. Phylogenies and the comparative method. American
+            Naturalist 125:1-15.
+        Garland, T., Jr., Jr., A. F. Bennett, and E. L. Rezende. 2005.
+            Phylogenetic approaches in comparative physiology. Journal of
+            Experimental Biology 208:3015-3035.
+    """
+    all_results = {}
+    for nd in tree.postorder_node_iter():
+        nd_results = {}
+        child_nodes = nd.child_nodes()
+        if len(child_nodes) == 0:
+            nd_results['pic_state_value'] = char_matrix[nd.taxon][column_index].value
+            nd_results['pic_state_variance'] = None
+            nd_results['pic_contrast_raw'] = None
+            nd_results['pic_contrast_variance'] = None
+            nd_results['pic_contrast_standardized'] = None
+            nd_results['pic_edge_length_error'] = None
+            nd_results['pic_corrected_edge_length'] = None
+        elif len(child_nodes) == 2:
+            x1, x2 = all_results[child_nodes[0]]['pic_state_value'], all_results[child_nodes[1]]['pic_state_value']
+            v1, v2 = child_nodes[0].edge.length, child_nodes[1].edge.length
+            sum_of_child_edges = v1 + v2
+            nd_results['pic_state_value'] = ( (1.0/v1)*x1 + (1.0/v2)*x2 ) / ( 1.0/v1 + 1.0/v2 )
+            nd_results['pic_state_variance'] = ( float(v1*v2) / (sum_of_child_edges) )
+            nd_results['pic_contrast_raw'] = x1 - x2
+            nd_results['pic_contrast_variance'] = sum_of_child_edges
+            nd_results['pic_contrast_standardized'] = nd_results['pic_contrast_raw'] / (sum_of_child_edges ** 0.5)
+            nd_results['pic_edge_length_error'] = nd_results['pic_state_variance']
+            nd_results['pic_corrected_edge_length'] = nd.edge.length + nd_results['pic_edge_length_error']
+        else:
+            raise NotImplementedError("Only bifurcating trees supported at this time")
+        all_results[nd] = nd_results
+    if annotate:
+        for nd in tree.postorder_internal_node_iter():
+            nd_results = all_results[nd]
+            for k, v in nd_results.items():
+                setattr(nd, k, v)
+                nd.annotate(k)
+    return tree
 
 
