@@ -328,7 +328,10 @@ def independent_contrasts(tree,
                     / sum(denominator_func(i) for i in range(n))
             #nd_results['pic_state_value'] = ( (1.0/v1)*x1 + (1.0/v2)*x2 ) / ( 1.0/v1 + 1.0/v2 )
             nd_results['pic_state_variance'] = ( reduce(operator.mul, edge_lens) / (sum_of_child_edges) )
+
+            ## TODO: THIS IS OBVIOUSLY WRONG WHEN MORE THAN 2 CHILDREN!!
             nd_results['pic_contrast_raw'] = state_vals[0] - state_vals[1]
+
             nd_results['pic_contrast_variance'] = sum_of_child_edges
             nd_results['pic_contrast_standardized'] = nd_results['pic_contrast_raw'] / (sum_of_child_edges ** 0.5)
             nd_results['pic_edge_length_error'] = nd_results['pic_state_variance']
