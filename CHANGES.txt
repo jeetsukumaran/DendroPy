@@ -1,3 +1,11 @@
+Release 3.8.2 (next release, in development)
+--------------------------------------------
+
+Bug Fixes
+^^^^^^^^^
+
+    - Reading interleaved character matrices now longer results in the following block being skipped (NEXUS).
+
 Release 3.8.1
 -------------
 
