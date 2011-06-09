@@ -21,6 +21,7 @@ Simulates and calculates statistics for various continuous characters on trees.
 """
 
 import math
+import operator
 import dendropy
 
 def _calc_TKP_rate(starting_rate, duration, roeotroe, rng):
@@ -306,13 +307,28 @@ def independent_contrasts(tree,
             nd_results['pic_contrast_standardized'] = None
             nd_results['pic_edge_length_error'] = None
             nd_results['pic_corrected_edge_length'] = None
-        elif len(child_nodes) == 2:
-            x1, x2 = all_results[child_nodes[0]]['pic_state_value'], all_results[child_nodes[1]]['pic_state_value']
-            v1, v2 = child_nodes[0].edge.length, child_nodes[1].edge.length
-            sum_of_child_edges = v1 + v2
-            nd_results['pic_state_value'] = ( (1.0/v1)*x1 + (1.0/v2)*x2 ) / ( 1.0/v1 + 1.0/v2 )
-            nd_results['pic_state_variance'] = ( float(v1*v2) / (sum_of_child_edges) )
-            nd_results['pic_contrast_raw'] = x1 - x2
+        elif len(child_nodes) == 1:
+            # root node?
+            nd_results['pic_state_value'] = None
+            nd_results['pic_state_variance'] = None
+            nd_results['pic_contrast_raw'] = None
+            nd_results['pic_contrast_variance'] = None
+            nd_results['pic_contrast_standardized'] = None
+            nd_results['pic_edge_length_error'] = None
+            nd_results['pic_corrected_edge_length'] = None
+        else:
+            state_vals =  [all_results[c]['pic_state_value'] for c in child_nodes]
+            edge_lens = [c.edge.length for c in child_nodes]
+            sum_of_child_edges = sum(edge_lens)
+            n = len(state_vals)
+            numerator_func = lambda i : (1.0/edge_lens[i]) * state_vals[i]
+            denominator_func = lambda i  : 1.0/edge_lens[i]
+            nd_results['pic_state_value'] = \
+                    sum(numerator_func(i) for i in range(n)) \
+                    / sum(denominator_func(i) for i in range(n))
+            #nd_results['pic_state_value'] = ( (1.0/v1)*x1 + (1.0/v2)*x2 ) / ( 1.0/v1 + 1.0/v2 )
+            nd_results['pic_state_variance'] = ( reduce(operator.mul, edge_lens) / (sum_of_child_edges) )
+            nd_results['pic_contrast_raw'] = state_vals[0] - state_vals[1]
             nd_results['pic_contrast_variance'] = sum_of_child_edges
             nd_results['pic_contrast_standardized'] = nd_results['pic_contrast_raw'] / (sum_of_child_edges ** 0.5)
             nd_results['pic_edge_length_error'] = nd_results['pic_state_variance']
@@ -320,8 +336,6 @@ def independent_contrasts(tree,
                 nd_results['pic_corrected_edge_length'] = nd.edge.length + nd_results['pic_edge_length_error']
             else:
                 nd_results['pic_corrected_edge_length'] = None
-        else:
-            raise NotImplementedError("Only bifurcating trees supported at this time")
         all_results[nd] = nd_results
     if annotate:
         for nd in tree.postorder_internal_node_iter():
