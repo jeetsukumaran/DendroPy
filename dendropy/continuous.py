@@ -281,13 +281,19 @@ class PhylogeneticIndependentConstrasts(object):
         self._tree = None
         self._char_matrix = None
         self._is_dirty = None
+        self._is_fully_analyzed = False
         self._character_contrasts = {}
         self.tree = tree
         self.char_matrix = char_matrix
 
     def _get_tree(self):
-        for idx in range(len(self.char_matrix[0])):
-            self._get_contrasts(idx)
+        if not self._is_fully_analyzed:
+            analyzed_chars = self._character_contrasts.keys()
+            for idx in range(len(self.char_matrix[0])):
+                if idx in analyzed_chars:
+                    continue
+                self._get_contrasts(idx)
+            self._is_fully_analyzed = True
         return self._tree
     def _set_tree(self, tree):
         self._tree = dendropy.Tree(tree)
@@ -318,6 +324,7 @@ class PhylogeneticIndependentConstrasts(object):
         self._is_dirty = is_dirty
         if self._is_dirty:
             self._character_contrasts = {}
+            self._is_fully_analyzed = False
     is_dirty = property(_get_is_dirty, _set_is_dirty)
 
     def _get_contrasts(self, character_index):
@@ -436,4 +443,4 @@ END;
     pic = PhylogeneticIndependentConstrasts(tree, data)
     annotated_tree = pic.annotated_tree(1)
     print annotated_tree.as_string('nexus')
-
+    t = pic.tree
