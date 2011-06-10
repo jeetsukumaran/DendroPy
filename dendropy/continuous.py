@@ -293,7 +293,7 @@ class PhylogeneticIndependentConstrasts(object):
         self._tree = dendropy.Tree(tree)
         self.is_dirty = True
     tree = property(_get_tree, _set_tree, """\
-            This tree will have an attribute added to each node, `contrasts`. This attribute
+            This tree will have an attribute added to each node, `pic`. This attribute
             will be a dictionary with character (column) index as keys, and another dictionary
             with the following keys and corresponding the constrast statistics for that column
             index:
@@ -385,9 +385,9 @@ class PhylogeneticIndependentConstrasts(object):
             nd._track_id = id(nd) # will get cloned
             all_results[nd._track_id] = nd_results
             try:
-                nd.contrasts[character_index] = dict(nd_results)
+                nd.pic[character_index] = dict(nd_results)
             except AttributeError:
-                nd.contrasts = {character_index: dict(nd_results)}
+                nd.pic = {character_index: dict(nd_results)}
         self._character_contrasts[character_index] = dict(all_results)
         return self._character_contrasts[character_index]
 
