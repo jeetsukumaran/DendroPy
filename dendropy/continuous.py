@@ -366,7 +366,11 @@ class PhylogeneticIndependentConstrasts(object):
                     nd_results['pic_corrected_edge_length'] = None
             nd._track_id = id(nd) # will get cloned
             all_results[nd._track_id] = nd_results
-        self._character_contrasts[character_index] = all_results
+            try:
+                nd.contrasts[character_index] = dict(nd_results)
+            except AttributeError:
+                nd.contrasts = {character_index: dict(nd_results)}
+        self._character_contrasts[character_index] = dict(all_results)
         return self._character_contrasts[character_index]
 
     def annotated_tree(self, character_index):
