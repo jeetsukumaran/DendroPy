@@ -286,6 +286,8 @@ class PhylogeneticIndependentConstrasts(object):
         self.char_matrix = char_matrix
 
     def _get_tree(self):
+        for idx in range(len(self.char_matrix[0])):
+            self._get_contrasts(idx)
         return self._tree
     def _set_tree(self, tree):
         self._tree = dendropy.Tree(tree)
