@@ -15,6 +15,10 @@ The support for the splits will be mapped onto one or more target trees either i
 The target trees can be supplied by yourself, or, if no target trees are given, then a majority-rule clade consensus tree will be constructed based on the samples given.
 In the latter case, you have the option of specifying the minimum posterior probability or proportional frequency threshold for a clade to be included on the consensus tree.
 
+.. versionadded:: 3.3.1 (with DendroPy 3.8.0)
+
+By default SumTrees will now provide summaries of edge lengths (i.e., mean, median, standard deviation, range, 95% HPD, 5% and 95% quantiles, etc.) as special node comments. These can be visualized in `FigTree <http://tree.bio.ed.ac.uk/software/figtree/>`_ by, for example, checking "Node Labels", then selecting one of "length_mean", "length_median", "length_sd", "length_hpd95", etc. If the trees are ultrametric and the "``--ultrametric``" flag is used, or edge lengths are set so that node ages on the output trees correspond to be mean or median of the node ages of the input trees ("``--edges=mean-age``" or "``--edges=median-age``"), then node ages will be summarized as well. In all cases, the flag "``--no-summary-metadata``" will suppress calculation and output of these summaries.
+
 Where to Find the Package
 =========================
 
