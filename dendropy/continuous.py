@@ -434,6 +434,6 @@ END;
     tree = dendropy.Tree.get_from_string(tree_str, 'newick', taxon_set=taxa)
     data = dendropy.ContinuousCharacterMatrix.get_from_string(data_str, 'nexus', taxon_set=taxa)
     pic = PhylogeneticIndependentConstrasts(tree, data)
-    pic_tree = pic.annotated_tree(1)
-    print pic_tree.as_string('nexus')
+    annotated_tree = pic.annotated_tree(1)
+    print annotated_tree.as_string('nexus')
 
