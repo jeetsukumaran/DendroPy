@@ -255,37 +255,9 @@ def simulate_continuous(node, rng, **kwargs):
         if mean_val_attr:
             setattr(nd, mean_val_attr, mr)
 
-def independent_contrasts(tree,
-        char_matrix,
-        column_index,
-        annotate=True):
+class PhylogeneticIndependentConstrasts(object):
     """
     Phylogenetic Independent Contrasts.
-
-    Arguments:
-
-        `tree`
-            Tree to use
-
-        `character_matrix`
-            ContinuousCharacterMatrix that is the source of the data
-
-        `column_indices`
-            0-based indexes column (character) in ContinuousCharacterMatrix to
-            use.
-
-    Returns:
-        `tree`, with the following modifications:
-
-            - each node on the tree has the following attributes added (and annotated):
-                    - `pic_state_value`
-                    - `pic_state_variance`
-                    - `pic_contrast_raw`
-                    - `pic_contrast_variance`
-                    - `pic_contrast_standardized`
-
-            - each edge on the tree has the following attributes added (and annotated):
-                    - `pic_corrected_length`
 
     References:
 
@@ -295,58 +267,130 @@ def independent_contrasts(tree,
             Phylogenetic approaches in comparative physiology. Journal of
             Experimental Biology 208:3015-3035.
     """
-    all_results = {}
-    for nd in tree.postorder_node_iter():
-        nd_results = {}
-        child_nodes = nd.child_nodes()
-        if len(child_nodes) == 0:
-            nd_results['pic_state_value'] = char_matrix[nd.taxon][column_index].value
-            nd_results['pic_state_variance'] = None
-            nd_results['pic_contrast_raw'] = None
-            nd_results['pic_contrast_variance'] = None
-            nd_results['pic_contrast_standardized'] = None
-            nd_results['pic_edge_length_error'] = None
-            nd_results['pic_corrected_edge_length'] = None
-        elif len(child_nodes) == 1:
-            # root node?
-            nd_results['pic_state_value'] = None
-            nd_results['pic_state_variance'] = None
-            nd_results['pic_contrast_raw'] = None
-            nd_results['pic_contrast_variance'] = None
-            nd_results['pic_contrast_standardized'] = None
-            nd_results['pic_edge_length_error'] = None
-            nd_results['pic_corrected_edge_length'] = None
-        else:
-            state_vals =  [all_results[c]['pic_state_value'] for c in child_nodes]
-            edge_lens = [c.edge.length for c in child_nodes]
-            sum_of_child_edges = sum(edge_lens)
-            n = len(state_vals)
-            numerator_func = lambda i : (1.0/edge_lens[i]) * state_vals[i]
-            denominator_func = lambda i  : 1.0/edge_lens[i]
-            nd_results['pic_state_value'] = \
-                    sum(numerator_func(i) for i in range(n)) \
-                    / sum(denominator_func(i) for i in range(n))
-            #nd_results['pic_state_value'] = ( (1.0/v1)*x1 + (1.0/v2)*x2 ) / ( 1.0/v1 + 1.0/v2 )
-            nd_results['pic_state_variance'] = ( reduce(operator.mul, edge_lens) / (sum_of_child_edges) )
 
-            ## TODO: THIS IS OBVIOUSLY WRONG WHEN MORE THAN 2 CHILDREN!!
-            nd_results['pic_contrast_raw'] = state_vals[0] - state_vals[1]
+    def __init__(self, tree, char_matrix):
+        """
+        Arguments:
 
-            nd_results['pic_contrast_variance'] = sum_of_child_edges
-            nd_results['pic_contrast_standardized'] = nd_results['pic_contrast_raw'] / (sum_of_child_edges ** 0.5)
-            nd_results['pic_edge_length_error'] = nd_results['pic_state_variance']
-            if nd.edge.length is not None:
-                nd_results['pic_corrected_edge_length'] = nd.edge.length + nd_results['pic_edge_length_error']
-            else:
+            `tree`
+                Tree to use
+
+            `char_matrix`
+                ContinuousCharacterMatrix that is the source of the data
+        """
+        self._tree = None
+        self._char_matrix = None
+        self._is_dirty = None
+        self._character_contrasts = {}
+        self.tree = tree
+        self.char_matrix = char_matrix
+
+    def _set_tree(self, tree):
+        self._tree = tree
+        self.is_dirty = True
+    tree = property(None, _set_tree)
+
+    def _set_char_matrix(self, char_matrix):
+        self._char_matrix = char_matrix
+        self.is_dirty = True
+    char_matrix = property(None, _set_char_matrix)
+
+    def _get_is_dirty(self):
+        return self._is_dirty
+    def _set_is_dirty(self, is_dirty):
+        self._is_dirty = is_dirty
+        if self._is_dirty:
+            self._character_contrasts = {}
+    is_dirty = property(_get_is_dirty, _set_is_dirty)
+
+    def _get_contrasts(self, character_index):
+        """
+        Main work-horse method. If needed, adds an entry to
+        self._character_constrants, with key being the character index, and a
+        value being another dictionary that contains the constrast information.
+        This second dictionary has the node's id as a key and as a value the a
+        dictionary with the following:
+
+                - `pic_state_value`
+                - `pic_state_variance`
+                - `pic_contrast_raw`
+                - `pic_contrast_variance`
+                - `pic_contrast_standardized`
+                - `pic_corrected_length`
+        """
+        if character_index in self._character_contrasts:
+            return self._character_contrasts[character_index]
+        all_results = {}
+        for nd in self._tree.postorder_node_iter():
+            nd_results = {}
+            child_nodes = nd.child_nodes()
+            if len(child_nodes) == 0:
+                nd_results['pic_state_value'] = self._char_matrix[nd.taxon][character_index].value
+                nd_results['pic_state_variance'] = None
+                nd_results['pic_contrast_raw'] = None
+                nd_results['pic_contrast_variance'] = None
+                nd_results['pic_contrast_standardized'] = None
+                nd_results['pic_edge_length_error'] = None
                 nd_results['pic_corrected_edge_length'] = None
-        all_results[nd] = nd_results
-    if annotate:
+            elif len(child_nodes) == 1:
+                # root node?
+                nd_results['pic_state_value'] = None
+                nd_results['pic_state_variance'] = None
+                nd_results['pic_contrast_raw'] = None
+                nd_results['pic_contrast_variance'] = None
+                nd_results['pic_contrast_standardized'] = None
+                nd_results['pic_edge_length_error'] = None
+                nd_results['pic_corrected_edge_length'] = None
+            else:
+                state_vals =  [all_results[c._track_id]['pic_state_value'] for c in child_nodes]
+                edge_lens = [c.edge.length for c in child_nodes]
+                sum_of_child_edges = sum(edge_lens)
+                n = len(state_vals)
+                numerator_func = lambda i : (1.0/edge_lens[i]) * state_vals[i]
+                denominator_func = lambda i  : 1.0/edge_lens[i]
+                nd_results['pic_state_value'] = \
+                        sum(numerator_func(i) for i in range(n)) \
+                        / sum(denominator_func(i) for i in range(n))
+                #nd_results['pic_state_value'] = ( (1.0/v1)*x1 + (1.0/v2)*x2 ) / ( 1.0/v1 + 1.0/v2 )
+                nd_results['pic_state_variance'] = ( reduce(operator.mul, edge_lens) / (sum_of_child_edges) )
+
+                ## TODO: THIS IS OBVIOUSLY WRONG WHEN MORE THAN 2 CHILDREN!!
+                nd_results['pic_contrast_raw'] = state_vals[0] - state_vals[1]
+
+                nd_results['pic_contrast_variance'] = sum_of_child_edges
+                nd_results['pic_contrast_standardized'] = nd_results['pic_contrast_raw'] / (sum_of_child_edges ** 0.5)
+                nd_results['pic_edge_length_error'] = nd_results['pic_state_variance']
+                if nd.edge.length is not None:
+                    nd_results['pic_corrected_edge_length'] = nd.edge.length + nd_results['pic_edge_length_error']
+                else:
+                    nd_results['pic_corrected_edge_length'] = None
+            nd._track_id = id(nd) # will get cloned
+            all_results[nd._track_id] = nd_results
+        self._character_contrasts[character_index] = all_results
+        return self._character_contrasts[character_index]
+
+    def annotated_tree(self, character_index):
+        """
+        Returns a Tree object annotated with the following attributes added
+        to each node (as annotations to be serialized):
+
+            - `pic_state_value`
+            - `pic_state_variance`
+            - `pic_contrast_raw`
+            - `pic_contrast_variance`
+            - `pic_contrast_standardized`
+            - `pic_corrected_length`
+
+        """
+        contrasts = self._get_contrasts(character_index)
+        tree = dendropy.Tree(self._tree)
         for nd in tree.postorder_internal_node_iter():
-            nd_results = all_results[nd]
+            nd_results = contrasts[nd._track_id]
             for k, v in nd_results.items():
                 setattr(nd, k, v)
                 nd.annotate(k)
-    return tree
+        return tree
+
 
 if __name__ == "__main__":
     tree_str = "[&R] (E:6,((C:4,D:4):1,(A:2,B:2):3):1);"
@@ -367,7 +411,7 @@ END;
     taxa = dendropy.TaxonSet()
     tree = dendropy.Tree.get_from_string(tree_str, 'newick', taxon_set=taxa)
     data = dendropy.ContinuousCharacterMatrix.get_from_string(data_str, 'nexus', taxon_set=taxa)
-    pic_tree = independent_contrasts(tree, data, 0)
+    pic = PhylogeneticIndependentConstrasts(tree, data)
+    pic_tree = pic.annotated_tree(1)
     print pic_tree.as_string('nexus')
-
 
