@@ -503,6 +503,15 @@ class CharacterDataMap(dict, Annotated):
         dict.__init__(self)
         Annotated.__init__(self)
 
+    def num_characters(self):
+        """
+        Returns number of characters in *first* sequence.
+        """
+        if len(self):
+            return len(self.values()[0])
+        else:
+            return 0
+
     def __setitem__(self, key, value):
         """
         Synchronizes taxon association.
@@ -527,9 +536,9 @@ class CharacterDataMap(dict, Annotated):
                 self[taxon].extend(other_map[label_taxon_map[taxon.label]])
 
     def extend(self,
-        other_map,
-        overwrite_existing=False,
-        extend_existing=False):
+            other_map,
+            overwrite_existing=False,
+            extend_existing=False):
         """
         Extends this matrix by adding taxa and characters from the given
         matrix to this one.  If `overwrite_existing` is True and a taxon
