@@ -285,15 +285,30 @@ class PhylogeneticIndependentConstrasts(object):
         self.tree = tree
         self.char_matrix = char_matrix
 
+    def _get_tree(self):
+        return self._tree
     def _set_tree(self, tree):
-        self._tree = tree
+        self._tree = dendropy.Tree(tree)
         self.is_dirty = True
-    tree = property(None, _set_tree)
+    tree = property(_get_tree, _set_tree, """\
+            This tree will have an attribute added to each node, `contrasts`. This attribute
+            will be a dictionary with character (column) index as keys, and another dictionary
+            with the following keys and corresponding the constrast statistics for that column
+            index:
+                - `pic_state_value`
+                - `pic_state_variance`
+                - `pic_contrast_raw`
+                - `pic_contrast_variance`
+                - `pic_contrast_standardized`
+                - `pic_corrected_length`
+            """)
 
+    def _get_char_matrix(self):
+        return self._char_matrix
     def _set_char_matrix(self, char_matrix):
         self._char_matrix = char_matrix
         self.is_dirty = True
-    char_matrix = property(None, _set_char_matrix)
+    char_matrix = property(_get_char_matrix, _set_char_matrix)
 
     def _get_is_dirty(self):
         return self._is_dirty
@@ -317,6 +332,7 @@ class PhylogeneticIndependentConstrasts(object):
                 - `pic_contrast_variance`
                 - `pic_contrast_standardized`
                 - `pic_corrected_length`
+
         """
         if character_index in self._character_contrasts:
             return self._character_contrasts[character_index]
