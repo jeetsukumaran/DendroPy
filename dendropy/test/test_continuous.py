@@ -147,9 +147,12 @@ class PICTest(extendedtest.ExtendedTestCase):
             "N4": (3.011356599, 0.375743470, 1.135377150, 1.601905551),
             })
 
-    def testTree(self):
+    def testTreeValues(self):
         for cidx in range(self.char_matrix.vector_size):
-            ctree = self.pic.annotated_tree(cidx)
+            ctree = self.pic.contrasts_tree(character_index=cidx,
+                    annotate_pic_statistics=True,
+                    state_values_as_internal_labels=False,
+                    corrected_edge_lengths=False)
             for nd in ctree.postorder_internal_node_iter():
                 vals = (nd.pic_state_value,
                         nd.pic_corrected_edge_length,

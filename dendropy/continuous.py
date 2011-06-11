@@ -407,7 +407,11 @@ class PhylogeneticIndependentConstrasts(object):
         self._character_contrasts[character_index] = dict(all_results)
         return self._character_contrasts[character_index]
 
-    def annotated_tree(self, character_index):
+    def contrasts_tree(self,
+            character_index,
+            annotate_pic_statistics=True,
+            state_values_as_internal_labels=False,
+            corrected_edge_lengths=False):
         """
         Returns a Tree object annotated with the following attributes added
         to each node (as annotations to be serialized):
@@ -424,8 +428,13 @@ class PhylogeneticIndependentConstrasts(object):
         tree = dendropy.Tree(self._tree)
         for nd in tree.postorder_internal_node_iter():
             nd_results = contrasts[nd._track_id]
-            for k, v in nd_results.items():
-                setattr(nd, k, v)
-                nd.annotate(k)
+            if annotate_pic_statistics:
+                for k, v in nd_results.items():
+                    setattr(nd, k, v)
+                    nd.annotate(k)
+            if corrected_edge_lengths and nd_results['pic_corrected_edge_length'] is not None:
+                nd.edge.length = nd_results['pic_corrected_edge_length']
+            if state_values_as_internal_labels:
+                nd.label = str(nd_results['pic_state_value'])
         return tree
 
