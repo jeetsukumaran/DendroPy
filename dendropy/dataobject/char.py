@@ -503,7 +503,7 @@ class CharacterDataMap(dict, Annotated):
         dict.__init__(self)
         Annotated.__init__(self)
 
-    def num_characters(self):
+    def _get_vector_size(self):
         """
         Returns number of characters in *first* sequence.
         """
@@ -511,6 +511,7 @@ class CharacterDataMap(dict, Annotated):
             return len(self.values()[0])
         else:
             return 0
+    vector_size = property(_get_vector_size, None, None, "Returns number of characters in *first* sequence")
 
     def __setitem__(self, key, value):
         """
@@ -834,6 +835,10 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     def __len__(self):
         "Dictionary interface implementation for direct access to character map."
         return len(self.taxon_seq_map)
+
+    def _get_vector_size(self):
+        return self.taxon_seq_map.vector_size
+    vector_size = property(_get_vector_size, None, None, "Returns number of characters in *first* sequence")
 
     def __getitem__(self, key):
         "Dictionary interface implementation for direct access to character map."
