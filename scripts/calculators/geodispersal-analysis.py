@@ -138,10 +138,9 @@ def add_to_full(mat, full_mat, mat_el_len_list):
 
 def check_file_overwrite(fn):
     if os.path.exists(fn):
-        c = raw_input(fn  + ' exists. Are you sure that you would like to over-write it? (y/n) ')
+        c = raw_input(fn  + ' exists. Are you sure that you would like to over-write it? (y/n)\n')
         if c.lower() != 'y':
             sys.exit('Did not get "y" in response to prompt to overwrite file. Exiting...')
-    sys.stderr.write('\n')
 
 if __name__ == '__main__':
     from optparse import OptionParser
@@ -329,19 +328,14 @@ is a valid (but uninteresting) input file.
     
     if options.paup:
         try:
-            same_file = vic_stream == disp_stream
-            if same_file:
-                vic_stream.close()
-                
-            else:
-                vic_stream.close()
-                disp_stream.close()
+            vic_stream.close()
+            disp_stream.close()
             rc = subprocess.call(['paup', '-n', options.vicariance])
             rc = subprocess.call(['paup', '-n', options.dispersal])
         except:
-            sys.exit("Error running paup! (exception in subprocess).\n") 
+            sys.exit("Error running paup! (A python exception in subprocess).\nYou must have PAUP* in the PATH variable in your shell's environment to use the --paup option.\n") 
         if rc != 0:
-            sys.exit("Error running paup! (return code = %d)\n" % rc)
+            sys.exit("Error running paup! (PAUP exited with code = %d)\n" % rc)
         
         
         
