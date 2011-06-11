@@ -7,12 +7,15 @@ from dendropy.utility.messaging import get_logger
 from dendropy.treecalc import fitch_down_pass, fitch_up_pass
 from dendropy import DataSet
 from dendropy.utility.error import DataParseError
+from dendropy.utility.textutils import escape_nexus_token
 _DEBUGGING = True
 _LOG = get_logger('geodispersal')
 verbose = False
-gStateNames = None
+AREA_NAME_LIST = []
 col_width = 17
 
+def warn(msg):
+    _LOG.warn(msg)
 LAST_COMMAND = ''
 def write_as_nexus(stream, patterns, label):
     global LAST_COMMAND
@@ -20,15 +23,27 @@ def write_as_nexus(stream, patterns, label):
     p = patterns[0]
     num_chars = len(patterns)
     num_areas = len(p)
+    if num_areas < len(AREA_NAME_LIST):
+        warn('%d labels were found in the labels file, but only %d areas were read in the input NEXUS files' % (
+                    len(AREA_NAME_LIST),
+                    num_areas))
+    elif num_areas > len(AREA_NAME_LIST):
+        warn('Only %d labels were found in the labels file, but %d areas were read in the input NEXUS files' % (
+                    len(AREA_NAME_LIST),
+                    num_areas))
     stream.write("""Begin Data;
     Dimensions ntax = %d nchar = %d;
     Format datatype=standard symbols="012" ;
     Matrix \n""" % (num_areas, num_chars))
     for area_ind in range(num_areas):
-        if gStateNames:
-            name = gStateNames[area_ind]
+        if AREA_NAME_LIST:
+            try:
+                name = AREA_NAME_LIST[area_ind]
+            except:
+                name = 'unlabelled area ' + str(1 + area_ind)
         else:
             name = "area%d" % area_ind
+        name = escape_nexus_token(name)
         padding = ' ' * (col_width - len(name))
         stream.write("%s%s" % (name, padding))
         for p in patterns:
@@ -61,7 +76,7 @@ def vicariance_patterns(node_list, num_areas):
     for i in root.state_sets[0]:
         curr_pat[i] = 1
     patterns.append(curr_pat)
-
+    areas_seen = set()
     count = 0
     for node in node_list[1:]:
         curr_pat = [0]*num_areas
@@ -70,6 +85,8 @@ def vicariance_patterns(node_list, num_areas):
         assert(p)
         par_area = p.state_sets[0]
         child_area = node.state_sets[0]
+        areas_seen.update(par_area)
+        areas_seen.update(child_area)
 
         diff = par_area - child_area
         _LOG.debug("count = %d Par = %s       Des = %s    diff = %s" %(count, str(par_area), str(child_area), str(diff)))
@@ -88,7 +105,15 @@ def vicariance_patterns(node_list, num_areas):
         patterns.append(curr_pat)
         count += 1
 
+    if ABSENT_FOR_ALLTAXA_CODE != 0:
+        replace_unseen_areas(patterns, num_areas, areas_seen)
     return patterns
+
+def replace_unseen_areas(patterns, num_areas, areas_seen):
+    for area_ind in range(num_areas):
+        if area_ind not in areas_seen:
+            for pattern in patterns:
+                pattern[area_ind] = ABSENT_FOR_ALLTAXA_CODE
 
 def dispersal_patterns(node_list, num_areas):
     '''Returns a transpose (characters as rows) matrix of 0, 1, 2 values for the
@@ -101,11 +126,16 @@ def dispersal_patterns(node_list, num_areas):
         curr_pat[i] = 1
     patterns.append(curr_pat)
 
+    areas_seen = set()
+
     for node in node_list[1:]:
         p = node.parent_node
         assert(p)
         par_area = p.state_sets[0]
         child_area = node.state_sets[0]
+
+        areas_seen.update(par_area)
+        areas_seen.update(child_area)
 
         twos = child_area - par_area
         curr_pat = [0]*num_areas
@@ -116,9 +146,12 @@ def dispersal_patterns(node_list, num_areas):
         _LOG.debug("dispersal: count = %d Par = %s, Des = %s, twos = %s, pattern= %s" % 
                     (node.biogeo_number, str(par_area), str(child_area), str(twos), str(curr_pat)))
         patterns.append(curr_pat)
+
+    if ABSENT_FOR_ALLTAXA_CODE != 0:
+        replace_unseen_areas(patterns, num_areas, areas_seen)
     return patterns
 
-ABSENT_FOR_ALLTAXA_CODE = '0'
+ABSENT_FOR_ALLTAXA_CODE = 0
 
 def add_to_full(mat, full_mat, mat_el_len_list):
     prev_n_char = len(full_mat)
@@ -186,6 +219,10 @@ is a valid (but uninteresting) input file.
                       dest="dispersal",
                       default=None,
                       help="The name of the output file for the dispersal matrix")
+    parser.add_option("--labels", 
+                      dest="labels",
+                      default=None,
+                      help="Name of an (optional) file with labels for the areas.  The format for this file is simply one label per line.  Note that the labels should correspond to that the state codes are listed in the SYMBOLS option of the FORMAT command input files.")
     parser.add_option('-p',
                       '--paup', 
                       dest="paup", 
@@ -227,9 +264,20 @@ is a valid (but uninteresting) input file.
         check_file_overwrite('Dispersal.tre')
         LAST_COMMAND = ' Quit; '
 
-    #if len(args) == 2:
-    #    labels_filename = args[1]
-    #    gStateNames = [i.strip() for i in open(labels_filename, "rU").readlines()]
+    if options.labels:
+        labels_filename = options.labels
+        try:
+            raw_labels = [i.strip() for i in open(labels_filename, "rU").readlines()]
+        except:
+            sys.exit('Error reading the area labels file "%s"\n' % labels_filename)
+        blank_found = False
+        for label in raw_labels:
+            if not label:
+                blank_found = True
+            else:
+                if blank_found:
+                    sys.exit('Blank line (or line with only whitespace) found in "%s"\nThis is not supported' % labels_filename)
+                AREA_NAME_LIST.append(label)
 
     char_index = 0
     char_mat_index = 0
