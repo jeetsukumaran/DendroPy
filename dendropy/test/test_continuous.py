@@ -25,6 +25,7 @@ import inspect
 import dendropy
 import itertools
 from dendropy.test.support.datagen import RepeatedRandom
+from dendropy.test.support import extendedtest
 from dendropy import continuous
 
 class BounceConstrainTest(unittest.TestCase):
@@ -105,6 +106,58 @@ class KTBEvolveLinearBounce(unittest.TestCase):
             if i.edge_length is not None:
                 i.edge_length *= i.mean_edge_rate
 
+class PICTest(extendedtest.ExtendedTestCase):
+
+    def setUp(self):
+        tree_str = "[&R] ((((Homo:0.21,Pongo:0.21)N1:0.28,Macaca:0.49)N2:0.13,Ateles:0.62)N3:0.38,Galago:1.00)N4:0.0;"
+        data_str = """
+    #NEXUS
+    BEGIN DATA;
+        DIMENSIONS  NTAX=5 NCHAR=2;
+        FORMAT DATATYPE = CONTINUOUS GAP = - MISSING = ?;
+        MATRIX
+            Homo      4.09434   4.74493
+            Pongo     3.61092   3.33220
+            Macaca    2.37024   3.36730
+            Ateles    2.02815   2.89037
+            Galago   -1.46968   2.30259
+        ;
+    END;
+    """
+        taxa = dendropy.TaxonSet()
+        self.tree = dendropy.Tree.get_from_string(tree_str, 'newick', taxon_set=taxa)
+        self.char_matrix = dendropy.ContinuousCharacterMatrix.get_from_string(data_str,
+                'nexus',
+                taxon_set=taxa)
+        self.pic = continuous.PhylogeneticIndependentConstrasts(tree=self.tree,
+                char_matrix=self.char_matrix)
+        self.expected_vals = []
+        self.expected_vals.append({
+            # state, corrected edge length, contrast, contrast_var
+            "N1": (3.852630000, 0.385000000, 0.483420000, 0.420000000),
+            "N2": (3.200378400, 0.345600000, 1.482390000, 0.875000000),
+            "N3": (2.780823579, 0.601905551, 1.172228400, 0.965600000),
+            "N4": (1.183724613, 0.375743470, 4.250503579, 1.601905551),
+            })
+        self.expected_vals.append({
+            # state, corrected edge length, contrast, contrast_var
+            "N1": (4.038565000, 0.385000000, 1.412730000, 0.420000000),
+            "N2": (3.743208400, 0.345600000, 0.671265000, 0.875000000),
+            "N3": (3.437967150, 0.601905551, 0.852838400, 0.965600000),
+            "N4": (3.011356599, 0.375743470, 1.135377150, 1.601905551),
+            })
+
+    def testTree(self):
+        for cidx in range(self.char_matrix.vector_size):
+            ctree = self.pic.annotated_tree(cidx)
+            for nd in ctree.postorder_internal_node_iter():
+                vals = (nd.pic_state_value,
+                        nd.pic_corrected_edge_length,
+                        nd.pic_contrast_raw,
+                        nd.pic_contrast_variance)
+                exp_vals = self.expected_vals[cidx][nd.label]
+                for vidx, val in enumerate(vals):
+                    self.assertAlmostEqual(vals[vidx], exp_vals[vidx])
 
 def approx_equal(x, y, tol=1e-5):
     "Returns True if x and y differ by less than tol"
