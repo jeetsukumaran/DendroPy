@@ -384,8 +384,6 @@ class PhylogeneticIndependentConstrasts(object):
                         sum(numerator_func(i) for i in range(n)) \
                         / sum(denominator_func(i) for i in range(n))
 
-
-                # debugging this ..
                 sum_of_child_edges = sum(corrected_edge_lens)
                 prod_of_child_edges = reduce(operator.mul, corrected_edge_lens)
                 nd_results['pic_edge_length_error'] = (  prod_of_child_edges / (sum_of_child_edges) )
