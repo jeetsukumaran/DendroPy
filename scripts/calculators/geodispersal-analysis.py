@@ -191,7 +191,7 @@ is a valid (but uninteresting) input file.
                       dest="paup", 
                       default=False, 
                       action="store_true",
-                      help="If specified, then PAUP* will be invoked to produce Vicariance.tre and Dispersal.tre")
+                      help="If specified, then PAUP* will be invoked to produce Vicariance.tre and Dispersal.tre Note that both the --vicariance and --dispersal options must also be used if you use the --paup option")
     parser.add_option('--absent-as-missing', 
                       dest="absent_is_missing", 
                       default=False, 
