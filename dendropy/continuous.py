@@ -368,37 +368,38 @@ class PhylogeneticIndependentConstrasts(object):
                 nd_results['pic_corrected_edge_length'] = None
             else:
                 state_vals = []
-                edge_lens = []
+                corrected_edge_lens = []
+                actual_edge_lens = []
                 for cnd in child_nodes:
                     state_vals.append(all_results[cnd._track_id]['pic_state_value'])
+                    actual_edge_lens.append(cnd.edge.length)
                     if all_results[cnd._track_id]['pic_corrected_edge_length'] is not None:
-                        edge_lens.append(all_results[cnd._track_id]['pic_corrected_edge_length'])
+                        corrected_edge_lens.append(all_results[cnd._track_id]['pic_corrected_edge_length'])
                     else:
-                        edge_lens.append(cnd.edge.length)
-                sum_of_child_edges = sum(edge_lens)
+                        corrected_edge_lens.append(cnd.edge.length)
                 n = len(state_vals)
-                numerator_func = lambda i : (1.0/edge_lens[i]) * state_vals[i]
-                denominator_func = lambda i  : 1.0/edge_lens[i]
+                numerator_func = lambda i : (1.0/corrected_edge_lens[i]) * state_vals[i]
+                denominator_func = lambda i  : 1.0/corrected_edge_lens[i]
                 nd_results['pic_state_value'] = \
                         sum(numerator_func(i) for i in range(n)) \
                         / sum(denominator_func(i) for i in range(n))
-                #x1 = state_vals[0]
-                #x2 = state_vals[1]
-                #v1 = edge_lens[0]
-                #v2 = edge_lens[1]
-                #nd_results['pic_state_value'] = ( (1.0/v1)*x1 + (1.0/v2)*x2 ) / ( 1.0/v1 + 1.0/v2 )
-                nd_results['pic_state_variance'] = ( reduce(operator.mul, edge_lens) / (sum_of_child_edges) )
+
+
+                # debugging this ..
+                sum_of_child_edges = sum(corrected_edge_lens)
+                prod_of_child_edges = reduce(operator.mul, corrected_edge_lens)
+                nd_results['pic_edge_length_error'] = (  prod_of_child_edges / (sum_of_child_edges) )
+                if nd.edge.length is not None:
+                    nd_results['pic_corrected_edge_length'] = nd.edge.length + nd_results['pic_edge_length_error']
+                else:
+                    nd_results['pic_corrected_edge_length'] = None
+                nd_results['pic_state_variance'] = nd_results['pic_corrected_edge_length']
 
                 ## TODO: THIS IS OBVIOUSLY WRONG WHEN MORE THAN 2 CHILDREN!!
                 nd_results['pic_contrast_raw'] = state_vals[0] - state_vals[1]
 
                 nd_results['pic_contrast_variance'] = sum_of_child_edges
                 nd_results['pic_contrast_standardized'] = nd_results['pic_contrast_raw'] / (sum_of_child_edges ** 0.5)
-                nd_results['pic_edge_length_error'] = nd_results['pic_state_variance']
-                if nd.edge.length is not None:
-                    nd_results['pic_corrected_edge_length'] = nd.edge.length + nd_results['pic_edge_length_error']
-                else:
-                    nd_results['pic_corrected_edge_length'] = None
             nd._track_id = id(nd) # will get cloned
             all_results[nd._track_id] = nd_results
             try:
