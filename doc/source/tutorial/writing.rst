@@ -48,13 +48,13 @@ All Formats
 ^^^^^^^^^^^
 
     ``taxon_set``
-        When writing a |DataSet| object, if passed a specific |TaxonSet|, then **only** |TreeList| and |CharacterMatrix| objects associated with this |TaxonSet| will be written. By default, this is :keyword:`None`, meaning that all data in the |DataSet| object will be written.
+        When writing a |DataSet| object, if passed a specific |TaxonSet|, then **only** |TreeList| and |CharacterMatrix| objects associated with this |TaxonSet| will be written. By default, this is |None|, meaning that all data in the |DataSet| object will be written.
 
     ``exclude_trees``
-        When writing a |DataSet| object, if :keyword:`True`, then **no** tree data will be written (i.e., all |TreeList| objects in the |DataSet| will be skipped in the output). By default, this is :keyword:`False`, meaning that all tree data will be written.
+        When writing a |DataSet| object, if |True|, then **no** tree data will be written (i.e., all |TreeList| objects in the |DataSet| will be skipped in the output). By default, this is |False|, meaning that all tree data will be written.
 
     ``exclude_chars``
-        When writing a |DataSet| object, if :keyword:`True`, then **no** characer data will be written (i.e., all |CharacterMatrix| objects in the |DataSet| will be skipped in the output). By default, this is :keyword:`False`, meaning that all character data will be written.
+        When writing a |DataSet| object, if |True|, then **no** characer data will be written (i.e., all |CharacterMatrix| objects in the |DataSet| will be skipped in the output). By default, this is |False|, meaning that all character data will be written.
 
 .. _Customizing_Writing_NEXUS_and_Newick:
 
@@ -108,50 +108,50 @@ The following code fragment shows a typical invocation of Newick format write op
 The keywords supported for writing general NEXUS-formatted output include:
 
     ``simple``
-        When writing NEXUS-formatted data, if :keyword:`True`, then character data will be represented as a single "``DATA``" block, instead of separate "``TAXA``" and "``CHARACTERS``" blocks. By default this is :keyword:`False`.
+        When writing NEXUS-formatted data, if |True|, then character data will be represented as a single "``DATA``" block, instead of separate "``TAXA``" and "``CHARACTERS``" blocks. By default this is |False|.
     ``block_titles``
-        When writing NEXUS-formatted data, if :keyword:`False`, then title statements will not be added to the various NEXUS blocks (i.e., "``TAXA``", "``CHARACTERS``", and "``TREES``"). By default, this is :keyword:`True`, i.e., block titles will be written.
+        When writing NEXUS-formatted data, if |False|, then title statements will not be added to the various NEXUS blocks (i.e., "``TAXA``", "``CHARACTERS``", and "``TREES``"). By default, this is |True|, i.e., block titles will be written.
     ``suppress_taxa_block``
-        If :keyword:`True`, do not write a "TAXA" block. Default is :keyword:`False`.
+        If |True|, do not write a "TAXA" block. Default is |False|.
     ``exclude_trees``
-        When writing NEXUS-formatted data, if :keyword:`True`, then **no** tree data will be written (i.e., all |TreeList| objects in the |DataSet| will be skipped in the output). By default, this is :keyword:`False`, meaning that all tree data will be written.
+        When writing NEXUS-formatted data, if |True|, then **no** tree data will be written (i.e., all |TreeList| objects in the |DataSet| will be skipped in the output). By default, this is |False|, meaning that all tree data will be written.
     ``exclude_chars``
-        When writing NEXUS-formatted data, if :keyword:`True`, then **no** characer data will be written (i.e., all |CharacterMatrix| objects in the |DataSet| will be skipped in the output). By default, this is :keyword:`False`, meaning that all character data will be written.
+        When writing NEXUS-formatted data, if |True|, then **no** characer data will be written (i.e., all |CharacterMatrix| objects in the |DataSet| will be skipped in the output). By default, this is |False|, meaning that all character data will be written.
     ``supplemental_blocks``
         When writing NEXUS-formatted data, a list of other blocks (or strings) to be written at the end of the file.
     ``file_comments``
-        When writing NEXUS-formatted data, then the contents of this variable (a string or a list of strings) will be added as a NEXUS comment to the file (at the top). By default, this is :keyword:`None`.
+        When writing NEXUS-formatted data, then the contents of this variable (a string or a list of strings) will be added as a NEXUS comment to the file (at the top). By default, this is |None|.
 
 The keywords supported for writing both NEXUS- or Newick-formatted trees include:
 
     ``suppress_leaf_taxon_labels``
-        If :keyword:`True`, then taxon labels will not be printed for leaves.  Default is :keyword:`False`.
+        If |True|, then taxon labels will not be printed for leaves.  Default is |False|.
     ``suppress_leaf_node_labels``
-        If :keyword:`False`, then node labels (if available) will be printed for leaves. Defaults to :keyword:`True`. Note that DendroPy distinguishes between *taxon* labels and *node* labels. In a typical NEWICK string, taxon labels are printed for leaf nodes, while leaf node labels are ignored (hence the default ':keyword:`True`' setting, to ignore leaf *node* labels).
+        If |False|, then node labels (if available) will be printed for leaves. Defaults to |True|. Note that DendroPy distinguishes between *taxon* labels and *node* labels. In a typical NEWICK string, taxon labels are printed for leaf nodes, while leaf node labels are ignored (hence the default ':keyword:`True`' setting, to ignore leaf *node* labels).
     ``suppress_internal_taxon_labels``
-        If :keyword:`True`, then taxon labels will not be printed for internal nodes.  Default is :keyword:`False`.  NOTE: this replaces the ``internal_labels`` argument which has been deprecated.
+        If |True|, then taxon labels will not be printed for internal nodes.  Default is |False|.  NOTE: this replaces the ``internal_labels`` argument which has been deprecated.
     ``suppress_internal_node_labels``
-        If :keyword:`True`, internal node labels will not be written. Default is :keyword:`False`.  NOTE: this replaces the ``internal_labels`` argument which has been deprecated.
+        If |True|, internal node labels will not be written. Default is |False|.  NOTE: this replaces the ``internal_labels`` argument which has been deprecated.
     ``suppress_rooting``
-        If :keyword:`True`, will not write rooting statement. Default is :keyword:`False`.  NOTE: this keyword argument replaces the ``write_rooting`` argument which has now been deprecated.
+        If |True|, will not write rooting statement. Default is |False|.  NOTE: this keyword argument replaces the ``write_rooting`` argument which has now been deprecated.
     ``suppress_edge_lengths``
-        If :keyword:`True`, will not write edge lengths. Default is :keyword:`False`.  NOTE: this keyword argument replaces the ``edge_lengths`` argument which has now been deprecated.
+        If |True|, will not write edge lengths. Default is |False|.  NOTE: this keyword argument replaces the ``edge_lengths`` argument which has now been deprecated.
     ``unquoted_underscores``
-        If :keyword:`True`, labels with underscores will not be quoted, which will mean that they will be interpreted as spaces if read again ("soft" underscores).  If :keyword:`False`, then labels with underscores will be quoted, resulting in "hard" underscores.  Default is :keyword:`False`.  NOTE: this keyword argument replaces the ``quote_underscores`` argument which has now been deprecated.
+        If |True|, labels with underscores will not be quoted, which will mean that they will be interpreted as spaces if read again ("soft" underscores).  If |False|, then labels with underscores will be quoted, resulting in "hard" underscores.  Default is :keyword:`False`.  NOTE: this keyword argument replaces the ``quote_underscores`` argument which has now been deprecated.
     ``preserve_spaces``
-        If :keyword:`True`, spaces not mapped to underscores in labels. Default is :keyword:`False`.
+        If |True|, spaces not mapped to underscores in labels. Default is |False|.
     ``store_tree_weights``
-        If :keyword:`True`, tree weights are written. Default is :keyword:`False`.
+        If |True|, tree weights are written. Default is |False|.
     ``suppress_annotations``
-        If :keyword:`True`, will **not** write annotated attributes as comments. Default is :keyword:`False` if writing in NEXUS format *and* ``simple`` is :keyword:`False`; otherwise, if writing in NEWICK format or NEXUS format with ``simple`` set to :keyword:`True`, then defaults to :keyword:`True`.
+        If |True|, will **not** write annotated attributes as comments. Default is |False| if writing in NEXUS format *and* ``simple`` is :keyword:`False`; otherwise, if writing in NEWICK format or NEXUS format with ``simple`` set to :keyword:`True`, then defaults to :keyword:`True`.
     ``annotations_as_nhx``
-        If :keyword:`True` and ``suppress_annotations`` is :keyword:`True`, then annotations will be written in NHX format ('[&&field=value:field=value]'), as opposed to a more generic 'hot comment' format with only one leading ampersand ('[&field=value,field=value,field={value,value}]'). Defaults to :keyword:`False`.
+        If |True| and ``suppress_annotations`` is :keyword:`True`, then annotations will be written in NHX format ('[&&field=value:field=value]'), as opposed to a more generic 'hot comment' format with only one leading ampersand ('[&field=value,field=value,field={value,value}]'). Defaults to |False|.
     ``suppress_item_comments``
-        If :keyword:`True`, will **not** write any additional comments associated with (tree) items. Default is :keyword:`False` if writing in NEXUS format *and* ``simple`` is :keyword:`False`; otherwise, if writing in NEWICK format or NEXUS format with ``simple`` set to :keyword:`True`, then defaults to :keyword:`True`.
+        If |True|, will **not** write any additional comments associated with (tree) items. Default is |False| if writing in NEXUS format *and* ``simple`` is :keyword:`False`; otherwise, if writing in NEWICK format or NEXUS format with ``simple`` set to :keyword:`True`, then defaults to :keyword:`True`.
     ``node_label_element_separator``
-        If both ``suppress_leaf_taxon_labels`` and ``suppress_leaf_node_labels`` are :keyword:`False`, then this will be the string used to join them. Defaults to ' '.
+        If both ``suppress_leaf_taxon_labels`` and ``suppress_leaf_node_labels`` are |False|, then this will be the string used to join them. Defaults to ' '.
     ``node_label_compose_func``
-        If not None, should be a function that takes a |Node| object as an argument and returns the string to be used to represent the node in the tree statement. The return value from this function is used unconditionally to print a node representation in a tree statement, by-passing the default labelling function (and thus ignoring ``suppress_leaf_taxon_labels``, ``suppress_leaf_node_labels=:keyword:`True```, ``suppress_internal_taxon_labels``, ``suppress_internal_node_labels``, etc.). Defaults to :keyword:`None`.
+        If not None, should be a function that takes a |Node| object as an argument and returns the string to be used to represent the node in the tree statement. The return value from this function is used unconditionally to print a node representation in a tree statement, by-passing the default labelling function (and thus ignoring ``suppress_leaf_taxon_labels``, ``suppress_leaf_node_labels=|True|``, ``suppress_internal_taxon_labels``, ``suppress_internal_node_labels``, etc.). Defaults to |None|.
 
 .. _Customizing_Writing_PHYLIP:
 

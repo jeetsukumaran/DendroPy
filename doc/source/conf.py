@@ -147,6 +147,13 @@ rst_epilog = """
 .. |ContinuousCharacterMatrix| replace:: :class:`~dendropy.dataobject.char.ContinuousCharacterMatrix`
 .. |CharacterDataVector| replace:: :class:`~dendropy.dataobject.char.CharacterDataVector`
 .. |CharacterDataCell| replace:: :class:`~dendropy.dataobject.char.CharacterDataCell`
+
+.. |True| replace:: :keyword:`True`
+.. |False| replace:: :keyword:`False`
+.. |None| replace:: :keyword:`None`
+
+.. |FigTree| replace:: FigTree
+.. _FigTree: http://tree.bio.ed.ac.uk/software/figtree/
 """
 
 _source_archive_url = """
