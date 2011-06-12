@@ -47,7 +47,27 @@ In addition to the 0-based index first argument, ``character_index``, the :meth:
     ``corrected_edge_lengths``
         If |True| then the |Tree| returned will have its edge lengths adjusted to the corrected edge lengths as yielded by the PIC analysis.
 
-For example, the following prints out a contrasts analysis tree for the first character (index=0) in NEXUS format, with the statistics marked up as metadata that can be viewed in |FigTree| (by checking "Node Labels" and selecting the appropriate statistics from the drop-down menu::
+So the following retrieves the constrasts tree for the first character (index=0), and prints a table of the various statistics::
+
+    >>> ctree1 = pic.contrasts_tree(character_index=0,
+    ...     annotate_pic_statistics=True,
+    ...     state_values_as_node_labels=False,
+    ...     corrected_edge_lengths=False)
+    >>> for nd in ctree1.postorder_internal_node_iter():
+    ...     row = [nd.pic_state_value,
+    ...             nd.pic_state_variance,
+    ...             nd.pic_contrast_raw,
+    ...             nd.pic_edge_length_error]
+    ...     row_str = [(("%10.8f") % i) for i in row]
+    ...     row_str = "    ".join(row_str)
+    ...     label = nd.label.ljust(6)
+    ...     print "%s %s" % (label, row_str)
+    HP     3.85263000    0.38500000    0.48342000    0.10500000
+    HPM    3.20037840    0.34560000    1.48239000    0.21560000
+    HPMA   2.78082358    0.60190555    1.17222840    0.22190555
+    Root   1.18372461    0.37574347    4.25050358    0.37574347
+
+The following prints out a contrasts analysis tree for the first character (index=0) in NEXUS format, with the statistics marked up as metadata that can be viewed in |FigTree| (by checking "Node Labels" and selecting the appropriate statistics from the drop-down menu::
 
     >>> ctree1 = pic.contrasts_tree(character_index=0,
     ...     annotate_pic_statistics=True,
@@ -73,17 +93,13 @@ For example, the following prints out a contrasts analysis tree for the first ch
 
     END;
 
-Alternatively, you might want the same tree showing just the numeric values of the states. The following produces this by first requesting that :meth:`~dendropy.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` maps state values to node labels, and then, when writing out in Newick format, suppressing the taxon labels but printing node labels instead::
+Alternatively, you might want the same tree showing just the numeric values of the states. The following produces this for each character in the matrix by first requesting that :meth:`~dendropy.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` replace existing node labels with the state values for that node, and then, when writing out in Newick format, suppressing taxon labels and printing node labels in their place:
 
-    >>> ctree1 = pic.contrasts_tree(character_index=0,
-    ...         annotate_pic_statistics=True,
-    ...         state_values_as_node_labels=True,
-    ...         corrected_edge_lengths=False)
-    >>> print(ctree1.as_string("newick",
-    ...             suppress_leaf_taxon_labels=True,
-    ...             suppress_leaf_node_labels=False,
-    ...             suppress_internal_taxon_labels=True,
-    ...             suppress_internal_node_labels=False))
+.. literalinclude:: /examples/pic1.py
+
+This results in::
+
     [&R] ((((4.09434:0.21,3.61092:0.21)3.85263:0.28,2.37024:0.49)3.2003784:0.13,2.02815:0.62)2.78082357912:0.38,'-1.46968':1.0)1.1837246134:0.0;
 
+    [&R] ((((4.74493:0.21,3.3322:0.21)4.038565:0.28,3.3673:0.49)3.7432084:0.13,2.89037:0.62)3.43796714996:0.38,2.30259:1.0)3.01135659943:0.0;
 
