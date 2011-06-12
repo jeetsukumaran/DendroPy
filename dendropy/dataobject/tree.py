@@ -2601,8 +2601,10 @@ class Node(TaxonLinked):
 
     def as_newick_string(self, **kwargs):
         """
-        This returns the Node as a NEWICK
-        statement according to the given formatting rules.
+        This returns the Node as a NEWICK statement according to the given
+        formatting rules. This should be used for debugging purposes only.
+        For production purposes, use the the full-fledged 'as_string()'
+        method of the object.
         """
         out = StringIO()
         self.write_newick(out, **kwargs)
@@ -2610,10 +2612,13 @@ class Node(TaxonLinked):
 
     def write_newick(self, out, **kwargs):
         """
-        This returns the Node as a NEWICK
-        statement according to the given formatting rules.
+        This returns the Node as a NEWICK statement according to the given
+        formatting rules. This should be used for debugging purposes only.  For
+        production purposes, use the the full-fledged 'write_to_stream()'
+        method of the object.
         """
-        edge_lengths = kwargs.get('edge_lengths', True)
+        edge_lengths = not kwargs.get('suppress_edge_lengths', False)
+        edge_lengths = kwargs.get('edge_lengths', edge_lengths)
         child_nodes = self.child_nodes()
         if child_nodes:
             out.write('(')
@@ -2647,13 +2652,14 @@ class Node(TaxonLinked):
         """returns a string that is an identifier for the node.  This is called
         by the newick-writing functions, so the kwargs that affect how node
         labels show up in a newick string are the same ones used here:
-        `include_internal_labels` is a Boolean.
+        `suppress_internal_labels` is a Boolean, and defaults to False.
         """
         is_leaf = (len(self._child_nodes) == 0)
-        if (not is_leaf):
+        if not is_leaf:
             if kwargs.get("newick", False):
                 return self.as_newick_string()
-            if not kwargs.get("include_internal_labels"):
+            if kwargs.get("suppress_internal_labels", False) \
+                    or not kwargs.get("include_internal_labels", True):
                 return ""
         try:
             t = self.taxon

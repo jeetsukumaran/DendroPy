@@ -56,21 +56,29 @@ class NexusWriter(iosys.DataWriter):
             `supplemental_blocks`
                 List of strings to be written after data (e.g., PAUP blocks,
                 MrBayes blocks etc.).
-            `write_rooting`
-                If False, rooting comment ('[&R]' or '[&U]') will not be
-                written. Default is True.
-            `edge_lengths`
-                If False, edges will not write edge lengths. Default is True.
-            `internal_labels`
-                If False, internal labels will not be written. Default is True.
+            `suppress_rooting`
+                If True, will not write rooting statement. Default is False.
+                NOTE: this replaces the `write_rooting` argument which has been
+                deprecated.
+            `suppress_edge_lengths`
+                If True, will not write edge lengths. Default is False.
+                NOTE: this replaces the `edge_lengths` argument which has been
+                deprecated.
+            `suppress_internal_labels`
+                If True, internal labels will not be written. Default is False.
+                NOTE: this replaces the `internal_labels` argument which has
+                been deprecated.
+            `unquoted_underscores`
+                If True, labels with underscores will not be quoted, which will
+                mean that they will be interpreted as spaces if read again
+                ("soft" underscores).  If False, then labels with underscores
+                will be quoted, resulting in "hard" underscores.  Default is
+                False.
+                NOTE: this replaces the `quote_underscores` argument which has
+                been deprecated.
             `preserve_spaces`
                 If True, spaces not mapped to underscores in labels. Default is
                 False.
-            `quote_underscores`
-                If False, labels with underscores will not be quoted, which
-                will mean that they will be interpreted as spaces if read
-                again. If True, then they will be quoted, resulting in "hard"
-                underscores. Default is True.
             `store_tree_weights`
                 If True, tree weights are written. Default is False.
             `annotations_as_comments`
@@ -78,24 +86,34 @@ class NexusWriter(iosys.DataWriter):
             `annotations_as_nhx`
                 If True, will write annotation as NHX statements. Default is
                 False.
+            `write_item_comments`
+                If True, will write any additional comments. Default is False.
 
         """
         iosys.DataWriter.__init__(self, **kwargs)
         self.simple = kwargs.get("simple", False)
         self.exclude_taxa = kwargs.get("exclude_taxa", False)
-        self.is_write_rooting = kwargs.get("write_rooting", True)
-        self.store_tree_weights = kwargs.get('store_tree_weights', False)
-        self.is_write_edge_lengths = kwargs.get("edge_lengths", True)
-        self.is_write_internal_labels = kwargs.get("internal_labels", True)
         self.is_write_block_titles = kwargs.get("block_titles", None)
-        self.preserve_spaces = kwargs.get("preserve_spaces", False)
-        self.quote_underscores = kwargs.get('quote_underscores', True)
-        self.annotations_as_comments = kwargs.get("annotations_as_comments", True)
-        self.annotations_as_nhx = kwargs.get("annotations_as_nhx", False)
-        self.nhx_key_to_func = kwargs.get("nhx_key_to_func_dict")
-        self.is_write_item_comments = kwargs.get("write_item_comments", not self.simple)
         self.comment = kwargs.get("comment", [])
         self.supplemental_blocks = kwargs.get("supplemental_blocks", [])
+
+        self.suppress_rooting = kwargs.get("suppress_rooting", False)
+        self.suppress_rooting = not kwargs.get("write_rooting", not self.suppress_rooting) # legacy
+
+        self.suppress_edge_lengths = kwargs.get("suppress_edge_lengths", False)
+        self.suppress_edge_lengths = not kwargs.get("edge_lengths", not self.suppress_edge_lengths) # legacy
+
+        self.suppress_internal_labels = kwargs.get("suppress_internal_labels", False)
+        self.suppress_internal_labels = not kwargs.get("internal_labels", not self.suppress_internal_labels) # legacy
+
+        self.unquoted_underscores = kwargs.get('unquoted_underscores', False)
+        self.unquoted_underscores = not kwargs.get('quote_underscores', not self.unquoted_underscores) # legacy
+
+        self.preserve_spaces = kwargs.get("preserve_spaces", False)
+        self.store_tree_weights = kwargs.get("store_tree_weights", False)
+        self.annotations_as_comments = kwargs.get("annotations_as_comments", False)
+        self.annotations_as_nhx = kwargs.get("annotations_as_nhx", False)
+        self.write_item_comments = kwargs.get("write_item_comments", False)
 
     def write(self, stream):
         """
@@ -165,7 +183,7 @@ class NexusWriter(iosys.DataWriter):
         if not block.label:
             block.label = block.oid
         if block.label:
-            return "TITLE %s" % textutils.escape_nexus_token(block.label, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores)
+            return "TITLE %s" % textutils.escape_nexus_token(block.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores)
         else:
             return ""
 
@@ -179,7 +197,7 @@ class NexusWriter(iosys.DataWriter):
         block.append('    DIMENSIONS NTAX=%d;' % len(taxon_set))
         block.append('    TAXLABELS')
         for taxon in taxon_set:
-            block.append('        %s' % textutils.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores))
+            block.append('        %s' % textutils.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores))
         block.append('  ;')
         block.append('END;\n\n')
         stream.write('\n'.join(block))
@@ -187,35 +205,37 @@ class NexusWriter(iosys.DataWriter):
     def write_trees_block(self, tree_list, stream):
         block = []
         newick_writer = newick.NewickWriter(
-                edge_lengths=self.is_write_edge_lengths,
-                internal_labels=self.is_write_internal_labels,
+                suppress_rooting=self.suppress_rooting,
+                suppress_edge_lengths=self.suppress_edge_lengths,
+                suppress_internal_labels=self.suppress_internal_labels,
+                unquoted_underscores=self.unquoted_underscores,
                 preserve_spaces=self.preserve_spaces,
-                quote_underscores=self.quote_underscores,
+                store_tree_weights=self.store_tree_weights,
                 annotations_as_comments=self.annotations_as_comments,
                 annotations_as_nhx=self.annotations_as_nhx,
-                nhx_key_to_func_dict=self.nhx_key_to_func,
-                write_item_comments=self.is_write_item_comments)
+                write_item_comments=self.write_item_comments,
+                )
         block.append('BEGIN TREES;')
         if self._link_blocks():
             title = self.compose_block_title(tree_list)
             if title:
                 block.append('    %s;' % title)
             if tree_list.taxon_set.labels:
-                block.append('    LINK TAXA = %s;' % textutils.escape_nexus_token(tree_list.taxon_set.label, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores))
+                block.append('    LINK TAXA = %s;' % textutils.escape_nexus_token(tree_list.taxon_set.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores))
         for treeidx, tree in enumerate(tree_list):
             if tree.label:
                 tree_name = tree.label
             else:
                 tree_name = str(treeidx)
             newick_str = newick_writer.compose_tree(tree)
-            block.append('    TREE %s = %s' % (textutils.escape_nexus_token(tree_name, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores),
+            block.append('    TREE %s = %s' % (textutils.escape_nexus_token(tree_name, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores),
                 newick_str))
         block.append('END;\n\n')
         stream.write('\n'.join(block))
 
     def write_char_block(self, char_matrix, stream):
         nexus = []
-        taxlabels = [textutils.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores) for taxon in char_matrix.taxon_set]
+        taxlabels = [textutils.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores) for taxon in char_matrix.taxon_set]
         max_label_len = max([len(label) for label in taxlabels])
         nchar = max([len(seq) for seq in char_matrix.values()])
         if self.simple:
@@ -229,7 +249,7 @@ class NexusWriter(iosys.DataWriter):
             if title:
                 nexus.append('    %s;' % title)
             if char_matrix.taxon_set.label:
-                nexus.append('    LINK TAXA = %s;' % textutils.escape_nexus_token(char_matrix.taxon_set.label, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores))
+                nexus.append('    LINK TAXA = %s;' % textutils.escape_nexus_token(char_matrix.taxon_set.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores))
         nexus.append('    DIMENSIONS %s NCHAR=%d;' % (ntaxstr, nchar))
         nexus.append('    FORMAT %s;' % self.compose_format_terms(char_matrix))
         nexus.append('    MATRIX')
@@ -237,7 +257,7 @@ class NexusWriter(iosys.DataWriter):
         if isinstance(char_matrix, dataobject.ContinuousCharacterMatrix):
             for taxon in char_matrix.taxon_set:
                 seq = " ".join([str(v) for v in char_matrix[taxon]])
-                nexus.append('%s    %s' % (textutils.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores).ljust(max_label_len), seq))
+                nexus.append('%s    %s' % (textutils.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores).ljust(max_label_len), seq))
         else:
             for taxon in char_matrix.taxon_set:
                 seq_vec = char_matrix[taxon]
@@ -257,7 +277,7 @@ class NexusWriter(iosys.DataWriter):
                         else:
                             raise Exception("Could not match character state to symbol: '%s'." % state)
                         seq.write(state_string_map[state])
-                nexus.append('%s    %s' % (textutils.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores).ljust(max_label_len), seq.getvalue()))
+                nexus.append('%s    %s' % (textutils.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores).ljust(max_label_len), seq.getvalue()))
         nexus.append('    ;')
         nexus.append('END;\n\n')
         stream.write('\n'.join(nexus))

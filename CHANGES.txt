@@ -1,5 +1,15 @@
-Release 3.8.2 (next release, in development)
+Release 3.9.0 (next release, in development)
 --------------------------------------------
+
+New Features
+^^^^^^^^^^^^
+
+    - Phylogenetic independent contrasts (PIC) analysis can now be carried out using the `dendropy.continuous.PhylogeneticIndependentContrasts` class.
+
+Changes
+^^^^^^^
+
+    - Keyword arguments to `as_string()`, `write_to_path()`, `write_to_file`, etc. methods to customize NEXUS and NEWICK output have been tweaked to become more consistent. Previous keywords are still supported, but will be deprecated. The new set of keyword arguments supported can be seen in the :ref:`NEXUS and Newick tree writing customization <Customizing_Writing_NEXUS_and_Newick_Trees>` section.
 
 Bug Fixes
 ^^^^^^^^^

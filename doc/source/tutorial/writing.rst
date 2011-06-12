@@ -58,35 +58,40 @@ All Formats
 
 .. _Customizing_Writing_NEXUS_and_Newick:
 
-NEXUS/Newick
+NEXUS (only)
 ^^^^^^^^^^^^
 
     ``simple``
         When writing NEXUS-formatted data, if :keyword:`True`, then character data will be represented as a single "``DATA``" block, instead of separate "``TAXA``" and "``CHARACTERS``" blocks. By default this is :keyword:`False`.
-
-    ``write_rooting``
-        If :keyword:`False`, then tree rooting statements (e.g., "``[&R]``" or "``[&U]``") will not be prefixed to the tree statements. By default, this is :keyword:`True`, i.e., rooting statements will be written.
-
-    ``edge_lengths``
-        If :keyword:`False`, then edge or branch lengths will not be written as part of the tree statements. By default, this is :keyword:`True`, i.e., edge lengths will be written.
-
-    ``internal_labels``
-        If :keyword:`False`, then labels for internal nodes (if given) will not be written as part of the tree statements. By default, this is :keyword:`True`, i.e., internal node labels will be written.
-
-    ``write_item_comments``
-        If :keyword:`True`, then comments associated with nodes on trees will be written. When writing NEXUS formats, this defaults to :keyword:`True` for NEXUS formats, *unless* ``simple=True`` (see above) is specified, in which case it defaults to :keyword:`False` unless explicitly overridden by calling code. When writing NEWICK formats, this defaults to :keyword:`False`.
-
     ``block_titles``
         When writing NEXUS-formatted data, if :keyword:`False`, then title statements will not be added to the various NEXUS blocks (i.e., "``TAXA``", "``CHARACTERS``", and "``TREES``"). By default, this is :keyword:`True`, i.e., block titles will be written.
-
-    ``preserve_spaces``
-        If :keyword:`True`, then no attempt will be made to produce unquoted labels by substituting spaces for underscores. By default, this is :keyword:`False`, i.e., any label that includes spaces but no other special punctuation character or underscores will have all spaces replaced by underscores so as to allow the label to be represented without quotes.
-
-    ``quote_underscores``
-        If :keyword:`False`, then labels will not be wrapped in quotes even if they contain underscores (meaning that the underscores will be interpreted as spaces according to the NEXUS standard). By default, this is :keyword:`True`, meaning that any label that contains underscores will be wrapped in quotes. Note that if a label has any other characters requiring quote protection as specified by the NEXUS standard, then the label will be quoted regardless of the value of this keyword argument.
-
     ``comment``
         When writing NEXUS-formatted data, then the contents of this variable will be added as NEXUS comment to the output. By default, this is :keyword:`None`.
+
+.. _Customizing_Writing_NEXUS_and_Newick_Trees:
+
+NEXUS/Newick Trees
+^^^^^^^^^^^^^^^^^^
+
+    ``suppress_rooting``
+        If :keyword:`True`, will not write rooting statement. Default is :keyword:`False`.  NOTE: this keyword argument replaces the ``write_rooting`` argument which has now been deprecated.
+    ``suppress_edge_lengths``
+        If :keyword:`True`, will not write edge lengths. Default is :keyword:`False`.  NOTE: this keyword argument replaces the ``edge_lengths`` argument which has now been deprecated.
+    ``suppress_internal_labels``
+        If :keyword:`True`, internal labels will not be written. Default is :keyword:`False`.  NOTE: this keyword argument replaces the ``internal_labels`` argument which has now been deprecated.
+    ``unquoted_underscores``
+        If :keyword:`True`, labels with underscores will not be quoted, which will mean that they will be interpreted as spaces if read again ("soft" underscores).  If :keyword:`False`, then labels with underscores will be quoted, resulting in "hard" underscores.  Default is :keyword:`False`.  NOTE: this keyword argument replaces the ``quote_underscores`` argument which has now been deprecated.
+    ``preserve_spaces``
+        If :keyword:`True`, spaces not mapped to underscores in labels. Default is :keyword:`False`.
+    ``store_tree_weights``
+        If :keyword:`True`, tree weights are written. Default is :keyword:`False`.
+    ``annotations_as_comments``
+        If :keyword:`True`, will write annotations as comments. Default is :keyword:`False`.
+    ``annotations_as_nhx``
+        If :keyword:`True`, will write annotation as NHX statements. Default is
+        :keyword:`False`.
+    ``write_item_comments``
+        If :keyword:`True`, will write any additional comments. Default is :keyword:`False`.
 
 .. _Customizing_Writing_PHYLIP:
 

@@ -182,22 +182,34 @@ class NewickWriter(iosys.DataWriter):
 
     def __init__(self, **kwargs):
         """
-        __init__ recognizes the following keywords (in addition to those of `DataWriter.__init__`):
+        __init__ recognizes the following keywords (in addition to those of
+        `DataWriter.__init__`):
 
             `dataset`
                 Data to be written.
-            `edge_lengths`
-                If False, edges will not write edge lengths. Default is True.
-            `internal_labels`
-                If False, internal labels will not be written Default is True.
+            `suppress_rooting`
+                If True, will not write rooting statement. Default is False.
+                NOTE: this replaces the `write_rooting` argument which has been
+                deprecated.
+            `suppress_edge_lengths`
+                If True, will not write edge lengths. Default is False.
+                NOTE: this replaces the `edge_lengths` argument which has been
+                deprecated.
+            `suppress_internal_labels`
+                If True, internal labels will not be written. Default is False.
+                NOTE: this replaces the `internal_labels` argument which has
+                been deprecated.
+            `unquoted_underscores`
+                If True, labels with underscores will not be quoted, which will
+                mean that they will be interpreted as spaces if read again
+                ("soft" underscores).  If False, then labels with underscores
+                will be quoted, resulting in "hard" underscores.  Default is
+                False.
+                NOTE: this replaces the `quote_underscores` argument which has
+                been deprecated.
             `preserve_spaces`
                 If True, spaces not mapped to underscores in labels. Default is
                 False.
-            `quote_underscores`
-                If False, labels with underscores will not be quoted, which
-                will mean that they will be interpreted as spaces if read
-                again. If True, then they will be quoted, resulting in "hard"
-                underscores. Default is True.
             `store_tree_weights`
                 If True, tree weights are written. Default is False.
             `annotations_as_comments`
@@ -207,14 +219,22 @@ class NewickWriter(iosys.DataWriter):
                 False.
             `write_item_comments`
                 If True, will write any additional comments. Default is False.
-
         """
         iosys.DataWriter.__init__(self, **kwargs)
-        self.edge_lengths = kwargs.get("edge_lengths", True)
-        self.is_write_rooting = kwargs.get("write_rooting", True)
-        self.internal_labels = kwargs.get("internal_labels", True)
+
+        self.suppress_rooting = kwargs.get("suppress_rooting", False)
+        self.suppress_rooting = not kwargs.get("write_rooting", not self.suppress_rooting) # legacy
+
+        self.suppress_edge_lengths = kwargs.get("suppress_edge_lengths", False)
+        self.suppress_edge_lengths = not kwargs.get("edge_lengths", not self.suppress_edge_lengths) # legacy
+
+        self.suppress_internal_labels = kwargs.get("suppress_internal_labels", False)
+        self.suppress_internal_labels = not kwargs.get("internal_labels", not self.suppress_internal_labels) # legacy
+
+        self.unquoted_underscores = kwargs.get('unquoted_underscores', False)
+        self.unquoted_underscores = not kwargs.get('quote_underscores', not self.unquoted_underscores) # legacy
+
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
-        self.quote_underscores = kwargs.get('quote_underscores', True)
         self.store_tree_weights = kwargs.get("store_tree_weights", False)
         self.annotations_as_comments = kwargs.get("annotations_as_comments", False)
         self.annotations_as_nhx = kwargs.get("annotations_as_nhx", False)
@@ -261,7 +281,7 @@ class NewickWriter(iosys.DataWriter):
         """
         Composes and writes `tree` to `stream`.
         """
-        if tree.rooting_state_is_undefined or not self.is_write_rooting:
+        if tree.rooting_state_is_undefined or self.suppress_rooting:
             rooting = ""
         elif tree.is_rooted:
             rooting = "[&R] "
@@ -305,7 +325,9 @@ class NewickWriter(iosys.DataWriter):
         else:
             tag = ""
         if tag:
-            tag = textutils.escape_nexus_token(tag, preserve_spaces=self.preserve_spaces, quote_underscores=self.quote_underscores)
+            tag = textutils.escape_nexus_token(tag,
+                    preserve_spaces=self.preserve_spaces,
+                    quote_underscores=not self.unquoted_underscores)
         return tag
 
     def compose_node(self, node):
@@ -317,26 +339,26 @@ class NewickWriter(iosys.DataWriter):
         if child_nodes:
             subnodes = [self.compose_node(child) for child in child_nodes]
             statement = '(' + ','.join(subnodes) + ')'
-            if self.internal_labels:
+            if not self.suppress_internal_labels:
                 statement = statement + self.choose_display_tag(node)
-            if node.edge and node.edge.length != None and self.edge_lengths:
+            if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
                 statement =  "%s:%s" % (statement, node.edge.length)
         else:
             statement = self.choose_display_tag(node)
-            if node.edge and node.edge.length != None and self.edge_lengths:
+            if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
                 statement =  "%s:%s" % (statement, node.edge.length)
         if self.annotations_as_comments or self.annotations_as_nhx:
             node_annotation_comments = nexustokenizer.format_annotation_as_comments(node, nhx=self.annotations_as_nhx)
             edge_annotation_comments = nexustokenizer.format_annotation_as_comments(node.edge, nhx=self.annotations_as_nhx)
             statement = statement + node_annotation_comments + edge_annotation_comments
-        if self.nhx_key_to_func:
-            nhx_to_print = []
-            for k, v in self.nhx_key_to_func.items():
-                r = v(node.edge)
-                if r is not None:
-                    nhx_to_print.append("%s=%s" % (k, str(r)))
-            if nhx_to_print:
-                statement = statement + ('[&&NHX:%s]' % ':'.join(nhx_to_print))
+        #if self.nhx_key_to_func:
+        #    nhx_to_print = []
+        #    for k, v in self.nhx_key_to_func.items():
+        #        r = v(node.edge)
+        #        if r is not None:
+        #            nhx_to_print.append("%s=%s" % (k, str(r)))
+        #    if nhx_to_print:
+        #        statement = statement + ('[&&NHX:%s]' % ':'.join(nhx_to_print))
         node_comment_str = self.compose_comment_string(node)
         statement += node_comment_str
         return statement
