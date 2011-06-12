@@ -308,7 +308,8 @@ class PhylogeneticIndependentConstrasts(object):
                 - `pic_contrast_raw`
                 - `pic_contrast_variance`
                 - `pic_contrast_standardized`
-                - `pic_corrected_length`
+                - `pic_edge_length_error`
+                - `pic_corrected_edge_length`
             """)
 
     def _get_char_matrix(self):
@@ -340,7 +341,8 @@ class PhylogeneticIndependentConstrasts(object):
                 - `pic_contrast_raw`
                 - `pic_contrast_variance`
                 - `pic_contrast_standardized`
-                - `pic_corrected_length`
+                - `pic_edge_length_error`
+                - `pic_corrected_edge_length`
 
         """
         if character_index in self._character_contrasts:
@@ -410,31 +412,36 @@ class PhylogeneticIndependentConstrasts(object):
     def contrasts_tree(self,
             character_index,
             annotate_pic_statistics=True,
-            state_values_as_internal_labels=False,
+            state_values_as_node_labels=False,
             corrected_edge_lengths=False):
         """
         Returns a Tree object annotated with the following attributes added
-        to each node (as annotations to be serialized):
+        to each node (as annotations to be serialized if
+                `annotate_pic_statistics` is True):
 
             - `pic_state_value`
             - `pic_state_variance`
             - `pic_contrast_raw`
             - `pic_contrast_variance`
             - `pic_contrast_standardized`
-            - `pic_corrected_length`
+            - `pic_edge_length_error`
+            - `pic_corrected_edge_length`
 
         """
         contrasts = self._get_contrasts(character_index)
         tree = dendropy.Tree(self._tree)
         for nd in tree.postorder_internal_node_iter():
             nd_results = contrasts[nd._track_id]
-            if annotate_pic_statistics:
-                for k, v in nd_results.items():
-                    setattr(nd, k, v)
+            for k, v in nd_results.items():
+                setattr(nd, k, v)
+                if annotate_pic_statistics:
                     nd.annotate(k)
             if corrected_edge_lengths and nd_results['pic_corrected_edge_length'] is not None:
                 nd.edge.length = nd_results['pic_corrected_edge_length']
-            if state_values_as_internal_labels:
+            if state_values_as_node_labels:
                 nd.label = str(nd_results['pic_state_value'])
+        if state_values_as_node_labels:
+            for nd in tree.leaf_iter():
+                nd.label = contrasts[nd._track_id]['pic_state_value']
         return tree
 
