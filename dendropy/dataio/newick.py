@@ -208,17 +208,35 @@ class NewickWriter(iosys.DataWriter):
                 NOTE: this replaces the `quote_underscores` argument which has
                 been deprecated.
             `preserve_spaces`
-                If True, spaces not mapped to underscores in labels. Default is
+                If True, spaces not mapped to underscores in labels (which
+                means any labels containing spaces will have to be
+                quoted). Default is False.
                 False.
             `store_tree_weights`
                 If True, tree weights are written. Default is False.
-            `annotations_as_comments`
-                If True, will write annotations as comments. Default is False.
+            `supppress_annotations`
+                If False, will write annotations as comments. Default is True.
             `annotations_as_nhx`
-                If True, will write annotation as NHX statements. Default is
-                False.
-            `write_item_comments`
-                If True, will write any additional comments. Default is False.
+                If True, and if `suppress_annotations` is False, will write
+                annotation as NHX statements. Default is False.
+            `suppress_item_comments`
+                If False, will write any additional comments. Default is True.
+
+        Typically, these keywords would be passed to the `write_to_path()`,
+        `write_to_stream` or `as_string` arguments, when 'newick' is used as
+        the schema::
+
+            d.write_to_path('data.tre', 'newick',
+                    suppress_rooting=False,
+                    suppress_edge_lengths=False,
+                    suppress_internal_labels=False,
+                    unquoted_underscores=False,
+                    preserve_spaces=False,
+                    store_tree_weights=False,
+                    suppress_annotations=True,
+                    annotations_as_nhx=False,
+                    suppress_item_comments=True)
+
         """
         iosys.DataWriter.__init__(self, **kwargs)
 
@@ -236,9 +254,14 @@ class NewickWriter(iosys.DataWriter):
 
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
         self.store_tree_weights = kwargs.get("store_tree_weights", False)
-        self.annotations_as_comments = kwargs.get("annotations_as_comments", False)
+
+        self.suppress_annotations = kwargs.get("suppress_annotations", True)
+        self.suppress_annotations = not kwargs.get("annotations_as_comments", not self.suppress_annotations) # legacy
+
         self.annotations_as_nhx = kwargs.get("annotations_as_nhx", False)
-        self.write_item_comments = kwargs.get("write_item_comments", False)
+
+        self.suppress_item_comments = kwargs.get("suppress_item_comments", True)
+        self.suppress_item_comments = not kwargs.get("write_item_comments", not self.suppress_item_comments)
 
     def write(self, stream):
         """
@@ -266,7 +289,7 @@ class NewickWriter(iosys.DataWriter):
             self.write_tree(tree, stream)
 
     def compose_comment_string(self, item):
-        if self.write_item_comments and item.comments:
+        if not self.suppress_item_comments and item.comments:
             item_comments = []
             if isinstance(item.comments, str):
                 item.comments = [item.comments]
@@ -293,7 +316,7 @@ class NewickWriter(iosys.DataWriter):
             weight = "[&W %s] " % tree.weight
         else:
             weight = ""
-        if self.annotations_as_comments or self.annotations_as_nhx:
+        if not self.suppress_annotations or self.annotations_as_nhx:
             annotation_comments = nexustokenizer.format_annotation_as_comments(tree, nhx=self.annotations_as_nhx)
         else:
             annotation_comments = ""
@@ -347,7 +370,7 @@ class NewickWriter(iosys.DataWriter):
             statement = self.choose_display_tag(node)
             if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
                 statement =  "%s:%s" % (statement, node.edge.length)
-        if self.annotations_as_comments or self.annotations_as_nhx:
+        if not self.suppress_annotations or self.annotations_as_nhx:
             node_annotation_comments = nexustokenizer.format_annotation_as_comments(node, nhx=self.annotations_as_nhx)
             edge_annotation_comments = nexustokenizer.format_annotation_as_comments(node.edge, nhx=self.annotations_as_nhx)
             statement = statement + node_annotation_comments + edge_annotation_comments

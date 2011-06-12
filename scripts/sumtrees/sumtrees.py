@@ -920,13 +920,15 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
     if opts.to_newick_format:
         output_dataset.write(output_dest,
                 "newick",
-                edge_lengths=True,
-                write_rooting=True,
-                internal_labels=True,
-                annotations_as_comments=True,
+                suppress_rooting=False,
+                suppress_edge_lengths=False,
+                suppress_internal_labels=False,
+                unquoted_underscores=False,
+                preserve_spaces=False,
+                store_tree_weights=False,
+                suppress_annotations=False,
                 annotations_as_nhx=False,
-                write_item_comments=False,
-                )
+                suppress_item_comments=False)
     else:
         if opts.include_taxa_block:
             simple = False
@@ -958,14 +960,16 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
         output_dataset.write(output_dest,
                 "nexus",
                 simple=simple,
-                edge_lengths=opts.edge_summarization != 'unweighted',
-                write_rooting=True,
-                internal_labels=True,
-                annotations_as_comments=True,
+                comment=comment,
+                suppress_rooting=False,
+                suppress_edge_lengths=opts.edge_summarization == 'unweighted',
+                suppress_internal_labels=False,
+                unquoted_underscores=False,
+                preserve_spaces=False,
+                store_tree_weights=False,
+                suppress_annotations=False,
                 annotations_as_nhx=False,
-                write_item_comments=False,
-                comment=comment)
-
+                suppress_item_comments=False)
 
     if trprobs_dest:
         messenger.send_info("Writing tree probabilities ...")
@@ -984,13 +988,16 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
             tree.label = "Tree%d" % (idx+1)
         tree_list.write_to_stream(trprobs_dest,
                 'nexus',
-                edge_lengths=False,
-                write_rooting=False,
-                internal_labels=False,
-                annotations_as_comments=True,
+                simple=simple,
+                suppress_rooting=True,
+                suppress_edge_lengths=True,
+                suppress_internal_labels=True,
+                unquoted_underscores=False,
+                preserve_spaces=False,
+                store_tree_weights=False,
+                suppress_annotations=False,
                 annotations_as_nhx=False,
-                write_item_comments=False
-                )
+                suppress_item_comments=True)
 
     if split_edges_dest:
         messenger.send_info("Writing split edge lengths ...")

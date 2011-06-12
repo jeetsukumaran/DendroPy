@@ -49,13 +49,11 @@ class NexusWriter(iosys.DataWriter):
                 Default is False.
             `taxa_block`
                 If False, do not write a "TAXA" block. Default is True.
-            `write_item_comments`
-                If True, will write any additional comments. Default is False.
             `comment`
                 List of lines of text to be added as comments to the file.
             `supplemental_blocks`
                 List of strings to be written after data (e.g., PAUP blocks,
-                MrBayes blocks etc.).
+                MrBayes blocks etc.). Default is [].
             `suppress_rooting`
                 If True, will not write rooting statement. Default is False.
                 NOTE: this replaces the `write_rooting` argument which has been
@@ -77,17 +75,44 @@ class NexusWriter(iosys.DataWriter):
                 NOTE: this replaces the `quote_underscores` argument which has
                 been deprecated.
             `preserve_spaces`
-                If True, spaces not mapped to underscores in labels. Default is
+                If True, spaces not mapped to underscores in labels (which
+                means any labels containing spaces will have to be
+                quoted). Default is False.
                 False.
             `store_tree_weights`
                 If True, tree weights are written. Default is False.
-            `annotations_as_comments`
-                If True, will write annotations as comments. Default is False.
+            `suppress_annotations`
+                If False, will *not* write annotations as comments. Default is
+                False if ``simple`` is False; True otherwise (note that, in
+                contrast to this, the default for NEWICK formats, which
+                is False).
             `annotations_as_nhx`
-                If True, will write annotation as NHX statements. Default is
-                False.
-            `write_item_comments`
-                If True, will write any additional comments. Default is False.
+                If True, and if `suppress_annotations` is False, will write
+                annotation as NHX statements. Default is False.
+            `suppress_item_comments`
+                If True, will write any additional comments. Default is
+                False if ``simple`` is False; True otherwise (note that, in
+                contrast to this, the default for NEWICK formats, which
+                is False).
+
+        Typically, these keywords would be passed to the `write_to_path()`,
+        `write_to_stream` or `as_string` arguments, when 'nexus' is used as
+        the schema::
+
+            d.write_to_path('data.tre', 'nexus',
+                    simple=False,
+                    taxa_block=True,
+                    comment=None,
+                    supplemental_blocks=[],
+                    suppress_rooting=False,
+                    suppress_edge_lengths=False,
+                    suppress_internal_labels=False,
+                    unquoted_underscores=False,
+                    preserve_spaces=False,
+                    store_tree_weights=False,
+                    suppress_annotations=False,
+                    annotations_as_nhx=False,
+                    suppress_item_comments=False)
 
         """
         iosys.DataWriter.__init__(self, **kwargs)
@@ -111,9 +136,11 @@ class NexusWriter(iosys.DataWriter):
 
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
         self.store_tree_weights = kwargs.get("store_tree_weights", False)
-        self.annotations_as_comments = kwargs.get("annotations_as_comments", False)
+        self.suppress_annotations = kwargs.get("suppress_annotations", self.simple)
+        self.suppress_annotations = not kwargs.get("annotations_as_comments", not self.suppress_annotations) # legacy
         self.annotations_as_nhx = kwargs.get("annotations_as_nhx", False)
-        self.write_item_comments = kwargs.get("write_item_comments", False)
+        self.suppress_item_comments = kwargs.get("suppress_item_comments", self.simple)
+        self.suppress_item_comments = not kwargs.get("write_item_comments", not self.suppress_item_comments)
 
     def write(self, stream):
         """
@@ -211,9 +238,9 @@ class NexusWriter(iosys.DataWriter):
                 unquoted_underscores=self.unquoted_underscores,
                 preserve_spaces=self.preserve_spaces,
                 store_tree_weights=self.store_tree_weights,
-                annotations_as_comments=self.annotations_as_comments,
+                suppress_annotations=self.suppress_annotations,
                 annotations_as_nhx=self.annotations_as_nhx,
-                write_item_comments=self.write_item_comments,
+                suppress_item_comments=self.suppress_item_comments,
                 )
         block.append('BEGIN TREES;')
         if self._link_blocks():

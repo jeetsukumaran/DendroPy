@@ -85,13 +85,12 @@ NEXUS/Newick Trees
         If :keyword:`True`, spaces not mapped to underscores in labels. Default is :keyword:`False`.
     ``store_tree_weights``
         If :keyword:`True`, tree weights are written. Default is :keyword:`False`.
-    ``annotations_as_comments``
-        If :keyword:`True`, will write annotations as comments. Default is :keyword:`False`.
+    ``suppress_annotations``
+        If :keyword:`True`, will **not** write annotated attributes as comments. Default is :keyword:`False` if writing in NEXUS format *and* ``simple`` is :keyword:`False`; otherwise, if writing in NEWICK format or NEXUS format with ``simple`` set to :keyword:`True`, then defaults to :keyword:`True`.
     ``annotations_as_nhx``
-        If :keyword:`True`, will write annotation as NHX statements. Default is
-        :keyword:`False`.
-    ``write_item_comments``
-        If :keyword:`True`, will write any additional comments. Default is :keyword:`False`.
+        If :keyword:`True` and ``suppress_annotations`` is :keyword:`True`, then annotations will be written in NHX format ('[&&field=value:field=value]'), as opposed to a more generic 'hot comment' format with only one leading ampersand ('[&field=value:field=value]'). Defaults to :keyword:`False`.
+    ``suppress_item_comments``
+        If :keyword:`True`, will **not** write any additional comments associated with (tree) items. Default is :keyword:`False` if writing in NEXUS format *and* ``simple`` is :keyword:`False`; otherwise, if writing in NEWICK format or NEXUS format with ``simple`` set to :keyword:`True`, then defaults to :keyword:`True`.
 
 .. _Customizing_Writing_PHYLIP:
 
