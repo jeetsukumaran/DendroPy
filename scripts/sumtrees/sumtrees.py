@@ -965,7 +965,7 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
         output_dataset.write(output_dest,
                 "nexus",
                 simple=simple,
-                comment=comment,
+                file_comments=comment,
                 suppress_rooting=False,
                 suppress_edge_lengths=opts.edge_summarization == 'unweighted',
                 unquoted_underscores=False,

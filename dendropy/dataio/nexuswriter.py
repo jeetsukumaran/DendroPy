@@ -47,9 +47,9 @@ class NexusWriter(iosys.DataWriter):
                 If True, write in simple NEXUS format, i.e. in a single "DATA"
                 block, instead of separate "TAXA" and "CHARACTER" blocks.
                 Default is False.
-            `taxa_block`
-                If False, do not write a "TAXA" block. Default is True.
-            `comment`
+            `suppress_taxa_block`
+                If True, do not write a "TAXA" block. Default is False.
+            `file_comments`
                 List of lines of text to be added as comments to the file.
             `supplemental_blocks`
                 List of strings to be written after data (e.g., PAUP blocks,
@@ -131,8 +131,8 @@ class NexusWriter(iosys.DataWriter):
 
             d.write_to_path('data.nex', 'nexus',
                     simple=False,
-                    taxa_block=True,
-                    comment=None,
+                    suppress_taxa_block=True,
+                    file_comments=None,
                     supplemental_blocks=[],
                     suppress_leaf_taxon_labels=False,
                     suppress_leaf_node_labels=True,
@@ -152,9 +152,12 @@ class NexusWriter(iosys.DataWriter):
         """
         iosys.DataWriter.__init__(self, **kwargs)
         self.simple = kwargs.get("simple", False)
-        self.exclude_taxa = kwargs.get("exclude_taxa", False)
+        self.suppress_taxa_block = kwargs.get("suppress_taxa_block", False)
+        self.suppress_taxa_block = kwargs.get("exclude_taxa", self.suppress_taxa_block) # legacy
+        self.suppress_taxa_block = not kwargs.get("taxa_block", not self.suppress_taxa_block) # legacy
         self.is_write_block_titles = kwargs.get("block_titles", None)
-        self.comment = kwargs.get("comment", [])
+        self.file_comments = kwargs.get("file_comments", [])
+        self.file_comments = kwargs.get("comment", self.file_comments) # legacy
         self.supplemental_blocks = kwargs.get("supplemental_blocks", [])
 
         self.suppress_leaf_taxon_labels = kwargs.get("suppress_leaf_taxon_labels", False)
@@ -199,20 +202,20 @@ class NexusWriter(iosys.DataWriter):
             _LOG.warn("Multiple taxon sets in data, but directed not to write block titles: data file may not be interpretable")
 
         stream.write('#NEXUS\n\n')
-        if self.comment is not None:
-            if isinstance(self.comment, list):
-                for line in self.comment:
+        if self.file_comments is not None:
+            if isinstance(self.file_comments, list):
+                for line in self.file_comments:
                     if line.strip().replace("\n", "").replace("\r", ""):
                         stream.write("[ %s ]\n" % line)
                     else:
                         stream.write("\n")
                 stream.write("\n")
             else:
-                stream.write("[ %s ]\n\n" % self.comment)
+                stream.write("[ %s ]\n\n" % self.file_comments)
         if (( (not self.exclude_chars) and self.dataset.char_matrices) \
                 or ( (not self.exclude_trees) and self.dataset.tree_lists)) \
                 and (not self.simple) \
-                and (not self.exclude_taxa):
+                and (not self.suppress_taxa_block):
             for taxon_set in self.dataset.taxon_sets:
                 if self.attached_taxon_set is None or taxon_set is self.attached_taxon_set:
                     self.write_taxa_block(taxon_set, stream=stream)

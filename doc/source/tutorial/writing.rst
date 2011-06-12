@@ -65,11 +65,11 @@ The following code fragment shows a typical invocation of a NEXUS format write o
 
             d.write_to_path('data.nex', 'nexus',
                     simple=False,
-                    taxa_block=True,
-                    comment=None,
+                    suppress_taxa_block=True,
                     exclude_trees=False,
                     exclude_chars=False,
                     supplemental_blocks=[],
+                    file_comments=None,
                     suppress_leaf_taxon_labels=False,
                     suppress_leaf_node_labels=True,
                     suppress_internal_taxon_labels=False,
@@ -111,14 +111,16 @@ The keywords supported for writing general NEXUS-formatted output include:
         When writing NEXUS-formatted data, if :keyword:`True`, then character data will be represented as a single "``DATA``" block, instead of separate "``TAXA``" and "``CHARACTERS``" blocks. By default this is :keyword:`False`.
     ``block_titles``
         When writing NEXUS-formatted data, if :keyword:`False`, then title statements will not be added to the various NEXUS blocks (i.e., "``TAXA``", "``CHARACTERS``", and "``TREES``"). By default, this is :keyword:`True`, i.e., block titles will be written.
-    ``comment``
-        When writing NEXUS-formatted data, then the contents of this variable will be added as NEXUS comment to the output. By default, this is :keyword:`None`.
+    ``suppress_taxa_block``
+        If :keyword:`True`, do not write a "TAXA" block. Default is :keyword:`False`.
     ``exclude_trees``
         When writing NEXUS-formatted data, if :keyword:`True`, then **no** tree data will be written (i.e., all |TreeList| objects in the |DataSet| will be skipped in the output). By default, this is :keyword:`False`, meaning that all tree data will be written.
     ``exclude_chars``
         When writing NEXUS-formatted data, if :keyword:`True`, then **no** characer data will be written (i.e., all |CharacterMatrix| objects in the |DataSet| will be skipped in the output). By default, this is :keyword:`False`, meaning that all character data will be written.
     ``supplemental_blocks``
         When writing NEXUS-formatted data, a list of other blocks (or strings) to be written at the end of the file.
+    ``file_comments``
+        When writing NEXUS-formatted data, then the contents of this variable (a string or a list of strings) will be added as a NEXUS comment to the file (at the top). By default, this is :keyword:`None`.
 
 The keywords supported for writing both NEXUS- or Newick-formatted trees include:
 
