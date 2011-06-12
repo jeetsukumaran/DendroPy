@@ -21,7 +21,7 @@ While if you have the tree and characters in a different file::
     >>> tree = dendropy.Tree.get_from_path("primates.tre", "newick", taxon_set=taxa)
     >>> chars = dendropy.ContinuousCharacterMatrix.get_from_path("primates.cc.nex", "nexus", taxon_set=taxa)
 
-In either case, we have a |Tree| object, ``tree`` and a |ContinuousCharacterMatrix| object, ``char_matrix``, that both reference the same |TaxonSet|.
+In either case, we have a |Tree| object, ``tree`` and a |ContinuousCharacterMatrix| object, ``chars``, that both reference the same |TaxonSet|.
 
 Once the data is loaded, we create the :class:`~dendropy.continuous.PhylogeneticIndependentConstrasts` object::
 
