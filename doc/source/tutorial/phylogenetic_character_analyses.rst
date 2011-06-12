@@ -77,11 +77,11 @@ This results in::
 
     [&R] ((((4.74493:0.21,3.3322:0.21)4.038565:0.28,3.3673:0.49)3.7432084:0.13,2.89037:0.62)3.43796714996:0.38,2.30259:1.0)3.01135659943:0.0;
 
-However, probably the best way to visualize the results would be as a tree marked up with metadata that can be viewed in |FigTree|_ (by checking "Node Labels" and selecting the appropriate statistics from the drop-down menu). This is, in fact, even easier to do than the above, as it will result from the default options:
+However, probably the best way to visualize the results would be as a tree marked up with metadata that can be viewed in |FigTree|_ (by checking "Node Labels" and selecting the appropriate statistics from the drop-down menu). This is, in fact, even easier to do than the above, as it will result from the default options. The following illustrates this. It collects the metadata-annotated contrast analysis trees produced by :meth:`~dendropy.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` in a |TreeList| object, and then prints the |TreeList| as NEXUS-formatted string. The default options to :meth:`~dendropy.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` result in annotated attributes, while the default options to the writing method result in the annotations being written out as comment metadata.
 
 .. literalinclude:: /examples/pic_annotated.py
 
-This results in::
+Thus, we get::
 
     #NEXUS
 
