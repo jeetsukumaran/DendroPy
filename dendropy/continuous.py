@@ -370,8 +370,8 @@ class PhylogeneticIndependentConstrasts(object):
                 nd_results['pic_contrast_raw'] = None
                 nd_results['pic_contrast_variance'] = None
                 nd_results['pic_contrast_standardized'] = None
-                nd_results['pic_edge_length_error'] = None
-                nd_results['pic_corrected_edge_length'] = None
+                nd_results['pic_edge_length_error'] = 0.0
+                nd_results['pic_corrected_edge_length'] = nd.edge.length
             elif len(child_nodes) == 1:
                 # root node?
                 nd_results['pic_state_value'] = None
@@ -443,7 +443,7 @@ class PhylogeneticIndependentConstrasts(object):
         """
         contrasts = self._get_contrasts(character_index)
         tree = dendropy.Tree(self._tree)
-        for nd in tree.postorder_internal_node_iter():
+        for nd in tree.postorder_node_iter():
             nd_results = contrasts[nd._track_id]
             for k, v in nd_results.items():
                 setattr(nd, k, v)
@@ -453,8 +453,5 @@ class PhylogeneticIndependentConstrasts(object):
                 nd.edge.length = nd_results['pic_corrected_edge_length']
             if state_values_as_node_labels:
                 nd.label = str(nd_results['pic_state_value'])
-        if state_values_as_node_labels:
-            for nd in tree.leaf_iter():
-                nd.label = contrasts[nd._track_id]['pic_state_value']
         return tree
 
