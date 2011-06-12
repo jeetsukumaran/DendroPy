@@ -41,22 +41,44 @@ class NexusWriter(iosys.DataWriter):
         """
         __init__ recognizes the following keywords (in addition to those of `DataWriter.__init__`):
 
-           - `simple` : if True, write in simple NEXUS format, i.e. in a
-             single "DATA" block, instead of separate "TAXA" and "CHARACTER"
-             blocks. [False]
-           - `taxa_block` : if False, do not write a "TAXA" block [True]
-           - `write_rooting` : if False, do not write a comment before each
-             tree indicating its rooting state [True]
-           - `store_tree_weights` : tree weights are store
-           - `edge_lengths` : if False, edges will not write edge lengths [True]
-           - `internal_labels` : if False, internal labels will not be written [True]
-           - `annotations_as_comments` : if True, will write annotations as comments
-           - `annotations_as_nhx` : if True, will write annotation as NHX statements
-           - `write_item_comments` : if True, comments associated with (tree) nodes will be written [False]
-           - `comment` : list of lines of text to be added as comments to the
-             file
-           - `supplemental_blocks` : list of strings to be written after data
-           	 (e.g., PAUP blocks, MrBayes blocks etc.)
+            `dataset`
+                Data to be written.
+            `simple`
+                If True, write in simple NEXUS format, i.e. in a single "DATA"
+                block, instead of separate "TAXA" and "CHARACTER" blocks.
+                Default is False.
+            `taxa_block`
+                If False, do not write a "TAXA" block. Default is True.
+            `write_item_comments`
+                If True, will write any additional comments. Default is False.
+            `comment`
+                List of lines of text to be added as comments to the file.
+            `supplemental_blocks`
+                List of strings to be written after data (e.g., PAUP blocks,
+                MrBayes blocks etc.).
+            `write_rooting`
+                If False, rooting comment ('[&R]' or '[&U]') will not be
+                written. Default is True.
+            `edge_lengths`
+                If False, edges will not write edge lengths. Default is True.
+            `internal_labels`
+                If False, internal labels will not be written. Default is True.
+            `preserve_spaces`
+                If True, spaces not mapped to underscores in labels. Default is
+                False.
+            `quote_underscores`
+                If False, labels with underscores will not be quoted, which
+                will mean that they will be interpreted as spaces if read
+                again. If True, then they will be quoted, resulting in "hard"
+                underscores. Default is True.
+            `store_tree_weights`
+                If True, tree weights are written. Default is False.
+            `annotations_as_comments`
+                If True, will write annotations as comments. Default is False.
+            `annotations_as_nhx`
+                If True, will write annotation as NHX statements. Default is
+                False.
+
         """
         iosys.DataWriter.__init__(self, **kwargs)
         self.simple = kwargs.get("simple", False)
