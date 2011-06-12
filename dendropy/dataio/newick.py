@@ -195,10 +195,6 @@ class NewickWriter(iosys.DataWriter):
                 If True, will not write edge lengths. Default is False.
                 NOTE: this replaces the `edge_lengths` argument which has been
                 deprecated.
-            `suppress_internal_labels`
-                If True, internal labels will not be written. Default is False.
-                NOTE: this replaces the `internal_labels` argument which has
-                been deprecated.
             `unquoted_underscores`
                 If True, labels with underscores will not be quoted, which will
                 mean that they will be interpreted as spaces if read again
@@ -221,6 +217,34 @@ class NewickWriter(iosys.DataWriter):
                 annotation as NHX statements. Default is False.
             `suppress_item_comments`
                 If False, will write any additional comments. Default is True.
+            `suppress_leaf_taxon_labels`
+                If True, then taxon labels will not be printed for leaves.
+                Default is False.
+            `suppress_leaf_node_labels`
+                If False, then node labels (if available) will be printed
+                for leaves. Defaults to False. Note that DendroPy distinguishes
+                between *taxon* labels and *node* labels. In a typical NEWICK
+                string, taxon labels are printed for leaf nodes, while leaf
+                node labels are ignored (hence the default 'False' setting).
+            `suppress_internal_taxon_labels`
+                If True, then taxon labels will not be printed for internal
+                nodes.  Default is False.
+                NOTE: this replaces the `internal_labels` argument which has
+                been deprecated.
+            `suppress_internal_node_labels`
+                If True, internal node labels will not be written. Default is
+                False.
+                NOTE: this replaces the `internal_labels` argument which has
+                been deprecated.
+            `node_label_element_separator`
+                If both `suppress_leaf_taxon_labels` and
+                `suppress_leaf_node_labels` are False, then this will be the
+                string used to join them. Defaults to ' '.
+            `node_label_compose_func`
+                Should be a function that takes a Node object as an argument
+                and returns the string to be used to represent it in the tree
+                statement string. Defaults to None. If a function is given, then
+                this overrides all the above labels settings given above.
 
         Typically, these keywords would be passed to the `write_to_path()`,
         `write_to_stream` or `as_string` arguments, when 'newick' is used as
@@ -229,13 +253,18 @@ class NewickWriter(iosys.DataWriter):
             d.write_to_path('data.tre', 'newick',
                     suppress_rooting=False,
                     suppress_edge_lengths=False,
-                    suppress_internal_labels=False,
                     unquoted_underscores=False,
                     preserve_spaces=False,
                     store_tree_weights=False,
                     suppress_annotations=True,
                     annotations_as_nhx=False,
-                    suppress_item_comments=True)
+                    suppress_item_comments=True,
+                    suppress_leaf_taxon_labels=False,
+                    suppress_leaf_node_labels=True,
+                    suppress_internal_taxon_labels=False,
+                    suppress_internal_node_labels=False,
+                    node_label_element_separator=' ',
+                    node_label_compose_func=None)
 
         """
         iosys.DataWriter.__init__(self, **kwargs)
@@ -245,9 +274,6 @@ class NewickWriter(iosys.DataWriter):
 
         self.suppress_edge_lengths = kwargs.get("suppress_edge_lengths", False)
         self.suppress_edge_lengths = not kwargs.get("edge_lengths", not self.suppress_edge_lengths) # legacy
-
-        self.suppress_internal_labels = kwargs.get("suppress_internal_labels", False)
-        self.suppress_internal_labels = not kwargs.get("internal_labels", not self.suppress_internal_labels) # legacy
 
         self.unquoted_underscores = kwargs.get('unquoted_underscores', False)
         self.unquoted_underscores = not kwargs.get('quote_underscores', not self.unquoted_underscores) # legacy
@@ -262,6 +288,15 @@ class NewickWriter(iosys.DataWriter):
 
         self.suppress_item_comments = kwargs.get("suppress_item_comments", True)
         self.suppress_item_comments = not kwargs.get("write_item_comments", not self.suppress_item_comments)
+
+        self.suppress_leaf_taxon_labels = kwargs.get("suppress_leaf_taxon_labels", False)
+        self.suppress_leaf_node_labels = kwargs.get("suppress_leaf_node_labels", True)
+        self.suppress_internal_taxon_labels = kwargs.get("suppress_internal_taxon_labels", False)
+        self.suppress_internal_node_labels = not kwargs.get("internal_labels", not self.suppress_internal_taxon_labels) # legacy
+        self.suppress_internal_node_labels = kwargs.get("suppress_internal_node_labels", False)
+        self.suppress_internal_node_labels = not kwargs.get("internal_labels", not self.suppress_internal_node_labels) # legacy
+        self.node_label_element_separator = kwargs.get("node_label_element_separator", ' ')
+        self.node_label_compose_func = kwargs.get("node_label_compose_func", None)
 
     def write(self, stream):
         """
@@ -338,15 +373,42 @@ class NewickWriter(iosys.DataWriter):
         Based on current settings, the attributes of a node, and
         whether or not the node is a leaf, returns an appropriate tag.
         """
-        if hasattr(node, 'taxon') and node.taxon:
-            tag = node.taxon.label
-        elif hasattr(node, 'label') and node.label:
-            tag = node.label
-        elif len(node.child_nodes()) == 0:
-            # force label if a leaf node
-            tag = node.oid
+        tag = None
+        if self.node_label_compose_func:
+            tag = self.node_label_compose_func(node)
         else:
-            tag = ""
+            tag_parts = []
+            is_leaf = len(node.child_nodes()) == 0
+            if is_leaf:
+                if hasattr(node, 'taxon') \
+                        and node.taxon \
+                        and node.taxon.label is not None \
+                        and not self.suppress_leaf_taxon_labels:
+                    tag_parts.append(str(node.taxon.label))
+                if hasattr(node, 'label') \
+                        and node.label \
+                        and node.label is not None \
+                        and not self.suppress_leaf_node_labels:
+                    tag_parts.append(str(node.label))
+                if len(tag_parts) > 0:
+                    tag = self.node_label_element_separator.join(tag_parts)
+                else:
+                    tag = "_"
+            else:
+                if hasattr(node, 'taxon') \
+                        and node.taxon \
+                        and node.taxon.label is not None \
+                        and not self.suppress_internal_taxon_labels:
+                    tag_parts.append(str(node.taxon.label))
+                if hasattr(node, 'label') \
+                        and node.label \
+                        and node.label is not None \
+                        and not self.suppress_internal_node_labels:
+                    tag_parts.append(str(node.label))
+                if len(tag_parts) > 0:
+                    tag = self.node_label_element_separator.join(tag_parts)
+                else:
+                    tag = ""
         if tag:
             tag = textutils.escape_nexus_token(tag,
                     preserve_spaces=self.preserve_spaces,
@@ -362,7 +424,7 @@ class NewickWriter(iosys.DataWriter):
         if child_nodes:
             subnodes = [self.compose_node(child) for child in child_nodes]
             statement = '(' + ','.join(subnodes) + ')'
-            if not self.suppress_internal_labels:
+            if not (self.suppress_internal_taxon_labels and self.suppress_internal_node_labels):
                 statement = statement + self.choose_display_tag(node)
             if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
                 statement =  "%s:%s" % (statement, node.edge.length)

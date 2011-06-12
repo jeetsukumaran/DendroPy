@@ -922,13 +922,18 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 "newick",
                 suppress_rooting=False,
                 suppress_edge_lengths=False,
-                suppress_internal_labels=False,
                 unquoted_underscores=False,
                 preserve_spaces=False,
                 store_tree_weights=False,
                 suppress_annotations=False,
                 annotations_as_nhx=False,
-                suppress_item_comments=False)
+                suppress_item_comments=False,
+                suppress_leaf_taxon_labels=False,
+                suppress_leaf_node_labels=True,
+                suppress_internal_taxon_labels=False,
+                suppress_internal_node_labels=False,
+                node_label_element_separator=' ',
+                node_label_compose_func=None)
     else:
         if opts.include_taxa_block:
             simple = False
@@ -963,13 +968,18 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 comment=comment,
                 suppress_rooting=False,
                 suppress_edge_lengths=opts.edge_summarization == 'unweighted',
-                suppress_internal_labels=False,
                 unquoted_underscores=False,
                 preserve_spaces=False,
                 store_tree_weights=False,
                 suppress_annotations=False,
                 annotations_as_nhx=False,
-                suppress_item_comments=False)
+                suppress_item_comments=False,
+                suppress_leaf_taxon_labels=False,
+                suppress_leaf_node_labels=True,
+                suppress_internal_taxon_labels=False,
+                suppress_internal_node_labels=False,
+                node_label_element_separator=' ',
+                node_label_compose_func=None)
 
     if trprobs_dest:
         messenger.send_info("Writing tree probabilities ...")
@@ -997,7 +1007,13 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 store_tree_weights=False,
                 suppress_annotations=False,
                 annotations_as_nhx=False,
-                suppress_item_comments=True)
+                suppress_item_comments=True,
+                suppress_leaf_taxon_labels=False,
+                suppress_leaf_node_labels=True,
+                suppress_internal_taxon_labels=False,
+                suppress_internal_node_labels=False,
+                node_label_element_separator=' ',
+                node_label_compose_func=None)
 
     if split_edges_dest:
         messenger.send_info("Writing split edge lengths ...")
