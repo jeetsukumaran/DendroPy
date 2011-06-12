@@ -25,7 +25,9 @@ import operator
 import dendropy
 
 def _calc_TKP_rate(starting_rate, duration, roeotroe, rng):
-    """Returns a simulated rate for the head node of a tree when:
+    """
+    Returns a simulated rate for the head node of a tree when:
+
         * the tail node has rate `starting_rate`
         * the time duration of the edge is `duration`
         * the rate of evolution of the rate of evolution is `roeotroe` (this is
@@ -45,7 +47,8 @@ def _calc_TKP_rate(starting_rate, duration, roeotroe, rng):
     return starting_rate
 
 def _calc_KTB_rate(starting_rate, duration, roeotroe, rng):
-    """Returns a simulated rate for the head node of a tree when:
+    """
+    Returns a simulated rate for the head node of a tree when:
         * the tail node has rate `starting_rate`
         * the time duration of the edge is `duration`
         * the rate of evolution of the rate of evolution is `roeotroe` (this is
@@ -157,41 +160,50 @@ def bounce_constrain(start_x, x, min_x=None, max_x=None):
 
 
 def simulate_continuous(node, rng, **kwargs):
-    """Takes a node and a random number generator object, `rng` This function
+    """
+    Takes a node and a random number generator object, `rng` This function
     "evolves" a set of rates on the subtree descending from the  `node`.
 
     kwargs keys that are used are:
-        `roeotroe` --  the rate of evolution of the rate of evolution. This
-            parameter that controls the degree of deviations away from the
-            molecular clock.
-        `min_rate` is the minimum rate (default None)
-        `max_rate' is the maximum rate (default None),
-        `model` is a string specifying the name of the model. Currently only the
-            KTB (Kishino, Thorne, Bruno) is supported
-        `time_attr` is a string that specifies the name of the attribute
-            that returns the branch length in terms of time for a node. The
-            default is "edge_length"
-        `val_attr` is the string that specifies the name of the attribute
-            used to hold the value that is evolving along the nodes.  The root
-            of the subtree is assumed to have this field on calling of the
-            function.  On success all nodes in the subtree will have the
-            attribute.  The default is "mutation_rate"
-        `mean_val_attr` if specified this is string that gives the name of
-            attribute in each node that is mean value for the branch (default is
-            None). This is filled in after time_attr and val_attr are read,
-            so it is permissible to have this attribute match one of thos
-            strings (although it will make the model odd if the mean_val_attr
-            is the same as the val_attr)
-         `constrain_rate_mode` controls the behavior when the minimum or maximum
-            rate is simulated. The choices are "crop", and "linear_bounce"
-            "crop" means that the rate is set to the most extreme value allowed.
-            "linear_bounce" considers the path of evolution of rate to be a
-                simple line from the ancestor's rate to the proposed rate. The
-                point at which the path crosses the extreme value is determined
-                and the rate is "reflected off" the limiting rate at that point.
-                This causes the rate to avoid the extreme values more than a
-                simulation of small time slices that simply rejects illegal
-                rates.
+
+    `roeotroe`
+        the rate of evolution of the rate of evolution. This
+        parameter that controls the degree of deviations away from the
+        molecular clock.
+    `min_rate`
+        is the minimum rate (default None)
+    `max_rate`
+        is the maximum rate (default None),
+    `model`
+        is a string specifying the name of the model. Currently only the
+        KTB (Kishino, Thorne, Bruno) is supported
+    `time_attr`
+        is a string that specifies the name of the attribute
+        that returns the branch length in terms of time for a node. The
+        default is "edge_length"
+    `val_attr`
+        is the string that specifies the name of the attribute
+        used to hold the value that is evolving along the nodes.  The root
+        of the subtree is assumed to have this field on calling of the
+        function.  On success all nodes in the subtree will have the
+        attribute.  The default is "mutation_rate"
+    `mean_val_attr`
+        if specified this is string that gives the name of
+        attribute in each node that is mean value for the branch (default is
+        None). This is filled in after time_attr and val_attr are read,
+        so it is permissible to have this attribute match one of thos
+        strings (although it will make the model odd if the mean_val_attr
+        is the same as the val_attr)
+        `constrain_rate_mode`
+        controls the behavior when the minimum or maximum rate is
+        simulated. The choices are "crop", and "linear_bounce" "crop" means
+        that the rate is set to the most extreme value allowed.
+        "linear_bounce" considers the path of evolution of rate to be a
+        simple line from the ancestor's rate to the proposed rate. The
+        point at which the path crosses the extreme value is determined and
+        the rate is "reflected off" the limiting rate at that point.  This
+        causes the rate to avoid the extreme values more than a simulation
+        of small time slices that simply rejects illegal rates.
 
     Currently the only model supported is the one of Kishino, Thorne, and Bruno.
     "Performance of a Divergence Time Estimation Method under a Probabilistic
@@ -299,10 +311,11 @@ class PhylogeneticIndependentConstrasts(object):
         self._tree = dendropy.Tree(tree)
         self.is_dirty = True
     tree = property(_get_tree, _set_tree, None, """\
-            This tree will have an attribute added to each node, `pic`. This attribute
-            will be a dictionary with character (column) index as keys, and another dictionary
-            with the following keys and corresponding the constrast statistics for that column
-            index:
+            This tree will have an attribute added to each node, `pic`. This
+            attribute will be a dictionary with character (column) index as
+            keys. Each column index will map to another dictionary that has the
+            following keys (and values):
+
                 - `pic_state_value`
                 - `pic_state_variance`
                 - `pic_contrast_raw`
@@ -417,7 +430,7 @@ class PhylogeneticIndependentConstrasts(object):
         """
         Returns a Tree object annotated with the following attributes added
         to each node (as annotations to be serialized if
-                `annotate_pic_statistics` is True):
+        `annotate_pic_statistics` is True):
 
             - `pic_state_value`
             - `pic_state_variance`
