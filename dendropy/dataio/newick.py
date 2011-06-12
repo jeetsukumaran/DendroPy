@@ -184,16 +184,30 @@ class NewickWriter(iosys.DataWriter):
         """
         __init__ recognizes the following keywords (in addition to those of `DataWriter.__init__`):
 
-            - `dataset`: data to be written
-            - `edge_lengths` : if False, edges will not write edge lengths [True]
-            - `internal_labels` : if False, internal labels will not be written [True]
-            - `preserve_spaces` : spaces not mapped to underscores in labels [False]
-            - `quote_underscores` : labels with underscores are quoted, for "hard" underscores [True]
-            - `store_tree_weights` : tree weights are stored
-            - `nhx_key_to_func_dict` : a dict of NHX "key" to a function that takes an edge and returns the string that is the value of the NHX key (or None to omit that key for that edge)
-            - `annotations_as_comments` : if True, will write annotations as comments
-            - `annotations_as_nhx` : if True, will write annotation as NHX statements
-            - `write_item_comments` : if True, will write any additional comments
+            `dataset`
+                Data to be written.
+            `edge_lengths`
+                If False, edges will not write edge lengths. Default is True.
+            `internal_labels`
+                If False, internal labels will not be written Default is True.
+            `preserve_spaces`
+                If True, spaces not mapped to underscores in labels. Default is
+                False.
+            `quote_underscores`
+                If False, labels with underscores will not be quoted, which
+                will mean that they will be interpreted as spaces if read
+                again. If True, then they will be quoted, resulting in "hard"
+                underscores. Default is True.
+            `store_tree_weights`
+                If True, tree weights are written. Default is False.
+            `annotations_as_comments`
+                If True, will write annotations as comments. Default is False.
+            `annotations_as_nhx`
+                If True, will write annotation as NHX statements. Default is
+                False.
+            `write_item_comments`
+                If True, will write any additional comments. Default is False.
+
         """
         iosys.DataWriter.__init__(self, **kwargs)
         self.edge_lengths = kwargs.get("edge_lengths", True)
@@ -202,7 +216,6 @@ class NewickWriter(iosys.DataWriter):
         self.preserve_spaces = kwargs.get("preserve_spaces", False)
         self.quote_underscores = kwargs.get('quote_underscores', True)
         self.store_tree_weights = kwargs.get("store_tree_weights", False)
-        self.nhx_key_to_func = kwargs.get("nhx_key_to_func_dict")
         self.annotations_as_comments = kwargs.get("annotations_as_comments", False)
         self.annotations_as_nhx = kwargs.get("annotations_as_nhx", False)
         self.write_item_comments = kwargs.get("write_item_comments", False)
