@@ -187,6 +187,26 @@ class NewickWriter(iosys.DataWriter):
 
             `dataset`
                 Data to be written.
+            `suppress_leaf_taxon_labels`
+                If True, then taxon labels will not be printed for leaves.
+                Default is False.
+            `suppress_leaf_node_labels`
+                If False, then node labels (if available) will be printed
+                for leaves. Defaults to True. Note that DendroPy distinguishes
+                between *taxon* labels and *node* labels. In a typical NEWICK
+                string, taxon labels are printed for leaf nodes, while leaf
+                node labels are ignored (hence the default 'True' setting to
+                suppress leaf node labels).
+            `suppress_internal_taxon_labels`
+                If True, then taxon labels will not be printed for internal
+                nodes.  Default is False.
+                NOTE: this replaces the `internal_labels` argument which has
+                been deprecated.
+            `suppress_internal_node_labels`
+                If True, internal node labels will not be written. Default is
+                False.
+                NOTE: this replaces the `internal_labels` argument which has
+                been deprecated.
             `suppress_rooting`
                 If True, will not write rooting statement. Default is False.
                 NOTE: this replaces the `write_rooting` argument which has been
@@ -217,40 +237,30 @@ class NewickWriter(iosys.DataWriter):
                 annotation as NHX statements. Default is False.
             `suppress_item_comments`
                 If False, will write any additional comments. Default is True.
-            `suppress_leaf_taxon_labels`
-                If True, then taxon labels will not be printed for leaves.
-                Default is False.
-            `suppress_leaf_node_labels`
-                If False, then node labels (if available) will be printed
-                for leaves. Defaults to False. Note that DendroPy distinguishes
-                between *taxon* labels and *node* labels. In a typical NEWICK
-                string, taxon labels are printed for leaf nodes, while leaf
-                node labels are ignored (hence the default 'False' setting).
-            `suppress_internal_taxon_labels`
-                If True, then taxon labels will not be printed for internal
-                nodes.  Default is False.
-                NOTE: this replaces the `internal_labels` argument which has
-                been deprecated.
-            `suppress_internal_node_labels`
-                If True, internal node labels will not be written. Default is
-                False.
-                NOTE: this replaces the `internal_labels` argument which has
-                been deprecated.
             `node_label_element_separator`
                 If both `suppress_leaf_taxon_labels` and
                 `suppress_leaf_node_labels` are False, then this will be the
                 string used to join them. Defaults to ' '.
             `node_label_compose_func`
-                Should be a function that takes a Node object as an argument
-                and returns the string to be used to represent it in the tree
-                statement string. Defaults to None. If a function is given, then
-                this overrides all the above labels settings given above.
+                If not None, should be a function that takes a Node object as
+                an argument and returns the string to be used to represent the
+                node in the tree statement. The return value
+                from this function is used unconditionally to print a node
+                representation in a tree statement, by-passing the default
+                labelling function (and thus ignoring
+                `suppress_leaf_taxon_labels`, `suppress_leaf_node_labels=True`,
+                `suppress_internal_taxon_labels`, `suppress_internal_node_labels`,
+                etc.). Defaults to None.
 
         Typically, these keywords would be passed to the `write_to_path()`,
         `write_to_stream` or `as_string` arguments, when 'newick' is used as
         the schema::
 
             d.write_to_path('data.tre', 'newick',
+                    suppress_leaf_taxon_labels=False,
+                    suppress_leaf_node_labels=True,
+                    suppress_internal_taxon_labels=False,
+                    suppress_internal_node_labels=False,
                     suppress_rooting=False,
                     suppress_edge_lengths=False,
                     unquoted_underscores=False,
@@ -259,15 +269,18 @@ class NewickWriter(iosys.DataWriter):
                     suppress_annotations=True,
                     annotations_as_nhx=False,
                     suppress_item_comments=True,
-                    suppress_leaf_taxon_labels=False,
-                    suppress_leaf_node_labels=True,
-                    suppress_internal_taxon_labels=False,
-                    suppress_internal_node_labels=False,
                     node_label_element_separator=' ',
                     node_label_compose_func=None)
 
         """
         iosys.DataWriter.__init__(self, **kwargs)
+
+        self.suppress_leaf_taxon_labels = kwargs.get("suppress_leaf_taxon_labels", False)
+        self.suppress_leaf_node_labels = kwargs.get("suppress_leaf_node_labels", True)
+        self.suppress_internal_taxon_labels = kwargs.get("suppress_internal_taxon_labels", False)
+        self.suppress_internal_taxon_labels = not kwargs.get("internal_labels", not self.suppress_internal_taxon_labels) # legacy
+        self.suppress_internal_node_labels = kwargs.get("suppress_internal_node_labels", False)
+        self.suppress_internal_node_labels = not kwargs.get("internal_labels", not self.suppress_internal_node_labels) # legacy
 
         self.suppress_rooting = kwargs.get("suppress_rooting", False)
         self.suppress_rooting = not kwargs.get("write_rooting", not self.suppress_rooting) # legacy
@@ -289,12 +302,6 @@ class NewickWriter(iosys.DataWriter):
         self.suppress_item_comments = kwargs.get("suppress_item_comments", True)
         self.suppress_item_comments = not kwargs.get("write_item_comments", not self.suppress_item_comments)
 
-        self.suppress_leaf_taxon_labels = kwargs.get("suppress_leaf_taxon_labels", False)
-        self.suppress_leaf_node_labels = kwargs.get("suppress_leaf_node_labels", True)
-        self.suppress_internal_taxon_labels = kwargs.get("suppress_internal_taxon_labels", False)
-        self.suppress_internal_node_labels = not kwargs.get("internal_labels", not self.suppress_internal_taxon_labels) # legacy
-        self.suppress_internal_node_labels = kwargs.get("suppress_internal_node_labels", False)
-        self.suppress_internal_node_labels = not kwargs.get("internal_labels", not self.suppress_internal_node_labels) # legacy
         self.node_label_element_separator = kwargs.get("node_label_element_separator", ' ')
         self.node_label_compose_func = kwargs.get("node_label_compose_func", None)
 
