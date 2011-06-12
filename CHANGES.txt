@@ -9,7 +9,7 @@ New Features
 Changes
 ^^^^^^^
 
-    - Keyword arguments to `as_string()`, `write_to_path()`, `write_to_file`, etc. methods to customize NEXUS and NEWICK output have been tweaked to become more consistent. Previous keywords are still supported, but will be deprecated. The new set of keyword arguments supported can be seen in the :ref:`NEXUS and Newick tree writing customization <Customizing_Writing_NEXUS_and_Newick_Trees>` section.
+    - Keyword arguments to `as_string()`, `write_to_path()`, `write_to_file`, etc. methods to customize NEXUS and NEWICK output have been tweaked to become more consistent. Previous keywords are still supported, but will be deprecated. The new set of keyword arguments supported can be seen in the :ref:`NEXUS and Newick writing customization <Customizing_Writing_NEXUS_and_Newick>` section.
 
 Bug Fixes
 ^^^^^^^^^
