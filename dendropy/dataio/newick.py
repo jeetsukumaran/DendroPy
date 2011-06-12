@@ -400,7 +400,7 @@ class NewickWriter(iosys.DataWriter):
                 if len(tag_parts) > 0:
                     tag = self.node_label_element_separator.join(tag_parts)
                 else:
-                    tag = "_"
+                    return "_" # anonymous leaf
             else:
                 if hasattr(node, 'taxon') \
                         and node.taxon \
@@ -415,12 +415,14 @@ class NewickWriter(iosys.DataWriter):
                 if len(tag_parts) > 0:
                     tag = self.node_label_element_separator.join(tag_parts)
                 else:
-                    tag = ""
+                    return "" # nada
         if tag:
             tag = textutils.escape_nexus_token(tag,
                     preserve_spaces=self.preserve_spaces,
                     quote_underscores=not self.unquoted_underscores)
-        return tag
+            return tag
+        else:
+            return ""
 
     def compose_node(self, node):
         """

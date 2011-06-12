@@ -151,7 +151,7 @@ class PICTest(extendedtest.ExtendedTestCase):
         for cidx in range(self.char_matrix.vector_size):
             ctree = self.pic.contrasts_tree(character_index=cidx,
                     annotate_pic_statistics=True,
-                    state_values_as_internal_labels=False,
+                    state_values_as_node_labels=False,
                     corrected_edge_lengths=False)
             for nd in ctree.postorder_internal_node_iter():
                 vals = (nd.pic_state_value,
