@@ -139,28 +139,29 @@ def summarize(values):
         raise ValueError("No values in data")
     try:
         summary['range'] = (min(values), max(values))
-    except ValueError:
+    except (ValueError, OverflowError):
         summary['range'] = None
     try:
         summary['mean'], summary['var'] = mean_and_sample_variance(values)
         try:
-            summary['sd'] = math.sqrt(summary['var'])
+            #summary['sd'] = math.sqrt(summary['var'])
+            summary['sd'] = summary['var'] ** 0.5
         except ValueError:
             summary['sd'] = 0.0
-    except ValueError:
-        summary['mean'], summary['var'] = None, None
-    except IndexError:
-        summary['mean'], summary['var'] = None, None
+        except OverflowError:
+            summary['sd'] = 'Inf'
+    except (ValueError, OverflowError, IndexError):
+        summary['mean'], summary['var'], summary['sd'] = None, None, None
     try:
         summary['median'] = median(values)
-    except ValueError:
+    except (ValueError, OverflowError):
         summary['median'] = None
     try:
         summary['hpd95'] = empirical_hpd(values, conf=0.95)
-    except ValueError:
+    except (ValueError, OverflowError):
         summary['hpd95'] = None
     try:
         summary['quant_5_95'] = quantile_5_95(values)
-    except ValueError:
+    except (ValueError, OverflowError):
         summary['quant_5_95'] = None
     return summary
