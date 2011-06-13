@@ -15,6 +15,7 @@ Bug Fixes
 ^^^^^^^^^
 
     - Reading interleaved character matrices now longer results in the following block being skipped (NEXUS).
+    - Caught OverflowError when calculating summary statistics.
 
 Release 3.8.1
 -------------
