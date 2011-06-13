@@ -1212,6 +1212,8 @@ class NexmlWriter(iosys.DataWriter):
                 parts.append('target="%s"' % edge.head_node.oid)
             if hasattr(edge, 'length') and edge.length is not None:
                 parts.append('length="%s"' % edge.length)
+            if hasattr(edge, 'label') and edge.label:
+                parts.append('label=%s' % _protect_attr(edge.label))
 
             # only write if we have more than just the 'edge' and '/' bit
             if len(parts) > 2:
