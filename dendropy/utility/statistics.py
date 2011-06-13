@@ -149,7 +149,7 @@ def summarize(values):
         except ValueError:
             summary['sd'] = 0.0
         except OverflowError:
-            summary['sd'] = 'Inf'
+            summary['sd'] = float('inf')
     except (ValueError, OverflowError, IndexError):
         summary['mean'], summary['var'], summary['sd'] = None, None, None
     try:
