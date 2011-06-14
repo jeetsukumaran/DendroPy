@@ -21,6 +21,9 @@ While if you have the tree and characters in a different file::
     >>> tree = dendropy.Tree.get_from_path("primates.tre", "newick", taxon_set=taxa)
     >>> chars = dendropy.ContinuousCharacterMatrix.get_from_path("primates.cc.nex", "nexus", taxon_set=taxa)
 
+Basic Analysis
+--------------
+
 In either case, we have a |Tree| object, ``tree`` and a |ContinuousCharacterMatrix| object, ``chars``, that both reference the same |TaxonSet|.
 
 Once the data is loaded, we create the :class:`~dendropy.continuous.PhylogeneticIndependentConstrasts` object::
@@ -47,6 +50,9 @@ In addition to the 0-based index first argument, ``character_index``, the :meth:
     ``corrected_edge_lengths``
         If |True| then the |Tree| returned will have its edge lengths adjusted to the corrected edge lengths as yielded by the PIC analysis.
 
+Results as a Table
+------------------
+
 So the following retrieves the constrasts tree for the first character (index=0), and prints a table of the various statistics::
 
     >>> ctree1 = pic.contrasts_tree(character_index=0,
@@ -67,6 +73,9 @@ So the following retrieves the constrasts tree for the first character (index=0)
     HPMA   2.78082358    0.60190555    1.17222840    0.22190555
     Root   1.18372461    0.37574347    4.25050358    0.37574347
 
+Results as a Newick String with State Values as Node Labels
+-----------------------------------------------------------
+
 Alternatively, you might want to visualize the results as a tree showing the numeric values of the states. The following produces this for each character in the matrix by first requesting that :meth:`~dendropy.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` replace existing node labels with the state values for that node, and then, when writing out in Newick format, suppressing taxon labels and printing node labels in their place:
 
 .. literalinclude:: /examples/pic1.py
@@ -76,6 +85,9 @@ This results in::
     [&R] ((((4.09434:0.21,3.61092:0.21)3.85263:0.28,2.37024:0.49)3.2003784:0.13,2.02815:0.62)2.78082357912:0.38,'-1.46968':1.0)1.1837246134:0.0;
 
     [&R] ((((4.74493:0.21,3.3322:0.21)4.038565:0.28,3.3673:0.49)3.7432084:0.13,2.89037:0.62)3.43796714996:0.38,2.30259:1.0)3.01135659943:0.0;
+
+Results as a NEXUS Document with Analysis Statistics as Node Metadata
+---------------------------------------------------------------------
 
 However, probably the best way to visualize the results would be as a tree marked up with metadata that can be viewed in |FigTree|_ (by checking "Node Labels" and selecting the appropriate statistics from the drop-down menu). This is, in fact, even easier to do than the above, as it will result from the default options. The following illustrates this. It collects the metadata-annotated contrast analysis trees produced by :meth:`~dendropy.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` in a |TreeList| object, and then prints the |TreeList| as NEXUS-formatted string. The default options to :meth:`~dendropy.continuous.PhylogeneticIndependentConstrasts.contrasts_tree` result in annotated attributes, while the default options to the writing method result in the annotations being written out as comment metadata.
 
