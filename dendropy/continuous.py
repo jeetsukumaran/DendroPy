@@ -442,12 +442,18 @@ class PhylogeneticIndependentConstrasts(object):
                     nd_results['pic_corrected_edge_length'] = None
                 nd_results['pic_state_variance'] = nd_results['pic_corrected_edge_length']
 
-                if len(child_nodes) != 2 and self._polytomy_strategy != "ignore":
-                    raise ValueError("Tree is not fully-bifurcating")
-                nd_results['pic_contrast_raw'] = state_vals[0] - state_vals[1]
+                if len(child_nodes) != 2:
+                    if self._polytomy_strategy == "ignore":
+                        nd_results['pic_contrast_raw'] = None
+                        nd_results['pic_contrast_standardized'] = None
+                        nd_results['pic_contrast_variance'] = sum_of_child_edges
+                    else:
+                        raise ValueError("Tree is not fully-bifurcating")
+                else:
+                    nd_results['pic_contrast_raw'] = state_vals[0] - state_vals[1]
+                    nd_results['pic_contrast_standardized'] = nd_results['pic_contrast_raw'] / (sum_of_child_edges ** 0.5)
+                    nd_results['pic_contrast_variance'] = sum_of_child_edges
 
-                nd_results['pic_contrast_variance'] = sum_of_child_edges
-                nd_results['pic_contrast_standardized'] = nd_results['pic_contrast_raw'] / (sum_of_child_edges ** 0.5)
             nd._track_id = id(nd) # will get cloned
             all_results[nd._track_id] = nd_results
             try:
