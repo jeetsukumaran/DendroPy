@@ -5,6 +5,9 @@ Phylogenetic Character Analyses
 Phylogenetic Independent Contrasts (PIC)
 ========================================
 
+Basic Analysis
+--------------
+
 A phylogenetic independent contrasts analysis (Felsenstein 1985; Garland et al. 2005) can be carried out using the :class:`~dendropy.continuous.PhylogeneticIndependentConstrasts` class.
 This requires you to have a |Tree| and a |ContinuousCharacterMatrix| which reference the same |TaxonSet|.
 Thus, if your data is in the same file::
@@ -20,9 +23,6 @@ While if you have the tree and characters in a different file::
     >>> taxa = dendropy.TaxonSet()
     >>> tree = dendropy.Tree.get_from_path("primates.tre", "newick", taxon_set=taxa)
     >>> chars = dendropy.ContinuousCharacterMatrix.get_from_path("primates.cc.nex", "nexus", taxon_set=taxa)
-
-Basic Analysis
---------------
 
 In either case, we have a |Tree| object, ``tree`` and a |ContinuousCharacterMatrix| object, ``chars``, that both reference the same |TaxonSet|.
 
