@@ -87,7 +87,10 @@ def parse_comment_metadata(comments,
     for comment in comments:
         if comment.startswith("&&"):
             pattern = NHX_COMMENT_FIELD_PATTERN
-            comment = comment[2:]
+            if comment.startswith("&&NHX:"):
+                comment = comment[6:]
+            else:
+                comment = comment[2:]
         elif comment.startswith("&"):
             pattern = FIGTREE_COMMENT_FIELD_PATTERN
             comment = comment[1:]
