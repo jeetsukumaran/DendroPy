@@ -117,7 +117,29 @@ Thus, we get::
     END;
 
 
+Multifurcating Trees and Polytomies
+-----------------------------------
 
+By default, the :class:`~dendropy.continuous.PhylogeneticIndependentConstrasts` class only handles fully-bifurcating trees, and throws an exception if the input tree has polytomies.
+You can change this behavior by specifying one of the following strings to the "``polytomy_strategy``" argument of the class constructor:
+
+    "``ignore``"
+        Polytomies will handled without complaint::
+
+            >>> pic = dendropy.continuous.PhylogeneticIndependentContrasts(tree=tree,
+            ...        char_matrix=chars,
+            ...        polytomy_strategy='ignore')
+
+        Note that in this case the raw contrast and the raw contrast variance calculated for nodes that have more than two children will be invalid. The reconstructed state values should be still valid, though.
+
+    "``resolve``"
+        Polytomies will be arbitrarily resolved with 0-length branches::
+
+            >>> pic = dendropy.continuous.PhylogeneticIndependentContrasts(tree=tree,
+            ...        char_matrix=chars,
+            ...        polytomy_strategy='resolve')
+
+        In this case this validity of the analysis for nodes with (originally) more than two children is dubious, as the resulting contrasts are non-independent.
 
 
 

@@ -24,6 +24,7 @@ import unittest
 import inspect
 import dendropy
 import itertools
+from dendropy.test.support import pathmap
 from dendropy.test.support.datagen import RepeatedRandom
 from dendropy.test.support import extendedtest
 from dendropy import continuous
@@ -106,7 +107,7 @@ class KTBEvolveLinearBounce(unittest.TestCase):
             if i.edge_length is not None:
                 i.edge_length *= i.mean_edge_rate
 
-class PICTest(extendedtest.ExtendedTestCase):
+class BifurcatingTreePICTest(extendedtest.ExtendedTestCase):
 
     def setUp(self):
         tree_str = "[&R] ((((Homo:0.21,Pongo:0.21)N1:0.28,Macaca:0.49)N2:0.13,Ateles:0.62)N3:0.38,Galago:1.00)N4:0.0;"
@@ -161,6 +162,56 @@ class PICTest(extendedtest.ExtendedTestCase):
                 exp_vals = self.expected_vals[cidx][nd.label]
                 for vidx, val in enumerate(vals):
                     self.assertAlmostEqual(vals[vidx], exp_vals[vidx])
+
+class MultifurcatingTreePICTest(extendedtest.ExtendedTestCase):
+
+    def setUp(self):
+        tree_str = "[&R] ((((Homo:0.21,Bogus1:0.23,Pongo:0.21)N1:0.28,Bogus2:0.49,Macaca:0.49)N2:0.13,Bogus3:0.62,Ateles:0.62)N3:0.38,Galago:1.00)N4:0.0;"
+        data_str = """
+    #NEXUS
+    BEGIN DATA;
+        DIMENSIONS  NTAX=8 NCHAR=2;
+        FORMAT DATATYPE = CONTINUOUS GAP = - MISSING = ?;
+        MATRIX
+            Homo      4.09434   4.74493
+            Pongo     3.61092   3.33220
+            Macaca    2.37024   3.36730
+            Ateles    2.02815   2.89037
+            Galago   -1.46968   2.30259
+            Bogus1    2.15      2.15
+            Bogus2    2.15      2.15
+            Bogus3    2.15      2.15
+        ;
+    END;
+    """
+        taxa = dendropy.TaxonSet()
+        self.tree = dendropy.Tree.get_from_string(tree_str, 'newick', taxon_set=taxa)
+        self.char_matrix = dendropy.ContinuousCharacterMatrix.get_from_string(data_str,
+                'nexus',
+                taxon_set=taxa)
+
+    def testErrorOnDefault(self):
+        pic = continuous.PhylogeneticIndependentConstrasts(tree=self.tree,
+                char_matrix=self.char_matrix)
+        self.assertRaises(ValueError, pic.contrasts_tree, 1)
+
+    def testError(self):
+        pic = continuous.PhylogeneticIndependentConstrasts(tree=self.tree,
+                char_matrix=self.char_matrix,
+                polytomy_strategy="error")
+        self.assertRaises(ValueError, pic.contrasts_tree, 1)
+
+    def testIgnore(self):
+        pic = continuous.PhylogeneticIndependentConstrasts(tree=self.tree,
+                char_matrix=self.char_matrix,
+                polytomy_strategy="Ignore")
+        ctree = pic.contrasts_tree(1)
+
+    def testResolve(self):
+        pic = continuous.PhylogeneticIndependentConstrasts(tree=self.tree,
+                char_matrix=self.char_matrix,
+                polytomy_strategy="Resolve")
+        ctree = pic.contrasts_tree(1)
 
 def approx_equal(x, y, tol=1e-5):
     "Returns True if x and y differ by less than tol"

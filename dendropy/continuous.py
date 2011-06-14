@@ -280,7 +280,10 @@ class PhylogeneticIndependentConstrasts(object):
             Experimental Biology 208:3015-3035.
     """
 
-    def __init__(self, tree, char_matrix):
+    def __init__(self,
+            tree,
+            char_matrix,
+            polytomy_strategy=None):
         """
         Arguments:
 
@@ -289,14 +292,43 @@ class PhylogeneticIndependentConstrasts(object):
 
             `char_matrix`
                 ContinuousCharacterMatrix that is the source of the data
+
+            `polytomy_strategy`
+                One of: 'error', 'ignore', 'resolve':
+
+                    'error'
+                        throws an error if tree has polytomies
+                    'ignore'
+                        no error, but raw contrasts will not be calculated for
+                        polytomies
+                    'resolve'
+                        will be arbitarily-resolved with 0-length branches
+
+                Defaults to 'error' if not specified or set to None.
+
         """
         self._tree = None
         self._char_matrix = None
         self._is_dirty = None
         self._is_fully_analyzed = False
+        self._polytomy_strategy = None
         self._character_contrasts = {}
+        self._set_polytomy_strategy(polytomy_strategy)
         self.tree = tree
         self.char_matrix = char_matrix
+
+    def _get_polytomy_strategy(self):
+        return self._polytomy_strategy
+    def _set_polytomy_strategy(self, polytomy_strategy):
+        if polytomy_strategy is None:
+            self._polytomy_strategy = 'error'
+        else:
+            polytomy_strategy = polytomy_strategy.lower()
+            if polytomy_strategy not in ['error', 'ignore', 'resolve']:
+                raise ValueError("Invalid polytomy strategy: '%s'" % polytomy_strategy)
+            else:
+                self._polytomy_strategy = polytomy_strategy
+    polytomy_strategy = property(_get_polytomy_strategy, None)
 
     def _get_tree(self):
         if not self._is_fully_analyzed:
@@ -309,6 +341,8 @@ class PhylogeneticIndependentConstrasts(object):
         return self._tree
     def _set_tree(self, tree):
         self._tree = dendropy.Tree(tree)
+        if self._polytomy_strategy == 'resolve':
+            self._tree.resolve_polytomies()
         self.is_dirty = True
     tree = property(_get_tree, _set_tree, None, """\
             This tree will have an attribute added to each node, `pic`. This
@@ -408,7 +442,8 @@ class PhylogeneticIndependentConstrasts(object):
                     nd_results['pic_corrected_edge_length'] = None
                 nd_results['pic_state_variance'] = nd_results['pic_corrected_edge_length']
 
-                ## TODO: THIS IS OBVIOUSLY WRONG WHEN MORE THAN 2 CHILDREN!!
+                if len(child_nodes) != 2 and self._polytomy_strategy != "ignore":
+                    raise ValueError("Tree is not fully-bifurcating")
                 nd_results['pic_contrast_raw'] = state_vals[0] - state_vals[1]
 
                 nd_results['pic_contrast_variance'] = sum_of_child_edges
