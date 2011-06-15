@@ -195,9 +195,10 @@ class Revision(object):
         cmd = "symbolic-ref HEAD"
         retcode, stdout, stderr = self._run_vcs(cmd)
         if retcode != 0:
-#            if "fatal: ref HEAD is not a symbolic ref" in stderr:
-#                raise VersionControlInfo.NonBranchException("Current branch is invalid: detached HEAD")
-            return None
+            if "fatal: ref HEAD is not a symbolic ref" in stderr:
+                return "(no branch)"
+            else:
+                return None
         else:
             return stdout.replace('\n', '').split('/')[-1]
 
@@ -205,9 +206,10 @@ class Revision(object):
         cmd = "describe --tags --long --always --abbrev=12"
         retcode, stdout, stderr = self._run_vcs(cmd)
         if retcode != 0:
-#            if "fatal: No names found, cannot describe anything." in stderr:
-#                raise VersionControlInfo.UntaggedException("Revision is untagged")
-            return None
+            if "fatal: No names found, cannot describe anything." in stderr:
+                return "(unnamed)"
+            else:
+                return None
         else:
             return stdout.replace('\n', '')
 
