@@ -61,47 +61,13 @@ All Formats
 NEXUS and Newick
 ^^^^^^^^^^^^^^^^
 
-The following code fragment shows a typical invocation of a NEXUS format write operation using all supported keywords with their defaults::
+The following code fragment shows a typical invocation of a NEXUS-format write operation using all supported keywords with their defaults:
 
-            d.write_to_path('data.nex', 'nexus',
-                    simple=False,
-                    suppress_taxa_block=True,
-                    exclude_trees=False,
-                    exclude_chars=False,
-                    supplemental_blocks=[],
-                    file_comments=None,
-                    suppress_leaf_taxon_labels=False,
-                    suppress_leaf_node_labels=True,
-                    suppress_internal_taxon_labels=False,
-                    suppress_internal_node_labels=False,
-                    suppress_rooting=False,
-                    suppress_edge_lengths=False,
-                    unquoted_underscores=False,
-                    preserve_spaces=False,
-                    store_tree_weights=False,
-                    suppress_annotations=False,
-                    annotations_as_nhx=False,
-                    suppress_item_comments=False,
-                    node_label_element_separator=' ',
-                    node_label_compose_func=None)
+.. literalinclude:: /examples/skel_dataio_nexus_writing.py
 
-The following code fragment shows a typical invocation of Newick format write operation using all supported keyword arguments with their default values::
+The following code fragment shows a typical invocation of a Newick-format write operation using all supported keyword arguments with their default values:
 
-            d.write_to_path('data.tre', 'newick',
-                    suppress_leaf_taxon_labels=False,
-                    suppress_leaf_node_labels=True,
-                    suppress_internal_taxon_labels=False,
-                    suppress_internal_node_labels=False,
-                    suppress_rooting=False,
-                    suppress_edge_lengths=False,
-                    unquoted_underscores=False,
-                    preserve_spaces=False,
-                    store_tree_weights=False,
-                    suppress_annotations=True,
-                    annotations_as_nhx=False,
-                    suppress_item_comments=True,
-                    node_label_element_separator=' ',
-                    node_label_compose_func=None)
+.. literalinclude:: /examples/skel_dataio_newick_writing.py
 
 .. NEXUS and Newick share mostly the same format for writing tree statements. As such, in DendroPy the same set of keyword arguments can be used to control and customize both NEXUS and Newick output (though the defaults for a few of these keywords vary between formats). In addtion, because it is more extensive than Newick, several other keyword arguments are supported when writing in NEXUS format.
 
