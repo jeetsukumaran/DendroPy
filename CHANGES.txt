@@ -4,17 +4,17 @@ Release 3.9.0 (next release, in development)
 New Features
 ^^^^^^^^^^^^
 
-    - Phylogenetic independent contrasts (PIC) analysis can now be carried out using the `dendropy.continuous.PhylogeneticIndependentContrasts` class.
+    - Phylogenetic independent contrasts (PIC) analysis can now be carried out using the ``dendropy.continuous.PhylogeneticIndependentContrasts`` class.
 
 Changes
 ^^^^^^^
 
-    - Keyword arguments to `as_string()`, `write_to_path()`, `write_to_file`, etc. methods to customize NEXUS and NEWICK output have been tweaked to become more consistent. Previous keywords are still supported, but will be deprecated. The new set of keyword arguments supported can be seen in the :ref:`NEXUS and Newick writing customization <Customizing_Writing_NEXUS_and_Newick>` section.
+    - Keyword arguments to ``as_string()``, ``write_to_path()``, ``write_to_file``, etc. methods have been tweaked to become more consistent for NEXUS and Newick formats. Previous keywords are still supported, but will be deprecated. The new set of keyword arguments supported can be seen in the :ref:``NEXUS and Newick writing customization <Customizing_Writing_NEXUS_and_Newick>`` section.
 
 Bug Fixes
 ^^^^^^^^^
 
-    - Reading interleaved character matrices now longer results in the following block being skipped (NEXUS).
+    - Reading interleaved character matrices no longer results in the following block being skipped (NEXUS).
     - Caught OverflowError when calculating summary statistics.
 
 Release 3.8.1
@@ -44,28 +44,28 @@ SumTrees
 ^^^^^^^^
 
     - SumTrees can now summarize edge lengths on target trees in different ways:
-        - `-e mean-length`: sets the edge lengths of the target/consensus tree(s) to the mean of the lengths of the corresponding edges of the input trees.
-        - `-e median-length`: sets the edge lengths of the target/consensus tree(s) to the median of the lengths of the corresponding edges of the input trees.
-        - `-e median-age`: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the median age of corresponding nodes of the input trees [requires rooted ultrametric trees].
-        - `-e mean-age`: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the mean age of corresponding nodes of the input trees [requires rooted ultrametric trees].
+        - ``-e mean-length``: sets the edge lengths of the target/consensus tree(s) to the mean of the lengths of the corresponding edges of the input trees.
+        - ``-e median-length``: sets the edge lengths of the target/consensus tree(s) to the median of the lengths of the corresponding edges of the input trees.
+        - ``-e median-age``: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the median age of corresponding nodes of the input trees [requires rooted ultrametric trees].
+        - ``-e mean-age``: adjusts the edge lengths of the target/consensus tree(s) such that the node ages correspond to the mean age of corresponding nodes of the input trees [requires rooted ultrametric trees].
     - SumTrees will now annotate nodes with summaries (mean, median, standard deviation, range, 95% highest posterior density, 5% and 95% quantiles, etc.) of the distribution of ages across across input trees if the trees are indicated to be ultrametric with the "``--ultrametric``" flag [requires rooted ultrametric trees].
     - SumTrees will now annotate edges with summaries (mean, median, standard deviation, range, 95% highest posterior density, 5% and 95% quantiles, etc.) of the distribution of edge lengths across across input trees.
-    - SumTrees will now be interpret and handle tree weights if the `--weighted-trees` option is specified.
-    - SumTrees will now report topology frequencies/probabilities, if given the `--trprobs` option.
+    - SumTrees will now be interpret and handle tree weights if the ``--weighted-trees`` option is specified.
+    - SumTrees will now report topology frequencies/probabilities, if given the ``--trprobs`` option.
     - SumTrees can now handle arbitrarily-large numbers of files.
-    - SumTrees creates a rooted consensus tree if input trees are specified to be rooted using the `--rooted-trees` flag (or rooted trees are assumed as with the '--ultrametric' flag).
+    - SumTrees creates a rooted consensus tree if input trees are specified to be rooted using the ``--rooted-trees`` flag (or rooted trees are assumed as with the '--ultrametric' flag).
 
 DendroPy Library
 ^^^^^^^^^^^^^^^^
 
-        - Tree objects can now be rerooted at midpoint (see `Tree.reroot_at_midpoint()`).
-        - Annotations (i.e., attributes of Tree, Node or Edge objects that have had "annotate()" called on them) can now be written as metadata comments ("[&field=value]") when writing NEXUS/NEWICK format if the keyword argument `annotations_as_comments` is used.
-        - When reading in NEXUS/NEWICK format trees, specifying `extract_comment_metadata=True` will result in metadata comments being pulled into dictionary, with keys being fieldnames and values being the field values.
+        - Tree objects can now be rerooted at midpoint (see ``Tree.reroot_at_midpoint()``).
+        - Annotations (i.e., attributes of Tree, Node or Edge objects that have had "annotate()" called on them) can now be written as metadata comments ("[&field=value]") when writing NEXUS/NEWICK format if the keyword argument ``annotations_as_comments`` is used.
+        - When reading in NEXUS/NEWICK format trees, specifying ``extract_comment_metadata=True`` will result in metadata comments being pulled into dictionary, with keys being fieldnames and values being the field values.
         - When reading NEXUS format data, SETS blocks will be processed, and character sets parsed into the relevant CharacterDataMatrix.
         - Character sets (as, for example, parsed out of NEXUS SETS blocks: see above) can be exported as new CharacterDataMatrix objects, and be saved/manipulated/etc. independentally.
-        - When writing in NEXUS or NEWICK formats, the `write_item_comments` keyword argument (`True` or `False`) can control whether extended comments associated with nodes on trees will be written or not.
+        - When writing in NEXUS or NEWICK formats, the ``write_item_comments`` keyword argument (``True`` or ``False``) can control whether extended comments associated with nodes on trees will be written or not.
         - TopologyCounter class added to dendropy.treesum: allows for tracking of topology frequencies.
-        - `treesplits.tree_from_splits()` allows constructing of (topology-only) trees from a set of splits.
+        - ``treesplits.tree_from_splits()`` allows constructing of (topology-only) trees from a set of splits.
         - Most functionality that used to be 'dendropy.treemanip' has now been migrated as native methods of the dendropy.Tree class. 'dendropy.treemanip' will be deprecated.
         - Trees can now be pruned based on a list of taxa labels to remove or keep (previously, the methods would only accept lists of Taxon objects).
 
@@ -225,7 +225,7 @@ New Features
     * Native ASCII tree plotting is available as the "``as_ascii_plot()``" method of a ``Tree`` object.
     * Some tree distance functions integrated as native methods of ``Tree``: ``symmetric_difference``, ``false_positives_and_negatives``, ``robinson_foulds_distance``, ``euclidean_distance``.
     * ``Tree()`` objects can now be cloned with a custom ``TaxonSet`` object by passing it to the constructor via the ``taxon_set`` keyword argument.
-    * Interoperability with the `ETE <http://ete.cgenomics.org/>`_ library via the ``dendropy.interop.ete`` module.
+    * Interoperability with the ``ETE <http://ete.cgenomics.org/>``_ library via the ``dendropy.interop.ete`` module.
 
 Release 3.1.3
 -------------
@@ -264,12 +264,12 @@ New Features
         >>> import dendropy
         >>> cytb = dendropy.DnaCharacterMatrix.get_from_path("data.fas", "fasta")
 
-      but requires supplemental keyword argument, '``data_type``' to specify type of data ('``dna``', '``rna``', '``protein``', etc.) when using `DataSet`::
+      but requires supplemental keyword argument, '``data_type``' to specify type of data ('``dna``', '``rna``', '``protein``', etc.) when using ``DataSet``::
 
         >>> import dendropy
         >>> cytb_ds = dendropy.DataSet.get_from_path("data.fas", "fasta", data_type="dna")
 
-    * Implemented full-featured PHYLIP reader and enhanced PHYLIP writer, for both strict and relaxed modes (PHYLIP reader requires 'data_type' keyword argument when using `DataSet`)::
+    * Implemented full-featured PHYLIP reader and enhanced PHYLIP writer, for both strict and relaxed modes (PHYLIP reader requires 'data_type' keyword argument when using ``DataSet``)::
 
         >>> import dendropy
         >>> cytb = dendropy.DnaCharacterMatrix.get_from_path("data.dat", "phylip")
