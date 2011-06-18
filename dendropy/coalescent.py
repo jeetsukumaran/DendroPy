@@ -61,7 +61,8 @@ def discrete_time_to_coalescence(n_genes,
     If `pop_size` is 1 or 0 or None, then time is in haploid population units;
     i.e. where 1 unit of time equals 2N generations for a diploid population of
     size N, or N generations for a haploid population of size N. Otherwise time
-    is in generations.
+    is in generations. Otherwise time is in generations.
+
 
     """
     if not pop_size:

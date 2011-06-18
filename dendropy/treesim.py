@@ -492,39 +492,45 @@ def pop_gen_tree(tree=None,
     Otherwise, a Yule tree is generated based on the given taxon_set.
     Either `tree` or `taxon_set` must be given.
 
-    The timing of the divergences can be
-    controlled by specifying a vector of ages, `ages`. This should be
-    sequences of values specifying the ages of the first, second,
-    third etc. divergence events, in terms of time from the present,
-    specified either in generations (if the pop_sizes vector is given)
-    or population units (if the pop_size vector is not given). If an
-    ages vector is given and there are less than num_pops-1 of these, then
-    an exception is raised.
+    The timing of the divergences can be controlled by specifying a vector of
+    ages, `ages`. This should be sequences of values specifying the ages of the
+    first, second, third etc. divergence events, in terms of time from the
+    present, specified either in generations (if the `pop_sizes` vector is
+    given) or population units (if the pop_size vector is not given).
+    If an ages vector is given and there are less than num_pops-1 of these,
+    then an exception is raised.
 
     The number of gene lineages per population can be specified through
     the 'num_genes', which can either be an scalar integer or a list.
     If it is an integer, all the population get the same number of
     genes. If it is a list, it must be at least as long as num_pops.
 
-    The population sizes of each edge can be specified using the
-    `pop_sizes` vector, which should be a sequence of values
-    specifying the population sizes of the edges in postorder. If the
-    pop_size vector is given, then it must be at least as long as
-    there are branches on a tree (=2 * num_pops + 1), otherwise it is an
-    error. If it is not given, then the branch lengths of the population
-    trees will be in population units.
+    The population sizes of each edge can be specified using the `pop_sizes`
+    vector, which should be a sequence of values specifying the population
+    sizes of the edges in postorder. If the pop_size vector is given, then it
+    must be at least as long as there are branches on a tree, i.e. 2 * num_pops
+    + 1, otherwise it is an error.  The population size should be the effective
+    *haploid* population size; i.e., number of gene copies in the population: 2
+    * N in a diploid population of N individuals, or N in a haploid population
+    * of N individuals.
 
-    This function first generates a tree using a pure-birth model with
-    a uniform birth rate of 1.0. If an ages vector is given, it then
-    sweeps through the internal nodes, assigning branch lengths such
-    that the divergence events correspond to the ages in the
-    vector. If a population sizes vector is given, it then visits all
-    the edges in postorder, assigning population sizes to the
-    attribute 'pop_size' (which is persisted as an annotation). During
-    this, if an ages vector was *not* given, then the edge lengths are
-    multiplied by the population size of the edge so the branch length
-    units will be in generations. If an ages vector was given, then it
-    is assumed that the ages are already in the proper scale/units.
+    If `pop_size` is 1 or 0 or None, then edge lengths of the tree are in
+    haploid population units; i.e. where 1 unit of time equals 2N generations
+    for a diploid population of size N, or N generations for a haploid
+    population of size N. Otherwise edge lengths of the tree are in
+    generations.
+
+    This function first generates a tree using a pure-birth model with a
+    uniform birth rate of 1.0. If an ages vector is given, it then sweeps
+    through the internal nodes, assigning branch lengths such that the
+    divergence events correspond to the ages in the vector. If a population
+    sizes vector is given, it then visits all the edges in postorder, assigning
+    population sizes to the attribute with the name specified in
+    'pop_size_attr' (which is persisted as an annotation). During this, if an
+    ages vector was *not* given, then the edge lengths are multiplied by the
+    population size of the edge so the branch length units will be in
+    generations. If an ages vector was given, then it is assumed that the ages
+    are already in the proper scale/units.
     """
 
     # get our random number generator
@@ -627,7 +633,18 @@ def constrained_kingman(pop_tree,
     of a class derived from this with the following attribute
     `num_genes` -- the number of gene samples from each population in the
     present.  Each edge on the tree should also have the attribute
-    `pop_size` -- the effective size of the population at this time.
+
+    `pop_size_attr` is the attribute name of the edges of `pop_tree` that
+    specify the population size. By default it is `pop_size`. The should
+    specify the effective *haploid* population size; i.e., number of gene
+    copies in the population: 2 * N in a diploid population of N individuals,
+    or N in a haploid population of N individuals.
+
+    If `pop_size` is 1 or 0 or None, then the edge lengths of `pop_tree` is
+    taken to be in haploid population units; i.e. where 1 unit equals 2N
+    generations for a diploid population of size N, or N generations for a
+    haploid population of size N. Otherwise the edge lengths of `pop_tree` is
+    taken to be in generations.
 
     If `gene_tree_list` is given, then the gene tree is added to the
     tree block, and the tree block's taxa block will be used to manage
