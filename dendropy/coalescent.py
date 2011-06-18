@@ -50,77 +50,91 @@ except:
 
 def discrete_time_to_coalescence(n_genes,
                                  pop_size=None,
-                                 haploid=True,
                                  rng=None):
     """
     A random draw from the "Kingman distribution" (discrete time version):
     Time to go from n genes to n-1 genes; i.e. waiting time until two
-    lineages coalesce. **`pop_size` = HAPLOID population size in the default
-    formulation!**
+    lineages coalesce.
+    `pop_size` is the effective *haploid* population size; i.e., number of gene
+    copies in the population: 2 * N in a diploid population of N individuals,
+    or N in a haploid population of N individuals.
+    If `pop_size` is 1 or 0 or None, then time is in haploid population units;
+    i.e. where 1 unit of time equals 2N generations for a diploid population of
+    size N, or N generations for a haploid population of size N.
     """
-    if pop_size is None or pop_size <= n_genes:
-        raise Exception("Population size must be >> num genes")
-    if haploid:
-        N = pop_size
+    if not pop_size:
+        time_units = 1
     else:
-        N = pop_size * 2
+        time_units = pop_size * 2
     if rng is None:
         rng = GLOBAL_RNG
-    p = float(probability.binomial_coefficient(n_genes, 2)) / N
+    p = float(probability.binomial_coefficient(n_genes, 2)) / time_units
     tmrca = probability.geometric_rv(p)
-    if pop_size is not None and pop_size >= 0:
-        return tmrca * pop_size
-    else:
-        return tmrca
+    return tmrca * time_units
 
-def time_to_coalescence(n_genes, pop_size=None, rng=None):
+def time_to_coalescence(n_genes,
+        pop_size=None,
+        haploid=True,
+        rng=None):
     """
     A random draw from the "Kingman distribution" (continuous time version):
     Time to go from n genes to n-1 genes; i.e. waiting time until two
     lineages coalesce.  This is a random number with an exponential
-    distribution with a rate of (n choose 2). Time is in coalescent
-    units unless population size is > 1.
+    distribution with a rate of (n choose 2).
+    `pop_size` is the effective *haploid* population size; i.e., number of gene
+    copies in the population: 2 * N in a diploid population of N individuals,
+    or N in a haploid population of N individuals.
+    If `pop_size` is 1 or 0 or None, then time is in haploid population units;
+    i.e. where 1 unit of time equals 2N generations for a diploid population of
+    size N, or N generations for a haploid population of size N.
     """
     if rng is None:
         rng = GLOBAL_RNG
+    if not pop_size:
+        time_units = 1
+    else:
+        time_units = pop_size * 2
     rate = probability.binomial_coefficient(n_genes, 2)
     tmrca = rng.expovariate(rate)
-    if pop_size is not None and pop_size >= 0:
-        return tmrca * pop_size
-    else:
-        return tmrca
+    return tmrca * pop_size
 
 def expected_tmrca(n_genes, pop_size=None, rng=None):
     """
-    Expected (mean) value for the TMRCA in coalescent time units unless
-    population size > 1
+    Expected (mean) value for the Time to the Most Recent Common Ancestor.
+    `n_genes` is the number of genes in the sample.
+    `pop_size` is the effective *haploid* population size; i.e., number of gene
+    copies in the population: 2 * N in a diploid population of N individuals,
+    or N in a haploid population of N individuals.
+    If `pop_size` is 1 or 0 or None, then time is in haploid population units;
+    i.e. where 1 unit of time equals 2N generations for a diploid population of
+    size N, or N generations for a haploid population of size N.
     """
     if rng is None:
         rng = GLOBAL_RNG
     nc2 = probability.binomial_coefficient(n_genes, 2)
     tmrca = (float(1)/nc2)
-    if pop_size and pop_size >= 0:
-        return tmrca * pop_size
-    else:
-        return tmrca
+    return tmrca * pop_sze
 
 def coalesce(nodes,
              pop_size=None,
              period=None,
              rng=None):
     """
+    Returns a list of nodes that have not yet coalesced once `period` is
+    exhausted.
+
     `nodes` is a list of DendroPy Nodes representing a sample of
     neutral genes (some, all, or none of these nodes may have
     descendent nodes).
 
-    `pop_size` is the effective population size of a Wright-Fisher
-    population in which thes genes are evolving, and must be given for
-    correct behaviour if time is generations.
+    `pop_size` is the effective *haploid* population size; i.e., number of gene
+    copies in the population: 2 * N in a diploid population of N individuals,
+    or N in a haploid population of N individuals.
 
-    `period` is the time in generations (if pop_size is not None) or
-    in populaton/coalescent units (if pop_size is given) that the
-    genes have to coalesce. If not given, then the the method will
-    continue to coalesce the genes until only one gene is left.
+    `period` is the time that the genes have to coalesce.  If `pop_size` is 1
+    or 0 or None, then time is in haploid population units; i.e. where 1 unit
+    of time equals 2N generations for a diploid population of size N, or N
+    generations for a haploid population of size N.
 
     This function will a draw a coalescence time, `t`, from
     EXP(1/num_genes). If `period` is given and if this time is less
