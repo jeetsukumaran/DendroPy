@@ -226,7 +226,9 @@ Coming soon: :func:`~dendropy.treesim.pop_gen_tree()`.
 (Pure Neutral) Coalescent Trees
 ===============================
 
-Coming soon: :func:`~dendropy.treesim.pure_kingman()`.
+The :func:`~dendropy.treesim.pure_kingman()` function returns a tree generated under a neutral coalescent model for a specified |TaxonSet|. The first argument to this function, ``taxon_set``, is a |TaxonSet| object, where each member |Taxon| object represents a gene to be coalesced. The second argument, ``pop_size``, specifies the population size in terms of the number of gene copies in the population. This means that for a diploid population of size ``N``, ``pop_size`` should be ``N*2``, while for a haploid population of size ``N``, ``pop_size`` should be ``N``. If ``pop_size`` is |None|, 1, or 0, then the edge lengths of the returned gene tree will be in population units (i.e., 1 unit of edge length == to 2N generations if a diploid population or 1N generations if a haploid population). Otherwise, the edge lengths will be in generation units. For example:
+
+.. literalinclude:: pure_kingman1.py
 
 
 Censored/Constrained Coalescent Trees
