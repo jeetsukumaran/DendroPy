@@ -60,7 +60,9 @@ def discrete_time_to_coalescence(n_genes,
     or N in a haploid population of N individuals.
     If `pop_size` is 1 or 0 or None, then time is in haploid population units;
     i.e. where 1 unit of time equals 2N generations for a diploid population of
-    size N, or N generations for a haploid population of size N.
+    size N, or N generations for a haploid population of size N. Otherwise time
+    is in generations.
+
     """
     if not pop_size:
         time_units = 1
@@ -86,7 +88,9 @@ def time_to_coalescence(n_genes,
     or N in a haploid population of N individuals.
     If `pop_size` is 1 or 0 or None, then time is in haploid population units;
     i.e. where 1 unit of time equals 2N generations for a diploid population of
-    size N, or N generations for a haploid population of size N.
+    size N, or N generations for a haploid population of size N. Otherwise time
+    is in generations.
+
     """
     if rng is None:
         rng = GLOBAL_RNG
@@ -107,7 +111,9 @@ def expected_tmrca(n_genes, pop_size=None, rng=None):
     or N in a haploid population of N individuals.
     If `pop_size` is 1 or 0 or None, then time is in haploid population units;
     i.e. where 1 unit of time equals 2N generations for a diploid population of
-    size N, or N generations for a haploid population of size N.
+    size N, or N generations for a haploid population of size N. Otherwise time
+    is in generations.
+
     """
     if rng is None:
         rng = GLOBAL_RNG
@@ -134,7 +140,8 @@ def coalesce(nodes,
     `period` is the time that the genes have to coalesce.  If `pop_size` is 1
     or 0 or None, then time is in haploid population units; i.e. where 1 unit
     of time equals 2N generations for a diploid population of size N, or N
-    generations for a haploid population of size N.
+    generations for a haploid population of size N. Otherwise time is in
+    generations.
 
     This function will a draw a coalescence time, `t`, from
     EXP(1/num_genes). If `period` is given and if this time is less
