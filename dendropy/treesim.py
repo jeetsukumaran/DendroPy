@@ -597,6 +597,111 @@ def pop_gen_tree(tree=None,
 
     return tree
 
+def contained_coalescent(pop_tree,
+        pop_gene_taxa_map,
+        edge_pop_size_map=None,
+        gene_tree_taxon_set=None,
+        default_pop_size=1,
+        rng=None):
+    """
+    Returns a gene tree simulated under the coalescent conditioned on
+    population splitting/divergences.
+
+        `pop_tree`
+            The population or species tree. If `edge_pop_size_map` is not None,
+            and population sizes given are non-trivial (i.e., >1), then edge
+            lengths on this tree are in units of generations. Otherwise edge
+            lengths are in population units; i.e. 2N generations for diploid
+            populations of size N, or N generations for diploid populations of
+            size N.
+
+        `pop_gene_taxa_map`
+            A dictionary with keys being the Taxon objects of `pop_tree` and
+            values a list of Taxon objects of the gene tree that are associated
+            with or have been sampled from this population or species taxon.
+
+        `edge_pop_size_map`
+            A dictionary with keys being the Edge objects of `pop_tree`, and
+            values being the haploid population size or the number of gene
+            copies; i.e.  2N for a diploid population of N individuals, or N
+            for a haploid population of N individuals. This value determines
+            how branch length units are interpreted in the input tree,
+            `pop_tree`.  If a biologically-meaningful value, then branch
+            lengths on the `pop_tree` are properly read as generations. If not
+            (e.g. 1 or 0), then they are in population units, i.e. where 1 unit
+            of time equals 2N generations for a diploid population of size N,
+            or N generations for a haploid population of size N. Otherwise time
+            is in generations. If this argument is None, then population sizes
+            default to `default_pop_size`.
+
+        `gene_tree_taxon_set`
+            TaxonSet object to use for the gene tree being returned. If not given
+            then a new TaxonSet object will be created and used, though Taxon
+            object members of this TaxonSet will be the same as given in
+            `pop_gene_taxa_map`.
+
+        `default_pop_size`
+            Population size to use if `edge_pop_size_map` is not given or
+            if an edge is not in the map. Defaults to 1.
+
+    The returned gene tree will have the following extra attributes:
+
+        `pop_node_genes`
+            A dictionary with nodes of `pop_tree` as keys and a list of gene
+            tree nodes that are uncoalesced as values.
+
+    Note that this function does very much the same thing as
+    `constrained_kingman()`, but provides a very different API.
+    """
+
+    if rng is None:
+        rng = GLOBAL_RNG
+
+    if gene_tree_taxon_set is None:
+        gene_tree_taxon_set = dendropy.TaxonSet()
+        for gene_taxa in pop_gene_taxa_map:
+            for taxon in gene_taxa:
+                gene_tree_taxon_set.add(taxon)
+    gene_tree = dataobject.Tree(taxon_set=gene_tree_taxon_set)
+    gene_tree.is_rooted = True
+
+    pop_node_genes = {}
+    for nd in pop_tree.postorder_node_iter():
+        if nd.taxon and nd.taxon in pop_gene_taxa_map:
+            gene_taxa = pop_gene_taxa_map[nd.taxon]
+            gene_nodes = [dataobject.Node() for i in range(len(gene_taxa))]
+            pop_node_genes[nd] = []
+            for gidx, gene_node in enumerate(gene_nodes):
+                gene_node.taxon = gene_taxa[gidx]
+                pop_node_genes[nd].append(gene_node)
+
+    for edge in pop_tree.postorder_edge_iter():
+
+        if edge_pop_size_map:
+            pop_size = edge_pop_size_map.get(edge, default_pop_size)
+        else:
+            pop_size = default_pop_size
+        if edge.head_node.parent_node is None:
+            if len(pop_node_genes[edge.head_node]) > 1:
+                final = coalescent.coalesce(nodes=pop_node_genes[edge.head_node],
+                                            pop_size=default_pop_size,
+                                            period=None,
+                                            rng=rng)
+            else:
+                final = pop_node_genes[edge.head_node]
+            gene_tree.seed_node = final[0]
+        else:
+            uncoal = coalescent.coalesce(nodes=pop_node_genes[edge.head_node],
+                                         pop_size=pop_size,
+                                         period=edge.length,
+                                         rng=rng)
+            if edge.tail_node not in pop_node_genes:
+                pop_node_genes[edge.tail_node] = []
+            pop_node_genes[edge.tail_node].extend(uncoal)
+
+    gene_tree.pop_node_genes = pop_node_genes
+    return gene_tree
+
 def pure_kingman(taxon_set, pop_size=1, rng=None):
     """
     Generates a tree under the unconstrained Kingman's coalescent process.
@@ -658,6 +763,9 @@ def constrained_kingman(pop_tree,
     if `decorate_original_tree` is True, then the list of uncoalesced nodes at
     each node of the population tree is added to the original (input) population
     tree instead of a copy.
+
+    Note that this function does very much the same thing as `contained_coalescent()`,
+    but provides a very different API.
     """
 
     # get our random number generator
