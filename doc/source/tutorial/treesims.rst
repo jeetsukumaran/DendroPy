@@ -228,7 +228,7 @@ Coming soon: :func:`~dendropy.treesim.pop_gen_tree()`.
 
 The :func:`~dendropy.treesim.pure_kingman()` function returns a tree generated under an unconstrained neutral coalescent model. The first argument to this function, ``taxon_set``, is a |TaxonSet| object, where each member |Taxon| object represents a gene to be coalesced. The second argument, ``pop_size``, specifies the population size in terms of the number of gene copies in the population. This means that for a diploid population of size ``N``, ``pop_size`` should be ``N*2``, while for a haploid population of size ``N``, ``pop_size`` should be ``N``. If ``pop_size`` is |None|, 1, or 0, then the edge lengths of the returned gene tree will be in population units (i.e., 1 unit of edge length == to 2N generations if a diploid population or 1N generations if a haploid population). Otherwise, the edge lengths will be in generation units. For example:
 
-.. literalinclude:: pure_kingman1.py
+.. literalinclude:: /examples/pure_kingman1.py
 
 
 Censored/Constrained Coalescent Trees
@@ -256,15 +256,15 @@ The easiest way to get a |TaxonSetMapping| object is to call the special factory
 This will create a new |TaxonSet| to manage the gene taxa, and create the associations between the gene taxa and the containing tree taxa for you.
 It takes two arguments: the |TaxonSet| of the containing tree, and the number of genes you want sampled from each species.
 
-The following example shows how to create a |TaxonSetMapping| using :func:`dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`, and then calls :func:`~dendropy.treesim.contained_coalescent()` to produce a contained coalescent tree:
+The following example shows how to create a |TaxonSetMapping| using :meth:`~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`, and then calls :meth:`~dendropy.treesim.contained_coalescent()` to produce a contained coalescent tree:
 
-.. literalinclude:: contained_coalescent1.py
+.. literalinclude:: /examples/contained_coalescent1.py
 
 In the above example, the branch lengths were in haploid population units, so we did not specify a population size.
 If the gene-species associations are more complex, e.g., different numbers of genes per species, we can pass in a list of values as the second argument to `~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`:
 
 
-.. literalinclude:: contained_coalescent2.py
+.. literalinclude:: /examples/contained_coalescent2.py
 
 This approach should be used with caution if we cannot be certain of the order of taxa (as is the case with data read in Newick formats). In these case, and in more complex cases, we might need to directly instantiate the :class:`~dendropy.dataobject.taxon.TaxonSetMapping` object.
 
