@@ -597,16 +597,16 @@ def pop_gen_tree(tree=None,
 
     return tree
 
-def contained_coalescent(pop_tree,
-        gene_to_pop_taxon_map,
+def contained_coalescent(containing_tree,
+        gene_to_containing_taxon_map,
         edge_pop_size_attr="pop_size",
         default_pop_size=1,
         rng=None):
     """
-    Returns a gene tree simulated under the coalescent conditioned on
-    population splitting/divergences.
+    Returns a gene tree simulated under the coalescent contained within a
+    population or species tree.
 
-        `pop_tree`
+        `containing_tree`
             The population or species tree. If `edge_pop_size_map` is not None,
             and population sizes given are non-trivial (i.e., >1), then edge
             lengths on this tree are in units of generations. Otherwise edge
@@ -614,9 +614,9 @@ def contained_coalescent(pop_tree,
             populations of size N, or N generations for diploid populations of
             size N.
 
-        `gene_to_pop_taxon_map`
+        `gene_to_containing_taxon_map`
             A TaxonSetMapping object mapping Taxon objects in the
-            `pop_tree` TaxonSet to corresponding Taxon objects in the
+            `containing_tree` TaxonSet to corresponding Taxon objects in the
             resulting gene tree.
 
         `edge_pop_size_attr`
@@ -626,14 +626,14 @@ def contained_coalescent(pop_tree,
             should be the haploid population size or the number of gene copies;
             i.e.  2N for a diploid population of N individuals, or N for a
             haploid population of N individuals. This value determines how
-            branch length units are interpreted in the input tree, `pop_tree`.
-            If a biologically-meaningful value, then branch lengths on the
-            `pop_tree` are properly read as generations. If not (e.g. 1 or 0),
-            then they are in population units, i.e. where 1 unit of time equals
-            2N generations for a diploid population of size N, or N generations
-            for a haploid population of size N. Otherwise time is in
-            generations. If this argument is None, then population sizes
-            default to `default_pop_size`.
+            branch length units are interpreted in the input tree,
+            `containing_tree`.  If a biologically-meaningful value, then branch
+            lengths on the `containing_tree` are properly read as generations.
+            If not (e.g. 1 or 0), then they are in population units, i.e. where
+            1 unit of time equals 2N generations for a diploid population of
+            size N, or N generations for a haploid population of size N.
+            Otherwise time is in generations. If this argument is None, then
+            population sizes default to `default_pop_size`.
 
         `default_pop_size`
             Population size to use if `edge_pop_size_attr` is None or
@@ -642,7 +642,7 @@ def contained_coalescent(pop_tree,
     The returned gene tree will have the following extra attributes:
 
         `pop_node_genes`
-            A dictionary with nodes of `pop_tree` as keys and a list of gene
+            A dictionary with nodes of `containing_tree` as keys and a list of gene
             tree nodes that are uncoalesced as values.
 
     Note that this function does very much the same thing as
@@ -652,7 +652,7 @@ def contained_coalescent(pop_tree,
     if rng is None:
         rng = GLOBAL_RNG
 
-    gene_tree_taxon_set = gene_to_pop_taxon_map.domain_taxon_set
+    gene_tree_taxon_set = gene_to_containing_taxon_map.domain_taxon_set
     if gene_tree_taxon_set is None:
         gene_tree_taxon_set = dendropy.TaxonSet()
         for gene_taxa in pop_gene_taxa_map:
