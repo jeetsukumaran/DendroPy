@@ -635,6 +635,74 @@ class TaxonSetMapping(base.IdTagged):
     A many-to-one mapping of ``Taxon`` objects (e.g., gene taxa to population/species taxa).
     """
 
+    @staticmethod
+    def create_contained_taxon_mapping(containing_taxon_set,
+            num_contained,
+            contained_taxon_label_prefix=None,
+            contained_taxon_label_separator=' ',
+            contained_taxon_label_func=None):
+        """
+        Creates and returns a TaxonSetMapping object that maps multiple
+        "contained" Taxon objects (e.g., genes) to Taxon objects in
+        `containing_taxon_set` (e.g., populations or species).
+
+            `containing_taxon_set`
+                A TaxonSet object that defines a Taxon for each population or
+                species.
+
+            `num_contained`
+                The number of genes per population of species. The value of
+                this attribute can be a scalar integer, in which case each
+                species or population taxon will get the same fixed number
+                of genes. Or it can be a list, in which case the list has
+                to have as many elements as there are members in
+                `containing_taxon_set`, and each element will specify the
+                number of genes that the corresponding species or population
+                Taxon will get.
+
+            `contained_taxon_label_prefix`
+                If specified, then each gene Taxon label will begin with this.
+                Otherwise, each gene Taxon label will begin with the same label
+                as its corresponding species/population taxon label.
+
+            `contained_taxon_label_separator`
+                String used to separate gene Taxon label prefix from its index.
+
+            `contained_taxon_label_func`
+                If specified, should be a function that takes two arguments: a
+                Taxon object from `containing_taxon_set` and an integer
+                specifying the contained gene index. It should return a string
+                which will be used as the label for the corresponding gene
+                taxon. If not None, this will bypass the
+                `contained_taxon_label_prefix` and
+                `contained_taxon_label_separator` arguments.
+        """
+        if isinstance(num_contained, int):
+            _num_contained = [num_contained] * len(containing_taxon_set)
+        else:
+            _num_contained = num_contained
+        contained_to_containing = {}
+        contained_taxa = TaxonSet()
+        for cidx, containing_taxon in enumerate(containing_taxon_set):
+            num_new = _num_contained[cidx]
+            for new_idx in range(num_new):
+
+                if contained_taxon_label_func is not None:
+                    label = contained_taxon_label_func(containing_taxon,
+                            new_idx)
+                else:
+                    label = "%s%s%d" % (containing_taxon.label,
+                            contained_taxon_label_separator,
+                            new_idx+1)
+                contained_taxon = Taxon(label=label)
+                contained_to_containing[contained_taxon] = containing_taxon
+                contained_taxa.append(contained_taxon)
+        contained_to_containing_map = TaxonSetMapping(domain_taxon_set=contained_taxa,
+                range_taxon_set=containing_taxon_set,
+                mapping_dict=contained_to_containing)
+        return contained_to_containing_map
+
+
     def __init__(self, **kwargs):
         """
         __init__ uses one of the following keyword arguments:
