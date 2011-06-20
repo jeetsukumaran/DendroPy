@@ -138,6 +138,7 @@ rst_epilog = """
 .. |Edge| replace:: :class:`~dendropy.dataobject.tree.Edge`
 .. |Taxon| replace:: :class:`~dendropy.dataobject.taxon.Taxon`
 .. |TaxonSet| replace:: :class:`~dendropy.dataobject.taxon.TaxonSet`
+.. |TaxonSetMapping| replace:: :class:`~dendropy.dataobject.taxon.TaxonSetMapping`
 .. |DataSet| replace:: :class:`~dendropy.dataobject.dataset.DataSet`
 .. |CharacterMatrix| replace:: :class:`~dendropy.dataobject.char.CharacterMatrix`
 .. |DnaCharacterMatrix| replace:: :class:`~dendropy.dataobject.char.DnaCharacterMatrix`

@@ -226,7 +226,7 @@ Coming soon: :func:`~dendropy.treesim.pop_gen_tree()`.
 (Pure Neutral) Coalescent Trees
 ===============================
 
-The :func:`~dendropy.treesim.pure_kingman()` function returns a tree generated under a neutral coalescent model for a specified |TaxonSet|. The first argument to this function, ``taxon_set``, is a |TaxonSet| object, where each member |Taxon| object represents a gene to be coalesced. The second argument, ``pop_size``, specifies the population size in terms of the number of gene copies in the population. This means that for a diploid population of size ``N``, ``pop_size`` should be ``N*2``, while for a haploid population of size ``N``, ``pop_size`` should be ``N``. If ``pop_size`` is |None|, 1, or 0, then the edge lengths of the returned gene tree will be in population units (i.e., 1 unit of edge length == to 2N generations if a diploid population or 1N generations if a haploid population). Otherwise, the edge lengths will be in generation units. For example:
+The :func:`~dendropy.treesim.pure_kingman()` function returns a tree generated under an unconstrained neutral coalescent model. The first argument to this function, ``taxon_set``, is a |TaxonSet| object, where each member |Taxon| object represents a gene to be coalesced. The second argument, ``pop_size``, specifies the population size in terms of the number of gene copies in the population. This means that for a diploid population of size ``N``, ``pop_size`` should be ``N*2``, while for a haploid population of size ``N``, ``pop_size`` should be ``N``. If ``pop_size`` is |None|, 1, or 0, then the edge lengths of the returned gene tree will be in population units (i.e., 1 unit of edge length == to 2N generations if a diploid population or 1N generations if a haploid population). Otherwise, the edge lengths will be in generation units. For example:
 
 .. literalinclude:: pure_kingman1.py
 
@@ -234,5 +234,39 @@ The :func:`~dendropy.treesim.pure_kingman()` function returns a tree generated u
 Censored/Constrained Coalescent Trees
 =====================================
 
-Coming soon: :func:`~dendropy.treesim.constrained_kingman()`.
+The :func:`~dendropy.treesim.contained_coalescent()` function returns a tree generated under a neutral coalescent model conditioned on population splitting times or events given by a containing species or population tree.
+Such a tree is often referred to as a contained, embedded, censored, truncated, or constrained genealogy/tree.
+At a minimum, this function takes two arguments: a |Tree| object representing the containing (species or population) tree, and a |TaxonSetMapping| object describing how the sampled gene taxa map or are associated with the species/population |Tree| taxa.
+
+The |Tree| object representing the containing species or population tree should be rooted and ultrametric.
+If edge lengths are given in generations, then a meaningful population size needs to be communicated to the :func:`~dendropy.treesim.contained_coalescent()` function.
+In general, for coalescent operations in DendroPy, unless otherwise specified, population sizes are the *haploid* population size, i.e. the number of genes in the population.
+This is 2N for a diploid population with N individuals, or N for haploid population of N individuals.
+If edge lengths are given in population units (e.g., N), then the appropriate population size to use is 1.
+
+If the population size is fixed throughout the containing species/population tree, then simply passing in the appropriate value using the ``default_pop_size`` argument to the :func:`~dendropy.treesim.contained_coalescent()` function is sufficient.
+If, on the other hand, the population size varies, the a special attribute must be added to each edge, "``pop_size``", that specifies the population size for that edge.
+For example::
+
+    tree = dendropy.Tree.get_from_path("sp.tre", "newick")
+    for edge in tree.postorder_edge_iter():
+            edge.pop_size = 100000
+
+The easiest way to get a |TaxonSetMapping| object is to call the special factory function :func:`~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`.
+This will create a new |TaxonSet| to manage the gene taxa, and create the associations between the gene taxa and the containing tree taxa for you.
+It takes two arguments: the |TaxonSet| of the containing tree, and the number of genes you want sampled from each species.
+
+The following example shows how to create a |TaxonSetMapping| using :func:`dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`, and then calls :func:`~dendropy.treesim.contained_coalescent()` to produce a contained coalescent tree:
+
+.. literalinclude:: contained_coalescent1.py
+
+In the above example, the branch lengths were in haploid population units, so we did not specify a population size.
+If the gene-species associations are more complex, e.g., different numbers of genes per species, we can pass in a list of values as the second argument to `~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`:
+
+
+.. literalinclude:: contained_coalescent2.py
+
+This approach should be used with caution if we cannot be certain of the order of taxa (as is the case with data read in Newick formats). In these case, and in more complex cases, we might need to directly instantiate the :class:`~dendropy.dataobject.taxon.TaxonSetMapping` object.
+
+
 
