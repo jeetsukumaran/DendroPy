@@ -662,8 +662,8 @@ def contained_coalescent(containing_tree,
     gene_tree.is_rooted = True
 
     pop_node_genes = {}
-    pop_gene_taxa = gene_to_pop_taxon_map.reverse
-    for nd in pop_tree.postorder_node_iter():
+    pop_gene_taxa = gene_to_containing_taxon_map.reverse
+    for nd in containing_tree.postorder_node_iter():
         if nd.taxon and nd.taxon in pop_gene_taxa:
             pop_node_genes[nd] = []
             gene_taxa = pop_gene_taxa[nd.taxon]
@@ -676,7 +676,7 @@ def contained_coalescent(containing_tree,
             #    gene_node.taxon = gene_taxa[gidx]
             #    pop_node_genes[nd].append(gene_node)
 
-    for edge in pop_tree.postorder_edge_iter():
+    for edge in containing_tree.postorder_edge_iter():
 
         if edge_pop_size_attr and hasattr(edge, edge_pop_size_attr):
             pop_size = getattr(edge, edge_pop_size_attr)
