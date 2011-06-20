@@ -598,8 +598,7 @@ def pop_gen_tree(tree=None,
     return tree
 
 def contained_coalescent(pop_tree,
-        pop_gene_taxa_map,
-        gene_tree_taxon_set=None,
+        gene_to_pop_taxon_map,
         edge_pop_size_attr="pop_size",
         default_pop_size=1,
         rng=None):
@@ -615,16 +614,10 @@ def contained_coalescent(pop_tree,
             populations of size N, or N generations for diploid populations of
             size N.
 
-        `pop_gene_taxa_map`
-            A dictionary with keys being the Taxon objects of `pop_tree` and
-            values a list of Taxon objects of the gene tree that are associated
-            with or have been sampled from this population or species taxon.
-
-        `gene_tree_taxon_set`
-            TaxonSet object to use for the gene tree being returned. If not given
-            then a new TaxonSet object will be created and used, though Taxon
-            object members of this TaxonSet will be the same as given in
-            `pop_gene_taxa_map`.
+        `gene_to_pop_taxon_map`
+            A TaxonSetMapping object mapping Taxon objects in the
+            `pop_tree` TaxonSet to corresponding Taxon objects in the
+            resulting gene tree.
 
         `edge_pop_size_attr`
             Name of attribute of edges that specify population size. By default
@@ -659,6 +652,7 @@ def contained_coalescent(pop_tree,
     if rng is None:
         rng = GLOBAL_RNG
 
+    gene_tree_taxon_set = gene_to_pop_taxon_map.domain_taxon_set
     if gene_tree_taxon_set is None:
         gene_tree_taxon_set = dendropy.TaxonSet()
         for gene_taxa in pop_gene_taxa_map:
@@ -668,14 +662,19 @@ def contained_coalescent(pop_tree,
     gene_tree.is_rooted = True
 
     pop_node_genes = {}
+    pop_gene_taxa = gene_to_pop_taxon_map.reverse
     for nd in pop_tree.postorder_node_iter():
-        if nd.taxon and nd.taxon in pop_gene_taxa_map:
-            gene_taxa = pop_gene_taxa_map[nd.taxon]
-            gene_nodes = [dataobject.Node() for i in range(len(gene_taxa))]
+        if nd.taxon and nd.taxon in pop_gene_taxa:
             pop_node_genes[nd] = []
-            for gidx, gene_node in enumerate(gene_nodes):
-                gene_node.taxon = gene_taxa[gidx]
+            gene_taxa = pop_gene_taxa[nd.taxon]
+            for gene_taxon in gene_taxa:
+                gene_node = dataobject.Node()
+                gene_node.taxon = gene_taxon
                 pop_node_genes[nd].append(gene_node)
+            #gene_nodes = [dataobject.Node() for i in range(len(gene_taxa))]
+            #for gidx, gene_node in enumerate(gene_nodes):
+            #    gene_node.taxon = gene_taxa[gidx]
+            #    pop_node_genes[nd].append(gene_node)
 
     for edge in pop_tree.postorder_edge_iter():
 
