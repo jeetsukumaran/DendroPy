@@ -623,7 +623,7 @@ def contained_coalescent(containing_tree,
             Name of attribute of edges that specify population size. By default
             this is "pop_size". If this attribute does not exist,
             `default_pop_size` will be used.  The value for this attribute
-            should be the haploid population size or the number of gene copies;
+            should be the haploid population size or the number of genes;
             i.e.  2N for a diploid population of N individuals, or N for a
             haploid population of N individuals. This value determines how
             branch length units are interpreted in the input tree,
@@ -743,7 +743,7 @@ def constrained_kingman(pop_tree,
     `pop_size_attr` is the attribute name of the edges of `pop_tree` that
     specify the population size. By default it is `pop_size`. The should
     specify the effective *haploid* population size; i.e., number of gene
-    copies in the population: 2 * N in a diploid population of N individuals,
+    in the population: 2 * N in a diploid population of N individuals,
     or N in a haploid population of N individuals.
 
     If `pop_size` is 1 or 0 or None, then the edge lengths of `pop_tree` is

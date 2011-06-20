@@ -55,13 +55,13 @@ def discrete_time_to_coalescence(n_genes,
     A random draw from the "Kingman distribution" (discrete time version):
     Time to go from n genes to n-1 genes; i.e. waiting time until two
     lineages coalesce.
-    `pop_size` is the effective *haploid* population size; i.e., number of gene
-    copies in the population: 2 * N in a diploid population of N individuals,
-    or N in a haploid population of N individuals.
+    `pop_size` is the effective *haploid* population size; i.e., number of
+    genes in the population: 2 * N in a diploid population of N individuals, or
+    N in a haploid population of N individuals.
     If `pop_size` is 1 or 0 or None, then time is in haploid population units;
     i.e. where 1 unit of time equals 2N generations for a diploid population of
     size N, or N generations for a haploid population of size N. Otherwise time
-    is in generations. Otherwise time is in generations.
+    is in generations.
 
 
     """
@@ -85,7 +85,7 @@ def time_to_coalescence(n_genes,
     lineages coalesce.  This is a random number with an exponential
     distribution with a rate of (n choose 2).
     `pop_size` is the effective *haploid* population size; i.e., number of gene
-    copies in the population: 2 * N in a diploid population of N individuals,
+    in the population: 2 * N in a diploid population of N individuals,
     or N in a haploid population of N individuals.
     If `pop_size` is 1 or 0 or None, then time is in haploid population units;
     i.e. where 1 unit of time equals 2N generations for a diploid population of
@@ -108,7 +108,7 @@ def expected_tmrca(n_genes, pop_size=None, rng=None):
     Expected (mean) value for the Time to the Most Recent Common Ancestor.
     `n_genes` is the number of genes in the sample.
     `pop_size` is the effective *haploid* population size; i.e., number of gene
-    copies in the population: 2 * N in a diploid population of N individuals,
+    in the population: 2 * N in a diploid population of N individuals,
     or N in a haploid population of N individuals.
     If `pop_size` is 1 or 0 or None, then time is in haploid population units;
     i.e. where 1 unit of time equals 2N generations for a diploid population of
@@ -135,7 +135,7 @@ def coalesce(nodes,
     descendent nodes).
 
     `pop_size` is the effective *haploid* population size; i.e., number of gene
-    copies in the population: 2 * N in a diploid population of N individuals,
+    in the population: 2 * N in a diploid population of N individuals,
     or N in a haploid population of N individuals.
 
     `period` is the time that the genes have to coalesce.  If `pop_size` is 1
