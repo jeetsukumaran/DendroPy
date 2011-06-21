@@ -230,9 +230,10 @@ The :func:`~dendropy.treesim.pure_kingman()` function returns a tree generated u
 
 .. literalinclude:: /examples/pure_kingman1.py
 
+.. _Simulating_Contained_Coalescent_Trees:
 
-Censored/Constrained Coalescent Trees
-=====================================
+Contained Coalescent Trees
+==========================
 
 The :func:`~dendropy.treesim.contained_coalescent()` function returns a tree generated under a neutral coalescent model conditioned on population splitting times or events given by a containing species or population tree.
 Such a tree is often referred to as a contained, embedded, censored, truncated, or constrained genealogy/tree.
@@ -268,8 +269,10 @@ If the gene-species associations are more complex, e.g., different numbers of ge
 
 This approach should be used with caution if we cannot be certain of the order of taxa (as is the case with data read in Newick formats). In these case, and in more complex cases, we might need to directly instantiate the :class:`~dendropy.dataobject.taxon.TaxonSetMapping` object. The API to describe the associations when constructing this object is very similar to that of the :class:`~dendropy.dataobject.taxon.TaxonSetPartition` object: you can use a function, attribute or dictionary.
 
-Distribution of Number Deep Coalescences Under Different Phylogeographic History Scenarios
-==========================================================================================
+.. _Simulating_and_Counting_Deep_Coalescences:
+
+Simulating the Distribution of Number Deep Coalescences Under Different Phylogeographic History Scenarios
+=========================================================================================================
 
 A typical application for simulating censored coalescent trees is to produce a distribution of trees under different hypotheses of demographic or phylogeographic histories.
 

@@ -63,6 +63,30 @@ Numbers of Deep Coalescences
     .. versionchanged:: 3.3.0
         Renamed and moved to :mod:`~dendropy.reconcile` module.
 
+Simulating the Distribution of Number Deep Coalescences Under Different Phylogeographic History Scenarios
+=========================================================================================================
+
+Imagine we wanted to generate the distribution of the number of deep coalescences under two scenarios: one in which a population underwent sequential or step-wise vicariance, and another when there was simultaneous fragmentation.
+In this case, the containing tree and the embedded trees have different leaf sets, and there is a many-to-one mapping of embedded tree taxa to containing tree taxa.
+
+The :class:`~dendropy.reconcile.ContainingTree` class is designed to allow for counting deep coalescences in cases like this.
+It requires a |TaxonSetMapping| object, which provides an association between the embedded taxa and the containing taxa.
+The easiest way to get a |TaxonSetMapping| object is to call the special factory function :func:`~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`.
+This will create a new |TaxonSet| to manage the gene taxa, and create the associations between the gene taxa and the containing tree taxa for you.
+It takes two arguments: the |TaxonSet| of the containing tree, and the number of genes you want sampled from each species.
+If the gene-species associations are more complex, e.g., different numbers of genes per species, we can pass in a list of values as the second argument to `~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`.
+This approach should be used with caution if we cannot be certain of the order of taxa (as is the case with data read in Newick formats). In these case, and in more complex cases, we might need to directly instantiate the :class:`~dendropy.dataobject.taxon.TaxonSetMapping` object. The API to describe the associations when constructing this object is very similar to that of the :class:`~dendropy.dataobject.taxon.TaxonSetPartition` object: you can use a function, attribute or dictionary.
+
+The :class:`~dendropy.reconcile.ContainingTree` class has its own native contained coalescent simulator, :meth:`~dendropy.reconcile.ContainingTree.embed_contained_kingman()`, which simulates *and* embeds a contained coalescent tree at the same time.
+
+.. literalinclude:: /examples/sim_and_count_deepcoal2.py
+
+If you have used some other method to simulate your trees, you can use :meth:`~dendropy.reconcile.ContainingTree.embed_tree()` to embed the trees and count then number of deep coalescences.
+
+.. literalinclude:: /examples/sim_and_count_deepcoal1.py
+
+For more details on simulating contained coalescent trees and counting numbers of deep coalescences on them, see ":ref:`Simulating_Contained_Coalescent_Trees`" or ":ref:`Simulating_and_Counting_Deep_Coalescences`".
+
 Majority-Rule Consensus Tree from a Collection of Trees
 =======================================================
 
