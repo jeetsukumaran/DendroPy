@@ -269,15 +269,15 @@ If the gene-species associations are more complex, e.g., different numbers of ge
 This approach should be used with caution if we cannot be certain of the order of taxa (as is the case with data read in Newick formats). In these case, and in more complex cases, we might need to directly instantiate the :class:`~dendropy.dataobject.taxon.TaxonSetMapping` object. The API to describe the associations when constructing this object is very similar to that of the :class:`~dendropy.dataobject.taxon.TaxonSetPartition` object: you can use a function, attribute or dictionary.
 
 Distribution of Number Deep Coalescences Under Different Phylogeographic History Scenarios
-------------------------------------------------------------------------------------------
+==========================================================================================
 
 A typical application for simulating censored coalescent trees is to produce a distribution of trees under different hypotheses of demographic or phylogeographic histories.
 
 For example, imagine we wanted to generate the distribution of the number of deep coalescences under two scenarios: one in which a population underwent sequential or step-wise vicariance, and another when there was simultaneous fragmentation.
-This can be achieved by generating trees under :meth:`~dendropy.treesim.contained_coalescent()`, and then using a :class:`~dendropy.reconcile.ContainingTree()` object to embed the trees and count the number of deep coalescences.
+This can be achieved by generating trees under :meth:`~dendropy.treesim.contained_coalescent()`, and then using a :class:`~dendropy.reconcile.ContainingTree` object to embed the trees and count the number of deep coalescences.
 
 .. literalinclude:: /examples/sim_and_count_deepcoal1.py
 
-Actually, the  :class:`~dendropy.reconcile.ContainingTree()` class has its own native contained coalescent simulator, so a more practical approach would be:
+Actually, the  :class:`~dendropy.reconcile.ContainingTree` class has its own native contained coalescent simulator, :meth:`~dendropy.reconcile.ContainingTree.embed_contained_kingman()`, which simulates *and* embeds a contained coalescent tree at the same time. So a more practical approach might be:
 
 .. literalinclude:: /examples/sim_and_count_deepcoal2.py
