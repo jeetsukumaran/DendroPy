@@ -63,8 +63,8 @@ Numbers of Deep Coalescences
     .. versionchanged:: 3.3.0
         Renamed and moved to :mod:`~dendropy.reconcile` module.
 
-Number Deep Coalescences when Embedding a (Gene) Tree in a (Species/Population) Tree
-====================================================================================
+Number of Deep Coalescences when Embedding a (Gene) Tree in a (Species/Population) Tree
+=======================================================================================
 
 Imagine we wanted to generate the distribution of the number of deep coalescences under two scenarios: one in which a population underwent sequential or step-wise vicariance, and another when there was simultaneous fragmentation.
 In this case, the containing tree and the embedded trees have different leaf sets, and there is a many-to-one mapping of embedded tree taxa to containing tree taxa.
