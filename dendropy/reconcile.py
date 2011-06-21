@@ -321,7 +321,11 @@ class ContainingTree(dataobject.Tree):
                     dc[tree] = len(edge.tail_embedded_edges[tree]) - 1
         return dc
 
-    def embed_contained_kingman(self, rng=None, pop_size_attr='pop_size', label=None):
+    def embed_contained_kingman(self,
+            edge_pop_size_attr='pop_size',
+            default_pop_size=1,
+            label=None,
+            rng=None):
         """
         Simulates, *embeds*, and returns a "censored" (Kingman) neutral coalescence tree
         conditional on self.
@@ -330,7 +334,7 @@ class ContainingTree(dataobject.Tree):
                 Random number generator to use. If ``None``, the default will
                 be used.
 
-            ``pop_size_attr``
+            ``edge_pop_size_attr``
                 Name of attribute of self's edges that specify the population
                 size. If this attribute does not exist, then the population
                 size is taken to be 1.
@@ -338,13 +342,19 @@ class ContainingTree(dataobject.Tree):
         Note that all edge-associated taxon sets must be up-to-date (otherwise,
         ``build_edge_taxa_sets()`` should be called).
         """
-        et = self.simulate_contained_kingman(rng=rng,
-                pop_size_attr=pop_size_attr,
-                label=label)
+        et = self.simulate_contained_kingman(
+                edge_pop_size_attr=edge_pop_size_attr,
+                default_pop_size=default_pop_size,
+                label=label,
+                rng=rng)
         self.embed_tree(et)
         return et
 
-    def simulate_contained_kingman(self, rng=None, pop_size_attr='pop_size', label=None):
+    def simulate_contained_kingman(self,
+            edge_pop_size_attr='pop_size',
+            default_pop_size=1,
+            label=None,
+            rng=None):
         """
         Simulates and returns a "censored" (Kingman) neutral coalescence tree
         conditional on self.
@@ -353,7 +363,7 @@ class ContainingTree(dataobject.Tree):
                 Random number generator to use. If ``None``, the default will
                 be used.
 
-            ``pop_size_attr``
+            ``edge_pop_size_attr``
                 Name of attribute of self's edges that specify the population
                 size. If this attribute does not exist, then the population
                 size is taken to be 1.
@@ -379,6 +389,10 @@ class ContainingTree(dataobject.Tree):
             if edge.head_node.parent_node is None:
                 # root: run unconstrained coalescence until just one gene node
                 # remaining
+                if hasattr(edge, edge_pop_size_attr):
+                    pop_size = getattr(edge, edge_pop_size_attr)
+                else:
+                    pop_size = default_pop_size
                 if len(embedded_nodes[edge.head_node]) > 1:
                     final = coalescent.coalesce(nodes=embedded_nodes[edge.head_node],
                             pop_size=pop_size,
@@ -389,10 +403,10 @@ class ContainingTree(dataobject.Tree):
             else:
                 # run until next coalescence event, as determined by this edge
                 # size.
-                if hasattr(edge, pop_size_attr):
-                    pop_size = getattr(edge, pop_size_attr)
+                if hasattr(edge, edge_pop_size_attr):
+                    pop_size = getattr(edge, edge_pop_size_attr)
                 else:
-                    pop_size = 1
+                    pop_size = default_pop_size
                 remaining = coalescent.coalesce(nodes=embedded_nodes[edge.head_node],
                         pop_size=pop_size,
                         period=edge.length,
