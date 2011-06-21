@@ -253,7 +253,7 @@ For example::
     for edge in tree.postorder_edge_iter():
             edge.pop_size = 100000
 
-The easiest way to get a |TaxonSetMapping| object is to call the special factory function :func:`~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`.
+The easiest way to get a |TaxonSetMapping| object is to call the special factory function :meth:`~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`.
 This will create a new |TaxonSet| to manage the gene taxa, and create the associations between the gene taxa and the containing tree taxa for you.
 It takes two arguments: the |TaxonSet| of the containing tree, and the number of genes you want sampled from each species.
 

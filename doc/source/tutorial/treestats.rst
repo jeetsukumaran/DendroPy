@@ -71,7 +71,7 @@ In this case, the containing tree and the embedded trees have different leaf set
 
 The :class:`~dendropy.reconcile.ContainingTree` class is designed to allow for counting deep coalescences in cases like this.
 It requires a |TaxonSetMapping| object, which provides an association between the embedded taxa and the containing taxa.
-The easiest way to get a |TaxonSetMapping| object is to call the special factory function :func:`~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`.
+The easiest way to get a |TaxonSetMapping| object is to call the special factory function :meth:`~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`.
 This will create a new |TaxonSet| to manage the gene taxa, and create the associations between the gene taxa and the containing tree taxa for you.
 It takes two arguments: the |TaxonSet| of the containing tree, and the number of genes you want sampled from each species.
 If the gene-species associations are more complex, e.g., different numbers of genes per species, we can pass in a list of values as the second argument to `~dendropy.dataobject.taxon.TaxonSetMapping.create_contained_taxon_mapping()`.
