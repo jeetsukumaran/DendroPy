@@ -11,8 +11,10 @@ These nonetheless can be considered to have an implicit definition of a collecti
 Every time a reference to a taxon is encountered in a data source, such as a taxon label in a tree or matrix statement in a NEXUS file, the current |TaxonSet| object is searched for corresponding |Taxon| object with a matching label (see below for details on how the match is made). If found, the |Taxon| object is used to represent the taxon. If not, a new |Taxon| object is created, added to the |TaxonSet| object, and used to represent the taxon.
 
 DendroPy maps taxon definitions encountered in a data source to |Taxon| objects by the taxon label.
-The labels have to match **exactly** for the taxa to be correctly mapped, with the match being **case-sensitive**.
-Thus, "Python regius", "PYTHON REGIUS", "python regius", "P. regius", etc. will all be considered as referring to distinct and different taxa.
+The labels have to match **exactly** for the taxa to be correctly mapped
+
+Some special formats, such as NEXUS or Newick, treat the taxa labels as **case-insensitive**: "Python regius", "PYTHON REGIUS" and "python regius" will all be considered the same taxon (this can be turned off by specifying the appropriate |False| to ``case_insensitive_taxon_labels`` when reading the data in NEXUS or Newick formats).
+Otherwise, in general, most other formats (e.g., PHYLIP, Fasta, NExML) treat the taxa labels as **case-sensitive**: "Python regius", "PYTHON REGIUS" and "python regius" will all be considered the different taxa.
 
 Further quirks may arise due to some schema-specific idiosyncracies.
 For example, the NEXUS standard dictates that an underscore ("_") should be substituted for a space in all labels.

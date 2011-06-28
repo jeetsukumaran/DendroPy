@@ -5,11 +5,13 @@ New Features
 ^^^^^^^^^^^^
 
     - Phylogenetic independent contrasts (PIC) analysis can now be carried out using the ``dendropy.continuous.PhylogeneticIndependentContrasts`` class.
+    - Simplified contained coalescent (gene tree in species tree) simulation.
 
 Changes
 ^^^^^^^
 
     - Keyword arguments to ``as_string()``, ``write_to_path()``, ``write_to_file``, etc. methods have been tweaked to become more consistent for NEXUS and Newick formats. Previous keywords are still supported, but will be deprecated. The new set of keyword arguments supported can be seen in the :ref:``NEXUS and Newick writing customization <Customizing_Writing_NEXUS_and_Newick>`` section.
+    - NEXUS and Newick formats now default to case-insensitive taxon labels; specify ``case_insensitive_taxon_labels=False`` for case-sensitivity.
 
 Bug Fixes
 ^^^^^^^^^
