@@ -64,6 +64,8 @@ def tree_source_iter(stream, **kwargs):
            comment associated with each tree, if any.
         - `finish_node_func`: is a function that will be applied to each node
            after it has been constructed.
+        - `case_insensitive_taxon_labels`: If False, then taxon labels are
+            case sensitive (different cases = different taxa); defaults to True
 
     """
     if "taxon_set" in kwargs:
@@ -81,7 +83,8 @@ def tree_source_iter(stream, **kwargs):
     newick_stream = nexustokenizer.NexusTokenizer(stream,
                                                   preserve_underscores=preserve_underscores,
                                                   hyphens_as_tokens=hyphens_as_tokens,
-                                                  extract_comment_metadata=extract_comment_metadata)
+                                                  extract_comment_metadata=extract_comment_metadata,
+                                                  case_insensitive_taxon_labels=case_insensitive_taxon_labels)
     while not newick_stream.eof:
         t = nexustokenizer.tree_from_token_stream(newick_stream, taxon_set=taxon_set, **kwargs)
         if t is not None:
@@ -139,6 +142,8 @@ class NewickReader(iosys.DataReader):
                object: "comment_metadata".
             - `store_tree_weights`: if True, process the tree weight ("[&W 1/2]")
                comment associated with each tree, if any.
+            - `case_insensitive_taxon_labels`: If False, then taxon labels are
+                case sensitive (different cases = different taxa); defaults to True
         """
         iosys.DataReader.__init__(self, **kwargs)
         self.finish_node_func = kwargs.get("finish_node_func", None)
@@ -149,6 +154,7 @@ class NewickReader(iosys.DataReader):
         self.store_tree_weights = kwargs.get('store_tree_weights', False)
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
         self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
+        self.case_insensitive_taxon_labels = kwargs.get("case_insensitive_taxon_labels", True)
 
     def read(self, stream):
         """
@@ -170,7 +176,8 @@ class NewickReader(iosys.DataReader):
                 store_tree_weights=self.store_tree_weights,
                 encode_splits=self.encode_splits,
                 preserve_underscores=self.preserve_underscores,
-                suppress_internal_node_taxa=self.suppress_internal_node_taxa):
+                suppress_internal_node_taxa=self.suppress_internal_node_taxa,
+                case_insensitive_taxon_labels=self.case_insensitive_taxon_labels):
             tree_list.append(t, reindex_taxa=False)
         return self.dataset
 

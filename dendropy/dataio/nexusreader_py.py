@@ -56,6 +56,8 @@ class NexusReader(iosys.DataReader):
                calculated and attached to the edges.
             - `finish_node_func`: is a function that will be applied to each node
                after it has been constructed
+            - `case_insensitive_taxon_labels`: If False, then taxon labels are
+                case sensitive (different cases = different taxa); defaults to True
             - `allow_duplicate_taxon_labels` : if True, allow duplicate labels
                on trees
 
@@ -70,6 +72,7 @@ class NexusReader(iosys.DataReader):
         self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS)
         self.store_tree_weights = kwargs.get('store_tree_weights', False)
         self.extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
+        self.case_insensitive_taxon_labels = kwargs.get('case_insensitive_taxon_labels', True)
 
     def read(self, stream):
         """
@@ -355,9 +358,9 @@ class NexusReader(iosys.DataReader):
 
     def _get_taxon(self, taxon_set, label):
         if len(taxon_set) < self.file_specified_ntax:
-            taxon = taxon_set.require_taxon(label=label)
+            taxon = taxon_set.require_taxon(label=label, case_insensitive=self.case_insensitive_taxon_labels)
         else:
-            taxon = taxon_set.get_taxon(label=label)
+            taxon = taxon_set.get_taxon(label=label, case_insensitive=self.case_insensitive_taxon_labels)
         if taxon is None:
             raise self.too_many_taxa_error(taxon_set=taxon_set, label=label)
         return taxon
@@ -726,7 +729,8 @@ class NexusReader(iosys.DataReader):
                 extract_comment_metadata=self.extract_comment_metadata,
                 store_tree_weights=self.store_tree_weights,
                 preserve_underscores=self.preserve_underscores,
-                suppress_internal_node_taxa=self.suppress_internal_node_taxa)
+                suppress_internal_node_taxa=self.suppress_internal_node_taxa,
+                case_insensitive_taxon_labels=self.case_insensitive_taxon_labels)
         tree.label = tree_name
         if tree_comments is not None and len(tree_comments) > 0:
             tree.comments.extend(tree_comments)

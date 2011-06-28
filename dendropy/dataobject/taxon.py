@@ -196,7 +196,7 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
         exists (supplied by keywords; matches any)
         """
         if "taxon" not in kwargs and "oid" not in kwargs and "label" not in kwargs:
-            raise TypeError("Need to specify oid or Label.")
+            raise TypeError("Need to specify oid or label.")
         req_taxon = kwargs.get("taxon", None)
         oid = kwargs.get("oid", None)
         label = kwargs.get("label", None)
@@ -227,27 +227,37 @@ class TaxonSet(containers.OrderedSet, base.IdTagged):
 
     def get_taxon(self, **kwargs):
         """
-        Retrieves taxon object with given id OR label (if both are
-        given, the first match found is returned). If taxon does not
-        exist then None is returned.
+        Retrieves taxon object with given id OR label (if both are given, the
+        first match found is returned). If taxon does not exist then
+        None is returned. Also accepts `case_insensitive` as a keyword
+        argument; if `label` is used as a selection criterion, and
+        `case_insensitive` is True [default=False], then matching is case
+        insensitive.
         """
         if "oid" not in kwargs and "label" not in kwargs:
-            raise TypeError("Need to specify Taxon oid or Label.")
+            raise TypeError("Need to specify Taxon oid or label.")
         oid = kwargs.get("oid", None)
         label = kwargs.get("label", None)
+        ci = kwargs.get("case_insensitive", False)
+        if ci:
+            label_lower = label.lower()
         for taxon in self:
             if (oid is not None and taxon.oid == oid) \
-                or (label is not None and taxon.label == label):
+                    or (label is not None and taxon.label == label) \
+                    or (ci and label is not None and label_lower == taxon.label.lower()):
                 return taxon
         return None
 
     def require_taxon(self, **kwargs):
         """
-        Retrieves taxon object with given id OR label (if both are
-        given, the first match found is returned). If taxon does not
-        exist and the `TaxonSet` is not mutable, an exception is raised.
-        If taxon does not exist and the `TaxonSet` is mutable, then a
-        new taxon is created, added, and returned.
+        Retrieves taxon object with given id OR label (if both are given, the
+        first match found is returned). If taxon does not exist and the
+        `TaxonSet` is not mutable, an exception is raised.  If taxon does not
+        exist and the `TaxonSet` is mutable, then a new taxon is created,
+        added, and returned. Also accepts `case_insensitive` as a keyword
+        argument; if `label` is used as a selection criterion, and
+        `case_insensitive` is True [default=False], then matching is case
+        insensitive.
         """
         taxon = self.get_taxon(**kwargs)
         if taxon is not None:

@@ -506,7 +506,54 @@ class NexusInterleavedWhitespace(extendedtest.ExtendedTestCase):
             for j, c in enumerate(s1):
                 self.assertEqual(c, s2[j])
 
-class NexusTaxaTest(extendedtest.ExtendedTestCase):
+class NexusTaxaCaseInsensitivityTest(extendedtest.ExtendedTestCase):
+
+    def setUp(self):
+        self.data_str = """\
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=5;
+    TAXLABELS AAA BBB CCC DDD EEE;
+END;
+
+BEGIN CHARACTERS;
+    DIMENSIONS  NCHAR=8;
+    FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=. INTERLEAVE;
+    MATRIX
+        AAA ACGT
+        BBB ACGT
+        CCC ACGT
+        DDD ACGT
+        EEE ACGT
+
+        aaa ACGT
+        bbb ACGT
+        ccc ACGT
+        ddd ACGT
+        eee ACGT
+    ;
+END;
+"""
+
+    def testCaseInsensitiveChars(self):
+        d = dendropy.DnaCharacterMatrix.get_from_string(self.data_str, 'nexus', case_insensitive_taxon_labels=True)
+        self.assertEqual(len(d.taxon_set), 5)
+
+    def testCaseSensitiveChars(self):
+        #d = dendropy.DnaCharacterMatrix.get_from_string(self.data_str, 'nexus', case_insensitive_taxon_labels=True)
+        self.assertRaises(error.DataParseError,
+                dendropy.DnaCharacterMatrix.get_from_string,
+                self.data_str,
+                'nexus',
+                case_insensitive_taxon_labels=False)
+
+    def testDefaultCaseSensitiveChars(self):
+        d = dendropy.DnaCharacterMatrix.get_from_string(self.data_str, 'nexus')
+        self.assertEqual(len(d.taxon_set), 5)
+
+
+class NexusTooManyTaxaTest(extendedtest.ExtendedTestCase):
 
     def testTooManyTaxaNonInterleaved(self):
         data_str = """\

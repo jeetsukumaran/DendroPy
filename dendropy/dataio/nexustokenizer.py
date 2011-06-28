@@ -231,7 +231,11 @@ class StrToTaxon(object):
         def __init__(self, *args, **kwargs):
             DataParseError.__init__(self, *args, **kwargs)
 
-    def __init__(self, taxon_set, translate_dict=None, allow_repeated_use=False):
+    def __init__(self,
+            taxon_set,
+            translate_dict=None,
+            allow_repeated_use=False,
+            case_insensitive=False):
         """
         __init__ creates a StrToTaxon object with the requested policy of taxon
         repitition.
@@ -241,7 +245,14 @@ class StrToTaxon(object):
         calling the functions with the same label will generate a DataParseError
         indicating that the taxon has been used multiple times."""
         self.taxon_set = taxon_set
-        self.translate = translate_dict or {}
+        self.case_insensitive = case_insensitive
+        if translate_dict is not None:
+            self.translate = translate_dict
+        else:
+            if self.case_insensitive:
+                self.translate = containers.OrderedCaselessDict()
+            else:
+                self.translate = {}
         if allow_repeated_use:
             self.returned_taxon_set = None
         else:
@@ -258,17 +269,15 @@ class StrToTaxon(object):
     def get_taxon(self, label):
         t = self.translate.get(label)
         if t is None:
-            t = self.taxon_set.get_taxon(label=label)
+            t = self.taxon_set.get_taxon(label=label, case_insensitive=self.case_insensitive)
         return self._returning(t, label)
 
     def require_taxon(self, label):
         v = self.get_taxon(label)
         if v is not None:
             return v
-        t = self.taxon_set.require_taxon(label=label)
+        t = self.taxon_set.require_taxon(label=label, case_insensitive=self.case_insensitive)
         return self._returning(t, label)
-#        if t is not None:
-#            self.translate[label] = t #@this could lead to problems when we support multiple taxon blocks, but now it'll speed thing up
 
     def index(self, t):
         return self.taxon_set.index(t)
@@ -293,6 +302,7 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
     suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
     store_tree_weights = kwargs.get("store_tree_weights", False)
     extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
+    case_insensitive_taxon_labels = kwargs.get("case_insensitive_taxon_labels", True)
     stream_tokenizer_extract_comment_metadata_setting = stream_tokenizer.extract_comment_metadata
     stream_tokenizer.extract_comment_metadata = extract_comment_metadata
     if taxon_set is None:
@@ -336,7 +346,10 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
 
     stt = kwargs.get('str_to_taxon')
     if stt is None:
-        stt = StrToTaxon(taxon_set, translate_dict, allow_repeated_use=False)
+        stt = StrToTaxon(taxon_set,
+                translate_dict,
+                allow_repeated_use=False,
+                case_insensitive=case_insensitive_taxon_labels)
 
     tree.seed_node = dataobject.Node()
     curr_node = tree.seed_node
