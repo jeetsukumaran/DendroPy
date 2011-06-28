@@ -84,7 +84,7 @@ def tree_source_iter(stream, **kwargs):
                                                   preserve_underscores=preserve_underscores,
                                                   hyphens_as_tokens=hyphens_as_tokens,
                                                   extract_comment_metadata=extract_comment_metadata,
-                                                  case_insensitive_taxon_labels=case_insensitive_taxon_labels)
+                                                  case_insensitive_taxon_labels=kwargs.get("case_insensitive_taxon_labels", True))
     while not newick_stream.eof:
         t = nexustokenizer.tree_from_token_stream(newick_stream, taxon_set=taxon_set, **kwargs)
         if t is not None:
