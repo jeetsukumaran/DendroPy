@@ -163,6 +163,15 @@ class NexusReader(iosys.DataReader):
         """
         return self.stream_tokenizer.data_format_error(message)
 
+    def too_many_taxa_error(self, taxon_set, label):
+        """
+        Returns an exception object parameterized with line and
+        column number values.
+        """
+        raise self.data_format_error("Cannot add '%s':" % label \
+                + " Declared number of taxa (%d) already defined: %s" % (self.file_specified_ntax,
+                    str([("%s" % t.label) for t in taxon_set])))
+
     ###########################################################################
     ## HELPERS
 
@@ -344,6 +353,15 @@ class NexusReader(iosys.DataReader):
         self.stream_tokenizer.skip_to_semicolon() # move past END statement
         self.stream_tokenizer.allow_eof = True
 
+    def _get_taxon(self, taxon_set, label):
+        if len(taxon_set) < self.file_specified_ntax:
+            taxon = taxon_set.require_taxon(label=label)
+        else:
+            taxon = taxon_set.get_taxon(label=label)
+        if taxon is None:
+            raise self.too_many_taxa_error(taxon_set=taxon_set, label=label)
+        return taxon
+
     def _parse_taxlabels_statement(self, taxon_set=None):
         """
         Processes a TAXLABELS command. Assumes that the file reader is
@@ -357,9 +375,7 @@ class NexusReader(iosys.DataReader):
             if taxon_set.has_taxon(label=label):
                 pass
             elif len(taxon_set) >= self.file_specified_ntax and not self.attached_taxon_set:
-                raise self.data_format_error("Cannot add '%s':" % label \
-                                      + " Declared number of taxa (%d) already defined: %s" % (self.file_specified_ntax,
-                                          str([("%s" % t.label) for t in taxon_set])))
+                raise self.too_many_taxa_error(taxon_set=taxon_set, label=label)
             else:
                 taxon_set.require_taxon(label=label)
             token = self.stream_tokenizer.read_next_token()
@@ -536,7 +552,7 @@ class NexusReader(iosys.DataReader):
         taxon_set = char_block.taxon_set
         token = self.stream_tokenizer.read_next_token()
         while token != ';' and not self.stream_tokenizer.eof:
-            taxon = taxon_set.require_taxon(label=token)
+            taxon = self._get_taxon(taxon_set=taxon_set, label=token)
             if taxon not in char_block:
                 char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
                 if self.interleave:
@@ -560,7 +576,7 @@ class NexusReader(iosys.DataReader):
         if self.interleave:
             try:
                 while token != ";" and not self.stream_tokenizer.eof:
-                    taxon = taxon_set.require_taxon(label=token)
+                    taxon = self._get_taxon(taxon_set=taxon_set, label=token)
                     if taxon not in char_block:
                         char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
                     tokens = self.stream_tokenizer.read_statement_tokens_till_eol(ignore_punctuation="{}()")
@@ -575,7 +591,7 @@ class NexusReader(iosys.DataReader):
                 token = self.stream_tokenizer.read_next_token()
         else:
             while token != ';' and not self.stream_tokenizer.eof:
-                taxon = taxon_set.require_taxon(label=token)
+                taxon = self._get_taxon(taxon_set=taxon_set, label=token)
                 if taxon not in char_block:
                     char_block[taxon] = dataobject.CharacterDataVector(taxon=taxon)
                 while len(char_block[taxon]) < self.file_specified_nchar \

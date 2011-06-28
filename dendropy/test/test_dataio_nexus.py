@@ -506,6 +506,64 @@ class NexusInterleavedWhitespace(extendedtest.ExtendedTestCase):
             for j, c in enumerate(s1):
                 self.assertEqual(c, s2[j])
 
+class NexusTaxaTest(extendedtest.ExtendedTestCase):
+
+    def testTooManyTaxaNonInterleaved(self):
+        data_str = """\
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=5;
+    TAXLABELS AAA BBB CCC DDD EEE;
+END;
+
+BEGIN CHARACTERS;
+    DIMENSIONS  NCHAR=8;
+    FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;
+    MATRIX
+        AAA ACGTACGT
+        BBB ACGTACGT
+        CCC ACGTACGT
+        DDD ACGTACGT
+        EEE ACGTACGT
+        FFF ACGTACGT
+    ;
+END;
+"""
+        #d = dendropy.DnaCharacterMatrix.get_from_string(data_str, 'nexus')
+        self.assertRaises(error.DataParseError, dendropy.DnaCharacterMatrix.get_from_string, data_str, 'nexus')
+
+    def testTooManyTaxaInterleaved(self):
+        data_str = """\
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=5;
+    TAXLABELS AAA BBB CCC DDD EEE;
+END;
+
+BEGIN CHARACTERS;
+    DIMENSIONS  NCHAR=8;
+    FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=. INTERLEAVE;
+    MATRIX
+        AAA ACGT
+        BBB ACGT
+        CCC ACGT
+        DDD ACGT
+        EEE ACGT
+
+        AAA ACGT
+        BBB ACGT
+        CCC ACGT
+        DDD ACGT
+        EEE ACGT
+        FFF ACGT
+    ;
+END;
+"""
+        #d = dendropy.DnaCharacterMatrix.get_from_string(data_str, 'nexus')
+        self.assertRaises(error.DataParseError, dendropy.DnaCharacterMatrix.get_from_string, data_str, 'nexus')
+
 class NexusInternalNodeLabelsAsNonTaxa(extendedtest.ExtendedTestCase):
 
     def setUp(self):
