@@ -535,6 +535,26 @@ BEGIN CHARACTERS;
     ;
 END;
 """
+        self.tree_str = """\
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=5;
+    TAXLABELS AAA BBB CCC DDD EEE;
+END;
+
+BEGIN TREES;
+    TREE 1 = (AAA, (bbb, (ccc, (ddd, eee))));
+END;
+"""
+
+    def testCaseInsensitiveTrees(self):
+        d = dendropy.TreeList.get_from_string(self.tree_str, 'nexus', case_insensitive_taxon_labels=True)
+        self.assertEqual(len(d.taxon_set), 5)
+
+    def testDefaultCaseSensitiveTrees(self):
+        d = dendropy.TreeList.get_from_string(self.tree_str, 'nexus')
+        self.assertEqual(len(d.taxon_set), 5)
 
     def testCaseInsensitiveChars(self):
         d = dendropy.DnaCharacterMatrix.get_from_string(self.data_str, 'nexus', case_insensitive_taxon_labels=True)
