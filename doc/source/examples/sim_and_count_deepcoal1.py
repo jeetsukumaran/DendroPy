@@ -29,11 +29,11 @@ genes_to_species = dendropy.TaxonSetMapping.create_contained_taxon_mapping(
 
 # convert to containing tree
 stepwise_tree = reconcile.ContainingTree(stepwise_tree,
-            embedded_taxon_set=genes_to_species.domain_taxon_set,
-            embedded_to_containing_taxon_map=genes_to_species)
+            contained_taxon_set=genes_to_species.domain_taxon_set,
+            contained_to_containing_taxon_map=genes_to_species)
 frag_tree = reconcile.ContainingTree(frag_tree,
-            embedded_taxon_set=genes_to_species.domain_taxon_set,
-            embedded_to_containing_taxon_map=genes_to_species)
+            contained_taxon_set=genes_to_species.domain_taxon_set,
+            contained_to_containing_taxon_map=genes_to_species)
 
 # for each rep
 for rep in range(num_reps):
@@ -48,14 +48,14 @@ for rep in range(num_reps):
 
 # write results
 
-# returns dictionary with embedded trees as keys
+# returns dictionary with contained trees as keys
 # and number of deep coalescences as values
 stepwise_deep_coals = stepwise_tree.deep_coalescences()
 stepwise_out = open("stepwise.txt", "w")
 for tree in stepwise_deep_coals:
     stepwise_out.write("%d\n" % stepwise_deep_coals[tree])
 
-# returns dictionary with embedded trees as keys
+# returns dictionary with contained trees as keys
 # and number of deep coalescences as values
 frag_deep_coals = frag_tree.deep_coalescences()
 frag_out = open("frag.txt", "w")

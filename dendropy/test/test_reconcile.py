@@ -50,9 +50,9 @@ class ContainingTreeDeepCoalescenceSmall(unittest.TestCase):
         results = []
         for idx, gt in enumerate(self.gene_trees):
             ct = reconcile.ContainingTree(containing_tree=self.species_tree,
-                    embedded_taxon_set=self.gene_trees.taxon_set,
-                    embedded_to_containing_taxon_map=self.gene_taxon_to_population_taxon_map,
-                    embedded_trees=[gt],
+                    contained_taxon_set=self.gene_trees.taxon_set,
+                    contained_to_containing_taxon_map=self.gene_taxon_to_population_taxon_map,
+                    contained_trees=[gt],
                     fit_containing_edge_lengths=False,
                     )
             dc = ct.num_deep_coalescences()
@@ -64,9 +64,9 @@ class ContainingTreeDeepCoalescenceSmall(unittest.TestCase):
     def testFittedEdgesDeepCoalCount(self):
         for idx, gt in enumerate(self.gene_trees):
             ct = reconcile.ContainingTree(containing_tree=self.species_tree,
-                    embedded_taxon_set=self.gene_trees.taxon_set,
-                    embedded_to_containing_taxon_map=self.gene_taxon_to_population_taxon_map,
-                    embedded_trees=[gt],
+                    contained_taxon_set=self.gene_trees.taxon_set,
+                    contained_to_containing_taxon_map=self.gene_taxon_to_population_taxon_map,
+                    contained_trees=[gt],
                     fit_containing_edge_lengths=True,
                     )
             dc = ct.num_deep_coalescences()

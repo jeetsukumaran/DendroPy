@@ -28,16 +28,16 @@ from dendropy import treemanip
 class ContainingTree(dataobject.Tree):
     """
     A "containing tree" is a (usually rooted) tree data structure within which
-    other trees are "embedded". For example, species trees and their embedded
-    gene trees; host trees and their embedded parasite trees; biogeographical
-    "area" trees and their embedded species or taxon trees.
+    other trees are "contained". For example, species trees and their contained
+    gene trees; host trees and their contained parasite trees; biogeographical
+    "area" trees and their contained species or taxon trees.
     """
 
     def __init__(self,
             containing_tree,
-            embedded_taxon_set,
-            embedded_to_containing_taxon_map,
-            embedded_trees=None,
+            contained_taxon_set,
+            contained_to_containing_taxon_map,
+            contained_trees=None,
             fit_containing_edge_lengths=True,
             collapse_empty_edges=True,
             ultrametricity_check_prec=False,
@@ -45,7 +45,7 @@ class ContainingTree(dataobject.Tree):
             **kwargs):
         """
         __init__ converts `self` to ContainingTree class, embedding the trees
-        given in the list, ``embedded_trees.``
+        given in the list, ``contained_trees.``
 
 
         Mandatory Arguments:
@@ -55,25 +55,25 @@ class ContainingTree(dataobject.Tree):
                 constraints or conditions of the containing tree (e.g., species,
                 host, or biogeographical area trees).
 
-            ``embedded_taxon_set``
+            ``contained_taxon_set``
                 A ``TaxonSet`` object that will be used to manage the taxa of
-                the embedded trees.
+                the contained trees.
 
-            ``embedded_to_containing_taxon_map``
+            ``contained_to_containing_taxon_map``
                 A ``TaxonSetMapping`` object mapping ``Taxon`` objects in the
-                embedded ``TaxonSet`` to corresponding ``Taxon`` objects in the
+                contained ``TaxonSet`` to corresponding ``Taxon`` objects in the
                 containing tree.
 
         Optional Arguments:
 
-            ``embedded_trees``
+            ``contained_trees``
                 An iterable container of ``Tree`` or ``Tree``-like objects that
-                will be embedded into ``containing_tree``; e.g. gene or
+                will be contained into ``containing_tree``; e.g. gene or
                 parasite trees.
 
             ``fit_containing_edge_lengths``
                 If ``True`` [default], then the branch lengths of
-                ``containing_tree`` will be adjusted to fit the embedded tree
+                ``containing_tree`` will be adjusted to fit the contained tree
                 as they are added. Otherwise, the containing tree edge lengths
                 will not be changed.
 
@@ -98,98 +98,98 @@ class ContainingTree(dataobject.Tree):
         dataobject.Tree.__init__(self, containing_tree, **kwargs)
         self.original_tree = containing_tree
         for edge in self.postorder_edge_iter():
-            edge.head_embedded_edges = {}
-            edge.tail_embedded_edges = {}
+            edge.head_contained_edges = {}
+            edge.tail_contained_edges = {}
             edge.containing_taxa = set()
-            edge.embedded_taxa = set()
-        self._embedded_taxon_set = embedded_taxon_set
-        self._embedded_to_containing_taxon_map = None
-        self._embedded_trees = None
-        self._set_embedded_to_containing_taxon_map(embedded_to_containing_taxon_map)
+            edge.contained_taxa = set()
+        self._contained_taxon_set = contained_taxon_set
+        self._contained_to_containing_taxon_map = None
+        self._contained_trees = None
+        self._set_contained_to_containing_taxon_map(contained_to_containing_taxon_map)
         self.fit_containing_edge_lengths = fit_containing_edge_lengths
         self.collapse_empty_edges = collapse_empty_edges
         self.ultrametricity_check_prec = ultrametricity_check_prec
         self.ignore_root_deep_coalescences = ignore_root_deep_coalescences
-        if embedded_trees:
-            self._set_embedded_trees(embedded_trees)
-        if self.embedded_trees:
+        if contained_trees:
+            self._set_contained_trees(contained_trees)
+        if self.contained_trees:
             self.rebuild(rebuild_taxa=False)
 
-    def _set_embedded_taxon_set(self, taxon_set):
-        self._embedded_taxon_set = taxon_set
+    def _set_contained_taxon_set(self, taxon_set):
+        self._contained_taxon_set = taxon_set
 
-    def _get_embedded_taxon_set(self):
-        if self._embedded_taxon_set is None:
-            self._embedded_taxon_set = dataobject.TaxonSet()
-        return self._embedded_taxon_set
+    def _get_contained_taxon_set(self):
+        if self._contained_taxon_set is None:
+            self._contained_taxon_set = dataobject.TaxonSet()
+        return self._contained_taxon_set
 
-    embedded_taxon_set = property(_get_embedded_taxon_set)
+    contained_taxon_set = property(_get_contained_taxon_set)
 
-    def _set_embedded_to_containing_taxon_map(self, embedded_to_containing_taxon_map):
+    def _set_contained_to_containing_taxon_map(self, contained_to_containing_taxon_map):
         """
         Sets mapping of ``Taxon`` objects of the genes/parasite/etc. to that of
         the population/species/host/etc.
         Creates mapping (e.g., species to genes) and decorates edges of self
-        with sets of both containing ``Taxon`` objects and the embedded
+        with sets of both containing ``Taxon`` objects and the contained
         ``Taxon`` objects that map to them.
         """
-        if isinstance(embedded_to_containing_taxon_map, dataobject.TaxonSetMapping):
-            if self._embedded_taxon_set is not embedded_to_containing_taxon_map.domain_taxon_set:
-                raise ValueError("Domain TaxonSet of TaxonSetMapping ('domain_taxon_set') not the same as 'embedded_taxon_set' TaxonSet")
-            self._embedded_to_containing_taxon_map = embedded_to_containing_taxon_map
+        if isinstance(contained_to_containing_taxon_map, dataobject.TaxonSetMapping):
+            if self._contained_taxon_set is not contained_to_containing_taxon_map.domain_taxon_set:
+                raise ValueError("Domain TaxonSet of TaxonSetMapping ('domain_taxon_set') not the same as 'contained_taxon_set' TaxonSet")
+            self._contained_to_containing_taxon_map = contained_to_containing_taxon_map
         else:
-            self._embedded_to_containing_taxon_map = dataobject.TaxonSetMapping(
-                    mapping_dict=embedded_to_containing_taxon_map,
-                    domain_taxon_set=self.embedded_taxon_set,
+            self._contained_to_containing_taxon_map = dataobject.TaxonSetMapping(
+                    mapping_dict=contained_to_containing_taxon_map,
+                    domain_taxon_set=self.contained_taxon_set,
                     range_taxon_set=self.taxon_set)
         self.build_edge_taxa_sets()
 
-    def _get_embedded_to_containing_taxon_map(self):
-        return self._embedded_to_containing_taxon_map
+    def _get_contained_to_containing_taxon_map(self):
+        return self._contained_to_containing_taxon_map
 
-    embedded_to_containing_taxon_map = property(_get_embedded_to_containing_taxon_map)
+    contained_to_containing_taxon_map = property(_get_contained_to_containing_taxon_map)
 
-    def _set_embedded_trees(self, trees):
+    def _set_contained_trees(self, trees):
         if hasattr(trees, 'taxon_set'):
-            if self._embedded_taxon_set is None:
-                self._embedded_taxon_set = trees.taxon_set
-            elif self._embedded_taxon_set is not trees.taxon_set:
-                raise ValueError("'embedded_taxon_set' of ContainingTree is not the same TaxonSet object of 'embedded_trees'")
-        self._embedded_trees = dataobject.TreeList(trees, taxon_set=self._embedded_taxon_set)
-        if self._embedded_taxon_set is None:
-            self._embedded_taxon_set = self._embedded_trees.taxon_set
+            if self._contained_taxon_set is None:
+                self._contained_taxon_set = trees.taxon_set
+            elif self._contained_taxon_set is not trees.taxon_set:
+                raise ValueError("'contained_taxon_set' of ContainingTree is not the same TaxonSet object of 'contained_trees'")
+        self._contained_trees = dataobject.TreeList(trees, taxon_set=self._contained_taxon_set)
+        if self._contained_taxon_set is None:
+            self._contained_taxon_set = self._contained_trees.taxon_set
 
-    def _get_embedded_trees(self):
-        if self._embedded_trees is None:
-            self._embedded_trees = dataobject.TreeList(taxon_set=self._embedded_taxon_set)
-        return self._embedded_trees
+    def _get_contained_trees(self):
+        if self._contained_trees is None:
+            self._contained_trees = dataobject.TreeList(taxon_set=self._contained_taxon_set)
+        return self._contained_trees
 
-    embedded_trees = property(_get_embedded_trees)
+    contained_trees = property(_get_contained_trees)
 
-    def _get_containing_to_embedded_taxa_map(self):
-        return self._embedded_to_containing_taxon_map.reverse
+    def _get_containing_to_contained_taxa_map(self):
+        return self._contained_to_containing_taxon_map.reverse
 
-    containing_to_embedded_taxa_map = property(_get_containing_to_embedded_taxa_map)
+    containing_to_contained_taxa_map = property(_get_containing_to_contained_taxa_map)
 
     def clear(self):
         """
-        Clears all embedded trees and mapped edges.
+        Clears all contained trees and mapped edges.
         """
-        self.embedded_trees = dataobject.TreeList(taxon_set=self._embedded_to_containing_taxon_map.domain_taxa)
-        self.clear_embedded_edges()
+        self.contained_trees = dataobject.TreeList(taxon_set=self._contained_to_containing_taxon_map.domain_taxa)
+        self.clear_contained_edges()
 
-    def clear_embedded_edges(self):
+    def clear_contained_edges(self):
         """
-        Clears all embedded mapped edges.
+        Clears all contained mapped edges.
         """
         for edge in self.postorder_edge_iter():
-            edge.head_embedded_edges = {}
-            edge.tail_embedded_edges = {}
+            edge.head_contained_edges = {}
+            edge.tail_contained_edges = {}
 
-    def fit_edge_lengths(self, embedded_trees):
+    def fit_edge_lengths(self, contained_trees):
         """
         Recalculate node ages / edge lengths of containing tree to accomodate
-        embedded trees.
+        contained trees.
         """
 
         # set the ages
@@ -199,7 +199,7 @@ class ContainingTree(dataobject.Tree):
                 for i in node.child_nodes():
                     disjunct_leaf_set_list_split_bitmasks.append(self.taxon_set.get_taxa_bitmask(taxa=i.edge.containing_taxa))
                 min_age = float('inf')
-                for et in embedded_trees:
+                for et in contained_trees:
                     min_age = self._find_youngest_intergroup_age(et, disjunct_leaf_set_list_split_bitmasks, min_age)
                 node.age = max( [min_age] + [cn.age for cn in node.child_nodes()] )
             else:
@@ -215,77 +215,77 @@ class ContainingTree(dataobject.Tree):
     def rebuild(self, rebuild_taxa=True):
         """
         Recalculate edge taxa sets, node ages / edge lengths of containing
-        tree, and embed edges of embedded trees.
+        tree, and embed edges of contained trees.
         """
         if rebuild_taxa:
             self.build_edge_taxa_sets()
         if self.fit_containing_edge_lengths:
-            self.fit_edge_lengths(self.embedded_trees)
-        self.clear_embedded_edges()
-        for et in self.embedded_trees:
+            self.fit_edge_lengths(self.contained_trees)
+        self.clear_contained_edges()
+        for et in self.contained_trees:
             self.embed_tree(et)
 
-    def embed_tree(self, embedded_tree):
+    def embed_tree(self, contained_tree):
         """
-        Map edges of embedded tree into containing tree (i.e., self).
+        Map edges of contained tree into containing tree (i.e., self).
         """
         if self.seed_node.age is None:
             self.calc_node_ages(check_prec=self.ultrametricity_check_prec)
-        if embedded_tree not in self.embedded_trees:
-            self.embedded_trees.append(embedded_tree)
-        if embedded_tree.seed_node.age is None:
-            embedded_tree.calc_node_ages(check_prec=self.ultrametricity_check_prec)
-        contained_leaves = embedded_tree.leaf_nodes()
+        if contained_tree not in self.contained_trees:
+            self.contained_trees.append(contained_tree)
+        if contained_tree.seed_node.age is None:
+            contained_tree.calc_node_ages(check_prec=self.ultrametricity_check_prec)
+        contained_leaves = contained_tree.leaf_nodes()
         taxon_to_contained = {}
         for nd in contained_leaves:
-            containing_taxon = self.embedded_to_containing_taxon_map[nd.taxon]
+            containing_taxon = self.contained_to_containing_taxon_map[nd.taxon]
             x = taxon_to_contained.setdefault(containing_taxon, set())
             x.add(nd.edge)
         for containing_edge in self.postorder_edge_iter():
             if containing_edge.is_terminal():
-                containing_edge.head_embedded_edges[embedded_tree] = taxon_to_contained[containing_edge.head_node.taxon]
+                containing_edge.head_contained_edges[contained_tree] = taxon_to_contained[containing_edge.head_node.taxon]
             else:
-                containing_edge.head_embedded_edges[embedded_tree] = set()
+                containing_edge.head_contained_edges[contained_tree] = set()
                 for nd in containing_edge.head_node.child_nodes():
-                    containing_edge.head_embedded_edges[embedded_tree].update(nd.edge.tail_embedded_edges[embedded_tree])
+                    containing_edge.head_contained_edges[contained_tree].update(nd.edge.tail_contained_edges[contained_tree])
 
             if containing_edge.tail_node is None:
                 if containing_edge.length is not None:
                     target_age =  containing_edge.head_node.age + containing_edge.length
                 else:
                     # assume all coalesce?
-                    containing_edge.tail_embedded_edges[embedded_tree] = set(embedded_tree.seed_node.edge)
+                    containing_edge.tail_contained_edges[contained_tree] = set(contained_tree.seed_node.edge)
                     continue
             else:
                 target_age = containing_edge.tail_node.age
 
-            containing_edge.tail_embedded_edges[embedded_tree] = set()
-            for embedded_edge in containing_edge.head_embedded_edges[embedded_tree]:
-                if embedded_edge.tail_node is not None:
-                    remaining = target_age - embedded_edge.tail_node.age
-                elif embedded_edge.length is not None:
-                    remaining = target_age - (embedded_edge.head_node.age + embedded_age.length)
+            containing_edge.tail_contained_edges[contained_tree] = set()
+            for contained_edge in containing_edge.head_contained_edges[contained_tree]:
+                if contained_edge.tail_node is not None:
+                    remaining = target_age - contained_edge.tail_node.age
+                elif contained_edge.length is not None:
+                    remaining = target_age - (contained_edge.head_node.age + contained_age.length)
                 else:
                     continue
                 while remaining > 0:
-                    if embedded_edge.tail_node is not None:
-                        embedded_edge = embedded_edge.tail_node.edge
+                    if contained_edge.tail_node is not None:
+                        contained_edge = contained_edge.tail_node.edge
                     else:
-                        if embedded_edge.length is not None and (remaining - embedded_edge.length) <= 0:
-                            embedded_edge = None
+                        if contained_edge.length is not None and (remaining - contained_edge.length) <= 0:
+                            contained_edge = None
                             remaining = 0
                             break
                         else:
                             remaining = 0
                             break
-                    if embedded_edge and remaining > 0:
-                        remaining -= embedded_edge.length
-                if embedded_edge is not None:
-                    containing_edge.tail_embedded_edges[embedded_tree].add(embedded_edge)
+                    if contained_edge and remaining > 0:
+                        remaining -= contained_edge.length
+                if contained_edge is not None:
+                    containing_edge.tail_contained_edges[contained_tree].add(contained_edge)
 
     def build_edge_taxa_sets(self):
         """
-        Rebuilds sets of containing and corresponding embedded taxa at each
+        Rebuilds sets of containing and corresponding contained taxa at each
         edge.
         """
         for edge in self.postorder_edge_iter():
@@ -295,30 +295,30 @@ class ContainingTree(dataobject.Tree):
                 edge.containing_taxa = set()
                 for i in edge.head_node.child_nodes():
                     edge.containing_taxa.update(i.edge.containing_taxa)
-            edge.embedded_taxa = set()
+            edge.contained_taxa = set()
             for t in edge.containing_taxa:
-                edge.embedded_taxa.update(self.containing_to_embedded_taxa_map[t])
+                edge.contained_taxa.update(self.containing_to_contained_taxa_map[t])
 
     def num_deep_coalescences(self):
         """
-        Returns total number of deep coalescences of the embedded trees.
+        Returns total number of deep coalescences of the contained trees.
         """
         return sum(self.deep_coalescences().values())
 
     def deep_coalescences(self):
         """
-        Returns dictionary where the embedded trees are keys, and the number of
+        Returns dictionary where the contained trees are keys, and the number of
         deep coalescences corresponding to the tree are values.
         """
         dc = {}
-        for tree in self.embedded_trees:
+        for tree in self.contained_trees:
             for edge in self.postorder_edge_iter():
                 if edge.tail_node is None and self.ignore_root_deep_coalescences:
                     continue
                 try:
-                    dc[tree] += len(edge.tail_embedded_edges[tree]) - 1
+                    dc[tree] += len(edge.tail_contained_edges[tree]) - 1
                 except KeyError:
-                    dc[tree] = len(edge.tail_embedded_edges[tree]) - 1
+                    dc[tree] = len(edge.tail_contained_edges[tree]) - 1
         return dc
 
     def embed_contained_kingman(self,
@@ -370,19 +370,19 @@ class ContainingTree(dataobject.Tree):
 
         Note that all edge-associated taxon sets must be up-to-date (otherwise,
         ``build_edge_taxa_sets()`` should be called), and that the tree
-        is *not* added to the set of embedded trees. For the latter, call
+        is *not* added to the set of contained trees. For the latter, call
         ``embed_contained_kingman``.
         """
 
         # Dictionary that maps nodes of containing tree to list of
         # corresponding nodes on gene tree, initially populated with leaf
         # nodes.
-        embedded_nodes = {}
+        contained_nodes = {}
         for nd in self.leaf_iter():
-            embedded_nodes[nd] = []
-            for gt in nd.edge.embedded_taxa:
+            contained_nodes[nd] = []
+            for gt in nd.edge.contained_taxa:
                 gn = dataobject.Node(taxon=gt)
-                embedded_nodes[nd].append(gn)
+                contained_nodes[nd].append(gn)
 
         # Generate the tree structure
         for edge in self.postorder_edge_iter():
@@ -393,13 +393,13 @@ class ContainingTree(dataobject.Tree):
                     pop_size = getattr(edge, edge_pop_size_attr)
                 else:
                     pop_size = default_pop_size
-                if len(embedded_nodes[edge.head_node]) > 1:
-                    final = coalescent.coalesce(nodes=embedded_nodes[edge.head_node],
+                if len(contained_nodes[edge.head_node]) > 1:
+                    final = coalescent.coalesce(nodes=contained_nodes[edge.head_node],
                             pop_size=pop_size,
                             period=None,
                             rng=rng)
                 else:
-                    final = embedded_nodes[edge.head_node]
+                    final = contained_nodes[edge.head_node]
             else:
                 # run until next coalescence event, as determined by this edge
                 # size.
@@ -407,32 +407,32 @@ class ContainingTree(dataobject.Tree):
                     pop_size = getattr(edge, edge_pop_size_attr)
                 else:
                     pop_size = default_pop_size
-                remaining = coalescent.coalesce(nodes=embedded_nodes[edge.head_node],
+                remaining = coalescent.coalesce(nodes=contained_nodes[edge.head_node],
                         pop_size=pop_size,
                         period=edge.length,
                         rng=rng)
                 try:
-                    embedded_nodes[edge.tail_node].extend(remaining)
+                    contained_nodes[edge.tail_node].extend(remaining)
                 except KeyError:
-                    embedded_nodes[edge.tail_node] = remaining
+                    contained_nodes[edge.tail_node] = remaining
 
         # Create and return the full tree
-        embedded_tree = dataobject.Tree(taxon_set=self.embedded_taxon_set, label=label)
-        embedded_tree.seed_node = final[0]
-        embedded_tree.is_rooted = True
-        return embedded_tree
+        contained_tree = dataobject.Tree(taxon_set=self.contained_taxon_set, label=label)
+        contained_tree.seed_node = final[0]
+        contained_tree.is_rooted = True
+        return contained_tree
 
-    def _find_youngest_intergroup_age(self, embedded_tree, disjunct_leaf_set_list_split_bitmasks, starting_min_age=None):
+    def _find_youngest_intergroup_age(self, contained_tree, disjunct_leaf_set_list_split_bitmasks, starting_min_age=None):
         """
         Find the age of the youngest MRCA of disjunct leaf sets.
         """
         if starting_min_age is None:
             starting_min_age = float('inf')
-        if embedded_tree.seed_node.age is None:
-            embedded_tree.calc_node_ages(check_prec=self.ultrametricity_check_prec)
-        if not hasattr(embedded_tree, 'split_edges'):
-            embedded_tree.update_splits()
-        for nd in embedded_tree.age_order_node_iter(include_leaves=False):
+        if contained_tree.seed_node.age is None:
+            contained_tree.calc_node_ages(check_prec=self.ultrametricity_check_prec)
+        if not hasattr(contained_tree, 'split_edges'):
+            contained_tree.update_splits()
+        for nd in contained_tree.age_order_node_iter(include_leaves=False):
             if nd.age > starting_min_age:
                 break
             prev_intersections = False
@@ -453,19 +453,19 @@ class ContainingTree(dataobject.Tree):
         out.write("#NEXUS\n\n")
         nw.write_taxa_block(self.taxon_set, out)
         out.write('\n')
-        nw.write_taxa_block(self.embedded_trees.taxon_set, out)
-        if self.embedded_trees.taxon_set.label:
-            domain_title = self.embedded_trees.taxon_set.label
+        nw.write_taxa_block(self.contained_trees.taxon_set, out)
+        if self.contained_trees.taxon_set.label:
+            domain_title = self.contained_trees.taxon_set.label
         else:
-            domain_title = self.embedded_trees.taxon_set.oid
-        embedded_taxon_set = self.embedded_trees.taxon_set
-        embedded_label = self.embedded_trees.label
+            domain_title = self.contained_trees.taxon_set.oid
+        contained_taxon_set = self.contained_trees.taxon_set
+        contained_label = self.contained_trees.label
         out.write('\n')
-        self._embedded_to_containing_taxon_map.write_mesquite_association_block(out)
+        self._contained_to_containing_taxon_map.write_mesquite_association_block(out)
         out.write('\n')
         nw.write_trees_block(dataobject.TreeList([self], taxon_set=self.taxon_set), out)
         out.write('\n')
-        nw.write_trees_block(dataobject.TreeList(self.embedded_trees, taxon_set=embedded_taxon_set, label=embedded_label), out)
+        nw.write_trees_block(dataobject.TreeList(self.contained_trees, taxon_set=contained_taxon_set, label=contained_label), out)
         out.write('\n')
 
 def __RETIRED__fit_contained_tree(contained_tree, containing_tree, contained_taxon_to_containing_taxon_map, optimize_containing_edge_lengths=True):
@@ -566,38 +566,38 @@ def __RETIRED__fit_contained_tree(contained_tree, containing_tree, contained_tax
     # Map the edges
     num_deep_coalescences = 0
     for containing_edge in containing_tree.postorder_edge_iter():
-        if not hasattr(containing_edge, 'tail_embedded_edges'):
-            containing_edge.tail_embedded_edges = {}
-        if not hasattr(containing_edge, 'head_embedded_edges'):
-            containing_edge.head_embedded_edges = {}
+        if not hasattr(containing_edge, 'tail_contained_edges'):
+            containing_edge.tail_contained_edges = {}
+        if not hasattr(containing_edge, 'head_contained_edges'):
+            containing_edge.head_contained_edges = {}
         if not hasattr(containing_edge, 'uncoalesced_edges'):
             containing_edge.num_uncoalesced_edges = {}
         child_nodes = containing_edge.head_node.child_nodes()
         if not child_nodes:
-            containing_edge.head_embedded_edges[contained_tree] = set([n.edge for n in containing_edge.head_node.contained_tree_nodes[contained_tree]])
+            containing_edge.head_contained_edges[contained_tree] = set([n.edge for n in containing_edge.head_node.contained_tree_nodes[contained_tree]])
         else:
-            containing_edge.head_embedded_edges[contained_tree] = set()
+            containing_edge.head_contained_edges[contained_tree] = set()
             for n in child_nodes:
-                containing_edge.head_embedded_edges[contained_tree].update(n.edge.tail_embedded_edges[contained_tree])
-            containing_edge.num_uncoalesced_edges[contained_tree] = len(containing_edge.head_embedded_edges[contained_tree]) - len(child_nodes)
+                containing_edge.head_contained_edges[contained_tree].update(n.edge.tail_contained_edges[contained_tree])
+            containing_edge.num_uncoalesced_edges[contained_tree] = len(containing_edge.head_contained_edges[contained_tree]) - len(child_nodes)
             num_deep_coalescences += containing_edge.num_uncoalesced_edges[contained_tree]
         if containing_edge.tail_node is None:
-            containing_edge.tail_embedded_edges[contained_tree] = containing_edge.head_embedded_edges[contained_tree]
+            containing_edge.tail_contained_edges[contained_tree] = containing_edge.head_contained_edges[contained_tree]
             continue
-        containing_edge.tail_embedded_edges[contained_tree] = set()
-        for embedded_edge in containing_edge.head_embedded_edges[contained_tree]:
-            #if embedded_edge.tail_node is None:
+        containing_edge.tail_contained_edges[contained_tree] = set()
+        for contained_edge in containing_edge.head_contained_edges[contained_tree]:
+            #if contained_edge.tail_node is None:
             #    break
-            remaining = containing_edge.tail_node.age - embedded_edge.tail_node.age
+            remaining = containing_edge.tail_node.age - contained_edge.tail_node.age
             while remaining > 0:
                 try:
-                    embedded_edge = embedded_edge.tail_node.edge
+                    contained_edge = contained_edge.tail_node.edge
                 except AttributeError:
-                    #embedded_edge = None
+                    #contained_edge = None
                     break
-                remaining -= embedded_edge.length
-            if embedded_edge is not None:
-                containing_edge.tail_embedded_edges[contained_tree].add(embedded_edge)
+                remaining -= contained_edge.length
+            if contained_edge is not None:
+                containing_edge.tail_contained_edges[contained_tree].add(contained_edge)
 
     if not hasattr(containing_tree, 'num_deep_coalescences'):
         containing_tree.num_deep_coalescences = {}
