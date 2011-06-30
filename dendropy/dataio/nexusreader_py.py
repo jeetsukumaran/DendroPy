@@ -36,30 +36,73 @@ class NexusReader(iosys.DataReader):
 
     def __init__(self, **kwargs):
         """
-        __init__ recognizes the following keywords (in addition to those of `DataReader.__init__`):
+        __init__ recognizes the following keywords (in addition to
+        those of `DataReader.__init__`):
 
-            - `taxon_set`: TaxonSet object to use when reading data
-            - `as_rooted=True` (or `as_unrooted=False`): interprets trees as rooted
-            - `as_unrooted=True` (or `as_rooted=False`): interprets trees as unrooted
-            - `default_as_rooted=True` (or `default_as_unrooted=False`): interprets
-               all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
-            - `default_as_unrooted=True` (or `default_as_rooted=False`): interprets
-               all trees as rooted if rooting not given by `[&R]` or `[&U]` comments
-            - `edge_len_type`: specifies the type of the edge lengths (int or float)
-            - `extract_comment_metadata`: if True, any 'hot comments' (i.e.,
-               comments that begin with '&') or NHX comments associated with
-               items will be processed and stored as a dictionary attribute of the
-               object: "comment_metadata".
-            - `store_tree_weights`: if True, process the tree weight ("[&W 1/2]")
-               comment associated with each tree, if any.
-            - `encode_splits`: specifies whether or not split bitmasks will be
-               calculated and attached to the edges.
-            - `finish_node_func`: is a function that will be applied to each node
-               after it has been constructed
-            - `case_insensitive_taxon_labels`: If False, then taxon labels are
-                case sensitive (different cases = different taxa); defaults to True
-            - `allow_duplicate_taxon_labels` : if True, allow duplicate labels
-               on trees
+            `taxon_set`
+                TaxonSet object to use when reading data.
+
+            `as_rooted=True` (or `as_unrooted=False`)
+                Unconditionally interprets all trees as rooted.
+
+            `as_unrooted=True` (or `as_rooted=False`)
+                Unconditionally interprets all trees as unrooted.
+
+            `default_as_rooted=True` (or `default_as_unrooted=False`)
+                Interprets all trees as rooted if rooting not given by `[&R]`
+                or `[&U]` comments.
+
+            `default_as_unrooted=True` (or `default_as_rooted=False`)
+                Interprets all trees as rooted if rooting not given by `[&R]`
+                or `[&U]` comments.
+
+            `edge_len_type`
+                Specifies the type of the edge lengths (int or float).
+
+            `extract_comment_metadata`
+                If True, any 'hot comments', i.e., comments that begin with
+                '&', or NHX comments associated with items will be processed
+                and stored as a dictionary attribute of the object:
+                "comment_metadata".
+
+            `store_tree_weights`
+                If True, process the tree weight ("[&W 1/2]") comment
+                associated with each tree, if any.
+
+            `encode_splits`
+                Specifies whether or not split bitmasks will be calculated and
+                attached to the edges.
+
+            `finish_node_func`
+                Is a function that will be applied to each node after it has
+                been constructed.
+
+            `case_insensitive_taxon_labels`
+                If False, then taxon labels are case sensitive (different cases
+                = different taxa); defaults to True.
+
+            `allow_duplicate_taxon_labels`
+                if True, allow duplicate labels on trees
+
+            `preserve_underscores`
+                If True, unquoted underscores in labels will *not* converted to
+                spaces. Defaults to False: all underscores not protected by
+                quotes will be converted to spaces.
+
+            `suppress_internal_node_taxa`
+                If True, internal node labels will not be treated as taxa.
+                Defaults to True: internal node labels will be instantantiatd
+                into Taxon objects.
+
+            `suppress_internal_node_taxa`
+                If True, internal node labels will not be treated as taxa.
+                Defaults to True: internal node labels will be instantantiatd
+                into Taxon objects.
+
+            `hyphens_as_tokens`
+                If True, hyphens will be treated as special punctuation
+                characters. Defaults to False, hyphens not treated as special
+                punctuation characters.
 
         """
         iosys.DataReader.__init__(self, **kwargs)

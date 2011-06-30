@@ -126,7 +126,7 @@ All Formats
 ^^^^^^^^^^^
 
     ``attached_taxon_set``
-        If :keyword:`True` when reading into a |DataSet| object, then a new |TaxonSet| object will be created and added to the :attr:`~dendropy.dataobject.dataset.DataSet.taxon_sets` list of the |DataSet| object, and the |DataSet| object will be placed in "attached" (or single) taxon set mode, i.e., all taxa in any data sources parsed or read will be mapped to the same |TaxonSet| object. By default, this is :keyword:`False`, resulting in a multi-taxon set mode |DataSet| object.
+        If |True| when reading into a |DataSet| object, then a new |TaxonSet| object will be created and added to the :attr:`~dendropy.dataobject.dataset.DataSet.taxon_sets` list of the |DataSet| object, and the |DataSet| object will be placed in "attached" (or single) taxon set mode, i.e., all taxa in any data sources parsed or read will be mapped to the same |TaxonSet| object. By default, this is |False|, resulting in a multi-taxon set mode |DataSet| object.
 
     ``taxon_set``
         If passed a |TaxonSet| object, then this |TaxonSet| will be used to manage all taxon references in the data source.
@@ -134,12 +134,12 @@ All Formats
         When reading into a |DataSet| object, if the data source defines multiple collections of taxa (as is possible with, for example, the NEXML schema, or the Mesquite variant of the NEXUS schema), then multiple new |TaxonSet| object will be created. By passing a |TaxonSet| object through the ``taxon_set`` keyword, you can force DendroPy to use the same |TaxonSet| object for all taxon references.
 
     ``exclude_trees``
-        If :keyword:`True`, then all tree data in the data source will be skipped.
-        Default value is :keyword:`False`, i.e., all tree data will be included.
+        If |True|, then all tree data in the data source will be skipped.
+        Default value is |False|, i.e., all tree data will be included.
 
     ``exclude_chars``
-        If :keyword:`True`, then all character data in the data source will be skipped.
-        Default value is :keyword:`False`, i.e., all character data will be included.
+        If |True|, then all character data in the data source will be skipped.
+        Default value is |False|, i.e., all character data will be included.
 
 .. _Customizing_Reading_NEXUS_and_Newick:
 
@@ -154,27 +154,73 @@ NEXUS/Newick
         If these tags are not present, then the trees are assumed to be unrooted.
         This behavior can be changed by specifying keyword arguments to the :meth:`get_from_*()`,  or :meth:`read_from_*()` methods of both the |Tree| and |TreeList| classes, or the constructors of these classes when specifying a data source from which to construct the tree:
 
-        The ``as_rooted`` keyword argument, if :keyword:`True`, forces all trees to be interpreted as rooted, regardless of whether or not the ``[&R]``/``[&U]`` comment tags are given.
-        Conversely, if :keyword:`False`, all trees will be interpreted as unrooted.
-        For semantic clarity, you can also specify ``as_unrooted`` to be :keyword:`True` to force all trees to be unrooted.
+        The ``as_rooted`` keyword argument, if |True|, forces all trees to be interpreted as rooted, regardless of whether or not the ``[&R]``/``[&U]`` comment tags are given.
+        Conversely, if |False|, all trees will be interpreted as unrooted.
+        For semantic clarity, you can also specify ``as_unrooted`` to be |True| to force all trees to be unrooted.
 
         .. literalinclude:: /examples/tree_rootings1.py
             :linenos:
 
-        In addition, you can specify a ``default_as_rooted`` keyword argument, which, if :keyword:`True`, forces all trees to be interpreted as rooted, *if* the ``[&R]``/``[&U]`` comment tags are *not* given.
+        In addition, you can specify a ``default_as_rooted`` keyword argument, which, if |True|, forces all trees to be interpreted as rooted, *if* the ``[&R]``/``[&U]`` comment tags are *not* given.
         Otherwise the rooting will follow the ``[&R]``/``[&U]`` commands.
-        Conversely, if ``default_as_rooted`` is :keyword:`False`, all trees will be interpreted as unrooted if the ``[&R]``/``[&U]`` comment tags are not given.
-        Again, for semantic clarity, you can also specify ``default_as_unrooted`` to be :keyword:`True` to assume all trees are unrooted if not explicitly specified, though, as this is default behavior, this should not be neccessary.
+        Conversely, if ``default_as_rooted`` is |False|, all trees will be interpreted as unrooted if the ``[&R]``/``[&U]`` comment tags are not given.
+        Again, for semantic clarity, you can also specify ``default_as_unrooted`` to be |True| to assume all trees are unrooted if not explicitly specified, though, as this is default behavior, this should not be neccessary.
+
+    ``edge_len_type``
+
+        Specifies the type of the edge lengths (int or float).
 
     ``extract_comment_metadata``
 
-        If :keyword:`True`, then any FigTree-style "hot comments" (e.g. "[&age_mean=2.01,age_range={0.1,3.4}]") or NHX-style comments associated with nodes (or the tree) will be parsed and stored as a dictionary attribute named ``comment_metadata`` of the corresponding object. Note that comments containing metadata *will be stripped* from the nodes once they have been successfully parsed, extracted, and stored in the ``comment_metadata`` dictionary.
+        If |True|, then any FigTree-style "hot comments" (e.g. "[&age_mean=2.01,age_range={0.1,3.4}]") or NHX-style comments associated with nodes (or the tree) will be parsed and stored as a dictionary attribute named ``comment_metadata`` of the corresponding object. Note that comments containing metadata *will be stripped* from the nodes once they have been successfully parsed, extracted, and stored in the ``comment_metadata`` dictionary.
+
+    ``store_tree_weights``
+
+        If |True|, process the tree weight ("[&W 1/2]") comment
+        associated with each tree, if any.
+
+    ``encode_splits``
+
+        Specifies whether or not split bitmasks will be calculated and
+        attached to the edges.
+
+    ``finish_node_func``
+
+        Is a function that will be applied to each node after it has
+        been constructed.
+
+    ``case_insensitive_taxon_labels``
+
+        If |False|, then taxon labels are case sensitive (different cases
+        = different taxa); defaults to |True|.
+
+    ``allow_duplicate_taxon_labels``
+
+        if |True|, allow duplicate labels on trees
 
     ``preserve_underscores``
 
-        With NEXUS and Newick data sources, you can also specify ``preserve_underscores=True``.
-        The NEXUS standard dictates that underscores are equivalent to spaces, and thus any underscore found in any unquoted label in a NEXUS/Newick data source will be substituted for spaces.
-        Specifying ``preserve_underscores=True`` will force DendroPy to keep the underscores.
+        If |True|, unquoted underscores in labels will *not* converted to
+        spaces. Defaults to |False|: all underscores not protected by
+        quotes will be converted to spaces.
+
+    ``suppress_internal_node_taxa``
+
+        If |True|, internal node labels will not be treated as taxa.
+        Defaults to |True|: internal node labels will be instantantiatd
+        into Taxon objects.
+
+    ``suppress_internal_node_taxa``
+
+        If |True|, internal node labels will not be treated as taxa.
+        Defaults to |True|: internal node labels will be instantantiatd
+        into Taxon objects.
+
+    ``hyphens_as_tokens``
+
+        If |True|, hyphens will be treated as special punctuation
+        characters. Defaults to |False|, hyphens not treated as special
+        punctuation characters.
 
 .. _Customizing_Reading_PHYLIP:
 
