@@ -91,7 +91,7 @@ class NexusReader(iosys.DataReader):
 
             `suppress_internal_node_taxa`
                 If True, internal node labels will not be treated as taxa.
-                Defaults to True: internal node labels will be instantantiatd
+                Defaults to False: internal node labels will be instantantiatd
                 into Taxon objects.
 
             `allow_duplicate_taxon_labels`
