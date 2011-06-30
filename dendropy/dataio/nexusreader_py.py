@@ -94,10 +94,10 @@ class NexusReader(iosys.DataReader):
                 Defaults to True: internal node labels will be instantantiatd
                 into Taxon objects.
 
-            `suppress_internal_node_taxa`
-                If True, internal node labels will not be treated as taxa.
-                Defaults to True: internal node labels will be instantantiatd
-                into Taxon objects.
+            `allow_duplicate_taxon_labels`
+                If True, then multiple identical taxon labels will be allowed.
+                Defaults to False: treat multiple identical taxon labels as an
+                error.
 
             `hyphens_as_tokens`
                 If True, hyphens will be treated as special punctuation

@@ -210,11 +210,11 @@ NEXUS/Newick
         Defaults to |True|: internal node labels will be instantantiatd
         into Taxon objects.
 
-    ``suppress_internal_node_taxa``
+    ``allow_duplicate_taxon_labels``
 
-        If |True|, internal node labels will not be treated as taxa.
-        Defaults to |True|: internal node labels will be instantantiatd
-        into Taxon objects.
+        If |True|, then multiple identical taxon labels will be allowed.
+        Defaults to |False|: treat multiple identical taxon labels as an
+        error.
 
     ``hyphens_as_tokens``
 
