@@ -549,12 +549,21 @@ END;
 """
 
     def testCaseInsensitiveTrees(self):
-        d = dendropy.TreeList.get_from_string(self.tree_str, 'nexus', case_insensitive_taxon_labels=True)
+        d = dendropy.TreeList.get_from_string(self.tree_str,
+                'nexus',
+                case_insensitive_taxon_labels=True)
         self.assertEqual(len(d.taxon_set), 5)
 
-    def testDefaultCaseSensitiveTrees(self):
-        d = dendropy.TreeList.get_from_string(self.tree_str, 'nexus')
+    def testDefaultCaseSensitivityTrees(self):
+        d = dendropy.TreeList.get_from_string(self.tree_str,
+                'nexus')
         self.assertEqual(len(d.taxon_set), 5)
+
+    def testCaseSensitiveTrees(self):
+        d = dendropy.TreeList.get_from_string(self.tree_str,
+                'nexus',
+                case_insensitive_taxon_labels=False)
+        self.assertEqual(len(d.taxon_set), 9)
 
     def testCaseInsensitiveChars(self):
         d = dendropy.DnaCharacterMatrix.get_from_string(self.data_str, 'nexus', case_insensitive_taxon_labels=True)
@@ -568,7 +577,7 @@ END;
                 'nexus',
                 case_insensitive_taxon_labels=False)
 
-    def testDefaultCaseSensitiveChars(self):
+    def testDefaultCaseSensitivityChars(self):
         d = dendropy.DnaCharacterMatrix.get_from_string(self.data_str, 'nexus')
         self.assertEqual(len(d.taxon_set), 5)
 
