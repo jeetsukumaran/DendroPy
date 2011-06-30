@@ -215,9 +215,9 @@ class NexusReader(iosys.DataReader):
         Returns an exception object parameterized with line and
         column number values.
         """
-        raise self.data_format_error("Cannot add '%s':" % label \
-                + " Declared number of taxa (%d) already defined: %s" % (self.file_specified_ntax,
-                    str([("%s" % t.label) for t in taxon_set])))
+        return self.stream_tokenizer.too_many_taxa_error(taxon_set=taxon_set,
+                max_taxa=self.file_specified_ntax,
+                label=label)
 
     ###########################################################################
     ## HELPERS

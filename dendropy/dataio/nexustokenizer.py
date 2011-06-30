@@ -488,6 +488,19 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
 ###############################################################################
 ## NexusTokenizer
 
+class TooManyTaxaError(DataParseError):
+
+    def __init__(self, row, column, taxon_set, max_taxa, label):
+        self.taxon_set = taxon_set
+        self.label = label
+        message = "Cannot add '%s': Declared number of taxa (%d) already defined: %s" % \
+                        (label,
+                        max_taxa,
+                        str([("%s" % t.label) for t in taxon_set]))
+        DataParseError.__init__(self, message=message,
+                row=row,
+                column=column)
+
 class NexusTokenizer(object):
     "Encapsulates reading NEXUS/NEWICK tokens from file."
 
@@ -1006,10 +1019,22 @@ class NexusTokenizer(object):
             pass
 
     def data_format_error(self, message):
-            """
-            Returns an exception object parameterized with line and
-            column number values.
-            """
-            return DataParseError(message=message,
-                                   row=self.current_line_number,
-                                   column=self.current_col_number)
+        """
+        Returns an exception object parameterized with line and
+        column number values.
+        """
+        return DataParseError(message=message,
+                                row=self.current_line_number,
+                                column=self.current_col_number)
+
+    def too_many_taxa_error(self, taxon_set, max_taxa, label):
+        """
+        Returns an exception object parameterized with line and
+        column number values.
+        """
+        return TooManyTaxaError(row=self.current_line_number,
+                                column=self.current_col_number,
+                                taxon_set=taxon_set,
+                                max_taxa=max_taxa,
+                                label=label)
+

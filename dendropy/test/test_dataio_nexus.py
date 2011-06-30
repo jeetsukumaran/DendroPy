@@ -31,6 +31,7 @@ from dendropy.test.support import datagen
 from dendropy.test.support import datatest
 from dendropy.test.support import extendedtest
 from dendropy import dataio
+from dendropy.dataio.nexustokenizer import TooManyTaxaError
 from dendropy.utility import error
 from dendropy.utility.messaging import get_logger
 import dendropy
@@ -607,7 +608,7 @@ BEGIN CHARACTERS;
 END;
 """
         #d = dendropy.DnaCharacterMatrix.get_from_string(data_str, 'nexus')
-        self.assertRaises(error.DataParseError, dendropy.DnaCharacterMatrix.get_from_string, data_str, 'nexus')
+        self.assertRaises(TooManyTaxaError, dendropy.DnaCharacterMatrix.get_from_string, data_str, 'nexus')
 
     def testTooManyTaxaInterleaved(self):
         data_str = """\
@@ -638,7 +639,7 @@ BEGIN CHARACTERS;
 END;
 """
         #d = dendropy.DnaCharacterMatrix.get_from_string(data_str, 'nexus')
-        self.assertRaises(error.DataParseError, dendropy.DnaCharacterMatrix.get_from_string, data_str, 'nexus')
+        self.assertRaises(TooManyTaxaError, dendropy.DnaCharacterMatrix.get_from_string, data_str, 'nexus')
 
 class NexusInternalNodeLabelsAsNonTaxa(extendedtest.ExtendedTestCase):
 
