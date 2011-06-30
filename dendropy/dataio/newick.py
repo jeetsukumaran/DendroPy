@@ -234,6 +234,7 @@ class NewickReader(iosys.DataReader):
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
         self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
         self.case_insensitive_taxon_labels = kwargs.get("case_insensitive_taxon_labels", True)
+        self.edge_len_type = kwargs.get('edge_len_type', float)
 
     def read(self, stream):
         """
@@ -256,6 +257,7 @@ class NewickReader(iosys.DataReader):
                 encode_splits=self.encode_splits,
                 preserve_underscores=self.preserve_underscores,
                 suppress_internal_node_taxa=self.suppress_internal_node_taxa,
+                edge_len_type=self.edge_len_type,
                 case_insensitive_taxon_labels=self.case_insensitive_taxon_labels):
             tree_list.append(t, reindex_taxa=False)
         return self.dataset

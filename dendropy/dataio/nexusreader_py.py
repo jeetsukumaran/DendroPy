@@ -116,6 +116,7 @@ class NexusReader(iosys.DataReader):
         self.store_tree_weights = kwargs.get('store_tree_weights', False)
         self.extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
         self.case_insensitive_taxon_labels = kwargs.get('case_insensitive_taxon_labels', True)
+        self.edge_len_type = kwargs.get('edge_len_type', float)
 
     def read(self, stream):
         """
@@ -773,6 +774,7 @@ class NexusReader(iosys.DataReader):
                 store_tree_weights=self.store_tree_weights,
                 preserve_underscores=self.preserve_underscores,
                 suppress_internal_node_taxa=self.suppress_internal_node_taxa,
+                edge_len_type=self.edge_len_type,
                 case_insensitive_taxon_labels=self.case_insensitive_taxon_labels)
         tree.label = tree_name
         if tree_comments is not None and len(tree_comments) > 0:
