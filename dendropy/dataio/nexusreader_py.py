@@ -77,9 +77,9 @@ class NexusReader(iosys.DataReader):
                 Is a function that will be applied to each node after it has
                 been constructed.
 
-            `case_insensitive_taxon_labels`
-                If False, then taxon labels are case sensitive (different cases
-                = different taxa); defaults to True.
+            `case_sensitive_taxon_labels`
+                If True, then taxon labels are case sensitive (different cases
+                = different taxa); defaults to False.
 
             `allow_duplicate_taxon_labels`
                 if True, allow duplicate labels on trees
@@ -115,7 +115,7 @@ class NexusReader(iosys.DataReader):
         self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS)
         self.store_tree_weights = kwargs.get('store_tree_weights', False)
         self.extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
-        self.case_insensitive_taxon_labels = kwargs.get('case_insensitive_taxon_labels', True)
+        self.case_sensitive_taxon_labels = kwargs.get('case_sensitive_taxon_labels', False)
         self.edge_len_type = kwargs.get('edge_len_type', float)
 
     def read(self, stream):
@@ -402,9 +402,9 @@ class NexusReader(iosys.DataReader):
 
     def _get_taxon(self, taxon_set, label):
         if not self.file_specified_ntax or len(taxon_set) < self.file_specified_ntax:
-            taxon = taxon_set.require_taxon(label=label, case_insensitive=self.case_insensitive_taxon_labels)
+            taxon = taxon_set.require_taxon(label=label, case_insensitive=not self.case_sensitive_taxon_labels)
         else:
-            taxon = taxon_set.get_taxon(label=label, case_insensitive=self.case_insensitive_taxon_labels)
+            taxon = taxon_set.get_taxon(label=label, case_insensitive=not self.case_sensitive_taxon_labels)
         if taxon is None:
             raise self.too_many_taxa_error(taxon_set=taxon_set, label=label)
         return taxon
@@ -775,7 +775,7 @@ class NexusReader(iosys.DataReader):
                 preserve_underscores=self.preserve_underscores,
                 suppress_internal_node_taxa=self.suppress_internal_node_taxa,
                 edge_len_type=self.edge_len_type,
-                case_insensitive_taxon_labels=self.case_insensitive_taxon_labels)
+                case_sensitive_taxon_labels=self.case_sensitive_taxon_labels)
         tree.label = tree_name
         if tree_comments is not None and len(tree_comments) > 0:
             tree.comments.extend(tree_comments)

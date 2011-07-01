@@ -235,7 +235,7 @@ class StrToTaxon(object):
             taxon_set,
             translate_dict=None,
             allow_repeated_use=False,
-            case_insensitive=False):
+            case_sensitive=True):
         """
         __init__ creates a StrToTaxon object with the requested policy of taxon
         repitition.
@@ -245,11 +245,11 @@ class StrToTaxon(object):
         calling the functions with the same label will generate a DataParseError
         indicating that the taxon has been used multiple times."""
         self.taxon_set = taxon_set
-        self.case_insensitive = case_insensitive
+        self.case_sensitive = case_sensitive
         if translate_dict is not None:
             self.translate = translate_dict
         else:
-            if self.case_insensitive:
+            if self.case_sensitive:
                 self.translate = containers.OrderedCaselessDict()
             else:
                 self.translate = {}
@@ -269,14 +269,14 @@ class StrToTaxon(object):
     def get_taxon(self, label):
         t = self.translate.get(label)
         if t is None:
-            t = self.taxon_set.get_taxon(label=label, case_insensitive=self.case_insensitive)
+            t = self.taxon_set.get_taxon(label=label, case_insensitive=not self.case_sensitive)
         return self._returning(t, label)
 
     def require_taxon(self, label):
         v = self.get_taxon(label)
         if v is not None:
             return v
-        t = self.taxon_set.require_taxon(label=label, case_insensitive=self.case_insensitive)
+        t = self.taxon_set.require_taxon(label=label, case_insensitive=not self.case_sensitive)
         return self._returning(t, label)
 
     def index(self, t):
@@ -302,7 +302,7 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
     suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
     store_tree_weights = kwargs.get("store_tree_weights", False)
     extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
-    case_insensitive_taxon_labels = kwargs.get("case_insensitive_taxon_labels", True)
+    case_sensitive_taxon_labels = kwargs.get('case_sensitive_taxon_labels', False)
     stream_tokenizer_extract_comment_metadata_setting = stream_tokenizer.extract_comment_metadata
     stream_tokenizer.extract_comment_metadata = extract_comment_metadata
     if taxon_set is None:
@@ -349,7 +349,7 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
         stt = StrToTaxon(taxon_set,
                 translate_dict,
                 allow_repeated_use=False,
-                case_insensitive=case_insensitive_taxon_labels)
+                case_sensitive=case_sensitive_taxon_labels)
 
     tree.seed_node = dataobject.Node()
     curr_node = tree.seed_node

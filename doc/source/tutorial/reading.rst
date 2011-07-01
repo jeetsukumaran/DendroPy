@@ -189,10 +189,10 @@ NEXUS/Newick
         Is a function that will be applied to each node after it has
         been constructed.
 
-    ``case_insensitive_taxon_labels``
+    ``case_sensitive_taxon_labels``
 
-        If |False|, then taxon labels are case sensitive (different cases
-        = different taxa); defaults to |True|.
+        If |True|, then taxon labels are case sensitive (different cases
+        = different taxa); defaults to |False|.
 
     ``allow_duplicate_taxon_labels``
 
