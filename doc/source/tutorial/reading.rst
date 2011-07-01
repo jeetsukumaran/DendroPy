@@ -234,8 +234,14 @@ The keyword arguments are:
 PHYLIP
 ^^^^^^
 
+The following snippets illustrate typical keyword arguments and their defaults when reading data from PHYLIP-formatted sources:
+
+.. literalinclude:: /examples/skel_dataio_phylip_reading.py
+
+The keyword arguments are:
+
     ``data_type``
-        As noted above, the PHYLIP format requires specification of the type of data using the ``data_type`` argument, which takes one of the following strings: "``dna``", "``rna``", "``protein``", "``standard``"", "``restriction``", or "``infinite``".
+        As noted above, if not reading into a |CharacterMatrix| of a particular type, the PHYLIP format requires specification of the type of data using the ``data_type`` argument, which takes one of the following strings: "``dna``", "``rna``", "``protein``", "``standard``"", "``restriction``", or "``infinite``".
 
     ``strict``
         By default, the PHYLIP parser works in "relaxed" mode, which means that taxon labels can be of arbitrary length, and taxon labels and corresponding sequences are separated by one or more spaces. By specifying ``strict=True``, the parse will behave in strict mode, i.e., where taxon labels are limited to 10 characters in length, and sequences start on column 11.
