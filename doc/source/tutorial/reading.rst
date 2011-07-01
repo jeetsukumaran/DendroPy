@@ -146,6 +146,13 @@ All Formats
 NEXUS/Newick
 ^^^^^^^^^^^^
 
+The following snippet serves as an example that shows all the keywords that can be passed to a ":meth:`read_from_*()`" or ":meth:`get_from_*()`" method when the schema is NEXUS or Newick:
+
+.. literalinclude:: /examples/skel_dataio_nexus_reading.py
+
+The keyword arguments are:
+
+
     ``is_rooted``, ``is_unrooted``, ``default_as_rooted``, ``default_as_unrooted``
 
         When reading into a |Tree|, |TreeList|, or |DataSet| object, this keyword determines how trees in the data source will be rooted.
