@@ -401,7 +401,7 @@ class NexusReader(iosys.DataReader):
         self.stream_tokenizer.allow_eof = True
 
     def _get_taxon(self, taxon_set, label):
-        if len(taxon_set) < self.file_specified_ntax:
+        if not self.file_specified_ntax or len(taxon_set) < self.file_specified_ntax:
             taxon = taxon_set.require_taxon(label=label, case_insensitive=self.case_insensitive_taxon_labels)
         else:
             taxon = taxon_set.get_taxon(label=label, case_insensitive=self.case_insensitive_taxon_labels)
