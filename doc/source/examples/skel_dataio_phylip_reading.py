@@ -3,7 +3,7 @@
 # a CharacterMatrix of a particular
 # type, the `data_type` argument
 # is not needed.
-d = dendropy.DnaCharacterMatrix(
+d = dendropy.DnaCharacterMatrix.get_from_path(
         "data.dat",
         "phylip",
         taxon_set=None,
@@ -14,7 +14,7 @@ d = dendropy.DnaCharacterMatrix(
         ignore_invalid_chars=Fa;se)
 
 # Otherwise ...
-d = dendropy.DataSet(
+d = dendropy.DataSet.get_from_path(
         "data.dat",
         "phylip",
         taxon_set=None,
@@ -26,7 +26,7 @@ d = dendropy.DataSet(
         ignore_invalid_chars=Fa;se)
 
 # Or ..
-d = dendropy.DataSet(
+d = dendropy.DataSet.get_from_path(
         "data.dat",
         "phylip",
         taxon_set=None,
