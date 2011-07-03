@@ -11,7 +11,7 @@ d = dendropy.DnaCharacterMatrix.get_from_path(
         interleaved=False,
         multispace_delimiter=False,
         underscores_to_spaces=False,
-        ignore_invalid_chars=Fa;se)
+        ignore_invalid_chars=False)
 
 # Otherwise ...
 d = dendropy.DataSet.get_from_path(
@@ -23,7 +23,7 @@ d = dendropy.DataSet.get_from_path(
         interleaved=False,
         multispace_delimiter=False,
         underscores_to_spaces=False,
-        ignore_invalid_chars=Fa;se)
+        ignore_invalid_chars=False)
 
 # Or ..
 d = dendropy.DataSet.get_from_path(
@@ -35,5 +35,5 @@ d = dendropy.DataSet.get_from_path(
         interleaved=False,
         multispace_delimiter=False,
         underscores_to_spaces=False,
-        ignore_invalid_chars=Fa;se)
+        ignore_invalid_chars=False)
 
