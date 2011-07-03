@@ -71,7 +71,7 @@ The following code fragment shows a typical invocation of a Newick-format write 
 
 .. NEXUS and Newick share mostly the same format for writing tree statements. As such, in DendroPy the same set of keyword arguments can be used to control and customize both NEXUS and Newick output (though the defaults for a few of these keywords vary between formats). In addtion, because it is more extensive than Newick, several other keyword arguments are supported when writing in NEXUS format.
 
-The keywords supported for writing general NEXUS-formatted output include:
+The special keywords supported for writing NEXUS-formatted output include:
 
     ``simple``
         When writing NEXUS-formatted data, if |True|, then character data will be represented as a single "``DATA``" block, instead of separate "``TAXA``" and "``CHARACTERS``" blocks. By default this is |False|.
@@ -88,7 +88,7 @@ The keywords supported for writing general NEXUS-formatted output include:
     ``file_comments``
         When writing NEXUS-formatted data, then the contents of this variable (a string or a list of strings) will be added as a NEXUS comment to the file (at the top). By default, this is |None|.
 
-The keywords supported for writing both NEXUS- or Newick-formatted trees include:
+The special keywords supported for writing both NEXUS- or Newick-formatted trees include:
 
     ``suppress_leaf_taxon_labels``
         If |True|, then taxon labels will not be printed for leaves.  Default is |False|.
@@ -119,13 +119,40 @@ The keywords supported for writing both NEXUS- or Newick-formatted trees include
     ``node_label_compose_func``
         If not None, should be a function that takes a |Node| object as an argument and returns the string to be used to represent the node in the tree statement. The return value from this function is used unconditionally to print a node representation in a tree statement, by-passing the default labelling function (and thus ignoring ``suppress_leaf_taxon_labels``, ``suppress_leaf_node_labels=|True|``, ``suppress_internal_taxon_labels``, ``suppress_internal_node_labels``, etc.). Defaults to |None|.
 
+.. _Customizing_Writing_FASTA:
+
+FASTA
+^^^^^
+
+The following code fragment shows a typical invocation of a FASTA-format write operation using all supported keywords with their defaults:
+
+.. literalinclude:: /examples/skel_dataio_nexus_writing.py
+
+The special keywords supported for writing FASTA-formatted data include:
+
+    ``wrap``
+        If |True|, then sequences will be wrapped at ``wrap_width`` characters. Defaults to |False|. Output is prettier, but writing operations are considerably slower.
+
+    ``wrap_width``
+        If ``wrap`` is |True|, then sequences will be wrapped at these many characters. Defaults to 70.
+
+
 .. _Customizing_Writing_PHYLIP:
 
 PHYLIP
 ^^^^^^
 
+The following code fragment shows a typical invocation of a PHYLIP-format write operation using all supported keywords with their defaults:
+
+.. literalinclude:: /examples/skel_dataio_nexus_writing.py
+
+The special keywords supported for writing PHYLIP-formatted data include:
+
     ``strict``
-        Write in "strict" PHYLIP format, i.e., with taxon labels truncated to 10-characters, and sequence characters beginning on column 11.
+        If |True|, write in "strict" PHYLIP format, i.e., with taxon labels truncated to 10-characters, and sequence characters beginning on column 11. Defaults to |False|: writes in "relaxed" format (taxon labels not truncated, and separated from sequence characters by more two consecutive spaces).
 
     ``spaces_to_underscores``
-        Replace all spaces in taxon labels with underscores; useful if writing in relaxed mode, where spaces are used to delimit the beginning of sequence characters.
+        If |True|, replace all spaces in taxon labels with underscores; useful if writing in relaxed mode, where spaces are used to delimit the beginning of sequence characters. Defaults to |False|: labels not changed.
+
+    ``force_unique_taxon_labels``
+        If |True|, then identical taxon labels (or labels that are identical due to truncation) will be disambiguated through the appending of indexes.
