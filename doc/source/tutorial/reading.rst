@@ -230,6 +230,23 @@ The keyword arguments are:
         characters. Defaults to |False|, hyphens not treated as special
         punctuation characters.
 
+.. _Customizing_Reading_FASTA:
+
+FASTA
+^^^^^
+
+The following snippet serves as an example that shows all the keywords that can be passed to a ":meth:`read_from_*()`" or ":meth:`get_from_*()`" method when the schema is FASTA:
+
+.. literalinclude:: /examples/skel_dataio_fasta_reading.py
+
+The keyword arguments are:
+
+    ``data_type``
+        As noted above, if not reading into a |CharacterMatrix| of a particular type, the FASTA format requires specification of the type of data using the ``data_type`` argument, which takes one of the following strings: "``dna``", "``rna``", "``protein``", "``standard``"", "``restriction``", or "``infinite``".
+
+    ``row_type``
+        Defaults to '``rich``': characters will be read into the full DendroPy character data object model. Alternately, '``str``' can be specified: characters will be read as simple strings.
+
 .. _Customizing_Reading_PHYLIP:
 
 PHYLIP
