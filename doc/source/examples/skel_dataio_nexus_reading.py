@@ -2,6 +2,8 @@ trees = dendropy.TreeList.get_from_path(
         "data.nex",
         "nexus",
         taxon_set=None,
+        exclude_trees=False,
+        exclude_chars=False,
         as_rooted=None,
         as_unrooted=None,
         default_as_rooted=None,

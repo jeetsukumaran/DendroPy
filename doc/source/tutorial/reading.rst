@@ -151,8 +151,7 @@ The following snippet serves as an example that shows all the keywords that can 
 
 .. literalinclude:: /examples/skel_dataio_nexus_reading.py
 
-The keyword arguments are:
-
+The special keywords supported for reading NEXUS-formatted or NEWICK-formatted data include:
 
     ``is_rooted``, ``is_unrooted``, ``default_as_rooted``, ``default_as_unrooted``
 
@@ -239,7 +238,7 @@ The following snippet serves as an example that shows all the keywords that can 
 
 .. literalinclude:: /examples/skel_dataio_fasta_reading.py
 
-The keyword arguments are:
+The special keywords supported for reading FASTA-formatted data include:
 
     ``data_type``
         As noted above, if not reading into a |CharacterMatrix| of a particular type, the FASTA format requires specification of the type of data using the ``data_type`` argument, which takes one of the following strings: "``dna``", "``rna``", "``protein``", "``standard``"", "``restriction``", or "``infinite``".
@@ -256,7 +255,7 @@ The following snippets illustrate typical keyword arguments and their defaults w
 
 .. literalinclude:: /examples/skel_dataio_phylip_reading.py
 
-The keyword arguments are:
+The special keywords supported for reading PHYLIP-formatted data include:
 
     ``data_type``
         As noted above, if not reading into a |CharacterMatrix| of a particular type, the PHYLIP format requires specification of the type of data using the ``data_type`` argument, which takes one of the following strings: "``dna``", "``rna``", "``protein``", "``standard``"", "``restriction``", or "``infinite``".
