@@ -1,5 +1,5 @@
-Release 3.9.0 (next release, in development)
---------------------------------------------
+Release 3.9.0
+-------------
 
 New Features
 ^^^^^^^^^^^^
