@@ -20,8 +20,8 @@ data = dendropy.DataSet.get_from_path(
         hyphens_as_tokens=False)
 
 # Reading a tree-only NEXUS or NEWICK data source, or you want just the trees
-# from a mixed data source (for NEWICK format data, replace "nexus" with
-# "newick" below). You can use ``collection_offset`` to specify a particular
+# from a mixed NEXUS data source. For NEWICK format data, replace "nexus" with
+# "newick" below. You can use ``collection_offset`` to specify a particular
 # tree block to read (integer; first block offset = 0), and ``tree_offset`` to
 # skip to a particular tree (integer; offset of 0 skips no trees, offset of 1
 # skips the first tree, etc.)
