@@ -21,7 +21,10 @@ data = dendropy.DataSet.get_from_path(
 
 # Reading a tree-only NEXUS or NEWICK data source, or you want just the trees
 # from a mixed data source (for NEWICK format data, replace "nexus" with
-# "newick" below).
+# "newick" below). You can use ``collection_offset`` to specify a particular
+# tree block to read (integer; first block offset = 0), and ``tree_offset`` to
+# skip to a particular tree (integer; offset of 0 skips no trees, offset of 1
+# skips the first tree, etc.)
 trees = dendropy.TreeList.get_from_path(
         "data.nex",
         "nexus",
@@ -39,10 +42,13 @@ trees = dendropy.TreeList.get_from_path(
         preserve_underscores=False,
         suppress_internal_node_taxa=False,
         allow_duplicate_taxon_labels=False,
-        hyphens_as_tokens=False)
+        hyphens_as_tokens=False,
+        collection_offset=0,
+        tree_offset=0)
 
 # Reading character-only NEXUS data source, or you want just characters from a
-# mixed data source.
+# mixed data source. You can use ``matrix_offset` to specify a particular
+# character block to read (integer; first matrix offset = 0).
 dna = dendropy.DnaCharacterSet.get_from_path(
         "data.nex",
         "nexus",
@@ -60,4 +66,5 @@ dna = dendropy.DnaCharacterSet.get_from_path(
         preserve_underscores=False,
         suppress_internal_node_taxa=False,
         allow_duplicate_taxon_labels=False,
-        hyphens_as_tokens=False)
+        hyphens_as_tokens=False,
+        matrix_offset=0)
