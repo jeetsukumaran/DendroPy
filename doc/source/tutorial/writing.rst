@@ -126,7 +126,7 @@ FASTA
 
 The following code fragment shows a typical invocation of a FASTA-format write operation using all supported keywords with their defaults:
 
-.. literalinclude:: /examples/skel_dataio_nexus_writing.py
+.. literalinclude:: /examples/skel_dataio_fasta_writing.py
 
 The special keywords supported for writing FASTA-formatted data include:
 
@@ -144,7 +144,7 @@ PHYLIP
 
 The following code fragment shows a typical invocation of a PHYLIP-format write operation using all supported keywords with their defaults:
 
-.. literalinclude:: /examples/skel_dataio_nexus_writing.py
+.. literalinclude:: /examples/skel_dataio_phylip_writing.py
 
 The special keywords supported for writing PHYLIP-formatted data include:
 

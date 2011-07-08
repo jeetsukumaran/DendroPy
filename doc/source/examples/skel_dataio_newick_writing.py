@@ -2,8 +2,6 @@ d.write_to_path(
         'data.tre',
         'newick',
         taxon_set=None,
-        exclude_trees=False,
-        exclude_chars=True,
         suppress_leaf_taxon_labels=False,
         suppress_leaf_node_labels=True,
         suppress_internal_taxon_labels=False,

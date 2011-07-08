@@ -147,7 +147,7 @@ All Formats
 NEXUS/Newick
 ^^^^^^^^^^^^
 
-The following snippet serves as an example that shows all the keywords that can be passed to a ":meth:`read_from_*()`" or ":meth:`get_from_*()`" method when the schema is NEXUS or Newick:
+The following snippets serve to show all the keywords that can be passed to various ":meth:`read_from_*()`" or ":meth:`get_from_*()`" methods when the schema is NEXUS or Newick:
 
 .. literalinclude:: /examples/skel_dataio_nexus_reading.py
 
@@ -234,7 +234,7 @@ The special keywords supported for reading NEXUS-formatted or NEWICK-formatted d
 FASTA
 ^^^^^
 
-The following snippet serves as an example that shows all the keywords that can be passed to a ":meth:`read_from_*()`" or ":meth:`get_from_*()`" method when the schema is FASTA:
+The following snippets show all the keywords that can be passed to various ":meth:`read_from_*()`" or ":meth:`get_from_*()`" methods when the schema is FASTA:
 
 .. literalinclude:: /examples/skel_dataio_fasta_reading.py
 
