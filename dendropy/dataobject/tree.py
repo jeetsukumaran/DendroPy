@@ -1079,6 +1079,9 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         `delete_outdegree_one` is False, then it will be
         removed from the tree.
         """
+        if new_seed_node.is_leaf():
+            raise ValueError('Rooting at a leaf is not supported')
+            
         old_par = new_seed_node.parent_node
         if old_par is None:
             return
