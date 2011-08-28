@@ -124,6 +124,10 @@ class NexusWriter(iosys.DataWriter):
                 `suppress_leaf_taxon_labels`, `suppress_leaf_node_labels=True`,
                 `suppress_internal_taxon_labels`, `suppress_internal_node_labels`,
                 etc.). Defaults to None.
+            `edge_label_compose_func`
+                If not None, should be a function that takes an Edge object as
+                an argument, and returns the string to be used to represent the
+                edge length in the tree statement.
 
         Typically, these keywords would be passed to the `write_to_path()`,
         `write_to_stream` or `as_string` arguments, when 'nexus' is used as
@@ -147,7 +151,8 @@ class NexusWriter(iosys.DataWriter):
                     annotations_as_nhx=False,
                     suppress_item_comments=False,
                     node_label_element_separator=' ',
-                    node_label_compose_func=None)
+                    node_label_compose_func=None,
+                    edge_label_compose_func=None)
 
         """
         iosys.DataWriter.__init__(self, **kwargs)
@@ -186,6 +191,7 @@ class NexusWriter(iosys.DataWriter):
 
         self.node_label_element_separator = kwargs.get("node_label_element_separator", ' ')
         self.node_label_compose_func = kwargs.get("node_label_compose_func", None)
+        self.edge_label_compose_func = kwargs.get("edge_label_compose_func", None)
 
     def write(self, stream):
         """
@@ -291,6 +297,7 @@ class NexusWriter(iosys.DataWriter):
                 suppress_internal_node_labels=self.suppress_internal_node_labels,
                 node_label_element_separator=self.node_label_element_separator,
                 node_label_compose_func=self.node_label_compose_func,
+                edge_label_compose_func=self.edge_label_compose_func,
                 )
         block.append('BEGIN TREES;')
         if self._link_blocks():

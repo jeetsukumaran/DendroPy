@@ -23,6 +23,7 @@ d.write_to_path(
         annotations_as_nhx=False,
         suppress_item_comments=False,
         node_label_element_separator=' ',
-        node_label_compose_func=None)
+        node_label_compose_func=None,
+        edge_label_compose_func=None)
 
 

@@ -339,6 +339,10 @@ class NewickWriter(iosys.DataWriter):
                 `suppress_leaf_taxon_labels`, `suppress_leaf_node_labels=True`,
                 `suppress_internal_taxon_labels`, `suppress_internal_node_labels`,
                 etc.). Defaults to None.
+            `edge_label_compose_func`
+                If not None, should be a function that takes an Edge object as
+                an argument, and returns the string to be used to represent the
+                edge length in the tree statement.
 
         Typically, these keywords would be passed to the `write_to_path()`,
         `write_to_stream` or `as_string` arguments, when 'newick' is used as
@@ -358,7 +362,8 @@ class NewickWriter(iosys.DataWriter):
                     annotations_as_nhx=False,
                     suppress_item_comments=True,
                     node_label_element_separator=' ',
-                    node_label_compose_func=None)
+                    node_label_compose_func=None,
+                    edge_label_compose_func=None)
 
         """
         iosys.DataWriter.__init__(self, **kwargs)
@@ -392,6 +397,9 @@ class NewickWriter(iosys.DataWriter):
 
         self.node_label_element_separator = kwargs.get("node_label_element_separator", ' ')
         self.node_label_compose_func = kwargs.get("node_label_compose_func", None)
+        self.edge_label_compose_func = kwargs.get("edge_label_compose_func", None)
+        if self.edge_label_compose_func is None:
+            self.edge_label_compose_func = self._format_edge_length
 
     def write(self, stream):
         """
@@ -512,6 +520,9 @@ class NewickWriter(iosys.DataWriter):
         else:
             return ""
 
+    def _format_edge_length(self, edge):
+        return "%s" % edge.length
+
     def compose_node(self, node):
         """
         Given a DendroPy Node, this returns the Node as a NEWICK
@@ -524,11 +535,11 @@ class NewickWriter(iosys.DataWriter):
             if not (self.suppress_internal_taxon_labels and self.suppress_internal_node_labels):
                 statement = statement + self.choose_display_tag(node)
             if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
-                statement =  "%s:%s" % (statement, node.edge.length)
+                statement =  "%s:%s" % (statement, self.edge_label_compose_func(node.edge))
         else:
             statement = self.choose_display_tag(node)
             if node.edge and node.edge.length != None and not self.suppress_edge_lengths:
-                statement =  "%s:%s" % (statement, node.edge.length)
+                statement =  "%s:%s" % (statement, self.edge_label_compose_func(node.edge))
         if not self.suppress_annotations or self.annotations_as_nhx:
             node_annotation_comments = nexustokenizer.format_annotation_as_comments(node, nhx=self.annotations_as_nhx)
             edge_annotation_comments = nexustokenizer.format_annotation_as_comments(node.edge, nhx=self.annotations_as_nhx)

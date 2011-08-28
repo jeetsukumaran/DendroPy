@@ -118,6 +118,10 @@ The special keywords supported for writing both NEXUS- or Newick-formatted trees
         If both ``suppress_leaf_taxon_labels`` and ``suppress_leaf_node_labels`` are |False|, then this will be the string used to join them. Defaults to ' '.
     ``node_label_compose_func``
         If not None, should be a function that takes a |Node| object as an argument and returns the string to be used to represent the node in the tree statement. The return value from this function is used unconditionally to print a node representation in a tree statement, by-passing the default labelling function (and thus ignoring ``suppress_leaf_taxon_labels``, ``suppress_leaf_node_labels=|True|``, ``suppress_internal_taxon_labels``, ``suppress_internal_node_labels``, etc.). Defaults to |None|.
+    ``edge_label_compose_func``
+        If not None, should be a function that takes an |Edge| object as
+        an argument, and returns the string to be used to represent the
+        edge length in the tree statement.
 
 .. _Customizing_Writing_FASTA:
 
