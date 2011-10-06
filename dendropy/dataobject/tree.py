@@ -1296,9 +1296,16 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if update_splits:
             self.update_splits()
 
-    def resolve_polytomies(self, update_splits=False):
+    def resolve_polytomies(self, update_splits=False, rng=None):
         """
         Arbitrarily resolve polytomies using 0-length splits.
+        
+        If `rng` is an object with a sample() method then the polytomy will be 
+            resolved by sequentially adding (generating all tree topologies 
+            equiprobably
+            rng.sample() should behave like random.sample()
+        If `rng` is not passed in, then polytomy is broken deterministically by
+            repeatedly joining pairs of children.
         """
         polytomies = []
         for node in self.postorder_node_iter():
@@ -1306,17 +1313,35 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 polytomies.append(node)
         for node in polytomies:
             children = node.child_nodes()
-            while len(children) > 2:
-                nn1 = Node()
-                nn1.edge.length = 0
-                c1 = children[0]
-                c2 = children[1]
-                node.remove_child(c1)
-                node.remove_child(c2)
-                nn1.add_child(c1)
-                nn1.add_child(c2)
-                node.add_child(nn1)
-                children = node.child_nodes()
+            nc = len(children)
+            if nc > 2:
+                if rng:
+                    to_attach = children[2:]
+                    for child in to_attach:
+                        node.remove_child(child)
+                    attachment_points = children[:2] + [node]
+                    while len(to_attach) > 0:
+                        next_child = to_attach.pop()
+                        next_sib = rng.sample(attachment_points, 1)[0]
+                        next_attachment = Node()
+                        p = next_sib.parent_node
+                        p.add_child(next_attachment)
+                        p.remove_child(next_sib)
+                        next_attachment.add_child(next_sib)
+                        next_attachment.add_child(next_child)
+                        attachment_points.append(next_attachment)
+                else:
+                    while len(children) > 2:
+                        nn1 = Node()
+                        nn1.edge.length = 0
+                        c1 = children[0]
+                        c2 = children[1]
+                        node.remove_child(c1)
+                        node.remove_child(c2)
+                        nn1.add_child(c1)
+                        nn1.add_child(c2)
+                        node.add_child(nn1)
+                        children = node.child_nodes()
         if update_splits:
             self.update_splits()
 
