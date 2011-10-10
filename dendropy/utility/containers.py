@@ -160,7 +160,7 @@ class NormalizedBitmaskDict(dict):
     """
 
     def normalize(key, mask):
-        if key & 1:
+        if key & 1 == 0:
             return (~key) & mask
         return key
     normalize = staticmethod(normalize)
