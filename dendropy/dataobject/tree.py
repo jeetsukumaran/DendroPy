@@ -1081,7 +1081,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         if new_seed_node.is_leaf():
             raise ValueError('Rooting at a leaf is not supported')
-            
+
         old_par = new_seed_node.parent_node
         if old_par is None:
             return
@@ -1299,9 +1299,9 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     def resolve_polytomies(self, update_splits=False, rng=None):
         """
         Arbitrarily resolve polytomies using 0-length splits.
-        
-        If `rng` is an object with a sample() method then the polytomy will be 
-            resolved by sequentially adding (generating all tree topologies 
+
+        If `rng` is an object with a sample() method then the polytomy will be
+            resolved by sequentially adding (generating all tree topologies
             equiprobably
             rng.sample() should behave like random.sample()
         If `rng` is not passed in, then polytomy is broken deterministically by
