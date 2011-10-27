@@ -251,10 +251,10 @@ def coalesce(nodes,
     # return the list of nodes that have not coalesced
     return nodes
 
-def node_waiting_time_pairs(tree):
+def node_waiting_time_pairs(tree, check_ultrametricity_prec=0.0000001):
     """Returns list of tuples of (node, coalescent interval [= time between
     last coalescent event and current node age])"""
-    tree.calc_node_ages()
+    tree.calc_node_ages(check_prec=check_ultrametricity_prec)
     ages = [(n, n.age) for n in tree.internal_nodes()]
     ages.sort(lambda x, y: int(x[1] - y[1]))
     intervals = []
@@ -263,10 +263,10 @@ def node_waiting_time_pairs(tree):
         intervals.append( (d[0], d[1] - ages[i][1]) )
     return intervals
 
-def extract_coalescent_frames(tree):
+def extract_coalescent_frames(tree, check_ultrametricity_prec=0.0000001):
     """Returns dictionary, with key = number of alleles, and values = waiting time for
     coalescent for the given tree"""
-    nwti = node_waiting_time_pairs(tree)
+    nwti = node_waiting_time_pairs(tree, check_ultrametricity_prec=check_ultrametricity_prec)
 #     num_genes = len(tree.taxon_set)
     num_genes = len(tree.leaf_nodes())
     num_genes_wt = {}
@@ -296,11 +296,13 @@ def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
         lp =  lp + math.log(k2N) - (k2N * t)
     return lp
 
-def log_probability_of_coalescent_tree(tree, haploid_pop_size):
+def log_probability_of_coalescent_tree(tree, haploid_pop_size, check_ultrametricity_prec=0.0000001):
     """
     Wraps up extraction of coalescent frames and reporting of probability.
     """
-    return log_probability_of_coalescent_frames(extract_coalescent_frames(tree), haploid_pop_size)
+    return log_probability_of_coalescent_frames(extract_coalescent_frames(tree),
+            haploid_pop_size,
+            check_ultrametricity_prec=check_ultrametricity_prec)
 
 if de_hoon_statistics:
 
