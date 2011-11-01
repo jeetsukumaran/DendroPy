@@ -95,7 +95,7 @@ def unique_taxon_label_map(taxa, taxon_label_map=None, max_label_len=0, logger=N
             taxon_label_map[t] = t.label
     labels = []
     for t in taxon_label_map:
-        label = t.label
+        label = taxon_label_map[t]
         idx = 1
         if label in labels:
             candidate_label = label
