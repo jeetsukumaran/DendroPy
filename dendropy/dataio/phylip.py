@@ -242,7 +242,7 @@ class PhylipWriter(iosys.DataWriter):
     def __init__(self, **kwargs):
         """
         __init__ recognizes the following keywords (in addition to those of `DataWriter.__init__`):
-        
+
             - `strict` (boolean)
             - `spaces_to_underscores` (boolean)
             - `force_unique_taxon_labels` (boolean)
@@ -302,6 +302,10 @@ class PhylipWriter(iosys.DataWriter):
 
         if self.strict or self.force_unique_taxon_labels:
             taxon_label_map = self.get_taxon_label_map(char_matrix.taxon_set)
+            if not self.strict:
+                spacer = "  "
+            else:
+                spacer = ""
         else:
             taxon_label_map = {}
             for taxon in char_matrix.taxon_set:
@@ -309,6 +313,7 @@ class PhylipWriter(iosys.DataWriter):
                 if self.spaces_to_underscores:
                     label = label.replace(' ', '_')
                 taxon_label_map[taxon] = label
+            spacer = "  "
         maxlen = max([len(str(label)) for label in taxon_label_map.values()])
 
         n_seqs = len(char_matrix)
@@ -317,5 +322,4 @@ class PhylipWriter(iosys.DataWriter):
 
         for taxon in char_matrix.taxon_set:
             label = taxon_label_map[taxon]
-            stream.write("%s        %s\n" % ( label.ljust(maxlen), str(char_matrix[taxon].symbols_as_string()).replace(' ', '')))
-
+            stream.write("%s%s%s\n" % ( label.ljust(maxlen), spacer, str(char_matrix[taxon].symbols_as_string()).replace(' ', '')))
