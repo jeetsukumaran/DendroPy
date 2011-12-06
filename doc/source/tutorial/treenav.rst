@@ -33,7 +33,7 @@ The previous example would thus be better implemented as follows:
     :linenos:
 
 The nodes returned by each of these iterators can be filtered if a filter function is passed as a second argument to the iterator.
-This filter function should take a |Node| object as an argument, and return :keyword:`True` if the node is to be returned or :keyword:`False` if it is not. For example, the following iterates over all nodes that have more than two children:
+This filter function should take a |Node| object as an argument, and return |True| if the node is to be returned or |False| if it is not. For example, the following iterates over all nodes that have more than two children:
 
 .. literalinclude:: /examples/preorder_filtered_node_iteration.py
     :linenos:
@@ -77,7 +77,7 @@ Nodes with Particular Taxa
 --------------------------
 
 To retrieve a node associated with a particular taxon, we can use the :meth:`~dendropy.dataobject.tree.Tree.find_taxon_node()` method, which takes a filter function as an argument.
-The filter function should take a |Taxon| object as an argument and return :keyword:`True` if the taxon is to be returned.
+The filter function should take a |Taxon| object as an argument and return |True| if the taxon is to be returned.
 For example:
 
 .. literalinclude:: /examples/find_taxon_node1.py

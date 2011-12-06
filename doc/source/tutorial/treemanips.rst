@@ -14,7 +14,7 @@ In most cases, however, you will be using high-level methods to restructure |Tre
 
 In all cases, if any part of the |Tree| object's structural relations change, *and* you are interested in calculating any metrics or statistics on the tree or comparing the tree to another tree, you need to call :meth:`~dendropy.dataobject.tree.Tree.update_splits()` on the object to update the internal splits hash representation.
 This is not done for you automatically because there is a computational cost associated with the operation, and the splits hashes are not always needed. Furthermore, even when needed, if there are a number of structural changes to be made to a |Tree| object before calculations/comparisions, it makes sense to postpone the splits rehashing until there all the tree manipulations are completed.
-Most methods that affect the tree structure that require the splits hashes to updated take a ``update_splits`` argument. By specifying :keyword:`True` for this, the |Tree| object will recalculate the splits hashes after the changes have been made.
+Most methods that affect the tree structure that require the splits hashes to updated take a ``update_splits`` argument. By specifying |True| for this, the |Tree| object will recalculate the splits hashes after the changes have been made.
 
 Rooting, Derooting and Rerooting
 ================================
@@ -22,7 +22,7 @@ Rooting, Derooting and Rerooting
 Setting the Rooting State
 -------------------------
 
-All |Tree| objects have a boolean property, :attr:`~dendropy.dataobject.tree.Tree.is_rooted` that DendroPy uses to track whether or not the tree should be treated as rooted. The property :attr:`~dendropy.dataobject.tree.Tree.is_unrooted` is also defined, and these two properties are synchronized. Thus setting :attr:`~dendropy.dataobject.tree.Tree.is_rooted` to :keyword:`True` will result in :attr:`~dendropy.dataobject.tree.Tree.is_rooted` being set to :keyword:`False` and vice versa.
+All |Tree| objects have a boolean property, :attr:`~dendropy.dataobject.tree.Tree.is_rooted` that DendroPy uses to track whether or not the tree should be treated as rooted. The property :attr:`~dendropy.dataobject.tree.Tree.is_unrooted` is also defined, and these two properties are synchronized. Thus setting :attr:`~dendropy.dataobject.tree.Tree.is_rooted` to |True| will result in :attr:`~dendropy.dataobject.tree.Tree.is_rooted` being set to |False| and vice versa.
 
 The state of a |Tree| object's rootedness flag does not modify any internal structural relationship between nodes. It simply determines how its splits hashes are calculated, which in turn affects a broad range of comparison and metric operations. Thus you need to update the splits hashes after modifying the :attr:`~dendropy.dataobject.tree.Tree.is_rooted` property by calling the :meth:`~dendropy.dataobject.tree.Tree.update_splits()` before carrying out any calculations on or with the |Tree| object. Note that calling :meth:`~dendropy.dataobject.tree.Tree.update_splits()` on an unrooted tree will force the basal split to be a trifurcation. So if the original tree was bifurcating, the end result will be a tree with a trifurcation at the root. This can be prevented by passing in the keyword argument ``delete_outdegree_one=False`` to :meth:`~dendropy.dataobject.tree.Tree.update_splits()`.
 
@@ -110,12 +110,12 @@ will result in::
 Derooting
 ---------
 
-To deroot a rooted |Tree|, you can also call the :meth:`~dendropy.dataobject.tree.Tree.deroot()` method, which collapses the root to a trifurcation if it is bifurcation *and* sets the :attr:`~dendropy.dataobject.tree.Tree.is_rooted` to :keyword:`False`. The :meth:`~dendropy.dataobject.tree.Tree.deroot()` method has the same structural and semantic affect of :attr:`~dendropy.dataobject.tree.Tree.is_rooted` to :keyword:`False` and then calling :meth:`~dendropy.dataobject.tree.Tree.update_splits()`. You would use the former if you are *not* going to be doing any tree comparisons or calculating tree metrics, and thus do not want to calculate the splits hashes.
+To deroot a rooted |Tree|, you can also call the :meth:`~dendropy.dataobject.tree.Tree.deroot()` method, which collapses the root to a trifurcation if it is bifurcation *and* sets the :attr:`~dendropy.dataobject.tree.Tree.is_rooted` to |False|. The :meth:`~dendropy.dataobject.tree.Tree.deroot()` method has the same structural and semantic affect of :attr:`~dendropy.dataobject.tree.Tree.is_rooted` to |False| and then calling :meth:`~dendropy.dataobject.tree.Tree.update_splits()`. You would use the former if you are *not* going to be doing any tree comparisons or calculating tree metrics, and thus do not want to calculate the splits hashes.
 
 Rerooting
 ---------
 
-To reroot a |Tree| along an existing edge, you can use the :meth:`~dendropy.dataobject.tree.Tree.reroot_at_edge()` method. This method takes an |Edge| object as as its first argument. This rerooting is a structural change that will require the splits hashes to be updated before performing any tree comparisons or calculating tree metrics. If needed, you can do this yourself by calling :meth:`~dendropy.dataobject.tree.Tree.update_splits()` later, or you can pass in :keyword:`True` as the second argument to the  :meth:`~dendropy.dataobject.tree.Tree.reroot_at_edge()` method call, which instructs DendroPy to automatically update the splits for you.
+To reroot a |Tree| along an existing edge, you can use the :meth:`~dendropy.dataobject.tree.Tree.reroot_at_edge()` method. This method takes an |Edge| object as as its first argument. This rerooting is a structural change that will require the splits hashes to be updated before performing any tree comparisons or calculating tree metrics. If needed, you can do this yourself by calling :meth:`~dendropy.dataobject.tree.Tree.update_splits()` later, or you can pass in |True| as the second argument to the  :meth:`~dendropy.dataobject.tree.Tree.reroot_at_edge()` method call, which instructs DendroPy to automatically update the splits for you.
 
 As an example, the following reroots the tree along an internal edge (note that we do not recalculate the splits hashes, as we are not carrying out any calculations or comparisons with the |Tree|):
 
@@ -217,7 +217,7 @@ which results in::
                                        \----------------- A
 
 
-You can also reroot the tree such that a particular node is moved to the outgroup position using the :meth:`~dendropy.dataobject.tree.Tree.to_outgroup_position()`, which takes a |Node| as the first argument. Again, you can update the splits hashes *in situ* by passing :keyword:`True` to the second argument, and again, here we do not because we are not carrying out any calculations. For example:
+You can also reroot the tree such that a particular node is moved to the outgroup position using the :meth:`~dendropy.dataobject.tree.Tree.to_outgroup_position()`, which takes a |Node| as the first argument. Again, you can update the splits hashes *in situ* by passing |True| to the second argument, and again, here we do not because we are not carrying out any calculations. For example:
 
 .. literalinclude:: /examples/to_outgroup_position.py
 

@@ -95,7 +95,7 @@ The special keywords supported for writing both NEXUS- or Newick-formatted trees
     ``suppress_leaf_taxon_labels``
         If |True|, then taxon labels will not be printed for leaves.  Default is |False|.
     ``suppress_leaf_node_labels``
-        If |False|, then node labels (if available) will be printed for leaves. Defaults to |True|. Note that DendroPy distinguishes between *taxon* labels and *node* labels. In a typical NEWICK string, taxon labels are printed for leaf nodes, while leaf node labels are ignored (hence the default ':keyword:`True`' setting, to ignore leaf *node* labels).
+        If |False|, then node labels (if available) will be printed for leaves. Defaults to |True|. Note that DendroPy distinguishes between *taxon* labels and *node* labels. In a typical NEWICK string, taxon labels are printed for leaf nodes, while leaf node labels are ignored (hence the default '|True|' setting, to ignore leaf *node* labels).
     ``suppress_internal_taxon_labels``
         If |True|, then taxon labels will not be printed for internal nodes.  Default is |False|.  NOTE: this replaces the ``internal_labels`` argument which has been deprecated.
     ``suppress_internal_node_labels``
@@ -105,21 +105,21 @@ The special keywords supported for writing both NEXUS- or Newick-formatted trees
     ``suppress_edge_lengths``
         If |True|, will not write edge lengths. Default is |False|.  NOTE: this keyword argument replaces the ``edge_lengths`` argument which has now been deprecated.
     ``unquoted_underscores``
-        If |True|, labels with underscores will not be quoted, which will mean that they will be interpreted as spaces if read again ("soft" underscores).  If |False|, then labels with underscores will be quoted, resulting in "hard" underscores.  Default is :keyword:`False`.  NOTE: this keyword argument replaces the ``quote_underscores`` argument which has now been deprecated.
+        If |True|, labels with underscores will not be quoted, which will mean that they will be interpreted as spaces if read again ("soft" underscores).  If |False|, then labels with underscores will be quoted, resulting in "hard" underscores.  Default is |False|.  NOTE: this keyword argument replaces the ``quote_underscores`` argument which has now been deprecated.
     ``preserve_spaces``
         If |True|, spaces not mapped to underscores in labels. Default is |False|.
     ``store_tree_weights``
         If |True|, tree weights are written. Default is |False|.
     ``suppress_annotations``
-        If |True|, will **not** write annotated attributes as comments. Default is |False| if writing in NEXUS format *and* ``simple`` is :keyword:`False`; otherwise, if writing in NEWICK format or NEXUS format with ``simple`` set to :keyword:`True`, then defaults to :keyword:`True`.
+        If |True|, will **not** write annotated attributes as comments. Default is |False| if writing in NEXUS format *and* ``simple`` is |False|; otherwise, if writing in NEWICK format or NEXUS format with ``simple`` set to |True|, then defaults to |True|.
     ``annotations_as_nhx``
-        If |True| and ``suppress_annotations`` is :keyword:`True`, then annotations will be written in NHX format ('[&&field=value:field=value]'), as opposed to a more generic 'hot comment' format with only one leading ampersand ('[&field=value,field=value,field={value,value}]'). Defaults to |False|.
+        If |True| and ``suppress_annotations`` is |True|, then annotations will be written in NHX format ('[&&field=value:field=value]'), as opposed to a more generic 'hot comment' format with only one leading ampersand ('[&field=value,field=value,field={value,value}]'). Defaults to |False|.
     ``suppress_item_comments``
-        If |True|, will **not** write any additional comments associated with (tree) items. Default is |False| if writing in NEXUS format *and* ``simple`` is :keyword:`False`; otherwise, if writing in NEWICK format or NEXUS format with ``simple`` set to :keyword:`True`, then defaults to :keyword:`True`.
+        If |True|, will **not** write any additional comments associated with (tree) items. Default is |False| if writing in NEXUS format *and* ``simple`` is |False|; otherwise, if writing in NEWICK format or NEXUS format with ``simple`` set to |True|, then defaults to |True|.
     ``node_label_element_separator``
         If both ``suppress_leaf_taxon_labels`` and ``suppress_leaf_node_labels`` are |False|, then this will be the string used to join them. Defaults to ' '.
     ``node_label_compose_func``
-        If not None, should be a function that takes a |Node| object as an argument and returns the string to be used to represent the node in the tree statement. The return value from this function is used unconditionally to print a node representation in a tree statement, by-passing the default labelling function (and thus ignoring ``suppress_leaf_taxon_labels``, ``suppress_leaf_node_labels=|True|``, ``suppress_internal_taxon_labels``, ``suppress_internal_node_labels``, etc.). Defaults to |None|.
+        If not None, should be a function that takes a |Node| object as an argument and returns the string to be used to represent the node in the tree statement. The return value from this function is used unconditionally to print a node representation in a tree statement, by-passing the default labelling function (and thus ignoring ``suppress_leaf_taxon_labels``, ``suppress_leaf_node_labels=True``, ``suppress_internal_taxon_labels``, ``suppress_internal_node_labels``, etc.). Defaults to |None|.
     ``edge_label_compose_func``
         If not None, should be a function that takes an |Edge| object as
         an argument, and returns the string to be used to represent the

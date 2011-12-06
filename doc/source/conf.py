@@ -149,9 +149,9 @@ rst_epilog = """
 .. |CharacterDataVector| replace:: :class:`~dendropy.dataobject.char.CharacterDataVector`
 .. |CharacterDataCell| replace:: :class:`~dendropy.dataobject.char.CharacterDataCell`
 
-.. |True| replace:: :keyword:`True`
-.. |False| replace:: :keyword:`False`
-.. |None| replace:: :keyword:`None`
+.. |True| replace:: `True`
+.. |False| replace:: `False`
+.. |None| replace:: `None`
 
 .. |FigTree| replace:: FigTree
 .. _FigTree: http://tree.bio.ed.ac.uk/software/figtree/
