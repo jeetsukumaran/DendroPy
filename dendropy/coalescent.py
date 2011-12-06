@@ -301,8 +301,7 @@ def log_probability_of_coalescent_tree(tree, haploid_pop_size, check_ultrametric
     Wraps up extraction of coalescent frames and reporting of probability.
     """
     return log_probability_of_coalescent_frames(extract_coalescent_frames(tree),
-            haploid_pop_size,
-            check_ultrametricity_prec=check_ultrametricity_prec)
+            haploid_pop_size)
 
 if de_hoon_statistics:
 
