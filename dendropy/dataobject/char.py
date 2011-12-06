@@ -24,6 +24,7 @@ import copy
 from cStringIO import StringIO
 from dendropy.utility import error
 from dendropy.utility import iosys
+from dendropy.utility import containers
 from dendropy.dataobject.base import IdTagged, Annotated
 from dendropy.dataobject.taxon import TaxonLinked, TaxonSetLinked
 
@@ -615,7 +616,7 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                                 oid=kwargs.get("oid", None))
         self.taxon_seq_map = CharacterDataMap()
         self.character_types = []
-        self.character_subsets = {}
+        self.character_subsets = containers.OrderedCaselessDict()
         self.markup_as_sequences = True
         if len(args) > 1:
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
@@ -634,15 +635,26 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if "label" in kwargs:
             self.label = kwargs["label"]
 
+
+    def add_character_subset(self, char_subset):
+        """
+        Adds a CharacterSubset object. Raises an error if one already exists
+        with the same label.
+        """
+        label = char_subset.label
+        if label in self.character_subsets:
+            raise ValueError("Character subset '%s' already defined" % label)
+        self.character_subsets[label] = char_subset
+        return self.character_subsets[label]
+
     def new_character_subset(self, label, character_indices):
         """
         Defines a set of character (columns) that make up a character set.
-        Column indices are 0-based.
+        Raises an error if one already exists with the same label. Column
+        indices are 0-based.
         """
-        self.character_subsets[label] = CharacterSubset(
-                character_indices=character_indices,
-                label=label)
-        return self.character_subsets[label]
+        cs = CharacterSubset(character_indices=character_indices, label=label)
+        return self.add_character_subset(cs)
 
     def create_taxon_to_state_set_map(self, char_indices=None):
         """Returns a dictionary that maps taxon objects to lists of sets of state

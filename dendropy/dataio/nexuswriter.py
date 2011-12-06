@@ -364,6 +364,15 @@ class NexusWriter(iosys.DataWriter):
                 nexus.append('%s    %s' % (textutils.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores).ljust(max_label_len), seq.getvalue()))
         nexus.append('    ;')
         nexus.append('END;\n\n')
+        if hasattr(char_matrix, "character_subsets"):
+            nexus.append('BEGIN SETS;')
+            for label, char_set in char_matrix.character_subsets.items():
+                label = textutils.escape_nexus_token(char_set.label,
+                        preserve_spaces=self.preserve_spaces,
+                        quote_underscores=not self.unquoted_underscores)
+                pos = " ".join(str(c+1) for c in char_set.character_indices)
+                nexus.append('    charset %s = %s;\n' % (label, pos))
+            nexus.append('END;\n\n')
         stream.write('\n'.join(nexus))
 
     def compose_format_terms(self, char_matrix):
