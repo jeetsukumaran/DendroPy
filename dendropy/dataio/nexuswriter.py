@@ -51,6 +51,9 @@ class NexusWriter(iosys.DataWriter):
                 If True, do not write a "TAXA" block. Default is False.
             `file_comments`
                 List of lines of text to be added as comments to the file.
+            `preamble_blocks`
+                List of strings to be written before data (e.g., PAUP blocks
+                suppressing warnings etc.). Default is [].
             `supplemental_blocks`
                 List of strings to be written after data (e.g., PAUP blocks,
                 MrBayes blocks etc.). Default is [].
@@ -137,6 +140,7 @@ class NexusWriter(iosys.DataWriter):
                     simple=False,
                     suppress_taxa_block=True,
                     file_comments=None,
+                    preamble_blocks=[],
                     supplemental_blocks=[],
                     suppress_leaf_taxon_labels=False,
                     suppress_leaf_node_labels=True,
@@ -163,6 +167,7 @@ class NexusWriter(iosys.DataWriter):
         self.is_write_block_titles = kwargs.get("block_titles", None)
         self.file_comments = kwargs.get("file_comments", [])
         self.file_comments = kwargs.get("comment", self.file_comments) # legacy
+        self.preamble_blocks = kwargs.get("preamble_blocks", [])
         self.supplemental_blocks = kwargs.get("supplemental_blocks", [])
 
         self.suppress_leaf_taxon_labels = kwargs.get("suppress_leaf_taxon_labels", False)
@@ -218,6 +223,11 @@ class NexusWriter(iosys.DataWriter):
                 stream.write("\n")
             else:
                 stream.write("[ %s ]\n\n" % self.file_comments)
+        if self.preamble_blocks:
+            for block in self.preamble_blocks:
+                stream.write(block)
+                stream.write("\n")
+            stream.write("\n")
         if (( (not self.exclude_chars) and self.dataset.char_matrices) \
                 or ( (not self.exclude_trees) and self.dataset.tree_lists)) \
                 and (not self.simple) \

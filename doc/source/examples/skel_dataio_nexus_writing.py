@@ -8,6 +8,7 @@ d.write_to_path(
         suppress_taxa_block=True,
         exclude_trees=False,
         exclude_chars=False,
+        preamble_blocks=[],
         supplemental_blocks=[],
         file_comments=None,
         suppress_leaf_taxon_labels=False,

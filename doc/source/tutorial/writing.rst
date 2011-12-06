@@ -83,6 +83,8 @@ The special keywords supported for writing NEXUS-formatted output include:
         When writing NEXUS-formatted data, if |True|, then **no** tree data will be written (i.e., all |TreeList| objects in the |DataSet| will be skipped in the output). By default, this is |False|, meaning that all tree data will be written.
     ``exclude_chars``
         When writing NEXUS-formatted data, if |True|, then **no** characer data will be written (i.e., all |CharacterMatrix| objects in the |DataSet| will be skipped in the output). By default, this is |False|, meaning that all character data will be written.
+    ``preamble_blocks``
+        When writing NEXUS-formatted data, a list of other blocks (or strings) to be written at the beginning of the file.
     ``supplemental_blocks``
         When writing NEXUS-formatted data, a list of other blocks (or strings) to be written at the end of the file.
     ``file_comments``
