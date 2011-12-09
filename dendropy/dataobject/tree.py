@@ -1847,6 +1847,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 length/weights).
             ``show_internal_node_labels``
                 Boolean: whether or not to write out internal node labels.
+            - `show_internal_node_ids`
+                Boolean: whether or not to write out internal node id's.
             ``leaf_spacing_factor``
                 Positive integer: number of rows between each leaf.
             ``display_width``
@@ -1869,6 +1871,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 length/weights).
             ``show_internal_node_labels``
                 Boolean: whether or not to write out internal node labels.
+            - `show_internal_node_ids`
+                Boolean: whether or not to write out internal node id's.
             ``leaf_spacing_factor``
                 Positive integer: number of rows between each leaf.
             ``display_width``
@@ -1890,6 +1894,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 length/weights).
             ``show_internal_node_labels``
                 Boolean: whether or not to write out internal node labels.
+            - `show_internal_node_ids`
+                Boolean: whether or not to write out internal node id's.
             ``leaf_spacing_factor``
                 Positive integer: number of rows between each leaf.
             ``display_width``
@@ -2918,6 +2924,8 @@ class AsciiTreePlot(object):
                 length/weights).
             - `show_internal_node_labels`
                 Boolean: whether or not to write out internal node labels.
+            - `show_internal_node_ids`
+                Boolean: whether or not to write out internal node id's.
             - `leaf_spacing_factor`
                 Positive integer: number of rows between each leaf.
             - `display_width`
@@ -2926,6 +2934,7 @@ class AsciiTreePlot(object):
         """
         self.plot_metric = kwargs.get('plot_metric', 'depth')
         self.show_internal_node_labels = kwargs.get('show_internal_node_labels', False)
+        self.show_internal_node_ids = kwargs.get('show_internal_node_ids', False)
         self.leaf_spacing_factor = kwargs.get('leaf_spacing_factor', 2)
 #        self.null_edge_length = kwargs.get('null_edge_length', 0)
         self.display_width = kwargs.get('display_width', None)
@@ -2999,9 +3008,18 @@ class AsciiTreePlot(object):
     def get_label_for_node(self, nd):
         if nd.taxon and nd.taxon.label:
             return nd.taxon.label
-        if self.show_internal_node_labels: #@TODO: we should have a separate setting for labeling nodes with an id, but thus far when I want to see this, I want internal_nodes_labels too...
-            return '@' + str(id(nd))
-        return '@'
+        # @TODO: we should have a separate setting for labeling nodes with an
+        # id, but thus far when I want to see this, I want
+        # internal_nodes_labels too...
+        label = []
+        if self.show_internal_node_labels and nd.label:
+            label.append(nd.label)
+        if self.show_internal_node_ids:
+            label.append("@")
+            label.append(str(id(nd)))
+        if not label:
+            return "@"
+        return "".join(label)
 
     def compose(self, tree):
         self.reset()
@@ -3079,7 +3097,7 @@ class AsciiTreePlot(object):
                 for y in range(start_row, end_row):
                     self.grid[y][self.node_col[node]] = '|'
             label = []
-            if self.show_internal_node_labels or self.show_internal_node_labels:
+            if self.show_internal_node_labels or self.show_internal_node_ids:
                 label = self.get_label_for_node(node)
                 self.draw_internal_text(label, self.node_row[node], self.node_col[node])
             else:
