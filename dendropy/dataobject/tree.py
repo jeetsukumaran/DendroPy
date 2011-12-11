@@ -1453,7 +1453,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         for nd in internal_nodes:
             c = nd.child_nodes()
             rng.shuffle(c)
-            nd.set_children(c)
+            nd.set_child_nodes(c)
 
     def ladderize(self, ascending=True):
         """
@@ -2331,7 +2331,7 @@ class Node(TaxonLinked):
         "Returns the a shallow-copy list of all child nodes."
         return list(self._child_nodes)
 
-    def set_children(self, child_nodes):
+    def set_child_nodes(self, child_nodes):
         """
         Sets the child_nodes for this node.
         Side effects:
@@ -2339,10 +2339,14 @@ class Node(TaxonLinked):
             - sets the parent of each child node to this node
             - sets the tail node of each child to self
         """
-        self._child_nodes = child_nodes
+        self._child_nodes = list(child_nodes)
         for nidx in range(len(self._child_nodes)):
             self._child_nodes[nidx].parent_node = self
             self._child_nodes[nidx].edge.tail_node = self
+
+    def set_children(self, child_nodes):
+        """Legacy support: delegates to `set_child_nodes()`"""
+        return self.set_child_nodes(child_nodes)
 
     def _get_parent_node(self):
         """Returns the parent node of this node."""
@@ -2355,16 +2359,34 @@ class Node(TaxonLinked):
 
     parent_node = property(_get_parent_node, _set_parent_node)
 
-    def get_incident_edges(self):
+    def incident_edges(self):
+        """Return parent and child edges."""
         e = [c.edge for c in self._child_nodes]
         e.append(self.edge)
         return e
 
-    def get_adjacent_nodes(self):
+    def get_incident_edges(self):
+        """Legacy synonym for 'incident_edges()'"""
+        return self.incident_edges()
+
+    def adjacent_nodes(self):
+        """Return parent and child nodes."""
         n = [c for c in self._child_nodes]
         if self.parent_node:
             n.append(self.parent_node)
         return n
+
+    def get_adjacent_nodes(self):
+        """Legacy synonym for 'get_incident_edges()'"""
+        return self.adjacent_nodes()
+
+    def sister_nodes(self):
+        """Return all other children of parent, excluding self."""
+        p = self.parent_node
+        if not p:
+            return []
+        sisters = [nd for nd in p.child_nodes() if nd is not self]
+        return sisters
 
     def add_child(self, node, edge_length=None, pos=None):
         """
@@ -2566,7 +2588,7 @@ class Node(TaxonLinked):
         if self.is_leaf():
             return
         leaves = [i for i in self.leaf_iter()]
-        self.set_children(leaves)
+        self.set_child_nodes(leaves)
 
     ###########################################################################
     ## Representation
