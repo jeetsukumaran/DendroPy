@@ -671,7 +671,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                     if i == tree_offset:
                         self.__dict__ = t.__dict__
                     i += 1
-            if i < tree_offset:
+            if i <= tree_offset:
                 raise IndexError("Tree offset %d specified, but data source only has %d trees defined" \
                             % (tree_offset, i+1))
         else:
@@ -1636,6 +1636,26 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     ###########################################################################
     ## Metrics -- Comparative
+
+    def find_missing_splits(self, other_tree):
+        """
+        Returns a list of splits that are in self,  but
+        not in `other_tree`.
+        """
+        missing = []
+        if self.taxon_set is not other_tree.taxon_set:
+            raise TypeError("Trees have different TaxonSet objects: %s vs. %s" \
+                    % (hex(id(self.taxon_set)), hex(id(other_tree.taxon_set))))
+        if not hasattr(self, "split_edges"):
+            self.encode_splits()
+        if not hasattr(other_tree, "split_edges"):
+            other_tree.encode_splits()
+        for split in self.split_edges:
+            if split in other_tree.split_edges:
+                pass
+            else:
+                missing.append(split)
+        return missing
 
     def symmetric_difference(self, other_tree):
         """
