@@ -256,11 +256,13 @@ def node_waiting_time_pairs(tree, check_ultrametricity_prec=0.0000001):
     last coalescent event and current node age])"""
     tree.calc_node_ages(check_prec=check_ultrametricity_prec)
     ages = [(n, n.age) for n in tree.internal_nodes()]
-    ages.sort(lambda x, y: int(x[1] - y[1]))
+    ages.sort(key=lambda x: x[1])
     intervals = []
     intervals.append(ages[0])
     for i, d in enumerate(ages[1:]):
-        intervals.append( (d[0], d[1] - ages[i][1]) )
+        nd = d[0]
+        prev_nd = ages[i][0]
+        intervals.append( (nd, nd.age - prev_nd.age) )
     return intervals
 
 def extract_coalescent_frames(tree, check_ultrametricity_prec=0.0000001):
@@ -273,6 +275,13 @@ def extract_coalescent_frames(tree, check_ultrametricity_prec=0.0000001):
     for n in nwti:
         num_genes_wt[num_genes] = n[1]
         num_genes = num_genes - len(n[0].child_nodes()) + 1
+
+    import sys
+    num_alleles_list = sorted(num_genes_wt.keys(), reverse=True)
+    for na in num_alleles_list:
+        sys.stderr.write("(dendropy) {:3d}     {:20.18f}\n".format(na, num_genes_wt[na]))
+    sys.stderr.write("---\n")
+
     return num_genes_wt
 
 def log_probability_of_coalescent_frames(coalescent_frames, haploid_pop_size):
