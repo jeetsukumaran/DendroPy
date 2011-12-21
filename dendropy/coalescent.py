@@ -280,7 +280,6 @@ def extract_coalescent_frames(tree, check_ultrametricity_prec=0.0000001):
     num_alleles_list = sorted(num_genes_wt.keys(), reverse=True)
     for na in num_alleles_list:
         sys.stderr.write("(dendropy) {:3d}     {:20.18f}\n".format(na, num_genes_wt[na]))
-    sys.stderr.write("---\n")
 
     return num_genes_wt
 
