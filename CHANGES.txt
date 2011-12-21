@@ -1,3 +1,21 @@
+Release 3.9.1
+-------------
+
+New Features
+^^^^^^^^^^^^
+
+    - Support for writing preamble blocks in NEXUS format.
+    - Support for writing character subsets in NEXUS.
+    - Support for user customization of edge label formatting.
+    - find_missing_splits() method added to dendropy.Tree().
+
+Bug Fixes
+^^^^^^^^^
+
+    - Log probability of coalescent frames/trees now calculated correctly [PLEASE REVISIT PREVIOUS ANALYSIS IF YOU USED THIS FEATURE!].
+    - Strict PHYLIP format now correct.
+
+
 Release 3.9.0
 -------------
 
