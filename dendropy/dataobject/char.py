@@ -612,11 +612,16 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         character subsets.
         """
         taxon_set = char_matrices[0].taxon_set
+        nseqs = len(char_matrices[0])
         concatenated_chars = cls(taxon_set=taxon_set)
         pos_start = 0
         for cidx, cm in enumerate(char_matrices):
             if cm.taxon_set is not taxon_set:
                 raise ValueError("Different `taxon_set` references in matrices to be merged")
+            if len(cm) != len(taxon_set):
+                raise ValueError("Number of sequences not equal to the number of taxa")
+            if len(cm) != nseqs:
+                raise ValueError("Different number of sequences across alignments: %d (expecting %d based on first matrix)" % (len(cm), nseqs))
             v1 = len(cm[0])
             for t, s in cm.items():
                 if len(s) != v1:
