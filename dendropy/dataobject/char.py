@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env pthon
 
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
@@ -26,7 +26,7 @@ from dendropy.utility import error
 from dendropy.utility import iosys
 from dendropy.utility import containers
 from dendropy.dataobject.base import IdTagged, Annotated
-from dendropy.dataobject.taxon import TaxonLinked, TaxonSetLinked
+from dendropy.dataobject.taxon import TaxonLinked, TaxonSetLinked, TaxonSet
 
 class ContinuousCharElement(IdTagged):
     def __init__(self, value, column_def,  **kwargs):
@@ -600,6 +600,77 @@ class CharacterSubset(IdTagged):
 
 class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     "Character data container/manager manager."
+
+    def concatenate(cls, char_matrices):
+        """
+        Creates and returns a single character matrix from multiple
+        CharacterMatrix objects specified as a list, 'char_matrices'.
+        All the CharacterMatrix objects in the list must be of the
+        same type, and share the same TaxonSet reference. All taxa
+        must be present in all alignments, all all alignments must
+        be of the same length. Component parts will be recorded as
+        character subsets.
+        """
+        taxon_set = char_matrices[0].taxon_set
+        concatenated_chars = cls(taxon_set=taxon_set)
+        pos_start = 0
+        for cidx, cm in enumerate(char_matrices):
+            if cm.taxon_set is not taxon_set:
+                raise ValueError("Different `taxon_set` references in matrices to be merged")
+            v1 = len(cm[0])
+            for t, s in cm.items():
+                if len(s) != v1:
+                    raise ValueError("Unequal length sequences in character matrix %d".format(cidx+1))
+            concatenated_chars.extend(cm,
+                    extend_existing=True,
+                    overwrite_existing=False)
+            if cm.label is None:
+                new_label = "locus%03d" % cidx
+            else:
+                new_label = cm.label
+            cs_label = new_label
+            i = 2
+            while cs_label in concatenated_chars.character_subsets:
+                label = "%s_%03d" % (new_label, i)
+                i += 1
+            character_indices = range(pos_start, pos_start + cm.vector_size)
+            pos_start += cm.vector_size
+            concatenated_chars.new_character_subset(character_indices=character_indices,
+                    label=cs_label)
+        return concatenated_chars
+    concatenate = classmethod(concatenate)
+
+    def concatenate_from_streams(cls, streams, schema, **kwargs):
+        """
+        Read a character matrix from each file object given in `streams`,
+        assuming data format/schema `schema`, and passing any keyword arguments
+        down to the underlying specialized reader. Merge the character matrices
+        and return the combined character matrix. Component parts will be
+        recorded as character subsets.
+        """
+        if 'taxon_set' not in kwargs:
+            taxon_set = TaxonSet()
+            kwargs["taxon_set"] = taxon_set
+        else:
+            taxon_set = kwargs["taxon_set"]
+        char_matrices = []
+        for stream in streams:
+            char_matrices.append(cls.get_from_stream(stream,
+                schema=schema, **kwargs))
+        return cls.concatenate(char_matrices)
+    concatenate_from_streams = classmethod(concatenate_from_streams)
+
+    def concatenate_from_paths(cls, paths, schema, **kwargs):
+        """
+        Read a character matrix from each file path given in `paths`, assuming
+        data format/schema `schema`, and passing any keyword arguments down to
+        the underlying specialized reader. Merge the and return the combined
+        character matrix. Component parts will be recorded as character
+        subsets.
+        """
+        streams = [open(path, "rU") for path in paths]
+        return cls.concatenate_from_streams(streams, schema, **kwargs)
+    concatenate_from_paths = classmethod(concatenate_from_paths)
 
     def __init__(self, *args, **kwargs):
         """__init__ calls TaxonSetLinked.__init__ for handling of `oid`, `label` and `taxon_set` keyword arguments.

@@ -1,5 +1,5 @@
-Release 3.9.1
--------------
+Release 3.10.0
+--------------
 
 New Features
 ^^^^^^^^^^^^
@@ -7,7 +7,13 @@ New Features
     - Support for writing preamble blocks in NEXUS format.
     - Support for writing character subsets in NEXUS.
     - Support for user customization of edge label formatting.
-    - find_missing_splits() method added to dendropy.Tree().
+    - `find_missing_splits()` method added to `dendropy.Tree()`.
+    - `concatenate()`, `concatenate_from_paths()`, and
+      `concatenate_from_streams()` methods added to CharacterMatrix and derived
+      classes: allows for creation of new CharacterMatrix or subtype from
+      multiple character matrices or file sources. Sub-components or alignments
+      will be stored as character subsets in the concatenated matrices (and can
+      be re-exported as individual matrices using `export_character_subset()`.
 
 Bug Fixes
 ^^^^^^^^^
