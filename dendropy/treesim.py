@@ -716,7 +716,27 @@ def pure_kingman(taxon_set, pop_size=1, rng=None):
     seed_node = coalescent.coalesce(nodes=nodes,
                                     pop_size=pop_size,
                                     period=None,
-                                    rng=rng)[0]
+                                    rng=rng,
+                                    use_expected_tmrca=True)[0]
+    tree = dataobject.Tree(taxon_set=taxon_set, seed_node=seed_node)
+    return tree
+
+def mean_kingman(taxon_set, pop_size=1):
+    """
+    Returns a tree with coalescent intervals given by the expected times under
+    Kingman's neutral coalescent.
+    """
+
+    # get our random number generator
+    if rng is None:
+        rng = GLOBAL_RNG # use the global rng by default
+
+    nodes = [dataobject.Node(taxon=t) for t in taxon_set]
+    seed_node = coalescent.coalesce(nodes=nodes,
+                                    pop_size=pop_size,
+                                    period=None,
+                                    rng=rng,
+                                    use_expected_tmrca=True)[0]
     tree = dataobject.Tree(taxon_set=taxon_set, seed_node=seed_node)
     return tree
 

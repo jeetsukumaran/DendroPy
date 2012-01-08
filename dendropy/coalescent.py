@@ -103,7 +103,7 @@ def time_to_coalescence(n_genes,
     tmrca = rng.expovariate(rate)
     return tmrca * pop_size
 
-def expected_tmrca(n_genes, pop_size=None, rng=None):
+def expected_tmrca(n_genes, pop_size=None):
     """
     Expected (mean) value for the Time to the Most Recent Common Ancestor.
     `n_genes` is the number of genes in the sample.
@@ -116,16 +116,15 @@ def expected_tmrca(n_genes, pop_size=None, rng=None):
     is in generations.
 
     """
-    if rng is None:
-        rng = GLOBAL_RNG
     nc2 = probability.binomial_coefficient(n_genes, 2)
     tmrca = (float(1)/nc2)
-    return tmrca * pop_sze
+    return tmrca * pop_size
 
 def coalesce(nodes,
              pop_size=None,
              period=None,
-             rng=None):
+             rng=None,
+             use_expected_tmrca=False):
     """
     Returns a list of nodes that have not yet coalesced once `period` is
     exhausted.
@@ -195,10 +194,13 @@ def coalesce(nodes,
     # exceeds the time remaining, and triggers a break from the loop
     while len(nodes) > 1:
 
-        # draw a time to coalesce: this will be an exponential random
-        # variable with parameter (rate) of BINOMIAL[n_genes 2]
-        # multiplied pop_size
-        tmrca = time_to_coalescence(len(nodes), pop_size=pop_size, rng=rng)
+        if use_expected_tmrca:
+            tmrca = expected_tmrca(len(nodes), pop_size=pop_size)
+        else:
+            # draw a time to coalesce: this will be an exponential random
+            # variable with parameter (rate) of BINOMIAL[n_genes 2]
+            # multiplied pop_size
+            tmrca = time_to_coalescence(len(nodes), pop_size=pop_size, rng=rng)
 
         # if no time_remaining is given (i.e, we want to coalesce till
         # there is only one gene left) or, if we are working under the

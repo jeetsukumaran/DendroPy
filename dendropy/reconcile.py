@@ -325,7 +325,8 @@ class ContainingTree(dataobject.Tree):
             edge_pop_size_attr='pop_size',
             default_pop_size=1,
             label=None,
-            rng=None):
+            rng=None,
+            use_expected_tmrca=False):
         """
         Simulates, *embeds*, and returns a "censored" (Kingman) neutral coalescence tree
         conditional on self.
@@ -346,7 +347,8 @@ class ContainingTree(dataobject.Tree):
                 edge_pop_size_attr=edge_pop_size_attr,
                 default_pop_size=default_pop_size,
                 label=label,
-                rng=rng)
+                rng=rng,
+                use_expected_tmrca=use_expected_tmrca)
         self.embed_tree(et)
         return et
 
@@ -354,7 +356,8 @@ class ContainingTree(dataobject.Tree):
             edge_pop_size_attr='pop_size',
             default_pop_size=1,
             label=None,
-            rng=None):
+            rng=None,
+            use_expected_tmrca=False):
         """
         Simulates and returns a "censored" (Kingman) neutral coalescence tree
         conditional on self.
@@ -397,7 +400,8 @@ class ContainingTree(dataobject.Tree):
                     final = coalescent.coalesce(nodes=contained_nodes[edge.head_node],
                             pop_size=pop_size,
                             period=None,
-                            rng=rng)
+                            rng=rng,
+                            use_expected_tmrca=use_expected_tmrca)
                 else:
                     final = contained_nodes[edge.head_node]
             else:
@@ -410,7 +414,8 @@ class ContainingTree(dataobject.Tree):
                 remaining = coalescent.coalesce(nodes=contained_nodes[edge.head_node],
                         pop_size=pop_size,
                         period=edge.length,
-                        rng=rng)
+                        rng=rng,
+                        use_expected_tmrca=use_expected_tmrca)
                 try:
                     contained_nodes[edge.tail_node].extend(remaining)
                 except KeyError:
