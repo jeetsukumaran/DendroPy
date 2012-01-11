@@ -371,6 +371,8 @@ else:
                        unequal_base_freqs=True,
                        gamma_rates=True,
                        prop_invar=True,
+                       extra_pre_est_commands=None,
+                       extra_post_est_commands=None,
                        paup_path='paup'):
         """
         Given a dataset, `char_matrix`, estimates a tree using the given criterion.
@@ -381,16 +383,24 @@ else:
             'rates' : gamma_rates and 'gamma' or 'equal',
             'pinvar' : prop_invar and 'estimate' or '0',
         }
-        if tree_est_criterion == 'nj':
-            paup_args['tree'] = 'nj;'
-        else:
-            paup_args['tree'] = "set crit=%s; hsearch;" % tree_est_criterion
         cf = tempfile.NamedTemporaryFile()
         char_matrix.write_to_stream(cf, schema='nexus', exclude_chars=False, exclude_trees=True)
         cf.flush()
         paup_args['datafile'] = cf.name
         output_tree_file_handle, output_tree_filepath = tempfile.mkstemp(text=True)
         paup_args['est_tree_file'] = output_tree_filepath
+        if extra_pre_est_commands:
+            if isinstance(extra_pre_est_commands, str):
+                extra_pre_est_commands = [extra_pre_est_commands]
+            paup_args["pre_est_commands"] = ";\n".join(extra_pre_est_commands)
+        else:
+            paup_args["pre_est_commands"] = ""
+        if extra_post_est_commands:
+            if isinstance(extra_post_est_commands, str):
+                extra_post_est_commands = [extra_post_est_commands]
+            paup_args["post_est_commands"] = ";\n".join(extra_post_est_commands)
+        else:
+            paup_args["post_est_commands"] = ""
         paup_template = """\
         set warnreset=no;
         exe %(datafile)s;
@@ -399,8 +409,21 @@ else:
             paup_template += """\
         lset tratio=estimate rmatrix=estimate nst=%(nst)s basefreq=%(basefreq)s rates=%(rates)s shape=estimate pinvar=%(pinvar)s userbrlens=yes;
         """
+        if tree_est_criterion != 'nj':
+            paup_template += """\
+            set crit=%s;
+            """ % tree_est_criterion
         paup_template += """\
-        %(tree)s;
+        %(pre_est_commands)s;
+        """
+
+        if tree_est_criterion == 'nj':
+            paup_template += "nj;"
+        else:
+            paup_template += "hsearch;"
+
+        paup_template += """\
+        %(post_est_commands)s;
         savetrees file=%(est_tree_file)s format=nexus root=yes brlens=yes taxablk=yes maxdecimals=20;
         """
         paup_run = subprocess.Popen(['%s -n' % paup_path],
