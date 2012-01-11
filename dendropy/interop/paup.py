@@ -409,7 +409,7 @@ else:
             paup_template += """\
         lset tratio=estimate rmatrix=estimate nst=%(nst)s basefreq=%(basefreq)s rates=%(rates)s shape=estimate pinvar=%(pinvar)s userbrlens=yes;
         """
-        if tree_est_criterion != 'nj':
+        if tree_est_criterion not in ["nj", "upgma"] :
             paup_template += """\
             set crit=%s;
             """ % tree_est_criterion
@@ -417,8 +417,8 @@ else:
         %(pre_est_commands)s;
         """
 
-        if tree_est_criterion == 'nj':
-            paup_template += "nj;"
+        if tree_est_criterion in ["nj", "upgma"] :
+            paup_template += tree_est_criterion + ";"
         else:
             paup_template += "hsearch;"
 
@@ -463,8 +463,8 @@ else:
             tf.flush()
             paup_args['tree'] = "gettrees file=%s storebrlens=yes;" % tf.name
         else:
-            if tree_est_criterion == 'nj':
-                paup_args['tree'] = 'nj;'
+            if tree_est_criterion in ["nj", "upgma"] :
+                paup_args['tree'] = tree_est_criterion
             else:
                 paup_args['tree'] = "set crit=%s; hsearch; set crit=like;" % tree_est_criterion
         if tree_user_brlens:
