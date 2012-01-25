@@ -1,3 +1,11 @@
+Release 3.10.1
+--------------
+
+Bug Fixes
+^^^^^^^^^
+
+    - Split orientation regression bug introduced in 3.10.0 fixed (affected SumTrees and other split comparisons when dealing with unrooted trees).
+
 Release 3.10.0
 --------------
 
