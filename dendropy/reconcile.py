@@ -233,6 +233,8 @@ class ContainingTree(dataobject.Tree):
             self.calc_node_ages(check_prec=self.ultrametricity_check_prec)
         if contained_tree not in self.contained_trees:
             self.contained_trees.append(contained_tree)
+        if self.fit_containing_edge_lengths:
+            self.fit_edge_lengths(self.contained_trees)
         if contained_tree.seed_node.age is None:
             contained_tree.calc_node_ages(check_prec=self.ultrametricity_check_prec)
         contained_leaves = contained_tree.leaf_nodes()
@@ -264,7 +266,7 @@ class ContainingTree(dataobject.Tree):
                 if contained_edge.tail_node is not None:
                     remaining = target_age - contained_edge.tail_node.age
                 elif contained_edge.length is not None:
-                    remaining = target_age - (contained_edge.head_node.age + contained_age.length)
+                    remaining = target_age - (contained_edge.head_node.age + contained_edge.length)
                 else:
                     continue
                 while remaining > 0:
