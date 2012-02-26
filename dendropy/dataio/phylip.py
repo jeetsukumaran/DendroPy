@@ -322,4 +322,8 @@ class PhylipWriter(iosys.DataWriter):
 
         for taxon in char_matrix.taxon_set:
             label = taxon_label_map[taxon]
-            stream.write("%s%s%s\n" % ( label.ljust(maxlen), spacer, str(char_matrix[taxon].symbols_as_string()).replace(' ', '')))
+            try:
+                seq_vec = char_matrix[taxon]
+            except KeyError:
+                continue
+            stream.write("%s%s%s\n" % ( label.ljust(maxlen), spacer, str(seq_vec.symbols_as_string()).replace(' ', '')))

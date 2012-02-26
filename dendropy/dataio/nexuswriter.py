@@ -354,7 +354,10 @@ class NexusWriter(iosys.DataWriter):
                 nexus.append('%s    %s' % (textutils.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores).ljust(max_label_len), seq))
         else:
             for taxon in char_matrix.taxon_set:
-                seq_vec = char_matrix[taxon]
+                try:
+                    seq_vec = char_matrix[taxon]
+                except KeyError:
+                    continue
                 seq = StringIO()
                 for cell in seq_vec:
                     state = cell.value
