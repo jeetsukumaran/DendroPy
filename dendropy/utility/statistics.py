@@ -121,6 +121,40 @@ def quantile_5_95(values):
         raise ValueError("Sample size too small: %s" % len(values))
     return values[idx5], values[idx95]
 
+def variance_covariance(data):
+    """
+    Returns the Variance-Covariance matrix for `data`.
+    From: http://www.python-forum.org/pythonforum/viewtopic.php?f=3&t=17441
+    """
+    N = len(data) # number of vectors
+    D = len(data[0]) # dimensions per vector
+
+    means = [0.0 for i in range(D)] # intialize 1xD mean vector
+    for i in range(N):
+        for j in range(D):
+            means[j] += data[i][j]
+    means = [i/N for i in means]
+    # print "Means:"," ".join(map(str,means)),"\n"
+
+    covar = [[0.0 for i in range(D)] for j in range(D)] # initialize DxD covariance matrix
+
+    for i in range(D):
+        for j in range(i+1): #  covariance symmetric, only do lower triangle of matrix
+            sum = 0.0
+            for k in range(N):
+                sum += data[k][i]*data[k][j]
+            covar[i][j] = sum/(N-1) - means[i]*means[j]*N/(N-1.0)
+
+    for j in range(D):
+            for k in range(j+1):
+                covar[k][j] = covar[j][k]
+
+    # print "covariance:"
+    # for i in range(D):
+    #     print " ".join(map(str,covar[i]))
+    # print ""
+    return covar
+
 def summarize(values):
     """
     Summarizes a sample of values:
