@@ -711,7 +711,6 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if "label" in kwargs:
             self.label = kwargs["label"]
 
-
     def add_character_subset(self, char_subset):
         """
         Adds a CharacterSubset object. Raises an error if one already exists
@@ -916,6 +915,18 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 return [self.taxon_seq_map[t] for t in self.taxon_set]
             return []
         return None
+
+    def prune_taxa(self, taxa, update_taxon_set=False):
+        """
+        Removes given taxa from matrix. If `preserve_taxon_set` is
+        `True`, then the taxa are removed from the associated TaxonSet
+        object as well. Otherwise this is not modified (default).
+        """
+        for taxon in taxa:
+            if taxon in self.taxon_seq_map:
+                del self.taxon_seq_map[taxon]
+                if update_taxon_set and taxon in self.taxon_set:
+                    self.taxon_set.remove(taxon)
 
     # following allows a CharacterMatrix object to simulate a dictionary
     # by `passing-through` calls to the underlying character map

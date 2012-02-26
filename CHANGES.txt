@@ -1,3 +1,12 @@
+Release 3.11
+------------
+
+New Features
+^^^^^^^^^^^^
+
+    - `prune_taxa()` method added to `CharacterMatrix`.
+
+
 Release 3.10.1
 --------------
 
