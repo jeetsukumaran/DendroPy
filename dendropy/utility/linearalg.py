@@ -513,6 +513,101 @@ class Matrix(Table):
     def rank( self ):
         return Vector([ not row.forall(iszero) for row in self.qr(ROnly=1) ]).sum()
 
+    def row_means(self):
+        """
+        Return vector consisting of row means.
+        """
+        return Vector([float(sum(v))/len(v) for v in self])
+
+    def center_rows(self):
+        """
+        Return new matrix consisting of each the difference of each cell from
+        its row mean.
+        """
+        row_means = self.row_means()
+        m = []
+        for i, v in enumerate(self):
+            m.append(v - row_means[i])
+        return Matrix(m)
+
+    def covariance_by_rows(self):
+        """
+        Returns covariance matrix (variables by rows).
+        """
+        x = self.center_rows()
+        return x.mmul(x.tr()) / len(x[0])
+
+    def col_means(self):
+        """
+        Return vector consisting of column means.
+        """
+        return self.tr().row_means()
+
+    def center_cols(self):
+        """
+        Return new matrix consisting of each the difference of each cell from
+        its column mean.
+        """
+        return self.tr().center_rows().tr()
+
+    def covariance_by_cols(self):
+        """
+        Returns covariance matrix (variables by columns).
+        """
+        x = self.center_cols()
+        return x.tr().mmul(x) / len(x)
+
+    def _pooled_covariance(self, other):
+        """
+        Returns pooled covariance matrix.
+        """
+        assert len(self[0]) == len(other[0]), "Number of columns in matrices not equal"
+        nrow1 = len(self)
+        nrow2 = len(other)
+        total_rows = nrow1 + nrow2
+        f1 = float(nrow1) / total_rows
+        f2 = float(nrow2) / total_rows
+        s1 = self.covariance_by_cols()
+        s2 = other.covariance_by_cols()
+        pooled_cov = []
+        for i, r1 in enumerate(s1):
+            pooled_cov.append([])
+            for j, c1 in enumerate(r1):
+                pooled_cov[-1].append(f1 * s1[i][j] + f2 *s2[i][j])
+        pooled_cov = new_matrix(pooled_cov)
+        return pooled_cov
+
+    def squared_mahalanobis_distance(self, other):
+        """
+        Returns the *squared* Mahalanobis disatance between this matrix and
+        `other`, which both should have the same number of columns.
+        """
+        if not isinstance(other, Matrix):
+            other = Matrix(other)
+        pooled_cov = self._pooled_covariance(other)
+        pooled_cov_inv = pooled_cov.inverse()
+
+        # TODO: column means have already been calculated to
+        # get the covariances: avoid duplicating calcs
+        mean_diffs = new_matrix([self.col_means() - other.col_means()])
+
+        # `mean_diffs` is now a row vector
+        # for consistency with the standard formulation, we should:
+        #
+        #     mean_diffs = mean_diffs.tr()
+        #     d = mean_diffs.tr().mmul(pooled_cov_inv).mmul(mean_diffs)
+        #
+        # Instead ...
+        d = mean_diffs.mmul(pooled_cov_inv).mmul(mean_diffs.tr())
+        return d[0][0]
+
+    def mahalanobis_distance(self, other):
+        """
+        Returns the Mahalanobis disatance between this matrix and
+        `other`, which both should have the same number of columns.
+        """
+        return math.sqrt(self.squared_mahalanobis_distance(other))
+
 class Square(Matrix):
 
     def lu( self ):
