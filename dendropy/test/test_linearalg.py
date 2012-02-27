@@ -67,11 +67,5 @@ class TestMatrix(unittest.TestCase):
             s = x.covariance_by_rows()
             assert self.expected_cov[i] == s
 
-    def testMahalanobisDistance(self):
-        u = linearalg.new_matrix(self.g1)
-        v = linearalg.new_matrix(self.g2)
-        d = u.mahalanobis_distance(v)
-        self.assertAlmostEqual(d, 1.410417840)
-
 if __name__ == "__main__":
     unittest.main()
