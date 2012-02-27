@@ -167,10 +167,15 @@ def mahalanobis_distance(u, v):
         >>> v = [ [4, 1, 1], [5, 3, 2], [1, 3, 4], [1, 4, 4] ]
         >>> print mahalanobis_distance(u, v)
         1.46632046397
-        >>> u = [ [2,5], [5, 7] ]
-        >>> v = [ [1,5], [4, 8] ]
+        >>> u = [ [2, 5], [5, 7] ]
+        >>> v = [ [1, 5], [4, 8] ]
         >>> print mahalanobis_distance(u, v)
         5.37483849887
+        >>> # single column
+        >>> u = [ [1], [3], [5] ]
+        >>> v = [ [2], [3] ]
+        >>> print statistics.mahalanobis_distance(u, v)
+        0.65192024052
     """
     if not isinstance(u, linearalg.Matrix):
         u = linearalg.new_matrix(u)

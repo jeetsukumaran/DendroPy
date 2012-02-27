@@ -585,7 +585,10 @@ class Matrix(Table):
         if not isinstance(other, Matrix):
             other = Matrix(other)
         pooled_cov = self._pooled_covariance(other)
-        pooled_cov_inv = pooled_cov.inverse()
+        if len(pooled_cov) == 1:
+            pooled_cov_inv = pooled_cov
+        else:
+            pooled_cov_inv = pooled_cov.inverse()
 
         # TODO: column means have already been calculated to
         # get the covariances: avoid duplicating calcs
