@@ -21,6 +21,7 @@ Functions to calculate some general statistics.
 """
 
 import math
+import linearalg
 from operator import itemgetter
 
 def _mean_and_variance_pop_n(values):
@@ -154,6 +155,29 @@ def variance_covariance(data):
     #     print " ".join(map(str,covar[i]))
     # print ""
     return covar
+
+def mahalanobis_distance(u, v):
+    """
+    Returns Mahalanobis distance between matrices `u` and `v`.
+    `u` and `v` must be 2-dimensional, and have the same number of columns.
+    That is, they must be a list of lists, and the lengths of the inner lists
+    must be equal.
+
+        >>> u = [ [2, 3.14, 1.3], [1, 4, 5] ]
+        >>> v = [ [4, 1, 1], [5, 3, 2], [1, 3, 4], [1, 4, 4] ]
+        >>> print mahalanobis_distance(u, v)
+        1.46632046397
+        >>> u = [ [2,5], [5, 7] ]
+        >>> v = [ [1,5], [4, 8] ]
+        >>> print mahalanobis_distance(u, v)
+        5.37483849887
+    """
+    if not isinstance(u, linearalg.Matrix):
+        u = linearalg.new_matrix(u)
+    if not isinstance(v, linearalg.Matrix):
+        v = linearalg.new_matrix(v)
+    assert len(u[0]) == len(v[0])
+    return u.mahalanobis_distance(v)
 
 def summarize(values):
     """
