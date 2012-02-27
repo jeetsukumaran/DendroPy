@@ -1,11 +1,12 @@
-Release 3.11
-------------
+Release 3.11.0
+--------------
 
 New Features
 ^^^^^^^^^^^^
 
     - `prune_taxa()` method added to `CharacterMatrix`.
-
+    - New module for matrix and vector computations: `dendropy.utility.linearalg`.
+    - Mahalanobis distances: `dendropy.utility.statistics.mahalanobis_distance(u, v)`
 
 Release 3.10.1
 --------------
