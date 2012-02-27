@@ -46,33 +46,32 @@ def _pooled_covariance(u, v):
 def squared_mahalanobis(u, v):
     """
     Returns the *squared* Mahalanobis distance between matrices `u` and `v`.
-    `u` and `v` must be 2-dimensional, and have the same number of columns.
+    `u` and `v` must be 2-dimensional, and have the same number of columns
+    (though they can have different number of rows).
     That is, they must be a list of lists, and the lengths of the inner lists
-    must be equal. If there simple vectors of values, they should be
-    represented as lists of multiple single-element lists, or use the
-    convenience function `squared_mahalanobis_vec(u, v)`.  If only relative
-    distances are needed (as they are in most cases), then this function should
-    be preferred over `mahalanobis(u, v)` which has the added computational
-    expense of taking the square root.
+    must be equal, though the length of the outer lists can be differnt). If
+    there simple vectors of values, they should be represented as lists of
+    multiple single-element lists, or use the convenience function
+    `squared_mahalanobis_1d(u, v)`.
+    If only relative distances are needed (as they are in most cases), then
+    this function should be preferred over `mahalanobis(u, v)` which has the
+    added computational expense of taking the square root.
 
         >>> u = [ [2, 3.14, 1.3], [1, 4, 5] ]
         >>> v = [ [4, 1, 1], [5, 3, 2], [1, 3, 4], [1, 4, 4] ]
         >>> print squared_mahalanobis(u, v)
-        1.46632046397
+        2.15009570304
         >>> u = [ [2, 5], [5, 7] ]
         >>> v = [ [1, 5], [4, 8] ]
         >>> print squared_mahalanobis(u, v)
-        5.37483849887
-        >>> # for single column, you can:
+        28.8888888889
+        >>> # for single column, you can use
+        ... `squared_mahalanobis_vec(u, v)` or:
         >>> u = [ [1], [3], [5] ]
         >>> v = [ [2], [3] ]
         >>> print squared_mahalanobis(u, v)
-        0.65192024052
-        >>> # or:
-        >>> u = [ 1, 3, 5 ]
-        >>> v = [ 2, 3 ]
-        >>> print squared_mahalanobis(u, v)
-        0.65192024052
+        0.425
+
     """
     if not isinstance(u, linearalg.Matrix):
         u = linearalg.new_matrix(u)
@@ -99,18 +98,71 @@ def squared_mahalanobis(u, v):
     d = mean_diffs.mmul(pooled_cov_inv).mmul(mean_diffs.tr())
     return d[0][0]
 
+def squared_mahalanobis_1d(u, v):
+    """
+    Returns the *squared* Mahalanobis distance between vectors `u` and `v`.
+    `u` and `v` are assumed to be single-dimension, i.e., a simple list or
+    Vector of values.
+    If only relative distances are needed (as they are in most cases), then
+    this function should be preferred over `mahalanobis_1d(u, v)` which has the
+    added computational expense of taking the square root.
+
+       >>> u = [1, 2, 2, 4, 1, 4]
+       >>> v = [2, 1, 1, 0, 2, 1]
+       >>> print squared_mahalanobis_1d(u, v)
+       1.3800154321
+
+    """
+    u = linearalg.new_matrix([[i] for i in u])
+    v = linearalg.new_matrix([[i] for i in v])
+    return squared_mahalanobis(u, v)
+
 def mahalanobis(u, v):
     """
-    Returns Mahalanobis distance between matrices `u` and `v`.
-    `u` and `v` must be 2-dimensional, and have the same number of columns.
+    Returns the Mahalanobis distance between matrices `u` and `v`.
+    `u` and `v` must be 2-dimensional, and have the same number of columns
+    (though they can have different number of rows).
     That is, they must be a list of lists, and the lengths of the inner lists
-    must be equal. If there simple vectors of values, they should be
-    represented as lists of multiple single-element lists, or use the
-    convenience function `squared_mahalanobis_vec(u, v)`.  If only relative
-    distances are needed (as they are in most cases), then
+    must be equal, though the length of the outer lists can be differnt). If
+    there simple vectors of values, they should be represented as lists of
+    multiple single-element lists, or use the convenience function
+    `mahalanobis_1d(u, v)`.
+    If only relative distances are needed (as they are in most cases), then
     `squared_mahalanobis(u, v) should be preferred over this one as this has
     the added computational expense of taking the square root.
+
+        >>> u = [ [2, 3.14, 1.3], [1, 4, 5] ]
+        >>> v = [ [4, 1, 1], [5, 3, 2], [1, 3, 4], [1, 4, 4] ]
+        >>> print mahalanobis(u, v)
+        1.46632046397
+        >>> u = [ [2, 5], [5, 7] ]
+        >>> v = [ [1, 5], [4, 8] ]
+        >>> print mahalanobis(u, v)
+        5.37483849887
+        >>> # for single column, you can use
+        ... `mahalanobis_vec(u, v)` or:
+        >>> u = [ [1], [3], [5] ]
+        >>> v = [ [2], [3] ]
+        >>> print mahalanobis(u, v)
+        0.65192024052
+
     """
     return math.sqrt(squared_mahalanobis(u,v))
 
 
+def mahalanobis_1d(u, v):
+    """
+    Returns the  Mahalanobis distance between vectors `u` and `v`.
+    `u` and `v` are assumed to be single-dimension, i.e., a simple list or
+    Vector of values.
+    If only relative distances are needed (as they are in most cases), then
+    `squared_mahalanobis_1d(u, v) should be preferred over this one as this has
+    the added computational expense of taking the square root.
+
+       >>> u = [1, 2, 2, 4, 1, 4]
+       >>> v = [2, 1, 1, 0, 2, 1]
+       >>> print squared_mahalanobis_1d(u, v)
+       1.3800154321
+
+    """
+    return math.sqrt(squared_mahalanobis_1d(u, v))
