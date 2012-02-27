@@ -26,7 +26,7 @@ _LOG = messaging.get_logger(__name__)
 
 from dendropy.utility import containers
 from dendropy.utility import textutils
-from dendropy.utility import statistics
+from dendropy.mathlib import statistics
 
 import dendropy
 

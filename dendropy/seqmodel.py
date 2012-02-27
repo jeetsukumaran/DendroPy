@@ -24,7 +24,7 @@ import math
 import itertools
 
 from dendropy.utility import GLOBAL_RNG
-from dendropy.utility import probability
+from dendropy.mathlib import probability
 import dendropy
 
 class SeqModel(object):

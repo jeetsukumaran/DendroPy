@@ -25,7 +25,7 @@ import copy
 import math
 
 from dendropy.utility import GLOBAL_RNG
-from dendropy.utility import probability
+from dendropy.mathlib import probability
 from dendropy import coalescent
 from dendropy import dataobject
 from dendropy import treemanip

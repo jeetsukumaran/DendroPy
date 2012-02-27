@@ -29,7 +29,7 @@ from dendropy.treesplit import encode_splits, count_bits, lowest_bit_only
 from dendropy.treemanip import collapse_clade, collapse_edge
 from dendropy.dataobject.tree import format_split
 from dendropy.utility.containers import NormalizedBitmaskDict
-from dendropy.utility.statistics import mean_and_sample_variance
+from dendropy.mathlib.statistics import mean_and_sample_variance
 
 def reroot_on_lowest_common_index_path(t, common_mask):
     """This operation is only for unrooted trees that are being merged using

@@ -26,7 +26,7 @@ from dendropy import dataobject
 from dendropy import treecalc
 from dendropy import treesim
 from dendropy.utility.containers import OrderedDict
-from dendropy.utility.statistics import mean_and_sample_variance
+from dendropy.mathlib.statistics import mean_and_sample_variance
 
 ##############################################################################
 ## TreeSummarizer

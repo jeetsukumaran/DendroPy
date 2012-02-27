@@ -21,7 +21,7 @@ Functions to calculate some general statistics.
 """
 
 import math
-import linearalg
+from dendropy.mathlib import linearalg
 from operator import itemgetter
 
 def _mean_and_variance_pop_n(values):

@@ -23,7 +23,7 @@ Methods for working with Kingman's n-coalescent framework.
 import math
 
 from dendropy.utility import GLOBAL_RNG
-from dendropy.utility import probability
+from dendropy.mathlib import probability
 from dendropy import dataobject
 from dendropy import treecalc
 

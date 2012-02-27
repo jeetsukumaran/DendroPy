@@ -22,7 +22,7 @@ Tests statistical routines.
 
 import unittest
 from dendropy.test.support import extendedtest
-from dendropy.utility import statistics
+from dendropy.mathlib import statistics
 from dendropy.utility import messaging
 
 _LOG = messaging.get_logger(__name__)

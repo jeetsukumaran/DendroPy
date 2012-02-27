@@ -26,7 +26,7 @@ from dendropy import treecalc
 from dendropy import treesum
 from dendropy import treesplit
 from dendropy.test.support import pathmap
-from dendropy.utility import statistics
+from dendropy.mathlib import statistics
 from dendropy.test.support import extendedtest
 
 class TestConsensusTree(unittest.TestCase):

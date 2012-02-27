@@ -49,7 +49,7 @@ from dendropy.dataio import multi_tree_source_iter
 from dendropy.dataio import newick
 from dendropy.utility.messaging import ConsoleMessenger
 from dendropy.utility.cli import confirm_overwrite, show_splash
-from dendropy.utility import statistics
+from dendropy.mathlib import statistics
 
 _program_name = "SumTrees"
 _program_subtitle = "Phylogenetic Tree Split Support Summarization"

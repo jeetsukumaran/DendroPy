@@ -22,7 +22,7 @@ Tests linear algebra and matrix computation.
 
 import unittest
 from dendropy.test.support import extendedtest
-from dendropy.utility import linearalg
+from dendropy.mathlib import linearalg
 from dendropy.utility import messaging
 
 _LOG = messaging.get_logger(__name__)
