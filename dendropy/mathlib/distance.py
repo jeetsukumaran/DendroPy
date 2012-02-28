@@ -132,6 +132,38 @@ def squared_mahalanobis(u, v, cov=None, population_variance=False):
         d(v3, mu2) = 34.534579346
         d(v3, mu3) = 0.977010139431
 
+    The `mahal` function of MATLAB calculates the Mahalanobis distance as well.
+    Its implementation and usage are a little different:
+
+        d = mahal(Y,X) computes the Mahalanobis distance (in squared units) of
+        each observation in Y from the reference sample in matrix X. If Y is
+        n-by-m, where n is the number of observations and m is the dimension of
+        the data, d is n-by-1. X and Y must have the same number of columns,
+        but can have different numbers of rows. X must have more rows than
+        columns.
+
+        For observation I, the Mahalanobis distance is defined by d(I) =
+        (Y(I,:)-mu)*inv(SIGMA)*(Y(I,:)-mu)', where mu and SIGMA are the sample
+        mean and covariance of the data in X.
+
+    Thus, the following MATLAB code::
+
+        >> g1 = [ 2 2; 2 5; 6 5; 7 3; 4 7; 6 4; 5 3; 4 6; 2 5; 1 3; ];
+        >> g2 = [ 6 5; 7 4; 8 7; 5 6; 5 4; ];
+        >> mahal(g1, g2)
+
+    can be replicated by::
+
+        #! /usr/bin/env python
+
+        from dendropy.mathlib import distance
+        from dendropy.mathlib import linearalg
+
+        g1 = [ [2, 2], [2, 5], [6, 5], [7, 3], [4, 7], [6, 4], [5, 3], [4, 6], [2, 5], [1, 3], ]
+        g2 = [ [6, 5], [7, 4], [8, 7], [5, 6], [5, 4], ]
+        s = linearalg.new_matrix(g2).covariance_by_cols(population_variance=False)
+        for g in g1:
+            print distance.squared_mahalanobis([g], g2, cov=s)
 
     """
     if not isinstance(u, linearalg.Matrix):
@@ -173,6 +205,7 @@ def squared_mahalanobis_1d(u, v, cov=None, population_variance=False):
     If only relative distances are needed (as they are in most cases), then
     this function should be preferred over `mahalanobis_1d(u, v)` which has the
     added computational expense of taking the square root.
+    For more details and examples, see `dendropy.mathlib.distance.squared_mahalanobis()`.
 
        >>> u = [1, 2, 2, 4, 1, 4]
        >>> v = [2, 1, 1, 0, 2, 1]
@@ -202,6 +235,7 @@ def mahalanobis(u, v, cov=None, population_variance=False):
     If only relative distances are needed (as they are in most cases), then
     `squared_mahalanobis(u, v) should be preferred over this one as this has
     the added computational expense of taking the square root.
+    For more details and examples, see `dendropy.mathlib.distance.squared_mahalanobis()`.
 
         >>> u = [ [2, 3.14, 1.3], [1, 4, 5] ]
         >>> v = [ [4, 1, 1], [5, 3, 2], [1, 3, 4], [1, 4, 4] ]
@@ -235,6 +269,7 @@ def mahalanobis_1d(u, v, cov=None, population_variance=False):
     If only relative distances are needed (as they are in most cases), then
     `squared_mahalanobis_1d(u, v) should be preferred over this one as this has
     the added computational expense of taking the square root.
+    For more details and examples, see `dendropy.mathlib.distance.squared_mahalanobis()`.
 
        >>> u = [1, 2, 2, 4, 1, 4]
        >>> v = [2, 1, 1, 0, 2, 1]
