@@ -49,7 +49,7 @@ class TestMahalanobis(unittest.TestCase):
             [5, 6],
             [5, 4],
             ]
-        d = distance.mahalanobis(g1, g2)
+        d = distance.mahalanobis(g1, g2, population_variance=True)
         self.assertAlmostEqual(d, 1.410417840)
 
 if __name__ == "__main__":

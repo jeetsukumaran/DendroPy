@@ -11,7 +11,7 @@ Original Source:
     email: python@rcn.com
     Updates and documentation:  http://users.rcn.com/python/download/python.htm
 
-Adapted and modified for inclusion in the DendroPy library.
+Adapted, extended and modified for inclusion in the DendroPy library.
 
 A 100% pure Python module for vector, matrix, and table math operations which
 runs on Python 2.1 or later. It neither conflicts with nor requires NumPy.
@@ -108,6 +108,27 @@ LIMITATIONS
 
 import operator, math, random
 NPRE, NPOST = 0, 0                    # Disables pre and post condition checks
+
+def pooled_covariance(u, v, population_variance=False):
+    """
+    Returns pooled covariance matrix of u, v.
+    """
+    assert len(u[0]) == len(v[0]), "Number of columns in matrices not equal"
+    nrow1 = len(u)
+    nrow2 = len(v)
+    total_rows = nrow1 + nrow2
+    f1 = float(nrow1) / total_rows
+    f2 = float(nrow2) / total_rows
+    s1 = u.covariance_by_cols(population_variance=population_variance)
+    s2 = v.covariance_by_cols(population_variance=population_variance)
+    pooled_cov = []
+    for i, r1 in enumerate(s1):
+        pooled_cov.append([])
+        for j, c1 in enumerate(r1):
+            pooled_cov[-1].append(f1 * s1[i][j] + f2 *s2[i][j])
+    pooled_cov = new_matrix(pooled_cov)
+    return pooled_cov
+
 
 def iszero(z):
     """This predicate evaluates to true when x is nearly zero. It is used
@@ -530,11 +551,15 @@ class Matrix(Table):
             m.append(v - row_means[i])
         return Matrix(m)
 
-    def covariance_by_rows(self):
+    def covariance_by_rows(self, population_variance=False):
         """
         Returns covariance matrix (variables by rows).
         """
         x = self.center_rows()
+        if population_variance:
+            n = len(x[0])
+        else:
+            n = len(x[0])-1
         return x.mmul(x.tr()) / len(x[0])
 
     def col_means(self):
@@ -550,12 +575,16 @@ class Matrix(Table):
         """
         return self.tr().center_rows().tr()
 
-    def covariance_by_cols(self):
+    def covariance_by_cols(self, population_variance=False):
         """
         Returns covariance matrix (variables by columns).
         """
         x = self.center_cols()
-        return x.tr().mmul(x) / len(x)
+        if population_variance:
+            n = len(x)
+        else:
+            n = len(x)-1
+        return x.tr().mmul(x) / n
 
 class Square(Matrix):
 

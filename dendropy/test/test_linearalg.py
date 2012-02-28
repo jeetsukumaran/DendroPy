@@ -58,13 +58,13 @@ class TestMatrix(unittest.TestCase):
     def testCovarianceByColumns(self):
         for i, x in enumerate([self.g1, self.g2]):
             x = linearalg.new_matrix(x)
-            s = x.covariance_by_cols()
+            s = x.covariance_by_cols(population_variance=True)
             assert self.expected_cov[i] == s
 
     def testCovarianceByRows(self):
         for i, x in enumerate([self.h1, self.h2]):
             x = linearalg.new_matrix(x)
-            s = x.covariance_by_rows()
+            s = x.covariance_by_rows(population_variance=True)
             assert self.expected_cov[i] == s
 
 if __name__ == "__main__":
