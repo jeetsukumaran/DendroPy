@@ -5,8 +5,12 @@ New Features
 ^^^^^^^^^^^^
 
     - `prune_taxa()` method added to `CharacterMatrix`.
-    - New module for matrix and vector computations: `dendropy.utility.linearalg`.
-    - Mahalanobis distances: `dendropy.utility.statistics.mahalanobis_distance(u, v)`
+    - Math modules moved to their own subpackage: `dendropy.mathlib`.
+    - New module for matrix and vector computations: `dendropy.mathlib.linearalg`.
+    - New module for statistical distance calculation: `dendropy.mathlib.distance`.
+    - Family of Mahalanobis distance calculation functions in
+      `dendropy.mathlib.distance`: `squared_mahalanobis`,
+      `squared_mahalanobis_1d`, `mahalanobis`, `mahalanobis_1d`.
 
 Release 3.10.1
 --------------
