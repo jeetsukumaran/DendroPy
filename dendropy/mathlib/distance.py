@@ -84,53 +84,50 @@ def squared_mahalanobis(u, v, cov=None, population_variance=False):
         for i in range(nrows):
             v3.append([random.gauss(-10, 10) for j in range(ncols)])
 
-        mu1 = [ [0] * 4 ]
-        mu2 = [ [10] * 4 ]
-        mu3 = [ [-10] * 4 ]
+        c1 = [ [0] * 4 ]
+        c2 = [ [10] * 4 ]
+        c3 = [ [-10] * 4 ]
+        v1 = linearalg.new_matrix(v1)
+        s1 = v1.covariance_by_cols()
+        v2 = linearalg.new_matrix(v2)
+        s2 = v2.covariance_by_cols()
+        v3 = linearalg.new_matrix(v3)
+        s3 = v3.covariance_by_cols()
 
         print
         print "-- v1 --"
-        # print "v1 = {}".format(v1)
-        v1 = linearalg.new_matrix(v1)
-        s1 = v1.covariance_by_cols()
-        print "d(v1, mu1) = {}".format(distance.squared_mahalanobis(v1, mu1, cov=s1))
-        print "d(v1, mu2) = {}".format(distance.squared_mahalanobis(v1, mu2, cov=s1))
-        print "d(v1, mu3) = {}".format(distance.squared_mahalanobis(v1, mu3, cov=s1))
+        print "d(c1, v1) = {}".format(distance.squared_mahalanobis(c1, v1, cov=s1))
+        print "d(c2, v1) = {}".format(distance.squared_mahalanobis(c2, v1, cov=s1))
+        print "d(c3, v1) = {}".format(distance.squared_mahalanobis(c3, v1, cov=s1))
 
         print
         print "-- v2 --"
-        # print "v2 = {}".format(v2)
-        v2 = linearalg.new_matrix(v2)
-        s2 = v2.covariance_by_cols()
-        print "d(v2, mu1) = {}".format(distance.squared_mahalanobis(v2, mu1, cov=s2))
-        print "d(v2, mu2) = {}".format(distance.squared_mahalanobis(v2, mu2, cov=s2))
-        print "d(v2, mu3) = {}".format(distance.squared_mahalanobis(v2, mu3, cov=s2))
+        print "d(c1, v2) = {}".format(distance.squared_mahalanobis(c1, v2, cov=s2))
+        print "d(c2, v2) = {}".format(distance.squared_mahalanobis(c2, v2, cov=s2))
+        print "d(c3, v2) = {}".format(distance.squared_mahalanobis(c3, v2, cov=s2))
 
         print
         print "-- v3 --"
-        # print "v3 = {}".format(v3)
-        v3 = linearalg.new_matrix(v3)
-        s3 = v3.covariance_by_cols()
-        print "d(v3, mu1) = {}".format(distance.squared_mahalanobis(v3, mu1, cov=s3))
-        print "d(v3, mu2) = {}".format(distance.squared_mahalanobis(v3, mu2, cov=s3))
-        print "d(v3, mu3) = {}".format(distance.squared_mahalanobis(v3, mu3, cov=s3))
+        print "d(c1, v3) = {}".format(distance.squared_mahalanobis(c1, v3, cov=s3))
+        print "d(c2, v3) = {}".format(distance.squared_mahalanobis(c2, v3, cov=s3))
+        print "d(c3, v3) = {}".format(distance.squared_mahalanobis(c3, v3, cov=s3))
 
     This results in::
 
         -- v1 --
-        d(v1, mu1) = 9.93031690821
-        d(v1, mu2) = 7.32291043019
-        d(v1, mu3) = 19.2837217336
+        d(c1, v1) = 0.170092378552
+        d(c2, v1) = 8.59447583779
+        d(c3, v1) = 8.898973355
 
         -- v2 --
-        d(v2, mu1) = 13.0856935601
-        d(v2, mu2) = 0.88944501575
-        d(v2, mu3) = 43.5848508888
+        d(c1, v2) = 30.7463150693
+        d(c2, v2) = 0.434906936737
+        d(c3, v2) = 121.212523478
 
         -- v3 --
-        d(v3, mu1) = 11.2652191693
-        d(v3, mu2) = 34.534579346
-        d(v3, mu3) = 0.977010139431
+        d(c1, v3) = 4.19154157624
+        d(c2, v3) = 18.4689462227
+        d(c3, v3) = 0.128840873046
 
     The `mahal` function of MATLAB calculates the Mahalanobis distance as well.
     Its implementation and usage are a little different:
