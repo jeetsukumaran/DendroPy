@@ -122,13 +122,17 @@ def quantile_5_95(values):
         raise ValueError("Sample size too small: %s" % len(values))
     return values[idx5], values[idx95]
 
-def variance_covariance(data):
+def variance_covariance(data, population_variance=False):
     """
     Returns the Variance-Covariance matrix for `data`.
     From: http://www.python-forum.org/pythonforum/viewtopic.php?f=3&t=17441
     """
     N = len(data) # number of vectors
     D = len(data[0]) # dimensions per vector
+    if population_variance:
+        denom = N
+    else:
+        denom = N-1.0
 
     means = [0.0 for i in range(D)] # intialize 1xD mean vector
     for i in range(N):
@@ -144,7 +148,7 @@ def variance_covariance(data):
             sum = 0.0
             for k in range(N):
                 sum += data[k][i]*data[k][j]
-            covar[i][j] = sum/(N-1) - means[i]*means[j]*N/(N-1.0)
+            covar[i][j] = sum/denom - means[i]*means[j]*N/denom
 
     for j in range(D):
             for k in range(j+1):
