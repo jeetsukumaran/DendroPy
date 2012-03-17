@@ -43,7 +43,8 @@ class PatristicDistanceMatrix(object):
         self.max_dist_nodes = None
         self._mrca = {}
         if tree is not None:
-            self.calc(tree)
+            self.tree = tree
+            self.calc()
 
     def __call__(self, taxon1, taxon2):
         """
@@ -73,10 +74,10 @@ class PatristicDistanceMatrix(object):
         """
         if tree is not None:
             self.tree = tree
-        assert tree is not None
+        assert self.tree is not None
         if not hasattr(self.tree, "split_edges"):
             treesplit.encode_splits(self.tree)
-        self.taxon_set = tree.taxon_set
+        self.taxon_set = self.tree.taxon_set
         self._pat_dists = {}
         for i1, t1 in enumerate(self.taxon_set):
             self._pat_dists[t1] = {}
@@ -85,7 +86,7 @@ class PatristicDistanceMatrix(object):
             self.max_dist_taxa = None
             self.max_dist_nodes = None
 
-        for node in tree.postorder_node_iter():
+        for node in self.tree.postorder_node_iter():
             children = node.child_nodes()
             if len(children) == 0:
                 node.desc_paths = {node : 0}
