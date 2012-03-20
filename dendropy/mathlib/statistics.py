@@ -110,6 +110,17 @@ def empirical_hpd(values, conf=0.05):
     #print "nnn=", n
     return (x[nnn], x[n-nn+nnn])
 
+def quantile(values, q):
+    """
+    Returns q-th quantile.
+    """
+    values = sorted(values)
+    size = len(values)
+    idx = int(round(size * q)) - 1
+    if idx == 0:
+        raise ValueError("Sample size too small: %s" % len(values))
+    return values[idx]
+
 def quantile_5_95(values):
     """
     Returns 5% and 95% quantiles.
