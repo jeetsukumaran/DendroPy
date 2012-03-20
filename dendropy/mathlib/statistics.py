@@ -110,6 +110,16 @@ def empirical_hpd(values, conf=0.05):
     #print "nnn=", n
     return (x[nnn], x[n-nn+nnn])
 
+def empirical_cdf(values, v):
+    """
+    Returns the proportion of values in `values` <= `v`.
+    """
+    count = 0.0
+    for idx, v0 in enumerate(values):
+        if v0 <= v:
+            ++count
+    return count / len(values)
+
 def quantile(values, q):
     """
     Returns q-th quantile.
