@@ -117,7 +117,7 @@ def empirical_cdf(values, v):
     count = 0.0
     for idx, v0 in enumerate(values):
         if v0 <= v:
-            ++count
+            count += 1
     return count / len(values)
 
 def quantile(values, q):
