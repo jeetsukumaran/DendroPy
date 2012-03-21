@@ -616,6 +616,28 @@ class TestVarianceCovariance(unittest.TestCase):
             for j, y in enumerate(x):
                 self.assertAlmostEqual(cov[i][j], e[i][j])
 
+class FishersExactTests(extendedtest.ExtendedTestCase):
+    """
+    Fisher's exact test.
+    """
+
+    def setUp(self):
+        self.table = [[12, 5], [29, 2]]
+
+    def testLeftTail(self):
+        ft = statistics.FishersExactTest(self.table)
+        p = ft.left_tail_p()
+        self.assertAlmostEqual(p, 0.044554737835078267)
+
+    def testRightTail(self):
+        ft = statistics.FishersExactTest(self.table)
+        p = ft.right_tail_p()
+        self.assertAlmostEqual(p, 0.99452520602190897)
+
+    def testTwoTail(self):
+        ft = statistics.FishersExactTest(self.table)
+        p = ft.two_tail_p()
+        self.assertAlmostEqual(p, 0.08026855207410688)
 
 if __name__ == "__main__":
     unittest.main()

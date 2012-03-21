@@ -22,6 +22,7 @@ Functions to calculate some general statistics.
 
 import math
 from dendropy.mathlib import linearalg
+from dendropy.mathlib import probability
 from operator import itemgetter
 
 def _mean_and_variance_pop_n(values):
@@ -242,6 +243,216 @@ def variance_covariance(data, population_variance=False):
     #     print " ".join(map(str,covar[i]))
     # print ""
     return covar
+
+class FishersExactTest(object):
+    """
+    Given a 2x2 table:
+
+        +---+---+
+        | a | b |
+        +---+---+
+        | c | d |
+        +---+---+
+
+    represented by a list of lists::
+
+        [[a,b],[c,d]]
+
+    this calculates the sum of the probability of this table and all others
+    more extreme under the null hypothesis that there is no association between
+    the categories represented by the vertical and horizontal axes.
+    """
+
+    def probability_of_table(table):
+        """
+        Given a 2x2 table:
+
+            +---+---+
+            | a | b |
+            +---+---+
+            | c | d |
+            +---+---+
+
+        represented by a list of lists::
+
+            [[a,b],[c,d]]
+
+        this returns the probability of this table under the null hypothesis of
+        no association between rows and columns, which was shown by Fisher to be
+        a hypergeometric distribution:
+
+            p = ( choose(a+b, a) * choose(c+d, c) ) / choose(a+b+c+d, a+c)
+
+        """
+        a = table[0][0]
+        b = table[0][1]
+        c = table[1][0]
+        d = table[1][1]
+        return probability.hypergeometric_pmf(a, a+b, c+d, a+c)
+    probability_of_table = staticmethod(probability_of_table)
+
+    def __init__(self, table):
+        self.table = table
+        self.flat_table = [table[0][0], table[0][1], table[1][0], table[1][1]]
+        self.min_value = min(self.flat_table)
+        self.max_value = max(self.flat_table)
+
+    def _rotate_cw(self, table):
+        """
+        Returns a copy of table such that all the values
+        are rotated clockwise once.
+        """
+        return [ [ table[1][0], table[0][0] ],
+                [table[1][1], table[0][1] ] ]
+
+    def _min_rotation(self):
+        """
+        Returns copy of self.table such that the smallest value is in the first
+        (upper left) cell.
+        """
+        table = [list(self.table[0]), list(self.table[1])]
+        while table[0][0] != self.min_value:
+            table = self._rotate_cw(table)
+        return table
+
+    def _max_rotation(self):
+        """
+        Returns copy of self.table such that the largest value is in the first
+        (upper left) cell.
+        """
+        table = [list(self.table[0]), list(self.table[1])]
+        while table[0][0] != self.max_value:
+            table = self._rotate_cw(table)
+        return table
+
+    def _sum_left_tail(self):
+        """
+        Returns the sum of probabilities of tables that are *more* extreme than
+        the current table.
+        """
+        # left_tail_tables = self._get_left_tail_tables()
+        # p_vals = [ self.probability_of_table(t) for t in left_tail_tables ]
+        p_vals = self._get_left_tail_p_values()
+        return sum(p_vals)
+
+    def _sum_right_tail(self):
+        """
+        Returns the sum of probabilities of tables that are *less* extreme than
+        the current table.
+        """
+        # right_tail_tables = self._get_right_tail_tables()
+        # p_vals = [ self.probability_of_table(t) for t in right_tail_tables ]
+        p_vals = self._get_right_tail_p_values()
+        return sum(p_vals)
+
+    def _get_left_tail_p_values(self):
+        """
+        Returns list of probabilities of all tables *more* extreme than the
+        current table.
+        """
+        table = self._min_rotation()
+        row_totals = [sum(table[0]), sum(table[1])]
+        col_totals = [table[0][0] + table[1][0], table[0][1] + table[1][1]]
+        p_vals = []
+        while True:
+            table[0][0] -= 1
+            if table[0][0] < 0:
+                break
+            table[0][1] = row_totals[0] - table[0][0]
+            table[1][0] = col_totals[0] - table[0][0]
+            table[1][1] = row_totals[1] - table[1][0]
+            p_vals.append(self.probability_of_table(table))
+        return p_vals
+
+    def _get_right_tail_p_values(self):
+        """
+        Returns list of probabilities of all tables *less* extreme than the
+        current table.
+        """
+        table = self._min_rotation()
+        row_totals = [sum(table[0]), sum(table[1])]
+        col_totals = [table[0][0] + table[1][0], table[0][1] + table[1][1]]
+        p_vals = []
+        while True:
+            table[0][0] += 1
+            table[0][1] = row_totals[0] - table[0][0]
+            if table[0][1] < 0:
+                break
+            table[1][0] = col_totals[0] - table[0][0]
+            if table[1][0] < 0:
+                break
+            table[1][1] = row_totals[1] - table[1][0]
+            if table[1][1] < 0:
+                break
+            p_vals.append(self.probability_of_table(table))
+        return p_vals
+
+    def _get_left_tail_tables(self):
+        """
+        Returns all tables that are *more* extreme than the current table.
+        """
+        table = self._min_rotation()
+        row_totals = [sum(table[0]), sum(table[1])]
+        col_totals = [table[0][0] + table[1][0], table[0][1] + table[1][1]]
+        left_tail_tables = []
+        while True:
+            table[0][0] -= 1
+            if table[0][0] < 0:
+                break
+            table[0][1] = row_totals[0] - table[0][0]
+            table[1][0] = col_totals[0] - table[0][0]
+            table[1][1] = row_totals[1] - table[1][0]
+            left_tail_tables.append([list(table[0]), list(table[1])])
+        return left_tail_tables
+
+    def _get_right_tail_tables(self):
+        """
+        Returns all tables that are *less* extreme than the current table.
+        """
+        table = self._min_rotation()
+        row_totals = [sum(table[0]), sum(table[1])]
+        col_totals = [table[0][0] + table[1][0], table[0][1] + table[1][1]]
+        right_tail_tables = []
+        while True:
+            table[0][0] += 1
+            table[0][1] = row_totals[0] - table[0][0]
+            if table[0][1] < 0:
+                break
+            table[1][0] = col_totals[0] - table[0][0]
+            if table[1][0] < 0:
+                break
+            table[1][1] = row_totals[1] - table[1][0]
+            if table[1][1] < 0:
+                break
+            right_tail_tables.append([list(table[0]), list(table[1])])
+        return right_tail_tables
+
+    def left_tail_p(self):
+        """
+        Returns the sum of probabilities of this table and all others more
+        extreme.
+        """
+        return self.probability_of_table(self.table) + self._sum_left_tail()
+
+    def right_tail_p(self):
+        """
+        Returns the sum of probabilities of this table and all others more
+        extreme.
+        """
+        return self.probability_of_table(self.table) + self._sum_right_tail()
+
+    def two_tail_p(self):
+        """
+        Returns the sum of probabilities of this table and all others more
+        extreme.
+        """
+        p0 = self.probability_of_table(self.table)
+        all_p_vals = self._get_left_tail_p_values() + self._get_right_tail_p_values()
+        p_vals = []
+        for p in all_p_vals:
+            if p < p0:
+                p_vals.append(p)
+        return sum(p_vals) + p0
 
 def summarize(values):
     """
