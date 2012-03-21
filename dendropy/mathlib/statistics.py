@@ -450,7 +450,7 @@ class FishersExactTest(object):
         all_p_vals = self._get_left_tail_probs() + self._get_right_tail_probs()
         p_vals = []
         for p in all_p_vals:
-            if p < p0:
+            if p <= p0:
                 p_vals.append(p)
         return sum(p_vals) + p0
 
