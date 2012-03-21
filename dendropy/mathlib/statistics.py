@@ -332,7 +332,7 @@ class FishersExactTest(object):
         """
         # left_tail_tables = self._get_left_tail_tables()
         # p_vals = [ self.probability_of_table(t) for t in left_tail_tables ]
-        p_vals = self._get_left_tail_p_values()
+        p_vals = self._get_left_tail_probs()
         return sum(p_vals)
 
     def _sum_right_tail(self):
@@ -342,10 +342,10 @@ class FishersExactTest(object):
         """
         # right_tail_tables = self._get_right_tail_tables()
         # p_vals = [ self.probability_of_table(t) for t in right_tail_tables ]
-        p_vals = self._get_right_tail_p_values()
+        p_vals = self._get_right_tail_probs()
         return sum(p_vals)
 
-    def _get_left_tail_p_values(self):
+    def _get_left_tail_probs(self):
         """
         Returns list of probabilities of all tables *more* extreme than the
         current table.
@@ -364,7 +364,7 @@ class FishersExactTest(object):
             p_vals.append(self.probability_of_table(table))
         return p_vals
 
-    def _get_right_tail_p_values(self):
+    def _get_right_tail_probs(self):
         """
         Returns list of probabilities of all tables *less* extreme than the
         current table.
@@ -447,7 +447,7 @@ class FishersExactTest(object):
         extreme.
         """
         p0 = self.probability_of_table(self.table)
-        all_p_vals = self._get_left_tail_p_values() + self._get_right_tail_p_values()
+        all_p_vals = self._get_left_tail_probs() + self._get_right_tail_probs()
         p_vals = []
         for p in all_p_vals:
             if p < p0:
