@@ -47,7 +47,7 @@ from dendropy.utility.cli import confirm_overwrite, show_splash
 from dendropy.mathlib import statistics
 
 _program_name = "SumLabels"
-_program_subtitle = "Phylogenetic Tree Label Concatentation"
+_program_subtitle = "Phylogenetic Tree Label Concatenation"
 _program_date = "Mar 20 2012"
 _program_version = "Version 1.0.0 (%s)" % _program_date
 _program_author = "Jeet Sukumaran"
