@@ -4,6 +4,8 @@ Release 3.11.0
 New Features
 ^^^^^^^^^^^^
 
+    - New application script for concatenation of branch labels from across
+      multiple input trees: sumlabels.py
     - `prune_taxa()` method added to `CharacterMatrix`.
     - Math modules moved to their own subpackage: `dendropy.mathlib`.
     - New module for matrix and vector computations: `dendropy.mathlib.linearalg`.
