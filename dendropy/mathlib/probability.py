@@ -306,3 +306,19 @@ def hypergeometric_pmf(x, m, n, k):
             p(x) = (choose(m, x) * choose(n, k-x)) / choose(m+n, k)
     """
     return float(binomial_coefficient(m, x) * binomial_coefficient(n, k-x))/binomial_coefficient(m+n, k)
+
+def hypergeometric_pmf(x, m, n, k):
+    """
+    Given a population consisting of `m` items of class M and `n` items of class N,
+    this returns the probability of observing `x` items of class M when sampling
+    `k` times without replacement from the entire population (i.e., {M,N})
+
+            p(x) = (choose(m, x) * choose(n, k-x)) / choose(m+n, k)
+    """
+    # following fails with 'OverflowError: long int too large to convert to
+    # float' with large numbers
+    # return float(binomial_coefficient(m, x) * binomial_coefficient(n, k-x))/binomial_coefficient(m+n, k)
+    a = math.log(binomial_coefficient(m, x))
+    b = math.log(binomial_coefficient(n, k-x))
+    c = math.log(binomial_coefficient(m+n, k))
+    return math.exp(a+b-c)
