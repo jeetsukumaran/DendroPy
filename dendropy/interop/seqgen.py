@@ -185,7 +185,7 @@ class SeqGen(object):
         args.append("-n1")
         return args
 
-    def generate(self, trees, dataset=None, **kwargs):
+    def generate(self, trees, dataset=None, taxon_set=None, **kwargs):
         args=self._compose_arguments()
         tree_inputf = self.get_tempfile()
         trees.write_to_path(tree_inputf.name,
@@ -196,10 +196,12 @@ class SeqGen(object):
         args.append(tree_inputf.name)
         run = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = run.communicate()
+        if taxon_set is None:
+            taxon_set = dendropy.TaxonSet()
         if dataset is None:
-            dataset = dendropy.DataSet()
+            dataset = dendropy.DataSet(taxon_set=taxon_set, **kwargs)
         results = StringIO(stdout)
-        dataset.read(results, "nexus", **kwargs)
+        dataset.read(results, "nexus")
         return dataset
 
 
