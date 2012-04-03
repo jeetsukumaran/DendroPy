@@ -89,16 +89,7 @@ class SeqGen(object):
         # python object specific attributes
         self.seqgen_path = 'seq-gen'
         self.rng_seed = None
-        self.__rng = None
-        self.num_sites_per_tree = None
-        self.rel_rates_per_tree = None
-        self.overwrite = False
-        self.output_dir = '.'
-        self.output_filename_prefix = 'data'
-        self.output_filename_suffix = None
-        self.output_nexus = False
-        self.simple_nexus = True
-        self.dump_tree = False
+        self._rng = None
 
         # following are passed to seq-gen in one form or another
         self.char_model = 'HKY'
@@ -117,16 +108,13 @@ class SeqGen(object):
         self.output_text_append = None
         self.write_ancestral_seqs = False
         self.write_site_rates = False
-        self.quiet = False
-        self.dry_run = False
-        self.dump_command = True
 
     def _get_rng(self):
-        if self.__rng is None:
-            self.__rng = random.Random(self.rng_seed)
-        return self.__rng
+        if self._rng is None:
+            self._rng = random.Random(self.rng_seed)
+        return self._rng
     def _set_rng(self, rng):
-        self.__rng = rng
+        self._rng = rng
     rng = property(_get_rng, _set_rng)
 
     def _compose_arguments(self):
@@ -174,9 +162,10 @@ class SeqGen(object):
             args.append("-wa")
         if self.write_site_rates:
             args.append("-wr")
-        if self.quiet:
-            args.append("-q")
+
         # following are controlled directly by the wrapper
+        # silent running
+        args.append("-q")
         # we explicitly pass a random number seed on each call
         args.append("-z%s" % self.rng.randint(0, sys.maxint))
         # force nexus
