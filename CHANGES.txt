@@ -13,6 +13,7 @@ New Features
     - Family of Mahalanobis distance calculation functions in
       `dendropy.mathlib.distance`: `squared_mahalanobis`,
       `squared_mahalanobis_1d`, `mahalanobis`, `mahalanobis_1d`.
+    - `dendropy.interop.seqgen.SeqGen`: wrapper for Seq-Gen integrated into library.
 
 Release 3.10.1
 --------------
