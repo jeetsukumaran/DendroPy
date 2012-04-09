@@ -3,7 +3,7 @@
 import dendropy
 from dendropy.interop import seqgen
 
-trees = dendropy.TreeList.get_from_path("pythonidae.mle.nex",
+trees = dendropy.TreeList.get_from_path("pythonidae.mcmc.nex",
         "nexus")
 s = seqgen.SeqGen()
 
