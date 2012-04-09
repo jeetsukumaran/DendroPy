@@ -155,6 +155,8 @@ rst_epilog = """
 
 .. |FigTree| replace:: FigTree
 .. _FigTree: http://tree.bio.ed.ac.uk/software/figtree/
+.. |RAxML| replace:: RAxML
+.. _RAxML: http://sco.h-its.org/exelixis/software.html
 """
 
 _source_archive_url = """
