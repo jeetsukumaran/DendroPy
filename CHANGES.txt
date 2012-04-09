@@ -5,7 +5,11 @@ New Features
 ^^^^^^^^^^^^
 
     - New application script for concatenation of branch labels from across
-      multiple input trees: sumlabels.py
+      multiple input trees: `sumlabels.py`.
+    - New interoperability class `dendropy.interop.seqgen.SeqGen`:
+      wrapper for Seq-Gen integrated into library.
+    - New interoperability function `dendropy.interop.muscle.muscle_align()`:
+      wrapper for MUSCLE alignment.
     - `prune_taxa()` method added to `CharacterMatrix`.
     - Math modules moved to their own subpackage: `dendropy.mathlib`.
     - New module for matrix and vector computations: `dendropy.mathlib.linearalg`.
@@ -13,7 +17,6 @@ New Features
     - Family of Mahalanobis distance calculation functions in
       `dendropy.mathlib.distance`: `squared_mahalanobis`,
       `squared_mahalanobis_1d`, `mahalanobis`, `mahalanobis_1d`.
-    - `dendropy.interop.seqgen.SeqGen`: wrapper for Seq-Gen integrated into library.
 
 Release 3.10.1
 --------------
