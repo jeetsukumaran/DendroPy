@@ -12,9 +12,9 @@ The basic call assumes nucleotide data and estimates a tree under the ``GTRCAT``
 .. literalinclude:: /examples/raxml_estimate_tree.py
 
 
-Currently, the only way to customize the call to the underlying |RAxML| program using :meth:`~dendropy.interop.raxml.RaxmlRunner.estimate_tree` is to pass it a list of command-line arguments, with each argument token a separate list element::
+Currently, the only way to customize the call to the underlying |RAxML| program using :meth:`~dendropy.interop.raxml.RaxmlRunner.estimate_tree` is to pass it a list of command-line arguments, with each argument token a separate list element. So, for example, to include invariant sites in the substitutio model and run 250 independent tree searches::
 
 
-    >>> tree = rx.estimate_tree(data, ['-m', 'GTRCATI'])
+    >>> tree = rx.estimate_tree(data, ['-m', 'GTRCATI', '-N', '250'])
 
 Obviously, while this works, it is neither ideal nor very Pythonic. Future releases will polish up the interface.
