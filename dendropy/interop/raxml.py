@@ -446,13 +446,13 @@ class RaxmlRunner(object):
                 try:
                     os.remove(fpath)
                 except OSError as e:
-                    self._send_error("Failed: {}".format(str(e)))
+                    pass
             for dir_path in self.dirs_to_clean:
                 # self._send_info("Deleting directory: {}".format(dir_path))
                 try:
                     os.rmdir(dir_path)
                 except OSError as e:
-                    self._send_error("Failed: {}".format(str(e)))
+                    pass
 
     def estimate_tree(self,
             char_matrix,
