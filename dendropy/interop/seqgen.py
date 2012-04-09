@@ -102,7 +102,7 @@ class SeqGen(object):
         self.gamma_cats = None
         self.prop_invar = None
         self.state_freqs = None
-        self.ti_tv = None
+        self.ti_tv = 0.5 # = kappa of 1.0, i.e. JC
         self.general_rates = None
         self.ancestral_seq = None
         self.output_text_append = None
@@ -116,6 +116,11 @@ class SeqGen(object):
     def _set_rng(self, rng):
         self._rng = rng
     rng = property(_get_rng, _set_rng)
+
+    def _get_kappa(self):
+        return float(self.ti_tv) / 2
+    def _set_kappa(self, kappa):
+        self.ti_tv = kappa * 2
 
     def _compose_arguments(self):
         """
