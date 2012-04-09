@@ -5,8 +5,6 @@ The DendroPy Tutorial
 .. toctree::
     :maxdepth: 2
 
-    changes.rst
-
 .. toctree::
     :maxdepth: 3
     :numbered:
