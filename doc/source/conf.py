@@ -157,6 +157,8 @@ rst_epilog = """
 .. _FigTree: http://tree.bio.ed.ac.uk/software/figtree/
 .. |RAxML| replace:: RAxML
 .. _RAxML: http://sco.h-its.org/exelixis/software.html
+.. |SeqGen| replace:: Seq-Gen
+.. _SeqGen: http://tree.bio.ed.ac.uk/software/seqgen/
 """
 
 _source_archive_url = """
