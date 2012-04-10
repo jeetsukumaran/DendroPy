@@ -17,6 +17,8 @@ New Features
     - Family of Mahalanobis distance calculation functions in
       `dendropy.mathlib.distance`: `squared_mahalanobis`,
       `squared_mahalanobis_1d`, `mahalanobis`, `mahalanobis_1d`.
+    - Better documentation and examples of geodispersal analysis of Lieberman
+        and Eldredge (see extras/geodispersal subdirectory).
 
 Release 3.10.1
 --------------
