@@ -10,6 +10,8 @@ New Features
       wrapper for Seq-Gen integrated into library.
     - New interoperability function `dendropy.interop.muscle.muscle_align()`:
       wrapper for MUSCLE alignment.
+    - New interoperability class `dendropy.interop.raxml.RaxmlRunner`:
+      wrapper for RAxML.
     - `prune_taxa()` method added to `CharacterMatrix`.
     - Math modules moved to their own subpackage: `dendropy.mathlib`.
     - New module for matrix and vector computations: `dendropy.mathlib.linearalg`.
