@@ -1,0 +1,31 @@
+#NEXUS
+BEGIN DATA;
+	DIMENSIONS ntax = 15 nchar = 1;
+	FORMAT datatype = standard symbols = "0123456";
+
+MATRIX
+taxonA 1
+taxonB 1
+taxonC 2
+taxonD 5
+taxonE {13}
+taxonF 3
+taxonG 3
+taxonH {13}
+taxonI {123}
+taxonJ {23}
+taxonK 1
+taxonL 3
+taxonM 2
+taxonN 3
+taxonO 3
+
+;
+
+
+END;
+
+
+BEGIN TREES;
+	TREE T = [&R] (taxonA,((taxonB,taxonC),(taxonD,(taxonE,(((taxonF,taxonG),(taxonH,taxonI)),(taxonJ,((taxonK,taxonL),(taxonM,(taxonN,taxonO)))))))));
+END;
