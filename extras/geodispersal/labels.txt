@@ -1,0 +1,6 @@
+Africa
+N_Amer
+S_Amer
+Aust
+Eur
+Asia
