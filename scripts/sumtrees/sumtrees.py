@@ -22,7 +22,7 @@ CLI wrapper for tree summarization.
 
 import os
 import sys
-import textwrap
+import re
 from optparse import OptionParser
 from optparse import OptionGroup
 
@@ -799,6 +799,7 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
     support_summarization = "%s of support for each split %s" % (support_units, support_show)
 
     tt_trees = []
+    support_comment_pattern = re.compile(r'support\s*=\s*[0-9.eE-]+,?', re.I)
     if target_tree_filepath is not None:
         messenger.send_info("Mapping support to target tree ...")
         for tree in tree_source_iter(stream=open(target_tree_filepath, 'r'),
@@ -813,6 +814,15 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
             if opts.rooted_trees and not tree.is_rooted:
                 messenger.send_error("Support trees are treated as rooted, but target tree is unrooted. Root target tree(s) and re-run, or run using the '--root-target' flag.")
                 sys.exit(1)
+            for nd in tree:
+                print nd.comments
+
+            # strip out existing support statement
+            if tsum.add_node_metadata:
+                for nd in tree.postorder_node_iter():
+                    for nd_comment_idx, comment in enumerate(nd.comments):
+                        nd.comments[nd_comment_idx] = support_comment_pattern.sub("", nd.comments[nd_comment_idx])
+
             stree = tsum.map_split_support_to_tree(tree,
                     master_split_distribution)
             tt_trees.append(stree)
