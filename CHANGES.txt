@@ -1,3 +1,13 @@
+Release 3.11.1
+--------------
+
+Changes
+^^^^^^^
+
+    - [SumTrees] Strip out 'support' annotation from node meta-comments before
+      annotating tree.
+
+
 Release 3.11.0
 --------------
 
