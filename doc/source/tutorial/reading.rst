@@ -213,9 +213,9 @@ The special keywords supported for reading NEXUS-formatted or NEWICK-formatted d
 
     ``suppress_internal_node_taxa``
 
-        If |True|, internal node labels will not be treated as taxa.
-        Defaults to |True|: internal node labels will be instantantiatd
-        into Taxon objects.
+        If |False|, internal node labels will be instantantiatd into Taxon
+        objects.  Defaults to |True|: internal node labels will *not* be
+        treated as taxa.
 
     ``allow_duplicate_taxon_labels``
 
