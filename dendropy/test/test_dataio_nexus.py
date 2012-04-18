@@ -741,5 +741,39 @@ class NexusCharsSubsetsTest(datatest.DataObjectVerificationTestCase):
                 }
         self.verify_subsets('interleaved-charsets-all.nex', expected_sets)
 
+class NexusInternalTaxaTest(datatest.DataObjectVerificationTestCase):
+
+    def setUp(self):
+        self.tree_str = """
+#NEXUS
+BEGIN TAXA;
+    DIMENSIONS NTAX=5;
+    TAXLABELS t1 t2 t3 t4 t5 ;
+END;
+BEGIN TREES;
+    TREE 0 = [&U] (t1,(t2,(t3,(t4,t5)i1)i2)i3)i0;
+END;
+"""
+        self.expected_internal_labels = ['i1', 'i2', 'i3', 'i0']
+        self.expected_external_labels = ['t1', 't2', 't3', 't4', 't5']
+
+    def check(self, tree, expected_taxon_labels):
+        self.assertEqual(len(tree.taxon_set), len(expected_taxon_labels))
+        tax_labels = [t.label for t in tree.taxon_set]
+        for label in expected_taxon_labels:
+            self.assertTrue(label in tax_labels)
+
+    def testDefaultInternalTaxaParsing(self):
+        tree = dendropy.Tree.get_from_string(self.tree_str, "nexus")
+        self.check(tree, self.expected_external_labels)
+
+    def testSuppressInternalTaxaParsing(self):
+        tree = dendropy.Tree.get_from_string(self.tree_str, "nexus", suppress_internal_node_taxa=True)
+        self.check(tree, self.expected_external_labels)
+
+    def testDefaultInternalTaxaParsing(self):
+        tree = dendropy.Tree.get_from_string(self.tree_str, "nexus", suppress_internal_node_taxa=False)
+        self.check(tree, self.expected_external_labels + self.expected_internal_labels)
+
 if __name__ == "__main__":
     unittest.main()
