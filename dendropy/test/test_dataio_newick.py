@@ -35,7 +35,7 @@ from dendropy.dataio import newick
 class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
 
     def testBadInit(self):
-        self.assertRaises(DataParseError, dendropy.TreeList, stream=StringIO("(a,(b,c))a"), schema="NEWICK")
+        self.assertRaises(DataParseError, dendropy.TreeList, stream=StringIO("(a,(b,c))a"), schema="NEWICK", suppress_internal_node_taxa=False)
         self.assertRaises(DataParseError, dendropy.TreeList, stream=StringIO("(a,(b,c)) (b,(a,c))"), schema="NEWICK")
         self.assertRaises(DataParseError, dendropy.TreeList, stream=StringIO("(a,(b,c)) (d,(e,f))"), schema="NEWICK")
         self.assertRaises(DataParseError, dendropy.TreeList, stream=StringIO("(a,(b,c)),"), schema="NEWICK")
