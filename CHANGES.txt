@@ -4,6 +4,9 @@ Release 3.11.1
 Changes
 ^^^^^^^
 
+    - [NEXUS/NEWICK] ``suppress_internal_node_taxa`` keyword now actually
+      instantiates Taxon objects from internal node labels when 'False', but
+      defaults to `True` for consistency with legacy behavior.
     - [SumTrees] Strip out 'support' annotation from node meta-comments before
       annotating tree.
 
