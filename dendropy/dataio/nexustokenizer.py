@@ -299,7 +299,7 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
     finish_node_func = kwargs.get("finish_node_func", None)
     edge_len_type = kwargs.get("edge_len_type", float)
     taxon_set = kwargs.get("taxon_set", None)
-    suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
+    suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", True)
     store_tree_weights = kwargs.get("store_tree_weights", False)
     extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
     case_sensitive_taxon_labels = kwargs.get('case_sensitive_taxon_labels', False)
@@ -450,7 +450,7 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
                         t = None
                     else:
                         try:
-                            t = stt.get_taxon(label=token)
+                            t = stt.require_taxon(label=token)
                         except StrToTaxon.MultipleTaxonUseError, e:
                             raise stream_tokenizer.data_format_error(e.msg)
                 if t is None:

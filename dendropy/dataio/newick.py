@@ -97,9 +97,9 @@ def tree_source_iter(stream, **kwargs):
             quotes will be converted to spaces.
 
         `suppress_internal_node_taxa`
-            If True, internal node labels will not be treated as taxa.
-            Defaults to False: internal node labels will be instantantiatd
-            into Taxon objects.
+            If False, internal node labels will be instantantiatd into Taxon
+            objects.  Defaults to True: internal node labels will *not* be
+            treated as taxa.
 
         `allow_duplicate_taxon_labels`
             If True, then multiple identical taxon labels will be allowed.
@@ -210,9 +210,9 @@ class NewickReader(iosys.DataReader):
                 quotes will be converted to spaces.
 
             `suppress_internal_node_taxa`
-                If True, internal node labels will not be treated as taxa.
-                Defaults to False: internal node labels will be instantantiatd
-                into Taxon objects.
+                If False, internal node labels will be instantantiatd into Taxon
+                objects.  Defaults to True: internal node labels will *not* be
+                treated as taxa.
 
             `allow_duplicate_taxon_labels`
                 If True, then multiple identical taxon labels will be allowed.
@@ -232,7 +232,7 @@ class NewickReader(iosys.DataReader):
         self.extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
         self.store_tree_weights = kwargs.get('store_tree_weights', False)
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
-        self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
+        self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", True)
         self.case_sensitive_taxon_labels = kwargs.get('case_sensitive_taxon_labels', False)
         self.edge_len_type = kwargs.get('edge_len_type', float)
 
