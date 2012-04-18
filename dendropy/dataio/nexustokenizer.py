@@ -447,6 +447,7 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
                     if curr_node.label:
                         raise stream_tokenizer.data_format_error("Multiple labels found for the same leaf (taxon '%s' and label '%s')" % (curr_node.label, token))
                     if suppress_internal_node_taxa:
+                    # if True:
                         t = None
                     else:
                         try:

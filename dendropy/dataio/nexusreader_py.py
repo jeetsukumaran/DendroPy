@@ -90,9 +90,9 @@ class NexusReader(iosys.DataReader):
                 quotes will be converted to spaces.
 
             `suppress_internal_node_taxa`
-                If True, internal node labels will not be treated as taxa.
-                Defaults to False: internal node labels will be instantantiatd
-                into Taxon objects.
+                If False, internal node labels will be instantantiatd into Taxon
+                objects.  Defaults to True: internal node labels will *not* be
+                treated as taxa.
 
             `allow_duplicate_taxon_labels`
                 If True, then multiple identical taxon labels will be allowed.
@@ -111,7 +111,7 @@ class NexusReader(iosys.DataReader):
         self.finish_node_func = kwargs.get("finish_node_func", None)
         self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", False)
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
-        self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", False)
+        self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", True)
         self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS)
         self.store_tree_weights = kwargs.get('store_tree_weights', False)
         self.extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
