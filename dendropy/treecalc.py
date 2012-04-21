@@ -462,3 +462,14 @@ def fitch_up_pass(preorder_node_list, attr_name="state_sets", taxa_to_state_set_
             #                    (str(curr_ss), str(par_ss), str(left_ss), str(right_ss), str(final_ss)))
             result.append(final_ss)
         setattr(nd, attr_name, result)
+
+
+def mason_gamer_kellogg_score(tree1, tree2):
+    """
+    Mason-Gamer and Kellogg. Testing for phylogenetic conflict among molecular
+    data sets in the tribe Triticeae (Gramineae). Systematic Biology (1996)
+    vol. 45 (4) pp. 524
+    """
+    if tree1.taxon_set is not tree2.taxon_set:
+        raise Exception("Input tres have different TaxonSet object references")
+
