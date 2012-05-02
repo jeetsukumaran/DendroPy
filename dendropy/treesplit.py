@@ -223,7 +223,7 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
             [otherwise]: a containers.NormalizedBitmaskDictionary where the keys are the
             normalized (unrooted) split representations and the values
             are edges. A normalized split_mask is where the split_bitmask
-            is complemented if the right-most bit is not '1' (or just
+            is complemented if the right-most bit is not '0' (or just
             the split_bitmask otherwise).
     If `delete_outdegree_one` is True then nodes with one
         will be deleted as they are encountered (this is required
@@ -235,13 +235,15 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
     if taxon_set is None:
         taxon_set = tree.infer_taxa()
     if create_dict:
-        if tree.is_rooted:
-            tree.split_edges = {}
-        else:
-            atb = taxon_set.all_taxa_bitmask()
-            d = containers.NormalizedBitmaskDict(mask=atb)
-            tree.split_edges = d
+        tree.split_edges = {}
         split_map = tree.split_edges
+        # if tree.is_rooted:
+        #     tree.split_edges = {}
+        # else:
+        #     atb = taxon_set.all_taxa_bitmask()
+        #     d = containers.NormalizedBitmaskDict(mask=atb)
+        #     tree.split_edges = d
+        # split_map = tree.split_edges
     if not tree.seed_node:
         return
 
@@ -289,6 +291,13 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
         edge.split_bitmask = cm
         if create_dict:
             split_map[cm] = edge
+    # create normalized bitmasks, where the full (tree) split mask is *not*
+    # all the taxa, but only those found on the tree
+    if not tree.is_rooted:
+        d = containers.NormalizedBitmaskDict(mask=tree.seed_node.edge.split_bitmask)
+        for k, v in tree.split_edges.items():
+            d[k] = v
+        tree.split_edges = d
 
 def is_compatible(split1, split2, mask):
     """

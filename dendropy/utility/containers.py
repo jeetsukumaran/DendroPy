@@ -155,14 +155,17 @@ class NormalizedBitmaskDict(dict):
     """
     Keys, {K_i}, are longs. `mask` must be provided before elements can be
     added removed from dictionary. All keys are normalized such that the right-
-    most bit is '1'. That is, if the key's right-most bit is '1', it is added
+    most bit is '0'. That is, if the key's right-most bit is '0', it is added
     as-is, otherwise it is complemented by XOR'ing it with 'mask'.
     """
 
     def normalize(key, mask):
         if key & 1:
             return (~key) & mask
-        return key
+        else:
+            return key & mask
+        # assert (key & mask) == key
+        # return key
     normalize = staticmethod(normalize)
 
     def __init__(self, other=None, mask=None):
