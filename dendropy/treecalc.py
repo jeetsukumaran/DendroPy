@@ -472,4 +472,10 @@ def mason_gamer_kellogg_score(tree1, tree2):
     """
     if tree1.taxon_set is not tree2.taxon_set:
         raise Exception("Input tres have different TaxonSet object references")
-
+    if not hasattr(tree1, "split_edges"):
+        tree1.update_splits()
+    se1 = tree1.split_edges
+    if not hasattr(tree2, "split_edges"):
+        tree2.update_splits()
+    se2 = tree2.split_edges
+    splits = sorted(list(set(se1.keys() + se2.keys())))

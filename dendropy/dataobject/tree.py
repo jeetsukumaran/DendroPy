@@ -1693,6 +1693,28 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             other_tree = Tree(other_tree, taxon_set=self.taxon_set)
         return treecalc.euclidean_distance(self, other_tree)
 
+    def _check_children_for_split_compatibility(self, nd_list, split):
+        for nd in nd_list:
+            if is_compatible(nd.edge.split, split):
+                # see if nd has all of the leaves that are flagged as 1 in the split of interest
+                if (nd.edge.split & split) == split:
+                    return nd
+            else:
+                return None
+        return None
+
+    def is_compatible_with_split(self, split):
+        nd = self.root
+        while True:
+            if nd.edge.split == split:
+                return True
+            nd = self._check_children_for_split_compatibility(nd.child_nodes, split)
+            if nd is None:
+                return False
+
+    def is_compatible_with_tree(self, other):
+        pass
+
     ###########################################################################
     ## Metadata
 

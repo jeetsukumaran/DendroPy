@@ -1,6 +1,12 @@
 Release 3.11.1
 --------------
 
+Bug Fixes
+^^^^^^^^^
+
+    - Splits hash calculations now correctly deal with unrooted incomplete leaf-set trees.
+
+
 Changes
 ^^^^^^^
 
