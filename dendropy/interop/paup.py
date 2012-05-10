@@ -540,9 +540,11 @@ else:
         paup_template = """\
         set warnreset=no;
         exe %s;
+        gett file=%s storebrlens=yes;
         delete %s / prune;
-        savetrees file=%s format=nexus root=yes brlens=yes taxablk=yes maxdecimals=20;
+        savetrees file=%s format=nexus brlens=user taxablk=yes maxdecimals=20;
         """ % (tf.name,
+               tf.name,
                tax_idxs,
                output_tree_filepath)
         paup_run = subprocess.Popen(['%s -n' % paup_path],
