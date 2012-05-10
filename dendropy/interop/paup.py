@@ -527,3 +527,30 @@ else:
         t = dendropy.Tree.get_from_path(output_tree_filepath, "nexus", taxon_set=char_matrix.taxon_set)
         return t, results
 
+    def prune_taxa_from_trees(trees, taxa, paup_path='paup'):
+        """
+        Drops Taxon objects given in container `taxa` from TreeList `trees`
+        """
+        tf = tempfile.NamedTemporaryFile()
+        trees.write_to_stream(tf, schema='nexus')
+        tf.flush()
+        output_tree_file_handle, output_tree_filepath = tempfile.mkstemp(text=True)
+        tax_idxs = [ str(trees.taxon_set.index(t)+1) for t in taxa ]
+        tax_idxs = " ".join(tax_idxs)
+        paup_template = """\
+        set warnreset=no;
+        exe %s;
+        delete %s / prune;
+        savetrees file=%s format=nexus root=yes brlens=yes taxablk=yes maxdecimals=20;
+        """ % (tf.name,
+               tax_idxs,
+               output_tree_filepath)
+        paup_run = subprocess.Popen(['%s -n' % paup_path],
+                                    shell=True,
+                                    stdin=subprocess.PIPE,
+                                    stdout=subprocess.PIPE)
+        stdout, stderr = paup_run.communicate(paup_template)
+        t = dendropy.TreeList.get_from_path(output_tree_filepath,
+                "nexus",
+                taxon_set=trees.taxon_set)
+        return t
