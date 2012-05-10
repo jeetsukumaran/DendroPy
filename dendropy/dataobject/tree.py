@@ -1377,15 +1377,50 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if update_splits:
             self.update_splits()
 
+    def xprune_taxa(self, taxa, update_splits=False, delete_outdegree_one=True):
+        """
+        Removes terminal nodes associated with Taxon objects given by the container
+        `taxa` (which can be any iterable, including a TaxonSet object) from `self`.
+        """
+        nodes_to_retain = []
+        for nd in self.postorder_node_iter():
+            if nd.taxon and nd.taxon not in taxa:
+                nodes_to_retain.append(nd)
+        parent_nodes = []
+        nodes_to_retain.append(self.seed_node)
+        for nd in list(nodes_to_retain):
+            parent_node = nd.parent_node
+            while parent_node is not None and parent_node not in nodes_to_retain:
+                nodes_to_retain.append(parent_node)
+                parent_node = parent_node.parent_node
+        # print ">>"
+        # for nd in sorted(nodes_to_retain):
+        #     print nd.oid
+        # print "--"
+        to_process = [self.seed_node]
+        while to_process:
+            nd = to_process.pop(0)
+            children = nd._child_nodes
+            for ch in children:
+                if ch not in nodes_to_retain:
+                    nd._child_nodes.remove(ch)
+                    # ch.edge.tail_node.remove_child(ch)
+            to_process.extend(nd._child_nodes)
+        if delete_outdegree_one:
+            self.delete_outdegree_one_nodes()
+        # print self.as_string("newick")
+        # for nd in sorted(self.postorder_node_iter()):
+        #     print nd.oid
+        # print "<<\n"
+
     def prune_taxa(self, taxa, update_splits=False, delete_outdegree_one=True):
         """
         Removes terminal nodes associated with Taxon objects given by the container
         `taxa` (which can be any iterable, including a TaxonSet object) from `self`.
         """
-        nodes = []
-        for taxon in taxa:
-            nd = self.find_node(lambda x: x.taxon is taxon)
-            if nd is not None:
+        nodes_to_remove = []
+        for nd in self.postorder_node_iter():
+            if nd.taxon and nd.taxon in taxa:
                 nd.edge.tail_node.remove_child(nd)
         self.prune_leaves_without_taxa(update_splits=update_splits,
                 delete_outdegree_one=delete_outdegree_one)
