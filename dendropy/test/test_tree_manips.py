@@ -23,11 +23,13 @@ Tests of tree structural manipulations.
 from cStringIO import StringIO
 import unittest
 
+import random
 import dendropy
 from dendropy import treecalc
 from dendropy import treemanip
 from dendropy import treesplit
 from dendropy.test.support.datagen import RepeatedRandom
+from dendropy.test.support import pathmap
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
@@ -62,7 +64,7 @@ class ScaleTest(unittest.TestCase):
         for n, tree in enumerate(tree_list):
             treemanip.scale_edges(tree, .5)
             self.assertEqual(as_f[n], "%s;" % tree.as_newick_string())
-    
+
 
 class RandomlyRotateTest(unittest.TestCase):
 
@@ -147,14 +149,46 @@ class CollapseConflictingTest(unittest.TestCase):
 
 class PruneTest(unittest.TestCase):
 
-    def testPruneNodes(self):
-        """NOT IMPLEMENTED YET: PRIORITY TODO!!!"""
-        pass
+    def check(self,
+            title,
+            src_prefix,
+            to_retain=False):
+        input_ds = dendropy.DataSet.get_from_path(
+                src=pathmap.tree_source_path(src_prefix + ".pre-pruned.nex"),
+                schema='nexus',
+                attached_taxon_set=True)
+        input_taxa = input_ds.taxon_sets[0]
+        output_ds = dendropy.DataSet.get_from_path(
+                src=pathmap.tree_source_path(src_prefix + ".paup-pruned.nex"),
+                schema='nexus',
+                attached_taxon_set=True,
+                taxon_set=input_taxa)
+        if to_retain:
+            taxf = open(pathmap.tree_source_path(src_prefix + ".retained_taxa.txt"), "rU")
+        else:
+            taxf = open(pathmap.tree_source_path(src_prefix + ".pruned_taxa.txt"), "rU")
+        rows = taxf.readlines()
+        taxon_idxs_list = [ [int(i) for i in row.split()] for row in rows ]
+        for set_idx, src_trees in enumerate(input_ds.tree_lists):
+            src_trees = input_ds.tree_lists[set_idx]
+            ref_trees = output_ds.tree_lists[set_idx]
+            taxon_idxs = taxon_idxs_list[set_idx]
+            sub_taxa = [src_trees.taxon_set[i] for i in taxon_idxs]
+            for tree_idx, src_tree in enumerate(src_trees):
+                _LOG.debug("%s Set %d/%d, Tree %d/%d" % (title, set_idx+1, len(input_ds.tree_lists), tree_idx+1, len(src_trees)))
+                ref_tree = ref_trees[tree_idx]
+                if to_retain:
+                    src_tree.retain_taxa(sub_taxa)
+                else:
+                    src_tree.prune_taxa(sub_taxa)
+                # tree_dist = paup.symmetric_difference(src_tree, ref_tree)
+                self.assertEqual(src_tree.symmetric_difference(ref_tree), 0)
 
-    def testPruneTaxa(self):
-        """NOT IMPLEMENTED YET: PRIORITY TODO!!!"""
-        pass
+    def testPruneTaxaUnrooted(self):
+        self.check("Unrooted", "prune_unrooted", False)
 
+    def testPruneTaxaRooted(self):
+        self.check("Rooted", "prune_rooted", False)
 
 if __name__ == "__main__":
     unittest.main()
