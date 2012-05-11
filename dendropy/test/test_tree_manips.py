@@ -190,5 +190,11 @@ class PruneTest(unittest.TestCase):
     def testPruneTaxaRooted(self):
         self.check("Rooted", "prune_rooted", False)
 
+    def testRetainTaxaUnrooted(self):
+        self.check("Unrooted", "prune_unrooted", True)
+
+    def testRetainTaxaRooted(self):
+        self.check("Rooted", "prune_rooted", True)
+
 if __name__ == "__main__":
     unittest.main()
