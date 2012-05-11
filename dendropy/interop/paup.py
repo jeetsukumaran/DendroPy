@@ -55,7 +55,10 @@ else:
     # HIGHER-LEVEL CONVENIENCE AND UTILITY METHODS
 
     def symmetric_difference(tree1, tree2):
-        trees = dendropy.TreeList([dendropy.Tree(tree1), dendropy.Tree(tree2)])
+        if tree1.taxon_set is not tree2.taxon_set:
+            trees = dendropy.TreeList([dendropy.Tree(tree1), dendropy.Tree(tree2)])
+        else:
+            trees = dendropy.TreeList([tree1, tree2], taxon_set=tree1.taxon_set)
         tf = tempfile.NamedTemporaryFile()
         trees.write_to_stream(tf, schema='nexus')
         tf.flush()
