@@ -1384,7 +1384,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         """
         nodes_to_retain = []
         for nd in self.postorder_node_iter():
-            if nd.taxon and nd.taxon not in taxa:
+            if nd.taxon is not None and nd.taxon not in taxa:
                 nodes_to_retain.append(nd)
         parent_nodes = []
         nodes_to_retain.append(self.seed_node)
