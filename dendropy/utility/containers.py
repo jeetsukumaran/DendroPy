@@ -171,7 +171,10 @@ class NormalizedBitmaskDict(dict):
     def __init__(self, other=None, mask=None):
         "__init__ assigns `mask`, and then populates from `other`, if given."
         dict.__init__(self)
-        self.mask = mask
+        if not ( mask & 1 ):
+            self.mask = ~mask
+        else:
+            self.mask = mask
         if other is not None:
             if isinstance(other, NormalizedBitmaskDict):
                 self.mask = other.mask

@@ -294,7 +294,8 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
     # create normalized bitmasks, where the full (tree) split mask is *not*
     # all the taxa, but only those found on the tree
     if not tree.is_rooted:
-        d = containers.NormalizedBitmaskDict(mask=tree.seed_node.edge.split_bitmask)
+        mask = tree.seed_node.edge.split_bitmask
+        d = containers.NormalizedBitmaskDict(mask=mask)
         for k, v in tree.split_edges.items():
             d[k] = v
         tree.split_edges = d
