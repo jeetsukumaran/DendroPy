@@ -175,6 +175,7 @@ class NormalizedBitmaskDict(dict):
             self.mask = ~mask
         else:
             self.mask = mask
+        # self.mask = mask
         if other is not None:
             if isinstance(other, NormalizedBitmaskDict):
                 self.mask = other.mask

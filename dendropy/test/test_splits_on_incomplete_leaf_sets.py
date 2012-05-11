@@ -30,6 +30,7 @@ _LOG = messaging.get_logger(__name__)
 class IncompleteLeafSetSplitTest(unittest.TestCase):
 
     def testUnrooted(self):
+        title = "Unrooted"
         src_prefix = "incomplete_leaves_unrooted"
         input_ds = dendropy.DataSet.get_from_path(
                 src=pathmap.tree_source_path(src_prefix + ".dendropy-pruned.nex"),
@@ -45,8 +46,9 @@ class IncompleteLeafSetSplitTest(unittest.TestCase):
             src_trees = input_ds.tree_lists[set_idx]
             ref_trees = output_ds.tree_lists[set_idx]
             for tree_idx, src_tree in enumerate(src_trees):
-                _LOG.debug("Set %d/%d, Tree %d/%d" % (set_idx+1, len(input_ds.tree_lists), tree_idx+1, len(src_trees)))
+                _LOG.debug("%s Set %d/%d, Tree %d/%d" % (title, set_idx+1, len(input_ds.tree_lists), tree_idx+1, len(src_trees)))
                 ref_tree = ref_trees[tree_idx]
+                # tree_dist = paup.symmetric_difference(src_tree, ref_tree)
                 self.assertEqual(src_tree.symmetric_difference(ref_tree), 0)
 
 if __name__ == "__main__":
