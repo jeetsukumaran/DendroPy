@@ -29,9 +29,7 @@ _LOG = messaging.get_logger(__name__)
 
 class IncompleteLeafSetSplitTest(unittest.TestCase):
 
-    def testUnrooted(self):
-        title = "Unrooted"
-        src_prefix = "incomplete_leaves_unrooted"
+    def check(self, title, src_prefix):
         input_ds = dendropy.DataSet.get_from_path(
                 src=pathmap.tree_source_path(src_prefix + ".dendropy-pruned.nex"),
                 schema='nexus',
@@ -49,7 +47,16 @@ class IncompleteLeafSetSplitTest(unittest.TestCase):
                 _LOG.debug("%s Set %d/%d, Tree %d/%d" % (title, set_idx+1, len(input_ds.tree_lists), tree_idx+1, len(src_trees)))
                 ref_tree = ref_trees[tree_idx]
                 # tree_dist = paup.symmetric_difference(src_tree, ref_tree)
+                # d = src_tree.symmetric_difference(ref_tree)
+                # if d > 0:
+                #     print d
                 self.assertEqual(src_tree.symmetric_difference(ref_tree), 0)
+
+    def testUnrooted(self):
+        self.check("Unrooted", "incomplete_leaves_unrooted")
+
+    def testRooted(self):
+        self.check("Rooted", "incomplete_leaves_rooted")
 
 if __name__ == "__main__":
     unittest.main()
