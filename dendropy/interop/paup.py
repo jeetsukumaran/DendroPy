@@ -54,6 +54,24 @@ else:
     ###############################################################################
     # HIGHER-LEVEL CONVENIENCE AND UTILITY METHODS
 
+    def symmetric_difference(tree1, tree2):
+        trees = dendropy.TreeList([tree1, tree2])
+        tf = tempfile.NamedTemporaryFile()
+        trees.write_to_stream(tf, schema='nexus')
+        tf.flush()
+        assert tree1.is_rooted == tree2.is_rooted
+        sd = get_split_distribution(
+                tree_filepaths=[tf.name],
+                taxa_filepath=tf.name,
+                is_rooted=tree1.is_rooted,
+                burnin=0)
+        sf = sd.split_frequencies
+        conflicts = 0
+        for k, v in sf.items():
+            if v < 1.0:
+                conflicts += 1
+        return conflicts
+
     def get_split_distribution(tree_filepaths,
                                taxa_filepath,
                                is_rooted=False,
