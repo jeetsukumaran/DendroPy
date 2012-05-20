@@ -284,17 +284,16 @@ class StrToTaxon(object):
         if t is not None:
             self.label_taxon[label] = t
             return self._returning(t, label)
-        return None
+        else:
+            return None
 
     def require_taxon(self, label):
-        v = self.get_taxon(label)
-        if v is not None:
-            return v
-        t = self.label_taxon.get(label)
-        if t is None:
-            t = dataobject.Taxon(label=label)
-            self.taxon_set.add(t)
-            self.label_taxon[label] = t
+        t = self.get_taxon(label)
+        if t is not None:
+            return t
+        t = dataobject.Taxon(label=label)
+        self.taxon_set.add(t)
+        self.label_taxon[label] = t
         return self._returning(t, label)
 
     def index(self, t):
