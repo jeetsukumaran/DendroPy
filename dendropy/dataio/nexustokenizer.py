@@ -253,6 +253,12 @@ class StrToTaxon(object):
                 self.translate = containers.OrderedCaselessDict()
             else:
                 self.translate = {}
+        if self.case_sensitive:
+            self.label_taxon = containers.OrderedCaselessDict()
+        else:
+            self.label_taxon = {}
+        for t in self.taxon_set:
+            self.label_taxon[t.label] = t
         if allow_repeated_use:
             self.returned_taxon_set = None
         else:
@@ -269,14 +275,26 @@ class StrToTaxon(object):
     def get_taxon(self, label):
         t = self.translate.get(label)
         if t is None:
-            t = self.taxon_set.get_taxon(label=label, case_insensitive=not self.case_sensitive)
-        return self._returning(t, label)
+            t = self.label_taxon.get(label)
+        if t is None:
+            for taxon in self.taxon_set:
+                if taxon.label == label:
+                    t = taxon
+                    break
+        if t is not None:
+            self.label_taxon[label] = t
+            return self._returning(t, label)
+        return None
 
     def require_taxon(self, label):
         v = self.get_taxon(label)
         if v is not None:
             return v
-        t = self.taxon_set.require_taxon(label=label, case_insensitive=not self.case_sensitive)
+        t = self.label_taxon.get(label)
+        if t is None:
+            t = dataobject.Taxon(label=label)
+            self.taxon_set.add(t)
+            self.label_taxon[label] = t
         return self._returning(t, label)
 
     def index(self, t):
