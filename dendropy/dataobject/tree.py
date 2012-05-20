@@ -2135,7 +2135,14 @@ class Node(TaxonLinked):
         self._edge = None
         self._child_nodes = []
         self._parent_node = None
-        self.edge = kwargs.get("edge", Edge(head_node=self))
+        if "edge" in kwargs:
+            self.edge = kwargs["edge"]
+        else:
+            self.edge = Edge(head_node=self)
+        # try:
+        #     self.edge = kwargs["edge"]
+        # except KeyError:
+        #     self.edge = Edge(head_node=self)
         self._edge.head_node = self
         self.comments = []
 
