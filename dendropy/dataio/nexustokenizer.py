@@ -254,9 +254,9 @@ class StrToTaxon(object):
             else:
                 self.translate = {}
         if self.case_sensitive:
-            self.label_taxon = containers.OrderedCaselessDict()
-        else:
             self.label_taxon = {}
+        else:
+            self.label_taxon = containers.OrderedCaselessDict()
         for t in self.taxon_set:
             self.label_taxon[t.label] = t
         if allow_repeated_use:

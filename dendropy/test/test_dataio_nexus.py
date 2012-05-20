@@ -553,21 +553,45 @@ END;
         d = dendropy.TreeList.get_from_string(self.tree_str,
                 'nexus',
                 case_sensitive_taxon_labels=False)
+        expected = ["AAA", "BBB", "CCC", "DDD", "EEE"]
+        observed = [t.label.upper() for t in d.taxon_set]
+        for i, x in enumerate(expected):
+            self.assertTrue(x in observed)
+        for i, x in enumerate(observed):
+            self.assertTrue(x in expected)
         self.assertEqual(len(d.taxon_set), 5)
 
     def testDefaultCaseSensitivityTrees(self):
         d = dendropy.TreeList.get_from_string(self.tree_str,
                 'nexus')
+        expected = ["AAA", "BBB", "CCC", "DDD", "EEE"]
+        observed = [t.label.upper() for t in d.taxon_set]
+        for i, x in enumerate(expected):
+            self.assertTrue(x in observed)
+        for i, x in enumerate(observed):
+            self.assertTrue(x in expected)
         self.assertEqual(len(d.taxon_set), 5)
 
     def testCaseSensitiveTrees(self):
         d = dendropy.TreeList.get_from_string(self.tree_str,
                 'nexus',
                 case_sensitive_taxon_labels=True)
+        expected = ["AAA", "BBB", "CCC", "DDD", "EEE", "bbb", "ccc", "ddd", "eee"]
+        observed = [t.label for t in d.taxon_set]
+        for i, x in enumerate(expected):
+            self.assertTrue(x in observed)
+        for i, x in enumerate(observed):
+            self.assertTrue(x in expected)
         self.assertEqual(len(d.taxon_set), 9)
 
     def testCaseInsensitiveChars(self):
         d = dendropy.DnaCharacterMatrix.get_from_string(self.data_str, 'nexus', case_sensitive_taxon_labels=False)
+        expected = ["AAA", "BBB", "CCC", "DDD", "EEE"]
+        observed = [t.label.upper() for t in d.taxon_set]
+        for i, x in enumerate(expected):
+            self.assertTrue(x in observed)
+        for i, x in enumerate(observed):
+            self.assertTrue(x in expected)
         self.assertEqual(len(d.taxon_set), 5)
 
     def testCaseSensitiveChars(self):
@@ -580,6 +604,12 @@ END;
 
     def testDefaultCaseSensitivityChars(self):
         d = dendropy.DnaCharacterMatrix.get_from_string(self.data_str, 'nexus')
+        expected = ["AAA", "BBB", "CCC", "DDD", "EEE"]
+        observed = [t.label.upper() for t in d.taxon_set]
+        for i, x in enumerate(expected):
+            self.assertTrue(x in observed)
+        for i, x in enumerate(observed):
+            self.assertTrue(x in expected)
         self.assertEqual(len(d.taxon_set), 5)
 
 
