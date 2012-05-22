@@ -53,6 +53,8 @@ class Annotated(DataObject):
 
     def __init__(self):
         "__init__ creates dictionary to track attributes that will be persisted."
+
+    def _create(self):
         DataObject.__init__(self)
         self._annotations = {}
 
@@ -61,6 +63,8 @@ class Annotated(DataObject):
         Add an attribute to the list of attributes that need to be
         persisted as an annotation.
         """
+        if not hasattr(self, "_annotations"):
+            self._create()
         if annotate_as is None:
             annotate_as = attr_name
         if attr_name not in self._annotations:
@@ -80,6 +84,8 @@ class Annotated(DataObject):
         Remove an attribute from the list of attributes to be
         persisted as an annotation.
         """
+        if not hasattr(self, "_annotations"):
+            self._create()
         self._annotations.pop(attr_name, None)
 
     def annotations(self):
@@ -89,6 +95,8 @@ class Annotated(DataObject):
         'annotations()' method is called to populate the dictionary
         value.
         """
+        if not hasattr(self, "_annotations"):
+            self._create()
         annote_dict = AnnotesDict()
         for key, value in self._annotations.items():
             if hasattr(self, value.attr_name):
@@ -117,6 +125,8 @@ class Annotated(DataObject):
         """
         Clears registry of annotations to be persisted.
         """
+        if not hasattr(self, "_annotations"):
+            self._create()
         self._annotations.clear()
 
     def has_annotations(self):
@@ -124,6 +134,8 @@ class Annotated(DataObject):
         Returns True if there are attributes to be persisted as
         annotations.
         """
+        if not hasattr(self, "_annotations"):
+            self._create()
         return bool(len(self._annotations) > 0)
 
 class Labelled(Annotated):
@@ -134,7 +146,6 @@ class Labelled(Annotated):
         __init__ calls Annotated.__init__, and then, if keyword
         argument `label` is given, assigns it to self.label.
         """
-        Annotated.__init__(self)
         self.label = label
 
 class IdTagged(Labelled):
@@ -145,39 +156,39 @@ class IdTagged(Labelled):
 
     instances = 0
 
-    def normalize_id(id_str):
-        """
-        Given a string `id_str`, this returns a xs:NCName compliant
-        version of the string: (Letter | '_' | ':')
-        (NameChar)*. NameChar is given by : Letter | Digit | '.' | '-'
-        | '_' | ':'
-        """
-        if len(id_str) > 0:
-            f = id_str[0]
-        else:
-            f = '_' + str(id(id_str))
-        if not (f.isalpha or f == '_' or f == ':'):
-            id_str = '_' + id_str
-        id_str = re.sub('[^\w\d\-\.]', '', id_str)
-        return id_str
+    # def normalize_id(id_str):
+    #     """
+    #     Given a string `id_str`, this returns a xs:NCName compliant
+    #     version of the string: (Letter | '_' | ':')
+    #     (NameChar)*. NameChar is given by : Letter | Digit | '.' | '-'
+    #     | '_' | ':'
+    #     """
+    #     if len(id_str) > 0:
+    #         f = id_str[0]
+    #     else:
+    #         f = '_' + str(id(id_str))
+    #     if not (f.isalpha or f == '_' or f == ':'):
+    #         id_str = '_' + id_str
+    #     id_str = re.sub('[^\w\d\-\.]', '', id_str)
+    #     return id_str
 
-    normalize_id = staticmethod(normalize_id)
+    # normalize_id = staticmethod(normalize_id)
 
-    def __init__(self, **kwargs):
+    def __init__(self, label=None, oid=None, **kwargs):
         """
         __init__ calls Labelled.__init__, and assigns element id if
         given.
         """
-        Labelled.__init__(self, label=kwargs.get("label", None))
+        self.label = label
         IdTagged.instances += 1
-        if "oid" not in kwargs or kwargs["oid"] is None:
-            self._oid = self._default_oid()
+        if oid is not None:
+            self._oid = oid
         else:
-            self._oid = self.normalize_id(kwargs["oid"])
+            self._oid = self._default_oid()
 
     def _default_oid(self):
         "Returns default oid."
-        return self.__class__.__name__ + str(id(self))
+        return "x" + str(id(self))
 
     def _get_oid(self):
         "Returns id."
@@ -190,7 +201,7 @@ class IdTagged(Labelled):
         other oidue.
         """
         if oid is not None:
-            self._oid = self.normalize_id(oid)
+            self._oid = oid
         else:
             self._oid = self._default_oid()
 

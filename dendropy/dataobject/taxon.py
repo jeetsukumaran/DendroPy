@@ -51,11 +51,10 @@ class TaxonLinked(base.IdTagged):
     object.
     """
 
-    def __init__(self, **kwargs):
-        base.IdTagged.__init__(self,
-                               label=kwargs.get("label", None),
-                               oid=kwargs.get("oid", None))
-        self.taxon = kwargs.get("taxon", None)
+    def __init__(self, taxon=None, label=None, oid=None):
+        self.label = label
+        self.oid = oid
+        self.taxon = taxon
 
     def __deepcopy__(self, memo):
         """

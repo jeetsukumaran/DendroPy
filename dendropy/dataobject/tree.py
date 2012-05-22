@@ -2126,24 +2126,28 @@ class Node(TaxonLinked):
 
     ## INSTANCE METHODS #######################################################
 
-    def __init__(self, **kwargs):
-        TaxonLinked.__init__(self,
-                             taxon=kwargs.get("taxon", None),
-                             label=kwargs.get("label", None),
-                             oid=kwargs.get("oid", None))
+    def __init__(self,
+            taxon=None,
+            label=None,
+            oid=None,
+            edge=None,
+            edge_length=None):
+        self.label = label
+        self.oid = oid
+        self.taxon = taxon
         self.age = None
         self._edge = None
         self._child_nodes = []
         self._parent_node = None
-        if "edge" in kwargs:
-            self.edge = kwargs["edge"]
+        if edge is not None:
+            self.edge = edge
         else:
-            self.edge = Edge(head_node=self)
+            self.edge = Edge(head_node=self, length=edge_length)
         # try:
         #     self.edge = kwargs["edge"]
         # except KeyError:
         #     self.edge = Edge(head_node=self)
-        self._edge.head_node = self
+        # self._edge.head_node = self
         self.comments = []
 
     def __deepcopy__(self, memo):
@@ -2867,16 +2871,23 @@ class Edge(IdTagged):
 
     ## CLASS METHODS  ########################################################
 
-    def __init__(self, **kwargs):
+    def __init__(self,
+            tail_node=None,
+            head_node=None,
+            length=None,
+            rootedge=False,
+            label=None,
+            oid=None):
         """
         __init__ creates an edge from tail_node to head_node.  Modified from
         arbol.
         """
-        IdTagged.__init__(self, oid=kwargs.get("oid", None), label=kwargs.get("label", None))
-        self.tail_node = kwargs.get("tail_node", None)
-        self.head_node = kwargs.get("head_node", None)
-        self.rootedge = kwargs.get("rootedge", False)
-        self.length = kwargs.get("length", None)
+        self.label = label
+        self.oid = oid
+        self.tail_node = tail_node
+        self.head_node = head_node
+        self.rootedge = rootedge
+        self.length = length
 
     def __deepcopy__(self, memo):
         o = self.__class__()
