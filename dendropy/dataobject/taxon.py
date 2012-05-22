@@ -457,16 +457,18 @@ class Taxon(base.IdTagged):
 
     cmp = staticmethod(cmp)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, taxon=None, label=None, oid=None):
         """
         __init__ can take the kwargs needed by base.IdTagged, or the label keyword
         can be inferred from the label of an unnamed argument
         """
-        if len(args) > 1:
-            raise TypeError("Taxon() takes at most 1 non-keyword argument (%d given)" % len(args))
-        elif len(args) == 1:
-            kwargs['label'] = args[0].label
-        base.IdTagged.__init__(self, **kwargs)
+        if taxon is not None:
+            self.label = taxon.label
+        else:
+            self.label = None
+        if label is not None:
+            self.label = label
+        self.oid = oid
 
     def __str__(self):
         "String representation of self = taxon name."
