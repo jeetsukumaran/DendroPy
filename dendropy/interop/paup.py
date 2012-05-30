@@ -154,8 +154,18 @@ else:
             return stdout_block, stderr_block
 
         def execute_file(self, filepath):
-            return self.send_command("set warnreset=no; execute ss%s;\n" % filepath)
+            return self.send_command("set warnreset=no; execute %s;\n" % filepath)
 
+        def read_data(self, data):
+            """
+            Writes `data` as NEXUS-formatted file and
+            executes file within session.
+            """
+            cf = tempfile.NamedTemporaryFile()
+            data.write_to_stream(cf, "nexus")
+            cf.flush()
+            stdout, stderr = self.execute_file(cf.name)
+            return stdout, stderr
 
     class PaupRunner(object):
         """ Wrapper around PAUP* """
