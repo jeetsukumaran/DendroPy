@@ -32,6 +32,7 @@ import dendropy.test
 from dendropy.utility import containers
 from dendropy.utility import messaging
 from dendropy.utility import fileutils
+from dendropy.utility import session
 _LOG = messaging.get_logger(__name__)
 
 import dendropy
@@ -96,7 +97,58 @@ else:
         return sd
 
     ###############################################################################
-    ## PAUP* WRAPPER
+    ## PAUP* WRAPPERS
+
+    class PaupSession(session.Session):
+        """
+        Starts a PAUP* session, which remains active until explicitly closed.
+        Various commands can get executed and results returned.
+        """
+
+        EOC_FLAG = "@@@END-OF-COMMAND@@@"
+        FLAG_DETECT = re.compile(r'^\s*%s\s*$' % EOC_FLAG, re.MULTILINE)
+        EOC_FLAG_STRIP = re.compile(r"^(paup>)*\s*(\[!)*" + EOC_FLAG + "(\])*\s*$", re.MULTILINE)
+        # FLAG_DETECT = re.compile(r'[^\[]\s*%s\s*[^\]]' % EOC_FLAG, re.MULTILINE)
+
+        def __init__(self, paup_path=None):
+            session.Session.__init__(self, join_err_to_out=True)
+            if paup_path is None:
+                self.paup_path = PAUP_PATH
+            else:
+                self.paup_path = paup_path
+            self.start([self.paup_path])
+
+        def __del__(self):
+            self.stop()
+
+        def stop(self):
+            if self.process:
+                try:
+                    self.process.terminate()
+                except:
+                    pass
+            self.process = None
+
+        def send_command(self, command):
+            command = command + ";\n"
+            command = command + "[!" + self.EOC_FLAG + "]\n"
+            self.process.stdin.write(command)
+            self.process.stdin.flush()
+            stdout_block = ""
+            while True:
+                stdout = self._stdout_reader.read()
+                if stdout is not None:
+                    stdout_block = stdout_block + stdout
+                if self.FLAG_DETECT.search(stdout_block):
+                    stdout_block = self.EOC_FLAG_STRIP.sub("", stdout_block)
+                    break
+                # else:
+                #     print stdout_block
+            return stdout_block
+
+        def execute_file(self, filepath):
+            return self.send_command("set warnreset=no; execute %s;\n" % filepath)
+
 
     class PaupRunner(object):
         """ Wrapper around PAUP* """
