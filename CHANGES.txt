@@ -15,6 +15,7 @@ Changes
       defaults to `True` for consistency with legacy behavior.
     - [SumTrees] Strip out 'support' annotation from node meta-comments before
       annotating tree.
+    - [NEXUS/NEWICK] Faster parsing of tree files.
 
 
 Release 3.11.0
