@@ -111,7 +111,7 @@ else:
         # FLAG_DETECT = re.compile(r'[^\[]\s*%s\s*[^\]]' % EOC_FLAG, re.MULTILINE)
 
         def __init__(self, paup_path=None):
-            session.Session.__init__(self, join_err_to_out=True)
+            session.Session.__init__(self, join_err_to_out=False)
             if paup_path is None:
                 self.paup_path = PAUP_PATH
             else:
@@ -144,10 +144,17 @@ else:
                     break
                 # else:
                 #     print stdout_block
-            return stdout_block
+            stderr_block = ""
+            while True:
+                    stderr = self._stderr_reader.read()
+                    if stderr is not None:
+                        stderr_block += stderr
+                    else:
+                        break
+            return stdout_block, stderr_block
 
         def execute_file(self, filepath):
-            return self.send_command("set warnreset=no; execute %s;\n" % filepath)
+            return self.send_command("set warnreset=no; execute ss%s;\n" % filepath)
 
 
     class PaupRunner(object):
