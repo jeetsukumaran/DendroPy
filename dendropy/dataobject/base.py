@@ -147,9 +147,9 @@ class Annotated(DataObject):
         Returns True if there are attributes to be persisted as
         annotations.
         """
-        if not hasattr(self, "_annotations"):
+        if not hasattr(self, "annotations"):
             self._create()
-        return bool(len(self._annotations) > 0)
+        return bool(len(self.annotations) > 0)
 
 class Labelled(Annotated):
     "Provides for getting and setting of an object label."

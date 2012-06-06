@@ -928,8 +928,8 @@ class NexmlWriter(iosys.DataWriter):
 
             # annotate
 #             self.write_extensions(taxon_set, dest, indent_level=indent_level+1)
-#             if isinstance(taxon_set, base.Annotated) and taxon_set.has_annotations():
-#                 self.write_annotations(taxon_set, dest, indent_level=indent_level+1)
+            if isinstance(taxon_set, dendropy.Annotated) and taxon_set.has_annotations():
+                self.write_annotations(taxon_set, dest, indent_level=indent_level+1)
             for taxon in taxon_set:
                 dest.write(self.indent * (indent_level+1))
                 parts = []
@@ -940,13 +940,14 @@ class NexmlWriter(iosys.DataWriter):
                     raise Exception("Taxon without ID")
                 if taxon.label:
                     parts.append('label=%s' % _protect_attr(taxon.label))
-#                 if isinstance(taxon, base.Annotated) and taxon.has_annotations():
-#                     dest.write("<%s>\n" % ' '.join(parts))
-#                     self.write_extensions(taxon, dest, indent_level=indent_level+2)
-#                     self.write_annotations(taxon, dest, indent_level=indent_level+2)
-#                     dest.write(self.indent * (indent_level+1))
-#                     dest.write("</otu>\n")
-                dest.write("<%s />\n" % ' '.join(parts))
+                if isinstance(taxon, dendropy.Annotated) and taxon.has_annotations():
+                    dest.write("<%s>\n" % ' '.join(parts))
+                    # self.write_extensions(taxon, dest, indent_level=indent_level+2)
+                    self.write_annotations(taxon, dest, indent_level=indent_level+2)
+                    dest.write(self.indent * (indent_level+1))
+                    dest.write("</otu>\n")
+                else:
+                    dest.write("<%s />\n" % ' '.join(parts))
             dest.write(self.indent * indent_level)
             dest.write('</otus>\n')
 
@@ -967,8 +968,8 @@ class NexmlWriter(iosys.DataWriter):
 
             # annotate
 #             self.write_extensions(tree_list, dest, indent_level=indent_level+1)
-#             if isinstance(tree_list, base.Annotated) and tree_list.has_annotations():
-#                 self.write_annotations(tree_list, dest, indent_level=indent_level+1)
+            if isinstance(tree_list, dendropy.Annotated) and tree_list.has_annotations():
+                self.write_annotations(tree_list, dest, indent_level=indent_level+1)
 
             for tree in tree_list:
                 self.write_tree(tree=tree, dest=dest, indent_level=2)
@@ -1034,8 +1035,8 @@ class NexmlWriter(iosys.DataWriter):
 
             # annotate
 #             self.write_extensions(char_matrix, dest, indent_level=indent_level+1)
-#             if isinstance(char_matrix, base.Annotated) and char_matrix.has_annotations():
-#                 self.write_annotations(char_matrix, dest, indent_level=indent_level+1)
+            if isinstance(char_matrix, dendropy.Annotated) and char_matrix.has_annotations():
+                self.write_annotations(char_matrix, dest, indent_level=indent_level+1)
             state_alphabet_parts = []
             if hasattr(char_matrix, "state_alphabets"): #isinstance(char_matrix, dendropy.StandardCharacterMatrix):
                 for state_alphabet in char_matrix.state_alphabets:
@@ -1114,8 +1115,8 @@ class NexmlWriter(iosys.DataWriter):
             dest.write("%s<matrix>\n" % (self.indent * (indent_level+1)))
 
 #             self.write_extensions(char_matrix.taxon_seq_map, dest, indent_level=indent_level+1)
-#             if isinstance(char_matrix.taxon_seq_map, base.Annotated) and char_matrix.taxon_seq_map.has_annotations():
-#                 self.write_annotations(char_matrix.taxon_seq_map, dest, indent_level=indent_level+1)
+            if isinstance(char_matrix.taxon_seq_map, dendropy.Annotated) and char_matrix.taxon_seq_map.has_annotations():
+                self.write_annotations(char_matrix.taxon_seq_map, dest, indent_level=indent_level+1)
 
             for taxon, row in char_matrix.taxon_seq_map.items():
                 dest.write(self.indent*(indent_level+2))
@@ -1130,8 +1131,8 @@ class NexmlWriter(iosys.DataWriter):
                 dest.write("<%s>\n" % ' '.join(parts))
 
 #                 self.write_extensions(row, dest, indent_level=indent_level+3)
-#                 if isinstance(row, base.Annotated) and row.has_annotations():
-#                     self.write_annotations(row, dest, indent_level=indent_level+3)
+                if isinstance(row, dendropy.Annotated) and row.has_annotations():
+                    self.write_annotations(row, dest, indent_level=indent_level+3)
 
 
                 if hasattr(char_matrix, 'markup_as_sequences') and char_matrix.markup_as_sequences:
@@ -1174,13 +1175,13 @@ class NexmlWriter(iosys.DataWriter):
                             v = str(cell.value)
                         parts.append('state="%s"' % v)
                         dest.write(' '.join(parts))
-#                         if isinstance(cell, base.Annotated) and cell.has_annotations():
-#                             dest.write('>\n')
-#                             self.write_extensions(cell, dest, indent_level=indent_level+4)
-#                             self.write_annotations(cell, dest, indent_level=indent_level+4)
-#                             dest.write('%s</cell>' % (self.indent*(indent_level+3)))
-#                         else:
-                        dest.write('/>\n')
+                        if isinstance(cell, base.Annotated) and cell.has_annotations():
+                            dest.write('>\n')
+                            # self.write_extensions(cell, dest, indent_level=indent_level+4)
+                            self.write_annotations(cell, dest, indent_level=indent_level+4)
+                            dest.write('%s</cell>' % (self.indent*(indent_level+3)))
+                        else:
+                            dest.write('/>\n')
                 dest.write(self.indent * (indent_level+2))
                 dest.write('</row>\n')
             dest.write("%s</matrix>\n" % (self.indent * (indent_level+1)))
@@ -1209,8 +1210,8 @@ class NexmlWriter(iosys.DataWriter):
                    % (self.indent * indent_level, parts))
         # annotate
 #         self.write_extensions(tree, dest, indent_level=indent_level+1)
-#         if isinstance(tree, base.Annotated) and tree.has_annotations():
-#             self.write_annotations(tree, dest, indent_level=indent_level+1)
+        if isinstance(tree, dendropy.Annotated) and tree.has_annotations():
+            self.write_annotations(tree, dest, indent_level=indent_level+1)
 
         for node in tree.preorder_node_iter():
             self.write_node(node=node, dest=dest, indent_level=indent_level+1)
@@ -1254,7 +1255,7 @@ class NexmlWriter(iosys.DataWriter):
         if node.has_annotations():
             dest.write('>\n')
 #             self.write_extensions(node, dest, indent_level=indent_level+1)
-#             self.write_annotations(node, dest, indent_level=indent_level+1)
+            self.write_annotations(node, dest, indent_level=indent_level+1)
             dest.write('%s</node>\n' % (self.indent * indent_level))
         else:
             dest.write(' />\n')
@@ -1296,15 +1297,14 @@ class NexmlWriter(iosys.DataWriter):
                 else:
                     dest.write(' />\n')
 
-#     def write_annotations(self, annotated, dest, indent_level=0):
-#         "Writes out annotations for an Annotable object."
-#         pass
-#         if hasattr(annotated, "annotations"):
-#             annotes_dict = annotated.annotations()
-#             if len(annotes_dict) > 0:
-#                 parts = _to_nexml_dict(annotes_dict, self.indent, indent_level)
-#                 parts = '\n'.join(parts)
-#                 dest.write(parts + '\n')
+    def write_annotations(self, annotated, dest, indent_level=0):
+        "Writes out annotations for an Annotable object."
+        if hasattr(annotated, "annotations"):
+            for annote in annotated.annotations.values():
+                dest.write("    " * indent_level)
+                dest.write(_compose_annotation_xml(annote))
+                dest.write("\n")
+
 #
 #     def write_extensions(self, element, dest, indent_level=0):
 #         ### HACK TO SUPPORT RICH STRUCTURED METADATA ###
