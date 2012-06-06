@@ -28,36 +28,31 @@ class Annotation(object):
             annotate_as,
             value,
             datatype_hint=None,
-            namespace=None,
-            namespace_prefix=None
+            namespace_map=None,
+            namespace_key=None
             ):
         self.annotate_as = annotate_as
         self.value = value
         self.datatype_hint = datatype_hint
-        self._namespace = None
-        self.namespace = namespace
-        self._namespace_prefix = None
-        self.namespace_prefix = namespace_prefix
+        self._namespace_map = None
+        self.namespace_map = namespace_map
+        self._namespace_key = None
+        self.namespace_key = namespace_key
 
-    def _get_namespace(self):
-        if self._namespace is None:
-            self._namespace = "http://packages.python.org/DendroPy/"
-        return self._namespace
+    def _get_namespace_map(self):
+        if self._namespace_map is None:
+            self._namespace_map = {"http://packages.python.org/DendroPy/": "dendropy"}
+        return self._namespace_map
+    def _set_namespace_map(self, value):
+        self._namespace_map = value
+    namespace_map = property(_get_namespace_map, _set_namespace_map)
 
-    def _set_namespace(self, value):
-        self._namespace = value
-
-    namespace = property(_get_namespace, _set_namespace)
-
-    def _get_namespace_prefix(self):
-        if self._namespace_prefix is None:
-            self._namespace_prefix = "dendropy"
-
-    def _set_namespace_prefix(self, value):
-        self._namespace_prefix = value
-
-    namespace_prefix = property(_get_namespace_prefix, _set_namespace_prefix)
-
+    def _get_namespace_key(self):
+        if self._namespace_key is None:
+            self._namespace_key = "dendropy"
+    def _set_namespace_key(self, value):
+        self._namespace_key = value
+    namespace_key = property(_get_namespace_key, _set_namespace_key)
 
 class DataObject(object):
     """
@@ -84,8 +79,8 @@ class Annotated(DataObject):
             annotate_as,
             value,
             datatype_hint=None,
-            namespace=None,
-            namespace_prefix=None):
+            namespace_map=None,
+            namespace_key=None):
         """
         Add an attribute to the list of attributes that need to be
         persisted as an annotation.
@@ -96,8 +91,8 @@ class Annotated(DataObject):
                 annotate_as=annotate_as,
                 value=value,
                 datatype_hint=datatype_hint,
-                namespace=namespace,
-                namespace_prefix=namespace_prefix,
+                namespace_map=namespace_map,
+                namespace_key=namespace_key,
                 )
         self.annotations[annotate_as] = annote
         return annote
@@ -106,8 +101,8 @@ class Annotated(DataObject):
             attr_name,
             annotate_as=None,
             datatype_hint=None,
-            namespace=None,
-            namespace_prefix=None):
+            namespace_map=None,
+            namespace_key=None):
         """
         Add an attribute to the list of attributes that need to be
         persisted as an annotation.
@@ -121,8 +116,8 @@ class Annotated(DataObject):
                 annotate_as=annotate_as,
                 value=value,
                 datatype_hint=datatype_hint,
-                namespace=namespace,
-                namespace_prefix=namespace_prefix,
+                namespace_map=namespace_map,
+                namespace_key=namespace_key,
                 )
 
     def unannotate(self, attr_name):

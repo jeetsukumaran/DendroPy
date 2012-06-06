@@ -127,11 +127,14 @@ class xml_document(object):
         """
         self.namespace_list = list(namespace_list)
         self.etree = ElementTree.ElementTree(element=element, file=file_obj)
+        self.namespace_map = {}
+        self.namespace_map.update(ElementTree._namespace_map)
 
     def parse_string(self, source):
         "Loads an XML document from an XML string, source."
         root = ElementTree.fromstring(source)
         self.etree = ElementTree(element=root)
+        self.namespace_map.update(ElementTree._namespace_map)
 
     def parse_file(self, source):
         """
@@ -140,6 +143,7 @@ class xml_document(object):
         """
         root = ElementTree.parse(source=source)
         self.etree = ElementTree(element=root)
+        self.namespace_map.update(ElementTree._namespace_map)
 
     def getiterator(self, tag):
         """
@@ -147,6 +151,14 @@ class xml_document(object):
         that have the matching tag.
         """
         return _getiterator(self.etree.getroot(), tag, self.namespace_list)
+
+    def find(self, path):
+        "Finds all matching subelements, by tag name or path."
+        return _invoke_method_for_namespaces(self.etree.find, path, self.namespace_list)
+
+    def findall(self, path):
+        "Finds all matching subelements, by tag name or path."
+        return _invoke_method_for_namespaces(self.etree.findall, path, self.namespace_list)
 
 class XmlElement(object):
     """
