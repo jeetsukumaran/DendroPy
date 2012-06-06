@@ -243,6 +243,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         iosys.DataReader.__init__(self, **kwargs)
         self.load_time = None
         self.parse_time = None
+        # _AnnotationParser.__init__(self, namespace_map=kwargs.get("namespace_map", None))
         _AnnotationParser.__init__(self, namespace_map=kwargs.get("namespace_map", None))
 
     ## Implementation of the datasets.Reader interface ##

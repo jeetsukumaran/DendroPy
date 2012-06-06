@@ -85,8 +85,6 @@ class Annotated(DataObject):
         Add an attribute to the list of attributes that need to be
         persisted as an annotation.
         """
-        if not hasattr(self, "annotations"):
-            self._create()
         annote = Annotation(
                 annotate_as=annotate_as,
                 value=value,
@@ -96,6 +94,12 @@ class Annotated(DataObject):
                 )
         self.annotations.append(annote)
         return annote
+
+    def __getattr__(self, name):
+        if name == "annotations":
+            self._create()
+            return self.annotations
+        raise AttributeError(name)
 
     def annotate(self,
             attr_name,
@@ -125,16 +129,12 @@ class Annotated(DataObject):
         Remove an attribute from the list of attributes to be
         persisted as an annotation.
         """
-        if not hasattr(self, "annotations"):
-            self._create()
         del self.annotations.pop[attr_name]
 
     def clear_annotations(self):
         """
         Clears registry of annotations to be persisted.
         """
-        if not hasattr(self, "annotations"):
-            self._create()
         self.annotations.clear()
 
     def has_annotations(self):
@@ -142,8 +142,6 @@ class Annotated(DataObject):
         Returns True if there are attributes to be persisted as
         annotations.
         """
-        if not hasattr(self, "annotations"):
-            self._create()
         return bool(len(self.annotations) > 0)
 
 class Labelled(Annotated):
