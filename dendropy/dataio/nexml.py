@@ -46,76 +46,76 @@ def _to_nexml_indent_items(items, indent="", indent_level=0):
     return '\n'.join(["%s%s" % (indent * indent_level, str(item)) \
                      for item in items])
 
-def _to_nexml_dict(annotes_dict, indent="", indent_level=0):
-    "Composes a nexml dict entry, given a python dictionary."
-    main_indent = indent * indent_level
-    parts = []
-    parts.append('%s<dict id="%s">' % (main_indent,  annotes_dict.oid))
-    keyvals = _to_nexml_dict_keyvalues(annotes_dict=annotes_dict,
-                                    indent=indent,
-                                    indent_level=indent_level+1)
-    parts.append(_to_nexml_indent_items(keyvals, indent=indent, indent_level=0))
-    parts.append('%s</dict>' % (main_indent))
-    return parts
+# def _to_nexml_dict(annotes_dict, indent="", indent_level=0):
+#     "Composes a nexml dict entry, given a python dictionary."
+#     main_indent = indent * indent_level
+#     parts = []
+#     parts.append('%s<dict id="%s">' % (main_indent,  annotes_dict.oid))
+#     keyvals = _to_nexml_dict_keyvalues(annotes_dict=annotes_dict,
+#                                     indent=indent,
+#                                     indent_level=indent_level+1)
+#     parts.append(_to_nexml_indent_items(keyvals, indent=indent, indent_level=0))
+#     parts.append('%s</dict>' % (main_indent))
+#     return parts
 
-def _to_nexml_dict_keyvalues(annotes_dict, indent="", indent_level=0):
-    """
-    Returns a list of lines corresponding to a nexml rendering of a
-    dictionary.
-    """
-    parts = []
-    subindent = indent * (indent_level + 0)
-    for key, value in annotes_dict.items():
-#         parts.append('%s<key>%s</key>' % (subindent, key))
-#         anvalue = _to_nexml_dict_value(value=value[0],
-#                                        type_hint=value[1],
-#                                        indent=indent,
-#                                        indent_level=indent_level)
+# def _to_nexml_dict_keyvalues(annotes_dict, indent="", indent_level=0):
+#     """
+#     Returns a list of lines corresponding to a nexml rendering of a
+#     dictionary.
+#     """
+#     parts = []
+#     subindent = indent * (indent_level + 0)
+#     for key, value in annotes_dict.items():
+# #         parts.append('%s<key>%s</key>' % (subindent, key))
+# #         anvalue = _to_nexml_dict_value(value=value[0],
+# #                                        type_hint=value[1],
+# #                                        indent=indent,
+# #                                        indent_level=indent_level)
 
-        annote_value = value[0]
-        type_hint = value[1]
-        if type_hint is None:
-            value_type = _to_nexml_dict_value_type(annote_value)
-        else:
-            value_type = type_hint
-        if value_type == 'boolean':
-            annote_value = str(annote_value==True).lower()
-        if isinstance(annote_value, list):
-            value_str = '%s<%s id="%s">%s</%s>' % (subindent,
-                                           value_type,
-                                           key,
-                                           ' '.join([str(item) for item in annote_value]),
-                                           value_type)
-            parts.append(value_str)
-        elif isinstance(annote_value, dict):
-            parts.append(_to_nexml_indent_items(_to_nexml_dict(annote_value, indent=indent, indent_level=indent_level), indent, indent_level=0))
-        else:
-            parts.append('%s<%s id="%s">%s</%s>' % (subindent, value_type, key, str(annote_value), value_type))
-    return parts
+#         annote_value = value[0]
+#         type_hint = value[1]
+#         if type_hint is None:
+#             value_type = _to_nexml_dict_value_type(annote_value)
+#         else:
+#             value_type = type_hint
+#         if value_type == 'boolean':
+#             annote_value = str(annote_value==True).lower()
+#         if isinstance(annote_value, list):
+#             value_str = '%s<%s id="%s">%s</%s>' % (subindent,
+#                                            value_type,
+#                                            key,
+#                                            ' '.join([str(item) for item in annote_value]),
+#                                            value_type)
+#             parts.append(value_str)
+#         elif isinstance(annote_value, dict):
+#             parts.append(_to_nexml_indent_items(_to_nexml_dict(annote_value, indent=indent, indent_level=indent_level), indent, indent_level=0))
+#         else:
+#             parts.append('%s<%s id="%s">%s</%s>' % (subindent, value_type, key, str(annote_value), value_type))
+#     return parts
 
-def _to_nexml_dict_value_type(value):
-    """
-    Figures out the value type, and returns and appropriate nexml
-    string corresponding to it.
-    """
-    value_type = 'any'
-    if isinstance(value, list):
-        # assumes rest of the vector is same type as the first element
-        value_type = _to_nexml_dict_value_type(value[0]) + 'vector'
-    elif isinstance(value, dict):
-        value_type = 'dict'
-    else:
-        if type(value) == bool:
-            value_type = 'boolean'
-        elif type(value) == float:
-            value_type = 'float'
-        elif type(value) == int:
-            value_type = 'integer'
-        elif type(value) == str:
-            value_type = 'string'
-        else:
-            value_type = 'any'
-    return value_type
+# def _to_nexml_dict_value_type(value):
+#     """
+#     Figures out the value type, and returns and appropriate nexml
+#     string corresponding to it.
+#     """
+#     value_type = 'any'
+#     if isinstance(value, list):
+#         # assumes rest of the vector is same type as the first element
+#         value_type = _to_nexml_dict_value_type(value[0]) + 'vector'
+#     elif isinstance(value, dict):
+#         value_type = 'dict'
+#     else:
+#         if type(value) == bool:
+#             value_type = 'boolean'
+#         elif type(value) == float:
+#             value_type = 'float'
+#         elif type(value) == int:
+#             value_type = 'integer'
+#         elif type(value) == str:
+#             value_type = 'string'
+#         else:
+#             value_type = 'any'
+#     return value_type
 
 def _to_nexml_chartype(chartype):
     """
@@ -150,38 +150,81 @@ def _from_nexml_tree_length_type(type_attr):
     else:
         return float
 
-def _from_nexml_dict_value(value, value_type):
-    """
-    A text representation of a value of type `type`, where `type`
-    is specified in terms of an nexml element, returns the Python
-    representation of the value.
-    """
-    parsed_value = None
-    value = value.strip()
-    if value_type == "integer":
-        try:
-            parsed_value = int(value)
-        except ValueError:
-            raise Exception("Could not parse integer value")
-    elif value_type == "float":
-        try:
-            parsed_value = float(value)
-        except ValueError:
-            raise Exception("Could not parse float value")
-    elif value_type == "boolean":
-        try:
-            parsed_value = bool(value)
-        except ValueError:
-            raise Exception("Could not parse boolean value")
-    elif value_type == "string":
-        try:
-            parsed_value = str(value)
-        except ValueError:
-            raise Exception("Could not parse string value")
+# def _from_nexml_dict_value(value, value_type):
+#     """
+#     A text representation of a value of type `type`, where `type`
+#     is specified in terms of an nexml element, returns the Python
+#     representation of the value.
+#     """
+#     parsed_value = None
+#     value = value.strip()
+#     if value_type == "integer":
+#         try:
+#             parsed_value = int(value)
+#         except ValueError:
+#             raise Exception("Could not parse integer value")
+#     elif value_type == "float":
+#         try:
+#             parsed_value = float(value)
+#         except ValueError:
+#             raise Exception("Could not parse float value")
+#     elif value_type == "boolean":
+#         try:
+#             parsed_value = bool(value)
+#         except ValueError:
+#             raise Exception("Could not parse boolean value")
+#     elif value_type == "string":
+#         try:
+#             parsed_value = str(value)
+#         except ValueError:
+#             raise Exception("Could not parse string value")
+#     else:
+#         # what else to do?
+#         parsed_value = value
+#     return parsed_value
+
+def _parse_annotations(annotated, nxelement):
+    attrib = nxelement.etree_element.attrib
+    if '{http://www.w3.org/2001/XMLSchema-instance}type' in attrib:
+        xml_type = attrib['{http://www.w3.org/2001/XMLSchema-instance}type']
+    elif 'type' in attrib:
+        xml_type = attrib['type']
     else:
-        # what else to do?
-        parsed_value = value
-    return parsed_value
+        xml_type = 'nex:LiteralMeta'
+    if xml_type == 'nex:LiteralMeta':
+        value = attrib.get("content", None)
+        annotate_as = attrib.get("property", None)
+        datatype_hint = attrib.get("datatype", None)
+    else:
+        value = attrib.get("href", None)
+        annotate_as = attrib.get("rel", None)
+        datatype_hint = attrib.get("href", None)
+    if annotate_as is None:
+        raise Exception("Could not determine value for meta element: %s\n%s" % (nxelement, attrib))
+    namespace = None
+    namespace_prefix = None
+    if ":" in annotate_as:
+        namespace_prefix, annotate_as = annotate_as.split(":", 1)
+    a = annotated.store_annotation(
+            annotate_as=annotate_as,
+            value=value,
+            datatype_hint=datatype_hint,
+            namespace=namespace,
+            namespace_prefix=namespace_prefix)
+    # print _compose_annotation_xml(a)
+
+def _compose_annotation_xml(annote):
+    parts = ["<meta"]
+    if annote.datatype_hint == "href":
+        parts.append('xsi:type="nex:ResourceMeta"')
+        parts.append('rel="%s"' % annote.annotate_as)
+        parts.append('href="%s"' % annote.value)
+    else:
+        parts.append('xsi:type="nex:LiteralMeta"')
+        parts.append('property="%s"' % annote.annotate_as)
+        parts.append('content="%s"' % annote.value)
+    parts.append("/>")
+    return " ".join(parts)
 
 
 ############################################################################
@@ -242,6 +285,9 @@ class NexmlReader(iosys.DataReader):
             self.parse_char_matrices(xml_doc, self.dataset)
         if not self.exclude_trees:
             self.parse_tree_lists(xml_doc, self.dataset)
+        top_annotations = [i for i in xml_doc.getiterator('meta')]
+        for annotation in top_annotations:
+            _parse_annotations(self.dataset, annotation)
         return self.dataset
 
     def parse_taxon_sets(self, taxon_set_elements, dataset):
@@ -294,70 +340,70 @@ class _NexmlElementParser(object):
     def __init__(self):
         pass
 
-    def parse_annotations(self, annotated, nxelement):
-        """
-        Given an nexml element, this looks for a 'dict' child element
-        and passes it to the dictionary parse if found. Results are
-        placed as attributes of `annotated`.
-        """
-        pass
+    # def parse_annotations(self, annotated, nxelement):
+    #     print '---'
+    #     print nxelement.etree_element.tag
+    #     print nxelement.etree_element.attrib
+
+        # for xml_meta in xml_metas:
+        #     print xml_meta
 #         xml_dict = nxelement.find('dict')
 #         if xml_dict:
 #             return self.parse_dict(annotated=annotated, xml_dict=xml_dict)
 
-    def parse_dict(self, annotated, xml_dict):
-        """
-        This parses an xml_dict and sets the attributes of annotable
-        correspondingly.
-        """
-        xml_keys = []
-        xml_values = []
-        for child in xml_dict.getchildren():
-            if child.tag == 'key':
-                xml_keys.append(child)
-            else:
-                xml_values.append(child)
-        if len(xml_keys) > 0 or len(xml_values) > 0:
-            if len(xml_keys) == len(xml_values):
-                xml_keyvals = dict(zip(xml_keys, xml_values))
-                self.parse_keyvals(annotated, xml_keyvals)
-            else:
-                raise Exception("Unequal numbers of keys and values in annotations")
+    # def parse_dict(self, annotated, xml_dict):
+    #     """
+    #     This parses an xml_dict and sets the attributes of annotable
+    #     correspondingly.
+    #     """
+    #     xml_keys = []
+    #     xml_values = []
+    #     for child in xml_dict.getchildren():
+    #         if child.tag == 'key':
+    #             xml_keys.append(child)
+    #         else:
+    #             xml_values.append(child)
+    #     if len(xml_keys) > 0 or len(xml_values) > 0:
+    #         if len(xml_keys) == len(xml_values):
+    #             xml_keyvals = dict(zip(xml_keys, xml_values))
+    #             self.parse_keyvals(annotated, xml_keyvals)
+    #         else:
+    #             raise Exception("Unequal numbers of keys and values in annotations")
 
-    def parse_keyvals(self, annotated, xml_keyvals):
-        """
-        Given a dictionary where the keys are nexml dict key
-        XmlElements and the values are nexl dict value XmlElements
-        corresponding to those keys, this will parse the elements into
-        the attributes of an Annotable object.
-        """
-        for xml_key, xml_value in xml_keyvals.items():
-            an_key = xml_key.text
-            an_value = None
-            if xml_value.tag == 'dict':
-                subannotable = base.Annotated()
-                self.parse_dict(subannotable, xml_value)
-                an_value = subannotable
-            elif xml_value.tag.count('vector'):
-                an_value = []
-                vector_text = xml_value.text
-                vector_text = vector_text.strip('\n').strip('\r').strip()
-                vector_type = xml_value.tag.replace('vector', '')
-                if vector_type == 'dict':
-                    ## must handle it here:
-                    ## loop through child elements of xml_value,
-                    ## parsing the dicts and building up a list of
-                    ## Annotable objects
-                    raise NotImplementedError
-                else:
-                    vector_items = vector_text.split()
-                    for item in vector_items:
-                        an_value.append(_from_nexml_dict_value(item, vector_type))
-            else:
-                an_value = _from_nexml_dict_value(xml_value.text, xml_value.tag)
-            if an_key is not None and an_value is not None:
-                setattr(annotated, an_key, an_value)
-                annotated.annotate(an_key)
+    # def parse_keyvals(self, annotated, xml_keyvals):
+    #     """
+    #     Given a dictionary where the keys are nexml dict key
+    #     XmlElements and the values are nexl dict value XmlElements
+    #     corresponding to those keys, this will parse the elements into
+    #     the attributes of an Annotable object.
+    #     """
+    #     for xml_key, xml_value in xml_keyvals.items():
+    #         an_key = xml_key.text
+    #         an_value = None
+    #         if xml_value.tag == 'dict':
+    #             subannotable = base.Annotated()
+    #             self.parse_dict(subannotable, xml_value)
+    #             an_value = subannotable
+    #         elif xml_value.tag.count('vector'):
+    #             an_value = []
+    #             vector_text = xml_value.text
+    #             vector_text = vector_text.strip('\n').strip('\r').strip()
+    #             vector_type = xml_value.tag.replace('vector', '')
+    #             if vector_type == 'dict':
+    #                 ## must handle it here:
+    #                 ## loop through child elements of xml_value,
+    #                 ## parsing the dicts and building up a list of
+    #                 ## Annotable objects
+    #                 raise NotImplementedError
+    #             else:
+    #                 vector_items = vector_text.split()
+    #                 for item in vector_items:
+    #                     an_value.append(_from_nexml_dict_value(item, vector_type))
+    #         else:
+    #             an_value = _from_nexml_dict_value(xml_value.text, xml_value.tag)
+    #         if an_key is not None and an_value is not None:
+    #             setattr(annotated, an_key, an_value)
+    #             annotated.annotate(an_key)
 
 class _NexmlTreesParser(_NexmlElementParser):
     "Parses an XmlElement representation of NEXML schema tree blocks."
@@ -383,7 +429,9 @@ class _NexmlTreesParser(_NexmlElementParser):
             raise Exception("Taxa block \"%s\" not found" % taxa_id)
         tree_list = dendropy.TreeList(oid=oid, label=label, taxon_set=taxon_set)
         dataset.add_tree_list(tree_list)
-        self.parse_annotations(annotated=tree_list, nxelement=nxtrees)
+        annotations = [i for i in nxtrees.getiterator('meta')]
+        for annotation in annotations:
+            _parse_annotations(tree_list, annotation)
         tree_counter = 0
         for tree_element in nxtrees.getiterator('tree'):
             tree_counter = tree_counter + 1
@@ -393,7 +441,9 @@ class _NexmlTreesParser(_NexmlElementParser):
             treeobj.taxon_set = taxon_set
             tree_type_attr = tree_element.get('{http://www.w3.org/2001/XMLSchema-instance}type')
             treeobj.length_type = _from_nexml_tree_length_type(tree_type_attr)
-            self.parse_annotations(annotated=treeobj, nxelement=tree_element)
+            annotations = [i for i in tree_element.getiterator('meta')]
+            for annotation in annotations:
+                _parse_annotations(treeobj, annotation)
             nodes = self.parse_nodes(tree_element, taxon_set=treeobj.taxon_set)
             edges = self.parse_edges(tree_element, length_type=treeobj.length_type)
             for edge in edges.values():
@@ -479,7 +529,9 @@ class _NexmlTreesParser(_NexmlElementParser):
                 except KeyError:
                     raise Exception('Taxon with id "%s" not defined in taxa block "%s"' % (taxon_id, taxon_set.oid))
                 nodes[node_id].taxon = taxon
-            self.parse_annotations(annotated=nodes[node_id], nxelement=nxnode)
+            annotations = [i for i in nxnode.getiterator('meta')]
+            for annotation in annotations:
+                _parse_annotations(nodes[node_id], annotation)
         return nodes
 
     def parse_root_edge(self, tree_element, length_type):
@@ -499,7 +551,9 @@ class _NexmlTreesParser(_NexmlElementParser):
                       % (edge.oid, str(length_type))
                 raise Exception(msg)
             edge.length = edge_length
-            self.parse_annotations(annotated=edge, nxelement=rootedge)
+            annotations = [i for i in rootedge.getiterator('meta')]
+            for annotation in annotations:
+                _parse_annotations(edge, annotation)
             return edge
         else:
             return None
@@ -539,7 +593,9 @@ class _NexmlTreesParser(_NexmlElementParser):
                       % (edge_counter, edge.oid, str(length_type))
                 raise Exception(msg)
             edge.length = edge_length
-            self.parse_annotations(annotated=edge, nxelement=nxedge)
+            annotations = [i for i in nxedge.getiterator('meta')]
+            for annotation in annotations:
+                _parse_annotations(edge, annotation)
             edges[edge.oid] = edge
         return edges
 
@@ -559,11 +615,15 @@ class _NexmlTaxaParser(_NexmlElementParser):
                 taxon_set.oid = oid
             if label is not None:
                 taxon_set.label = label
-        self.parse_annotations(annotated=taxon_set, nxelement=nxtaxa)
+        annotations = [i for i in nxtaxa.getiterator('meta')]
+        for annotation in annotations:
+            _parse_annotations(taxon_set, annotation)
         for idx, nxtaxon in enumerate(nxtaxa.getiterator('otu')):
             taxon = dendropy.Taxon(label=nxtaxon.get('label', "Taxon" + str(idx)),
                     oid=nxtaxon.get('id', "s" + str(idx) ), )
-            self.parse_annotations(annotated=taxon, nxelement=nxtaxon)
+            annotations = [i for i in nxtaxon.getiterator('meta')]
+            for annotation in annotations:
+                _parse_annotations(taxon, annotation)
             taxon_set.append(taxon)
 
     def parse_taxa(self, nxtaxa, dataset):
@@ -710,7 +770,9 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         if not taxon_set:
             raise Exception("Character Block %s (\"%s\"): Taxa block \"%s\" not found" % (char_matrix.oid, char_matrix.label, taxa_id))
         char_matrix.taxon_set = taxon_set
-        self.parse_annotations(annotated=char_matrix, nxelement=nxchars)
+        annotations = [i for i in nxchars.getiterator('meta')]
+        for annotation in annotations:
+            _parse_annotations(char_matrix, annotation)
 
         nxformat = nxchars.find('format')
         if nxformat is not None:
@@ -720,7 +782,9 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             self.create_standard_character_alphabet(char_matrix)
 
         matrix = nxchars.find('matrix')
-        self.parse_annotations(annotated=char_matrix.taxon_seq_map, nxelement=matrix)
+        annotations = [i for i in matrix.getiterator('meta')]
+        for annotation in annotations:
+            _parse_annotations(char_matrix.taxon_seq_map, annotation)
 
         if char_matrix.character_types:
             id_chartype_map = char_matrix.id_chartype_map()
@@ -739,7 +803,9 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                 raise error.DataParseError(message='Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_matrix.oid, char_matrix.label, taxon_id, taxon_set.oid))
 
             character_vector = dendropy.CharacterDataVector(oid=row_id, label=label, taxon=taxon)
-            self.parse_annotations(annotated=character_vector, nxelement=nxrow)
+            annotations = [i for i in nxrow.getiterator('meta')]
+            for annotation in annotations:
+                _parse_annotations(character_vector, annotation)
 
             if isinstance(char_matrix, dendropy.ContinuousCharacterMatrix):
                 if nxchartype.endswith('Seqs'):
@@ -772,7 +838,9 @@ class _NexmlCharBlockParser(_NexmlElementParser):
 #                         column = id_chartype_map[chartype_id]
 #                         state = column.state_id_map[cell.get('state', None)]
                         cell = dendropy.CharacterDataCell(value=float(nxcell.get('state')), character_type=chartype)
-                        self.parse_annotations(annotated=cell, nxelement=nxcell)
+                        annotations = [i for i in nxtaxon.nxcell('meta')]
+                        for annotation in annotations:
+                            _parse_annotations(cell, annotation)
                         character_vector.set_cell_by_index(pos_idx, cell)
             else:
                 if nxchartype.endswith('Seqs'):

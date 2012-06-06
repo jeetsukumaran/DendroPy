@@ -99,9 +99,16 @@ def _invoke_method_for_namespaces(meth, tag, namespace_list=()):
     if i is None:
         diagnose_namespace(tag, "NOT FOUND")
         return i
-    if not isinstance(i, str) and not isinstance(i, unicode):
+    return _cast_to_element(i, namespace_list=namespace_list)
+
+def _cast_to_element(i, namespace_list=None):
+    if isinstance(i, list):
+        return [_cast_to_element(x) for x in i]
+    elif isinstance(i, str) or isinstance(i, unicode):
+        return i
+    else:
         return XmlElement(i, namespace_list=namespace_list)
-    return i
+
 
 class xml_document(object):
     """
@@ -178,3 +185,7 @@ class XmlElement(object):
     def find(self, path):
         "Finds all matching subelements, by tag name or path."
         return _invoke_method_for_namespaces(self.etree_element.find, path, self.namespace_list)
+
+    def findall(self, path):
+        "Finds all matching subelements, by tag name or path."
+        return _invoke_method_for_namespaces(self.etree_element.findall, path, self.namespace_list)
