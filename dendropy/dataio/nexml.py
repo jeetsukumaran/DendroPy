@@ -224,7 +224,7 @@ class _AnnotationParser(object):
             raise Exception("Could not determine value for meta element: %s\n%s" % (nxelement, attrib))
         namespace_key = None
         if ":" in annotate_as:
-            namespace_key, annotate_as = annotate_as.split(":", 1)
+            namespace_key = annotate_as.split(":")[0]
         a = annotated.store_annotation(
                 annotate_as=annotate_as,
                 value=value,
@@ -911,6 +911,8 @@ class NexmlWriter(iosys.DataWriter):
         """
         self.write_to_nexml_open(stream, indent_level=0)
 #         self.write_extensions(self.dataset, dest)
+        if isinstance(self.dataset, dendropy.Annotated) and self.dataset.has_annotations():
+            self.write_annotations(self.dataset, stream, indent_level=1)
         self.write_taxon_sets(taxon_sets=self.dataset.taxon_sets, dest=stream)
         if not self.exclude_chars:
             self.write_char_matrices(char_matrices=self.dataset.char_matrices, dest=stream)
@@ -1308,7 +1310,7 @@ class NexmlWriter(iosys.DataWriter):
     def write_annotations(self, annotated, dest, indent_level=0):
         "Writes out annotations for an Annotable object."
         if hasattr(annotated, "annotations"):
-            for annote in annotated.annotations.values():
+            for annote in annotated.annotations:
                 self.namespace_map.update(annote.namespace_map)
                 dest.write(self.indent * indent_level)
                 dest.write(_compose_annotation_xml(annote))

@@ -73,7 +73,7 @@ class Annotated(DataObject):
 
     def _create(self):
         DataObject.__init__(self)
-        self.annotations = {}
+        self.annotations = []
 
     def store_annotation(self,
             annotate_as,
@@ -85,7 +85,7 @@ class Annotated(DataObject):
         Add an attribute to the list of attributes that need to be
         persisted as an annotation.
         """
-        if not hasattr(self, "_annotations"):
+        if not hasattr(self, "annotations"):
             self._create()
         annote = Annotation(
                 annotate_as=annotate_as,
@@ -94,7 +94,7 @@ class Annotated(DataObject):
                 namespace_map=namespace_map,
                 namespace_key=namespace_key,
                 )
-        self.annotations[annotate_as] = annote
+        self.annotations.append(annote)
         return annote
 
     def annotate(self,
@@ -125,17 +125,17 @@ class Annotated(DataObject):
         Remove an attribute from the list of attributes to be
         persisted as an annotation.
         """
-        if not hasattr(self, "_annotations"):
+        if not hasattr(self, "annotations"):
             self._create()
-        del self._annotations.pop[attr_name]
+        del self.annotations.pop[attr_name]
 
     def clear_annotations(self):
         """
         Clears registry of annotations to be persisted.
         """
-        if not hasattr(self, "_annotations"):
+        if not hasattr(self, "annotations"):
             self._create()
-        self._annotations.clear()
+        self.annotations.clear()
 
     def has_annotations(self):
         """
