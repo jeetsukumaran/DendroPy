@@ -185,14 +185,19 @@ def _from_nexml_tree_length_type(type_attr):
 
 def _compose_annotation_xml(annote):
     parts = ["<meta"]
+    value = annote.value
+    if value:
+        value = _protect_attr(value)
+    else:
+        value = '""'
     if annote.datatype_hint == "href":
         parts.append('xsi:type="nex:ResourceMeta"')
         parts.append('rel="%s"' % annote.annotate_as)
-        parts.append('href="%s"' % annote.value)
+        parts.append('href=%s' % value)
     else:
         parts.append('xsi:type="nex:LiteralMeta"')
         parts.append('property="%s"' % annote.annotate_as)
-        parts.append('content="%s"' % annote.value)
+        parts.append('content=%s' % value)
         if annote.datatype_hint:
             parts.append('datatype="%s"'% annote.datatype_hint)
         parts.append('id="meta%d"' % id(annote))
@@ -1243,20 +1248,35 @@ class NexmlWriter(iosys.DataWriter):
         parts.append('<?xml version="1.0" encoding="ISO-8859-1"?>')
         parts.append('<nex:nexml')
         parts.append('%sversion="0.8"' % (self.indent * (indent_level+1)))
-        parts.append('%sxmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
-                     % (self.indent * (indent_level+1)))
-        parts.append('%sxmlns:xml="http://www.w3.org/XML/1998/namespace"' \
-                     % (self.indent * (indent_level+1)))
+        ensured_namespaces = [
+            ["", "http://www.nexml.org/2009"],
+            ["xsi", "http://www.w3.org/2001/XMLSchema-instance"],
+            ["xml", "http://www.w3.org/XML/1998/namespace"],
+            ["nex", "http://www.nexml.org/2009"],
+                ]
+        # parts.append('%sxmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
+        #              % (self.indent * (indent_level+1)))
+        # parts.append('%sxmlns:xml="http://www.w3.org/XML/1998/namespace"' \
+        #              % (self.indent * (indent_level+1)))
         parts.append('%sxsi:schemaLocation="http://www.nexml.org/2009"'
                      % (self.indent * (indent_level+1)))
-        parts.append('%sxmlns="http://www.nexml.org/2009"'
-                     % (self.indent * (indent_level+1)))
-        parts.append('%sxmlns:nex="http://www.nexml.org/2009"'
-                     % (self.indent * (indent_level+1)))
+        # parts.append('%sxmlns="http://www.nexml.org/2009"'
+        #              % (self.indent * (indent_level+1)))
+        # parts.append('%sxmlns:nex="http://www.nexml.org/2009"'
+        #              % (self.indent * (indent_level+1)))
+        seen_prefixes = []
+        seen_uris = []
         for uri, prefix in self.namespace_map.items():
-            if not prefix:
+            seen_prefixes.append(prefix)
+            seen_uris.append(uri)
+            if prefix:
+                prefix = ":" + prefix
+            parts.append('%sxmlns%s="%s"'
+                        % (self.indent * (indent_level+1), prefix, uri))
+        for prefix, uri in ensured_namespaces:
+            if uri in seen_uris:
                 continue
-            parts.append('%sxmlns:%s="%s"'
+            parts.append('%sxmlns%s="%s"'
                         % (self.indent * (indent_level+1), prefix, uri))
         parts.append('>\n')
         dest.write('\n'.join(parts))
