@@ -1276,6 +1276,8 @@ class NexmlWriter(iosys.DataWriter):
         for prefix, uri in ensured_namespaces:
             if uri in seen_uris:
                 continue
+            if prefix:
+                prefix = ":" + prefix
             parts.append('%sxmlns%s="%s"'
                         % (self.indent * (indent_level+1), prefix, uri))
         parts.append('>\n')
