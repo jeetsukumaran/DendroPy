@@ -1336,7 +1336,7 @@ class NexmlWriter(iosys.DataWriter):
                 dest.write('%s%s' % ((self.indent * indent_level), parts))
                 if edge.has_annotations():
                     dest.write('>\n')
-                    self.write_extensions(edge, dest, indent_level=indent_level+1)
+                    # self.write_extensions(edge, dest, indent_level=indent_level+1)
                     self.write_annotations(edge, dest,
                                            indent_level=indent_level+1)
                     dest.write('%s</%s>\n' % ((self.indent * indent_level), tag))
