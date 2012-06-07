@@ -22,38 +22,6 @@ Infrastructure for object serialization and management.
 
 import re
 
-class Annotation(object):
-    "Tracks the basic information need to serialize an attribute correctly."
-    def __init__(self,
-            key,
-            value,
-            datatype_hint=None,
-            namespace_map=None,
-            namespace_key=None
-            ):
-        self.key = key
-        self.value = value
-        self.datatype_hint = datatype_hint
-        self._namespace_map = None
-        self.namespace_map = namespace_map
-        self._namespace_key = None
-        self.namespace_key = namespace_key
-
-    def _get_namespace_map(self):
-        if self._namespace_map is None:
-            self._namespace_map = {"http://packages.python.org/DendroPy/": "dendropy"}
-        return self._namespace_map
-    def _set_namespace_map(self, value):
-        self._namespace_map = value
-    namespace_map = property(_get_namespace_map, _set_namespace_map)
-
-    def _get_namespace_key(self):
-        if self._namespace_key is None:
-            self._namespace_key = "dendropy"
-    def _set_namespace_key(self, value):
-        self._namespace_key = value
-    namespace_key = property(_get_namespace_key, _set_namespace_key)
-
 class DataObject(object):
     """
     Base class for elements that will be serialized.
@@ -143,6 +111,38 @@ class Annotated(DataObject):
         annotations.
         """
         return bool(len(self.annotations) > 0)
+
+class Annotation(Annotated):
+    "Tracks the basic information need to serialize an attribute correctly."
+    def __init__(self,
+            key,
+            value,
+            datatype_hint=None,
+            namespace_map=None,
+            namespace_key=None
+            ):
+        self.key = key
+        self.value = value
+        self.datatype_hint = datatype_hint
+        self._namespace_map = None
+        self.namespace_map = namespace_map
+        self._namespace_key = None
+        self.namespace_key = namespace_key
+
+    def _get_namespace_map(self):
+        if self._namespace_map is None:
+            self._namespace_map = {"http://packages.python.org/DendroPy/": "dendropy"}
+        return self._namespace_map
+    def _set_namespace_map(self, value):
+        self._namespace_map = value
+    namespace_map = property(_get_namespace_map, _set_namespace_map)
+
+    def _get_namespace_key(self):
+        if self._namespace_key is None:
+            self._namespace_key = "dendropy"
+    def _set_namespace_key(self, value):
+        self._namespace_key = value
+    namespace_key = property(_get_namespace_key, _set_namespace_key)
 
 class Labelled(Annotated):
     "Provides for getting and setting of an object label."

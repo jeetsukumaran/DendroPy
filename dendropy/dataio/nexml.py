@@ -46,77 +46,6 @@ def _to_nexml_indent_items(items, indent="", indent_level=0):
     return '\n'.join(["%s%s" % (indent * indent_level, str(item)) \
                      for item in items])
 
-# def _to_nexml_dict(annotes_dict, indent="", indent_level=0):
-#     "Composes a nexml dict entry, given a python dictionary."
-#     main_indent = indent * indent_level
-#     parts = []
-#     parts.append('%s<dict id="%s">' % (main_indent,  annotes_dict.oid))
-#     keyvals = _to_nexml_dict_keyvalues(annotes_dict=annotes_dict,
-#                                     indent=indent,
-#                                     indent_level=indent_level+1)
-#     parts.append(_to_nexml_indent_items(keyvals, indent=indent, indent_level=0))
-#     parts.append('%s</dict>' % (main_indent))
-#     return parts
-
-# def _to_nexml_dict_keyvalues(annotes_dict, indent="", indent_level=0):
-#     """
-#     Returns a list of lines corresponding to a nexml rendering of a
-#     dictionary.
-#     """
-#     parts = []
-#     subindent = indent * (indent_level + 0)
-#     for key, value in annotes_dict.items():
-# #         parts.append('%s<key>%s</key>' % (subindent, key))
-# #         anvalue = _to_nexml_dict_value(value=value[0],
-# #                                        type_hint=value[1],
-# #                                        indent=indent,
-# #                                        indent_level=indent_level)
-
-#         annote_value = value[0]
-#         type_hint = value[1]
-#         if type_hint is None:
-#             value_type = _to_nexml_dict_value_type(annote_value)
-#         else:
-#             value_type = type_hint
-#         if value_type == 'boolean':
-#             annote_value = str(annote_value==True).lower()
-#         if isinstance(annote_value, list):
-#             value_str = '%s<%s id="%s">%s</%s>' % (subindent,
-#                                            value_type,
-#                                            key,
-#                                            ' '.join([str(item) for item in annote_value]),
-#                                            value_type)
-#             parts.append(value_str)
-#         elif isinstance(annote_value, dict):
-#             parts.append(_to_nexml_indent_items(_to_nexml_dict(annote_value, indent=indent, indent_level=indent_level), indent, indent_level=0))
-#         else:
-#             parts.append('%s<%s id="%s">%s</%s>' % (subindent, value_type, key, str(annote_value), value_type))
-#     return parts
-
-# def _to_nexml_dict_value_type(value):
-#     """
-#     Figures out the value type, and returns and appropriate nexml
-#     string corresponding to it.
-#     """
-#     value_type = 'any'
-#     if isinstance(value, list):
-#         # assumes rest of the vector is same type as the first element
-#         value_type = _to_nexml_dict_value_type(value[0]) + 'vector'
-#     elif isinstance(value, dict):
-#         value_type = 'dict'
-#     else:
-#         if type(value) == bool:
-#             value_type = 'boolean'
-#         elif type(value) == float:
-#             value_type = 'float'
-#         elif type(value) == int:
-#             value_type = 'integer'
-#         elif type(value) == str:
-#             value_type = 'string'
-#         else:
-#             value_type = 'any'
-#     return value_type
-
 def _to_nexml_chartype(chartype):
     """
     Returns nexml characters element attribute corresponding to given
@@ -150,41 +79,8 @@ def _from_nexml_tree_length_type(type_attr):
     else:
         return float
 
-# def _from_nexml_dict_value(value, value_type):
-#     """
-#     A text representation of a value of type `type`, where `type`
-#     is specified in terms of an nexml element, returns the Python
-#     representation of the value.
-#     """
-#     parsed_value = None
-#     value = value.strip()
-#     if value_type == "integer":
-#         try:
-#             parsed_value = int(value)
-#         except ValueError:
-#             raise Exception("Could not parse integer value")
-#     elif value_type == "float":
-#         try:
-#             parsed_value = float(value)
-#         except ValueError:
-#             raise Exception("Could not parse float value")
-#     elif value_type == "boolean":
-#         try:
-#             parsed_value = bool(value)
-#         except ValueError:
-#             raise Exception("Could not parse boolean value")
-#     elif value_type == "string":
-#         try:
-#             parsed_value = str(value)
-#         except ValueError:
-#             raise Exception("Could not parse string value")
-#     else:
-#         # what else to do?
-#         parsed_value = value
-#     return parsed_value
-
-def _compose_annotation_xml(annote):
-    parts = ["<meta"]
+def _compose_annotation_xml(annote, indent="", indent_level=0):
+    parts = ["%s<meta" % (indent * indent_level)]
     value = annote.value
     if value:
         value = _protect_attr(value)
@@ -201,7 +97,13 @@ def _compose_annotation_xml(annote):
         if annote.datatype_hint:
             parts.append('datatype="%s"'% annote.datatype_hint)
         parts.append('id="meta%d"' % id(annote))
-    parts.append("/>")
+    if annote.has_annotations():
+        parts.append(">")
+        for a in annote.annotations:
+            parts.append("\n" + _compose_annotation_xml(a, indent=indent, indent_level=indent_level+1))
+        parts.append("\n%s</meta>" % (indent * indent_level))
+    else:
+        parts.append("/>")
     return " ".join(parts)
 
 class _AnnotationParser(object):
@@ -239,6 +141,9 @@ class _AnnotationParser(object):
                 datatype_hint=datatype_hint,
                 namespace_key=namespace_key,
                 namespace_map=self.namespace_map)
+        top_annotations = [i for i in nxelement.iter_top_children('meta')]
+        for annotation in top_annotations:
+            self.parse_annotations(a, annotation)
     # print _compose_annotation_xml(a)
 
 class NexmlReader(iosys.DataReader, _AnnotationParser):
@@ -1346,8 +1251,8 @@ class NexmlWriter(iosys.DataWriter):
         if hasattr(annotated, "annotations"):
             for annote in annotated.annotations:
                 self.namespace_map.update(annote.namespace_map)
-                dest.write(self.indent * indent_level)
-                dest.write(_compose_annotation_xml(annote))
+                # dest.write(self.indent * indent_level)
+                dest.write(_compose_annotation_xml(annote, indent=self.indent, indent_level=indent_level))
                 dest.write("\n")
 #
 #     def write_extensions(self, element, dest, indent_level=0):
