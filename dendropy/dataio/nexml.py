@@ -1247,7 +1247,7 @@ class NexmlWriter(iosys.DataWriter):
         parts = []
         parts.append('<?xml version="1.0" encoding="ISO-8859-1"?>')
         parts.append('<nex:nexml')
-        parts.append('%sversion="0.8"' % (self.indent * (indent_level+1)))
+        parts.append('%sversion="0.9"' % (self.indent * (indent_level+1)))
         ensured_namespaces = [
             ["", "http://www.nexml.org/2009"],
             ["xsi", "http://www.w3.org/2001/XMLSchema-instance"],
