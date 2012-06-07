@@ -213,7 +213,7 @@ class _AnnotationParser(object):
             self.namespace_map = namespace_map
 
     def parse_annotations(self, annotated, nxelement):
-        attrib = nxelement.etree_element.attrib
+        attrib = nxelement.attrib
         if '{http://www.w3.org/2001/XMLSchema-instance}type' in attrib:
             xml_type = attrib['{http://www.w3.org/2001/XMLSchema-instance}type']
         elif 'type' in attrib:

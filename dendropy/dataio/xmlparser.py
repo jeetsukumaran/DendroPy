@@ -250,3 +250,8 @@ class XmlElement(object):
     def findall(self, path):
         "Finds all matching subelements, by tag name or path."
         return _invoke_method_for_namespaces(self.etree_element.findall, path, self.namespace_list)
+
+    def __getattr__(self, name):
+        if name == 'attrib':
+            return self.etree_element.attrib
+        raise AttributeError(name)
