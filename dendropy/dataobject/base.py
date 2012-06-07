@@ -49,7 +49,7 @@ class Annotation(object):
 
     def _get_namespace_key(self):
         if self._namespace_key is None:
-            self._namespace_key = "dpy"
+            self._namespace_key = "dendropy"
     def _set_namespace_key(self, value):
         self._namespace_key = value
     namespace_key = property(_get_namespace_key, _set_namespace_key)
