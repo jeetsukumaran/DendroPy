@@ -905,19 +905,24 @@ class NexmlWriter(iosys.DataWriter):
 
     ### self.datasets.Writer interface  ###
 
+
+
     def write(self, stream):
         """
         Writes a list of DendroPy Tree objects to a full NEXML
         document.
         """
-        self.write_to_nexml_open(stream, indent_level=0)
+        body = StringIO()
         if isinstance(self.dataset, dendropy.Annotated) and self.dataset.has_annotations():
-            self.write_annotations(self.dataset, stream, indent_level=1)
-        self.write_taxon_sets(taxon_sets=self.dataset.taxon_sets, dest=stream)
+            self.write_annotations(self.dataset, body, indent_level=1)
+        self.write_taxon_sets(taxon_sets=self.dataset.taxon_sets, dest=body)
         if not self.exclude_chars:
-            self.write_char_matrices(char_matrices=self.dataset.char_matrices, dest=stream)
+            self.write_char_matrices(char_matrices=self.dataset.char_matrices, dest=body)
         if not self.exclude_trees:
-            self.write_tree_lists(tree_lists=self.dataset.tree_lists, dest=stream)
+            self.write_tree_lists(tree_lists=self.dataset.tree_lists, dest=body)
+
+        self.write_to_nexml_open(stream, indent_level=0)
+        stream.write(body.getvalue())
         self.write_to_nexml_close(stream, indent_level=0)
 
     ### class-specific  ###
@@ -1243,8 +1248,14 @@ class NexmlWriter(iosys.DataWriter):
                      % (self.indent * (indent_level+1)))
         parts.append('%sxmlns="http://www.nexml.org/2009"'
                      % (self.indent * (indent_level+1)))
-        parts.append('%sxmlns:nex="http://www.nexml.org/2009">\n'
+        parts.append('%sxmlns:nex="http://www.nexml.org/2009"'
                      % (self.indent * (indent_level+1)))
+        for uri, prefix in self.namespace_map.items():
+            if not prefix:
+                continue
+            parts.append('%sxmlns:%s="%s"'
+                        % (self.indent * (indent_level+1), prefix, uri))
+        parts.append('>\n')
         dest.write('\n'.join(parts))
 
     def write_to_nexml_close(self, dest, indent_level=0):
