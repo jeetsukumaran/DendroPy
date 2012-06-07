@@ -911,7 +911,6 @@ class NexmlWriter(iosys.DataWriter):
         document.
         """
         self.write_to_nexml_open(stream, indent_level=0)
-#         self.write_extensions(self.dataset, dest)
         if isinstance(self.dataset, dendropy.Annotated) and self.dataset.has_annotations():
             self.write_annotations(self.dataset, stream, indent_level=1)
         self.write_taxon_sets(taxon_sets=self.dataset.taxon_sets, dest=stream)
@@ -920,12 +919,6 @@ class NexmlWriter(iosys.DataWriter):
         if not self.exclude_trees:
             self.write_tree_lists(tree_lists=self.dataset.tree_lists, dest=stream)
         self.write_to_nexml_close(stream, indent_level=0)
-
-        print
-        print
-        print
-        for k, v in self.namespace_map.items():
-            print k, v
 
     ### class-specific  ###
 
@@ -1192,7 +1185,7 @@ class NexmlWriter(iosys.DataWriter):
                             v = str(cell.value)
                         parts.append('state="%s"' % v)
                         dest.write(' '.join(parts))
-                        if isinstance(cell, base.Annotated) and cell.has_annotations():
+                        if isinstance(cell, dendropy.Annotated) and cell.has_annotations():
                             dest.write('>\n')
                             # self.write_extensions(cell, dest, indent_level=indent_level+4)
                             self.write_annotations(cell, dest, indent_level=indent_level+4)
