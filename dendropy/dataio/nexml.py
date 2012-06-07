@@ -921,6 +921,12 @@ class NexmlWriter(iosys.DataWriter):
             self.write_tree_lists(tree_lists=self.dataset.tree_lists, dest=stream)
         self.write_to_nexml_close(stream, indent_level=0)
 
+        print
+        print
+        print
+        for k, v in self.namespace_map.items():
+            print k, v
+
     ### class-specific  ###
 
     def write_taxon_sets(self, taxon_sets, dest, indent_level=1):

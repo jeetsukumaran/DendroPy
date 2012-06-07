@@ -119,31 +119,45 @@ class xml_document(object):
     for messing with other sections of code.
     """
 
-    def __init__(self, element=None, file_obj=None, namespace_list=()):
+    def __init__(self, file_obj=None, namespace_list=()):
         """
         __init__ initializes a reference to the ElementTree parser, passing it
         the a file descripter object to be read and parsed or the
         ElemenTree.Element object to be used as the root element.
         """
         self.namespace_list = list(namespace_list)
-        self.etree = ElementTree.ElementTree(element=element, file=file_obj)
         self.namespace_map = {}
-        self.namespace_map.update(ElementTree._namespace_map)
+        self.parse_file(file_obj)
 
     def parse_string(self, source):
         "Loads an XML document from an XML string, source."
-        root = ElementTree.fromstring(source)
-        self.etree = ElementTree(element=root)
-        self.namespace_map.update(ElementTree._namespace_map)
+        raise NotImplementedError
 
     def parse_file(self, source):
         """
         Loads an XML document from source, which can either be a
         filepath string or a file object.
         """
-        root = ElementTree.parse(source=source)
-        self.etree = ElementTree(element=root)
-        self.namespace_map.update(ElementTree._namespace_map)
+        events = "start", "start-ns", "end-ns"
+
+        root = None
+        ns_map = []
+
+        for event, elem in ElementTree.iterparse(source, events):
+            if event == "start-ns":
+                ns_map.append(elem)
+            # elif event == "end-ns":
+            #     ns_map.pop()
+            elif event == "start":
+                if root is None:
+                    root = elem
+                # elem.set(NS_MAP, dict(ns_map))
+        # e = ElementTree.ElementTree(root)
+        # print ns_map
+        # root = ElementTree.parse(source=source)
+        self.etree = ElementTree.ElementTree(element=root)
+        for k, v in ns_map:
+            self.namespace_map[v] = k
 
     def getiterator(self, tag):
         """
