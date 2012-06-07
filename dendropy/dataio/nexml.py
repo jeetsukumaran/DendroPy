@@ -193,6 +193,9 @@ def _compose_annotation_xml(annote):
         parts.append('xsi:type="nex:LiteralMeta"')
         parts.append('property="%s"' % annote.annotate_as)
         parts.append('content="%s"' % annote.value)
+        if annote.datatype_hint:
+            parts.append('datatype="%s"'% annote.datatype_hint)
+        parts.append('id="meta%d"' % id(annote))
     parts.append("/>")
     return " ".join(parts)
 
