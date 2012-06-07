@@ -86,13 +86,16 @@ def _compose_annotation_xml(annote, indent="", indent_level=0):
         value = _protect_attr(value)
     else:
         value = '""'
+    key = annote.key
+    if ":" not in key:
+        key = "dendropy:%s" % key
     if annote.datatype_hint == "href":
         parts.append('xsi:type="nex:ResourceMeta"')
-        parts.append('rel="%s"' % annote.key)
+        parts.append('rel="%s"' % key)
         parts.append('href=%s' % value)
     else:
         parts.append('xsi:type="nex:LiteralMeta"')
-        parts.append('property="%s"' % annote.key)
+        parts.append('property="%s"' % key)
         parts.append('content=%s' % value)
         if annote.datatype_hint:
             parts.append('datatype="%s"'% annote.datatype_hint)
