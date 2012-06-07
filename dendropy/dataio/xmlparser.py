@@ -58,7 +58,11 @@ def diagnose_namespace(tag, namespace):
 #        sys.stderr.write("% 20s\t%s\n" % (tag, namespace))
 
 
-def _iterfind(etree, tag, namespace_list=()):
+def _iter_top_children(etree, tag, namespace_list=()):
+    """
+    Returns an iterator over *top" child elements from the root
+    element that have the matching tag.
+    """
     i = etree.findall(tag)
     if i:
         diagnose_namespace(tag, "no namespace decoration")
@@ -80,8 +84,8 @@ def _iterfind(etree, tag, namespace_list=()):
 
 def _getiterator(etree, tag, namespace_list=()):
     """
-    Returns an iterator over all top-level elements from the root element
-    that have the matching tag.
+    Returns an iterator over *all* (recursively) child elements from the root
+    element that have the matching tag.
     """
     i = etree.getiterator(tag)
     if i:
@@ -179,12 +183,12 @@ class xml_document(object):
         for k, v in ns_map:
             self.namespace_map[v] = k
 
-    def iterfind(self, tag):
+    def iter_top_children(self, tag):
         """
         Returns an iterator over all top-level elements from the root element
         that have the matching tag.
         """
-        return _iterfind(self.etree.getroot(), tag, self.namespace_list)
+        return _iter_top_children(self.etree.getroot(), tag, self.namespace_list)
 
     def getiterator(self, tag):
         """
@@ -217,9 +221,9 @@ class XmlElement(object):
         self.namespace_list = namespace_list
         self.etree_element = element
 
-    def iterfind(self, tag):
+    def iter_top_children(self, tag):
         "Returns an iterator over child elements with tags that match `tag`."
-        return _iterfind(self.etree_element, tag, self.namespace_list)
+        return _iter_top_children(self.etree_element, tag, self.namespace_list)
 
     def getiterator(self, tag):
         "Returns an iterator over child elements with tags that match `tag`."
