@@ -301,7 +301,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
             self.parse_char_matrices(xml_doc, self.dataset)
         if not self.exclude_trees:
             self.parse_tree_lists(xml_doc, self.dataset)
-        top_annotations = [i for i in xml_doc.getiterator('meta')]
+        top_annotations = [i for i in xml_doc.iterfind('meta')]
         for annotation in top_annotations:
             self.parse_annotations(self.dataset, annotation)
         return self.dataset
@@ -445,7 +445,7 @@ class _NexmlTreesParser(_NexmlElementParser):
             raise Exception("Taxa block \"%s\" not found" % taxa_id)
         tree_list = dendropy.TreeList(oid=oid, label=label, taxon_set=taxon_set)
         dataset.add_tree_list(tree_list)
-        annotations = [i for i in nxtrees.getiterator('meta')]
+        annotations = [i for i in nxtrees.iterfind('meta')]
         for annotation in annotations:
             self.parse_annotations(tree_list, annotation)
         tree_counter = 0
@@ -457,7 +457,7 @@ class _NexmlTreesParser(_NexmlElementParser):
             treeobj.taxon_set = taxon_set
             tree_type_attr = tree_element.get('{http://www.w3.org/2001/XMLSchema-instance}type')
             treeobj.length_type = _from_nexml_tree_length_type(tree_type_attr)
-            annotations = [i for i in tree_element.getiterator('meta')]
+            annotations = [i for i in tree_element.iterfind('meta')]
             for annotation in annotations:
                 self.parse_annotations(treeobj, annotation)
             nodes = self.parse_nodes(tree_element, taxon_set=treeobj.taxon_set)
@@ -545,7 +545,7 @@ class _NexmlTreesParser(_NexmlElementParser):
                 except KeyError:
                     raise Exception('Taxon with id "%s" not defined in taxa block "%s"' % (taxon_id, taxon_set.oid))
                 nodes[node_id].taxon = taxon
-            annotations = [i for i in nxnode.getiterator('meta')]
+            annotations = [i for i in nxnode.iterfind('meta')]
             for annotation in annotations:
                 self.parse_annotations(nodes[node_id], annotation)
         return nodes
@@ -567,7 +567,7 @@ class _NexmlTreesParser(_NexmlElementParser):
                       % (edge.oid, str(length_type))
                 raise Exception(msg)
             edge.length = edge_length
-            annotations = [i for i in rootedge.getiterator('meta')]
+            annotations = [i for i in rootedge.iterfind('meta')]
             for annotation in annotations:
                 self.parse_annotations(edge, annotation)
             return edge
@@ -609,7 +609,7 @@ class _NexmlTreesParser(_NexmlElementParser):
                       % (edge_counter, edge.oid, str(length_type))
                 raise Exception(msg)
             edge.length = edge_length
-            annotations = [i for i in nxedge.getiterator('meta')]
+            annotations = [i for i in nxedge.iterfind('meta')]
             for annotation in annotations:
                 self.parse_annotations(edge, annotation)
             edges[edge.oid] = edge
@@ -631,13 +631,13 @@ class _NexmlTaxaParser(_NexmlElementParser):
                 taxon_set.oid = oid
             if label is not None:
                 taxon_set.label = label
-        annotations = [i for i in nxtaxa.getiterator('meta')]
+        annotations = [i for i in nxtaxa.iterfind('meta')]
         for annotation in annotations:
             self.parse_annotations(taxon_set, annotation)
         for idx, nxtaxon in enumerate(nxtaxa.getiterator('otu')):
             taxon = dendropy.Taxon(label=nxtaxon.get('label', "Taxon" + str(idx)),
                     oid=nxtaxon.get('id', "s" + str(idx) ), )
-            annotations = [i for i in nxtaxon.getiterator('meta')]
+            annotations = [i for i in nxtaxon.iterfind('meta')]
             for annotation in annotations:
                 self.parse_annotations(taxon, annotation)
             taxon_set.append(taxon)
@@ -786,7 +786,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         if not taxon_set:
             raise Exception("Character Block %s (\"%s\"): Taxa block \"%s\" not found" % (char_matrix.oid, char_matrix.label, taxa_id))
         char_matrix.taxon_set = taxon_set
-        annotations = [i for i in nxchars.getiterator('meta')]
+        annotations = [i for i in nxchars.iterfind('meta')]
         for annotation in annotations:
             self.parse_annotations(char_matrix, annotation)
 
@@ -798,7 +798,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             self.create_standard_character_alphabet(char_matrix)
 
         matrix = nxchars.find('matrix')
-        annotations = [i for i in matrix.getiterator('meta')]
+        annotations = [i for i in matrix.iterfind('meta')]
         for annotation in annotations:
             self.parse_annotations(char_matrix.taxon_seq_map, annotation)
 
@@ -819,7 +819,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                 raise error.DataParseError(message='Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_matrix.oid, char_matrix.label, taxon_id, taxon_set.oid))
 
             character_vector = dendropy.CharacterDataVector(oid=row_id, label=label, taxon=taxon)
-            annotations = [i for i in nxrow.getiterator('meta')]
+            annotations = [i for i in nxrow.iterfind('meta')]
             for annotation in annotations:
                 self.parse_annotations(character_vector, annotation)
 
