@@ -910,10 +910,8 @@ class NexmlWriter(iosys.DataWriter):
         iosys.DataWriter.__init__(self, **kwargs)
         self.indent = "    "
         self.namespace_map = {}
-
-    ### self.datasets.Writer interface  ###
-
-
+        if "namespace_map" in kwargs:
+            self.namespace_map.update(kwargs["namespace_map"])
 
     def write(self, stream):
         """
