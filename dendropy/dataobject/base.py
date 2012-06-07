@@ -25,13 +25,13 @@ import re
 class Annotation(object):
     "Tracks the basic information need to serialize an attribute correctly."
     def __init__(self,
-            annotate_as,
+            key,
             value,
             datatype_hint=None,
             namespace_map=None,
             namespace_key=None
             ):
-        self.annotate_as = annotate_as
+        self.key = key
         self.value = value
         self.datatype_hint = datatype_hint
         self._namespace_map = None
@@ -76,7 +76,7 @@ class Annotated(DataObject):
         self.annotations = []
 
     def store_annotation(self,
-            annotate_as,
+            key,
             value,
             datatype_hint=None,
             namespace_map=None,
@@ -86,7 +86,7 @@ class Annotated(DataObject):
         persisted as an annotation.
         """
         annote = Annotation(
-                annotate_as=annotate_as,
+                key=key,
                 value=value,
                 datatype_hint=datatype_hint,
                 namespace_map=namespace_map,
@@ -117,7 +117,7 @@ class Annotated(DataObject):
             raise AttributeError(attr_name)
         value = getattr(self, attr_name)
         return self.store_annotation(
-                annotate_as=annotate_as,
+                key=annotate_as,
                 value=value,
                 datatype_hint=datatype_hint,
                 namespace_map=namespace_map,

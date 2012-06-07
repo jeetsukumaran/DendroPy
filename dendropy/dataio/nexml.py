@@ -192,11 +192,11 @@ def _compose_annotation_xml(annote):
         value = '""'
     if annote.datatype_hint == "href":
         parts.append('xsi:type="nex:ResourceMeta"')
-        parts.append('rel="%s"' % annote.annotate_as)
+        parts.append('rel="%s"' % annote.key)
         parts.append('href=%s' % value)
     else:
         parts.append('xsi:type="nex:LiteralMeta"')
-        parts.append('property="%s"' % annote.annotate_as)
+        parts.append('property="%s"' % annote.key)
         parts.append('content=%s' % value)
         if annote.datatype_hint:
             parts.append('datatype="%s"'% annote.datatype_hint)
@@ -222,19 +222,19 @@ class _AnnotationParser(object):
             xml_type = 'nex:LiteralMeta'
         if xml_type == 'nex:LiteralMeta':
             value = attrib.get("content", None)
-            annotate_as = attrib.get("property", None)
+            key = attrib.get("property", None)
             datatype_hint = attrib.get("datatype", None)
         else:
             value = attrib.get("href", None)
-            annotate_as = attrib.get("rel", None)
+            key = attrib.get("rel", None)
             datatype_hint = attrib.get("href", None)
-        if annotate_as is None:
+        if key is None:
             raise Exception("Could not determine value for meta element: %s\n%s" % (nxelement, attrib))
         namespace_key = None
-        if ":" in annotate_as:
-            namespace_key = annotate_as.split(":")[0]
+        if ":" in key:
+            namespace_key = key.split(":")[0]
         a = annotated.store_annotation(
-                annotate_as=annotate_as,
+                key=key,
                 value=value,
                 datatype_hint=datatype_hint,
                 namespace_key=namespace_key,
