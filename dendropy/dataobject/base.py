@@ -87,6 +87,17 @@ class Annotated(DataObject):
                 `getattr(object, "attribute_name")`.
 
         """
+        if not name_is_qualified:
+            if name_prefix is None and namespace is None:
+                name_prefix = "dendropy"
+                namespace = "http://packages.python.org/DendroPy/"
+            elif name_prefix is None:
+                raise TypeError("Cannot specify 'name_prefix' for unqualified name without specifying 'namespace'")
+            elif namespace is None:
+                raise TypeError("Cannot specify 'namespace' for unqualified name without specifying 'name_prefix'")
+        else:
+            if namespace is None:
+                raise TypeError("Cannot specify qualified name without specifying 'namespace'")
         annote = Annotation(
                 name=name,
                 value=value,
@@ -139,10 +150,17 @@ class Annotated(DataObject):
             annotate_as = attr_name
         if not hasattr(self, attr_name):
             raise AttributeError(attr_name)
-        if name_prefix is None:
-            name_prefix = "dendropy"
-        if namespace is None:
-            namespace = "http://packages.python.org/DendroPy/"
+        if not name_is_qualified:
+            if name_prefix is None and namespace is None:
+                name_prefix = "dendropy"
+                namespace = "http://packages.python.org/DendroPy/"
+            elif name_prefix is None:
+                raise TypeError("Cannot specify 'name_prefix' for unqualified name without specifying 'namespace'")
+            elif namespace is None:
+                raise TypeError("Cannot specify 'namespace' for unqualified name without specifying 'name_prefix'")
+        else:
+            if namespace is None:
+                raise TypeError("Cannot specify qualified name without specifying 'namespace'")
         annote = Annotation(
                 name=annotate_as,
                 value=(self, attr_name),

@@ -1192,8 +1192,10 @@ class NexmlWriter(iosys.DataWriter):
 
     def write_annotations(self, annotated, dest, indent_level=0):
         "Writes out annotations for an Annotable object."
+        # import sys
         if hasattr(annotated, "annotations"):
             for annote in annotated.annotations:
+                # sys.stderr.write("{}\t\t{}\n".format(annote.name_prefix, annote.namespace))
                 self._prefix_uri_tuples.add((annote.name_prefix, annote.namespace))
                 dest.write(_compose_annotation_xml(annote, indent=self.indent, indent_level=indent_level))
                 dest.write("\n")
