@@ -48,7 +48,7 @@ class Annotated(DataObject):
             value,
             datatype_hint=None,
             name_prefix=None,
-            namespace_map=None,
+            namespace=None,
             name_is_qualified=False):
         """
         Add an attribute to the list of attributes that need to be
@@ -59,7 +59,7 @@ class Annotated(DataObject):
                 value=value,
                 datatype_hint=datatype_hint,
                 name_prefix=name_prefix,
-                namespace_map=namespace_map,
+                namespace=namespace,
                 name_is_qualified=name_is_qualified,
                 )
         self.annotations.append(annote)
@@ -76,7 +76,7 @@ class Annotated(DataObject):
             annotate_as=None,
             datatype_hint=None,
             name_prefix=None,
-            namespace_map=None,
+            namespace=None,
             name_is_qualified=False,
             ):
         """
@@ -88,14 +88,12 @@ class Annotated(DataObject):
         if not hasattr(self, attr_name):
             raise AttributeError(attr_name)
         value = getattr(self, attr_name)
-        if name_prefix is None:
-            name_prefix = "dendropy"
         return self.store_annotation(
                 name=annotate_as,
                 value=value,
                 datatype_hint=datatype_hint,
                 name_prefix=name_prefix,
-                namespace_map=namespace_map,
+                namespace=namespace,
                 name_is_qualified=name_is_qualified,
                 )
 
@@ -121,12 +119,19 @@ class Annotated(DataObject):
 
 class Annotation(Annotated):
     "Tracks the basic information need to serialize an attribute correctly."
+
+    def parse_qualified_name(qualified_name, sep=":"):
+        if sep not in qualified_name:
+            raise ValueError("'%s' is not a valid CURIE-standard qualified name" % qualified_name)
+        return qualified_name.split(":", 1)
+    parse_qualified_name = staticmethod(parse_qualified_name)
+
     def __init__(self,
             name,
             value,
             datatype_hint=None,
             name_prefix=None,
-            namespace_map=None,
+            namespace=None,
             name_is_qualified=False
             ):
         self.value = value
@@ -138,8 +143,8 @@ class Annotation(Annotated):
             self.name = name
             self._name_prefix = name_prefix
         self.datatype_hint = datatype_hint
-        self._namespace_map = None
-        self.namespace_map = namespace_map
+        self._namespace = None
+        self.namespace = namespace
 
     def _get_name_prefix(self):
         if self._name_prefix is None:
@@ -149,21 +154,19 @@ class Annotation(Annotated):
         self._name_prefix = prefix
     name_prefix = property(_get_name_prefix, _set_name_prefix)
 
+    def _get_namespace(self):
+        if self._namespace is None:
+            self._namespace = "http://packages.python.org/DendroPy/"
+        return self._namespace
+    def _set_namespace(self, prefix):
+        self._namespace = prefix
+    namespace = property(_get_namespace, _set_namespace)
+
     def _get_qualified_name(self):
         return "%s:%s" % (self.name_prefix, self.name)
     def _set_qualified_name(self, qualified_name):
-        if ":" not in qualified_name:
-            raise ValueError("'%s' is not a valid CURIE-standard qualified name" % qualified_name)
-        self._name_prefix, self.name = qualified_name.split(":", 1)
+        self._name_prefix, self.name = Annotation.parse_qualified_name(qualified_name)
     qualified_name = property(_get_qualified_name, _set_qualified_name)
-
-    def _get_namespace_map(self):
-        if self._namespace_map is None:
-            self._namespace_map = {"http://packages.python.org/DendroPy/": "dendropy"}
-        return self._namespace_map
-    def _set_namespace_map(self, value):
-        self._namespace_map = value
-    namespace_map = property(_get_namespace_map, _set_namespace_map)
 
 class Labelled(Annotated):
     "Provides for getting and setting of an object label."

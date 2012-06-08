@@ -115,6 +115,9 @@ class _AnnotationParser(object):
             self.namespace_map = {}
         else:
             self.namespace_map = namespace_map
+        self.rev_namespace_map = {}
+        for k, v in self.namespace_map.items():
+            self.rev_namespace_map[v] = k
 
     def parse_annotations(self, annotated, nxelement):
         attrib = nxelement.attrib
@@ -133,13 +136,23 @@ class _AnnotationParser(object):
             key = attrib.get("rel", None)
             datatype_hint = attrib.get("href", None)
         if key is None:
-            raise Exception("Could not determine value for meta element: %s\n%s" % (nxelement, attrib))
+            raise ValueError("Could not determine property/rel for meta element: %s\n%s" % (nxelement, attrib))
+        name_prefix, name = dendropy.Annotation.parse_qualified_name(key)
+        # try:
+        #     namespace = self.rev_namespace_map[name_prefix]
+        # except KeyError:
+        #     raise ValueError("CURIE-standard prefix '%s' not defined in document: %s" % (name_prefix, self.rev_namespace_map))
+        try:
+            namespace = (namespace for namespace, prefix in self.namespace_map.items() if prefix==name_prefix).next()
+        except StopIteration:
+            raise ValueError("CURIE-standard prefix '%s' not defined in document: %s" % (name_prefix, self.namespace_map))
         a = annotated.store_annotation(
-                name=key,
+                name=name,
                 value=value,
                 datatype_hint=datatype_hint,
-                namespace_map=self.namespace_map,
-                name_is_qualified=True)
+                name_prefix=name_prefix,
+                namespace=namespace,
+                name_is_qualified=False)
         top_annotations = [i for i in nxelement.iter_top_children('meta')]
         for annotation in top_annotations:
             self.parse_annotations(a, annotation)
@@ -155,7 +168,6 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         iosys.DataReader.__init__(self, **kwargs)
         self.load_time = None
         self.parse_time = None
-        # _AnnotationParser.__init__(self, namespace_map=kwargs.get("namespace_map", None))
         _AnnotationParser.__init__(self, namespace_map=kwargs.get("namespace_map", None))
 
     ## Implementation of the datasets.Reader interface ##
@@ -169,7 +181,6 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         start = time.clock()
         xml_doc = xmlparser.xml_document(file_obj=stream, namespace_list=SUPPORTED_NEXML_NAMESPACES)
         # import xml.etree.ElementTree as xx
-        # xml_doc.namespace_map.update(xx._namespace_map)
         self.namespace_map.update(xml_doc.namespace_map)
         self.load_time = time.clock() - start
         start = time.clock()
@@ -748,9 +759,7 @@ class NexmlWriter(iosys.DataWriter):
         "Calls the base class constructor."
         iosys.DataWriter.__init__(self, **kwargs)
         self.indent = "    "
-        self.namespace_map = {}
-        if "namespace_map" in kwargs:
-            self.namespace_map.update(kwargs["namespace_map"])
+        self._prefix_uri_tuples = set()
 
     def write(self, stream):
         """
@@ -1104,7 +1113,7 @@ class NexmlWriter(iosys.DataWriter):
         #              % (self.indent * (indent_level+1)))
         seen_prefixes = []
         seen_uris = []
-        for uri, prefix in self.namespace_map.items():
+        for prefix, uri in self._prefix_uri_tuples:
             seen_prefixes.append(prefix)
             seen_uris.append(uri)
             if prefix:
@@ -1185,15 +1194,6 @@ class NexmlWriter(iosys.DataWriter):
         "Writes out annotations for an Annotable object."
         if hasattr(annotated, "annotations"):
             for annote in annotated.annotations:
-                self.namespace_map.update(annote.namespace_map)
-                # dest.write(self.indent * indent_level)
+                self._prefix_uri_tuples.add((annote.name_prefix, annote.namespace))
                 dest.write(_compose_annotation_xml(annote, indent=self.indent, indent_level=indent_level))
                 dest.write("\n")
-#
-#     def write_extensions(self, element, dest, indent_level=0):
-#         ### HACK TO SUPPORT RICH STRUCTURED METADATA ###
-#         from xml.etree import ElementTree
-#         for e in element.extensions:
-#             dest.write(ElementTree.tostring(e))
-#             dest.write("\n")
-
