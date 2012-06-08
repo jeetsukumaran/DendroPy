@@ -55,11 +55,8 @@ class Annotated(DataObject):
             datatype_hint=None,
             name_prefix=None,
             namespace=None,
-            name_is_qualified=False):
-        """
-        Add an attribute to the list of attributes that need to be
-        persisted as an annotation.
-        """
+            name_is_qualified=False,
+            value_is_attribute=False):
         annote = Annotation(
                 name=name,
                 value=value,
@@ -67,6 +64,7 @@ class Annotated(DataObject):
                 name_prefix=name_prefix,
                 namespace=namespace,
                 name_is_qualified=name_is_qualified,
+                value_is_attribute=value_is_attribute,
                 )
         self.annotations.add(annote)
         return annote
@@ -87,15 +85,21 @@ class Annotated(DataObject):
             annotate_as = attr_name
         if not hasattr(self, attr_name):
             raise AttributeError(attr_name)
-        value = getattr(self, attr_name)
-        return self.add_annotation(
+        if name_prefix is None:
+            name_prefix = "dendropy"
+        if namespace is None:
+            namespace = "http://packages.python.org/DendroPy/"
+        annote = Annotation(
                 name=annotate_as,
-                value=value,
+                value=(self, attr_name),
                 datatype_hint=datatype_hint,
                 name_prefix=name_prefix,
                 namespace=namespace,
                 name_is_qualified=name_is_qualified,
+                value_is_attribute=True,
                 )
+        self.annotations.add(annote)
+        return annote
 
     def has_annotations(self):
         """
@@ -109,12 +113,16 @@ class Annotated(DataObject):
         Returns list of Annotation objects associated with self that match
         based on *all* criteria specified in keyword arguments::
 
-            >>> a.get_annotations(name="color")
-            >>> a.get_annotations(namespace="http://packages.python.org/DendroPy/")
-            >>> a.get_annotations(namespace="http://packages.python.org/DendroPy/",
-                    name="color")
-            >>> a.get_annotations(name_prefix="dc")
-            >>> a.get_annotations(qualified_name="dc:color")
+            >>> notes = a.get_annotations(name="color")
+            >>> notes = a.get_annotations(namespace="http://packages.python.org/DendroPy/")
+            >>> notes = a.get_annotations(namespace="http://packages.python.org/DendroPy/",
+                                          name="color")
+            >>> notes = a.get_annotations(name_prefix="dc")
+            >>> notes = a.get_annotations(qualified_name="dc:color")
+
+        If no keyword arguments are given, *all* annotations are returned::
+
+            >>> notes = a.get_annotations()
 
         """
         results = []
@@ -126,19 +134,46 @@ class Annotated(DataObject):
     def remove_annotations(self, **kwargs):
         """
         Removes Annotation objects associated with self that match
-        based on *all* criteria specified in keyword arguments::
+        based on *all* criteria specified in keyword arguments.
+
+        Remove all annotation objects associated with self with `name` ==
+        "color"::
 
             >>> a.remove_annotations(name="color")
+
+        Remove all annotation objects associated with self with `namespace` ==
+        "http://packages.python.org/DendroPy/"::
+
             >>> a.remove_annotations(namespace="http://packages.python.org/DendroPy/")
+
+        Remove all annotation objects associated with self with `namespace` ==
+        "http://packages.python.org/DendroPy/" *and* `name` == "color"::
+
             >>> a.remove_annotations(namespace="http://packages.python.org/DendroPy/",
                     name="color")
+
+        Remove all annotation objects associated with self with `name_prefix` ==
+        "dc"::
+
             >>> a.remove_annotations(name_prefix="dc")
+
+        Remove all annotation objects associated with self with `qualified_name` ==
+        "dc:color"::
+
             >>> a.remove_annotations(qualified_name="dc:color")
 
+        If no keyword argument filter criteria are given, *all* annotations are
+        removed::
+
+            >>> a.remove_annotations()
+
         """
+        to_remove = []
         for a in self.annotations:
             if a.is_match(**kwargs):
-                self.annotations.remove(a)
+                to_remove.append(a)
+        for a in to_remove:
+            self.annotations.remove(a)
 
 class Annotation(Annotated):
     "Tracks the basic information need to serialize an attribute correctly."
@@ -155,9 +190,11 @@ class Annotation(Annotated):
             datatype_hint=None,
             name_prefix=None,
             namespace=None,
-            name_is_qualified=False
+            name_is_qualified=False,
+            value_is_attribute=False,
             ):
-        self.value = value
+        self._value = value
+        self.value_is_attribute = value_is_attribute
         if name_is_qualified:
             self.qualified_name = name
             if name_prefix is not None:
@@ -173,18 +210,30 @@ class Annotation(Annotated):
         match = True
         for k, v in kwargs.items():
             if k == "name_prefix":
-                if self.name_prefix == v:
+                if self.name_prefix != v:
                     return False
             elif k == "qualified_name":
-                if self.qualified_name == v:
+                if self.qualified_name != v:
                     return False
             elif k == "namespace":
-                if self.namespace == v:
+                if self.namespace != v:
+                    return False
+            elif k == "value":
+                if self.value != v:
                     return False
             elif hasattr(self, k):
                 if getattr(self, k) != v:
                     return False
         return True
+
+    def _get_value(self):
+        if self.value_is_attribute:
+            return getattr(*self._value)
+        else:
+            return self._value
+    def _set_value(self, value):
+        self._value = value
+    value = property(_get_value, _set_value)
 
     def _get_name_prefix(self):
         if self._name_prefix is None:

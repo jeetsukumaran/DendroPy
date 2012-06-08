@@ -36,7 +36,7 @@ SUPPORTED_NEXML_NAMESPACES = ('http://www.nexml.org/1.0', 'http://www.nexml.org/
 
 def _protect_attr(x):
 #     return cgi.escape(x)
-    return saxutils.quoteattr(x)
+    return saxutils.quoteattr(str(x))
 
 def _to_nexml_indent_items(items, indent="", indent_level=0):
     """
