@@ -44,21 +44,23 @@ class Annotated(DataObject):
         self.annotations = []
 
     def store_annotation(self,
-            key,
+            name,
             value,
             datatype_hint=None,
+            name_prefix=None,
             namespace_map=None,
-            namespace_key=None):
+            name_is_qualified=False):
         """
         Add an attribute to the list of attributes that need to be
         persisted as an annotation.
         """
         annote = Annotation(
-                key=key,
+                name=name,
                 value=value,
                 datatype_hint=datatype_hint,
+                name_prefix=name_prefix,
                 namespace_map=namespace_map,
-                namespace_key=namespace_key,
+                name_is_qualified=name_is_qualified,
                 )
         self.annotations.append(annote)
         return annote
@@ -73,8 +75,10 @@ class Annotated(DataObject):
             attr_name,
             annotate_as=None,
             datatype_hint=None,
+            name_prefix=None,
             namespace_map=None,
-            namespace_key=None):
+            name_is_qualified=False,
+            ):
         """
         Add an attribute to the list of attributes that need to be
         persisted as an annotation.
@@ -84,20 +88,23 @@ class Annotated(DataObject):
         if not hasattr(self, attr_name):
             raise AttributeError(attr_name)
         value = getattr(self, attr_name)
+        if name_prefix is None:
+            name_prefix = "dendropy"
         return self.store_annotation(
-                key=annotate_as,
+                name=annotate_as,
                 value=value,
                 datatype_hint=datatype_hint,
+                name_prefix=name_prefix,
                 namespace_map=namespace_map,
-                namespace_key=namespace_key,
+                name_is_qualified=name_is_qualified,
                 )
 
-    def unannotate(self, attr_name):
+    def unannotate(self, name):
         """
         Remove an attribute from the list of attributes to be
         persisted as an annotation.
         """
-        del self.annotations.pop[attr_name]
+        raise NotImplementedError
 
     def clear_annotations(self):
         """
@@ -115,19 +122,40 @@ class Annotated(DataObject):
 class Annotation(Annotated):
     "Tracks the basic information need to serialize an attribute correctly."
     def __init__(self,
-            key,
+            name,
             value,
             datatype_hint=None,
+            name_prefix=None,
             namespace_map=None,
-            namespace_key=None
+            name_is_qualified=False
             ):
-        self.key = key
         self.value = value
+        if name_is_qualified:
+            self.qualified_name = name
+            if name_prefix is not None:
+                self._name_prefix = name_prefix
+        else:
+            self.name = name
+            self._name_prefix = name_prefix
         self.datatype_hint = datatype_hint
         self._namespace_map = None
         self.namespace_map = namespace_map
-        self._namespace_key = None
-        self.namespace_key = namespace_key
+
+    def _get_name_prefix(self):
+        if self._name_prefix is None:
+            self._name_prefix = "dendropy"
+        return self._name_prefix
+    def _set_name_prefix(self, prefix):
+        self._name_prefix = prefix
+    name_prefix = property(_get_name_prefix, _set_name_prefix)
+
+    def _get_qualified_name(self):
+        return "%s:%s" % (self.name_prefix, self.name)
+    def _set_qualified_name(self, qualified_name):
+        if ":" not in qualified_name:
+            raise ValueError("'%s' is not a valid CURIE-standard qualified name" % qualified_name)
+        self._name_prefix, self.name = qualified_name.split(":", 1)
+    qualified_name = property(_get_qualified_name, _set_qualified_name)
 
     def _get_namespace_map(self):
         if self._namespace_map is None:
@@ -136,13 +164,6 @@ class Annotation(Annotated):
     def _set_namespace_map(self, value):
         self._namespace_map = value
     namespace_map = property(_get_namespace_map, _set_namespace_map)
-
-    def _get_namespace_key(self):
-        if self._namespace_key is None:
-            self._namespace_key = "dendropy"
-    def _set_namespace_key(self, value):
-        self._namespace_key = value
-    namespace_key = property(_get_namespace_key, _set_namespace_key)
 
 class Labelled(Annotated):
     "Provides for getting and setting of an object label."

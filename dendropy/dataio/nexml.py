@@ -86,9 +86,8 @@ def _compose_annotation_xml(annote, indent="", indent_level=0):
         value = _protect_attr(value)
     else:
         value = '""'
-    key = annote.key
-    if ":" not in key:
-        key = "dendropy:%s" % key
+    key = annote.qualified_name
+    # assert ":" in key
     if annote.datatype_hint == "href":
         parts.append('xsi:type="nex:ResourceMeta"')
         parts.append('rel="%s"' % key)
@@ -135,15 +134,12 @@ class _AnnotationParser(object):
             datatype_hint = attrib.get("href", None)
         if key is None:
             raise Exception("Could not determine value for meta element: %s\n%s" % (nxelement, attrib))
-        namespace_key = None
-        if ":" in key:
-            namespace_key = key.split(":")[0]
         a = annotated.store_annotation(
-                key=key,
+                name=key,
                 value=value,
                 datatype_hint=datatype_hint,
-                namespace_key=namespace_key,
-                namespace_map=self.namespace_map)
+                namespace_map=self.namespace_map,
+                name_is_qualified=True)
         top_annotations = [i for i in nxelement.iter_top_children('meta')]
         for annotation in top_annotations:
             self.parse_annotations(a, annotation)
@@ -263,71 +259,6 @@ class _NexmlElementParser(_AnnotationParser):
 
     def __init__(self, namespace_map):
         _AnnotationParser.__init__(self, namespace_map)
-
-    # def parse_annotations(self, annotated, nxelement):
-    #     print '---'
-    #     print nxelement.etree_element.tag
-    #     print nxelement.etree_element.attrib
-
-        # for xml_meta in xml_metas:
-        #     print xml_meta
-#         xml_dict = nxelement.find('dict')
-#         if xml_dict:
-#             return self.parse_dict(annotated=annotated, xml_dict=xml_dict)
-
-    # def parse_dict(self, annotated, xml_dict):
-    #     """
-    #     This parses an xml_dict and sets the attributes of annotable
-    #     correspondingly.
-    #     """
-    #     xml_keys = []
-    #     xml_values = []
-    #     for child in xml_dict.getchildren():
-    #         if child.tag == 'key':
-    #             xml_keys.append(child)
-    #         else:
-    #             xml_values.append(child)
-    #     if len(xml_keys) > 0 or len(xml_values) > 0:
-    #         if len(xml_keys) == len(xml_values):
-    #             xml_keyvals = dict(zip(xml_keys, xml_values))
-    #             self.parse_keyvals(annotated, xml_keyvals)
-    #         else:
-    #             raise Exception("Unequal numbers of keys and values in annotations")
-
-    # def parse_keyvals(self, annotated, xml_keyvals):
-    #     """
-    #     Given a dictionary where the keys are nexml dict key
-    #     XmlElements and the values are nexl dict value XmlElements
-    #     corresponding to those keys, this will parse the elements into
-    #     the attributes of an Annotable object.
-    #     """
-    #     for xml_key, xml_value in xml_keyvals.items():
-    #         an_key = xml_key.text
-    #         an_value = None
-    #         if xml_value.tag == 'dict':
-    #             subannotable = base.Annotated()
-    #             self.parse_dict(subannotable, xml_value)
-    #             an_value = subannotable
-    #         elif xml_value.tag.count('vector'):
-    #             an_value = []
-    #             vector_text = xml_value.text
-    #             vector_text = vector_text.strip('\n').strip('\r').strip()
-    #             vector_type = xml_value.tag.replace('vector', '')
-    #             if vector_type == 'dict':
-    #                 ## must handle it here:
-    #                 ## loop through child elements of xml_value,
-    #                 ## parsing the dicts and building up a list of
-    #                 ## Annotable objects
-    #                 raise NotImplementedError
-    #             else:
-    #                 vector_items = vector_text.split()
-    #                 for item in vector_items:
-    #                     an_value.append(_from_nexml_dict_value(item, vector_type))
-    #         else:
-    #             an_value = _from_nexml_dict_value(xml_value.text, xml_value.tag)
-    #         if an_key is not None and an_value is not None:
-    #             setattr(annotated, an_key, an_value)
-    #             annotated.annotate(an_key)
 
 class _NexmlTreesParser(_NexmlElementParser):
     "Parses an XmlElement representation of NEXML schema tree blocks."

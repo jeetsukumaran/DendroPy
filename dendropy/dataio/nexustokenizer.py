@@ -39,7 +39,7 @@ DEFAULT_HYPHENS_AS_TOKENS = False
 def format_annotation_as_comments(annotated, nhx=False):
     parts = []
     for annote in annotated.annotations:
-        key = annote.key
+        key = annote.name
         value = annote.value
         if isinstance(value, list) or isinstance(value, tuple):
             items = ",".join(str(i) for i in value)
