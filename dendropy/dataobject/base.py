@@ -57,6 +57,36 @@ class Annotated(DataObject):
             namespace=None,
             name_is_qualified=False,
             value_is_attribute=False):
+        """
+        Add an annotation to self, where:
+
+            `name`
+                The property/subject/field of the annotation (e.g. "color",
+                "locality", "dc:citation")
+
+            `value`
+                The content of the annotation.
+
+            `datatype_hint`
+                Mainly for NeXML output (e.g. "xsd:string").
+
+            `namespace_prefix`
+                Mainly for NeXML output (e.g. "dc:").
+
+            `namespace`
+                Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
+
+            `name_is_qualified`
+                Mainly for NeXML *input*: name will be split into prefix and local part
+                before storage (e.g., "dc:citations" will result in prefix = "dc" and
+                name="citations")
+
+            `value_is_attribute`
+                If value is passed as a tuple of (object, "attribute_name") and this
+                is True, then actual content will be the result of calling
+                `getattr(object, "attribute_name")`.
+
+        """
         annote = Annotation(
                 name=name,
                 value=value,
@@ -79,7 +109,31 @@ class Annotated(DataObject):
             ):
         """
         Add an attribute to the list of attributes that need to be
-        persisted as an annotation.
+        persisted as an annotation. The value of the annotation will
+        be dynamically bound to the value of the attribute.
+
+            `attr_name`
+                The name of the attribute to be used as the source of the
+                content or value of the annotation.
+
+            `annotate_as`
+                Use this string as the annotation field/name rather than the attribute
+                name.
+
+            `datatype_hint`
+                Mainly for NeXML output (e.g. "xsd:string").
+
+            `namespace_prefix`
+                Mainly for NeXML output (e.g. "dc:").
+
+            `namespace`
+                Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
+
+            `name_is_qualified`
+                Mainly for NeXML *input*: name will be split into prefix and local part
+                before storage (e.g., "dc:citations" will result in prefix = "dc" and
+                name="citations")
+
         """
         if annotate_as is None:
             annotate_as = attr_name
