@@ -37,6 +37,8 @@ DEFAULT_HYPHENS_AS_TOKENS = False
 ## annotations to comments and vice versa
 
 def format_annotation_as_comments(annotated, nhx=False):
+    if not annotated.annotations:
+        return ""
     parts = []
     for annote in annotated.annotations:
         key = annote.name
