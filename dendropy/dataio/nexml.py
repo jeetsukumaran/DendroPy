@@ -146,7 +146,7 @@ class _AnnotationParser(object):
             namespace = (namespace for namespace, prefix in self.namespace_map.items() if prefix==name_prefix).next()
         except StopIteration:
             raise ValueError("CURIE-standard prefix '%s' not defined in document: %s" % (name_prefix, self.namespace_map))
-        a = annotated.store_annotation(
+        a = annotated.add_annotation(
                 name=name,
                 value=value,
                 datatype_hint=datatype_hint,

@@ -1002,9 +1002,9 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
             tree.probability = prop
             tree.count = count
             tree.cumulative_probability = cumulative_prob
-            tree.annotate('count')
-            tree.annotate('probability')
-            tree.annotate('cumulative_probability')
+            tree.add_attribute_annotation('count')
+            tree.add_attribute_annotation('probability')
+            tree.add_attribute_annotation('cumulative_probability')
             tree.label = "Tree%d" % (idx+1)
         tree_list.write_to_stream(trprobs_dest,
                 'nexus',

@@ -489,7 +489,7 @@ class PhylogeneticIndependentConstrasts(object):
             for k, v in nd_results.items():
                 setattr(nd, k, v)
                 if annotate_pic_statistics:
-                    nd.annotate(k)
+                    nd.add_attribute_annotation(k)
             if corrected_edge_lengths and nd_results['pic_corrected_edge_length'] is not None:
                 nd.edge.length = nd_results['pic_corrected_edge_length']
             if state_values_as_node_labels:

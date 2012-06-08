@@ -41,9 +41,15 @@ class Annotated(DataObject):
 
     def _create(self):
         DataObject.__init__(self)
-        self.annotations = []
+        self.annotations = set()
 
-    def store_annotation(self,
+    def __getattr__(self, name):
+        if name == "annotations":
+            self._create()
+            return self.annotations
+        raise AttributeError(name)
+
+    def add_annotation(self,
             name,
             value,
             datatype_hint=None,
@@ -62,16 +68,10 @@ class Annotated(DataObject):
                 namespace=namespace,
                 name_is_qualified=name_is_qualified,
                 )
-        self.annotations.append(annote)
+        self.annotations.add(annote)
         return annote
 
-    def __getattr__(self, name):
-        if name == "annotations":
-            self._create()
-            return self.annotations
-        raise AttributeError(name)
-
-    def annotate(self,
+    def add_attribute_annotation(self,
             attr_name,
             annotate_as=None,
             datatype_hint=None,
@@ -88,7 +88,7 @@ class Annotated(DataObject):
         if not hasattr(self, attr_name):
             raise AttributeError(attr_name)
         value = getattr(self, attr_name)
-        return self.store_annotation(
+        return self.add_annotation(
                 name=annotate_as,
                 value=value,
                 datatype_hint=datatype_hint,
@@ -97,25 +97,48 @@ class Annotated(DataObject):
                 name_is_qualified=name_is_qualified,
                 )
 
-    def unannotate(self, name):
-        """
-        Remove an attribute from the list of attributes to be
-        persisted as an annotation.
-        """
-        raise NotImplementedError
-
-    def clear_annotations(self):
-        """
-        Clears registry of annotations to be persisted.
-        """
-        self.annotations.clear()
-
     def has_annotations(self):
         """
         Returns True if there are attributes to be persisted as
         annotations.
         """
         return bool(len(self.annotations) > 0)
+
+    def get_annotations(self, **kwargs):
+        """
+        Returns list of Annotation objects associated with self that match
+        based on *all* criteria specified in keyword arguments::
+
+            >>> a.get_annotations(name="color")
+            >>> a.get_annotations(namespace="http://packages.python.org/DendroPy/")
+            >>> a.get_annotations(namespace="http://packages.python.org/DendroPy/",
+                    name="color")
+            >>> a.get_annotations(name_prefix="dc")
+            >>> a.get_annotations(qualified_name="dc:color")
+
+        """
+        results = []
+        for a in self.annotations:
+            if a.is_match(**kwargs):
+                results.append(a)
+        return results
+
+    def remove_annotations(self, **kwargs):
+        """
+        Removes Annotation objects associated with self that match
+        based on *all* criteria specified in keyword arguments::
+
+            >>> a.remove_annotations(name="color")
+            >>> a.remove_annotations(namespace="http://packages.python.org/DendroPy/")
+            >>> a.remove_annotations(namespace="http://packages.python.org/DendroPy/",
+                    name="color")
+            >>> a.remove_annotations(name_prefix="dc")
+            >>> a.remove_annotations(qualified_name="dc:color")
+
+        """
+        for a in self.annotations:
+            if a.is_match(**kwargs):
+                self.annotations.remove(a)
 
 class Annotation(Annotated):
     "Tracks the basic information need to serialize an attribute correctly."
@@ -145,6 +168,23 @@ class Annotation(Annotated):
         self.datatype_hint = datatype_hint
         self._namespace = None
         self.namespace = namespace
+
+    def is_match(self, **kwargs):
+        match = True
+        for k, v in kwargs.items():
+            if k == "name_prefix":
+                if self.name_prefix == v:
+                    return False
+            elif k == "qualified_name":
+                if self.qualified_name == v:
+                    return False
+            elif k == "namespace":
+                if self.namespace == v:
+                    return False
+            elif hasattr(self, k):
+                if getattr(self, k) != v:
+                    return False
+        return True
 
     def _get_name_prefix(self):
         if self._name_prefix is None:
