@@ -52,7 +52,7 @@ class DataSet(Annotated, iosys.Readable, iosys.Writeable):
             - keyword arguments that supply a file-like object (`stream`) to be parsed and a string (`schema`) specifying the schema of the data in the file-like object.
 
         """
-        Annotated.__init__(self)
+        Annotated.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
         iosys.Writeable.__init__(self)
         iosys.Readable.__init__(self)
         self.taxon_sets = containers.OrderedSet()

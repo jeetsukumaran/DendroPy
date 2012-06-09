@@ -34,7 +34,7 @@ from dendropy.utility import iosys
 from dendropy.utility import error
 from dendropy.utility import textutils
 from dendropy.utility import termutils
-from dendropy.dataobject.base import IdTagged
+from dendropy.dataobject import base
 from dendropy.dataobject.taxon import TaxonSet, TaxonSetLinked, TaxonLinked
 from dendropy import treesplit
 
@@ -2132,9 +2132,10 @@ class Node(TaxonLinked):
             oid=None,
             edge=None,
             edge_length=None):
-        self.label = label
-        self.oid = oid
-        self.taxon = taxon
+        TaxonLinked.__init__(self,
+                taxon=taxon,
+                label=label,
+                oid=oid)
         self.age = None
         self._edge = None
         self._child_nodes = []
@@ -2863,7 +2864,7 @@ class Node(TaxonLinked):
 ##############################################################################
 ## Edge
 
-class Edge(IdTagged):
+class Edge(base.Annotated):
     """
     An edge on a tree. This class implements only the core
     functionality needed for trees.
@@ -2882,8 +2883,7 @@ class Edge(IdTagged):
         __init__ creates an edge from tail_node to head_node.  Modified from
         arbol.
         """
-        self.label = label
-        self.oid = oid
+        base.Annotated.__init__(self, label=label, oid=oid)
         self.tail_node = tail_node
         self.head_node = head_node
         self.rootedge = rootedge

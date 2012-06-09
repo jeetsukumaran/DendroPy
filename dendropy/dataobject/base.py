@@ -23,12 +23,7 @@ Infrastructure for object serialization and management.
 import re
 
 class DataObject(object):
-    """
-    Base class for elements that will be serialized.
-    """
-    def __init__(self):
-        self.attributes = []    ## extra attributes to be written during XML serialization
-        # self.extensions = []    ## DOM extensions to be written during XML serialization
+    pass
 
 class Annotated(DataObject):
     """
@@ -36,18 +31,32 @@ class Annotated(DataObject):
     beyond the core elements (such as id, label, etc.) will derive.
     """
 
-    def __init__(self):
-        pass
-
-    def _create(self):
-        DataObject.__init__(self)
+    def __init__(self, label=None, oid=None):
+        self.label = label
+        if oid is not None:
+            self._oid = oid
+        else:
+            self._oid = self._default_oid()
         self.annotations = set()
 
-    def __getattr__(self, name):
-        if name == "annotations":
-            self._create()
-            return self.annotations
-        raise AttributeError(name)
+    def _default_oid(self):
+        "Returns default oid."
+        return "x" + str(id(self))
+
+    def _get_oid(self):
+        "Returns id."
+        return self._oid
+    def _set_oid(self, oid):
+        """
+        Sets oid to oid if oid is not None (normalized to conform
+        to xs:NCName specs if neccessary), otherwise sets to some
+        other oidue.
+        """
+        if oid is not None:
+            self._oid = oid
+        else:
+            self._oid = self._default_oid()
+    oid = property(_get_oid, _set_oid)
 
     def add_annotation(self,
             name,
@@ -247,7 +256,7 @@ class Annotated(DataObject):
         for a in to_remove:
             self.annotations.remove(a)
 
-class Annotation(Annotated):
+class Annotation(DataObject):
     "Tracks the basic information need to serialize an attribute correctly."
 
     def parse_qualified_name(qualified_name, sep=":"):
@@ -265,6 +274,7 @@ class Annotation(Annotated):
             name_is_qualified=False,
             value_is_attribute=False,
             ):
+        DataObject.__init__(self)
         self._value = value
         self.value_is_attribute = value_is_attribute
         if name_is_qualified:
@@ -329,75 +339,3 @@ class Annotation(Annotated):
         self._name_prefix, self.name = Annotation.parse_qualified_name(qualified_name)
     qualified_name = property(_get_qualified_name, _set_qualified_name)
 
-class Labelled(Annotated):
-    "Provides for getting and setting of an object label."
-
-    def __init__(self, label=None):
-        """
-        __init__ calls Annotated.__init__, and then, if keyword
-        argument `label` is given, assigns it to self.label.
-        """
-        self.label = label
-
-class IdTagged(Labelled):
-    """
-    Provides infrastructure for the maintenance of a unique object id,
-    ensuring that this will never be None.
-    """
-
-    instances = 0
-
-    # def normalize_id(id_str):
-    #     """
-    #     Given a string `id_str`, this returns a xs:NCName compliant
-    #     version of the string: (Letter | '_' | ':')
-    #     (NameChar)*. NameChar is given by : Letter | Digit | '.' | '-'
-    #     | '_' | ':'
-    #     """
-    #     if len(id_str) > 0:
-    #         f = id_str[0]
-    #     else:
-    #         f = '_' + str(id(id_str))
-    #     if not (f.isalpha or f == '_' or f == ':'):
-    #         id_str = '_' + id_str
-    #     id_str = re.sub('[^\w\d\-\.]', '', id_str)
-    #     return id_str
-
-    # normalize_id = staticmethod(normalize_id)
-
-    def __init__(self, label=None, oid=None, **kwargs):
-        """
-        __init__ calls Labelled.__init__, and assigns element id if
-        given.
-        """
-        self.label = label
-        IdTagged.instances += 1
-        if oid is not None:
-            self._oid = oid
-        else:
-            self._oid = self._default_oid()
-
-    def _default_oid(self):
-        "Returns default oid."
-        return "x" + str(id(self))
-
-    def _get_oid(self):
-        "Returns id."
-        return self._oid
-
-    def _set_oid(self, oid):
-        """
-        Sets oid to oid if oid is not None (normalized to conform
-        to xs:NCName specs if neccessary), otherwise sets to some
-        other oidue.
-        """
-        if oid is not None:
-            self._oid = oid
-        else:
-            self._oid = self._default_oid()
-
-    oid = property(_get_oid, _set_oid)
-
-    def __str__(self):
-        "String representation of the object: it's id."
-        return str(self.oid)
