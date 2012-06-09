@@ -58,6 +58,9 @@ class Annotated(DataObject):
             self._oid = self._default_oid()
     oid = property(_get_oid, _set_oid)
 
+    def __str__(self):
+        return str(self.oid)
+
     def add_annotation(self,
             name,
             value,

@@ -1027,7 +1027,7 @@ class NexmlWriter(iosys.DataWriter):
                     for cell in row:
                         parts = []
                         parts.append('%s<cell' % (self.indent*(indent_level+3)))
-                        parts.append('char="%s"' % cell_chartype_map[cell])
+                        parts.append('char="%s"' % cell_chartype_map[cell].oid)
                         if hasattr(cell, "value") and hasattr(cell.value, "oid"):
                             v = cell.value.oid
                         else:
