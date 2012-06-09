@@ -110,14 +110,8 @@ def _compose_annotation_xml(annote, indent="", indent_level=0):
 
 class _AnnotationParser(object):
 
-    def __init__(self, namespace_map):
-        if namespace_map is None:
-            self.namespace_map = {}
-        else:
-            self.namespace_map = namespace_map
-        self.rev_namespace_map = {}
-        for k, v in self.namespace_map.items():
-            self.rev_namespace_map[v] = k
+    def __init__(self, namespace_registry=None):
+        self.namespace_registry = namespace_registry
 
     def parse_annotations(self, annotated, nxelement):
         attrib = nxelement.attrib
@@ -138,14 +132,10 @@ class _AnnotationParser(object):
         if key is None:
             raise ValueError("Could not determine property/rel for meta element: %s\n%s" % (nxelement, attrib))
         name_prefix, name = dendropy.Annotation.parse_qualified_name(key)
-        # try:
-        #     namespace = self.rev_namespace_map[name_prefix]
-        # except KeyError:
-        #     raise ValueError("CURIE-standard prefix '%s' not defined in document: %s" % (name_prefix, self.rev_namespace_map))
         try:
-            namespace = (namespace for namespace, prefix in self.namespace_map.items() if prefix==name_prefix).next()
-        except StopIteration:
-            raise ValueError("CURIE-standard prefix '%s' not defined in document: %s" % (name_prefix, self.namespace_map))
+            namespace = self.namespace_registry.prefix_namespace_map[name_prefix]
+        except KeyError:
+            raise ValueError("CURIE-standard prefix '%s' not defined in document: %s" % (name_prefix, self.namespace_registry))
         a = annotated.add_annotation(
                 name=name,
                 value=value,
@@ -168,7 +158,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         iosys.DataReader.__init__(self, **kwargs)
         self.load_time = None
         self.parse_time = None
-        _AnnotationParser.__init__(self, namespace_map=kwargs.get("namespace_map", None))
+        _AnnotationParser.__init__(self)
 
     ## Implementation of the datasets.Reader interface ##
 
@@ -181,7 +171,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         start = time.clock()
         xml_doc = xmlparser.xml_document(file_obj=stream, namespace_list=SUPPORTED_NEXML_NAMESPACES)
         # import xml.etree.ElementTree as xx
-        self.namespace_map.update(xml_doc.namespace_map)
+        self.namespace_registry = xml_doc.namespace_registry
         self.load_time = time.clock() - start
         start = time.clock()
         dataset = self.parse_dataset(xml_doc)
@@ -208,7 +198,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
                 self.dataset = dendropy.DataSet()
             nxtaxa = taxon_set_elements[0]
             taxon_set = self.get_default_taxon_set(oid=nxtaxa.get('id', None), label=nxtaxa.get('label', None))
-            nxt = _NexmlTaxaParser(self.namespace_map)
+            nxt = _NexmlTaxaParser(self.namespace_registry)
             nxt.set_taxon_set_from_xml(nxtaxa, taxon_set=taxon_set)
         else:
             raise error.DataParseError(message="No taxon definitions found in data source")
@@ -226,7 +216,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         Given an xml_document, parses the XmlElement representation of
         taxon sets into a TaxonSets objects.
         """
-        nxt = _NexmlTaxaParser(self.namespace_map)
+        nxt = _NexmlTaxaParser(self.namespace_registry)
         for taxa_element in taxon_set_elements:
             taxon_set = nxt.parse_taxa(taxa_element, dataset)
 
@@ -235,7 +225,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         Given an xml_document, parses the XmlElement representation of
         character sequences into a list of CharacterMatrix objects.
         """
-        nxc = _NexmlCharBlockParser(self.namespace_map)
+        nxc = _NexmlCharBlockParser(self.namespace_registry)
         for char_matrix_element in xml_doc.getiterator('characters'):
             nxc.parse_char_matrix(char_matrix_element, dataset)
 
@@ -245,7 +235,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         representations of a set of NEXML treeblocks (`nex:trees`) and
         returns a TreeLists object corresponding to the NEXML.
         """
-        nx_tree_parser = _NexmlTreesParser(self.namespace_map)
+        nx_tree_parser = _NexmlTreesParser(self.namespace_registry)
         for trees_idx, trees_element in enumerate(xml_doc.getiterator('trees')):
             for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, add_to_tree_list=True):
                 pass
@@ -260,7 +250,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         if not (taxon_set in dataset.taxon_sets):
             dataset.taxon_sets.append(taxon_set)
         self.parse_taxon_sets(xml_doc, dataset)
-        nx_tree_parser = _NexmlTreesParser(self.namespace_map)
+        nx_tree_parser = _NexmlTreesParser(self.namespace_registry)
         for trees_idx, trees_element in enumerate(xml_doc.getiterator('trees')):
             for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, add_to_tree_list=False):
                 yield tree
@@ -268,14 +258,14 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
 class _NexmlElementParser(_AnnotationParser):
     "Base parser class: wraps around annotations/dictionary element handling."
 
-    def __init__(self, namespace_map):
-        _AnnotationParser.__init__(self, namespace_map)
+    def __init__(self, namespace_registry):
+        _AnnotationParser.__init__(self, namespace_registry)
 
 class _NexmlTreesParser(_NexmlElementParser):
     "Parses an XmlElement representation of NEXML schema tree blocks."
 
-    def __init__(self, namespace_map):
-        _NexmlElementParser.__init__(self, namespace_map)
+    def __init__(self, namespace_registry):
+        _NexmlElementParser.__init__(self, namespace_registry)
 
     def parse_trees(self, nxtrees, dataset, trees_idx=None, add_to_tree_list=True):
         """
@@ -468,8 +458,8 @@ class _NexmlTreesParser(_NexmlElementParser):
 class _NexmlTaxaParser(_NexmlElementParser):
     "Parses an XmlElement representation of NEXML taxa blocks."
 
-    def __init__(self, namespace_map):
-        _NexmlElementParser.__init__(self, namespace_map)
+    def __init__(self, namespace_registry):
+        _NexmlElementParser.__init__(self, namespace_registry)
 
     def set_taxon_set_from_xml(self, nxtaxa, taxon_set=None):
         oid = nxtaxa.get('id', None)
@@ -502,8 +492,8 @@ class _NexmlTaxaParser(_NexmlElementParser):
 class _NexmlCharBlockParser(_NexmlElementParser):
     "Parses an XmlElement representation of NEXML taxa blocks."
 
-    def __init__(self, namespace_map):
-        _NexmlElementParser.__init__(self, namespace_map)
+    def __init__(self, namespace_registry):
+        _NexmlElementParser.__init__(self, namespace_registry)
 
     def parse_ambiguous_state(self, nxambiguous, state_alphabet):
         """

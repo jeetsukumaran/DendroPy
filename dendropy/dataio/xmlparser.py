@@ -134,6 +134,19 @@ def _cast_to_element(i, namespace_list=None):
         return XmlElement(i, namespace_list=namespace_list)
 
 
+class XmlNamespaces(object):
+
+    def __init__(self):
+        self.namespace_prefix_map = {}
+        self.prefix_namespace_map = {}
+
+    def add_namespace(self, prefix, namespace):
+        try:
+            self.namespace_prefix_map[namespace].append(prefix)
+        except KeyError:
+            self.namespace_prefix_map[namespace] = [prefix]
+        self.prefix_namespace_map[prefix] = namespace
+
 class xml_document(object):
     """
     ElementTree requires that the complete XML be loaded in memory
@@ -150,7 +163,7 @@ class xml_document(object):
         ElemenTree.Element object to be used as the root element.
         """
         self.namespace_list = list(namespace_list)
-        self.namespace_map = {}
+        self.namespace_registry = XmlNamespaces()
         self.parse_file(file_obj)
 
     def parse_string(self, source):
@@ -180,8 +193,8 @@ class xml_document(object):
         # print ns_map
         # root = ElementTree.parse(source=source)
         self.etree = ElementTree.ElementTree(element=root)
-        for k, v in ns_map:
-            self.namespace_map[v] = k
+        for prefix, namespace in ns_map:
+            self.namespace_registry.add_namespace(prefix=prefix, namespace=namespace)
 
     def iter_top_children(self, tag):
         """
