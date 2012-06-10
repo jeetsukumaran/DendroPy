@@ -481,13 +481,14 @@ class _NexmlTaxaParser(_NexmlElementParser):
             for annotation in annotations:
                 self.parse_annotations(taxon, annotation)
             taxon_set.append(taxon)
+        return taxon_set
 
     def parse_taxa(self, nxtaxa, dataset):
         """
         Given an XmlElement representing a nexml taxa block, this
         instantiates and returns a corresponding DendroPy Taxa object.
         """
-        dataset.taxon_sets.append(set_taxon_set_from_xml(self, nxtaxa))
+        dataset.taxon_sets.append(self.set_taxon_set_from_xml(nxtaxa))
 
 class _NexmlCharBlockParser(_NexmlElementParser):
     "Parses an XmlElement representation of NEXML taxa blocks."
