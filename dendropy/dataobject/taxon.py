@@ -45,14 +45,14 @@ def new_taxon_set(ntax=10, label_func=None):
         taxon_set.new_taxon(label=label_func(i+1))
     return taxon_set
 
-class TaxonLinked(base.Annotated):
+class TaxonLinked(base.DataObject):
     """
     Provides infrastructure for maintaining link/reference to a Taxon
     object.
     """
 
     def __init__(self, taxon=None, label=None, oid=None):
-        base.Annotated.__init__(self, label=label, oid=oid)
+        base.DataObject.__init__(self, label=label, oid=oid)
         self.taxon = taxon
 
     def __deepcopy__(self, memo):
@@ -70,13 +70,13 @@ class TaxonLinked(base.Annotated):
         memo[id(self._oid)] = o._oid
         return o
 
-class TaxonSetLinked(base.Annotated):
+class TaxonSetLinked(base.DataObject):
     """
     Provides infrastructure for the maintenance of references to taxa.
     """
 
     def __init__(self, **kwargs):
-        base.Annotated.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
+        base.DataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
         if "taxon_set" not in kwargs or kwargs["taxon_set"] is None:
             self.taxon_set = TaxonSet()
         else:
@@ -122,7 +122,7 @@ class TaxonSetLinked(base.Annotated):
                 memo[id(t)] = o.taxon_set[i]
         return o
 
-class TaxonSet(containers.OrderedSet, base.Annotated):
+class TaxonSet(containers.OrderedSet, base.DataObject):
     """
     Primary manager for collections of `Taxon` objects.
     """
@@ -145,7 +145,7 @@ class TaxonSet(containers.OrderedSet, base.Annotated):
         label is constructed and added to the set.
         """
         containers.OrderedSet.__init__(self)
-        base.Annotated.__init__(self, oid=kwargs.get('oid'), label=kwargs.get('label'))
+        base.DataObject.__init__(self, oid=kwargs.get('oid'), label=kwargs.get('label'))
         if len(args) > 1:
             raise TypeError("TaxonSet() takes at most 1 non-keyword argument (%d given)" % len(args))
         elif len(args) == 1:
@@ -438,7 +438,7 @@ class TaxonSet(containers.OrderedSet, base.Annotated):
             output.write(s)
         return s
 
-class Taxon(base.Annotated):
+class Taxon(base.DataObject):
     """
     A taxon associated with a sequence or a node on a tree.
     """
@@ -459,7 +459,7 @@ class Taxon(base.Annotated):
         __init__ can take the kwargs needed by base.IdTagged, or the label keyword
         can be inferred from the label of an unnamed argument
         """
-        base.Annotated.__init__(self, label=label, oid=oid)
+        base.DataObject.__init__(self, label=label, oid=oid)
         if taxon is not None:
             self.label = taxon.label
         else:
@@ -639,7 +639,7 @@ class TaxonSetPartition(TaxonSetLinked):
                 self.subset_map[subset_id].add(t)
         return self.subsets()
 
-class TaxonSetMapping(base.Annotated):
+class TaxonSetMapping(base.DataObject):
     """
     A many-to-one mapping of ``Taxon`` objects (e.g., gene taxa to population/species taxa).
     """
@@ -733,7 +733,7 @@ class TaxonSetMapping(base.Annotated):
                 keys, and the corresponding ``Taxon`` object from the range
                 taxa as values.
         """
-        base.Annotated.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
+        base.DataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
         self.forward = {}
         self.reverse = {}
         if "mapping_func" in kwargs:

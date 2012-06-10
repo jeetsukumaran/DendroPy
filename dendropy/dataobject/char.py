@@ -28,16 +28,16 @@ from dendropy.utility import containers
 from dendropy.dataobject import base
 from dendropy.dataobject.taxon import TaxonLinked, TaxonSetLinked, TaxonSet
 
-class ContinuousCharElement(base.Annotated):
+class ContinuousCharElement(base.DataObject):
     def __init__(self, value, column_def,  **kwargs):
-        base.Annotated.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
+        base.DataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
         self.value = value
         self.column_def = column_def
 
 ###############################################################################
 ## State Alphabet Infrastructure
 
-class StateAlphabetElement(base.Annotated):
+class StateAlphabetElement(base.DataObject):
     """
     A character state definition, which can either be a fundamental state or
     a mapping to a set of other character states (for polymorphic or ambiguous
@@ -56,7 +56,7 @@ class StateAlphabetElement(base.Annotated):
                  token=None,
                  multistate=SINGLE_STATE,
                  member_states=None):
-        base.Annotated.__init__(self, label=label, oid=oid)
+        base.DataObject.__init__(self, label=label, oid=oid)
         self.symbol = symbol
         self.token = token
         self.multistate = multistate
@@ -102,12 +102,12 @@ class StateAlphabetElement(base.Annotated):
 
     fundamental_tokens = property(_get_fundamental_tokens)
 
-class StateAlphabet(base.Annotated, list):
+class StateAlphabet(base.DataObject, list):
 
     "A list of states available for a particular character type/format."
 
     def __init__(self, *args, **kwargs):
-        base.Annotated.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
+        base.DataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
         list.__init__(self, *args)
         self.missing = None
         self.symbol_synonyms = {}
@@ -407,14 +407,14 @@ INFINITE_SITES_STATE_ALPHABET = InfiniteSitesStateAlphabet()
 ###############################################################################
 ## Data Containers
 
-class CharacterType(base.Annotated):
+class CharacterType(base.DataObject):
     """
     A character format or type of a particular column: i.e., maps
     a particular set of character state definitions to a column in a character matrix.
     """
 
     def __init__(self, *args, **kwargs):
-        base.Annotated.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
+        base.DataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
         self._state_alphabet = None
         self.id_state_map = None
         self.state_alphabet = kwargs.get("state_alphabet", None)
@@ -431,7 +431,7 @@ class CharacterType(base.Annotated):
 
     state_alphabet = property(_get_state_alphabet, _set_state_alphabet)
 
-class CharacterDataCell(base.Annotated):
+class CharacterDataCell(base.DataObject):
     """
     A container for that holds the value for a particular cell in a matrix.
 
@@ -441,7 +441,7 @@ class CharacterDataCell(base.Annotated):
     """
 
     def __init__(self, value=None, character_type=None):
-        base.Annotated.__init__(self)
+        base.DataObject.__init__(self)
         self.value = value
         self.character_type = character_type
 
@@ -494,7 +494,7 @@ class CharacterDataVector(list, TaxonLinked):
     def __str__(self):
         return str(self.symbols_as_string())
 
-class CharacterDataMap(dict, base.Annotated):
+class CharacterDataMap(dict, base.DataObject):
     """
     An annotable dictionary with Taxon objects as keys and
     CharacterDataVectors objects as values.
@@ -502,7 +502,7 @@ class CharacterDataMap(dict, base.Annotated):
 
     def __init__(self):
         dict.__init__(self)
-        base.Annotated.__init__(self)
+        base.DataObject.__init__(self)
 
     def _get_vector_size(self):
         """
@@ -572,7 +572,7 @@ class CharacterDataMap(dict, base.Annotated):
 ###############################################################################
 ## Subset of Character (Columns)
 
-class CharacterSubset(base.Annotated):
+class CharacterSubset(base.DataObject):
     """
     Tracks definition of a subset of characters.
     """
@@ -586,7 +586,7 @@ class CharacterSubset(base.Annotated):
                of column positions that constitute this subset.
 
         """
-        base.Annotated.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
+        base.DataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
         self.character_indices = set(kwargs.get("character_indices", []))
 
     def __len__(self):

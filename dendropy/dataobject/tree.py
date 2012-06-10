@@ -2864,7 +2864,7 @@ class Node(TaxonLinked):
 ##############################################################################
 ## Edge
 
-class Edge(base.Annotated):
+class Edge(base.DataObject):
     """
     An edge on a tree. This class implements only the core
     functionality needed for trees.
@@ -2883,7 +2883,7 @@ class Edge(base.Annotated):
         __init__ creates an edge from tail_node to head_node.  Modified from
         arbol.
         """
-        base.Annotated.__init__(self, label=label, oid=oid)
+        base.DataObject.__init__(self, label=label, oid=oid)
         self.tail_node = tail_node
         self.head_node = head_node
         self.rootedge = rootedge

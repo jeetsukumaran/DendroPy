@@ -23,12 +23,9 @@ Infrastructure for object serialization and management.
 import re
 
 class DataObject(object):
-    pass
-
-class Annotated(DataObject):
     """
     Base class from which all classes that need to persist object attributes
-    beyond the core elements (such as id, label, etc.) will derive.
+    or other information as metadata.
     """
 
     def __init__(self, label=None, oid=None):
@@ -61,8 +58,10 @@ class Annotated(DataObject):
     def __str__(self):
         return str(self.oid)
 
-class Annotation(Annotated):
-    "Tracks the basic information need to serialize an attribute correctly."
+class Annotation(DataObject):
+    """
+    Metadata storage, composition and persistance.
+    """
 
     def parse_qualified_name(qualified_name, sep=":"):
         if sep not in qualified_name:
@@ -79,7 +78,7 @@ class Annotation(Annotated):
             name_is_qualified=False,
             value_is_attribute=False,
             ):
-        Annotated.__init__(self)
+        DataObject.__init__(self)
         self._value = value
         self.value_is_attribute = value_is_attribute
         if name_is_qualified:
