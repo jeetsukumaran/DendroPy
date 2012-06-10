@@ -158,6 +158,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         iosys.DataReader.__init__(self, **kwargs)
         self.load_time = None
         self.parse_time = None
+        self.id_taxon_set_map = {}
         _AnnotationParser.__init__(self)
 
     ## Implementation of the datasets.Reader interface ##
@@ -186,22 +187,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         taxon sets, character matrices, and trees into a DataSet object.
         """
         taxon_set_elements = [i for i in xml_doc.getiterator('otus')]
-        if len(taxon_set_elements) > 1:
-            if self.dataset is None:
-                self.dataset = dendropy.DataSet()
-            else:
-                if self.dataset.attached_taxon_set is not None:
-                    raise TypeError('Multiple taxon sets in data source, but DataSet object is in attached (single) taxon set mode')
-            self.parse_taxon_sets(taxon_set_elements, self.dataset)
-        elif len(taxon_set_elements) == 1:
-            if self.dataset is None:
-                self.dataset = dendropy.DataSet()
-            nxtaxa = taxon_set_elements[0]
-            taxon_set = self.get_default_taxon_set(oid=nxtaxa.get('id', None), label=nxtaxa.get('label', None))
-            nxt = _NexmlTaxaParser(self.namespace_registry)
-            nxt.set_taxon_set_from_xml(nxtaxa, taxon_set=taxon_set)
-        else:
-            raise error.DataParseError(message="No taxon definitions found in data source")
+        self.parse_taxon_sets(taxon_set_elements)
         if not self.exclude_chars:
             self.parse_char_matrices(xml_doc, self.dataset)
         if not self.exclude_trees:
@@ -211,21 +197,37 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
             self.parse_annotations(self.dataset, annotation)
         return self.dataset
 
-    def parse_taxon_sets(self, taxon_set_elements, dataset):
+    def parse_taxon_sets(self, taxon_set_elements):
         """
         Given an xml_document, parses the XmlElement representation of
         taxon sets into a TaxonSets objects.
         """
         nxt = _NexmlTaxaParser(self.namespace_registry)
-        for taxa_element in taxon_set_elements:
-            taxon_set = nxt.parse_taxa(taxa_element, dataset)
+        if len(taxon_set_elements) > 1:
+            if self.dataset is None:
+                self.dataset = dendropy.DataSet()
+            else:
+                if self.dataset.attached_taxon_set is not None:
+                    raise TypeError('Multiple taxon sets in data source, but DataSet object is in attached (single) taxon set mode')
+            for nxtaxa in taxon_set_elements:
+                taxon_set = nxt.set_taxon_set_from_xml(nxtaxa, taxon_set=None)
+                self.id_taxon_set_map[taxon_set.oid] = taxon_set
+        elif len(taxon_set_elements) == 1:
+            if self.dataset is None:
+                self.dataset = dendropy.DataSet()
+            nxtaxa = taxon_set_elements[0]
+            taxon_set = self.get_default_taxon_set(oid=nxtaxa.get('id', None), label=nxtaxa.get('label', None))
+            taxon_set = nxt.set_taxon_set_from_xml(nxtaxa, taxon_set=taxon_set)
+            self.id_taxon_set_map[taxon_set.oid] = taxon_set
+        else:
+            raise error.DataParseError(message="No taxon definitions found in data source")
 
     def parse_char_matrices(self, xml_doc, dataset):
         """
         Given an xml_document, parses the XmlElement representation of
         character sequences into a list of CharacterMatrix objects.
         """
-        nxc = _NexmlCharBlockParser(self.namespace_registry)
+        nxc = _NexmlCharBlockParser(self.namespace_registry, self.id_taxon_set_map)
         for char_matrix_element in xml_doc.getiterator('characters'):
             nxc.parse_char_matrix(char_matrix_element, dataset)
 
@@ -235,7 +237,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         representations of a set of NEXML treeblocks (`nex:trees`) and
         returns a TreeLists object corresponding to the NEXML.
         """
-        nx_tree_parser = _NexmlTreesParser(self.namespace_registry)
+        nx_tree_parser = _NexmlTreesParser(self.namespace_registry, self.id_taxon_set_map)
         for trees_idx, trees_element in enumerate(xml_doc.getiterator('trees')):
             for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, add_to_tree_list=True):
                 pass
@@ -250,7 +252,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         if not (taxon_set in dataset.taxon_sets):
             dataset.taxon_sets.append(taxon_set)
         self.parse_taxon_sets(xml_doc, dataset)
-        nx_tree_parser = _NexmlTreesParser(self.namespace_registry)
+        nx_tree_parser = _NexmlTreesParser(self.namespace_registry, self.id_taxon_set_map)
         for trees_idx, trees_element in enumerate(xml_doc.getiterator('trees')):
             for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, add_to_tree_list=False):
                 yield tree
@@ -264,8 +266,9 @@ class _NexmlElementParser(_AnnotationParser):
 class _NexmlTreesParser(_NexmlElementParser):
     "Parses an XmlElement representation of NEXML schema tree blocks."
 
-    def __init__(self, namespace_registry):
+    def __init__(self, namespace_registry, id_taxon_set_map):
         _NexmlElementParser.__init__(self, namespace_registry)
+        self.id_taxon_set_map = id_taxon_set_map
 
     def parse_trees(self, nxtrees, dataset, trees_idx=None, add_to_tree_list=True):
         """
@@ -280,7 +283,8 @@ class _NexmlTreesParser(_NexmlElementParser):
         taxa_id = nxtrees.get('otus', None)
         if taxa_id is None:
             raise Exception("Taxa block not specified for trees block \"%s\"" % oid)
-        taxon_set = dataset.get_default_taxon_set(oid=taxa_id)
+        # taxon_set = dataset.get_default_taxon_set(oid=taxa_id)
+        taxon_set = self.id_taxon_set_map.get(taxa_id, None)
         if not taxon_set:
             raise Exception("Taxa block \"%s\" not found" % taxa_id)
         tree_list = dendropy.TreeList(oid=oid, label=label, taxon_set=taxon_set)
@@ -491,8 +495,9 @@ class _NexmlTaxaParser(_NexmlElementParser):
 class _NexmlCharBlockParser(_NexmlElementParser):
     "Parses an XmlElement representation of NEXML taxa blocks."
 
-    def __init__(self, namespace_registry):
+    def __init__(self, namespace_registry, id_taxon_set_map):
         _NexmlElementParser.__init__(self, namespace_registry)
+        self.id_taxon_set_map = id_taxon_set_map
 
     def parse_ambiguous_state(self, nxambiguous, state_alphabet):
         """
@@ -621,7 +626,8 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         taxa_id = nxchars.get('otus', None)
         if taxa_id is None:
             raise Exception("Character Block %s (\"%s\"): Taxa block not specified for trees block \"%s\"" % (char_matrix.oid, char_matrix.label, char_matrix.oid))
-        taxon_set = dataset.get_default_taxon_set(oid = taxa_id)
+        # taxon_set = dataset.get_default_taxon_set(oid = taxa_id)
+        taxon_set = self.id_taxon_set_map.get(taxa_id, None)
         if not taxon_set:
             raise Exception("Character Block %s (\"%s\"): Taxa block \"%s\" not found" % (char_matrix.oid, char_matrix.label, taxa_id))
         char_matrix.taxon_set = taxon_set
