@@ -583,14 +583,14 @@ def pop_gen_tree(tree=None,
     if samples is not None:
         for index, leaf in enumerate(tree.leaf_iter()):
             setattr(leaf, num_genes_attr, samples[index])
-            leaf.add_attribute_annotation(num_genes_attr)
+            leaf.annotations.add_bound_attribute(num_genes_attr)
 
     # set the population sizes
     if pop_sizes is not None:
         index = 0
         for edge in tree.postorder_edge_iter():
             setattr(edge, pop_size_attr, pop_sizes[index])
-            edge.add_attribute_annotation(pop_size_attr)
+            edge.annotations.add_bound_attribute(pop_size_attr)
             if ages is None:
                 edge.length = edge.length * getattr(edge, pop_size_attr)
             index = index + 1

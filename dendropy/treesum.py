@@ -147,7 +147,7 @@ class TreeSummarizer(object):
             node.edge.length = support_value
         if self.add_node_metadata and attr_name:
             setattr(node, attr_name, support_value)
-            node.add_attribute_annotation(attr_name)
+            node.annotations.add_bound_attribute(attr_name)
         return node
 
     def map_split_support_to_tree(self, tree, split_distribution):
@@ -203,12 +203,12 @@ class TreeSummarizer(object):
                     for field in fields:
                         attr_name = summary_name + "_" + field
                         setattr(summary_target, attr_name, summary[field])
-                        summary_target.add_attribute_annotation(attr_name)
+                        summary_target.annotations.add_bound_attribute(attr_name)
                 else:
                     for field in fields:
                         attr_name = summary_name + "_" + field
                         setattr(summary_target, attr_name, None)
-                        #nd.add_attribute_annotation(attr_name)
+                        #nd.annotations.add_bound_attribute(attr_name)
 
     def summarize_node_ages_on_tree(self,
             tree,

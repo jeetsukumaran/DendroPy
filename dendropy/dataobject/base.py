@@ -37,7 +37,7 @@ class Annotated(DataObject):
             self._oid = oid
         else:
             self._oid = self._default_oid()
-        self.annotations = set()
+        self.annotations = AnnotationSet(self)
 
     def _default_oid(self):
         "Returns default oid."
@@ -61,205 +61,7 @@ class Annotated(DataObject):
     def __str__(self):
         return str(self.oid)
 
-    def add_annotation(self,
-            name,
-            value,
-            datatype_hint=None,
-            name_prefix=None,
-            namespace=None,
-            name_is_qualified=False,
-            value_is_attribute=False):
-        """
-        Add an annotation to self, where:
-
-            `name`
-                The property/subject/field of the annotation (e.g. "color",
-                "locality", "dc:citation")
-
-            `value`
-                The content of the annotation.
-
-            `datatype_hint`
-                Mainly for NeXML output (e.g. "xsd:string").
-
-            `namespace_prefix`
-                Mainly for NeXML output (e.g. "dc:").
-
-            `namespace`
-                Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
-
-            `name_is_qualified`
-                Mainly for NeXML *input*: name will be split into prefix and local part
-                before storage (e.g., "dc:citations" will result in prefix = "dc" and
-                name="citations")
-
-            `value_is_attribute`
-                If value is passed as a tuple of (object, "attribute_name") and this
-                is True, then actual content will be the result of calling
-                `getattr(object, "attribute_name")`.
-
-        """
-        if not name_is_qualified:
-            if name_prefix is None and namespace is None:
-                name_prefix = "dendropy"
-                namespace = "http://packages.python.org/DendroPy/"
-            elif name_prefix is None:
-                raise TypeError("Cannot specify 'name_prefix' for unqualified name without specifying 'namespace'")
-            elif namespace is None:
-                raise TypeError("Cannot specify 'namespace' for unqualified name without specifying 'name_prefix'")
-        else:
-            if namespace is None:
-                raise TypeError("Cannot specify qualified name without specifying 'namespace'")
-        annote = Annotation(
-                name=name,
-                value=value,
-                datatype_hint=datatype_hint,
-                name_prefix=name_prefix,
-                namespace=namespace,
-                name_is_qualified=name_is_qualified,
-                value_is_attribute=value_is_attribute,
-                )
-        self.annotations.add(annote)
-        return annote
-
-    def add_attribute_annotation(self,
-            attr_name,
-            annotate_as=None,
-            datatype_hint=None,
-            name_prefix=None,
-            namespace=None,
-            name_is_qualified=False,
-            ):
-        """
-        Add an attribute to the list of attributes that need to be
-        persisted as an annotation. The value of the annotation will
-        be dynamically bound to the value of the attribute.
-
-            `attr_name`
-                The name of the attribute to be used as the source of the
-                content or value of the annotation.
-
-            `annotate_as`
-                Use this string as the annotation field/name rather than the attribute
-                name.
-
-            `datatype_hint`
-                Mainly for NeXML output (e.g. "xsd:string").
-
-            `namespace_prefix`
-                Mainly for NeXML output (e.g. "dc:").
-
-            `namespace`
-                Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
-
-            `name_is_qualified`
-                Mainly for NeXML *input*: name will be split into prefix and local part
-                before storage (e.g., "dc:citations" will result in prefix = "dc" and
-                name="citations")
-
-        """
-        if annotate_as is None:
-            annotate_as = attr_name
-        if not hasattr(self, attr_name):
-            raise AttributeError(attr_name)
-        if not name_is_qualified:
-            if name_prefix is None and namespace is None:
-                name_prefix = "dendropy"
-                namespace = "http://packages.python.org/DendroPy/"
-            elif name_prefix is None:
-                raise TypeError("Cannot specify 'name_prefix' for unqualified name without specifying 'namespace'")
-            elif namespace is None:
-                raise TypeError("Cannot specify 'namespace' for unqualified name without specifying 'name_prefix'")
-        else:
-            if namespace is None:
-                raise TypeError("Cannot specify qualified name without specifying 'namespace'")
-        annote = Annotation(
-                name=annotate_as,
-                value=(self, attr_name),
-                datatype_hint=datatype_hint,
-                name_prefix=name_prefix,
-                namespace=namespace,
-                name_is_qualified=name_is_qualified,
-                value_is_attribute=True,
-                )
-        self.annotations.add(annote)
-        return annote
-
-    def has_annotations(self):
-        """
-        Returns True if there are attributes to be persisted as
-        annotations.
-        """
-        return bool(len(self.annotations) > 0)
-
-    def get_annotations(self, **kwargs):
-        """
-        Returns list of Annotation objects associated with self that match
-        based on *all* criteria specified in keyword arguments::
-
-            >>> notes = a.get_annotations(name="color")
-            >>> notes = a.get_annotations(namespace="http://packages.python.org/DendroPy/")
-            >>> notes = a.get_annotations(namespace="http://packages.python.org/DendroPy/",
-                                          name="color")
-            >>> notes = a.get_annotations(name_prefix="dc")
-            >>> notes = a.get_annotations(qualified_name="dc:color")
-
-        If no keyword arguments are given, *all* annotations are returned::
-
-            >>> notes = a.get_annotations()
-
-        """
-        results = []
-        for a in self.annotations:
-            if a.is_match(**kwargs):
-                results.append(a)
-        return results
-
-    def remove_annotations(self, **kwargs):
-        """
-        Removes Annotation objects associated with self that match
-        based on *all* criteria specified in keyword arguments.
-
-        Remove all annotation objects associated with self with `name` ==
-        "color"::
-
-            >>> a.remove_annotations(name="color")
-
-        Remove all annotation objects associated with self with `namespace` ==
-        "http://packages.python.org/DendroPy/"::
-
-            >>> a.remove_annotations(namespace="http://packages.python.org/DendroPy/")
-
-        Remove all annotation objects associated with self with `namespace` ==
-        "http://packages.python.org/DendroPy/" *and* `name` == "color"::
-
-            >>> a.remove_annotations(namespace="http://packages.python.org/DendroPy/",
-                    name="color")
-
-        Remove all annotation objects associated with self with `name_prefix` ==
-        "dc"::
-
-            >>> a.remove_annotations(name_prefix="dc")
-
-        Remove all annotation objects associated with self with `qualified_name` ==
-        "dc:color"::
-
-            >>> a.remove_annotations(qualified_name="dc:color")
-
-        If no keyword argument filter criteria are given, *all* annotations are
-        removed::
-
-            >>> a.remove_annotations()
-
-        """
-        to_remove = []
-        for a in self.annotations:
-            if a.is_match(**kwargs):
-                to_remove.append(a)
-        for a in to_remove:
-            self.annotations.remove(a)
-
-class Annotation(DataObject):
+class Annotation(Annotated):
     "Tracks the basic information need to serialize an attribute correctly."
 
     def parse_qualified_name(qualified_name, sep=":"):
@@ -277,7 +79,7 @@ class Annotation(DataObject):
             name_is_qualified=False,
             value_is_attribute=False,
             ):
-        DataObject.__init__(self)
+        Annotated.__init__(self)
         self._value = value
         self.value_is_attribute = value_is_attribute
         if name_is_qualified:
@@ -341,4 +143,205 @@ class Annotation(DataObject):
     def _set_qualified_name(self, qualified_name):
         self._name_prefix, self.name = Annotation.parse_qualified_name(qualified_name)
     qualified_name = property(_get_qualified_name, _set_qualified_name)
+
+class AnnotationSet(set):
+
+    def __init__(self, target, *args):
+        set.__init__(self, *args)
+        self.target = target
+
+    def add_new(self,
+            name,
+            value,
+            datatype_hint=None,
+            name_prefix=None,
+            namespace=None,
+            name_is_qualified=False,
+            value_is_attribute=False):
+        """
+        Add an annotation, where:
+
+            `name`
+                The property/subject/field of the annotation (e.g. "color",
+                "locality", "dc:citation")
+
+            `value`
+                The content of the annotation.
+
+            `datatype_hint`
+                Mainly for NeXML output (e.g. "xsd:string").
+
+            `namespace_prefix`
+                Mainly for NeXML output (e.g. "dc:").
+
+            `namespace`
+                Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
+
+            `name_is_qualified`
+                Mainly for NeXML *input*: name will be split into prefix and local part
+                before storage (e.g., "dc:citations" will result in prefix = "dc" and
+                name="citations")
+
+            `value_is_attribute`
+                If value is passed as a tuple of (object, "attribute_name") and this
+                is True, then actual content will be the result of calling
+                `getattr(object, "attribute_name")`.
+
+        """
+        if not name_is_qualified:
+            if name_prefix is None and namespace is None:
+                name_prefix = "dendropy"
+                namespace = "http://packages.python.org/DendroPy/"
+            elif name_prefix is None:
+                raise TypeError("Cannot specify 'name_prefix' for unqualified name without specifying 'namespace'")
+            elif namespace is None:
+                raise TypeError("Cannot specify 'namespace' for unqualified name without specifying 'name_prefix'")
+        else:
+            if namespace is None:
+                raise TypeError("Cannot specify qualified name without specifying 'namespace'")
+        annote = Annotation(
+                name=name,
+                value=value,
+                datatype_hint=datatype_hint,
+                name_prefix=name_prefix,
+                namespace=namespace,
+                name_is_qualified=name_is_qualified,
+                value_is_attribute=value_is_attribute,
+                )
+        self.add(annote)
+        return annote
+
+    def add_bound_attribute(self,
+            attr_name,
+            annotate_as=None,
+            datatype_hint=None,
+            name_prefix=None,
+            namespace=None,
+            name_is_qualified=False,
+            owner_instance=None,
+            ):
+        """
+        Add an attribute of an object as an annotation. The value of the
+        annotation will be dynamically bound to the value of the attribute.
+
+            `attr_name`
+                The (string) name of the attribute to be used as the source of the
+                content or value of the annotation.
+
+            `annotate_as`
+                Use this string as the annotation field/name rather than the attribute
+                name.
+
+            `datatype_hint`
+                Mainly for NeXML output (e.g. "xsd:string").
+
+            `namespace_prefix`
+                Mainly for NeXML output (e.g. "dc:").
+
+            `namespace`
+                Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
+
+            `name_is_qualified`
+                Mainly for NeXML *input*: name will be split into prefix and local part
+                before storage (e.g., "dc:citations" will result in prefix = "dc" and
+                name="citations")
+
+            `owner_instance`
+                The object whose attribute is to be used as the value of the
+                annotation. Defaults to `self.target`.
+
+        """
+        if annotate_as is None:
+            annotate_as = attr_name
+        if owner_instance is None:
+            owner_instance = self.target
+        if not hasattr(owner_instance, attr_name):
+            raise AttributeError(attr_name)
+        if not name_is_qualified:
+            if name_prefix is None and namespace is None:
+                name_prefix = "dendropy"
+                namespace = "http://packages.python.org/DendroPy/"
+            elif name_prefix is None:
+                raise TypeError("Cannot specify 'name_prefix' for unqualified name without specifying 'namespace'")
+            elif namespace is None:
+                raise TypeError("Cannot specify 'namespace' for unqualified name without specifying 'name_prefix'")
+        else:
+            if namespace is None:
+                raise TypeError("Cannot specify qualified name without specifying 'namespace'")
+        annote = Annotation(
+                name=annotate_as,
+                value=(owner_instance, attr_name),
+                datatype_hint=datatype_hint,
+                name_prefix=name_prefix,
+                namespace=namespace,
+                name_is_qualified=name_is_qualified,
+                value_is_attribute=True,
+                )
+        self.add(annote)
+        return annote
+
+    def get(self, **kwargs):
+        """
+        Returns list of Annotation objects associated with self.target that match
+        based on *all* criteria specified in keyword arguments::
+
+            >>> notes = tree.annotations.get(name="color")
+            >>> notes = tree.annotations.get(namespace="http://packages.python.org/DendroPy/")
+            >>> notes = tree.annotations.get(namespace="http://packages.python.org/DendroPy/",
+                                          name="color")
+            >>> notes = tree.annotations.get(name_prefix="dc")
+            >>> notes = tree.annotations.get(qualified_name="dc:color")
+
+        If no keyword arguments are given, *all* annotations are returned::
+
+            >>> notes = tree.annotations.get()
+
+        """
+        results = []
+        for a in self.annotations:
+            if a.is_match(**kwargs):
+                results.append(a)
+        return results
+
+    def drop(self, **kwargs):
+        """
+        Removes Annotation objects that match based on *all* criteria specified
+        in keyword arguments.
+
+        Remove all annotation objects with `name` ==
+        "color"::
+
+            >>> tree.annotations.drop(name="color")
+
+        Remove all annotation objects with `namespace` ==
+        "http://packages.python.org/DendroPy/"::
+
+            >>> tree.annotations.drop(namespace="http://packages.python.org/DendroPy/")
+
+        Remove all annotation objects with `namespace` ==
+        "http://packages.python.org/DendroPy/" *and* `name` == "color"::
+
+            >>> tree.annotations.drop(namespace="http://packages.python.org/DendroPy/",
+                    name="color")
+
+        Remove all annotation objects with `name_prefix` == "dc"::
+
+            >>> tree.annotations.drop(name_prefix="dc")
+
+        Remove all annotation objects with `qualified_name` == "dc:color"::
+
+            >>> tree.annotations.drop(qualified_name="dc:color")
+
+        If no keyword argument filter criteria are given, *all* annotations are
+        removed::
+
+            >>> tree.annotations.drop()
+
+        """
+        to_remove = []
+        for a in self.annotations:
+            if a.is_match(**kwargs):
+                to_remove.append(a)
+        for a in to_remove:
+            self.annotations.remove(a)
 
