@@ -5,16 +5,17 @@ New Features
 ^^^^^^^^^^^^
 
     - [NeXML] Full support of NeXML 0.9 metadata parsing and writing.
+    - `get_from_url()` and `read_from_url()` methods now allow for reading of phylogenetic data from URL's.
 
 Bug Fixes
 ^^^^^^^^^
 
     - Splits hash calculations now correctly deal with unrooted incomplete leaf-set trees.
 
-
 Changes
 ^^^^^^^
 
+    - Annotations/metadata API significantly changed.
     - [NEXUS/NEWICK] ``suppress_internal_node_taxa`` keyword now actually
       instantiates Taxon objects from internal node labels when 'False', but
       defaults to `True` for consistency with legacy behavior.

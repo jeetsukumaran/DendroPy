@@ -21,6 +21,7 @@ Base classes for all readers/parsers and formatters/writers.
 """
 
 import os
+from urllib import urlopen
 from cStringIO import StringIO
 from dendropy.utility import error
 
@@ -55,6 +56,16 @@ def extract_kwarg(kwdict, kw, default=None):
         return kwarg
     else:
         return default
+
+###############################################################################
+## Helpers
+
+def read_url(url):
+    """
+    Return contents of url as string.
+    """
+    s = urlopen(url)
+    return s.read()
 
 ###############################################################################
 ## IOService
@@ -196,6 +207,17 @@ class Readable(object):
         return readable
     get_from_string = classmethod(get_from_string)
 
+    def get_from_url(cls, src, schema, **kwargs):
+        """
+        Factory method to return a new object of this class from
+        URL given by `src`.
+        """
+        text = read_url(src)
+        readable = cls(**kwargs)
+        readable.read_from_string(text, schema, **kwargs)
+        return readable
+    get_from_url = classmethod(get_from_url)
+
     def __init__(self, *args, **kwargs):
         pass
 
@@ -205,7 +227,7 @@ class Readable(object):
 
             # checks that `schema` keyword argument is specified, and then
             # calls self.read()
-        
+
         If `stream` is not specified then `source_string` and `source_filepath`
             kwarg arguments are checked. The effect of thes is similar to calling
             read_from_string and read_from_path
@@ -252,6 +274,14 @@ class Readable(object):
         """
         Reads a string object.
         """
+        s = StringIO(src_str)
+        return self.read(stream=s, schema=schema, **kwargs)
+
+    def read_from_url(self, url, schema, **kwargs):
+        """
+        Reads a URL source.
+        """
+        src_str = read_url(url)
         s = StringIO(src_str)
         return self.read(stream=s, schema=schema, **kwargs)
 
