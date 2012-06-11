@@ -76,11 +76,12 @@ class Annotation(DataObject):
             name_prefix=None,
             namespace=None,
             name_is_qualified=False,
-            value_is_attribute=False,
+            is_attribute=False,
+            as_reference=False,
             ):
         DataObject.__init__(self)
         self._value = value
-        self.value_is_attribute = value_is_attribute
+        self.is_attribute = is_attribute
         if name_is_qualified:
             self.qualified_name = name
             if name_prefix is not None:
@@ -91,6 +92,7 @@ class Annotation(DataObject):
         self.datatype_hint = datatype_hint
         self._namespace = None
         self.namespace = namespace
+        self.as_reference = as_reference
 
     def is_match(self, **kwargs):
         match = True
@@ -113,7 +115,7 @@ class Annotation(DataObject):
         return True
 
     def _get_value(self):
-        if self.value_is_attribute:
+        if self.is_attribute:
             return getattr(*self._value)
         else:
             return self._value
@@ -156,7 +158,8 @@ class AnnotationSet(set):
             name_prefix=None,
             namespace=None,
             name_is_qualified=False,
-            value_is_attribute=False):
+            is_attribute=False,
+            as_reference=False):
         """
         Add an annotation, where:
 
@@ -181,10 +184,13 @@ class AnnotationSet(set):
                 before storage (e.g., "dc:citations" will result in prefix = "dc" and
                 name="citations")
 
-            `value_is_attribute`
+            `is_attribute`
                 If value is passed as a tuple of (object, "attribute_name") and this
                 is True, then actual content will be the result of calling
                 `getattr(object, "attribute_name")`.
+
+            `as_reference`
+                The value should be interpreted as a URI that points to content.
 
         """
         if not name_is_qualified:
@@ -205,7 +211,8 @@ class AnnotationSet(set):
                 name_prefix=name_prefix,
                 namespace=namespace,
                 name_is_qualified=name_is_qualified,
-                value_is_attribute=value_is_attribute,
+                is_attribute=is_attribute,
+                as_reference=as_reference
                 )
         self.add(annote)
         return annote
@@ -217,6 +224,7 @@ class AnnotationSet(set):
             name_prefix=None,
             namespace=None,
             name_is_qualified=False,
+            as_reference=False,
             owner_instance=None,
             ):
         """
@@ -244,6 +252,9 @@ class AnnotationSet(set):
                 Mainly for NeXML *input*: name will be split into prefix and local part
                 before storage (e.g., "dc:citations" will result in prefix = "dc" and
                 name="citations")
+
+            `as_reference`
+                The value should be interpreted as a URI that points to content.
 
             `owner_instance`
                 The object whose attribute is to be used as the value of the
@@ -274,7 +285,8 @@ class AnnotationSet(set):
                 name_prefix=name_prefix,
                 namespace=namespace,
                 name_is_qualified=name_is_qualified,
-                value_is_attribute=True,
+                is_attribute=True,
+                as_reference=as_reference,
                 )
         self.add(annote)
         return annote

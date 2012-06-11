@@ -88,7 +88,7 @@ def _compose_annotation_xml(annote, indent="", indent_level=0):
         value = '""'
     key = annote.qualified_name
     # assert ":" in key
-    if annote.datatype_hint == "href":
+    if annote.as_reference:
         parts.append('xsi:type="nex:ResourceMeta"')
         parts.append('rel="%s"' % key)
         parts.append('href=%s' % value)
@@ -124,11 +124,12 @@ class _AnnotationParser(object):
         if xml_type == 'nex:LiteralMeta':
             value = attrib.get("content", None)
             key = attrib.get("property", None)
-            datatype_hint = attrib.get("datatype", None)
+            as_reference = False
         else:
             value = attrib.get("href", None)
             key = attrib.get("rel", None)
-            datatype_hint = attrib.get("href", None)
+            as_reference = True
+        datatype_hint = attrib.get("datatype", None)
         if key is None:
             raise ValueError("Could not determine property/rel for meta element: %s\n%s" % (nxelement, attrib))
         name_prefix, name = dendropy.Annotation.parse_qualified_name(key)
@@ -142,7 +143,8 @@ class _AnnotationParser(object):
                 datatype_hint=datatype_hint,
                 name_prefix=name_prefix,
                 namespace=namespace,
-                name_is_qualified=False)
+                name_is_qualified=False,
+                as_reference=as_reference)
         top_annotations = [i for i in nxelement.iter_top_children('meta')]
         for annotation in top_annotations:
             self.parse_annotations(a, annotation)
