@@ -252,13 +252,18 @@ class NexmlAnnotations(datatest.DataObjectVerificationTestCase):
         for meta in meta_elements:
             if "href" in meta:
                 value = meta["href"]
+                qname = meta["rel"]
             else:
                 value = meta["content"]
-            vtype = meta["datatype"]
+                qname = meta["property"]
             try:
-                qname_to_content[meta["property"]].add((value, vtype,))
+                vtype = meta["datatype"]
             except KeyError:
-                qname_to_content[meta["property"]] = set([(value, vtype,)])
+                vtype = None
+            try:
+                qname_to_content[qname].add((value, vtype,))
+            except KeyError:
+                qname_to_content[qname] = set([(value, vtype,)])
         return qname_to_content
 
     def verify_metadata(self, observed, expected):
@@ -273,16 +278,37 @@ class NexmlAnnotations(datatest.DataObjectVerificationTestCase):
                 obs_set.add((a.value, a.datatype_hint,))
             self.assertEqual(meta_set, obs_set)
 
-    def verify_dataset_metadata(self, dataset):
+    def testParseNexmlAnnotations(self):
+        s = pathmap.tree_source_stream("treebase_s373.xml")
+        dataset = dendropy.DataSet(stream=s, schema="nexml")
         annotations = dataset.annotations
         self.verify_metadata(
                 observed=annotations,
                 expected=self.meta["dataset"])
-
-    def testParseNexmlAnnotations(self):
-        s = pathmap.tree_source_stream("treebase_s373.xml")
-        ds = dendropy.DataSet(stream=s, schema="nexml")
-        self.verify_dataset_metadata(ds)
+        for taxon_set in dataset.taxon_sets:
+            annotations = taxon_set.annotations
+            expected = self.meta["taxon_sets"][taxon_set.oid]
+            self.verify_metadata(
+                    observed=annotations,
+                    expected=expected)
+            for taxon in taxon_set:
+                annotations = taxon.annotations
+                expected = self.meta["taxon"][taxon.oid]
+                self.verify_metadata(
+                        observed=annotations,
+                        expected=expected)
+        for tree_list in dataset.tree_lists:
+            annotations = tree_list.annotations
+            expected = self.meta["tree_lists"][tree_list.oid]
+            self.verify_metadata(
+                    observed=annotations,
+                    expected=expected)
+            for tree in tree_list:
+                annotations = tree.annotations
+                expected = self.meta["tree"][tree.oid]
+                self.verify_metadata(
+                        observed=annotations,
+                        expected=expected)
 
 if __name__ == "__main__":
     unittest.main()
