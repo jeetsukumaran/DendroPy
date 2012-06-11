@@ -21,6 +21,7 @@ Infrastructure for object serialization and management.
 """
 
 import re
+from dendropy.utility import bibtex
 
 class DataObject(object):
     """
@@ -305,31 +306,63 @@ class AnnotationSet(set):
 
     def add_citation(self,
             citation,
-            schema="bibtex",
-            as_bibtex_fields=True,
-            as_prism_fields=True,
-            as_dublin_core_fields=True,
+            store_as="bibtex",
+            name_prefix=None,
+            namespace=None,
             is_hidden=False):
-        from dendropy.utility import bibtex
-        bt = bibtex.BibTexEntry(citation)
+        """
+        Add a citation as an annotation.
+
+            `citation`
+                This can be a string representing a BibTex entry, a dictionary
+                with BibTex fields as keys and contents as values, or a
+                dendropy.utility.BibTex.BibTexEntry object.
+
+            `store_as`
+                Specifies how to record the citation:
+
+                    `bibtex`        : a set of annotations, where each BibTex
+                                      field becomes a separate annotation
+                    `prism`         : a set of of PRISM (Publishing Requirements for
+                                      Industry Standard Metadata) annotations
+                    `dublic-core`   : a set of of Dublic Core annotations
+
+                Defaults to `bibtex`.
+
+            `name_prefix`
+                Mainly for NeXML output (e.g. "dc:").
+
+            `namespace`
+                Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
+
+            `is_hidden`
+                Do not write or print this annotation when writing data.
+
+        """
+        if isinstance(citation, bibtex.BibTexEntry):
+            bt = citation
+        elif isinstance(citation, dict):
+            bt = bibtex.BibTexEntry()
+            bt._entry_dict = dict(citation)
+        else:
+            bt = bibtex.BibTexEntry(citation)
         bt_dict = bt.fields_as_dict()
-        # if as_bibtex_record:
-        #     # defaults to dendropy namespace
-        #     self.add_new(
-        #             name="bibtex",
-        #             value=bt.as_compact_bibtex(),
-        #             datatype_hint="xsd:string",
-        #             name_is_qualified=False,
-        #             is_attribute=False,
-        #             as_reference=False,
-        #             is_hidden=is_hidden)
-        if as_bibtex_fields:
+
+        if name_prefix is None and namespace is not None:
+            raise TypeError("Cannot specify 'name_prefix' for unqualified name without specifying 'namespace'")
+        elif namespace is None and name_prefix is not None:
+            raise TypeError("Cannot specify 'namespace' for unqualified name without specifying 'name_prefix'")
+
+        if store_as.lower().startswith("bibtex"):
+            if name_prefix is None and namespace is None:
+                name_prefix = "bibtex"
+                namespace = "http://www.edutella.org/bibtex#"
             self.add_new(
                     name="bibtype",
                     value=bt.bibtype,
                     datatype_hint="xsd:string",
-                    name_prefix="bibtex",
-                    namespace="http://www.edutella.org/bibtex#",
+                    name_prefix=name_prefix,
+                    namespace=namespace,
                     name_is_qualified=False,
                     is_attribute=False,
                     as_reference=False,
@@ -338,8 +371,8 @@ class AnnotationSet(set):
                     name="citekey",
                     value=bt.citekey,
                     datatype_hint="xsd:string",
-                    name_prefix="bibtex",
-                    namespace="http://www.edutella.org/bibtex#",
+                    name_prefix=name_prefix,
+                    namespace=namespace,
                     name_is_qualified=False,
                     is_attribute=False,
                     as_reference=False,
@@ -349,19 +382,36 @@ class AnnotationSet(set):
                         name=entry_key,
                         value=entry_value,
                         datatype_hint="xsd:string",
-                        name_prefix="bibtex",
-                        namespace="http://www.edutella.org/bibtex#",
+                        name_prefix=name_prefix,
+                        namespace=namespace,
                         name_is_qualified=False,
                         is_attribute=False,
                         as_reference=False,
                         is_hidden=is_hidden)
-        if as_prism_fields:
+        # elif store_as.lower().startswith("bibtex-record"):
+        #     if name_prefix is None and namespace is None:
+        #         name_prefix = "dendropy"
+        #         namespace = "http://packages.python.org/DendroPy/"
+        #     self.add_new(
+        #             name="bibtex",
+        #             value=bt.as_compact_bibtex(),
+        #             datatype_hint="xsd:string",
+        #             name_is_qualified=False,
+        #             name_prefix=name_prefix,
+        #             namespace=namespace,
+        #             is_attribute=False,
+        #             as_reference=False,
+        #             is_hidden=is_hidden)
+        elif store_as.lower().startswith("prism"):
             prism_map = {
                     'volume': bt_dict.get('volume', None),
                     'publicationName':  bt_dict.get('journal', None),
                     'pageRange': bt_dict.get('pages', None),
                     'publicationDate': bt_dict.get('year', None),
                     }
+            if name_prefix is None and namespace is None:
+                name_prefix = "prism"
+                namespace = "http://prismstandard.org/namespaces/1.2/basic/"
             for field, value in prism_map.items():
                 if value is None:
                     continue
@@ -369,32 +419,37 @@ class AnnotationSet(set):
                         name=field,
                         value=value,
                         datatype_hint="xsd:string",
-                        name_prefix="prism",
-                        namespace="http://prismstandard.org/namespaces/1.2/basic/",
+                        name_prefix=name_prefix,
+                        namespace=namespace,
                         name_is_qualified=False,
                         is_attribute=False,
                         as_reference=False,
                         is_hidden=is_hidden)
-        if as_dublin_core_fields:
+        elif store_as.lower().startswith("dublin-core"):
             dc_map = {
                     'title': bt_dict.get('title', None),
                     'creator':  bt_dict.get('author', None),
                     'publisher': bt_dict.get('journal', None),
                     'date': bt_dict.get('year', None),
                     }
-            for field, value in prism_map.items():
+            if name_prefix is None and namespace is None:
+                name_prefix = "dc"
+                namespace = "http://purl.org/dc/elements/1.1/"
+            for field, value in dc_map.items():
                 if value is None:
                     continue
                 self.add_new(
                         name=field,
                         value=value,
                         datatype_hint="xsd:string",
-                        name_prefix="dc",
-                        namespace="http://purl.org/dc/elements/1.1/",
                         name_is_qualified=False,
+                        name_prefix=name_prefix,
+                        namespace=namespace,
                         is_attribute=False,
                         as_reference=False,
                         is_hidden=is_hidden)
+        else:
+            raise ValueError("Unrecognized mark-up format: '%s'" % store_as)
 
     def get(self, **kwargs):
         """
