@@ -34,9 +34,26 @@ SUPPORTED_NEXML_NAMESPACES = ('http://www.nexml.org/1.0', 'http://www.nexml.org/
 ############################################################################
 ## Local Module Methods
 
+def _safe_unicode(obj, *args):
+    """ return the unicode representation of obj """
+    try:
+        return unicode(obj, *args)
+    except UnicodeDecodeError:
+        # obj is byte string
+        ascii_text = str(obj).encode('string_escape')
+        return unicode(ascii_text)
+
+def _safe_str(obj):
+    """ return the byte string representation of obj """
+    try:
+        return str(obj)
+    except UnicodeEncodeError:
+        # obj is unicode
+        return unicode(obj).encode('unicode_escape')
+
 def _protect_attr(x):
 #     return cgi.escape(x)
-    return saxutils.quoteattr(str(x))
+    return saxutils.quoteattr(_safe_str(x))
 
 def _to_nexml_indent_items(items, indent="", indent_level=0):
     """
