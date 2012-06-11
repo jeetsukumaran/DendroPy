@@ -306,7 +306,7 @@ class AnnotationSet(set):
 
     def add_citation(self,
             citation,
-            store_as="bibtex",
+            compose_as="bibtex",
             name_prefix=None,
             namespace=None,
             is_hidden=False):
@@ -318,7 +318,7 @@ class AnnotationSet(set):
                 with BibTex fields as keys and contents as values, or a
                 dendropy.utility.BibTex.BibTexEntry object.
 
-            `store_as`
+            `compose_as`
                 Specifies how to record the citation:
 
                     `bibtex`        : a set of annotations, where each BibTex
@@ -353,7 +353,7 @@ class AnnotationSet(set):
         elif namespace is None and name_prefix is not None:
             raise TypeError("Cannot specify 'namespace' for unqualified name without specifying 'name_prefix'")
 
-        if store_as.lower().startswith("bibtex"):
+        if compose_as.lower().startswith("bibtex"):
             if name_prefix is None and namespace is None:
                 name_prefix = "bibtex"
                 namespace = "http://www.edutella.org/bibtex#"
@@ -388,7 +388,7 @@ class AnnotationSet(set):
                         is_attribute=False,
                         as_reference=False,
                         is_hidden=is_hidden)
-        # elif store_as.lower().startswith("bibtex-record"):
+        # elif compose_as.lower().startswith("bibtex-record"):
         #     if name_prefix is None and namespace is None:
         #         name_prefix = "dendropy"
         #         namespace = "http://packages.python.org/DendroPy/"
@@ -402,7 +402,7 @@ class AnnotationSet(set):
         #             is_attribute=False,
         #             as_reference=False,
         #             is_hidden=is_hidden)
-        elif store_as.lower().startswith("prism"):
+        elif compose_as.lower().startswith("prism"):
             prism_map = {
                     'volume': bt_dict.get('volume', None),
                     'publicationName':  bt_dict.get('journal', None),
@@ -425,7 +425,7 @@ class AnnotationSet(set):
                         is_attribute=False,
                         as_reference=False,
                         is_hidden=is_hidden)
-        elif store_as.lower().startswith("dublin-core"):
+        elif compose_as.lower().startswith("dublin-core"):
             dc_map = {
                     'title': bt_dict.get('title', None),
                     'creator':  bt_dict.get('author', None),
@@ -449,7 +449,7 @@ class AnnotationSet(set):
                         as_reference=False,
                         is_hidden=is_hidden)
         else:
-            raise ValueError("Unrecognized mark-up format: '%s'" % store_as)
+            raise ValueError("Unrecognized composition specification: '%s'" % compose_as)
 
     def get(self, **kwargs):
         """
