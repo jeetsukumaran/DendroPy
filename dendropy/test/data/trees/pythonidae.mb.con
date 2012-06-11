@@ -32,7 +32,7 @@ begin taxa;
 		Python_molurus
 		Python_curtus
 		Python_regius
-		Candola_aspera
+		Candoia_aspera
 		Morelia_nauta
 		Morelia_clastolepis
 		Morelia_tracyae
@@ -68,7 +68,7 @@ begin trees;
 		26	Python_molurus,
 		27	Python_curtus,
 		28	Python_regius,
-		29	Candola_aspera,
+		29	Candoia_aspera,
 		30	Morelia_nauta,
 		31	Morelia_clastolepis,
 		32	Morelia_tracyae,
