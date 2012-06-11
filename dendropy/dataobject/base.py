@@ -297,7 +297,7 @@ class AnnotationSet(set):
 
         """
         results = []
-        for a in self.annotations:
+        for a in self:
             if a.is_match(**kwargs):
                 results.append(a)
         return results
@@ -338,7 +338,7 @@ class AnnotationSet(set):
 
         """
         to_remove = []
-        for a in self.annotations:
+        for a in self:
             if a.is_match(**kwargs):
                 to_remove.append(a)
         for a in to_remove:
