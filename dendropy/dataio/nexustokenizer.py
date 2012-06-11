@@ -41,6 +41,8 @@ def format_annotation_as_comments(annotated, nhx=False):
         return ""
     parts = []
     for annote in annotated.annotations:
+        if annote.is_hidden:
+            continue
         key = annote.name
         value = annote.value
         if isinstance(value, list) or isinstance(value, tuple):

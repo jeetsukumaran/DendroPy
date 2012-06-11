@@ -78,6 +78,7 @@ class Annotation(DataObject):
             name_is_qualified=False,
             is_attribute=False,
             as_reference=False,
+            is_hidden=False,
             ):
         DataObject.__init__(self)
         self._value = value
@@ -93,6 +94,7 @@ class Annotation(DataObject):
         self._namespace = None
         self.namespace = namespace
         self.as_reference = as_reference
+        self.is_hidden = is_hidden
 
     def is_match(self, **kwargs):
         match = True
@@ -159,7 +161,8 @@ class AnnotationSet(set):
             namespace=None,
             name_is_qualified=False,
             is_attribute=False,
-            as_reference=False):
+            as_reference=False,
+            is_hidden=False):
         """
         Add an annotation, where:
 
@@ -192,6 +195,9 @@ class AnnotationSet(set):
             `as_reference`
                 The value should be interpreted as a URI that points to content.
 
+            `is_hidden`
+                Do not write or print this annotation when writing data.
+
         """
         if not name_is_qualified:
             if name_prefix is None and namespace is None:
@@ -212,7 +218,8 @@ class AnnotationSet(set):
                 namespace=namespace,
                 name_is_qualified=name_is_qualified,
                 is_attribute=is_attribute,
-                as_reference=as_reference
+                as_reference=as_reference,
+                is_hidden=is_hidden,
                 )
         self.add(annote)
         return annote
@@ -225,6 +232,7 @@ class AnnotationSet(set):
             namespace=None,
             name_is_qualified=False,
             as_reference=False,
+            is_hidden=False,
             owner_instance=None,
             ):
         """
@@ -255,6 +263,9 @@ class AnnotationSet(set):
 
             `as_reference`
                 The value should be interpreted as a URI that points to content.
+
+            `is_hidden`
+                Do not write or print this annotation when writing data.
 
             `owner_instance`
                 The object whose attribute is to be used as the value of the
@@ -287,6 +298,7 @@ class AnnotationSet(set):
                 name_is_qualified=name_is_qualified,
                 is_attribute=True,
                 as_reference=as_reference,
+                is_hidden=is_hidden,
                 )
         self.add(annote)
         return annote
@@ -297,7 +309,8 @@ class AnnotationSet(set):
             as_bibtex_record=True,
             as_bibtex_fields=True,
             as_prism_fields=True,
-            as_dublin_core_fields=True):
+            as_dublin_core_fields=True,
+            is_hidden=False):
         from dendropy.utility import bibtex
         bt = bibtex.BibTexEntry(citation)
         bt_dict = bt.fields_as_dict()
@@ -309,7 +322,8 @@ class AnnotationSet(set):
                     datatype_hint="xsd:string",
                     name_is_qualified=False,
                     is_attribute=False,
-                    as_reference=False)
+                    as_reference=False,
+                    is_hidden=is_hidden)
         if as_bibtex_fields:
             self.add_new(
                     name="bibtype",
@@ -319,7 +333,8 @@ class AnnotationSet(set):
                     namespace="http://www.edutella.org/bibtex#",
                     name_is_qualified=False,
                     is_attribute=False,
-                    as_reference=False)
+                    as_reference=False,
+                    is_hidden=is_hidden)
             self.add_new(
                     name="citekey",
                     value=bt.citekey,
@@ -328,7 +343,8 @@ class AnnotationSet(set):
                     namespace="http://www.edutella.org/bibtex#",
                     name_is_qualified=False,
                     is_attribute=False,
-                    as_reference=False)
+                    as_reference=False,
+                    is_hidden=is_hidden)
             for entry_key, entry_value in bt_dict.items():
                 self.add_new(
                         name=entry_key,
@@ -338,7 +354,8 @@ class AnnotationSet(set):
                         namespace="http://www.edutella.org/bibtex#",
                         name_is_qualified=False,
                         is_attribute=False,
-                        as_reference=False)
+                        as_reference=False,
+                        is_hidden=is_hidden)
         if as_prism_fields:
             prism_map = {
                     'volume': bt_dict.get('volume', None),
@@ -357,7 +374,8 @@ class AnnotationSet(set):
                         namespace="http://prismstandard.org/namespaces/1.2/basic/",
                         name_is_qualified=False,
                         is_attribute=False,
-                        as_reference=False)
+                        as_reference=False,
+                        is_hidden=is_hidden)
         if as_dublin_core_fields:
             dc_map = {
                     'title': bt_dict.get('title', None),
@@ -376,7 +394,8 @@ class AnnotationSet(set):
                         namespace="http://purl.org/dc/elements/1.1/",
                         name_is_qualified=False,
                         is_attribute=False,
-                        as_reference=False)
+                        as_reference=False,
+                        is_hidden=is_hidden)
 
     def get(self, **kwargs):
         """
