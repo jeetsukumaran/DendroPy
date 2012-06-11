@@ -306,7 +306,6 @@ class AnnotationSet(set):
     def add_citation(self,
             citation,
             schema="bibtex",
-            as_bibtex_record=True,
             as_bibtex_fields=True,
             as_prism_fields=True,
             as_dublin_core_fields=True,
@@ -314,16 +313,16 @@ class AnnotationSet(set):
         from dendropy.utility import bibtex
         bt = bibtex.BibTexEntry(citation)
         bt_dict = bt.fields_as_dict()
-        if as_bibtex_record:
-            # defaults to dendropy namespace
-            self.add_new(
-                    name="bibtex",
-                    value=bt.as_compact_bibtex(),
-                    datatype_hint="xsd:string",
-                    name_is_qualified=False,
-                    is_attribute=False,
-                    as_reference=False,
-                    is_hidden=is_hidden)
+        # if as_bibtex_record:
+        #     # defaults to dendropy namespace
+        #     self.add_new(
+        #             name="bibtex",
+        #             value=bt.as_compact_bibtex(),
+        #             datatype_hint="xsd:string",
+        #             name_is_qualified=False,
+        #             is_attribute=False,
+        #             as_reference=False,
+        #             is_hidden=is_hidden)
         if as_bibtex_fields:
             self.add_new(
                     name="bibtype",
