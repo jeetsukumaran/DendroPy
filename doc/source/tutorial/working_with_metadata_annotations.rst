@@ -234,3 +234,47 @@ In addition, the method call also supports the other customization arguments of 
     ... annotate_as="dc:subject",
     ... namespace="http://purl.org/dc/elements/1.1/",
     ... compose_as_reference=True)
+
+Adding Citation Metadata
+------------------------
+
+You can add citation annotations using the :meth:`~dendropy.dataobject.base.Annotation.add_citation` method.
+This method takes at least one argument, ``citation``.
+This can be a string representing the citation as a BibTex record or a dictionary with BibTex fields as keys and field content as values.
+
+For example:
+
+.. literalinclude:: /examples/bibtex_annotations1.py
+
+will result in::
+
+    <?xml version="1.0" encoding="ISO-8859-1"?>
+    <nex:nexml
+        version="0.9"
+        xsi:schemaLocation="http://www.nexml.org/2009"
+        xmlns:bibtex="http://www.edutella.org/bibtex#"
+        xmlns="http://www.nexml.org/2009"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:xml="http://www.w3.org/XML/1998/namespace"
+        xmlns:nex="http://www.nexml.org/2009"
+        xmlns:dendropy="http://packages.python.org/DendroPy/"
+    >
+        <meta xsi:type="nex:LiteralMeta" property="bibtex:journal" content="Molecular Biology and Evolution" datatype="xsd:string" id="meta4320453648" />
+        <meta xsi:type="nex:LiteralMeta" property="bibtex:bibtype" content="article" datatype="xsd:string" id="meta4320453200" />
+        <meta xsi:type="nex:LiteralMeta" property="bibtex:number" content="3" datatype="xsd:string" id="meta4320453776" />
+        <meta xsi:type="nex:LiteralMeta" property="bibtex:citekey" content="HeathHH2012" datatype="xsd:string" id="meta4320453328" />
+        <meta xsi:type="nex:LiteralMeta" property="bibtex:pages" content="939-955" datatype="xsd:string" id="meta4320453968" />
+        <meta xsi:type="nex:LiteralMeta" property="bibtex:volume" content="29" datatype="xsd:string" id="meta4320453840" />
+        <meta xsi:type="nex:LiteralMeta" property="bibtex:year" content="2012" datatype="xsd:string" id="meta4320453904" />
+        <meta xsi:type="nex:LiteralMeta" property="bibtex:doi" content="10.1093/molbev/msr255" datatype="xsd:string" id="meta4320453456" />
+        <meta xsi:type="nex:LiteralMeta" property="bibtex:title" content="A {Dirichlet} Process Prior for Estimating Lineage-Specific Substitution Rates." datatype="xsd:string" id="meta4320453520" />
+        <meta xsi:type="nex:LiteralMeta" property="bibtex:url" content="http://mbe.oxfordjournals.org/content/early/2011/11/04/molbev.msr255.abstract" datatype="xsd:string" id="meta4320453584" />
+        <meta xsi:type="nex:LiteralMeta" property="bibtex:author" content="Tracy A. Heath and Mark T. Holder and John P. Huelsenbeck" datatype="xsd:string" id="meta4320453712" />
+        .
+        .
+        .
+
+
+
+.. literalinclude:: /examples/bibtex_annotations2.py
+
