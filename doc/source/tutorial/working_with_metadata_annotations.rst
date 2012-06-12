@@ -275,6 +275,7 @@ will result in::
         .
 
 
+The following results in the same output as above, but the citation is given as a dictionary with BibTex fields as keys and content as values:
 
 .. literalinclude:: /examples/bibtex_annotations2.py
 

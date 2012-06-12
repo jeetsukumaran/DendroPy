@@ -306,6 +306,55 @@ class AnnotationSet(set):
 
     def add_citation(self,
             citation,
+            read_as="bibtex",
+            compose_as="bibtex",
+            name_prefix=None,
+            namespace=None,
+            is_hidden=False):
+        """
+        Add a citation as an annotation.
+
+            `citation`
+                This can be a string representing a BibTex entry, a dictionary
+                with BibTex fields as keys and contents as values, or a
+                dendropy.utility.BibTex.BibTexEntry object.
+
+            `read_as`
+                Specifies the format/schema/structure of the citation. Currently
+                only supports 'bibtex'.
+
+            `compose_as`
+                Specifies how to record the citation:
+
+                    `bibtex`        : a set of annotations, where each BibTex
+                                      field becomes a separate annotation
+                    `prism`         : a set of of PRISM (Publishing Requirements for
+                                      Industry Standard Metadata) annotations
+                    `dublic-core`   : a set of of Dublic Core annotations
+
+                Defaults to `bibtex`.
+
+            `name_prefix`
+                Mainly for NeXML output (e.g. "dc:").
+
+            `namespace`
+                Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
+
+            `is_hidden`
+                Do not write or print this annotation when writing data.
+
+        """
+        if read_as == "bibtex":
+            self.add_bibtex(citation=citation,
+                    compose_as=compose_as,
+                    name_prefix=name_prefix,
+                    namespace=namespace,
+                    is_hidden=is_hidden)
+        else:
+            raise ValueError("Source format '%s' is not supported" % read_as)
+
+    def add_bibtex(self,
+            citation,
             compose_as="bibtex",
             name_prefix=None,
             namespace=None,
