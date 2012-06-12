@@ -307,7 +307,7 @@ class AnnotationSet(set):
     def add_citation(self,
             citation,
             read_as="bibtex",
-            compose_as="bibtex",
+            store_as="bibtex",
             name_prefix=None,
             namespace=None,
             is_hidden=False):
@@ -323,7 +323,7 @@ class AnnotationSet(set):
                 Specifies the format/schema/structure of the citation. Currently
                 only supports 'bibtex'.
 
-            `compose_as`
+            `store_as`
                 Specifies how to record the citation:
 
                     `bibtex`        : a set of annotations, where each BibTex
@@ -346,7 +346,7 @@ class AnnotationSet(set):
         """
         if read_as == "bibtex":
             self.add_bibtex(citation=citation,
-                    compose_as=compose_as,
+                    store_as=store_as,
                     name_prefix=name_prefix,
                     namespace=namespace,
                     is_hidden=is_hidden)
@@ -355,7 +355,7 @@ class AnnotationSet(set):
 
     def add_bibtex(self,
             citation,
-            compose_as="bibtex",
+            store_as="bibtex",
             name_prefix=None,
             namespace=None,
             is_hidden=False):
@@ -367,7 +367,7 @@ class AnnotationSet(set):
                 with BibTex fields as keys and contents as values, or a
                 dendropy.utility.BibTex.BibTexEntry object.
 
-            `compose_as`
+            `store_as`
                 Specifies how to record the citation:
 
                     `bibtex`        : a set of annotations, where each BibTex
@@ -396,7 +396,7 @@ class AnnotationSet(set):
         elif namespace is None and name_prefix is not None:
             raise TypeError("Cannot specify 'namespace' for unqualified name without specifying 'name_prefix'")
 
-        if compose_as.lower().startswith("bibtex"):
+        if store_as.lower().startswith("bibtex"):
             if name_prefix is None and namespace is None:
                 name_prefix = "bibtex"
                 namespace = "http://www.edutella.org/bibtex#"
@@ -431,7 +431,7 @@ class AnnotationSet(set):
                         is_attribute=False,
                         compose_as_reference=False,
                         is_hidden=is_hidden)
-        # elif compose_as.lower().startswith("bibtex-record"):
+        # elif store_as.lower().startswith("bibtex-record"):
         #     if name_prefix is None and namespace is None:
         #         name_prefix = "dendropy"
         #         namespace = "http://packages.python.org/DendroPy/"
@@ -445,7 +445,7 @@ class AnnotationSet(set):
         #             is_attribute=False,
         #             compose_as_reference=False,
         #             is_hidden=is_hidden)
-        elif compose_as.lower().startswith("prism"):
+        elif store_as.lower().startswith("prism"):
             prism_map = {
                     'volume': bt_dict.get('volume', None),
                     'publicationName':  bt_dict.get('journal', None),
@@ -468,7 +468,7 @@ class AnnotationSet(set):
                         is_attribute=False,
                         compose_as_reference=False,
                         is_hidden=is_hidden)
-        elif compose_as.lower().startswith("dublin"):
+        elif store_as.lower().startswith("dublin"):
             dc_map = {
                     'title': bt_dict.get('title', None),
                     'creator':  bt_dict.get('author', None),
@@ -492,7 +492,7 @@ class AnnotationSet(set):
                         compose_as_reference=False,
                         is_hidden=is_hidden)
         else:
-            raise ValueError("Unrecognized composition specification: '%s'" % compose_as)
+            raise ValueError("Unrecognized composition specification: '%s'" % store_as)
 
     def get(self, **kwargs):
         """

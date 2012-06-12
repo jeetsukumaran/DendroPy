@@ -23,7 +23,7 @@ dataset = dendropy.DataSet.get_from_string(
         "(A,(B,(C,(D,E))));",
         "newick")
 dataset.annotations.add_citation(citation,
-        compose_as="prism")
+        store_as="prism")
 dataset.annotations.add_citation(citation,
-        compose_as="dublin")
+        store_as="dublin")
 print dataset.as_string("nexml")
