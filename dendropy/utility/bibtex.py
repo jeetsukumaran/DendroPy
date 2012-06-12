@@ -30,6 +30,7 @@ BibTeX interface.
 import re
 import textwrap
 import sys
+from dendropy.utility.containers import OrderedCaselessDict
 
 # default order of fields
 BIBTEX_FIELDS = [
@@ -109,17 +110,24 @@ class BibTexEntry(object):
     # get the last field
     last_field_pattern = re.compile(r'\s*([\w|\-]*?)\s*=\s*(.*?)\s*[,]*\s*$')
 
-    def __init__(self, entry_text=None):
+    def __init__(self, citation=None):
         """
         Sets up internal dictionary of BibTeX fields, and initializes
         if argument is given.
         """
-        entry_text = entry_text.replace("\n", "")
-        self._entry_dict = {}
         self.bibtype = None
         self.citekey = None
-        if entry_text:
-            self.parse_text(entry_text)
+        if isinstance(citation, BibTexEntry):
+            self._entry_dict = OrderedCaselessDict(citation._entry_dict)
+        elif isinstance(citation, dict):
+            self._entry_dict = OrderedCaselessDict()
+            for k, v in citation.items():
+                self._entry_dict[k.lower()] = v
+            self.bibtype = self._entry_dict.get("bibtype", None)
+            self.citekey = self._entry_dict.get("citekey", None)
+        else:
+            self._entry_dict = OrderedCaselessDict()
+            self.parse_text(citation)
 
     def __getattr__(self, name):
         """
@@ -217,6 +225,7 @@ class BibTexEntry(object):
         """
         Parses a BibTeX text entry.
         """
+        text = text.replace("\n", "")
         self.bibtype = None
         self.citekey = None
         text = text.strip()

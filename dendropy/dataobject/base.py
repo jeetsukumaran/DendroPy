@@ -339,13 +339,7 @@ class AnnotationSet(set):
                 Do not write or print this annotation when writing data.
 
         """
-        if isinstance(citation, bibtex.BibTexEntry):
-            bt = citation
-        elif isinstance(citation, dict):
-            bt = bibtex.BibTexEntry()
-            bt._entry_dict = dict(citation)
-        else:
-            bt = bibtex.BibTexEntry(citation)
+        bt = bibtex.BibTexEntry(citation)
         bt_dict = bt.fields_as_dict()
 
         if name_prefix is None and namespace is not None:
