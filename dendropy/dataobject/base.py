@@ -330,7 +330,7 @@ class AnnotationSet(set):
                                       field becomes a separate annotation
                     `prism`         : a set of of PRISM (Publishing Requirements for
                                       Industry Standard Metadata) annotations
-                    `dublic-core`   : a set of of Dublic Core annotations
+                    `dublin`        : a set of of Dublic Core annotations
 
                 Defaults to `bibtex`.
 
@@ -374,7 +374,7 @@ class AnnotationSet(set):
                                       field becomes a separate annotation
                     `prism`         : a set of of PRISM (Publishing Requirements for
                                       Industry Standard Metadata) annotations
-                    `dublic-core`   : a set of of Dublic Core annotations
+                    `dublin`        : a set of of Dublic Core annotations
 
                 Defaults to `bibtex`.
 
@@ -468,7 +468,7 @@ class AnnotationSet(set):
                         is_attribute=False,
                         compose_as_reference=False,
                         is_hidden=is_hidden)
-        elif compose_as.lower().startswith("dublin-core"):
+        elif compose_as.lower().startswith("dublin"):
             dc_map = {
                     'title': bt_dict.get('title', None),
                     'creator':  bt_dict.get('author', None),

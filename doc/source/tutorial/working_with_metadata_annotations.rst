@@ -279,3 +279,20 @@ The following results in the same output as above, but the citation is given as 
 
 .. literalinclude:: /examples/bibtex_annotations2.py
 
+By default, the citation gets annotated as a series of separate BibTex elements.
+You can specify alternate formats by using the "``compose_as``" argument.
+This argument can take one of the following values:
+
+    - "``bibtex``"
+        Each BibTex field gets recorded as a separate annotation, with name
+        given by the field name, content by the field value.
+        This is the default.
+
+    - "``prism``"
+        A subset of the BibTex fields gets recorded as a set of PRISM (Publishing Requirements for Industry Standard Metadata) annotations, one per field.
+
+
+    - "``dublin``"
+        A subset of the BibTex fields gets recorded as a set of Dublin Core (Publishing Requirements for Industry Standard Metadata) annotations, one per field.
+
+In addition, the method call also supports some of the other customization arguments of the :meth:`~dendropy.dataobject.base.Annotation.add_new` method:  "``name_prefix``", "``namespace``", "``name_is_qualified``", "``is_hidden``".
