@@ -561,7 +561,7 @@ class AnnotationSet(set):
             if a.is_match(**kwargs):
                 to_remove.append(a)
         for a in to_remove:
-            self.annotations.remove(a)
+            self.remove(a)
 
 
     def values_as_dict(self, key_func=None, value_func=None):
