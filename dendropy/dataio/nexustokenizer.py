@@ -23,6 +23,7 @@ by both `dendropy.newick` and `dendropy.nexus` modules.
 
 import re
 from cStringIO import StringIO
+from dendropy import Annotation
 from dendropy.utility import containers
 from dendropy.utility.error import DataParseError
 from dendropy import dataobject
@@ -67,6 +68,7 @@ def format_annotation_as_comments(annotated, nhx=False):
 FIGTREE_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(,|$)')
 NHX_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(:|$)')
 def parse_comment_metadata(comments,
+        annotations=None,
         field_name_map=None,
         field_value_types=None,
         strip_leading_trailing_spaces=True):
@@ -80,7 +82,8 @@ def parse_comment_metadata(comments,
     `field_value_types` should be a dictionary mapping field names (as given in
     the comment string) to the value type (e.g. {"node-age" : float}.
     """
-    metadata = {}
+    if annotations is None:
+        annotations = set()
     if isinstance(comments, str):
         comments = [comments]
     if field_name_map is None:
@@ -118,8 +121,19 @@ def parse_comment_metadata(comments,
                     val = value_type(val)
             if key in field_name_map:
                 key = field_name_map[key]
-            metadata[key] = val
-    return metadata
+            annote = Annotation(
+                    name=key,
+                    value=val,
+                    # datatype_hint=datatype_hint,
+                    # name_prefix=name_prefix,
+                    # namespace=namespace,
+                    # name_is_qualified=name_is_qualified,
+                    # is_attribute=False,
+                    # compose_as_reference=compose_as_reference,
+                    # is_hidden=is_hidden,
+                    )
+            annotations.add(annote)
+    return annotations
 
 ###############################################################################
 ## RootingInterpreter
@@ -382,16 +396,10 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
             active_node.comments.extend(stream_tokenizer.comments)
 
     def store_comment_metadata(target):
-        if extract_comment_metadata:
-            if stream_tokenizer.has_comment_metadata():
+        if extract_comment_metadata and stream_tokenizer.has_comment_metadata():
                 comment_metadata = stream_tokenizer.comment_metadata
-                try:
-                    target.comment_metadata.update(comment_metadata)
-                except AttributeError:
-                    target.comment_metadata = comment_metadata
+                target.annotations.update(comment_metadata)
                 stream_tokenizer.clear_comment_metadata()
-            elif not hasattr(target, "comment_metadata"):
-                target.comment_metadata = {}
 
     # store and clear comments
     tree.comments = stream_tokenizer.comments
@@ -608,7 +616,7 @@ class NexusTokenizer(object):
         self.preserve_underscores = False
         self.global_ignore_punctuation = set()
         self.hyphens_as_tokens = DEFAULT_HYPHENS_AS_TOKENS
-        self._comment_metadata = {}
+        self._comment_metadata = set()
 
     def _get_hyphens_as_tokens(self):
         return self._hyphens_as_tokens
@@ -634,13 +642,13 @@ class NexusTokenizer(object):
     current_file_char = property(_get_current_file_char, _set_current_file_char)
 
     def _get_comment_metadata(self):
-        return dict(self._comment_metadata)
+        return set(self._comment_metadata)
 
     def _set_comment_metadata(self, val):
         if val is None:
-            self._comment_metadata = {}
+            self._comment_metadata = set()
         else:
-            self._comment_metadata = dict(val)
+            self._comment_metadata = set(val)
 
     comment_metadata = property(_get_comment_metadata, _set_comment_metadata)
 
@@ -648,7 +656,7 @@ class NexusTokenizer(object):
         return len(self._comment_metadata) > 0
 
     def clear_comment_metadata(self):
-        self._comment_metadata = {}
+        self._comment_metadata.clear()
 
     def clear_comments(self):
         self.comments = []

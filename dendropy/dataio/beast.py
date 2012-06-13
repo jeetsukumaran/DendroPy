@@ -112,20 +112,17 @@ class BeastSummaryTreeReader(NexusReader):
         """
         for nd in tree.postorder_node_iter():
             beast_info = {}
-            if nd.comments is None or len(nd.comments) == 0:
+            if len(nd.annotations) == 0:
                 if not ignore_missing:
-                    raise ValueError("No comments found associated with node '%s'" % (str(nd)))
+                    raise ValueError("No annotations found associated with node '%s'" % (str(nd)))
             else:
-                # populate info dictionary
-                node_comment = nd.comments[0][1:]
-                for match_group in BEAST_NODE_INFO_PATTERN.findall(node_comment):
-                    key, val = match_group[:2]
+                for annote in nd.annotations:
+                    key = annote.name
                     key = BEAST_SUMMARY_FIELDS_TO_ATTR_MAP.get(key, key)
-                    if val.startswith('{'):
+                    val = annote.value
+                    if isinstance(val, list):
                         if value_type is not None:
-                            val = [value_type(v) for v in val[1:-1].split(',')]
-                        else:
-                            val = val[1:-1].split(',')
+                            val = [value_type(v) for v in val]
                     else:
                         if value_type is not None:
                             val = value_type(val)

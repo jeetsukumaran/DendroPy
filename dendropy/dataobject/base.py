@@ -97,6 +97,9 @@ class Annotation(DataObject):
         self.compose_as_reference = compose_as_reference
         self.is_hidden = is_hidden
 
+    def __str__(self):
+        return '<%s="%s">' % (self.qualified_name, self.value)
+
     def is_match(self, **kwargs):
         match = True
         for k, v in kwargs.items():
@@ -149,6 +152,7 @@ class Annotation(DataObject):
     qualified_name = property(_get_qualified_name, _set_qualified_name)
 
 class AnnotationSet(set):
+
 
     def __init__(self, target, *args):
         set.__init__(self, *args)
@@ -559,3 +563,20 @@ class AnnotationSet(set):
         for a in to_remove:
             self.annotations.remove(a)
 
+
+    def values_as_dict(self, key_func=None, value_func=None):
+        """
+        Returns annotation set as a dictionary. `key` and `value` should be
+        *functions* that take a Annotation object and return the objects to be
+        used for the key and value for representing this Annotation in the
+        dictionary. If not specified, defaults to Annotation.name and
+        Annotation.value respectively.
+        """
+        if key_func is None:
+            key_func = lambda a: a.name
+        if value_func is None:
+            value_func = lambda a: a.value
+        d = {}
+        for a in self:
+            d[key_func(a)] = value_func(a)
+        return d
