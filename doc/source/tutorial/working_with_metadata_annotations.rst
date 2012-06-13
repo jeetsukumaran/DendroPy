@@ -14,7 +14,7 @@ Metadata Annotation Creation
 Direct Composition with Literal Values
 --------------------------------------
 
-The :meth:`~dendropy.dataobject.base.AnnotationSet.add_new` method of the :attr:`annotations` attribute allows for direct adding of metadata. This method has two mandatory arguments, ``name`` and ``value``::
+The :meth:`~dendropy.dataobject.base.AnnotationSet.add_new` method of the :attr:`annotations` attribute allows for direct adding of metadata. This method has two mandatory arguments, "``name``" and "``value``"::
 
     >>> import dendropy
     >>> tree = dendropy.Tree.get_from_path('pythonidae.mle.tree', 'nexus')
@@ -24,7 +24,7 @@ The :meth:`~dendropy.dataobject.base.AnnotationSet.add_new` method of the :attr:
     ... value="Python phylogenetics",
     ... )
 
-When printing the tree in NeXML, the metadata will be rendered as a ``<meta>`` tag child element of the associated ``<tree>`` element::
+When printing the tree in NeXML, the metadata will be rendered as a "``<meta>``" tag child element of the associated "``<tree>``" element::
 
     <nex:nexml
         version="0.9"
@@ -45,7 +45,7 @@ When printing the tree in NeXML, the metadata will be rendered as a ``<meta>`` t
     .
     .
 
-As can be seen, by default the metadata property is mapped to the "``dendropy``" namespace (i.e., '``xmlns:dendropy="http://packages.python.org/DendroPy/"``').
+As can be seen, by default, the metadata property is mapped to the "``dendropy``" namespace (i.e., '``xmlns:dendropy="http://packages.python.org/DendroPy/"``').
 This can be customized by using the "``name_prefix``" and "``namespace``" arguments to the call to :meth:`~dendropy.dataobject.base.AnnotationSet.add_new`::
 
     >>> tree.annotations.add_new(
@@ -77,8 +77,8 @@ This will result in the following NeXML fragment::
     .
     .
 
-Note that if the "``name_prefix``" or "``namespace``" must be specified simultaneously; that is, if one is specified, then the other must be specified as well.
-For convenience, you can specify the name of the annotation with the name prefix prepended by specifying "``name_is_qualified=True``", thought the namespace must still be provided separately::
+Note that the "``name_prefix``" or "``namespace``" must be specified simultaneously; that is, if one is specified, then the other must be specified as well.
+For convenience, you can specify the name of the annotation with the name prefix prepended by specifying "``name_is_qualified=True``", though the namespace must still be provided separately::
 
     >>> tree.annotations.add_new(
     ... name="dc:subject",
@@ -109,7 +109,7 @@ When writing to NeXML, this will result in the following fragment::
             <meta xsi:type="nex:LiteralMeta" property="dendropy:subject" content="Python phylogenetics" datatype="xsd:string" id="meta4320379472" />
 
 You can also specify that the data should be interpreted as a source to be dereferenced in NeXML by passing in ``compose_as_reference=True``.
-Note that this does not actually populated the contents of the annotation from the source (unlike the dynamic attribute value binding discussed below), but just indicates the the contents of the annotation should be *interpreted* differently.
+Note that this does not actually populate the contents of the annotation from the source (unlike the dynamic attribute value binding discussed below), but just indicates the the contents of the annotation should be *interpreted* differently by semantic readers.
 Thus, the following annotation::
 
     >>> tree.annotations.add_new(
@@ -286,15 +286,24 @@ This argument can take one of the following values:
     - "``bibtex``"
         Each BibTex field gets recorded as a separate annotation, with name
         given by the field name, content by the field value.
-        This is the default.
-
-    - "``prism``"
-        A subset of the BibTex fields gets recorded as a set of PRISM (Publishing Requirements for Industry Standard Metadata) annotations, one per field.
-
+        This is the default, and the results in NeXML are shown above.
 
     - "``dublin``"
-        A subset of the BibTex fields gets recorded as a set of Dublin Core (Publishing Requirements for Industry Standard Metadata) annotations, one per field.
+        A subset of the BibTex fields gets recorded as a set of Dublin Core (Publishing Requirements for Industry Standard Metadata) annotations, one per field::
+
+        <meta xsi:type="nex:LiteralMeta" property="dc:date" content="2012" datatype="xsd:string" id="meta4320461584" />
+        <meta xsi:type="nex:LiteralMeta" property="dc:publisher" content="Molecular Biology and Evolution" datatype="xsd:string" id="meta4320461648" />
+        <meta xsi:type="nex:LiteralMeta" property="dc:title" content="A {Dirichlet} Process Prior for Estimating Lineage-Specific Substitution Rates." datatype="xsd:string" id="meta4320461776" />
+        <meta xsi:type="nex:LiteralMeta" property="dc:creator" content="Tracy A. Heath and Mark T. Holder and John P. Huelsenbeck" datatype="xsd:string" id="meta4320461712" />
+
+    - "``prism``"
+        A subset of the BibTex fields gets recorded as a set of PRISM (Publishing Requirements for Industry Standard Metadata) annotations, one per field::
+
+        <meta xsi:type="nex:LiteralMeta" property="prism:volume" content="29" datatype="xsd:string" id="meta4320461584" />
+        <meta xsi:type="nex:LiteralMeta" property="prism:pageRange" content="939-955" datatype="xsd:string" id="meta4320461648" />
+        <meta xsi:type="nex:LiteralMeta" property="prism:publicationDate" content="2012" datatype="xsd:string" id="meta4320461776" />
+        <meta xsi:type="nex:LiteralMeta" property="prism:publicationName" content="Molecular Biology and Evolution" datatype="xsd:string" id="meta4320461712" />
+
 
 In addition, the method call also supports some of the other customization arguments of the :meth:`~dendropy.dataobject.base.Annotation.add_new` method:  "``name_prefix``", "``namespace``", "``name_is_qualified``", "``is_hidden``".
 
-.. literalinclude:: /examples/bibtex_annotations3.py
