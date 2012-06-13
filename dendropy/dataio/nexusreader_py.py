@@ -751,6 +751,11 @@ class NexusReader(iosys.DataReader):
 #                ti = taxon_set.index(t)
 #                t.split_bitmask = (1 << ti)
 
+    def store_comment_metadata(self, target):
+        if self.extract_comment_metadata and self.stream_tokenizer.has_comment_metadata():
+                target.annotations.update(self.stream_tokenizer.comment_metadata)
+                stream_tokenizer.clear_comment_metadata()
+
     def _parse_tree_statement(self, taxon_set=None):
         """
         Processes a TREE command. Assumes that the file reader is

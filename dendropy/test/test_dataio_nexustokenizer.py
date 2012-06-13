@@ -215,7 +215,7 @@ END;
     def testFigtreeStyleBasic(self):
         s = self.figtree_metadata_str
         _LOG.info("Tree = %s" % s)
-        tree = dendropy.Tree.get_from_string(s, 'newick')
+        tree = dendropy.Tree.get_from_string(s, 'newick', extract_comment_metadata=True)
         tree.comment_metadata = nexustokenizer.parse_comment_metadata(tree.comments)
         for nd in tree.postorder_node_iter():
             nd.comment_metadata = nexustokenizer.parse_comment_metadata(nd.comments)
@@ -224,7 +224,7 @@ END;
     def testNHXBasic(self):
         s = self.nhx_metadata_str
         _LOG.info("Tree = %s" % s)
-        tree = dendropy.Tree.get_from_string(s, 'newick')
+        tree = dendropy.Tree.get_from_string(s, 'newick', extract_comment_metadata=True)
         tree.comment_metadata = nexustokenizer.parse_comment_metadata(tree.comments)
         for nd in tree.postorder_node_iter():
             nd.comment_metadata = nexustokenizer.parse_comment_metadata(nd.comments)

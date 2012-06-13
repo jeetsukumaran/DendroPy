@@ -316,6 +316,11 @@ class StrToTaxon(object):
     def index(self, t):
         return self.taxon_set.index(t)
 
+
+###############################################################################
+## tree_from_token_stream
+
+
 ###############################################################################
 ## tree_from_token_stream
 
@@ -390,21 +395,10 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
     if encode_splits:
         curr_node.edge.split_bitmask = 0L
 
-    ### NHX format support ###
-    def store_node_comments(active_node):
-        if stream_tokenizer.comments:
-            active_node.comments.extend(stream_tokenizer.comments)
-
-    def store_comment_metadata(target):
-        if extract_comment_metadata and stream_tokenizer.has_comment_metadata():
-                comment_metadata = stream_tokenizer.comment_metadata
-                target.annotations.update(comment_metadata)
-                stream_tokenizer.clear_comment_metadata()
-
     # store and clear comments
     tree.comments = stream_tokenizer.comments
     stream_tokenizer.clear_comments()
-    store_comment_metadata(tree)
+    stream_tokenizer.store_comment_metadata(tree)
 
     while True:
         if not token or token == ';':
@@ -423,8 +417,8 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
             curr_node.add_child(tmp_node)
             curr_node = tmp_node
             token = stream_tokenizer.read_next_token()
-            store_node_comments(curr_node)
-            store_comment_metadata(curr_node)
+            stream_tokenizer.store_comments(curr_node)
+            stream_tokenizer.store_comment_metadata(curr_node)
         elif token == ',':
             tmp_node = dataobject.Node()
             if curr_node.is_leaf() and not curr_node.taxon:
@@ -445,8 +439,8 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
             p.add_child(tmp_node)
             curr_node = tmp_node
             token = stream_tokenizer.read_next_token()
-            store_node_comments(curr_node)
-            store_comment_metadata(curr_node)
+            stream_tokenizer.store_comments(curr_node)
+            stream_tokenizer.store_comment_metadata(curr_node)
         else:
             if token == ')':
                 if curr_node.is_leaf() and not curr_node.taxon:
@@ -496,12 +490,12 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
                         split_map[cm] = e
 
             token = stream_tokenizer.read_next_token()
-            store_node_comments(curr_node)
-            store_comment_metadata(curr_node)
+            stream_tokenizer.store_comments(curr_node)
+            stream_tokenizer.store_comment_metadata(curr_node)
             if token == ':':
                 edge_length_str = stream_tokenizer.read_next_token(ignore_punctuation='-+.')
-                store_node_comments(curr_node)
-                store_comment_metadata(curr_node)
+                stream_tokenizer.store_comments(curr_node)
+                stream_tokenizer.store_comment_metadata(curr_node)
                 if not edge_length_str:
                     raise stream_tokenizer.data_format_error("Expecting a branch length after : but encountered the end of the tree description" )
                 try:
@@ -509,8 +503,8 @@ def tree_from_token_stream(stream_tokenizer, **kwargs):
                 except:
                     curr_node.edge.length = edge_length_str
                 token = stream_tokenizer.read_next_token()
-                store_node_comments(curr_node)
-                store_comment_metadata(curr_node)
+                stream_tokenizer.store_comments(curr_node)
+                stream_tokenizer.store_comment_metadata(curr_node)
     stream_tokenizer.extract_comment_metadata = stream_tokenizer_extract_comment_metadata_setting
     return tree
 
@@ -681,6 +675,18 @@ class NexusTokenizer(object):
             self.current_file_char = read_char
             return self._current_file_char
         return None
+
+    def store_comments(self, target):
+        if self.comments:
+            try:
+                target.comments.extend(self.comments)
+            except:
+                target.comments = list(self.comments)
+
+    def store_comment_metadata(self, target):
+        if self._comment_metadata:
+            target.annotations.update(self._comment_metadata)
+            self._comment_metadata.clear()
 
     def _raw_read_next_char(self):
             read_char = self.stream_handle.read(1) # returns empty string if EOF
