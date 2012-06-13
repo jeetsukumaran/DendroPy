@@ -164,6 +164,8 @@ class BeastSummaryTreeReader(NexusReader):
         """
         if 'edge_len_type' not in kwargs:
             kwargs['edge_len_type'] = float
+        if 'extract_comment_metadata' not in kwargs:
+            kwargs["extract_comment_metadata"] = True
         NexusReader.__init__(self, **kwargs)
         self.is_ignore_missing_node_info = kwargs.get('ignore_missing_node_info', False)
 

@@ -64,7 +64,7 @@ class NexusReader(iosys.DataReader):
                 '&', or NHX comments associated with items will be processed
                 and stored as part of the annotation set of the object
                 (`annotations`) If False, this will be skipped. Defaults to
-                True.
+                False.
 
             `store_tree_weights`
                 If True, process the tree weight ("[&W 1/2]") comment
@@ -115,7 +115,7 @@ class NexusReader(iosys.DataReader):
         self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", True)
         self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS)
         self.store_tree_weights = kwargs.get('store_tree_weights', False)
-        self.extract_comment_metadata = kwargs.get('extract_comment_metadata', True)
+        self.extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
         self.case_sensitive_taxon_labels = kwargs.get('case_sensitive_taxon_labels', False)
         self.edge_len_type = kwargs.get('edge_len_type', float)
 

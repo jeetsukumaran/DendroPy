@@ -71,7 +71,7 @@ def tree_source_iter(stream, **kwargs):
             '&', or NHX comments associated with items will be processed
             and stored as part of the annotation set of the object
             (`annotations`) If False, this will be skipped. Defaults to
-            True.
+            False.
 
         `store_tree_weights`
             If True, process the tree weight ("[&W 1/2]") comment
@@ -124,7 +124,7 @@ def tree_source_iter(stream, **kwargs):
             + "changing as new Taxon objects are added to the set.")
     preserve_underscores = kwargs.get('preserve_underscores', False)
     hyphens_as_tokens = kwargs.get('hyphens_as_tokens', nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS)
-    extract_comment_metadata = kwargs.get("extract_comment_metadata", True)
+    extract_comment_metadata = kwargs.get("extract_comment_metadata", False)
     newick_stream = nexustokenizer.NexusTokenizer(stream,
                                                   preserve_underscores=preserve_underscores,
                                                   hyphens_as_tokens=hyphens_as_tokens,
@@ -185,7 +185,7 @@ class NewickReader(iosys.DataReader):
                 '&', or NHX comments associated with items will be processed
                 and stored as part of the annotation set of the object
                 (`annotations`) If False, this will be skipped. Defaults to
-                True.
+                False.
 
             `store_tree_weights`
                 If True, process the tree weight ("[&W 1/2]") comment
@@ -231,7 +231,7 @@ class NewickReader(iosys.DataReader):
         self.rooting_interpreter = kwargs.get("rooting_interpreter", nexustokenizer.RootingInterpreter(**kwargs))
         self.hyphens_as_tokens = kwargs.get('hyphens_as_tokens', nexustokenizer.DEFAULT_HYPHENS_AS_TOKENS)
         self.encode_splits = kwargs.get('encode_splits', False)
-        self.extract_comment_metadata = kwargs.get('extract_comment_metadata', True)
+        self.extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
         self.store_tree_weights = kwargs.get('store_tree_weights', False)
         self.preserve_underscores = kwargs.get('preserve_underscores', False)
         self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", True)

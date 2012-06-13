@@ -179,7 +179,10 @@ The special keywords supported for reading NEXUS-formatted or NEWICK-formatted d
 
     ``extract_comment_metadata``
 
-        If |True|, then any FigTree-style "hot comments" (e.g. "[&age_mean=2.01,age_range={0.1,3.4}]") or NHX-style comments associated with nodes (or the tree) will be parsed and stored as a dictionary attribute named ``comment_metadata`` of the corresponding object. Note that comments containing metadata *will be stripped* from the nodes once they have been successfully parsed, extracted, and stored in the ``comment_metadata`` dictionary.
+        If |True|, any 'hot comments', i.e., comments that begin with '&', or NHX
+        comments associated with items will be processed and stored as part of
+        the annotation set of the object (`annotations`) If False, this will be
+        skipped. Defaults to |False|.
 
     ``store_tree_weights``
 
