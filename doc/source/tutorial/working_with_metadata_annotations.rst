@@ -8,6 +8,31 @@ Each :class:`~dendropy.dataobject.base.Annotation` object tracks a single annota
 These annotations will be rendered as ``meta`` elements when writing to NeXML format or ampersand-prepended comemnt strings when writing to NEXUS/NEWICK format.
 Note that full and robust expression of metadata annotations, including stable and consistent round-tripping of information, can only be achieved while in the NeXML format.
 
+Overview of the Infrastructure for Metadata Annotation in |DendroPy|
+====================================================================
+
+The metadata annotations associated with objects of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other phylogenetic data class types are collected and managed by the :attr:`annotations` attribute of the object.
+This :attr:`annotations` is an object of the :class:`~dendropy.dataobject.base.AnnotationSet`, which is a specialization of :class:`set` with the following additional methods:
+
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_new()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_bound_attribute()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_citation()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.get()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.drop()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.values_as_dict()`
+
+The elements of the :attr:`annotations` object are in turn are objects of :class:`~dendropy.dataobject.base.Annotation` class, each of which stores the information associated with a single annotation or metadata element, parsed into the following public attributes:
+
+    - :attr:`~dendropy.dataobject.base.Annotation.name`
+    - :attr:`~dendropy.dataobject.base.Annotation.value`
+    - :attr:`~dendropy.dataobject.base.Annotation.datatype_hunt`
+    - :attr:`~dendropy.dataobject.base.Annotation.name_prefix`
+    - :attr:`~dendropy.dataobject.base.Annotation.namespace`
+    - :attr:`~dendropy.dataobject.base.Annotation.compose_as_reference`
+    - :attr:`~dendropy.dataobject.base.Annotation.is_hidden`
+
+The following sections discuss these methods and attributes in detail, describing how the create, read, write, search, and manipulate annotations.
+
 Metadata Annotation Creation
 =============================
 
@@ -173,12 +198,12 @@ This will result in the following NeXML fragment::
     .
 
 Note that the "``name_prefix``" or "``namespace``" must be specified simultaneously; that is, if one is specified, then the other must be specified as well.
-For convenience, you can specify the name of the annotation with the name prefix prepended by specifying "``name_is_qualified=True``", though the namespace must still be provided separately::
+For convenience, you can specify the name of the annotation with the name prefix prepended by specifying "``name_is_prefixed=True``", though the namespace must still be provided separately::
 
     >>> tree.annotations.add_new(
     ... name="dc:subject",
     ... value="Python phylogenetics",
-    ... name_is_qualified=True,
+    ... name_is_prefixed=True,
     ... namespace="http://purl.org/dc/elements/1.1/",
     ... )
 
@@ -321,7 +346,7 @@ results in::
 
 By default, the :meth:`~dendropy.dataobject.base.Annotation.add_bound_attribute` method uses the name of the attribute as the name of the annotation.
 The "``annotate_as``" argument allows you explictly set the name of the annotation.
-In addition, the method call also supports the other customization arguments of the :meth:`~dendropy.dataobject.base.Annotation.add_new` method: "``datatype_hint``", "``name_prefix``", "``namespace``", "``name_is_qualified``", "``compose_as_reference``", "``is_hidden``", etc.::
+In addition, the method call also supports the other customization arguments of the :meth:`~dendropy.dataobject.base.Annotation.add_new` method: "``datatype_hint``", "``name_prefix``", "``namespace``", "``name_is_prefixed``", "``compose_as_reference``", "``is_hidden``", etc.::
 
     >>> tree.source_uri = None
     >>> tree.annotations.add_bound_attribute(
@@ -400,8 +425,14 @@ This argument can take one of the following values:
         <meta xsi:type="nex:LiteralMeta" property="prism:publicationName" content="Molecular Biology and Evolution" datatype="xsd:string" id="meta4320461712" />
 
 
-In addition, the method call also supports some of the other customization arguments of the :meth:`~dendropy.dataobject.base.Annotation.add_new` method:  "``name_prefix``", "``namespace``", "``name_is_qualified``", "``is_hidden``".
+In addition, the method call also supports some of the other customization arguments of the :meth:`~dendropy.dataobject.base.Annotation.add_new` method:  "``name_prefix``", "``namespace``", "``name_is_prefixed``", "``is_hidden``".
 
 Metadata Annotation Access and Manipulation
 ===========================================
 
+This ":attr:`annotations`" attribute of objects of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other phylogenetic data class types
+
+
+
+are collected and managed by the :attr:`annotations` attribute of the object.
+ is an object of the :class:`~dendropy.dataobject.base.AnnotationSet`, which is a specialization of :class:`set` with the following additional methods:
