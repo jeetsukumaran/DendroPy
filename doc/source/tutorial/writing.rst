@@ -113,7 +113,7 @@ The special keywords supported for writing both NEXUS- or Newick-formatted trees
     ``suppress_annotations``
         If |True|, will **not** write annotated attributes as comments. Default is |False| if writing in NEXUS format *and* ``simple`` is |False|; otherwise, if writing in NEWICK format or NEXUS format with ``simple`` set to |True|, then defaults to |True|.
     ``annotations_as_nhx``
-        If |True| and ``suppress_annotations`` is |True|, then annotations will be written in NHX format ('[&&field=value:field=value]'), as opposed to a more generic 'hot comment' format with only one leading ampersand ('[&field=value,field=value,field={value,value}]'). Defaults to |False|.
+        If |True| and ``suppress_annotations`` is |True|, then annotations will be written in NHX format ('[&&field=value:field=value]'), as opposed to a more generic format with only one leading ampersand ('[&field=value,field=value,field={value,value}]'). Defaults to |False|.
     ``suppress_item_comments``
         If |True|, will **not** write any additional comments associated with (tree) items. Default is |False| if writing in NEXUS format *and* ``simple`` is |False|; otherwise, if writing in NEWICK format or NEXUS format with ``simple`` set to |True|, then defaults to |True|.
     ``node_label_element_separator``

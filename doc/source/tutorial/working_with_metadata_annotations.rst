@@ -5,7 +5,7 @@ Working with Metadata and Annotations
 |DendroPy| provides a rich infrastructure for decorating most types of phylogenetic objects (e.g., the |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, and various |CharacterMatrix| classes) with metadata information.
 These phylogenetic objects have an attribute, :attr:`annotations`, that is an instance of the :class:`~dendropy.dataobject.base.AnnotationSet` class, which is an iterable (derived from :class:`set`) that serves to manage a collection of :class:`~dendropy.dataobject.base.Annotation` objects.
 Each :class:`~dendropy.dataobject.base.Annotation` object tracks a single annotation element.
-These annotations will be rendered as ``meta`` elements when writing to NeXML format or "hot comments" when writing to NEXUS/NEWICK format.
+These annotations will be rendered as ``meta`` elements when writing to NeXML format or ampersand-prepended comemnt strings when writing to NEXUS/NEWICK format.
 Note that full and robust expression of metadata annotations, including stable and consistent round-tripping of information, can only be achieved while in the NeXML format.
 
 Metadata Annotation Creation
@@ -401,4 +401,7 @@ This argument can take one of the following values:
 
 
 In addition, the method call also supports some of the other customization arguments of the :meth:`~dendropy.dataobject.base.Annotation.add_new` method:  "``name_prefix``", "``namespace``", "``name_is_qualified``", "``is_hidden``".
+
+Metadata Annotation Access and Manipulation
+===========================================
 

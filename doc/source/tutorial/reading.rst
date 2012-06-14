@@ -179,10 +179,10 @@ The special keywords supported for reading NEXUS-formatted or NEWICK-formatted d
 
     ``extract_comment_metadata``
 
-        If |True|, any 'hot comments', i.e., comments that begin with '&', or NHX
-        comments associated with items will be processed and stored as part of
-        the annotation set of the object (`annotations`) If False, this will be
-        skipped. Defaults to |False|.
+        If |True|, comments that begin with '&' or '&&' associated with items
+        will be processed and stored as part of the annotation set of the
+        object (`annotations`) If False, this will be skipped. Defaults to
+        |False|.
 
     ``store_tree_weights``
 
