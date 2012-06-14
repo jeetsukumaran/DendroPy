@@ -31,7 +31,7 @@ This class has the following attributes:
         The namespace (e.g. "http://www.w3.org/XML/1998/namespace") of this
         metadata item (NeXML output).
 
-    :attr:`~dendropy.dataobject.base.Annotation.compose_as_reference`
+    :attr:`~dendropy.dataobject.base.Annotation.note_as_reference`
         If |True|, indicates that this annotation should not be interpreted semantically as a literal value, but rather as a source to be dereferenced.
 
     :attr:`~dendropy.dataobject.base.Annotation.is_hidden`
@@ -318,7 +318,7 @@ When writing to NeXML, this will result in the following fragment::
             <meta xsi:type="nex:LiteralMeta" property="dendropy:answer" content="42" datatype="xsd:integer" id="meta4320379536" />
             <meta xsi:type="nex:LiteralMeta" property="dendropy:subject" content="Python phylogenetics" datatype="xsd:string" id="meta4320379472" />
 
-You can also specify that the data should be interpreted as a source to be dereferenced in NeXML by passing in ``compose_as_reference=True``.
+You can also specify that the data should be interpreted as a source to be dereferenced in NeXML by passing in ``note_as_reference=True``.
 Note that this does not actually populate the contents of the annotation from the source (unlike the dynamic attribute value binding discussed below), but just indicates the the contents of the annotation should be *interpreted* differently by semantic readers.
 Thus, the following annotation::
 
@@ -327,7 +327,7 @@ Thus, the following annotation::
     ... value="http://en.wikipedia.org/wiki/Pythonidae",
     ... name_prefix="dc",
     ... namespace="http://purl.org/dc/elements/1.1/",
-    ... compose_as_reference=True,
+    ... note_as_reference=True,
     ... )
 
 will be rendered in NeXML as::
@@ -436,14 +436,14 @@ results in::
 
 By default, the :meth:`~dendropy.dataobject.base.AnnotationSet.add_bound_attribute` method uses the name of the attribute as the name of the annotation.
 The "``annotate_as``" argument allows you explictly set the name of the annotation.
-In addition, the method call also supports the other customization arguments of the :meth:`~dendropy.dataobject.base.AnnotationSet.add_new` method: "``datatype_hint``", "``name_prefix``", "``namespace``", "``name_is_prefixed``", "``compose_as_reference``", "``is_hidden``", etc.::
+In addition, the method call also supports the other customization arguments of the :meth:`~dendropy.dataobject.base.AnnotationSet.add_new` method: "``datatype_hint``", "``name_prefix``", "``namespace``", "``name_is_prefixed``", "``note_as_reference``", "``is_hidden``", etc.::
 
     >>> tree.source_uri = None
     >>> tree.annotations.add_bound_attribute(
     ... "source_uri",
     ... annotate_as="dc:subject",
     ... namespace="http://purl.org/dc/elements/1.1/",
-    ... compose_as_reference=True)
+    ... note_as_reference=True)
 
 Adding Citation Metadata
 ------------------------

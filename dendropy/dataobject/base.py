@@ -68,7 +68,7 @@ class Annotation(DataObject):
         - `datatype_hunt`
         - `name_prefix`
         - `namespace`
-        - `compose_as_reference`
+        - `note_as_reference`
         - `is_hidden`
 
     """
@@ -87,7 +87,7 @@ class Annotation(DataObject):
             namespace=None,
             name_is_prefixed=False,
             is_attribute=False,
-            compose_as_reference=False,
+            note_as_reference=False,
             is_hidden=False,
             ):
         DataObject.__init__(self)
@@ -103,7 +103,7 @@ class Annotation(DataObject):
         self.datatype_hint = datatype_hint
         self._namespace = None
         self.namespace = namespace
-        self.compose_as_reference = compose_as_reference
+        self.note_as_reference = note_as_reference
         self.is_hidden = is_hidden
 
     def __str__(self):
@@ -177,7 +177,7 @@ class AnnotationSet(set):
             namespace=None,
             name_is_prefixed=False,
             is_attribute=False,
-            compose_as_reference=False,
+            note_as_reference=False,
             is_hidden=False):
         """
         Add an annotation, where:
@@ -208,7 +208,7 @@ class AnnotationSet(set):
                 is True, then actual content will be the result of calling
                 `getattr(object, "attribute_name")`.
 
-            `compose_as_reference`
+            `note_as_reference`
                 The value should be interpreted as a URI that points to content.
 
             `is_hidden`
@@ -234,7 +234,7 @@ class AnnotationSet(set):
                 namespace=namespace,
                 name_is_prefixed=name_is_prefixed,
                 is_attribute=is_attribute,
-                compose_as_reference=compose_as_reference,
+                note_as_reference=note_as_reference,
                 is_hidden=is_hidden,
                 )
         self.add(annote)
@@ -247,7 +247,7 @@ class AnnotationSet(set):
             name_prefix=None,
             namespace=None,
             name_is_prefixed=False,
-            compose_as_reference=False,
+            note_as_reference=False,
             is_hidden=False,
             owner_instance=None,
             ):
@@ -277,7 +277,7 @@ class AnnotationSet(set):
                 before storage (e.g., "dc:citations" will result in prefix = "dc" and
                 name="citations")
 
-            `compose_as_reference`
+            `note_as_reference`
                 The value should be interpreted as a URI that points to content.
 
             `is_hidden`
@@ -313,7 +313,7 @@ class AnnotationSet(set):
                 namespace=namespace,
                 name_is_prefixed=name_is_prefixed,
                 is_attribute=True,
-                compose_as_reference=compose_as_reference,
+                note_as_reference=note_as_reference,
                 is_hidden=is_hidden,
                 )
         self.add(annote)
@@ -434,7 +434,7 @@ class AnnotationSet(set):
                     namespace=namespace,
                     name_is_prefixed=False,
                     is_attribute=False,
-                    compose_as_reference=False,
+                    note_as_reference=False,
                     is_hidden=is_hidden)
             self.add_new(
                     name="citekey",
@@ -444,7 +444,7 @@ class AnnotationSet(set):
                     namespace=namespace,
                     name_is_prefixed=False,
                     is_attribute=False,
-                    compose_as_reference=False,
+                    note_as_reference=False,
                     is_hidden=is_hidden)
             for entry_key, entry_value in bt_dict.items():
                 self.add_new(
@@ -455,7 +455,7 @@ class AnnotationSet(set):
                         namespace=namespace,
                         name_is_prefixed=False,
                         is_attribute=False,
-                        compose_as_reference=False,
+                        note_as_reference=False,
                         is_hidden=is_hidden)
         # elif store_as.lower().startswith("bibtex-record"):
         #     if name_prefix is None and namespace is None:
@@ -469,7 +469,7 @@ class AnnotationSet(set):
         #             name_prefix=name_prefix,
         #             namespace=namespace,
         #             is_attribute=False,
-        #             compose_as_reference=False,
+        #             note_as_reference=False,
         #             is_hidden=is_hidden)
         elif store_as.lower().startswith("prism"):
             prism_map = {
@@ -492,7 +492,7 @@ class AnnotationSet(set):
                         namespace=namespace,
                         name_is_prefixed=False,
                         is_attribute=False,
-                        compose_as_reference=False,
+                        note_as_reference=False,
                         is_hidden=is_hidden)
         elif store_as.lower().startswith("dublin"):
             dc_map = {
@@ -515,7 +515,7 @@ class AnnotationSet(set):
                         name_prefix=name_prefix,
                         namespace=namespace,
                         is_attribute=False,
-                        compose_as_reference=False,
+                        note_as_reference=False,
                         is_hidden=is_hidden)
         else:
             raise ValueError("Unrecognized composition specification: '%s'" % store_as)
