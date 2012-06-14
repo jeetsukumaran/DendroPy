@@ -299,6 +299,8 @@ class NexusReader(iosys.DataReader):
         else:
             while not self.stream_tokenizer.eof:
                 token = self.stream_tokenizer.read_next_token_ucase()
+                self.stream_tokenizer.store_comment_metadata(self.dataset)
+                self.stream_tokenizer.store_comments(self.dataset)
                 while token != None and token != 'BEGIN' and not self.stream_tokenizer.eof:
                     token = self.stream_tokenizer.read_next_token_ucase()
                 token = self.stream_tokenizer.read_next_token_ucase()
@@ -397,6 +399,8 @@ class NexusReader(iosys.DataReader):
             if token == 'TAXLABELS':
                 if taxon_set is None:
                     taxon_set = self._new_taxon_set()
+                self.stream_tokenizer.store_comment_metadata(taxon_set)
+                self.stream_tokenizer.store_comments(taxon_set)
                 self._parse_taxlabels_statement(taxon_set)
         self.stream_tokenizer.skip_to_semicolon() # move past END statement
         self.stream_tokenizer.allow_eof = True
@@ -420,13 +424,18 @@ class NexusReader(iosys.DataReader):
         token = self.stream_tokenizer.read_next_token()
         while token != ';':
             label = token
-            if taxon_set.has_taxon(label=label):
-                pass
-            elif len(taxon_set) >= self.file_specified_ntax and not self.attached_taxon_set:
+            # if taxon_set.has_taxon(label=label):
+            #     pass
+            # elif len(taxon_set) >= self.file_specified_ntax and not self.attached_taxon_set:
+            #     raise self.too_many_taxa_error(taxon_set=taxon_set, label=label)
+            # else:
+            #     taxon_set.require_taxon(label=label)
+            if len(taxon_set) >= self.file_specified_ntax and not self.attached_taxon_set:
                 raise self.too_many_taxa_error(taxon_set=taxon_set, label=label)
-            else:
-                taxon_set.require_taxon(label=label)
+            taxon = taxon_set.require_taxon(label=label)
             token = self.stream_tokenizer.read_next_token()
+            self.stream_tokenizer.store_comment_metadata(taxon)
+            self.stream_tokenizer.store_comments(taxon)
 
     def _parse_link_statement(self):
         """

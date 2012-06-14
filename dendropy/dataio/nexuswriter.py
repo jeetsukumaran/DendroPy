@@ -223,6 +223,9 @@ class NexusWriter(iosys.DataWriter):
                 stream.write("\n")
             else:
                 stream.write("[ %s ]\n\n" % self.file_comments)
+        if not self.suppress_annotations:
+            stream.write(nexustokenizer.format_annotation_as_comments(self.dataset, nhx=self.annotations_as_nhx))
+            stream.write("\n")
         if self.preamble_blocks:
             for block in self.preamble_blocks:
                 stream.write(block)
@@ -278,6 +281,8 @@ class NexusWriter(iosys.DataWriter):
     def write_taxa_block(self, taxon_set, stream):
         block = []
         block.append('BEGIN TAXA;')
+        if not self.suppress_annotations:
+            block.append(nexustokenizer.format_annotation_as_comments(taxon_set, nhx=self.annotations_as_nhx))
         if self._link_blocks():
             title = self.compose_block_title(taxon_set)
             if title:
@@ -285,7 +290,14 @@ class NexusWriter(iosys.DataWriter):
         block.append('    DIMENSIONS NTAX=%d;' % len(taxon_set))
         block.append('    TAXLABELS')
         for taxon in taxon_set:
-            block.append('        %s' % textutils.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores))
+            if self.suppress_annotations:
+                annotation_str =  ""
+            else:
+                annotation_str = " " + nexustokenizer.format_annotation_as_comments(taxon, nhx=self.annotations_as_nhx)
+            block.append('        %s%s' % (
+                textutils.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores),
+                annotation_str
+                ))
         block.append('  ;')
         block.append('END;\n\n')
         stream.write('\n'.join(block))
@@ -310,6 +322,8 @@ class NexusWriter(iosys.DataWriter):
                 edge_label_compose_func=self.edge_label_compose_func,
                 )
         block.append('BEGIN TREES;')
+        if not self.suppress_annotations:
+            block.append(nexustokenizer.format_annotation_as_comments(tree_list, nhx=self.annotations_as_nhx))
         if self._link_blocks():
             title = self.compose_block_title(tree_list)
             if title:
