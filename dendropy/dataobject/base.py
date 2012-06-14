@@ -563,17 +563,51 @@ class AnnotationSet(set):
         for a in to_remove:
             self.remove(a)
 
-    def values_as_dict(self, key_func=None, value_func=None):
+    def values_as_dict(self, **kwargs):
         """
-        Returns annotation set as a dictionary. `key` and `value` should be
-        *functions* that take a Annotation object and return the objects to be
-        used for the key and value for representing this Annotation in the
-        dictionary. If not specified, defaults to Annotation.name and
-        Annotation.value respectively.
+        Returns annotation set as a dictionary. The keys and values for the dictionary will
+        be generated based on the following keyword arguments:
+
+            ``key_attr``
+                String specifying an Annotation object attribute name to be used
+                as keys for the dictionary.
+
+            ``key_func``
+                Function that takes an Annotation object as an argument and returns
+                the value to be used as a key for the dictionary.
+
+            ``value_attr``
+                String specifying an Annotation object attribute name to be used
+                as values for the dictionary.
+
+            ``value_func``
+                Function that takes an Annotation object as an argument and returns
+                the value to be used as a value for the dictionary.
+
+        At most one of ``key_attr`` or ``key_func`` can be specified. If neither
+        is specified, then by default the keys are generated from Annotation.name.
+        At most one of ``value_attr`` or ``value_func`` can be specified. If neither
+        is specified, then by default the values are generated from Annotation.value.
+        Key collisions will result in the dictionary entry for that key being
+        overwritten.
         """
-        if key_func is None:
+        if "key_attr" in kwargs and "key_func" in kwargs:
+            raise TypeError("Cannot specify both 'key_attr' and 'key_func'")
+        elif "key_attr" in kwargs:
+            key_attr = kwargs["key_attr"]
+            key_func = lambda a: getattr(a, key_attr)
+        elif "key_func" in kwargs:
+            key_func = kwargs["key_func"]
+        else:
             key_func = lambda a: a.name
-        if value_func is None:
+        if "value_attr" in kwargs and "value_func" in kwargs:
+            raise TypeError("Cannot specify both 'value_attr' and 'value_func'")
+        elif "value_attr" in kwargs:
+            value_attr = kwargs["value_attr"]
+            value_func = lambda a: getattr(a, value_attr)
+        elif "value_func" in kwargs:
+            value_func = kwargs["value_func"]
+        else:
             value_func = lambda a: a.value
         d = {}
         for a in self:
