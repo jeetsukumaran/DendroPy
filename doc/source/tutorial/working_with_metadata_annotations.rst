@@ -824,3 +824,19 @@ and results in::
     Removed: 30 items
     Current: 0 items
 
+Writing or Saving Metadata
+==========================
+
+When writing to NeXML format, all metadata annotations are preserved and can be fully round-tripped.
+Currently, this is the only data format that allows for robust treatment of metadata.
+
+Due to the fundamental limitations of the NEXUS/Newick format, metadata handling in this format is limited and rather idiosyncratic.
+Currently, metadata will be written out as name-value pairs (separated by "=") in ampersand-prepended comments associated with the particular phylogenetic data object.
+This syntax corresponds to the BEAST or FigTree style of metadata annotation.
+However, this association might not be preserved.
+For example, metadata annotations associated with edges and nodes of trees will be written out fully in NEXUS and NEWICK formats, but when read in again will all be associated with nodes.
+The keyword argument ``annotations_as_nhx=True`` passed to the call to write the data in NEXUS/NEWICK format will result in a double ampersand prefix to the comment, thus (partially) conforming to NHX specifications.
+Metadata associated with |DataSet| objects will be written in out in the same BEAST/FigTree/NHX syntax at the top of the file, while metadata associated with |TaxonSet| and |Taxon| objects will be written out immediately after the start of the Taxa Block and taxon labels respectively.
+This is very fragile: for example, a metadata annotation *before* a taxon label will be associated with the *previous* taxon when being read in again.
+As noted above, if metadata annotations are important for yourself, your workflow, or your task, then the NeXML format should be used rather than NEXUS or NEWICK.
+
