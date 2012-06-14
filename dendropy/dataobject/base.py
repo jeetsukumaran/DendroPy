@@ -585,6 +585,7 @@ class AnnotationSet(set):
                 to_remove.append(a)
         for a in to_remove:
             self.remove(a)
+        return AnnotationSet(self.target, to_remove)
 
     def values_as_dict(self, **kwargs):
         """

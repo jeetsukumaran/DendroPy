@@ -517,6 +517,32 @@ This argument can take one of the following values:
 
 In addition, the method call also supports some of the other customization arguments of the :meth:`~dendropy.dataobject.base.AnnotationSet.add_new` method:  "``name_prefix``", "``namespace``", "``name_is_prefixed``", "``is_hidden``".
 
+Copying Metadata Annotations from One Phylogenetic Data Object to Another
+-------------------------------------------------------------------------
+
+As the :class:`~dendropy.dataobject.base.AnnotationSet` is derived from :class:`set`, it has the :meth:`set.add` and :meth:`set.update` methods available for direct addition of :class:`~dendropy.dataobject.base.Annotation` objects.
+The following example shows how to add metadata annotations associated with a |DataSet| object to all its |Tree| objects::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+            "nexml")
+    ds_annotes = ds.annotations.get(name_prefix="dc").values_as_dict()
+    for tree_list in ds.tree_lists:
+        for tree in tree_list:
+            tree.annotations.update(ds_annotes)
+
+Or, alternatively::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+            "nexml")
+    ds_annotes = ds.annotations.get(name_prefix="dc").values_as_dict()
+    for tree_list in ds.tree_lists:
+        for tree in tree_list:
+            for a in ds_annotes:
+                tree.annotations.add(a)
+
+
 Metadata Annotation Access and Manipulation
 ===========================================
 
@@ -646,6 +672,8 @@ The above produces::
     30
     30
 
+As can be seen, no new annotations are added to the data set metadata.
+
 If *no* keyword arguments are passed to :meth:`~dendropy.dataobject.base.Annotation.get`, then *all* annotations are returned::
 
     import dendropy
@@ -751,3 +779,48 @@ Adding to, deleting, or modifying either the keys or the values of the dictionar
 
 Deleting or Removing Metadata Annotations
 -----------------------------------------
+
+The :meth:`~dendropy.dataobject.base.AnnotationSet.drop` method of :class:`~dendropy.dataobject.base.AnnotationSet` objects takes search criteria similar to :meth:`~dendropy.dataobject.base.AnnotationSet.get`, but instead of returning the matched  :class:`~dendropy.dataobject.base.Annotation` objects, it *removes* them from the parent collection.
+For example, the following removes all metadata annotations with the name prefix "dc" from the |DataSet| object ``ds``::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+            "nexml")
+    print "Original: %d items" % len(ds.annotations)
+    removed = ds.annotations.drop(name_prefix="dc")
+    print "Removed: %d items" % len(removed)
+    print "Current: %d items" % len(ds.annotations)
+
+and results in::
+
+    Original: 30 items
+    Removed: 16 items
+    Current: 14 items
+
+As can be seen, the :meth:`~dendropy.dataobject.base.AnnotationSet.drop` method returns the individual :class:`~dendropy.dataobject.base.Annotation` removed as a new :class:`~dendropy.dataobject.base.AnnotationSet` collection.
+This is useful if you still want to use the removed :class:`~dendropy.dataobject.base.Annotation` objects elsewhere.
+
+As with the :meth:`~dendropy.dataobject.base.AnnotationSet.get` method, multiple keyword criteria can be specified::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+            "nexml")
+    ds.annotations.drop(name_prefix="dc", name="contributor")
+
+In addition, again similar in behavior to the :meth:`~dendropy.dataobject.base.AnnotationSet.get` method, *no* keyword arguments result in *all* the annotations being removed.
+Thus, the following results in all metadata annotations being deleted from the |DataSet| object ``ds``::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+        "nexml")
+    print "Original: %d items" % len(ds.annotations)
+    removed = ds.annotations.drop()
+    print "Removed: %d items" % len(removed)
+    print "Current: %d items" % len(ds.annotations)
+
+and results in::
+
+    Original: 30 items
+    Removed: 30 items
+    Current: 0 items
+
