@@ -596,7 +596,7 @@ and results in::
     creator='Wiklund H., Altamira I.V., Glover A., Smith C., Baco A., & Dahlgren T.G.'
     contributor='Baco A.'
 
-The following, in turn, searches for suppresses printing of annotations that have a name prefix of "dc" *and* have empty values::
+The following, in turn, searches for and suppresses printing of annotations that have a name prefix of "dc" *and* have empty values::
 
     import dendropy
     ds = dendropy.DataSet.get_from_path("sample1.xml",
@@ -605,8 +605,29 @@ The following, in turn, searches for suppresses printing of annotations that hav
     for a in results:
         a.is_hidden = True
 
+Modifying the :class:`~dendropy.dataobject.base.Annotation` objects in a returned collection modifies the metadata of the parent data object. For example, the following sets all the field values to upper case characters::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+            "nexml")
+    results = ds.annotations.get(name="contributor")
+    for a in results:
+        a.value = a.value.upper()
+    results = ds.annotations.get(name="contributor")
+    for a in results:
+        print a.value
+
+and results in::
+
+    DAHLGREN T.G.
+    BACO A.
+    SMITH C.
+    GLOVER A.
+    ALTAMIRA I.V.
+    WIKLUND H.
+
 The collection returned by the :meth:`~dendropy.dataobject.base.AnnotationSet.get` method is an object of type :class:`~dendropy.dataobject.base.AnnotationSet`.
-However, while modifying :class:`~dendropy.dataobject.base.Annotation` objects in this collection will result in the metadata of the parent object being modified, adding new annotations to this returned collection will *not*  add them to the collection of metadata annotations of the parent object.
+However, while modifying :class:`~dendropy.dataobject.base.Annotation` objects in this collection will result in the metadata of the parent object being modified (as in the previous example), adding new annotations to this returned collection will *not*  add them to the collection of metadata annotations of the parent object.
 Thus, the following example shows that the size of the annotations collection associated with the dataset is unchanged by adding new annotations to the results of a :meth:`~dendropy.dataobject.base.AnnotationSet.get` call::
 
     import dendropy
@@ -636,3 +657,97 @@ If *no* keyword arguments are passed to :meth:`~dendropy.dataobject.base.Annotat
 The above produces::
 
     True
+
+Transforming Annotations to a Dictionary
+----------------------------------------
+
+In some applications, it might be more convenient to work with dictionaries rather than :class:`~dendropy.dataobject.base.AnnotationSet` objects.
+The :meth:`~dendropy.dataobject.base.Annotation.values_as_dict` methods creates a dictionary populated with key-value pairs from the collection.
+By default, the keys are the ``name`` attribute of the :class:`~dendropy.dataobject.base.Annotation` object and the values are the ``value`` attribute.
+Thus, the following::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+            "nexml")
+    a = ds.annotations.values_as_dict()
+    print a
+
+results in::
+
+    {'volume': '',
+    'doi': '',
+    'date': '2012-06-04',
+    'bibliographicCitation': 'Wiklund H., Altamira I.V., Glover A., Smith C., Baco A., & Dahlgren T.G. 2012. Systematics and biodiversity of Ophryotrocha (Annelida, Dorvilleidae) with descriptions of six new species from deep-sea whale-fall and wood-fall habitats in the north-east Pacific. Systematics and Biodiversity, .',
+    'changeNote': 'Generated on Wed Jun 06 11:02:45 EDT 2012',
+    'creator': 'Wiklund H., Altamira I.V., Glover A., Smith C., Baco A., & Dahlgren T.G.',
+    'section': 'Study',
+    'title': 'Systematics and biodiversity of Ophryotrocha (Annelida, Dorvilleidae) with descriptions of six new species from deep-sea whale-fall and wood-fall habitats in the north-east Pacific',
+    'publisher': 'Systematics and Biodiversity',
+    'identifier.study.tb1': None,
+    'number': '',
+    'identifier.study': '12713',
+    'modificationDate': '2012-06-04',
+    'historyNote': 'Mapped from TreeBASE schema using org.cipres.treebase.domain.nexus.nexml.NexmlDocumentWriter@645f9132 $Rev: 1060 $',
+    'publicationDate': '2012',
+    'contributor': 'Wiklund H.',
+    'publicationName': 'Systematics and Biodiversity',
+    'creationDate': '2012-05-09',
+    'title.study': 'Systematics and biodiversity of Ophryotrocha (Annelida, Dorvilleidae) with descriptions of six new species from deep-sea whale-fall and wood-fall habitats in the north-east Pacific',
+    'subject': 'molecular phylogeny'}
+
+Note that no attempt is made to prevent or account for key collision: :class:`~dendropy.dataobject.base.Annotation` with the same name value will overwrite each other in the dictionary.
+Custom control of the dictionary key/value generation can be specified via keyword arguments:
+
+    ``key_attr``
+        String specifying an Annotation object attribute name to be used
+        as keys for the dictionary.
+
+    ``key_func``
+        Function that takes an Annotation object as an argument and returns
+        the value to be used as a key for the dictionary.
+
+    ``value_attr``
+        String specifying an Annotation object attribute name to be used
+        as values for the dictionary.
+
+    ``value_func``
+        Function that takes an Annotation object as an argument and returns
+        the value to be used as a value for the dictionary.
+
+For example::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+            "nexml")
+    a = ds.annotations.values_as_dict(key_attr="prefixed_name")
+    a = ds.annotations.values_as_dict(key_attr="prefixed_name", value_attr="namespace")
+    a = ds.annotations.values_as_dict(key_func=lambda a: a.namespace + a.name)
+    a = ds.annotations.values_as_dict(key_func=lambda a: a.namespace + a.name,
+            value_attr="value")
+
+
+As the collection returned by the :meth:`~dendropy.dataobject.base.AnnotationSet.get` method is an object of type :class:`~dendropy.dataobject.base.AnnotationSet`, this can also be transformed to a dictionary.
+For example::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+            "nexml")
+    a = ds.annotations.get(name_prefix="dc").values_as_dict()
+    print a
+
+will result in::
+
+    {'publisher': 'Systematics and Biodiversity',
+    'creator': 'Wiklund H., Altamira I.V., Glover A., Smith C., Baco A., & Dahlgren T.G.',
+    'title': 'Systematics and biodiversity of Ophryotrocha (Annelida, Dorvilleidae) with descriptions of six new species from deep-sea whale-fall and wood-fall habitats in the north-east Pacific',
+    'date': '2012-06-04',
+    'contributor': 'Baco A.',
+    'subject': 'molecular phylogeny'}
+
+Note how only one entry for "contributor" is present: the others were overwritten/replaced.
+
+Adding to, deleting, or modifying either the keys or the values of the dictionary returned by :meth:`~dendropy.dataobject.base.Annotation.values_as_dict` in *no way* changes any of the original metadata: it is serves as snapshot copy of literal values of the metadata.
+
+
+Deleting or Removing Metadata Annotations
+-----------------------------------------
