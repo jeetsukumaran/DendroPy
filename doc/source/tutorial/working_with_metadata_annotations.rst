@@ -265,7 +265,7 @@ Dynamically Binding Annotation Values to Object Attribute Values
 ----------------------------------------------------------------
 
 In some cases, instead of "hard-wiring" in metadata for an object, you may want to write out metadata that takes its value from the value of an attribute of the object.
-The :meth:`~dendropy.dataobject.base.Annotation.add_bound_attribute` method allows you to do this.
+The :meth:`~dendropy.dataobject.base.AnnotationSet.add_bound_attribute` method allows you to do this.
 This method takes, as a minimum, a *string* specifying the *name* of an existing attribute to which the value of the annotation will be dynamically bound.
 
 For example:
@@ -344,9 +344,9 @@ results in::
     </nex:nexml>
 
 
-By default, the :meth:`~dendropy.dataobject.base.Annotation.add_bound_attribute` method uses the name of the attribute as the name of the annotation.
+By default, the :meth:`~dendropy.dataobject.base.AnnotationSet.add_bound_attribute` method uses the name of the attribute as the name of the annotation.
 The "``annotate_as``" argument allows you explictly set the name of the annotation.
-In addition, the method call also supports the other customization arguments of the :meth:`~dendropy.dataobject.base.Annotation.add_new` method: "``datatype_hint``", "``name_prefix``", "``namespace``", "``name_is_prefixed``", "``compose_as_reference``", "``is_hidden``", etc.::
+In addition, the method call also supports the other customization arguments of the :meth:`~dendropy.dataobject.base.AnnotationSet.add_new` method: "``datatype_hint``", "``name_prefix``", "``namespace``", "``name_is_prefixed``", "``compose_as_reference``", "``is_hidden``", etc.::
 
     >>> tree.source_uri = None
     >>> tree.annotations.add_bound_attribute(
@@ -358,7 +358,7 @@ In addition, the method call also supports the other customization arguments of 
 Adding Citation Metadata
 ------------------------
 
-You can add citation annotations using the :meth:`~dendropy.dataobject.base.Annotation.add_citation` method.
+You can add citation annotations using the :meth:`~dendropy.dataobject.base.AnnotationSet.add_citation` method.
 This method takes at least one argument, ``citation``.
 This can be a string representing the citation as a BibTex record or a dictionary with BibTex fields as keys and field content as values.
 
@@ -425,14 +425,10 @@ This argument can take one of the following values:
         <meta xsi:type="nex:LiteralMeta" property="prism:publicationName" content="Molecular Biology and Evolution" datatype="xsd:string" id="meta4320461712" />
 
 
-In addition, the method call also supports some of the other customization arguments of the :meth:`~dendropy.dataobject.base.Annotation.add_new` method:  "``name_prefix``", "``namespace``", "``name_is_prefixed``", "``is_hidden``".
+In addition, the method call also supports some of the other customization arguments of the :meth:`~dendropy.dataobject.base.AnnotationSet.add_new` method:  "``name_prefix``", "``namespace``", "``name_is_prefixed``", "``is_hidden``".
 
 Metadata Annotation Access and Manipulation
 ===========================================
 
-This ":attr:`annotations`" attribute of objects of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other phylogenetic data class types
+This ":attr:`annotations`" attribute of objects of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other phylogenetic data class types is the container of :class:`~dendropy.dataobject.base.AnnotationSet` type, in which the metadata corresponding to those objects are collected in the form of sets of :class:`~dendropy.dataobject.base.Annotation` objects.
 
-
-
-are collected and managed by the :attr:`annotations` attribute of the object.
- is an object of the :class:`~dendropy.dataobject.base.AnnotationSet`, which is a specialization of :class:`set` with the following additional methods:
