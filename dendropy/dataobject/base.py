@@ -563,7 +563,6 @@ class AnnotationSet(set):
         for a in to_remove:
             self.remove(a)
 
-
     def values_as_dict(self, key_func=None, value_func=None):
         """
         Returns annotation set as a dictionary. `key` and `value` should be

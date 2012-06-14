@@ -678,6 +678,7 @@ class NexusTokenizer(object):
 
     def store_comments(self, target):
         if self.comments:
+            # print "--- storing comments: {}".format(str(a) for a in self.comments)
             try:
                 target.comments.extend(self.comments)
             except:
@@ -685,6 +686,7 @@ class NexusTokenizer(object):
 
     def store_comment_metadata(self, target):
         if self._comment_metadata:
+            # print "--- storing metadata: {}".format(", ".join(str(a) for a in self._comment_metadata))
             target.annotations.update(self._comment_metadata)
             self._comment_metadata.clear()
 
@@ -731,6 +733,7 @@ class NexusTokenizer(object):
             self.tree_weight_comment = comment
         elif self.extract_comment_metadata and comment.startswith("&"):
             self._comment_metadata.update(parse_comment_metadata([comment]))
+            # print "--- storing metadata: {}".format(", ".join(str(a) for a in self._comment_metadata))
         else:
             # only add comments if none of the above
             self.comments.append(comment)

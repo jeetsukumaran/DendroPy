@@ -205,7 +205,10 @@ class TreeSummarizer(object):
                     for field in fields:
                         attr_name = summary_name + "_" + field
                         setattr(summary_target, attr_name, summary[field])
-                        summary_target.annotations.drop(name=attr_name)
+                        # clear annotations, which might be associated with either nodes
+                        # or edges due to the way NEXUS/NEWICK hot comments are parsed
+                        nd.annotations.drop(name=attr_name)
+                        edge.annotations.drop(name=attr_name)
                         summary_target.annotations.add_bound_attribute(attr_name)
                 else:
                     for field in fields:
