@@ -11,25 +11,75 @@ Note that full and robust expression of metadata annotations, including stable a
 Overview of the Infrastructure for Metadata Annotation in |DendroPy|
 ====================================================================
 
-The metadata annotations associated with objects of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other phylogenetic data class types are collected and managed by the :attr:`annotations` attribute of the object.
-This :attr:`annotations` is an object of the :class:`~dendropy.dataobject.base.AnnotationSet`, which is a specialization of :class:`set` with the following additional methods:
+The fundamental unit of metadata in |DendroPy| is the :class:`~dendropy.dataobject.base.Annotation` object.
+Each :class:`~dendropy.dataobject.base.Annotation` object stores information regarding a single item of metadata, keeping track of, at a minimum, the name and value or content of the metadata item, which is accessible through the attributes ":attr:`~dendropy.dataobject.base.Annotation.name`" and  ":attr:`~dendropy.dataobject.base.Annotation.value`" respectively.
 
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_new()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_bound_attribute()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_citation()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.get()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.drop()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.values_as_dict()`
+These :class:`~dendropy.dataobject.base.Annotation` objects are typically collected and managed in a "annotations manager" container class, :class:`~dendropy.dataobject.base.AnnotationSet`, which is a specialization of ":class:`set`".
+Phylogenetic data objects of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other classes all have an attribute, ":attr:`annotations`", that represents an instance of the :class:`~dendropy.dataobject.base.AnnotationSet` class, and whose elements are :class:`~dendropy.dataobject.base.Annotation` objects that collectively make up the full set of annotations or metadata associated with that particular phylogenetic data object.
 
-The elements of the :attr:`annotations` object are in turn are objects of :class:`~dendropy.dataobject.base.Annotation` class, each of which stores the information associated with a single annotation or metadata element, parsed into the following public attributes:
+..
+    The elements of the ":attr:`annotations`" attribute of phylogenetic data objects are objects of :class:`~dendropy.dataobject.base.Annotation` that collectively make up the full set of annotations or metadata associated with that particular phylogenetic data object.
 
-    - :attr:`~dendropy.dataobject.base.Annotation.name`
-    - :attr:`~dendropy.dataobject.base.Annotation.value`
-    - :attr:`~dendropy.dataobject.base.Annotation.datatype_hunt`
-    - :attr:`~dendropy.dataobject.base.Annotation.name_prefix`
-    - :attr:`~dendropy.dataobject.base.Annotation.namespace`
-    - :attr:`~dendropy.dataobject.base.Annotation.compose_as_reference`
-    - :attr:`~dendropy.dataobject.base.Annotation.is_hidden`
+
+The following code snippet reads in a data file in NeXML format, and dumps out the annotations::
+
+    #! /usr/bin/env python
+
+    import sys
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml", "nexml")
+    print "-- (dataset) ---\n"
+    for a in ds.annotations:
+        print "%s = '%s'" % (a.name, a.value)
+    for tree_list in ds.tree_lists:
+        for tree in tree_list:
+            print "\n-- (tree '%s') --\n" % tree.label
+            for a in tree.annotations:
+                print "%s = '%s'" % (a.name, a.value)
+
+Running the above results in::
+
+    -- (dataset) ---
+
+    bibliographicCitation = 'Wiklund H., Altamira I.V., Glover A., Smith C., Baco A., & Dahlgren T.G. 2012. Systematics and biodiversity of Ophryotrocha (Annelida, Dorvilleidae) with descriptions of six new species from deep-sea whale-fall and wood-fall habitats in the north-east Pacific. Systematics and Biodiversity, .'
+    subject = 'whale-fall'
+    changeNote = 'Generated on Wed Jun 06 11:02:45 EDT 2012'
+    subject = 'wood-fall'
+    title = 'Systematics and biodiversity of Ophryotrocha (Annelida, Dorvilleidae) with descriptions of six new species from deep-sea whale-fall and wood-fall habitats in the north-east Pacific'
+    publicationName = 'Systematics and Biodiversity'
+    creator = 'Wiklund H., Altamira I.V., Glover A., Smith C., Baco A., & Dahlgren T.G.'
+    publisher = 'Systematics and Biodiversity'
+    contributor = 'Wiklund H.'
+    volume = ''
+    contributor = 'Altamira I.V.'
+    number = ''
+    contributor = 'Glover A.'
+    historyNote = 'Mapped from TreeBASE schema using org.cipres.treebase.domain.nexus.nexml.NexmlDocumentWriter@645f9132 $Rev: 1060 $'
+    contributor = 'Smith C.'
+    modificationDate = '2012-06-04'
+    contributor = 'Baco A.'
+    contributor = 'Dahlgren T.G.'
+    identifier.study.tb1 = 'None'
+    publicationDate = '2012'
+    section = 'Study'
+    doi = ''
+    title.study = 'Systematics and biodiversity of Ophryotrocha (Annelida, Dorvilleidae) with descriptions of six new species from deep-sea whale-fall and wood-fall habitats in the north-east Pacific'
+    subject = 'New species'
+    subject = 'Ophryotrocha'
+    creationDate = '2012-05-09'
+    subject = 'polychaeta'
+    date = '2012-06-04'
+    subject = 'molecular phylogeny'
+    identifier.study = '12713'
+
+    -- (tree 'con 50 majrule') --
+
+    ntax.tree = '41'
+    kind.tree = 'Species Tree'
+    quality.tree = 'Unrated'
+    isDefinedBy = 'http://purl.org/phylo/treebase/phylows/study/TB2:S12713'
+    type.tree = 'Consensus'
+
 
 The following sections discuss these methods and attributes in detail, describing how the create, read, write, search, and manipulate annotations.
 
@@ -430,5 +480,41 @@ In addition, the method call also supports some of the other customization argum
 Metadata Annotation Access and Manipulation
 ===========================================
 
-This ":attr:`annotations`" attribute of objects of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other phylogenetic data class types is the container of :class:`~dendropy.dataobject.base.AnnotationSet` type, in which the metadata corresponding to those objects are collected in the form of sets of :class:`~dendropy.dataobject.base.Annotation` objects.
+Each item of metadata is maintained in an object of the :class:`~dendropy.dataobject.base.Annotation` class.
+This class has the following attributes:
 
+    :attr:`~dendropy.dataobject.base.Annotation.name`
+        The name of the metadata item or annotation.
+
+    :attr:`~dendropy.dataobject.base.Annotation.value`
+        The value or content of the metadata item or annotation.
+
+    :attr:`~dendropy.dataobject.base.Annotation.datatype_hunt`
+        Custom data type indication for NeXML output (e.g. "xsd:string").
+
+    :attr:`~dendropy.dataobject.base.Annotation.name_prefix`
+        Prefix that represents an abbreviation of the namespace associated with
+        this metadata item.
+
+    :attr:`~dendropy.dataobject.base.Annotation.namespace`
+        The namespace (e.g. "http://www.w3.org/XML/1998/namespace") of this
+        metadata item (NeXML output).
+
+    :attr:`~dendropy.dataobject.base.Annotation.compose_as_reference`
+        If |True|, indicates that this annotation should not be interpreted semantically as a literal value, but rather as a source to be dereferenced.
+
+    :attr:`~dendropy.dataobject.base.Annotation.is_hidden`
+        If |True|, indicates that this annotation should not be printed or written out.
+
+    :attr:`~dendropy.dataobject.base.Annotation.prefixed_name`
+        Returns the name of this annotation with its namespace prefix (e.g. "dc:subject").
+
+The full set of annotations associated with each object of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other phylogenetic data class types is available through the :attr:`annotations` attribute of those objects, which is an instance of :class:`~dendropy.dataobject.base.AnnotationSet`.
+This is a specialization of :class:`set` whose elements are instances of :class:`~dendropy.dataobject.base.Annotation`, and which has the following additional methods:
+
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_new()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_bound_attribute()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_citation()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.get()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.drop()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.values_as_dict()`

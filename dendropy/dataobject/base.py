@@ -166,6 +166,9 @@ class AnnotationSet(set):
         set.__init__(self, *args)
         self.target = target
 
+    def __str__(self):
+        return "AnnotationSet([%s])" % ( ", ".join(str(a) for a in self))
+
     def add_new(self,
             name,
             value,
