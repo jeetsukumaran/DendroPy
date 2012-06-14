@@ -11,14 +11,54 @@ Note that full and robust expression of metadata annotations, including stable a
 Overview of the Infrastructure for Metadata Annotation in |DendroPy|
 ====================================================================
 
-The fundamental unit of metadata in |DendroPy| is the :class:`~dendropy.dataobject.base.Annotation` object.
-Each :class:`~dendropy.dataobject.base.Annotation` object stores information regarding a single item of metadata, keeping track of, at a minimum, the name and value or content of the metadata item, which is accessible through the attributes ":attr:`~dendropy.dataobject.base.Annotation.name`" and  ":attr:`~dendropy.dataobject.base.Annotation.value`" respectively.
+Each item of metadata is maintained in an object of the :class:`~dendropy.dataobject.base.Annotation` class.
+This class has the following attributes:
 
-These :class:`~dendropy.dataobject.base.Annotation` objects are typically collected and managed in a "annotations manager" container class, :class:`~dendropy.dataobject.base.AnnotationSet`, which is a specialization of ":class:`set`".
-Phylogenetic data objects of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other classes all have an attribute, ":attr:`annotations`", that represents an instance of the :class:`~dendropy.dataobject.base.AnnotationSet` class, and whose elements are :class:`~dendropy.dataobject.base.Annotation` objects that collectively make up the full set of annotations or metadata associated with that particular phylogenetic data object.
+    :attr:`~dendropy.dataobject.base.Annotation.name`
+        The name of the metadata item or annotation.
+
+    :attr:`~dendropy.dataobject.base.Annotation.value`
+        The value or content of the metadata item or annotation.
+
+    :attr:`~dendropy.dataobject.base.Annotation.datatype_hunt`
+        Custom data type indication for NeXML output (e.g. "xsd:string").
+
+    :attr:`~dendropy.dataobject.base.Annotation.name_prefix`
+        Prefix that represents an abbreviation of the namespace associated with
+        this metadata item.
+
+    :attr:`~dendropy.dataobject.base.Annotation.namespace`
+        The namespace (e.g. "http://www.w3.org/XML/1998/namespace") of this
+        metadata item (NeXML output).
+
+    :attr:`~dendropy.dataobject.base.Annotation.compose_as_reference`
+        If |True|, indicates that this annotation should not be interpreted semantically as a literal value, but rather as a source to be dereferenced.
+
+    :attr:`~dendropy.dataobject.base.Annotation.is_hidden`
+        If |True|, indicates that this annotation should not be printed or written out.
+
+    :attr:`~dendropy.dataobject.base.Annotation.prefixed_name`
+        Returns the name of this annotation with its namespace prefix (e.g. "dc:subject").
+
+These :class:`~dendropy.dataobject.base.Annotation` objects are typically collected and managed in a "annotations manager" container class, :class:`~dendropy.dataobject.base.AnnotationSet`.
+This is a specialization of :class:`set` whose elements are instances of :class:`~dendropy.dataobject.base.Annotation`.
+The full set of annotations associated with each object of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other phylogenetic data class types is available through the :attr:`annotations` attribute of those objects, which is an instance of :class:`~dendropy.dataobject.base.AnnotationSet`.
+The :class:`~dendropy.dataobject.base.AnnotationSet` includes the following additional methods to support the creation, access, and management of the :class:`~dendropy.dataobject.base.Annotation` object elements contained within it:
+
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_new()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_bound_attribute()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_citation()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.get()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.drop()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.values_as_dict()`
+
 
 ..
-    The elements of the ":attr:`annotations`" attribute of phylogenetic data objects are objects of :class:`~dendropy.dataobject.base.Annotation` that collectively make up the full set of annotations or metadata associated with that particular phylogenetic data object.
+    The fundamental unit of metadata in |DendroPy| is the :class:`~dendropy.dataobject.base.Annotation` object.
+    Each :class:`~dendropy.dataobject.base.Annotation` object stores information regarding a single item of metadata, keeping track of, at a minimum, the name and value or content of the metadata item, which is accessible through the attributes ":attr:`~dendropy.dataobject.base.Annotation.name`" and  ":attr:`~dendropy.dataobject.base.Annotation.value`" respectively.
+    These :class:`~dendropy.dataobject.base.Annotation` objects are typically collected and managed in a "annotations manager" container class, :class:`~dendropy.dataobject.base.AnnotationSet`, which is a specialization of ":class:`set`".
+    Phylogenetic data objects of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other classes all have an attribute, ":attr:`annotations`", that represents an instance of the :class:`~dendropy.dataobject.base.AnnotationSet` class, and whose elements are :class:`~dendropy.dataobject.base.Annotation` objects that collectively make up the full set of annotations or metadata associated with that particular phylogenetic data object.
+        The elements of the ":attr:`annotations`" attribute of phylogenetic data objects are objects of :class:`~dendropy.dataobject.base.Annotation` that collectively make up the full set of annotations or metadata associated with that particular phylogenetic data object.
 
 
 The following code snippet reads in a data file in NeXML format, and dumps out the annotations::
@@ -97,65 +137,65 @@ object of type :class:`~dendropy.dataobject.base.Annotation`.
 
 For example::
 
-    >>> import dendropy
-    >>> ds = dendropy.DataSet.get_from_path("pythonidae.annotated.nexml",
-    ... "nexml")
-    >>> for a in ds.annotations:
-    ...     print a
-    ...
-    <dendropy:description="composite dataset of Pythonid sequences and trees">
-    <dc:subject="Pythonidae">
-    >>> for taxon_set in ds.taxon_sets:
-    ...     for a in taxon_set.annotations:
-    ...         print a
-    ...     for taxon in taxon_set:
-    ...         for a in taxon.annotations:
-    ...             print taxon.label, a
-    ...
-    <dc:subject="Pythonidae">
-    Python regius <skos:closeMatch="http://purl.uniprot.org/taxonomy/51751">
-    Python sebae <skos:closeMatch="http://purl.uniprot.org/taxonomy/51752">
-    Python molurus <skos:closeMatch="http://purl.uniprot.org/taxonomy/51750">
-    Python curtus <skos:closeMatch="http://purl.uniprot.org/taxonomy/143436">
-    Morelia bredli <skos:closeMatch="http://purl.uniprot.org/taxonomy/461327">
-    Morelia spilota <skos:closeMatch="http://purl.uniprot.org/taxonomy/51896">
-    Morelia tracyae <skos:closeMatch="http://purl.uniprot.org/taxonomy/129332">
-    Morelia clastolepis <skos:closeMatch="http://purl.uniprot.org/taxonomy/129329">
-    Morelia kinghorni <skos:closeMatch="http://purl.uniprot.org/taxonomy/129330">
-    Morelia nauta <skos:closeMatch="http://purl.uniprot.org/taxonomy/129331">
-    Morelia amethistina <skos:closeMatch="http://purl.uniprot.org/taxonomy/51895">
-    Morelia oenpelliensis <skos:closeMatch="http://purl.uniprot.org/taxonomy/461329">
-    Antaresia maculosa <skos:closeMatch="http://purl.uniprot.org/taxonomy/51891">
-    Antaresia perthensis <skos:closeMatch="http://purl.uniprot.org/taxonomy/461324">
-    Antaresia stimsoni <skos:closeMatch="http://purl.uniprot.org/taxonomy/461325">
-    Antaresia childreni <skos:closeMatch="http://purl.uniprot.org/taxonomy/51888">
-    Morelia carinata <skos:closeMatch="http://purl.uniprot.org/taxonomy/461328">
-    Morelia viridisN <skos:closeMatch="http://purl.uniprot.org/taxonomy/129333">
-    Morelia viridisS <skos:closeMatch="http://purl.uniprot.org/taxonomy/129333">
-    Apodora papuana <skos:closeMatch="http://purl.uniprot.org/taxonomy/129310">
-    Liasis olivaceus <skos:closeMatch="http://purl.uniprot.org/taxonomy/283338">
-    Liasis fuscus <skos:closeMatch="http://purl.uniprot.org/taxonomy/129327">
-    Liasis mackloti <skos:closeMatch="http://purl.uniprot.org/taxonomy/51889">
-    Antaresia melanocephalus <skos:closeMatch="http://purl.uniprot.org/taxonomy/51883">
-    Antaresia ramsayi <skos:closeMatch="http://purl.uniprot.org/taxonomy/461326">
-    Liasis albertisii <skos:closeMatch="http://purl.uniprot.org/taxonomy/129326">
-    Bothrochilus boa <skos:closeMatch="http://purl.uniprot.org/taxonomy/461341">
-    Morelia boeleni <skos:closeMatch="http://purl.uniprot.org/taxonomy/129328">
-    Python timoriensis <skos:closeMatch="http://purl.uniprot.org/taxonomy/51753">
-    Python reticulatus <skos:closeMatch="http://purl.uniprot.org/taxonomy/37580">
-    Xenopeltis unicolor <skos:closeMatch="http://purl.uniprot.org/taxonomy/196253">
-    Candoia aspera <skos:closeMatch="http://purl.uniprot.org/taxonomy/51853">
-    Loxocemus bicolor <skos:closeMatch="http://purl.uniprot.org/taxonomy/39078">
-    >>> for tree_list in ds.tree_lists:
-    ...     for a in tree_list.annotations:
-    ...         print a
-    ...     for tree in tree_list:
-    ...         for a in tree.annotations:
-    ...             print a
-    ...
-    <dendropy:treeEstimator="RAxML">
-    <dendropy:substitutionModel="GTR+G+I">
+    #! /usr/bin/env python
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("pythonidae.annotated.nexml",
+    "nexml")
+    for a in ds.annotations:
+        print "Data Set '%s': %s" % (ds.label, a)
+    for taxon_set in ds.taxon_sets:
+        for a in taxon_set.annotations:
+            print "Taxon Set '%s': %s" % (taxon_set.label, a)
+        for taxon in taxon_set:
+            for a in taxon.annotations:
+                print "Taxon '%s': %s" % (taxon.label, a)
+    for tree_list in ds.tree_lists:
+        for a in tree_list.annotations:
+            print "Tree List '%s': %s" % (tree_list.label, a)
+        for tree in tree_list:
+            for a in tree.annotations:
+                print "Tree '%s': %s" % (tree.label, a)
 
+produces::
+
+    Data Set 'None': description="composite dataset of Pythonid sequences and trees"
+    Data Set 'None': subject="Pythonidae"
+    Taxon Set 'None': subject="Pythonidae"
+    Taxon 'Python regius': closeMatch="http://purl.uniprot.org/taxonomy/51751"
+    Taxon 'Python sebae': closeMatch="http://purl.uniprot.org/taxonomy/51752"
+    Taxon 'Python molurus': closeMatch="http://purl.uniprot.org/taxonomy/51750"
+    Taxon 'Python curtus': closeMatch="http://purl.uniprot.org/taxonomy/143436"
+    Taxon 'Morelia bredli': closeMatch="http://purl.uniprot.org/taxonomy/461327"
+    Taxon 'Morelia spilota': closeMatch="http://purl.uniprot.org/taxonomy/51896"
+    Taxon 'Morelia tracyae': closeMatch="http://purl.uniprot.org/taxonomy/129332"
+    Taxon 'Morelia clastolepis': closeMatch="http://purl.uniprot.org/taxonomy/129329"
+    Taxon 'Morelia kinghorni': closeMatch="http://purl.uniprot.org/taxonomy/129330"
+    Taxon 'Morelia nauta': closeMatch="http://purl.uniprot.org/taxonomy/129331"
+    Taxon 'Morelia amethistina': closeMatch="http://purl.uniprot.org/taxonomy/51895"
+    Taxon 'Morelia oenpelliensis': closeMatch="http://purl.uniprot.org/taxonomy/461329"
+    Taxon 'Antaresia maculosa': closeMatch="http://purl.uniprot.org/taxonomy/51891"
+    Taxon 'Antaresia perthensis': closeMatch="http://purl.uniprot.org/taxonomy/461324"
+    Taxon 'Antaresia stimsoni': closeMatch="http://purl.uniprot.org/taxonomy/461325"
+    Taxon 'Antaresia childreni': closeMatch="http://purl.uniprot.org/taxonomy/51888"
+    Taxon 'Morelia carinata': closeMatch="http://purl.uniprot.org/taxonomy/461328"
+    Taxon 'Morelia viridisN': closeMatch="http://purl.uniprot.org/taxonomy/129333"
+    Taxon 'Morelia viridisS': closeMatch="http://purl.uniprot.org/taxonomy/129333"
+    Taxon 'Apodora papuana': closeMatch="http://purl.uniprot.org/taxonomy/129310"
+    Taxon 'Liasis olivaceus': closeMatch="http://purl.uniprot.org/taxonomy/283338"
+    Taxon 'Liasis fuscus': closeMatch="http://purl.uniprot.org/taxonomy/129327"
+    Taxon 'Liasis mackloti': closeMatch="http://purl.uniprot.org/taxonomy/51889"
+    Taxon 'Antaresia melanocephalus': closeMatch="http://purl.uniprot.org/taxonomy/51883"
+    Taxon 'Antaresia ramsayi': closeMatch="http://purl.uniprot.org/taxonomy/461326"
+    Taxon 'Liasis albertisii': closeMatch="http://purl.uniprot.org/taxonomy/129326"
+    Taxon 'Bothrochilus boa': closeMatch="http://purl.uniprot.org/taxonomy/461341"
+    Taxon 'Morelia boeleni': closeMatch="http://purl.uniprot.org/taxonomy/129328"
+    Taxon 'Python timoriensis': closeMatch="http://purl.uniprot.org/taxonomy/51753"
+    Taxon 'Python reticulatus': closeMatch="http://purl.uniprot.org/taxonomy/37580"
+    Taxon 'Xenopeltis unicolor': closeMatch="http://purl.uniprot.org/taxonomy/196253"
+    Taxon 'Candoia aspera': closeMatch="http://purl.uniprot.org/taxonomy/51853"
+    Taxon 'Loxocemus bicolor': closeMatch="http://purl.uniprot.org/taxonomy/39078"
+    Tree '0': treeEstimator="RAxML"
+    Tree '0': substitutionModel="GTR+G+I"
 
 Metadata annotations in NEXUS and NEWICK must be given in the form of "hot comments" either in BEAST/FigTree syntax::
 
@@ -480,41 +520,22 @@ In addition, the method call also supports some of the other customization argum
 Metadata Annotation Access and Manipulation
 ===========================================
 
-Each item of metadata is maintained in an object of the :class:`~dendropy.dataobject.base.Annotation` class.
-This class has the following attributes:
+Metadata annotations associated with phylogenetics objects can be accessed through the :attr:`annotations` attribute of that object.
 
-    :attr:`~dendropy.dataobject.base.Annotation.name`
-        The name of the metadata item or annotation.
+For example::
 
-    :attr:`~dendropy.dataobject.base.Annotation.value`
-        The value or content of the metadata item or annotation.
+    #! /usr/bin/env python
+    ds = dendropy.DataSet.get_from_path("pythonidae.annotated.nexml",
+    "nexml")
+    for a in ds.annotations:
+        print "The dataset has property '%s' with content '%s'" % (a.name, a.value)
+    tree = ds.tree_lists[0][0]
+    for a in tree.annotations:
+        print "Tree '%s' has property '%s' with content '%s'" % (tree.label, a.name, a.value)
 
-    :attr:`~dendropy.dataobject.base.Annotation.datatype_hunt`
-        Custom data type indication for NeXML output (e.g. "xsd:string").
+will result in::
 
-    :attr:`~dendropy.dataobject.base.Annotation.name_prefix`
-        Prefix that represents an abbreviation of the namespace associated with
-        this metadata item.
-
-    :attr:`~dendropy.dataobject.base.Annotation.namespace`
-        The namespace (e.g. "http://www.w3.org/XML/1998/namespace") of this
-        metadata item (NeXML output).
-
-    :attr:`~dendropy.dataobject.base.Annotation.compose_as_reference`
-        If |True|, indicates that this annotation should not be interpreted semantically as a literal value, but rather as a source to be dereferenced.
-
-    :attr:`~dendropy.dataobject.base.Annotation.is_hidden`
-        If |True|, indicates that this annotation should not be printed or written out.
-
-    :attr:`~dendropy.dataobject.base.Annotation.prefixed_name`
-        Returns the name of this annotation with its namespace prefix (e.g. "dc:subject").
-
-The full set of annotations associated with each object of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other phylogenetic data class types is available through the :attr:`annotations` attribute of those objects, which is an instance of :class:`~dendropy.dataobject.base.AnnotationSet`.
-This is a specialization of :class:`set` whose elements are instances of :class:`~dendropy.dataobject.base.Annotation`, and which has the following additional methods:
-
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_new()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_bound_attribute()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.add_citation()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.get()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.drop()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.values_as_dict()`
+    The dataset has property 'description' with content 'composite dataset of Pythonid sequences and trees'
+    The dataset has property 'subject' with content 'Pythonidae'
+    Tree '0' has property 'treeEstimator' with content 'RAxML'
+    Tree '0' has property 'substitutionModel' with content 'GTR+G+I'

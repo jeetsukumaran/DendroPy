@@ -107,7 +107,7 @@ class Annotation(DataObject):
         self.is_hidden = is_hidden
 
     def __str__(self):
-        return '<%s="%s">' % (self.prefixed_name, self.value)
+        return '%s="%s"' % (self.name, self.value)
 
     def is_match(self, **kwargs):
         match = True
