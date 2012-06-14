@@ -11,6 +11,101 @@ Note that full and robust expression of metadata annotations, including stable a
 Metadata Annotation Creation
 =============================
 
+Reading Data from an External Source
+------------------------------------
+
+When reading data in NeXML format, metadata annotations given in the source are automatically created and associated with the corresponding data objects.
+
+The metadata annotations associated with the phylogenetic data objects are collected in the attribute ``annotations`` of the objects, which is an object of type :class:`~dendropy.dataobject.base.AnnotationSet`.
+Each annotation item is represented as an
+object of type :class:`~dendropy.dataobject.base.Annotation`.
+
+For example::
+
+    >>> import dendropy
+    >>> ds = dendropy.DataSet.get_from_path("pythonidae.annotated.nexml",
+    ... "nexml")
+    >>> for a in ds.annotations:
+    ...     print a
+    ...
+    <dendropy:description="composite dataset of Pythonid sequences and trees">
+    <dc:subject="Pythonidae">
+    >>> for taxon_set in ds.taxon_sets:
+    ...     for a in taxon_set.annotations:
+    ...         print a
+    ...     for taxon in taxon_set:
+    ...         for a in taxon.annotations:
+    ...             print taxon.label, a
+    ...
+    <dc:subject="Pythonidae">
+    Python regius <skos:closeMatch="http://purl.uniprot.org/taxonomy/51751">
+    Python sebae <skos:closeMatch="http://purl.uniprot.org/taxonomy/51752">
+    Python molurus <skos:closeMatch="http://purl.uniprot.org/taxonomy/51750">
+    Python curtus <skos:closeMatch="http://purl.uniprot.org/taxonomy/143436">
+    Morelia bredli <skos:closeMatch="http://purl.uniprot.org/taxonomy/461327">
+    Morelia spilota <skos:closeMatch="http://purl.uniprot.org/taxonomy/51896">
+    Morelia tracyae <skos:closeMatch="http://purl.uniprot.org/taxonomy/129332">
+    Morelia clastolepis <skos:closeMatch="http://purl.uniprot.org/taxonomy/129329">
+    Morelia kinghorni <skos:closeMatch="http://purl.uniprot.org/taxonomy/129330">
+    Morelia nauta <skos:closeMatch="http://purl.uniprot.org/taxonomy/129331">
+    Morelia amethistina <skos:closeMatch="http://purl.uniprot.org/taxonomy/51895">
+    Morelia oenpelliensis <skos:closeMatch="http://purl.uniprot.org/taxonomy/461329">
+    Antaresia maculosa <skos:closeMatch="http://purl.uniprot.org/taxonomy/51891">
+    Antaresia perthensis <skos:closeMatch="http://purl.uniprot.org/taxonomy/461324">
+    Antaresia stimsoni <skos:closeMatch="http://purl.uniprot.org/taxonomy/461325">
+    Antaresia childreni <skos:closeMatch="http://purl.uniprot.org/taxonomy/51888">
+    Morelia carinata <skos:closeMatch="http://purl.uniprot.org/taxonomy/461328">
+    Morelia viridisN <skos:closeMatch="http://purl.uniprot.org/taxonomy/129333">
+    Morelia viridisS <skos:closeMatch="http://purl.uniprot.org/taxonomy/129333">
+    Apodora papuana <skos:closeMatch="http://purl.uniprot.org/taxonomy/129310">
+    Liasis olivaceus <skos:closeMatch="http://purl.uniprot.org/taxonomy/283338">
+    Liasis fuscus <skos:closeMatch="http://purl.uniprot.org/taxonomy/129327">
+    Liasis mackloti <skos:closeMatch="http://purl.uniprot.org/taxonomy/51889">
+    Antaresia melanocephalus <skos:closeMatch="http://purl.uniprot.org/taxonomy/51883">
+    Antaresia ramsayi <skos:closeMatch="http://purl.uniprot.org/taxonomy/461326">
+    Liasis albertisii <skos:closeMatch="http://purl.uniprot.org/taxonomy/129326">
+    Bothrochilus boa <skos:closeMatch="http://purl.uniprot.org/taxonomy/461341">
+    Morelia boeleni <skos:closeMatch="http://purl.uniprot.org/taxonomy/129328">
+    Python timoriensis <skos:closeMatch="http://purl.uniprot.org/taxonomy/51753">
+    Python reticulatus <skos:closeMatch="http://purl.uniprot.org/taxonomy/37580">
+    Xenopeltis unicolor <skos:closeMatch="http://purl.uniprot.org/taxonomy/196253">
+    Candoia aspera <skos:closeMatch="http://purl.uniprot.org/taxonomy/51853">
+    Loxocemus bicolor <skos:closeMatch="http://purl.uniprot.org/taxonomy/39078">
+    >>> for tree_list in ds.tree_lists:
+    ...     for a in tree_list.annotations:
+    ...         print a
+    ...     for tree in tree_list:
+    ...         for a in tree.annotations:
+    ...             print a
+    ...
+    <dendropy:treeEstimator="RAxML">
+    <dendropy:substitutionModel="GTR+G+I">
+
+
+Metadata annotations in NEXUS and NEWICK must be given in the form of "hot comments" either in BEAST/FigTree syntax::
+
+    [&subject='Pythonidae']
+
+    [&length_hpd95={0.01917252,0.06241567},length_quant_5_95={0.02461821,0.06197141},length_range={0.01570374,0.07787249},length_mean=0.0418470252488,length_median=0.04091105,length_sd=0.0113086027131]
+
+or NHX-like syntax::
+
+    [&&subject='Pythonidae']
+
+    [&&length_hpd95={0.01917252,0.06241567},length_quant_5_95={0.02461821,0.06197141},length_range={0.01570374,0.07787249},length_mean=0.0418470252488,length_median=0.04091105,length_sd=0.0113086027131]
+
+However, by default these annotations are not parsed into |DendroPy| data model
+unless the keyword argument ``extract_comment_metadata=True`` is passed in to the call::
+
+    >>> ds = dendropy.DataSet.get_from_path("data.nex",
+    ... "nexus",
+    ... extract_comment_metadata=True)
+
+In general, support for metadata in NEXUS and NEWICK formats is very basic and lossy, and is limited to a small range of phylogenetic data types (taxa, trees, nodes, edges).
+These issues and limits are fundamental to the NEXUS and NEWICK formats, and thus if metadata is important to you and your work, you should be working with NeXML format.
+The NeXML format provides for rich, flexible and robust metadata annotation for the broad range of phylogenetic data, and |DendroPy| provides full support for metadata reading and writing in NeXML.
+
+
 Direct Composition with Literal Values
 --------------------------------------
 
