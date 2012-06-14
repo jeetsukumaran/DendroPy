@@ -20,7 +20,7 @@ This class has the following attributes:
     :attr:`~dendropy.dataobject.base.Annotation.value`
         The value or content of the metadata item or annotation.
 
-    :attr:`~dendropy.dataobject.base.Annotation.datatype_hunt`
+    :attr:`~dendropy.dataobject.base.Annotation.datatype_hint`
         Custom data type indication for NeXML output (e.g. "xsd:string").
 
     :attr:`~dendropy.dataobject.base.Annotation.name_prefix`

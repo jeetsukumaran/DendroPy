@@ -65,7 +65,7 @@ class Annotation(DataObject):
 
         - `name`
         - `value`
-        - `datatype_hunt`
+        - `datatype_hint`
         - `name_prefix`
         - `namespace`
         - `note_as_reference`
