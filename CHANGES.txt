@@ -6,6 +6,7 @@ New Features
 
     - [NeXML] Full support of NeXML 0.9 metadata parsing and writing.
     - `get_from_url()` and `read_from_url()` methods now allow for reading of phylogenetic data from URL's.
+    - New infrastructure for metadata annotations: AnnotationSet and Annotation.
 
 Bug Fixes
 ^^^^^^^^^
@@ -15,12 +16,13 @@ Bug Fixes
 Changes
 ^^^^^^^
 
-    - Annotations/metadata API significantly changed.
+    - Annotations/metadata API significantly changed. Affects not only parsing
+      of NeXML-formatted data by NEXUS/NEWICK as well (metadata no longer
+      stored in dictionaries, by AnnotationSet collections of Annotation
+      objects).
     - [NEXUS/NEWICK] ``suppress_internal_node_taxa`` keyword now actually
       instantiates Taxon objects from internal node labels when 'False', but
       defaults to `True` for consistency with legacy behavior.
-    - [SumTrees] Strip out 'support' annotation from node meta-comments before
-      annotating tree.
     - [NEXUS/NEWICK] Faster parsing of tree files.
 
 
