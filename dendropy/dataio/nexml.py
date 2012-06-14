@@ -1110,7 +1110,7 @@ class NexmlWriter(iosys.DataWriter):
             ["xsi", "http://www.w3.org/2001/XMLSchema-instance"],
             ["xml", "http://www.w3.org/XML/1998/namespace"],
             ["nex", "http://www.nexml.org/2009"],
-            ["dendropy", "http://packages.python.org/DendroPy/"],
+            # ["dendropy", "http://packages.python.org/DendroPy/"],
                 ]
         # parts.append('%sxmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
         #              % (self.indent * (indent_level+1)))
@@ -1122,11 +1122,15 @@ class NexmlWriter(iosys.DataWriter):
         #              % (self.indent * (indent_level+1)))
         # parts.append('%sxmlns:nex="http://www.nexml.org/2009"'
         #              % (self.indent * (indent_level+1)))
-        seen_prefixes = []
-        seen_uris = []
+        seen_prefixes = {}
         for prefix, uri in self._prefix_uri_tuples:
-            seen_prefixes.append(prefix)
-            seen_uris.append(uri)
+            if prefix in seen_prefixes:
+                if seen_prefixes[prefix] != uri:
+                    raise ValueError("Prefix '%s' mapped to multiple namespaces: '%s', '%s'" % (
+                        prefix,
+                        uri,
+                        seen_prefixes[prefix]))
+            seen_prefixes[prefix] = uri
             if prefix:
                 prefix = ":" + prefix
             parts.append('%sxmlns%s="%s"'
