@@ -544,11 +544,6 @@ class NewickWriter(iosys.DataWriter):
                 statement =  "%s:%s" % (statement, self.edge_label_compose_func(node.edge))
         if not self.suppress_annotations or self.annotations_as_nhx:
             node_annotation_comments = nexustokenizer.format_annotation_as_comments(node, nhx=self.annotations_as_nhx)
-            if node.edge is None:
-                print
-                print
-                print node.oid
-                print node.edge.oid
             edge_annotation_comments = nexustokenizer.format_annotation_as_comments(node.edge, nhx=self.annotations_as_nhx)
             statement = statement + node_annotation_comments + edge_annotation_comments
         #if self.nhx_key_to_func:
