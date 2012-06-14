@@ -64,11 +64,11 @@ class Annotation(DataObject):
     Metadata storage, composition and persistance.
     """
 
-    def parse_qualified_name(qualified_name, sep=":"):
-        if sep not in qualified_name:
-            raise ValueError("'%s' is not a valid CURIE-standard qualified name" % qualified_name)
-        return qualified_name.split(":", 1)
-    parse_qualified_name = staticmethod(parse_qualified_name)
+    def parse_prefixed_name(prefixed_name, sep=":"):
+        if sep not in prefixed_name:
+            raise ValueError("'%s' is not a valid CURIE-standard qualified name" % prefixed_name)
+        return prefixed_name.split(":", 1)
+    parse_prefixed_name = staticmethod(parse_prefixed_name)
 
     def __init__(self,
             name,
@@ -76,7 +76,7 @@ class Annotation(DataObject):
             datatype_hint=None,
             name_prefix=None,
             namespace=None,
-            name_is_qualified=False,
+            name_is_prefixed=False,
             is_attribute=False,
             compose_as_reference=False,
             is_hidden=False,
@@ -84,8 +84,8 @@ class Annotation(DataObject):
         DataObject.__init__(self)
         self._value = value
         self.is_attribute = is_attribute
-        if name_is_qualified:
-            self.qualified_name = name
+        if name_is_prefixed:
+            self.prefixed_name = name
             if name_prefix is not None:
                 self._name_prefix = name_prefix
         else:
@@ -98,7 +98,7 @@ class Annotation(DataObject):
         self.is_hidden = is_hidden
 
     def __str__(self):
-        return '<%s="%s">' % (self.qualified_name, self.value)
+        return '<%s="%s">' % (self.prefixed_name, self.value)
 
     def is_match(self, **kwargs):
         match = True
@@ -106,8 +106,8 @@ class Annotation(DataObject):
             if k == "name_prefix":
                 if self.name_prefix != v:
                     return False
-            elif k == "qualified_name":
-                if self.qualified_name != v:
+            elif k == "prefixed_name":
+                if self.prefixed_name != v:
                     return False
             elif k == "namespace":
                 if self.namespace != v:
@@ -145,14 +145,13 @@ class Annotation(DataObject):
         self._namespace = prefix
     namespace = property(_get_namespace, _set_namespace)
 
-    def _get_qualified_name(self):
+    def _get_prefixed_name(self):
         return "%s:%s" % (self.name_prefix, self.name)
-    def _set_qualified_name(self, qualified_name):
-        self._name_prefix, self.name = Annotation.parse_qualified_name(qualified_name)
-    qualified_name = property(_get_qualified_name, _set_qualified_name)
+    def _set_prefixed_name(self, prefixed_name):
+        self._name_prefix, self.name = Annotation.parse_prefixed_name(prefixed_name)
+    prefixed_name = property(_get_prefixed_name, _set_prefixed_name)
 
 class AnnotationSet(set):
-
 
     def __init__(self, target, *args):
         set.__init__(self, *args)
@@ -164,7 +163,7 @@ class AnnotationSet(set):
             datatype_hint=None,
             name_prefix=None,
             namespace=None,
-            name_is_qualified=False,
+            name_is_prefixed=False,
             is_attribute=False,
             compose_as_reference=False,
             is_hidden=False):
@@ -187,7 +186,7 @@ class AnnotationSet(set):
             `namespace`
                 Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
 
-            `name_is_qualified`
+            `name_is_prefixed`
                 Mainly for NeXML *input*: name will be split into prefix and local part
                 before storage (e.g., "dc:citations" will result in prefix = "dc" and
                 name="citations")
@@ -204,7 +203,7 @@ class AnnotationSet(set):
                 Do not write or print this annotation when writing data.
 
         """
-        if not name_is_qualified:
+        if not name_is_prefixed:
             if name_prefix is None and namespace is None:
                 name_prefix = "dendropy"
                 namespace = "http://packages.python.org/DendroPy/"
@@ -221,7 +220,7 @@ class AnnotationSet(set):
                 datatype_hint=datatype_hint,
                 name_prefix=name_prefix,
                 namespace=namespace,
-                name_is_qualified=name_is_qualified,
+                name_is_prefixed=name_is_prefixed,
                 is_attribute=is_attribute,
                 compose_as_reference=compose_as_reference,
                 is_hidden=is_hidden,
@@ -235,7 +234,7 @@ class AnnotationSet(set):
             datatype_hint=None,
             name_prefix=None,
             namespace=None,
-            name_is_qualified=False,
+            name_is_prefixed=False,
             compose_as_reference=False,
             is_hidden=False,
             owner_instance=None,
@@ -261,7 +260,7 @@ class AnnotationSet(set):
             `namespace`
                 Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
 
-            `name_is_qualified`
+            `name_is_prefixed`
                 Mainly for NeXML *input*: name will be split into prefix and local part
                 before storage (e.g., "dc:citations" will result in prefix = "dc" and
                 name="citations")
@@ -283,7 +282,7 @@ class AnnotationSet(set):
             owner_instance = self.target
         if not hasattr(owner_instance, attr_name):
             raise AttributeError(attr_name)
-        if not name_is_qualified:
+        if not name_is_prefixed:
             if name_prefix is None and namespace is None:
                 name_prefix = "dendropy"
                 namespace = "http://packages.python.org/DendroPy/"
@@ -300,7 +299,7 @@ class AnnotationSet(set):
                 datatype_hint=datatype_hint,
                 name_prefix=name_prefix,
                 namespace=namespace,
-                name_is_qualified=name_is_qualified,
+                name_is_prefixed=name_is_prefixed,
                 is_attribute=True,
                 compose_as_reference=compose_as_reference,
                 is_hidden=is_hidden,
@@ -410,7 +409,7 @@ class AnnotationSet(set):
                     datatype_hint="xsd:string",
                     name_prefix=name_prefix,
                     namespace=namespace,
-                    name_is_qualified=False,
+                    name_is_prefixed=False,
                     is_attribute=False,
                     compose_as_reference=False,
                     is_hidden=is_hidden)
@@ -420,7 +419,7 @@ class AnnotationSet(set):
                     datatype_hint="xsd:string",
                     name_prefix=name_prefix,
                     namespace=namespace,
-                    name_is_qualified=False,
+                    name_is_prefixed=False,
                     is_attribute=False,
                     compose_as_reference=False,
                     is_hidden=is_hidden)
@@ -431,7 +430,7 @@ class AnnotationSet(set):
                         datatype_hint="xsd:string",
                         name_prefix=name_prefix,
                         namespace=namespace,
-                        name_is_qualified=False,
+                        name_is_prefixed=False,
                         is_attribute=False,
                         compose_as_reference=False,
                         is_hidden=is_hidden)
@@ -443,7 +442,7 @@ class AnnotationSet(set):
         #             name="bibtex",
         #             value=bt.as_compact_bibtex(),
         #             datatype_hint="xsd:string",
-        #             name_is_qualified=False,
+        #             name_is_prefixed=False,
         #             name_prefix=name_prefix,
         #             namespace=namespace,
         #             is_attribute=False,
@@ -468,7 +467,7 @@ class AnnotationSet(set):
                         datatype_hint="xsd:string",
                         name_prefix=name_prefix,
                         namespace=namespace,
-                        name_is_qualified=False,
+                        name_is_prefixed=False,
                         is_attribute=False,
                         compose_as_reference=False,
                         is_hidden=is_hidden)
@@ -489,7 +488,7 @@ class AnnotationSet(set):
                         name=field,
                         value=value,
                         datatype_hint="xsd:string",
-                        name_is_qualified=False,
+                        name_is_prefixed=False,
                         name_prefix=name_prefix,
                         namespace=namespace,
                         is_attribute=False,
@@ -500,15 +499,15 @@ class AnnotationSet(set):
 
     def get(self, **kwargs):
         """
-        Returns list of Annotation objects associated with self.target that match
-        based on *all* criteria specified in keyword arguments::
+        Returns AnnotationSet of Annotation objects associated with self.target
+        that match based on *all* criteria specified in keyword arguments::
 
             >>> notes = tree.annotations.get(name="color")
             >>> notes = tree.annotations.get(namespace="http://packages.python.org/DendroPy/")
             >>> notes = tree.annotations.get(namespace="http://packages.python.org/DendroPy/",
                                           name="color")
             >>> notes = tree.annotations.get(name_prefix="dc")
-            >>> notes = tree.annotations.get(qualified_name="dc:color")
+            >>> notes = tree.annotations.get(prefixed_name="dc:color")
 
         If no keyword arguments are given, *all* annotations are returned::
 
@@ -519,6 +518,7 @@ class AnnotationSet(set):
         for a in self:
             if a.is_match(**kwargs):
                 results.append(a)
+        results = AnnotationSet(self.target, results)
         return results
 
     def drop(self, **kwargs):
@@ -546,9 +546,9 @@ class AnnotationSet(set):
 
             >>> tree.annotations.drop(name_prefix="dc")
 
-        Remove all annotation objects with `qualified_name` == "dc:color"::
+        Remove all annotation objects with `prefixed_name` == "dc:color"::
 
-            >>> tree.annotations.drop(qualified_name="dc:color")
+            >>> tree.annotations.drop(prefixed_name="dc:color")
 
         If no keyword argument filter criteria are given, *all* annotations are
         removed::

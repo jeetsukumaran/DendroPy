@@ -271,7 +271,7 @@ class NexmlAnnotations(datatest.DataObjectVerificationTestCase):
         qname_to_content = self.collect_by_qname(expected)
         for qname in qname_to_content:
             meta_set = qname_to_content[qname]
-            annotes = observed.get(qualified_name=qname)
+            annotes = observed.get(prefixed_name=qname)
             self.assertEqual(len(meta_set), len(annotes))
             obs_set = set()
             for a in annotes:

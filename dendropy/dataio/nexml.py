@@ -103,7 +103,7 @@ def _compose_annotation_xml(annote, indent="", indent_level=0):
         value = _protect_attr(value)
     else:
         value = '""'
-    key = annote.qualified_name
+    key = annote.prefixed_name
     # assert ":" in key
     if annote.compose_as_reference:
         parts.append('xsi:type="nex:ResourceMeta"')
@@ -149,7 +149,7 @@ class _AnnotationParser(object):
         datatype_hint = attrib.get("datatype", None)
         if key is None:
             raise ValueError("Could not determine property/rel for meta element: %s\n%s" % (nxelement, attrib))
-        name_prefix, name = dendropy.Annotation.parse_qualified_name(key)
+        name_prefix, name = dendropy.Annotation.parse_prefixed_name(key)
         try:
             namespace = self.namespace_registry.prefix_namespace_map[name_prefix]
         except KeyError:
@@ -160,7 +160,7 @@ class _AnnotationParser(object):
                 datatype_hint=datatype_hint,
                 name_prefix=name_prefix,
                 namespace=namespace,
-                name_is_qualified=False,
+                name_is_prefixed=False,
                 compose_as_reference=compose_as_reference)
         top_annotations = [i for i in nxelement.iter_top_children('meta')]
         for annotation in top_annotations:
