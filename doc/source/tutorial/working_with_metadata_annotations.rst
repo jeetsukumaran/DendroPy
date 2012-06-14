@@ -1,6 +1,6 @@
-*************************************
-Working with Metadata and Annotations
-*************************************
+*********************************
+Working with Metadata Annotations
+*********************************
 
 |DendroPy| provides a rich infrastructure for decorating most types of phylogenetic objects (e.g., the |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, and various |CharacterMatrix| classes) with metadata information.
 These phylogenetic objects have an attribute, :attr:`annotations`, that is an instance of the :class:`~dendropy.dataobject.base.AnnotationSet` class, which is an iterable (derived from :class:`set`) that serves to manage a collection of :class:`~dendropy.dataobject.base.Annotation` objects.
@@ -520,7 +520,10 @@ In addition, the method call also supports some of the other customization argum
 Metadata Annotation Access and Manipulation
 ===========================================
 
-Metadata annotations associated with phylogenetics objects can be accessed through the :attr:`annotations` attribute of that object.
+Iterating Over Collections of Annotations
+-----------------------------------------
+
+The collection of :class:`~dendropy.dataobject.base.Annotation` objects representing metadata annotations associated with particular phylgoenetic data objects can be accessed through the :attr:`annotations` attribute of each particular object.
 
 For example::
 
@@ -528,14 +531,108 @@ For example::
     ds = dendropy.DataSet.get_from_path("pythonidae.annotated.nexml",
     "nexml")
     for a in ds.annotations:
-        print "The dataset has property '%s' with content '%s'" % (a.name, a.value)
+        print "The dataset has metadata annotation '%s' with content '%s'" % (a.name, a.value)
     tree = ds.tree_lists[0][0]
     for a in tree.annotations:
-        print "Tree '%s' has property '%s' with content '%s'" % (tree.label, a.name, a.value)
+        print "Tree '%s' has metadata annotation '%s' with content '%s'" % (tree.label, a.name, a.value)
 
 will result in::
 
-    The dataset has property 'description' with content 'composite dataset of Pythonid sequences and trees'
-    The dataset has property 'subject' with content 'Pythonidae'
-    Tree '0' has property 'treeEstimator' with content 'RAxML'
-    Tree '0' has property 'substitutionModel' with content 'GTR+G+I'
+    The dataset has metadata annotation 'description' with content 'composite dataset of Pythonid sequences and trees'
+    The dataset has metadata annotation 'subject' with content 'Pythonidae'
+    Tree '0' has metadata annotation 'treeEstimator' with content 'RAxML'
+    Tree '0' has metadata annotation 'substitutionModel' with content 'GTR+G+I'
+
+Retrieving Annotations By Search Criteria
+-----------------------------------------
+
+Instead of interating through every element in the :attr:`annotations` attribute of data objects, you can use the :meth:`~dendropy.dataobject.base.AnnotationSet.get` method of the the :attr:`annotations` object to return a *collection* of :class:`~dendropy.dataobject.base.Annotation` objects that match the search or filter criteria specified in keyword arguments to the :meth:`~dendropy.dataobject.base.AnnotationSet.get` call.
+These keyword arguments should specify attributes of :class:`~dendropy.dataobject.base.Annotation` and the corresponding value to be matched.
+Multiple keyword-value pairs can be specified, and only :class:`~dendropy.dataobject.base.Annotation` objects that match *all* the criteria will be returned.
+
+For example, the following returns a collection of annotations that have a name of "contributor"::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+            "nexml")
+    results = ds.annotations.get(name="contributor")
+    for a in results:
+        print "%s='%s'" % (a.name, a.value)
+
+and will result in::
+
+    contributor='Dahlgren T.G.'
+    contributor='Baco A.'
+    contributor='Smith C.'
+    contributor='Glover A.'
+    contributor='Altamira I.V.'
+    contributor='Wiklund H.'
+
+While the following returns a collection of annotations that are in the Dublin Core namespace::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+            "nexml")
+    results = ds.annotations.get(namespace="http://purl.org/dc/elements/1.1/")
+    for a in results:
+        print "%s='%s'" % (a.name, a.value)
+
+and results in::
+
+    subject='wood-fall'
+    contributor='Wiklund H.'
+    publisher='Systematics and Biodiversity'
+    subject='whale-fall'
+    contributor='Dahlgren T.G.'
+    contributor='Smith C.'
+    date='2012-06-04'
+    subject='polychaeta'
+    contributor='Glover A.'
+    subject='Ophryotrocha'
+    title='Systematics and biodiversity of Ophryotrocha (Annelida, Dorvilleidae) with descriptions of six new species from deep-sea whale-fall and wood-fall habitats in the north-east Pacific'
+    subject='New species'
+    subject='molecular phylogeny'
+    contributor='Altamira I.V.'
+    creator='Wiklund H., Altamira I.V., Glover A., Smith C., Baco A., & Dahlgren T.G.'
+    contributor='Baco A.'
+
+The following, in turn, searches for suppresses printing of annotations that have a name prefix of "dc" *and* have empty values::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+            "nexml")
+    results = ds.annotations.get(name_prefix="dc", value="")
+    for a in results:
+        a.is_hidden = True
+
+The collection returned by the :meth:`~dendropy.dataobject.base.AnnotationSet.get` method is an object of type :class:`~dendropy.dataobject.base.AnnotationSet`.
+However, while modifying :class:`~dendropy.dataobject.base.Annotation` objects in this collection will result in the metadata of the parent object being modified, adding new annotations to this returned collection will *not*  add them to the collection of metadata annotations of the parent object.
+Thus, the following example shows that the size of the annotations collection associated with the dataset is unchanged by adding new annotations to the results of a :meth:`~dendropy.dataobject.base.AnnotationSet.get` call::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+            "nexml")
+    print len(ds.annotations)
+    results = ds.annotations.get(namespace="http://purl.org/dc/elements/1.1/")
+    results.add_new(name="color", value="blue")
+    results.add_new(name="height", value="100")
+    results.add_new(name="length", value="200")
+    results.add_new(name="width", value="50")
+    print len(ds.annotations)
+
+The above produces::
+
+    30
+    30
+
+If *no* keyword arguments are passed to :meth:`~dendropy.dataobject.base.Annotation.get`, then *all* annotations are returned::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+            "nexml")
+    results = ds.annotations.get()
+    print len(results) == len(ds.annotations)
+
+The above produces::
+
+    True
