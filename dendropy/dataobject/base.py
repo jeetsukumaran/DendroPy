@@ -61,7 +61,16 @@ class DataObject(object):
 
 class Annotation(DataObject):
     """
-    Metadata storage, composition and persistance.
+    Metadata storage, composition and persistance, with the following attributes:
+
+        - `name`
+        - `value`
+        - `datatype_hunt`
+        - `name_prefix`
+        - `namespace`
+        - `compose_as_reference`
+        - `is_hidden`
+
     """
 
     def parse_prefixed_name(prefixed_name, sep=":"):
@@ -327,15 +336,21 @@ class AnnotationSet(set):
                 only supports 'bibtex'.
 
             `store_as`
-                Specifies how to record the citation:
+                Specifies how to record the citation, takes one of the
+                following strings as values:
 
-                    `bibtex`        : a set of annotations, where each BibTex
-                                      field becomes a separate annotation
-                    `prism`         : a set of of PRISM (Publishing Requirements for
-                                      Industry Standard Metadata) annotations
-                    `dublin`        : a set of of Dublic Core annotations
+                    "bibtex"
+                        A set of annotations, where each BibTex field becomes a
+                        separate annotation.
 
-                Defaults to `bibtex`.
+                    "prism"
+                        A set of of PRISM (Publishing Requirements for Industry
+                        Standard Metadata) annotations.
+
+                    "dublin"
+                        A set of of Dublic Core annotations.
+
+                Defaults to "bibtex".
 
             `name_prefix`
                 Mainly for NeXML output (e.g. "dc:").
@@ -373,13 +388,18 @@ class AnnotationSet(set):
             `store_as`
                 Specifies how to record the citation:
 
-                    `bibtex`        : a set of annotations, where each BibTex
-                                      field becomes a separate annotation
-                    `prism`         : a set of of PRISM (Publishing Requirements for
-                                      Industry Standard Metadata) annotations
-                    `dublin`        : a set of of Dublic Core annotations
+                    "bibtex"
+                        A set of annotations, where each BibTex field becomes a
+                        separate annotation.
 
-                Defaults to `bibtex`.
+                    "prism"
+                        A set of of PRISM (Publishing Requirements for Industry
+                        Standard Metadata) annotations.
+
+                    "dublin"
+                        A set of of Dublic Core annotations.
+
+                Defaults to "bibtex".
 
             `name_prefix`
                 Mainly for NeXML output (e.g. "dc:").

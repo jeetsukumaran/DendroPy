@@ -5,9 +5,10 @@ DendroPy Library Reference
 .. toctree::
     :maxdepth: 2
 
-    dataset.rst
+    base.rst
     taxon.rst
     tree.rst
+    dataset.rst
     char.rst
     coalescent.rst
     reconcile.rst
