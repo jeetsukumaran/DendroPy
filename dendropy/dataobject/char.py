@@ -783,7 +783,10 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         elif len(args) == 1:
             if isinstance(args[0],  self.__class__):
                 ca = copy.deepcopy(args[0])
-                self.__dict__ = ca.__dict__
+                for k, v in ca.__dict__.iteritems():
+                    if k not in ["annotations"]:
+                        self.__dict__[k] = v
+                self.annotations = t.annotations
             else:
                 raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         return self

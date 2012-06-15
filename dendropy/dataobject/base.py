@@ -60,6 +60,8 @@ class DataObject(object):
     def _get_annotations(self):
         return self._annotations
     def _set_annotations(self, annotations):
+        if annotations is self.annotations:
+            return
         old_target = annotations.target
         self._annotations = annotations
         self._annotations.target = self
