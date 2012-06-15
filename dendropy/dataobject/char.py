@@ -601,6 +601,25 @@ class CharacterSubset(base.DataObject):
 class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     "Character data container/manager manager."
 
+    def _parse_from_stream(cls, stream, schema, **kwargs):
+        from dendropy.dataobject.dataset import DataSet
+        index = kwargs.get("matrix_offset", 0)
+        kwargs["exclude_chars"] = False
+        kwargs["exclude_trees"] = True
+        if 'data_type' not in kwargs and 'char_matrix_type' not in kwargs:
+            kwargs['char_matrix_type'] = cls
+        d = DataSet(stream=stream, schema=schema, **kwargs)
+        if len(d.char_matrices) == 0:
+            raise ValueError("No character data in data source")
+        if index >= len(d.char_matrices):
+            raise IndexError("Character matrix of offset %d specified, but data source only has %d matrices defined (max. index=%d)" \
+                % (index, len(d.char_matrices), len(d.char_matrices)-1))
+        if not isinstance(d.char_matrices[index], cls):
+            raise ValueError("Character data found was of type '%s' (object is of type '%s')" %
+                    (d.char_matrices[index].__class__.__name__, cls.__name__))
+        return d.char_matrices[index]
+    _parse_from_stream = classmethod(_parse_from_stream)
+
     def concatenate(cls, char_matrices):
         """
         Creates and returns a single character matrix from multiple
@@ -778,22 +797,10 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         be specified using the `matrix_offset` keyword (defaults to 0, i.e., first
         character matrix).
         """
-        from dendropy.dataobject.dataset import DataSet
-        index = kwargs.get("matrix_offset", 0)
-        kwargs["exclude_chars"] = False
-        kwargs["exclude_trees"] = True
-        if 'data_type' not in kwargs and 'char_matrix_type' not in kwargs:
-            kwargs['char_matrix_type'] = self.__class__
-        d = DataSet(stream=stream, schema=schema, **kwargs)
-        if len(d.char_matrices) == 0:
-            raise ValueError("No character data in data source")
-        if index >= len(d.char_matrices):
-            raise IndexError("Character matrix of offset %d specified, but data source only has %d matrices defined (max. index=%d)" \
-                % (index, len(d.char_matrices), len(d.char_matrices)-1))
-        if not isinstance(self, d.char_matrices[index].__class__):
-            raise ValueError("Character data found was of type '%s' (object is of type '%s')" %
-                    (d.char_matrices[index].__class__.__name__, self.__class__.__name__))
-        self.clone_from(d.char_matrices[index])
+        m = self.__class__._parse_from_stream(stream=stream,
+                schema=schema,
+                **kwargs)
+        return self.clone_from(m)
 
     def write(self, stream, schema, **kwargs):
         """

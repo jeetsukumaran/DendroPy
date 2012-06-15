@@ -47,6 +47,14 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
     same set of taxa.
     """
 
+    def _parse_from_stream(cls, stream, schema, **kwargs):
+        tlist = cls()
+        tlist.read(stream=stream,
+                schema=schema,
+                **kwargs)
+        return tlist
+    _parse_from_stream = classmethod(_parse_from_stream)
+
     def __init__(self, *args, **kwargs):
         """
         __init__ creates a new TreeList object, populating it with any iterable
@@ -466,6 +474,38 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     root node as a node without `child_node` objects.
     """
 
+    def _parse_from_stream(cls, stream, schema, **kwargs):
+        from dendropy.dataobject.dataset import DataSet
+        collection_offset = kwargs.get("collection_offset", -1)
+        tree_offset = kwargs.get("tree_offset", 0)
+        kwargs["exclude_chars"] = True
+        kwargs["exclude_trees"] = False
+        d = DataSet(stream=stream, schema=schema, **kwargs)
+        if len(d.tree_lists) == 0:
+            raise ValueError("No trees in data source")
+        if collection_offset >= len(d.tree_lists):
+            raise IndexError("Tree collection offset %d specified, but data source only has %d tree collections defined" \
+                % (collection_offset, len(d.tree_lists)))
+        if collection_offset < 0:
+            i = 0
+            for tlist in d.tree_lists:
+                for t in tlist:
+                    if i == tree_offset:
+                        return t
+                    i += 1
+            if i <= tree_offset:
+                raise IndexError("Tree offset %d specified, but data source only has %d trees defined" \
+                            % (tree_offset, i+1))
+        else:
+            tlist = d.tree_lists[collection_offset]
+            if tree_offset < len(tlist):
+                t = tlist[tree_offset]
+                return t
+            else:
+                raise IndexError("Tree offset %d specified, but tree collection only has %d trees defined" \
+                        % (tree_offset, len(tlist)))
+    _parse_from_stream = classmethod(_parse_from_stream)
+
     ###########################################################################
     ## Special/Lifecycle methods
 
@@ -610,15 +650,19 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         Clones the structure and properties of `Tree` object `other`.
         """
         t = copy.deepcopy(other)
-        self.__dict__ = t.__dict__
+        for k, v in t.__dict__.iteritems():
+            if k not in ["annotations"]:
+                self.__dict__[k] = v
+        self.annotations = t.annotations
         return self
 
     def __deepcopy__(self, memo):
         # we treat the taxa as immutable and copy the reference even in a deepcopy
         o = TaxonSetLinked.__deepcopy__(self, memo)
         for k, v in self.__dict__.iteritems():
-            if k not in ['taxon_set', "_oid"]:
+            if k not in ['taxon_set', "_oid", "annotations"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
+        o.annotations = copy.deepcopy(self.annotations, memo)
         return o
 
     def read(self, stream, schema, **kwargs):
@@ -651,37 +695,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         If ``tree_offset`` is not specified, then the first tree (offset=0) is
         returned.
         """
-        from dendropy.dataobject.dataset import DataSet
-        collection_offset = kwargs.get("collection_offset", -1)
-        tree_offset = kwargs.get("tree_offset", 0)
-        if "taxon_set" in kwargs:
-            self.taxon_set = kwargs["taxon_set"]
-        kwargs["exclude_chars"] = True
-        kwargs["exclude_trees"] = False
-        d = DataSet(stream=stream, schema=schema, **kwargs)
-        if len(d.tree_lists) == 0:
-            raise ValueError("No trees in data source")
-        if collection_offset >= len(d.tree_lists):
-            raise IndexError("Tree collection offset %d specified, but data source only has %d tree collections defined" \
-                % (collection_offset, len(d.tree_lists)))
-        if collection_offset < 0:
-            i = 0
-            for tlist in d.tree_lists:
-                for t in tlist:
-                    if i == tree_offset:
-                        self.__dict__ = t.__dict__
-                    i += 1
-            if i <= tree_offset:
-                raise IndexError("Tree offset %d specified, but data source only has %d trees defined" \
-                            % (tree_offset, i+1))
-        else:
-            tlist = d.tree_lists[collection_offset]
-            if tree_offset < len(tlist):
-                t = tlist[tree_offset]
-                self.__dict__ = t.__dict__
-            else:
-                raise IndexError("Tree offset %d specified, but tree collection only has %d trees defined" \
-                        % (tree_offset, len(tlist)))
+        tree = Tree._parse_from_stream(stream, schema, **kwargs)
+        self.clone_from(tree)
 
     def write(self, stream, schema, **kwargs):
         """

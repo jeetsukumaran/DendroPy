@@ -21,6 +21,7 @@ Infrastructure for object serialization and management.
 """
 
 import re
+import copy
 from dendropy.utility import bibtex
 
 class DataObject(object):
@@ -35,7 +36,7 @@ class DataObject(object):
             self._oid = oid
         else:
             self._oid = self._default_oid()
-        self.annotations = AnnotationSet(self)
+        self._annotations = AnnotationSet(self)
 
     def _default_oid(self):
         "Returns default oid."
@@ -56,8 +57,30 @@ class DataObject(object):
             self._oid = self._default_oid()
     oid = property(_get_oid, _set_oid)
 
+    def _get_annotations(self):
+        return self._annotations
+    def _set_annotations(self, annotations):
+        old_target = annotations.target
+        self._annotations = annotations
+        self._annotations.target = self
+        for a in self._annotations:
+            if a.is_attribute and a.value[0] is old_target:
+                a.target = self
+    annotations = property(_get_annotations, _set_annotations)
+
     def __str__(self):
         return str(self.oid)
+
+    def __deepcopy__(self, memo):
+        o = self.__class__(label=self.label, oid=None)
+        memo[id(self)] = o
+        memo[id(self._oid)] = o._oid
+        memo[id(self.label)] = o.label
+        memo[id(self.annotations)] = copy.deepcopy(self.annotations)
+        # for k, v in self.__dict__.iteritems():
+        #     if k not in ["label", "_oid"]:
+        #         o.__dict__[k] = copy.deepcopy(v, memo)
+        return o
 
 class Annotation(DataObject):
     """
@@ -89,8 +112,10 @@ class Annotation(DataObject):
             is_attribute=False,
             note_as_reference=False,
             is_hidden=False,
+            label=None,
+            oid=None,
             ):
-        DataObject.__init__(self)
+        DataObject.__init__(self, label=label, oid=oid)
         self._value = value
         self.is_attribute = is_attribute
         if name_is_prefixed:
@@ -108,6 +133,16 @@ class Annotation(DataObject):
 
     def __str__(self):
         return '%s="%s"' % (self.name, self.value)
+
+    def __deepcopy__(self, memo):
+        o = self.__class__(name=None, value=None)
+        memo[id(self)] = o
+        for k, v in self.__dict__.iteritems():
+            if k not in ["value", "label", "_oid"]:
+                o.__dict__[k] = copy.deepcopy(v, memo)
+        if o.is_attribute:
+            o._value = (memo[i] for i in self._value)
+        return o
 
     def is_match(self, **kwargs):
         match = True
@@ -168,6 +203,16 @@ class AnnotationSet(set):
 
     def __str__(self):
         return "AnnotationSet([%s])" % ( ", ".join(str(a) for a in self))
+
+    def __deepcopy__(self, memo):
+        try:
+            o = self.__class__(target=memo[id(self.target)])
+        except KeyError:
+            raise KeyError("deepcopy error: object id %d not found: %s" % (id(self.target), repr(self.target)))
+        memo[id(self)] = o
+        for a in self:
+            o.add(copy.deepcopy(a, memo))
+        return o
 
     def add_new(self,
             name,

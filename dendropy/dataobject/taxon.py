@@ -110,13 +110,12 @@ class TaxonSetLinked(base.DataObject):
         the taxa, and id's of all taxon set objects are mapped to self. This
         can be overridden by pre-populating memo with appropriate clones.
         """
-        if id(self.taxon_set) in memo:
-            o = self.__class__(taxon_set=memo[id(self.taxon_set)], label=self.label)
-        else:
-            o = self.__class__(taxon_set=self.taxon_set, label=self.label)
-            memo[id(self.taxon_set)] = o.taxon_set
+        if id(self.taxon_set) not in memo:
+            memo[id(self.taxon_set)] = self.taxon_set
+        o = self.__class__(label=self.label,
+                oid=None,
+                taxon_set=memo[id(self.taxon_set)])
         memo[id(self)] = o
-        memo[id(self._oid)] = o._oid
         for i, t in enumerate(self.taxon_set):
             if id(t) not in memo:
                 memo[id(t)] = o.taxon_set[i]
@@ -160,8 +159,13 @@ class TaxonSet(containers.OrderedSet, base.DataObject):
 
     def __deepcopy__(self, memo):
         o = self.__class__(list(self), label=self.label, is_mutable=self._is_mutable)
+        # o = base.DataObject.__deepcopy__(self, memo)
+        # for t in self:
+        #     self.append(t)
+        for k, v in self.__dict__.iteritems():
+            if k not in ["_oid", "label"]:
+                o.__dict__[k] = copy.deepcopy(v)
         memo[id(self)] = o
-        memo[id(self._oid)] = o._oid
         return o
 
     def __getitem__(self, i):

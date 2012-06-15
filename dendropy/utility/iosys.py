@@ -178,14 +178,23 @@ class Readable(object):
     Data object that can be instantiated using a `DataReader` service.
     """
 
+    def _parse_from_stream(cls, stream, schema, **kwargs):
+        """
+        Subclasses need to implement this method to create
+        and return and instance of themselves read from the
+        stream.
+        """
+        raise NotImplementedError
+    _parse_from_stream = classmethod(_parse_from_stream)
+
     def get_from_stream(cls, src, schema, **kwargs):
         """
         Factory method to return new object of this class from file-like
         object `src`.
         """
-        readable = cls(**kwargs)
-        readable.read_from_stream(src, schema, **kwargs)
-        return readable
+        return cls._parse_from_stream(stream=src,
+                schema=schema,
+                **kwargs)
     get_from_stream = classmethod(get_from_stream)
 
     def get_from_path(cls, src, schema, **kwargs):
@@ -193,18 +202,20 @@ class Readable(object):
         Factory method to return new object of this class from file
         specified by string `src`.
         """
-        readable = cls(**kwargs)
-        readable.read_from_path(src, schema, **kwargs)
-        return readable
+        fsrc = open(src, "rU")
+        return cls._parse_from_stream(stream=fsrc,
+                schema=schema,
+                **kwargs)
     get_from_path = classmethod(get_from_path)
 
     def get_from_string(cls, src, schema, **kwargs):
         """
         Factory method to return new object of this class from string `src`.
         """
-        readable = cls(**kwargs)
-        readable.read_from_string(src, schema, **kwargs)
-        return readable
+        ssrc = StringIO(src)
+        return cls._parse_from_stream(stream=ssrc,
+                schema=schema,
+                **kwargs)
     get_from_string = classmethod(get_from_string)
 
     def get_from_url(cls, src, schema, **kwargs):
@@ -213,9 +224,10 @@ class Readable(object):
         URL given by `src`.
         """
         text = read_url(src)
-        readable = cls(**kwargs)
-        readable.read_from_string(text, schema, **kwargs)
-        return readable
+        ssrc = StringIO(text)
+        return cls._parse_from_stream(stream=ssrc,
+                schema=schema,
+                **kwargs)
     get_from_url = classmethod(get_from_url)
 
     def __init__(self, *args, **kwargs):

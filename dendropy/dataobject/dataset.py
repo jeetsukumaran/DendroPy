@@ -40,6 +40,14 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
     and delete them.
     """
 
+    def _parse_from_stream(cls, stream, schema, **kwargs):
+        ds = cls()
+        ds.read(stream=stream,
+                schema=schema,
+                **kwargs)
+        return ds
+    _parse_from_stream = classmethod(_parse_from_stream)
+
     def __init__(self, *args, **kwargs):
         """
         __init__ takes a new `DataSet` object from another DataSet object or by
@@ -89,7 +97,8 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
     ## CLONING
 
     def __deepcopy__(self, memo):
-        o = self.__class__()
+        o = DataSet()
+        memo[id(self)] = o
         for ts0 in self.taxon_sets:
             ts1 = o.new_taxon_set(label=ts0.label)
             memo[id(ts0)] = ts1
@@ -114,6 +123,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
             o.attached_taxon_set = memo[id(self.attached_taxon_set)]
         else:
             o.attached_taxon_set = None
+        o.annotations = deepcopy(self.annotations, memo)
         return o
 
     ###########################################################################

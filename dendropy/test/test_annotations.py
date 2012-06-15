@@ -24,6 +24,7 @@ import sys
 import os
 import unittest
 import tempfile
+import copy
 
 from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
@@ -278,9 +279,7 @@ class NexmlAnnotations(datatest.DataObjectVerificationTestCase):
                 obs_set.add((a.value, a.datatype_hint,))
             self.assertEqual(meta_set, obs_set)
 
-    def testParseNexmlAnnotations(self):
-        s = pathmap.tree_source_stream("treebase_s373.xml")
-        dataset = dendropy.DataSet(stream=s, schema="nexml")
+    def verify_dataset(self, dataset):
         annotations = dataset.annotations
         self.verify_metadata(
                 observed=annotations,
@@ -309,6 +308,17 @@ class NexmlAnnotations(datatest.DataObjectVerificationTestCase):
                 self.verify_metadata(
                         observed=annotations,
                         expected=expected)
+
+    def testParseNexmlAnnotations(self):
+        s = pathmap.tree_source_stream("treebase_s373.xml")
+        dataset = dendropy.DataSet(stream=s, schema="nexml")
+        self.verify_dataset(dataset)
+
+    # def testClonedNexmlAnnotations(self):
+    #     s = pathmap.tree_source_stream("treebase_s373.xml")
+    #     dataset1 = dendropy.DataSet(stream=s, schema="nexml")
+    #     dataset2 = dendropy.DataSet(dataset1)
+    #     self.verify_dataset(dataset2)
 
 if __name__ == "__main__":
     unittest.main()
