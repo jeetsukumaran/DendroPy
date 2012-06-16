@@ -120,195 +120,451 @@
             <meta xsi:type="nex:LiteralMeta" property="dendropy:substitutionModel" content="GTR+G+I" id="meta4320372176" />
             <node id="x4320407696" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK122" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320408016" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK125" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320408144" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK128" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320408272" otu="x4320372304" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK131" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320408400" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK134" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320408528" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK137" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320408656" otu="x4320372368" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK140" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320408784" otu="x4320372432" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK143" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320408912" otu="x4320372496" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK146" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320409040" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK149" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320409168" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK152" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320409296" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK155" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320409424" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK158" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320409552" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK161" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320409680" otu="x4320372560" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK164" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320409808" otu="x4320372624" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK167" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320409936" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK170" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320410064" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK173" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320410192" otu="x4320372688" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK176" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320410320" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK179" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320410448" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK182" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320410576" otu="x4320372752" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK185" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320410704" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK188" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320410832" otu="x4320372816" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK191" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320410960" otu="x4320372880" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK194" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320411088" otu="x4320372944" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK197" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320411216" otu="x4320373072" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK200" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320411344" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK203" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320411472" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK206" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320411600" otu="x4320373136" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK209" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320428176" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK212" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320428304" otu="x4320373264" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK215" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320428432" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK218" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320428560" otu="x4320373328" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK221" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320428688" otu="x4320373392" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK224" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320428816" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK227" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320428944" otu="x4320373456" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK230" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320429072" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK233" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320429200" otu="x4320373520" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK236" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320429328" otu="x4320373584" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK239" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320429456" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK242" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320429584" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK245" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320429712" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK248" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320429840" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK251" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320429968" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK254" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320430096" otu="x4320373648" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK257" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320430224" otu="x4320373712" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK260" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320430352" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK263" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320430480" otu="x4320373776" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK266" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320430608" otu="x4320373840" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK269" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320430736" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK272" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320430864" otu="x4320373968" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK275" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320430992" otu="x4320374032" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK278" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320431120" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK281" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320431248" otu="x4320374096" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK284" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320431376" otu="x4320374160" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK287" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320431504" otu="x4320374224" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK290" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320431632" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK293" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320431760" otu="x4320374288" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK296" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320431888" otu="x4320374352" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK299" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320432016" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK302" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320460880" otu="x4320374416" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK305" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320461008" otu="x4320374480" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK308" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <node id="x4320461136" otu="x4320374544" >
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="metaK311" />
+                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="metaZ122">
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="metaQ122" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="metaQ123" />
+                </meta>
             </node>
             <rootedge id="x4320407760" target="x4320407696" />
             <edge id="x4320408080" source="x4320407696" target="x4320408016" length="0.060789" >
