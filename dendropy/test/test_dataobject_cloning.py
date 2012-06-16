@@ -75,8 +75,8 @@ class TestTreeListCloning(datatest.AnnotatedDataObjectVerificationTestCase):
 class TestContinuousCharMatrix(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
-        s = pathmap.char_source_stream("pythonidae_continuous.chars.nexus")
-        self.dataset = dendropy.DataSet.get_from_stream(s, "nexus")
+        s = pathmap.char_source_stream("pythonidae_continuous.chars.nexml")
+        self.dataset = dendropy.DataSet.get_from_stream(s, "nexml")
 
     def testDeepCopy(self):
         chars1 = self.dataset.char_matrices[0]

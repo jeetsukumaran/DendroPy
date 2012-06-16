@@ -224,10 +224,10 @@ class StateAlphabet(base.AnnotatedDataObject, list):
 
     def id_state_map(self):
         "Returns dictionary of element id's to state objects."
-        map = {}
+        smap = {}
         for state in self:
-            map[state.oid] = state
-        return map
+            smap[state.oid] = state
+        return smap
 
     def fundamental_states(self):
         "Returns list of fundamental states of this alphabet"
@@ -440,12 +440,10 @@ class CharacterType(base.AnnotatedDataObject):
 
     state_alphabet = property(_get_state_alphabet, _set_state_alphabet)
 
-    def __deepcopy__(self, memo):
-        o = base.AnnotatedDataObject.__deepcopy__(self, memo)
-        memo[id(self)] = o
-        o._state_alphabet = self._state_alphabet
-        o.id_state_map = dict(o.id_state_map)
-        return o
+    ## default AnnotatedDataObject.__deepcopy__ works fine
+    # def __deepcopy__(self, memo):
+    #     o = base.AnnotatedDataObject.__deepcopy__(self, memo)
+    #     return o
 
 class CharacterDataCell(base.AnnotatedDataObject):
     """

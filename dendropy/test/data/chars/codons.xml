@@ -1,0 +1,170 @@
+<nex:nexml about="#nl1" generator="Bio::Phylo::Project v.0.50_1660" version="0.9" xmlns="http://www.nexml.org/2009" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:nex="http://www.nexml.org/2009" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nexml.org/2009 http://www.nexml.org/2009/nexml.xsd">
+  <meta content="rvosa" datatype="xsd:string" id="ma33" property="dc:creator" xsi:type="nex:LiteralMeta"/>
+  <meta content="2012-06-16T10:00:18" datatype="xsd:date" id="ma34" property="dc:date" xsi:type="nex:LiteralMeta"/>
+  <otus id="os24">
+    <otu id="ou25" label="Homo_sapiens"/>
+    <otu id="ou27" label="Pan_troglodytes"/>
+    <otu id="ou29" label="Pongo_pygmaeus"/>
+  </otus>
+  <characters id="cs4" otus="os24" xsi:type="nex:DnaCells">
+    <format>
+      <states id="ss6">
+        <state about="#s1" id="s1" symbol="A"/>
+        <state about="#s2" id="s2" symbol="C"/>
+        <state about="#s3" id="s3" symbol="G"/>
+        <state about="#s4" id="s4" symbol="T"/>
+        <uncertain_state_set about="#s5" id="s5" symbol="K">
+          <member state="s3"/>
+          <member state="s4"/>
+        </uncertain_state_set>
+        <uncertain_state_set about="#s6" id="s6" symbol="M">
+          <member state="s1"/>
+          <member state="s2"/>
+        </uncertain_state_set>
+        <uncertain_state_set about="#s7" id="s7" symbol="R">
+          <member state="s1"/>
+          <member state="s3"/>
+        </uncertain_state_set>
+        <uncertain_state_set about="#s8" id="s8" symbol="S">
+          <member state="s2"/>
+          <member state="s3"/>
+        </uncertain_state_set>
+        <uncertain_state_set about="#s9" id="s9" symbol="W">
+          <member state="s1"/>
+          <member state="s4"/>
+        </uncertain_state_set>
+        <uncertain_state_set about="#s10" id="s10" symbol="Y">
+          <member state="s2"/>
+          <member state="s4"/>
+        </uncertain_state_set>
+        <uncertain_state_set about="#s11" id="s11" symbol="B">
+          <member state="s2"/>
+          <member state="s3"/>
+          <member state="s4"/>
+        </uncertain_state_set>
+        <uncertain_state_set about="#s12" id="s12" symbol="D">
+          <member state="s1"/>
+          <member state="s3"/>
+          <member state="s4"/>
+        </uncertain_state_set>
+        <uncertain_state_set about="#s13" id="s13" symbol="H">
+          <member state="s1"/>
+          <member state="s2"/>
+          <member state="s4"/>
+        </uncertain_state_set>
+        <uncertain_state_set about="#s14" id="s14" symbol="V">
+          <member state="s1"/>
+          <member state="s2"/>
+          <member state="s3"/>
+        </uncertain_state_set>
+        <uncertain_state_set about="#s15" id="s15" symbol="N">
+          <member state="s3"/>
+          <member state="s1"/>
+          <member state="s4"/>
+          <member state="s2"/>
+        </uncertain_state_set>
+        <uncertain_state_set about="#s16" id="s16" symbol="X">
+          <member state="s3"/>
+          <member state="s1"/>
+          <member state="s4"/>
+          <member state="s2"/>
+        </uncertain_state_set>
+        <uncertain_state_set id="s17" symbol="-"/>
+        <uncertain_state_set id="s18" symbol="?">
+          <member state="s1"/>
+          <member state="s2"/>
+          <member state="s3"/>
+          <member state="s4"/>
+          <member state="s5"/>
+          <member state="s6"/>
+          <member state="s7"/>
+          <member state="s8"/>
+          <member state="s9"/>
+          <member state="s10"/>
+          <member state="s11"/>
+          <member state="s12"/>
+          <member state="s13"/>
+          <member state="s14"/>
+          <member state="s15"/>
+          <member state="s16"/>
+          <member state="s17"/>
+        </uncertain_state_set>
+      </states>
+      <char id="cr8" states="ss6"/>
+      <char id="cr9" states="ss6"/>
+      <char id="cr10" states="ss6"/>
+      <char id="cr11" states="ss6"/>
+      <char id="cr12" states="ss6"/>
+      <char id="cr13" states="ss6"/>
+      <char id="cr14" states="ss6"/>
+      <char id="cr15" states="ss6"/>
+      <char id="cr16" states="ss6"/>
+      <char id="cr17" states="ss6"/>
+      <char id="cr18" states="ss6"/>
+      <char id="cr19" states="ss6"/>
+      <char id="cr20" states="ss6"/>
+      <char id="cr21" states="ss6"/>
+      <char id="cr22" states="ss6"/>
+      <char id="cr23" states="ss6"/>
+      <set char="cr10 cr13 cr16 cr19 cr22" id="st32" label="3rd codon position"/>
+      <set char="cr8 cr12 cr14 cr18 cr20" id="st30" label="1st codon position"/>
+      <set char="cr9 cr11 cr15 cr17 cr21 cr23" id="st31" label="2nd codon position"/>
+    </format>
+    <matrix>
+      <row id="rw7" label="Homo_sapiens" otu="ou25">
+        <cell char="cr8" state="s1"/>
+        <cell char="cr9" state="s2"/>
+        <cell char="cr10" state="s3"/>
+        <cell char="cr11" state="s4"/>
+        <cell char="cr12" state="s2"/>
+        <cell char="cr13" state="s3"/>
+        <cell char="cr14" state="s1"/>
+        <cell char="cr15" state="s2"/>
+        <cell char="cr16" state="s4"/>
+        <cell char="cr17" state="s2"/>
+        <cell char="cr18" state="s1"/>
+        <cell char="cr19" state="s3"/>
+        <cell char="cr20" state="s2"/>
+        <cell char="cr21" state="s1"/>
+        <cell char="cr22" state="s4"/>
+        <cell char="cr23" state="s3"/>
+      </row>
+      <row id="rw26" label="Pan_troglodytes" otu="ou27">
+        <cell char="cr8" state="s1"/>
+        <cell char="cr9" state="s3"/>
+        <cell char="cr10" state="s2"/>
+        <cell char="cr11" state="s1"/>
+        <cell char="cr12" state="s4"/>
+        <cell char="cr13" state="s1"/>
+        <cell char="cr14" state="s3"/>
+        <cell char="cr15" state="s2"/>
+        <cell char="cr16" state="s1"/>
+        <cell char="cr17" state="s4"/>
+        <cell char="cr18" state="s2"/>
+        <cell char="cr19" state="s3"/>
+        <cell char="cr20" state="s1"/>
+        <cell char="cr21" state="s2"/>
+        <cell char="cr22" state="s4"/>
+        <cell char="cr23" state="s1"/>
+      </row>
+      <row id="rw28" label="Pongo_pygmaeus" otu="ou29">
+        <cell char="cr8" state="s1"/>
+        <cell char="cr9" state="s3"/>
+        <cell char="cr10" state="s2"/>
+        <cell char="cr11" state="s1"/>
+        <cell char="cr12" state="s4"/>
+        <cell char="cr13" state="s2"/>
+        <cell char="cr14" state="s3"/>
+        <cell char="cr15" state="s1"/>
+        <cell char="cr16" state="s2"/>
+        <cell char="cr17" state="s1"/>
+        <cell char="cr18" state="s4"/>
+        <cell char="cr19" state="s2"/>
+        <cell char="cr20" state="s3"/>
+        <cell char="cr21" state="s1"/>
+        <cell char="cr22" state="s2"/>
+        <cell char="cr23" state="s4"/>
+      </row>
+    </matrix>
+  </characters>
+</nex:nexml>
