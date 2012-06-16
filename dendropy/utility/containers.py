@@ -144,6 +144,11 @@ class OrderedSet(list):
         else:
             return None
 
+    def update(self, x):
+        for i in x:
+            if i not in self:
+                list.append(self, x)
+
     def extend(self, t):
         for x in t:
             self.append(x)

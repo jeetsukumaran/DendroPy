@@ -23,6 +23,7 @@ Infrastructure for object serialization and management.
 import re
 import copy
 from dendropy.utility import bibtex
+from dendropy.utility import containers
 
 class CloningMetaClass(type):
     """
@@ -240,10 +241,10 @@ class Annotation(AnnotatedDataObject):
         self._name_prefix, self.name = Annotation.parse_prefixed_name(prefixed_name)
     prefixed_name = property(_get_prefixed_name, _set_prefixed_name)
 
-class AnnotationSet(set):
+class AnnotationSet(containers.OrderedSet):
 
     def __init__(self, target, *args):
-        set.__init__(self, *args)
+        containers.OrderedSet.__init__(self, *args)
         self.target = target
 
     def __str__(self):

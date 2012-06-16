@@ -3,7 +3,7 @@ Working with Metadata Annotations
 *********************************
 
 |DendroPy| provides a rich infrastructure for decorating most types of phylogenetic objects (e.g., the |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, and various |CharacterMatrix| classes) with metadata information.
-These phylogenetic objects have an attribute, :attr:`annotations`, that is an instance of the :class:`~dendropy.dataobject.base.AnnotationSet` class, which is an iterable (derived from :class:`set`) that serves to manage a collection of :class:`~dendropy.dataobject.base.Annotation` objects.
+These phylogenetic objects have an attribute, :attr:`annotations`, that is an instance of the :class:`~dendropy.dataobject.base.AnnotationSet` class, which is an iterable (derived from :class:`dendropy.utility.containers.OrderedSet`) that serves to manage a collection of :class:`~dendropy.dataobject.base.Annotation` objects.
 Each :class:`~dendropy.dataobject.base.Annotation` object tracks a single annotation element.
 These annotations will be rendered as ``meta`` elements when writing to NeXML format or ampersand-prepended comemnt strings when writing to NEXUS/NEWICK format.
 Note that full and robust expression of metadata annotations, including stable and consistent round-tripping of information, can only be achieved while in the NeXML format.
@@ -41,7 +41,7 @@ This class has the following attributes:
         Returns the name of this annotation with its namespace prefix (e.g. "dc:subject").
 
 These :class:`~dendropy.dataobject.base.Annotation` objects are typically collected and managed in a "annotations manager" container class, :class:`~dendropy.dataobject.base.AnnotationSet`.
-This is a specialization of :class:`set` whose elements are instances of :class:`~dendropy.dataobject.base.Annotation`.
+This is a specialization of :class:`dendropy.utility.containers.OrderedSet` whose elements are instances of :class:`~dendropy.dataobject.base.Annotation`.
 The full set of annotations associated with each object of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other phylogenetic data class types is available through the :attr:`annotations` attribute of those objects, which is an instance of :class:`~dendropy.dataobject.base.AnnotationSet`.
 The :class:`~dendropy.dataobject.base.AnnotationSet` includes the following additional methods to support the creation, access, and management of the :class:`~dendropy.dataobject.base.Annotation` object elements contained within it:
 
@@ -56,7 +56,7 @@ The :class:`~dendropy.dataobject.base.AnnotationSet` includes the following addi
 ..
     The fundamental unit of metadata in |DendroPy| is the :class:`~dendropy.dataobject.base.Annotation` object.
     Each :class:`~dendropy.dataobject.base.Annotation` object stores information regarding a single item of metadata, keeping track of, at a minimum, the name and value or content of the metadata item, which is accessible through the attributes ":attr:`~dendropy.dataobject.base.Annotation.name`" and  ":attr:`~dendropy.dataobject.base.Annotation.value`" respectively.
-    These :class:`~dendropy.dataobject.base.Annotation` objects are typically collected and managed in a "annotations manager" container class, :class:`~dendropy.dataobject.base.AnnotationSet`, which is a specialization of ":class:`set`".
+    These :class:`~dendropy.dataobject.base.Annotation` objects are typically collected and managed in a "annotations manager" container class, :class:`~dendropy.dataobject.base.AnnotationSet`, which is a specialization of ":class:`dendropy.utility.containers.OrderedSet`".
     Phylogenetic data objects of |DataSet|, |TaxonSet|, |Taxon| |TreeList|, |Tree|, various |CharacterMatrix| and other classes all have an attribute, ":attr:`annotations`", that represents an instance of the :class:`~dendropy.dataobject.base.AnnotationSet` class, and whose elements are :class:`~dendropy.dataobject.base.Annotation` objects that collectively make up the full set of annotations or metadata associated with that particular phylogenetic data object.
         The elements of the ":attr:`annotations`" attribute of phylogenetic data objects are objects of :class:`~dendropy.dataobject.base.Annotation` that collectively make up the full set of annotations or metadata associated with that particular phylogenetic data object.
 
@@ -520,7 +520,7 @@ In addition, the method call also supports some of the other customization argum
 Copying Metadata Annotations from One Phylogenetic Data Object to Another
 -------------------------------------------------------------------------
 
-As the :class:`~dendropy.dataobject.base.AnnotationSet` is derived from :class:`set`, it has the :meth:`set.add` and :meth:`set.update` methods available for direct addition of :class:`~dendropy.dataobject.base.Annotation` objects.
+As the :class:`~dendropy.dataobject.base.AnnotationSet` is derived from :class:`dendropy.utility.containers.OrderedSet`, it has the :meth:`:class:`dendropy.utility.containers.OrderedSet`dendropy.utility.containers.OrderedSet.add` and :meth:`:class:`dendropy.utility.containers.OrderedSet`dendropy.utility.containers.OrderedSet.update` methods available for direct addition of :class:`~dendropy.dataobject.base.Annotation` objects.
 The following example shows how to add metadata annotations associated with a |DataSet| object to all its |Tree| objects::
 
     import dendropy
