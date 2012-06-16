@@ -83,5 +83,10 @@ class TestContinuousCharMatrix(datatest.AnnotatedDataObjectVerificationTestCase)
         chars2 = copy.deepcopy(chars1)
         self.assertDistinctButEqualContinuousCharMatrix(chars1, chars2, distinct_taxa=False)
 
+    def testCopyConstruction(self):
+        chars1 = self.dataset.char_matrices[0]
+        chars2 = dendropy.ContinuousCharacterMatrix(chars1)
+        self.assertDistinctButEqualContinuousCharMatrix(chars1, chars2, distinct_taxa=False)
+
 if __name__ == "__main__":
     unittest.main()
