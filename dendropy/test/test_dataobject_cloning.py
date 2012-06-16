@@ -48,7 +48,7 @@ class TestTreeCloning(datatest.AnnotatedDataObjectVerificationTestCase):
         tree1 = self.dataset.tree_lists[0][0]
         tree1.update_splits()
         tree2 = copy.deepcopy(tree1)
-        # self.assertDistinctButEqualTree(tree1, tree2, distinct_taxa=False)
+        self.assertDistinctButEqualTree(tree1, tree2, distinct_taxa=False)
 
 
 class TestTreeListCloning(datatest.AnnotatedDataObjectVerificationTestCase):
