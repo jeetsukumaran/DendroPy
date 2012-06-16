@@ -110,6 +110,8 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             tree_list2 = dataset2.tree_lists[tsi]
             self.assertDistinctButEqualTreeList(tree_list1, tree_list2, **kwargs)
 
+        self.assertDistinctButEqualAnnotations(dataset1, dataset2, **kwargs)
+
     def assertDistinctButEqualTaxon(self, taxon1, taxon2, **kwargs):
         equal_oids = kwargs.get("equal_oids", None)
         ignore_underscore_substitution = kwargs.get("ignore_underscore_substitution", False)
@@ -125,6 +127,7 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             self.assertEqual(taxon1.oid, taxon2.oid)
         elif equal_oids is False:
             self.assertNotEqual(taxon1.oid, taxon2.oid)
+        self.assertDistinctButEqualAnnotations(taxon1, taxon2, **kwargs)
 
     def assertDistinctButEqualTaxonSet(self, taxon_set1, taxon_set2, **kwargs):
         equal_oids = kwargs.get("equal_oids", None)
@@ -156,8 +159,9 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                         self.assertEqual(oids1, oids2)
                     else:
                         self.assertNotEqual(oids1, oids2)
+            self.assertDistinctButEqualAnnotations(taxon_set1, taxon_set2, **kwargs)
         else:
-            self.assertEqual(taxon_set1, taxon_set2)
+            self.assertIs(taxon_set1, taxon_set2)
 
     def assertDistinctButEqualTreeList(self, tree_list1, tree_list2, **kwargs):
         """
@@ -170,10 +174,6 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         self.assertEqual(len(tree_list1), len(tree_list2))
         if distinct_taxa:
             self.assertIsNot(tree_list1.taxon_set, tree_list2.taxon_set)
-            self.assertDistinctButEqualTaxonSet(tree_list1.taxon_set, tree_list2.taxon_set, **kwargs)
-        else:
-            self.assertIs(tree_list1.taxon_set, tree_list2.taxon_set)
-        if distinct_taxa:
             self.assertDistinctButEqualTaxonSet(tree_list1.taxon_set, tree_list2.taxon_set, **kwargs)
         else:
             self.assertIs(tree_list1.taxon_set, tree_list2.taxon_set)
@@ -192,6 +192,7 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 self.assertDistinctButEqualTree(tree1, tree2, **kwargs)
             else:
                 self.assertIs(tree1, tree2)
+        self.assertDistinctButEqualAnnotations(tree_list1, tree_list2, **kwargs)
 
     def assertDistinctButEqualTree(self, tree1, tree2, **kwargs):
         """
@@ -264,6 +265,7 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 self.assertEqual(edge1.oid, edge2.oid)
             elif equal_oids is False:
                 self.assertNotEqual(edge1.oid, edge2.oid)
+        self.assertDistinctButEqualAnnotations(tree1, tree2, **kwargs)
 
     def assertDistinctButEqualStateAlphabetElement(self, sae1, sae2, **kwargs):
         equal_oids = kwargs.get("equal_oids", None)
@@ -283,6 +285,7 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 self.assertDistinctButEqualStateAlphabetElement(ms1, ms2, **kwargs)
         else:
             self.assertIs(sae2.member_states, None)
+        self.assertDistinctButEqualAnnotations(sae1, sae2, **kwargs)
 
     def assertDistinctButEqualStateAlphabet(self, state_alphabet1, state_alphabet2, **kwargs):
         equal_oids = kwargs.get("equal_oids", None)
@@ -300,6 +303,8 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         for state_idx, state1 in enumerate(state_alphabet1):
             state2 = state_alphabet2[state_idx]
             self.assertDistinctButEqualStateAlphabetElement(state1, state2)
+            self.assertDistinctButEqualAnnotations(state1, state2, **kwargs)
+        self.assertDistinctButEqualAnnotations(state_alphabet1, state_alphabet2, **kwargs)
 
     def assertDistinctButEqualContinuousCharMatrix(self, char_matrix1, char_matrix2, **kwargs):
         distinct_taxa = kwargs.get("distinct_taxa", True)
@@ -339,6 +344,9 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             for i, c1 in enumerate(vec1):
                 c2 = vec2[i]
                 self.assertAlmostEqual(c1.value, c2.value, 6)
+                self.assertDistinctButEqualAnnotations(c1, c2, **kwargs)
+            self.assertDistinctButEqualAnnotations(vec1, vec2, **kwargs)
+        self.assertDistinctButEqualAnnotations(char_matrix1, char_matrix2, **kwargs)
 
     def assertDistinctButEqualDiscreteCharMatrix(self, char_matrix1, char_matrix2, **kwargs):
         """
@@ -368,6 +376,7 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             for sai, sa1 in enumerate(char_matrix1.state_alphabets):
                 sa2 = char_matrix2.state_alphabets[sai]
                 self.assertDistinctButEqualStateAlphabet(sa1, sa2)
+                self.assertDistinctButEqualAnnotations(sa1, sa2, **kwargs)
         elif distinct_state_alphabets is False:
             for sai, sa1 in enumerate(char_matrix1.state_alphabets):
                 sa2 = char_matrix2.state_alphabets[sai]
@@ -381,6 +390,7 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 self.assertDistinctButEqualStateAlphabet(col1.state_alphabet, col2.state_alphabet)
             elif distinct_state_alphabets is False:
                 self.assertIs(col1.state_alphabet, col2.state_alphabet)
+            self.assertDistinctButEqualAnnotations(col1, col2, **kwargs)
         self.assertEqual(len(char_matrix1), len(char_matrix2))
 
         for ti, taxon1 in enumerate(char_matrix1):
@@ -388,6 +398,7 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             taxon2 = char_matrix2.taxon_set[ti]
             vec2 = char_matrix2[taxon2]
             self.logger.info("Comparing CharacterDataVector objects %d and %d" % (id(vec2), id(vec2)))
+            self.assertDistinctButEqualAnnotations(vec1, vec2, **kwargs)
             if distinct_taxa:
                 self.assertDistinctButEqualTaxon(taxon1, taxon2, **kwargs)
             else:
@@ -408,6 +419,7 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                     self.assertDistinctButEqualStateAlphabetElement(c1.value, c2.value)
                 elif distinct_state_alphabets is False:
                     self.assertIs(c1.value, c2.value)
+                self.assertDistinctButEqualAnnotations(c1, c2, **kwargs)
                 if not ignore_chartypes:
                     if c1.character_type is not None:
                         self.assertIsNot(c1.character_type, c2.character_type)
@@ -419,8 +431,10 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                         self.assertIn(c2.character_type.state_alphabet, char_matrix2.state_alphabets)
                         self.assertIn(c1.value, c1.character_type.state_alphabet)
                         self.assertIn(c2.value, c2.character_type.state_alphabet)
+                        self.assertDistinctButEqualAnnotations(c1, c2, **kwargs)
                     else:
                         self.assertIs(c2.character_type, None)
+        self.assertDistinctButEqualAnnotations(char_matrix1, char_matrix2, **kwargs)
 
     def assertDistinctButEqualCharMatrix(self, char_matrix1, char_matrix2, **kwargs):
         if isinstance(char_matrix1, dendropy.DiscreteCharacterMatrix):
@@ -429,6 +443,37 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             self.assertDistinctButEqualContinuousCharMatrix(char_matrix1, char_matrix2, **kwargs)
         else:
             raise NotImplementedError()
+
+    def verifyAnnotationsTarget(self, annotated):
+        self.assertIs(annotated.annotations.target, annotated)
+        for a in annotated.annotations:
+            if a.is_attribute:
+                self.assertIs(a._value[0], annotated)
+            self.verifyAnnotationsTarget(a)
+
+    def assertDistinctButEqualAnnotations(self, annotated1, annotated2, **kwargs):
+        if kwargs.get("ignore_annotations", False):
+            return
+        self.verifyAnnotationsTarget(annotated1)
+        self.verifyAnnotationsTarget(annotated2)
+        self.assertEqual(len(annotated1.annotations), len(annotated2.annotations))
+        self.assertTrue(annotated1.annotations is not annotated2.annotations)
+        equal_oids = kwargs.get("equal_oids", None)
+        for idx, a1 in enumerate(annotated1.annotations):
+            a2 = annotated2.annotations[idx]
+            self.assertEqual(a1.name, a2.name)
+            self.assertEqual(a1.value, a2.value)
+            self.assertEqual(a1.datatype_hint, a2.datatype_hint)
+            self.assertEqual(a1.name_prefix, a2.name_prefix)
+            self.assertEqual(a1.namespace, a2.namespace)
+            self.assertEqual(a1.is_attribute, a2.is_attribute)
+            self.assertEqual(a1.note_as_reference, a2.note_as_reference)
+            self.assertEqual(a1.is_hidden, a2.is_hidden)
+            self.assertEqual(a1.label, a2.label)
+            if equal_oids:
+                self.assertEqual(a1.oid, a2.oid)
+            else:
+                self.assertNotEqual(a1.oid, a2.oid)
 
     def text_to_label_symbol_tuples(self, text):
         """
