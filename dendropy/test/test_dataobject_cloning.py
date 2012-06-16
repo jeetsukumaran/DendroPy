@@ -50,6 +50,11 @@ class TestTreeCloning(datatest.AnnotatedDataObjectVerificationTestCase):
         tree2 = copy.deepcopy(tree1)
         self.assertDistinctButEqualTree(tree1, tree2, distinct_taxa=False)
 
+    def testTreeWithSplitsCopyConstruction(self):
+        tree1 = self.dataset.tree_lists[0][0]
+        tree1.update_splits()
+        tree2 = dendropy.Tree(tree1)
+        self.assertDistinctButEqualTree(tree1, tree2, distinct_taxa=False)
 
 class TestTreeListCloning(datatest.AnnotatedDataObjectVerificationTestCase):
 
