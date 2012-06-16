@@ -189,7 +189,7 @@ class NormalizedBitmaskDict(dict):
                     self[key] = val
 
     def __deepcopy__(self, memo):
-        o = NormalizedBitmaskDict()
+        o = NormalizedBitmaskDict(mask=self.mask)
         memo[id(self)] = o
         o.mask = self.mask
         for key, val in self.items():
