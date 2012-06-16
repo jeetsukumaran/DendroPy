@@ -44,17 +44,17 @@ class TestTreeCloning(datatest.AnnotatedDataObjectVerificationTestCase):
     #     rfdist = treecalc.robinson_foulds_distance(tree1, tree2)
     #     self.assertAlmostEqual(rfdist, 0)
 
-    def testDeepCopy(self):
+    def setUp(self):
         s = pathmap.tree_source_stream("pythonidae.annotated.nexml")
-        d = dendropy.DataSet.get_from_stream(s, "nexml")
-        tree1 = d.tree_lists[0][0]
+        self.dataset = dendropy.DataSet.get_from_stream(s, "nexml")
+
+    def testDeepCopy(self):
+        tree1 = self.dataset.tree_lists[0][0]
         tree2 = copy.deepcopy(tree1)
         self.assertDistinctButEqualTree(tree1, tree2, distinct_taxa=False)
 
     def testCopyConstruction(self):
-        s = pathmap.tree_source_stream("pythonidae.annotated.nexml")
-        d = dendropy.DataSet.get_from_stream(s, "nexml")
-        tree1 = d.tree_lists[0][0]
+        tree1 = self.dataset.tree_lists[0][0]
         tree2 = dendropy.Tree(tree1)
         self.assertDistinctButEqualTree(tree1, tree2, distinct_taxa=False)
 
