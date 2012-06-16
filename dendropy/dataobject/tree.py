@@ -116,8 +116,9 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
             tlst10.read_from_path("boot3.tre", "newick")
 
         """
+        specified_taxon_set = kwargs.get("taxon_set", None)
         TaxonSetLinked.__init__(self,
-                                taxon_set=kwargs.get("taxon_set", None),
+                                taxon_set=specified_taxon_set,
                                 label=kwargs.get("label", None),
                                 oid=kwargs.get("oid", None))
         iosys.Readable.__init__(self)
@@ -132,6 +133,8 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 if (stream is not None) or (schema is not None):
                     raise error.MultipleInitializationSourceError(class_name=self.__class__.__name__, arg=args[0])
                 if isinstance(args[0], TreeList):
+                    if specified_taxon_set is None:
+                        self.taxon_set = args[0].taxon_set
                     for t in args[0]:
                         if not isinstance(t, Tree):
                             raise ValueError("TreeList() requires TreeList or list of Tree objects as initialization argument in this context")
