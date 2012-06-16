@@ -21,6 +21,7 @@ This module handles the core definition of phylogenetic character data.
 """
 
 import copy
+import warnings
 from cStringIO import StringIO
 from dendropy.utility import error
 from dendropy.utility import iosys
@@ -595,11 +596,19 @@ class CharacterSubset(base.DataObject):
     def __iter__(self):
         return iter(self.character_indices)
 
+    def __deepcopy__(self, memo):
+        o = base.DataObject.__deepcopy__(self, memo)
+        memo[id(self)] = o
+        o.annotations = copy.deepcopy(self.annotations, memo)
+        memo[id(self.annotations)] = o.annotations
+
 ###############################################################################
 ## Base Character Matrix
 
 class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     "Character data container/manager manager."
+
+    __metaclass__ = base.CloningMetaClass
 
     def _parse_from_stream(cls, stream, schema, **kwargs):
         from dendropy.dataobject.dataset import DataSet
@@ -777,6 +786,8 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         return taxon_to_state_indices
 
     def clone_from(self, *args):
+        warnings.warn("Repopulating a CharacterMatrix is now deprecated. Instantiate a new instance from the source instead.",
+                DeprecationWarning)
         "\TODO: may need to check that we are not overwriting oid"
         if len(args) > 1:
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
@@ -786,7 +797,7 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 for k, v in ca.__dict__.iteritems():
                     if k not in ["annotations"]:
                         self.__dict__[k] = v
-                self.annotations = t.annotations
+                self.annotations = ca.annotations
             else:
                 raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         return self
@@ -800,6 +811,8 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         be specified using the `matrix_offset` keyword (defaults to 0, i.e., first
         character matrix).
         """
+        warnings.warn("Repopulating a CharacterMatrix is now deprecated. Instantiate a new instance from the source instead.",
+                DeprecationWarning)
         m = self.__class__._parse_from_stream(stream=stream,
                 schema=schema,
                 **kwargs)
@@ -887,8 +900,8 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         of columns given by the 0-based indices in `indices`.
         Note that this new matrix will still reference the same taxon set.
         """
-        clone = self.__class__()
-        clone.clone_from(self)
+        clone = self.__class__(self)
+        # clone.clone_from(self)
         for vec in clone.taxon_seq_map.values():
             for cell_idx in range(len(vec)-1, -1, -1):
                 if cell_idx not in indices:
@@ -1102,16 +1115,23 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 class ContinuousCharacterMatrix(CharacterMatrix):
     "Character data container/manager manager."
 
+    __metaclass__ = base.CloningMetaClass
+
     def __init__(self, *args, **kwargs):
         "See CharacterMatrix.__init__ documentation"
         CharacterMatrix.__init__(self, *args, **kwargs)
 
     def __deepcopy__(self, memo):
         o = TaxonSetLinked.__deepcopy__(self, memo)
+        for cs in self.character_subsets:
+            o.character_subsets = copy.deepcopy(cs, memo)
+        memo[id(self.character_subsets)] = o.character_subsets
         for k, v in self.__dict__.iteritems():
             if k not in ["taxon_set",
                          "_oid",
-                         "taxon_seq_map"]:
+                         "taxon_seq_map",
+                         "annotations",
+                         "character_subsets"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
         for taxon, cdv in self.taxon_seq_map.items():
             otaxon = memo[id(taxon)]
@@ -1124,6 +1144,8 @@ class ContinuousCharacterMatrix(CharacterMatrix):
                 ocdv.append(CharacterDataCell(value=cell.value, character_type=character_type))
             o.taxon_seq_map[otaxon] = ocdv
             memo[id(self.taxon_seq_map[taxon])] = o.taxon_seq_map[otaxon]
+        o.annotations = copy.deepcopy(self.annotations, memo)
+        memo[id(self.annotations)] = o.annotations
         return o
 
 class DiscreteCharacterMatrix(CharacterMatrix):
@@ -1132,6 +1154,8 @@ class DiscreteCharacterMatrix(CharacterMatrix):
     That adds the attributes self.state_alphabets (a list of alphabets)
     and self.default_state_alphabet
     """
+
+    __metaclass__ = base.CloningMetaClass
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
@@ -1165,6 +1189,8 @@ class DiscreteCharacterMatrix(CharacterMatrix):
 class StandardCharacterMatrix(DiscreteCharacterMatrix):
     "`standard` data."
 
+    __metaclass__ = base.CloningMetaClass
+
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
 
@@ -1176,10 +1202,15 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
 
     def __deepcopy__(self, memo):
         o = TaxonSetLinked.__deepcopy__(self, memo)
+        for cs in self.character_subsets:
+            o.character_subsets = copy.deepcopy(cs, memo)
+        memo[id(self.character_subsets)] = o.character_subsets
         for k, v in self.__dict__.iteritems():
             if k not in ["taxon_set",
                          "_oid",
-                         "taxon_seq_map"]:
+                         "taxon_seq_map",
+                         "character_subsets",
+                         "annotations"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
 
         for taxon, cdv in self.taxon_seq_map.items():
@@ -1193,7 +1224,8 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
                 ocdv.append(CharacterDataCell(value=memo[id(cell.value)], character_type=character_type))
             o.taxon_seq_map[otaxon] = ocdv
             memo[id(self.taxon_seq_map[taxon])] = o.taxon_seq_map[otaxon]
-
+        o.annotations = copy.deepcopy(self.annotations, memo)
+        memo[id(self.annotations)] = o.annotations
         return o
 
     def extend(self,
@@ -1223,6 +1255,8 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
 
 class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 
+    __metaclass__ = base.CloningMetaClass
+
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
 
@@ -1241,6 +1275,9 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
         o._default_symbol_state_map = self._default_symbol_state_map
         memo[id(self._default_symbol_state_map)] = o._default_symbol_state_map
         o.character_types = copy.deepcopy(self.character_types, memo)
+        for cs in self.character_subsets:
+            o.character_subsets = copy.deepcopy(cs, memo)
+        memo[id(self.character_subsets)] = o.character_subsets
         for taxon, cdv in self.taxon_seq_map.items():
             otaxon = memo[id(taxon)]
             ocdv = CharacterDataVector(oid=cdv.oid, label=cdv.label, taxon=otaxon)
@@ -1259,12 +1296,18 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
                          "default_state_alphabet",
                          "_default_symbol_state_map",
                          "taxon_seq_map",
-                         "character_types"]:
+                         "character_types",
+                         "character_subsets",
+                         "annotations"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
+        o.annotations = copy.deepcopy(self.annotations, memo)
+        memo[id(self.annotations)] = o.annotations
         return o
 
 class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "DNA nucleotide data."
+
+    __metaclass__ = base.CloningMetaClass
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
@@ -1280,6 +1323,8 @@ class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
 class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "RNA nucleotide data."
 
+    __metaclass__ = base.CloningMetaClass
+
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
 
@@ -1294,6 +1339,8 @@ class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
 class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Generic nucleotide data."
 
+    __metaclass__ = base.CloningMetaClass
+
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
         FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
@@ -1304,6 +1351,8 @@ class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
 
 class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Protein / amino acid data."
+
+    __metaclass__ = base.CloningMetaClass
 
     def __init__(self, *args, **kwargs):
         """
@@ -1318,6 +1367,8 @@ class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
 class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Restriction sites data."
 
+    __metaclass__ = base.CloningMetaClass
+
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
 
@@ -1331,6 +1382,8 @@ class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
 
 class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Infinite sites data."
+
+    __metaclass__ = base.CloningMetaClass
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.

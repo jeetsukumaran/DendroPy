@@ -24,6 +24,23 @@ import re
 import copy
 from dendropy.utility import bibtex
 
+class CloningMetaClass(type):
+    """
+    Allow cloning of objects using 'c = ClassName(o)' via deepcopy.
+    """
+
+    def __new__(cls, name, bases, dct):
+        c = type.__new__(cls, name, bases, dct)
+        return c
+
+    def __call__(cls, *args, **kwargs):
+        if len(args) == 1 and isinstance(args[0], cls):
+            b = copy.deepcopy(args[0])
+            return b
+        else:
+            b = type.__call__(cls, *args, **kwargs)
+            return b
+
 class DataObject(object):
     """
     Base class from which all classes that need to persist object attributes

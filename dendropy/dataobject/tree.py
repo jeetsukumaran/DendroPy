@@ -474,6 +474,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     root node as a node without `child_node` objects.
     """
 
+    __metaclass__ = base.CloningMetaClass
+
     def _parse_from_stream(cls, stream, schema, **kwargs):
         from dendropy.dataobject.dataset import DataSet
         collection_offset = kwargs.get("collection_offset", -1)
@@ -627,10 +629,11 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if isinstance(args[0], Node):
                 self.seed_node = args[0]
             elif isinstance(args[0], Tree):
-                self.clone_from(args[0])
-                if "taxon_set" in kwargs:
-                    self.taxon_set = kwargs["taxon_set"]
-                    self.reindex_subcomponent_taxa()
+                raise NotImplementedError
+                # self.clone_from(args[0])
+                # if "taxon_set" in kwargs:
+                #     self.taxon_set = kwargs["taxon_set"]
+                #     self.reindex_subcomponent_taxa()
             else:
                 raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
         else:
@@ -645,16 +648,16 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     ###########################################################################
     ## I/O
 
-    def clone_from(self, other):
-        """
-        Clones the structure and properties of `Tree` object `other`.
-        """
-        t = copy.deepcopy(other)
-        for k, v in t.__dict__.iteritems():
-            if k not in ["annotations"]:
-                self.__dict__[k] = v
-        self.annotations = t.annotations
-        return self
+    # def clone_from(self, other):
+    #     """
+    #     Clones the structure and properties of `Tree` object `other`.
+    #     """
+    #     t = copy.deepcopy(other)
+    #     for k, v in t.__dict__.iteritems():
+    #         if k not in ["annotations"]:
+    #             self.__dict__[k] = v
+    #     self.annotations = t.annotations
+    #     return self
 
     def __deepcopy__(self, memo):
         # we treat the taxa as immutable and copy the reference even in a deepcopy
@@ -663,6 +666,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if k not in ['taxon_set', "_oid", "annotations"]:
                 o.__dict__[k] = copy.deepcopy(v, memo)
         o.annotations = copy.deepcopy(self.annotations, memo)
+        memo[id(self.annotations)] = o.annotations
         return o
 
     def read(self, stream, schema, **kwargs):
