@@ -154,9 +154,8 @@ class TreeList(list, TaxonSetLinked, iosys.Readable, iosys.Writeable):
     def __deepcopy__(self, memo):
         # we treat the taxa as immutable and copy the reference even in a deepcopy
         o = TaxonSetLinked.__deepcopy__(self, memo)
-        for k, v in self.__dict__.iteritems():
-            if k not in ['taxon_set', "_oid"]:
-                o.__dict__[k] = copy.deepcopy(v, memo)
+        for tree in self:
+            o.append(copy.deepcopy(tree, memo))
         return o
 
     def read(self, stream, schema, **kwargs):
