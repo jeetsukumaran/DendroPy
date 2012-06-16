@@ -456,8 +456,12 @@ class CharacterDataCell(base.AnnotatedDataObject):
         'character_type' isa CharacterType or None
     """
 
-    def __init__(self, value=None, character_type=None):
-        base.AnnotatedDataObject.__init__(self)
+    def __init__(self,
+            value=None,
+            character_type=None,
+            label=None,
+            oid=None):
+        base.AnnotatedDataObject.__init__(self, label=label, oid=oid)
         self.value = value
         self.character_type = character_type
 
@@ -476,12 +480,10 @@ class CharacterDataCell(base.AnnotatedDataObject):
             return NotImplemented
         return not result
 
-    def __deepcopy__(self):
-        o = base.AnnotatedDataObject.__deepcopy__(self, memo)
-        memo[id(self)] = o
-        o.value = copy.deepcopy(self.value, memo)
-        o.character_type = copy.deepcopy(self.character_type, memo)
-        return o
+    ## default AnnotatedDataObject.__deepcopy__ works fine
+    # def __deepcopy__(self, memo):
+    #     o = base.AnnotatedDataObject.__deepcopy__(self, memo)
+    #     return o
 
 class CharacterDataVector(list, TaxonLinked):
     """A list of character data values for a taxon -- a row of a Character Matrix.
@@ -496,6 +498,12 @@ class CharacterDataVector(list, TaxonLinked):
         list.__init__(self, *args)
         TaxonLinked.__init__(self, **kwargs)
         self.string_sep = ''
+
+    def __deepcopy__(self, memo):
+        o = TaxonLinked.__deepcopy__(self, memo)
+        for v in self:
+            o.append(copy.deepcopy(v, memo))
+        return o
 
     def set_cell_by_index(self, column_index, cell):
         """
@@ -523,9 +531,17 @@ class CharacterDataMap(dict, base.AnnotatedDataObject):
     CharacterDataVectors objects as values.
     """
 
-    def __init__(self):
+    def __init__(self, label=None, oid=None):
         dict.__init__(self)
-        base.AnnotatedDataObject.__init__(self)
+        base.AnnotatedDataObject.__init__(self,
+                label=label,
+                oid=oid)
+
+    def __deepcopy__(self, memo):
+        o = base.AnnotatedDataObject.__deepcopy__(self, memo)
+        for k, v in self.iteritems():
+            o[k] = copy.deepcopy(v, memo)
+        return o
 
     def _get_vector_size(self):
         """
@@ -760,6 +776,14 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             self.oid = kwargs["oid"]
         if "label" in kwargs:
             self.label = kwargs["label"]
+
+    ## default AnnotatedDataObject.__deepcopy__ works fine
+    # def __deepcopy__(self, memo):
+    #     # memo[id(self.taxon_seq_map)] = None
+    #     # memo[id(self.character_types)] = None
+    #     # memo[id(self.character_subsets)] = None
+    #     o = TaxonSetLinked.__deepcopy__(self, memo)
+    #     return o
 
     def add_character_subset(self, char_subset):
         """
@@ -1142,33 +1166,6 @@ class ContinuousCharacterMatrix(CharacterMatrix):
     def __init__(self, *args, **kwargs):
         "See CharacterMatrix.__init__ documentation"
         CharacterMatrix.__init__(self, *args, **kwargs)
-
-    def __deepcopy__(self, memo):
-        o = TaxonSetLinked.__deepcopy__(self, memo)
-        for cs in self.character_subsets:
-            o.character_subsets = copy.deepcopy(cs, memo)
-        memo[id(self.character_subsets)] = o.character_subsets
-        for k, v in self.__dict__.iteritems():
-            if k not in ["taxon_set",
-                         "_oid",
-                         "taxon_seq_map",
-                         "annotations",
-                         "character_subsets"]:
-                o.__dict__[k] = copy.deepcopy(v, memo)
-        for taxon, cdv in self.taxon_seq_map.items():
-            otaxon = memo[id(taxon)]
-            ocdv = CharacterDataVector(oid=cdv.oid, label=cdv.label, taxon=otaxon)
-            for cell in cdv:
-                if cell.character_type is not None:
-                    character_type = memo[id(cell.character_type)]
-                else:
-                    character_type = None
-                ocdv.append(CharacterDataCell(value=cell.value, character_type=character_type))
-            o.taxon_seq_map[otaxon] = ocdv
-            memo[id(self.taxon_seq_map[taxon])] = o.taxon_seq_map[otaxon]
-        o.annotations = copy.deepcopy(self.annotations, memo)
-        memo[id(self.annotations)] = o.annotations
-        return o
 
 class DiscreteCharacterMatrix(CharacterMatrix):
     """Character data container/manager manager.

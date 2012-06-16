@@ -72,6 +72,16 @@ class TestTreeListCloning(datatest.AnnotatedDataObjectVerificationTestCase):
         tree_list2 = dendropy.TreeList(tree_list1)
         self.assertDistinctButEqualTreeList(tree_list1, tree_list2, distinct_taxa=False)
 
+class TestContinuousCharMatrix(datatest.AnnotatedDataObjectVerificationTestCase):
+
+    def setUp(self):
+        s = pathmap.char_source_stream("pythonidae_continuous.chars.nexus")
+        self.dataset = dendropy.DataSet.get_from_stream(s, "nexus")
+
+    def testDeepCopy(self):
+        chars1 = self.dataset.char_matrices[0]
+        chars2 = copy.deepcopy(chars1)
+        self.assertDistinctButEqualContinuousCharMatrix(chars1, chars2, distinct_taxa=False)
 
 if __name__ == "__main__":
     unittest.main()
