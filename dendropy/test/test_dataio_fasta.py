@@ -29,7 +29,7 @@ from dendropy.test.support import datagen
 from dendropy.test.support import datatest
 import dendropy
 
-class TestFasta(datatest.DataObjectVerificationTestCase):
+class TestFasta(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def testAsStrReading(self):
         dataset = dendropy.DataSet(

@@ -32,7 +32,7 @@ from dendropy.utility.error import DataParseError
 import dendropy
 from dendropy.dataio import newick
 
-class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
+class NewickBasicParseTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def testBadInit(self):
         self.assertRaises(DataParseError, dendropy.TreeList, stream=StringIO("(a,(b,c))a"), schema="NEWICK", suppress_internal_node_taxa=False)
@@ -95,7 +95,7 @@ class NewickBasicParseTest(datatest.DataObjectVerificationTestCase):
                 )
         self.assertEquals(len(trees), 1)
 
-class NewickEdgeLengthParsing(datatest.DataObjectVerificationTestCase):
+class NewickEdgeLengthParsing(datatest.AnnotatedDataObjectVerificationTestCase):
 
 
     def testEdgeLengths1(self):
@@ -183,7 +183,7 @@ T4:4.4e+8)'this is an internal node called "i2"':4.0e+1)i3:4.0E-4,
                 label = nd.label
             self.assertAlmostEquals(nd.edge.length, expected[label])
 
-class NewickTreeListWriterTest(datatest.DataObjectVerificationTestCase):
+class NewickTreeListWriterTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.ref_tree_list = datagen.reference_tree_list()
@@ -209,7 +209,7 @@ class NewickTreeListWriterTest(datatest.DataObjectVerificationTestCase):
                 distinct_taxa=False,
                 equal_oids=None)
 
-class NewickDocumentReaderTest(datatest.DataObjectVerificationTestCase):
+class NewickDocumentReaderTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         reference_tree_list = datagen.reference_tree_list()
@@ -229,7 +229,7 @@ class NewickDocumentReaderTest(datatest.DataObjectVerificationTestCase):
         test_dataset = dendropy.DataSet(stream=pathmap.tree_source_stream(datagen.reference_trees_filename(schema="newick")), schema="newick")
         self.assertDistinctButEqual(self.reference_dataset, test_dataset, ignore_taxon_order=True)
 
-class NewickDocumentWriterTest(datatest.DataObjectVerificationTestCase):
+class NewickDocumentWriterTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         reference_tree_list = datagen.reference_tree_list()
@@ -238,7 +238,7 @@ class NewickDocumentWriterTest(datatest.DataObjectVerificationTestCase):
     def testRoundTrip(self):
         self.roundTripDataSetTest(self.reference_dataset, "newick", ignore_taxon_order=True)
 
-class NewickInternalTaxaTest(datatest.DataObjectVerificationTestCase):
+class NewickInternalTaxaTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.tree_str = """(t1, (t2, (t3, (t4, t5)i1)i2)i3)i0;"""

@@ -34,7 +34,7 @@ from dendropy import treesplit
 from dendropy import treecalc
 
 
-class NexmlRoundTripTest(datatest.DataObjectVerificationTestCase):
+class NexmlRoundTripTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     ## Trees need special attention
     def assertDistinctButEqualTree(self, tree1, tree2, **kwargs):

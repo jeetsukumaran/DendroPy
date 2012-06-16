@@ -26,7 +26,7 @@ from dendropy.test.support import datagen
 from dendropy.test.support import datatest
 import dendropy
 
-class DataForTestingTest(datatest.DataObjectVerificationTestCase):
+class DataForTestingTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def testTreeFromStandard(self):
         tree1 = datagen.four_taxon_tree1()

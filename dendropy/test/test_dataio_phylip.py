@@ -532,14 +532,14 @@ class RelaxedInterleavedDnaTest(extendedtest.ExtendedTestCase):
         dataset = pr.read(StringIO(s))
         self.verify(dataset, underscores_to_spaces=True)
 
-class StrictDnaReadWrite(datatest.DataObjectVerificationTestCase):
+class StrictDnaReadWrite(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def test_round_trip(self):
         ds1 = dendropy.DataSet.get_from_string(strict_sequential_dna_valid_chars_clean_str, 'phylip', data_type='dna', strict=True)
         rw_kwargs = {'strict': True, 'data_type': 'dna'}
         self.roundTripDataSetTest(ds1, 'phylip', writer_kwargs=rw_kwargs, reader_kwargs=rw_kwargs)
 
-class RelaxedReadWrite(datatest.DataObjectVerificationTestCase):
+class RelaxedReadWrite(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def test_dna_round_trip(self):
         ds1 = datagen.reference_dna_matrix()

@@ -659,15 +659,15 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     #     self.annotations = t.annotations
     #     return self
 
-    def __deepcopy__(self, memo):
-        # we treat the taxa as immutable and copy the reference even in a deepcopy
-        o = TaxonSetLinked.__deepcopy__(self, memo)
-        for k, v in self.__dict__.iteritems():
-            if k not in ['taxon_set', "_oid", "annotations"]:
-                o.__dict__[k] = copy.deepcopy(v, memo)
-        o.annotations = copy.deepcopy(self.annotations, memo)
-        memo[id(self.annotations)] = o.annotations
-        return o
+    # def __deepcopy__(self, memo):
+    #     # we treat the taxa as immutable and copy the reference even in a deepcopy
+    #     o = TaxonSetLinked.__deepcopy__(self, memo)
+    #     for k, v in self.__dict__.iteritems():
+    #         if k not in ['taxon_set', "_oid", "annotations"]:
+    #             o.__dict__[k] = copy.deepcopy(v, memo)
+    #     o.annotations = copy.deepcopy(self.annotations, memo)
+    #     memo[id(self.annotations)] = o.annotations
+    #     return o
 
     def read(self, stream, schema, **kwargs):
         """
@@ -2171,14 +2171,11 @@ class Node(TaxonLinked):
         self.comments = []
 
     def __deepcopy__(self, memo):
+        memo[id(self._child_nodes)] = []
         o = TaxonLinked.__deepcopy__(self, memo)
-        for k, v in self.__dict__.iteritems():
-            if not k in ['_child_nodes', '_taxon', "_oid"]:
-                o.__dict__[k] = copy.deepcopy(v, memo)
-        for c in self.child_nodes():
-            o.add_child(copy.deepcopy(c, memo))
         memo[id(self._child_nodes)] = o._child_nodes
-        memo[id(self._oid)] = o._oid
+        for c in self._child_nodes:
+            o.add_child(copy.deepcopy(c, memo))
         return o
 
     ###########################################################################
@@ -2883,7 +2880,7 @@ class Node(TaxonLinked):
 ##############################################################################
 ## Edge
 
-class Edge(base.DataObject):
+class Edge(base.AnnotatedDataObject):
     """
     An edge on a tree. This class implements only the core
     functionality needed for trees.
@@ -2902,7 +2899,7 @@ class Edge(base.DataObject):
         __init__ creates an edge from tail_node to head_node.  Modified from
         arbol.
         """
-        base.DataObject.__init__(self, label=label, oid=oid)
+        base.AnnotatedDataObject.__init__(self, label=label, oid=oid)
         self.tail_node = tail_node
         self.head_node = head_node
         self.rootedge = rootedge

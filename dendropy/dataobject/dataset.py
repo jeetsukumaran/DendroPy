@@ -25,7 +25,7 @@ from cStringIO import StringIO
 from dendropy.utility import iosys
 from dendropy.utility import containers
 from dendropy.utility import error
-from dendropy.dataobject.base import DataObject
+from dendropy.dataobject.base import AnnotatedDataObject
 from dendropy.dataobject.taxon import TaxonSet
 from dendropy.dataobject.tree import TreeList
 from dendropy.dataobject.char import CharacterMatrix
@@ -33,7 +33,7 @@ from dendropy.dataobject.char import CharacterMatrix
 ###############################################################################
 ## DataSet
 
-class DataSet(DataObject, iosys.Readable, iosys.Writeable):
+class DataSet(AnnotatedDataObject, iosys.Readable, iosys.Writeable):
     """
     The main data manager, consisting of a lists of taxa, trees, and character
     phylogenetic data objects, as well as methods to create, populate, access,
@@ -60,7 +60,7 @@ class DataSet(DataObject, iosys.Readable, iosys.Writeable):
             - keyword arguments that supply a file-like object (`stream`) to be parsed and a string (`schema`) specifying the schema of the data in the file-like object.
 
         """
-        DataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
+        AnnotatedDataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
         iosys.Writeable.__init__(self)
         iosys.Readable.__init__(self)
         self.taxon_sets = containers.OrderedSet()

@@ -92,7 +92,7 @@ class TestExtendSequencesAppend(TestCharStruct):
                 self.assertEqual(len(self.cb1[t]), 20)
                 self.assertEqual(self.cb1[t].symbols_as_string(), "AAAAAAAAAACCCCCCCCCC")
 
-class DnaMatrixTest(datatest.DataObjectVerificationTestCase):
+class DnaMatrixTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.char_matrix1 = datagen.reference_dna_matrix()
@@ -106,7 +106,7 @@ class DnaMatrixTest(datatest.DataObjectVerificationTestCase):
             distinct_state_alphabets=False,
             distinct_taxa=False)
 
-class StandardMatrixTest(datatest.DataObjectVerificationTestCase):
+class StandardMatrixTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.char_matrix1 = datagen.reference_standard_matrix()
@@ -120,7 +120,7 @@ class StandardMatrixTest(datatest.DataObjectVerificationTestCase):
             distinct_state_alphabets=True,
             distinct_taxa=False)
 
-class CharMatrixReadTest(datatest.DataObjectVerificationTestCase):
+class CharMatrixReadTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.reference_dataset = datagen.reference_single_taxonset_dataset()
@@ -184,7 +184,7 @@ class CharMatrixReadTest(datatest.DataObjectVerificationTestCase):
             distinct_state_alphabets=False,
             distinct_taxa=False)
 
-class CharMatrixWriteTest(datatest.DataObjectVerificationTestCase):
+class CharMatrixWriteTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def testDnaRountTripDistinctTaxa(self):
         c1 = datagen.reference_dna_matrix()

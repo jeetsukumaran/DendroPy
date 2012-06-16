@@ -28,7 +28,7 @@ from dendropy.test.support import datagen
 from dendropy.test.support import pathmap
 import dendropy
 
-class TreeListCreateTest(datatest.DataObjectVerificationTestCase):
+class TreeListCreateTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.tree_list1 = datagen.reference_tree_list()

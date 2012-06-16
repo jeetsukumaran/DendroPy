@@ -21,6 +21,7 @@ This module provides classes and methods for managing taxa.
 """
 
 import sys
+import copy
 import math
 from cStringIO import StringIO
 from dendropy.dataobject import base
@@ -45,38 +46,46 @@ def new_taxon_set(ntax=10, label_func=None):
         taxon_set.new_taxon(label=label_func(i+1))
     return taxon_set
 
-class TaxonLinked(base.DataObject):
+class TaxonLinked(base.AnnotatedDataObject):
     """
     Provides infrastructure for maintaining link/reference to a Taxon
     object.
     """
 
     def __init__(self, taxon=None, label=None, oid=None):
-        base.DataObject.__init__(self, label=label, oid=oid)
+        base.AnnotatedDataObject.__init__(self, label=label, oid=oid)
         self.taxon = taxon
 
-    def __deepcopy__(self, memo):
-        """
-        By default, deep copies of non-DataSet data objects do *not* deep-copy
-        the taxa, and id's of all taxon set objects are mapped to self. This
-        can be overridden by pre-populating memo with appropriate clones.
-        """
-        if id(self.taxon) in memo:
-            o = self.__class__(taxon=memo[id(self.taxon)], label=self.label)
-        else:
-            o = self.__class__(taxon=self.taxon, label=self.label)
-            memo[id(self.taxon)] = o.taxon
-        memo[id(self)] = o
-        memo[id(self._oid)] = o._oid
-        return o
+    # def __deepcopy__(self, memo):
+    #     """
+    #     By default, deep copies of non-DataSet data objects do *not* deep-copy
+    #     the taxa, and id's of all taxon set objects are mapped to self. This
+    #     can be overridden by pre-populating memo with appropriate clones.
+    #     """
+    #     if id(self.taxon) in memo:
+    #         o = self.__class__(taxon=memo[id(self.taxon)], label=self.label)
+    #     else:
+    #         o = self.__class__(taxon=self.taxon, label=self.label)
+    #         memo[id(self.taxon)] = o.taxon
+    #     memo[id(self)] = o
+    #     memo[id(self.label)] = o.label
+    #     memo[id(self._oid)] = o._oid
+    #     for k, v in self.__dict__.iteritems():
+    #         if k not in ["_oid",
+    #                 "label",
+    #                 "taxon"]:
+    #             self.__dict__[k] = copy.deepcopy(v)
+    #     # o.annotations = copy.deepcopy(self.annotations)
+    #     # memo[id(self.annotations)] = o.annotations
+    #     return o
 
-class TaxonSetLinked(base.DataObject):
+class TaxonSetLinked(base.AnnotatedDataObject):
     """
     Provides infrastructure for the maintenance of references to taxa.
     """
 
     def __init__(self, **kwargs):
-        base.DataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
+        base.AnnotatedDataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
         if "taxon_set" not in kwargs or kwargs["taxon_set"] is None:
             self.taxon_set = TaxonSet()
         else:
@@ -104,24 +113,31 @@ class TaxonSetLinked(base.DataObject):
         """
         pass
 
-    def __deepcopy__(self, memo):
-        """
-        By default, deep copies of non-DataSet data objects do *not* deep-copy
-        the taxa, and id's of all taxon set objects are mapped to self. This
-        can be overridden by pre-populating memo with appropriate clones.
-        """
-        if id(self.taxon_set) not in memo:
-            memo[id(self.taxon_set)] = self.taxon_set
-        o = self.__class__(label=self.label,
-                oid=None,
-                taxon_set=memo[id(self.taxon_set)])
-        memo[id(self)] = o
-        for i, t in enumerate(self.taxon_set):
-            if id(t) not in memo:
-                memo[id(t)] = o.taxon_set[i]
-        return o
+    # def __deepcopy__(self, memo):
+    #     """
+    #     By default, deep copies of non-DataSet data objects do *not* deep-copy
+    #     the taxa, and id's of all taxon set objects are mapped to self. This
+    #     can be overridden by pre-populating memo with appropriate clones.
+    #     """
+    #     if id(self.taxon_set) not in memo:
+    #         memo[id(self.taxon_set)] = self.taxon_set
+    #     o = self.__class__(label=self.label,
+    #             oid=None,
+    #             taxon_set=memo[id(self.taxon_set)])
+    #     memo[id(self)] = o
+    #     for i, t in enumerate(self.taxon_set):
+    #         if id(t) not in memo:
+    #             memo[id(t)] = o.taxon_set[i]
+    #     for k, v in self.__dict__.iteritems():
+    #         if k not in ["_oid",
+    #                 "label",
+    #                 "taxon_set"]:
+    #             self.__dict__[k] = copy.deepcopy(v)
+    #     # o.annotations = copy.deepcopy(self.annotations)
+    #     # memo[id(self.annotations)] = o.annotations
+    #     return o
 
-class TaxonSet(containers.OrderedSet, base.DataObject):
+class TaxonSet(containers.OrderedSet, base.AnnotatedDataObject):
     """
     Primary manager for collections of `Taxon` objects.
     """
@@ -144,7 +160,7 @@ class TaxonSet(containers.OrderedSet, base.DataObject):
         label is constructed and added to the set.
         """
         containers.OrderedSet.__init__(self)
-        base.DataObject.__init__(self, oid=kwargs.get('oid'), label=kwargs.get('label'))
+        base.AnnotatedDataObject.__init__(self, oid=kwargs.get('oid'), label=kwargs.get('label'))
         if len(args) > 1:
             raise TypeError("TaxonSet() takes at most 1 non-keyword argument (%d given)" % len(args))
         elif len(args) == 1:
@@ -158,15 +174,13 @@ class TaxonSet(containers.OrderedSet, base.DataObject):
         self._is_mutable = kwargs.get('is_mutable', True) # immutable constraints not fully implemented -- only enforced at the add_taxon stage)
 
     def __deepcopy__(self, memo):
-        o = self.__class__(list(self), label=self.label, is_mutable=self._is_mutable)
-        # o = base.DataObject.__deepcopy__(self, memo)
-        # for t in self:
-        #     self.append(t)
-        for k, v in self.__dict__.iteritems():
-            if k not in ["_oid", "label"]:
-                o.__dict__[k] = copy.deepcopy(v)
-        memo[id(self)] = o
-        return o
+        """
+        By default, deep copies of non-DataSet data objects do *not* deep-copy
+        the taxa, and id's of all taxon set objects are mapped to self. This
+        can be overridden by pre-populating memo with appropriate clones.
+        """
+        memo[id(self)] = self
+        return self
 
     def __getitem__(self, i):
         if isinstance(i, int):
@@ -442,13 +456,17 @@ class TaxonSet(containers.OrderedSet, base.DataObject):
             output.write(s)
         return s
 
-class Taxon(base.DataObject):
+class Taxon(base.AnnotatedDataObject):
     """
     A taxon associated with a sequence or a node on a tree.
     """
 
     def __deepcopy__(self, memo):
-        "Should not be copied"
+        """
+        By default, deep copies of non-DataSet data objects do *not* deep-copy
+        the taxa, and id's of all taxon set objects are mapped to self. This
+        can be overridden by pre-populating memo with appropriate clones.
+        """
         memo[id(self)] = self
         return self
 
@@ -463,7 +481,7 @@ class Taxon(base.DataObject):
         __init__ can take the kwargs needed by base.IdTagged, or the label keyword
         can be inferred from the label of an unnamed argument
         """
-        base.DataObject.__init__(self, label=label, oid=oid)
+        base.AnnotatedDataObject.__init__(self, label=label, oid=oid)
         if taxon is not None:
             self.label = taxon.label
         else:
@@ -643,7 +661,7 @@ class TaxonSetPartition(TaxonSetLinked):
                 self.subset_map[subset_id].add(t)
         return self.subsets()
 
-class TaxonSetMapping(base.DataObject):
+class TaxonSetMapping(base.AnnotatedDataObject):
     """
     A many-to-one mapping of ``Taxon`` objects (e.g., gene taxa to population/species taxa).
     """
@@ -737,7 +755,7 @@ class TaxonSetMapping(base.DataObject):
                 keys, and the corresponding ``Taxon`` object from the range
                 taxa as values.
         """
-        base.DataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
+        base.AnnotatedDataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
         self.forward = {}
         self.reverse = {}
         if "mapping_func" in kwargs:

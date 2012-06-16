@@ -29,16 +29,16 @@ from dendropy.utility import containers
 from dendropy.dataobject import base
 from dendropy.dataobject.taxon import TaxonLinked, TaxonSetLinked, TaxonSet
 
-class ContinuousCharElement(base.DataObject):
+class ContinuousCharElement(base.AnnotatedDataObject):
     def __init__(self, value, column_def,  **kwargs):
-        base.DataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
+        base.AnnotatedDataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
         self.value = value
         self.column_def = column_def
 
 ###############################################################################
 ## State Alphabet Infrastructure
 
-class StateAlphabetElement(base.DataObject):
+class StateAlphabetElement(base.AnnotatedDataObject):
     """
     A character state definition, which can either be a fundamental state or
     a mapping to a set of other character states (for polymorphic or ambiguous
@@ -57,7 +57,7 @@ class StateAlphabetElement(base.DataObject):
                  token=None,
                  multistate=SINGLE_STATE,
                  member_states=None):
-        base.DataObject.__init__(self, label=label, oid=oid)
+        base.AnnotatedDataObject.__init__(self, label=label, oid=oid)
         self.symbol = symbol
         self.token = token
         self.multistate = multistate
@@ -103,12 +103,20 @@ class StateAlphabetElement(base.DataObject):
 
     fundamental_tokens = property(_get_fundamental_tokens)
 
-class StateAlphabet(base.DataObject, list):
+    def __deepcopy__(self, memo):
+        o = base.AnnotatedDataObject.__deepcopy__(self, memo)
+        o.symbol = self.symbol
+        o.token = self.token
+        o.multistate = self.multistate
+        o.member_states = copy.deepcopy(self.member_states)
+        return o
+
+class StateAlphabet(base.AnnotatedDataObject, list):
 
     "A list of states available for a particular character type/format."
 
     def __init__(self, *args, **kwargs):
-        base.DataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
+        base.AnnotatedDataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
         list.__init__(self, *args)
         self.missing = None
         self.symbol_synonyms = {}
@@ -408,14 +416,14 @@ INFINITE_SITES_STATE_ALPHABET = InfiniteSitesStateAlphabet()
 ###############################################################################
 ## Data Containers
 
-class CharacterType(base.DataObject):
+class CharacterType(base.AnnotatedDataObject):
     """
     A character format or type of a particular column: i.e., maps
     a particular set of character state definitions to a column in a character matrix.
     """
 
     def __init__(self, *args, **kwargs):
-        base.DataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
+        base.AnnotatedDataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
         self._state_alphabet = None
         self.id_state_map = None
         self.state_alphabet = kwargs.get("state_alphabet", None)
@@ -432,7 +440,14 @@ class CharacterType(base.DataObject):
 
     state_alphabet = property(_get_state_alphabet, _set_state_alphabet)
 
-class CharacterDataCell(base.DataObject):
+    def __deepcopy__(self, memo):
+        o = base.AnnotatedDataObject.__deepcopy__(self, memo)
+        memo[id(self)] = o
+        o._state_alphabet = self._state_alphabet
+        o.id_state_map = dict(o.id_state_map)
+        return o
+
+class CharacterDataCell(base.AnnotatedDataObject):
     """
     A container for that holds the value for a particular cell in a matrix.
 
@@ -442,7 +457,7 @@ class CharacterDataCell(base.DataObject):
     """
 
     def __init__(self, value=None, character_type=None):
-        base.DataObject.__init__(self)
+        base.AnnotatedDataObject.__init__(self)
         self.value = value
         self.character_type = character_type
 
@@ -460,6 +475,13 @@ class CharacterDataCell(base.DataObject):
         if result is NotImplemented:
             return NotImplemented
         return not result
+
+    def __deepcopy__(self):
+        o = base.AnnotatedDataObject.__deepcopy__(self, memo)
+        memo[id(self)] = o
+        o.value = copy.deepcopy(self.value, memo)
+        o.character_type = copy.deepcopy(self.character_type, memo)
+        return o
 
 class CharacterDataVector(list, TaxonLinked):
     """A list of character data values for a taxon -- a row of a Character Matrix.
@@ -495,7 +517,7 @@ class CharacterDataVector(list, TaxonLinked):
     def __str__(self):
         return str(self.symbols_as_string())
 
-class CharacterDataMap(dict, base.DataObject):
+class CharacterDataMap(dict, base.AnnotatedDataObject):
     """
     An annotable dictionary with Taxon objects as keys and
     CharacterDataVectors objects as values.
@@ -503,7 +525,7 @@ class CharacterDataMap(dict, base.DataObject):
 
     def __init__(self):
         dict.__init__(self)
-        base.DataObject.__init__(self)
+        base.AnnotatedDataObject.__init__(self)
 
     def _get_vector_size(self):
         """
@@ -573,7 +595,7 @@ class CharacterDataMap(dict, base.DataObject):
 ###############################################################################
 ## Subset of Character (Columns)
 
-class CharacterSubset(base.DataObject):
+class CharacterSubset(base.AnnotatedDataObject):
     """
     Tracks definition of a subset of characters.
     """
@@ -587,7 +609,7 @@ class CharacterSubset(base.DataObject):
                of column positions that constitute this subset.
 
         """
-        base.DataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
+        base.AnnotatedDataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
         self.character_indices = set(kwargs.get("character_indices", []))
 
     def __len__(self):
@@ -597,7 +619,7 @@ class CharacterSubset(base.DataObject):
         return iter(self.character_indices)
 
     def __deepcopy__(self, memo):
-        o = base.DataObject.__deepcopy__(self, memo)
+        o = base.AnnotatedDataObject.__deepcopy__(self, memo)
         memo[id(self)] = o
         o.annotations = copy.deepcopy(self.annotations, memo)
         memo[id(self.annotations)] = o.annotations
@@ -1204,14 +1226,18 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
         o = TaxonSetLinked.__deepcopy__(self, memo)
         for cs in self.character_subsets:
             o.character_subsets = copy.deepcopy(cs, memo)
+        o.state_alphabets = [s for s in self.state_alphabets]
+        memo[id(self.state_alphabets)] = o.state_alphabets
         memo[id(self.character_subsets)] = o.character_subsets
         for k, v in self.__dict__.iteritems():
             if k not in ["taxon_set",
                          "_oid",
                          "taxon_seq_map",
                          "character_subsets",
+                         "state_alphabets",
                          "annotations"]:
-                o.__dict__[k] = copy.deepcopy(v, memo)
+                o.__dict__[k] = copy.deepcopy(v)
+                # memo[id(self.__dict__[k])] = o.__dict__[k]
 
         for taxon, cdv in self.taxon_seq_map.items():
             otaxon = memo[id(taxon)]

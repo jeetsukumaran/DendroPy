@@ -30,7 +30,7 @@ from dendropy.test.support import datatest
 from dendropy.test.support import datagen
 import dendropy
 
-class DataSetCreateTest(datatest.DataObjectVerificationTestCase):
+class DataSetCreateTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.dataset = datagen.reference_single_taxonset_dataset()
@@ -74,7 +74,7 @@ class DataSetCreateTest(datatest.DataObjectVerificationTestCase):
         ds2 = dendropy.DataSet(ds1)
         self.assertDistinctButEqual(ds1, ds2)
 
-class DataSetTaxonManagement(datatest.DataObjectVerificationTestCase):
+class DataSetTaxonManagement(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def testMultiTaxonSet(self):
         d = dendropy.DataSet()

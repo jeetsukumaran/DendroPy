@@ -825,7 +825,7 @@ class NexmlWriter(iosys.DataWriter):
                     raise Exception("Taxon without ID")
                 if taxon.label:
                     parts.append('label=%s' % _protect_attr(taxon.label))
-                if isinstance(taxon, dendropy.DataObject) and len(taxon.annotations) > 0:
+                if isinstance(taxon, dendropy.AnnotatedDataObject) and len(taxon.annotations) > 0:
                     dest.write("<%s>\n" % ' '.join(parts))
                     # self.write_extensions(taxon, dest, indent_level=indent_level+2)
                     self.write_annotations(taxon, dest, indent_level=indent_level+2)
@@ -1056,7 +1056,7 @@ class NexmlWriter(iosys.DataWriter):
                             v = str(cell.value)
                         parts.append('state="%s"' % v)
                         dest.write(' '.join(parts))
-                        if isinstance(cell, dendropy.DataObject) and len(cell.annotations) > 0:
+                        if isinstance(cell, dendropy.AnnotatedDataObject) and len(cell.annotations) > 0:
                             dest.write('>\n')
                             # self.write_extensions(cell, dest, indent_level=indent_level+4)
                             self.write_annotations(cell, dest, indent_level=indent_level+4)

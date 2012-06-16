@@ -35,7 +35,7 @@ from dendropy import treesplit
 from dendropy import treecalc
 
 
-class NexmlAnnotations(datatest.DataObjectVerificationTestCase):
+class NexmlAnnotations(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.tree_src_path = pathmap.tree_source_path("treebase_s373.xml")

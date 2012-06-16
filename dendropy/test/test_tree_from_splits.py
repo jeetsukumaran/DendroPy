@@ -30,7 +30,7 @@ import dendropy
 
 _LOG = get_logger(__name__)
 
-class NexusTreeListReaderTest(datatest.DataObjectVerificationTestCase):
+class NexusTreeListReaderTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def testReferenceTree(self):
         ref_tree_list = datagen.reference_tree_list()

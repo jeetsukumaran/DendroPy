@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<nex:nexml
+    version="0.9"
+    xsi:schemaLocation="http://www.nexml.org/2009"
+    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+    xmlns:dendropy="http://packages.python.org/DendroPy/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns="http://www.nexml.org/2009"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:nex="http://www.nexml.org/2009"
+>
+    <meta xsi:type="nex:LiteralMeta" property="dendropy:description" content="composite dataset of Pythonid sequences and trees" id="meta4320371728" />
+    <meta xsi:type="nex:ResourceMeta" rel="dc:subject" href="Pythonidae" />
+    <otus id="x4320344648">
+        <meta xsi:type="nex:ResourceMeta" rel="dc:subject" href="Pythonidae" />
+        <otu id="x4320372304" label="Python regius">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/51751" />
+        </otu>
+        <otu id="x4320372368" label="Python sebae">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/51752" />
+        </otu>
+        <otu id="x4320372432" label="Python molurus">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/51750" />
+        </otu>
+        <otu id="x4320372496" label="Python curtus">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/143436" />
+        </otu>
+        <otu id="x4320372560" label="Morelia bredli">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/461327" />
+        </otu>
+        <otu id="x4320372624" label="Morelia spilota">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/51896" />
+        </otu>
+        <otu id="x4320372688" label="Morelia tracyae">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/129332" />
+        </otu>
+        <otu id="x4320372752" label="Morelia clastolepis">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/129329" />
+        </otu>
+        <otu id="x4320372816" label="Morelia kinghorni">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/129330" />
+        </otu>
+        <otu id="x4320372880" label="Morelia nauta">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/129331" />
+        </otu>
+        <otu id="x4320372944" label="Morelia amethistina">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/51895" />
+        </otu>
+        <otu id="x4320373072" label="Morelia oenpelliensis">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/461329" />
+        </otu>
+        <otu id="x4320373136" label="Antaresia maculosa">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/51891" />
+        </otu>
+        <otu id="x4320373264" label="Antaresia perthensis">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/461324" />
+        </otu>
+        <otu id="x4320373328" label="Antaresia stimsoni">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/461325" />
+        </otu>
+        <otu id="x4320373392" label="Antaresia childreni">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/51888" />
+        </otu>
+        <otu id="x4320373456" label="Morelia carinata">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/461328" />
+        </otu>
+        <otu id="x4320373520" label="Morelia viridisN">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/129333" />
+        </otu>
+        <otu id="x4320373584" label="Morelia viridisS">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/129333" />
+        </otu>
+        <otu id="x4320373648" label="Apodora papuana">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/129310" />
+        </otu>
+        <otu id="x4320373712" label="Liasis olivaceus">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/283338" />
+        </otu>
+        <otu id="x4320373776" label="Liasis fuscus">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/129327" />
+        </otu>
+        <otu id="x4320373840" label="Liasis mackloti">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/51889" />
+        </otu>
+        <otu id="x4320373968" label="Antaresia melanocephalus">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/51883" />
+        </otu>
+        <otu id="x4320374032" label="Antaresia ramsayi">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/461326" />
+        </otu>
+        <otu id="x4320374096" label="Liasis albertisii">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/129326" />
+        </otu>
+        <otu id="x4320374160" label="Bothrochilus boa">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/461341" />
+        </otu>
+        <otu id="x4320374224" label="Morelia boeleni">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/129328" />
+        </otu>
+        <otu id="x4320374288" label="Python timoriensis">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/51753" />
+        </otu>
+        <otu id="x4320374352" label="Python reticulatus">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/37580" />
+        </otu>
+        <otu id="x4320374416" label="Xenopeltis unicolor">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/196253" />
+        </otu>
+        <otu id="x4320374480" label="Candoia aspera">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/51853" />
+        </otu>
+        <otu id="x4320374544" label="Loxocemus bicolor">
+            <meta xsi:type="nex:ResourceMeta" rel="skos:closeMatch" href="http://purl.uniprot.org/taxonomy/39078" />
+        </otu>
+    </otus>
+    <trees id="x4320345352" otus="x4320344648">
+        <tree id="x4320374608" label="0" xsi:type="nex:FloatTree">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:treeEstimator" content="RAxML" id="meta4320372112" />
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:substitutionModel" content="GTR+G+I" id="meta4320372176" />
+            <node id="x4320407696" />
+            <node id="x4320408016" />
+            <node id="x4320408144" />
+            <node id="x4320408272" otu="x4320372304" />
+            <node id="x4320408400" />
+            <node id="x4320408528" />
+            <node id="x4320408656" otu="x4320372368" />
+            <node id="x4320408784" otu="x4320372432" />
+            <node id="x4320408912" otu="x4320372496" />
+            <node id="x4320409040" />
+            <node id="x4320409168" />
+            <node id="x4320409296" />
+            <node id="x4320409424" />
+            <node id="x4320409552" />
+            <node id="x4320409680" otu="x4320372560" />
+            <node id="x4320409808" otu="x4320372624" />
+            <node id="x4320409936" />
+            <node id="x4320410064" />
+            <node id="x4320410192" otu="x4320372688" />
+            <node id="x4320410320" />
+            <node id="x4320410448" />
+            <node id="x4320410576" otu="x4320372752" />
+            <node id="x4320410704" />
+            <node id="x4320410832" otu="x4320372816" />
+            <node id="x4320410960" otu="x4320372880" />
+            <node id="x4320411088" otu="x4320372944" />
+            <node id="x4320411216" otu="x4320373072" />
+            <node id="x4320411344" />
+            <node id="x4320411472" />
+            <node id="x4320411600" otu="x4320373136" />
+            <node id="x4320428176" />
+            <node id="x4320428304" otu="x4320373264" />
+            <node id="x4320428432" />
+            <node id="x4320428560" otu="x4320373328" />
+            <node id="x4320428688" otu="x4320373392" />
+            <node id="x4320428816" />
+            <node id="x4320428944" otu="x4320373456" />
+            <node id="x4320429072" />
+            <node id="x4320429200" otu="x4320373520" />
+            <node id="x4320429328" otu="x4320373584" />
+            <node id="x4320429456" />
+            <node id="x4320429584" />
+            <node id="x4320429712" />
+            <node id="x4320429840" />
+            <node id="x4320429968" />
+            <node id="x4320430096" otu="x4320373648" />
+            <node id="x4320430224" otu="x4320373712" />
+            <node id="x4320430352" />
+            <node id="x4320430480" otu="x4320373776" />
+            <node id="x4320430608" otu="x4320373840" />
+            <node id="x4320430736" />
+            <node id="x4320430864" otu="x4320373968" />
+            <node id="x4320430992" otu="x4320374032" />
+            <node id="x4320431120" />
+            <node id="x4320431248" otu="x4320374096" />
+            <node id="x4320431376" otu="x4320374160" />
+            <node id="x4320431504" otu="x4320374224" />
+            <node id="x4320431632" />
+            <node id="x4320431760" otu="x4320374288" />
+            <node id="x4320431888" otu="x4320374352" />
+            <node id="x4320432016" />
+            <node id="x4320460880" otu="x4320374416" />
+            <node id="x4320461008" otu="x4320374480" />
+            <node id="x4320461136" otu="x4320374544" />
+            <rootedge id="x4320407760" target="x4320407696" />
+            <edge id="x4320408080" source="x4320407696" target="x4320408016" length="0.060789" />
+            <edge id="x4320408208" source="x4320408016" target="x4320408144" length="0.032743" />
+            <edge id="x4320408336" source="x4320408144" target="x4320408272" length="0.1058922755" />
+            <edge id="x4320408464" source="x4320408144" target="x4320408400" length="0.016163" />
+            <edge id="x4320408592" source="x4320408400" target="x4320408528" length="0.02165" />
+            <edge id="x4320408720" source="x4320408528" target="x4320408656" length="0.0629755585" />
+            <edge id="x4320408848" source="x4320408528" target="x4320408784" length="0.0335903967" />
+            <edge id="x4320408976" source="x4320408400" target="x4320408912" length="0.1067094932" />
+            <edge id="x4320409104" source="x4320408016" target="x4320409040" length="0.030952" />
+            <edge id="x4320409232" source="x4320409040" target="x4320409168" length="0.027099" />
+            <edge id="x4320409360" source="x4320409168" target="x4320409296" length="0.006602" />
+            <edge id="x4320409488" source="x4320409296" target="x4320409424" length="0.031732" />
+            <edge id="x4320409616" source="x4320409424" target="x4320409552" length="0.026356" />
+            <edge id="x4320409744" source="x4320409552" target="x4320409680" length="0.0274921037" />
+            <edge id="x4320409872" source="x4320409552" target="x4320409808" length="0.0241663426" />
+            <edge id="x4320410000" source="x4320409424" target="x4320409936" length="0.004283" />
+            <edge id="x4320410128" source="x4320409936" target="x4320410064" length="0.024796" />
+            <edge id="x4320410256" source="x4320410064" target="x4320410192" length="0.0377936102" />
+            <edge id="x4320410384" source="x4320410064" target="x4320410320" length="0.007181" />
+            <edge id="x4320410512" source="x4320410320" target="x4320410448" length="0.018597" />
+            <edge id="x4320410640" source="x4320410448" target="x4320410576" length="0.0045446653" />
+            <edge id="x4320410768" source="x4320410448" target="x4320410704" length="0.004182" />
+            <edge id="x4320410896" source="x4320410704" target="x4320410832" length="0.0075825724" />
+            <edge id="x4320411024" source="x4320410704" target="x4320410960" length="0.0086155842" />
+            <edge id="x4320411152" source="x4320410320" target="x4320411088" length="0.0227641045" />
+            <edge id="x4320411280" source="x4320409936" target="x4320411216" length="0.0579745143" />
+            <edge id="x4320411408" source="x4320409296" target="x4320411344" length="0.015469" />
+            <edge id="x4320411536" source="x4320411344" target="x4320411472" length="0.011617" />
+            <edge id="x4320428112" source="x4320411472" target="x4320411600" length="0.0679212061" />
+            <edge id="x4320428240" source="x4320411472" target="x4320428176" length="0.012848" />
+            <edge id="x4320428368" source="x4320428176" target="x4320428304" length="0.0760812159" />
+            <edge id="x4320428496" source="x4320428176" target="x4320428432" length="0.032397" />
+            <edge id="x4320428624" source="x4320428432" target="x4320428560" length="0.0152390165" />
+            <edge id="x4320428752" source="x4320428432" target="x4320428688" length="0.023141749" />
+            <edge id="x4320428880" source="x4320411344" target="x4320428816" length="0.013482" />
+            <edge id="x4320429008" source="x4320428816" target="x4320428944" length="0.0660356718" />
+            <edge id="x4320429136" source="x4320428816" target="x4320429072" length="0.027329" />
+            <edge id="x4320429264" source="x4320429072" target="x4320429200" length="0.0377499268" />
+            <edge id="x4320429392" source="x4320429072" target="x4320429328" length="0.0473589755" />
+            <edge id="x4320429520" source="x4320409168" target="x4320429456" length="0.002859" />
+            <edge id="x4320429648" source="x4320429456" target="x4320429584" length="0.002713" />
+            <edge id="x4320429776" source="x4320429584" target="x4320429712" length="0.007734" />
+            <edge id="x4320429904" source="x4320429712" target="x4320429840" length="0.013422" />
+            <edge id="x4320430032" source="x4320429840" target="x4320429968" length="0.010168" />
+            <edge id="x4320430160" source="x4320429968" target="x4320430096" length="0.0670782319" />
+            <edge id="x4320430288" source="x4320429968" target="x4320430224" length="0.0430801028" />
+            <edge id="x4320430416" source="x4320429840" target="x4320430352" length="0.048505" />
+            <edge id="x4320430544" source="x4320430352" target="x4320430480" length="0.0194903208" />
+            <edge id="x4320430672" source="x4320430352" target="x4320430608" length="0.0141916418" />
+            <edge id="x4320430800" source="x4320429712" target="x4320430736" length="0.043626" />
+            <edge id="x4320430928" source="x4320430736" target="x4320430864" length="0.0380695554" />
+            <edge id="x4320431056" source="x4320430736" target="x4320430992" length="0.0325474267" />
+            <edge id="x4320431184" source="x4320429584" target="x4320431120" length="0.038444" />
+            <edge id="x4320431312" source="x4320431120" target="x4320431248" length="0.0542142498" />
+            <edge id="x4320431440" source="x4320431120" target="x4320431376" length="0.0638595214" />
+            <edge id="x4320431568" source="x4320429456" target="x4320431504" length="0.0843874314" />
+            <edge id="x4320431696" source="x4320409040" target="x4320431632" length="0.06004" />
+            <edge id="x4320431824" source="x4320431632" target="x4320431760" length="0.074479767" />
+            <edge id="x4320431952" source="x4320431632" target="x4320431888" length="0.0562613055" />
+            <edge id="x4320432080" source="x4320407696" target="x4320432016" length="0.048508" />
+            <edge id="x4320460944" source="x4320432016" target="x4320460880" length="0.1983677797" />
+            <edge id="x4320461072" source="x4320432016" target="x4320461008" length="0.4092923305" />
+            <edge id="x4320461200" source="x4320407696" target="x4320461136" length="0.2627888765" />
+        </tree>
+    </trees>
+</nex:nexml>

@@ -28,7 +28,7 @@ from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
 import dendropy
 
-class TreeCreateTest(datatest.DataObjectVerificationTestCase):
+class TreeCreateTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.tree1 = datagen.four_taxon_tree1()

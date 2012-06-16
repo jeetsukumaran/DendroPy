@@ -34,7 +34,7 @@ import dendropy
 if not ape.DENDROPY_APE_INTEROPERABILITY:
     _LOG.warn("APE interoperability not available: skipping APE tests")
 else:
-    class DataRoundTrip(datatest.DataObjectVerificationTestCase):
+    class DataRoundTrip(datatest.AnnotatedDataObjectVerificationTestCase):
 
         def setUp(self):
             self.trees = datagen.reference_tree_list()

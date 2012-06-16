@@ -27,7 +27,7 @@ from dendropy.test.support import datatest
 from dendropy.test.support.extendedtest import ExtendedTestCase
 import dendropy
 
-class TaxaTest(datatest.DataObjectVerificationTestCase):
+class TaxaTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.labels = []
@@ -102,7 +102,7 @@ class TaxaTest(datatest.DataObjectVerificationTestCase):
         self.assertIs(ts.get_taxon(label="Q"), None)
         self.assertIs(ts.get_taxon(label="T1"), ts[0])
 
-class TaxonSetPartitionTest(datatest.DataObjectVerificationTestCase):
+class TaxonSetPartitionTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.taxon_set = dendropy.TaxonSet([
@@ -157,7 +157,7 @@ class TaxonSetPartitionTest(datatest.DataObjectVerificationTestCase):
         tsp = dendropy.TaxonSetPartition(self.taxon_set, membership_lists=self.membership_lists)
         self.verify_subsets(tsp.subsets(), use_label_indices=True)
 
-class TaxonSetMappingTest(datatest.DataObjectVerificationTestCase):
+class TaxonSetMappingTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.domain_taxa = dendropy.TaxonSet([

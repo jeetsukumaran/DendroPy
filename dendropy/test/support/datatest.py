@@ -25,7 +25,7 @@ import dendropy
 from dendropy.test.support import pathmap
 from dendropy.test.support import extendedtest
 
-class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
+class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
     """
     Extends ExtendedTestCase with tests for data object comparisons.
     """
@@ -551,7 +551,7 @@ class DataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 v2 = seq_values2[j]
                 self.assertAlmostEqual(v1, v2, 4)
 
-class ComplexMultiTaxonSetDataVerificationTest(DataObjectVerificationTestCase):
+class ComplexMultiTaxonSetDataVerificationTest(AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.taxon_set_names = [

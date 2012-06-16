@@ -38,7 +38,7 @@ import dendropy
 
 _LOG = get_logger(__name__)
 
-class NexusGeneralParseCharsTest(datatest.DataObjectVerificationTestCase):
+class NexusGeneralParseCharsTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def check_chars_against_expected(self, data_filename, expected_filename, datatype):
         self.logger.info("Checking '%s' => %s" % (data_filename, datatype.__name__))
@@ -100,7 +100,7 @@ class NexusParseContinuousCharsTest(NexusGeneralParseCharsTest):
                 "pythonidae_continuous.chars.txt",
                 dendropy.ContinuousCharacterMatrix)
 
-class NexusParseStandardCharsWithMultistateTest(datatest.DataObjectVerificationTestCase):
+class NexusParseStandardCharsWithMultistateTest(datatest.AnnotatedDataObjectVerificationTestCase):
     """
     This tests the capability of the NEXUS parser in handling "{}" and
     "()" constructs in the data. Two files are used, one in which the
@@ -153,7 +153,7 @@ class NexusParseStandardCharsWithMultistateTest(datatest.DataObjectVerificationT
     def testStandardWithMultistateInBracesInterleaved(self):
         self.check_parse_with_ambiguities("apternodus.chars.interleaved.nexus", "apternodus.chars.hacked-for-tests.txt")
 
-class NexusTreeListReaderTest(datatest.DataObjectVerificationTestCase):
+class NexusTreeListReaderTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def testReferenceTreeFileDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
@@ -214,7 +214,7 @@ class NexusTreeListReaderTest(datatest.DataObjectVerificationTestCase):
                 ignore_taxon_order=True,
                 equal_oids=None)
 
-class NexusTreeListWriterTest(datatest.DataObjectVerificationTestCase):
+class NexusTreeListWriterTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def testWriteTreeListDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
@@ -288,7 +288,7 @@ end;
         for t in dendropy.dataio.tree_source_iter(StringIO(self.str3), "nexus"):
             _LOG.info(t.as_string("newick"))
 
-class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
+class MultiTreeSourceIterTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.ref_tree_list = datagen.reference_tree_list()
@@ -339,7 +339,7 @@ class MultiTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
             self.assertDistinctButEqualTree(check_tree, test_tree, distinct_taxa=False, ignore_taxon_order=True)
         self.assertEqual(idx, 23)
 
-class NexusOrNewickTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
+class NexusOrNewickTreeSourceIterTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.ref_tree_list = datagen.reference_tree_list()
@@ -364,7 +364,7 @@ class NexusOrNewickTreeSourceIterTest(datatest.DataObjectVerificationTestCase):
         for idx, test_tree in enumerate(dataio.tree_source_iter(stream=stream, schema='nexus/newick', taxon_set=self.ref_tree_list.taxon_set)):
             self.assertDistinctButEqualTree(self.ref_tree_list[idx], test_tree, distinct_taxa=False)
 
-class NexusTreeDocumentReaderTest(datatest.DataObjectVerificationTestCase):
+class NexusTreeDocumentReaderTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def testReferenceTreeFileDistinctTaxa(self):
         ref_tree_list = datagen.reference_tree_list()
@@ -422,7 +422,7 @@ class NexusTreeDocumentReaderTest(datatest.DataObjectVerificationTestCase):
                 ignore_taxon_order=True,
                 equal_oids=None)
 
-class NexusDocumentReadWriteTest(datatest.DataObjectVerificationTestCase):
+class NexusDocumentReadWriteTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def testRoundTripReference(self):
         reference_dataset = datagen.reference_single_taxonset_dataset()
@@ -697,7 +697,7 @@ end;
     def testParseWithKeyword(self):
         t = dendropy.TreeList.get_from_string(self.trees_string, 'nexus', suppress_internal_node_taxa=True)
 
-class NexusCharsSubsetsTest(datatest.DataObjectVerificationTestCase):
+class NexusCharsSubsetsTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def verify_subsets(self, src_filename, expected_sets):
         """
@@ -771,7 +771,7 @@ class NexusCharsSubsetsTest(datatest.DataObjectVerificationTestCase):
                 }
         self.verify_subsets('interleaved-charsets-all.nex', expected_sets)
 
-class NexusInternalTaxaTest(datatest.DataObjectVerificationTestCase):
+class NexusInternalTaxaTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def setUp(self):
         self.tree_str = """

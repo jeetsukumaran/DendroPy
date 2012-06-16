@@ -74,6 +74,25 @@ class DataObject(object):
             self._oid = self._default_oid()
     oid = property(_get_oid, _set_oid)
 
+    def __deepcopy__(self, memo):
+        o = self.__class__(label=self.label, oid=None)
+        memo[id(self)] = o
+        memo[id(self._oid)] = o._oid
+        memo[id(self.label)] = o.label
+        for k, v in self.__dict__.iteritems():
+            o.__dict__[k] = copy.deepcopy(v, memo)
+        return o
+
+class AnnotatedDataObject(DataObject):
+    """
+    Base class from which all classes that need to persist object attributes
+    or other information as metadata.
+    """
+
+    def __init__(self, label=None, oid=None):
+        DataObject.__init__(self, label=label, oid=oid)
+        self._annotations = AnnotationSet(self)
+
     def _get_annotations(self):
         return self._annotations
     def _set_annotations(self, annotations):
@@ -91,17 +110,24 @@ class DataObject(object):
         return str(self.oid)
 
     def __deepcopy__(self, memo):
-        o = self.__class__(label=self.label, oid=None)
-        memo[id(self)] = o
-        memo[id(self._oid)] = o._oid
-        memo[id(self.label)] = o.label
-        memo[id(self.annotations)] = copy.deepcopy(self.annotations)
-        # for k, v in self.__dict__.iteritems():
-        #     if k not in ["label", "_oid"]:
-        #         o.__dict__[k] = copy.deepcopy(v, memo)
+
+        # temporary disable deepcopying of annotations
+        # until target object is created
+        memo[id(self.annotations)] = None
+
+        # copy object
+        o = DataObject.__deepcopy__(self, memo)
+
+        # reassign annotations
+        del memo[id(self.annotations)]
+        annotations_copy = copy.deepcopy(self.annotations, memo)
+        o._annotations = annotations_copy
+        memo[id(self.annotations)] = o._annotations
+
+        # return
         return o
 
-class Annotation(DataObject):
+class Annotation(AnnotatedDataObject):
     """
     Metadata storage, composition and persistance, with the following attributes:
 
@@ -134,7 +160,7 @@ class Annotation(DataObject):
             label=None,
             oid=None,
             ):
-        DataObject.__init__(self, label=label, oid=oid)
+        AnnotatedDataObject.__init__(self, label=label, oid=oid)
         self._value = value
         self.is_attribute = is_attribute
         if name_is_prefixed:

@@ -756,7 +756,7 @@ REFERENCE_SPLIT_NODE_INFO_MAP = {
         },
 }
 
-class BeastSummaryTreeTests(datatest.DataObjectVerificationTestCase):
+class BeastSummaryTreeTests(datatest.AnnotatedDataObjectVerificationTestCase):
 
     def verify_node_info(self, tree):
         tree.update_splits()

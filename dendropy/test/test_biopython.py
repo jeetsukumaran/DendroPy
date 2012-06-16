@@ -34,7 +34,7 @@ import dendropy
 if not biopython.DENDROPY_BIOPYTHON_INTEROPERABILITY:
     _LOG.warn("Biopython interoperability not available: skipping Biopython tests")
 else:
-    class DataRoundTrip(datatest.DataObjectVerificationTestCase):
+    class DataRoundTrip(datatest.AnnotatedDataObjectVerificationTestCase):
 
         def setUp(self):
             self.taxon_set = datagen.reference_taxon_set()

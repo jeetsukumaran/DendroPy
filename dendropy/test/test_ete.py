@@ -34,7 +34,7 @@ import dendropy
 if not ete.DENDROPY_ETE_INTEROPERABILITY:
     _LOG.warn("ETE interoperability not available: skipping ETE tests")
 else:
-    class DataRoundTrip(datatest.DataObjectVerificationTestCase):
+    class DataRoundTrip(datatest.AnnotatedDataObjectVerificationTestCase):
 
         def setUp(self):
             self.trees = datagen.reference_tree_list()
