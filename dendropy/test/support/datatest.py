@@ -323,7 +323,7 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
     def assertDistinctButEqualContinuousCharMatrix(self, char_matrix1, char_matrix2, **kwargs):
         distinct_taxa = kwargs.get("distinct_taxa", True)
         equal_oids = kwargs.get("equal_oids", None)
-        ignore_chartypes = kwargs.get("ignore_chartypes", True)
+        ignore_chartypes = kwargs.get("ignore_chartypes", False)
         self.logger.info("Comparing ContinuousCharacterMatrix objects %d and %d" % (id(char_matrix1), id(char_matrix2)))
         self.assertIsNot(char_matrix1, char_matrix2)
         if distinct_taxa:
@@ -360,6 +360,16 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 self.assertAlmostEqual(c1.value, c2.value, 6)
                 self.assertDistinctButEqualAnnotations(c1, c2, **kwargs)
             self.assertDistinctButEqualAnnotations(vec1, vec2, **kwargs)
+        if not ignore_chartypes:
+            self.assertEqual(len(char_matrix1.character_types), len(char_matrix2.character_types))
+            distinct_state_alphabets = kwargs.get("distinct_state_alphabets", None)
+            for coli, col1 in enumerate(char_matrix1.character_types):
+                col2 = char_matrix2.character_types[coli]
+                if distinct_state_alphabets is True:
+                    self.assertDistinctButEqualStateAlphabet(col1.state_alphabet, col2.state_alphabet)
+                elif distinct_state_alphabets is False:
+                    self.assertIs(col1.state_alphabet, col2.state_alphabet)
+                self.assertDistinctButEqualAnnotations(col1, col2, **kwargs)
         self.assertDistinctButEqualAnnotations(char_matrix1, char_matrix2, **kwargs)
 
     def assertDistinctButEqualDiscreteCharMatrix(self, char_matrix1, char_matrix2, **kwargs):
@@ -371,7 +381,7 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         distinct_state_alphabets = kwargs.get("distinct_state_alphabets", None)
         distinct_taxa = kwargs.get("distinct_taxa", True)
         equal_oids = kwargs.get("equal_oids", None)
-        ignore_chartypes = kwargs.get("ignore_chartypes", True)
+        ignore_chartypes = kwargs.get("ignore_chartypes", False)
         self.logger.info("Comparing DiscreteCharacterMatrix objects %d and %d" % (id(char_matrix1), id(char_matrix2)))
         self.assertIsNot(char_matrix1, char_matrix2)
         if distinct_taxa:
@@ -398,13 +408,13 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 self.assertIs(char_matrix1.default_state_alphabet, char_matrix2.default_state_alphabet)
         if not ignore_chartypes:
             self.assertEqual(len(char_matrix1.character_types), len(char_matrix2.character_types))
-        for coli, col1 in enumerate(char_matrix1.character_types):
-            if distinct_state_alphabets is True:
+            for coli, col1 in enumerate(char_matrix1.character_types):
                 col2 = char_matrix2.character_types[coli]
-                self.assertDistinctButEqualStateAlphabet(col1.state_alphabet, col2.state_alphabet)
-            elif distinct_state_alphabets is False:
-                self.assertIs(col1.state_alphabet, col2.state_alphabet)
-            self.assertDistinctButEqualAnnotations(col1, col2, **kwargs)
+                if distinct_state_alphabets is True:
+                    self.assertDistinctButEqualStateAlphabet(col1.state_alphabet, col2.state_alphabet)
+                elif distinct_state_alphabets is False:
+                    self.assertIs(col1.state_alphabet, col2.state_alphabet)
+                self.assertDistinctButEqualAnnotations(col1, col2, **kwargs)
         self.assertEqual(len(char_matrix1), len(char_matrix2))
 
         for ti, taxon1 in enumerate(char_matrix1):
