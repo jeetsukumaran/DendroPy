@@ -265,6 +265,20 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 self.assertEqual(edge1.oid, edge2.oid)
             elif equal_oids is False:
                 self.assertNotEqual(edge1.oid, edge2.oid)
+        if not kwargs.get("ignore_splits", False):
+            if hasattr(tree1, "split_edges"):
+                self.assertTrue(tree1.split_edges is not tree2.split_edges)
+                self.assertEqual(len(tree1.split_edges), len(tree2.split_edges))
+                self.assertTrue(hasattr(tree2, "split_edges"))
+                for edge_idx, edge1 in enumerate(tree1_edges):
+                    edge2 = tree2_edges[edge_idx]
+                    self.assertTrue(edge1 is not edge2)
+                    self.assertEqual(edge1.split_bitmask, edge2.split_bitmask)
+                    self.assertIs(tree1.split_edges[edge1.split_bitmask], edge1)
+                    self.assertIs(tree2.split_edges[edge2.split_bitmask], edge2)
+            else:
+                self.assertFalse(hasattr(tree2, "split_edges"))
+
         self.assertDistinctButEqualAnnotations(tree1, tree2, **kwargs)
 
     def assertDistinctButEqualStateAlphabetElement(self, sae1, sae2, **kwargs):
