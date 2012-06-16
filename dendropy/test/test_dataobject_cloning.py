@@ -30,20 +30,6 @@ import dendropy
 
 class TestTreeCloning(datatest.AnnotatedDataObjectVerificationTestCase):
 
-    ## Trees need special attention
-    # def assertDistinctButEqualTree(self, tree1, tree2, **kwargs):
-    #     otaxa = tree1.taxon_set
-    #     ts = dendropy.TaxonSet()
-    #     tree1.reindex_taxa(ts, clear=True)
-    #     tree2.reindex_taxa(ts)
-    #     self.assertIs(tree1.taxon_set, tree2.taxon_set)
-    #     self.assertIsNot(tree1.taxon_set, otaxa)
-    #     self.assertDistinctButEqual(tree1.taxon_set, otaxa, **kwargs)
-    #     treesplit.encode_splits(tree1)
-    #     treesplit.encode_splits(tree2)
-    #     rfdist = treecalc.robinson_foulds_distance(tree1, tree2)
-    #     self.assertAlmostEqual(rfdist, 0)
-
     def setUp(self):
         s = pathmap.tree_source_stream("pythonidae.annotated.nexml")
         self.dataset = dendropy.DataSet.get_from_stream(s, "nexml")
@@ -57,6 +43,23 @@ class TestTreeCloning(datatest.AnnotatedDataObjectVerificationTestCase):
         tree1 = self.dataset.tree_lists[0][0]
         tree2 = dendropy.Tree(tree1)
         self.assertDistinctButEqualTree(tree1, tree2, distinct_taxa=False)
+
+class TestTreeListCloning(datatest.AnnotatedDataObjectVerificationTestCase):
+
+    def setUp(self):
+        s = pathmap.tree_source_stream("pythonidae.annotated.nexml")
+        self.dataset = dendropy.DataSet.get_from_stream(s, "nexml")
+
+    def testDeepCopy(self):
+        tree_list1 = self.dataset.tree_lists[0]
+        tree_list2 = copy.deepcopy(tree_list1)
+        self.assertDistinctButEqualTreeList(tree_list1, tree_list2, distinct_taxa=False)
+
+    def testCopyConstruction(self):
+        tree_list1 = self.dataset.tree_lists[0]
+        tree_list2 = dendropy.TreeList(tree_list1)
+        self.assertDistinctButEqualTreeList(tree_list1, tree_list2, distinct_taxa=False)
+
 
 if __name__ == "__main__":
     unittest.main()
