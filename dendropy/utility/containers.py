@@ -147,7 +147,7 @@ class OrderedSet(list):
     def update(self, x):
         for i in x:
             if i not in self:
-                list.append(self, x)
+                list.append(self, i)
 
     def extend(self, t):
         for x in t:
