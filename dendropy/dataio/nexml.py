@@ -627,16 +627,22 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         nxchartype = nxchars.get('{http://www.w3.org/2001/XMLSchema-instance}type', None)
         if nxchartype.startswith('nex:Dna'):
             char_matrix = dendropy.DnaCharacterMatrix()
+            fixed_state_alphabet = True
         elif nxchartype.startswith('nex:Rna'):
             char_matrix = dendropy.RnaCharacterMatrix()
+            fixed_state_alphabet = True
         elif nxchartype.startswith('nex:Protein'):
             char_matrix = dendropy.ProteinCharacterMatrix()
+            fixed_state_alphabet = True
         elif nxchartype.startswith('nex:Restriction'):
             char_matrix = dendropy.RestrictionSitesCharacterMatrix()
+            fixed_state_alphabet = True
         elif nxchartype.startswith('nex:Standard'):
             char_matrix = dendropy.StandardCharacterMatrix()
+            fixed_state_alphabet = False
         elif nxchartype.startswith('nex:Continuous'):
             char_matrix = dendropy.ContinuousCharacterMatrix()
+            fixed_state_alphabet = False
         else:
             raise NotImplementedError('Character Block %s (\"%s\"): Character type "%s" not supported.'
                 % (char_matrix.oid, char_matrix.label, nxchartype))
@@ -768,6 +774,8 @@ class _NexmlCharBlockParser(_NexmlElementParser):
 
             char_matrix[taxon] = character_vector
 
+        if fixed_state_alphabet:
+            char_matrix.remap_to_default_state_alphabet_by_symbol(purge_other_state_alphabets=True)
         dataset.char_matrices.append(char_matrix)
 
 class NexmlWriter(iosys.DataWriter):

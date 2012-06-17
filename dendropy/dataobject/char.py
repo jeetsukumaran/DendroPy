@@ -1314,6 +1314,39 @@ class DiscreteCharacterMatrix(CharacterMatrix):
                 symbol = str(value)
             self[taxon].append(CharacterDataCell(value=self.default_symbol_state_map[symbol]))
 
+    def remap_to_state_alphabet_by_symbol(self,
+            state_alphabet,
+            purge_other_state_alphabets=True):
+        """
+        All entities with any reference to a state alphabet will be have the
+        reference reassigned to state alphabet ``sa``, and all entities with
+        any reference to a state alphabet element will be have the reference
+        reassigned to any state alphabet element in ``sa`` that has the same
+        symbol. Raises KeyError if no matching symbol can be found.
+        """
+        symbol_state_map = state_alphabet.symbol_state_map()
+        for taxon, vec in self.taxon_seq_map.items():
+            for cell in vec:
+                cell.value = symbol_state_map[cell.value.symbol]
+        for ct in self.character_types:
+            ct.state_alphabet = state_alphabet
+        if purge_other_state_alphabets:
+            self.state_alphabets = [state_alphabet]
+
+    def remap_to_default_state_alphabet_by_symbol(self,
+            purge_other_state_alphabets=True):
+        """
+        All entities with any reference to a state alphabet will be have the
+        reference reassigned to the default state alphabet, and all entities
+        with any reference to a state alphabet element will be have the
+        reference reassigned to any state alphabet element in the default
+        state alphabet that has the same symbol. Raises ValueError if no
+        matching symbol can be found.
+        """
+        self.remap_to_state_alphabet_by_symbol(
+                state_alphabet=self.default_state_alphabet,
+                purge_other_state_alphabets=purge_other_state_alphabets)
+
 class StandardCharacterMatrix(DiscreteCharacterMatrix):
     "`standard` data."
 
