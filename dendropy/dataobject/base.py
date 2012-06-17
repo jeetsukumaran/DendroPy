@@ -99,6 +99,8 @@ class AnnotatedDataObject(DataObject):
     def _set_annotations(self, annotations):
         if annotations is self.annotations:
             return
+        if not isinstance(annotations, AnnotationSet):
+            raise ValueError("Cannot set `annotations` to object of type `%s`" % type(annotations))
         old_target = annotations.target
         self._annotations = annotations
         self._annotations.target = self
@@ -244,6 +246,9 @@ class Annotation(AnnotatedDataObject):
 class AnnotationSet(containers.OrderedSet):
 
     def __init__(self, target, *args):
+        # for item in args:
+        #     if not isinstance(item, Annotation):
+        #         raise ValueError("Cannot add object of type `%s`" % type(item))
         containers.OrderedSet.__init__(self, *args)
         self.target = target
 
@@ -330,6 +335,28 @@ class AnnotationSet(containers.OrderedSet):
                 )
         self.add(annote)
         return annote
+
+    # def update(self, other):
+    #     for item in other:
+    #         if not isinstance(item, Annotation):
+    #             raise ValueError("Cannot add object of type `%s`" % type(item))
+    #     containers.OrderedSet.update(self, other)
+
+    # def extend(self, other):
+    #     for item in other:
+    #         if not isinstance(item, Annotation):
+    #             raise ValueError("Cannot add object of type `%s`" % type(item))
+    #     containers.OrderedSet.extend(self, other)
+
+    # def add(self, item):
+    #     if not isinstance(item, Annotation):
+    #         raise ValueError("Cannot add object of type `%s`" % type(item))
+    #     containers.OrderedSet.add(self, item)
+
+    # def append(self, item):
+    #     if not isinstance(item, Annotation):
+    #         raise ValueError("Cannot add object of type `%s`" % type(item))
+    #     containers.OrderedSet.append(self, item)
 
     def add_bound_attribute(self,
             attr_name,
