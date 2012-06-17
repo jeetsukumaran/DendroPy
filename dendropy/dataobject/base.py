@@ -35,7 +35,7 @@ class CloningMetaClass(type):
         return c
 
     def __call__(cls, *args, **kwargs):
-        if len(args) == 1 and isinstance(args[0], cls):
+        if len(args) >= 1 and isinstance(args[0], cls):
             b = copy.deepcopy(args[0])
             return b
         else:
