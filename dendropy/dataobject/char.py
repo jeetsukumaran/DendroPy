@@ -67,7 +67,7 @@ class StateAlphabetElement(base.AnnotatedDataObject):
         self.member_states = member_states
 
     def __str__(self):
-        return str(self.symbol)
+        return "'%s'" % str(self.symbol)
 
     def _is_single_state(self):
         return self.multistate == StateAlphabetElement.SINGLE_STATE
@@ -175,14 +175,13 @@ class FixedStateAlphabetElement(StateAlphabetElement):
                  token=None,
                  multistate=StateAlphabetElement.SINGLE_STATE,
                  member_states=None):
-        # StateAlphabetElement.__init__(self, label=label, oid=oid)
-        base.AnnotatedDataObject.__init__(self, label=label, oid=oid)
-        self.symbol = symbol
-        self.label = label
-        self.oid = oid
-        self.token = token
-        self.multistate = multistate
-        self.member_states = member_states
+         StateAlphabetElement.__init__(self,
+                 oid=oid,
+                 label=label,
+                 symbol=symbol,
+                 token=token,
+                 multistate=multistate,
+                 member_states=member_states)
 
     def __deepcopy__(self, memo):
         memo[id(self)] = self
