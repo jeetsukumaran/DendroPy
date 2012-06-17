@@ -67,7 +67,9 @@ class StateAlphabetElement(base.AnnotatedDataObject):
         self.member_states = member_states
 
     def __str__(self):
-        return "'%s'" % str(self.symbol)
+        # note that tests currently assume this particular string
+        # representation (i.e., undecorated symbol)
+        return str(self.symbol)
 
     def _is_single_state(self):
         return self.multistate == StateAlphabetElement.SINGLE_STATE
