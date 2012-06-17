@@ -103,6 +103,52 @@ class StateAlphabetElement(base.AnnotatedDataObject):
 
     fundamental_tokens = property(_get_fundamental_tokens)
 
+    def is_exact_correspondence(self, other):
+        """
+        Tries to determine if two StateAlphabetElement definitions
+        are equivalent by matching symbols.
+        """
+        match = True
+        if self.multistate != other.multistate:
+            return False
+        if self.multistate and other.multistate:
+            xf1 = self.fundamental_states
+            xf2 = other.fundamental_states
+            if len(xf1) != len(xf2):
+                match = False
+            else:
+                f1 = set(xf1)
+                f2 = set(xf2)
+                for m1 in f1:
+                    member_match = False
+                    for m2 in f2:
+                        if m1.is_exact_correspondence(m2):
+                            member_match = True
+                            f2.remove(m2)
+                            break
+                    if not member_match:
+                        match = False
+                        break
+                if match:
+                    f1 = set(xf1)
+                    f2 = set(xf2)
+                    for m2 in f2:
+                        member_match = False
+                        for m1 in f1:
+                            if m1.is_exact_correspondence(m2):
+                                f1.remove(m1)
+                                member_match = True
+                                break
+                        if not member_match:
+                            match = False
+                            break
+            return match
+        else:
+            try:
+                return self.symbol.upper() == other.symbol.upper()
+            except AttributeError:
+                return self.symbol == other.symbol
+
     def __deepcopy__(self, memo):
         o = base.AnnotatedDataObject.__deepcopy__(self, memo)
         o.symbol = self.symbol
@@ -271,6 +317,58 @@ class StateAlphabet(base.AnnotatedDataObject, list):
         except:
             return False
 
+    def is_exact_correspondence(self,
+            other,
+            accept_other_as_subset=False,
+            symbols_to_ignore=None):
+        n1 = len(self)
+        n2 = len(other)
+        if n1 > n2:
+            if accept_other_as_subset:
+                sa1 = self
+                sa2 = other
+            else:
+                return False
+        elif n1 < n2:
+            return False
+        else:
+            sa1 = self
+            sa2 = other
+        match = True
+        f1 = set(sa1)
+        f2 = set(sa2)
+        if symbols_to_ignore is None:
+            symbols_to_ignore = []
+        for m1 in f1:
+            if m1.symbol in symbols_to_ignore:
+                continue
+            member_match = False
+            for m2 in f2:
+                if m1.is_exact_correspondence(m2):
+                    member_match = True
+                    f2.remove(m2)
+                    break
+            if not member_match:
+                match = False
+                break
+        f1 = set(sa1)
+        f2 = set(sa2)
+        if match:
+            for m2 in f2:
+                if m2.symbol in symbols_to_ignore:
+                    continue
+                member_match = False
+                for m1 in f1:
+                    if m1.is_exact_correspondence(m2):
+                        member_match = True
+                        break
+                if not member_match:
+                    match = False
+                    break
+
+        return match
+
+
 ###############################################################################
 ## Pre-defined State Alphabets
 
@@ -280,6 +378,8 @@ class FixedStateAlphabet(StateAlphabet):
         StateAlphabet.__init__(self, *args, **kwargs)
 
     def __deepcopy__(self, memo):
+        asasdasdasdas
+        print repr(self)
         memo[id(self)] = self
         return self
 
@@ -319,6 +419,11 @@ class DnaStateAlphabet(FixedStateAlphabet):
               ("H",('A', 'C', 'T')),
               ("D", ('A', 'G', 'T')),
               ("B", ('C', 'G', 'T')),
+              # Added 'X', 2012-07-17: this is how Rutger's BioPhylo treats 'X",
+              # and this definition is to allow for state alphabet
+              # equivalency with files produced by that library
+              # have not checked how this interacts with 'symbol_synonyms' below
+              ("X",('A', 'C', 'G', 'T')),
              )
     unknown_state_symbol = 'N'
 
@@ -342,6 +447,11 @@ class RnaStateAlphabet(FixedStateAlphabet):
               ("H",('A', 'C', 'U')),
               ("D", ('A', 'G', 'U')),
               ("B", ('C', 'G', 'U')),
+              # Added 'X', 2012-07-17: this is how Rutger's BioPhylo treats 'X",
+              # and this definition is to allow for state alphabet
+              # equivalency with files produced by that library
+              # have not checked how this interacts with 'symbol_synonyms' below
+              ("X",('A', 'C', 'G', 'U')),
              )
     unknown_state_symbol = 'N'
 
@@ -440,9 +550,11 @@ class CharacterType(base.AnnotatedDataObject):
     state_alphabet = property(_get_state_alphabet, _set_state_alphabet)
 
     ## default AnnotatedDataObject.__deepcopy__ works fine
-    # def __deepcopy__(self, memo):
-    #     o = base.AnnotatedDataObject.__deepcopy__(self, memo)
-    #     return o
+    def __deepcopy__(self, memo):
+        print id(self._state_alphabet), type(self._state_alphabet)
+        s = copy.deepcopy(self._state_alphabet)
+        o = base.AnnotatedDataObject.__deepcopy__(self, memo)
+        return o
 
 class CharacterDataCell(base.AnnotatedDataObject):
     """
@@ -1253,6 +1365,12 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
         DiscreteCharacterMatrix.__init__(self, **kwargs)
         if len(args) > 0:
             self.clone_from(*args)
+
+    def __deepcopy__(self, memo):
+        memo[id(self.default_state_alphabet)] = self.default_state_alphabet
+        memo[id(self.state_alphabets)] = list(self.state_alphabets)
+        # memo[id(self._default_symbol_state_map)] = self._default_symbol_state_map
+        return DiscreteCharacterMatrix.__deepcopy__(self, memo)
 
 class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "DNA nucleotide data."
