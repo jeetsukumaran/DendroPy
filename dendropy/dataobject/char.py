@@ -280,9 +280,8 @@ class FixedStateAlphabet(StateAlphabet):
         StateAlphabet.__init__(self, *args, **kwargs)
 
     def __deepcopy__(self, memo):
-        o = self
-        memo[id(self)] = o
-        return o
+        memo[id(self)] = self
+        return self
 
 def _add_iupac(alphabet, states, ambig):
     for sym in states:
@@ -1217,38 +1216,6 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
         if len(args) > 0:
             self.clone_from(*args)
 
-    def __deepcopy__(self, memo):
-        o = TaxonSetLinked.__deepcopy__(self, memo)
-        for cs in self.character_subsets:
-            o.character_subsets = copy.deepcopy(cs, memo)
-        o.state_alphabets = [s for s in self.state_alphabets]
-        memo[id(self.state_alphabets)] = o.state_alphabets
-        memo[id(self.character_subsets)] = o.character_subsets
-        for k, v in self.__dict__.iteritems():
-            if k not in ["taxon_set",
-                         "_oid",
-                         "taxon_seq_map",
-                         "character_subsets",
-                         "state_alphabets",
-                         "annotations"]:
-                o.__dict__[k] = copy.deepcopy(v)
-                # memo[id(self.__dict__[k])] = o.__dict__[k]
-
-        for taxon, cdv in self.taxon_seq_map.items():
-            otaxon = memo[id(taxon)]
-            ocdv = CharacterDataVector(oid=cdv.oid, label=cdv.label, taxon=otaxon)
-            for cell in cdv:
-                if cell.character_type is not None:
-                    character_type = memo[id(cell.character_type)]
-                else:
-                    character_type = None
-                ocdv.append(CharacterDataCell(value=memo[id(cell.value)], character_type=character_type))
-            o.taxon_seq_map[otaxon] = ocdv
-            memo[id(self.taxon_seq_map[taxon])] = o.taxon_seq_map[otaxon]
-        o.annotations = copy.deepcopy(self.annotations, memo)
-        memo[id(self.annotations)] = o.annotations
-        return o
-
     def extend(self,
                other_matrix,
                overwrite_existing=False,
@@ -1286,44 +1253,6 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
         DiscreteCharacterMatrix.__init__(self, **kwargs)
         if len(args) > 0:
             self.clone_from(*args)
-
-    def __deepcopy__(self, memo):
-        o = TaxonSetLinked.__deepcopy__(self, memo)
-        o.state_alphabets = self.state_alphabets
-        memo[id(self.state_alphabets)] = o.state_alphabets
-        o.default_state_alphabet = self.default_state_alphabet
-        memo[id(self.default_state_alphabet)] = o.default_state_alphabet
-        o._default_symbol_state_map = self._default_symbol_state_map
-        memo[id(self._default_symbol_state_map)] = o._default_symbol_state_map
-        o.character_types = copy.deepcopy(self.character_types, memo)
-        for cs in self.character_subsets:
-            o.character_subsets = copy.deepcopy(cs, memo)
-        memo[id(self.character_subsets)] = o.character_subsets
-        for taxon, cdv in self.taxon_seq_map.items():
-            otaxon = memo[id(taxon)]
-            ocdv = CharacterDataVector(oid=cdv.oid, label=cdv.label, taxon=otaxon)
-            for cell in cdv:
-                if cell.character_type is not None:
-                    character_type = memo[id(cell.character_type)]
-                else:
-                    character_type = None
-                ocdv.append(CharacterDataCell(value=cell.value, character_type=character_type))
-            o.taxon_seq_map[otaxon] = ocdv
-            memo[id(self.taxon_seq_map[taxon])] = o.taxon_seq_map[otaxon]
-        for k, v in self.__dict__.iteritems():
-            if k not in ["taxon_set",
-                         "_oid",
-                         "state_alphabets",
-                         "default_state_alphabet",
-                         "_default_symbol_state_map",
-                         "taxon_seq_map",
-                         "character_types",
-                         "character_subsets",
-                         "annotations"]:
-                o.__dict__[k] = copy.deepcopy(v, memo)
-        o.annotations = copy.deepcopy(self.annotations, memo)
-        memo[id(self.annotations)] = o.annotations
-        return o
 
 class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "DNA nucleotide data."

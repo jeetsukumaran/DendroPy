@@ -778,6 +778,7 @@ class NexmlWriter(iosys.DataWriter):
         iosys.DataWriter.__init__(self, **kwargs)
         self.indent = "    "
         self._prefix_uri_tuples = set()
+        self.markup_as_sequences = kwargs.get("markup_as_sequences", None)
 
     def write(self, stream):
         """
@@ -1016,36 +1017,9 @@ class NexmlWriter(iosys.DataWriter):
                 self.write_annotations(row, dest, indent_level=indent_level+3)
 
 
-                if hasattr(char_matrix, 'markup_as_sequences') and char_matrix.markup_as_sequences:
-                    ### actual sequences get written here ###
-                    if isinstance(char_matrix, dendropy.DnaCharacterMatrix) \
-                        or isinstance(char_matrix, dendropy.RnaCharacterMatrix) \
-                        or isinstance(char_matrix, dendropy.ProteinCharacterMatrix) \
-                        or isinstance(char_matrix, dendropy.RestrictionSitesCharacterMatrix):
-                        separator = ''
-                        break_long_words = True
-                    else:
-                        # Standard or Continuous
-                        separator = ' '
-                        break_long_words = False
-
-                    if isinstance(char_matrix, dendropy.DiscreteCharacterMatrix):
-                        seq_symbols = []
-                        for cidx, c in enumerate(row):
-                            if c.value.symbol is None:
-                                raise TypeError("Character %d in row '%d' does not have a symbol defined for its character state:" % (cidx, row.oid) \
-                                            + " this matrix cannot be written in sequence format (set 'markup_as_sequences' to False)'")
-                            seq_symbols.append(c.value.symbol)
-                    else:
-                        seq_symbols = [str(c) for c in row]
-                    seqlines = textwrap.fill(separator.join(seq_symbols),
-                                           width=70,
-                                           initial_indent=self.indent*(indent_level+3) + "<seq>",
-                                           subsequent_indent=self.indent*(indent_level+4),
-                                           break_long_words=break_long_words)
-                    seqlines = seqlines + "</seq>\n"
-                    dest.write(seqlines)
-                else:
+                if ( (self.markup_as_sequences is not None and self.markup_as_sequences is False)
+                        or (hasattr(char_matrix, 'markup_as_sequences') and not char_matrix.markup_as_sequences)
+                        ):
                     for cell in row:
                         parts = []
                         parts.append('%s<cell' % (self.indent*(indent_level+3)))
@@ -1063,6 +1037,35 @@ class NexmlWriter(iosys.DataWriter):
                             dest.write('%s</cell>' % (self.indent*(indent_level+3)))
                         else:
                             dest.write('/>\n')
+                else:
+                    ### actual sequences get written here ###
+                    if isinstance(char_matrix, dendropy.DnaCharacterMatrix) \
+                        or isinstance(char_matrix, dendropy.RnaCharacterMatrix) \
+                        or isinstance(char_matrix, dendropy.ProteinCharacterMatrix) \
+                        or isinstance(char_matrix, dendropy.RestrictionSitesCharacterMatrix):
+                        separator = ''
+                        break_long_words = True
+                    else:
+                        # Standard or Continuous
+                        separator = ' '
+                        break_long_words = False
+
+                    if isinstance(char_matrix, dendropy.DiscreteCharacterMatrix):
+                        seq_symbols = []
+                        for cidx, c in enumerate(row):
+                            if c.value.symbol is None:
+                                raise TypeError("Character %d in row '%s' does not have a symbol defined for its character state:" % (cidx, row.oid) \
+                                            + " this matrix cannot be written in sequence format (set 'markup_as_sequences' to False)'")
+                            seq_symbols.append(c.value.symbol)
+                    else:
+                        seq_symbols = [str(c) for c in row]
+                    seqlines = textwrap.fill(separator.join(seq_symbols),
+                                           width=70,
+                                           initial_indent=self.indent*(indent_level+3) + "<seq>",
+                                           subsequent_indent=self.indent*(indent_level+4),
+                                           break_long_words=break_long_words)
+                    seqlines = seqlines + "</seq>\n"
+                    dest.write(seqlines)
                 dest.write(self.indent * (indent_level+2))
                 dest.write('</row>\n')
             dest.write("%s</matrix>\n" % (self.indent * (indent_level+1)))

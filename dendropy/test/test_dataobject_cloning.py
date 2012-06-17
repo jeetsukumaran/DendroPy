@@ -88,5 +88,21 @@ class TestContinuousCharMatrix(datatest.AnnotatedDataObjectVerificationTestCase)
         chars2 = dendropy.ContinuousCharacterMatrix(chars1)
         self.assertDistinctButEqualContinuousCharMatrix(chars1, chars2, distinct_taxa=False)
 
+class TestStandardCharMatrix(datatest.AnnotatedDataObjectVerificationTestCase):
+
+    def setUp(self):
+        s = pathmap.char_source_stream("apternodus.chars.nexml")
+        self.dataset = dendropy.DataSet.get_from_stream(s, "nexml")
+
+    def testDeepCopy(self):
+        chars1 = self.dataset.char_matrices[0]
+        chars2 = copy.deepcopy(chars1)
+        self.assertDistinctButEqualDiscreteCharMatrix(chars1, chars2, distinct_taxa=False)
+
+    def testCopyConstruction(self):
+        chars1 = self.dataset.char_matrices[0]
+        chars2 = dendropy.StandardCharacterMatrix(chars1)
+        self.assertDistinctButEqualDiscreteCharMatrix(chars1, chars2, distinct_taxa=False)
+
 if __name__ == "__main__":
     unittest.main()
