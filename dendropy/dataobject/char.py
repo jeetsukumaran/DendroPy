@@ -29,6 +29,9 @@ from dendropy.utility import containers
 from dendropy.dataobject import base
 from dendropy.dataobject.taxon import TaxonLinked, TaxonSetLinked, TaxonSet
 
+###############################################################################
+## Continuous Characters
+
 class ContinuousCharElement(base.AnnotatedDataObject):
     def __init__(self, value, column_def,  **kwargs):
         base.AnnotatedDataObject.__init__(self, label=kwargs.get('label'), oid=kwargs.get('oid'))
@@ -149,13 +152,44 @@ class StateAlphabetElement(base.AnnotatedDataObject):
             except AttributeError:
                 return self.symbol == other.symbol
 
+    # def __deepcopy__(self, memo):
+    #     o = base.AnnotatedDataObject.__deepcopy__(self, memo)
+    #     o.symbol = self.symbol
+    #     o.token = self.token
+    #     o.multistate = self.multistate
+    #     o.member_states = copy.deepcopy(self.member_states)
+    #     return o
+
+###############################################################################
+## FixedStateAlphabetElement
+
+class FixedStateAlphabetElement(StateAlphabetElement):
+    """
+    Specialized for fixed state alphabets (e.g. DNA).
+    """
+
+    def __init__(self,
+                 oid=None,
+                 label=None,
+                 symbol=None,
+                 token=None,
+                 multistate=StateAlphabetElement.SINGLE_STATE,
+                 member_states=None):
+        # StateAlphabetElement.__init__(self, label=label, oid=oid)
+        base.AnnotatedDataObject.__init__(self, label=label, oid=oid)
+        self.symbol = symbol
+        self.label = label
+        self.oid = oid
+        self.token = token
+        self.multistate = multistate
+        self.member_states = member_states
+
     def __deepcopy__(self, memo):
-        o = base.AnnotatedDataObject.__deepcopy__(self, memo)
-        o.symbol = self.symbol
-        o.token = self.token
-        o.multistate = self.multistate
-        o.member_states = copy.deepcopy(self.member_states)
-        return o
+        memo[id(self)] = self
+        return self
+
+###############################################################################
+## StateAlphabet
 
 class StateAlphabet(base.AnnotatedDataObject, list):
 
@@ -368,7 +402,6 @@ class StateAlphabet(base.AnnotatedDataObject, list):
 
         return match
 
-
 ###############################################################################
 ## Pre-defined State Alphabets
 
@@ -378,14 +411,12 @@ class FixedStateAlphabet(StateAlphabet):
         StateAlphabet.__init__(self, *args, **kwargs)
 
     def __deepcopy__(self, memo):
-        asasdasdasdas
-        print repr(self)
         memo[id(self)] = self
         return self
 
 def _add_iupac(alphabet, states, ambig):
     for sym in states:
-        sae = StateAlphabetElement(symbol=sym)
+        sae = FixedStateAlphabetElement(symbol=sym)
         alphabet.append(sae)
         if sym == '-':
             alphabet.gap = sae
@@ -394,7 +425,7 @@ def _add_iupac(alphabet, states, ambig):
 
     for a in ambig:
         k, v = a[0], a[1]
-        sae = StateAlphabetElement(symbol=k,
+        sae = FixedStateAlphabetElement(symbol=k,
                                    multistate=StateAlphabetElement.AMBIGUOUS_STATE,
                                    member_states=alphabet.get_states(symbols=v))
         alphabet.append(sae)
@@ -484,18 +515,18 @@ class BinaryStateAlphabet(FixedStateAlphabet):
 
     def __init__(self, *args, **kwargs):
         FixedStateAlphabet.__init__(self, *args, **kwargs)
-        self.append(StateAlphabetElement(symbol="0"))
-        self.append(StateAlphabetElement(symbol="1"))
+        self.append(FixedStateAlphabetElement(symbol="0"))
+        self.append(FixedStateAlphabetElement(symbol="1"))
         if kwargs.get("allow_gaps", False):
-            self.append(StateAlphabetElement(symbol="-"))
+            self.append(FixedStateAlphabetElement(symbol="-"))
             self.gap = self[-1]
             if kwargs.get("allow_missing", False):
-                self.missing = StateAlphabetElement(symbol="?",
+                self.missing = FixedStateAlphabetElement(symbol="?",
                                                    multistate=StateAlphabetElement.AMBIGUOUS_STATE,
                                                    member_states=self.get_states(symbols=['0', '1', '-']))
                 self.append(self.missing)
         elif kwargs.get("allow_missing", False):
-            self.missing = StateAlphabetElement(symbol="?",
+            self.missing = FixedStateAlphabetElement(symbol="?",
                                                multistate=StateAlphabetElement.AMBIGUOUS_STATE,
                                                member_states=self.get_states(symbols=['0', '1']))
             self.append(self.missing)
@@ -551,7 +582,6 @@ class CharacterType(base.AnnotatedDataObject):
 
     ## default AnnotatedDataObject.__deepcopy__ works fine
     def __deepcopy__(self, memo):
-        print id(self._state_alphabet), type(self._state_alphabet)
         s = copy.deepcopy(self._state_alphabet)
         o = base.AnnotatedDataObject.__deepcopy__(self, memo)
         return o
@@ -1325,13 +1355,14 @@ class DiscreteCharacterMatrix(CharacterMatrix):
         symbol. Raises KeyError if no matching symbol can be found.
         """
         symbol_state_map = state_alphabet.symbol_state_map()
-        for taxon, vec in self.taxon_seq_map.items():
-            for cell in vec:
+        for vi, vec in enumerate(self.taxon_seq_map.values()):
+            for ci, cell in enumerate(vec):
                 cell.value = symbol_state_map[cell.value.symbol]
         for ct in self.character_types:
             ct.state_alphabet = state_alphabet
         if purge_other_state_alphabets:
             self.state_alphabets = [state_alphabet]
+            self.default_state_alphabet = state_alphabet
 
     def remap_to_default_state_alphabet_by_symbol(self,
             purge_other_state_alphabets=True):
