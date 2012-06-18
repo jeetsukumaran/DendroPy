@@ -611,11 +611,13 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
         """
         if len(args) > 1:
+            # only allow 1 positional argument
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
         elif args and isinstance(args[0], Tree):
-            # Instantiation of self from other Tree
-            # should be handled by metaclass via deep copy
-            # Here, we apply other operations based on arguments
+            # Instantiation of self from other Tree should have been handled by
+            # metaclass via deep copy.  Thus here we skip actual
+            # creation/initialization of members, and instead apply other
+            # operations based on arguments
             # self.clone_from(args[0])
             if "taxon_set" in kwargs:
                 self.taxon_set = kwargs["taxon_set"]
