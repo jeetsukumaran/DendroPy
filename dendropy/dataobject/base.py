@@ -24,6 +24,7 @@ import re
 import copy
 from dendropy.utility import bibtex
 from dendropy.utility import containers
+from dendropy.utility import error
 
 class DeepCopyConstructorMetaClass(type):
     """
@@ -36,7 +37,12 @@ class DeepCopyConstructorMetaClass(type):
 
     def __call__(cls, *args, **kwargs):
         if len(args) >= 1 and isinstance(args[0], cls):
+            if ("stream" in kwargs and kwargs["stream"] is not None) \
+                    or ("schema" in kwargs and kwargs["schema"] is not None):
+                raise error.MultipleInitializationSourceError(cls.__name__, arg=args[0])
             b = copy.deepcopy(args[0])
+            if len(args) > 1 or kwargs:
+                b.__init__(*args, **kwargs)
             return b
         else:
             b = type.__call__(cls, *args, **kwargs)
