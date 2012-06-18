@@ -26,28 +26,6 @@ from dendropy.utility import bibtex
 from dendropy.utility import containers
 from dendropy.utility import error
 
-class DeepCopyConstructorMetaClass(type):
-    """
-    Allow cloning of objects using 'c = ClassName(o)' via deepcopy.
-    """
-
-    def __new__(cls, name, bases, dct):
-        c = type.__new__(cls, name, bases, dct)
-        return c
-
-    def __call__(cls, *args, **kwargs):
-        if len(args) >= 1 and isinstance(args[0], cls):
-        # if len(args) >= 1 and args[0].__class__ in cls.__subclasses__():
-            if ("stream" in kwargs and kwargs["stream"] is not None) \
-                    or ("schema" in kwargs and kwargs["schema"] is not None):
-                raise error.MultipleInitializationSourceError(cls.__name__, arg=args[0])
-            b = copy.deepcopy(args[0])
-            b.__init__(*args, **kwargs)
-            return b
-        else:
-            b = type.__call__(cls, *args, **kwargs)
-            return b
-
 class DataObject(object):
     """
     Base class from which all classes that need to persist object attributes

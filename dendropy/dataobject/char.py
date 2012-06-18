@@ -786,8 +786,6 @@ class CharacterSubset(base.AnnotatedDataObject):
 class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     "Character data container/manager manager."
 
-    __metaclass__ = base.DeepCopyConstructorMetaClass
-
     def _parse_from_stream(cls, stream, schema, **kwargs):
         from dendropy.dataobject.dataset import DataSet
         index = kwargs.get("matrix_offset", 0)
@@ -972,16 +970,14 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         return taxon_to_state_indices
 
     def clone_from(self, *args):
-        warnings.warn("Repopulating a CharacterMatrix is now deprecated. Instantiate a new instance from the source instead.",
-                DeprecationWarning)
-        "\TODO: may need to check that we are not overwriting oid"
+        "TODO: may need to check that we are not overwriting oid"
         if len(args) > 1:
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
         elif len(args) == 1:
             if isinstance(args[0],  self.__class__):
                 ca = copy.deepcopy(args[0])
                 for k, v in ca.__dict__.iteritems():
-                    if k not in ["annotations"]:
+                    if k not in ["_annotations"]:
                         self.__dict__[k] = v
                 self.annotations = ca.annotations
             else:
@@ -1301,8 +1297,6 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 class ContinuousCharacterMatrix(CharacterMatrix):
     "Character data container/manager manager."
 
-    __metaclass__ = base.DeepCopyConstructorMetaClass
-
     def __init__(self, *args, **kwargs):
         "See CharacterMatrix.__init__ documentation"
         CharacterMatrix.__init__(self, *args, **kwargs)
@@ -1313,8 +1307,6 @@ class DiscreteCharacterMatrix(CharacterMatrix):
     That adds the attributes self.state_alphabets (a list of alphabets)
     and self.default_state_alphabet
     """
-
-    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
@@ -1382,8 +1374,6 @@ class DiscreteCharacterMatrix(CharacterMatrix):
 class StandardCharacterMatrix(DiscreteCharacterMatrix):
     "`standard` data."
 
-    __metaclass__ = base.DeepCopyConstructorMetaClass
-
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
 
@@ -1420,8 +1410,6 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
 
 class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 
-    __metaclass__ = base.DeepCopyConstructorMetaClass
-
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
 
@@ -1440,8 +1428,6 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "DNA nucleotide data."
 
-    __metaclass__ = base.DeepCopyConstructorMetaClass
-
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
 
@@ -1455,8 +1441,6 @@ class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
 
 class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "RNA nucleotide data."
-
-    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
@@ -1472,8 +1456,6 @@ class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
 class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Generic nucleotide data."
 
-    __metaclass__ = base.DeepCopyConstructorMetaClass
-
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
         FixedAlphabetCharacterMatrix.__init__(self, **kwargs)
@@ -1484,8 +1466,6 @@ class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
 
 class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Protein / amino acid data."
-
-    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def __init__(self, *args, **kwargs):
         """
@@ -1500,8 +1480,6 @@ class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
 class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Restriction sites data."
 
-    __metaclass__ = base.DeepCopyConstructorMetaClass
-
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
 
@@ -1515,8 +1493,6 @@ class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
 
 class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Infinite sites data."
-
-    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.

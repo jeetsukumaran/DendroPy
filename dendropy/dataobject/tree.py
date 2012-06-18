@@ -476,8 +476,6 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     root node as a node without `child_node` objects.
     """
 
-    __metaclass__ = base.DeepCopyConstructorMetaClass
-
     def _parse_from_stream(cls, stream, schema, **kwargs):
         from dendropy.dataobject.dataset import DataSet
         collection_offset = kwargs.get("collection_offset", -1)
@@ -613,39 +611,34 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         if len(args) > 1:
             # only allow 1 positional argument
             raise error.TooManyArgumentsError(func_name=self.__class__.__name__, max_args=1, args=args)
-        elif args and isinstance(args[0], Tree):
-            # Instantiation of self from other Tree should have been handled by
-            # metaclass via deep copy.  Thus here we skip actual
-            # creation/initialization of members, and instead apply other
-            # operations based on arguments.
-            # self.clone_from(args[0])
-            if "taxon_set" in kwargs:
-                self.taxon_set = kwargs["taxon_set"]
-                self.reindex_subcomponent_taxa()
-        else:
-            TaxonSetLinked.__init__(self,
-                                    taxon_set=kwargs.get("taxon_set", None),
-                                    label=kwargs.get("label", None),
-                                    oid=kwargs.get("oid", None))
-            iosys.Writeable.__init__(self)
-            iosys.Readable.__init__(self)
-            self.seed_node = Node(edge=Edge())
-            self.length_type = None
-            self.comments = None
-            self._is_rooted = None
-            self.weight = None
-            if len(args) == 1:
-                if ("stream" in kwargs and kwargs["stream"] is not None) \
-                        or ("schema" in kwargs and kwargs["schema"] is not None):
-                    raise error.MultipleInitializationSourceError(class_name=self.__class__.__name__, arg=args[0])
-                if isinstance(args[0], Node):
-                    self.seed_node = args[0]
-                else:
-                    raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
+        TaxonSetLinked.__init__(self,
+                                taxon_set=kwargs.get("taxon_set", None),
+                                label=kwargs.get("label", None),
+                                oid=kwargs.get("oid", None))
+        iosys.Writeable.__init__(self)
+        iosys.Readable.__init__(self)
+        self.seed_node = Node(edge=Edge())
+        self.length_type = None
+        self.comments = None
+        self._is_rooted = None
+        self.weight = None
+        if len(args) == 1:
+            if ("stream" in kwargs and kwargs["stream"] is not None) \
+                    or ("schema" in kwargs and kwargs["schema"] is not None):
+                raise error.MultipleInitializationSourceError(class_name=self.__class__.__name__, arg=args[0])
+            if isinstance(args[0], Node):
+                self.seed_node = args[0]
+            elif isinstance(args[0], Tree):
+                self.clone_from(args[0])
+                if "taxon_set" in kwargs:
+                    self.taxon_set = kwargs["taxon_set"]
+                    self.reindex_subcomponent_taxa()
             else:
-                if "seed_node" in kwargs:
-                    self.seed_node = kwargs['seed_node']
-                self.process_source_kwargs(**kwargs)
+                raise error.InvalidArgumentValueError(func_name=self.__class__.__name__, arg=args[0])
+        else:
+            if "seed_node" in kwargs:
+                self.seed_node = kwargs['seed_node']
+            self.process_source_kwargs(**kwargs)
         if "oid" in kwargs:
             self.oid = kwargs["oid"]
         if "label" in kwargs:
