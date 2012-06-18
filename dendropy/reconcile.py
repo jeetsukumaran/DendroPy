@@ -95,7 +95,8 @@ class ContainingTree(dataobject.Tree):
     """
         if "taxon_set" not in kwargs:
             kwargs["taxon_set"] = containing_tree.taxon_set
-        dataobject.Tree.__init__(self, containing_tree, **kwargs)
+        # dataobject.Tree.__init__(self, containing_tree, **kwargs)
+        self.clone_from(containing_tree)
         self.original_tree = containing_tree
         for edge in self.postorder_edge_iter():
             edge.head_contained_edges = {}

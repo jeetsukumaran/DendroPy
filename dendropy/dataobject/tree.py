@@ -617,7 +617,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             # Instantiation of self from other Tree should have been handled by
             # metaclass via deep copy.  Thus here we skip actual
             # creation/initialization of members, and instead apply other
-            # operations based on arguments
+            # operations based on arguments.
             # self.clone_from(args[0])
             if "taxon_set" in kwargs:
                 self.taxon_set = kwargs["taxon_set"]

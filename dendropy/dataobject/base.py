@@ -37,12 +37,12 @@ class DeepCopyConstructorMetaClass(type):
 
     def __call__(cls, *args, **kwargs):
         if len(args) >= 1 and isinstance(args[0], cls):
+        # if len(args) >= 1 and args[0].__class__ in cls.__subclasses__():
             if ("stream" in kwargs and kwargs["stream"] is not None) \
                     or ("schema" in kwargs and kwargs["schema"] is not None):
                 raise error.MultipleInitializationSourceError(cls.__name__, arg=args[0])
             b = copy.deepcopy(args[0])
-            if len(args) > 1 or kwargs:
-                b.__init__(*args, **kwargs)
+            b.__init__(*args, **kwargs)
             return b
         else:
             b = type.__call__(cls, *args, **kwargs)
@@ -101,9 +101,11 @@ class AnnotatedDataObject(DataObject):
         self._annotations = AnnotationSet(self)
 
     def _get_annotations(self):
+        if not hasattr(self, "_annotations"):
+            self._annotations = AnnotationSet(self)
         return self._annotations
     def _set_annotations(self, annotations):
-        if annotations is self.annotations:
+        if hasattr(self, "_annotations") and annotations is self.annotations:
             return
         if not isinstance(annotations, AnnotationSet):
             raise ValueError("Cannot set `annotations` to object of type `%s`" % type(annotations))
