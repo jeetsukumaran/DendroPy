@@ -426,7 +426,7 @@ class NexusDocumentReadWriteTest(datatest.AnnotatedDataObjectVerificationTestCas
 
     def testRoundTripReference(self):
         reference_dataset = datagen.reference_single_taxonset_dataset()
-        self.roundTripDataSetTest(reference_dataset, "nexus")
+        self.roundTripDataSetTest(reference_dataset, "nexus", ignore_chartypes=True)
 
     def testRoundTripProtein(self):
         s = pathmap.char_source_stream("caenophidia_mos.chars.nexus")
