@@ -23,6 +23,7 @@ Base classes for all readers/parsers and formatters/writers.
 import os
 from urllib import urlopen
 from cStringIO import StringIO
+from dendropy.dataobject import base
 from dendropy.utility import error
 
 ###############################################################################

@@ -469,7 +469,8 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             raise NotImplementedError()
 
     def verifyAnnotationsTarget(self, annotated):
-        self.assertIs(annotated.annotations.target, annotated)
+        self.assertIs(annotated.annotations.target, annotated,
+                "invalid target for %s: %s is not %s" % (repr(annotated.annotations), repr(annotated.annotations.target), repr(annotated)))
         for a in annotated.annotations:
             if a.is_attribute:
                 self.assertIs(a._value[0], annotated)

@@ -129,7 +129,7 @@ class OrderedSet(list):
         return "[%s]" % ", ".join([str(i) for i in self])
 
     def __repr__(self):
-        return "OrderedSet([%s])" % ", ".join([str(i) for i in self])
+        return "%s([%s])" % (self.__class__.__name__, ", ".join([str(i) for i in self]))
 
     def __hash__(self):
         return hash( (t for t in self) )

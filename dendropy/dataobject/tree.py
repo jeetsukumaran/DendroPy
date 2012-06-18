@@ -650,16 +650,16 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     ###########################################################################
     ## I/O
 
-    # def clone_from(self, other):
-    #     """
-    #     Clones the structure and properties of `Tree` object `other`.
-    #     """
-    #     t = copy.deepcopy(other)
-    #     for k, v in t.__dict__.iteritems():
-    #         if k not in ["annotations"]:
-    #             self.__dict__[k] = v
-    #     self.annotations = t.annotations
-    #     return self
+    def clone_from(self, other):
+        """
+        Clones the structure and properties of `Tree` object `other`.
+        """
+        t = copy.deepcopy(other)
+        for k, v in t.__dict__.iteritems():
+            if k not in ["_annotations"]:
+                self.__dict__[k] = v
+        self.annotations = t.annotations
+        return self
 
     # def __deepcopy__(self, memo):
     #     # we treat the taxa as immutable and copy the reference even in a deepcopy
