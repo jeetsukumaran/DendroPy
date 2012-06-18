@@ -476,7 +476,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     root node as a node without `child_node` objects.
     """
 
-    __metaclass__ = base.CloningMetaClass
+    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def _parse_from_stream(cls, stream, schema, **kwargs):
         from dendropy.dataobject.dataset import DataSet

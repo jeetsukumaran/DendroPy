@@ -25,7 +25,7 @@ import copy
 from dendropy.utility import bibtex
 from dendropy.utility import containers
 
-class CloningMetaClass(type):
+class DeepCopyConstructorMetaClass(type):
     """
     Allow cloning of objects using 'c = ClassName(o)' via deepcopy.
     """

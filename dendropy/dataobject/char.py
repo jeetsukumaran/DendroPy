@@ -786,7 +786,7 @@ class CharacterSubset(base.AnnotatedDataObject):
 class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     "Character data container/manager manager."
 
-    __metaclass__ = base.CloningMetaClass
+    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def _parse_from_stream(cls, stream, schema, **kwargs):
         from dendropy.dataobject.dataset import DataSet
@@ -1301,7 +1301,7 @@ class CharacterMatrix(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 class ContinuousCharacterMatrix(CharacterMatrix):
     "Character data container/manager manager."
 
-    __metaclass__ = base.CloningMetaClass
+    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def __init__(self, *args, **kwargs):
         "See CharacterMatrix.__init__ documentation"
@@ -1314,7 +1314,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
     and self.default_state_alphabet
     """
 
-    __metaclass__ = base.CloningMetaClass
+    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
@@ -1382,7 +1382,7 @@ class DiscreteCharacterMatrix(CharacterMatrix):
 class StandardCharacterMatrix(DiscreteCharacterMatrix):
     "`standard` data."
 
-    __metaclass__ = base.CloningMetaClass
+    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
@@ -1420,7 +1420,7 @@ class StandardCharacterMatrix(DiscreteCharacterMatrix):
 
 class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 
-    __metaclass__ = base.CloningMetaClass
+    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
@@ -1440,7 +1440,7 @@ class FixedAlphabetCharacterMatrix(DiscreteCharacterMatrix):
 class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "DNA nucleotide data."
 
-    __metaclass__ = base.CloningMetaClass
+    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
@@ -1456,7 +1456,7 @@ class DnaCharacterMatrix(FixedAlphabetCharacterMatrix):
 class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
     "RNA nucleotide data."
 
-    __metaclass__ = base.CloningMetaClass
+    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
@@ -1472,7 +1472,7 @@ class RnaCharacterMatrix(FixedAlphabetCharacterMatrix):
 class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Generic nucleotide data."
 
-    __metaclass__ = base.CloningMetaClass
+    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def __init__(self, *args, **kwargs):
         "Inits. Handles keyword arguments: `oid`, `label` and `taxon_set`."
@@ -1485,7 +1485,7 @@ class NucleotideCharacterMatrix(FixedAlphabetCharacterMatrix):
 class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Protein / amino acid data."
 
-    __metaclass__ = base.CloningMetaClass
+    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def __init__(self, *args, **kwargs):
         """
@@ -1500,7 +1500,7 @@ class ProteinCharacterMatrix(FixedAlphabetCharacterMatrix):
 class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Restriction sites data."
 
-    __metaclass__ = base.CloningMetaClass
+    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
@@ -1516,7 +1516,7 @@ class RestrictionSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
 class InfiniteSitesCharacterMatrix(FixedAlphabetCharacterMatrix):
     "Infinite sites data."
 
-    __metaclass__ = base.CloningMetaClass
+    __metaclass__ = base.DeepCopyConstructorMetaClass
 
     def __init__(self, *args, **kwargs):
         """See CharacterMatrix.__init__ documentation for kwargs.
