@@ -166,7 +166,9 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                         self.assertNotEqual(oids1, oids2)
             self.assertDistinctButEqualAnnotations(taxon_set1, taxon_set2, **kwargs)
         else:
-            self.assertIs(taxon_set1, taxon_set2)
+            for ti, t1 in enumerate(taxon_set1):
+                t2 = taxon_set2[ti]
+                self.assertIs(t1, t2)
 
     def assertDistinctButEqualTreeList(self, tree_list1, tree_list2, **kwargs):
         """
