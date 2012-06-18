@@ -47,6 +47,11 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             writer_kwargs = {}
         if reader_kwargs is None:
             reader_kwargs = {}
+
+        # no real support character types in non-NeXML formats ... yet
+        if "ignore_chartypes" not in kwargs and schema != "nexml":
+            kwargs["ignore_chartypes"] = True
+
         rt_dataset, output_path = self.roundTripData(dataset, schema, writer_kwargs=writer_kwargs, reader_kwargs=reader_kwargs)
         self.logger.info("Comparing original and round-tripped DataSet objects")
         self.assertDistinctButEqual(dataset, rt_dataset, **kwargs)
@@ -407,7 +412,10 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
                 self.assertIs(sa1, sa2)
                 self.assertIs(char_matrix1.default_state_alphabet, char_matrix2.default_state_alphabet)
         if not ignore_chartypes:
-            self.assertEqual(len(char_matrix1.character_types), len(char_matrix2.character_types))
+            self.assertEqual(len(char_matrix1.character_types), len(char_matrix2.character_types),
+                    "Unequal character type lists:\n\n%s: %s\n\n%s: %s\n" % (
+                        repr(char_matrix1), char_matrix1.character_types,
+                        repr(char_matrix1), char_matrix2.character_types))
             for coli, col1 in enumerate(char_matrix1.character_types):
                 col2 = char_matrix2.character_types[coli]
                 if distinct_state_alphabets is True:

@@ -2433,6 +2433,11 @@ def reference_dna_matrix(taxon_set=None):
     dna_dict = reference_dna_dict()
     for t in dna.taxon_set:
         dna[t] = sa.get_states_as_vector(symbols=dna_dict[t.label])
+    ct = dendropy.CharacterType(state_alphabet=dna.default_state_alphabet)
+    dna.character_types.append(ct)
+    for vec in dna.values():
+        for col in vec:
+            col.character_type = ct
     return dna
 
 def reference_continuous_matrix(taxon_set=None):

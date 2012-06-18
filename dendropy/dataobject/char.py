@@ -203,6 +203,12 @@ class StateAlphabet(base.AnnotatedDataObject, list):
         self.symbol_synonyms = {}
         self.case_sensitive = kwargs.get('case_sensitive', False)
 
+    def __deepcopy__(self, memo):
+        o = base.AnnotatedDataObject.__deepcopy__(self, memo)
+        for sae in self:
+            o.append(copy.deepcopy(sae, memo))
+        return o
+
     def get_state(self, attr_name, value):
         "Returns state in self in which attr_name equals value."
         for state in self:

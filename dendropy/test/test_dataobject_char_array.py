@@ -104,7 +104,8 @@ class DnaMatrixTest(datatest.AnnotatedDataObjectVerificationTestCase):
             ca2,
             char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
-            distinct_taxa=False)
+            distinct_taxa=False,
+            ignore_chartypes=True)
 
 class StandardMatrixTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
@@ -118,7 +119,8 @@ class StandardMatrixTest(datatest.AnnotatedDataObjectVerificationTestCase):
             ca2,
             char_type=dendropy.StandardCharacterMatrix,
             distinct_state_alphabets=True,
-            distinct_taxa=False)
+            distinct_taxa=False,
+            ignore_chartypes=True)
 
 class CharMatrixReadTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
@@ -135,7 +137,8 @@ class CharMatrixReadTest(datatest.AnnotatedDataObjectVerificationTestCase):
             c,
             char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
-            distinct_taxa=True)
+            distinct_taxa=True,
+            ignore_chartypes=True)
 
     def testIndexedRead(self):
         c = dendropy.StandardCharacterMatrix()
@@ -145,7 +148,8 @@ class CharMatrixReadTest(datatest.AnnotatedDataObjectVerificationTestCase):
             c,
             char_type=dendropy.StandardCharacterMatrix,
             distinct_state_alphabets=None,
-            distinct_taxa=True)
+            distinct_taxa=True,
+            ignore_chartypes=True)
 
     def testIncompatibleRead(self):
         c = dendropy.DnaCharacterMatrix()
@@ -159,7 +163,8 @@ class CharMatrixReadTest(datatest.AnnotatedDataObjectVerificationTestCase):
             c,
             char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
-            distinct_taxa=True)
+            distinct_taxa=True,
+            ignore_chartypes=True)
 
     def testSameTaxaRead(self):
         c = dendropy.DnaCharacterMatrix()
@@ -171,7 +176,8 @@ class CharMatrixReadTest(datatest.AnnotatedDataObjectVerificationTestCase):
             c,
             char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
-            distinct_taxa=False)
+            distinct_taxa=False,
+            ignore_chartypes=True)
 
     def testSameTaxaInit(self):
         c = dendropy.DnaCharacterMatrix(stream=open(self.data_path, "rU"),
@@ -182,7 +188,8 @@ class CharMatrixReadTest(datatest.AnnotatedDataObjectVerificationTestCase):
             c,
             char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
-            distinct_taxa=False)
+            distinct_taxa=False,
+            ignore_chartypes=True)
 
 class CharMatrixWriteTest(datatest.AnnotatedDataObjectVerificationTestCase):
 
@@ -196,7 +203,8 @@ class CharMatrixWriteTest(datatest.AnnotatedDataObjectVerificationTestCase):
             c2,
             char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
-            distinct_taxa=True)
+            distinct_taxa=True,
+            ignore_chartypes=True)
 
     def testDnaRountTripToStringDistinctTaxa(self):
         c1 = datagen.reference_dna_matrix()
@@ -207,7 +215,8 @@ class CharMatrixWriteTest(datatest.AnnotatedDataObjectVerificationTestCase):
             c2,
             char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
-            distinct_taxa=True)
+            distinct_taxa=True,
+            ignore_chartypes=True)
 
     def testDnaRountTripSameTaxa(self):
         c1 = datagen.reference_dna_matrix()
@@ -219,7 +228,8 @@ class CharMatrixWriteTest(datatest.AnnotatedDataObjectVerificationTestCase):
             c2,
             char_type=dendropy.DnaCharacterMatrix,
             distinct_state_alphabets=False,
-            distinct_taxa=False)
+            distinct_taxa=False,
+            ignore_chartypes=True)
 
     def testStandardRountTripDistinctTaxa(self):
         c1 = datagen.reference_standard_matrix()
@@ -231,7 +241,8 @@ class CharMatrixWriteTest(datatest.AnnotatedDataObjectVerificationTestCase):
             c2,
             char_type=dendropy.StandardCharacterMatrix,
             distinct_state_alphabets=None,
-            distinct_taxa=True)
+            distinct_taxa=True,
+            ignore_chartypes=True)
 
     def testStandardRountTripSameTaxa(self):
         c1 = datagen.reference_standard_matrix()
@@ -243,7 +254,8 @@ class CharMatrixWriteTest(datatest.AnnotatedDataObjectVerificationTestCase):
             c2,
             char_type=dendropy.StandardCharacterMatrix,
             distinct_state_alphabets=None,
-            distinct_taxa=False)
+            distinct_taxa=False,
+            ignore_chartypes=True)
 
 
 if __name__ == "__main__":

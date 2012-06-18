@@ -38,25 +38,30 @@ class DataSetCreateTest(datatest.AnnotatedDataObjectVerificationTestCase):
     def testReadNexus(self):
         ds_str = self.dataset.as_string(schema="nexus")
         ds2 = dendropy.DataSet(stream=StringIO(ds_str), schema="nexus")
-        self.assertDistinctButEqual(self.dataset, ds2)
+        self.assertDistinctButEqual(self.dataset, ds2,
+                ignore_chartypes=True)
 
     def testFromFileFactory(self):
         ds_str = self.dataset.as_string(schema="nexus")
         ds2 = dendropy.DataSet.get_from_stream(StringIO(ds_str), "nexus")
-        self.assertDistinctButEqual(self.dataset, ds2)
+        self.assertDistinctButEqual(self.dataset, ds2,
+                ignore_chartypes=True)
 
     def testFromPathFactory(self):
         ds2 = dendropy.DataSet.get_from_path(pathmap.mixed_source_path('reference_single_taxonset_dataset.nex'), "nexus")
-        self.assertDistinctButEqual(self.dataset, ds2)
+        self.assertDistinctButEqual(self.dataset, ds2,
+                ignore_chartypes=True)
 
     def testFromStringFactory(self):
         ds_str = self.dataset.as_string(schema="nexus")
         ds2 = dendropy.DataSet.get_from_string(ds_str, "nexus")
-        self.assertDistinctButEqual(self.dataset, ds2)
+        self.assertDistinctButEqual(self.dataset, ds2,
+                ignore_chartypes=True)
 
     def testFromCopy(self):
         ds2 = dendropy.DataSet(self.dataset)
-        self.assertDistinctButEqual(self.dataset, ds2)
+        self.assertDistinctButEqual(self.dataset, ds2,
+                ignore_chartypes=True)
 
     def testSimpleCopyDnaMatrix(self):
         char_matrix = datagen.reference_dna_matrix()
@@ -64,7 +69,8 @@ class DataSetCreateTest(datatest.AnnotatedDataObjectVerificationTestCase):
         self.assertEqual(len(ds1.char_matrices), 1)
         self.assertIs(ds1.char_matrices[0], char_matrix)
         ds2 = dendropy.DataSet(ds1)
-        self.assertDistinctButEqual(ds1, ds2)
+        self.assertDistinctButEqual(ds1, ds2,
+                ignore_chartypes=True)
 
     def testSimpleCopyStandardMatrix(self):
         char_matrix = datagen.reference_standard_matrix()
@@ -72,7 +78,8 @@ class DataSetCreateTest(datatest.AnnotatedDataObjectVerificationTestCase):
         self.assertEqual(len(ds1.char_matrices), 1)
         self.assertIs(ds1.char_matrices[0], char_matrix)
         ds2 = dendropy.DataSet(ds1)
-        self.assertDistinctButEqual(ds1, ds2)
+        self.assertDistinctButEqual(ds1, ds2,
+                ignore_chartypes=True)
 
 class DataSetTaxonManagement(datatest.AnnotatedDataObjectVerificationTestCase):
 

@@ -52,7 +52,7 @@ class TestFasta(datatest.AnnotatedDataObjectVerificationTestCase):
         output_path = pathmap.named_output_path(filename="roundtrip_test.fasta", suffix_timestamp=True)
         dna1.write_to_path(output_path, 'fasta')
         dna2 = dendropy.DnaCharacterMatrix.get_from_path(output_path, 'fasta')
-        self.assertDistinctButEqual(dna1, dna2)
+        self.assertDistinctButEqual(dna1, dna2, ignore_chartypes=True)
 
 if __name__ == "__main__":
     unittest.main()
