@@ -241,9 +241,10 @@ class Readable(object):
             # checks that `schema` keyword argument is specified, and then
             # calls self.read()
 
-        If `stream` is not specified then `source_string` and `source_filepath`
-            kwarg arguments are checked. The effect of thes is similar to calling
-            read_from_string and read_from_path
+        If `stream` is not specified, then nothing happens: unless the
+        data object was populated through other means, and empty data
+        object will the result (typically used as a starting point
+        for population unit by unit).
         """
         if "stream" in kwargs:
             stream = kwargs["stream"]
@@ -251,7 +252,7 @@ class Readable(object):
             schema = require_format_from_kwargs(kwargs)
             self.read(stream=stream, schema=schema, **kwargs)
         # else:
-        #     raise NotImplementedError
+        #     from pudb import set_trace; set_trace()
         # elif "source_string" in kwargs:
         #     as_str = kwargs["source_string"]
         #     del(kwargs["source_string"])
