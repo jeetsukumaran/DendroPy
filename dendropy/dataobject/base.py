@@ -65,7 +65,7 @@ class DataObject(object):
         memo[id(self._oid)] = o._oid
         memo[id(self.label)] = o.label
         for k, v in self.__dict__.iteritems():
-            o.__dict__[copy.deepcopy(k)] = copy.deepcopy(v, memo)
+            o.__dict__[copy.deepcopy(k, memo)] = copy.deepcopy(v, memo)
         return o
 
 class AnnotatedDataObject(DataObject):
@@ -179,7 +179,7 @@ class Annotation(AnnotatedDataObject):
         memo[id(self)] = o
         for k, v in self.__dict__.iteritems():
             if k not in ["label", "_oid"]:
-                o.__dict__[copy.deepcopy(k)] = copy.deepcopy(v, memo)
+                o.__dict__[copy.deepcopy(k, memo)] = copy.deepcopy(v, memo)
         # if o.is_attribute:
         #     o._value = (memo[i] for i in self._value)
         return o
