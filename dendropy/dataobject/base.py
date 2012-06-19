@@ -83,7 +83,9 @@ class AnnotatedDataObject(DataObject):
             self._annotations = AnnotationSet(self)
         return self._annotations
     def _set_annotations(self, annotations):
-        if hasattr(self, "_annotations") and annotations is self.annotations:
+        if hasattr(self, "_annotations") \
+                and annotations is self._annotations \
+                and self._annotations.target is self:
             return
         if not isinstance(annotations, AnnotationSet):
             raise ValueError("Cannot set `annotations` to object of type `%s`" % type(annotations))
@@ -108,10 +110,14 @@ class AnnotatedDataObject(DataObject):
         o = DataObject.__deepcopy__(self, memo)
 
         # reassign annotations
-        del memo[id(self.annotations)]
-        annotations_copy = copy.deepcopy(self.annotations, memo)
-        o._annotations = annotations_copy
-        memo[id(self.annotations)] = o._annotations
+        # del memo[id(self.annotations)]
+        # annotations_copy = copy.deepcopy(self.annotations, memo)
+        # o._annotations = annotations_copy
+        # memo[id(self.annotations)] = o._annotations
+        del memo[id(self._annotations)]
+        annotations_copy = copy.deepcopy(self._annotations, memo)
+        o.annotations = annotations_copy
+        memo[id(self._annotations)] = o._annotations
 
         # return
         return o

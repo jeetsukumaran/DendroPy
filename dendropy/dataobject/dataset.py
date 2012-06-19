@@ -80,8 +80,7 @@ class DataSet(AnnotatedDataObject, iosys.Readable, iosys.Writeable):
             if len(args) == 1 and isinstance(args[0], DataSet):
                 if attach_taxon_set or (taxa is not None):
                     raise error.MultipleInitializationSourceError("Cannot initialize DataSet from another DataSetobject taxon_set or attach_taxon_set are specified")
-                d = deepcopy(args[0])
-                self.__dict__ = d.__dict__
+                self.clone_from(args[0])
             else:
                 for arg in args:
                     if isinstance(arg, DataSet):
@@ -96,34 +95,26 @@ class DataSet(AnnotatedDataObject, iosys.Readable, iosys.Writeable):
     ###########################################################################
     ## CLONING
 
+    def clone_from(self, other):
+        d = deepcopy(other)
+        self.__dict__ = d.__dict__
+        self.annotations = d.annotations
+        return self
+
     def __deepcopy__(self, memo):
-        o = DataSet()
-        memo[id(self)] = o
+        taxon_sets = []
         for ts0 in self.taxon_sets:
-            ts1 = o.new_taxon_set(label=ts0.label)
+            ts1 = TaxonSet(label=ts0.label)
             memo[id(ts0)] = ts1
+            taxon_sets.append(ts1)
             for t in ts0:
-                ts1.new_taxon(label=t.label)
-                memo[id(t)] = ts1[-1]
-        memo[id(self.taxon_sets)] = o.taxon_sets
-        for tli, tl1 in enumerate(self.tree_lists):
-            tl2 = o.new_tree_list(label=tl1.label, taxon_set=memo[id(tl1.taxon_set)])
-            memo[id(tl1)] = tl2
-            for ti, t1 in enumerate(tl1):
-                t2 = deepcopy(t1, memo)
-                tl2.append(t2)
-                memo[id(t1)] = t2
-        memo[id(self.tree_lists)] = o.tree_lists
-        for cai, ca1 in enumerate(self.char_matrices):
-            ca2 = deepcopy(ca1, memo)
-            o.char_matrices.add(ca2)
-            memo[id(ca1)] = ca2
-        memo[id(self.char_matrices)] = o.char_matrices
-        if self.attached_taxon_set is not None:
-            o.attached_taxon_set = memo[id(self.attached_taxon_set)]
-        else:
-            o.attached_taxon_set = None
-        o.annotations = deepcopy(self.annotations, memo)
+                taxon = ts1.new_taxon(label=t.label)
+                memo[id(t)] = taxon
+        memo[id(self.taxon_sets)] = taxon_sets
+        o = AnnotatedDataObject.__deepcopy__(self, memo)
+        memo[id(self)] = o
+        o.taxon_sets = taxon_sets
+        assert o.annotations.target is o
         return o
 
     ###########################################################################

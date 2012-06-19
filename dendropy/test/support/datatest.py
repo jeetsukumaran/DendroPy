@@ -428,8 +428,8 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
         self.assertEqual(len(char_matrix1), len(char_matrix2))
 
         for ti, taxon1 in enumerate(char_matrix1):
-            vec1 = char_matrix1[taxon1]
             taxon2 = char_matrix2.taxon_set[ti]
+            vec1 = char_matrix1[taxon1]
             vec2 = char_matrix2[taxon2]
             self.logger.info("Comparing CharacterDataVector objects %d and %d" % (id(vec2), id(vec2)))
             self.assertDistinctButEqualAnnotations(vec1, vec2, **kwargs)
@@ -480,7 +480,11 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
 
     def verifyAnnotationsTarget(self, annotated):
         self.assertIs(annotated.annotations.target, annotated,
-                "invalid target for %s: %s is not %s" % (repr(annotated.annotations), repr(annotated.annotations.target), repr(annotated)))
+                "invalid target for %s (%s): %s (target) is not %s (annotated)" % (
+                        repr(annotated.annotations),
+                        hex(id(annotated.annotations)),
+                        repr(annotated.annotations.target),
+                        repr(annotated)))
         for a in annotated.annotations:
             if a.is_attribute:
                 self.assertIs(a._value[0], annotated)

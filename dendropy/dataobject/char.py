@@ -686,7 +686,7 @@ class CharacterDataMap(dict, base.AnnotatedDataObject):
     def __deepcopy__(self, memo):
         o = base.AnnotatedDataObject.__deepcopy__(self, memo)
         for k, v in self.iteritems():
-            o[k] = copy.deepcopy(v, memo)
+            o[copy.deepcopy(k, memo)] = copy.deepcopy(v, memo)
         return o
 
     def _get_vector_size(self):
