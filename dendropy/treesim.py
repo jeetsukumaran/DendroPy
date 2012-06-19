@@ -825,7 +825,7 @@ def constrained_kingman(pop_tree,
     else:
         # start with a new (deep) copy of the population tree so as to not
         # to change the original tree
-        working_poptree = copy.deepcopy(pop_tree)
+        working_poptree = dataobject.Tree(pop_tree)
 
     # start with a new tree
     gene_tree = dataobject.Tree()

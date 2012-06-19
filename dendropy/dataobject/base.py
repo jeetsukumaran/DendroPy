@@ -65,7 +65,7 @@ class DataObject(object):
         memo[id(self._oid)] = o._oid
         memo[id(self.label)] = o.label
         for k, v in self.__dict__.iteritems():
-            o.__dict__[k] = copy.deepcopy(v, memo)
+            o.__dict__[copy.deepcopy(k)] = copy.deepcopy(v, memo)
         return o
 
 class AnnotatedDataObject(DataObject):
@@ -93,7 +93,7 @@ class AnnotatedDataObject(DataObject):
         self._annotations = annotations
         self._annotations.target = self
         for a in self._annotations:
-            if a.is_attribute and a.value[0] is old_target:
+            if a.is_attribute and a._value[0] is old_target:
                 a.target = self
     annotations = property(_get_annotations, _set_annotations)
 
@@ -178,10 +178,10 @@ class Annotation(AnnotatedDataObject):
         o = self.__class__(name=None, value=None)
         memo[id(self)] = o
         for k, v in self.__dict__.iteritems():
-            if k not in ["value", "label", "_oid"]:
-                o.__dict__[k] = copy.deepcopy(v, memo)
-        if o.is_attribute:
-            o._value = (memo[i] for i in self._value)
+            if k not in ["label", "_oid"]:
+                o.__dict__[copy.deepcopy(k)] = copy.deepcopy(v, memo)
+        # if o.is_attribute:
+        #     o._value = (memo[i] for i in self._value)
         return o
 
     def is_match(self, **kwargs):
