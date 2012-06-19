@@ -250,17 +250,19 @@ class Readable(object):
             del(kwargs["stream"])
             schema = require_format_from_kwargs(kwargs)
             self.read(stream=stream, schema=schema, **kwargs)
-        elif "source_string" in kwargs:
-            as_str = kwargs["source_string"]
-            del(kwargs["source_string"])
-            kwargs["stream"] = StringIO(as_str)
-            return self.process_source_kwargs(**kwargs)
-        elif "source_file" in kwargs:
-            fp = kwargs["source_filepath"]
-            fo = open(os.path.expandvars(os.path.expanduser(filepath)), "rU")
-            del(kwargs["source_filepath"])
-            kwargs["stream"] = fo
-            return self.process_source_kwargs(**kwargs)
+        # else:
+        #     raise NotImplementedError
+        # elif "source_string" in kwargs:
+        #     as_str = kwargs["source_string"]
+        #     del(kwargs["source_string"])
+        #     kwargs["stream"] = StringIO(as_str)
+        #     return self.process_source_kwargs(**kwargs)
+        # elif "source_file" in kwargs:
+        #     fp = kwargs["source_filepath"]
+        #     fo = open(os.path.expandvars(os.path.expanduser(filepath)), "rU")
+        #     del(kwargs["source_filepath"])
+        #     kwargs["stream"] = fo
+        #     return self.process_source_kwargs(**kwargs)
 
     def read(self, stream, schema, **kwargs):
         """
