@@ -21,7 +21,11 @@ Base classes for all readers/parsers and formatters/writers.
 """
 
 import os
+import sys
+import re
 from urllib import urlopen
+from HTMLParser import HTMLParser
+
 from cStringIO import StringIO
 from dendropy.dataobject import base
 from dendropy.utility import error
@@ -61,12 +65,31 @@ def extract_kwarg(kwdict, kw, default=None):
 ###############################################################################
 ## Helpers
 
-def read_url(url):
+# class MLStripper(HTMLParser):
+#     def __init__(self):
+#         self.reset()
+#         self.fed = []
+#     def handle_data(self, d):
+#         self.fed.append(d)
+#     def get_data(self):
+#         return ''.join(self.fed)
+
+# # note that this strips &amp; etc. as well
+# def strip_markup(html):
+#     s = MLStripper()
+#     s.feed(html)
+#     return s.get_data()
+
+def read_url(url, strip_markup=False):
     """
     Return contents of url as string.
     """
     s = urlopen(url)
-    return s.read()
+    text = s.read()
+    if strip_markup:
+        return re.sub(r'<[^>]*?>', '', text)
+    else:
+        return text
 
 ###############################################################################
 ## IOService
@@ -219,16 +242,21 @@ class Readable(object):
                 **kwargs)
     get_from_string = classmethod(get_from_string)
 
-    def get_from_url(cls, src, schema, **kwargs):
+    def get_from_url(cls, src, schema, strip_markup=False, **kwargs):
         """
         Factory method to return a new object of this class from
         URL given by `src`.
         """
-        text = read_url(src)
+        text = read_url(src, strip_markup=strip_markup)
         ssrc = StringIO(text)
-        return cls._parse_from_stream(stream=ssrc,
-                schema=schema,
-                **kwargs)
+        try:
+            return cls._parse_from_stream(stream=ssrc,
+                    schema=schema,
+                    **kwargs)
+        except error.DataParseError:
+            sys.stderr.write(text)
+            raise
+
     get_from_url = classmethod(get_from_url)
 
     def __init__(self, *args, **kwargs):
