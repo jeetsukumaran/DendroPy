@@ -325,8 +325,7 @@ class AnnotationSet(containers.OrderedSet):
                 note_as_reference=note_as_reference,
                 is_hidden=is_hidden,
                 )
-        self.add(annote)
-        return annote
+        return self.add(annote)
 
     # def update(self, other):
     #     for item in other:
@@ -426,8 +425,7 @@ class AnnotationSet(containers.OrderedSet):
                 note_as_reference=note_as_reference,
                 is_hidden=is_hidden,
                 )
-        self.add(annote)
-        return annote
+        return self.add(annote)
 
     def add_citation(self,
             citation,
@@ -476,7 +474,7 @@ class AnnotationSet(containers.OrderedSet):
 
         """
         if read_as == "bibtex":
-            self.add_bibtex(citation=citation,
+            return self.add_bibtex(citation=citation,
                     store_as=store_as,
                     name_prefix=name_prefix,
                     namespace=namespace,
