@@ -267,7 +267,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         self.load_time = None
         self.parse_time = None
         self.id_taxon_set_map = {}
-        self.namespace =kwargs.get("namespace", NexmlReader.DEFAULT_NEXML_NAMESPACE)
+        self.namespace = kwargs.get("namespace", NexmlReader.DEFAULT_NEXML_NAMESPACE)
         _AnnotationParser.__init__(self)
 
     ## Implementation of the datasets.Reader interface ##
