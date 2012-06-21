@@ -31,6 +31,7 @@ from dendropy.dataio import xmlparser
 import dendropy
 
 SUPPORTED_NEXML_NAMESPACES = ('http://www.nexml.org/1.0', 'http://www.nexml.org/2009')
+
 ############################################################################
 ## Local Module Methods
 
@@ -162,10 +163,98 @@ class _AnnotationParser(object):
                 namespace=namespace,
                 name_is_prefixed=False,
                 note_as_reference=note_as_reference)
-        top_annotations = [i for i in nxelement.iter_top_children('meta')]
+        top_annotations = [i for i in nxelement.findall_annotations()]
         for annotation in top_annotations:
             self.parse_annotations(a, annotation)
     # print _compose_annotation_xml(a)
+
+############################################################################
+## Abstraction Layer Around XML
+
+DEFAULT_NEXML_NAMESPACE = 'http://www.nexml.org/2009'
+
+class NexmlElement(xmlparser.XmlElement):
+
+    def __init__(self, element, default_namespace=None, element_object_type=None):
+        if default_namespace is None:
+            default_namespace = DEFAULT_NEXML_NAMESPACE
+        if element_object_type is None:
+            element_object_type = self.__class__
+        xmlparser.XmlElement.__init__(self,
+                element=element,
+                default_namespace=default_namespace,
+                element_object_type=element_object_type)
+
+    ## Annotations ##
+
+    def findall_annotations(self):
+        return self.namespaced_findall("meta")
+
+    ## TaxonSet Elements ##
+
+    def iter_otus(self):
+        return self.namespaced_getiterator("otus")
+
+    def findall_otu(self):
+        return self.namespaced_findall("otu")
+
+    ## Characters ##
+
+    def iter_characters(self):
+        return self.namespaced_getiterator("characters")
+
+    def find_char_format(self):
+        return self.namespaced_find("format")
+
+    def find_char_matrix(self):
+        return self.namespaced_find("matrix")
+
+    def findall_multistate_member(self):
+        return self.namespaced_findall("member")
+
+    def findall_polymorphic_state_set(self):
+        return self.namespaced_findall("polymorphic_state_set")
+
+    def findall_uncertain_state_set(self):
+        return self.namespaced_findall("uncertain_state_set")
+
+    def findall_char_state(self):
+        return self.namespaced_findall("state")
+
+    def findall_char_states(self):
+        return self.namespaced_findall("states")
+
+    def findall_char(self):
+        return self.namespaced_findall("char")
+
+    def findall_char_row(self):
+        return self.namespaced_findall("row")
+
+    def findall_char_cell(self):
+        return self.namespaced_findall("cell")
+
+    def find_char_seq(self):
+        return self._element.findtext('{%s}seq' % self.default_namespace)
+
+    ## Trees ##
+
+    def iter_trees(self):
+        return self.namespaced_getiterator("trees")
+
+    def findall_tree(self):
+        return self.namespaced_findall("tree")
+
+    def findall_node(self):
+        return self.namespaced_findall("node")
+
+    def findall_edge(self):
+        return self.namespaced_findall("edge")
+
+    def find_rootedge(self):
+        return self.namespaced_find("rootedge")
+
+############################################################################
+## NexmlReader and Supporting Classes
 
 class NexmlReader(iosys.DataReader, _AnnotationParser):
     "Implements thinterface for handling NEXML files."
@@ -178,6 +267,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         self.load_time = None
         self.parse_time = None
         self.id_taxon_set_map = {}
+        self.default_namespace =kwargs.get("namespace", DEFAULT_NEXML_NAMESPACE)
         _AnnotationParser.__init__(self)
 
     ## Implementation of the datasets.Reader interface ##
@@ -189,7 +279,9 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         `stream`.
         """
         start = time.clock()
-        xml_doc = xmlparser.xml_document(file_obj=stream, namespace_list=SUPPORTED_NEXML_NAMESPACES)
+        xml_doc = xmlparser.XmlDocument(file_obj=stream,
+                default_namespace=self.default_namespace,
+                element_object_type=NexmlElement)
         # import xml.etree.ElementTree as xx
         self.namespace_registry = xml_doc.namespace_registry
         self.load_time = time.clock() - start
@@ -207,17 +299,18 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         """
         if self.dataset is None:
             self.dataset = dendropy.DataSet()
-        self.parse_taxon_sets(xml_doc, self.dataset)
+        xml_root = xml_doc.root
+        self.parse_taxon_sets(xml_root, self.dataset)
         if not self.exclude_chars:
-            self.parse_char_matrices(xml_doc, self.dataset)
+            self.parse_char_matrices(xml_root, self.dataset)
         if not self.exclude_trees:
-            self.parse_tree_lists(xml_doc, self.dataset)
-        top_annotations = [i for i in xml_doc.iter_top_children('meta')]
+            self.parse_tree_lists(xml_root, self.dataset)
+        top_annotations = [i for i in xml_root.findall_annotations()]
         for annotation in top_annotations:
             self.parse_annotations(self.dataset, annotation)
         return self.dataset
 
-    def parse_taxon_sets(self, xml_doc, dataset):
+    def parse_taxon_sets(self, xml_root, dataset):
         """
         Given an xml_document, parses the XmlElement representation of
         taxon sets into a TaxonSets objects.
@@ -241,7 +334,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         #     self.id_taxon_set_map[taxon_set.oid] = taxon_set
         # else:
         #     raise error.DataParseError(message="No taxon definitions found in data source")
-        taxon_set_elements = [i for i in xml_doc.getiterator('otus')]
+        taxon_set_elements = [i for i in xml_root.iter_otus()]
         if len(taxon_set_elements) == 0:
             raise error.DataParseError(message="No taxon definitions found in data source")
         if dataset.attached_taxon_set:
@@ -267,53 +360,54 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
                 taxon_set.oid = oid
             if label is not None:
                 taxon_set.label = label
-        annotations = [i for i in nxtaxa.iter_top_children('meta')]
+        annotations = [i for i in nxtaxa.findall_annotations()]
         for annotation in annotations:
             self.parse_annotations(taxon_set, annotation)
-        for idx, nxtaxon in enumerate(nxtaxa.getiterator('otu')):
+        for idx, nxtaxon in enumerate(nxtaxa.findall_otu()):
             taxon = dendropy.Taxon(label=nxtaxon.get('label', "Taxon" + str(idx)),
                     oid=nxtaxon.get('id', "s" + str(idx) ), )
-            annotations = [i for i in nxtaxon.iter_top_children('meta')]
+            annotations = [i for i in nxtaxon.findall_annotations()]
             for annotation in annotations:
                 self.parse_annotations(taxon, annotation)
             taxon_set.append(taxon)
         return taxon_set
 
 
-    def parse_char_matrices(self, xml_doc, dataset):
+    def parse_char_matrices(self, xml_root, dataset):
         """
         Given an xml_document, parses the XmlElement representation of
         character sequences into a list of CharacterMatrix objects.
         """
         nxc = _NexmlCharBlockParser(self.namespace_registry, self.id_taxon_set_map)
-        for char_matrix_element in xml_doc.getiterator('characters'):
+        for char_matrix_element in xml_root.iter_characters():
             nxc.parse_char_matrix(char_matrix_element, dataset)
 
-    def parse_tree_lists(self, xml_doc, dataset):
+    def parse_tree_lists(self, xml_root, dataset):
         """
         Given an xml_document object, parses the XmlElement structural
         representations of a set of NEXML treeblocks (`nex:trees`) and
         returns a TreeLists object corresponding to the NEXML.
         """
         nx_tree_parser = _NexmlTreesParser(self.namespace_registry, self.id_taxon_set_map)
-        for trees_idx, trees_element in enumerate(xml_doc.getiterator('trees')):
+        for trees_idx, trees_element in enumerate(xml_root.iter_trees()):
             for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, add_to_tree_list=True):
                 pass
 
     def iterate_over_trees(file_obj, taxon_set=None, dataset=None):
         "Generator to iterate over trees in file without retaining any in memory."
-        xml_doc = xmlparser.xml_document(file_obj=file_obj, namespace_list=SUPPORTED_NEXML_NAMESPACES)
-        if dataset is None:
-            dataset = datasets.DataSet() or dataset
-        if taxon_set is None:
-            taxon_set = taxa.TaxonSet()
-        if not (taxon_set in dataset.taxon_sets):
-            dataset.taxon_sets.append(taxon_set)
-        self.parse_taxon_sets(xml_doc, dataset)
-        nx_tree_parser = _NexmlTreesParser(self.namespace_registry, self.id_taxon_set_map)
-        for trees_idx, trees_element in enumerate(xml_doc.getiterator('trees')):
-            for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, add_to_tree_list=False):
-                yield tree
+        raise NotImplementedError
+        # xml_doc = xmlparser.xml_document(file_obj=file_obj, namespace_list=SUPPORTED_NEXML_NAMESPACES)
+        # if dataset is None:
+        #     dataset = datasets.DataSet() or dataset
+        # if taxon_set is None:
+        #     taxon_set = taxa.TaxonSet()
+        # if not (taxon_set in dataset.taxon_sets):
+        #     dataset.taxon_sets.append(taxon_set)
+        # self.parse_taxon_sets(xml_doc, dataset)
+        # nx_tree_parser = _NexmlTreesParser(self.namespace_registry, self.id_taxon_set_map)
+        # for trees_idx, trees_element in enumerate(xml_doc.getiterator('trees')):
+        #     for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, add_to_tree_list=False):
+        #         yield tree
 
 class _NexmlElementParser(_AnnotationParser):
     "Base parser class: wraps around annotations/dictionary element handling."
@@ -347,11 +441,11 @@ class _NexmlTreesParser(_NexmlElementParser):
             raise Exception("Taxa block \"%s\" not found" % taxa_id)
         tree_list = dendropy.TreeList(oid=oid, label=label, taxon_set=taxon_set)
         dataset.add_tree_list(tree_list)
-        annotations = [i for i in nxtrees.iter_top_children('meta')]
+        annotations = [i for i in nxtrees.findall_annotations()]
         for annotation in annotations:
             self.parse_annotations(tree_list, annotation)
         tree_counter = 0
-        for tree_element in nxtrees.getiterator('tree'):
+        for tree_element in nxtrees.findall_tree():
             tree_counter = tree_counter + 1
             oid = tree_element.get('id', tree_counter)
             label = tree_element.get('label', '')
@@ -359,7 +453,7 @@ class _NexmlTreesParser(_NexmlElementParser):
             treeobj.taxon_set = taxon_set
             tree_type_attr = tree_element.get('{http://www.w3.org/2001/XMLSchema-instance}type')
             treeobj.length_type = _from_nexml_tree_length_type(tree_type_attr)
-            annotations = [i for i in tree_element.iter_top_children('meta')]
+            annotations = [i for i in tree_element.findall_annotations()]
             for annotation in annotations:
                 self.parse_annotations(treeobj, annotation)
             nodes = self.parse_nodes(tree_element, taxon_set=treeobj.taxon_set)
@@ -433,7 +527,7 @@ class _NexmlTreesParser(_NexmlElementParser):
         objects with the node_id as the key.
         """
         nodes = {}
-        for nxnode in tree_element.getiterator('node'):
+        for nxnode in tree_element.findall_node():
             node_id = nxnode.get('id', None)
             nodes[node_id] = dendropy.Node()
             nodes[node_id].oid = node_id
@@ -445,14 +539,14 @@ class _NexmlTreesParser(_NexmlElementParser):
                 except KeyError:
                     raise Exception('Taxon with id "%s" not defined in taxa block "%s"' % (taxon_id, taxon_set.oid))
                 nodes[node_id].taxon = taxon
-            annotations = [i for i in nxnode.iter_top_children('meta')]
+            annotations = [i for i in nxnode.findall_annotations()]
             for annotation in annotations:
                 self.parse_annotations(nodes[node_id], annotation)
         return nodes
 
     def parse_root_edge(self, tree_element, length_type):
         "Returns the edge subtending the root node, or None if not defined."
-        rootedge = tree_element.find('rootedge')
+        rootedge = tree_element.find_rootedge()
         if rootedge is not None:
             edge = dendropy.Edge()
             edge.head_node_id = rootedge.get('target', None)
@@ -467,7 +561,7 @@ class _NexmlTreesParser(_NexmlElementParser):
                       % (edge.oid, str(length_type))
                 raise Exception(msg)
             edge.length = edge_length
-            annotations = [i for i in rootedge.iter_top_children('meta')]
+            annotations = [i for i in rootedge.findall_annotations()]
             for annotation in annotations:
                 self.parse_annotations(edge, annotation)
             return edge
@@ -484,7 +578,7 @@ class _NexmlTreesParser(_NexmlElementParser):
         """
         edges = {}
         edge_counter = 0
-        for nxedge in tree_element.getiterator('edge'):
+        for nxedge in tree_element.findall_edge():
             edge = dendropy.Edge()
             edge_counter = edge_counter + 1
             edge.tail_node_id = nxedge.get('source', None)
@@ -509,7 +603,7 @@ class _NexmlTreesParser(_NexmlElementParser):
                       % (edge_counter, edge.oid, str(length_type))
                 raise Exception(msg)
             edge.length = edge_length
-            annotations = [i for i in nxedge.iter_top_children('meta')]
+            annotations = [i for i in nxedge.findall_annotations()]
             for annotation in annotations:
                 self.parse_annotations(edge, annotation)
             edges[edge.oid] = edge
@@ -533,7 +627,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                                                 symbol=nxambiguous.get('symbol', None),
                                                 token=nxambiguous.get('token', None))
         state.member_states = []
-        for nxmember in nxambiguous.getiterator('member'):
+        for nxmember in nxambiguous.findall_multistate_member():
             member_state_id = nxmember.get('state', None)
             member_state = state_alphabet.get_state('oid', member_state_id)
             state.member_states.append(member_state)
@@ -551,11 +645,11 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                                                 symbol=nxpolymorphic.get('symbol', None),
                                                 token=nxpolymorphic.get('token', None))
         state.member_states = []
-        for nxmember in nxpolymorphic.getiterator('member'):
+        for nxmember in nxpolymorphic.findall_multistate_member():
             member_state_id = nxmember.get('state', None)
             member_state = state_alphabet.get_state('oid', member_state_id)
             state.member_states.append(member_state)
-        for nxambiguous in nxpolymorphic.getiterator('uncertain_state_set'):
+        for nxambiguous in nxpolymorphic.findall_uncertain_state_set():
             state.member_states.append(self.parse_ambiguous_state(nxambiguous, state_alphabet))
         state.multistate = dendropy.StateAlphabetElement.POLYMORPHIC_STATE
         return state
@@ -568,15 +662,15 @@ class _NexmlCharBlockParser(_NexmlElementParser):
 
         state_alphabet = dendropy.StateAlphabet(oid=nxstates.get('id', None),
                                                          label=nxstates.get('label', None))
-        for nxstate in nxstates.getiterator('state'):
+        for nxstate in nxstates.findall_char_state():
             state = dendropy.StateAlphabetElement(oid=nxstate.get('id', None),
                                                     label=nxstate.get('label', None),
                                                     symbol=nxstate.get('symbol', None),
                                                     token=nxstate.get('token', None))
             state_alphabet.append(state)
-        for nxstate in nxstates.getiterator('uncertain_state_set'):
+        for nxstate in nxstates.findall_uncertain_state_set():
             state_alphabet.append(self.parse_ambiguous_state(nxstate, state_alphabet))
-        for nxstate in nxstates.getiterator('polymorphic_state_set'):
+        for nxstate in nxstates.findall_polymorphic_state_set():
             state_alphabet.append(self.parse_polymorphic_state(nxstate, state_alphabet))
         return state_alphabet
 
@@ -587,9 +681,9 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         and populates the given char_matrix accordingly.
         """
         if nxformat is not None:
-            for nxstates in nxformat.getiterator('states'):
+            for nxstates in nxformat.findall_char_states():
                 char_matrix.state_alphabets.append(self.parse_state_alphabet(nxstates))
-            for nxchars in nxformat.getiterator('char'):
+            for nxchars in nxformat.findall_char():
                 col = dendropy.CharacterType(oid=nxchars.get('id', None))
                 char_state_set_id = nxchars.get('states')
                 if char_state_set_id is not None:
@@ -660,19 +754,19 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         if not taxon_set:
             raise Exception("Character Block %s (\"%s\"): Taxa block \"%s\" not found" % (char_matrix.oid, char_matrix.label, taxa_id))
         char_matrix.taxon_set = taxon_set
-        annotations = [i for i in nxchars.iter_top_children('meta')]
+        annotations = [i for i in nxchars.findall_annotations()]
         for annotation in annotations:
             self.parse_annotations(char_matrix, annotation)
 
-        nxformat = nxchars.find('format')
+        nxformat = nxchars.find_char_format()
         if nxformat is not None:
             self.parse_characters_format(nxformat, char_matrix)
         elif isinstance(char_matrix, dendropy.StandardCharacterMatrix):
             # default to all integers < 10 as symbols
             self.create_standard_character_alphabet(char_matrix)
 
-        matrix = nxchars.find('matrix')
-        annotations = [i for i in matrix.iter_top_children('meta')]
+        matrix = nxchars.find_char_matrix()
+        annotations = [i for i in matrix.findall_annotations()]
         for annotation in annotations:
             self.parse_annotations(char_matrix.taxon_seq_map, annotation)
 
@@ -682,7 +776,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         else:
             id_chartype_map = {}
             chartypes = []
-        for nxrow in matrix.getiterator('row'):
+        for nxrow in matrix.findall_char_row():
             row_id = nxrow.get('id', None)
 
             label = nxrow.get('label', None)
@@ -693,14 +787,14 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                 raise error.DataParseError(message='Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_matrix.oid, char_matrix.label, taxon_id, taxon_set.oid))
 
             character_vector = dendropy.CharacterDataVector(oid=row_id, label=label, taxon=taxon)
-            annotations = [i for i in nxrow.iter_top_children('meta')]
+            annotations = [i for i in nxrow.findall_annotations()]
             for annotation in annotations:
                 self.parse_annotations(character_vector, annotation)
 
             if isinstance(char_matrix, dendropy.ContinuousCharacterMatrix):
                 if nxchartype.endswith('Seqs'):
                     char_matrix.markup_as_sequences = True
-                    seq = nxrow.findtext('seq')
+                    seq = nxrow.find_char_seq()
                     if seq is not None:
                         seq = seq.replace('\n\r', ' ').replace('\r\n', ' ').replace('\n', ' ').replace('\r',' ')
                         col_idx = -1
@@ -715,7 +809,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                                 character_vector.append(cell)
                 else:
                     char_matrix.markup_as_sequences = False
-                    for nxcell in nxrow.getiterator('cell'):
+                    for nxcell in nxrow.findall_char_cell():
                         chartype_id = nxcell.get('char', None)
                         if chartype_id is None:
                             raise error.DataParseError(message="'char' attribute missing for cell: cell markup must indicate character column type for character"\
@@ -728,7 +822,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
 #                         column = id_chartype_map[chartype_id]
 #                         state = column.state_id_map[cell.get('state', None)]
                         cell = dendropy.CharacterDataCell(value=float(nxcell.get('state')), character_type=chartype)
-                        annotations = [i for i in nxtaxon.nxcell('meta')]
+                        annotations = [i for i in nxtaxon.findall_annotations]
                         for annotation in annotations:
                             self.parse_annotations(cell, annotation)
                         character_vector.set_cell_by_index(pos_idx, cell)
@@ -736,7 +830,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                 if nxchartype.endswith('Seqs'):
                     char_matrix.markup_as_sequences = True
 #                     symbol_state_map = char_matrix.default_state_alphabet.symbol_state_map()
-                    seq = nxrow.findtext('seq')
+                    seq = nxrow.find_char_seq()
                     if seq is not None:
                         seq = seq.replace(' ', '').replace('\n', '').replace('\r', '')
                         col_idx = -1
@@ -756,7 +850,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
                 else:
                     char_matrix.markup_as_sequences = False
                     id_state_maps = {}
-                    for nxcell in nxrow.getiterator('cell'):
+                    for nxcell in nxrow.findall_char_cell():
                         chartype_id = nxcell.get('char', None)
                         if chartype_id is None:
                             raise error.DataParseError(message="'char' attribute missing for cell: cell markup must indicate character column type for character"\
