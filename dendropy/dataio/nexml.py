@@ -171,13 +171,14 @@ class _AnnotationParser(object):
 ############################################################################
 ## Abstraction Layer Around XML
 
-DEFAULT_NEXML_NAMESPACE = 'http://www.nexml.org/2009'
 
 class NexmlElement(xmlparser.XmlElement):
 
+    DEFAULT_NEXML_NAMESPACE = 'http://www.nexml.org/2009'
+
     def __init__(self, element, default_namespace=None, element_object_type=None):
         if default_namespace is None:
-            default_namespace = DEFAULT_NEXML_NAMESPACE
+            default_namespace = NexmlElement.DEFAULT_NEXML_NAMESPACE
         if element_object_type is None:
             element_object_type = self.__class__
         xmlparser.XmlElement.__init__(self,
@@ -267,7 +268,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         self.load_time = None
         self.parse_time = None
         self.id_taxon_set_map = {}
-        self.default_namespace =kwargs.get("namespace", DEFAULT_NEXML_NAMESPACE)
+        self.default_namespace =kwargs.get("default_namespace", NexmlElement.DEFAULT_NEXML_NAMESPACE)
         _AnnotationParser.__init__(self)
 
     ## Implementation of the datasets.Reader interface ##
