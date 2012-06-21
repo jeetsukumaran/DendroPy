@@ -116,7 +116,7 @@ class GbifOccurrenceDb(GbifDb):
         url = self.compose_query_url(action="list",
                 query_dict=kwargs)
         response = urlopen(url)
-        return self._parse_list_keys(response)
+        return self.parse_list_keys(response)
 
     def fetch_occurrences(self, **kwargs):
         keys = self.fetch_keys(**kwargs)
@@ -126,11 +126,10 @@ class GbifOccurrenceDb(GbifDb):
             response = urlopen(url)
             print response.read()
 
-    def _parse_list_keys(self, stream):
+    def parse_list_keys(self, stream):
         keys = []
         xml_doc = xmlparser.XmlDocument(file_obj=stream,
-                default_namespace=GbifXmlElement.GBIF_NAMESPACE,
-                element_object_type=GbifXmlElement)
+                subelement_factory=GbifXmlElement)
         xml_root = xml_doc.root
         for txml in xml_root.iter_taxon_occurrence():
             keys.append(txml.get("gbifKey"))
