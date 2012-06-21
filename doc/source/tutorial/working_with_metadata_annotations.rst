@@ -690,8 +690,8 @@ The above produces::
     True
 
 
-Retrieving a Single Annotations By Search Criteria
----------------------------------------------------
+Retrieving a Single Annotation By Search Criteria
+-------------------------------------------------
 
 The :meth:`~dendropy.dataobject.base.AnnotationSet.find` method of the the :attr:`annotations` object return a the *first* :class:`~dendropy.dataobject.base.Annotation` object that matches the search or filter criteria specified in keyword arguments to the :meth:`~dendropy.dataobject.base.AnnotationSet.findall` call.
 These keyword arguments should specify attributes of :class:`~dendropy.dataobject.base.Annotation` and the corresponding value to be matched.
