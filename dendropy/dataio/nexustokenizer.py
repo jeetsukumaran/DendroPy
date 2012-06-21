@@ -129,7 +129,7 @@ def parse_comment_metadata(comments,
                     # namespace=namespace,
                     # name_is_prefixed=name_is_prefixed,
                     # is_attribute=False,
-                    # note_as_reference=note_as_reference,
+                    # annotate_as_reference=annotate_as_reference,
                     # is_hidden=is_hidden,
                     )
             annotations.add(annote)

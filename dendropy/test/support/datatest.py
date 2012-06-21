@@ -506,7 +506,7 @@ class AnnotatedDataObjectVerificationTestCase(extendedtest.ExtendedTestCase):
             self.assertEqual(a1.name_prefix, a2.name_prefix)
             self.assertEqual(a1.namespace, a2.namespace)
             self.assertEqual(a1.is_attribute, a2.is_attribute)
-            self.assertEqual(a1.note_as_reference, a2.note_as_reference)
+            self.assertEqual(a1.annotate_as_reference, a2.annotate_as_reference)
             self.assertEqual(a1.is_hidden, a2.is_hidden)
             self.assertEqual(a1.label, a2.label)
             if equal_oids:
