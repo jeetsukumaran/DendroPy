@@ -174,17 +174,14 @@ class _AnnotationParser(object):
 
 class NexmlElement(xmlparser.XmlElement):
 
-    DEFAULT_NEXML_NAMESPACE = 'http://www.nexml.org/2009'
-
-    def __init__(self, element, default_namespace=None, element_object_type=None):
-        if default_namespace is None:
-            default_namespace = NexmlElement.DEFAULT_NEXML_NAMESPACE
-        if element_object_type is None:
-            element_object_type = self.__class__
+    def __init__(self, element, namespace=None, element_object_type=None):
+        if namespace is None:
+            namespace = NexmlReader.DEFAULT_NEXML_NAMESPACE
+        else:
+            namespace = namespace
         xmlparser.XmlElement.__init__(self,
                 element=element,
-                default_namespace=default_namespace,
-                element_object_type=element_object_type)
+                namespace=namespace)
 
     ## Annotations ##
 
@@ -235,7 +232,7 @@ class NexmlElement(xmlparser.XmlElement):
         return self.namespaced_findall("cell")
 
     def find_char_seq(self):
-        return self._element.findtext('{%s}seq' % self.default_namespace)
+        return self.namespaced_findtext("seq")
 
     ## Trees ##
 
@@ -260,6 +257,8 @@ class NexmlElement(xmlparser.XmlElement):
 class NexmlReader(iosys.DataReader, _AnnotationParser):
     "Implements thinterface for handling NEXML files."
 
+    DEFAULT_NEXML_NAMESPACE = 'http://www.nexml.org/2009'
+
     def __init__(self, **kwargs):
         """
         See `iosys.IOService.__init__` and `iosys.DataReader.__init__` for kwargs.
@@ -268,7 +267,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         self.load_time = None
         self.parse_time = None
         self.id_taxon_set_map = {}
-        self.default_namespace =kwargs.get("default_namespace", NexmlElement.DEFAULT_NEXML_NAMESPACE)
+        self.namespace =kwargs.get("namespace", NexmlReader.DEFAULT_NEXML_NAMESPACE)
         _AnnotationParser.__init__(self)
 
     ## Implementation of the datasets.Reader interface ##
@@ -281,7 +280,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         """
         start = time.clock()
         xml_doc = xmlparser.XmlDocument(file_obj=stream,
-                default_namespace=self.default_namespace,
+                default_namespace=self.namespace,
                 element_object_type=NexmlElement)
         # import xml.etree.ElementTree as xx
         self.namespace_registry = xml_doc.namespace_registry

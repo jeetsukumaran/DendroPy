@@ -47,6 +47,7 @@ else:
     """)
             sys.exit(1)
 
+from StringIO import StringIO
 from dendropy.utility import containers
 
 # diagnosed_tags = []
@@ -148,46 +149,27 @@ class XmlNamespaces(object):
 
 class XmlObject(object):
 
-    def __init__(self, default_namespace, element_object_type):
-        self.default_namespace = default_namespace
-        self._element_object_type = element_object_type
+    def __init__(self):
+        pass
 
-    def _get_element_object_type(self):
-        if self._element_object_type is None:
-            self._element_object_type = XmlElement
-        return self._element_object_type
-    def _set_element_object_type(self, value):
-        self._element_object_type = value
-    element_object_type = property(_get_element_object_type, _set_element_object_type)
-
-    def recast_element(self, e):
-        if e is None:
+    def recast_element(self, element, ret_type=None):
+        if element is None:
             return None
-        return self.element_object_type(e,
-                default_namespace=self.default_namespace,
-                element_object_type=self.element_object_type)
+        if ret_type is not None:
+            return ret_type(element)
+        else:
+            return self.__class__(element)
 
-    def namespaced_getiterator(self, tag):
-        for element in self._element.getiterator("{%s}%s" % (self.default_namespace, tag)):
-            yield self.recast_element(element)
-
-    def namespaced_findall(self, tag):
-        for element in self._element.findall("{%s}%s" % (self.default_namespace, tag)):
-            yield self.recast_element(element)
-
-    def namespaced_find(self, tag):
-        return self.recast_element(self._element.find("{%s}%s" % (self.default_namespace, tag)))
-
-    def getiterator(self, tag):
+    def getiterator(self, tag, ret_type=None):
         for element in self._element.getiterator(tag):
-            yield self.recast_element(element)
+            yield self.recast_element(element=element, ret_type=ret_type)
 
-    def findall(self, tag):
+    def findall(self, tag, ret_type=None):
         for element in self._element.findall(tag):
-            yield self.recast_element(element)
+            yield self.recast_element(element, ret_type=ret_type)
 
-    def find(self, tag):
-        return self.recast_element(self._element.find(tag))
+    def find(self, tag, ret_type=None):
+        return self.recast_element(self._element.find(tag), ret_type=ret_type)
 
     def get(self, attrib_name, default=None):
         return self._element.get(attrib_name, default)
@@ -196,16 +178,50 @@ class XmlObject(object):
         return self._element.attrib
     attrib = property(_get_attrib)
 
+    def _get_text(self):
+        return self._element.text
+    text = property(_get_text)
+
 class XmlElement(XmlObject):
     """
     Abstraction layer around an item.
     """
 
-    def __init__(self, element, default_namespace=None, element_object_type=None):
-        XmlObject.__init__(self,
-                default_namespace=default_namespace,
-                element_object_type=element_object_type)
+    def __init__(self, element, namespace=None):
+        XmlObject.__init__(self)
         self._element = element
+        self.namespace = namespace
+
+    def format_namespace(self, namespace=None):
+        if namespace:
+            return "{%s}" % namespace
+        if self.namespace:
+            return "{%s}" % self.namespace
+        return ""
+
+    def compose_tag(self, tag, namespace=None):
+        if namespace:
+            ns = "{%s}" % namespace
+        elif self.namespace:
+            ns = "{%s}" % self.namespace
+        else:
+            ns = ""
+        return "%s%s" % (ns, tag)
+
+    def namespaced_getiterator(self, tag, namespace=None, ret_type=None):
+        for element in self._element.getiterator(self.compose_tag(tag, namespace)):
+            yield self.recast_element(element=element, ret_type=ret_type)
+
+    def namespaced_findall(self, tag, namespace=None, ret_type=None):
+        for element in self._element.findall(self.compose_tag(tag, namespace)):
+            yield self.recast_element(element=element, ret_type=ret_type)
+
+    def namespaced_find(self, tag, namespace=None, ret_type=None):
+        e = self._element.find(self.compose_tag(tag, namespace))
+        return self.recast_element(e, ret_type=ret_type)
+
+    def namespaced_findtext(self, tag, namespace=None):
+        return self._element.findtext(self.compose_tag(tag, namespace))
 
 class XmlDocument(XmlObject):
     """
@@ -221,9 +237,9 @@ class XmlDocument(XmlObject):
         the a file descripter object to be read and parsed or the
         ElemenTree.Element object to be used as the root element.
         """
-        XmlObject.__init__(self,
-                default_namespace=default_namespace,
-                element_object_type=element_object_type)
+        XmlObject.__init__(self)
+        self.default_namespace = default_namespace
+        self.element_object_type = element_object_type
         self.namespace_registry = XmlNamespaces()
         self.root = None
         if file_obj:
@@ -231,7 +247,8 @@ class XmlDocument(XmlObject):
 
     def parse_string(self, source):
         "Loads an XML document from an XML string, source."
-        raise NotImplementedError
+        s = StringIO(source)
+        return self.parse_file(source)
 
     def parse_file(self, source):
         """
