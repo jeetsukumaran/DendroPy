@@ -572,7 +572,7 @@ will result in::
 Retrieving Annotations By Search Criteria
 -----------------------------------------
 
-Instead of interating through every element in the :attr:`annotations` attribute of data objects, you can use the :meth:`~dendropy.dataobject.base.AnnotationSet.get` method of the the :attr:`annotations` object to return a *collection* of :class:`~dendropy.dataobject.base.Annotation` objects that match the search or filter criteria specified in keyword arguments to the :meth:`~dendropy.dataobject.base.AnnotationSet.get` call.
+Instead of interating through every element in the :attr:`annotations` attribute of data objects, you can use the :meth:`~dendropy.dataobject.base.AnnotationSet.findall` method of the the :attr:`annotations` object to return a *collection* of :class:`~dendropy.dataobject.base.Annotation` objects that match the search or filter criteria specified in keyword arguments to the :meth:`~dendropy.dataobject.base.AnnotationSet.findall` call.
 These keyword arguments should specify attributes of :class:`~dendropy.dataobject.base.Annotation` and the corresponding value to be matched.
 Multiple keyword-value pairs can be specified, and only :class:`~dendropy.dataobject.base.Annotation` objects that match *all* the criteria will be returned.
 
@@ -581,7 +581,7 @@ For example, the following returns a collection of annotations that have a name 
     import dendropy
     ds = dendropy.DataSet.get_from_path("sample1.xml",
             "nexml")
-    results = ds.annotations.get(name="contributor")
+    results = ds.annotations.findall(name="contributor")
     for a in results:
         print "%s='%s'" % (a.name, a.value)
 
@@ -599,7 +599,7 @@ While the following returns a collection of annotations that are in the Dublin C
     import dendropy
     ds = dendropy.DataSet.get_from_path("sample1.xml",
             "nexml")
-    results = ds.annotations.get(namespace="http://purl.org/dc/elements/1.1/")
+    results = ds.annotations.findall(namespace="http://purl.org/dc/elements/1.1/")
     for a in results:
         print "%s='%s'" % (a.name, a.value)
 
@@ -627,7 +627,7 @@ The following, in turn, searches for and suppresses printing of annotations that
     import dendropy
     ds = dendropy.DataSet.get_from_path("sample1.xml",
             "nexml")
-    results = ds.annotations.get(name_prefix="dc", value="")
+    results = ds.annotations.findall(name_prefix="dc", value="")
     for a in results:
         a.is_hidden = True
 
@@ -636,10 +636,10 @@ Modifying the :class:`~dendropy.dataobject.base.Annotation` objects in a returne
     import dendropy
     ds = dendropy.DataSet.get_from_path("sample1.xml",
             "nexml")
-    results = ds.annotations.get(name="contributor")
+    results = ds.annotations.findall(name="contributor")
     for a in results:
         a.value = a.value.upper()
-    results = ds.annotations.get(name="contributor")
+    results = ds.annotations.findall(name="contributor")
     for a in results:
         print a.value
 
@@ -652,15 +652,15 @@ and results in::
     ALTAMIRA I.V.
     WIKLUND H.
 
-The collection returned by the :meth:`~dendropy.dataobject.base.AnnotationSet.get` method is an object of type :class:`~dendropy.dataobject.base.AnnotationSet`.
+The collection returned by the :meth:`~dendropy.dataobject.base.AnnotationSet.findall` method is an object of type :class:`~dendropy.dataobject.base.AnnotationSet`.
 However, while modifying :class:`~dendropy.dataobject.base.Annotation` objects in this collection will result in the metadata of the parent object being modified (as in the previous example), adding new annotations to this returned collection will *not*  add them to the collection of metadata annotations of the parent object.
-Thus, the following example shows that the size of the annotations collection associated with the dataset is unchanged by adding new annotations to the results of a :meth:`~dendropy.dataobject.base.AnnotationSet.get` call::
+Thus, the following example shows that the size of the annotations collection associated with the dataset is unchanged by adding new annotations to the results of a :meth:`~dendropy.dataobject.base.AnnotationSet.findall` call::
 
     import dendropy
     ds = dendropy.DataSet.get_from_path("sample1.xml",
             "nexml")
     print len(ds.annotations)
-    results = ds.annotations.get(namespace="http://purl.org/dc/elements/1.1/")
+    results = ds.annotations.findall(namespace="http://purl.org/dc/elements/1.1/")
     results.add_new(name="color", value="blue")
     results.add_new(name="height", value="100")
     results.add_new(name="length", value="200")
@@ -674,17 +674,53 @@ The above produces::
 
 As can be seen, no new annotations are added to the data set metadata.
 
-If *no* keyword arguments are passed to :meth:`~dendropy.dataobject.base.Annotation.get`, then *all* annotations are returned::
+If no matching :class:`~dendropy.dataobject.base.Annotation` objects are found then the :class:`~dendropy.dataobject.base.AnnotationSet` that is returned is empty.
+
+If *no* keyword arguments are passed to :meth:`~dendropy.dataobject.base.Annotation.findall`, then *all* annotations are returned::
 
     import dendropy
     ds = dendropy.DataSet.get_from_path("sample1.xml",
             "nexml")
-    results = ds.annotations.get()
+    results = ds.annotations.findall()
     print len(results) == len(ds.annotations)
 
 The above produces::
 
     True
+
+
+Retrieving a Single Annotations By Search Criteria
+---------------------------------------------------
+
+The :meth:`~dendropy.dataobject.base.AnnotationSet.find` method of the the :attr:`annotations` object return a the *first* :class:`~dendropy.dataobject.base.Annotation` object that matches the search or filter criteria specified in keyword arguments to the :meth:`~dendropy.dataobject.base.AnnotationSet.findall` call.
+These keyword arguments should specify attributes of :class:`~dendropy.dataobject.base.Annotation` and the corresponding value to be matched.
+Multiple keyword-value pairs can be specified, and only the first :class:`~dendropy.dataobject.base.Annotation` object that matches *all* the criteria will be returned.
+
+For example::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+            "nexml")
+    print ds.annotations.find(name="contributor")
+
+and will result in::
+
+    contributor='Dahlgren T.G.'
+
+While the following returns the first annotation in the Dublin Core namespace::
+
+    import dendropy
+    ds = dendropy.DataSet.get_from_path("sample1.xml",
+            "nexml")
+    print ds.annotations.findall(namespace="http://purl.org/dc/elements/1.1/")
+
+and results in::
+
+    subject='wood-fall'
+
+If no matching :class:`~dendropy.dataobject.base.Annotation` objects are found then |None| is returned.
+
+Unlike :meth:`~dendropy.dataobject.base.AnnotationSet.findall`, it is invalid to call :meth:`~dendropy.dataobject.base.AnnotationSet.find` with no keyword arguments, and an ``TypeError`` exception will be raised.
 
 Transforming Annotations to a Dictionary
 ----------------------------------------
@@ -754,7 +790,7 @@ For example::
             value_attr="value")
 
 
-As the collection returned by the :meth:`~dendropy.dataobject.base.AnnotationSet.get` method is an object of type :class:`~dendropy.dataobject.base.AnnotationSet`, this can also be transformed to a dictionary.
+As the collection returned by the :meth:`~dendropy.dataobject.base.AnnotationSet.findall` method is an object of type :class:`~dendropy.dataobject.base.AnnotationSet`, this can also be transformed to a dictionary.
 For example::
 
     import dendropy
@@ -780,7 +816,7 @@ Adding to, deleting, or modifying either the keys or the values of the dictionar
 Deleting or Removing Metadata Annotations
 -----------------------------------------
 
-The :meth:`~dendropy.dataobject.base.AnnotationSet.drop` method of :class:`~dendropy.dataobject.base.AnnotationSet` objects takes search criteria similar to :meth:`~dendropy.dataobject.base.AnnotationSet.get`, but instead of returning the matched  :class:`~dendropy.dataobject.base.Annotation` objects, it *removes* them from the parent collection.
+The :meth:`~dendropy.dataobject.base.AnnotationSet.drop` method of :class:`~dendropy.dataobject.base.AnnotationSet` objects takes search criteria similar to :meth:`~dendropy.dataobject.base.AnnotationSet.findall`, but instead of returning the matched  :class:`~dendropy.dataobject.base.Annotation` objects, it *removes* them from the parent collection.
 For example, the following removes all metadata annotations with the name prefix "dc" from the |DataSet| object ``ds``::
 
     import dendropy
@@ -800,14 +836,14 @@ and results in::
 As can be seen, the :meth:`~dendropy.dataobject.base.AnnotationSet.drop` method returns the individual :class:`~dendropy.dataobject.base.Annotation` removed as a new :class:`~dendropy.dataobject.base.AnnotationSet` collection.
 This is useful if you still want to use the removed :class:`~dendropy.dataobject.base.Annotation` objects elsewhere.
 
-As with the :meth:`~dendropy.dataobject.base.AnnotationSet.get` method, multiple keyword criteria can be specified::
+As with the :meth:`~dendropy.dataobject.base.AnnotationSet.findall` method, multiple keyword criteria can be specified::
 
     import dendropy
     ds = dendropy.DataSet.get_from_path("sample1.xml",
             "nexml")
     ds.annotations.drop(name_prefix="dc", name="contributor")
 
-In addition, again similar in behavior to the :meth:`~dendropy.dataobject.base.AnnotationSet.get` method, *no* keyword arguments result in *all* the annotations being removed.
+In addition, again similar in behavior to the :meth:`~dendropy.dataobject.base.AnnotationSet.findall` method, *no* keyword arguments result in *all* the annotations being removed.
 Thus, the following results in all metadata annotations being deleted from the |DataSet| object ``ds``::
 
     import dendropy

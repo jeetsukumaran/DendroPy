@@ -630,21 +630,23 @@ class AnnotationSet(containers.OrderedSet):
         else:
             raise ValueError("Unrecognized composition specification: '%s'" % store_as)
 
-    def get(self, **kwargs):
+    def findall(self, **kwargs):
         """
         Returns AnnotationSet of Annotation objects associated with self.target
         that match based on *all* criteria specified in keyword arguments::
 
-            >>> notes = tree.annotations.get(name="color")
-            >>> notes = tree.annotations.get(namespace="http://packages.python.org/DendroPy/")
-            >>> notes = tree.annotations.get(namespace="http://packages.python.org/DendroPy/",
+            >>> notes = tree.annotations.findall(name="color")
+            >>> notes = tree.annotations.findall(namespace="http://packages.python.org/DendroPy/")
+            >>> notes = tree.annotations.findall(namespace="http://packages.python.org/DendroPy/",
                                           name="color")
-            >>> notes = tree.annotations.get(name_prefix="dc")
-            >>> notes = tree.annotations.get(prefixed_name="dc:color")
+            >>> notes = tree.annotations.findall(name_prefix="dc")
+            >>> notes = tree.annotations.findall(prefixed_name="dc:color")
+
+        If no matches are found, the return AnnotationSet is empty.
 
         If no keyword arguments are given, *all* annotations are returned::
 
-            >>> notes = tree.annotations.get()
+            >>> notes = tree.annotations.findall()
 
         """
         results = []
@@ -653,6 +655,26 @@ class AnnotationSet(containers.OrderedSet):
                 results.append(a)
         results = AnnotationSet(self.target, results)
         return results
+
+    def find(self, **kwargs):
+        """
+        Returns the *first* Annotation associated with self.target
+        which matches based on *all* criteria specified in keyword arguments::
+
+            >>> note = tree.annotations.find(name="color")
+            >>> note = tree.annotations.find(name_prefix="dc", name="color")
+            >>> note = tree.annotations.find(prefixed_name="dc:color")
+
+        If no match is found, None is returned.
+
+        If no keyword arguments are given, a TypeError is raised.
+        """
+        if not kwargs:
+            raise TypeError("Search criteria not specified")
+        for a in self:
+            if a.is_match(**kwargs):
+                return a
+        return None
 
     def drop(self, **kwargs):
         """
