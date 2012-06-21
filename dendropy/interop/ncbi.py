@@ -207,7 +207,7 @@ class Entrez(object):
         self.exclude_gbnum_from_label = exclude_gbnum_from_label
         self.sort_taxa_by_label = sort_taxa_by_label
 
-    def _fetch(self, db, ids, rettype):
+    def fetch(self, db, ids, rettype):
         """
         Raw fetch. Returns file-like object opened for reading on string
         returned by query.
@@ -222,7 +222,18 @@ class Entrez(object):
                 'retmode': 'text'}
         query_url = Entrez.BASE_URL + "/efetch.fcgi?" + urllib.urlencode(params)
         query = urllib.urlopen(query_url)
-        return query
+        results_str = query.read()
+        return results_str
+
+    def fetch_gbrecs(self, db, ids, as_plaintext=False):
+        db_name = "nucleotide"
+        gb_recs_str = self.fetch(db=db, ids=ids, rettype="gb")
+        gb_recs_str_list = re.split(r"^//$", gb_recs_str, flags=re.MULTILINE)
+        gb_recs_str_list = [gb_rec for gb_rec in gb_recs_str_list
+                    if gb_rec.replace("\n", "")]
+        if as_plaintext:
+            return gb_recs_str_list
+        raise NotImplementedError
 
     def fetch_nucleotide_accessions(self,
             ids,
@@ -240,8 +251,7 @@ class Entrez(object):
         """
         if prefix is not None:
             ids = ["%s%s" % (prefix,i) for i in ids]
-        results = self._fetch(db='nucleotide', ids=ids, rettype='fasta')
-        results_str = results.read()
+        results_str = self.fetch(db='nucleotide', ids=ids, rettype='fasta')
         try:
             d = matrix_type.get_from_string(results_str, 'fasta', **kwargs)
         except DataParseError, e:
