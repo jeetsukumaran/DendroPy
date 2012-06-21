@@ -436,13 +436,13 @@ results in::
 
 
 By default, the :meth:`~dendropy.dataobject.base.AnnotationSet.add_bound_attribute` method uses the name of the attribute as the name of the annotation.
-The "``annotate_as``" argument allows you explictly set the name of the annotation.
+The "``annotation_name``" argument allows you explictly set the name of the annotation.
 In addition, the method call also supports the other customization arguments of the :meth:`~dendropy.dataobject.base.AnnotationSet.add_new` method: "``datatype_hint``", "``name_prefix``", "``namespace``", "``name_is_prefixed``", "``note_as_reference``", "``is_hidden``", etc.::
 
     >>> tree.source_uri = None
     >>> tree.annotations.add_bound_attribute(
     ... "source_uri",
-    ... annotate_as="dc:subject",
+    ... annotation_name="dc:subject",
     ... namespace="http://purl.org/dc/elements/1.1/",
     ... note_as_reference=True)
 

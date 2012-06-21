@@ -351,7 +351,7 @@ class AnnotationSet(containers.OrderedSet):
 
     def add_bound_attribute(self,
             attr_name,
-            annotate_as=None,
+            annotation_name=None,
             datatype_hint=None,
             name_prefix=None,
             namespace=None,
@@ -368,7 +368,7 @@ class AnnotationSet(containers.OrderedSet):
                 The (string) name of the attribute to be used as the source of the
                 content or value of the annotation.
 
-            `annotate_as`
+            `annotation_name`
                 Use this string as the annotation field/name rather than the attribute
                 name.
 
@@ -397,8 +397,8 @@ class AnnotationSet(containers.OrderedSet):
                 annotation. Defaults to `self.target`.
 
         """
-        if annotate_as is None:
-            annotate_as = attr_name
+        if annotation_name is None:
+            annotation_name = attr_name
         if owner_instance is None:
             owner_instance = self.target
         if not hasattr(owner_instance, attr_name):
@@ -415,7 +415,7 @@ class AnnotationSet(containers.OrderedSet):
             if namespace is None:
                 raise TypeError("Cannot specify qualified name without specifying 'namespace'")
         annote = Annotation(
-                name=annotate_as,
+                name=annotation_name,
                 value=(owner_instance, attr_name),
                 datatype_hint=datatype_hint,
                 name_prefix=name_prefix,
