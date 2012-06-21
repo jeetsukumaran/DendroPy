@@ -174,14 +174,14 @@ class _AnnotationParser(object):
 
 class NexmlElement(xmlparser.XmlElement):
 
-    def __init__(self, element, namespace=None, element_object_type=None):
-        if namespace is None:
-            namespace = NexmlReader.DEFAULT_NEXML_NAMESPACE
-        else:
-            namespace = namespace
+    def __init__(self, element, default_namespace=None):
+        # if default_namespace is None:
+        #     default_namespace = NexmlReader.DEFAULT_NEXML_NAMESPACE
+        # else:
+        #     default_namespace = default_namespace
         xmlparser.XmlElement.__init__(self,
                 element=element,
-                namespace=namespace)
+                default_namespace=default_namespace)
 
     ## Annotations ##
 
@@ -257,20 +257,26 @@ class NexmlElement(xmlparser.XmlElement):
 class NexmlReader(iosys.DataReader, _AnnotationParser):
     "Implements thinterface for handling NEXML files."
 
-    DEFAULT_NEXML_NAMESPACE = 'http://www.nexml.org/2009'
+    DEFAULT_NEXML_NAMESPACE = "http://www.nexml.org/2009"
 
     def __init__(self, **kwargs):
         """
-        See `iosys.IOService.__init__` and `iosys.DataReader.__init__` for kwargs.
+        See `iosys.IOService.__init__` and `iosys.DataReader.__init__` for
+        kwargs.
+        ``default_namespace`` allows for parsing of NeXML files with
+        different base or default namespaces.
         """
         iosys.DataReader.__init__(self, **kwargs)
         self.load_time = None
         self.parse_time = None
         self.id_taxon_set_map = {}
-        self.namespace = kwargs.get("namespace", NexmlReader.DEFAULT_NEXML_NAMESPACE)
+        self.default_namespace = kwargs.get("default_namespace", NexmlReader.DEFAULT_NEXML_NAMESPACE)
         _AnnotationParser.__init__(self)
 
     ## Implementation of the datasets.Reader interface ##
+
+    def subelement_factory(self, element):
+        return NexmlElement(element, default_namespace=self.default_namespace)
 
     def read(self, stream):
         """
@@ -280,8 +286,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         """
         start = time.clock()
         xml_doc = xmlparser.XmlDocument(file_obj=stream,
-                default_namespace=self.namespace,
-                element_object_type=NexmlElement)
+                subelement_factory=self.subelement_factory)
         # import xml.etree.ElementTree as xx
         self.namespace_registry = xml_doc.namespace_registry
         self.load_time = time.clock() - start
