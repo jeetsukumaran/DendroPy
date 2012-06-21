@@ -48,7 +48,8 @@ The :class:`~dendropy.dataobject.base.AnnotationSet` includes the following addi
     - :meth:`~dendropy.dataobject.base.AnnotationSet.add_new()`
     - :meth:`~dendropy.dataobject.base.AnnotationSet.add_bound_attribute()`
     - :meth:`~dendropy.dataobject.base.AnnotationSet.add_citation()`
-    - :meth:`~dendropy.dataobject.base.AnnotationSet.get()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.findall()`
+    - :meth:`~dendropy.dataobject.base.AnnotationSet.find()`
     - :meth:`~dendropy.dataobject.base.AnnotationSet.drop()`
     - :meth:`~dendropy.dataobject.base.AnnotationSet.values_as_dict()`
 
@@ -347,7 +348,7 @@ Passing the ``is_hidden=True`` argument will result in the annotation being supp
 
 The ``is_hidden`` attribute of the an :class:`~dendropy.dataobject.base.Annotation` object can also be set directly::
 
-    >>> subject_annotations = tree.annotations.get(name="citation")
+    >>> subject_annotations = tree.annotations.findall(name="citation")
     >>> for a in subject_annotations:
     ...    a.is_hidden = True
 
@@ -526,7 +527,7 @@ The following example shows how to add metadata annotations associated with a |D
     import dendropy
     ds = dendropy.DataSet.get_from_path("sample1.xml",
             "nexml")
-    ds_annotes = ds.annotations.get(name_prefix="dc").values_as_dict()
+    ds_annotes = ds.annotations.findall(name_prefix="dc").values_as_dict()
     for tree_list in ds.tree_lists:
         for tree in tree_list:
             tree.annotations.update(ds_annotes)
@@ -536,7 +537,7 @@ Or, alternatively::
     import dendropy
     ds = dendropy.DataSet.get_from_path("sample1.xml",
             "nexml")
-    ds_annotes = ds.annotations.get(name_prefix="dc").values_as_dict()
+    ds_annotes = ds.annotations.findall(name_prefix="dc").values_as_dict()
     for tree_list in ds.tree_lists:
         for tree in tree_list:
             for a in ds_annotes:
@@ -796,7 +797,7 @@ For example::
     import dendropy
     ds = dendropy.DataSet.get_from_path("sample1.xml",
             "nexml")
-    a = ds.annotations.get(name_prefix="dc").values_as_dict()
+    a = ds.annotations.findall(name_prefix="dc").values_as_dict()
     print a
 
 will result in::
