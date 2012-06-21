@@ -209,7 +209,10 @@ class XmlElement(XmlObject):
             ns = "{%s}" % self.default_namespace
         else:
             ns = ""
-        return "%s%s" % (ns, tag)
+        if isinstance(tag, list):
+            return "/".join( ("%s%s" % (ns, i)) for i in tag )
+        else:
+            return "%s%s" % (ns, tag)
 
     def namespaced_getiterator(self, tag, namespace=None, subelement_factory=None):
         if subelement_factory is None:
