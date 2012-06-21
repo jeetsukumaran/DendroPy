@@ -62,14 +62,14 @@ class GbifXmlElement(xmlparser.XmlElement):
         path = ["identifiedTo", "Identification", "taxonName"]
         return self.namespaced_find(path, namespace=self.TAXON_OCCURRENCE_NAMESPACE)
 
-class GbifOccurrence(object):
+class GbifOccurrenceRecord(object):
 
     def parse_from_stream(stream):
         xml_doc = xmlparser.XmlDocument(file_obj=stream,
                 subelement_factory=GbifXmlElement)
         gb_recs = []
         for txo in xml_doc.root.iter_taxon_occurrence():
-            gbo = GbifOccurrence()
+            gbo = GbifOccurrenceRecord()
             gbo.parse_taxon_occurrence_xml(txo)
             gb_recs.append(gbo)
         return gb_recs
@@ -79,9 +79,9 @@ class GbifOccurrence(object):
         self.gbif_key = None
         self.url = None
         self.catalog_number = None
-        self.longitude = None
-        self.latitude = None
         self.taxon_name = None
+        self._longitude = None
+        self._latitude = None
 
     def subelement_factory(self, element):
         return GbifXmlElement(element)
@@ -93,6 +93,26 @@ class GbifOccurrence(object):
         self.longitude = txo.find_longitude().text
         self.latitude = txo.find_latitude().text
         self.taxon_name = txo.find_taxon_name().text
+
+    def _get_longitude(self):
+        return self._longitude
+    def _set_longitude(self, value):
+        if value is not None:
+            try:
+                self._longitude = float(value)
+            except ValueError:
+                self._longitude = value
+    longitude = property(_get_longitude, _set_longitude)
+
+    def _get_latitude(self):
+        return self._latitude
+    def _set_latitude(self, value):
+        if value is not None:
+            try:
+                self._latitude = float(value)
+            except ValueError:
+                self._latitude = value
+    latitude = property(_get_latitude, _set_latitude)
 
 class GbifDb(object):
 
