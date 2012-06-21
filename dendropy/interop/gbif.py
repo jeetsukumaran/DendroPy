@@ -20,6 +20,7 @@
 Wrappers for interacting with GBIF.
 """
 
+from dendropy.dataobject import base
 from dendropy.dataio import xmlparser
 
 class GbifXmlElement(xmlparser.XmlElement):
@@ -45,6 +46,14 @@ class GbifXmlElement(xmlparser.XmlElement):
         return self.namespaced_getiterator("TaxonOccurrence",
                 namespace=self.TAXON_OCCURRENCE_NAMESPACE)
 
+    def find_institution_code(self):
+        return self.namespaced_find("institutionCode",
+                namespace=self.TAXON_OCCURRENCE_NAMESPACE)
+
+    def find_collection_code(self):
+        return self.namespaced_find("collectionCode",
+                namespace=self.TAXON_OCCURRENCE_NAMESPACE)
+
     def find_catalog_number(self):
         return self.namespaced_find("catalogNumber",
                 namespace=self.TAXON_OCCURRENCE_NAMESPACE)
@@ -62,6 +71,24 @@ class GbifXmlElement(xmlparser.XmlElement):
         path = ["identifiedTo", "Identification", "taxonName"]
         return self.namespaced_find(path, namespace=self.TAXON_OCCURRENCE_NAMESPACE)
 
+class GbifDataProvenance(object):
+
+    def __init__(self, xml=None):
+        self.name = None
+        self.gbif_key = None
+        self.url = None
+        self.rights = None
+        self.citation = None
+        if xml:
+            self.parse_xml(xml)
+
+    def parse_xml(self, xml):
+        self.gbif_key = xml.get("gbifKey")
+        self.url = xml.get_about_attr()
+        self.name = xml.namespaced_find("name").text
+        self.rights = xml.namespaced_find("rights").text
+        self.citation = xml.namespaced_find("citation").text
+
 class GbifOccurrenceRecord(object):
 
     def parse_from_stream(stream):
@@ -78,8 +105,12 @@ class GbifOccurrenceRecord(object):
     def __init__(self):
         self.gbif_key = None
         self.url = None
+        self.institution_code = None
+        self.collection_code = None
         self.catalog_number = None
         self.taxon_name = None
+        self.data_provider = None
+        self.data_resource = None
         self._longitude = None
         self._latitude = None
 
@@ -89,6 +120,8 @@ class GbifOccurrenceRecord(object):
     def parse_taxon_occurrence_xml(self, txo):
         self.gbif_key = txo.get("gbifKey")
         self.url = txo.get_about_attr()
+        self.institution_code = txo.find_institution_code().text
+        self.collection_code = txo.find_collection_code().text
         self.catalog_number = txo.find_catalog_number().text
         self.longitude = txo.find_longitude().text
         self.latitude = txo.find_latitude().text
@@ -113,6 +146,80 @@ class GbifOccurrenceRecord(object):
             except ValueError:
                 self._latitude = value
     latitude = property(_get_latitude, _set_latitude)
+
+    def _get_coordinates_as_string(self, sep=","):
+        return "%s%s%s" % (self.longitude, sep, self.latitude)
+    coordinates_as_string = property(_get_coordinates_as_string)
+
+    def as_coordinate_annotation(self,
+            name=None,
+            name_prefix=None,
+            namespace=None,
+            name_is_prefixed=False,
+            include_gbif_reference=True,
+            include_metadata=True,
+            dynamic=False):
+        if name is None:
+            name = "coordinates"
+        if name_prefix is None or namespace is None:
+            # name_prefix = "kml"
+            # namespace = "http://earth.google.com/kml/2.2"
+            name_prefix = "ogckml"
+            namespace = "http://www.opengis.net/kml/2.2"
+        if dynamic:
+            is_attribute = True
+            value = (self, "coordinates_as_string")
+        else:
+            is_attribute = False
+            value = self.coordinates_as_string
+        annote = base.Annotation(
+                name="coordinates",
+                value=value,
+                name_prefix=name_prefix,
+                namespace=namespace,
+                name_is_prefixed=name_is_prefixed,
+                is_attribute=is_attribute,
+                annotate_as_reference=False,
+                )
+        if include_gbif_reference:
+            if dynamic:
+                value = (self, "url")
+            else:
+                value = self.url
+            subannote = base.Annotation(
+                    name="source",
+                    value=value,
+                    # name_prefix="dc",
+                    # namespace="http://purl.org/dc/elements/1.1/",
+                    name_prefix="dcterms",
+                    namespace="http://purl.org/dc/terms/",
+                    name_is_prefixed=False,
+                    is_attribute=is_attribute,
+                    annotate_as_reference=True,
+                    )
+            annote.annotations.add(subannote)
+        if include_metadata:
+            for attr in [
+                ("institution_code", "institutionCode"),
+                ("collection_code", "collectionCode"),
+                ("catalog_number", "catalogNumber"),
+                ("taxon_name", "scientificName"),
+                ]:
+                if dynamic:
+                    value = (self, attr[0])
+                else:
+                    value = getattr(self, attr[0])
+                subannote = base.Annotation(
+                        name=attr[1],
+                        value=value,
+                        name_prefix="dwc",
+                        namespace="http://rs.tdwg.org/dwc/terms/",
+                        name_is_prefixed=False,
+                        is_attribute=is_attribute,
+                        annotate_as_reference=False,
+                        )
+                annote.annotations.add(subannote)
+        return annote
 
 class GbifDb(object):
 
@@ -140,11 +247,13 @@ class GbifOccurrenceDb(GbifDb):
 
     def fetch_occurrences(self, **kwargs):
         keys = self.fetch_keys(**kwargs)
+        occurrences = []
         for key in keys:
             url = self.compose_query_url(action="get",
                     query_dict={"key": key})
             response = urlopen(url)
-            print response.read()
+            occurrences.extend(self.parse_occurrence_records(response))
+        return occurrences
 
     def parse_list_keys(self, stream):
         keys = []
@@ -154,3 +263,21 @@ class GbifOccurrenceDb(GbifDb):
         for txml in xml_root.iter_taxon_occurrence():
             keys.append(txml.get("gbifKey"))
         return keys
+
+    def parse_occurrence_records(self, stream):
+        occurrences = gbif.GbifOccurrenceRecord.parse_from_stream(stream)
+        return occurrences
+    #     xml_doc = xmlparser.XmlDocument(file_obj=stream,
+    #             subelement_factory=GbifXmlElement)
+    #     xml_root = xml_doc.root
+    #     gbif_recs = []
+    #     for dps in xml_root.namespaced_findall("dataProviders", namespace=self.GBIF_NAMESPACE):
+    #         for dp in dps.namespaced_findall("dataProvider", namespace=self.GBIF_NAMESPACE):
+    #             data_provider = GbifDataProvenance(dp)
+    #             for drs in dp.namespaced_findall("dataResources", namespace=self.GBIF_NAMESPACE):
+    #                 for dr in drs.namespaced_findall("dataResource", namespace=self.GBIF_NAMESPACE):
+    #                     data_resource = GbifDataProvenance(dr)
+    #                     for occurs in dr.namedspaced_findall("occurrenceRecords", namespace=self.GBIF_NAMESPACE):
+    #                         for occur in occurs.namespaced_findall("TaxonOccurrence", namespace=self.TAXON_OCCURRENCE_NAMESPACE):
+    #                             pass
+
