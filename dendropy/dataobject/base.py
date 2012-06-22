@@ -42,7 +42,8 @@ class DataObject(object):
 
     def _default_oid(self):
         "Returns default oid."
-        return "x" + str(id(self))
+        return "d" + str(id(self))
+    default_oid = property(_default_oid)
 
     def _get_oid(self):
         "Returns id."
@@ -58,6 +59,10 @@ class DataObject(object):
         else:
             self._oid = self._default_oid()
     oid = property(_get_oid, _set_oid)
+
+    def reset_oid(self):
+        self._oid = self._default_oid
+        return self._oid
 
     def __deepcopy__(self, memo):
         o = self.__class__(label=self.label, oid=None)

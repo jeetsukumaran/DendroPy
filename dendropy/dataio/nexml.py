@@ -117,7 +117,7 @@ def _compose_annotation_xml(annote, indent="", indent_level=0):
         parts.append('content=%s' % value)
         if annote.datatype_hint:
             parts.append('datatype="%s"'% annote.datatype_hint)
-        parts.append('id="meta%d"' % id(annote))
+        parts.append('id="%s"' % annote.default_oid)
     if len(annote.annotations) > 0:
         parts.append(">")
         for a in annote.annotations:
@@ -929,10 +929,7 @@ class NexmlWriter(iosys.DataWriter):
             dest.write(self.indent * indent_level)
             parts = []
             parts.append('otus')
-            if taxon_set.oid is not None:
-                parts.append('id="%s"' % taxon_set.oid)
-            else:
-                raise Exception("Taxa block given without ID")
+            parts.append('id="%s"' % taxon_set.default_oid)
             if taxon_set.label:
                 parts.append('label=%s' % _protect_attr(taxon_set.label))
             dest.write("<%s>\n" % ' '.join(parts))
@@ -944,10 +941,7 @@ class NexmlWriter(iosys.DataWriter):
                 dest.write(self.indent * (indent_level+1))
                 parts = []
                 parts.append('otu')
-                if taxon.oid is not None:
-                    parts.append('id="%s"' % taxon.oid)
-                else:
-                    raise Exception("Taxon without ID")
+                parts.append('id="%s"' % taxon.default_oid)
                 if taxon.label:
                     parts.append('label=%s' % _protect_attr(taxon.label))
                 if isinstance(taxon, dendropy.AnnotatedDataObject) and len(taxon.annotations) > 0:
@@ -967,13 +961,10 @@ class NexmlWriter(iosys.DataWriter):
             dest.write(self.indent * indent_level)
             parts = []
             parts.append('trees')
-            if tree_list.oid is not None:
-                parts.append('id="%s"' % tree_list.oid)
-            else:
-                raise Exception("Tree block given without ID")
+            parts.append('id="%s"' % tree_list.default_oid)
             if tree_list.label:
                 parts.append('label=%s' % _protect_attr(tree_list.label))
-            parts.append('otus="%s"' % tree_list.taxon_set.oid)
+            parts.append('otus="%s"' % tree_list.taxon_set.default_oid)
             dest.write("<%s>\n" % ' '.join(parts))
 
             # annotate
@@ -990,10 +981,10 @@ class NexmlWriter(iosys.DataWriter):
         parts = []
         if member_state:
             parts.append('%s<member state="%s"/>'
-                                % (self.indent * indent_level, state.oid))
+                                % (self.indent * indent_level, state.default_oid))
         elif state.multistate == dendropy.StateAlphabetElement.SINGLE_STATE:
             parts.append('%s<state id="%s" symbol="%s" />'
-                                % (self.indent * indent_level, state.oid, state.symbol))
+                                % (self.indent * indent_level, state.default_oid, state.symbol))
         else:
             if state.multistate == dendropy.StateAlphabetElement.AMBIGUOUS_STATE:
                 tag = "uncertain_state_set"
@@ -1001,7 +992,7 @@ class NexmlWriter(iosys.DataWriter):
                 tag = "polymorphic_state_set"
 
             parts.append('%s<%s id="%s" symbol="%s">'
-                            % (self.indent * indent_level, tag, state.oid, state.symbol))
+                            % (self.indent * indent_level, tag, state.default_oid, state.symbol))
             for member in state.member_states:
                 parts.extend(self.compose_state_definition(member, indent_level+1, member_state=True))
             parts.append("%s</%s>" % ((self.indent * indent_level), tag))
@@ -1013,13 +1004,10 @@ class NexmlWriter(iosys.DataWriter):
             dest.write(self.indent * indent_level)
             parts = []
             parts.append('characters')
-            if char_matrix.oid is not None:
-                parts.append('id="%s"' % char_matrix.oid)
-            else:
-                raise Exception("Character block without ID")
+            parts.append('id="%s"' % char_matrix.default_oid)
             if char_matrix.label:
                 parts.append('label=%s' % _protect_attr(char_matrix.label))
-            parts.append('otus="%s"' % char_matrix.taxon_set.oid)
+            parts.append('otus="%s"' % char_matrix.taxon_set.default_oid)
             if isinstance(char_matrix, dendropy.DnaCharacterMatrix):
                 xsi_datatype = 'nex:Dna'
             elif isinstance(char_matrix, dendropy.RnaCharacterMatrix):
@@ -1049,7 +1037,7 @@ class NexmlWriter(iosys.DataWriter):
             if hasattr(char_matrix, "state_alphabets"): #isinstance(char_matrix, dendropy.StandardCharacterMatrix):
                 for state_alphabet in char_matrix.state_alphabets:
                     state_alphabet_parts.append('%s<states id="%s">'
-                        % (self.indent * (indent_level+2), state_alphabet.oid))
+                        % (self.indent * (indent_level+2), state_alphabet.default_oid))
                     for state in state_alphabet:
                         if state.multistate == dendropy.StateAlphabetElement.SINGLE_STATE:
                             state_alphabet_parts.extend(self.compose_state_definition(state, indent_level+3))
@@ -1078,13 +1066,13 @@ class NexmlWriter(iosys.DataWriter):
                             elif len(char_matrix.state_alphabets) == 1:
                                 chartype = dendropy.CharacterType(state_alphabet=char_matrix.state_alphabets[0], oid=chartype_oid)
                             elif len(char_matrix.state_alphabets) > 1:
-                                raise TypeError("Character cell %d for taxon %s ('%s') does not have a state alphabet mapping given by the" % (col_idx, taxon.oid, taxon.label)\
+                                raise TypeError("Character cell %d for taxon %s ('%s') does not have a state alphabet mapping given by the" % (col_idx, taxon.default_oid, taxon.label)\
                                         + " 'character_type' property, and multiple state alphabets are defined for the containing" \
-                                        + " character matrix ('%s') with no default specified" % char_matrix.oid)
+                                        + " character matrix ('%s') with no default specified" % char_matrix.default_oid)
                             elif len(char_matrix.state_alphabets) == 0:
-                                raise TypeError("Character cell %d for taxon %s ('%s') does not have a state alphabet mapping given by the" % (col_idx, taxon.oid, taxon.label)\
+                                raise TypeError("Character cell %d for taxon %s ('%s') does not have a state alphabet mapping given by the" % (col_idx, taxon.default_oid, taxon.label)\
                                         + " 'character_type' property, and no state alphabets are defined for the containing" \
-                                        + " character matrix" % char_matrix.oid)
+                                        + " character matrix" % char_matrix.default_oid)
                         else:
                             chartype = dendropy.CharacterType(state_alphabet=cell.character_type.state_alphabet, oid="c%d" % col_idx)
                     else:
@@ -1099,16 +1087,16 @@ class NexmlWriter(iosys.DataWriter):
                         cell_chartype_map[cell] = chartype
                         column_chartype_map[col_idx] = chartype
                     else:
-                        raise TypeError("Cannot create character type mapping: character cell %d for taxon %s ('%s') in character matrix '%s'" %  (col_idx, taxon.oid, taxon.label, char_matrix))
+                        raise TypeError("Cannot create character type mapping: character cell %d for taxon %s ('%s') in character matrix '%s'" %  (col_idx, taxon.default_oid, taxon.label, char_matrix))
 
             character_types_parts = []
             for column in chartypes_to_add:
                 if column.state_alphabet:
-                    chartype_state = ' states="%s" ' % column.state_alphabet.oid
+                    chartype_state = ' states="%s" ' % column.state_alphabet.default_oid
                 else:
                     chartype_state = ' '
                 character_types_parts.append('%s<char id="%s"%s/>'
-                    % ((self.indent*(indent_level+1)), column.oid, chartype_state))
+                    % ((self.indent*(indent_level+1)), column.default_oid, chartype_state))
 
             if state_alphabet_parts or character_types_parts:
                 dest.write("%s<format>\n" % (self.indent*(indent_level+1)))
@@ -1129,12 +1117,9 @@ class NexmlWriter(iosys.DataWriter):
                 dest.write(self.indent*(indent_level+2))
                 parts = []
                 parts.append('row')
-                if row.oid is not None:
-                    parts.append('id="%s"' % row.oid)
-                else:
-                    raise Exception("Row without ID")
+                parts.append('id="%s"' % row.default_oid)
                 if taxon:
-                    parts.append('otu="%s"' % taxon.oid)
+                    parts.append('otu="%s"' % taxon.default_oid)
                 dest.write("<%s>\n" % ' '.join(parts))
 
 #                 self.write_extensions(row, dest, indent_level=indent_level+3)
@@ -1147,9 +1132,9 @@ class NexmlWriter(iosys.DataWriter):
                     for cell in row:
                         parts = []
                         parts.append('%s<cell' % (self.indent*(indent_level+3)))
-                        parts.append('char="%s"' % cell_chartype_map[cell].oid)
+                        parts.append('char="%s"' % cell_chartype_map[cell].default_oid)
                         if hasattr(cell, "value") and hasattr(cell.value, "oid"):
-                            v = cell.value.oid
+                            v = cell.value.default_oid
                         else:
                             v = str(cell.value)
                         parts.append('state="%s"' % v)
@@ -1178,7 +1163,7 @@ class NexmlWriter(iosys.DataWriter):
                         seq_symbols = []
                         for cidx, c in enumerate(row):
                             if c.value.symbol is None:
-                                raise TypeError("Character %d in row '%s' does not have a symbol defined for its character state:" % (cidx, row.oid) \
+                                raise TypeError("Character %d in row '%s' does not have a symbol defined for its character state:" % (cidx, row.default_oid) \
                                             + " this matrix cannot be written in sequence format (set 'markup_as_sequences' to False)'")
                             seq_symbols.append(c.value.symbol)
                     else:
@@ -1203,8 +1188,8 @@ class NexmlWriter(iosys.DataWriter):
         """
         parts = []
         parts.append('tree')
-        if hasattr(tree, 'oid') and tree.oid is not None:
-            parts.append('id="%s"' % tree.oid)
+        if hasattr(tree, 'oid') and tree.default_oid is not None:
+            parts.append('id="%s"' % tree.default_oid)
         else:
             parts.append('id="%s"' % ("Tree" + str(id(tree))))
         if hasattr(tree, 'label') and tree.label:
@@ -1280,11 +1265,11 @@ class NexmlWriter(iosys.DataWriter):
         "Writes out a NEXML node element."
         parts = []
         parts.append('<node')
-        parts.append('id="%s"' % node.oid)
+        parts.append('id="%s"' % node.default_oid)
         if hasattr(node, 'label') and node.label:
             parts.append('label=%s' % _protect_attr(node.label))
         if hasattr(node, 'taxon') and node.taxon:
-            parts.append('otu="%s"' % node.taxon.oid)
+            parts.append('otu="%s"' % node.taxon.default_oid)
         parts = ' '.join(parts)
         dest.write('%s%s' % ((self.indent * indent_level), parts))
         if len(node.annotations) > 0:
@@ -1306,14 +1291,14 @@ class NexmlWriter(iosys.DataWriter):
                 # EDGE-ON-ROOT:
                 tag = "rootedge"
                 parts.append('<%s' % tag)
-            if hasattr(edge, 'oid') and edge.oid:
-                parts.append('id="%s"' % edge.oid)
+            if hasattr(edge, 'oid') and edge.default_oid:
+                parts.append('id="%s"' % edge.default_oid)
             # programmatically more efficent to do this in above
             # block, but want to maintain this tag order ...
             if edge.tail_node is not None:
-                parts.append('source="%s"' % edge.tail_node.oid)
+                parts.append('source="%s"' % edge.tail_node.default_oid)
             if edge.head_node is not None:
-                parts.append('target="%s"' % edge.head_node.oid)
+                parts.append('target="%s"' % edge.head_node.default_oid)
             if hasattr(edge, 'length') and edge.length is not None:
                 parts.append('length="%s"' % edge.length)
             if hasattr(edge, 'label') and edge.label:
