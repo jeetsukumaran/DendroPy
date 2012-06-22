@@ -257,18 +257,18 @@ class GbifOccurrenceDb(GbifDb):
         return self.parse_list_keys(response)
 
     def fetch_occurrences(self, **kwargs):
-        # keys = self.fetch_keys(**kwargs)
-        # occurrences = []
-        # for key in keys:
-        #     url = self.compose_query_url(action="get",
-        #             query_dict={"key": key})
-        #     response = urlopen(url)
-        #     occurrences.extend(self.parse_occurrence_records(response))
-        # return occurrences
-        url = self.compose_query_url(action="list",
-                query_dict=kwargs)
-        response = urlopen(url)
-        return self.parse_occurrence_records(response)
+        keys = self.fetch_keys(**kwargs)
+        occurrences = []
+        for key in keys:
+            url = self.compose_query_url(action="get",
+                    query_dict={"key": key})
+            response = urlopen(url)
+            occurrences.extend(self.parse_occurrence_records(response))
+        return occurrences
+        # url = self.compose_query_url(action="list",
+        #         query_dict=kwargs)
+        # response = urlopen(url)
+        # return self.parse_occurrence_records(response)
 
     def parse_list_keys(self, stream):
         keys = []
