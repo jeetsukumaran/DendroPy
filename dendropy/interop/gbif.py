@@ -20,6 +20,7 @@
 Wrappers for interacting with GBIF.
 """
 
+from urllib import urlopen
 from dendropy.dataobject import base
 from dendropy.dataio import xmlparser
 
@@ -46,30 +47,40 @@ class GbifXmlElement(xmlparser.XmlElement):
         return self.namespaced_getiterator("TaxonOccurrence",
                 namespace=self.TAXON_OCCURRENCE_NAMESPACE)
 
-    def find_institution_code(self):
-        return self.namespaced_find("institutionCode",
-                namespace=self.TAXON_OCCURRENCE_NAMESPACE)
+    def _process_ret_val(self, element, text_only=False):
+        if text_only:
+            if element:
+                return element.text
+            else:
+                return None
+        else:
+            return element
 
-    def find_collection_code(self):
-        return self.namespaced_find("collectionCode",
-                namespace=self.TAXON_OCCURRENCE_NAMESPACE)
+    def find_institution_code(self, text_only=False):
+        e = self.namespaced_find("institutionCode", namespace=self.TAXON_OCCURRENCE_NAMESPACE)
+        return self._process_ret_val(e, text_only)
 
-    def find_catalog_number(self):
-        return self.namespaced_find("catalogNumber",
-                namespace=self.TAXON_OCCURRENCE_NAMESPACE)
+    def find_collection_code(self, text_only=False):
+        e = self.namespaced_find("collectionCode", namespace=self.TAXON_OCCURRENCE_NAMESPACE)
+        return self._process_ret_val(e, text_only)
 
-    def find_longitude(self):
-        return self.namespaced_find("decimalLongitude",
-                namespace=self.TAXON_OCCURRENCE_NAMESPACE)
+    def find_catalog_number(self, text_only=False):
+        e = self.namespaced_find("catalogNumber", namespace=self.TAXON_OCCURRENCE_NAMESPACE)
+        return self._process_ret_val(e, text_only)
 
-    def find_latitude(self):
-        return self.namespaced_find("decimalLatitude",
-                namespace=self.TAXON_OCCURRENCE_NAMESPACE)
+    def find_longitude(self, text_only=False):
+        e = self.namespaced_find("decimalLongitude", namespace=self.TAXON_OCCURRENCE_NAMESPACE)
+        return self._process_ret_val(e, text_only)
 
-    def find_taxon_name(self):
+    def find_latitude(self, text_only=False):
+        e = self.namespaced_find("decimalLatitude", namespace=self.TAXON_OCCURRENCE_NAMESPACE)
+        return self._process_ret_val(e, text_only)
+
+    def find_taxon_name(self, text_only=False):
         # path = "{%(ns)s}identifiedTo/{%(ns)s}Identification/{%(ns)s}taxon_name" % {"ns": self.TAXON_OCCURRENCE_NAMESPACE}
         path = ["identifiedTo", "Identification", "taxonName"]
-        return self.namespaced_find(path, namespace=self.TAXON_OCCURRENCE_NAMESPACE)
+        e = self.namespaced_find(path, namespace=self.TAXON_OCCURRENCE_NAMESPACE)
+        return self._process_ret_val(e, text_only)
 
 class GbifDataProvenance(object):
 
@@ -120,12 +131,12 @@ class GbifOccurrenceRecord(object):
     def parse_taxon_occurrence_xml(self, txo):
         self.gbif_key = txo.get("gbifKey")
         self.url = txo.get_about_attr()
-        self.institution_code = txo.find_institution_code().text
-        self.collection_code = txo.find_collection_code().text
-        self.catalog_number = txo.find_catalog_number().text
-        self.longitude = txo.find_longitude().text
-        self.latitude = txo.find_latitude().text
-        self.taxon_name = txo.find_taxon_name().text
+        self.institution_code = txo.find_institution_code(text_only=True)
+        self.collection_code = txo.find_collection_code(text_only=True)
+        self.catalog_number = txo.find_catalog_number(text_only=True)
+        self.longitude = txo.find_longitude(text_only=True)
+        self.latitude = txo.find_latitude(text_only=True)
+        self.taxon_name = txo.find_taxon_name(text_only=True)
 
     def _get_longitude(self):
         return self._longitude
@@ -246,14 +257,18 @@ class GbifOccurrenceDb(GbifDb):
         return self.parse_list_keys(response)
 
     def fetch_occurrences(self, **kwargs):
-        keys = self.fetch_keys(**kwargs)
-        occurrences = []
-        for key in keys:
-            url = self.compose_query_url(action="get",
-                    query_dict={"key": key})
-            response = urlopen(url)
-            occurrences.extend(self.parse_occurrence_records(response))
-        return occurrences
+        # keys = self.fetch_keys(**kwargs)
+        # occurrences = []
+        # for key in keys:
+        #     url = self.compose_query_url(action="get",
+        #             query_dict={"key": key})
+        #     response = urlopen(url)
+        #     occurrences.extend(self.parse_occurrence_records(response))
+        # return occurrences
+        url = self.compose_query_url(action="list",
+                query_dict=kwargs)
+        response = urlopen(url)
+        return self.parse_occurrence_records(response)
 
     def parse_list_keys(self, stream):
         keys = []
@@ -265,7 +280,7 @@ class GbifOccurrenceDb(GbifDb):
         return keys
 
     def parse_occurrence_records(self, stream):
-        occurrences = gbif.GbifOccurrenceRecord.parse_from_stream(stream)
+        occurrences = GbifOccurrenceRecord.parse_from_stream(stream)
         return occurrences
     #     xml_doc = xmlparser.XmlDocument(file_obj=stream,
     #             subelement_factory=GbifXmlElement)
