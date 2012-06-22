@@ -342,7 +342,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         taxon_set_elements = [i for i in xml_root.iter_otus()]
         if len(taxon_set_elements) == 0:
             raise error.DataParseError(message="No taxon definitions found in data source")
-        if dataset.attached_taxon_set:
+        if dataset.attached_taxon_set is not None:
             if len(taxon_set_elements) > 1:
                 raise TypeError('Multiple taxon sets in data source, but DataSet object is in attached (single) taxon set mode')
             nxtaxa = taxon_set_elements[0]
