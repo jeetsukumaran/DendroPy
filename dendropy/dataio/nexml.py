@@ -347,7 +347,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
                 raise TypeError('Multiple taxon sets in data source, but DataSet object is in attached (single) taxon set mode')
             nxtaxa = taxon_set_elements[0]
             taxon_set = self.get_default_taxon_set(oid=nxtaxa.get('id', None), label=nxtaxa.get('label', None))
-            taxon_set = self.parse_taxon_set(nxtaxa, taxon_set=taxon_set)
+            taxon_set = self.parse_taxon_set(nxtaxa, taxon_set=taxon_set, single_taxon_set_mode=True)
             self.id_taxon_set_map[taxon_set.oid] = taxon_set
         else:
             for nxtaxa in taxon_set_elements:
@@ -355,7 +355,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
                 dataset.taxon_sets.append(taxon_set)
                 self.id_taxon_set_map[taxon_set.oid] = taxon_set
 
-    def parse_taxon_set(self, nxtaxa, taxon_set=None):
+    def parse_taxon_set(self, nxtaxa, taxon_set=None, single_taxon_set_mode=False):
         oid = nxtaxa.get('id', None)
         label = nxtaxa.get('label', None)
         if taxon_set is None:
@@ -368,13 +368,25 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         annotations = [i for i in nxtaxa.findall_annotations()]
         for annotation in annotations:
             self.parse_annotations(taxon_set, annotation)
+        label_taxon_map = {}
+        if single_taxon_set_mode:
+            for t in taxon_set:
+                label_taxon_map[t.label] = t
         for idx, nxtaxon in enumerate(nxtaxa.findall_otu()):
-            taxon = dendropy.Taxon(label=nxtaxon.get('label', "Taxon" + str(idx)),
-                    oid=nxtaxon.get('id', "s" + str(idx) ), )
+            taxon = None
+            label = nxtaxon.get('label', "Taxon" + str(idx))
+            oid = nxtaxon.get('id', "s" + str(idx) )
+            if single_taxon_set_mode:
+                taxon = label_taxon_map.get(label, None)
+                if taxon is not None:
+                    taxon.oid = oid
+            if taxon is None:
+                taxon = dendropy.Taxon(label=label, oid=oid)
+                label_taxon_map[label] = taxon
+                taxon_set.append(taxon)
             annotations = [i for i in nxtaxon.findall_annotations()]
             for annotation in annotations:
                 self.parse_annotations(taxon, annotation)
-            taxon_set.append(taxon)
         return taxon_set
 
 
