@@ -25,6 +25,7 @@ from cStringIO import StringIO
 import time
 import textwrap
 
+from dendropy.utility import containers
 from dendropy.utility import iosys
 from dendropy.utility import error
 from dendropy.dataio import xmlparser
@@ -271,6 +272,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         self.parse_time = None
         self.id_taxon_set_map = {}
         self.default_namespace = kwargs.get("default_namespace", NexmlReader.DEFAULT_NEXML_NAMESPACE)
+        self.case_sensitive_taxon_labels = kwargs.get('case_sensitive_taxon_labels', False)
         _AnnotationParser.__init__(self)
 
     ## Implementation of the datasets.Reader interface ##
@@ -368,7 +370,10 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         annotations = [i for i in nxtaxa.findall_annotations()]
         for annotation in annotations:
             self.parse_annotations(taxon_set, annotation)
-        label_taxon_map = {}
+        if self.case_sensitive_taxon_labels:
+            label_taxon_map = {}
+        else:
+            label_taxon_map = containers.OrderedCaselessDict()
         if single_taxon_set_mode:
             for t in taxon_set:
                 label_taxon_map[t.label] = t
