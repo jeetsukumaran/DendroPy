@@ -87,7 +87,7 @@ class GbifDataProvenance(object):
     def __init__(self, xml=None):
         self.name = None
         self.gbif_key = None
-        self.url = None
+        self.uri = None
         self.rights = None
         self.citation = None
         if xml:
@@ -95,7 +95,7 @@ class GbifDataProvenance(object):
 
     def parse_xml(self, xml):
         self.gbif_key = xml.get("gbifKey")
-        self.url = xml.get_about_attr()
+        self.uri = xml.get_about_attr()
         self.name = xml.namespaced_find("name").text
         self.rights = xml.namespaced_find("rights").text
         self.citation = xml.namespaced_find("citation").text
@@ -115,7 +115,7 @@ class GbifOccurrenceRecord(object):
 
     def __init__(self):
         self.gbif_key = None
-        self.url = None
+        self.uri = None
         self.institution_code = None
         self.collection_code = None
         self.catalog_number = None
@@ -130,7 +130,7 @@ class GbifOccurrenceRecord(object):
 
     def parse_taxon_occurrence_xml(self, txo):
         self.gbif_key = txo.get("gbifKey")
-        self.url = txo.get_about_attr()
+        self.uri = txo.get_about_attr()
         self.institution_code = txo.find_institution_code(text_only=True)
         self.collection_code = txo.find_collection_code(text_only=True)
         self.catalog_number = txo.find_catalog_number(text_only=True)
@@ -194,9 +194,9 @@ class GbifOccurrenceRecord(object):
                 )
         if include_gbif_reference:
             if dynamic:
-                value = (self, "url")
+                value = (self, "uri")
             else:
-                value = self.url
+                value = self.uri
             subannote = base.Annotation(
                     name="source",
                     value=value,
