@@ -67,8 +67,24 @@ class DataSet(AnnotatedDataObject, iosys.Readable, iosys.Writeable):
         self.tree_lists = containers.OrderedSet()
         self.char_matrices = containers.OrderedSet()
         self.attached_taxon_set = None
-        taxa = kwargs.get("taxon_set", None)
-        attach_taxon_set = kwargs.get("attach_taxon_set", False)
+        if "taxon_set" in kwargs and "attached_taxon_set" in kwargs:
+            if kwargs["taxon_set"] is kwargs["attached_taxon_set"]:
+                raise TypeError("Specifying both 'taxon_set' and 'attached_taxon_set' is redundant")
+            else:
+                raise TypeError("Cannot specify both 'taxon_set' and 'attached_taxon_set'")
+        if "taxon_set" in kwargs:
+            taxa = kwargs.get("taxon_set", None)
+            if "attach_taxon_set" in kwargs and not kwargs["attach_taxon_set"]:
+                raise TypeError("Conflicting directives: 'taxon_set' is given but 'attach_taxon_set' is not True")
+            attach_taxon_set = True
+        elif "attached_taxon_set" in kwargs:
+            taxa = kwargs["attached_taxon_set"]
+            if "attach_taxon_set" in kwargs and not kwargs["attach_taxon_set"]:
+                raise TypeError("Conflicting directives: 'attached_taxon_set' is given but 'attach_taxon_set' is not True")
+            attach_taxon_set = True
+        else:
+            taxa = None
+            attach_taxon_set = kwargs.get("attach_taxon_set", False)
         if attach_taxon_set or (taxa is not None):
             self.attach_taxon_set(taxa)
         else:

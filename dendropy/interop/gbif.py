@@ -158,7 +158,7 @@ class GbifOccurrenceRecord(object):
                 self._latitude = value
     latitude = property(_get_latitude, _set_latitude)
 
-    def _get_coordinates_as_string(self, sep=","):
+    def _get_coordinates_as_string(self, sep=" "):
         return "%s%s%s" % (self.longitude, sep, self.latitude)
     coordinates_as_string = property(_get_coordinates_as_string)
 
@@ -175,8 +175,10 @@ class GbifOccurrenceRecord(object):
         if name_prefix is None or namespace is None:
             # name_prefix = "kml"
             # namespace = "http://earth.google.com/kml/2.2"
-            name_prefix = "ogckml"
-            namespace = "http://www.opengis.net/kml/2.2"
+            # name_prefix = "ogckml"
+            # namespace = "http://www.opengis.net/kml/2.2"
+            name_prefix = "gml"
+            namespace = "http://www.opengis.net/gml"
         if dynamic:
             is_attribute = True
             value = (self, "coordinates_as_string")
@@ -184,7 +186,7 @@ class GbifOccurrenceRecord(object):
             is_attribute = False
             value = self.coordinates_as_string
         annote = base.Annotation(
-                name="coordinates",
+                name="pos",
                 value=value,
                 name_prefix=name_prefix,
                 namespace=namespace,
