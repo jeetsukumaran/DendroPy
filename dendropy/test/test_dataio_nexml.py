@@ -82,6 +82,8 @@ class NexmlAttachedTaxonSet(unittest.TestCase):
         self.taxon_set1_data_paths = [
                 pathmap.tree_source_path("pythonidae.annotated.nexml"),
                 pathmap.char_source_path("pythonidae_continuous.chars.nexml"),
+                pathmap.tree_source_path("pythonidae.annotated.nexml"),
+                pathmap.char_source_path("pythonidae_continuous.chars.nexml"),
             ]
         self.taxon_set1_len = 33
         self.taxon_set2_data_paths = [
