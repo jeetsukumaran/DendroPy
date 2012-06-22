@@ -76,5 +76,32 @@ class NexmlRoundTripTest(datatest.AnnotatedDataObjectVerificationTestCase):
             ca.markup_as_sequences = False
         self.roundTripDataSetTest(d1, "nexml", ignore_chartypes=True)
 
+class NexmlAttachedTaxonSet(unittest.TestCase):
+
+    def setUp(self):
+        self.taxon_set1_data_paths = [
+                pathmap.tree_source_path("pythonidae.annotated.nexml"),
+                pathmap.char_source_path("pythonidae_continuous.chars.nexml"),
+            ]
+        self.taxon_set1_len = 33
+        self.taxon_set2_data_paths = [
+                pathmap.tree_source_path("treebase_s373.xml"),
+                ]
+
+    def testFromNew(self):
+        dataset = dendropy.DataSet(attach_taxon_set=True)
+        self.assertEqual(len(dataset.taxon_sets), 1)
+        taxa = dataset.taxon_sets[0]
+        self.assertEqual(len(taxa), 0)
+        dataset.read_from_path(self.taxon_set1_data_paths[0],
+                "nexml")
+        self.assertEqual(len(dataset.taxon_sets), 1)
+        self.assertEqual(len(taxa), self.taxon_set1_len)
+        for src_path in self.taxon_set1_data_paths:
+            dataset.read_from_path(src_path,
+                    "nexml")
+            self.assertEqual(len(dataset.taxon_sets), 1)
+            self.assertEqual(len(taxa), self.taxon_set1_len)
+
 if __name__ == "__main__":
     unittest.main()
