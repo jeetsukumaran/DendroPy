@@ -521,7 +521,7 @@ In addition, the method call also supports some of the other customization argum
 Copying Metadata Annotations from One Phylogenetic Data Object to Another
 -------------------------------------------------------------------------
 
-As the :class:`~dendropy.dataobject.base.AnnotationSet` is derived from :class:`dendropy.utility.containers.OrderedSet`, it has the :meth:`:class:`dendropy.utility.containers.OrderedSet.add` and :meth:`:class:`dendropy.utility.containers.OrderedSet.update` methods available for direct addition of :class:`~dendropy.dataobject.base.Annotation` objects.
+As the :class:`~dendropy.dataobject.base.AnnotationSet` is derived from :class:`dendropy.utility.containers.OrderedSet`, it has the :meth:`dendropy.utility.containers.OrderedSet.add` and :meth:`dendropy.utility.containers.OrderedSet.update` methods available for direct addition of :class:`~dendropy.dataobject.base.Annotation` objects.
 The following example shows how to add metadata annotations associated with a |DataSet| object to all its |Tree| objects::
 
     import dendropy
