@@ -1228,7 +1228,7 @@ class NexmlWriter(iosys.DataWriter):
         #              % (self.indent * (indent_level+1)))
         # parts.append('%sxmlns:xml="http://www.w3.org/XML/1998/namespace"' \
         #              % (self.indent * (indent_level+1)))
-        parts.append('%sxsi:schemaLocation="http://www.nexml.org/2009"'
+        parts.append('%sxsi:schemaLocation="http://www.nexml.org/2009 ../xsd/nexml.xsd"'
                      % (self.indent * (indent_level+1)))
         # parts.append('%sxmlns="http://www.nexml.org/2009"'
         #              % (self.indent * (indent_level+1)))
