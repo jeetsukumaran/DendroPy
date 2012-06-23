@@ -158,6 +158,15 @@ class GbifOccurrenceRecord(object):
                 self._latitude = value
     latitude = property(_get_latitude, _set_latitude)
 
+    def __str__(self):
+        return "%s (%s) %s: %s [%s %s]" % (
+                self.institution_code,
+                self.collection_code,
+                self.catalog_number,
+                self.taxon_name,
+                self.longitude,
+                self.latitude)
+
     def _get_coordinates_as_string(self, sep=" "):
         return "%s%s%s" % (self.longitude, sep, self.latitude)
     coordinates_as_string = property(_get_coordinates_as_string)
