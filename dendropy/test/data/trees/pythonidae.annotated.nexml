@@ -4,6 +4,7 @@
     xsi:schemaLocation="http://www.nexml.org/2009 ../xsd/nexml.xsd"
     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
     xmlns:dendropy="http://packages.python.org/DendroPy/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
     xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns="http://www.nexml.org/2009"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -120,450 +121,450 @@
             <meta xsi:type="nex:LiteralMeta" property="dendropy:substitutionModel" content="GTR+G+I" id="d4322368912" />
             <node id="d4322369040">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322369360" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322369488" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322386192" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322386256" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322369488" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322386192" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322386256" />
                 </meta>
             </node>
             <node id="d4322477008">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322478224" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322478736" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322478992" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322479056" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322478736" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322478992" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322479056" />
                 </meta>
             </node>
             <node id="d4322477904" otu="d4322368208">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322479120" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322479632" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322479888" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322479952" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322479632" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322479888" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322479952" />
                 </meta>
             </node>
             <node id="d4322477456" otu="d4322368080">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322478672" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322479184" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322479440" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322479504" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322479184" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322479440" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322479504" />
                 </meta>
             </node>
             <node id="d4322478352" otu="d4322368336">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322479568" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322480080" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322492688" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322492752" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322480080" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322492688" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322492752" />
                 </meta>
             </node>
             <node id="d4322368976">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322369296" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322386384" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322386640" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322386704" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322386384" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322386640" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322386704" />
                 </meta>
             </node>
             <node id="d4322388240">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322389456" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322389968" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322406672" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322406736" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322389968" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322406672" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322406736" />
                 </meta>
             </node>
             <node id="d4322467408">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322476880" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322477392" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322477648" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322477712" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322477392" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322477648" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322477712" />
                 </meta>
             </node>
             <node id="d4322476112" otu="d4322367824">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322477328" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322477840" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322478096" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322478160" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322477840" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322478096" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322478160" />
                 </meta>
             </node>
             <node id="d4322476560" otu="d4322367952">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322477776" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322478288" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322478544" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322478608" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322478288" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322478544" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322478608" />
                 </meta>
             </node>
             <node id="d4322388688">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322389904" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322406864" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322407120" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322407184" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322406864" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322407120" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322407184" />
                 </meta>
             </node>
             <node id="d4322389136">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322406800" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322407312" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322407568" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322407632" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322407312" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322407568" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322407632" />
                 </meta>
             </node>
             <node id="d4322421008">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322422224" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322422736" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322431248" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322431312" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322422736" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322431248" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322431312" />
                 </meta>
             </node>
             <node id="d4322421456">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322422672" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322431440" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322431696" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322431760" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322431440" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322431696" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322431760" />
                 </meta>
             </node>
             <node id="d4322422352">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322431824" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322432336" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322432592" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322432656" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322432336" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322432592" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322432656" />
                 </meta>
             </node>
             <node id="d4322431056" otu="d4322365712">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322432272" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322432784" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322433040" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322433104" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322432784" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322433040" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322433104" />
                 </meta>
             </node>
             <node id="d4322431504">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322432720" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322433232" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322433488" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322433552" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322433232" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322433488" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322433552" />
                 </meta>
             </node>
             <node id="d4322431952" otu="d4322365904">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322433168" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322433680" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322433936" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322434000" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322433680" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322433936" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322434000" />
                 </meta>
             </node>
             <node id="d4322432400" otu="d4322366032">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322433616" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322434128" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322434384" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322434448" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322434128" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322434384" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322434448" />
                 </meta>
             </node>
             <node id="d4322421904" otu="d4322365584">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322431376" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322431888" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322432144" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322432208" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322431888" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322432144" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322432208" />
                 </meta>
             </node>
             <node id="d4322432848">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322434064" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322434576" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322434832" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322434896" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322434576" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322434832" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322434896" />
                 </meta>
             </node>
             <node id="d4322433744">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322434960" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322451920" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322452176" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322452240" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322451920" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322452176" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322452240" />
                 </meta>
             </node>
             <node id="d4322434640" otu="d4322366480">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322452304" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322452816" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322453072" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322453136" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322452816" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322453072" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322453136" />
                 </meta>
             </node>
             <node id="d4322434192" otu="d4322366352">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322451856" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322452368" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322452624" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322452688" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322452368" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322452624" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322452688" />
                 </meta>
             </node>
             <node id="d4322433296" otu="d4322366224">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322434512" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322435024" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322451728" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322451792" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322435024" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322451728" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322451792" />
                 </meta>
             </node>
             <node id="d4322389584">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322407248" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322407760" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322408016" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322408080" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322407760" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322408016" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322408080" />
                 </meta>
             </node>
             <node id="d4322407824">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322409040" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322409552" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322409808" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322409872" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322409552" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322409808" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322409872" />
                 </meta>
             </node>
             <node id="d4322408272">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322409488" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322410000" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322410256" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322410320" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322410000" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322410256" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322410320" />
                 </meta>
             </node>
             <node id="d4322409168">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322410384" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322419152" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322419408" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322419472" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322419152" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322419408" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322419472" />
                 </meta>
             </node>
             <node id="d4322420112" otu="d4322340688">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322421328" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322421840" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322422096" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322422160" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322421840" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322422096" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322422160" />
                 </meta>
             </node>
             <node id="d4322409616">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322419088" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322419600" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322419856" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322419920" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322419600" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322419856" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322419920" />
                 </meta>
             </node>
             <node id="d4322410064" otu="d4322340304">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322419536" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322420048" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322420304" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322420368" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322420048" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322420304" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322420368" />
                 </meta>
             </node>
             <node id="d4322418768">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322419984" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322420496" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322420752" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322420816" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322420496" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322420752" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322420816" />
                 </meta>
             </node>
             <node id="d4322419216" otu="d4322340432">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322420432" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322420944" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322421200" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322421264" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322420944" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322421200" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322421264" />
                 </meta>
             </node>
             <node id="d4322419664" otu="d4322340560">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322420880" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322421392" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322421648" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322421712" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322421392" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322421648" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322421712" />
                 </meta>
             </node>
             <node id="d4322408720" otu="d4322340176">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322409936" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322410448" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322418960" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322419024" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322410448" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322418960" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322419024" />
                 </meta>
             </node>
             <node id="d4322420560" otu="d4322340816">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322421776" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322422288" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322422544" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322422608" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322422288" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322422544" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322422608" />
                 </meta>
             </node>
             <node id="d4322406480">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322407696" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322408208" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322408464" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322408528" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322408208" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322408464" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322408528" />
                 </meta>
             </node>
             <node id="d4322407376" otu="d4322340048">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322408592" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322409104" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322409360" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322409424" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322409104" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322409360" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322409424" />
                 </meta>
             </node>
             <node id="d4322406928" otu="d4322339920">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322408144" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322408656" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322408912" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322408976" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322408656" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322408912" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322408976" />
                 </meta>
             </node>
             <node id="d4322451536">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322452752" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322453264" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322453520" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322453584" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322453264" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322453520" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322453584" />
                 </meta>
             </node>
             <node id="d4322451984">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322453200" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322453712" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322453968" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322454032" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322453712" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322453968" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322454032" />
                 </meta>
             </node>
             <node id="d4322465616">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322466832" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322467344" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322467600" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322467664" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322467344" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322467600" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322467664" />
                 </meta>
             </node>
             <node id="d4322466064" otu="d4322367376">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322467280" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322467792" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322476304" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322476368" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322467792" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322476304" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322476368" />
                 </meta>
             </node>
             <node id="d4322466512" otu="d4322367568">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322467728" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322476496" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322476752" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322476816" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322476496" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322476752" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322476816" />
                 </meta>
             </node>
             <node id="d4322452432">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322453648" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322454160" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322454416" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322454480" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322454160" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322454416" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322454480" />
                 </meta>
             </node>
             <node id="d4322464272">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322465488" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322466000" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322466256" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322466320" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322466000" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322466256" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322466320" />
                 </meta>
             </node>
             <node id="d4322465168" otu="d4322367248">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322466384" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322466896" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322467152" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322467216" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322466896" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322467152" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322467216" />
                 </meta>
             </node>
             <node id="d4322464720" otu="d4322367120">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322465936" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322466448" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322466704" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322466768" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322466448" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322466704" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322466768" />
                 </meta>
             </node>
             <node id="d4322452880">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322454096" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322454608" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322454864" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322454928" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322454608" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322454864" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322454928" />
                 </meta>
             </node>
             <node id="d4322454672">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322464144" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322464656" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322464912" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322464976" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322464656" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322464912" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322464976" />
                 </meta>
             </node>
             <node id="d4322455120" otu="d4322366864">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322464592" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322465104" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322465360" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322465424" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322465104" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322465360" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322465424" />
                 </meta>
             </node>
             <node id="d4322463824" otu="d4322366992">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322465040" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322465552" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322465808" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322465872" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322465552" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322465808" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322465872" />
                 </meta>
             </node>
             <node id="d4322453328">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322454544" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322455056" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322455312" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322455376" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322455056" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322455312" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322455376" />
                 </meta>
             </node>
             <node id="d4322454224" otu="d4322366736">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322455440" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322464208" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322464464" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322464528" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322464208" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322464464" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322464528" />
                 </meta>
             </node>
             <node id="d4322453776" otu="d4322366608">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322454992" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322455504" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322464016" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322464080" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322455504" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322464016" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322464080" />
                 </meta>
             </node>
             <node id="d4322466960" otu="d4322367696">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322476432" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322476944" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322477200" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322477264" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322476944" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322477200" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322477264" />
                 </meta>
             </node>
             <node id="d4322369168">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322386320" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322386832" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322387088" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322387152" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322386832" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322387088" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322387152" />
                 </meta>
             </node>
             <node id="d4322369232" otu="d4322339600">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322386768" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322387280" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322387536" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322387600" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322387280" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322387536" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322387600" />
                 </meta>
             </node>
             <node id="d4322386000">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322387216" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322387728" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322387984" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322388048" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322387728" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322387984" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322388048" />
                 </meta>
             </node>
             <node id="d4322386448">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322387664" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322388176" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322388432" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322388496" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322388176" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322388432" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322388496" />
                 </meta>
             </node>
             <node id="d4322387344" otu="d4322339664">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322388560" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322389072" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322389328" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322389392" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322389072" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322389328" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322389392" />
                 </meta>
             </node>
             <node id="d4322386896" otu="d4322339536">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322388112" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322388624" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322388880" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322388944" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322388624" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322388880" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322388944" />
                 </meta>
             </node>
             <node id="d4322387792" otu="d4322339792">
                 <meta xsi:type="nex:LiteralMeta" property="dendropy:calibrationDate" content="unspecified" id="d4322389008" />
-                <meta xsi:type="nex:LiteralMeta" property="dendropy:agePriorDistribution" content="normal" id="d4322389520" > 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322389776" /> 
-                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322389840" /> 
+                <meta xsi:type="nex:ResourceMeta" rel="dendropy:hasPrior" id="d4322389520" >
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:mean" content="1000" id="d4322389776" />
+                    <meta xsi:type="nex:LiteralMeta" property="dendropy:sd" content="10" id="d4322389840" />
                 </meta>
             </node>
             <rootedge id="d4322512720" target="d4322369040" length="0.0" />
