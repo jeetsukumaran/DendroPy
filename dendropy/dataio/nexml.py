@@ -98,7 +98,7 @@ def _from_nexml_tree_length_type(type_attr):
     else:
         return float
 
-def _compose_annotation_xml(annote, indent="", indent_level=0):
+def _compose_annotation_xml(annote, indent="", indent_level=0, prefix_uri_tuples=None):
     parts = ["%s<meta" % (indent * indent_level)]
     value = annote.value
     if value:
@@ -118,10 +118,12 @@ def _compose_annotation_xml(annote, indent="", indent_level=0):
         if annote.datatype_hint:
             parts.append('datatype="%s"'% annote.datatype_hint)
         parts.append('id="%s"' % annote.default_oid)
+    if prefix_uri_tuples is not None:
+        prefix_uri_tuples.add((annote.name_prefix, annote.namespace))
     if len(annote.annotations) > 0:
         parts.append(">")
         for a in annote.annotations:
-            parts.append("\n" + _compose_annotation_xml(a, indent=indent, indent_level=indent_level+1))
+            parts.append("\n" + _compose_annotation_xml(a, indent=indent, indent_level=indent_level+1, prefix_uri_tuples=prefix_uri_tuples))
         parts.append("\n%s</meta>" % (indent * indent_level))
     else:
         parts.append("/>")
@@ -1340,6 +1342,6 @@ class NexmlWriter(iosys.DataWriter):
                 # sys.stderr.write("{}\t\t{}\n".format(annote.name_prefix, annote.namespace))
                 if annote.is_hidden:
                     continue
-                self._prefix_uri_tuples.add((annote.name_prefix, annote.namespace))
-                dest.write(_compose_annotation_xml(annote, indent=self.indent, indent_level=indent_level))
+                # self._prefix_uri_tuples.add((annote.name_prefix, annote.namespace))
+                dest.write(_compose_annotation_xml(annote, indent=self.indent, indent_level=indent_level, prefix_uri_tuples=self._prefix_uri_tuples))
                 dest.write("\n")
