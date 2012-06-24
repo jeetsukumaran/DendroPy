@@ -271,6 +271,7 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         self.load_time = None
         self.parse_time = None
         self.id_taxon_set_map = {}
+        self.id_taxon_map = {}
         self.default_namespace = kwargs.get("default_namespace", NexmlReader.DEFAULT_NEXML_NAMESPACE)
         self.case_sensitive_taxon_labels = kwargs.get('case_sensitive_taxon_labels', False)
         _AnnotationParser.__init__(self)
@@ -348,14 +349,19 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
             if len(taxon_set_elements) > 1:
                 raise TypeError('Multiple taxon sets in data source, but DataSet object is in attached (single) taxon set mode')
             nxtaxa = taxon_set_elements[0]
-            taxon_set = self.get_default_taxon_set(oid=nxtaxa.get('id', None), label=nxtaxa.get('label', None))
+            # taxon_set = self.get_default_taxon_set(oid=nxtaxa.get('id', None), label=nxtaxa.get('label', None))
+            taxon_set = dataset.attached_taxon_set
             taxon_set = self.parse_taxon_set(nxtaxa, taxon_set=taxon_set, single_taxon_set_mode=True)
             self.id_taxon_set_map[taxon_set.oid] = taxon_set
+            for t in taxon_set:
+                self.id_taxon_map[(taxon_set.oid, t.oid)] = t
         else:
             for nxtaxa in taxon_set_elements:
                 taxon_set = self.parse_taxon_set(nxtaxa, taxon_set=None)
                 dataset.taxon_sets.append(taxon_set)
                 self.id_taxon_set_map[taxon_set.oid] = taxon_set
+                for t in taxon_set:
+                    self.id_taxon_map[(taxon_set.oid, t.oid)] = t
 
     def parse_taxon_set(self, nxtaxa, taxon_set=None, single_taxon_set_mode=False):
         oid = nxtaxa.get('id', None)
@@ -400,7 +406,9 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         Given an xml_document, parses the XmlElement representation of
         character sequences into a list of CharacterMatrix objects.
         """
-        nxc = _NexmlCharBlockParser(self.namespace_registry, self.id_taxon_set_map)
+        nxc = _NexmlCharBlockParser(self.namespace_registry,
+                self.id_taxon_set_map,
+                self.id_taxon_map)
         for char_matrix_element in xml_root.iter_characters():
             nxc.parse_char_matrix(char_matrix_element, dataset)
 
@@ -410,9 +418,14 @@ class NexmlReader(iosys.DataReader, _AnnotationParser):
         representations of a set of NEXML treeblocks (`nex:trees`) and
         returns a TreeLists object corresponding to the NEXML.
         """
-        nx_tree_parser = _NexmlTreesParser(self.namespace_registry, self.id_taxon_set_map)
+        nx_tree_parser = _NexmlTreesParser(self.namespace_registry,
+                self.id_taxon_set_map,
+                self.id_taxon_map)
         for trees_idx, trees_element in enumerate(xml_root.iter_trees()):
-            for tree in nx_tree_parser.parse_trees(trees_element, dataset, trees_idx, add_to_tree_list=True):
+            for tree in nx_tree_parser.parse_trees(trees_element,
+                    dataset,
+                    trees_idx,
+                    add_to_tree_list=True):
                 pass
 
     def iterate_over_trees(file_obj, taxon_set=None, dataset=None):
@@ -440,9 +453,10 @@ class _NexmlElementParser(_AnnotationParser):
 class _NexmlTreesParser(_NexmlElementParser):
     "Parses an XmlElement representation of NEXML schema tree blocks."
 
-    def __init__(self, namespace_registry, id_taxon_set_map):
+    def __init__(self, namespace_registry, id_taxon_set_map, id_taxon_map):
         _NexmlElementParser.__init__(self, namespace_registry)
         self.id_taxon_set_map = id_taxon_set_map
+        self.id_taxon_map = id_taxon_map
 
     def parse_trees(self, nxtrees, dataset, trees_idx=None, add_to_tree_list=True):
         """
@@ -460,7 +474,7 @@ class _NexmlTreesParser(_NexmlElementParser):
         # taxon_set = dataset.get_default_taxon_set(oid=taxa_id)
         taxon_set = self.id_taxon_set_map.get(taxa_id, None)
         if not taxon_set:
-            raise Exception("Taxa block \"%s\" not found" % taxa_id)
+            raise Exception("Tree block '%s': Taxa block '%s' not found" % (oid, taxa_id))
         tree_list = dendropy.TreeList(oid=oid, label=label, taxon_set=taxon_set)
         dataset.add_tree_list(tree_list)
         annotations = [i for i in nxtrees.findall_annotations()]
@@ -557,7 +571,7 @@ class _NexmlTreesParser(_NexmlElementParser):
             taxon_id = nxnode.get('otu', None)
             if taxon_id is not None:
                 try:
-                    taxon = taxon_set.require_taxon(oid=taxon_id)
+                    taxon = self.id_taxon_map[(taxon_set.oid, taxon_id)]
                 except KeyError:
                     raise Exception('Taxon with id "%s" not defined in taxa block "%s"' % (taxon_id, taxon_set.oid))
                 nodes[node_id].taxon = taxon
@@ -634,9 +648,10 @@ class _NexmlTreesParser(_NexmlElementParser):
 class _NexmlCharBlockParser(_NexmlElementParser):
     "Parses an XmlElement representation of NEXML taxa blocks."
 
-    def __init__(self, namespace_registry, id_taxon_set_map):
+    def __init__(self, namespace_registry, id_taxon_set_map, id_taxon_map):
         _NexmlElementParser.__init__(self, namespace_registry)
         self.id_taxon_set_map = id_taxon_set_map
+        self.id_taxon_map = id_taxon_map
 
     def parse_ambiguous_state(self, nxambiguous, state_alphabet):
         """
@@ -804,8 +819,8 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             label = nxrow.get('label', None)
             taxon_id = nxrow.get('otu', None)
             try:
-                taxon = taxon_set.require_taxon(oid=taxon_id)
-            except KeyError, e:
+                taxon = self.id_taxon_map[(taxon_set.oid, taxon_id)]
+            except KeyError:
                 raise error.DataParseError(message='Character Block %s (\"%s\"): Taxon with id "%s" not defined in taxa block "%s"' % (char_matrix.oid, char_matrix.label, taxon_id, taxon_set.oid))
 
             character_vector = dendropy.CharacterDataVector(oid=row_id, label=label, taxon=taxon)
