@@ -9,7 +9,7 @@ import re
 import dendropy
 from dendropy.utility import messaging
 
-LOCAL_DIR = os.path.abspath(os.path.dirname(__file__))
+LOCAL_DIR = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 DEFAULT_SCHEMA_PATH = os.path.join(LOCAL_DIR, "schemas", "nexml", "nexml.xsd")
 DEFAULT_STANDARD_VALIDATOR_PATH = os.path.join(LOCAL_DIR, "nexmlvalidator.jar")
 DEFAULT_XMLLINT_PATH = "xmllint"
@@ -49,7 +49,7 @@ class StandardNexmlValidator(XmlValidator):
                 stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
         if stderr.startswith("Unable to access jarfile"):
-            raise OSError("parser module jar file not available")
+            raise OSError("Unable to access jarfile: %s" % DEFAULT_STANDARD_VALIDATOR_PATH)
         if "Failed to read schema document" in stderr:
             raise OSError("offline mode not yet supported")
         for line in stderr.split("\n"):
