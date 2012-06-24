@@ -36,18 +36,25 @@ class XmlValidator(object):
 
 class StandardNexmlValidator(XmlValidator):
 
-    def __init__(self):
-        XmlValidator.__init__(self)
+    def __init__(self,
+            schema_path=DEFAULT_SCHEMA_PATH):
+        XmlValidator.__init__(self, schema_path=schema_path)
         pattern_template = r"\[%s\] :(\d+?):(\d+?): (.+?): (.+)"
         self.error_pattern = re.compile(pattern_template % "Error")
         self.warning_pattern = re.compile(pattern_template % "Warning")
 
     def validate_nexml(self, nexml_filepath):
-        cmd = ["java", "-jar", DEFAULT_STANDARD_VALIDATOR_PATH, nexml_filepath]
+        cmd = ["java",
+                "-jar",
+                DEFAULT_STANDARD_VALIDATOR_PATH,
+                nexml_filepath,
+                self.schema_path]
         p = subprocess.Popen(cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
+        print stdout
+        print stderr
         if stderr.startswith("Unable to access jarfile"):
             raise OSError("Unable to access jarfile: %s" % DEFAULT_STANDARD_VALIDATOR_PATH)
         if "Failed to read schema document" in stderr:
@@ -138,7 +145,7 @@ def main():
                     xmllint_path=opts.xmllint_path)
             parser = "xmllint"
         else:
-            validator = StandardNexmlValidator()
+            validator = StandardNexmlValidator(schema_path=opts.schema)
             parser = "nexmlvalidator.jar"
         validator.validate_nexml(arg)
         if validator.is_invalid():
