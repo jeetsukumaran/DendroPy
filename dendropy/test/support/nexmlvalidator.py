@@ -48,6 +48,8 @@ class StandardNexmlValidator(XmlValidator):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
+        if stderr.startswith("Unable to access jarfile"):
+            raise OSError("parser module jar file not available")
         if "Failed to read schema document" in stderr:
             raise OSError("offline mode not yet supported")
         for line in stderr.split("\n"):
