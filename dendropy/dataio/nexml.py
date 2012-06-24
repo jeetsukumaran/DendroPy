@@ -24,6 +24,7 @@ from xml.sax import saxutils
 from cStringIO import StringIO
 import time
 import textwrap
+import re
 
 from dendropy.utility import containers
 from dendropy.utility import iosys
@@ -136,13 +137,8 @@ class _AnnotationParser(object):
 
     def parse_annotations(self, annotated, nxelement):
         attrib = nxelement.attrib
-        if '{http://www.w3.org/2001/XMLSchema-instance}type' in attrib:
-            xml_type = attrib['{http://www.w3.org/2001/XMLSchema-instance}type']
-        elif 'type' in attrib:
-            xml_type = attrib['type']
-        else:
-            xml_type = 'nex:LiteralMeta'
-        if xml_type == 'nex:LiteralMeta':
+        xml_type = nxelement.parse_type()
+        if xml_type == 'LiteralMeta':
             value = attrib.get("content", None)
             key = attrib.get("property", None)
             annotate_as_reference = False
@@ -185,6 +181,7 @@ class NexmlElement(xmlparser.XmlElement):
         xmlparser.XmlElement.__init__(self,
                 element=element,
                 default_namespace=default_namespace)
+        self.type_parse_pattern = re.compile(r"([A-Za-z0-9]+?):(.+)")
 
     ## Annotations ##
 
@@ -253,6 +250,16 @@ class NexmlElement(xmlparser.XmlElement):
 
     def find_rootedge(self):
         return self.namespaced_find("rootedge")
+
+    def parse_type(self):
+        type_value = self._element.get('{http://www.w3.org/2001/XMLSchema-instance}type', None)
+        if type_value is None:
+            raise ValueError("Type not specified for element '%s'" % self._element.get("id", None))
+        m = self.type_parse_pattern.match(type_value)
+        if m:
+            return m.groups()[1]
+        else:
+            return type_value
 
 ############################################################################
 ## NexmlReader and Supporting Classes
@@ -757,31 +764,31 @@ class _NexmlCharBlockParser(_NexmlElementParser):
         Given an XmlElement representing a nexml characters block, this
         instantiates and returns a corresponding DendroPy CharacterMatrix object.
         """
-        nxchartype = nxchars.get('{http://www.w3.org/2001/XMLSchema-instance}type', None)
-        if nxchartype.startswith('nex:Dna'):
+        oid = nxchars.get('id', None)
+        label = nxchars.get('label', None)
+        nxchartype = nxchars.parse_type()
+        if nxchartype.startswith('Dna'):
             char_matrix = dendropy.DnaCharacterMatrix()
             fixed_state_alphabet = True
-        elif nxchartype.startswith('nex:Rna'):
+        elif nxchartype.startswith('Rna'):
             char_matrix = dendropy.RnaCharacterMatrix()
             fixed_state_alphabet = True
-        elif nxchartype.startswith('nex:Protein'):
+        elif nxchartype.startswith('Protein'):
             char_matrix = dendropy.ProteinCharacterMatrix()
             fixed_state_alphabet = True
-        elif nxchartype.startswith('nex:Restriction'):
+        elif nxchartype.startswith('Restriction'):
             char_matrix = dendropy.RestrictionSitesCharacterMatrix()
             fixed_state_alphabet = True
-        elif nxchartype.startswith('nex:Standard'):
+        elif nxchartype.startswith('Standard'):
             char_matrix = dendropy.StandardCharacterMatrix()
             fixed_state_alphabet = False
-        elif nxchartype.startswith('nex:Continuous'):
+        elif nxchartype.startswith('Continuous'):
             char_matrix = dendropy.ContinuousCharacterMatrix()
             fixed_state_alphabet = False
         else:
             raise NotImplementedError('Character Block %s (\"%s\"): Character type "%s" not supported.'
-                % (char_matrix.oid, char_matrix.label, nxchartype))
+                % (oid, label, nxchartype))
 
-        oid = nxchars.get('id', None)
-        label = nxchars.get('label', None)
         char_matrix.oid = oid
         char_matrix.label = label
 
