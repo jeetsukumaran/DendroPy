@@ -31,14 +31,18 @@ from dendropy.utility.error import DataParseError
 
 GB_FASTA_DEFLINE_PATTERN = re.compile(r'^gi\|(\d+)\|(\w+)\|([\w\d]+).(\d+)\|(.*)$')
 
-def parse_gbnum(gb_defline):
-    m = GB_FASTA_DEFLINE_PATTERN.match(gb_defline)
-    if m is not None:
-        return m.groups()[2]
-    else:
-        return None
+def parse_accession_number_and_gi_from_gb(gb_str):
+    accession = re.search(r"ACCESSION\s+(\S+)$", gb_str, flags=re.MULTILINE)
+    if accession is None:
+        raise ValueError("Failed to parse accession number")
+    accession = accession.groups()[0].strip()
+    gi = re.search(r'^VERSION\s+\S+\s+GI:([0-9]+)$', gb_str, flags=re.MULTILINE)
+    if gi is None:
+        raise ValueError("Failed to parse GI number")
+    gi = gi.groups()[0].strip()
+    return accession, gi
 
-def parse_ncbi_curation_info(gb_defline):
+def parse_ncbi_curation_info_from_defline(gb_defline):
     m = GB_FASTA_DEFLINE_PATTERN.match(gb_defline)
     if m is not None:
         return m.groups()[0], m.groups()[2], m.groups()[2] + '.' + m.groups()[3]
@@ -225,15 +229,33 @@ class Entrez(object):
         results_str = query.read()
         return results_str
 
-    def fetch_gbrecs(self, db, ids, as_plaintext=False):
+    def fetch_gbrecs_as_plaintext_dict(self,
+            db,
+            ids,
+            key_field="accession"):
         db_name = "nucleotide"
         gb_recs_str = self.fetch(db=db, ids=ids, rettype="gb")
         gb_recs_str_list = re.split(r"^//$", gb_recs_str, flags=re.MULTILINE)
         gb_recs_str_list = [gb_rec for gb_rec in gb_recs_str_list
                     if gb_rec.replace("\n", "")]
-        if as_plaintext:
-            return gb_recs_str_list
-        raise NotImplementedError
+        gb_recs_dict = {}
+        for gb_str in gb_recs_str_list:
+            if not gb_str:
+                continue
+            try:
+                accession, gi = parse_accession_number_and_gi_from_gb(gb_str)
+            except TypeError:
+                print "---"
+                print gb_str
+                print "---"
+                raise
+            if key_field == "accession":
+                gb_recs_dict[accession] = gb_str
+            elif key_field == "gi":
+                gb_recs_dict[gi] = gb_str
+            else:
+                raise NotImplementedError("Key field '%s' is not supported" % key_field)
+        return gb_recs_dict
 
     def fetch_nucleotide_accessions(self,
             ids,
@@ -248,6 +270,7 @@ class Entrez(object):
         accession numbers). If `prefix` is given, it is pre-pended to all values
         given in the id list. Any other keyword arguments given are passed to
         the constructor of ``DnaCharacterMatrix``.
+        **Note that the order of records is *not* the same as the order of ids!!!**
         """
         if prefix is not None:
             ids = ["%s%s" % (prefix,i) for i in ids]
@@ -259,7 +282,7 @@ class Entrez(object):
             raise
         for taxon in d.taxon_set:
             taxon.ncbi_defline = taxon.label
-            taxon.ncbi_gi, taxon.ncbi_accession, taxon.ncbi_version = parse_ncbi_curation_info(taxon.ncbi_defline)
+            taxon.ncbi_gi, taxon.ncbi_accession, taxon.ncbi_version = parse_ncbi_curation_info_from_defline(taxon.ncbi_defline)
         if verify:
             found_ids = set([t.ncbi_accession for t in d.taxon_set])
             missing_ids = set(ids).difference(found_ids)
