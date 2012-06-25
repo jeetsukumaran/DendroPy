@@ -118,6 +118,8 @@ def _compose_annotation_xml(annote, indent="", indent_level=0, prefix_uri_tuples
         parts.append('property="%s"' % key)
         if value is not None:
             parts.append('content=%s' % value)
+        else:
+            parts.append('content=""')
     if annote.datatype_hint:
         parts.append('datatype="%s"'% annote.datatype_hint)
     parts.append('id="%s"' % annote.default_oid)
