@@ -457,7 +457,7 @@ else:
 
     def estimate_ultrametric_tree(
             char_matrix,
-            source_tree=None,
+            topology_tree=None,
             paup_path="paup"):
         post_est_commands = """\
         set crit=likelihood;
@@ -465,7 +465,7 @@ else:
         lset userbr=no nst = 1 basefreq = eq rates = eq clock =yes;
         lscore;
         """
-        if source_tree is None:
+        if topology_tree is None:
             ultrametric_tree = estimate_tree(char_matrix,
                     tree_est_criterion="nj",
                     num_states=2,
@@ -487,7 +487,7 @@ else:
             cf.flush()
             input_tree_file_handle = tempfile.NamedTemporaryFile()
             input_tree_filepath = input_tree_file_handle.name
-            source_tree.write_to_stream(input_tree_file_handle, schema="nexus")
+            topology_tree.write_to_stream(input_tree_file_handle, schema="nexus")
             input_tree_file_handle.flush()
             output_tree_file_handle, output_tree_filepath = tempfile.mkstemp(text=True)
             paup_args = {}
