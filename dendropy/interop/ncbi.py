@@ -221,6 +221,7 @@ class Entrez(object):
                 'rettype': rettype,
                 'retmode': 'text'}
         query_url = Entrez.BASE_URL + "/efetch.fcgi?" + urllib.urlencode(params)
+        print query_url
         query = urllib.urlopen(query_url)
         results_str = query.read()
         return results_str
@@ -262,6 +263,8 @@ class Entrez(object):
             taxon.ncbi_gi, taxon.ncbi_accession, taxon.ncbi_version = parse_ncbi_curation_info(taxon.ncbi_defline)
         if verify:
             found_ids = set([t.ncbi_accession for t in d.taxon_set])
+            missing_ids = set(ids).difference(found_ids)
+            found_ids = set([t.ncbi_gi for t in d.taxon_set])
             missing_ids = set(ids).difference(found_ids)
             if len(missing_ids) > 0:
                 raise Entrez.AccessionFetchError(missing_ids)
