@@ -1248,6 +1248,7 @@ class NexmlWriter(iosys.DataWriter):
             ["xsi", "http://www.w3.org/2001/XMLSchema-instance"],
             ["xml", "http://www.w3.org/XML/1998/namespace"],
             ["nex", "http://www.nexml.org/2009"],
+            ["xsd", "http://www.w3.org/2001/XMLSchema#"],
             # ["dendropy", "http://packages.python.org/DendroPy/"],
                 ]
         # parts.append('%sxmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
