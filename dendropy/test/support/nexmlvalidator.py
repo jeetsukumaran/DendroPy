@@ -53,8 +53,6 @@ class StandardNexmlValidator(XmlValidator):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
-        print stdout
-        print stderr
         if stderr.startswith("Unable to access jarfile"):
             raise OSError("Unable to access jarfile: %s" % DEFAULT_STANDARD_VALIDATOR_PATH)
         if "Failed to read schema document" in stderr:
