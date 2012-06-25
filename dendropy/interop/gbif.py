@@ -250,19 +250,18 @@ class GbifOccurrenceRecord(object):
             include_gbif_reference=True,
             dynamic=False):
         """
-            <meta rel="to:TaxonOccurrence" xsi:type="nex:ResourceMeta" id="meta1" about="meta1">
-                    <meta xsi:type="nex:LiteralMeta" property="dwc:basisOfRecordString" content="voucher" />
-                    <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="14584" />
-                    <meta xsi:type="nex:LiteralMeta" property="dwc:collectionCode" content="Herps" />
-                    <meta xsi:type="nex:LiteralMeta" property="dwc:collector" content="Morafka, D.J." />
-                    <meta xsi:type="nex:LiteralMeta" property="dwc:continent" content="North America" />
-                    <meta xsi:type="nex:LiteralMeta" property="dwc:coordinateUncertaintyInMeters" content="992.965" />
-                    <meta xsi:type="nex:LiteralMeta" property="dwc:country" content="United States" />
-                    <meta xsi:type="nex:LiteralMeta" property="dwc:decimalLatitude" content="34.6733800" />
-                    <meta xsi:type="nex:LiteralMeta" property="dwc:decimalLongitude" content="-116.0200400" />
-                    <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="ROM" />
-                    <meta xsi:type="nex:LiteralMeta" property="dwc:stateProvince" content="California" />
+        Sample output (NeXML)::
+
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4324014736" >
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/44726287" id="d4324014800" />
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-116.02004" datatype="xsd:float" id="d4324014928" />
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.67338" datatype="xsd:float" id="d4324014992" />
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="ROM" datatype="xsd:string" id="d4324015056" />
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herps" datatype="xsd:string" id="d4324015120" />
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="14584" datatype="xsd:string" id="d4324015184" />
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4324015248" />
             </meta>
+
         """
         # name_prefix="dwc",
         # namespace="http://rs.tdwg.org/dwc/terms/",
