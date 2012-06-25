@@ -171,38 +171,114 @@ class GbifOccurrenceRecord(object):
         return "%s%s%s" % (self.longitude, sep, self.latitude)
     coordinates_as_string = property(_get_coordinates_as_string)
 
-    def as_coordinate_annotation(self,
-            name=None,
-            name_prefix=None,
-            namespace=None,
-            name_is_prefixed=False,
+    # def as_coordinate_annotation(self,
+    #         name=None,
+    #         name_prefix=None,
+    #         namespace=None,
+    #         name_is_prefixed=False,
+    #         include_gbif_reference=True,
+    #         include_metadata=True,
+    #         dynamic=False):
+    #     if name is None:
+    #         name = "coordinates"
+    #     if name_prefix is None or namespace is None:
+    #         # name_prefix = "kml"
+    #         # namespace = "http://earth.google.com/kml/2.2"
+    #         # name_prefix = "ogckml"
+    #         # namespace = "http://www.opengis.net/kml/2.2"
+    #         name_prefix = "gml"
+    #         namespace = "http://www.opengis.net/gml"
+    #     if dynamic:
+    #         is_attribute = True
+    #         value = (self, "coordinates_as_string")
+    #     else:
+    #         is_attribute = False
+    #         value = self.coordinates_as_string
+    #     annote = base.Annotation(
+    #             name="pos",
+    #             value=value,
+    #             name_prefix=name_prefix,
+    #             namespace=namespace,
+    #             name_is_prefixed=name_is_prefixed,
+    #             is_attribute=is_attribute,
+    #             annotate_as_reference=False,
+    #             )
+    #     if include_gbif_reference:
+    #         if dynamic:
+    #             value = (self, "uri")
+    #         else:
+    #             value = self.uri
+    #         subannote = base.Annotation(
+    #                 name="source",
+    #                 value=value,
+    #                 # name_prefix="dc",
+    #                 # namespace="http://purl.org/dc/elements/1.1/",
+    #                 name_prefix="dcterms",
+    #                 namespace="http://purl.org/dc/terms/",
+    #                 name_is_prefixed=False,
+    #                 is_attribute=is_attribute,
+    #                 annotate_as_reference=True,
+    #                 )
+    #         annote.annotations.add(subannote)
+    #     if include_metadata:
+    #         for attr in [
+    #             ("institution_code", "institutionCode"),
+    #             ("collection_code", "collectionCode"),
+    #             ("catalog_number", "catalogNumber"),
+    #             ("taxon_name", "scientificName"),
+    #             ]:
+    #             if dynamic:
+    #                 value = (self, attr[0])
+    #             else:
+    #                 value = getattr(self, attr[0])
+    #             subannote = base.Annotation(
+    #                     name=attr[1],
+    #                     value=value,
+    #                     name_prefix="dwc",
+    #                     namespace="http://rs.tdwg.org/dwc/terms/",
+    #                     name_is_prefixed=False,
+    #                     is_attribute=is_attribute,
+    #                     annotate_as_reference=False,
+    #                     )
+    #             annote.annotations.add(subannote)
+    #     return annote
+
+    def as_annotation(self,
+            name="TaxonOccurrence",
+            name_prefix="to",
+            namespace="http://rs.tdwg.org/ontology/voc/TaxonOccurrence#",
             include_gbif_reference=True,
-            include_metadata=True,
             dynamic=False):
-        if name is None:
-            name = "coordinates"
-        if name_prefix is None or namespace is None:
-            # name_prefix = "kml"
-            # namespace = "http://earth.google.com/kml/2.2"
-            # name_prefix = "ogckml"
-            # namespace = "http://www.opengis.net/kml/2.2"
-            name_prefix = "gml"
-            namespace = "http://www.opengis.net/gml"
-        if dynamic:
-            is_attribute = True
-            value = (self, "coordinates_as_string")
-        else:
-            is_attribute = False
-            value = self.coordinates_as_string
-        annote = base.Annotation(
-                name="pos",
-                value=value,
+        """
+            <meta rel="to:TaxonOccurrence" xsi:type="nex:ResourceMeta" id="meta1" about="meta1">
+                    <meta xsi:type="nex:LiteralMeta" property="dwc:basisOfRecordString" content="voucher" />
+                    <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="14584" />
+                    <meta xsi:type="nex:LiteralMeta" property="dwc:collectionCode" content="Herps" />
+                    <meta xsi:type="nex:LiteralMeta" property="dwc:collector" content="Morafka, D.J." />
+                    <meta xsi:type="nex:LiteralMeta" property="dwc:continent" content="North America" />
+                    <meta xsi:type="nex:LiteralMeta" property="dwc:coordinateUncertaintyInMeters" content="992.965" />
+                    <meta xsi:type="nex:LiteralMeta" property="dwc:country" content="United States" />
+                    <meta xsi:type="nex:LiteralMeta" property="dwc:decimalLatitude" content="34.6733800" />
+                    <meta xsi:type="nex:LiteralMeta" property="dwc:decimalLongitude" content="-116.0200400" />
+                    <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="ROM" />
+                    <meta xsi:type="nex:LiteralMeta" property="dwc:stateProvince" content="California" />
+            </meta>
+        """
+        # name_prefix="dwc",
+        # namespace="http://rs.tdwg.org/dwc/terms/",
+        top_node = base.Annotation(
+                name=name,
+                value=None,
                 name_prefix=name_prefix,
                 namespace=namespace,
-                name_is_prefixed=name_is_prefixed,
-                is_attribute=is_attribute,
-                annotate_as_reference=False,
+                name_is_prefixed=False,
+                is_attribute=False,
+                annotate_as_reference=True,
                 )
+        if dynamic:
+            is_attribute=True
+        else:
+            is_attribute=False
         if include_gbif_reference:
             if dynamic:
                 value = (self, "uri")
@@ -219,29 +295,33 @@ class GbifOccurrenceRecord(object):
                     is_attribute=is_attribute,
                     annotate_as_reference=True,
                     )
-            annote.annotations.add(subannote)
-        if include_metadata:
-            for attr in [
-                ("institution_code", "institutionCode"),
-                ("collection_code", "collectionCode"),
-                ("catalog_number", "catalogNumber"),
-                ("taxon_name", "scientificName"),
-                ]:
-                if dynamic:
-                    value = (self, attr[0])
-                else:
-                    value = getattr(self, attr[0])
-                subannote = base.Annotation(
-                        name=attr[1],
-                        value=value,
-                        name_prefix="dwc",
-                        namespace="http://rs.tdwg.org/dwc/terms/",
-                        name_is_prefixed=False,
-                        is_attribute=is_attribute,
-                        annotate_as_reference=False,
-                        )
-                annote.annotations.add(subannote)
-        return annote
+            top_node.annotations.add(subannote)
+        for attr in [
+            ("longitude", "decimalLongitude", "xsd:float"),
+            ("latitude", "decimalLatitude", "xsd:float"),
+            ("institution_code", "institutionCode", "xsd:string"),
+            ("collection_code", "collectionCode", "xsd:string"),
+            ("catalog_number", "catalogNumber", "xsd:string"),
+            ("taxon_name", "scientificName", "xsd:string"),
+            ]:
+            if dynamic:
+                value = (self, attr[0])
+                is_attribute=True
+            else:
+                value = getattr(self, attr[0])
+                is_attribute=False
+            subannote = base.Annotation(
+                    name=attr[1],
+                    value=value,
+                    datatype_hint=attr[2],
+                    name_prefix=name_prefix,
+                    namespace=namespace,
+                    name_is_prefixed=False,
+                    is_attribute=is_attribute,
+                    annotate_as_reference=False,
+                    )
+            top_node.annotations.add(subannote)
+        return top_node
 
 class GbifDb(object):
 
