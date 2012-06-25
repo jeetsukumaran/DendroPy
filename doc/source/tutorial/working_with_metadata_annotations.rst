@@ -728,18 +728,18 @@ Unlike :meth:`~dendropy.dataobject.base.AnnotationSet.findall`, it is invalid to
 Retrieving the Value of a Single Annotation
 -------------------------------------------
 
-For convenience, the :meth:`~dendropy.dataobject.base.AnnotationSet.get`, method is provided.
-This will search the :class:`~dendropy.dataobject.base.AnnotationSet` for the first :class:`~dendropy.dataobject.base.Annotation` that has its name field equal to the first argument passed to the :meth:`~dendropy.dataobject.base.AnnotationSet.get` method, and return its value.
+For convenience, the :meth:`~dendropy.dataobject.base.AnnotationSet.get_value`, method is provided.
+This will search the :class:`~dendropy.dataobject.base.AnnotationSet` for the *first* :class:`~dendropy.dataobject.base.Annotation` that has its name field equal to the first argument passed to the :meth:`~dendropy.dataobject.base.AnnotationSet.get_value` method, and return its value.
 If no match is found, the second argument is returned (or |None|, if no second argument is specified).
 Examples::
 
-    >>> print tree.annotations.get("subject")
+    >>> print tree.annotations.get_value("subject")
     molecular phylogeny
-    >>> print tree.annotations.get("creator")
+    >>> print tree.annotations.get_value("creator")
     Yoder A.D., & Yang Z.
-    >>> print tree.annotations.get("generator")
+    >>> print tree.annotations.get_value("generator")
     None
-    >>> print tree.annotations.get("generator", "unspecified")
+    >>> print tree.annotations.get_value("generator", "unspecified")
     unspecified
 
 Transforming Annotations to a Dictionary

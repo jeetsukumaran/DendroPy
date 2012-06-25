@@ -684,7 +684,7 @@ class AnnotationSet(containers.OrderedSet):
                 return a
         return default
 
-    def get(self, name, default=None):
+    def get_value(self, name, default=None):
         """
         Returns the *value* of the *first* Annotation associated with
         self.target which has `name` in the name field.
