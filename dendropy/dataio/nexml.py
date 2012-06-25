@@ -102,23 +102,25 @@ def _from_nexml_tree_length_type(type_attr):
 def _compose_annotation_xml(annote, indent="", indent_level=0, prefix_uri_tuples=None):
     parts = ["%s<meta" % (indent * indent_level)]
     value = annote.value
-    if value:
+    if value is not None:
         value = _protect_attr(value)
     else:
-        value = '""'
+        value = None
     key = annote.prefixed_name
     # assert ":" in key
     if annote.annotate_as_reference:
         parts.append('xsi:type="nex:ResourceMeta"')
         parts.append('rel="%s"' % key)
-        parts.append('href=%s' % value)
+        if value is not None:
+            parts.append('href=%s' % value)
     else:
         parts.append('xsi:type="nex:LiteralMeta"')
         parts.append('property="%s"' % key)
-        parts.append('content=%s' % value)
-        if annote.datatype_hint:
-            parts.append('datatype="%s"'% annote.datatype_hint)
-        parts.append('id="%s"' % annote.default_oid)
+        if value is not None:
+            parts.append('content=%s' % value)
+    if annote.datatype_hint:
+        parts.append('datatype="%s"'% annote.datatype_hint)
+    parts.append('id="%s"' % annote.default_oid)
     if prefix_uri_tuples is not None:
         prefix_uri_tuples.add((annote.name_prefix, annote.namespace))
     if len(annote.annotations) > 0:
