@@ -689,7 +689,6 @@ The above produces::
 
     True
 
-
 Retrieving a Single Annotation By Search Criteria
 -------------------------------------------------
 
@@ -719,9 +718,29 @@ and results in::
 
     subject='wood-fall'
 
-If no matching :class:`~dendropy.dataobject.base.Annotation` objects are found then |None| is returned.
+If no matching :class:`~dendropy.dataobject.base.Annotation` objects are found then a default of |None| is returned::
 
-Unlike :meth:`~dendropy.dataobject.base.AnnotationSet.findall`, it is invalid to call :meth:`~dendropy.dataobject.base.AnnotationSet.find` with no keyword arguments, and an ``TypeError`` exception will be raised.
+    >>> print ds.annotations.find(name="author")
+    None
+
+Unlike :meth:`~dendropy.dataobject.base.AnnotationSet.findall`, it is invalid to call :meth:`~dendropy.dataobject.base.AnnotationSet.find` with no search criteria keyword arguments, and an ``TypeError`` exception will be raised.
+
+Retrieving the Value of a Single Annotation
+-------------------------------------------
+
+For convenience, the :meth:`~dendropy.dataobject.base.AnnotationSet.get`, method is provided.
+This will search the :class:`~dendropy.dataobject.base.AnnotationSet` for the first :class:`~dendropy.dataobject.base.Annotation` that has its name field equal to the first argument passed to the :meth:`~dendropy.dataobject.base.AnnotationSet.get` method, and return its value.
+If no match is found, the second argument is returned (or |None|, if no second argument is specified).
+Examples::
+
+    >>> print tree.annotations.get("subject")
+    molecular phylogeny
+    >>> print tree.annotations.get("creator")
+    Yoder A.D., & Yang Z.
+    >>> print tree.annotations.get("generator")
+    None
+    >>> print tree.annotations.get("generator", "unspecified")
+    unspecified
 
 Transforming Annotations to a Dictionary
 ----------------------------------------

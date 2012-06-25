@@ -672,12 +672,29 @@ class AnnotationSet(containers.OrderedSet):
 
         If no keyword arguments are given, a TypeError is raised.
         """
+        if "default" in kwargs:
+            default = kwargs["default"]
+            del kwargs["default"]
+        else:
+            default = None
         if not kwargs:
             raise TypeError("Search criteria not specified")
         for a in self:
             if a.is_match(**kwargs):
                 return a
-        return None
+        return default
+
+    def get(self, name, default=None):
+        """
+        Returns the *value* of the *first* Annotation associated with
+        self.target which has `name` in the name field.
+
+        If no match is found, then `default` is returned.
+        """
+        for a in self:
+            if a.is_match(name=name):
+                return a.value
+        return default
 
     def drop(self, **kwargs):
         """
