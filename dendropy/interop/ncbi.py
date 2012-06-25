@@ -221,7 +221,6 @@ class Entrez(object):
                 'rettype': rettype,
                 'retmode': 'text'}
         query_url = Entrez.BASE_URL + "/efetch.fcgi?" + urllib.urlencode(params)
-        print query_url
         query = urllib.urlopen(query_url)
         results_str = query.read()
         return results_str
