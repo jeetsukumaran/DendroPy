@@ -455,6 +455,55 @@ else:
                         tax_labels.append(ti_match.group(2).strip())
         return tax_labels, bipartitions, bipartition_counts, bipartition_freqs
 
+    def estimate_ultrametric_tree(
+            char_matrix,
+            source_tree=None,
+            paup_path="paup"):
+        post_est_commands = """\
+        set crit=likelihood;
+        root rootmethod=midpoint;
+        lset userbr=no nst = 1 basefreq = eq rates = eq clock =yes;
+        lscore;
+        """
+        if source_tree is None:
+            ultrametric_tree = estimate_tree(char_matrix,
+                    tree_est_criterion="nj",
+                    num_states=2,
+                    unequal_base_freqs=False,
+                    gamma_rates=False,
+                    prop_invar=False,
+                    extra_post_est_commands=post_est_commands)
+            return ultrametric_tree
+        else:
+            paup_block = """\
+            set warnreset=no;
+            exe '%(data_file)s';
+            gettrees file= '%(intree_file)s' warntree=no;
+            %(post_est_commands)s;
+            savetrees file=%(outtree_file)s format=nexus root=yes brlens=yes taxablk=yes maxdecimals=20;
+            """
+            cf = tempfile.NamedTemporaryFile()
+            char_matrix.write_to_stream(cf, schema='nexus', exclude_chars=False, exclude_trees=True)
+            cf.flush()
+            input_tree_file_handle = tempfile.NamedTemporaryFile()
+            input_tree_filepath = input_tree_file_handle.name
+            source_tree.write_to_stream(input_tree_file_handle, schema="nexus")
+            input_tree_file_handle.flush()
+            output_tree_file_handle, output_tree_filepath = tempfile.mkstemp(text=True)
+            paup_args = {}
+            paup_args["data_file"] = cf.name
+            paup_args["intree_file"] = input_tree_filepath
+            paup_args["post_est_commands"] = post_est_commands
+            paup_args["outtree_file"] = output_tree_filepath
+            paup_block = paup_block % paup_args
+            paup_run = subprocess.Popen(['%s -n' % paup_path],
+                                        shell=True,
+                                        stdin=subprocess.PIPE,
+                                        stdout=subprocess.PIPE)
+            stdout, stderr = paup_run.communicate(paup_block)
+            t = dendropy.Tree.get_from_path(output_tree_filepath, "nexus", taxon_set=char_matrix.taxon_set)
+            return t
+
     def estimate_tree(char_matrix,
                        tree_est_criterion="likelihood",
                        num_states=6,
