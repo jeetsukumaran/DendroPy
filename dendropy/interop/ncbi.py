@@ -30,91 +30,91 @@ from dendropy.utility import containers
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
-GB_FASTA_DEFLINE_PATTERN = re.compile(r'^gi\|(\d+)\|(\w+)\|([\w\d]+).(\d+)\|(.*)$')
+# GB_FASTA_DEFLINE_PATTERN = re.compile(r'^gi\|(\d+)\|(\w+)\|([\w\d]+).(\d+)\|(.*)$')
 
-def parse_accession_number_and_gi_from_gb(gb_str):
-    accession = re.search(r"ACCESSION\s+(\S+)$", gb_str, flags=re.MULTILINE)
-    if accession is None:
-        raise ValueError("Failed to parse accession number")
-    accession = accession.groups()[0].strip()
-    gi = re.search(r'^VERSION\s+\S+\s+GI:([0-9]+)$', gb_str, flags=re.MULTILINE)
-    if gi is None:
-        raise ValueError("Failed to parse GI number")
-    gi = gi.groups()[0].strip()
-    return accession, gi
+# def parse_accession_number_and_gi_from_gb(gb_str):
+#     accession = re.search(r"ACCESSION\s+(\S+)$", gb_str, flags=re.MULTILINE)
+#     if accession is None:
+#         raise ValueError("Failed to parse accession number")
+#     accession = accession.groups()[0].strip()
+#     gi = re.search(r'^VERSION\s+\S+\s+GI:([0-9]+)$', gb_str, flags=re.MULTILINE)
+#     if gi is None:
+#         raise ValueError("Failed to parse GI number")
+#     gi = gi.groups()[0].strip()
+#     return accession, gi
 
-def parse_ncbi_curation_info_from_defline(gb_defline):
-    m = GB_FASTA_DEFLINE_PATTERN.match(gb_defline)
-    if m is not None:
-        return m.groups()[0], m.groups()[2], m.groups()[2] + '.' + m.groups()[3]
-    else:
-        return None
+# def parse_ncbi_curation_info_from_defline(gb_defline):
+#     m = GB_FASTA_DEFLINE_PATTERN.match(gb_defline)
+#     if m is not None:
+#         return m.groups()[0], m.groups()[2], m.groups()[2] + '.' + m.groups()[3]
+#     else:
+#         return None
 
-def compose_taxon_label_from_gb_defline(gb_defline,
-        num_desc_components=3,
-        separator='_',
-        gbnum_in_front=True,
-        exclude_gbnum=False):
-    """
-    If `gb_defline` matches a GenBank FASTA-format defline structure, then this returns a
-    label:
+# def compose_taxon_label_from_gb_defline(gb_defline,
+#         num_desc_components=3,
+#         separator='_',
+#         gbnum_in_front=True,
+#         exclude_gbnum=False):
+#     """
+#     If `gb_defline` matches a GenBank FASTA-format defline structure, then this returns a
+#     label:
 
-        <GB-ACCESSION-ID><SEPARATOR><DESC_COMPONENT(1)><SEPARATOR><DESC_COMPONENT(2)>...<DESC_COMPONENT(n)>
+#         <GB-ACCESSION-ID><SEPARATOR><DESC_COMPONENT(1)><SEPARATOR><DESC_COMPONENT(2)>...<DESC_COMPONENT(n)>
 
-    So, for example, given the following FASTA label:
+#     So, for example, given the following FASTA label:
 
-        gi|158931046|gb|EU105975.1| Homo sapiens Ache non-coding region T1584 genomic sequence
+#         gi|158931046|gb|EU105975.1| Homo sapiens Ache non-coding region T1584 genomic sequence
 
-    the corresponding taxon 3-component (default) label will be:
+#     the corresponding taxon 3-component (default) label will be:
 
-        EU105975_Homo_sapiens_Ache
+#         EU105975_Homo_sapiens_Ache
 
-    If `gb_defline` does *not* match a GenBank FASTA-format defline structure, then the string
-    is returned unchanged.
-    """
-    m = GB_FASTA_DEFLINE_PATTERN.match(gb_defline)
-    if m is not None:
-        groups = m.groups()
-        desc_parts = [s.strip() for s in groups[-1].split() if s]
-        if exclude_gbnum:
-            label_parts = desc_parts[:num_desc_components]
-        elif gbnum_in_front:
-            label_parts = [groups[2]] + desc_parts[:num_desc_components]
-        else:
-            label_parts = desc_parts[:num_desc_components] + [groups[2]]
-        return separator.join(label_parts)
-    else:
-        return gb_defline
+#     If `gb_defline` does *not* match a GenBank FASTA-format defline structure, then the string
+#     is returned unchanged.
+#     """
+#     m = GB_FASTA_DEFLINE_PATTERN.match(gb_defline)
+#     if m is not None:
+#         groups = m.groups()
+#         desc_parts = [s.strip() for s in groups[-1].split() if s]
+#         if exclude_gbnum:
+#             label_parts = desc_parts[:num_desc_components]
+#         elif gbnum_in_front:
+#             label_parts = [groups[2]] + desc_parts[:num_desc_components]
+#         else:
+#             label_parts = desc_parts[:num_desc_components] + [groups[2]]
+#         return separator.join(label_parts)
+#     else:
+#         return gb_defline
 
-def relabel_taxa_from_defline(taxon_set,
-        num_desc_components=3,
-        separator='_',
-        gbnum_in_front=True,
-        exclude_gbnum=False):
-    """
-    Examines the labels of each `Taxon` object in `taxon_set`, and if
-    conforming to a GenBank pattern, translates the labels to a standard
-    format:
+# def relabel_taxa_from_defline(taxon_set,
+#         num_desc_components=3,
+#         separator='_',
+#         gbnum_in_front=True,
+#         exclude_gbnum=False):
+#     """
+#     Examines the labels of each `Taxon` object in `taxon_set`, and if
+#     conforming to a GenBank pattern, translates the labels to a standard
+#     format:
 
-        <GB-ACCESSION-ID><SEPARATOR><DESC_COMPONENT(1)><SEPARATOR><DESC_COMPONENT(2)>...<DESC_COMPONENT(n)>
+#         <GB-ACCESSION-ID><SEPARATOR><DESC_COMPONENT(1)><SEPARATOR><DESC_COMPONENT(2)>...<DESC_COMPONENT(n)>
 
-    So, for example, given the following FASTA label:
+#     So, for example, given the following FASTA label:
 
-        gi|158931046|gb|EU105975.1| Homo sapiens Ache non-coding region T1584 genomic sequence
+#         gi|158931046|gb|EU105975.1| Homo sapiens Ache non-coding region T1584 genomic sequence
 
-    the corresponding taxon 3-component (default) label will be:
+#     the corresponding taxon 3-component (default) label will be:
 
-        EU105975_Homo_sapiens_Ache
+#         EU105975_Homo_sapiens_Ache
 
-    """
-    for taxon in taxon_set:
-        taxon.label = compose_taxon_label_from_gb_defline(
-                gb_defline=taxon.label,
-                num_desc_components=num_desc_components,
-                separator=separator,
-                gbnum_in_front=gbnum_in_front,
-                exclude_gbnum=exclude_gbnum)
-    return taxon_set
+#     """
+#     for taxon in taxon_set:
+#         taxon.label = compose_taxon_label_from_gb_defline(
+#                 gb_defline=taxon.label,
+#                 num_desc_components=num_desc_components,
+#                 separator=separator,
+#                 gbnum_in_front=gbnum_in_front,
+#                 exclude_gbnum=exclude_gbnum)
+#     return taxon_set
 
 class GenBankReference(object):
     """
@@ -259,6 +259,18 @@ class GenBankRecord(object):
     """
     A GenBank record.
     """
+
+    def parse_from_stream(stream):
+        tree = ElementTree.parse(stream)
+        root = tree.getroot()
+        gb_recs = []
+        for seq_set in root.iter("INSDSet"):
+            for seq in seq_set.iter("INSDSeq"):
+                gb_rec = GenBankRecord(xml=seq)
+                gb_recs.append(gb_rec)
+        return gb_recs
+    parse_from_stream = staticmethod(parse_from_stream)
+
     def __init__(self, xml=None):
         self.locus = None
         self.length = None
@@ -339,9 +351,11 @@ class GenBankRecord(object):
         for component in components:
             component = str(getattr(self, component))
             if component is not None:
-                if " " in component and separator != " ":
+                if separator is not None and " " in component and separator != " ":
                     component = component.replace(" ", separator)
                 label.append(component)
+        if separator is None:
+            separator = ""
         return separator.join(label)
 
     def as_fasta(self,
@@ -356,20 +370,6 @@ class GenBankRecord(object):
         sequence_text = self.sequence_text.upper()
         return ">%s\n%s" % (label, sequence_text)
 
-class GenBankXmlParser(object):
-
-    def __init__(self):
-        pass
-
-    def parse_from_stream(self, stream):
-        tree = ElementTree.parse(stream)
-        root = tree.getroot()
-        gb_recs = []
-        for seq_set in root.iter("INSDSet"):
-            for seq in seq_set.iter("INSDSeq"):
-                gb_rec = GenBankRecord(xml=seq)
-                gb_recs.append(gb_rec)
-        return gb_recs
 
 class Entrez(object):
     """
@@ -387,53 +387,13 @@ class Entrez(object):
 
     BASE_URL = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils"
     DATABASES = [
-        'pubmed',
-        'protein',
-        'nucleotide',
-        'nuccore',
-        'nucgss',
-        'nucest',
-        'structure',
-        'genome',
-        'biosystems',
-        'books',
-        'cancerchromosomes',
-        'cdd',
-        'gap',
-        'dbvar',
-        'domains',
-        'epigenomics',
-        'gene',
-        'genomeprj',
-        'gensat',
-        'geo',
-        'gds',
-        'homologene',
-        'journals',
-        'mesh',
-        'ncbisearch',
-        'nlmcatalog',
-        'omia',
-        'omim',
-        'pepdome',
-        'pmc',
-        'popset',
-        'probe',
-        'proteinclusters',
-        'pcassay',
-        'pccompound',
-        'pcsubstance',
-        'seqannot',
-        'snp',
-        'sra',
-        'taxonomy',
-        'toolkit',
-        'toolkitall',
-        'unigene',
-        'unists',
-        'linkoutpubmed',
-        'linkoutseq',
-        'linkoutother',
+        'pubmed', 'protein', 'nucleotide', 'nuccore', 'nucgss', 'nucest', 'structure',
+        'genome', 'biosystems', 'books', 'cancerchromosomes', 'cdd', 'gap', 'dbvar',
+        'domains', 'epigenomics', 'gene', 'genomeprj', 'gensat', 'geo', 'gds', 'homologene',
+        'journals', 'mesh', 'ncbisearch', 'nlmcatalog', 'omia', 'omim', 'pepdome', 'pmc',
+        'popset', 'probe', 'proteinclusters', 'pcassay', 'pccompound', 'pcsubstance', 'seqannot',
+        'snp', 'sra', 'taxonomy', 'toolkit', 'toolkitall', 'unigene', 'unists', 'linkoutpubmed',
+        'linkoutseq', 'linkoutother',
         ]
 
     class AccessionFetchError(Exception):
@@ -441,33 +401,13 @@ class Entrez(object):
         def __init__(self, accession_ids):
             Exception.__init__(self, "Failed to retrieve accessions: %s" % (", ".join([str(s) for s in accession_ids])))
 
-    def __init__(self,
-            generate_labels=False,
-            label_num_desc_components=3,
-            label_separator='_',
-            label_id_in_front=True,
-            exclude_gbnum_from_label=False,
-            sort_taxa_by_label=False):
+    def __init__(self):
         """
-        Instantiates a broker that queries NCBI and returns data.  If
-        ``generate_labels`` is ``True``, then appropriate labels for sequences
-        will be automatically composed for each sequence based on the GenBank
-        FASTA defline. ``label_num_desc_components`` specifies the number of
-        components from the defline to use. ``label_separator`` specifies the
-        string used to separate the different label components.
-        ``label_id_in_front`` specifies whether the GenBank accession number
-        should form the beginning (``True``) or tail (``False``) end of the
-        label. ``sort_taxa_by_label`` specifies whether the sequences should be
-        sorted by their final label values.
+        Instantiates a broker that queries NCBI and returns data.
         """
-        self.generate_labels = generate_labels
-        self.label_num_desc_components = label_num_desc_components
-        self.label_separator = label_separator
-        self.label_id_in_front = label_id_in_front
-        self.exclude_gbnum_from_label = exclude_gbnum_from_label
-        self.sort_taxa_by_label = sort_taxa_by_label
+        pass
 
-    def fetch(self, db, ids, rettype):
+    def efetch(self, db, ids, rettype, retmode="text"):
         """
         Raw fetch. Returns file-like object opened for reading on string
         returned by query.
@@ -479,35 +419,63 @@ class Entrez(object):
         params = {'db': db,
                 'id': id_list,
                 'rettype': rettype,
-                'retmode': 'text'}
+                'retmode': retmode}
         query_url = Entrez.BASE_URL + "/efetch.fcgi?" + urllib.urlencode(params)
         query = urllib.urlopen(query_url)
-        results_str = query.read()
-        return results_str
+        return query
 
-    def fetch_gbrecs_as_plaintext_dict(self, db, ids, verify=True):
-        db_name = "nucleotide"
-        gb_recs_str = self.fetch(db=db, ids=ids, rettype="gb")
-        gb_recs_str_list = re.split(r"^//$", gb_recs_str, flags=re.MULTILINE)
-        gb_recs_str_list = [gb_rec for gb_rec in gb_recs_str_list
-                    if gb_rec.replace("\n", "")]
+#     def fetch_gbrecs_as_plaintext_dict(self, db, ids, verify=True):
+#         db_name = "nucleotide"
+#         gb_recs_str = self.fetch(db=db, ids=ids, rettype="gb")
+#         gb_recs_str_list = re.split(r"^//$", gb_recs_str, flags=re.MULTILINE)
+#         gb_recs_str_list = [gb_rec for gb_rec in gb_recs_str_list
+#                     if gb_rec.replace("\n", "")]
+#         accession_recs = {}
+#         gi_recs = {}
+#         for gb_str in gb_recs_str_list:
+#             if not gb_str:
+#                 continue
+#             accession, gi = parse_accession_number_and_gi_from_gb(gb_str)
+#             accession_recs[accession] = gb_str
+#             gi_recs[str(gi)] = gb_str
+#         result = containers.OrderedCaselessDict()
+#         for gbid in ids:
+#             sgbid = str(gbid)
+#             if sgbid in accession_recs:
+#                 result[gbid] = accession_recs[sgbid]
+#             elif sgbid in gi_recs:
+#                 result[gbid] = gi_recs[sgbid]
+#             elif verify:
+#                 raise Entrez.AccessionFetchError(sgbid)
+#         return result
+
+    def fetch_genbank_records(self, db, ids, verify=True):
+        results_stream = self.efetch(db=db,
+                ids=ids,
+                rettype='gbc',
+                retmode='xml')
+        gb_recs = GenBankRecord.parse_from_stream(results_stream)
         accession_recs = {}
+        accession_version_recs = {}
         gi_recs = {}
-        for gb_str in gb_recs_str_list:
-            if not gb_str:
-                continue
-            accession, gi = parse_accession_number_and_gi_from_gb(gb_str)
-            accession_recs[accession] = gb_str
-            gi_recs[str(gi)] = gb_str
-        result = containers.OrderedCaselessDict()
-        for gbid in ids:
+        for gb_rec in gb_recs:
+            accession_recs[gb_rec.accession] = gb_rec
+            accession_version_recs[gb_rec.accession_version] = gb_rec
+            gi_recs[gb_rec.gi] = gb_rec
+        result = []
+        missing = []
+        for idx, gbid in enumerate(ids):
             sgbid = str(gbid)
-            if sgbid in accession_recs:
-                result[gbid] = accession_recs[sgbid]
+            if sgbid in accession_version_recs:
+                result.append( accession_version_recs[sgbid] )
+            elif sgbid in accession_recs:
+                result.append( accession_recs[sgbid] )
             elif sgbid in gi_recs:
-                result[gbid] = gi_recs[sgbid]
+                result.append( gi_recs[sgbid] )
             elif verify:
-                raise Entrez.AccessionFetchError(sgbid)
+                missing.append(sgbid)
+        if missing:
+            raise Entrez.AccessionFetchError(missing)
         return result
 
     def fetch_nucleotide_accessions(self,
@@ -515,6 +483,10 @@ class Entrez(object):
             prefix=None,
             verify=True,
             matrix_type=dendropy.DnaCharacterMatrix,
+            generate_new_labels=False,
+            label_components=None,
+            label_component_separator=" ",
+            sort_taxa_by_label=False,
             **kwargs):
         """
         Returns a DnaCharacterMatrix object (or some other type, if specified
@@ -523,33 +495,31 @@ class Entrez(object):
         accession numbers). If `prefix` is given, it is pre-pended to all values
         given in the id list. Any other keyword arguments given are passed to
         the constructor of ``DnaCharacterMatrix``.
-        **Note that the order of records is *not* the same as the order of ids!!!**
+        By default, the sequence labels are as given by the GenBank defline.
+        If ``generate_new_labels`` is True then the sequence labels will be
+        generated based on the names of the GenBank attributes passed in
+        label components. This defaults to ``["accession", "organism"]``.
         """
         if prefix is not None:
             ids = ["%s%s" % (prefix,i) for i in ids]
-        results_str = self.fetch(db='nucleotide', ids=ids, rettype='fasta')
-        try:
-            d = matrix_type.get_from_string(results_str, 'fasta', **kwargs)
-        except DataParseError, e:
-            sys.stderr.write("---\nNCBI Entrez Query returned:\n%s\n---\n" % results_str)
-            raise
-        for taxon in d.taxon_set:
-            taxon.ncbi_defline = taxon.label
-            taxon.ncbi_gi, taxon.ncbi_accession, taxon.ncbi_version = parse_ncbi_curation_info_from_defline(taxon.ncbi_defline)
-        if verify:
-            found_ids = set([t.ncbi_accession for t in d.taxon_set])
-            missing_ids = set(ids).difference(found_ids)
-            found_ids = set([t.ncbi_gi for t in d.taxon_set])
-            missing_ids = set(ids).difference(found_ids)
-            if len(missing_ids) > 0:
-                raise Entrez.AccessionFetchError(missing_ids)
-        if self.generate_labels:
-            relabel_taxa_from_defline(d.taxon_set,
-                    num_desc_components=self.label_num_desc_components,
-                    separator=self.label_separator,
-                    gbnum_in_front=self.label_id_in_front,
-                    exclude_gbnum=self.exclude_gbnum_from_label)
-        if self.sort_taxa_by_label:
+        # results_stream = self.efetch(db='nucleotide',
+        #         ids=ids,
+        #         rettype='gbc',
+        #         retmode='xml')
+        gb_recs = self.fetch_genbank_records(db="nucleotide",
+                ids=ids,
+                verify=verify)
+        data_str = []
+        for gb_rec in gb_recs:
+            fasta = gb_rec.as_fasta(generate_new_label=generate_new_labels,
+                    label_components=label_components,
+                    label_component_separator=label_component_separator)
+            data_str.append(fasta)
+        data_str = "\n".join(data_str)
+        d = matrix_type.get_from_string(data_str,
+                'fasta',
+                **kwargs)
+        if sort_taxa_by_label:
             d.taxon_set.sort(key=lambda x: x.label)
         return d
 
