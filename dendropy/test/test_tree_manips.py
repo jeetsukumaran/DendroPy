@@ -156,12 +156,12 @@ class PruneTest(unittest.TestCase):
         input_ds = dendropy.DataSet.get_from_path(
                 src=pathmap.tree_source_path(src_prefix + ".pre-pruned.nex"),
                 schema='nexus',
-                attached_taxon_set=True)
+                attach_taxon_set=True)
         input_taxa = input_ds.taxon_sets[0]
         output_ds = dendropy.DataSet.get_from_path(
                 src=pathmap.tree_source_path(src_prefix + ".paup-pruned.nex"),
                 schema='nexus',
-                attached_taxon_set=True,
+                attach_taxon_set=True,
                 taxon_set=input_taxa)
         if to_retain:
             taxf = open(pathmap.tree_source_path(src_prefix + ".retained_taxa.txt"), "rU")

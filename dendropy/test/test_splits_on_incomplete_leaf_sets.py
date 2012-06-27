@@ -33,12 +33,11 @@ class IncompleteLeafSetSplitTest(unittest.TestCase):
         input_ds = dendropy.DataSet.get_from_path(
                 src=pathmap.tree_source_path(src_prefix + ".dendropy-pruned.nex"),
                 schema='nexus',
-                attached_taxon_set=True)
+                attach_taxon_set=True)
         input_taxa = input_ds.taxon_sets[0]
         output_ds = dendropy.DataSet.get_from_path(
                 src=pathmap.tree_source_path(src_prefix + ".paup-pruned.nex"),
                 schema='nexus',
-                attached_taxon_set=True,
                 taxon_set=input_taxa)
         for set_idx, src_trees in enumerate(input_ds.tree_lists):
             src_trees = input_ds.tree_lists[set_idx]

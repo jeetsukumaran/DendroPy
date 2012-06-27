@@ -118,7 +118,11 @@ class IOService(object):
         - `exclude_chars`: Characters in the source will be skipped.
         """
         self.dataset = extract_kwarg(kwargs, "dataset", None)
-        self.attached_taxon_set = extract_kwarg(kwargs, "taxon_set", None)
+        if self.dataset is not None:
+            self.attached_taxon_set = self.dataset.attached_taxon_set
+        else:
+            self.attached_taxon_set = None
+        self.attached_taxon_set = extract_kwarg(kwargs, "taxon_set", self.attached_taxon_set)
         self.exclude_trees = extract_kwarg(kwargs, "exclude_trees", False)
         self.exclude_chars = extract_kwarg(kwargs, "exclude_chars", False)
 
