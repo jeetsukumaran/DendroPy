@@ -1,0 +1,2206 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<nex:nexml
+    version="0.9"
+    xsi:schemaLocation="http://www.nexml.org/2009 ../xsd/nexml.xsd"
+    xmlns:dwc="http://rs.tdwg.org/dwc/terms/"
+    xmlns:to="http://rs.tdwg.org/ontology/voc/TaxonOccurrence#"
+    xmlns:dendropy="http://packages.python.org/DendroPy/"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns="http://www.nexml.org/2009"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:nex="http://www.nexml.org/2009"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+>
+    <otus id="d4320667088">
+        <otu id="d4327862864" label="gi161597072">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597072" id="d4387992912" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244210" id="d4388099152" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388099024" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244210" id="d4388098960" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388098896" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323157072" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708881" id="d4323159184" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-113.3423" datatype="xsd:float" id="d4323158928" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="32.9991666667" datatype="xsd:float" id="d4323148048" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388234576" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388234640" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244210" datatype="xsd:string" id="d4388234448" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388098576" /> 
+            </meta>
+        </otu>
+        <otu id="d4327949904" label="gi161597094">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597094" id="d4387992976" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244171" id="d4388098832" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388098704" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244171" id="d4388007184" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388007376" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388234512" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708842" id="d4388007696" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.079633333" datatype="xsd:float" id="d4388007824" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.8127333333" datatype="xsd:float" id="d4388007632" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388007568" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388098512" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244171" datatype="xsd:string" id="d4323147984" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323148112" /> 
+            </meta>
+        </otu>
+        <otu id="d4328041296" label="gi161597100">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597100" id="d4387993040" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244174" id="d4388007440" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388007312" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244174" id="d4388114384" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388114320" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323147920" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708845" id="d4323149968" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.08345" datatype="xsd:float" id="d4323147856" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.8107666667" datatype="xsd:float" id="d4323150224" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323150160" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323158416" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244174" datatype="xsd:string" id="d4388275792" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388275728" /> 
+            </meta>
+        </otu>
+        <otu id="d4328140944" label="gi161597130">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597130" id="d4387993104" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244182" id="d4388114256" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388114128" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244182" id="d4388114064" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388114000" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388275856" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708853" id="d4388276240" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-112.62905" datatype="xsd:float" id="d4388275920" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.4322666667" datatype="xsd:float" id="d4388275984" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388276048" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388274768" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244182" datatype="xsd:string" id="d4323157456" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323157392" /> 
+            </meta>
+        </otu>
+        <otu id="d4328232336" label="gi161597132">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597132" id="d4387993168" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244183" id="d4388113936" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388113808" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244183" id="d4388113744" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388113680" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4320648656" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708854" id="d4323157520" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-112.628983333" datatype="xsd:float" id="d4323157584" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.43115" datatype="xsd:float" id="d4323158032" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323158992" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388235152" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244183" datatype="xsd:string" id="d4388091536" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388091472" /> 
+            </meta>
+        </otu>
+        <otu id="d4328323728" label="gi161597134">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597134" id="d4387993232" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244184" id="d4388113616" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388113488" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244184" id="d4388113424" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388113360" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388091600" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708855" id="d4323149712" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-112.631383333" datatype="xsd:float" id="d4323149648" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.4335333333" datatype="xsd:float" id="d4323149584" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323149520" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323149328" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244184" datatype="xsd:string" id="d4388234320" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388234256" /> 
+            </meta>
+        </otu>
+        <otu id="d4328415120" label="gi161597136">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597136" id="d4387993296" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244185" id="d4388113296" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388113168" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244185" id="d4388113104" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388113040" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388234064" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708856" id="d4388237008" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-112.630166667" datatype="xsd:float" id="d4388234128" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.4324166667" datatype="xsd:float" id="d4388237264" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388237200" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323158352" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244185" datatype="xsd:string" id="d4388075856" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388075920" /> 
+            </meta>
+        </otu>
+        <otu id="d4328514768" label="gi161597148">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597148" id="d4387993360" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244213" id="d4388112976" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388112848" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244213" id="d4388112784" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388112720" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388075792" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708884" id="d4388075408" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.440266667" datatype="xsd:float" id="d4388075728" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="32.74755" datatype="xsd:float" id="d4388075664" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388075600" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388076432" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244213" datatype="xsd:string" id="d4323158096" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323157968" /> 
+            </meta>
+        </otu>
+        <otu id="d4359010768" label="gi161597150">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597150" id="d4387993424" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244214" id="d4388112656" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388112528" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244214" id="d4388112464" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388112400" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323158864" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708885" id="d4323158224" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.437366667" datatype="xsd:float" id="d4323157008" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="32.7526" datatype="xsd:float" id="d4323157136" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323157264" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388098256" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244214" datatype="xsd:string" id="d4388051216" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388051280" /> 
+            </meta>
+        </otu>
+        <otu id="d4359205904" label="gi161597076">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597076" id="d4387993552" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244212" id="d4388112016" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388111888" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244212" id="d4388111824" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388111760" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388235600" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708883" id="d4388235664" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-113.341316667" datatype="xsd:float" id="d4388235472" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="32.99805" datatype="xsd:float" id="d4388235408" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388235216" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323148880" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244212" datatype="xsd:string" id="d4323148944" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323148752" /> 
+            </meta>
+        </otu>
+        <otu id="d4359297296" label="gi161597088">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597088" id="d4387993616" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244176" id="d4388111696" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388111568" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244176" id="d4388111504" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388111440" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323148816" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708847" id="d4323148304" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.33755" datatype="xsd:float" id="d4323148688" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.6672166667" datatype="xsd:float" id="d4323148560" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323148496" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388275280" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244176" datatype="xsd:string" id="d4323210896" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323210832" /> 
+            </meta>
+        </otu>
+        <otu id="d4359384592" label="gi161597090">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597090" id="d4387993680" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244177" id="d4388111376" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388111248" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244177" id="d4388111184" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388111120" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323159376" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708848" id="d4323159312" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.333666667" datatype="xsd:float" id="d4323159504" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.6671166667" datatype="xsd:float" id="d4323159568" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323159760" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388275088" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244177" datatype="xsd:string" id="d4388235536" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388235344" /> 
+            </meta>
+        </otu>
+        <otu id="d4359579728" label="gi161597096">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597096" id="d4387993808" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244172" id="d4388110736" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388110608" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244172" id="d4388110544" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388110480" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388049936" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708843" id="d4323159440" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.082466667" datatype="xsd:float" id="d4388235024" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.8100666667" datatype="xsd:float" id="d4388234960" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323210512" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323126160" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244172" datatype="xsd:string" id="d4323126096" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323126288" /> 
+            </meta>
+        </otu>
+        <otu id="d4359667024" label="gi161597098">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597098" id="d4387993872" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244173" id="d4388110416" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388139152" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244173" id="d4388139216" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388139280" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388235088" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708844" id="d4388049744" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.081183333" datatype="xsd:float" id="d4388052304" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.8115833333" datatype="xsd:float" id="d4388052176" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388051984" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388007504" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244173" datatype="xsd:string" id="d4388007760" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388098384" /> 
+            </meta>
+        </otu>
+        <otu id="d4359766672" label="gi161597102">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597102" id="d4387993936" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244179" id="d4388139344" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388139472" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244179" id="d4388139536" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388139600" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388098448" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708850" id="d4388098192" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-113.03825" datatype="xsd:float" id="d4388235280" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.07895" datatype="xsd:float" id="d4388076368" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388076560" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323124752" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244179" datatype="xsd:string" id="d4323231632" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323231568" /> 
+            </meta>
+        </otu>
+        <otu id="d4359858064" label="gi161597104">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597104" id="d4387994000" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244180" id="d4388139664" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388139792" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244180" id="d4388139856" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388139920" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323126032" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708851" id="d4323125968" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-113.03825" datatype="xsd:float" id="d4323126992" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.07895" datatype="xsd:float" id="d4323127056" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323127248" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388050000" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244180" datatype="xsd:string" id="d4388050064" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323159632" /> 
+            </meta>
+        </otu>
+        <otu id="d4359949456" label="gi161597106">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597106" id="d4387994064" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244181" id="d4388139984" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388140112" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244181" id="d4388140176" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388140240" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388091664" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708852" id="d4388098320" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-113.039483333" datatype="xsd:float" id="d4323159824" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.0781833333" datatype="xsd:float" id="d4323159888" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323159952" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323231376" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244181" datatype="xsd:string" id="d4323256336" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323256272" /> 
+            </meta>
+        </otu>
+        <otu id="d4363194832" label="gi161597122">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597122" id="d4387994128" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244186" id="d4388140304" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388140432" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244186" id="d4388140496" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388140560" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323233552" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708857" id="d4323233488" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-112.820516667" datatype="xsd:float" id="d4323233680" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.88295" datatype="xsd:float" id="d4323233744" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323231824" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323124560" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244186" datatype="xsd:string" id="d4388052240" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388052112" /> 
+            </meta>
+        </otu>
+        <otu id="d4363286224" label="gi161597124">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597124" id="d4387994192" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244187" id="d4388140624" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388140752" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244187" id="d4388140816" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388140880" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323159696" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708858" id="d4388052048" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-112.820516667" datatype="xsd:float" id="d4388051920" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.88295" datatype="xsd:float" id="d4388051856" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388051792" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323255888" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244187" datatype="xsd:string" id="d4323284944" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323284880" /> 
+            </meta>
+        </otu>
+        <otu id="d4363377616" label="gi161597126">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597126" id="d4387994256" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244188" id="d4388140944" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388141072" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244188" id="d4388141136" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388141200" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323258128" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708859" id="d4323258064" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-112.820516667" datatype="xsd:float" id="d4323258256" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.88295" datatype="xsd:float" id="d4323258320" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323256528" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323127120" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244188" datatype="xsd:string" id="d4323127184" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323126352" /> 
+            </meta>
+        </otu>
+        <otu id="d4363477264" label="gi161597128">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597128" id="d4387994320" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244189" id="d4388141264" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388141392" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244189" id="d4388141456" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388141520" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388051600" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708860" id="d4323126224" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-112.770316667" datatype="xsd:float" id="d4323126416" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.8866666667" datatype="xsd:float" id="d4323126480" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323126672" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323284624" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244189" datatype="xsd:string" id="d4323305488" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323305424" /> 
+            </meta>
+        </otu>
+        <otu id="d4363568656" label="gi161597140">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597140" id="d4387994384" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244194" id="d4388141584" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388141712" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244194" id="d4388141776" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388141840" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323283728" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708865" id="d4323283664" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-112.906366667" datatype="xsd:float" id="d4323283856" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.6643" datatype="xsd:float" id="d4323283920" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323284112" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323230800" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244194" datatype="xsd:string" id="d4323230736" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323230928" /> 
+            </meta>
+        </otu>
+        <otu id="d4363660048" label="gi161597178">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597178" id="d4387994448" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244178" id="d4388141904" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388142032" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244178" id="d4388142096" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388142160" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323230864" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708849" id="d4323231120" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-113.302033333" datatype="xsd:float" id="d4323123536" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="32.93385" datatype="xsd:float" id="d4323123408" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323123344" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323305168" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244178" datatype="xsd:string" id="d4323338384" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323338320" /> 
+            </meta>
+        </otu>
+        <otu id="d4364029584" label="gi161597066">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597066" id="d4387994704" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244190" id="d4388147344" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388147472" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244190" id="d4388147536" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388147600" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323306064" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708861" id="d4323306960" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-113.179783333" datatype="xsd:float" id="d4323306832" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.8890833333" datatype="xsd:float" id="d4323306896" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323283408" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323257808" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244190" datatype="xsd:string" id="d4323257744" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323257936" /> 
+            </meta>
+        </otu>
+        <otu id="d4364129232" label="gi161597068">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597068" id="d4387994768" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244191" id="d4388147664" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388147792" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244191" id="d4388147856" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388147920" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323232016" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708862" id="d4323232272" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-113.178666667" datatype="xsd:float" id="d4323257872" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.8917666667" datatype="xsd:float" id="d4323256976" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323258000" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323256656" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244191" datatype="xsd:string" id="d4323256720" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323256848" /> 
+            </meta>
+        </otu>
+        <otu id="d4367370448" label="gi161597070">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597070" id="d4387994832" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244192" id="d4388147984" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388148112" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244192" id="d4388148176" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388148240" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323256912" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708863" id="d4323256784" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-113.17805" datatype="xsd:float" id="d4323257040" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.8913333333" datatype="xsd:float" id="d4323258192" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323256464" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323285648" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244192" datatype="xsd:string" id="d4323304272" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323304208" /> 
+            </meta>
+        </otu>
+        <otu id="d4367457744" label="gi161597074">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597074" id="d4387994896" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244211" id="d4388148304" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388148432" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244211" id="d4388148496" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388148560" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323231952" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708882" id="d4323125520" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-113.341316667" datatype="xsd:float" id="d4323304720" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="32.99805" datatype="xsd:float" id="d4323304400" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323305744" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323304464" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244211" datatype="xsd:string" id="d4323304528" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323305680" /> 
+            </meta>
+        </otu>
+        <otu id="d4367557392" label="gi161597086">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597086" id="d4387994960" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244175" id="d4388148624" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388148752" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244175" id="d4388148816" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388148880" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323305936" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708846" id="d4323303888" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.33755" datatype="xsd:float" id="d4323303504" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.6672166667" datatype="xsd:float" id="d4323303632" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323303696" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323257488" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244175" datatype="xsd:string" id="d4323285456" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323158480" /> 
+            </meta>
+        </otu>
+        <otu id="d4367648784" label="gi161597120">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597120" id="d4387995024" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244170" id="d4388148944" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388149072" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244170" id="d4388149136" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388149200" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323158544" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708841" id="d4323156304" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-113.5705" datatype="xsd:float" id="d4323158672" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.7696166667" datatype="xsd:float" id="d4323158736" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323211216" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323212304" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244170" datatype="xsd:string" id="d4323210320" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323211408" /> 
+            </meta>
+        </otu>
+        <otu id="d4367744272" label="gi161597138">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597138" id="d4387995088" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244193" id="d4388149264" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388149392" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244193" id="d4388149456" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388149520" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323211280" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708864" id="d4323211856" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-112.911283333" datatype="xsd:float" id="d4323211472" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.66575" datatype="xsd:float" id="d4323211600" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323211664" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323283152" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244193" datatype="xsd:string" id="d4323256080" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323255952" /> 
+            </meta>
+        </otu>
+        <otu id="d4367843920" label="gi161597142">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597142" id="d4387995152" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244195" id="d4388149584" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388149712" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244195" id="d4388149776" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388149840" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388237136" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708866" id="d4323158608" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-112.906366667" datatype="xsd:float" id="d4388049488" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.6643" datatype="xsd:float" id="d4388049680" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388050704" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388050640" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244195" datatype="xsd:string" id="d4388050576" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388050512" /> 
+            </meta>
+        </otu>
+        <otu id="d4368187792" label="gi161597216">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597216" id="d4387995408" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ137454" id="d4388150864" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388150992" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="137454" id="d4388151056" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388151120" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323211536" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201707494" id="d4323304144" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-117.660572" datatype="xsd:float" id="d4388050448" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="36.413472" datatype="xsd:float" id="d4388050384" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323286800" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388077072" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="137454" datatype="xsd:string" id="d4388077136" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323148624" /> 
+            </meta>
+        </otu>
+        <otu id="d4371603728" label="gi161597218">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597218" id="d4387995600" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ137645" id="d4388168272" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388168400" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="137645" id="d4388168464" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388168528" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388075024" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201707495" id="d4323149392" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-118.212449" datatype="xsd:float" id="d4323148368" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="37.22676" datatype="xsd:float" id="d4323149264" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323285136" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323255248" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="137645" datatype="xsd:string" id="d4323255184" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323255376" /> 
+            </meta>
+        </otu>
+        <otu id="d4372255888" label="gi161597220">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597220" id="d4388004304" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ137679" id="d4388170512" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388170640" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="137679" id="d4388170704" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388170768" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323257296" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201707496" id="d4323306128" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-117.379041" datatype="xsd:float" id="d4323303952" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="36.342612" datatype="xsd:float" id="d4323304080" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323284240" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388074256" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="137679" datatype="xsd:string" id="d4388074320" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388074128" /> 
+            </meta>
+        </otu>
+        <otu id="d4375860496" label="gi161597180">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597180" id="d4388004624" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="ROM14584" id="d4388184464" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="ROM" id="d4388184592" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="14584" id="d4388184656" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388184720" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323306000" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/44726287" id="d4388091344" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-116.02004" datatype="xsd:float" id="d4388091024" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.67338" datatype="xsd:float" id="d4388091408" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="ROM" datatype="xsd:string" id="d4388091920" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herps" datatype="xsd:string" id="d4388092176" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="14584" datatype="xsd:string" id="d4388074384" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323211728" /> 
+            </meta>
+        </otu>
+        <otu id="d4376147024" label="gi161597144">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597144" id="d4388004816" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244196" id="d4388185424" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388185552" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244196" id="d4388185616" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388185680" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323307280" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708867" id="d4323256592" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.16675" datatype="xsd:float" id="d4323257104" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.7962333333" datatype="xsd:float" id="d4323254352" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323254416" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323254480" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244196" datatype="xsd:string" id="d4323254544" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323255824" /> 
+            </meta>
+        </otu>
+        <otu id="d4376234320" label="gi161597108">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597108" id="d4388004880" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244219" id="d4388185744" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388185872" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244219" id="d4388185936" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388186000" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323256400" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708890" id="d4323255056" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.944666667" datatype="xsd:float" id="d4323254672" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.8061833333" datatype="xsd:float" id="d4323254736" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323254800" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323284816" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244219" datatype="xsd:string" id="d4388075088" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388075536" /> 
+            </meta>
+        </otu>
+        <otu id="d4376325712" label="gi161597112">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597112" id="d4388004944" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244221" id="d4388186064" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388186192" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244221" id="d4388186256" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388186320" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323336400" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708892" id="d4323339344" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.927766667" datatype="xsd:float" id="d4323336528" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.8081" datatype="xsd:float" id="d4323336592" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323336656" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323336720" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244221" datatype="xsd:string" id="d4323336784" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323336848" /> 
+            </meta>
+        </otu>
+        <otu id="d4376425360" label="gi161597114">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597114" id="d4388005008" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244222" id="d4388186384" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388186512" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244222" id="d4388186576" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388186640" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323336464" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708893" id="d4323337296" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.9277" datatype="xsd:float" id="d4323336912" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.8096" datatype="xsd:float" id="d4323337040" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323337104" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388075280" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244222" datatype="xsd:string" id="d4323284048" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323283792" /> 
+            </meta>
+        </otu>
+        <otu id="d4376520848" label="gi161597118">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597118" id="d4388005072" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244224" id="d4388186704" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388186832" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244224" id="d4388186896" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388186960" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323183056" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708895" id="d4323184272" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.929066667" datatype="xsd:float" id="d4323183184" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.8054" datatype="xsd:float" id="d4323183248" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323183312" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323183376" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244224" datatype="xsd:string" id="d4323183440" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323183504" /> 
+            </meta>
+        </otu>
+        <otu id="d4376608144" label="gi161597116">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597116" id="d4388005136" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244223" id="d4388187024" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388187152" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244223" id="d4388187216" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388187280" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323183120" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708894" id="d4323183952" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.77068" datatype="xsd:float" id="d4323183568" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.8364" datatype="xsd:float" id="d4323183696" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323183760" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323286160" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244223" datatype="xsd:string" id="d4388073680" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388073872" /> 
+            </meta>
+        </otu>
+        <otu id="d4376707792" label="gi161597146">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597146" id="d4388005200" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244197" id="d4388187344" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388187472" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244197" id="d4388187536" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388187600" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323372048" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708868" id="d4323371920" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.166033333" datatype="xsd:float" id="d4323372176" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.79545" datatype="xsd:float" id="d4323372240" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323372304" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323372368" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244197" datatype="xsd:string" id="d4323372432" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323372496" /> 
+            </meta>
+        </otu>
+        <otu id="d4380036304" label="gi161597154">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597154" id="d4388005328" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244198" id="d4388187984" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388188112" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244198" id="d4388196432" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388196496" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323338128" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708869" id="d4323372112" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.431466667" datatype="xsd:float" id="d4323372624" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.89635" datatype="xsd:float" id="d4323372944" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388075344" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323284304" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244198" datatype="xsd:string" id="d4323283984" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323284432" /> 
+            </meta>
+        </otu>
+        <otu id="d4380124752" label="gi161597164">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597164" id="d4388005392" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244203" id="d4388196560" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388196688" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244203" id="d4388196752" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388196816" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323284368" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708874" id="d4323285904" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.431466667" datatype="xsd:float" id="d4323283216" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.89635" datatype="xsd:float" id="d4323284560" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323284752" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323285392" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244203" datatype="xsd:string" id="d4323283088" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323149456" /> 
+            </meta>
+        </otu>
+        <otu id="d4380315792" label="gi161597078">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597078" id="d4388005520" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244215" id="d4388197200" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388197328" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244215" id="d4388197392" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388197456" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323371792" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708886" id="d4323284496" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.55255" datatype="xsd:float" id="d4323149008" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.7999666667" datatype="xsd:float" id="d4323149840" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323184400" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323337744" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244215" datatype="xsd:string" id="d4323337680" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323337872" /> 
+            </meta>
+        </otu>
+        <otu id="d4380403088" label="gi161597080">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597080" id="d4388005584" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244216" id="d4388197520" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388197648" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244216" id="d4388197712" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388197776" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323337808" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708887" id="d4323339472" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.517266667" datatype="xsd:float" id="d4323338000" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.7523666667" datatype="xsd:float" id="d4323339280" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323337616" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323184336" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244216" datatype="xsd:string" id="d4323184208" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323184528" /> 
+            </meta>
+        </otu>
+        <otu id="d4380498576" label="gi161597084">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597084" id="d4388005648" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244218" id="d4388197840" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388197968" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244218" id="d4388198032" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388198096" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323184464" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708889" id="d4323182608" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.517983333" datatype="xsd:float" id="d4323184592" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.7532833333" datatype="xsd:float" id="d4323182352" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323182416" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323148176" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244218" datatype="xsd:string" id="d4388278224" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388278160" /> 
+            </meta>
+        </otu>
+        <otu id="d4380589968" label="gi161597110">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597110" id="d4388005712" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244220" id="d4388198160" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388198288" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244220" id="d4388198352" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388198416" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323337936" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708891" id="d4323371472" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.92845" datatype="xsd:float" id="d4323371408" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.8072666667" datatype="xsd:float" id="d4323371600" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388274256" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388275152" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244220" datatype="xsd:string" id="d4388274320" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388274384" /> 
+            </meta>
+        </otu>
+        <otu id="d4380689616" label="gi161597156">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597156" id="d4388005776" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244199" id="d4388198480" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388198608" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244199" id="d4388198672" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388198736" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323371536" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708870" id="d4388276880" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.42875" datatype="xsd:float" id="d4388274448" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.8992" datatype="xsd:float" id="d4388274512" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388274960" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323181136" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244199" datatype="xsd:string" id="d4388090512" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388090448" /> 
+            </meta>
+        </otu>
+        <otu id="d4380776912" label="gi161597158">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597158" id="d4388005840" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244200" id="d4388198800" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388198928" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244200" id="d4388198992" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388199056" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323373008" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708871" id="d4388090576" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.428233333" datatype="xsd:float" id="d4388090640" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.9038166667" datatype="xsd:float" id="d4388093456" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388090704" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388090768" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244200" datatype="xsd:string" id="d4388090896" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388090832" /> 
+            </meta>
+        </otu>
+        <otu id="d4380872400" label="gi161597160">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597160" id="d4388005904" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244201" id="d4388199120" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388199248" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244201" id="d4388199312" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388199376" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388091088" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708872" id="d4388093264" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.428233333" datatype="xsd:float" id="d4388091152" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.9038166667" datatype="xsd:float" id="d4388093008" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388093072" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388275472" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244201" datatype="xsd:string" id="d4388049104" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388049168" /> 
+            </meta>
+        </otu>
+        <otu id="d4383069200" label="gi161597162">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597162" id="d4388005968" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244202" id="d4388199440" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388199568" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244202" id="d4388199632" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388199696" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323182160" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708873" id="d4323182032" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.431466667" datatype="xsd:float" id="d4323183632" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.89635" datatype="xsd:float" id="d4323182992" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323183888" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323183824" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244202" datatype="xsd:string" id="d4323184016" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323184080" /> 
+            </meta>
+        </otu>
+        <otu id="d4383160592" label="gi161597166">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597166" id="d4388006032" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244204" id="d4388199760" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388199888" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244204" id="d4388199952" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388200016" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323182224" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708875" id="d4323182928" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.431216667" datatype="xsd:float" id="d4323182288" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.8972666667" datatype="xsd:float" id="d4323182480" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323182672" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388093648" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244204" datatype="xsd:string" id="d4323210768" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323210704" /> 
+            </meta>
+        </otu>
+        <otu id="d4383347536" label="gi161597082">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597082" id="d4388006160" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244217" id="d4388200400" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388212880" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244217" id="d4388212944" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388213008" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323307344" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708888" id="d4323307152" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.517983333" datatype="xsd:float" id="d4323307408" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="33.7532833333" datatype="xsd:float" id="d4323305552" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323306192" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388277648" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244217" datatype="xsd:string" id="d4388277584" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388277776" /> 
+            </meta>
+        </otu>
+        <otu id="d4383530320" label="gi161597168">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597168" id="d4388006288" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244205" id="d4388213392" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388213520" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244205" id="d4388213584" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388213648" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323212688" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708876" id="d4323307216" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.4248" datatype="xsd:float" id="d4388277904" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="34.9243666667" datatype="xsd:float" id="d4388277968" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388093776" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323123600" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244205" datatype="xsd:string" id="d4323123280" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323123728" /> 
+            </meta>
+        </otu>
+        <otu id="d4383629968" label="gi161597170">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597170" id="d4388006352" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244206" id="d4388213712" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388213840" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244206" id="d4388213904" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388213968" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323123664" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708877" id="d4323125008" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.278733333" datatype="xsd:float" id="d4323123792" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="35.5925" datatype="xsd:float" id="d4323123856" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323123920" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323125328" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244206" datatype="xsd:string" id="d4388092240" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388092048" /> 
+            </meta>
+        </otu>
+        <otu id="d4387331984" label="gi161597172">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597172" id="d4388006736" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244207" id="d4388215632" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388215760" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244207" id="d4388215824" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388215888" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4323232464" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708878" id="d4388276944" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.278066667" datatype="xsd:float" id="d4388277072" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="35.594" datatype="xsd:float" id="d4388277136" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388277328" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4323210064" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244207" datatype="xsd:string" id="d4323210000" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323210256" /> 
+            </meta>
+        </otu>
+        <otu id="d4387431632" label="gi161597174">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597174" id="d4388006800" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244208" id="d4388215952" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388216080" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244208" id="d4388216144" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388216208" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388276816" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708879" id="d4323210192" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.278766667" datatype="xsd:float" id="d4323212176" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="35.5935666667" datatype="xsd:float" id="d4323211792" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4323210448" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388050192" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244208" datatype="xsd:string" id="d4323324816" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4323324752" /> 
+            </meta>
+        </otu>
+        <otu id="d4387518928" label="gi161597176">
+            <meta xsi:type="nex:LiteralMeta" property="dendropy:ncbi_gi" content="gi161597176" id="d4388006864" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:voucher" content="MVZ244209" id="d4388216272" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:institutionCode" content="MVZ" id="d4388216400" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:catalogNumber" content="244209" id="d4388216464" />
+            <meta xsi:type="nex:LiteralMeta" property="dwc:scientificName" content="Crotaphytus bicinctores" id="d4388216528" />
+            <meta xsi:type="nex:ResourceMeta" rel="to:TaxonOccurrence" id="d4388092688" > 
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://data.gbif.org/ws/rest/occurrence/get/201708880" id="d4388092624" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLongitude" content="-114.278766667" datatype="xsd:float" id="d4388091792" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:decimalLatitude" content="35.5935666667" datatype="xsd:float" id="d4388091984" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:institutionCode" content="MVZ" datatype="xsd:string" id="d4388093200" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:collectionCode" content="Herp" datatype="xsd:string" id="d4388052432" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:catalogNumber" content="244209" datatype="xsd:string" id="d4388052496" /> 
+                <meta xsi:type="nex:LiteralMeta" property="to:scientificName" content="Crotaphytus bicinctores" datatype="xsd:string" id="d4388051664" /> 
+            </meta>
+        </otu>
+    </otus>
+    <characters id="d4388051728" otus="d4320667088" xsi:type="nex:DnaSeqs">
+        <format>
+            <states id="d4302879920">
+                <state id="d4302907280" symbol="A" />
+                <state id="d4302907344" symbol="C" />
+                <state id="d4302907408" symbol="G" />
+                <state id="d4302907472" symbol="T" />
+                <state id="d4302907536" symbol="-" />
+                <uncertain_state_set id="d4302907600" symbol="?">
+                    <member state="d4302907280"/>
+                    <member state="d4302907344"/>
+                    <member state="d4302907408"/>
+                    <member state="d4302907472"/>
+                    <member state="d4302907536"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4302907664" symbol="N">
+                    <member state="d4302907280"/>
+                    <member state="d4302907344"/>
+                    <member state="d4302907408"/>
+                    <member state="d4302907472"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4302907728" symbol="M">
+                    <member state="d4302907280"/>
+                    <member state="d4302907344"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4302907792" symbol="R">
+                    <member state="d4302907280"/>
+                    <member state="d4302907408"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4302907856" symbol="W">
+                    <member state="d4302907280"/>
+                    <member state="d4302907472"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4302907920" symbol="S">
+                    <member state="d4302907344"/>
+                    <member state="d4302907408"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4302907984" symbol="Y">
+                    <member state="d4302907344"/>
+                    <member state="d4302907472"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4302908048" symbol="K">
+                    <member state="d4302907408"/>
+                    <member state="d4302907472"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4302908112" symbol="V">
+                    <member state="d4302907280"/>
+                    <member state="d4302907344"/>
+                    <member state="d4302907408"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4302908176" symbol="H">
+                    <member state="d4302907280"/>
+                    <member state="d4302907344"/>
+                    <member state="d4302907472"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4302908240" symbol="D">
+                    <member state="d4302907280"/>
+                    <member state="d4302907408"/>
+                    <member state="d4302907472"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4302908304" symbol="B">
+                    <member state="d4302907344"/>
+                    <member state="d4302907408"/>
+                    <member state="d4302907472"/>
+                </uncertain_state_set>
+                <uncertain_state_set id="d4302908368" symbol="X">
+                    <member state="d4302907280"/>
+                    <member state="d4302907344"/>
+                    <member state="d4302907408"/>
+                    <member state="d4302907472"/>
+                </uncertain_state_set>
+            </states>
+        <char id="d4395552400" states="d4302879920" />
+        <char id="d4395552336" states="d4302879920" />
+        <char id="d4395552464" states="d4302879920" />
+        <char id="d4395552528" states="d4302879920" />
+        <char id="d4395552592" states="d4302879920" />
+        <char id="d4395552656" states="d4302879920" />
+        <char id="d4395552720" states="d4302879920" />
+        <char id="d4395561040" states="d4302879920" />
+        <char id="d4395561104" states="d4302879920" />
+        <char id="d4395561168" states="d4302879920" />
+        <char id="d4395561232" states="d4302879920" />
+        <char id="d4395561296" states="d4302879920" />
+        <char id="d4395561360" states="d4302879920" />
+        <char id="d4395561424" states="d4302879920" />
+        <char id="d4395561488" states="d4302879920" />
+        <char id="d4395561552" states="d4302879920" />
+        <char id="d4395561616" states="d4302879920" />
+        <char id="d4395561680" states="d4302879920" />
+        <char id="d4395561744" states="d4302879920" />
+        <char id="d4395561808" states="d4302879920" />
+        <char id="d4395561872" states="d4302879920" />
+        <char id="d4395561936" states="d4302879920" />
+        <char id="d4395562000" states="d4302879920" />
+        <char id="d4395562064" states="d4302879920" />
+        <char id="d4395562128" states="d4302879920" />
+        <char id="d4395562192" states="d4302879920" />
+        <char id="d4395562256" states="d4302879920" />
+        <char id="d4395562320" states="d4302879920" />
+        <char id="d4395562384" states="d4302879920" />
+        <char id="d4395562448" states="d4302879920" />
+        <char id="d4395562512" states="d4302879920" />
+        <char id="d4395562576" states="d4302879920" />
+        <char id="d4395562640" states="d4302879920" />
+        <char id="d4395562704" states="d4302879920" />
+        <char id="d4395562768" states="d4302879920" />
+        <char id="d4395562832" states="d4302879920" />
+        <char id="d4395562896" states="d4302879920" />
+        <char id="d4395562960" states="d4302879920" />
+        <char id="d4395563024" states="d4302879920" />
+        <char id="d4395563088" states="d4302879920" />
+        <char id="d4395563152" states="d4302879920" />
+        <char id="d4395563216" states="d4302879920" />
+        <char id="d4395563280" states="d4302879920" />
+        <char id="d4395563344" states="d4302879920" />
+        <char id="d4395563408" states="d4302879920" />
+        <char id="d4395563472" states="d4302879920" />
+        <char id="d4395563536" states="d4302879920" />
+        <char id="d4395563600" states="d4302879920" />
+        <char id="d4395563664" states="d4302879920" />
+        <char id="d4395563728" states="d4302879920" />
+        <char id="d4395563792" states="d4302879920" />
+        <char id="d4395563856" states="d4302879920" />
+        <char id="d4395563920" states="d4302879920" />
+        <char id="d4395563984" states="d4302879920" />
+        <char id="d4395564048" states="d4302879920" />
+        <char id="d4395564112" states="d4302879920" />
+        <char id="d4395564176" states="d4302879920" />
+        <char id="d4395564240" states="d4302879920" />
+        <char id="d4395564304" states="d4302879920" />
+        <char id="d4395564368" states="d4302879920" />
+        <char id="d4395564432" states="d4302879920" />
+        <char id="d4395564496" states="d4302879920" />
+        <char id="d4395564560" states="d4302879920" />
+        <char id="d4395564624" states="d4302879920" />
+        <char id="d4395564688" states="d4302879920" />
+        <char id="d4395564752" states="d4302879920" />
+        <char id="d4395564816" states="d4302879920" />
+        <char id="d4395564880" states="d4302879920" />
+        <char id="d4395564944" states="d4302879920" />
+        <char id="d4395565008" states="d4302879920" />
+        <char id="d4395569232" states="d4302879920" />
+        <char id="d4395569296" states="d4302879920" />
+        <char id="d4395569360" states="d4302879920" />
+        <char id="d4395569424" states="d4302879920" />
+        <char id="d4395569488" states="d4302879920" />
+        <char id="d4395569552" states="d4302879920" />
+        <char id="d4395569616" states="d4302879920" />
+        <char id="d4395569680" states="d4302879920" />
+        <char id="d4395569744" states="d4302879920" />
+        <char id="d4395569808" states="d4302879920" />
+        <char id="d4395569872" states="d4302879920" />
+        <char id="d4395569936" states="d4302879920" />
+        <char id="d4395570000" states="d4302879920" />
+        <char id="d4395570064" states="d4302879920" />
+        <char id="d4395570128" states="d4302879920" />
+        <char id="d4395570192" states="d4302879920" />
+        <char id="d4395570256" states="d4302879920" />
+        <char id="d4395570320" states="d4302879920" />
+        <char id="d4395570384" states="d4302879920" />
+        <char id="d4395570448" states="d4302879920" />
+        <char id="d4395570512" states="d4302879920" />
+        <char id="d4395570576" states="d4302879920" />
+        <char id="d4395570640" states="d4302879920" />
+        <char id="d4395570704" states="d4302879920" />
+        <char id="d4395570768" states="d4302879920" />
+        <char id="d4395570832" states="d4302879920" />
+        <char id="d4395570896" states="d4302879920" />
+        <char id="d4395570960" states="d4302879920" />
+        <char id="d4395571024" states="d4302879920" />
+        <char id="d4395571088" states="d4302879920" />
+        <char id="d4395571152" states="d4302879920" />
+        <char id="d4395571216" states="d4302879920" />
+        <char id="d4395571280" states="d4302879920" />
+        <char id="d4395571344" states="d4302879920" />
+        <char id="d4395571408" states="d4302879920" />
+        <char id="d4395571472" states="d4302879920" />
+        <char id="d4395571536" states="d4302879920" />
+        <char id="d4395571600" states="d4302879920" />
+        <char id="d4395571664" states="d4302879920" />
+        <char id="d4395571728" states="d4302879920" />
+        <char id="d4395571792" states="d4302879920" />
+        <char id="d4395571856" states="d4302879920" />
+        <char id="d4395571920" states="d4302879920" />
+        <char id="d4395571984" states="d4302879920" />
+        <char id="d4395572048" states="d4302879920" />
+        <char id="d4395572112" states="d4302879920" />
+        <char id="d4395572176" states="d4302879920" />
+        <char id="d4395572240" states="d4302879920" />
+        <char id="d4395572304" states="d4302879920" />
+        <char id="d4395572368" states="d4302879920" />
+        <char id="d4395572432" states="d4302879920" />
+        <char id="d4395572496" states="d4302879920" />
+        <char id="d4395572560" states="d4302879920" />
+        <char id="d4395572624" states="d4302879920" />
+        <char id="d4395572688" states="d4302879920" />
+        <char id="d4395572752" states="d4302879920" />
+        <char id="d4395572816" states="d4302879920" />
+        <char id="d4395572880" states="d4302879920" />
+        <char id="d4395572944" states="d4302879920" />
+        <char id="d4395573008" states="d4302879920" />
+        <char id="d4395573072" states="d4302879920" />
+        <char id="d4395573136" states="d4302879920" />
+        <char id="d4395573200" states="d4302879920" />
+        <char id="d4395581520" states="d4302879920" />
+        <char id="d4395581584" states="d4302879920" />
+        <char id="d4395581648" states="d4302879920" />
+        <char id="d4395581712" states="d4302879920" />
+        <char id="d4395581776" states="d4302879920" />
+        <char id="d4395581840" states="d4302879920" />
+        <char id="d4395581904" states="d4302879920" />
+        <char id="d4395581968" states="d4302879920" />
+        <char id="d4395582032" states="d4302879920" />
+        <char id="d4395582096" states="d4302879920" />
+        <char id="d4395582160" states="d4302879920" />
+        <char id="d4395582224" states="d4302879920" />
+        <char id="d4395582288" states="d4302879920" />
+        <char id="d4395582352" states="d4302879920" />
+        <char id="d4395582416" states="d4302879920" />
+        <char id="d4395582480" states="d4302879920" />
+        <char id="d4395582544" states="d4302879920" />
+        <char id="d4395582608" states="d4302879920" />
+        <char id="d4395582672" states="d4302879920" />
+        <char id="d4395582736" states="d4302879920" />
+        <char id="d4395582800" states="d4302879920" />
+        <char id="d4395582864" states="d4302879920" />
+        <char id="d4395582928" states="d4302879920" />
+        <char id="d4395582992" states="d4302879920" />
+        <char id="d4395583056" states="d4302879920" />
+        <char id="d4395583120" states="d4302879920" />
+        <char id="d4395583184" states="d4302879920" />
+        <char id="d4395583248" states="d4302879920" />
+        <char id="d4395583312" states="d4302879920" />
+        <char id="d4395583376" states="d4302879920" />
+        <char id="d4395583440" states="d4302879920" />
+        <char id="d4395583504" states="d4302879920" />
+        <char id="d4395583568" states="d4302879920" />
+        <char id="d4395583632" states="d4302879920" />
+        <char id="d4395583696" states="d4302879920" />
+        <char id="d4395583760" states="d4302879920" />
+        <char id="d4395583824" states="d4302879920" />
+        <char id="d4395583888" states="d4302879920" />
+        <char id="d4395583952" states="d4302879920" />
+        <char id="d4395584016" states="d4302879920" />
+        <char id="d4395584080" states="d4302879920" />
+        <char id="d4395584144" states="d4302879920" />
+        <char id="d4395584208" states="d4302879920" />
+        <char id="d4395584272" states="d4302879920" />
+        <char id="d4395584336" states="d4302879920" />
+        <char id="d4395584400" states="d4302879920" />
+        <char id="d4395584464" states="d4302879920" />
+        <char id="d4395584528" states="d4302879920" />
+        <char id="d4395584592" states="d4302879920" />
+        <char id="d4395584656" states="d4302879920" />
+        <char id="d4395584720" states="d4302879920" />
+        <char id="d4395584784" states="d4302879920" />
+        <char id="d4395584848" states="d4302879920" />
+        <char id="d4395584912" states="d4302879920" />
+        <char id="d4395584976" states="d4302879920" />
+        <char id="d4395585040" states="d4302879920" />
+        <char id="d4395585104" states="d4302879920" />
+        <char id="d4395585168" states="d4302879920" />
+        <char id="d4395585232" states="d4302879920" />
+        <char id="d4395585296" states="d4302879920" />
+        <char id="d4395585360" states="d4302879920" />
+        <char id="d4395585424" states="d4302879920" />
+        <char id="d4395585488" states="d4302879920" />
+        <char id="d4395593808" states="d4302879920" />
+        <char id="d4395593872" states="d4302879920" />
+        <char id="d4395593936" states="d4302879920" />
+        <char id="d4395594000" states="d4302879920" />
+        <char id="d4395594064" states="d4302879920" />
+        <char id="d4395594128" states="d4302879920" />
+        <char id="d4395594192" states="d4302879920" />
+        <char id="d4395594256" states="d4302879920" />
+        <char id="d4395594320" states="d4302879920" />
+        <char id="d4395594384" states="d4302879920" />
+        <char id="d4395594448" states="d4302879920" />
+        <char id="d4395594512" states="d4302879920" />
+        <char id="d4395594576" states="d4302879920" />
+        <char id="d4395594640" states="d4302879920" />
+        <char id="d4395594704" states="d4302879920" />
+        <char id="d4395594768" states="d4302879920" />
+        <char id="d4395594832" states="d4302879920" />
+        <char id="d4395594896" states="d4302879920" />
+        <char id="d4395594960" states="d4302879920" />
+        <char id="d4395595024" states="d4302879920" />
+        <char id="d4395595088" states="d4302879920" />
+        <char id="d4395595152" states="d4302879920" />
+        <char id="d4395595216" states="d4302879920" />
+        <char id="d4395595280" states="d4302879920" />
+        <char id="d4395595344" states="d4302879920" />
+        <char id="d4395595408" states="d4302879920" />
+        <char id="d4395595472" states="d4302879920" />
+        <char id="d4395595536" states="d4302879920" />
+        <char id="d4395595600" states="d4302879920" />
+        <char id="d4395595664" states="d4302879920" />
+        <char id="d4395595728" states="d4302879920" />
+        <char id="d4395595792" states="d4302879920" />
+        <char id="d4395595856" states="d4302879920" />
+        <char id="d4395595920" states="d4302879920" />
+        <char id="d4395595984" states="d4302879920" />
+        <char id="d4395596048" states="d4302879920" />
+        <char id="d4395596112" states="d4302879920" />
+        <char id="d4395596176" states="d4302879920" />
+        <char id="d4395596240" states="d4302879920" />
+        <char id="d4395596304" states="d4302879920" />
+        <char id="d4395596368" states="d4302879920" />
+        <char id="d4395596432" states="d4302879920" />
+        <char id="d4395596496" states="d4302879920" />
+        <char id="d4395596560" states="d4302879920" />
+        <char id="d4395596624" states="d4302879920" />
+        <char id="d4395596688" states="d4302879920" />
+        <char id="d4395596752" states="d4302879920" />
+        <char id="d4395596816" states="d4302879920" />
+        <char id="d4395596880" states="d4302879920" />
+        <char id="d4395596944" states="d4302879920" />
+        <char id="d4395597008" states="d4302879920" />
+        <char id="d4395597072" states="d4302879920" />
+        <char id="d4395597136" states="d4302879920" />
+        <char id="d4395597200" states="d4302879920" />
+        <char id="d4395597264" states="d4302879920" />
+        <char id="d4395597328" states="d4302879920" />
+        <char id="d4395597392" states="d4302879920" />
+        <char id="d4395597456" states="d4302879920" />
+        <char id="d4395597520" states="d4302879920" />
+        <char id="d4395597584" states="d4302879920" />
+        <char id="d4395597648" states="d4302879920" />
+        <char id="d4395597712" states="d4302879920" />
+        <char id="d4395597776" states="d4302879920" />
+        <char id="d4395602000" states="d4302879920" />
+        <char id="d4395602064" states="d4302879920" />
+        <char id="d4395602128" states="d4302879920" />
+        <char id="d4395602192" states="d4302879920" />
+        <char id="d4395602256" states="d4302879920" />
+        <char id="d4395602320" states="d4302879920" />
+        <char id="d4395602384" states="d4302879920" />
+        <char id="d4395602448" states="d4302879920" />
+        <char id="d4395602512" states="d4302879920" />
+        <char id="d4395602576" states="d4302879920" />
+        <char id="d4395602640" states="d4302879920" />
+        <char id="d4395602704" states="d4302879920" />
+        <char id="d4395602768" states="d4302879920" />
+        <char id="d4395602832" states="d4302879920" />
+        <char id="d4395602896" states="d4302879920" />
+        <char id="d4395602960" states="d4302879920" />
+        <char id="d4395603024" states="d4302879920" />
+        <char id="d4395603088" states="d4302879920" />
+        <char id="d4395603152" states="d4302879920" />
+        <char id="d4395603216" states="d4302879920" />
+        <char id="d4395603280" states="d4302879920" />
+        <char id="d4395603344" states="d4302879920" />
+        <char id="d4395603408" states="d4302879920" />
+        <char id="d4395603472" states="d4302879920" />
+        <char id="d4395603536" states="d4302879920" />
+        <char id="d4395603600" states="d4302879920" />
+        <char id="d4395603664" states="d4302879920" />
+        <char id="d4395603728" states="d4302879920" />
+        <char id="d4395603792" states="d4302879920" />
+        <char id="d4395603856" states="d4302879920" />
+        <char id="d4395603920" states="d4302879920" />
+        <char id="d4395603984" states="d4302879920" />
+        <char id="d4395604048" states="d4302879920" />
+        <char id="d4395604112" states="d4302879920" />
+        <char id="d4395604176" states="d4302879920" />
+        <char id="d4395604240" states="d4302879920" />
+        <char id="d4395604304" states="d4302879920" />
+        <char id="d4395604368" states="d4302879920" />
+        <char id="d4395604432" states="d4302879920" />
+        <char id="d4395604496" states="d4302879920" />
+        <char id="d4395604560" states="d4302879920" />
+        <char id="d4395604624" states="d4302879920" />
+        <char id="d4395604688" states="d4302879920" />
+        <char id="d4395604752" states="d4302879920" />
+        <char id="d4395604816" states="d4302879920" />
+        <char id="d4395604880" states="d4302879920" />
+        <char id="d4395604944" states="d4302879920" />
+        <char id="d4395605008" states="d4302879920" />
+        <char id="d4395605072" states="d4302879920" />
+        <char id="d4395605136" states="d4302879920" />
+        <char id="d4395605200" states="d4302879920" />
+        <char id="d4395605264" states="d4302879920" />
+        <char id="d4395605328" states="d4302879920" />
+        <char id="d4395605392" states="d4302879920" />
+        <char id="d4395605456" states="d4302879920" />
+        <char id="d4395605520" states="d4302879920" />
+        <char id="d4395605584" states="d4302879920" />
+        <char id="d4395605648" states="d4302879920" />
+        <char id="d4395605712" states="d4302879920" />
+        <char id="d4395605776" states="d4302879920" />
+        <char id="d4395605840" states="d4302879920" />
+        <char id="d4395605904" states="d4302879920" />
+        <char id="d4395605968" states="d4302879920" />
+        <char id="d4395618384" states="d4302879920" />
+        <char id="d4395618448" states="d4302879920" />
+        <char id="d4395618512" states="d4302879920" />
+        <char id="d4395618576" states="d4302879920" />
+        <char id="d4395618640" states="d4302879920" />
+        <char id="d4395618704" states="d4302879920" />
+        <char id="d4395618768" states="d4302879920" />
+        <char id="d4395618832" states="d4302879920" />
+        <char id="d4395618896" states="d4302879920" />
+        <char id="d4395618960" states="d4302879920" />
+        <char id="d4395619024" states="d4302879920" />
+        <char id="d4395619088" states="d4302879920" />
+        <char id="d4395619152" states="d4302879920" />
+        <char id="d4395619216" states="d4302879920" />
+        <char id="d4395619280" states="d4302879920" />
+        <char id="d4395619344" states="d4302879920" />
+        <char id="d4395619408" states="d4302879920" />
+        <char id="d4395619472" states="d4302879920" />
+        <char id="d4395619536" states="d4302879920" />
+        <char id="d4395619600" states="d4302879920" />
+        <char id="d4395619664" states="d4302879920" />
+        <char id="d4395619728" states="d4302879920" />
+        <char id="d4395619792" states="d4302879920" />
+        <char id="d4395619856" states="d4302879920" />
+        <char id="d4395619920" states="d4302879920" />
+        <char id="d4395619984" states="d4302879920" />
+        <char id="d4395620048" states="d4302879920" />
+        <char id="d4395620112" states="d4302879920" />
+        <char id="d4395620176" states="d4302879920" />
+        <char id="d4395620240" states="d4302879920" />
+        <char id="d4395620304" states="d4302879920" />
+        <char id="d4395620368" states="d4302879920" />
+        <char id="d4395620432" states="d4302879920" />
+        <char id="d4395620496" states="d4302879920" />
+        <char id="d4395620560" states="d4302879920" />
+        <char id="d4395620624" states="d4302879920" />
+        <char id="d4395620688" states="d4302879920" />
+        <char id="d4395620752" states="d4302879920" />
+        <char id="d4395620816" states="d4302879920" />
+        <char id="d4395620880" states="d4302879920" />
+        <char id="d4395620944" states="d4302879920" />
+        <char id="d4395621008" states="d4302879920" />
+        <char id="d4395621072" states="d4302879920" />
+        <char id="d4395621136" states="d4302879920" />
+        <char id="d4395621200" states="d4302879920" />
+        <char id="d4395621264" states="d4302879920" />
+        <char id="d4395621328" states="d4302879920" />
+        <char id="d4395621392" states="d4302879920" />
+        <char id="d4395621456" states="d4302879920" />
+        <char id="d4395621520" states="d4302879920" />
+        <char id="d4395621584" states="d4302879920" />
+        <char id="d4395621648" states="d4302879920" />
+        <char id="d4395621712" states="d4302879920" />
+        <char id="d4395621776" states="d4302879920" />
+        <char id="d4395621840" states="d4302879920" />
+        <char id="d4395621904" states="d4302879920" />
+        <char id="d4395621968" states="d4302879920" />
+        <char id="d4395622032" states="d4302879920" />
+        <char id="d4395622096" states="d4302879920" />
+        <char id="d4395622160" states="d4302879920" />
+        <char id="d4395622224" states="d4302879920" />
+        <char id="d4395622288" states="d4302879920" />
+        <char id="d4395622352" states="d4302879920" />
+        <char id="d4410314832" states="d4302879920" />
+        <char id="d4410314896" states="d4302879920" />
+        <char id="d4410314960" states="d4302879920" />
+        <char id="d4410315024" states="d4302879920" />
+        <char id="d4410315088" states="d4302879920" />
+        <char id="d4410315152" states="d4302879920" />
+        <char id="d4410315216" states="d4302879920" />
+        <char id="d4410315280" states="d4302879920" />
+        <char id="d4410315344" states="d4302879920" />
+        <char id="d4410315408" states="d4302879920" />
+        <char id="d4410315472" states="d4302879920" />
+        <char id="d4410315536" states="d4302879920" />
+        <char id="d4410315600" states="d4302879920" />
+        <char id="d4410315664" states="d4302879920" />
+        <char id="d4410315728" states="d4302879920" />
+        <char id="d4410315792" states="d4302879920" />
+        <char id="d4410315856" states="d4302879920" />
+        <char id="d4410315920" states="d4302879920" />
+        <char id="d4410315984" states="d4302879920" />
+        <char id="d4410316048" states="d4302879920" />
+        <char id="d4410316112" states="d4302879920" />
+        <char id="d4410316176" states="d4302879920" />
+        <char id="d4410316240" states="d4302879920" />
+        <char id="d4410316304" states="d4302879920" />
+        <char id="d4410316368" states="d4302879920" />
+        <char id="d4410316432" states="d4302879920" />
+        <char id="d4410316496" states="d4302879920" />
+        <char id="d4410316560" states="d4302879920" />
+        <char id="d4410316624" states="d4302879920" />
+        <char id="d4410316688" states="d4302879920" />
+        <char id="d4410316752" states="d4302879920" />
+        <char id="d4410316816" states="d4302879920" />
+        <char id="d4410316880" states="d4302879920" />
+        <char id="d4410316944" states="d4302879920" />
+        <char id="d4410317008" states="d4302879920" />
+        <char id="d4410317072" states="d4302879920" />
+        <char id="d4410317136" states="d4302879920" />
+        <char id="d4410317200" states="d4302879920" />
+        <char id="d4410317264" states="d4302879920" />
+        <char id="d4410317328" states="d4302879920" />
+        <char id="d4410317392" states="d4302879920" />
+        <char id="d4410317456" states="d4302879920" />
+        <char id="d4410317520" states="d4302879920" />
+        <char id="d4410317584" states="d4302879920" />
+        <char id="d4410317648" states="d4302879920" />
+        <char id="d4410317712" states="d4302879920" />
+        <char id="d4410317776" states="d4302879920" />
+        <char id="d4410317840" states="d4302879920" />
+        <char id="d4410317904" states="d4302879920" />
+        <char id="d4410317968" states="d4302879920" />
+        <char id="d4410318032" states="d4302879920" />
+        <char id="d4410318096" states="d4302879920" />
+        <char id="d4410318160" states="d4302879920" />
+        <char id="d4410318224" states="d4302879920" />
+        <char id="d4410318288" states="d4302879920" />
+        <char id="d4410318352" states="d4302879920" />
+        <char id="d4410318416" states="d4302879920" />
+        <char id="d4410318480" states="d4302879920" />
+        <char id="d4410318544" states="d4302879920" />
+        <char id="d4410318608" states="d4302879920" />
+        <char id="d4410318672" states="d4302879920" />
+        <char id="d4410318736" states="d4302879920" />
+        <char id="d4410318800" states="d4302879920" />
+        <char id="d4410327120" states="d4302879920" />
+        <char id="d4410327184" states="d4302879920" />
+        <char id="d4410327248" states="d4302879920" />
+        <char id="d4410327312" states="d4302879920" />
+        <char id="d4410327376" states="d4302879920" />
+        <char id="d4410327440" states="d4302879920" />
+        <char id="d4410327504" states="d4302879920" />
+        <char id="d4410327568" states="d4302879920" />
+        <char id="d4410327632" states="d4302879920" />
+        <char id="d4410327696" states="d4302879920" />
+        <char id="d4410327760" states="d4302879920" />
+        <char id="d4410327824" states="d4302879920" />
+        <char id="d4410327888" states="d4302879920" />
+        </format>
+        <matrix>
+            <row id="d4327506792" otu="d4367648784">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TGCCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTCTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATTTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4383382616" otu="d4359579728">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TGCCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTTATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATCTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4387950360" otu="d4383069200">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TGCCTACCCCATCTAACATTTCAGCATGATGAAACTTCGGATCACTATTA
+                    GGAACATGTCTGATCTTACAAATTCTCACCGGACTATTTTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTAGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGAAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGGCGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAAACGTGAAACCTTGGAGTTATTCTACTGC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4371933592" otu="d4387518928">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TGCCTACCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGTCTGATCTTACAAATTCTCACCGGACTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTAGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGTAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGGCGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAAACGTGAAACCTTGGAGTTATTCTACTGC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4394845208" otu="d4328140944">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TACCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGGTCACTTTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATTTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTTGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTCCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4383612520" otu="d4367370448">
+                <seq>CTTGAAGAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TGCCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTCTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATTTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4327916304" otu="d4380689616">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TGCCTACCCCATCTAACATTTCAGCATGATGAAACTTCGGATCACTATTA
+                    GGAACATGTCTGATCTTACAAATTCTCACCGGACTATTTTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTAGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGAAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGGCGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAAACGTGAAACCTTGGAGTTATTCTACTGC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4376128512" otu="d4380124752">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TGCCTACCCCATCTAACATTTCAGCATGATGAAACTTCGGATCACTATTA
+                    GGAACATGTCTGATCTTACAAATTCTCACCGGACTATTTTTAGCCATACA
+                    CTATACAGCAGACATCTCCTCTGCCTTCTCTTCAGTAGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGAAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGGCGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAAACGTGAAACCTTGGAGTTATTCTACTGC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4388256680" otu="d4359297296">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTTATTGATC
+                    TACCCACCCCGTCTAACATTTCAGCATGATGAAACTTTGGGTCACTCTTA
+                    GGAACATGTCTAATCCTACAAATTCTCACCGGATTATTCCTAGCTATACA
+                    CTACACAGCAGACATCTCATCAGCCTTTTCCTCAGTAGCTCACATCTGCC
+                    GAGACGTCCAATATGGCTGACTCATCCGTAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATCTACCTCCACATTGGACGAGGGCTATATTA
+                    TGGATCTTACATATTTAAAGAAACATGAAATCTTGGGGTTATCTTACTCC
+                    TCCTCGTCATAGCAACTGCCTTCGTCGGCTATGTACTCCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4327543128" otu="d4376325712">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTTAACAACTCATTTATTGACC
+                    TACCTGCCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGCCTGATCCTACAAATTCTCACCGGATTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTGGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGCAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGACGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAGACATGAAACCTTGGAGTTATTCTACTTC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4327644600" otu="d4376234320">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTTAACAACTCATTTATTGACC
+                    TACCTGCCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGCCTGATCCTACAAATTCTCACCGGATTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTGGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGCAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGACGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAGACATGAAACCTTGGAGTTATTCTACTTC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4323931776" otu="d4380403088">
+                <seq>CTTGAARAACCAYCGTTGTGATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TACCCACCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGCCTGATCCTACAAATTCTCACCGGGTTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTGGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGTAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGACGTGGACTTTATTA
+                    CGGATCCTACATATTTAAAGAAACATGAAACCTTGGAGTCATTCTACTTC
+                    TCCTAGTTATAGCGACCGCATTCGTCGGCTATGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4364083544" otu="d4380776912">
+                <seq>CTTGAAGAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TGCCTACCCCATCTAACATTTCAGCATGATGAAACTTCGGATCACTATTA
+                    GGAACATGTCTGATCTTACAAATTCTCACCGGACTATTTTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTAGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGAAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGGCGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAAACGTGAAACCTTGGAGTTATTCTACTGC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4368144088" otu="d4368187792">
+                <seq>--------------------------------------------GTCAT
+                    ACGAAAATCCCATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TACCTACCCCATCTAACATTTCAGCATGATGAAACTTCGGATCACTATTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTTTTAGCCATACA
+                    CTACACAGCAGACATCTCATCTGCCTTCTCTTCAGTGGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGCAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACATATCGGGCGTGGACTTTACTA
+                    TGGATCCTACATATTCAAAGAAACATGAAATCTTGGAGTTATTCTACTTC
+                    TCCTCGTCATAGCGACCGCATTCGTCGGCTATGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4395223096" otu="d4363194832">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TACCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGGTCACTTTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATCTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATTTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTTGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTCCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4372053168" otu="d4376147024">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTTAACAACTCATTTATTGACC
+                    TACCTGCCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGCCTGATCCTACAAATTCTCACCGGATTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTGGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGCAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGACGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAGACATGAAACCTTGGAGTTATTCTACTTC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTCCTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4395346768" otu="d4367843920">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TGCCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTCTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATTTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4394660360" otu="d4363660048">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCCATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TGCCCACCCCATCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGCCTAATCCTACAAATTCTTACAGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAGTATTCTTTATCTGTATCTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4395034152" otu="d4328323728">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TACCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGGTCACTTTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATTTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTTGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTCCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4387345960" otu="d4376707792">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAACTCGTAAACAACTCATTTATTGACC
+                    TGCCTACCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGTCTGATCTTACAAATTCTCACCGGACTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTAGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGTAACCTTCACGCCAATGGGGCT
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGGCGTGGACTTTATTA
+                    TGGGTCCTACATATTTAAAGAAACATGAAACCTTGGAGTTATTCTACTGC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4371535664" otu="d4375860496">
+                <seq>CTTGAAGAACCATCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TACCTACCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTG
+                    GGAACATGTCTGATCCTACAAATTCTAACCGGATTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTAGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGCAACCTTCACGCTAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACATATTGGACGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAAACGTGAAACCTTGGAGTTATTCTACTTC
+                    TCCTCGTCATAGCGACTGCATTCGTCGGCTATGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4323217928" otu="d4359010768">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTTATTGATC
+                    TACCCACCCCGTCTAACATTTCAGCATGATGAAACTTTGGGTCACTCTTA
+                    GGAACATGTCTAGTACTACAAATTCTCACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATCTCATCAGCCTTTTCCTCAGTAGCTCACATCTGCC
+                    GAGACGTCCAATATGGCTGACTCATCCGTAACCTCCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGTATCTACCTCCACATTGGACGAGGGCTATACTA
+                    TGGATCTTACATATTTAAAGAAACATGAAATCTTGGGGTTATCTTACTCC
+                    TCCTCGTCATAGCAACTGCCTTCGTCGGCTATGTACTCCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4322991544" otu="d4367557392">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTTATTGATC
+                    TACCCACCCCGTCTAACATTTCAGCATGATGAAACTTTGGGTCACTCTTA
+                    GGAACATGTCTAATCCTACAAATTCTCACCGGATTATTCCTAGCTATACA
+                    CTACACAGCAGACATCTCATCAGCCTTTTCCTCAGTAGCTCACATCTGCC
+                    GAGACGTCCAATATGGCTGACTCATCCGTAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATCTACCTCCACATTGGACGAGGACTATATTA
+                    TGGATCTTACATATTTAAAGAAACATGAAATCTTGGGGTTATCTTACTCC
+                    TCCTCGTCATAGCAACTGCCTTCGTCGGCTATGTACTCCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4327812624" otu="d4380872400">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TGCCTACCCCATCTAACATTTCAGCATGATGAAACTTCGGATCACTATTA
+                    GGAACATGTCTGATCTTACAAATTCTCACCGGACTATTTTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTAGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGAAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGGCGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAAACGTGAAACCTTGGAGTTATTCTACTGC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4368246224" otu="d4371603728">
+                <seq>CTTGAAGAACCATCGTTGTAATTCAACTACAAAAACCAATGACAGTCAT
+                    ACGAAAATCCCATCCCATTATCAAAATCGTAAACAACTCATTCATCGATC
+                    TACCTACCCCATCTAACATTTCAGCATGATGAAACTTCGGATCACTATTA
+                    GGAACATGTCTGATCCTACAAATTATTACCGGATTATTTCTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTGGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTTATCCGCAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATCGGGCGTGGACTTTATTA
+                    TGGATCCTACATATTCAAAGAAACATGAAATCTTGGAGTCATTCTACTTC
+                    TCCTCGTTATAGCAACCGCATTCGTCGGCTATGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4383568568" otu="d4328041296">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TGCCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTTATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATCTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGGTCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4371634144" otu="d4372255888">
+                <seq>CTTGAAGAACCATCGTTGTAATTCAACTACAAAAA-CAATGACAGTCAT
+                    ACGAAAATCCCATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TACCTACCCCATCTAACATTTCAGCATGATGAAACTTCGGATCACTATTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTTTTAGCCATACA
+                    CTACACAGCAGACATCTCATCTGCCTTCTCTTCAGTGGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGCAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACATATCGGGCGTGGACTTTACTA
+                    TGGATCCTACATATTCAAAGAAACATGAAATCTTGGAGTTATTCTACTTC
+                    TCCTCGTCATAGCGACCGCATTCGTCGGCTATGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4384059336" otu="d4376425360">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTTAACAACTCATTTATTGACC
+                    TACCTGCCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGCCTGATCCTACAAATTCTCACCGGATTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTGGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGCAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGACGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAGACATGAAACCTTGGAGTTATTCTACTTC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4324026512" otu="d4380315792">
+                <seq>CTTGAARAACCAYCGTTGTGATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TACCCACCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGCCTGATCCTACAAATTCTCACCGGGTTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTGGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGTAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGACGTGGACTTTATTA
+                    CGGATCCTACATATTTAAAGAAACATGAAACCTTGGAGTCATTCTACTTC
+                    TCCTAGTTATAGCGACCGCATTCGTCGGCTATGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4383820976" otu="d4363377616">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TACCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGGTCACTTTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATCTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATTTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTTGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTCCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4372178032" otu="d4383347536">
+                <seq>CTTGAARAACCAYCGTTGTGATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TACCCACCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGCCTGATCCTACAAATTCTCACCGGATTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTGGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGTAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGACGTGGACTTTATTA
+                    CGGATCCTACATATTTAAAGAAACATGAAACCTTGGAGTCATTCTACTTC
+                    TCCTAGTTATAGCGACCGCATTCGTCGGCTATGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4359614320" otu="d4359205904">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TACCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATCTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4371830928" otu="d4383629968">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TGCCTACCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGTCTGATCTTACAAATTCTCACCGGACTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTAGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGTAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGACGTGGACTTTATTA
+                    CGGATCCTACATATTTAAAGAAACGTGAAACCTTGGAGTTATTCTACTGC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4364037736" otu="d4363568656">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TACCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGGTCACTTTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATCTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATTTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTTGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTCCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4383932672" otu="d4376520848">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTTAACAACTCATTTATTGACC
+                    TACCTGCCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGCCTGATCCTACAAATTCTCACCGGATTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTGGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGCAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGACGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAGACATGAAACCTTGGAGTTATTCTACTTC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4393422792" otu="d4359949456">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCCATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TGCCCACCCCATCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGCCTAATCCTACAAATTCTTACAGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATTAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATCTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4372280696" otu="d4380498576">
+                <seq>CTTGAARAACCAYCGTTGTGATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TACCCACCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGCCTGATCCTACAAATTCTCACCGGGTTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTGGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGTAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGACGTGGACTTTATTA
+                    CGGATCCTACATATTTAAAGAAACATGAAACCTTGGAGTCATTCTACTTC
+                    TCCTAGTTATAGCGACCGCATTCGTCGGCTATGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4323266416" otu="d4328514768">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTTATTGATC
+                    TACCCACCCCGTCTAACATTTCAGCATGATGAAACTTTGGGTCACTCTTA
+                    GGAACATGTCTAGTACTACAAATTCTCACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATCTCATCAGCCTTTTCCTCAGTAGCTCACATCTGCC
+                    GAGACGTCCAATATGGCTGACTCATCCGTAACCTCCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGTATCTACCTCCACATTGGACGAGGGCTATACTA
+                    TGGATCTTACATATTTAAAGAAACATGAAATCTTGGGGTTATCTTACTCC
+                    TCCTCGTCATAGCAACTGCCTTCGTCGGCTATGTACTCCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4376226552" otu="d4380036304">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TGCCTACCCCATCTAACATTTCAGCATGATGAAACTTCGGATCACTATTA
+                    GGAACATGTCTGATCTTACAAATTCTCACCGGACTATTTTTAGCCATACA
+                    CTATACAGCAGACATCTCCTCTGCCTTCTCTTCAGTAGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGAAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGGCGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAAACGTGAAACCTTGGAGTTATTCTACTGC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4322806344" otu="d4367744272">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TGCCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTCTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATTTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4395373064" otu="d4376608144">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTTAACAACTCATTTATTGACC
+                    TACCTACCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGCCTGATCCTACAAATTCTCACCGGATTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTGGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGCAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGACGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAGACATGAAACCTTGGAGTTATTCTACTTC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4372486992" otu="d4359667024">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TGCCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTTATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATCTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4393324224" otu="d4359858064">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCCATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TGCCCACCCCATCTAACATCTCAGCATGATGAAACTTCGGGTCACTCTTA
+                    GGAACATGCCTAATCCTACAAATTCTTACAGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATCTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTTC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4394943776" otu="d4328232336">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TACCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGGTCACTTTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATTTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTTGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTCCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4394754832" otu="d4367457744">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCCATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TGCCCACCCCATCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGCCTAATCCTACAAATTCTTACAGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATCTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4380090536" otu="d4327862864">
+                <seq>CTTGAAGAACCATCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TACCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTTTCCTCAGTAGCCCATATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATCTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4387839944" otu="d4383160592">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TGCCTACCCCATCTAACATTTCAGCATGATGAAACTTCGGATCACTATTA
+                    GGAACATGTCTGATCTTACAAATTCTCACCGGACTATTTTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTAGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGAAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGGCGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAAACGTGAAACCTTGGAGTTATTCTACTGC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4322897072" otu="d4359384592">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTTATTGATC
+                    TACCCACCCCGTCTAACATTTCAGCATGATGAAACTTTGGGTCACTCTTA
+                    GGAACATGTCTAATCCTACAAATTCTCACCGGATTATTCCTAGCTATACA
+                    CTACACAGCAGACATCTCATCAGCCTTTTCCTCAGTAGCTCACATCTGCC
+                    GAGACGTCCAATATGGCTGACTCATCCGTAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATCTACCTCCACATTGGACGAGGGCTATATTA
+                    TGGATCTTACATATTTAAAGAAACATGAAATCTTGGGGTTATCTTACTCC
+                    TCCTCGTCATAGCAACTGCCTTCGTCGGCTATGTACTCCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4375821224" otu="d4387331984">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TGCCTACCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGTCTGATCTTACAAATTCTCACCGGACTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTAGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGTAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGGCGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAAACGTGAAACCTTGGAGTTATTCTACTGC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4359213488" otu="d4327949904">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TGCCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTTATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATCTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGGTCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4372254664" otu="d4363477264">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TACCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGGTCACTTTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATCTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATTTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTTGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTCCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4363908032" otu="d4364029584">
+                <seq>CTTGAAGAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TGCCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTCTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATTTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4395313472" otu="d4363286224">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TACCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGGTCACTTTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATCTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATTTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTTGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTCCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4368081592" otu="d4364129232">
+                <seq>CTTGAAGAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TGCCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTCTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATTTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4363981408" otu="d4380589968">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TACCTACCCCGTCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGTCTGATCTTACAAATTCTCACCGGACTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTAGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGTAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGGCGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAAACATGAAACCTTGGAGTTATTCTACTGC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4393521408" otu="d4359766672">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCCATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TGCCCACCCCATCTAACATCTCAGCATGATGAAACTTTGGATCACTCTTA
+                    GGAACATGCCTAATCCTACAAATTCTTACAGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAGTATTCTTTATCTGTATCTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTCGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTTCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4395128624" otu="d4328415120">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATCAC
+                    ACGAAAATCCCACCCTATTATCAAAATTGTAAACAACTCATTCATTGACC
+                    TACCCACCCCGTCTAACATCTCAGCATGATGAAACTTTGGGTCACTTTTA
+                    GGAACATGTCTAATCCTACAAATTCTTACCGGATTATTCCTAGCCATACA
+                    CTACACAGCAGACATTTCATCAGCCTTTTCCTCAGTAGCCCACATCTGCC
+                    GAGACGTCCAATACGGCTGACTCATCCGCAACCTCCACGCCAACGGAGCC
+                    TCAATATTCTTTATCTGTATTTATCTCCACATTGGACGAGGACTTTATTA
+                    TGGATCTTATATATTTAAAGAAACATGAAATCTTGGGGTTATTTTACTCC
+                    TCCTCGTCATAGCAACCGCCTTCGTCGGCTACGTACTCCCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4375709048" otu="d4387431632">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TGCCTACCCCATCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGTCTGATCTTACAAATTCTCACCGGACTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTAGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGTAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGGCGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAAACGTGAAACCTTGGAGTTATTCTACTGC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+            <row id="d4375917416" otu="d4383530320">
+                <seq>CTTGAARAACCAYCGTTGTAATTCAACTACAAAAA-CAATGACAATTAC
+                    ACGAAAATCACATCCCATTATCAAAATCGTAAACAACTCATTTATTGACC
+                    TGCCTACCCCGTCTAACATTTCAGCATGATGAAACTTTGGATCACTATTA
+                    GGAACATGTCTGATCTTACAAATTCTCACCGGACTATTCTTAGCCATACA
+                    CTACACAGCAGACATCTCCTCTGCCTTCTCTTCAGTAGCCCACATCTGCC
+                    GAGATGTCCAATACGGATGACTCATCCGTAACCTTCACGCCAATGGAGCC
+                    TCAATATTCTTTATCTGCATCTATCTACACATTGGGCGTGGACTTTATTA
+                    TGGATCCTACATATTTAAAGAAACATGAAACCTTGGAGTTATTCTACTGC
+                    TCCTCGTTATAGCGACCGCATTCGTCGGCTACGTACTACCATGAGGACAA
+                    ATATCATTCTGA</seq>
+            </row>
+        </matrix>
+    </characters>
+</nex:nexml>

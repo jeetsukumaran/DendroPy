@@ -182,6 +182,15 @@ class TaxonSet(containers.OrderedSet, base.AnnotatedDataObject):
         memo[id(self)] = self
         return self
 
+    def fullcopy(self, memo=None):
+        if memo is None:
+            memo = {}
+        o = base.AnnotatedDataObject.__deepcopy__(self, memo)
+        for taxon in self:
+            o.add(taxon.fullcopy(memo))
+        memo[id(self)] = o
+        return o
+
     def __getitem__(self, i):
         if isinstance(i, int):
             return containers.OrderedSet.__getitem__(self, i)
@@ -469,6 +478,13 @@ class Taxon(base.AnnotatedDataObject):
         """
         memo[id(self)] = self
         return self
+
+    def fullcopy(self, memo=None):
+        if memo is None:
+            memo = {}
+        o = base.AnnotatedDataObject.__deepcopy__(self, memo)
+        memo[id(self)] = o
+        return o
 
     def cmp(taxon1, taxon2):
         "Compares taxon1 and taxon2 based on label."
