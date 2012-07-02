@@ -64,6 +64,27 @@ class GenBankResourceStore(object):
         return gb_recs
     parse_xml = staticmethod(parse_xml)
 
+    def fetch_xml(db, ids, prefix=None, email=None, as_stream=False):
+        stream = entrez.efetch(db=db,
+                ids=ids,
+                rettype='gbc',
+                retmode='xml',
+                email=email)
+        if as_stream:
+            return stream
+        else:
+            return stream.read()
+    fetch_xml = staticmethod(fetch_xml)
+
+    def prepare_ids(ids, prefix=None):
+        if prefix is None:
+            prefix = ""
+        # for idx, i in enumerate(ids):
+        #     ids[idx] = "%s%s" % (prefix, i)
+        ids = ["%s%s" % (prefix, i) for i in ids]
+        return ids
+    prepare_ids = staticmethod(prepare_ids)
+
     class AccessionFetchError(Exception):
         def __init__(self, missing, response=None):
             if response is None:
@@ -73,8 +94,9 @@ class GenBankResourceStore(object):
             missing_desc = ", ".join([str(s) for s in missing])
             Exception.__init__(self, "\n\nFailed to retrieve accessions: %s%s" % (missing_desc, response))
 
-    def __init__(self, db):
+    def __init__(self, db, email=None):
         self.db = db
+        self.email = email
         self._recs = []
         self._accession_recs = {}
         self._version_recs = {}
@@ -128,14 +150,12 @@ class GenBankResourceStore(object):
         self.update(gb_recs)
 
     def acquire(self, ids, prefix=None, verify=True):
-        if prefix is not None:
-            ids = ["%s%s" % (prefix, i) for i in ids]
-        stream = entrez.efetch(db=self.db,
+        ids = GenBankResourceStore.prepare_ids(ids=ids, prefix=prefix)
+        xml_string = GenBankResourceStore.fetch_xml(db=self.db,
                 ids=ids,
-                rettype='gbc',
-                retmode='xml')
-        # gb_recs = GenBankAccessionRecord.parse(stream=stream)
-        xml_string = stream.read()
+                prefix=prefix,
+                email=self.email,
+                as_stream=False)
         gb_recs = GenBankResourceStore.parse_xml(string=xml_string)
         accession_recs = {}
         accession_version_recs = {}
@@ -180,8 +200,8 @@ class GenBankResourceStore(object):
 
 class GenBankNucleotide(GenBankResourceStore):
 
-    def __init__(self, char_matrix_type=None):
-        GenBankResourceStore.__init__(self, db="nucleotide")
+    def __init__(self, char_matrix_type=None, email=None):
+        GenBankResourceStore.__init__(self, db="nucleotide", email=email)
         self.char_matrix_type = char_matrix_type
 
     def generate_char_matrix(self,
@@ -242,15 +262,17 @@ class GenBankNucleotide(GenBankResourceStore):
 
 class GenBankDna(GenBankNucleotide):
 
-    def __init__(self):
+    def __init__(self, email=None):
         GenBankNucleotide.__init__(self,
-            char_matrix_type=dendropy.DnaCharacterMatrix)
+            char_matrix_type=dendropy.DnaCharacterMatrix,
+            email=email)
 
 class GenBankRna(GenBankNucleotide):
 
-    def __init__(self):
+    def __init__(self, email=None):
         GenBankNucleotide.__init__(self,
-            char_matrix_type=dendropy.RnaCharacterMatrix)
+            char_matrix_type=dendropy.RnaCharacterMatrix,
+            email=email)
 
 
 ##############################################################################
