@@ -142,8 +142,10 @@ class GenBankNucleotide(GenBankResourceStore):
             label_component_separator=" ",
             taxon_set=None,
             id_to_taxon_map=None,
-            annotate_taxa=False,
-            annotate_seqs=False,
+            add_full_annotation_to_taxa=False,
+            add_ref_annotation_to_taxa=False,
+            add_full_annotation_to_seq=False,
+            add_ref_annotation_to_seq=False,
             set_taxon_attr=None,
             set_seq_attr=None,
             matrix_label=None):
@@ -170,14 +172,10 @@ class GenBankNucleotide(GenBankResourceStore):
                 assert str(label) != "None"
                 taxon = taxon_set.require_taxon(label=label)
             assert taxon is not None
-            if annotate_taxa:
-                taxon.annotations.add(gb_rec.as_annotation())
             if set_taxon_attr is not None:
                 setattr(taxon, set_taxon_attr, gb_rec)
             curr_vec = dendropy.CharacterDataVector(taxon=taxon)
             char_matrix[taxon] = curr_vec
-            if annotate_seqs:
-                curr_vec.annotations.add(gb_rec.as_annotation())
             if set_seq_attr is not None:
                 setattr(curr_vec, set_seq_attr, gb_rec)
             symbol_state_map = char_matrix.default_state_alphabet.symbol_state_map()
