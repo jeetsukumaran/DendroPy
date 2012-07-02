@@ -26,13 +26,19 @@ import dendropy
 from dendropy.interop import entrez
 from dendropy.dataio.xmlparser import ElementTree
 from dendropy.utility import containers
+from dendropy.utility import error
 
 ##############################################################################
 ## GenBank Resources
 
-class GenBankResource(object):
+class GenBankResourceStore(object):
 
-    def __init__(self):
+    class AccessionFetchError(Exception):
+        def __init__(self, accession_ids):
+            Exception.__init__(self, "Failed to retrieve accessions: %s" % (", ".join([str(s) for s in accession_ids])))
+
+    def __init__(self, db):
+        self.db = db
         self._recs = []
         self._accession_recs = {}
         self._version_recs = {}
@@ -77,12 +83,12 @@ class GenBankResource(object):
         for rec in recs:
             self.add(rec)
 
-    def fetch(self, db, ids, verify=True):
-        results_stream = entrez.efetch(db=db,
+    def acquire(self, ids, verify=True):
+        results_stream = entrez.efetch(db=self.db,
                 ids=ids,
                 rettype='gbc',
                 retmode='xml')
-        gb_recs = GenBankRecord.parse_from_stream(results_stream)
+        gb_recs = GenBankAccessionRecord.parse_from_stream(results_stream)
         accession_recs = {}
         accession_version_recs = {}
         gi_recs = {}
@@ -107,14 +113,104 @@ class GenBankResource(object):
                 gb_rec.request_key = sgbid
                 result.append(gb_rec)
         if missing:
-            raise Entrez.AccessionFetchError(missing)
+            raise GenBankResourceStore.AccessionFetchError(missing)
         self.update(result)
         return result
+
+    def acquire_range(self,
+            first,
+            last,
+            prefix=None,
+            verify=True):
+        ids = range(first, last+1)
+        if prefix is None:
+            prefix = ""
+        ids = ["%s%s" % (prefix, i) for i in ids]
+        return self.acquire(
+                ids=ids,
+                verify=verify)
+
+class GenBankNucleotide(GenBankResourceStore):
+
+    def __init__(self, char_matrix_type=None):
+        GenBankResourceStore.__init__(self, db="nucleotide")
+        self.char_matrix_type = char_matrix_type
+
+    def generate_char_matrix(self,
+            relabel_taxa=False,
+            label_components=None,
+            label_component_separator=" ",
+            taxon_set=None,
+            id_to_taxon_map=None,
+            annotate_taxa=False,
+            annotate_seqs=False,
+            set_taxon_attr=None,
+            set_seq_attr=None,
+            matrix_label=None):
+        if id_to_taxon_map is not None and taxon_set is None:
+            raise TypeError("Cannot specify 'id_to_taxon_map' without 'taxon_set'")
+        if id_to_taxon_map is None:
+            id_to_taxon_map = {}
+        if taxon_set is None:
+            taxon_set = dendropy.TaxonSet()
+        data_str = []
+        char_matrix = self.char_matrix_type(label=matrix_label)
+        for gb_idx, gb_rec in enumerate(self._recs):
+            taxon = None
+            if gb_rec.request_key in id_to_taxon_map:
+                taxon = id_to_taxon_map[gb_rec.request_key]
+            else:
+                if relabel_taxa:
+                    label = gb_rec.compose_taxon_label(
+                            components=label_components,
+                            separator=label_component_separator)
+                else:
+                    label = gb_rec.request_key
+                assert label is not None
+                assert str(label) != "None"
+                taxon = taxon_set.require_taxon(label=label)
+            assert taxon is not None
+            if annotate_taxa:
+                taxon.annotations.add(gb_rec.as_annotation())
+            if set_taxon_attr is not None:
+                setattr(taxon, set_taxon_attr, gb_rec)
+            curr_vec = dendropy.CharacterDataVector(taxon=taxon)
+            char_matrix[taxon] = curr_vec
+            if annotate_seqs:
+                curr_vec.annotations.add(gb_rec.as_annotation())
+            if set_seq_attr is not None:
+                setattr(curr_vec, set_seq_attr, gb_rec)
+            symbol_state_map = char_matrix.default_state_alphabet.symbol_state_map()
+            seq_text = gb_rec.sequence_text.upper()
+            for col_ind, c in enumerate(seq_text):
+                c = c.strip()
+                if not c:
+                    continue
+                try:
+                    state = symbol_state_map[c]
+                except KeyError:
+                    raise ValueError('Accession %d of %d (%s, GI %s, acquired using key: %s): Unrecognized sequence symbol "%s" in position %d: %s'
+                            % (gb_idx+1, len(self._recs), gb_rec.primary_accession, gb_rec.gi, gb_rec.request_key, c, col_ind+1, seq_text))
+                curr_vec.append(dendropy.CharacterDataCell(value=state))
+        return char_matrix
+
+class GenBankDna(GenBankNucleotide):
+
+    def __init__(self):
+        GenBankNucleotide.__init__(self,
+            char_matrix_type=dendropy.DnaCharacterMatrix)
+
+class GenBankRna(GenBankNucleotide):
+
+    def __init__(self):
+        GenBankNucleotide.__init__(self,
+            char_matrix_type=dendropy.RnaCharacterMatrix)
+
 
 ##############################################################################
 ## GenBank Data Parsing to Python Objects
 
-class GenBankReference(object):
+class GenBankAccessionReference(object):
     """
     A GenBank reference record.
     """
@@ -149,7 +245,7 @@ class GenBankReference(object):
             self.pubmed_id = xml.findtext("INSDReference_pubmed")
             self.medline_id = xml.findtext("INSDReference_medline")
 
-class GenBankInterval(object):
+class GenBankAccessionInterval(object):
     """
     A GenBank Interval record.
     """
@@ -165,7 +261,7 @@ class GenBankInterval(object):
         self.end = xml.findtext("INSDInterval_to")
         self.accession = xml.findtext("INSDInterval_accession")
 
-class GenBankQualifier(object):
+class GenBankAccessionQualifier(object):
     """
     A GenBank Qualifier record.
     """
@@ -179,7 +275,7 @@ class GenBankQualifier(object):
         self.name = xml.findtext("INSDQualifier_name")
         self.value = xml.findtext("INSDQualifier_value")
 
-class GenBankQualifiers(list):
+class GenBankAccessionQualifiers(list):
 
     def __init__(self, *args):
         list.__init__(self, *args)
@@ -189,7 +285,7 @@ class GenBankQualifiers(list):
         for a in self:
             if a.name == name:
                 results.append(a)
-        results = GenBankQualifiers(results)
+        results = GenBankAccessionQualifiers(results)
         return results
 
     def find(self, name, default=None):
@@ -204,14 +300,14 @@ class GenBankQualifiers(list):
                 return a.value
         return default
 
-class GenBankFeature(object):
+class GenBankAccessionFeature(object):
     """
     A GenBank Feature record.
     """
     def __init__(self, xml=None):
         self.key = None
         self.location = None
-        self.qualifiers = GenBankQualifiers()
+        self.qualifiers = GenBankAccessionQualifiers()
         self.intervals = []
         if xml is not None:
             self.parse_xml(xml)
@@ -221,14 +317,14 @@ class GenBankFeature(object):
         self.location = xml.findtext("INSDFeature_location")
         for intervals in xml.findall("INSDFeature_intervals"):
             for interval_xml in xml.findall("INSDInterval"):
-                interval = GenBankInterval(interval_xml)
+                interval = GenBankAccessionInterval(interval_xml)
                 self.intervals.append(interval)
         for qualifiers in xml.findall("INSDFeature_quals"):
             for qualifier_xml in qualifiers.findall("INSDQualifier"):
-                qualifier = GenBankQualifier(qualifier_xml)
+                qualifier = GenBankAccessionQualifier(qualifier_xml)
                 self.qualifiers.append(qualifier)
 
-class GenBankFeatures(list):
+class GenBankAccessionFeatures(list):
 
     def __init__(self, *args):
         list.__init__(self, *args)
@@ -238,7 +334,7 @@ class GenBankFeatures(list):
         for a in self:
             if a.key == key:
                 results.append(a)
-        results = GenBankFeatures(results)
+        results = GenBankAccessionFeatures(results)
         return results
 
     def find(self, key, default=None):
@@ -253,7 +349,7 @@ class GenBankFeatures(list):
                 return a.value
         return default
 
-class GenBankRecord(object):
+class GenBankAccessionRecord(object):
     """
     A GenBank record.
     """
@@ -264,7 +360,7 @@ class GenBankRecord(object):
         gb_recs = []
         for seq_set in root.iter("INSDSet"):
             for seq in seq_set.iter("INSDSeq"):
-                gb_rec = GenBankRecord(xml=seq)
+                gb_rec = GenBankAccessionRecord(xml=seq)
                 gb_recs.append(gb_rec)
         return gb_recs
     parse_from_stream = staticmethod(parse_from_stream)
@@ -288,7 +384,7 @@ class GenBankRecord(object):
         self.organism = None
         self.taxonomy = None
         self.references = []
-        self.features = GenBankFeatures()
+        self.features = GenBankAccessionFeatures()
         self.sequence_text = None
         if xml is not None:
             self.parse_xml(xml)
@@ -352,11 +448,11 @@ class GenBankRecord(object):
         self.taxonomy = xml.findtext("INSDSeq_taxonomy")
         for references in xml.findall("INSDSeq_references"):
             for reference_xml in references.findall("INSDReference"):
-                reference = GenBankReference(reference_xml)
+                reference = GenBankAccessionReference(reference_xml)
                 self.references.append(reference)
         for features in xml.findall("INSDSeq_feature-table"):
             for feature_xml in features.findall("INSDFeature"):
-                feature = GenBankFeature(feature_xml)
+                feature = GenBankAccessionFeature(feature_xml)
                 self.features.append(feature)
         self.sequence_text = xml.findtext("INSDSeq_sequence")
 
@@ -391,5 +487,20 @@ class GenBankRecord(object):
             label = self.compose_fasta_defline()
         sequence_text = self.sequence_text.upper()
         return ">%s\n%s" % (label, sequence_text)
+
+    def as_annotation(self):
+        annote = dendropy.Annotation(
+                name="placeholder",
+                value="nil")
+                # datatype_hint=None,
+                # name_prefix=None,
+                # namespace=None,
+                # name_is_prefixed=False,
+                # is_attribute=False,
+                # annotate_as_reference=False,
+                # is_hidden=False,
+                # label=None,
+                # oid=None)
+        return annote
 
 

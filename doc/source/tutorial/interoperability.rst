@@ -5,7 +5,8 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. toctree::
     :maxdepth: 2
 
-    ncbi.rst
+    genbank.rst
     seqgen.rst
     paup.rst
     raxml.rst
+    ncbi.rst
