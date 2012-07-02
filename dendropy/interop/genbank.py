@@ -156,7 +156,7 @@ class GenBankNucleotide(GenBankResourceStore):
         if taxon_set is None:
             taxon_set = dendropy.TaxonSet()
         data_str = []
-        char_matrix = self.char_matrix_type(label=matrix_label)
+        char_matrix = self.char_matrix_type(label=matrix_label, taxon_set=taxon_set)
         for gb_idx, gb_rec in enumerate(self._recs):
             taxon = None
             if gb_rec.request_key in id_to_taxon_map:
