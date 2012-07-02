@@ -20,6 +20,7 @@
 Wrappers for retrieving data from GenBank.
 """
 
+import sys
 import re
 import urllib
 import dendropy
@@ -34,8 +35,13 @@ from dendropy.utility import error
 class GenBankResourceStore(object):
 
     class AccessionFetchError(Exception):
-        def __init__(self, accession_ids):
-            Exception.__init__(self, "Failed to retrieve accessions: %s" % (", ".join([str(s) for s in accession_ids])))
+        def __init__(self, missing, response=None):
+            if response is None:
+                response = ""
+            else:
+                response = "\n\nServer response was:\n\n%s" % response
+            missing_desc = ", ".join([str(s) for s in missing])
+            Exception.__init__(self, "\n\nFailed to retrieve accessions: %s%s" % (missing_desc, response))
 
     def __init__(self, db):
         self.db = db
@@ -84,11 +90,13 @@ class GenBankResourceStore(object):
             self.add(rec)
 
     def acquire(self, ids, verify=True):
-        results_stream = entrez.efetch(db=self.db,
+        stream = entrez.efetch(db=self.db,
                 ids=ids,
                 rettype='gbc',
                 retmode='xml')
-        gb_recs = GenBankAccessionRecord.parse_from_stream(results_stream)
+        # gb_recs = GenBankAccessionRecord.parse(stream=stream)
+        xml_string = stream.read()
+        gb_recs = GenBankAccessionRecord.parse(string=xml_string)
         accession_recs = {}
         accession_version_recs = {}
         gi_recs = {}
@@ -113,7 +121,7 @@ class GenBankResourceStore(object):
                 gb_rec.request_key = sgbid
                 result.append(gb_rec)
         if missing:
-            raise GenBankResourceStore.AccessionFetchError(missing)
+            raise GenBankResourceStore.AccessionFetchError(missing=missing, response=xml_string)
         self.update(result)
         return result
 
@@ -352,16 +360,35 @@ class GenBankAccessionRecord(object):
     A GenBank record.
     """
 
-    def parse_from_stream(stream):
-        tree = ElementTree.parse(stream)
-        root = tree.getroot()
+    def parse(**kwargs):
+        if "stream" in kwargs and "string" in kwargs:
+            raise TypeError("Cannot specify both 'stream' and 'string'")
+        elif "stream" in kwargs:
+            tree = ElementTree.parse(kwargs["stream"])
+            root = tree.getroot()
+        elif "string" in kwargs:
+            # from StringIO import StringIO
+            # s = StringIO(kwargs["string"])
+            # try:
+            #     root = ElementTree.parse(s)
+            # except:
+            #     print kwargs["string"]
+            #     raise
+            s = kwargs["string"]
+            try:
+                root = ElementTree.fromstring(s)
+            except:
+                sys.stderr.write(s)
+                raise
+        else:
+            raise TypeError("Must specify exactly one of 'stream' or 'string'")
         gb_recs = []
         for seq_set in root.iter("INSDSet"):
             for seq in seq_set.iter("INSDSeq"):
                 gb_rec = GenBankAccessionRecord(xml=seq)
                 gb_recs.append(gb_rec)
         return gb_recs
-    parse_from_stream = staticmethod(parse_from_stream)
+    parse = staticmethod(parse)
 
     def __init__(self, xml=None):
         self._request_key = None
