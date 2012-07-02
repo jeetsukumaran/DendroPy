@@ -34,6 +34,36 @@ from dendropy.utility import error
 
 class GenBankResourceStore(object):
 
+    def parse_xml(**kwargs):
+        if "stream" in kwargs and "string" in kwargs:
+            raise TypeError("Cannot specify both 'stream' and 'string'")
+        elif "stream" in kwargs:
+            tree = ElementTree.parse(kwargs["stream"])
+            root = tree.getroot()
+        elif "string" in kwargs:
+            # from StringIO import StringIO
+            # s = StringIO(kwargs["string"])
+            # try:
+            #     root = ElementTree.parse(s)
+            # except:
+            #     print kwargs["string"]
+            #     raise
+            s = kwargs["string"]
+            try:
+                root = ElementTree.fromstring(s)
+            except:
+                sys.stderr.write(s)
+                raise
+        else:
+            raise TypeError("Must specify exactly one of 'stream' or 'string'")
+        gb_recs = []
+        for seq_set in root.iter("INSDSet"):
+            for seq in seq_set.iter("INSDSeq"):
+                gb_rec = GenBankAccessionRecord(xml=seq)
+                gb_recs.append(gb_rec)
+        return gb_recs
+    parse_xml = staticmethod(parse_xml)
+
     class AccessionFetchError(Exception):
         def __init__(self, missing, response=None):
             if response is None:
@@ -89,14 +119,24 @@ class GenBankResourceStore(object):
         for rec in recs:
             self.add(rec)
 
-    def acquire(self, ids, verify=True):
+    def read_xml_string(self, xml_string):
+        gb_recs = GenBankResourceStore.parse_xml(string=xml_string)
+        self.update(gb_recs)
+
+    def read_xml_stream(self, xml_stream):
+        gb_recs = GenBankResourceStore.parse_xml(stream=xml_stream)
+        self.update(gb_recs)
+
+    def acquire(self, ids, prefix=None, verify=True):
+        if prefix is not None:
+            ids = ["%s%s" % (prefix, i) for i in ids]
         stream = entrez.efetch(db=self.db,
                 ids=ids,
                 rettype='gbc',
                 retmode='xml')
         # gb_recs = GenBankAccessionRecord.parse(stream=stream)
         xml_string = stream.read()
-        gb_recs = GenBankAccessionRecord.parse(string=xml_string)
+        gb_recs = GenBankResourceStore.parse_xml(string=xml_string)
         accession_recs = {}
         accession_version_recs = {}
         gi_recs = {}
@@ -104,7 +144,7 @@ class GenBankResourceStore(object):
             accession_recs[gb_rec.primary_accession] = gb_rec
             accession_version_recs[gb_rec.accession_version] = gb_rec
             gi_recs[gb_rec.gi] = gb_rec
-        result = []
+        added = []
         missing = []
         for idx, gbid in enumerate(ids):
             sgbid = str(gbid)
@@ -119,11 +159,13 @@ class GenBankResourceStore(object):
                 missing.append(sgbid)
             if gb_rec is not None:
                 gb_rec.request_key = sgbid
-                result.append(gb_rec)
-        if missing:
+                added.append(gb_rec)
+        if len(added) == 0 and missing:
             raise GenBankResourceStore.AccessionFetchError(missing=missing, response=xml_string)
-        self.update(result)
-        return result
+        elif missing:
+            raise GenBankResourceStore.AccessionFetchError(missing=missing, response=None)
+        self.update(added)
+        return added
 
     def acquire_range(self,
             first,
@@ -131,11 +173,9 @@ class GenBankResourceStore(object):
             prefix=None,
             verify=True):
         ids = range(first, last+1)
-        if prefix is None:
-            prefix = ""
-        ids = ["%s%s" % (prefix, i) for i in ids]
         return self.acquire(
                 ids=ids,
+                prefix=prefix,
                 verify=verify)
 
 class GenBankNucleotide(GenBankResourceStore):
@@ -359,36 +399,6 @@ class GenBankAccessionRecord(object):
     """
     A GenBank record.
     """
-
-    def parse(**kwargs):
-        if "stream" in kwargs and "string" in kwargs:
-            raise TypeError("Cannot specify both 'stream' and 'string'")
-        elif "stream" in kwargs:
-            tree = ElementTree.parse(kwargs["stream"])
-            root = tree.getroot()
-        elif "string" in kwargs:
-            # from StringIO import StringIO
-            # s = StringIO(kwargs["string"])
-            # try:
-            #     root = ElementTree.parse(s)
-            # except:
-            #     print kwargs["string"]
-            #     raise
-            s = kwargs["string"]
-            try:
-                root = ElementTree.fromstring(s)
-            except:
-                sys.stderr.write(s)
-                raise
-        else:
-            raise TypeError("Must specify exactly one of 'stream' or 'string'")
-        gb_recs = []
-        for seq_set in root.iter("INSDSet"):
-            for seq in seq_set.iter("INSDSeq"):
-                gb_rec = GenBankAccessionRecord(xml=seq)
-                gb_recs.append(gb_rec)
-        return gb_recs
-    parse = staticmethod(parse)
 
     def __init__(self, xml=None):
         self._request_key = None
