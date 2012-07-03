@@ -97,13 +97,29 @@ class GenBankResourceStore(object):
             missing_desc = ", ".join([str(s) for s in missing])
             Exception.__init__(self, "\n\nFailed to retrieve accessions: %s%s" % (missing_desc, response))
 
-    def __init__(self, db, email=None):
+    def __init__(self,
+            db,
+            ids=None,
+            id_range=None,
+            prefix=None,
+            verify=True,
+            email=None):
         self.db = db
         self.email = email
         self._recs = []
         self._accession_recs = {}
         self._version_recs = {}
         self._gi_recs = {}
+        if ids is not None:
+            self.acquire(ids=ids,
+                    prefix=prefix,
+                    verify=verify)
+        if id_range is not None:
+            self.acquire_range(
+                    first=id_range[0],
+                    last=id_range[1],
+                    prefix=prefix,
+                    verify=verify)
 
     def __len__(self):
         return len(self._recs)
@@ -135,6 +151,8 @@ class GenBankResourceStore(object):
             return None
         if rec in self._recs:
             return None
+        if rec.db is None:
+            rec.db = self.db
         self._recs.append(rec)
         self._accession_recs[rec.primary_accession] = rec
         self._version_recs[rec.accession_version] = rec
@@ -202,12 +220,6 @@ class GenBankResourceStore(object):
                 prefix=prefix,
                 verify=verify)
 
-class GenBankNucleotide(GenBankResourceStore):
-
-    def __init__(self, char_matrix_type=None, email=None):
-        GenBankResourceStore.__init__(self, db="nucleotide", email=email)
-        self.char_matrix_type = char_matrix_type
-
     def generate_char_matrix(self,
             relabel_taxa=False,
             label_components=None,
@@ -268,20 +280,72 @@ class GenBankNucleotide(GenBankResourceStore):
                 curr_vec.append(dendropy.CharacterDataCell(value=state))
         return char_matrix
 
+class GenBankNucleotide(GenBankResourceStore):
+
+    def __init__(self,
+            ids=None,
+            id_range=None,
+            prefix=None,
+            verify=True,
+            char_matrix_type=None,
+            email=None):
+        GenBankResourceStore.__init__(self,
+                db="nucleotide",
+                ids=ids,
+                id_range=id_range,
+                prefix=prefix,
+                verify=verify,
+                email=email)
+        self.char_matrix_type = char_matrix_type
+
 class GenBankDna(GenBankNucleotide):
 
-    def __init__(self, email=None):
+    def __init__(self,
+            ids=None,
+            id_range=None,
+            prefix=None,
+            verify=True,
+            email=None):
         GenBankNucleotide.__init__(self,
-            char_matrix_type=dendropy.DnaCharacterMatrix,
-            email=email)
+                ids=ids,
+                id_range=id_range,
+                prefix=prefix,
+                verify=verify,
+                char_matrix_type=dendropy.DnaCharacterMatrix,
+                email=email)
 
 class GenBankRna(GenBankNucleotide):
 
-    def __init__(self, email=None):
+    def __init__(self,
+            ids=None,
+            id_range=None,
+            prefix=None,
+            verify=True,
+            email=None):
         GenBankNucleotide.__init__(self,
-            char_matrix_type=dendropy.RnaCharacterMatrix,
-            email=email)
+                ids=ids,
+                id_range=id_range,
+                prefix=prefix,
+                verify=verify,
+                char_matrix_type=dendropy.RnaCharacterMatrix,
+                email=email)
 
+class GenBankProtein(GenBankResourceStore):
+
+    def __init__(self,
+            ids=None,
+            id_range=None,
+            prefix=None,
+            verify=True,
+            email=None):
+        GenBankResourceStore.__init__(self,
+                db="protein",
+                ids=ids,
+                id_range=id_range,
+                prefix=prefix,
+                verify=verify,
+                email=email)
+        self.char_matrix_type = dendropy.ProteinCharacterMatrix
 
 ##############################################################################
 ## GenBank Data Parsing to Python Objects
