@@ -595,8 +595,8 @@ class GenBankAccessionFeature(object):
                         label=None,
                         oid=None)
                     interval_annote.annotations.add(interval_annote)
-            if self.qualifiers:
-                top.annotations.add(self.qualifiers.as_annotation())
+        if self.qualifiers:
+            top.annotations.add(self.qualifiers.as_annotation())
         return top
 
 class GenBankAccessionFeatures(list):
