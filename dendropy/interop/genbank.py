@@ -256,12 +256,16 @@ class GenBankResourceStore(object):
                 assert str(label) != "None"
                 taxon = taxon_set.require_taxon(label=label)
             assert taxon is not None
+            if add_ref_annotation_to_taxa:
+                taxon.annotations.add(gb_rec.as_reference_annotation())
             if add_full_annotation_to_taxa:
                 taxon.annotations.add(gb_rec.as_annotation())
             if set_taxon_attr is not None:
                 setattr(taxon, set_taxon_attr, gb_rec)
             curr_vec = dendropy.CharacterDataVector(taxon=taxon)
             char_matrix[taxon] = curr_vec
+            if add_ref_annotation_to_seqs:
+                curr_vec.annotations.add(gb_rec.as_reference_annotation())
             if add_full_annotation_to_seqs:
                 curr_vec.annotations.add(gb_rec.as_annotation())
             if set_seq_attr is not None:
