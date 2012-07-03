@@ -181,6 +181,7 @@ class GenBankResourceStore(object):
             elif verify:
                 missing.append(sgbid)
             if gb_rec is not None:
+                gb_rec.db = self.db
                 gb_rec.request_key = sgbid
                 added.append(gb_rec)
         if len(added) == 0 and missing:
@@ -680,7 +681,8 @@ class GenBankAccessionRecord(object):
     A GenBank record.
     """
 
-    def __init__(self, xml=None):
+    def __init__(self, db=None, xml=None):
+        self.db = db
         self._request_key = None
         self._defline = None
         self.locus = None
@@ -803,10 +805,17 @@ class GenBankAccessionRecord(object):
         sequence_text = self.sequence_text.upper()
         return ">%s\n%s" % (label, sequence_text)
 
-    def as_annotation(self):
-        top = dendropy.Annotation(
+    def _get_uri(self):
+        uri = ["http://www.ncbi.nlm.nih.gov"]
+        uri.append(str(self.db))
+        uri.append(str(self.request_key))
+        return "/".join(uri)
+    uri = property(_get_uri)
+
+    def as_reference_annotation(self):
+        annote = dendropy.Annotation(
                 name="source",
-                value=None,
+                value=self.uri,
                 datatype_hint=None,
                 name_prefix="dcterms",
                 namespace="http://purl.org/dc/terms/",
@@ -816,9 +825,43 @@ class GenBankAccessionRecord(object):
                 is_hidden=False,
                 label=None,
                 oid=None)
+        return annote
+
+    def as_annotation(self):
+        top = self.as_reference_annotation()
+        # top = dendropy.Annotation(
+        #         name="source",
+        #         value=None,
+        #         datatype_hint=None,
+        #         name_prefix="dcterms",
+        #         namespace="http://purl.org/dc/terms/",
+        #         name_is_prefixed=False,
+        #         is_attribute=False,
+        #         annotate_as_reference=True,
+        #         is_hidden=False,
+        #         label=None,
+        #         oid=None)
+        # for item in [
+        #         ("db", "db"),
+        #         ("request_key", "requestKey")
+        #         ]:
+        #     value = getattr(self, item[0])
+        #     if value is None:
+        #         continue
+        #     a = dendropy.Annotation(
+        #         name=item[1],
+        #         value=value,
+        #         datatype_hint=None,
+        #         name_prefix="dendropy",
+        #         namespace="http://packages.python.org/DendroPy/",
+        #         name_is_prefixed=False,
+        #         is_attribute=False,
+        #         annotate_as_reference=False,
+        #         is_hidden=False,
+        #         label=None,
+        #         oid=None)
+        #     top.annotations.add(a)
         for item in [
-                ("gi", "gi"),
-                ("request_key", "requestKey"),
                 ("locus", "INSDSeq_locus"),
                 ("length", "INSDSeq_length"),
                 ("moltype", "INSDSeq_moltype"),
