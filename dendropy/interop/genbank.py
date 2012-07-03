@@ -320,6 +320,46 @@ class GenBankAccessionReference(object):
             self.pubmed_id = xml.findtext("INSDReference_pubmed")
             self.medline_id = xml.findtext("INSDReference_medline")
 
+    def as_annotation(self):
+        top = dendropy.Annotation(
+                name="INSDReference_reference",
+                value=None,
+                datatype_hint=None,
+                name_prefix=GENBANK_ANNOTATION_PREFIX,
+                namespace=GENBANK_ANNOTATION_NAMESPACE,
+                name_is_prefixed=False,
+                is_attribute=False,
+                annotate_as_reference=True,
+                is_hidden=False,
+                label=None,
+                oid=None)
+        for item in [
+                ("number", "INSDReference_reference"),
+                ("position", "INSDReference_position"),
+                ("title", "INSDReference_title"),
+                ("journal", "INSDReference_journal"),
+                ("pubmed_id", "INSDReference_pubmed"),
+                ("medline_id", "INSDReference_medline"),
+                ]:
+            value = getattr(self, item[0])
+            if value is None:
+                continue
+            sub = dendropy.Annotation(
+                name=item[1],
+                value=value,
+                datatype_hint=None,
+                name_prefix=GENBANK_ANNOTATION_PREFIX,
+                namespace=GENBANK_ANNOTATION_NAMESPACE,
+                name_is_prefixed=False,
+                is_attribute=False,
+                annotate_as_reference=False,
+                is_hidden=False,
+                label=None,
+                oid=None)
+            top.annotations.add(sub)
+        return top
+
+
 class GenBankAccessionReferences(list):
 
     def __init__(self, *args):
@@ -347,7 +387,7 @@ class GenBankAccessionReferences(list):
 
     def as_annotation(self):
         top = dendropy.Annotation(
-                name="references",
+                name="INSDSeq_references",
                 value=None,
                 datatype_hint=None,
                 name_prefix=GENBANK_ANNOTATION_PREFIX,
@@ -359,19 +399,7 @@ class GenBankAccessionReferences(list):
                 label=None,
                 oid=None)
         for reference in self:
-            sub = dendropy.Annotation(
-                name="x",
-                value="x",
-                datatype_hint=None,
-                name_prefix=GENBANK_ANNOTATION_PREFIX,
-                namespace=GENBANK_ANNOTATION_NAMESPACE,
-                name_is_prefixed=False,
-                is_attribute=False,
-                annotate_as_reference=False,
-                is_hidden=False,
-                label=None,
-                oid=None)
-            top.annotations.add(sub)
+            top.annotations.add(reference.as_annotation())
         return top
 
 class GenBankAccessionInterval(object):
@@ -404,6 +432,21 @@ class GenBankAccessionQualifier(object):
         self.name = xml.findtext("INSDQualifier_name")
         self.value = xml.findtext("INSDQualifier_value")
 
+    def as_annotation(self):
+        annote = dendropy.Annotation(
+            name=self.name,
+            value=self.value,
+            datatype_hint=None,
+            name_prefix=GENBANK_ANNOTATION_PREFIX,
+            namespace=GENBANK_ANNOTATION_NAMESPACE,
+            name_is_prefixed=False,
+            is_attribute=False,
+            annotate_as_reference=False,
+            is_hidden=False,
+            label=None,
+            oid=None)
+        return annote
+
 class GenBankAccessionQualifiers(list):
 
     def __init__(self, *args):
@@ -429,6 +472,23 @@ class GenBankAccessionQualifiers(list):
                 return a.value
         return default
 
+    def as_annotation(self):
+        top = dendropy.Annotation(
+                name="INSDFeature_quals",
+                value=None,
+                datatype_hint=None,
+                name_prefix=GENBANK_ANNOTATION_PREFIX,
+                namespace=GENBANK_ANNOTATION_NAMESPACE,
+                name_is_prefixed=False,
+                is_attribute=False,
+                annotate_as_reference=True,
+                is_hidden=False,
+                label=None,
+                oid=None)
+        for item in self:
+            top.annotations.add(item.as_annotation())
+        return top
+
 class GenBankAccessionFeature(object):
     """
     A GenBank Feature record.
@@ -452,6 +512,92 @@ class GenBankAccessionFeature(object):
             for qualifier_xml in qualifiers.findall("INSDQualifier"):
                 qualifier = GenBankAccessionQualifier(qualifier_xml)
                 self.qualifiers.append(qualifier)
+
+    def as_annotation(self):
+        top = dendropy.Annotation(
+                name="INSDSeq_feature",
+                value=None,
+                datatype_hint=None,
+                name_prefix=GENBANK_ANNOTATION_PREFIX,
+                namespace=GENBANK_ANNOTATION_NAMESPACE,
+                name_is_prefixed=False,
+                is_attribute=False,
+                annotate_as_reference=True,
+                is_hidden=False,
+                label=None,
+                oid=None)
+        for item in [
+                ("key", "INSDFeature_key"),
+                ("location", "INSDFeature_location"),
+                ]:
+            value = getattr(self, item[0])
+            if not value:
+                continue
+            sub = dendropy.Annotation(
+                name=item[1],
+                value=value,
+                datatype_hint=None,
+                name_prefix=GENBANK_ANNOTATION_PREFIX,
+                namespace=GENBANK_ANNOTATION_NAMESPACE,
+                name_is_prefixed=False,
+                is_attribute=False,
+                annotate_as_reference=False,
+                is_hidden=False,
+                label=None,
+                oid=None)
+            top.annotations.add(sub)
+        if self.intervals:
+            intervals_annote = dendropy.Annotation(
+                name="INSDSeq_intervals",
+                value=None,
+                datatype_hint=None,
+                name_prefix=GENBANK_ANNOTATION_PREFIX,
+                namespace=GENBANK_ANNOTATION_NAMESPACE,
+                name_is_prefixed=False,
+                is_attribute=False,
+                annotate_as_reference=True,
+                is_hidden=False,
+                label=None,
+                oid=None)
+            top.annotations.add(intervals_annote)
+            for interval in self.intervals:
+                interval_annote = dendropy.Annotation(
+                    name="INSDInterval",
+                    value=None,
+                    datatype_hint=None,
+                    name_prefix=GENBANK_ANNOTATION_PREFIX,
+                    namespace=GENBANK_ANNOTATION_NAMESPACE,
+                    name_is_prefixed=False,
+                    is_attribute=False,
+                    annotate_as_reference=True,
+                    is_hidden=False,
+                    label=None,
+                    oid=None)
+                intervals_annote.annotations.add(interval_annote)
+                for item in [
+                        ("begin", "INSDInterval_from"),
+                        ("end", "INSDInterval_to"),
+                        ("accession", "INSDInterval_accession"),
+                        ]:
+                    value = getattr(self, item[0])
+                    if not value:
+                        continue
+                    sub = dendropy.Annotation(
+                        name=item[1],
+                        value=value,
+                        datatype_hint=None,
+                        name_prefix=GENBANK_ANNOTATION_PREFIX,
+                        namespace=GENBANK_ANNOTATION_NAMESPACE,
+                        name_is_prefixed=False,
+                        is_attribute=False,
+                        annotate_as_reference=False,
+                        is_hidden=False,
+                        label=None,
+                        oid=None)
+                    interval_annote.annotations.add(interval_annote)
+            if self.qualifiers:
+                top.annotations.add(self.qualifiers.as_annotation())
+        return top
 
 class GenBankAccessionFeatures(list):
 
@@ -480,7 +626,7 @@ class GenBankAccessionFeatures(list):
 
     def as_annotation(self):
         top = dendropy.Annotation(
-                name="features",
+                name="INSDSeq_feature-table",
                 value=None,
                 datatype_hint=None,
                 name_prefix=GENBANK_ANNOTATION_PREFIX,
@@ -492,19 +638,7 @@ class GenBankAccessionFeatures(list):
                 label=None,
                 oid=None)
         for feature in self:
-            sub = dendropy.Annotation(
-                name=feature.key,
-                value="x",
-                datatype_hint=None,
-                name_prefix=GENBANK_ANNOTATION_PREFIX,
-                namespace=GENBANK_ANNOTATION_NAMESPACE,
-                name_is_prefixed=False,
-                is_attribute=False,
-                annotate_as_reference=False,
-                is_hidden=False,
-                label=None,
-                oid=None)
-            top.annotations.add(sub)
+            top.annotations.add(feature.as_annotation())
         return top
 
 class GenBankAccessionOtherSeqIds(dict):
@@ -682,34 +816,34 @@ class GenBankAccessionRecord(object):
                 is_hidden=False,
                 label=None,
                 oid=None)
-        for attr_name in [
-                "locus",
-                "length",
-                "moltype",
-                "topology",
-                "strandedness",
-                "division",
-                "update_date",
-                "create_date",
-                "definition",
-                "primary_accession",
-                "accession_version",
-                "gi",
-                "request_key",
-                "other_seq_ids",
-                "source",
-                "organism",
-                "taxonomy",
-                "references",
-                "features",
+        for item in [
+                ("gi", "gi"),
+                ("request_key", "requestKey"),
+                ("locus", "INSDSeq_locus"),
+                ("length", "INSDSeq_length"),
+                ("moltype", "INSDSeq_moltype"),
+                ("topology", "INSDSeq_topology"),
+                ("strandedness", "INSDSeq_strandedness"),
+                ("division", "INSDSeq_division"),
+                ("update_date", "INSDSeq_update-date"),
+                ("create_date", "INSDSeq_create-date"),
+                ("definition", "INSDSeq_definition"),
+                ("primary_accession", "INSDSeq_primary-accesison"),
+                ("accession_version", "INSDSeq_accession-version"),
+                ("other_seq_ids",  "INSDSeq_hter-seqids"),
+                ("source", "INSDSeq_source"),
+                ("organism", "INSDSeq_organism"),
+                ("taxonomy", "INSDSeq_taxonomy"),
+                ("references", "INSDSeq_references"),
+                ("features", "INSDSeq_feature-table"),
                 ]:
-            attr = getattr(self, attr_name)
-            if hasattr(attr, "as_annotation"):
-                a = attr.as_annotation()
-            else:
+            value = getattr(self, item[0])
+            if hasattr(value, "as_annotation") and value:
+                a = value.as_annotation()
+            elif value is not None:
                 a = dendropy.Annotation(
-                    name=attr_name,
-                    value=attr,
+                    name=item[1],
+                    value=value,
                     datatype_hint=None,
                     name_prefix=GENBANK_ANNOTATION_PREFIX,
                     namespace=GENBANK_ANNOTATION_NAMESPACE,
