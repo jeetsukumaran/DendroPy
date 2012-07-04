@@ -159,6 +159,8 @@ rst_epilog = """
 .. _RAxML: http://sco.h-its.org/exelixis/software.html
 .. |SeqGen| replace:: Seq-Gen
 .. _SeqGen: http://tree.bio.ed.ac.uk/software/seqgen/
+.. |GenBank| replace:: GenBank
+.. _GenBank: http://www.ncbi.nlm.nih.gov/genbank/
 """
 
 _source_archive_url = """
