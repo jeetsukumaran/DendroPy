@@ -3,7 +3,7 @@ GenBank Genetic Sequence Databases
 **********************************
 
 The :mod:`~dendropy.interop.genbank` module provides the classes and methods to download sequences from |GenBank| and instantiate them into |DendroPy| phylogenetic data objects.
-Three classes are provided, all of which have an identical interface, varying only in that type of data retrieved:
+Three classes are provided, all of which have an identical interface, varying only in the type of data retrieved:
 
    :class:`~dendropy.interop.genbank.GenBankDna`
 
@@ -70,15 +70,15 @@ Acquiring Data from GeneBank
 
 The :class:`~dendropy.interop.genbank.GenBankDna`, :class:`~dendropy.interop.genbank.GenBankRna`, and :class:`~dendropy.interop.genbank.GenBankProtein` classes provide for the downloading and management of DNA, RNA, and protein (AA) sequences from |GenBank|.
 The first two of these query the "nucleotide" or "nuccore" database, while the last queries the "protein" database.
-The constructors for these classes accept the following arguments:
+The constructors of these classes accept the following arguments:
 
     ``ids``
 
-        A list of accession identifiers of GI numbers to be downloaded. E.g. "``ids=['EU105474', 'EU105475']``",  "``ids=['158930545', 'EU105475']``", or  "``ids=['158930545', '158930546']``".
+        A list of accession identifiers of GI numbers of the records to be downloaded. E.g. "``ids=['EU105474', 'EU105475']``",  "``ids=['158930545', 'EU105475']``", or  "``ids=['158930545', '158930546']``".
         If "``prefix``" is specified, this string will be pre-pended to all values in the list.
 
     ``id_range``
-        A tuple of *integers* that specify the first and last values (inclusive) of accession or GI numbers to be downloaded. If "``prefix``" is specified, this string will be prepended to all numbers in this range.
+        A tuple of *integers* that specify the first and last values (inclusive) of accession or GI numbers of the records to be downloaded. If "``prefix``" is specified, this string will be prepended to all numbers in this range.
         Thus specifying "``id_range=(158930545, 158930550)``" is exactly equivalent to specifying "``ids=[158930545, 158930546, 158930547, 158930548, 158930549, 158930550]``", while specifying "``id_range=(105474, 105479), prefix="EU"``" is exactly equivalent tp specifying "``ids=[EU105474, EU105475, EU105476, EU105477, EU105478, EU105479]``".
 
 
@@ -99,6 +99,20 @@ So, for example, the following are all different ways of instantiating |GenBank|
     >>> gb_dna = genbank.GenBankDna(id_range=(105474, 105478), prefix="EU")
     >>> gb_dna = genbank.GenBankDna(id_range=(158930545, 158930546))
 
-You can add more records to an existing instance of :class:`~dendropy.interop.genbank.GenBankDna`, :class:`~dendropy.interop.genbank.GenBankRna`, or :class:`~dendropy.interop.genbank.GenBankProtein` objects by using the "``acquire``" method.
-This method takes the same arguments as the constructor of these objects, namely: "``ids``", "``id_range``", "``prefix``", and "``verify``".
-For example
+You can add more records to an existing instance of :class:`~dendropy.interop.genbank.GenBankDna`, :class:`~dendropy.interop.genbank.GenBankRna`, or :class:`~dendropy.interop.genbank.GenBankProtein` objects by using the "``acquire``" or "``acquire_range``" methods.
+The "``acquire``" method takes a sequence of accession identifiers or GI numbers for the first argument ("``ids``"), and, in addition an optional string prefix to be prepended can be supplied using the second argument, "``prefix``", while verification can be disabled by specifying |False| for the third argument, "``verify``".
+The "``acquire_range``" method takes two mandatory *integer* arguments: the first and last value of the range of accession or GI numbers of the records to be downloaded.
+As with the other method, a string prefix to be prepended can be optionally supplied using the argument "``prefix``", while verification can be disabled by specifying "``verify=|False|``".
+For example::
+
+
+    >>> from dendropy.interop import genbank
+    >>> gb_dna = genbank.GenBankDna(['EU105474', 'EU105475'])
+    >>> print len(gb_dna)
+    >>> gb_dna.acquire([158930547, 158930548])
+    >>> print len(gb_dna)
+    >>> gb_dna.acquire_range(105479, 105480, prefix="EU")
+    >>> print len(gb_dna)
+    2
+    4
+    6
