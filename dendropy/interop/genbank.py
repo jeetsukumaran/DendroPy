@@ -769,7 +769,7 @@ class GenBankAccessionRecord(object):
         self.organism = None
         self.taxonomy = None
         self.references = GenBankAccessionReferences()
-        self.features = GenBankAccessionFeatures()
+        self.feature_table = GenBankAccessionFeatures()
         self.sequence_text = None
         if xml is not None:
             self.parse_xml(xml)
@@ -838,7 +838,7 @@ class GenBankAccessionRecord(object):
         for features in xml.findall("INSDSeq_feature-table"):
             for feature_xml in features.findall("INSDFeature"):
                 feature = GenBankAccessionFeature(feature_xml)
-                self.features.append(feature)
+                self.feature_table.append(feature)
         self.sequence_text = xml.findtext("INSDSeq_sequence")
 
     def compose_fasta_defline(self):
@@ -946,7 +946,7 @@ class GenBankAccessionRecord(object):
                 ("organism", "INSDSeq_organism"),
                 ("taxonomy", "INSDSeq_taxonomy"),
                 ("references", "INSDSeq_references"),
-                ("features", "INSDSeq_feature-table"),
+                ("feature_table", "INSDSeq_feature-table"),
                 ]:
             value = getattr(self, item[0])
             if hasattr(value, "as_annotation") and value:

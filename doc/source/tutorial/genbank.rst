@@ -25,7 +25,8 @@ The basic way to retrieve sequence data is create a
 :class:`~dendropy.interop.genbank.GenBankDna`,
 :class:`~dendropy.interop.genbank.GenBankRna`, or
 :class:`~dendropy.interop.genbank.GenBankProtein` object, and pass in a list of
-identifiers to be retrieved using the "``ids``"  argument::
+identifiers to be retrieved using the "``ids``"  argument.
+The value of this argument should be a container with either GenBank accession identifiers or GI numbers::
 
 
     >>> from dendropy.interop import genbank
@@ -36,6 +37,8 @@ identifiers to be retrieved using the "``ids``"  argument::
     gi|158930546|gb|EU105475.1| Homo sapiens Arara non-coding region T864 genomic sequence
 
 The records are stored as :class:`~dendropy.interop.genbank.GenBankAccessionRecord` objects.
+These records store the *full* information available in a |GenBank| record, including the references, feature table, qualifiers, and other details, and these are available as attributes of the :class:`~dendropy.interop.genbank.GenBankAccessionRecord` objects (e.g., "``primary_accession``", "``taxonomy``", "``feature_table``" and so on).
+
 To generate a |CharacterMatrix| object from the collection of sequences, call the :meth:`~dendropy.interop.genbank.GenBankDna.generate_char_matrix`  method::
 
     >>> from dendropy.interop import genbank
@@ -60,4 +63,42 @@ To generate a |CharacterMatrix| object from the collection of sequences, call th
     ;
     END;
 
+As can be seen, by default the primary accession identifiers are set as the taxon labels. This, and many other aspects of the character matrix generation, including annotation of taxa and sequences, can be customized, as discussed in detail below.
 
+Acquiring Data from GeneBank
+============================
+
+The :class:`~dendropy.interop.genbank.GenBankDna`, :class:`~dendropy.interop.genbank.GenBankRna`, and :class:`~dendropy.interop.genbank.GenBankProtein` classes provide for the downloading and management of DNA, RNA, and protein (AA) sequences from |GenBank|.
+The first two of these query the "nucleotide" or "nuccore" database, while the last queries the "protein" database.
+The constructors for these classes accept the following arguments:
+
+    ``ids``
+
+        A list of accession identifiers of GI numbers to be downloaded. E.g. "``ids=['EU105474', 'EU105475']``",  "``ids=['158930545', 'EU105475']``", or  "``ids=['158930545', '158930546']``".
+        If "``prefix``" is specified, this string will be pre-pended to all values in the list.
+
+    ``id_range``
+        A tuple of *integers* that specify the first and last values (inclusive) of accession or GI numbers to be downloaded. If "``prefix``" is specified, this string will be prepended to all numbers in this range.
+        Thus specifying "``id_range=(158930545, 158930550)``" is exactly equivalent to specifying "``ids=[158930545, 158930546, 158930547, 158930548, 158930549, 158930550]``", while specifying "``id_range=(105474, 105479), prefix="EU"``" is exactly equivalent tp specifying "``ids=[EU105474, EU105475, EU105476, EU105477, EU105478, EU105479]``".
+
+
+    ``prefix``
+        This string will be prepended to all values resulting from the "``ids``" and "``id_range``".
+
+
+    ``verify``
+        By default, the results of the download are checked to make sure there is a one-to-one correspondence between requested id's and retrieved records. Setting "``verify=False``" skips this checking.
+
+So, for example, the following are all different ways of instantiating |GenBank| resource data store::
+
+    >>> from dendropy.interop import genbank
+    >>> gb_dna = genbank.GenBankDna(ids=['EU105474', 'EU105475'])
+    >>> gb_dna = genbank.GenBankDna(ids=['158930545', 'EU105475'])
+    >>> gb_dna = genbank.GenBankDna(ids=['158930545', '158930546'])
+    >>> gb_dna = genbank.GenBankDna(ids=['105474', '105475'], prefix="EU")
+    >>> gb_dna = genbank.GenBankDna(id_range=(105474, 105478), prefix="EU")
+    >>> gb_dna = genbank.GenBankDna(id_range=(158930545, 158930546))
+
+You can add more records to an existing instance of :class:`~dendropy.interop.genbank.GenBankDna`, :class:`~dendropy.interop.genbank.GenBankRna`, or :class:`~dendropy.interop.genbank.GenBankProtein` objects by using the "``acquire``" method.
+This method takes the same arguments as the constructor of these objects, namely: "``ids``", "``id_range``", "``prefix``", and "``verify``".
+For example
