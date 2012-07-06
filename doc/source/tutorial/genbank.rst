@@ -79,7 +79,7 @@ The constructors of these classes accept the following arguments:
 
     ``id_range``
         A tuple of *integers* that specify the first and last values (inclusive) of accession or GI numbers of the records to be downloaded. If "``prefix``" is specified, this string will be prepended to all numbers in this range.
-        Thus specifying "``id_range=(158930545, 158930550)``" is exactly equivalent to specifying "``ids=[158930545, 158930546, 158930547, 158930548, 158930549, 158930550]``", while specifying "``id_range=(105474, 105479), prefix="EU"``" is exactly equivalent tp specifying "``ids=[EU105474, EU105475, EU105476, EU105477, EU105478, EU105479]``".
+        Thus specifying "``id_range=(158930545, 158930550)``" is exactly equivalent to specifying "``ids=[158930545, 158930546, 158930547, 158930548, 158930549, 158930550]``", while specifying "``id_range=(105474, 105479), prefix="EU"``" is exactly equivalent tp specifying "``ids=["EU105474", "EU105475", "EU105476", "EU105477", "EU105478", "EU105479"]``".
 
 
     ``prefix``
@@ -116,3 +116,81 @@ For example::
     2
     4
     6
+
+Accessing GenBank Records
+=========================
+
+The |GenBank| records accumulated in :class:`~dendropy.interop.genbank.GenBankDna`, :class:`~dendropy.interop.genbank.GenBankRna`, and :class:`~dendropy.interop.genbank.GenBankProtein` objects are represented by collections of :class:`~dendropy.interop.genbank.GenBankAccessionRecord` objects.
+Each of these :class:`~dendropy.interop.genbank.GenBankAccessionRecord` objects represent the full information from the |GenBank| source as a rich Python object.
+
+    >>> from dendropy.interop import genbank
+    >>> gb_dna = genbank.GenBankDna(['EU105474', 'EU105475'])
+    >>> for gb_rec in gb_dna:
+    ...    print gb_rec.gi
+    ...    print gb_rec.locus
+    ...    print gb_rec.length
+    ...    print gb_rec.moltype
+    ...    print gb_rec.topology
+    ...    print gb_rec.strandedness
+    ...    print gb_rec.division
+    ...    print gb_rec.update_date
+    ...    print gb_rec.create_date
+    ...    print gb_rec.definition
+    ...    print gb_rec.primary_accession
+    ...    print gb_rec.accession_version
+    ...    print "(other seq ids)"
+    ...    for osi_key, osi_value in gb_rec.other_seq_ids.items():
+    ...        print "    ", osi_key, osi_value
+    ...    print gb_rec.source
+    ...    print gb_rec.organism
+    ...    print gb_rec.taxonomy
+    ...    print "(references)"
+    ...    for ref in gb_rec.references:
+    ...        print "    ", ref.number , ref.position , ref.authors , ref.consrtm , ref.title , ref.journal , ref.medline_id , ref.pubmed_id , ref.remark
+    ...    print "(feature_table)"
+    ...    for feature in gb_rec.feature_table:
+    ...        print "    ", feature.key, feature.location
+    ...        for qualifier in feature.qualifiers:
+    ...            print "        ", qualifier.name, qualifier.value
+    ...    print gb_rec.sequence_text
+    158930545
+    EU105474
+    494
+    DNA
+    linear
+    double
+    PRI
+    27-NOV-2007
+    27-NOV-2007
+    Homo sapiens Ache non-coding region T864 genomic sequence
+    EU105474
+    EU105474.1
+    (other seq ids)
+        gb EU105474.1
+        gi 158930545
+    Homo sapiens (human)
+    Homo sapiens
+    Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Eutel...
+    (references)
+        1 1..494 [] None Statistical evaluation of alternativ...
+        2 1..494 [] None Direct Submission Submitted (17-AUG-...
+    (feature_table)
+        source 1..494
+            organism Homo sapiens
+            mol_type genomic DNA
+            db_xref taxon:9606
+            chromosome 18
+            note Ache
+        misc_feature 1..494
+            note non-coding region T864
+    tctcttatcaaactagctaaatttttacctctcaaaggcaagtgtctcagggaatgag...
+    .
+    .
+    .
+    (etc.)
+
+Generating Character Matrix Objects from GenBank Data
+=====================================================
+
+The "``generate_char_matrix()``" method of :class:`~dendropy.interop.genbank.GenBankDna`, :class:`~dendropy.interop.genbank.GenBankRna`, and :class:`~dendropy.interop.genbank.GenBankProtein` objects creates and returns a |CharacterMatrix| object of the appriopriate type out of the data collected in them.
+
