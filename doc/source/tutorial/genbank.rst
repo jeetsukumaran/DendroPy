@@ -260,3 +260,61 @@ Specifying a Custom Taxon-Discovery Function
 Full control over the |Taxon| object assignment process is given by using the "``gb_to_taxon_func``" argument.
 This should be used to specify a function that takes a :class:`~dendropy.interop.genbank.GenBankAccessionRecord` object and returns the |Taxon| object to be assigned to the sequence.
 The specification of a |TaxonSet| object passed using the "``taxon_set``" argument is also required, so that this can be assigned to the |CharacterMatrix| object.
+
+A simple example that illustrates the usage of the "``gb_to_taxon_func``" argument by creating a custom label::
+
+    #! /usr/bin/env python
+
+    import dendropy
+    from dendropy.interop import genbank
+
+    def gb_to_taxon(gb):
+        locality = gb.feature_table.find("source").qualifiers.find("note").value
+        label = "GI" + gb.gi + "." + locality
+        taxon = dendropy.Taxon(label=label)
+        return taxon
+
+    taxon_set = dendropy.TaxonSet()
+
+    gb_dna = genbank.GenBankDna(ids=[158930545, 'EU105475'])
+    char_matrix = gb_dna.generate_char_matrix(
+        taxon_set=taxon_set,
+        gb_to_taxon_func=gb_to_taxon)
+    print [t.label for t in char_matrix.taxon_set]
+
+which results in::
+
+    ['GI158930545.Ache', 'GI158930546.Arara']
+
+A more complex case might be where you may already have a |TaxonSet| with existing |Taxon| objects that you may want to associate with the sequences.
+The following illustrates how to do this::
+
+
+    #! /usr/bin/env python
+
+    import dendropy
+    from dendropy.interop import genbank
+
+    tree = dendropy.Tree.get_from_string(
+        "(Ache, (Arara, (Bribri, (Guatuso, Guaymi))))",
+        "newick")
+    def gb_to_taxon(gb):
+        locality = gb.feature_table.find("source").qualifiers.find("note").value
+        taxon = tree.taxon_set.get_taxon(label=locality)
+        assert taxon is not None
+        return taxon
+
+    gb_ids = [158930545, 158930546, 158930547, 158930548, 158930549]
+
+    gb_dna = genbank.GenBankDna(ids=gb_ids)
+    char_matrix = gb_dna.generate_char_matrix(
+        taxon_set=tree.taxon_set,
+        gb_to_taxon_func=gb_to_taxon)
+    print [t.label for t in char_matrix.taxon_set]
+
+which results in::
+
+    ['Ache', 'Arara', 'Bribri', 'Guatuso', 'Guaymi']
+
+The important thing to note here is the the |Taxon| objects in the |DnaCharacterMatrix| do not just have the same labels as the |Taxon| object in the |Tree|, "``tree``", but actually *are* the same objects (i.e., reference the same operational taxonomic units within |DendroPy|).
+
