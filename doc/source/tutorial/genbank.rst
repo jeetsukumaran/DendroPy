@@ -311,10 +311,65 @@ The following illustrates how to do this::
         taxon_set=tree.taxon_set,
         gb_to_taxon_func=gb_to_taxon)
     print [t.label for t in char_matrix.taxon_set]
+    print tree.taxon_set is char_matrix.taxon_set
+    for taxon in tree.taxon_set:
+        print "{}: {}".format(
+            taxon.label,
+            char_matrix[taxon].symbols_as_string()[:10])
 
 which results in::
 
+    True
+    Ache: TCTCTTATCA
+    Arara: TCTCTTATCA
+    Bribri: TCTCTTATCA
+    Guatuso: TCTCTTATCA
+    Guaymi: TCTCTTATCA
     ['Ache', 'Arara', 'Bribri', 'Guatuso', 'Guaymi']
 
 The important thing to note here is the the |Taxon| objects in the |DnaCharacterMatrix| do not just have the same labels as the |Taxon| object in the |Tree|, "``tree``", but actually *are* the same objects (i.e., reference the same operational taxonomic units within |DendroPy|).
+
+Adding the GenBank Record as an Attribute
+-----------------------------------------
+
+It is sometimes useful to maintain a handle on the original GenBank record in the |CharacterMatrix| resulting from "``generate_char_matrix()``".
+The "``set_taxon_attr``"  and "``set_seq_attr``" arguments of the "``generate_char_matrix()``" method allow you to this.
+The values supplied to these arguments should be strings that specify the name of the attribute that will be created on the |Taxon| or |CharacterDataVector| objects, respectively.
+The value of this attribute will be the :class:`~dendropy.interop.genbank.GenBankAccessionRecord` that underlies the |Taxon| or |CharacterDataVector| sequence.
+For example::
+
+    #! /usr/bin/env python
+
+    import dendropy
+    from dendropy.interop import genbank
+    gb_dna = genbank.GenBankDna(ids=[158930545, 'EU105475'])
+    char_matrix = gb_dna.generate_char_matrix(set_taxon_attr="gb_rec")
+    for taxon in char_matrix.taxon_set:
+        print "Dat for taxon '{}' is based on GenBank record: {}".format(
+            taxon.label,
+            taxon.gb_rec.definition)
+
+will result in::
+
+    Data for taxon '158930545' is based on GenBank record: Homo sapiens Ache non-coding region T864 genomic sequence
+    Data for taxon 'EU105475' is based on GenBank record: Homo sapiens Arara non-coding region T864 genomic sequence
+
+Alternatively, the following::
+
+    #! /usr/bin/env python
+
+    import dendropy
+    from dendropy.interop import genbank
+    gb_dna = genbank.GenBankDna(ids=[158930545, 'EU105475'])
+    char_matrix = gb_dna.generate_char_matrix(set_seq_attr="gb_rec")
+    for sidx, sequence in enumerate(char_matrix.vectors()):
+        print "Sequence {} ('{}') is based on GenBank record: {}".format(
+            sidx+1,
+            char_matrix.taxon_set[sidx].label,
+            sequence.gb_rec.defline)
+
+will result in::
+
+    Sequence 1 ('158930545') is based on GenBank record: gi|158930545|gb|EU105474.1| Homo sapiens Ache non-coding region T864 genomic sequence
+    Sequence 2 ('EU105475') is based on GenBank record: gi|158930546|gb|EU105475.1| Homo sapiens Arara non-coding region T864 genomic sequence
 
