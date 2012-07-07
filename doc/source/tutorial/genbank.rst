@@ -63,7 +63,7 @@ To generate a |CharacterMatrix| object from the collection of sequences, call th
     ;
     END;
 
-As can be seen, by default the primary accession identifiers are set as the taxon labels. This, and many other aspects of the character matrix generation, including annotation of taxa and sequences, can be customized, as discussed in detail below.
+As can be seen, by default the taxon labels assigned to the sequences are set to the identifier used to request the sequences. This, and many other aspects of the character matrix generation, including annotation of taxa and sequences, can be customized, as discussed in detail below.
 
 Acquiring Data from GeneBank
 ============================
@@ -152,7 +152,7 @@ Each of these :class:`~dendropy.interop.genbank.GenBankAccessionRecord` objects 
     ...        print "    ", feature.key, feature.location
     ...        for qualifier in feature.qualifiers:
     ...            print "        ", qualifier.name, qualifier.value
-    ...    print gb_rec.sequence_text
+    ...
     158930545
     EU105474
     494
@@ -183,7 +183,6 @@ Each of these :class:`~dendropy.interop.genbank.GenBankAccessionRecord` objects 
             note Ache
         misc_feature 1..494
             note non-coding region T864
-    tctcttatcaaactagctaaatttttacctctcaaaggcaagtgtctcagggaatgag...
     .
     .
     .
@@ -192,5 +191,72 @@ Each of these :class:`~dendropy.interop.genbank.GenBankAccessionRecord` objects 
 Generating Character Matrix Objects from GenBank Data
 =====================================================
 
-The "``generate_char_matrix()``" method of :class:`~dendropy.interop.genbank.GenBankDna`, :class:`~dendropy.interop.genbank.GenBankRna`, and :class:`~dendropy.interop.genbank.GenBankProtein` objects creates and returns a |CharacterMatrix| object of the appriopriate type out of the data collected in them.
+The "``generate_char_matrix()``" method of :class:`~dendropy.interop.genbank.GenBankDna`, :class:`~dendropy.interop.genbank.GenBankRna`, and :class:`~dendropy.interop.genbank.GenBankProtein` objects creates and returns a |CharacterMatrix| object of the appropriate type out of the data collected in them.
+When called without any arguments, it generates a new |TaxonSet| block, creating one new |Taxon| object for every sequence in the collection with a label corresponding to the identifier used to request the sequence::
 
+    >>> from dendropy.interop import genbank
+    >>> gb_dna = genbank.GenBankDna(ids=[158930545, 'EU105475'])
+    >>> char_matrix = gb_dna.generate_char_matrix()
+    >>> print char_matrix.as_string("nexus")
+    #NEXUS
+
+    BEGIN TAXA;
+
+        DIMENSIONS NTAX=2;
+        TAXLABELS
+            158930545
+            EU105475
+    ;
+    END;
+
+    BEGIN CHARACTERS;
+        DIMENSIONS  NCHAR=494;
+        FORMAT DATATYPE=DNA GAP=- MISSING=? MATCHCHAR=.;
+        MATRIX
+    158930545    TCTCTTATCAAACTA...
+    EU105475     TCTCTTATCAAACTA...
+        ;
+    END;
+
+
+    BEGIN SETS;
+    END;
+
+
+Customizing/Controlling Sequences Taxa
+--------------------------------------
+
+The taxon assignment can be controlled in one of two ways:
+
+    1. Using the "``label_components``" and optionally the "``label_component_separator``" arguments.
+    2. Specifying a custom function using the "``gb_to_taxon_func``" argument that takes a :class:`~dendropy.interop.genbank.GenBankAccessionRecord` object and returns the |Taxon| object to be assigned to the sequence; this approach requires specification of a |TaxonSet| object passed using the "``taxon_set``" argument.
+
+Specifying a Custom Label for Sequence Taxat
+............................................
+
+The "``label_components``" and the "``label_component_separator``" arguments allow for customization of the taxon labels of the |Taxon| objects created for each sequence.
+The "``label_components``" argument should be assigned an ordered container (e.g., a list) of strings that correspond to attributes of objects of the :class:`~dendropy.interop.genbank.GenBankAccessionRecord` class.
+The values of these attributes will be concatenated to compose the |Taxon| object label.
+By default, the components will be separated by spaces, but you can override this by passing the string to be used by the "``label_component_separator``" argument.
+For example::
+
+
+    >>> from dendropy.interop import genbank
+    >>> gb_dna = genbank.GenBankDna(ids=[158930545, 'EU105475'])
+    >>> char_matrix = gb_dna.generate_char_matrix(
+    ... label_components=["accession", "organism", ],
+    ... label_component_separator="_")
+    >>> print [t.label for t in char_matrix.taxon_set]
+    ['EU105474_Homo_sapiens', 'EU105475_Homo_sapiens']
+    >>> char_matrix = gb_dna.generate_char_matrix(
+    ... label_components=["organism", "moltype", "gi"],
+    ... label_component_separator=".")
+    >>> print [t.label for t in char_matrix.taxon_set]
+    ['Homo.sapiens.DNA.158930545', 'Homo.sapiens.DNA.158930546']
+
+Specifying a Custom Taxon-Discovery Function
+............................................
+
+Full control over the |Taxon| object assignment process is given by using the "``gb_to_taxon_func``" argument.
+This should be used to specify a function that takes a :class:`~dendropy.interop.genbank.GenBankAccessionRecord` object and returns the |Taxon| object to be assigned to the sequence.
+The specification of a |TaxonSet| object passed using the "``taxon_set``" argument is also required, so that this can be assigned to the |CharacterMatrix| object.

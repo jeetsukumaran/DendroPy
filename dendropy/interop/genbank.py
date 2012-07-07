@@ -221,11 +221,10 @@ class GenBankResourceStore(object):
                 verify=verify)
 
     def generate_char_matrix(self,
-            relabel_taxa=False,
             label_components=None,
             label_component_separator=" ",
             taxon_set=None,
-            id_to_taxon_map=None,
+            gb_to_taxon_func=None,
             add_full_annotation_to_taxa=False,
             add_ref_annotation_to_taxa=False,
             add_full_annotation_to_seqs=False,
@@ -233,20 +232,20 @@ class GenBankResourceStore(object):
             set_taxon_attr=None,
             set_seq_attr=None,
             matrix_label=None):
-        if id_to_taxon_map is not None and taxon_set is None:
-            raise TypeError("Cannot specify 'id_to_taxon_map' without 'taxon_set'")
-        if id_to_taxon_map is None:
-            id_to_taxon_map = {}
+        if gb_to_taxon_func is not None and taxon_set is None:
+            raise TypeError("Cannot specify 'gb_to_taxon_func' without 'taxon_set'")
         if taxon_set is None:
             taxon_set = dendropy.TaxonSet()
         data_str = []
         char_matrix = self.char_matrix_type(label=matrix_label, taxon_set=taxon_set)
         for gb_idx, gb_rec in enumerate(self._recs):
             taxon = None
-            if gb_rec.request_key in id_to_taxon_map:
-                taxon = id_to_taxon_map[gb_rec.request_key]
+            # if gb_rec.request_key in id_to_taxon_map:
+            #     taxon = id_to_taxon_map[gb_rec.request_key]
+            if gb_to_taxon_func is not None:
+                taxon = gb_to_taxon_func(gb_rec)
             else:
-                if relabel_taxa:
+                if label_components is not None:
                     label = gb_rec.compose_taxon_label(
                             components=label_components,
                             separator=label_component_separator)
