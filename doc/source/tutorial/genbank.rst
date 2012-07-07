@@ -223,16 +223,16 @@ When called without any arguments, it generates a new |TaxonSet| block, creating
     END;
 
 
-Customizing/Controlling Sequences Taxa
---------------------------------------
+Customizing/Controlling Sequence Taxa
+-------------------------------------
 
 The taxon assignment can be controlled in one of two ways:
 
     1. Using the "``label_components``" and optionally the "``label_component_separator``" arguments.
     2. Specifying a custom function using the "``gb_to_taxon_func``" argument that takes a :class:`~dendropy.interop.genbank.GenBankAccessionRecord` object and returns the |Taxon| object to be assigned to the sequence; this approach requires specification of a |TaxonSet| object passed using the "``taxon_set``" argument.
 
-Specifying a Custom Label for Sequence Taxat
-............................................
+Specifying a Custom Label for Sequence Taxa
+...........................................
 
 The "``label_components``" and the "``label_component_separator``" arguments allow for customization of the taxon labels of the |Taxon| objects created for each sequence.
 The "``label_components``" argument should be assigned an ordered container (e.g., a list) of strings that correspond to attributes of objects of the :class:`~dendropy.interop.genbank.GenBankAccessionRecord` class.
