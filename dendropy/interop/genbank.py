@@ -36,6 +36,9 @@ GENBANK_ANNOTATION_NAMESPACE = "http://www.ncbi.nlm.nih.gov/dtd/INSD_INSDSeq.mod
 ## GenBank Resources
 
 class GenBankResourceStore(object):
+    """
+    Base GenBank data acquisition and manager class.
+    """
 
     def parse_xml(**kwargs):
         if "stream" in kwargs and "string" in kwargs:
@@ -104,6 +107,17 @@ class GenBankResourceStore(object):
             prefix=None,
             verify=True,
             email=None):
+        """
+        Initializes a GenBank data resource manager class, and optionally
+        populates it with data from GenBank.
+
+            :db: database (e.g. "nucleotide" or "protein")
+            :ids: sequence of GenBank accession identifiers or GI numbers.
+            :id_range: tuple of integers indicating first and last (inclusive) range of identifiers to download.
+            :prefix: string to be prepended to values in :ids: or generated from :id_range:
+            :verify: check for one-to-one correspondence between requested id's and downloaded records
+
+        """
         self.db = db
         self.email = email
         self._recs = []
