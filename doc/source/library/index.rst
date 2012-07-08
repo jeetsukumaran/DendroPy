@@ -16,4 +16,4 @@ DendroPy Library Reference
     treemanip.rst
     treesim.rst
     continuous.rst
-    ncbi.rst
+    genbank.rst
