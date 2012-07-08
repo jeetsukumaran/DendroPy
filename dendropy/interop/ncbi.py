@@ -18,8 +18,12 @@
 
 """
 Wrappers for interacting with NCBI databases.
+*** DEPRECATED: use dendropy.interop.genbank.GenBankDna,
+dendropy.interop.genbank.GenBankRna, or
+dendropy.interop.genbank.GenBankProtein instead ***
 """
 
+import warnings
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 
@@ -193,6 +197,9 @@ class Entrez(object):
             exclude_gbnum_from_label=False,
             sort_taxa_by_label=False):
         """
+        *** DEPRECATED: use dendropy.interop.genbank.GenBankDna,
+        dendropy.interop.genbank.GenBankRna, or
+        dendropy.interop.genbank.GenBankProtein instead ***
         Instantiates a broker that queries NCBI and returns data.  If
         ``generate_labels`` is ``True``, then appropriate labels for sequences
         will be automatically composed for each sequence based on the GenBank
@@ -204,6 +211,7 @@ class Entrez(object):
         label. ``sort_taxa_by_label`` specifies whether the sequences should be
         sorted by their final label values.
         """
+        warnings.warn("This class (and parent module) has been deprecated. Use the classes provided in 'dendropy.interop.genbak' instead", DeprecationWarning)
         self.generate_labels = generate_labels
         self.label_num_desc_components = label_num_desc_components
         self.label_separator = label_separator

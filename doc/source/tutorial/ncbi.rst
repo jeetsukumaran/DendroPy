@@ -2,6 +2,13 @@
 NCBI (National Center for Biotechnology Information) Databases
 **************************************************************
 
+.. deprecated:: 3.12.0
+    This module has been deprecated. Use the ":doc:`genbank module </tutorial/genbank>`" instead.
+
+
+.. warning::
+    This module has been deprecated. For currently-supported approaches to download and generate character matrices from |GenBank| data, see ":doc:`Working with GenBank Molecular Sequence Databases </tutorial/genbank>`".
+
 The :mod:`~dendropy.interop.ncbi` module provides the :class:`~dendropy.interop.ncbi.Entrez` class, which wraps up some basic querying and retrieval of data from the NCBI (National Center for Biotechnology Information) life-sciences databases.
 
 Retrieving Nucleotide Data
