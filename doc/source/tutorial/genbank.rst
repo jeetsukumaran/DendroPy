@@ -473,61 +473,93 @@ For example::
     char_matrix = gb_dna.generate_char_matrix(add_full_annotation_to_taxa=True)
     print char_matrix.as_string("nexml")
 
-will result in the following metadata markup being added as a child element of the OTU definition of the first taxon::
+will result in the following::
 
-    <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://www.ncbi.nlm.nih.gov/nucleotide/158930545" id="d4323884752" >
-        <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_locus" content="EU105474" id="d4323884880" />
-        <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_length" content="494" id="d4323884944" />
-        <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_moltype" content="DNA" id="d4323885008" />
-        <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_topology" content="linear" id="d4323901520" />
-        <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_strandedness" content="double" id="d4323901584" />
-        <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_division" content="PRI" id="d4323901648" />
-        <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_update-date" content="27-NOV-2007" id="d4323901712" />
-        <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_create-date" content="27-NOV-2007" id="d4323901776" />
-        <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_definition" content="Homo sapiens Ache non-coding region T864 genomic sequence" id="d4323901840" />
-        <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_primary-accesison" content="EU105474" id="d4323901904" />
-        <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_accession-version" content="EU105474.1" id="d4323901968" />
-        <meta xsi:type="nex:ResourceMeta" rel="genbank:otherSeqIds" id="d4323902032" >
-            <meta xsi:type="nex:LiteralMeta" property="genbank:gb" content="EU105474.1" id="d4323902160" />
-            <meta xsi:type="nex:LiteralMeta" property="genbank:gi" content="158930545" id="d4323902224" />
-        </meta>
-        <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_source" content="Homo sapiens (human)" id="d4323902096" />
-        <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_organism" content="Homo sapiens" id="d4323902288" />
-        <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_taxonomy" content="Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi; Mammalia; Eutheria; Euarchontoglires; Primates; Haplorrhini; Catarrhini; Hominidae; Homo" id="d4323902352" />
-        <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDSeq_references" id="d4323902416" >
-            <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDReference_reference" id="d4323902544" >
-                <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_reference" content="1" id="d4323902672" />
-                <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_position" content="1..494" id="d4323902736" />
-                <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_title" content="Statistical evaluation of alternative models of human evolution" id="d4323902800" />
-                <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_journal" content="Proc. Natl. Acad. Sci. U.S.A. 104 (45), 17614-17619 (2007)" id="d4323902864" />
-                <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_pubmed" content="17978179" id="d4323902928" />
-            </meta>
-            <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDReference_reference" id="d4323902608" >
-                <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_reference" content="2" id="d4323903056" />
-                <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_position" content="1..494" id="d4323903120" />
-                <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_title" content="Direct Submission" id="d4323903184" />
-                <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_journal" content="Submitted (17-AUG-2007) Laboratorio de Biologia Genomica e Molecular, Pontificia Universidade Catolica do Rio Grande do Sul, Av Ipiranga 6681, Predio 12C, Sala 172, Porto Alegre, RS 90619-900, Brazil" id="d4323903248" />
-            </meta>
-        </meta>
-        <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDSeq_feature-table" id="d4323902480" >
-            <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDSeq_feature" id="d4323903312" >
-                <meta xsi:type="nex:LiteralMeta" property="genbank:INSDFeature_key" content="source" id="d4323903440" />
-                <meta xsi:type="nex:LiteralMeta" property="genbank:INSDFeature_location" content="1..494" id="d4323903504" />
-                <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDFeature_quals" id="d4323903376" >
-                    <meta xsi:type="nex:LiteralMeta" property="genbank:organism" content="Homo sapiens" id="d4323903632" />
-                    <meta xsi:type="nex:LiteralMeta" property="genbank:mol_type" content="genomic DNA" id="d4323903696" />
-                    <meta xsi:type="nex:LiteralMeta" property="genbank:db_xref" content="taxon:9606" id="d4323903760" />
-                    <meta xsi:type="nex:LiteralMeta" property="genbank:chromosome" content="18" id="d4323903824" />
-                    <meta xsi:type="nex:LiteralMeta" property="genbank:note" content="Ache" id="d4323903888" />
+    <?xml version="1.0" encoding="ISO-8859-1"?>
+    <nex:nexml
+        version="0.9"
+        xsi:schemaLocation="http://www.nexml.org/2009 ../xsd/nexml.xsd"
+        xmlns:genbank="http://www.ncbi.nlm.nih.gov/dtd/INSD_INSDSeq.mod.dtd"
+        xmlns:dcterms="http://purl.org/dc/terms/"
+        xmlns="http://www.nexml.org/2009"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:xml="http://www.w3.org/XML/1998/namespace"
+        xmlns:nex="http://www.nexml.org/2009"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    >
+        <otus id="d4320533416">
+            <otu id="d4323884688" label="158930545">
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://www.ncbi.nlm.nih.gov/nucleotide/158930545" id="d4323884752" >
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_locus" content="EU105474" id="d4323884880" />
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_length" content="494" id="d4323884944" />
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_moltype" content="DNA" id="d4323885008" />
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_topology" content="linear" id="d4323901520" />
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_strandedness" content="double" id="d4323901584" />
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_division" content="PRI" id="d4323901648" />
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_update-date" content="27-NOV-2007" id="d4323901712" />
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_create-date" content="27-NOV-2007" id="d4323901776" />
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_definition" content="Homo sapiens Ache non-coding region T864 genomic sequence" id="d4323901840" />
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_primary-accesison" content="EU105474" id="d4323901904" />
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_accession-version" content="EU105474.1" id="d4323901968" />
+                    <meta xsi:type="nex:ResourceMeta" rel="genbank:otherSeqIds" id="d4323902032" >
+                        <meta xsi:type="nex:LiteralMeta" property="genbank:gb" content="EU105474.1" id="d4323902160" />
+                        <meta xsi:type="nex:LiteralMeta" property="genbank:gi" content="158930545" id="d4323902224" />
+                    </meta>
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_source" content="Homo sapiens (human)" id="d4323902096" />
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_organism" content="Homo sapiens" id="d4323902288" />
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_taxonomy" content="Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi; Mammalia; Eutheria; Euarchontoglires; Primates; Haplorrhini; Catarrhini; Hominidae; Homo" id="d4323902352" />
+                    <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDSeq_references" id="d4323902416" >
+                        <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDReference_reference" id="d4323902544" >
+                            <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_reference" content="1" id="d4323902672" />
+                            <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_position" content="1..494" id="d4323902736" />
+                            <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_title" content="Statistical evaluation of alternative models of human evolution" id="d4323902800" />
+                            <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_journal" content="Proc. Natl. Acad. Sci. U.S.A. 104 (45), 17614-17619 (2007)" id="d4323902864" />
+                            <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_pubmed" content="17978179" id="d4323902928" />
+                        </meta>
+                        <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDReference_reference" id="d4323902608" >
+                            <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_reference" content="2" id="d4323903056" />
+                            <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_position" content="1..494" id="d4323903120" />
+                            <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_title" content="Direct Submission" id="d4323903184" />
+                            <meta xsi:type="nex:LiteralMeta" property="genbank:INSDReference_journal" content="Submitted (17-AUG-2007) Laboratorio de Biologia Genomica e Molecular, Pontificia Universidade Catolica do Rio Grande do Sul, Av Ipiranga 6681, Predio 12C, Sala 172, Porto Alegre, RS 90619-900, Brazil" id="d4323903248" />
+                        </meta>
+                    </meta>
+                    <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDSeq_feature-table" id="d4323902480" >
+                        <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDSeq_feature" id="d4323903312" >
+                            <meta xsi:type="nex:LiteralMeta" property="genbank:INSDFeature_key" content="source" id="d4323903440" />
+                            <meta xsi:type="nex:LiteralMeta" property="genbank:INSDFeature_location" content="1..494" id="d4323903504" />
+                            <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDFeature_quals" id="d4323903376" >
+                                <meta xsi:type="nex:LiteralMeta" property="genbank:organism" content="Homo sapiens" id="d4323903632" />
+                                <meta xsi:type="nex:LiteralMeta" property="genbank:mol_type" content="genomic DNA" id="d4323903696" />
+                                <meta xsi:type="nex:LiteralMeta" property="genbank:db_xref" content="taxon:9606" id="d4323903760" />
+                                <meta xsi:type="nex:LiteralMeta" property="genbank:chromosome" content="18" id="d4323903824" />
+                                <meta xsi:type="nex:LiteralMeta" property="genbank:note" content="Ache" id="d4323903888" />
+                            </meta>
+                        </meta>
+                        <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDSeq_feature" id="d4323903568" >
+                            <meta xsi:type="nex:LiteralMeta" property="genbank:INSDFeature_key" content="misc_feature" id="d4323904016" />
+                            <meta xsi:type="nex:LiteralMeta" property="genbank:INSDFeature_location" content="1..494" id="d4323904080" />
+                            <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDFeature_quals" id="d4323903952" >
+                                <meta xsi:type="nex:LiteralMeta" property="genbank:note" content="non-coding region T864" id="d4323904208" />
+                            </meta>
+                        </meta>
+                    </meta>
                 </meta>
-            </meta>
-            <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDSeq_feature" id="d4323903568" >
-                <meta xsi:type="nex:LiteralMeta" property="genbank:INSDFeature_key" content="misc_feature" id="d4323904016" />
-                <meta xsi:type="nex:LiteralMeta" property="genbank:INSDFeature_location" content="1..494" id="d4323904080" />
-                <meta xsi:type="nex:ResourceMeta" rel="genbank:INSDFeature_quals" id="d4323903952" >
-                    <meta xsi:type="nex:LiteralMeta" property="genbank:note" content="non-coding region T864" id="d4323904208" />
+            </otu>
+            <otu id="d4323884816" label="EU105475">
+                <meta xsi:type="nex:ResourceMeta" rel="dcterms:source" href="http://www.ncbi.nlm.nih.gov/nucleotide/EU105475" id="d4324005904" >
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_locus" content="EU105475" id="d4324006032" />
+                    <meta xsi:type="nex:LiteralMeta" property="genbank:INSDSeq_length" content="494" id="d4324006096" />
+                    .
+                    .
+                    .
+                    (etc.)
                 </meta>
-            </meta>
-        </meta>
-    </meta>
+            </otu>
+        </otus>
+        .
+        .
+        .
+        (etc.)
+    </nex:nexml>
+
 
