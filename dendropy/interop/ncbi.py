@@ -273,8 +273,10 @@ class Entrez(object):
         **Note that the order of records is *not* the same as the order of ids!!!**
         """
         if prefix is not None:
-            ids = ["%s%s" % (prefix,i) for i in ids]
-        results_str = self.fetch(db='nucleotide', ids=ids, rettype='fasta')
+            id_list = ["%s%s" % (prefix,i) for i in ids]
+        else:
+            id_list = [str(i) for i in ids]
+        results_str = self.fetch(db='nucleotide', ids=id_list, rettype='fasta')
         try:
             d = matrix_type.get_from_string(results_str, 'fasta', **kwargs)
         except DataParseError, e:
@@ -285,9 +287,9 @@ class Entrez(object):
             taxon.ncbi_gi, taxon.ncbi_accession, taxon.ncbi_version = parse_ncbi_curation_info_from_defline(taxon.ncbi_defline)
         if verify:
             found_ids = set([t.ncbi_accession for t in d.taxon_set])
-            missing_ids = set(ids).difference(found_ids)
+            missing_ids = set(id_list).difference(found_ids)
             found_ids = set([t.ncbi_gi for t in d.taxon_set])
-            missing_ids = set(ids).difference(found_ids)
+            missing_ids = set(missing_ids).difference(found_ids)
             if len(missing_ids) > 0:
                 raise Entrez.AccessionFetchError(missing_ids)
         if self.generate_labels:
