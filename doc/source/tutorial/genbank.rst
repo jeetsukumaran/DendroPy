@@ -1,6 +1,6 @@
-**********************************
-GenBank Genetic Sequence Databases
-**********************************
+*************************************************
+Working with GenBank Molecular Sequence Databases
+*************************************************
 
 The :mod:`~dendropy.interop.genbank` module provides the classes and methods to download sequences from |GenBank| and instantiate them into |DendroPy| phylogenetic data objects.
 Three classes are provided, all of which have an identical interface, varying only in the type of data retrieved:
