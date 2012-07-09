@@ -111,11 +111,11 @@ class GenBankResourceStore(object):
         Initializes a GenBank data resource manager class, and optionally
         populates it with data from GenBank.
 
-            :db: database (e.g. "nucleotide" or "protein")
-            :ids: sequence of GenBank accession identifiers or GI numbers.
-            :id_range: tuple of integers indicating first and last (inclusive) range of identifiers to download.
-            :prefix: string to be prepended to values in :ids: or generated from :id_range:
-            :verify: check for one-to-one correspondence between requested id's and downloaded records
+            - ``db``: database (e.g. "nucleotide" or "protein")
+            - ``ids``: sequence of GenBank accession identifiers or GI numbers.
+            - ``id_range``: tuple of integers indicating first and last (inclusive) range of identifiers to download.
+            - ``prefix``: string to be prepended to values in - ``ids``: or generated from - ``id_range``:
+            - ``verify``: check for one-to-one correspondence between requested id's and downloaded records
 
         """
         self.db = db
@@ -185,6 +185,14 @@ class GenBankResourceStore(object):
         self.update(gb_recs)
 
     def acquire(self, ids, prefix=None, verify=True):
+        """
+        Adds more data from GenBank.
+
+            - ``ids``: sequence of GenBank accession identifiers or GI numbers.
+            - ``prefix``: string to be prepended to values in - ``ids`` or generated from - ``id_range``.
+            - ``verify``: check for one-to-one correspondence between requested id's and downloaded records
+
+        """
         ids = GenBankResourceStore.prepare_ids(ids=ids, prefix=prefix)
         xml_string = GenBankResourceStore.fetch_xml(db=self.db,
                 ids=ids,
@@ -228,6 +236,15 @@ class GenBankResourceStore(object):
             last,
             prefix=None,
             verify=True):
+        """
+        Adds more data from GenBank.
+
+            - ``first``: integer specifying the start (inclusive) of the range of id's to download.
+            - ``last``: integer specifying the start (inclusive) of the range of id's to download.
+            - ``prefix``: string to be prepended to values given range.
+            - ``verify``: check for one-to-one correspondence between requested id's and downloaded records
+
+        """
         ids = range(first, last+1)
         return self.acquire(
                 ids=ids,
@@ -246,6 +263,22 @@ class GenBankResourceStore(object):
             set_taxon_attr=None,
             set_seq_attr=None,
             matrix_label=None):
+        """
+        Generates a CharacterMatrix of current sequences.
+
+            - ``label_components``: list of strings giving names of GenBankAccessionRecord attributes to be used to compose label.
+            - ``label_component_separator``: a string used to separate label components.
+            - ``taxon_set``: TaxonSet object to be used as the ``taxon_set`` of the resulting CharacterMatrix.
+            - ``gb_to_taxon_func``: Function to be used to assign a Taxon object to sequence. Should take a GenBankAccessionRecord object as an argument and return a Taxon object.
+            - ``add_full_annotation_to_taxa``: If True, add link to record as metadata annotation to Taxon objects.
+            - ``add_ref_annotation_to_taxa``: If True, add full GenBank record as metadata annotations to Taxon objects.
+            - ``add_full_annotation_to_seqs``: If True, add link to record as metadata annotation to sequence (CharacterDataVector) objects.
+            - ``add_ref_annotation_to_seqs``: If True, add full GenBank record as metadata annotations to sequence (CharacterDataVector) objects.
+            - ``set_taxon_attr``: Name of attribute (string) to create on Taxon objects pointing to GenBank record object (GenBankAccessionRecord).
+            - ``set_seq_attr``: Name of attribute (string) to create on sequence objects pointing to GenBank record object (GenBankAccessionRecord).
+            - ``matrix_label``: Label of character matrix.
+
+        """
         if gb_to_taxon_func is not None and taxon_set is None:
             raise TypeError("Cannot specify 'gb_to_taxon_func' without 'taxon_set'")
         if taxon_set is None:
