@@ -4,9 +4,11 @@ Release 3.12.0
 New Features
 ^^^^^^^^^^^^
 
+    - New infrastructure for metadata annotations: AnnotationSet and Annotation.
     - [NeXML] Full support of NeXML 0.9 metadata parsing and writing.
     - `get_from_url()` and `read_from_url()` methods now allow for reading of phylogenetic data from URL's.
-    - New infrastructure for metadata annotations: AnnotationSet and Annotation.
+    - Added GBIF interoperability module ("``dendropy.interop.gbif``").
+    - Added GenBank interoperability module ("``dendropy.interop.genbank``").
 
 Bug Fixes
 ^^^^^^^^^
@@ -24,6 +26,7 @@ Changes
       instantiates Taxon objects from internal node labels when 'False', but
       defaults to `True` for consistency with legacy behavior.
     - [NEXUS/NEWICK] Faster parsing of tree files.
+    - NCBI module ("``dendropy.interop.ncbi``") has been deprecated. Use "``dendropy.interop.genbank``" instead.
 
 
 Release 3.11.0
