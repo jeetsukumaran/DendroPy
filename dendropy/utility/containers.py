@@ -286,6 +286,13 @@ class OrderedCaselessDict(dict):
                     super(OrderedCaselessDict, \
                           self).__setitem__(key.lower(), val)
 
+    def __deepcopy__(self, memo):
+        o = self.__class__()
+        memo[id(self)] = o
+        for key, val in self.items():
+            o[key] = copy.deepcopy(val, memo)
+        return o
+
     def copy(self):
         "Returns a shallow copy of self."
         return self.__class__(self)
