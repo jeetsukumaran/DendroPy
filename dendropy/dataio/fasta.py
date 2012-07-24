@@ -143,15 +143,21 @@ class FastaReader(iosys.DataReader):
 
 class DNAFastaReader(FastaReader):
     def __init__(self, **kwargs):
-        FastaReader.__init__(self, char_matrix_type=dataobject.DnaCharacterMatrix, **kwargs)
+        if "char_matrix_type" not in kwargs:
+            kwargs["char_matrix_type"] = dataobject.DnaCharacterMatrix
+        FastaReader.__init__(self,  **kwargs)
 
 class RNAFastaReader(FastaReader):
     def __init__(self, **kwargs):
-        FastaReader.__init__(self, char_matrix_type=dataobject.RnaCharacterMatrix, **kwargs)
+        if "char_matrix_type" not in kwargs:
+            kwargs["char_matrix_type"] = dataobject.RnaCharacterMatrix
+        FastaReader.__init__(self,  **kwargs)
 
 class ProteinFastaReader(FastaReader):
     def __init__(self, **kwargs):
-        FastaReader.__init__(self, char_matrix_type=dataobject.ProteinCharacterMatrix, **kwargs)
+        if "char_matrix_type" not in kwargs:
+            kwargs["char_matrix_type"] = dataobject.ProteinCharacterMatrix
+        FastaReader.__init__(self,  **kwargs)
 
 class FastaWriter(iosys.DataWriter):
     """
