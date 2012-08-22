@@ -23,6 +23,7 @@ Various text-manipulating and formatting utilities.
 import re
 import sys
 import time
+import itertools
 
 ###############################################################################
 ## NEWICK/NEXUS format support. Placed here instead of `nexustokenizer` so that
@@ -68,6 +69,19 @@ def split_as_newick_string(split, taxon_set, preserve_spaces=False, quote_unders
         split = split >> 1
     assert ( len(left) + len(right) ) == len(taxlabels)
     return "((%s), (%s))" % (", ".join(left), ", ".join(right))
+
+def group_ranges(L):
+    """
+    Collapses a list of integers into a list of the start and end of
+    consecutive runs of numbers. Returns a generator of generators.
+
+    >>> [list(x) for x in group_ranges([1, 2, 3, 5, 6, 8])]
+    [[1, 3], [5, 6], [8]]
+    """
+    for w, z in itertools.groupby(L, lambda x, y=itertools.count(): next(y)-x):
+        grouped = list(z)
+        yield (x for x in [grouped[0], grouped[-1]][:len(grouped)])
+
 
 ###############################################################################
 ## Allows string objects to be annotated/decorated with attributes.
