@@ -397,7 +397,8 @@ class NexusWriter(iosys.DataWriter):
                 label = textutils.escape_nexus_token(char_set.label,
                         preserve_spaces=self.preserve_spaces,
                         quote_underscores=not self.unquoted_underscores)
-                pos = " ".join(str(c+1) for c in char_set.character_indices)
+                ranges = textutils.group_ranges(char_set.character_indices)
+                pos = " ".join("-".join(str(c+1) for c in r) for r in ranges)
                 nexus.append('    charset %s = %s;\n' % (label, pos))
             nexus.append('END;\n\n')
         stream.write('\n'.join(nexus))
