@@ -33,6 +33,8 @@ from optparse import OptionGroup
 from optparse import OptionParser
 
 import dendropy
+from dendropy.utility.messaging import get_logger
+_LOG = get_logger("interop.seqgen")
 
 HOSTNAME = socket.gethostname()
 PID = os.getpid()
@@ -152,7 +154,7 @@ class SeqGen(object):
                 args.append("-f%s" % self.state_freqs)
             else:
                 args.append("-f%s" % (",".join([str(s) for s in self.state_freqs])))
-        if self.ti_tv:
+        if self.ti_tv and (self.char_model in ['HKY', 'F84']):
             args.append("-t%s" % self.ti_tv)
         if self.general_rates:
             if isinstance(self.general_rates, str):
@@ -188,13 +190,19 @@ class SeqGen(object):
                 suppress_internal_node_labels=True)
         tree_inputf.flush()
         args.append(tree_inputf.name)
+        #_LOG.debug("seq-gen args: = %s" % " ".join(args))
         run = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = run.communicate()
+        if stderr or run.returncode != 0:
+            raise RuntimeError("Seq-gen error: %s" % stderr)
         if taxon_set is None:
             taxon_set = dendropy.TaxonSet()
         if dataset is None:
             dataset = dendropy.DataSet(taxon_set=taxon_set, **kwargs)
         results = StringIO(stdout)
+        #_LOG.debug('stderr = ' + stderr)
+        #_LOG.debug('stdout = ' + stdout)
+        
         dataset.read(results, "nexus")
         return dataset
 
