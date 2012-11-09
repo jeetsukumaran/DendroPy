@@ -621,7 +621,7 @@ else:
         set warnreset=no;
         exe %(datafile)s;
         set crit=like;
-        lset tratio=estimate rmatrix=estimate nst=%(nst)s basefreq=%(basefreq)s rates=%(rates)s shape=estimate pinvar=%(pinvar)s userbrlens=yes;
+        lset tratio=estimate rmatrix=estimate nst=%(nst)s basefreq=%(basefreq)s rates=%(rates)s shape=estimate pinvar=%(pinvar)s userbrlens=%(userbrlens)s;
         %(tree)s;
         lscore 1 / userbrlens=%(userbrlens)s;
         savetrees file=%(est_tree_file)s format=nexus root=yes brlens=yes taxablk=yes maxdecimals=20;
