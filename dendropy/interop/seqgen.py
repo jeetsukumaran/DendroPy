@@ -196,13 +196,13 @@ class SeqGen(object):
         if stderr or run.returncode != 0:
             raise RuntimeError("Seq-gen error: %s" % stderr)
         if taxon_set is None:
-            taxon_set = dendropy.TaxonSet()
+            taxon_set = trees.taxon_set
         if dataset is None:
             dataset = dendropy.DataSet(taxon_set=taxon_set, **kwargs)
         results = StringIO(stdout)
         #_LOG.debug('stderr = ' + stderr)
         #_LOG.debug('stdout = ' + stdout)
-        
+
         dataset.read(results, "nexus")
         return dataset
 
