@@ -30,6 +30,9 @@ from dendropy.utility import textutils
 from dendropy.utility import iosys
 from dendropy.dataio import newick
 from dendropy.dataio import nexustokenizer
+from dendropy.dataobject.tree import Node
+from dendropy.dataobject.taxon import Taxon
+
 
 ###############################################################################
 ## NexusWriter
@@ -299,10 +302,18 @@ class NexusWriter(iosys.DataWriter):
                 annotation_str =  ""
             else:
                 annotation_str = " " + nexustokenizer.format_annotation_as_comments(taxon, nhx=self.annotations_as_nhx)
-            block.append('        %s%s' % (
-                textutils.escape_nexus_token(taxon.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores),
-                annotation_str
-                ))
+            if self.node_label_compose_func:
+                fake_node = Node()
+                fake_node.taxon = taxon
+                block.append('        %s%s' % (
+                        self.node_label_compose_func(fake_node),
+                        annotation_str))
+            else:
+                block.append('        %s%s' % (
+                        textutils.escape_nexus_token(taxon.label,
+                        preserve_spaces=self.preserve_spaces,
+                        quote_underscores=not self.unquoted_underscores),
+                    annotation_str))
         block.append('  ;')
         block.append('END;\n\n')
         stream.write('\n'.join(block))
@@ -317,7 +328,7 @@ class NexusWriter(iosys.DataWriter):
                 try:
                     return str(translate_dict[node.taxon.label])
                 except AttributeError:
-                    return None
+                    return ""
         else:
             node_label_compose_func = self.node_label_compose_func
 
@@ -350,14 +361,15 @@ class NexusWriter(iosys.DataWriter):
         if self.translate_in_trees_block:
             block.append('    TRANSLATE')
             translation_table = []
-            # XXX somewhere check that all trees have the same taxa
-            for node in tree_list[0].nodes():
-                if node.taxon:
-                    idx = translate_dict[node.taxon.label]
-                    if self.node_label_compose_func:
-                        translation_table.append('        %s %s' % (idx, self.node_label_compose_func(node)))
-                    else:
-                        translation_table.append('        %s %s' % (idx, node.taxon.label))
+            for label in tree_list.taxon_set.labels():
+                idx = translate_dict[label]
+                if self.node_label_compose_func:
+                    fake_node = Node()
+                    fake_node.taxon = Taxon(label=label)
+                    translation_table.append('        %s %s' % (idx,
+                            self.node_label_compose_func(fake_node)))
+                else:
+                    translation_table.append('        %s %s' % (idx, label))
             block.append(',\n'.join(translation_table)+";")
         for treeidx, tree in enumerate(tree_list):
             if tree.label:
