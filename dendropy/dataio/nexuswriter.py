@@ -30,6 +30,9 @@ from dendropy.utility import textutils
 from dendropy.utility import iosys
 from dendropy.dataio import newick
 from dendropy.dataio import nexustokenizer
+from dendropy.dataobject.tree import Node
+from dendropy.dataobject.taxon import Taxon
+
 
 ###############################################################################
 ## NexusWriter
@@ -131,6 +134,9 @@ class NexusWriter(iosys.DataWriter):
                 If not None, should be a function that takes an Edge object as
                 an argument, and returns the string to be used to represent the
                 edge length in the tree statement.
+            `translate_in_trees_block`
+                If True, write nexus trees with a translate table. Defaults to
+                False
 
         Typically, these keywords would be passed to the `write_to_path()`,
         `write_to_stream` or `as_string` arguments, when 'nexus' is used as
@@ -156,7 +162,8 @@ class NexusWriter(iosys.DataWriter):
                     suppress_item_comments=False,
                     node_label_element_separator=' ',
                     node_label_compose_func=None,
-                    edge_label_compose_func=None)
+                    edge_label_compose_func=None,
+                    translate_in_trees_block=False)
 
         """
         iosys.DataWriter.__init__(self, **kwargs)
@@ -197,6 +204,7 @@ class NexusWriter(iosys.DataWriter):
         self.node_label_element_separator = kwargs.get("node_label_element_separator", ' ')
         self.node_label_compose_func = kwargs.get("node_label_compose_func", None)
         self.edge_label_compose_func = kwargs.get("edge_label_compose_func", None)
+        self.translate_in_trees_block = kwargs.get("translate_in_trees_block", False)
 
     def write(self, stream):
         """
@@ -304,6 +312,18 @@ class NexusWriter(iosys.DataWriter):
 
     def write_trees_block(self, tree_list, stream):
         block = []
+        if self.translate_in_trees_block:
+            translate_dict = {}
+            for i, label in enumerate(tree_list.taxon_set.labels()):
+                translate_dict[label] = i+1
+            def node_label_compose_func(node):
+                try:
+                    return str(translate_dict[node.taxon.label])
+                except AttributeError:
+                    return ""
+        else:
+            node_label_compose_func = self.node_label_compose_func
+
         newick_writer = newick.NewickWriter(
                 suppress_rooting=self.suppress_rooting,
                 suppress_edge_lengths=self.suppress_edge_lengths,
@@ -318,7 +338,7 @@ class NexusWriter(iosys.DataWriter):
                 suppress_internal_taxon_labels=self.suppress_internal_taxon_labels,
                 suppress_internal_node_labels=self.suppress_internal_node_labels,
                 node_label_element_separator=self.node_label_element_separator,
-                node_label_compose_func=self.node_label_compose_func,
+                node_label_compose_func=node_label_compose_func,
                 edge_label_compose_func=self.edge_label_compose_func,
                 )
         block.append('BEGIN TREES;')
@@ -330,6 +350,19 @@ class NexusWriter(iosys.DataWriter):
                 block.append('    %s;' % title)
             if tree_list.taxon_set.labels:
                 block.append('    LINK TAXA = %s;' % textutils.escape_nexus_token(tree_list.taxon_set.label, preserve_spaces=self.preserve_spaces, quote_underscores=not self.unquoted_underscores))
+        if self.translate_in_trees_block:
+            block.append('    TRANSLATE')
+            translation_table = []
+            for label in tree_list.taxon_set.labels():
+                idx = translate_dict[label]
+                if self.node_label_compose_func:
+                    fake_node = Node()
+                    fake_node.taxon = Taxon(label=label)
+                    translation_table.append('        %s %s' % (idx,
+                            self.node_label_compose_func(fake_node)))
+                else:
+                    translation_table.append('        %s %s' % (idx, label))
+            block.append(',\n'.join(translation_table)+";")
         for treeidx, tree in enumerate(tree_list):
             if tree.label:
                 tree_name = tree.label
