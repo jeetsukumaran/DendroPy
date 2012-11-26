@@ -734,7 +734,7 @@ class _NexmlCharBlockParser(_NexmlElementParser):
             for nxstates in nxformat.findall_char_states():
                 char_matrix.state_alphabets.append(self.parse_state_alphabet(nxstates))
             for nxchars in nxformat.findall_char():
-                col = dendropy.CharacterType(oid=nxchars.get('id', None))
+                col = dendropy.CharacterType(oid=nxchars.get('id', None), label=nxchars.get('label', None))
                 char_state_set_id = nxchars.get('states')
                 if char_state_set_id is not None:
                     state_alphabet = None
