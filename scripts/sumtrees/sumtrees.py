@@ -72,6 +72,7 @@ if _MP:
                 taxon_labels,
                 is_rooted,
                 ignore_node_ages,
+                ultrametricity_precision,
                 calc_tree_probs,
                 weighted_trees,
                 tree_offset,
@@ -89,6 +90,7 @@ if _MP:
             self.split_distribution = treesplit.SplitDistribution(taxon_set=self.taxon_set)
             self.split_distribution.is_rooted = is_rooted
             self.split_distribution.ignore_node_ages = ignore_node_ages
+            self.split_distribution.ultrametricity_precision = ultrametricity_precision
             self.is_rooted = is_rooted
             self.calc_tree_probs = calc_tree_probs
             self.topology_counter = treesum.TopologyCounter()
@@ -178,6 +180,7 @@ def process_sources_parallel(
         schema,
         is_rooted,
         ignore_node_ages,
+        ultrametricity_precision,
         calc_tree_probs,
         weighted_trees,
         tree_offset,
@@ -218,6 +221,7 @@ def process_sources_parallel(
                 taxon_labels=taxon_labels,
                 is_rooted=is_rooted,
                 ignore_node_ages=ignore_node_ages,
+                ultrametricity_precision=ultrametricity_precision,
                 calc_tree_probs=calc_tree_probs,
                 weighted_trees=weighted_trees,
                 tree_offset=tree_offset,
@@ -247,6 +251,7 @@ def process_sources_serial(
         schema,
         is_rooted,
         ignore_node_ages,
+        ultrametricity_precision,
         calc_tree_probs,
         weighted_trees,
         tree_offset,
@@ -261,6 +266,7 @@ def process_sources_serial(
     split_distribution = treesplit.SplitDistribution(taxon_set=taxon_set)
     split_distribution.ignore_node_ages = ignore_node_ages
     split_distribution.is_rooted = is_rooted
+    split_distribution.ultrametricity_precision = ultrametricity_precision
     topology_counter = treesum.TopologyCounter()
 
     if support_filepaths is None or len(support_filepaths) == 0:
@@ -466,6 +472,10 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
             dest="suppress_summary_metadata",
             default=False,
             help="do not annotate nodes with ranges, 5%/95 quartiles, 95% HPD's etc. of edge lengths and node ages")
+    other_summarization_optgroup.add_option("--ultrametricity-precision",
+            default=0.0000001,
+            type="float",
+            help="precision when checking ultrametricity")
 
     output_filepath_optgroup = OptionGroup(parser, "Output File Options")
     parser.add_option_group(output_filepath_optgroup)
@@ -700,6 +710,7 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 schema=schema,
                 is_rooted=opts.rooted_trees,
                 ignore_node_ages=not opts.calc_node_ages,
+                ultrametricity_precision=opts.ultrametricity_precision,
                 calc_tree_probs=opts.calc_tree_probs,
                 weighted_trees=opts.weighted_trees,
                 tree_offset=opts.burnin,
@@ -715,6 +726,7 @@ and 'mean-length' if no target trees are specified and the '--ultrametric' direc
                 schema=schema,
                 is_rooted=opts.rooted_trees,
                 ignore_node_ages=not opts.calc_node_ages,
+                ultrametricity_precision=opts.ultrametricity_precision,
                 calc_tree_probs=opts.calc_tree_probs,
                 weighted_trees=opts.weighted_trees,
                 tree_offset=opts.burnin,

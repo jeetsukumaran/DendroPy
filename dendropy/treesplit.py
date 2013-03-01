@@ -398,6 +398,7 @@ class SplitDistribution(object):
         self.split_node_ages = {}
         self.ignore_edge_lengths = False
         self.ignore_node_ages = True
+        self.ultrametricity_precision = 0.0000001
         self._is_rooted = False
         self._split_freqs = None
         self._weighted_split_freqs = None
@@ -577,7 +578,7 @@ class SplitDistribution(object):
             assert tree.taxon_set is self.taxon_set
         self.total_trees_counted += 1
         if not self.ignore_node_ages:
-            tree.calc_node_ages()
+            tree.calc_node_ages(check_prec=self.ultrametricity_precision)
         for split, edge in tree.split_edges.iteritems():
             if self.is_rooted:
                 split = edge.split_bitmask
