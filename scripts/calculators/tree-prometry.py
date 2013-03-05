@@ -38,11 +38,17 @@ class Profile(object):
         self._profile_data.append(value)
         self._profile_data = sorted(self._profile_data)
 
+    def __len__(self):
+        return len(self._profile_data)
+
     def get(self, idx):
         if idx >= len(self._profile_data):
-            return 0.0
+            val = 0.0
         else:
-            return self._profile_data[idx]
+            val = self._profile_data[idx]
+            if val is None:
+                val = 0.0
+        return val
 
 class ProfileMatrix(object):
 
@@ -58,17 +64,21 @@ class ProfileMatrix(object):
 
     def keys(self):
         keys = sorted(self._profiles.keys())
+        return keys
+
+    def __len__(self):
+        return len(self._profiles)
 
     def calc(self):
         results = {}
         keys = self.keys()
         for idx1, key1 in enumerate(keys[:-1]):
             for idx2, key2 in enumerate(keys[idx1+1:]):
-                key = "{}\t{}".format(key1, key2)
+                key = (key1, key2)
                 p1 = self._profiles[key1]
                 p2 = self._profiles[key2]
                 distance = 0.0
-                for i in range(max(len(p1, p2))):
+                for i in range(max(len(p1), len(p2))):
                     di = pow(p1.get(i) - p2.get(i), 2)
                     distance += di
                 results[key] = distance
@@ -118,7 +128,7 @@ def read_trees(
             if tidx >= tree_offset:
                 if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
                     messenger.send_info("(reading) '%s': tree at offset %d" % (name, tidx), wrap=False)
-                key = "{}.{}".format(name, tidx)
+                key = "{:02d}:{:03d}:{}".format(sidx+1, tidx+1, tree.label)
                 edge_len_profiles.add(
                         key=key,
                         profile_data=[e.length for e in tree.postorder_edge_iter()])
@@ -132,7 +142,32 @@ def read_trees(
             pass
 
     messenger.send_info("Serial processing of %d source(s) completed." % len(srcs))
+    return profile_matrices
 
+def report(profile_matrices,
+        out,
+        include_header_row=True):
+    if include_header_row:
+        row_parts = ["Tree.1", "Tree.2"]
+        for pm in profile_matrices:
+            row_parts.append("{}.Raw.Euclidean".format(pm.title))
+        out.write("\t".join(row_parts))
+        out.write("\n")
+    keys = []
+    results = {}
+    for pm in profile_matrices:
+        results[pm] = pm.calc()
+        keys.extend(results[pm].keys())
+    keys = set(sorted(keys))
+    for key in keys:
+        row_parts = [" <-> ".join(key)]
+        for pm in profile_matrices:
+            try:
+                row_parts.append("{}".format(results[pm][key]))
+            except KeyError:
+                row_parts.append("N/A")
+        out.write("\t".join(row_parts))
+        out.write("\n")
 
 def main_cli():
 
@@ -261,6 +296,8 @@ def main_cli():
             log_frequency=opts.log_frequency,
             messenger=messenger,
             )
+
+    report(profiles, sys.stdout)
 
 if __name__ == "__main__":
     main_cli()
