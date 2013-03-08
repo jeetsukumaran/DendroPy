@@ -20,6 +20,29 @@ _program_copyright = "Copyright (C) 2013 Jeet Sukumaran.\n" \
                  "License GPLv3+: GNU GPL version 3 or later.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
 
+def calc_alignment_profile(char_matrix, ignore_uncertain=True):
+    diffs = []
+    for vidx, i in enumerate(char_vectors[:-1]):
+        for j in char_vectors[vidx+1:]:
+            if len(i) != len(j):
+                raise Exception("sequences of unequal length")
+            diff = 0
+            counted = 0
+            comps += 1
+            for cidx, c in enumerate(i):
+                c1 = c
+                c2 = j[cidx]
+                if (not ignore_uncertain) \
+                    or (c1.value is not state_alphabet.gap \
+                        and c2.value is not state_alphabet.gap \
+                        and len(c1.value.fundamental_ids) == 1 \
+                        and len(c2.value.fundamental_ids) == 1):
+                    counted += 1
+                    total_counted += 1
+                    if c1.value is not c2.value:
+                        diff += 1
+    return sorted(diffs)
+
 def read_alignments(
         filepaths,
         schema,

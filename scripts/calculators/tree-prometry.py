@@ -76,7 +76,7 @@ def read_trees(
                 edge_len_profiles.add(
                         index=master_idx,
                         label=label,
-                        profile_data=[e.length for e in tree.postorder_edge_iter()])
+                        profile_data=sorted([e.length for e in tree.postorder_edge_iter()]))
             else:
                 if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
                     messenger.send_info("(reading) '%s': tree at offset %d (skipping)" % (name, tidx), wrap=False)
