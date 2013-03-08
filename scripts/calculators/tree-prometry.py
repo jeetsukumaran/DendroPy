@@ -191,9 +191,7 @@ def main_cli():
         for fpath in args:
             fpath = os.path.expanduser(os.path.expandvars(fpath))
             if not os.path.exists(fpath):
-                messenger.send_error("Terminating due to missing tree files. "
-                        + "Use the '--ignore-missing-support' option to continue even "
-                        + "if some files are missing.")
+                messenger.send_error("Terminating due to missing tree file: '{}'".format(fpath))
                 sys.exit(1)
             else:
                 tree_filepaths.append(fpath)
