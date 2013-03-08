@@ -21,6 +21,8 @@ _program_copyright = "Copyright (C) 2013 Jeet Sukumaran.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
 
 def calc_alignment_profile(char_matrix, ignore_uncertain=True):
+    state_alphabet = dendropy.DNA_STATE_ALPHABET
+    char_vectors = [v for v in char_matrix.taxon_seq_map.values()]
     diffs = []
     for vidx, i in enumerate(char_vectors[:-1]):
         for j in char_vectors[vidx+1:]:
@@ -28,7 +30,6 @@ def calc_alignment_profile(char_matrix, ignore_uncertain=True):
                 raise Exception("sequences of unequal length")
             diff = 0
             counted = 0
-            comps += 1
             for cidx, c in enumerate(i):
                 c1 = c
                 c2 = j[cidx]
@@ -38,9 +39,9 @@ def calc_alignment_profile(char_matrix, ignore_uncertain=True):
                         and len(c1.value.fundamental_ids) == 1 \
                         and len(c2.value.fundamental_ids) == 1):
                     counted += 1
-                    total_counted += 1
                     if c1.value is not c2.value:
                         diff += 1
+                    diffs.append(diff)
     return sorted(diffs)
 
 def read_alignments(
@@ -62,8 +63,8 @@ def read_alignments(
         aln = dendropy.DnaCharacterMatrix.get_from_path(fpath,
                 schema=schema,
                 taxon_set=taxon_set)
-        data = []
         label = "Alignment {}".format(fidx+1)
+        data = calc_alignment_profile(aln)
         hamming_distances.add(
                 index=fidx+1,
                 label=label,
