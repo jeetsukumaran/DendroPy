@@ -52,6 +52,8 @@ def read_trees(
     edge_len_profiles = prometry.ProfileMatrix("Edge.Lengths")
     profile_matrices.append(edge_len_profiles)
 
+    master_idx = 0
+
     for sidx, src in enumerate(srcs):
 
         # hack needed because we do not want to open all input files at the
@@ -65,12 +67,15 @@ def read_trees(
         for tidx, tree in enumerate(tree_source_iter(src,
                 schema=schema,
                 taxon_set=taxon_set)):
+            master_idx += 1
             if tidx >= tree_offset:
                 if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):
                     messenger.send_info("(reading) '%s': tree at offset %d" % (name, tidx), wrap=False)
-                key = "{:02d}:{:03d}:{}".format(sidx+1, tidx+1, tree.label)
+                # label = "[{:03d}] File {}, Tree {}".format(master_idx, sidx+1, tidx+1, tree.label)
+                label = "File {}, Tree {}".format(sidx+1, tidx+1, tree.label)
                 edge_len_profiles.add(
-                        key=key,
+                        index=master_idx,
+                        label=label,
                         profile_data=[e.length for e in tree.postorder_edge_iter()])
             else:
                 if (log_frequency == 1) or (tidx > 0 and log_frequency > 0 and tidx % log_frequency == 0):

@@ -23,9 +23,11 @@ Profile distances.
 class Profile(object):
 
     def __init__(self,
-            key=None,
+            index=None,
+            label=None,
             profile_data=None):
-        self.key = key
+        self.index = index
+        self.label = label
         if profile_data is None:
             self._profile_data = []
         else:
@@ -60,8 +62,12 @@ class ProfileMatrix(object):
         self.title = title
         self._profiles = []
 
-    def add(self, key, profile_data):
-        profile = Profile(key=key,
+    def add(self,
+            index,
+            label,
+            profile_data):
+        profile = Profile(index=index,
+                label=label,
                 profile_data=profile_data)
         self._profiles.append(profile)
 
@@ -124,17 +130,20 @@ def summarize_profile_matrices(profile_matrices,
     distance_names = sorted(distance_names)
     comparisons_list = []
     for comparison in comparisons_set:
-        comparisons_list.append( sorted(comparison, key=lambda x: x.key) )
-    comparisons_list = sorted(comparisons_list, key=lambda x: x[0].key + x[1].key)
+        comparisons_list.append( sorted(comparison, key=lambda x: x.index) )
+    comparisons_list = sorted(comparisons_list, key=lambda x: "{:09d}{:093}".format(x[0].index, x[1].index))
     if include_header_row:
-        row_parts = ["P1", "P2"]
+        row_parts = ["Comparison", "P1", "P2"]
         for dist_title in distance_group_titles:
             for dist_name in distance_names:
                 row_parts.append("{}.{}".format(dist_title, dist_name))
         out.write("\t".join(row_parts))
         out.write("\n")
     for comparisons in comparisons_list:
-        row_parts = [comparisons[0].key, comparisons[1].key]
+        row_parts = [
+                "{:4d} <-> {:<4d}".format(comparisons[0].index, comparisons[1].index),
+                str(comparisons[0].label),
+                str(comparisons[1].label)]
         for dist_title in distance_group_titles:
             for dist_name in distance_names:
                 distance = distance_groups[dist_title].get(dist_name, comparisons)
