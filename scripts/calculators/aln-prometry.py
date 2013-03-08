@@ -20,8 +20,9 @@ _program_copyright = "Copyright (C) 2013 Jeet Sukumaran.\n" \
                  "License GPLv3+: GNU GPL version 3 or later.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
 
+
 def calc_alignment_profile(char_matrix,
-        use_nucleotide_diversity=True,
+        normalize_to_num_comps=True,
         ignore_uncertain=True):
     state_alphabet = dendropy.DNA_STATE_ALPHABET
     char_vectors = [v for v in char_matrix.taxon_seq_map.values()]
@@ -43,15 +44,46 @@ def calc_alignment_profile(char_matrix,
                     counted += 1
                     if c1.value is not c2.value:
                         diff += 1
-            if use_nucleotide_diversity:
+            if normalize_to_num_comps:
                 diff = float(diff)/counted
             diffs.append(diff)
     return sorted(diffs)
 
+def calc_alignment_profile(char_matrix,
+        normalize_to_num_comps=True,
+        ignore_uncertain=True):
+    state_alphabet = dendropy.DNA_STATE_ALPHABET
+    diffs = {}
+    for a in state_alphabet:
+        for b in state_alphabet:
+            diffs[frozenset([a,b])] = 0
+    char_vectors = [v for v in char_matrix.taxon_seq_map.values()]
+    for vidx, i in enumerate(char_vectors[:-1]):
+        for j in char_vectors[vidx+1:]:
+            if len(i) != len(j):
+                raise Exception("sequences of unequal length")
+            # diff = 0
+            # counted = 0
+            for cidx, c in enumerate(i):
+                c1 = c
+                c2 = j[cidx]
+                if (not ignore_uncertain) \
+                    or (c1.value is not state_alphabet.gap \
+                        and c2.value is not state_alphabet.gap \
+                        and len(c1.value.fundamental_ids) == 1 \
+                        and len(c2.value.fundamental_ids) == 1):
+                    # counted += 1
+                    if c1.value is not c2.value:
+                        diffs[frozenset([c1.value, c2.value])] += 1
+            # if normalize_to_num_comps:
+                # diff = float(diff)/counted
+            # diffs.append(diff)
+    return sorted(diffs.values())
+
 def read_alignments(
         filepaths,
         schema,
-        use_nucleotide_diversity,
+        normalize_to_num_comps,
         messenger):
     messenger.send_info("Running in serial mode.")
 
@@ -70,7 +102,7 @@ def read_alignments(
                 taxon_set=taxon_set)
         label = "Alignment {}".format(fidx+1)
         data = calc_alignment_profile(char_matrix=aln,
-                use_nucleotide_diversity=use_nucleotide_diversity,
+                normalize_to_num_comps=normalize_to_num_comps,
                 ignore_uncertain=True)
         hamming_distances.add(
                 index=fidx+1,
@@ -100,11 +132,11 @@ def main_cli():
 
     metrics_optgroup = optparse.OptionGroup(parser, "Metric Options")
     parser.add_option_group(metrics_optgroup)
-    metrics_optgroup.add_option("--measure-nucleotide-diversity",
-            dest="use_nucleotide_diversity",
+    metrics_optgroup.add_option("--normalize-to-number-of-comparisons",
+            dest="normalize_to_num_comps",
             action="store_true",
             default=False,
-            help="normalize raw pairwise difference counts to sequence length")
+            help="normalize raw pairwise difference counts to number of bases of compared for every pair of sequences")
 
     run_optgroup = optparse.OptionGroup(parser, "Program Run Options")
     parser.add_option_group(run_optgroup)
@@ -155,7 +187,7 @@ def main_cli():
     profiles = read_alignments(
             filepaths=filepaths,
             schema=opts.schema,
-            use_nucleotide_diversity=opts.use_nucleotide_diversity,
+            normalize_to_num_comps=opts.normalize_to_num_comps,
             messenger=messenger,
             )
 
