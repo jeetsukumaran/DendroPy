@@ -174,7 +174,7 @@ def main_cli():
         messaging_level = ConsoleMessenger.ERROR_MESSAGING_LEVEL
     else:
         messaging_level = ConsoleMessenger.INFO_MESSAGING_LEVEL
-    messenger = ConsoleMessenger(name="Prometry", messaging_level=messaging_level)
+    messenger = ConsoleMessenger(name="Tree-Prometry", messaging_level=messaging_level)
 
     # splash
     if not opts.quiet:
