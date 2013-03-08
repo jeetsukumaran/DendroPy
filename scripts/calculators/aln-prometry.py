@@ -20,7 +20,9 @@ _program_copyright = "Copyright (C) 2013 Jeet Sukumaran.\n" \
                  "License GPLv3+: GNU GPL version 3 or later.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
 
-def calc_alignment_profile(char_matrix, normalize_to_alignment_size=True, ignore_uncertain=True):
+def calc_alignment_profile(char_matrix,
+        use_nucleotide_diversity=True,
+        ignore_uncertain=True):
     state_alphabet = dendropy.DNA_STATE_ALPHABET
     char_vectors = [v for v in char_matrix.taxon_seq_map.values()]
     diffs = []
@@ -41,7 +43,7 @@ def calc_alignment_profile(char_matrix, normalize_to_alignment_size=True, ignore
                     counted += 1
                     if c1.value is not c2.value:
                         diff += 1
-            if normalize_to_alignment_size:
+            if use_nucleotide_diversity:
                 diff = float(diff)/counted
             diffs.append(diff)
     return sorted(diffs)
@@ -49,7 +51,7 @@ def calc_alignment_profile(char_matrix, normalize_to_alignment_size=True, ignore
 def read_alignments(
         filepaths,
         schema,
-        normalize_to_alignment_size,
+        use_nucleotide_diversity,
         messenger):
     messenger.send_info("Running in serial mode.")
 
@@ -68,7 +70,7 @@ def read_alignments(
                 taxon_set=taxon_set)
         label = "Alignment {}".format(fidx+1)
         data = calc_alignment_profile(char_matrix=aln,
-                normalize_to_alignment_size=normalize_to_alignment_size,
+                use_nucleotide_diversity=use_nucleotide_diversity,
                 ignore_uncertain=True)
         hamming_distances.add(
                 index=fidx+1,
@@ -98,11 +100,11 @@ def main_cli():
 
     metrics_optgroup = optparse.OptionGroup(parser, "Metric Options")
     parser.add_option_group(metrics_optgroup)
-    metrics_optgroup.add_option("--no-normalize",
-            dest="normalize_to_alignment_size",
-            action="store_false",
-            default=True,
-            help="do NOT normalize to alignment size")
+    metrics_optgroup.add_option("--measure-nucleotide-diversity",
+            dest="use_nucleotide_diversity",
+            action="store_true",
+            default=False,
+            help="normalize raw pairwise difference counts to sequence length")
 
     run_optgroup = optparse.OptionGroup(parser, "Program Run Options")
     parser.add_option_group(run_optgroup)
@@ -111,7 +113,6 @@ def main_cli():
             dest="quiet",
             default=False,
             help="suppress ALL logging, progress and feedback messages")
-
 
     (opts, args) = parser.parse_args()
 
@@ -154,7 +155,7 @@ def main_cli():
     profiles = read_alignments(
             filepaths=filepaths,
             schema=opts.schema,
-            normalize_to_alignment_size=opts.normalize_to_alignment_size,
+            use_nucleotide_diversity=opts.use_nucleotide_diversity,
             messenger=messenger,
             )
 
