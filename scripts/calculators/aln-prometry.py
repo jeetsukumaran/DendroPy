@@ -20,7 +20,7 @@ _program_copyright = "Copyright (C) 2013 Jeet Sukumaran.\n" \
                  "License GPLv3+: GNU GPL version 3 or later.\n" \
                  "This is free software: you are free to change\nand redistribute it. " \
 
-def calc_alignment_profile(char_matrix, ignore_uncertain=True):
+def calc_alignment_profile(char_matrix, normalize_to_alignment_size=True, ignore_uncertain=True):
     state_alphabet = dendropy.DNA_STATE_ALPHABET
     char_vectors = [v for v in char_matrix.taxon_seq_map.values()]
     diffs = []
@@ -41,12 +41,15 @@ def calc_alignment_profile(char_matrix, ignore_uncertain=True):
                     counted += 1
                     if c1.value is not c2.value:
                         diff += 1
-                    diffs.append(diff)
+            if normalize_to_alignment_size:
+                diff = float(diff)/counted
+            diffs.append(diff)
     return sorted(diffs)
 
 def read_alignments(
         filepaths,
         schema,
+        normalize_to_alignment_size,
         messenger):
     messenger.send_info("Running in serial mode.")
 
@@ -64,7 +67,9 @@ def read_alignments(
                 schema=schema,
                 taxon_set=taxon_set)
         label = "Alignment {}".format(fidx+1)
-        data = calc_alignment_profile(aln)
+        data = calc_alignment_profile(char_matrix=aln,
+                normalize_to_alignment_size=normalize_to_alignment_size,
+                ignore_uncertain=True)
         hamming_distances.add(
                 index=fidx+1,
                 label=label,
@@ -84,12 +89,20 @@ def main_cli():
             version = _program_version,
             description=description)
 
-    source_optgroup = optparse.OptionGroup(parser, "Metric Options")
+    source_optgroup = optparse.OptionGroup(parser, "Source Options")
     parser.add_option_group(source_optgroup)
     source_optgroup.add_option("--format",
             dest="schema",
             default="dnafasta",
             help="format for data (default='%default')")
+
+    metrics_optgroup = optparse.OptionGroup(parser, "Metric Options")
+    parser.add_option_group(metrics_optgroup)
+    metrics_optgroup.add_option("--no-normalize",
+            dest="normalize_to_alignment_size",
+            action="store_false",
+            default=True,
+            help="do NOT normalize to alignment size")
 
     run_optgroup = optparse.OptionGroup(parser, "Program Run Options")
     parser.add_option_group(run_optgroup)
@@ -141,6 +154,7 @@ def main_cli():
     profiles = read_alignments(
             filepaths=filepaths,
             schema=opts.schema,
+            normalize_to_alignment_size=opts.normalize_to_alignment_size,
             messenger=messenger,
             )
 
