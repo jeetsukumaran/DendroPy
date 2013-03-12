@@ -38,6 +38,7 @@ class PatristicDistanceMatrix(object):
         self.tree = None
         self.taxon_set = None
         self._pat_dists = {}
+        self._path_steps = {}
         self.max_dist = None
         self.max_dist_taxa = None
         self.max_dist_nodes = None
@@ -68,9 +69,22 @@ class PatristicDistanceMatrix(object):
         except KeyError:
             return self._mrca[taxon2][taxon1]
 
+    def path_edge_count(self, taxon1, taxon2):
+        """
+        Returns the number of edges between two taxon objects.
+        """
+        if taxon1 is taxon2:
+            return 0
+        try:
+            return self._path_steps[taxon1][taxon2]
+        except KeyError:
+            return self._path_steps[taxon2][taxon1]
+
     def calc(self, tree=None, create_midpoints=None):
         """
-        Calculates the distances.
+        Calculates the distances. Note that the path length (in number of
+        steps) between taxa that span the root will be off by one if
+        the tree is unrooted.
         """
         if tree is not None:
             self.tree = tree
@@ -79,8 +93,10 @@ class PatristicDistanceMatrix(object):
             treesplit.encode_splits(self.tree)
         self.taxon_set = self.tree.taxon_set
         self._pat_dists = {}
+        self._path_steps = {}
         for i1, t1 in enumerate(self.taxon_set):
             self._pat_dists[t1] = {}
+            self._path_steps[t1] = {}
             self._mrca[t1] = {}
             self.max_dist = None
             self.max_dist_taxa = None
@@ -89,21 +105,23 @@ class PatristicDistanceMatrix(object):
         for node in self.tree.postorder_node_iter():
             children = node.child_nodes()
             if len(children) == 0:
-                node.desc_paths = {node : 0}
+                node.desc_paths = {node : (0,0)}
             else:
                 node.desc_paths = {}
                 for cidx1, c1 in enumerate(children):
-                    for desc1, desc1_plen in c1.desc_paths.items():
-                        node.desc_paths[desc1] = desc1_plen + c1.edge.length
+                    for desc1, (desc1_plen, desc1_psteps) in c1.desc_paths.items():
+                        node.desc_paths[desc1] = (desc1_plen + c1.edge.length, desc1_psteps + 1)
                         for c2 in children[cidx1+1:]:
-                            for desc2, desc2_plen in c2.desc_paths.items():
-                                pat_dist = node.desc_paths[desc1] + desc2_plen + c2.edge.length
-                                self._pat_dists[desc1.taxon][desc2.taxon] = pat_dist
+                            for desc2, (desc2_plen, desc2_psteps) in c2.desc_paths.items():
                                 self._mrca[desc1.taxon][desc2.taxon] = c1.parent_node
+                                pat_dist = node.desc_paths[desc1][0] + desc2_plen + c2.edge.length
+                                self._pat_dists[desc1.taxon][desc2.taxon] = pat_dist
+                                path_steps = node.desc_paths[desc1][1] + desc2_psteps + 1
+                                self._path_steps[desc1.taxon][desc2.taxon] = path_steps
                                 if pat_dist > self.max_dist:
                                     self.max_dist = pat_dist
                                     midpoint = float(pat_dist) / 2
-                                    if midpoint - node.desc_paths[desc1] <= 0:
+                                    if midpoint - node.desc_paths[desc1][0] <= 0:
                                         self.max_dist_nodes = (desc1, desc2)
                                         self.max_dist_taxa = (desc1.taxon, desc2.taxon)
                                     else:
