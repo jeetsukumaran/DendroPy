@@ -995,7 +995,7 @@ class NexusTokenizer(object):
         else:
             quick_check = NexusTokenizer.is_punctuation
             if quick_check(c) and c not in ignore_punctuation:
-                if c == '_':
+                if c == '_' and not self.preserve_underscores:
                     c = ' '
                 self.current_token = c
                 self.read_next_char()
