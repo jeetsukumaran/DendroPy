@@ -68,7 +68,10 @@ def discrete_time_to_coalescence(n_genes,
     if not pop_size:
         time_units = 1
     else:
-        time_units = pop_size * 2
+        if haploid:
+            time_units = pop_size
+        else:
+            time_units = pop_size * 2
     if rng is None:
         rng = GLOBAL_RNG
     p = float(probability.binomial_coefficient(n_genes, 2)) / time_units
@@ -98,10 +101,13 @@ def time_to_coalescence(n_genes,
     if not pop_size:
         time_units = 1
     else:
-        time_units = pop_size * 2
+        if haploid:
+            time_units = pop_size
+        else:
+            time_units = pop_size * 2
     rate = probability.binomial_coefficient(n_genes, 2)
     tmrca = rng.expovariate(rate)
-    return tmrca * pop_size
+    return tmrca * time_units
 
 def expected_tmrca(n_genes, pop_size=None):
     """
