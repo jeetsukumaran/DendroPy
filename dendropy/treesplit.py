@@ -511,7 +511,8 @@ class SplitDistribution(object):
         else:
             total_weight = float(self.sum_of_weights)
         for split in self.weighted_split_counts.keys():
-            self._weighted_split_freqs[split] = self.weighted_split_counts[split] / total_weight
+            # self._weighted_split_freqs[split] = self.weighted_split_counts[split] / total_weight
+            self._weighted_split_freqs[split] = self.weighted_split_counts[split]
         self._trees_counted_for_weighted_freqs = self.total_trees_counted
         self._trees_counted_for_summaries = self.total_trees_counted
         return self._weighted_split_freqs
