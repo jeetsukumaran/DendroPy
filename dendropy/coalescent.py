@@ -81,6 +81,7 @@ def discrete_time_to_coalescence(n_genes,
 def time_to_coalescence(n_genes,
         pop_size=None,
         haploid=True,
+        n_to_coalesce=2,
         rng=None):
     """
     A random draw from the "Kingman distribution" (continuous time version):
@@ -114,11 +115,11 @@ def time_to_coalescence(n_genes,
             time_units = pop_size
         else:
             time_units = pop_size * 2
-    rate = probability.binomial_coefficient(n_genes, 2)
+    rate = probability.binomial_coefficient(n_genes, n_to_coalesce)
     tmrca = rng.expovariate(rate)
     return tmrca * time_units
 
-def expected_tmrca(n_genes, pop_size=None):
+def expected_tmrca(n_genes, pop_size=None, n_to_coalesce=2):
     """
     Expected (mean) value for the Time to the Most Recent Common Ancestor.
     `n_genes` is the number of genes in the sample.
@@ -131,9 +132,12 @@ def expected_tmrca(n_genes, pop_size=None):
     is in generations.
 
     """
-    nc2 = probability.binomial_coefficient(n_genes, 2)
+    nc2 = probability.binomial_coefficient(n_genes, n_to_coalesce)
     tmrca = (float(1)/nc2)
-    return tmrca * pop_size
+    if pop_size is not None:
+        return tmrca * pop_size
+    else:
+        return tmrca
 
 def coalesce(nodes,
              pop_size=None,
