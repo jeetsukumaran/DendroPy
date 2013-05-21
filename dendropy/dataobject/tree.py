@@ -1443,6 +1443,15 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         self.prune_leaves_without_taxa(update_splits=update_splits,
                 delete_outdegree_one=delete_outdegree_one)
 
+    def prune_nodes(self, nodes, prune_leaves_without_taxa=False, update_splits=False, delete_outdegree_one=True):
+        for nd in nodes:
+            if nd.edge.tail_node is None:
+                raise Exception("Attempting to remove root node or node without parent")
+            nd.edge.tail_node.remove_child(nd)
+        if prune_leaves_without_taxa:
+            self.prune_leaves_without_taxa(update_splits=update_splits,
+                    delete_outdegree_one=delete_outdegree_one)
+
     def prune_taxa_with_labels(self,
             labels,
             update_splits=False,
@@ -1526,6 +1535,26 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 node_desc_counts[nd] = total
                 nd._child_nodes.sort(key=lambda n: node_desc_counts[n], reverse=not ascending)
 
+    def truncate_from_root(self, distance_from_root):
+        self.calc_node_root_distances()
+        new_terminals = []
+        for nd in self.preorder_node_iter():
+            if not nd._parent_node:
+                # root node
+                # TODO: strictly speaking, this might be a terminal if distance_from_root == 0
+                pass
+            else:
+                if nd.root_distance == distance_from_root:
+                    new_terminals.append(nd)
+                elif nd.root_distance > distance_from_root and nd._parent_node.root_distance < distance_from_root:
+                    # cut above current node
+                    nd.edge.length = distance_from_root - nd._parent_node.root_distance
+                    nd.root_distance = distance_from_root
+                    new_terminals.append(nd)
+        for nd in new_terminals:
+            for ch in nd.child_nodes():
+                nd.remove_child(ch)
+
     def update_splits(self, **kwargs):
         """
         Recalculates split hashes for tree.
@@ -1576,6 +1605,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         will be skipped.
         """
         for node in self.postorder_node_iter():
+            ages = []
             ch = node.child_nodes()
             if len(ch) == 0:
                node.age = 0.0
@@ -1587,6 +1617,25 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                         ocnd = nnd.age + nnd.edge.length
                         if abs(node.age - ocnd) > check_prec:
                             raise ValueError("Tree is not ultrametric")
+            ages.append(node.age)
+            return ages
+
+    def calc_node_root_distances(self, return_leaf_distances_only=True):
+        """
+        Adds attribute "root_distance" to each node, with value set to the
+        sum of edge lengths from the node to the root. Returns list of
+        distances. If `return_leaf_distances_only` is True, then only
+        leaf distances will be true.
+        """
+        dists = []
+        for node in self.preorder_node_iter():
+            if node._parent_node is None:
+                node.root_distance = 0.0
+            else:
+                node.root_distance = node.edge.length + node._parent_node.root_distance
+            if (not return_leaf_distances_only or node.is_leaf()):
+                dists.append(node.root_distance)
+        return dists
 
     def node_ages(self, check_prec=0.0000001):
         """
@@ -1612,6 +1661,21 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             if edge.length is not None:
                 total += edge.length
         return total
+
+    def max_distance_from_root(self):
+        """
+        Returns distance of node furthest from root.
+        """
+        dists = self.calc_node_root_distances()
+        return max(dists)
+
+    def minmax_leaf_distance_from_root(self):
+        """
+        Returns pair of values, representing the distance of the leaf closest
+        to a furthest from the root.
+        """
+        dists = self.calc_node_root_distances(return_leaf_distances_only=True)
+        return min(dists), max(dists)
 
     def coalescence_intervals(self):
         """
@@ -2054,16 +2118,16 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         import logging, inspect
         if logger_obj and logger_obj.isEnabledFor(logging.DEBUG):
             try:
-                assert self._debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
+                assert self.debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
             except:
                 calling_frame = inspect.currentframe().f_back
                 co = calling_frame.f_code
                 emsg = "\nCalled from file %s, line %d, in %s" % (co.co_filename, calling_frame.f_lineno, co.co_name)
                 _LOG.debug("%s" % str(self))
                 _LOG.debug("%s" % self.get_indented_form(**kwargs))
-        assert self._debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
+        assert self.debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
 
-    def _debug_tree_is_valid(self, **kwargs):
+    def debug_tree_is_valid(self, **kwargs):
         """Performs sanity-checks of the tree data structure.
 
         kwargs:
