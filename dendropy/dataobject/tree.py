@@ -2118,16 +2118,16 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         import logging, inspect
         if logger_obj and logger_obj.isEnabledFor(logging.DEBUG):
             try:
-                assert self.debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
+                assert self._debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
             except:
                 calling_frame = inspect.currentframe().f_back
                 co = calling_frame.f_code
                 emsg = "\nCalled from file %s, line %d, in %s" % (co.co_filename, calling_frame.f_lineno, co.co_name)
                 _LOG.debug("%s" % str(self))
                 _LOG.debug("%s" % self.get_indented_form(**kwargs))
-        assert self.debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
+        assert self._debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
 
-    def debug_tree_is_valid(self, **kwargs):
+    def _debug_tree_is_valid(self, **kwargs):
         """Performs sanity-checks of the tree data structure.
 
         kwargs:

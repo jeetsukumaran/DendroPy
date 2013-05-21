@@ -10,7 +10,7 @@ class TruncateTree(unittest.TestCase):
         self.trees = dendropy.TreeList.get_from_stream(pathmap.tree_source_stream("pythonidae.reference-trees.nexus"), "nexus")
 
     def check_ultrametric_tree(self, tree, dist):
-        self.assertTrue(tree.debug_tree_is_valid())
+        self.assertTrue(tree._debug_tree_is_valid())
         tree.calc_node_root_distances()
         for nd in tree.leaf_iter():
             self.assertAlmostEqual(nd.root_distance, nd.distance_from_root())
