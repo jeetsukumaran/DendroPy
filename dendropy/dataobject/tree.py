@@ -1604,8 +1604,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         ultrametricity. If `check_prec` is negative or False, then this check
         will be skipped.
         """
+        ages = []
         for node in self.postorder_node_iter():
-            ages = []
             ch = node.child_nodes()
             if len(ch) == 0:
                node.age = 0.0
@@ -1618,7 +1618,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                         if abs(node.age - ocnd) > check_prec:
                             raise ValueError("Tree is not ultrametric")
             ages.append(node.age)
-            return ages
+        return ages
 
     def calc_node_root_distances(self, return_leaf_distances_only=True):
         """
