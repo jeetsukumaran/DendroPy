@@ -1689,6 +1689,27 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             intervals.append(d - ages[i])
         return intervals
 
+    def num_lineages_at(self, distance_from_root):
+        """
+        Returns the number of lineages on the tree at a particular distance
+        from the root.
+        """
+        self.calc_node_root_distances()
+        num_lineages = 0
+        for nd in self.preorder_node_iter():
+            if not nd._parent_node:
+                # root node
+                pass
+            else:
+                if nd.root_distance == distance_from_root:
+                    num_lineages += 1
+                elif nd.root_distance >= distance_from_root and nd._parent_node.root_distance < distance_from_root:
+                    num_lineages += 1
+        return num_lineages
+
+    ###########################################################################
+    ## Metrics -- Unary
+
     def pybus_harvey_gamma(self, prec=0.00001):
         """Returns the gamma statistic of Pybus and Harvey (2000). This statistic
         is used to test for constancy of birth and death rates over the course of
@@ -1748,23 +1769,18 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         C = T*pow(1/(12*nmt), 0.5)
         return numerator/C
 
-    def num_lineages_at(self, distance_from_root):
+    def N_bar(self):
         """
-        Returns the number of lineages on the tree at a particular distance
-        from the root.
+        Returns the $\bar{N}$ statistic of Kirkpatric and Slatkin (1992): the
+        average number of nodes above a terminal node.
         """
-        self.calc_node_root_distances()
-        num_lineages = 0
-        for nd in self.preorder_node_iter():
-            if not nd._parent_node:
-                # root node
-                pass
-            else:
-                if nd.root_distance == distance_from_root:
-                    num_lineages += 1
-                elif nd.root_distance >= distance_from_root and nd._parent_node.root_distance < distance_from_root:
-                    num_lineages += 1
-        return num_lineages
+        leaf_count = 0
+        nbar = 0
+        for leaf_node in self.leaf_iter():
+            leaf_count += 1
+            for parent in leaf_node.ancestor_iter(inclusive=False):
+                nbar += 1
+        return float(nbar) / leaf_count
 
     ###########################################################################
     ## Metrics -- Comparative

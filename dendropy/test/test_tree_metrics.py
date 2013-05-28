@@ -30,9 +30,32 @@ from dendropy.test.support import pathmap
 from dendropy.test.support import datagen
 from dendropy.test.support import extendedtest
 
-class TreePHGammTest(unittest.TestCase):
+class TreeUnaryMetricsTest(unittest.TestCase):
 
-    def runTest(self):
+    def testNBar(self):
+        trees = datagen.reference_tree_list()
+        # trees = dendropy.TreeList.get_from_path(
+        #         src=pathmap.tree_source_path("pythonidae.beast.mcmc.trees"),
+        #         schema='nexus')
+        expected_values = [
+            7.818181818181818,
+            7.515151515151516,
+            7.666666666666667,
+            8.727272727272727,
+            8.757575757575758,
+            8.636363636363637,
+            8.727272727272727,
+            8.757575757575758,
+            8.727272727272727,
+            8.727272727272727,
+            8.575757575757576,
+            ]
+        for idx, tree in enumerate(trees):
+            observed = tree.N_bar()
+            expected = expected_values[idx]
+            self.assertAlmostEqual(expected, observed)
+
+    def testPHGamma(self):
         newick_str = "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);"
         tree = dendropy.Tree(stream=StringIO(newick_str), schema="newick")
         self.assertAlmostEqual(tree.pybus_harvey_gamma(tree), 0.546276, 4)
