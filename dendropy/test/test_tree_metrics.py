@@ -99,6 +99,28 @@ class TreeUnaryMetricsTest(unittest.TestCase):
             expected = expected_values[idx]
             self.assertAlmostEqual(expected, observed)
 
+    def test_treeness(self):
+        trees = datagen.reference_tree_list()
+        # for tree in trees:
+        #     print tree.treeness()
+        expected_values = [
+            0.82043976304486,
+            0.30678033634423607,
+            0.2686940663128338,
+            0.2674702980152253,
+            0.2731856127080352,
+            0.26942308963183575,
+            0.2764640737121644,
+            0.26096444220828763,
+            0.2846852453916621,
+            0.2791363657987356,
+            0.28304948441090816,
+            ]
+        for idx, tree in enumerate(trees):
+            observed = tree.treeness()
+            expected = expected_values[idx]
+            self.assertAlmostEqual(expected, observed)
+
     def testPHGamma(self):
         newick_str = "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);"
         tree = dendropy.Tree(stream=StringIO(newick_str), schema="newick")

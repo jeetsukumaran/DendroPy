@@ -1827,6 +1827,22 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
             b1 += 1.0/mi
         return b1
 
+    def treeness(self):
+        """
+        Returns the proportion of total tree length that is taken up by
+        internal branches.
+        """
+        internal = 0.0
+        external = 0.0
+        for nd in self.postorder_node_iter():
+            if not nd.parent_node:
+                continue
+            if nd.is_leaf():
+                external += nd.edge.length
+            else:
+                internal += nd.edge.length
+        return internal/(external + internal)
+
     ###########################################################################
     ## Metrics -- Comparative
 
