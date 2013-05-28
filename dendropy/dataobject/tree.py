@@ -1806,6 +1806,27 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         colless = colless * (2.0/(num_leaves * (num_leaves-3) + 2))
         return colless
 
+    def B1(self):
+        """
+        Returns the B1 statistic: the reciprocal of the sum of the maximum
+        number of nodes between each interior node and tip over all internal
+        nodes excluding root.
+        """
+        b1 = 0.0
+        nd_mi = {}
+        for nd in self.postorder_node_iter():
+            if nd._parent_node is None:
+                continue
+            child_nodes = nd._child_nodes
+            if len(child_nodes) == 0:
+                nd_mi[nd] = 0.0
+                continue
+            mi = max(nd_mi[ch] for ch in child_nodes)
+            mi += 1
+            nd_mi[nd] = mi
+            b1 += 1.0/mi
+        return b1
+
     ###########################################################################
     ## Metrics -- Comparative
 
