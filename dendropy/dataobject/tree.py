@@ -1782,6 +1782,30 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 nbar += 1
         return float(nbar) / leaf_count
 
+    def colless_tree_imbalance(self):
+        """
+        Returns Colless' tree imbalance or I statistic: the sum of differences
+        of numbers of children in left and right subtrees over all internal
+        nodes.
+        """
+        colless = 0.0
+        num_leaves = 0
+        subtree_leaves = {}
+        for nd in self.postorder_node_iter():
+            if nd.is_leaf():
+                subtree_leaves[nd] = 1
+                num_leaves += 1
+            else:
+                total_leaves = 0
+                if len(nd._child_nodes) > 2:
+                    raise Exception("Colless' tree imbalance statistic requires strictly bifurcating trees")
+                left = subtree_leaves[nd._child_nodes[0]]
+                right = subtree_leaves[nd._child_nodes[1]]
+                colless += abs(right-left)
+                subtree_leaves[nd] = right + left
+        colless = colless * (2.0/(num_leaves * (num_leaves-3) + 2))
+        return colless
+
     ###########################################################################
     ## Metrics -- Comparative
 
