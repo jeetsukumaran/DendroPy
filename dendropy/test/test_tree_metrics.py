@@ -78,6 +78,14 @@ class TreeUnaryMetricsTest(unittest.TestCase):
             self.assertAlmostEqual(expected, observed)
 
     def test_colless_tree_imbalance2(self):
+        # library(apTreeshape)
+        # data(hivtree.treeshape)
+        # print(paste("colless, raw: ", colless(hivtree.treeshape), sep=""))
+        # print(paste("colless, pda: ", colless(hivtree.treeshape, "pda"), sep=""))
+        # print(paste("colless, yule: ", colless(hivtree.treeshape, "yule"), sep=""))
+        # # [1] "colless, raw: 992"
+        # # [1] "colless, pda: 0.369977836654251"
+        # # [1] "colless, yule: 0.993137704712054"
         tree = dendropy.Tree.get_from_path(
                 src=pathmap.tree_source_path("hiv1.nexus"),
                 schema='nexus')
@@ -85,6 +93,21 @@ class TreeUnaryMetricsTest(unittest.TestCase):
         self.assertAlmostEqual(tree.colless_tree_imbalance(normalize="pda"), 0.3699778366542512686443)
         self.assertAlmostEqual(tree.colless_tree_imbalance(normalize="yule"), 0.9931377047120540924041)
 
+    def test_sackin_index(self):
+        # library(apTreeshape)
+        # data(hivtree.treeshape)
+        # print(paste("sackin, raw: ", sackin(hivtree.treeshape), sep=""))
+        # print(paste("sackin, pda: ", sackin(hivtree.treeshape, "pda"), sep=""))
+        # print(paste("sackin, yule: ", sackin(hivtree.treeshape, "yule"), sep=""))
+        # # [1] "sackin, raw: 2028"
+        # # [1] "sackin, pda: 0.756365980579457"
+        # # [1] "sackin, yule: 0.822783440343329"
+        tree = dendropy.Tree.get_from_path(
+                src=pathmap.tree_source_path("hiv1.nexus"),
+                schema='nexus')
+        self.assertAlmostEqual(tree.sackin_index(normalize=None), 2028)
+        self.assertAlmostEqual(tree.sackin_index(normalize="pda"), 0.756365980579457)
+        self.assertAlmostEqual(tree.sackin_index(normalize="yule"), 0.822783440343329)
 
     def test_b1(self):
         trees = datagen.reference_tree_list()

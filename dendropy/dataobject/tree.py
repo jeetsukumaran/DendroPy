@@ -1713,6 +1713,70 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
     ###########################################################################
     ## Metrics -- Unary
 
+    def B1(self):
+        """
+        Returns the B1 statistic: the reciprocal of the sum of the maximum
+        number of nodes between each interior node and tip over all internal
+        nodes excluding root.
+        """
+        b1 = 0.0
+        nd_mi = {}
+        for nd in self.postorder_node_iter():
+            if nd._parent_node is None:
+                continue
+            child_nodes = nd._child_nodes
+            if len(child_nodes) == 0:
+                nd_mi[nd] = 0.0
+                continue
+            mi = max(nd_mi[ch] for ch in child_nodes)
+            mi += 1
+            nd_mi[nd] = mi
+            b1 += 1.0/mi
+        return b1
+
+    def colless_tree_imbalance(self, normalize="max"):
+        """
+        Returns Colless' tree imbalance or I statistic: the sum of differences
+        of numbers of children in left and right subtrees over all internal
+        nodes. ``normalize`` specifies the normalization:
+
+            - "max" or True [DEFAULT]
+                normalized to maximum value for tree of
+                this size
+            - "yule"
+                normalized to the Yule model
+            - "pda"
+                normalized to the PDA (Proportional to Distinguishable
+                Arrangements) model
+            - None or False
+                no normalization
+
+        """
+        colless = 0.0
+        num_leaves = 0
+        subtree_leaves = {}
+        for nd in self.postorder_node_iter():
+            if nd.is_leaf():
+                subtree_leaves[nd] = 1
+                num_leaves += 1
+            else:
+                total_leaves = 0
+                if len(nd._child_nodes) > 2:
+                    raise TypeError("Colless' tree imbalance statistic requires strictly bifurcating trees")
+                left = subtree_leaves[nd._child_nodes[0]]
+                right = subtree_leaves[nd._child_nodes[1]]
+                colless += abs(right-left)
+                subtree_leaves[nd] = right + left
+        if normalize == "yule":
+            colless = float(colless - (num_leaves * math.log(num_leaves)) - (num_leaves * (EULERS_CONSTANT - 1.0 - math.log(2))))/num_leaves
+        elif normalize == "pda":
+            colless = colless / pow(num_leaves, 3.0/2)
+        elif normalize is True or normalize == "max":
+            colless = colless * (2.0/(num_leaves * (num_leaves-3) + 2))
+        elif normalize is not None and normalize is not False:
+            raise TypeError("`normalization` accepts only None, 'yule' or 'pda' as argument values")
+        return colless
+
     def pybus_harvey_gamma(self, prec=0.00001):
         """Returns the gamma statistic of Pybus and Harvey (2000). This statistic
         is used to test for constancy of birth and death rates over the course of
@@ -1774,8 +1838,8 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def N_bar(self):
         """
-        Returns the $\bar{N}$ statistic of Kirkpatric and Slatkin (1992): the
-        average number of nodes above a terminal node.
+        Returns the $\bar{N}$ statistic: the average number of nodes above a
+        terminal node.
         """
         leaf_count = 0
         nbar = 0
@@ -1785,63 +1849,42 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 nbar += 1
         return float(nbar) / leaf_count
 
-    def colless_tree_imbalance(self, normalize="max"):
+    def sackin_index(self, normalize=True):
         """
-        Returns Colless' tree imbalance or I statistic: the sum of differences
-        of numbers of children in left and right subtrees over all internal
-        nodes. ``normalize`` specifies the normalization:
+        Returns the Sackin's index: the sum of the number of ancestors for each
+        tip of the tree. The larger the Sackin's index, the less balanced the
+        tree. ``normalize`` specifies the normalization:
 
-            - "max" or True [DEFAULT]: (normalized to maximum value)
-            - "yule": normalized to Yule model
-            - "pda" normalized to PDA model
-            - None or False: (no normalization)
+            - True [DEFAULT]
+                normalized to number of leaves; this results in a value
+                equivalent to that given by Tree.N_bar()
+            - "yule"
+                normalized to the Yule model
+            - "pda"
+                normalized to the PDA (Proportional to Distinguishable
+                Arrangements) model
+            - None or False
+                no normalization
 
         """
-        colless = 0.0
-        num_leaves = 0
-        subtree_leaves = {}
-        for nd in self.postorder_node_iter():
-            if nd.is_leaf():
-                subtree_leaves[nd] = 1
-                num_leaves += 1
-            else:
-                total_leaves = 0
-                if len(nd._child_nodes) > 2:
-                    raise Exception("Colless' tree imbalance statistic requires strictly bifurcating trees")
-                left = subtree_leaves[nd._child_nodes[0]]
-                right = subtree_leaves[nd._child_nodes[1]]
-                colless += abs(right-left)
-                subtree_leaves[nd] = right + left
+        leaf_count = 0
+        num_anc = 0
+        for leaf_node in self.leaf_iter():
+            leaf_count += 1
+            for parent in leaf_node.ancestor_iter(inclusive=False):
+                num_anc += 1
         if normalize == "yule":
-            colless = float(colless - (num_leaves * math.log(num_leaves)) - (num_leaves * (EULERS_CONSTANT - 1.0 - math.log(2))))/num_leaves
+            x = sum(1.0/j for j in range(2, leaf_count+1))
+            s = float(num_anc - (2 * leaf_count * x))/leaf_count
         elif normalize == "pda":
-            colless = colless / pow(num_leaves, 3.0/2)
-        elif normalize is True or normalize == "max":
-            colless = colless * (2.0/(num_leaves * (num_leaves-3) + 2))
+            s = float(num_anc)/(pow(leaf_count, 3.0/2))
+        elif normalize is True:
+            s = float(num_anc)/leaf_count
+        elif normalize is None or normalize is False:
+            s = float(num_anc)
         elif normalize is not None and normalize is not False:
-            raise Exception("`normalization` accepts only None, 'yule' or 'pda' as argument values")
-        return colless
-
-    def B1(self):
-        """
-        Returns the B1 statistic: the reciprocal of the sum of the maximum
-        number of nodes between each interior node and tip over all internal
-        nodes excluding root.
-        """
-        b1 = 0.0
-        nd_mi = {}
-        for nd in self.postorder_node_iter():
-            if nd._parent_node is None:
-                continue
-            child_nodes = nd._child_nodes
-            if len(child_nodes) == 0:
-                nd_mi[nd] = 0.0
-                continue
-            mi = max(nd_mi[ch] for ch in child_nodes)
-            mi += 1
-            nd_mi[nd] = mi
-            b1 += 1.0/mi
-        return b1
+            raise TypeError("`normalization` accepts only None, 'yule' or 'pda' as argument values")
+        return s
 
     def treeness(self):
         """
@@ -3574,3 +3617,4 @@ def convert_node_to_root_polytomy(nd):
         return tuple(ndl)
 
     return ()
+
