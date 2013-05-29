@@ -1774,7 +1774,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         elif normalize is True or normalize == "max":
             colless = colless * (2.0/(num_leaves * (num_leaves-3) + 2))
         elif normalize is not None and normalize is not False:
-            raise TypeError("`normalization` accepts only None, 'yule' or 'pda' as argument values")
+            raise TypeError("`normalization` accepts only None, True, False, 'yule' or 'pda' as argument values")
         return colless
 
     def pybus_harvey_gamma(self, prec=0.00001):
@@ -1883,7 +1883,7 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         elif normalize is None or normalize is False:
             s = float(num_anc)
         elif normalize is not None and normalize is not False:
-            raise TypeError("`normalization` accepts only None, 'yule' or 'pda' as argument values")
+            raise TypeError("`normalization` accepts only None, True, False, 'yule' or 'pda' as argument values")
         return s
 
     def treeness(self):
