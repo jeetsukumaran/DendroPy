@@ -73,9 +73,18 @@ class TreeUnaryMetricsTest(unittest.TestCase):
             0.3407258064516129,
             ]
         for idx, tree in enumerate(trees):
-            observed = tree.colless_tree_imbalance()
+            observed = tree.colless_tree_imbalance(normalize="max")
             expected = expected_values[idx]
             self.assertAlmostEqual(expected, observed)
+
+    def test_colless_tree_imbalance2(self):
+        tree = dendropy.Tree.get_from_path(
+                src=pathmap.tree_source_path("hiv1.nexus"),
+                schema='nexus')
+        self.assertAlmostEqual(tree.colless_tree_imbalance(normalize=None), 992)
+        self.assertAlmostEqual(tree.colless_tree_imbalance(normalize="pda"), 0.3699778366542512686443)
+        self.assertAlmostEqual(tree.colless_tree_imbalance(normalize="yule"), 0.9931377047120540924041)
+
 
     def test_b1(self):
         trees = datagen.reference_tree_list()
@@ -147,6 +156,7 @@ class TreeUnaryMetricsTest(unittest.TestCase):
         newick_str = "((t5:0.161175,t6:0.161175):0.392293,((t4:0.104381,(t2:0.075411,t1:0.075411):0.028969):0.065840,t3:0.170221):0.383247);"
         tree = dendropy.Tree(stream=StringIO(newick_str), schema="newick")
         self.assertAlmostEqual(tree.pybus_harvey_gamma(tree), 0.546276, 4)
+
 
 class TreeCompareTests(extendedtest.ExtendedTestCase):
 

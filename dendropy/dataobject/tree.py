@@ -22,6 +22,7 @@ as well as all the structural classes that make up a tree.
 """
 
 from cStringIO import StringIO
+import math
 import copy
 import bisect
 import re
@@ -37,6 +38,8 @@ from dendropy.utility import termutils
 from dendropy.dataobject import base
 from dendropy.dataobject.taxon import TaxonSet, TaxonSetLinked, TaxonLinked
 from dendropy import treesplit
+
+EULERS_CONSTANT = 0.5772156649015328606065120900824024310421
 
 ##############################################################################
 ## TreeList
@@ -1782,11 +1785,17 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 nbar += 1
         return float(nbar) / leaf_count
 
-    def colless_tree_imbalance(self):
+    def colless_tree_imbalance(self, normalize="max"):
         """
         Returns Colless' tree imbalance or I statistic: the sum of differences
         of numbers of children in left and right subtrees over all internal
-        nodes.
+        nodes. ``normalize`` specifies the normalization:
+
+            - "max" or True [DEFAULT]: (normalized to maximum value)
+            - "yule": normalized to Yule model
+            - "pda" normalized to PDA model
+            - None or False: (no normalization)
+
         """
         colless = 0.0
         num_leaves = 0
@@ -1803,7 +1812,14 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
                 right = subtree_leaves[nd._child_nodes[1]]
                 colless += abs(right-left)
                 subtree_leaves[nd] = right + left
-        colless = colless * (2.0/(num_leaves * (num_leaves-3) + 2))
+        if normalize == "yule":
+            colless = float(colless - (num_leaves * math.log(num_leaves)) - (num_leaves * (EULERS_CONSTANT - 1.0 - math.log(2))))/num_leaves
+        elif normalize == "pda":
+            colless = colless / pow(num_leaves, 3.0/2)
+        elif normalize is True or normalize == "max":
+            colless = colless * (2.0/(num_leaves * (num_leaves-3) + 2))
+        elif normalize is not None and normalize is not False:
+            raise Exception("`normalization` accepts only None, 'yule' or 'pda' as argument values")
         return colless
 
     def B1(self):
