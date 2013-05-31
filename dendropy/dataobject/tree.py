@@ -1772,6 +1772,9 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
         elif normalize == "pda":
             colless = colless / pow(num_leaves, 3.0/2)
         elif normalize is True or normalize == "max":
+            ## note that Mooers 1995 (Evolution 49(2):379-384)
+            ## remarks that the correct normalization factor is
+            ## 2/((num_leaves - 1) * (num_leaves -2))
             colless = colless * (2.0/(num_leaves * (num_leaves-3) + 2))
         elif normalize is not None and normalize is not False:
             raise TypeError("`normalization` accepts only None, True, False, 'yule' or 'pda' as argument values")
