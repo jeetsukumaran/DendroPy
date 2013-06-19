@@ -2441,10 +2441,10 @@ class Node(TaxonLinked):
         (with leaves returned in same order as a post-order traversal of the tree).
         """
         if filter_fn:
-            filter_fn = lambda x: x.is_leaf() and filter_fn(x) or None
+            ff = lambda x: x.is_leaf() and filter_fn(x) or None
         else:
-            filter_fn = lambda x: x.is_leaf() and x or None
-        for node in self.postorder_iter(filter_fn):
+            ff = lambda x: x.is_leaf() and x or None
+        for node in self.postorder_iter(ff):
             yield node
 
     def level_order_iter(self, filter_fn=None):
