@@ -209,7 +209,7 @@ def find_edge_from_split(root, split_to_find, mask=-1):
             return r
     return None
 
-def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
+def encode_splits(tree, create_dict=True, delete_outdegree_one=True, lowest_relevant_bit=1):
     """
     Processes splits on a tree, encoding them as bitmask on each edge.
     Adds the following to each edge:
@@ -295,7 +295,7 @@ def encode_splits(tree, create_dict=True, delete_outdegree_one=True):
     # all the taxa, but only those found on the tree
     if not tree.is_rooted:
         mask = tree.seed_node.edge.split_bitmask
-        d = containers.NormalizedBitmaskDict(mask=mask)
+        d = containers.NormalizedBitmaskDict(mask=mask, lowest_relevant_bit=lowest_relevant_bit)
         for k, v in tree.split_edges.items():
             d[k] = v
         tree.split_edges = d

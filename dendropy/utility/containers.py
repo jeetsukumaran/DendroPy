@@ -164,22 +164,49 @@ class NormalizedBitmaskDict(dict):
     as-is, otherwise it is complemented by XOR'ing it with 'mask'.
     """
 
-    def normalize(key, mask):
-        if key & 1:
+    def normalize(key, mask, lowest_relevant_bit):
+        if key & lowest_relevant_bit:
             return (~key) & mask
         else:
             return key & mask
         # assert (key & mask) == key
         # return key
     normalize = staticmethod(normalize)
+#     
+#     real_normalize = normalize
+#     def verbose_normalize(key, mask, lowest_relevant_bit):
+#         bm = bin(mask)[2:]
+#         bk = bin(key)[2:]
+#         r = NormalizedBitmaskDict.real_normalize(key, mask, lowest_relevant_bit)
+#         br = bin(r)[2:]
+#         l = max(len(br), max(len(bm), len(bk)))
+#         if mask < 0:
+#             sm = bm.rjust(l, '1')
+#         else:
+#             sm = bm.rjust(l, '0')
+#         sk = bk.rjust(l, '0')
+#         sr = br.rjust(l, '0')
+#         import sys 
+#         sys.stderr.write('''Normalizing...
+# key  = %s %d
+# mask = %s %d
+# ret  = %s %d
+# ''' % (sk, key, sm, mask, sr, r))
+#         return r
+#     normalize = staticmethod(verbose_normalize)
 
-    def __init__(self, other=None, mask=None):
+    def __init__(self, other=None, mask=None, lowest_relevant_bit=1):
         "__init__ assigns `mask`, and then populates from `other`, if given."
         dict.__init__(self)
-        if not ( mask & 1 ):
+        self.lowest_relevant_bit = lowest_relevant_bit
+        if not ( mask & lowest_relevant_bit ):
             self.mask = ~mask
         else:
             self.mask = mask
+#         sys.stderr.write('''NormalizedBitmaskDict.__init__
+# mask      = %s %d
+# self.mask = %s %d
+# ''' % (bin(mask), mask, bin(self.mask), self.mask))
         # self.mask = mask
         if other is not None:
             if isinstance(other, NormalizedBitmaskDict):
@@ -192,12 +219,13 @@ class NormalizedBitmaskDict(dict):
         o = NormalizedBitmaskDict(mask=self.mask)
         memo[id(self)] = o
         o.mask = self.mask
+        o.lowest_relevant_bit = self.lowest_relevant_bit
         for key, val in self.items():
             o[key] = copy.deepcopy(val, memo)
         return o
 
     def normalize_key(self, key):
-        return NormalizedBitmaskDict.normalize(key, self.mask)
+        return NormalizedBitmaskDict.normalize(key, self.mask, self.lowest_relevant_bit)
 
     def __setitem__(self, key, value):
         "Sets item with normalized key."
