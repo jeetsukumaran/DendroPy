@@ -23,6 +23,11 @@ Various data structures.
 import copy
 import sys
 
+# copied from treesplit, which is a bit ugly, but this is a two-liner...
+def lowest_bit_only(s):
+    m = s & (s - 1)
+    return m ^ s
+
 ###############################################################################
 ## ItemAttributeProviderList
 
@@ -195,14 +200,11 @@ class NormalizedBitmaskDict(dict):
 #         return r
 #     normalize = staticmethod(verbose_normalize)
 
-    def __init__(self, other=None, mask=None, lowest_relevant_bit=1):
+    def __init__(self, other=None, mask=None):
         "__init__ assigns `mask`, and then populates from `other`, if given."
         dict.__init__(self)
-        self.lowest_relevant_bit = lowest_relevant_bit
-        if not ( mask & lowest_relevant_bit ):
-            self.mask = ~mask
-        else:
-            self.mask = mask
+        self.lowest_relevant_bit = lowest_bit_only(mask)
+        self.mask = mask
 #         sys.stderr.write('''NormalizedBitmaskDict.__init__
 # mask      = %s %d
 # self.mask = %s %d
@@ -211,6 +213,7 @@ class NormalizedBitmaskDict(dict):
         if other is not None:
             if isinstance(other, NormalizedBitmaskDict):
                 self.mask = other.mask
+                self.lowest_relevant_bit = other.lowest_relevant_bit
             if isinstance(other, dict):
                 for key, val in other.items():
                     self[key] = val

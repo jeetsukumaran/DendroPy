@@ -69,8 +69,6 @@ class IncompleteLeafSetSplitTest(unittest.TestCase):
         for nd in exclude_list:
             first.prune_subtree(nd)
         # the trees are now (b,c,(d,e)) and (b,d,(c,e)) so the symmetric diff is 2
-        dendropy.treesplit.encode_splits(first, lowest_relevant_bit=2)
-        dendropy.treesplit.encode_splits(second, lowest_relevant_bit=2)
         self.assertEquals(2, first.symmetric_difference(second))
 
 
