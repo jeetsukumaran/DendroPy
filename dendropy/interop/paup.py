@@ -382,7 +382,7 @@ else:
         split_bitmask = int(group_string.replace("*", "1").replace(".", "0"), 2)
         if normalized:
             mask=((2 ** len(group_string)) -1)
-            return containers.NormalizedBitmaskDict.normalize(split_bitmask, mask)
+            return containers.NormalizedBitmaskDict.normalize(split_bitmask, mask, 1)
         else:
             return split_bitmask
 

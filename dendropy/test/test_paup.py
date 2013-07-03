@@ -51,7 +51,7 @@ else:
             for i in xrange(0xFF):
                 s = treesplit.split_as_string(i, 8, "*", ".")[::-1]
                 r = paup.paup_group_to_mask(s, normalized=True)
-                normalized = containers.NormalizedBitmaskDict.normalize(i, 0xFF)
+                normalized = containers.NormalizedBitmaskDict.normalize(i, 0xFF, 1)
                 self.assertEqual(r, normalized, "%s  =>  %s  =>  %s" \
                     % (treesplit.split_as_string(i, 8), s, treesplit.split_as_string(normalized, 8)))
 
@@ -59,7 +59,7 @@ else:
             for i in xrange(0xFF):
                 s = treesplit.split_as_string(i, 8, ".", "*")[::-1]
                 r = paup.paup_group_to_mask(s, normalized=True)
-                normalized = containers.NormalizedBitmaskDict.normalize(i, 0xFF)
+                normalized = containers.NormalizedBitmaskDict.normalize(i, 0xFF, 1)
                 self.assertEqual(r, normalized, "%s  =>  %s  =>  %s" \
                     % (treesplit.split_as_string(i, 8), s, treesplit.split_as_string(normalized, 8)))
 
