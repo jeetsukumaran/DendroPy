@@ -57,6 +57,25 @@ class IncompleteLeafSetSplitTest(unittest.TestCase):
     def testRooted(self):
         self.check("Rooted", "incomplete_leaves_rooted")
 
+    def testPrunedThenEncoding(self):
+        from cStringIO import StringIO
+        FIX = False
+        inp = StringIO('''(a,b,c,(d,e));
+        (b,d,(c,e));''')
+        first, second = dendropy.TreeList.get_from_stream(inp, schema='newick')
+        # prune tree 1 to have the same leaf set as tree 2.
+        #   this removes the first taxon in the taxon list "A"
+        retain_list = set([node.taxon for node in second.leaf_nodes()])
+        exclude_list = [node for node in first.leaf_nodes() if node.taxon not in retain_list]
+        for nd in exclude_list:
+            first.prune_subtree(nd)
+        # the trees are now (b,c,(d,e)) and (b,d,(c,e)) so the symmetric diff is 2
+        if FIX:
+            dendropy.treesplit.encode_splits(first, lowest_relevant_bit=2)
+            dendropy.treesplit.encode_splits(second, lowest_relevant_bit=2)
+        self.assertEquals(2, first.symmetric_difference(second))
+
+
 if __name__ == "__main__":
     unittest.main()
 
