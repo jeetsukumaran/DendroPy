@@ -717,7 +717,7 @@ def pure_kingman(taxon_set, pop_size=1, rng=None):
                                     pop_size=pop_size,
                                     period=None,
                                     rng=rng,
-                                    use_expected_tmrca=True)[0]
+                                    use_expected_tmrca=False)[0]
     tree = dataobject.Tree(taxon_set=taxon_set, seed_node=seed_node)
     return tree
 
