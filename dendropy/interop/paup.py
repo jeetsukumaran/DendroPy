@@ -502,6 +502,7 @@ else:
                                         stdout=subprocess.PIPE)
             stdout, stderr = paup_run.communicate(paup_block)
             t = dendropy.Tree.get_from_path(output_tree_filepath, "nexus", taxon_set=char_matrix.taxon_set)
+            os.close(output_tree_file_handle)
             return t
 
     def estimate_tree(char_matrix,
@@ -571,6 +572,7 @@ else:
                                     stdout=subprocess.PIPE)
         stdout, stderr = paup_run.communicate(paup_template % paup_args)
         t = dendropy.Tree.get_from_path(output_tree_filepath, "nexus", taxon_set=char_matrix.taxon_set)
+        os.close(output_tree_file_handle)
         return t
 
     def estimate_model(char_matrix,
@@ -664,6 +666,7 @@ else:
                 except:
                     pass
         t = dendropy.Tree.get_from_path(output_tree_filepath, "nexus", taxon_set=char_matrix.taxon_set)
+        os.close(output_tree_file_handle)
         return t, results
 
     def prune_taxa_from_trees(trees, taxa, paup_path='paup'):
@@ -694,4 +697,5 @@ else:
         t = dendropy.TreeList.get_from_path(output_tree_filepath,
                 "nexus",
                 taxon_set=trees.taxon_set)
+        os.close(output_tree_file_handle)
         return t
