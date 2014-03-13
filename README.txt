@@ -13,50 +13,8 @@ The primary home page for DendroPy, with detailed tutorials and documentation, i
 Requirements and Installation
 =============================
 
-DendroPy 4.x requires Python 3. It does not run under Python 2.x or below.
+DendroPy 4.x runs under Python 3 (all versions > 3.1) and Python 2 (Python 2.7 only).
 
-If you have `setuptools <http://pypi.python.org/pypi/setuptools>`_ installed, you can install the latest public release of DendroPy directly from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_ by running::
+DendroPy 4.x is under development, and is not suitable yet for public or production use.
 
-    $ sudo easy_install -U dendropy
-
-Alternatively, if you have `pip <http://pypi.python.org/pypi/pip>`_ installed, you can run::
-
-    $ sudo pip install dendropy
-
-If you download the source code archive from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_, you can unarchive it and install it from the local source by running::
-
-    $ tar -xvzf DendroPy-4.x.x.tar.gz
-    $ cd DendroPy-4.x.x
-    $ sudo python setup.py install
-
-Documentation
-=============
-
-A detailed example-rich "cookbook"-style tutorial on using DendroPy can be found here:
-
-    http://packages.python.org/DendroPy/tutorial/index.html
-
-While the API reference can be found here:
-
-    http://packages.python.org/DendroPy/library/index.html
-
-Source Code Repository
-======================
-
-The DendroPy source code is version-controlled using `Git <http://git-scm.com/>`_, and the `DendroPy Git repository <http://github.com/jeetsukumaran/DendroPy>`_ can be cloned by running::
-
-    $ git clone git://github.com/jeetsukumaran/DendroPy.git
-
-Change History
-==============
-
-The major changes (new features and bug fixes) in the development history of DendroPy can be found here:
-
-    http://packages.python.org/DendroPy/changes.html
-
-More Information
-=================
-More information, including tutorials, library API references, citation, license, etc. can be found on the `DendroPy documentation website <http://packages.python.org/DendroPy/>`_:
-
-    http://packages.python.org/DendroPy/
-
+But it will soon be!
