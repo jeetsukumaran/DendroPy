@@ -33,7 +33,10 @@ def get_calling_code_info(stack_level):
 
 def dump_stack():
     for frame, filename, line_num, func, source_code, source_index in inspect.stack()[2:]:
-        print("{}[{}]: {}".format(filename, line_num, source_code[source_index].strip()))
+        if source_code is None:
+            print("{}: {}".format(filename, line_num))
+        else:
+            print("{}: {}: {}".format(filename, line_num, source_code[source_index].strip()))
 
 # def deprecation_alert(message,
 #         logger_obj=None,

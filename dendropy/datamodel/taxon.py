@@ -266,7 +266,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             else:
                 for i in args[0]:
                     if isinstance(i, Taxon):
-                        self.add_taxon(i.label)
+                        self.add_taxon(i)
                     else:
                         self.new_taxon(label=i)
 
@@ -274,7 +274,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         return "[{}]".format(", ".join([str(i) for i in self._taxa]))
 
     def __repr__(self):
-        return "<TaxonNamespace {} '{}': [{}]>".format(hex(id(self)), self.label, ", ".join(repr(i) for i in self._taxa))
+        return "<{} {} '{}': [{}]>".format(self.__class__.__name__, hex(id(self)), self.label, ", ".join(repr(i) for i in self._taxa))
 
     def __hash__(self):
         return hash( (t for t in self._taxa) )
@@ -764,34 +764,6 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         taxon = self.new_taxon(label=label)
         return taxon
 
-    # def drop_taxon(self,
-    #         key,
-    #         multiple=True,
-    #         case_insensitive=False,
-    #         error_if_not_found=True):
-    #     """
-    #     Removes a Taxon object from self based `key` value, which can be a
-    #     Taxon object directly, a string representing a Taxon object's
-    #     label.
-    #     """
-    #     taxa = self._resolve_taxon_request(key,
-    #             case_insensitive=case_insensitive,
-    #             multiple=True,
-    #             error_if_not_found=error_if_not_found)
-    #     if not multiple:
-    #         taxa = taxa[:1]
-    #     for taxon in taxa:
-    #         if taxon in self._taxa:
-    #             self._taxa.remove(taxon)
-    #         idx = self._taxon_accession_index_map.pop(taxon, None)
-    #         if idx is not None:
-    #             self._accession_index_taxon_map.pop(idx, None)
-    #             self._taxon_accession_index_map.pop(taxon, None)
-    #         bm = self._taxon_bitmask_map.pop(taxon, None)
-    #         if bm is not None:
-    #             self._bitmask_taxon_map.pop(bm, None)
-    #             self._taxon_accession_index_map.pop(taxon, None)
-
     def remove_taxon(self, taxon):
         """
         Removes specified `Taxon` object from the collection in this namespace.
@@ -1011,6 +983,22 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         return text.split_as_newick_string(split, self, preserve_spaces=preserve_spaces, quote_underscores=quote_underscores)
 
 ##############################################################################
+## TaxonSet
+class TaxonSet(TaxonNamespace):
+    """
+    This class is present for (temporary!) legacy support of code written under
+    DendroPy 3.x.  It will be removed in future versions. All new code should
+    be written using `TaxonNamespace`. Old code needs to be updated to use
+    `TaxonNamespace`.
+    """
+    def __new__(cls):
+        error.dump_stack()
+        warnings.warn("`TaxonSet` will no longer be supported in future releases; use `TaxonNamespace` instead",
+                FutureWarning, stacklevel=3)
+        o = super(TaxonSet, cls).__new__(cls)
+        return o
+
+##############################################################################
 ## SimpleTaxonNamespace
 
 # class SimpleTaxonNamespace(TaxonNamespace):
@@ -1174,7 +1162,7 @@ class Taxon(base.DataObject, base.Annotable):
         return "'{}'".format(self._label)
 
     def __repr__(self):
-        return "<Taxon {} '{}'>".format(hex(id(self)), self._label)
+        return "<{} {} '{}'>".format(self.__class__.__name__, hex(id(self)), self._label)
 
     def description(self, depth=1, indent=0, itemize="", output=None, **kwargs):
         """
