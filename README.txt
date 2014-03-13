@@ -13,7 +13,7 @@ The primary home page for DendroPy, with detailed tutorials and documentation, i
 Requirements and Installation
 =============================
 
-DendroPy runs under any version of Python 2 from 2.4 upwards (i.e., Python 2.4, 2.5, 2.6, 2.7, etc.). At present, it does not run under Python 3.
+DendroPy 4.x requires Python 3. It does not run under Python 2.x or below.
 
 If you have `setuptools <http://pypi.python.org/pypi/setuptools>`_ installed, you can install the latest public release of DendroPy directly from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_ by running::
 
@@ -25,8 +25,8 @@ Alternatively, if you have `pip <http://pypi.python.org/pypi/pip>`_ installed, y
 
 If you download the source code archive from the `Python Package Index <http://pypi.python.org/pypi/DendroPy/>`_, you can unarchive it and install it from the local source by running::
 
-    $ tar -xvzf DendroPy-3.x.x.tar.gz
-    $ cd DendroPy-3.x.x
+    $ tar -xvzf DendroPy-4.x.x.tar.gz
+    $ cd DendroPy-4.x.x
     $ sudo python setup.py install
 
 Documentation

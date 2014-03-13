@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -96,14 +96,6 @@ def get_logger(name="dendropy"):
         logger.is_configured = True
     return logger
 
-def deprecation(message, logger_obj=None, stacklevel=3):
-    try:
-        import warnings
-        warnings.warn(message, DeprecationWarning, stacklevel=stacklevel)
-    except:
-        if logger_obj:
-            logger_obj.warning(message)
-
 class ConsoleMessenger(object):
 
     ERROR_MESSAGING_LEVEL = 2000
@@ -143,7 +135,7 @@ class ConsoleMessenger(object):
             msg = self.text_wrapper.fill(msg)
         return msg
 
-    def send(self, msg, level=0, wrap=True, newline=True):
+    def log(self, msg, level=0, wrap=True, newline=True):
         if self.silent:
             return
         if level >= self.messaging_level:
@@ -152,23 +144,27 @@ class ConsoleMessenger(object):
             if newline:
                 self.primary_out.write("\n")
 
-    def send_lines(self, msg, level=None, wrap=True, prefix=""):
+    def log_lines(self, msg, level=None, wrap=True, prefix=""):
         for line in msg:
-            self.send(msg=prefix+line, level=level, wrap=wrap)
+            self.log(msg=prefix+line, level=level, wrap=wrap)
 
-    def send_error(self, msg, wrap=True):
-        self.send(msg, level=ConsoleMessenger.ERROR_MESSAGING_LEVEL, wrap=wrap)
+    def error(self, msg, wrap=True):
+        self.log(msg, level=ConsoleMessenger.ERROR_MESSAGING_LEVEL, wrap=wrap)
 
-    def send_warning(self, msg, wrap=True):
-        self.send(msg, level=ConsoleMessenger.WARNING_MESSAGING_LEVEL, wrap=wrap)
+    def warning(self, msg, wrap=True):
+        self.log(msg, level=ConsoleMessenger.WARNING_MESSAGING_LEVEL, wrap=wrap)
 
-    def send_info(self, msg, wrap=True):
-        self.send(msg, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
+    def info(self, msg, wrap=True):
+        self.log(msg, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
 
-    def send_info_lines(self, msg, wrap=True, prefix=""):
+    def info_lines(self, msg, wrap=True, prefix=""):
         for line in msg:
-            self.send(msg=prefix+line, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
+            self.log(msg=prefix+line, level=ConsoleMessenger.INFO_MESSAGING_LEVEL, wrap=wrap)
 
-    def write_info(self, msg):
+    def info_raw(self, msg):
         if self.messaging_level <= ConsoleMessenger.INFO_MESSAGING_LEVEL:
             self.primary_out.write(self.info_leader() + msg)
+
+
+
+

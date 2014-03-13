@@ -1,12 +1,13 @@
-*.pyc
-*.kpf
-DendroPy.egg-info*
-.svn*
+# OS X / Darwin
 .DS_Store*
-dendropy/test/output/
-dendropy/test/coverage/
+
+# Python
+*.pyc
+*.egg-info*
 build/*
 dist/*
+setup.cfg
 setuptools-*.egg
-*.bbprojectd
-tags
+
+# PyCharm
+**/.idea

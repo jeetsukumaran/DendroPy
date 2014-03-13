@@ -21,7 +21,7 @@ Path mapping for various test resources.
 """
 
 import os
-from dendropy.utility import textutils
+# from dendropy.utility import textutils
 from dendropy.utility import messaging
 _LOG = messaging.get_logger(__name__)
 

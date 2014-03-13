@@ -1,6 +1,0 @@
-DendroPy installs and works out-of-the-box under all versions of Python 2.x higher than 2.4.
-
-To install the DendroPy library from the source distribution, end-users can run::
-
-    $ python setup.py install
-

@@ -1,27 +1,20 @@
 #! /usr/bin/env python
 
-############################################################################
-##  bibtex.py
+##############################################################################
+##  DendroPy Phylogenetic Computing Library.
 ##
-##  Part of the lark ("literature archive") set of tools for the management
-##  of a document repository.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
+##  All rights reserved.
 ##
-##  Copyright 2007 Jeet Sukumaran (jeetsukumaran@frogweb.org)
+##  See "LICENSE.txt" for terms and conditions of usage.
 ##
-##  This program is free software; you can redistribute it and/or modify
-##  it under the terms of the GNU General Public License as published by
-##  the Free Software Foundation; either version 3 of the License, or
-##  (at your option) any later version.
+##  If you use this work or any portion thereof in published work,
+##  please cite it as:
 ##
-##  This program is distributed in the hope that it will be useful,
-##  but WITHOUT ANY WARRANTY; without even the implied warranty of
-##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##  GNU General Public License for more details.
+##     Sukumaran, J. and M. T. Holder. 2010. DendroPy: a Python library
+##     for phylogenetic computing. Bioinformatics 26: 1569-1571.
 ##
-##  You should have received a copy of the GNU General Public License along
-##  with this programm. If not, see <http://www.gnu.org/licenses/>.
-##
-############################################################################
+##############################################################################
 
 """
 BibTeX interface.
@@ -30,7 +23,7 @@ BibTeX interface.
 import re
 import textwrap
 import sys
-from dendropy.utility.containers import OrderedCaselessDict
+from dendropy.utility.container import OrderedCaselessDict
 
 # default order of fields
 BIBTEX_FIELDS = [
@@ -232,12 +225,12 @@ class BibTexEntry(object):
         decompose_match = self.decompose_pattern.match(text)
         try:
             self.bibtype = decompose_match.group(1)
-        except AttributeError, exception:
-            raise ValueError("Failed to parse bibtype: %s" % text)
+        except AttributeError as exception:
+            raise ValueError("Failed to parse bibtype: {}".format(text))
         try:
             self.citekey = decompose_match.group(2)
-        except AttributeError, exception:
-            raise ValueError("Failed to parse citekey: %s" % text)
+        except AttributeError as exception:
+            raise ValueError("Failed to parse citekey: {}".format(text))
         remaining = decompose_match.group(3)
         field_match = self.field_pattern.match(remaining)
         while field_match:
@@ -267,7 +260,7 @@ class BibTexEntry(object):
         """
         entry = []
         sep = "  =  "
-        entry.append('@%s{%s,' % (self.bibtype, self.citekey))
+        entry.append('@{}{{},'.format((self.bibtype, self.citekey)))
         fields = self.fields
 #         maxlen = max([len(field) for field in fields])
         maxlen = max([len(field) for field in BIBTEX_FIELDS])
@@ -281,7 +274,7 @@ class BibTexEntry(object):
                                       wrap=wrap,
                                       width = wrap_width - maxlen - len(sep) + 2,
                                       col_start = maxlen + len(sep) + 2 )
-            entry.append("  %s%s%s," % (field_header, sep, field_value))
+            entry.append("  {}{}{},".format((field_header, sep, field_value)))
         entry.append('}')
         return '\n'.join(entry)
 
@@ -290,14 +283,14 @@ class BibTexEntry(object):
         Composes entry in BibTex format.
         """
         entry = []
-        entry.append('@%s{%s,' % (self.bibtype, self.citekey))
+        entry.append('@{}{{{},'.format((self.bibtype, self.citekey)))
         fields = self.fields
         for field in fields:
             field_value = _format_bibtex_value(self._entry_dict[field],
                                       wrap=False,
                                       width=None,
                                       col_start=1)
-            entry.append("%s=%s," % (field, field_value))
+            entry.append("{}={},".format((field, field_value)))
         entry.append('}')
         return ''.join(entry)
 

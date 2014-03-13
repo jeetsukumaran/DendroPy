@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -17,21 +17,59 @@
 ##############################################################################
 
 """
-Exceptions and error.
+Exceptions and errors.
 """
+
 import sys
+import warnings
+import inspect
+
+
+def get_calling_code_info(stack_level):
+    frame = inspect.stack()[stacklevel]
+    filename = inspect.getfile(frame[0])
+    lineno = inspect.getlineno(frame[0])
+    return filename, lineno
+
+def dump_stack():
+    for frame, filename, line_num, func, source_code, source_index in inspect.stack()[2:]:
+        print("{}[{}]: {}".format(filename, line_num, source_code[source_index].strip()))
+
+# def deprecation_alert(message,
+#         logger_obj=None,
+#         stacklevel=2,
+#         force_warning=False):
+#     with warnings.catch_warnings() as w:
+#         if force_warning:
+#             frame = inspect.stack()[stacklevel]
+#             warnings.warn_explicit(
+#                     message=message,
+#                     category=UserWarning,
+#                     filename=inspect.getfile(frame[0]),
+#                     lineno=inspect.getlineno(frame[0]))
+#         else:
+#             warnings.warn(message, DeprecationWarning, stacklevel=stacklevel)
+#     if logger_obj:
+#         logger_obj.warning(message)
 
 class DataError(Exception):
 
-    def __init__(self, message=None, row=None, column=None, filename=None, stream=None):
+    def __init__(self,
+            message=None,
+            line_num=None,
+            col_num=None,
+            filename=None,
+            stream=None):
         Exception.__init__(self)
-        self.row = row
-        self.column = column
+        self.line_num = line_num
+        self.col_num = col_num
         self.msg = message
         self.filename = None
         self.decorate_with_name(filename=filename, stream=stream)
 
-    def decorate_with_name(self, filename=None, stream=None):
+    def decorate_with_name(self,
+            filename=None,
+            stream=None):
         if filename is not None:
             self.filename = filename
         if stream is not None:
@@ -43,17 +81,27 @@ class DataError(Exception):
     def __str__(self):
         f, l, c = "", "", ""
         if self.filename:
-            f =  ' "%s"' % self.filename
-        if self.row is not None:
-            l =  " on line %d" % self.row
-        if self.column is not None:
-            c =  " at column %d" % self.column
-        return 'Error parsing data source%s%s%s: %s' % (f, l, c, self.msg)
+            f =  " '{}'".format(self.filename)
+        if self.line_num is not None:
+            l =  " on line {}".format(self.line_num)
+        if self.col_num is not None:
+            c =  " at column {}".format(self.col_num)
+        return "Error parsing data source{}{}{}: {}".format(f, l, c, self.msg)
 
 class DataParseError(DataError):
 
-    def __init__(self, message=None, row=None, column=None, filename=None, stream=None):
-        DataError.__init__(self, message=message, row=row, column=column, filename=filename, stream=stream)
+    def __init__(self,
+            message=None,
+            line_num=None,
+            col_num=None,
+            filename=None,
+            stream=None):
+        DataError.__init__(self,
+                message=message,
+                line_num=line_num,
+                col_num=col_num,
+                filename=filename,
+                stream=stream)
 
 class UnsupportedSchemaError(NotImplementedError):
 
@@ -72,22 +120,26 @@ class UnspecifiedSourceError(Exception):
 
 class TooManyArgumentsError(TypeError):
 
-    def __init__(self, message=None, func_name=None, max_args=None, args=None):
+    def __init__(self,
+            message=None,
+            func_name=None,
+            max_args=None,
+            args=None):
         if message is None and (func_name is not None and max_args):
-            message = "%s() takes a maximum of %d arguments (%d given)" % (func_name, max_args, len(args))
+            message = "{}() takes a maximum of {} arguments ({} given)".format(func_name, max_args, len(args))
         TypeError.__init__(self, message)
 
 class InvalidArgumentValueError(ValueError):
 
     def __init__(self, message=None, func_name=None, arg=None):
         if message is None and (func_name is not None and arg is not None):
-            message = "%s() does not accept objects of type '%s' as an argument" % (func_name, arg.__class__.__name__)
+            message = "{}() does not accept objects of type '{}' as an argument".format(func_name, arg.__class__.__name__)
         ValueError.__init__(self, message)
 
 class MultipleInitializationSourceError(TypeError):
     def __init__(self, message=None, class_name=None, arg=None):
         if message is None and (class_name is not None and arg is not None):
-            message = "%s() does not accept data 'stream' or 'schema' arguments when initializing with another object" % (class_name)
+            message = "{}() does not accept data 'stream' or 'schema' arguments when initializing with another object".format(class_name)
         TypeError.__init__(self, message)
 
 

@@ -3,7 +3,7 @@
 ##############################################################################
 ##  DendroPy Phylogenetic Computing Library.
 ##
-##  Copyright 2010 Jeet Sukumaran and Mark T. Holder.
+##  Copyright 2010-2014 Jeet Sukumaran and Mark T. Holder.
 ##  All rights reserved.
 ##
 ##  See "LICENSE.txt" for terms and conditions of usage.
@@ -16,37 +16,3 @@
 ##
 ##############################################################################
 
-"""
-Low-level data structures, classes, constants, etc. that are used
-by the DendroPy library but generally not directly by client code.
-"""
-
-import os
-import random
-
-###############################################################################
-## USER-SPECIFIC
-
-# global debugging flag
-if "DENDROPY_DEBUG" in os.environ:
-    if os.environ["DENDROPY_DEBUG"] \
-        and os.environ["DENDROPY_DEBUG"].lower()[0] in ["1", "t", "y", "d"]:
-        GLOBAL_DEBUG = True
-    else:
-        GLOBAL_DEBUG = False
-else:
-    GLOBAL_DEBUG = False
-
-_user_ini_checked = False
-if not _user_ini_checked:
-    import os
-    _user_ini_checked = True
-    p = os.path.expanduser("~/.dendropy/startup.py")
-    if os.path.exists(p):
-        execfile(p)
-    del p
-
-###############################################################################
-## GLOBAL RANDOM NUMBER GENERATOR
-
-GLOBAL_RNG = random.Random()

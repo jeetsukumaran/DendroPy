@@ -1,0 +1,1473 @@
+[!This data set was downloaded from TreeBASE, a relational database of phylogenetic knowledge. TreeBASE has been supported by the NSF, Harvard University, Yale University, SDSC and UC Davis. Please do not remove this acknowledgment from the Nexus file.
+
+
+Generated on January 28, 2013; 23:05 GMT
+
+TreeBASE (cc) 1994-2008
+
+Study reference:
+Wu D., Hugenholtz P., Mavromatis K., Pukall R., Dalin E., Ivanova N.N., Kunin V.,
+Goodwin L., Wu M., Tindall B.J., Hooper S.D., Pati A., Lykidis A., Spring S., Anderson
+I.J., D¬íhaeseleer P., Zemla A., Singer M., Lapidus A., Nolan M., Copeland
+A., Chen F., Cheng J., Lucas S., Kerfeld C., Lang E., Gronow S., Chain P., Bruce
+D., Rubin E.M., Kyrpides N.C., Klenk H., & Eisen J.A. 2009. A phylogeny-driven
+genomic encyclopaedia of Bacteria and Archaea. Nature, 462(7276): 1056-1060.
+
+TreeBASE Study URI:  http://purl.org/phylo/treebase/phylows/study/TB2:S10965]
+
+BEGIN TAXA;
+        TITLE  Taxa1;
+        DIMENSIONS NTAX=720;
+        TAXLABELS
+            Acaryochloris_marina_MBIC11017
+            Acholeplasma_laidlawii_PG_8A
+            Acidimicrobium_ferrooxidans
+            Acidiphilium_cryptum_JF_5
+            Acidobacteria_bacterium_Ellin345
+            Acidothermus_cellulolyticus_11B
+            Acidovorax_avenae_subsp._citrulli_AAC00_1
+            Acidovorax_sp._JS42
+            Acinetobacter_baumannii_ACICU
+            Acinetobacter_baumannii_ATCC_17978
+            Acinetobacter_baumannii_AYE
+            Acinetobacter_baumannii_SDF
+            Acinetobacter_sp._ADP1
+            Actinobacillus_pleuropneumoniae_L20
+            Actinobacillus_pleuropneumoniae_serovar_3_str._JL03
+            Actinobacillus_pleuropneumoniae_serovar_7_str._AP76
+            Actinobacillus_succinogenes_130Z
+            Actinosynnema_mirum
+            Aeromonas_hydrophila_subsp._hydrophila_ATCC_7966
+            Aeromonas_salmonicida_subsp._salmonicida_A449
+            Agrobacterium_tumefaciens_str._C58
+            Akkermansia_muciniphila_ATCC_BAA_835
+            Alcanivorax_borkumensis_SK2
+            Alicyclobacillus_acidocaldarius
+            Alkalilimnicola_ehrlichei_MLHE_1
+            Alkaliphilus_metalliredigenes_QYMF
+            Alkaliphilus_oremlandii_OhILAs
+            Anabaena_variabilis_ATCC_29413
+            Anaerococcus_prevotii
+            Anaeromyxobacter_dehalogenans_2CP_C
+            'Anaeromyxobacter sp. Fw109-5'
+            Anaplasma_marginale_str._St_Maries
+            Anaplasma_phagocytophilum_HZ
+            Aquifex_aeolicus_VF5
+            Arcobacter_butzleri_RM4018
+            Arthrobacter_aurescens_TC1
+            Arthrobacter_sp._FB24
+            'Aster yellows witches''-broom phytoplasma AYWB'
+            Atopobium_parvulum
+            Azoarcus_sp._BH72
+            Azoarcus_sp._EbN1
+            Azorhizobium_caulinodans_ORS_571
+            Bacillus_amyloliquefaciens_FZB42
+            Bacillus_anthracis_str._Ames
+            Bacillus_anthracis_str._Ames_Ancestor
+            Bacillus_anthracis_str._Sterne
+            Bacillus_cereus_ATCC_10987
+            Bacillus_cereus_ATCC_14579
+            Bacillus_cereus_E33L
+            Bacillus_cereus_subsp._cytotoxis_NVH_391_98
+            Bacillus_clausii_KSM_K16
+            Bacillus_halodurans_C_125
+            Bacillus_licheniformis_ATCC_14580
+            Bacillus_pumilus_SAFR_032
+            Bacillus_subtilis_subsp._subtilis_str._168
+            'Bacillus thuringiensis serovar konkukian str. 97-27'
+            Bacillus_thuringiensis_str._Al_Hakam
+            Bacillus_weihenstephanensis_KBAB4
+            Bacteroides_fragilis_NCTC_9343
+            Bacteroides_fragilis_YCH46
+            Bacteroides_thetaiotaomicron_VPI_5482
+            Bacteroides_vulgatus_ATCC_8482
+            Bartonella_bacilliformis_KC583
+            Bartonella_henselae_str._Houston_1
+            Bartonella_quintana_str._Toulouse
+            Bartonella_tribocorum_CIP_105476
+            Baumannia_cicadellinicola_str._Hc_Homalodisca_coagulata
+            Bdellovibrio_bacteriovorus_HD100
+            Beijerinckia_indica_subsp._indica_ATCC_9039
+            Beutenbergia_cavernae
+            Bifidobacterium_adolescentis_ATCC_15703
+            Bifidobacterium_longum_DJO10A
+            Bifidobacterium_longum_NCC2705
+            Bordetella_avium_197N
+            Bordetella_bronchiseptica_RB50
+            Bordetella_parapertussis_12822
+            Bordetella_pertussis_Tohama_I
+            Bordetella_petrii_DSM_12804
+            Borrelia_afzelii_PKo
+            Borrelia_burgdorferi_B31
+            Borrelia_garinii_PBi
+            Borrelia_hermsii_DAH
+            Brachybacterium_faecium
+            Brachyspira_murdochii
+            Bradyrhizobium_japonicum_USDA_110
+            Bradyrhizobium_sp._BTAi1
+            Bradyrhizobium_sp._ORS278
+            Brucella_abortus_S19
+            'Brucella abortus biovar 1 str. 9-941'
+            Brucella_canis_ATCC_23365
+            Brucella_melitensis_16M
+            Brucella_melitensis_biovar_Abortus_2308
+            Brucella_ovis_ATCC_25840
+            Brucella_suis_1330
+            Brucella_suis_ATCC_23445
+            Buchnera_aphidicola_str._APS_Acyrthosiphon_pisum
+            Buchnera_aphidicola_str._Bp_Baizongia_pistaciae
+            Buchnera_aphidicola_str._Cc_Cinara_cedri
+            Buchnera_aphidicola_str._Sg_Schizaphis_graminum
+            Burkholderia_ambifaria_AMMD
+            Burkholderia_ambifaria_MC40_6
+            Burkholderia_cenocepacia_AU_1054
+            Burkholderia_cenocepacia_HI2424
+            Burkholderia_cenocepacia_MC0_3
+            Burkholderia_mallei_ATCC_23344
+            Burkholderia_mallei_NCTC_10229
+            Burkholderia_mallei_NCTC_10247
+            Burkholderia_mallei_SAVP1
+            Burkholderia_multivorans_ATCC_17616
+            Burkholderia_phymatum_STM815
+            Burkholderia_phytofirmans_PsJN
+            Burkholderia_pseudomallei_1106a
+            Burkholderia_pseudomallei_1710b
+            Burkholderia_pseudomallei_668
+            Burkholderia_pseudomallei_K96243
+            Burkholderia_sp._383
+            Burkholderia_thailandensis_E264
+            Burkholderia_vietnamiensis_G4
+            Burkholderia_xenovorans_LB400
+            Caldicellulosiruptor_saccharolyticus_DSM_8903
+            Campylobacter_concisus_13826
+            Campylobacter_curvus_525_92
+            'Campylobacter fetus subsp. fetus 82-40'
+            Campylobacter_hominis_ATCC_BAA_381
+            Campylobacter_jejuni_RM1221
+            Campylobacter_jejuni_subsp._doylei_269_97
+            Campylobacter_jejuni_subsp._jejuni_81_176
+            Campylobacter_jejuni_subsp._jejuni_81116
+            Campylobacter_jejuni_subsp._jejuni_NCTC_11168
+            Candidatus_Amoebophilus_asiaticus_5a2
+            Candidatus_Blochmannia_floridanus
+            Candidatus_Blochmannia_pennsylvanicus_str._BPEN
+            Candidatus_Desulfococcus_oleovorans_Hxd3
+            Candidatus_Desulforudis_audaxviator_MP104C
+            Candidatus_Pelagibacter_ubique_HTCC1062
+            Candidatus_Phytoplasma_mali
+            Candidatus_Protochlamydia_amoebophila_UWE25
+            'Candidatus Ruthia magnifica str. Cm (Calyptogena magnifica)'
+            Candidatus_Sulcia_muelleri_GWSS
+            Candidatus_Vesicomyosocius_okutanii_HA
+            Capnocytophaga_ochracea
+            Carboxydothermus_hydrogenoformans_Z_2901
+            Catenulispora_acidiphila
+            Caulobacter_crescentus_CB15
+            Caulobacter_sp._K31
+            Cellulomonas_flavigena
+            Cellvibrio_japonicus_Ueda107
+            Chitinophaga_pinensis
+            Chlamydia_muridarum_Nigg
+            Chlamydia_trachomatis_434_Bu
+            Chlamydia_trachomatis_A_HAR_13
+            Chlamydia_trachomatis_D_UW_3_CX
+            Chlamydia_trachomatis_L2b_UCH_1_proctitis
+            Chlamydophila_abortus_S26_3
+            Chlamydophila_caviae_GPIC
+            Chlamydophila_felis_Fe_C_56
+            Chlamydophila_pneumoniae_AR39
+            Chlamydophila_pneumoniae_CWL029
+            Chlamydophila_pneumoniae_J138
+            Chlamydophila_pneumoniae_TW_183
+            Chlorobaculum_parvum_NCIB_8327
+            Chlorobium_chlorochromatii_CaD3
+            Chlorobium_limicola_DSM_245
+            Chlorobium_phaeobacteroides_BS1
+            Chlorobium_phaeobacteroides_DSM_266
+            Chlorobium_tepidum_TLS
+            Chloroflexus_aurantiacus_J_10_fl
+            Chloroherpeton_thalassium_ATCC_35110
+            Chromobacterium_violaceum_ATCC_12472
+            Chromohalobacter_salexigens_DSM_3043
+            Citrobacter_koseri_ATCC_BAA_895
+            Clavibacter_michiganensis_subsp._michiganensis_NCPPB_382
+            Clavibacter_michiganensis_subsp._sepedonicus
+            Clostridium_acetobutylicum_ATCC_824
+            Clostridium_beijerinckii_NCIMB_8052
+            Clostridium_botulinum_A_str._ATCC_19397
+            Clostridium_botulinum_A_str._ATCC_3502
+            Clostridium_botulinum_A_str._Hall
+            Clostridium_botulinum_A3_str._Loch_Maree
+            Clostridium_botulinum_B_str._Eklund_17B
+            Clostridium_botulinum_B1_str._Okra
+            Clostridium_botulinum_E3_str._Alaska_E43
+            Clostridium_botulinum_F_str._Langeland
+            Clostridium_difficile_630
+            Clostridium_kluyveri_DSM_555
+            Clostridium_novyi_NT
+            Clostridium_perfringens_ATCC_13124
+            Clostridium_perfringens_SM101
+            Clostridium_perfringens_str._13
+            Clostridium_phytofermentans_ISDg
+            Clostridium_tetani_E88
+            Clostridium_thermocellum_ATCC_27405
+            Colwellia_psychrerythraea_34H
+            Conexibacter_woesei
+            Corynebacterium_diphtheriae_NCTC_13129
+            Corynebacterium_efficiens_YS_314
+            Corynebacterium_glutamicum_ATCC_13032
+            Corynebacterium_glutamicum_R
+            Corynebacterium_jeikeium_K411
+            Corynebacterium_urealyticum_DSM_7109
+            Coxiella_burnetii_Dugway_5J108_111
+            Coxiella_burnetii_RSA_331
+            Coxiella_burnetii_RSA_493
+            Cryptobacterium_curtum
+            Cupriavidus_taiwanensis
+            Cyanothece_sp._ATCC_51142
+            Cytophaga_hutchinsonii_ATCC_33406
+            Dechloromonas_aromatica_RCB
+            Dehalococcoides_ethenogenes_195
+            Dehalococcoides_sp._BAV1
+            Dehalococcoides_sp._CBDB1
+            Deinococcus_geothermalis_DSM_11300
+            Deinococcus_radiodurans_R1
+            Delftia_acidovorans_SPH_1
+            Denitrovibrio_acetiphilus
+            Desulfitobacterium_hafniense_Y51
+            Desulfohalobium_retbaense
+            Desulfomicrobium_baculatum
+            Desulfotalea_psychrophila_LSv54
+            Desulfotomaculum_acetoxidans
+            Desulfotomaculum_reducens_MI_1
+            Desulfovibrio_desulfuricans_subsp._desulfuricans_str._G20
+            Desulfovibrio_vulgaris_subsp._vulgaris_DP4
+            Desulfovibrio_vulgaris_subsp._vulgaris_str._Hildenborough
+            Dethiosulfovibrio_peptidovorans
+            Dichelobacter_nodosus_VCS1703A
+            Dinoroseobacter_shibae_DFL_12
+            Dyadobacter_fermentans
+            Eggerthella_lenta
+            Ehrlichia_canis_str._Jake
+            Ehrlichia_chaffeensis_str._Arkansas
+            Ehrlichia_ruminantium_str._Gardel
+            Ehrlichia_ruminantium_str._Welgevonden
+            Elusimicrobium_minutum_Pei191
+            Enterobacter_sakazakii_ATCC_BAA_894
+            Enterobacter_sp._638
+            Enterococcus_faecalis_V583
+            Erwinia_carotovora_subsp._atroseptica_SCRI1043
+            Erwinia_tasmaniensis
+            Erythrobacter_litoralis_HTCC2594
+            Escherichia_coli_536
+            Escherichia_coli_APEC_O1
+            Escherichia_coli_ATCC_8739
+            Escherichia_coli_CFT073
+            Escherichia_coli_E24377A
+            Escherichia_coli_HS
+            Escherichia_coli_O157_H7_EDL933
+            Escherichia_coli_O157_H7_str._Sakai
+            Escherichia_coli_SMS_3_5
+            Escherichia_coli_UTI89
+            Escherichia_coli_str._K12_substr_DH10B
+            Escherichia_coli_str._K12_substr_MG1655
+            Exiguobacterium_sibiricum_255_15
+            Fervidobacterium_nodosum_Rt17_B1
+            Finegoldia_magna_ATCC_29328
+            Flavobacterium_johnsoniae_UW101
+            Flavobacterium_psychrophilum_JIP02_86
+            Francisella_philomiragia_subsp._philomiragia_ATCC_25017
+            Francisella_tularensis_subsp._holarctica
+            Francisella_tularensis_subsp._holarctica_FTNF002_00
+            Francisella_tularensis_subsp._holarctica_OSU18
+            Francisella_tularensis_subsp._mediasiatica_FSC147
+            Francisella_tularensis_subsp._novicida_U112
+            Francisella_tularensis_subsp._tularensis_FSC198
+            Francisella_tularensis_subsp._tularensis_SCHU_S4
+            Francisella_tularensis_subsp._tularensis_WY96_3418
+            Frankia_alni_ACN14a
+            Frankia_sp._CcI3
+            Frankia_sp._EAN1pec
+            Fusobacterium_nucleatum_subsp._nucleatum_ATCC_25586
+            Geobacillus_kaustophilus_HTA426
+            Geobacillus_thermodenitrificans_NG80_2
+            Geobacter_lovleyi_SZ
+            Geobacter_metallireducens_GS_15
+            Geobacter_sulfurreducens_PCA
+            Geobacter_uraniumreducens_Rf4
+            Geodermatophilus_obscurus
+            Gloeobacter_violaceus_PCC_7421
+            Gluconacetobacter_diazotrophicus_PAl_5
+            Gluconobacter_oxydans_621H
+            Gordonia_bronchialis
+            Gramella_forsetii_KT0803
+            Granulibacter_bethesdensis_CGDNIH1
+            Haemophilus_ducreyi_35000HP
+            Haemophilus_influenzae_86_028NP
+            Haemophilus_influenzae_PittEE
+            Haemophilus_influenzae_PittGG
+            Haemophilus_influenzae_Rd_KW20
+            Haemophilus_somnus_129PT
+            Haemophilus_somnus_2336
+            Hahella_chejuensis_KCTC_2396
+            Haliangium_ochraceum
+            Halorhodospira_halophila_SL1
+            Helicobacter_acinonychis_str._Sheeba
+            Helicobacter_hepaticus_ATCC_51449
+            Helicobacter_pylori_26695
+            Helicobacter_pylori_HPAG1
+            Helicobacter_pylori_J99
+            Helicobacter_pylori_Shi470
+            Heliobacterium_modesticaldum_Ice1
+            Herminiimonas_arsenicoxydans
+            Herpetosiphon_aurantiacus_ATCC_23779
+            Hyphomonas_neptunium_ATCC_15444
+            Idiomarina_loihiensis_L2TR
+            Jannaschia_sp._CCS1
+            Janthinobacterium_sp._Marseille
+            Jonesia_denitrificans
+            Kangiella_koreensis
+            Kineococcus_radiotolerans_SRS30216
+            Klebsiella_pneumoniae_subsp._pneumoniae_MGH_78578
+            Kocuria_rhizophila_DC2201
+            Kribbella_flavida
+            Kytococcus_sedentarius
+            Lactobacillus_acidophilus_NCFM
+            Lactobacillus_brevis_ATCC_367
+            Lactobacillus_casei_ATCC_334
+            Lactobacillus_casei_BL23
+            Lactobacillus_delbrueckii_subsp._bulgaricus_ATCC_11842
+            Lactobacillus_delbrueckii_subsp._bulgaricus_ATCC_BAA_365
+            Lactobacillus_fermentum_IFO_3956
+            Lactobacillus_gasseri_ATCC_33323
+            Lactobacillus_helveticus_DPC_4571
+            Lactobacillus_johnsonii_NCC_533
+            Lactobacillus_plantarum_WCFS1
+            Lactobacillus_reuteri_F275
+            Lactobacillus_sakei_subsp._sakei_23K
+            Lactobacillus_salivarius_UCC118
+            Lactococcus_lactis_subsp._cremoris_MG1363
+            Lactococcus_lactis_subsp._cremoris_SK11
+            Lactococcus_lactis_subsp._lactis_Il1403
+            Lawsonia_intracellularis_PHE_MN1_00
+            Legionella_pneumophila_str._Corby
+            Legionella_pneumophila_str._Lens
+            Legionella_pneumophila_str._Paris
+            Legionella_pneumophila_subsp._pneumophila_str._Philadelphia_1
+            Leifsonia_xyli_subsp._xyli_str._CTCB07
+            Leptospira_biflexa_serovar_Patoc_strain_Patoc_1_Ames
+            Leptospira_biflexa_serovar_Patoc_strain_Patoc_1_Paris
+            'Leptospira borgpetersenii serovar Hardjo-bovis JB197'
+            'Leptospira borgpetersenii serovar Hardjo-bovis L550'
+            Leptospira_interrogans_serovar_Copenhageni_str._Fiocruz_L1_130
+            Leptospira_interrogans_serovar_Lai_str._56601
+            Leptothrix_cholodnii_sp._6
+            Leptotrichia_buccalis
+            Leuconostoc_citreum_KM20
+            Leuconostoc_mesenteroides_subsp._mesenteroides_ATCC_8293
+            Listeria_innocua_Clip11262
+            Listeria_monocytogenes_EGD_e
+            Listeria_monocytogenes_str._4b_F2365
+            Listeria_welshimeri_serovar_6b_str._SLCC5334
+            Lysinibacillus_sphaericus_C3_41
+            'Magnetococcus sp. MC-1'
+            Magnetospirillum_magneticum_AMB_1
+            Mannheimia_succiniciproducens_MBEL55E
+            Maricaulis_maris_MCS10
+            Marinobacter_aquaeolei_VT8
+            Marinomonas_sp._MWYL1
+            Meiothermus_ruber
+            Meiothermus_silvanus
+            Mesoplasma_florum_L1
+            Mesorhizobium_loti_MAFF303099
+            Mesorhizobium_sp._BNC1
+            Methylacidiphilum_infernorum_V4
+            Methylibium_petroleiphilum_PM1
+            Methylobacillus_flagellatus_KT
+            Methylobacterium_extorquens_PA1
+            Methylobacterium_populi_BJ001
+            Methylobacterium_radiotolerans_JCM_2831
+            Methylobacterium_sp._4_46
+            Methylococcus_capsulatus_str._Bath
+            Microcystis_aeruginosa_NIES_843
+            Moorella_thermoacetica_ATCC_39073
+            Mycobacterium_abscessus
+            Mycobacterium_avium_104
+            Mycobacterium_avium_subsp._paratuberculosis_K_10
+            Mycobacterium_bovis_AF2122_97
+            Mycobacterium_bovis_BCG_str._Pasteur_1173P2
+            Mycobacterium_gilvum_PYR_GCK
+            Mycobacterium_leprae_TN
+            Mycobacterium_marinum_M
+            Mycobacterium_smegmatis_str._MC2_155
+            Mycobacterium_sp._JLS
+            Mycobacterium_sp._KMS
+            Mycobacterium_sp._MCS
+            Mycobacterium_tuberculosis_CDC1551
+            Mycobacterium_tuberculosis_F11
+            Mycobacterium_tuberculosis_H37Ra
+            Mycobacterium_tuberculosis_H37Rv
+            Mycobacterium_ulcerans_Agy99
+            Mycobacterium_vanbaalenii_PYR_1
+            Mycoplasma_agalactiae_PG2
+            Mycoplasma_arthritidis_158L3_1
+            Mycoplasma_capricolum_subsp._capricolum_ATCC_27343
+            Mycoplasma_gallisepticum_R
+            Mycoplasma_genitalium_G37
+            Mycoplasma_hyopneumoniae_232
+            Mycoplasma_hyopneumoniae_7448
+            Mycoplasma_hyopneumoniae_J
+            Mycoplasma_mobile_163K
+            Mycoplasma_mycoides_subsp._mycoides_SC_str._PG1
+            Mycoplasma_penetrans_HF_2
+            Mycoplasma_pneumoniae_M129
+            Mycoplasma_pulmonis_UAB_CTIP
+            Mycoplasma_synoviae_53
+            Myxococcus_xanthus_DK_1622
+            Nakamurella_multipartita
+            Natranaerobius_thermophilus_JW_NM_WN_LF
+            Neisseria_gonorrhoeae_FA_1090
+            Neisseria_gonorrhoeae_NCCP11945
+            Neisseria_meningitidis_053442
+            Neisseria_meningitidis_FAM18
+            Neisseria_meningitidis_MC58
+            Neisseria_meningitidis_Z2491
+            Neorickettsia_sennetsu_str._Miyayama
+            Nitratiruptor_sp._SB155_2
+            Nitrobacter_hamburgensis_X14
+            Nitrobacter_winogradskyi_Nb_255
+            Nitrosococcus_oceani_ATCC_19707
+            Nitrosomonas_europaea_ATCC_19718
+            Nitrosomonas_eutropha_C91
+            Nitrosospira_multiformis_ATCC_25196
+            Nocardia_farcinica_IFM_10152
+            Nocardioides_sp._JS614
+            Nocardiopsis_dassonvillei
+            Nostoc_punctiforme_PCC_73102
+            Nostoc_sp._PCC_7120
+            Novosphingobium_aromaticivorans_DSM_12444
+            Oceanobacillus_iheyensis_HTE831
+            Ochrobactrum_anthropi_ATCC_49188
+            Oenococcus_oeni_PSU_1
+            'Onion yellows phytoplasma OY-M'
+            Opitutus_terrae_PB90_1
+            Orientia_tsutsugamushi_Boryong
+            Orientia_tsutsugamushi_str._Ikeda
+            Parabacteroides_distasonis_ATCC_8503
+            Paracoccus_denitrificans_PD1222
+            Parvibaculum_lavamentivorans_DS_1
+            Pasteurella_multocida_subsp._multocida_str._Pm70
+            Pediococcus_pentosaceus_ATCC_25745
+            Pedobacter_heparinus
+            Pelobacter_carbinolicus_DSM_2380
+            Pelobacter_propionicus_DSM_2379
+            Pelodictyon_luteolum_DSM_273
+            Pelotomaculum_thermopropionicum_SI
+            Petrotoga_mobilis_SJ95
+            Photobacterium_profundum_SS9
+            Photorhabdus_luminescens_subsp._laumondii_TTO1
+            Planctomyces_limnophilus
+            Polaromonas_naphthalenivorans_CJ2
+            Polaromonas_sp._JS666
+            Polynucleobacter_necessarius_STIR1
+            'Polynucleobacter sp. QLW-P1DMWA-1'
+            Porphyromonas_gingivalis_ATCC_33277
+            Porphyromonas_gingivalis_W83
+            Prochlorococcus_marinus_str._AS9601
+            Prochlorococcus_marinus_str._MIT_9211
+            Prochlorococcus_marinus_str._MIT_9215
+            Prochlorococcus_marinus_str._MIT_9301
+            Prochlorococcus_marinus_str._MIT_9303
+            Prochlorococcus_marinus_str._MIT_9312
+            Prochlorococcus_marinus_str._MIT_9313
+            Prochlorococcus_marinus_str._MIT_9515
+            Prochlorococcus_marinus_str._NATL1A
+            Prochlorococcus_marinus_str._NATL2A
+            Prochlorococcus_marinus_subsp._marinus_str._CCMP1375
+            Prochlorococcus_marinus_subsp._pastoris_str._CCMP1986
+            Propionibacterium_acnes_KPA171202
+            Prosthecochloris_vibrioformis_DSM_265
+            Pseudoalteromonas_atlantica_T6c
+            Pseudoalteromonas_haloplanktis_TAC125
+            Pseudomonas_aeruginosa_PA7
+            Pseudomonas_aeruginosa_PAO1
+            Pseudomonas_aeruginosa_UCBPP_PA14
+            Pseudomonas_entomophila_L48
+            Pseudomonas_fluorescens_Pf_5
+            Pseudomonas_fluorescens_PfO_1
+            Pseudomonas_mendocina_ymp
+            Pseudomonas_putida_F1
+            Pseudomonas_putida_GB_1
+            Pseudomonas_putida_KT2440
+            Pseudomonas_putida_W619
+            Pseudomonas_stutzeri_A1501
+            Pseudomonas_syringae_pv._phaseolicola_1448A
+            Pseudomonas_syringae_pv._syringae_B728a
+            Pseudomonas_syringae_pv._tomato_str._DC3000
+            Psychrobacter_arcticus_273_4
+            Psychrobacter_cryohalolentis_K5
+            'Psychrobacter sp. PRwf-1'
+            Psychromonas_ingrahamii_37
+            Ralstonia_eutropha_H16
+            Ralstonia_eutropha_JMP134
+            Ralstonia_metallidurans_CH34
+            Ralstonia_pickettii_12J
+            Ralstonia_solanacearum_GMI1000
+            Renibacterium_salmoninarum_ATCC_33209
+            Rhizobium_etli_CFN_42
+            Rhizobium_etli_CIAT_652
+            Rhizobium_leguminosarum_bv._viciae_3841
+            Rhodobacter_sphaeroides_2_4_1
+            Rhodobacter_sphaeroides_ATCC_17025
+            Rhodobacter_sphaeroides_ATCC_17029
+            Rhodococcus_sp._RHA1
+            Rhodoferax_ferrireducens_T118
+            Rhodopirellula_baltica_SH_1
+            Rhodopseudomonas_palustris_BisA53
+            Rhodopseudomonas_palustris_BisB18
+            Rhodopseudomonas_palustris_BisB5
+            Rhodopseudomonas_palustris_CGA009
+            Rhodopseudomonas_palustris_HaA2
+            Rhodopseudomonas_palustris_TIE_1
+            Rhodospirillum_rubrum_ATCC_11170
+            Rhodothermus_marinus
+            Rickettsia_akari_str._Hartford
+            Rickettsia_bellii_OSU_85_389
+            Rickettsia_bellii_RML369_C
+            Rickettsia_canadensis_str._McKiel
+            Rickettsia_conorii_str._Malish_7
+            Rickettsia_felis_URRWXCal2
+            Rickettsia_massiliae_MTU5
+            Rickettsia_prowazekii_str._Madrid_E
+            Rickettsia_rickettsii_str._Iowa
+            Rickettsia_rickettsii_str._Sheila_Smith
+            Rickettsia_typhi_str._Wilmington
+            Roseiflexus_castenholzii_DSM_13941
+            'Roseiflexus sp. RS-1'
+            Roseobacter_denitrificans_OCh_114
+            Rubrobacter_xylanophilus_DSM_9941
+            Saccharomonospora_viridis
+            Saccharophagus_degradans_2_40
+            Saccharopolyspora_erythraea_NRRL_2338
+            Salinibacter_ruber_DSM_13855
+            Salinispora_arenicola_CNS_205
+            Salinispora_tropica_CNB_440
+            Salmonella_enterica_subsp._arizonae_serovar_62_z4_z23
+            Salmonella_enterica_subsp._enterica_serovar_Choleraesuis_str._SC_B67
+            Salmonella_enterica_subsp._enterica_serovar_Paratyphi_A_str._ATCC_9150
+            Salmonella_enterica_subsp._enterica_serovar_Paratyphi_B_str._SPB7
+            Salmonella_enterica_subsp._enterica_serovar_Typhi_str._CT18
+            Salmonella_enterica_subsp._enterica_serovar_Typhi_str._Ty2
+            Salmonella_typhimurium_LT2
+            Sanguibacter_keddieii
+            Sebaldella_termitidis
+            Serratia_proteamaculans_568
+            Shewanella_amazonensis_SB2B
+            Shewanella_baltica_OS155
+            Shewanella_baltica_OS185
+            Shewanella_baltica_OS195
+            Shewanella_denitrificans_OS217
+            Shewanella_frigidimarina_NCIMB_400
+            Shewanella_halifaxensis_HAW_EB4
+            Shewanella_loihica_pv._4
+            Shewanella_oneidensis_MR_1
+            Shewanella_pealeana_ATCC_700345
+            Shewanella_putrefaciens_CN_32
+            Shewanella_sediminis_HAW_EB3
+            'Shewanella sp. ANA-3'
+            'Shewanella sp. MR-4'
+            'Shewanella sp. MR-7'
+            Shewanella_sp._W3_18_1
+            Shewanella_woodyi_ATCC_51908
+            Shigella_boydii_CDC_3083_94
+            Shigella_boydii_Sb227
+            Shigella_dysenteriae_Sd197
+            Shigella_flexneri_2a_str._2457T
+            Shigella_flexneri_2a_str._301
+            Shigella_flexneri_5_str._8401
+            Shigella_sonnei_Ss046
+            Silicibacter_pomeroyi_DSS_3
+            Silicibacter_sp._TM1040
+            Sinorhizobium_medicae_WSM419
+            Sinorhizobium_meliloti_1021
+            Slackia_heliotrinireducens
+            Sodalis_glossinidius_str._morsitans
+            Solibacter_usitatus_Ellin6076
+            Sorangium_cellulosum_So_ce_56
+            Sphaerobacter_thermophilus
+            Sphingomonas_wittichii_RW1
+            Sphingopyxis_alaskensis_RB2256
+            Spirosoma_linguale
+            Stackebrandtia_nassauensis
+            Staphylococcus_aureus_RF122
+            Staphylococcus_aureus_subsp._aureus_COL
+            Staphylococcus_aureus_subsp._aureus_JH1
+            Staphylococcus_aureus_subsp._aureus_JH9
+            Staphylococcus_aureus_subsp._aureus_MRSA252
+            Staphylococcus_aureus_subsp._aureus_MSSA476
+            Staphylococcus_aureus_subsp._aureus_MW2
+            Staphylococcus_aureus_subsp._aureus_Mu3
+            Staphylococcus_aureus_subsp._aureus_Mu50
+            Staphylococcus_aureus_subsp._aureus_N315
+            Staphylococcus_aureus_subsp._aureus_NCTC_8325
+            Staphylococcus_aureus_subsp._aureus_USA300
+            Staphylococcus_aureus_subsp._aureus_USA300_TCH1516
+            Staphylococcus_aureus_subsp._aureus_str._Newman
+            Staphylococcus_epidermidis_ATCC_12228
+            Staphylococcus_epidermidis_RP62A
+            Staphylococcus_haemolyticus_JCSC1435
+            Staphylococcus_saprophyticus_subsp._saprophyticus_ATCC_15305
+            Stenotrophomonas_maltophilia_K279a
+            Streptobacillus_moniliformis
+            Streptococcus_agalactiae_2603V_R
+            Streptococcus_agalactiae_A909
+            Streptococcus_agalactiae_NEM316
+            Streptococcus_gordonii_str._Challis_substr_CH1
+            Streptococcus_mutans_UA159
+            Streptococcus_pneumoniae_CGSP14
+            Streptococcus_pneumoniae_D39
+            Streptococcus_pneumoniae_Hungary19A_6
+            Streptococcus_pneumoniae_R6
+            Streptococcus_pneumoniae_TIGR4
+            Streptococcus_pyogenes_M1_GAS
+            Streptococcus_pyogenes_MGAS10270
+            Streptococcus_pyogenes_MGAS10394
+            Streptococcus_pyogenes_MGAS10750
+            Streptococcus_pyogenes_MGAS2096
+            Streptococcus_pyogenes_MGAS315
+            Streptococcus_pyogenes_MGAS5005
+            Streptococcus_pyogenes_MGAS6180
+            Streptococcus_pyogenes_MGAS8232
+            Streptococcus_pyogenes_MGAS9429
+            Streptococcus_pyogenes_SSI_1
+            Streptococcus_pyogenes_str._Manfredo
+            Streptococcus_sanguinis_SK36
+            Streptococcus_suis_05ZYH33
+            Streptococcus_suis_98HAH33
+            Streptococcus_thermophilus_CNRZ1066
+            Streptococcus_thermophilus_LMD_9
+            Streptococcus_thermophilus_LMG_18311
+            Streptomyces_avermitilis_MA_4680
+            Streptomyces_coelicolor_A3_2
+            Streptomyces_griseus_subsp._griseus_NBRC_13350
+            Streptosporangium_roseum
+            Sulfurihydrogenibium_sp._YO3AOP1
+            Sulfurimonas_denitrificans_DSM_1251
+            Sulfurospirillum_deleyianum
+            Sulfurovum_sp._NBC37_1
+            Symbiobacterium_thermophilum_IAM_14863
+            Synechococcus_elongatus_PCC_6301
+            Synechococcus_elongatus_PCC_7942
+            Synechococcus_sp._CC9311
+            Synechococcus_sp._CC9605
+            Synechococcus_sp._CC9902
+            'Synechococcus sp. JA-2-3B''a(2-13)'
+            'Synechococcus sp. JA-3-3Ab'
+            Synechococcus_sp._PCC_7002
+            Synechococcus_sp._RCC307
+            Synechococcus_sp._WH_7803
+            Synechococcus_sp._WH_8102
+            Synechocystis_sp._PCC_6803
+            Syntrophobacter_fumaroxidans_MPOB
+            Syntrophomonas_wolfei_subsp._wolfei_str._Goettingen
+            Syntrophus_aciditrophicus_SB
+            Thermanaerovibrio_acidaminovorans
+            Thermoanaerobacter_pseudethanolicus_ATCC_33223
+            Thermoanaerobacter_sp._X514
+            Thermoanaerobacter_tengcongensis_MB4
+            Thermobaculum_terrenum
+            Thermobifida_fusca_YX
+            Thermobispora_bispora
+            Thermomonospora_curvata
+            Thermosipho_melanesiensis_BI429
+            Thermosynechococcus_elongatus_BP_1
+            Thermotoga_lettingae_TMO
+            Thermotoga_maritima_MSB8
+            Thermotoga_petrophila_RKU_1
+            Thermotoga_sp._RQ2
+            Thermus_thermophilus_HB27
+            Thermus_thermophilus_HB8
+            Thiobacillus_denitrificans_ATCC_25259
+            Thiomicrospira_crunogena_XCL_2
+            Treponema_denticola_ATCC_35405
+            Treponema_pallidum_subsp._pallidum_SS14
+            Treponema_pallidum_subsp._pallidum_str._Nichols
+            Trichodesmium_erythraeum_IMS101
+            Tropheryma_whipplei_TW08_27
+            Tropheryma_whipplei_str._Twist
+            Tsukamurella_paurometabola
+            Ureaplasma_parvum_serovar_3_str._ATCC_27815
+            Ureaplasma_parvum_serovar_3_str._ATCC_700970
+            Veillonella_parvula
+            Verminephrobacter_eiseniae_EF01_2
+            Vibrio_cholerae_O1_biovar_eltor_str._N16961
+            Vibrio_cholerae_O395
+            Vibrio_fischeri_ES114
+            Vibrio_harveyi_ATCC_BAA_1116
+            Vibrio_parahaemolyticus_RIMD_2210633
+            Vibrio_vulnificus_CMCP6
+            Vibrio_vulnificus_YJ016
+            Wigglesworthia_glossinidia_endosymbiont_of_Glossina_brevipalpis
+            Wolbachia_endosymbiont_of_Drosophila_melanogaster
+            Wolbachia_endosymbiont_strain_TRS_of_Brugia_malayi
+            Wolbachia_pipientis
+            Wolinella_succinogenes_DSM_1740
+            Xanthobacter_autotrophicus_Py2
+            Xanthomonas_axonopodis_pv._citri_str._306
+            Xanthomonas_campestris_pv._campestris
+            Xanthomonas_campestris_pv._campestris_str._8004
+            Xanthomonas_campestris_pv._campestris_str._ATCC_33913
+            Xanthomonas_campestris_pv._vesicatoria_str._85_10
+            Xanthomonas_oryzae_pv._oryzae_KACC10331
+            Xanthomonas_oryzae_pv._oryzae_MAFF_311018
+            Xanthomonas_oryzae_pv._oryzae_PXO99A
+            Xylanimonas_cellulosilytica
+            Xylella_fastidiosa_9a5c
+            Xylella_fastidiosa_M12
+            Xylella_fastidiosa_M23
+            Xylella_fastidiosa_Temecula1
+            Yersinia_enterocolitica_subsp._enterocolitica_8081
+            Yersinia_pestis_Angola
+            Yersinia_pestis_Antiqua
+            Yersinia_pestis_CO92
+            Yersinia_pestis_KIM
+            Yersinia_pestis_Nepal516
+            Yersinia_pestis_Pestoides_F
+            Yersinia_pestis_biovar_Microtus_str._91001
+            Yersinia_pseudotuberculosis_IP_31758
+            Yersinia_pseudotuberculosis_IP_32953
+            Yersinia_pseudotuberculosis_PB1
+            Yersinia_pseudotuberculosis_YPIII
+            Zymomonas_mobilis_subsp._mobilis_ZM4
+            ;
+END;
+
+BEGIN TREES;
+      TITLE GEBA_720_TB;
+      LINK TAXA = Taxa1;
+         TRANSLATE
+            1    Gordonia_bronchialis,
+            2    Tsukamurella_paurometabola,
+            3    Alicyclobacillus_acidocaldarius,
+            4    Dyadobacter_fermentans,
+            5    Sulfurospirillum_deleyianum,
+            6    Thermobispora_bispora,
+            7    Sphaerobacter_thermophilus,
+            8    Atopobium_parvulum,
+            9    Jonesia_denitrificans,
+            10   Capnocytophaga_ochracea,
+            11   Chitinophaga_pinensis,
+            12   Kribbella_flavida,
+            13   Eggerthella_lenta,
+            14   Planctomyces_limnophilus,
+            15   Cellulomonas_flavigena,
+            16   Nakamurella_multipartita,
+            17   Meiothermus_silvanus,
+            18   Anaerococcus_prevotii,
+            19   Spirosoma_linguale,
+            20   Thermobaculum_terrenum,
+            21   Actinosynnema_mirum,
+            22   Meiothermus_ruber,
+            23   Haliangium_ochraceum,
+            24   Desulfotomaculum_acetoxidans,
+            25   Brachyspira_murdochii,
+            26   Pedobacter_heparinus,
+            27   Sanguibacter_keddieii,
+            28   Veillonella_parvula,
+            29   Slackia_heliotrinireducens,
+            30   Saccharomonospora_viridis,
+            31   Geodermatophilus_obscurus,
+            32   Desulfohalobium_retbaense,
+            33   Streptobacillus_moniliformis,
+            34   Kytococcus_sedentarius,
+            35   Nocardiopsis_dassonvillei,
+            36   Stackebrandtia_nassauensis,
+            37   Denitrovibrio_acetiphilus,
+            38   Sebaldella_termitidis,
+            39   Catenulispora_acidiphila,
+            40   Desulfomicrobium_baculatum,
+            41   Beutenbergia_cavernae,
+            42   Brachybacterium_faecium,
+            43   Thermanaerovibrio_acidaminovorans,
+            44   Xylanimonas_cellulosilytica,
+            45   Kangiella_koreensis,
+            46   Dethiosulfovibrio_peptidovorans,
+            47   Streptosporangium_roseum,
+            48   Rhodothermus_marinus,
+            49   Leptotrichia_buccalis,
+            50   Conexibacter_woesei,
+            51   Cryptobacterium_curtum,
+            52   Acidimicrobium_ferrooxidans,
+            53   Thermomonospora_curvata,
+            54   Geobacter_uraniumreducens_Rf4,
+            55   Mycoplasma_hyopneumoniae_7448,
+            56   Salmonella_enterica_subsp._enterica_serovar_Choleraesuis_str._SC_B67,
+            57   Bacillus_cereus_E33L,
+            58   Desulfovibrio_vulgaris_subsp._vulgaris_str._Hildenborough,
+            59   Microcystis_aeruginosa_NIES_843,
+            60   Coxiella_burnetii_Dugway_5J108_111,
+            61   Streptococcus_thermophilus_CNRZ1066,
+            62   Bacillus_halodurans_C_125,
+            63   Actinobacillus_succinogenes_130Z,
+            64   Mannheimia_succiniciproducens_MBEL55E,
+            65   Bacillus_amyloliquefaciens_FZB42,
+            66   Clostridium_tetani_E88,
+            67   Rhodopseudomonas_palustris_BisB18,
+            68   Nocardia_farcinica_IFM_10152,
+            69   Francisella_tularensis_subsp._novicida_U112,
+            70   'Psychrobacter sp. PRwf-1',
+            71   Bacteroides_vulgatus_ATCC_8482,
+            72   Haemophilus_somnus_129PT,
+            73   Lawsonia_intracellularis_PHE_MN1_00,
+            74   Borrelia_afzelii_PKo,
+            75   Acinetobacter_baumannii_SDF,
+            76   Mycobacterium_tuberculosis_CDC1551,
+            77   Mycobacterium_sp._JLS,
+            78   Chlamydophila_pneumoniae_TW_183,
+            79   Neisseria_meningitidis_MC58,
+            80   Clavibacter_michiganensis_subsp._michiganensis_NCPPB_382,
+            81   Clostridium_kluyveri_DSM_555,
+            82   Staphylococcus_aureus_subsp._aureus_USA300,
+            83   Mycoplasma_capricolum_subsp._capricolum_ATCC_27343,
+            84   Pseudoalteromonas_atlantica_T6c,
+            85   Brucella_melitensis_biovar_Abortus_2308,
+            86   Streptococcus_pyogenes_str._Manfredo,
+            87   Anaeromyxobacter_dehalogenans_2CP_C,
+            88   Enterococcus_faecalis_V583,
+            89   Xanthomonas_campestris_pv._campestris,
+            90   Xanthomonas_campestris_pv._campestris_str._ATCC_33913,
+            91   Burkholderia_cenocepacia_MC0_3,
+            92   Helicobacter_acinonychis_str._Sheeba,
+            93   Mycobacterium_marinum_M,
+            94   Salmonella_enterica_subsp._enterica_serovar_Paratyphi_A_str._ATCC_9150,
+            95   Haemophilus_influenzae_86_028NP,
+            96   Xylella_fastidiosa_9a5c,
+            97   Bacillus_anthracis_str._Ames,
+            98   Maricaulis_maris_MCS10,
+            99   Vibrio_vulnificus_YJ016,
+            100  Chlorobaculum_parvum_NCIB_8327,
+            101  Treponema_pallidum_subsp._pallidum_SS14,
+            102  Methylacidiphilum_infernorum_V4,
+            103  Xylella_fastidiosa_Temecula1,
+            104  Borrelia_burgdorferi_B31,
+            105  Shewanella_loihica_pv._4,
+            106  'Onion yellows phytoplasma OY-M',
+            107  Campylobacter_concisus_13826,
+            108  Mycoplasma_genitalium_G37,
+            109  Methylobacterium_radiotolerans_JCM_2831,
+            110  'Candidatus Ruthia magnifica str. Cm (Calyptogena magnifica)',
+            111  Actinobacillus_pleuropneumoniae_serovar_3_str._JL03,
+            112  Finegoldia_magna_ATCC_29328,
+            113  Burkholderia_mallei_ATCC_23344,
+            114  Petrotoga_mobilis_SJ95,
+            115  'Polynucleobacter sp. QLW-P1DMWA-1',
+            116  Geobacillus_thermodenitrificans_NG80_2,
+            117  Mycoplasma_penetrans_HF_2,
+            118  Pseudoalteromonas_haloplanktis_TAC125,
+            119  Azorhizobium_caulinodans_ORS_571,
+            120  Opitutus_terrae_PB90_1,
+            121  Chlamydophila_pneumoniae_J138,
+            122  Akkermansia_muciniphila_ATCC_BAA_835,
+            123  Anaplasma_phagocytophilum_HZ,
+            124  Exiguobacterium_sibiricum_255_15,
+            125  Leuconostoc_citreum_KM20,
+            126  Pseudomonas_aeruginosa_UCBPP_PA14,
+            127  Agrobacterium_tumefaciens_str._C58,
+            128  Corynebacterium_efficiens_YS_314,
+            129  Gramella_forsetii_KT0803,
+            130  Pseudomonas_fluorescens_PfO_1,
+            131  Bartonella_tribocorum_CIP_105476,
+            132  Gloeobacter_violaceus_PCC_7421,
+            133  Escherichia_coli_O157_H7_str._Sakai,
+            134  Francisella_tularensis_subsp._holarctica_OSU18,
+            135  Yersinia_enterocolitica_subsp._enterocolitica_8081,
+            136  Candidatus_Protochlamydia_amoebophila_UWE25,
+            137  Wigglesworthia_glossinidia_endosymbiont_of_Glossina_brevipalpis,
+            138  Mycoplasma_mobile_163K,
+            139  Clostridium_botulinum_B1_str._Okra,
+            140  'Shewanella sp. ANA-3',
+            141  Streptococcus_agalactiae_A909,
+            142  Yersinia_pseudotuberculosis_PB1,
+            143  Clostridium_difficile_630,
+            144  Nostoc_punctiforme_PCC_73102,
+            145  Hahella_chejuensis_KCTC_2396,
+            146  Bifidobacterium_longum_DJO10A,
+            147  Mycobacterium_sp._MCS,
+            148  Staphylococcus_aureus_subsp._aureus_Mu3,
+            149  Ehrlichia_ruminantium_str._Gardel,
+            150  Mycoplasma_mycoides_subsp._mycoides_SC_str._PG1,
+            151  Rhizobium_etli_CFN_42,
+            152  Sphingomonas_wittichii_RW1,
+            153  Helicobacter_pylori_26695,
+            154  Coxiella_burnetii_RSA_493,
+            155  Rhodopseudomonas_palustris_BisA53,
+            156  Mycobacterium_smegmatis_str._MC2_155,
+            157  Chromohalobacter_salexigens_DSM_3043,
+            158  Burkholderia_multivorans_ATCC_17616,
+            159  Burkholderia_phytofirmans_PsJN,
+            160  Sinorhizobium_medicae_WSM419,
+            161  Bacillus_cereus_ATCC_14579,
+            162  Prochlorococcus_marinus_str._MIT_9313,
+            163  Mycoplasma_agalactiae_PG2,
+            164  Kineococcus_radiotolerans_SRS30216,
+            165  Acidiphilium_cryptum_JF_5,
+            166  Streptococcus_suis_05ZYH33,
+            167  Hyphomonas_neptunium_ATCC_15444,
+            168  Burkholderia_ambifaria_AMMD,
+            169  Clostridium_thermocellum_ATCC_27405,
+            170  Candidatus_Vesicomyosocius_okutanii_HA,
+            171  Mycoplasma_hyopneumoniae_232,
+            172  Neisseria_meningitidis_Z2491,
+            173  Desulfitobacterium_hafniense_Y51,
+            174  Staphylococcus_aureus_subsp._aureus_MW2,
+            175  Thermotoga_maritima_MSB8,
+            176  Staphylococcus_haemolyticus_JCSC1435,
+            177  Buchnera_aphidicola_str._Bp_Baizongia_pistaciae,
+            178  Xanthomonas_campestris_pv._campestris_str._8004,
+            179  Streptococcus_agalactiae_2603V_R,
+            180  Lactobacillus_helveticus_DPC_4571,
+            181  Streptococcus_pyogenes_M1_GAS,
+            182  Mycobacterium_vanbaalenii_PYR_1,
+            183  Pseudomonas_putida_W619,
+            184  Mycoplasma_synoviae_53,
+            185  Francisella_tularensis_subsp._mediasiatica_FSC147,
+            186  Azoarcus_sp._BH72,
+            187  Pseudomonas_mendocina_ymp,
+            188  Wolbachia_endosymbiont_of_Drosophila_melanogaster,
+            189  Acinetobacter_baumannii_ACICU,
+            190  Alkaliphilus_oremlandii_OhILAs,
+            191  Flavobacterium_psychrophilum_JIP02_86,
+            192  Campylobacter_jejuni_subsp._jejuni_81116,
+            193  Frankia_sp._CcI3,
+            194  Bacillus_subtilis_subsp._subtilis_str._168,
+            195  Rickettsia_typhi_str._Wilmington,
+            196  Rickettsia_bellii_OSU_85_389,
+            197  Xanthomonas_axonopodis_pv._citri_str._306,
+            198  Haemophilus_influenzae_PittGG,
+            199  Methylococcus_capsulatus_str._Bath,
+            200  Brucella_melitensis_16M,
+            201  Bradyrhizobium_sp._ORS278,
+            202  Legionella_pneumophila_subsp._pneumophila_str._Philadelphia_1,
+            203  Prosthecochloris_vibrioformis_DSM_265,
+            204  'Synechococcus sp. JA-3-3Ab',
+            205  Arthrobacter_sp._FB24,
+            206  Synechocystis_sp._PCC_6803,
+            207  Burkholderia_sp._383,
+            208  Synechococcus_sp._RCC307,
+            209  Clostridium_botulinum_E3_str._Alaska_E43,
+            210  Bradyrhizobium_sp._BTAi1,
+            211  Oceanobacillus_iheyensis_HTE831,
+            212  Nitrosomonas_europaea_ATCC_19718,
+            213  Streptococcus_pneumoniae_R6,
+            214  Yersinia_pseudotuberculosis_IP_32953,
+            215  Bifidobacterium_longum_NCC2705,
+            216  Mycoplasma_pneumoniae_M129,
+            217  Fusobacterium_nucleatum_subsp._nucleatum_ATCC_25586,
+            218  Geobacter_metallireducens_GS_15,
+            219  Acidovorax_sp._JS42,
+            220  Mycoplasma_arthritidis_158L3_1,
+            221  Shewanella_baltica_OS185,
+            222  Prochlorococcus_marinus_subsp._pastoris_str._CCMP1986,
+            223  Pelobacter_carbinolicus_DSM_2380,
+            224  Candidatus_Blochmannia_pennsylvanicus_str._BPEN,
+            225  Streptococcus_pneumoniae_TIGR4,
+            226  Thermotoga_petrophila_RKU_1,
+            227  Chlamydia_muridarum_Nigg,
+            228  Shigella_dysenteriae_Sd197,
+            229  Campylobacter_curvus_525_92,
+            230  Silicibacter_sp._TM1040,
+            231  Thermotoga_sp._RQ2,
+            232  Sphingopyxis_alaskensis_RB2256,
+            233  Pediococcus_pentosaceus_ATCC_25745,
+            234  Chlorobium_chlorochromatii_CaD3,
+            235  Corynebacterium_diphtheriae_NCTC_13129,
+            236  'Aster yellows witches''-broom phytoplasma AYWB',
+            237  Brucella_suis_1330,
+            238  Wolbachia_endosymbiont_strain_TRS_of_Brugia_malayi,
+            239  Streptococcus_suis_98HAH33,
+            240  Chlamydia_trachomatis_434_Bu,
+            241  Sorangium_cellulosum_So_ce_56,
+            242  Ehrlichia_chaffeensis_str._Arkansas,
+            243  Chloroherpeton_thalassium_ATCC_35110,
+            244  Mycobacterium_leprae_TN,
+            245  Helicobacter_pylori_J99,
+            246  Citrobacter_koseri_ATCC_BAA_895,
+            247  Caldicellulosiruptor_saccharolyticus_DSM_8903,
+            248  Alkalilimnicola_ehrlichei_MLHE_1,
+            249  Polynucleobacter_necessarius_STIR1,
+            250  Burkholderia_pseudomallei_1710b,
+            251  Streptococcus_pyogenes_SSI_1,
+            252  Methylobacillus_flagellatus_KT,
+            253  Mycobacterium_tuberculosis_H37Ra,
+            254  Yersinia_pestis_Pestoides_F,
+            255  Lactobacillus_delbrueckii_subsp._bulgaricus_ATCC_11842,
+            256  Mycobacterium_bovis_BCG_str._Pasteur_1173P2,
+            257  Chlamydia_trachomatis_L2b_UCH_1_proctitis,
+            258  Mycoplasma_gallisepticum_R,
+            259  Synechococcus_elongatus_PCC_7942,
+            260  Shewanella_amazonensis_SB2B,
+            261  Mycobacterium_ulcerans_Agy99,
+            262  Buchnera_aphidicola_str._APS_Acyrthosiphon_pisum,
+            263  Candidatus_Pelagibacter_ubique_HTCC1062,
+            264  Shewanella_sp._W3_18_1,
+            265  Geobacillus_kaustophilus_HTA426,
+            266  Streptomyces_avermitilis_MA_4680,
+            267  Shewanella_pealeana_ATCC_700345,
+            268  Chloroflexus_aurantiacus_J_10_fl,
+            269  Brucella_ovis_ATCC_25840,
+            270  Prochlorococcus_marinus_str._MIT_9312,
+            271  Escherichia_coli_SMS_3_5,
+            272  Chlamydia_trachomatis_A_HAR_13,
+            273  Yersinia_pestis_Antiqua,
+            274  Deinococcus_geothermalis_DSM_11300,
+            275  Arcobacter_butzleri_RM4018,
+            276  Staphylococcus_aureus_subsp._aureus_USA300_TCH1516,
+            277  Nostoc_sp._PCC_7120,
+            278  Legionella_pneumophila_str._Lens,
+            279  Erwinia_tasmaniensis,
+            280  Pseudomonas_aeruginosa_PA7,
+            281  Candidatus_Phytoplasma_mali,
+            282  Desulfotomaculum_reducens_MI_1,
+            283  Streptococcus_sanguinis_SK36,
+            284  Candidatus_Desulfococcus_oleovorans_Hxd3,
+            285  Lactobacillus_casei_ATCC_334,
+            286  Geobacter_lovleyi_SZ,
+            287  Borrelia_hermsii_DAH,
+            288  Lactobacillus_gasseri_ATCC_33323,
+            289  Lactococcus_lactis_subsp._cremoris_MG1363,
+            290  Pelodictyon_luteolum_DSM_273,
+            291  Caulobacter_sp._K31,
+            292  Coxiella_burnetii_RSA_331,
+            293  Roseiflexus_castenholzii_DSM_13941,
+            294  Colwellia_psychrerythraea_34H,
+            295  Paracoccus_denitrificans_PD1222,
+            296  Geobacter_sulfurreducens_PCA,
+            297  Rhodoferax_ferrireducens_T118,
+            298  Acaryochloris_marina_MBIC11017,
+            299  Methylobacterium_populi_BJ001,
+            300  Escherichia_coli_str._K12_substr_DH10B,
+            301  Prochlorococcus_marinus_str._MIT_9515,
+            302  Shewanella_baltica_OS195,
+            303  Chlamydophila_caviae_GPIC,
+            304  Staphylococcus_aureus_subsp._aureus_MRSA252,
+            305  Shewanella_frigidimarina_NCIMB_400,
+            306  Herminiimonas_arsenicoxydans,
+            307  Trichodesmium_erythraeum_IMS101,
+            308  Symbiobacterium_thermophilum_IAM_14863,
+            309  Clostridium_botulinum_A_str._Hall,
+            310  Campylobacter_jejuni_subsp._jejuni_NCTC_11168,
+            311  Tropheryma_whipplei_TW08_27,
+            312  Staphylococcus_saprophyticus_subsp._saprophyticus_ATCC_15305,
+            313  Vibrio_harveyi_ATCC_BAA_1116,
+            314  Acidovorax_avenae_subsp._citrulli_AAC00_1,
+            315  Mycobacterium_sp._KMS,
+            316  Azoarcus_sp._EbN1,
+            317  Frankia_sp._EAN1pec,
+            318  Clostridium_botulinum_B_str._Eklund_17B,
+            319  Lactobacillus_johnsonii_NCC_533,
+            320  Mycobacterium_tuberculosis_H37Rv,
+            321  Ehrlichia_canis_str._Jake,
+            322  Campylobacter_jejuni_RM1221,
+            323  Thermoanaerobacter_sp._X514,
+            324  Thermoanaerobacter_pseudethanolicus_ATCC_33223,
+            325  Salmonella_enterica_subsp._enterica_serovar_Paratyphi_B_str._SPB7,
+            326  Salmonella_enterica_subsp._enterica_serovar_Typhi_str._Ty2,
+            327  Tropheryma_whipplei_str._Twist,
+            328  Staphylococcus_aureus_subsp._aureus_NCTC_8325,
+            329  Synechococcus_sp._WH_8102,
+            330  Francisella_tularensis_subsp._tularensis_WY96_3418,
+            331  Burkholderia_pseudomallei_668,
+            332  Clostridium_novyi_NT,
+            333  Leifsonia_xyli_subsp._xyli_str._CTCB07,
+            334  Vibrio_vulnificus_CMCP6,
+            335  Prochlorococcus_marinus_str._MIT_9211,
+            336  Bacillus_thuringiensis_str._Al_Hakam,
+            337  Legionella_pneumophila_str._Paris,
+            338  Parabacteroides_distasonis_ATCC_8503,
+            339  'Leptospira borgpetersenii serovar Hardjo-bovis JB197',
+            340  Lactobacillus_sakei_subsp._sakei_23K,
+            341  Dinoroseobacter_shibae_DFL_12,
+            342  Synechococcus_sp._WH_7803,
+            343  Leptospira_biflexa_serovar_Patoc_strain_Patoc_1_Paris,
+            344  Listeria_monocytogenes_EGD_e,
+            345  Shewanella_putrefaciens_CN_32,
+            346  Shigella_flexneri_2a_str._301,
+            347  Vibrio_fischeri_ES114,
+            348  Shewanella_oneidensis_MR_1,
+            349  Actinobacillus_pleuropneumoniae_serovar_7_str._AP76,
+            350  Streptococcus_pyogenes_MGAS315,
+            351  Shigella_boydii_CDC_3083_94,
+            352  Dechloromonas_aromatica_RCB,
+            353  Alcanivorax_borkumensis_SK2,
+            354  Psychromonas_ingrahamii_37,
+            355  Prochlorococcus_marinus_str._NATL2A,
+            356  Rhizobium_leguminosarum_bv._viciae_3841,
+            357  Methylibium_petroleiphilum_PM1,
+            358  Pseudomonas_putida_GB_1,
+            359  Yersinia_pestis_CO92,
+            360  Neisseria_gonorrhoeae_NCCP11945,
+            361  Streptococcus_pyogenes_MGAS6180,
+            362  Rhodobacter_sphaeroides_2_4_1,
+            363  Leptothrix_cholodnii_sp._6,
+            364  Escherichia_coli_UTI89,
+            365  Shigella_flexneri_2a_str._2457T,
+            366  Jannaschia_sp._CCS1,
+            367  Rickettsia_bellii_RML369_C,
+            368  Candidatus_Sulcia_muelleri_GWSS,
+            369  Neisseria_meningitidis_FAM18,
+            370  Buchnera_aphidicola_str._Cc_Cinara_cedri,
+            371  Baumannia_cicadellinicola_str._Hc_Homalodisca_coagulata,
+            372  Moorella_thermoacetica_ATCC_39073,
+            373  Candidatus_Desulforudis_audaxviator_MP104C,
+            374  Chlamydophila_pneumoniae_AR39,
+            375  Staphylococcus_aureus_subsp._aureus_N315,
+            376  Clostridium_botulinum_A_str._ATCC_19397,
+            377  Escherichia_coli_536,
+            378  Orientia_tsutsugamushi_str._Ikeda,
+            379  Bordetella_pertussis_Tohama_I,
+            380  Francisella_tularensis_subsp._holarctica,
+            381  Brucella_canis_ATCC_23365,
+            382  Streptococcus_pyogenes_MGAS5005,
+            383  Pasteurella_multocida_subsp._multocida_str._Pm70,
+            384  Francisella_philomiragia_subsp._philomiragia_ATCC_25017,
+            385  Streptococcus_agalactiae_NEM316,
+            386  Idiomarina_loihiensis_L2TR,
+            387  Brucella_abortus_S19,
+            388  Leptospira_interrogans_serovar_Copenhageni_str._Fiocruz_L1_130,
+            389  Rickettsia_massiliae_MTU5,
+            390  Gluconobacter_oxydans_621H,
+            391  Propionibacterium_acnes_KPA171202,
+            392  Mesorhizobium_loti_MAFF303099,
+            393  Clavibacter_michiganensis_subsp._sepedonicus,
+            394  Flavobacterium_johnsoniae_UW101,
+            395  Pelotomaculum_thermopropionicum_SI,
+            396  Aeromonas_salmonicida_subsp._salmonicida_A449,
+            397  Ralstonia_eutropha_H16,
+            398  Streptococcus_mutans_UA159,
+            399  Burkholderia_xenovorans_LB400,
+            400  Bacillus_pumilus_SAFR_032,
+            401  Acinetobacter_baumannii_ATCC_17978,
+            402  Granulibacter_bethesdensis_CGDNIH1,
+            403  'Leptospira borgpetersenii serovar Hardjo-bovis L550',
+            404  Verminephrobacter_eiseniae_EF01_2,
+            405  Vibrio_cholerae_O1_biovar_eltor_str._N16961,
+            406  Anabaena_variabilis_ATCC_29413,
+            407  Bacillus_licheniformis_ATCC_14580,
+            408  Rhodopseudomonas_palustris_CGA009,
+            409  Lactobacillus_delbrueckii_subsp._bulgaricus_ATCC_BAA_365,
+            410  Burkholderia_phymatum_STM815,
+            411  Lactobacillus_fermentum_IFO_3956,
+            412  Clostridium_botulinum_A3_str._Loch_Maree,
+            413  Mycobacterium_gilvum_PYR_GCK,
+            414  Thermosipho_melanesiensis_BI429,
+            415  Nitrosococcus_oceani_ATCC_19707,
+            416  Brucella_suis_ATCC_23445,
+            417  Salinibacter_ruber_DSM_13855,
+            418  Chlamydophila_pneumoniae_CWL029,
+            419  Synechococcus_sp._CC9311,
+            420  Chlamydophila_abortus_S26_3,
+            421  Burkholderia_mallei_NCTC_10247,
+            422  Neorickettsia_sennetsu_str._Miyayama,
+            423  Lactococcus_lactis_subsp._cremoris_SK11,
+            424  Pelobacter_propionicus_DSM_2379,
+            425  Bacillus_cereus_subsp._cytotoxis_NVH_391_98,
+            426  Erythrobacter_litoralis_HTCC2594,
+            427  Orientia_tsutsugamushi_Boryong,
+            428  Burkholderia_pseudomallei_1106a,
+            429  Dehalococcoides_sp._BAV1,
+            430  Cyanothece_sp._ATCC_51142,
+            431  Ralstonia_eutropha_JMP134,
+            432  Staphylococcus_aureus_subsp._aureus_JH1,
+            433  Burkholderia_thailandensis_E264,
+            434  Acidobacteria_bacterium_Ellin345,
+            435  Pseudomonas_syringae_pv._syringae_B728a,
+            436  Prochlorococcus_marinus_str._MIT_9215,
+            437  Synechococcus_sp._CC9605,
+            438  Rhodobacter_sphaeroides_ATCC_17029,
+            439  Bordetella_petrii_DSM_12804,
+            440  Streptococcus_pneumoniae_Hungary19A_6,
+            441  Yersinia_pestis_Nepal516,
+            442  Listeria_innocua_Clip11262,
+            443  Chlorobium_limicola_DSM_245,
+            444  Escherichia_coli_HS,
+            445  Xylella_fastidiosa_M23,
+            446  Anaplasma_marginale_str._St_Maries,
+            447  Pseudomonas_stutzeri_A1501,
+            448  Rhodopseudomonas_palustris_BisB5,
+            449  Lactobacillus_brevis_ATCC_367,
+            450  Helicobacter_pylori_Shi470,
+            451  Yersinia_pseudotuberculosis_YPIII,
+            452  Nitratiruptor_sp._SB155_2,
+            453  Saccharopolyspora_erythraea_NRRL_2338,
+            454  Polaromonas_naphthalenivorans_CJ2,
+            455  Sulfurovum_sp._NBC37_1,
+            456  Vibrio_parahaemolyticus_RIMD_2210633,
+            457  Saccharophagus_degradans_2_40,
+            458  Silicibacter_pomeroyi_DSS_3,
+            459  Herpetosiphon_aurantiacus_ATCC_23779,
+            460  Rickettsia_rickettsii_str._Iowa,
+            461  Ureaplasma_parvum_serovar_3_str._ATCC_27815,
+            462  Synechococcus_sp._CC9902,
+            463  Streptococcus_pyogenes_MGAS9429,
+            464  Nitrobacter_hamburgensis_X14,
+            465  Salinispora_arenicola_CNS_205,
+            466  Salmonella_enterica_subsp._enterica_serovar_Typhi_str._CT18,
+            467  Lactobacillus_casei_BL23,
+            468  Methylobacterium_sp._4_46,
+            469  Burkholderia_cenocepacia_AU_1054,
+            470  Streptococcus_pneumoniae_D39,
+            471  Pseudomonas_putida_F1,
+            472  Rhodobacter_sphaeroides_ATCC_17025,
+            473  Pseudomonas_putida_KT2440,
+            474  Thermosynechococcus_elongatus_BP_1,
+            475  Shewanella_baltica_OS155,
+            476  Kocuria_rhizophila_DC2201,
+            477  Legionella_pneumophila_str._Corby,
+            478  Ehrlichia_ruminantium_str._Welgevonden,
+            479  Candidatus_Blochmannia_floridanus,
+            480  Staphylococcus_epidermidis_ATCC_12228,
+            481  Frankia_alni_ACN14a,
+            482  Ralstonia_solanacearum_GMI1000,
+            483  Ralstonia_metallidurans_CH34,
+            484  Burkholderia_mallei_NCTC_10229,
+            485  Helicobacter_hepaticus_ATCC_51449,
+            486  Corynebacterium_glutamicum_ATCC_13032,
+            487  Burkholderia_vietnamiensis_G4,
+            488  Dehalococcoides_sp._CBDB1,
+            489  Klebsiella_pneumoniae_subsp._pneumoniae_MGH_78578,
+            490  Shewanella_denitrificans_OS217,
+            491  'Anaeromyxobacter sp. Fw109-5',
+            492  Chromobacterium_violaceum_ATCC_12472,
+            493  Rickettsia_canadensis_str._McKiel,
+            494  Alkaliphilus_metalliredigenes_QYMF,
+            495  Clostridium_perfringens_str._13,
+            496  Xanthobacter_autotrophicus_Py2,
+            497  Bordetella_parapertussis_12822,
+            498  Shewanella_halifaxensis_HAW_EB4,
+            499  Yersinia_pestis_biovar_Microtus_str._91001,
+            500  Renibacterium_salmoninarum_ATCC_33209,
+            501  Clostridium_beijerinckii_NCIMB_8052,
+            502  Salmonella_typhimurium_LT2,
+            503  Candidatus_Amoebophilus_asiaticus_5a2,
+            504  Lysinibacillus_sphaericus_C3_41,
+            505  Natranaerobius_thermophilus_JW_NM_WN_LF,
+            506  Xanthomonas_oryzae_pv._oryzae_KACC10331,
+            507  Parvibaculum_lavamentivorans_DS_1,
+            508  Shewanella_sediminis_HAW_EB3,
+            509  Pseudomonas_entomophila_L48,
+            510  Leptospira_interrogans_serovar_Lai_str._56601,
+            511  Rickettsia_conorii_str._Malish_7,
+            512  Streptococcus_thermophilus_LMG_18311,
+            513  Bradyrhizobium_japonicum_USDA_110,
+            514  Yersinia_pestis_KIM,
+            515  Prochlorococcus_marinus_str._AS9601,
+            516  Synechococcus_elongatus_PCC_6301,
+            517  Syntrophobacter_fumaroxidans_MPOB,
+            518  Chlorobium_tepidum_TLS,
+            519  Haemophilus_ducreyi_35000HP,
+            520  Burkholderia_ambifaria_MC40_6,
+            521  Staphylococcus_aureus_RF122,
+            522  Janthinobacterium_sp._Marseille,
+            523  Mycobacterium_tuberculosis_F11,
+            524  Serratia_proteamaculans_568,
+            525  Bordetella_avium_197N,
+            526  Lactobacillus_reuteri_F275,
+            527  Rhodococcus_sp._RHA1,
+            528  Prochlorococcus_marinus_str._MIT_9303,
+            529  Delftia_acidovorans_SPH_1,
+            530  Nitrosospira_multiformis_ATCC_25196,
+            531  Xylella_fastidiosa_M12,
+            532  Lactobacillus_acidophilus_NCFM,
+            533  Staphylococcus_aureus_subsp._aureus_COL,
+            534  Acinetobacter_sp._ADP1,
+            535  Mycobacterium_bovis_AF2122_97,
+            536  Caulobacter_crescentus_CB15,
+            537  Staphylococcus_aureus_subsp._aureus_JH9,
+            538  Thiomicrospira_crunogena_XCL_2,
+            539  Arthrobacter_aurescens_TC1,
+            540  Thermobifida_fusca_YX,
+            541  Thermotoga_lettingae_TMO,
+            542  Xanthomonas_oryzae_pv._oryzae_MAFF_311018,
+            543  Clostridium_botulinum_F_str._Langeland,
+            544  Acidothermus_cellulolyticus_11B,
+            545  Leptospira_biflexa_serovar_Patoc_strain_Patoc_1_Ames,
+            546  Lactobacillus_plantarum_WCFS1,
+            547  Mycobacterium_avium_subsp._paratuberculosis_K_10,
+            548  Vibrio_cholerae_O395,
+            549  Methylobacterium_extorquens_PA1,
+            550  'Brucella abortus biovar 1 str. 9-941',
+            551  Yersinia_pestis_Angola,
+            552  Oenococcus_oeni_PSU_1,
+            553  Shigella_flexneri_5_str._8401,
+            554  Staphylococcus_aureus_subsp._aureus_str._Newman,
+            555  Streptococcus_pyogenes_MGAS10270,
+            556  Deinococcus_radiodurans_R1,
+            557  'Synechococcus sp. JA-2-3B''a(2-13)',
+            558  Thermoanaerobacter_tengcongensis_MB4,
+            559  Streptococcus_thermophilus_LMD_9,
+            560  Escherichia_coli_E24377A,
+            561  Acinetobacter_baumannii_AYE,
+            562  Francisella_tularensis_subsp._tularensis_FSC198,
+            563  Lactobacillus_salivarius_UCC118,
+            564  Porphyromonas_gingivalis_ATCC_33277,
+            565  Marinomonas_sp._MWYL1,
+            566  Streptomyces_griseus_subsp._griseus_NBRC_13350,
+            567  Clostridium_acetobutylicum_ATCC_824,
+            568  Wolbachia_pipientis,
+            569  Chlorobium_phaeobacteroides_BS1,
+            570  Synechococcus_sp._PCC_7002,
+            571  Bartonella_bacilliformis_KC583,
+            572  Desulfotalea_psychrophila_LSv54,
+            573  Streptomyces_coelicolor_A3_2,
+            574  Escherichia_coli_CFT073,
+            575  Wolinella_succinogenes_DSM_1740,
+            576  Psychrobacter_cryohalolentis_K5,
+            577  Bordetella_bronchiseptica_RB50,
+            578  Buchnera_aphidicola_str._Sg_Schizaphis_graminum,
+            579  Desulfovibrio_desulfuricans_subsp._desulfuricans_str._G20,
+            580  Corynebacterium_glutamicum_R,
+            581  Rubrobacter_xylanophilus_DSM_9941,
+            582  'Magnetococcus sp. MC-1',
+            583  Pseudomonas_fluorescens_Pf_5,
+            584  Bartonella_quintana_str._Toulouse,
+            585  Polaromonas_sp._JS666,
+            586  Pseudomonas_syringae_pv._phaseolicola_1448A,
+            587  Staphylococcus_aureus_subsp._aureus_MSSA476,
+            588  Rickettsia_prowazekii_str._Madrid_E,
+            589  Rickettsia_rickettsii_str._Sheila_Smith,
+            590  'Bacillus thuringiensis serovar konkukian str. 97-27',
+            591  Streptococcus_pyogenes_MGAS2096,
+            592  Neisseria_meningitidis_053442,
+            593  Clostridium_perfringens_ATCC_13124,
+            594  Desulfovibrio_vulgaris_subsp._vulgaris_DP4,
+            595  Escherichia_coli_O157_H7_EDL933,
+            596  Mesoplasma_florum_L1,
+            597  Escherichia_coli_ATCC_8739,
+            598  Marinobacter_aquaeolei_VT8,
+            599  Staphylococcus_aureus_subsp._aureus_Mu50,
+            600  Streptococcus_gordonii_str._Challis_substr_CH1,
+            601  Francisella_tularensis_subsp._holarctica_FTNF002_00,
+            602  Ureaplasma_parvum_serovar_3_str._ATCC_700970,
+            603  Francisella_tularensis_subsp._tularensis_SCHU_S4,
+            604  Actinobacillus_pleuropneumoniae_L20,
+            605  Corynebacterium_urealyticum_DSM_7109,
+            606  Porphyromonas_gingivalis_W83,
+            607  Zymomonas_mobilis_subsp._mobilis_ZM4,
+            608  Chlorobium_phaeobacteroides_DSM_266,
+            609  Treponema_denticola_ATCC_35405,
+            610  Listeria_welshimeri_serovar_6b_str._SLCC5334,
+            611  Prochlorococcus_marinus_str._MIT_9301,
+            612  Rhodospirillum_rubrum_ATCC_11170,
+            613  Bacteroides_thetaiotaomicron_VPI_5482,
+            614  Borrelia_garinii_PBi,
+            615  Bifidobacterium_adolescentis_ATCC_15703,
+            616  Thiobacillus_denitrificans_ATCC_25259,
+            617  Haemophilus_influenzae_Rd_KW20,
+            618  Mesorhizobium_sp._BNC1,
+            619  Rhodopseudomonas_palustris_TIE_1,
+            620  Pseudomonas_syringae_pv._tomato_str._DC3000,
+            621  'Shewanella sp. MR-4',
+            622  Staphylococcus_epidermidis_RP62A,
+            623  Mycobacterium_abscessus,
+            624  'Campylobacter fetus subsp. fetus 82-40',
+            625  Aquifex_aeolicus_VF5,
+            626  Photobacterium_profundum_SS9,
+            627  Thermus_thermophilus_HB8,
+            628  Salinispora_tropica_CNB_440,
+            629  Burkholderia_mallei_SAVP1,
+            630  Ralstonia_pickettii_12J,
+            631  Salmonella_enterica_subsp._arizonae_serovar_62_z4_z23,
+            632  Nocardioides_sp._JS614,
+            633  Clostridium_perfringens_SM101,
+            634  Magnetospirillum_magneticum_AMB_1,
+            635  Shigella_boydii_Sb227,
+            636  Roseobacter_denitrificans_OCh_114,
+            637  Clostridium_botulinum_A_str._ATCC_3502,
+            638  Ochrobactrum_anthropi_ATCC_49188,
+            639  Mycoplasma_hyopneumoniae_J,
+            640  Novosphingobium_aromaticivorans_DSM_12444,
+            641  Clostridium_phytofermentans_ISDg,
+            642  Cytophaga_hutchinsonii_ATCC_33406,
+            643  Chlamydophila_felis_Fe_C_56,
+            644  Dichelobacter_nodosus_VCS1703A,
+            645  Bacillus_weihenstephanensis_KBAB4,
+            646  Cupriavidus_taiwanensis,
+            647  Bacillus_anthracis_str._Sterne,
+            648  Sinorhizobium_meliloti_1021,
+            649  Chlamydia_trachomatis_D_UW_3_CX,
+            650  Aeromonas_hydrophila_subsp._hydrophila_ATCC_7966,
+            651  Rickettsia_felis_URRWXCal2,
+            652  Shigella_sonnei_Ss046,
+            653  Nitrobacter_winogradskyi_Nb_255,
+            654  Bartonella_henselae_str._Houston_1,
+            655  Burkholderia_pseudomallei_K96243,
+            656  Yersinia_pseudotuberculosis_IP_31758,
+            657  Prochlorococcus_marinus_subsp._marinus_str._CCMP1375,
+            658  Prochlorococcus_marinus_str._NATL1A,
+            659  Solibacter_usitatus_Ellin6076,
+            660  Gluconacetobacter_diazotrophicus_PAl_5,
+            661  Neisseria_gonorrhoeae_FA_1090,
+            662  Xanthomonas_oryzae_pv._oryzae_PXO99A,
+            663  Erwinia_carotovora_subsp._atroseptica_SCRI1043,
+            664  Cellvibrio_japonicus_Ueda107,
+            665  Fervidobacterium_nodosum_Rt17_B1,
+            666  Leuconostoc_mesenteroides_subsp._mesenteroides_ATCC_8293,
+            667  Bacillus_clausii_KSM_K16,
+            668  Stenotrophomonas_maltophilia_K279a,
+            669  Shewanella_woodyi_ATCC_51908,
+            670  Beijerinckia_indica_subsp._indica_ATCC_9039,
+            671  Rhizobium_etli_CIAT_652,
+            672  Myxococcus_xanthus_DK_1622,
+            673  Enterobacter_sp._638,
+            674  Treponema_pallidum_subsp._pallidum_str._Nichols,
+            675  Sodalis_glossinidius_str._morsitans,
+            676  Lactococcus_lactis_subsp._lactis_Il1403,
+            677  Dehalococcoides_ethenogenes_195,
+            678  Bacillus_cereus_ATCC_10987,
+            679  Haemophilus_somnus_2336,
+            680  Streptococcus_pneumoniae_CGSP14,
+            681  Campylobacter_jejuni_subsp._doylei_269_97,
+            682  Mycobacterium_avium_104,
+            683  Rhodopirellula_baltica_SH_1,
+            684  Syntrophus_aciditrophicus_SB,
+            685  Corynebacterium_jeikeium_K411,
+            686  Campylobacter_jejuni_subsp._jejuni_81_176,
+            687  Streptococcus_pyogenes_MGAS10750,
+            688  Psychrobacter_arcticus_273_4,
+            689  Sulfurimonas_denitrificans_DSM_1251,
+            690  Halorhodospira_halophila_SL1,
+            691  Nitrosomonas_eutropha_C91,
+            692  Sulfurihydrogenibium_sp._YO3AOP1,
+            693  Bacteroides_fragilis_NCTC_9343,
+            694  Escherichia_coli_APEC_O1,
+            695  Haemophilus_influenzae_PittEE,
+            696  Thermus_thermophilus_HB27,
+            697  Acholeplasma_laidlawii_PG_8A,
+            698  Carboxydothermus_hydrogenoformans_Z_2901,
+            699  Bdellovibrio_bacteriovorus_HD100,
+            700  Photorhabdus_luminescens_subsp._laumondii_TTO1,
+            701  'Shewanella sp. MR-7',
+            702  Mycoplasma_pulmonis_UAB_CTIP,
+            703  Bacteroides_fragilis_YCH46,
+            704  'Roseiflexus sp. RS-1',
+            705  Escherichia_coli_str._K12_substr_MG1655,
+            706  Streptococcus_pyogenes_MGAS8232,
+            707  Xanthomonas_campestris_pv._vesicatoria_str._85_10,
+            708  Elusimicrobium_minutum_Pei191,
+            709  Enterobacter_sakazakii_ATCC_BAA_894,
+            710  Burkholderia_cenocepacia_HI2424,
+            711  Rickettsia_akari_str._Hartford,
+            712  Streptococcus_pyogenes_MGAS10394,
+            713  Heliobacterium_modesticaldum_Ice1,
+            714  Campylobacter_hominis_ATCC_BAA_381,
+            715  Bacillus_anthracis_str._Ames_Ancestor,
+            716  Rhodopseudomonas_palustris_HaA2,
+            717  Syntrophomonas_wolfei_subsp._wolfei_str._Goettingen,
+            718  Helicobacter_pylori_HPAG1,
+            719  Pseudomonas_aeruginosa_PAO1,
+            720  Listeria_monocytogenes_str._4b_F2365;
+      TREE phyml = [&R] (((((43:0.190689,46:0.263143):0.276658,((((((((((((((((((((((((((((((((((((((((133:0.0,705:0.0):1.51E-4,300:0.0):2.0E-5,(597:1.7E-4,444:1.71E-4):1.7E-4):0.0,(377:0.001196,694:0.0):0.0):0.0,((346:0.001883,365:0.0):1.71E-4,553:3.44E-4):5.12E-4):0.0,(351:5.13E-4,635:8.57E-4):3.42E-4):0.0,271:0.0):0.0,595:0.0):0.0,574:0.0):0.0,364:0.0):0.0,560:0.0):0.0,228:0.001025):1.69E-4,652:0.001028):0.012167,(((((((326:0.0,466:1.7E-4):3.4E-4,502:0.0):0.0,94:8.5E-4):2.0E-6,325:1.8E-4):1.69E-4,56:3.48E-4):0.001774,631:0.001673):0.008533,246:0.007106):0.003103):0.00437,489:0.012094):0.004392,709:0.019781):0.007021,673:0.019532):0.027075,(279:0.033979,524:0.033607):0.013319):0.008604,663:0.03122):0.012206,((((((514:0.0,656:0.0):0.0,359:0.0):0.0,214:0.0):0.0,((((142:0.0,254:0.0):0.0,(451:0.0,441:0.0):0.0):0.0,273:1.72E-4):0.0,499:0.0):0.0):0.0,551:3.44E-4):0.00575,135:0.009468):0.030284):0.008222,((((224:0.111832,479:0.199319):0.14508,(((262:0.081646,578:0.078489):0.090786,177:0.232468):0.043831,(137:0.30099,370:0.303142):0.063766):0.064196):0.054991,371:0.166451):0.081445,675:0.026696):0.024889):0.01239,700:0.048195):0.050763,((((72:9.73E-4,679:7.28E-4):0.038446,383:0.033371):0.011204,((64:0.02899,63:0.035825):0.013874,(((617:0.002043,198:0.00105):5.49E-4,95:5.15E-4):2.24E-4,695:0.001026):0.040304):0.008478):0.011217,(((604:0.00137,349:3.39E-4):1.74E-4,111:0.003062):0.011765,519:0.024577):0.038512):0.080775):0.047571,(((((405:3.64E-4,548:8.38E-4):0.041305,(334:5.27E-4,99:1.72E-4):0.020829):0.011445,(456:0.00625,313:0.010839):0.011481):0.027253,347:0.05376):0.027779,626:0.072105):0.054993):0.023142,(650:0.006284,396:0.0108):0.109795):0.020707,((((((498:0.008905,267:0.003805):0.025082,(508:0.019306,669:0.012326):0.017175):0.016987,105:0.021173):0.024752,((((((140:0.002092,621:9.8E-4):7.54E-4,701:3.48E-4):0.003036,348:0.002265):0.010027,(264:3.26E-4,345:1.85E-4):0.001996):0.006463,((475:0.001236,302:0.0):5.23E-4,221:6.84E-4):0.009966):0.015626,(490:0.017657,305:0.02512):0.022711):0.020469):0.018183,260:0.035265):0.092511,354:0.170059):0.021406):0.025447,((386:0.129215,84:0.121204):0.026755,(118:0.120366,294:0.144993):0.031198):0.015669):0.082415,45:0.172853):0.0486,((((((189:8.84E-4,401:0.003413):5.27E-4,(75:8.48E-4,561:1.7E-4):0.0):0.020056,534:0.027905):0.107102,((688:0.006888,576:0.006086):0.066403,70:0.060503):0.121017):0.15381,353:0.175254):0.040455,(((157:0.167612,565:0.175719):0.038094,(598:0.1125,145:0.130701):0.053467):0.019075,(((((((((435:0.001801,586:0.002321):0.002597,620:0.003918):0.02921,583:0.014609):0.00751,130:0.010753):0.026949,((((473:1.71E-4,471:0.0):0.001622,358:0.003034):0.003248,183:0.007868):0.003675,509:0.007306):0.02498):0.030505,187:0.030084):0.018411,447:0.035067):0.021645,((719:0.0,126:1.71E-4):0.001113,280:0.001132):0.032184):0.118537,(457:0.107494,664:0.109149):0.090952):0.024456):0.029903):0.041423):0.029921,(((477:0.001506,202:5.43E-4):3.1E-4,(278:0.00222,337:0.001831):3.76E-4):0.255271,((292:0.00102,154:5.1E-4):0.001141,60:0.001413):0.286937):0.063734):0.020357,((((((((603:0.0,562:0.0):0.001507,330:3.35E-4):3.34E-4,((134:0.0,380:5.02E-4):0.0,601:3.35E-4):0.002852):0.0,185:0.002516):0.001333,69:6.81E-4):0.02679,384:0.028537):0.343835,644:0.35117):0.058577,((110:0.048117,170:0.070088):0.299069,538:0.218606):0.069384):0.027865):0.019953,(((690:0.175731,248:0.10505):0.103584,415:0.225193):0.031953,((((((178:3.43E-4,90:5.15E-4):3.45E-4,89:1.7E-4):0.006192,(((506:1.75E-4,542:0.0):0.0,662:0.002957):0.008947,(707:0.001996,197:0.00127):0.004934):0.005782):0.031343,668:0.060056):0.030521,(((445:0.0,103:1.74E-4):0.005446,531:0.003419):0.005622,96:0.003688):0.09616):0.251782,199:0.208011):0.028921):0.02517):0.056558,((((((212:0.04084,691:0.04959):0.144982,530:0.08516):0.076439,616:0.145726):0.023371,252:0.155554):0.027233,(((186:0.052172,316:0.058776):0.062917,352:0.113139):0.05407,((((((115:0.011,249:0.023235):0.136644,((((646:0.005601,397:0.005264):0.006279,431:0.007605):0.010799,483:0.013934):0.029247,(482:0.02203,630:0.021784):0.025195):0.037629):0.022794,(((159:0.004098,399:0.002629):0.017129,410:0.017185):0.015186,(((((168:0.001201,520:1.65E-4):0.00415,(((469:0.0,710:1.71E-4):1.71E-4,91:0.0):0.002317,207:0.007333):0.002889):0.00261,487:0.003346):0.015421,158:0.005208):0.005853,((((((((421:0.0,484:1.72E-4):3.43E-4,113:1.91E-4):0.0,629:0.0):1.71E-4,655:5.16E-4):0.0,250:0.0):0.0,331:0.0):0.0,428:1.71E-4):0.004036,433:0.005011):0.007936):0.019911):0.063072):0.026718,(306:0.021781,522:0.013485):0.104015):0.024622,((357:0.071447,363:0.085431):0.041536,((((529:0.061373,219:0.025396):0.016116,314:0.025052):0.01365,404:0.072504):0.026641,((454:0.031581,585:0.022265):0.044515,297:0.06856):0.022175):0.065841):0.119404):0.025568,((((577:1.72E-4,497:0.001377):1.18E-4,379:0.001433):0.021534,525:0.031614):0.010355,439:0.021324):0.132685):0.071258):0.027059):0.037078,(((661:5.0E-4,360:0.001485):0.006103,(((79:0.001366,172:0.00101):7.87E-4,369:0.001575):5.57E-4,592:0.002602):0.001738):0.167934,492:0.09855):0.087498):0.124859):0.205339,(((((((((((((671:0.003437,151:0.005094):0.006043,356:0.011645):0.036083,127:0.045233):0.016839,(648:0.006124,160:0.006258):0.029756):0.070623,(((((654:0.020444,584:0.029388):0.009808,131:0.025338):0.031387,571:0.065286):0.098029,(((((381:6.88E-4,237:1.72E-4):6.89E-4,416:0.001033):0.0,(((387:1.76E-4,85:1.72E-4):0.0,550:0.0):6.84E-4,200:0.002611):1.71E-4):0.0,269:0.001206):0.013975,638:0.01275):0.047742):0.034988,(392:0.077568,618:0.07419):0.027327):0.021349):0.086016,((((((549:0.011368,299:0.004799):0.03256,109:0.045067):0.041026,468:0.058056):0.074338,670:0.149061):0.026115,(496:0.058512,119:0.044976):0.079042):0.02072,((((201:0.007711,210:0.006207):0.029183,513:0.033032):0.020122,(((619:0.0,408:3.43E-4):0.030733,(448:0.012815,716:0.011805):0.010984):0.018577,(67:0.037297,155:0.031869):0.014739):0.023424):0.01122,(653:0.018532,464:0.017835):0.041031):0.111343):0.056949):0.041219,507:0.17312):0.029751,((98:0.176054,167:0.253873):0.037937,(291:0.046364,536:0.03404):0.177012):0.067981):0.024054,(((((458:0.054186,230:0.048369):0.026318,636:0.076151):0.022514,366:0.099178):0.015502,341:0.062324):0.048422,(((438:3.54E-4,362:7.92E-4):0.0133,472:0.013986):0.076691,295:0.091793):0.030158):0.202704):0.030795,(((640:0.086704,426:0.121244):0.045873,232:0.085216):0.03517,(152:0.074921,607:0.113715):0.03071):0.187787):0.027917,((612:0.169238,634:0.125062):0.055149,(((390:0.101123,660:0.059111):0.060663,402:0.085514):0.032014,165:0.120348):0.145099):0.055072):0.09899,(((((367:6.4E-4,196:6.24E-4):0.053585,(((195:0.015422,588:0.012042):0.039247,((651:0.00684,711:0.024586):0.00502,(((460:0.0,589:0.0):0.00663,511:0.002765):0.00386,389:0.00794):0.008218):0.002179):0.00446,493:0.030982):0.03239):0.199956,(427:0.012903,378:0.003049):0.386268):0.180586,((((123:0.123173,446:0.120008):0.159306,((149:0.002292,478:0.002453):0.053871,(321:0.027749,242:0.027236):0.031378):0.134774):0.151991,((568:0.072061,188:0.04265):0.018425,238:0.077353):0.269684):0.141145,422:0.697366):0.171539):0.064736,263:0.549831):0.056614):0.089191,582:0.339568):0.063213):0.093791,((434:0.221486,659:0.235193):0.269435,((((((296:0.05188,218:0.04331):0.045927,54:0.08407):0.035503,(424:0.107415,286:0.104313):0.062144):0.11137,223:0.218315):0.102231,(((((((594:2.75E-4,58:2.47E-4):0.096556,579:0.130391):0.041935,73:0.194671):0.108731,(32:0.206905,40:0.21572):0.039647):0.204436,572:0.368324):0.05185,(284:0.325853,517:0.267991):0.045811):0.045242,684:0.335728):0.039815):0.036306,(((241:0.340758,23:0.326975):0.069132,((491:0.05281,87:0.046187):0.14976,672:0.199974):0.121235):0.065096,699:0.487944):0.045793):0.04331):0.033782):0.033693,37:0.52279):0.036282,(((((((689:0.23347,275:0.208618):0.040632,455:0.230443):0.030751,(((((310:0.001263,322:9.27E-4):6.61E-4,((681:0.006051,192:3.16E-4):0.001123,686:9.26E-4):3.5E-4):0.119606,((229:0.03145,107:0.037212):0.061724,624:0.097271):0.023098):0.020182,714:0.16927):0.075991,5:0.136694):0.07072):0.026032,((((((718:0.003032,153:0.004293):9.24E-4,450:0.004956):0.002035,245:0.00625):0.008252,92:0.010673):0.199339,485:0.121696):0.062387,575:0.107844):0.108511):0.052813,452:0.132215):0.401479,(625:0.291771,692:0.270137):0.202377):0.049843,708:0.667875):0.034753):0.023181,(((((((4:0.115999,19:0.124662):0.074785,642:0.182703):0.054101,503:0.332349):0.041954,((26:0.181859,11:0.30193):0.037197,(((((191:0.059237,394:0.052582):0.072716,129:0.133872):0.034419,10:0.123672):0.087924,368:0.665368):0.057908,((((703:0.0,693:0.0):0.024113,613:0.02726):0.02733,71:0.051865):0.063951,((564:8.58E-4,606:0.001013):0.151787,338:0.06466):0.046245):0.18136):0.057273):0.041539):0.194704,(48:0.154571,417:0.312844):0.159944):0.062353,((((518:0.032082,100:0.032712):0.058237,(((203:0.059493,290:0.0478):0.035359,234:0.105899):0.014378,(443:0.051253,608:0.062034):0.016101):0.038256):0.042465,569:0.115118):0.129491,243:0.162073):0.253695):0.148638,((((122:0.396966,120:0.451463):0.059359,102:0.427955):0.105972,(((((649:0.002254,272:0.002736):0.004197,(240:0.0,257:3.44E-4):0.002396):0.021326,227:0.019605):0.087368,(((420:0.030285,303:0.023437):0.007338,643:0.022986):0.042096,((374:0.0,121:1.71E-4):1.71E-4,(418:3.42E-4,78:3.44E-4):0.0):0.088464):0.034515):0.269463,136:0.26373):0.294159):0.072779,(683:0.328464,14:0.334605):0.359784):0.051776):0.041976):0.020277,((((((74:0.011852,614:0.016443):0.006519,104:0.013496):0.093741,287:0.090331):0.391295,((101:0.0,674:0.0):0.267368,609:0.151221):0.231493):0.155836,25:0.52097):0.062841,(((403:2.2E-4,339:0.0):0.017229,(510:1.81E-4,388:8.38E-4):0.020842):0.144917,(343:0.0,545:1.71E-4):0.165532):0.395767):0.1053):0.036183,((((((((639:0.002353,55:0.003734):0.002271,171:0.003699):0.430983,((((184:0.261036,163:0.263813):0.099129,702:0.278073):0.046282,220:0.383762):0.035874,138:0.328229):0.046689):0.262618,(((602:1.66E-4,461:0.0):0.453388,117:0.366678):0.056306,((216:0.106972,108:0.117431):0.32371,258:0.299834):0.137813):0.242873):0.06613,((150:0.018411,83:0.013116):0.146931,596:0.163211):0.286922):0.11052,(((106:0.016914,236:0.018909):0.202409,281:0.277597):0.160881,697:0.249163):0.180723):0.122978,(((33:0.173665,49:0.08471):0.045217,38:0.115851):0.114134,217:0.22874):0.263641):0.093021,((((((((173:0.199501,713:0.161842):0.040662,372:0.189602):0.025151,((((282:0.141921,24:0.173079):0.026808,395:0.119406):0.031051,373:0.239396):0.041262,698:0.192197):0.033883):0.022877,717:0.340927):0.029485,308:0.302816):0.024169,(505:0.328273,28:0.318108):0.03302):0.020798,((((((((((((((590:3.38E-4,336:1.69E-4):1.69E-4,((647:0.0,715:0.0):0.0,97:0.0):0.001183):6.51E-4,57:5.32E-4):0.001131,(161:0.002251,645:0.013987):0.004118):0.001515,678:2.57E-4):0.020967,425:0.013733):0.085584,(((194:0.015012,65:0.015183):0.020109,400:0.040049):0.011797,407:0.023456):0.065389):0.021459,(116:0.011367,265:0.01873):0.094956):0.020796,((((((((148:0.0,599:1.67E-4):1.67E-4,375:1.67E-4):0.0,(537:0.001001,432:0.0):3.34E-4):5.16E-4,(((304:6.67E-4,521:3.35E-4):0.0,(((328:6.77E-4,276:0.0):0.0,82:0.0):0.0,(533:6.68E-4,554:3.33E-4):3.34E-4):1.67E-4):0.0,(587:0.0,174:0.0):3.34E-4):1.51E-4):0.032187,((480:3.35E-4,622:1.66E-4):0.023543,176:0.025193):0.012868):0.014679,312:0.045225):0.208482,((((((((((251:1.69E-4,350:3.35E-4):3.86E-4,(((((181:3.34E-4,382:1.67E-4):3.34E-4,(((706:6.78E-4,687:8.62E-4):1.67E-4,86:5.01E-4):3.34E-4,712:5.01E-4):0.0):1.67E-4,(463:5.01E-4,591:0.0):5.01E-4):0.0,555:5.09E-4):3.34E-4,361:5.01E-4):2.83E-4):0.032705,((179:5.02E-4,141:0.0):5.02E-4,385:0.0):0.032531):0.009744,((512:4.96E-4,61:6.75E-4):0.001002,559:8.46E-4):0.042346):0.010989,398:0.053241):0.014154,((239:1.41E-4,166:0.003069):0.045053,((((470:0.0,213:0.0):0.001089,(225:7.57E-4,680:0.001274):5.04E-4):1.79E-4,440:5.78E-4):0.025464,(600:0.013866,283:0.013168):0.014048):0.01685):0.015608):0.079689,((423:0.001565,289:8.56E-4):0.005333,676:0.005458):0.157584):0.124114,88:0.096988):0.030082,(((((532:0.017053,180:0.025039):0.047802,(288:0.008251,319:0.00468):0.081515):0.035749,(409:0.001075,255:9.47E-4):0.095385):0.189762,((467:1.67E-4,285:1.71E-4):0.13496,340:0.116042):0.029638):0.037981,(((((449:0.113171,546:0.09989):0.023598,233:0.140539):0.018317,(411:0.075472,526:0.062813):0.114981):0.022679,((666:0.031056,125:0.035589):0.124121,552:0.234536):0.131959):0.021585,563:0.124879):0.034651):0.077386):0.111668,(((344:0.00208,720:7.75E-4):0.001511,610:0.003974):0.001047,442:0.001031):0.107265):0.033808):0.044404,504:0.152339):0.036331):0.021337,211:0.18896):0.019902,(667:0.093196,62:0.066964):0.053506):0.027554,124:0.211271):0.115095,3:0.223192):0.06559,(((((567:0.123954,332:0.114099):0.023517,((((593:5.13E-4,495:0.001376):4.86E-4,633:0.00102):0.09186,((209:0.003782,318:0.003812):0.055674,501:0.067314):0.054513):0.057627,((((((637:0.0,376:0.0):0.0,309:1.67E-4):0.001673,(543:0.001211,139:0.003486):0.001309):0.001791,412:0.007218):0.098641,81:0.121865):0.020585,66:0.115493):0.020236):0.012084):0.136573,641:0.312208):0.036695,((18:0.28787,112:0.211317):0.173769,((494:0.12868,190:0.107044):0.082634,143:0.211875):0.045791):0.027696):0.039355,((((324:0.004904,323:0.004594):0.034053,558:0.041493):0.149566,247:0.23409):0.036154,169:0.176618):0.036512):0.061826):0.019474):0.069313,((((((((((((((27:0.064063,9:0.099947):0.030002,44:0.094672):0.01975,15:0.082405):0.035617,41:0.115349):0.051352,((42:0.196353,34:0.168724):0.036428,((((539:0.020568,205:0.028887):0.039891,500:0.068094):0.050028,476:0.130484):0.065937,((80:0.003996,393:0.003983):0.084663,333:0.089834):0.133992):0.04523):0.013623):0.017241,164:0.154573):0.033958,(((((((35:0.093463,540:0.072507):0.074571,53:0.099223):0.020272,(6:0.072121,47:0.083245):0.048392):0.038128,544:0.153492):0.027393,(((193:0.019914,481:0.017049):0.027318,317:0.039855):0.137522,((((((((((413:0.025373,182:0.014398):0.020335,((315:0.0,147:0.0):2.54E-4,77:4.38E-4):0.029295):0.012695,156:0.027998):0.015961,((((((((535:0.0,256:3.48E-4):5.22E-4,523:3.48E-4):0.0,253:0.0):0.0,320:0.0):1.74E-4,76:3.48E-4):0.028503,(93:2.83E-4,261:0.005107):0.026919):0.008581,244:0.050438):0.008421,(682:1.71E-4,547:0.001878):0.024032):0.041807):0.021744,623:0.054563):0.05338,((1:0.080084,2:0.095182):0.023186,(68:0.066164,527:0.059553):0.015357):0.01873):0.081897,((30:0.098036,453:0.100342):0.021978,21:0.097173):0.027185):0.031045,16:0.151197):0.032028,31:0.140115):0.027068,((465:0.012069,628:0.010019):0.097618,36:0.170224):0.084563):0.033468):0.03169):0.026445,(((266:0.027139,573:0.027351):0.021484,566:0.037328):0.090414,39:0.137426):0.05113):0.0286,((12:0.118628,632:0.133604):0.026332,391:0.242956):0.044904):0.019561):0.056195,((((580:4.77E-4,486:0.001073):0.033614,128:0.038791):0.051561,235:0.068116):0.044622,(605:0.065695,685:0.054499):0.056416):0.221144):0.045301,((146:1.88E-4,215:3.39E-4):0.040933,615:0.037617):0.303161):0.039753,(311:8.95E-4,327:6.79E-4):0.478476):0.120846,52:0.43829):0.090081,(((51:0.142154,13:0.088587):0.047811,29:0.117231):0.104268,8:0.269623):0.198082):0.036936,(50:0.383152,581:0.357989):0.109409):0.087352,(((((((((342:0.023543,419:0.044194):0.014221,((437:0.022222,329:0.025798):0.006423,462:0.032326):0.022152):0.016325,(((657:0.058394,335:0.053438):0.019947,((355:0.00276,658:0.002109):0.070906,((301:0.013908,222:0.016702):0.023743,(((515:0.005031,611:0.005416):0.003975,436:0.011185):0.004908,270:0.010415):0.020455):0.117983):0.022565):0.040798,(162:0.00429,528:0.003453):0.043557):0.012995):0.046129,208:0.067465):0.195828,(259:3.21E-4,516:0.00142):0.098101):0.061386,(((((277:0.004827,406:0.003501):0.036361,144:0.042386):0.086848,307:0.151445):0.024405,(((430:0.088208,59:0.108904):0.018975,206:0.111161):0.027275,570:0.127272):0.053965):0.023778,(298:0.127345,474:0.138774):0.035212):0.017944):0.063385,(204:0.023735,557:0.025648):0.172906):0.056598,132:0.211642):0.301851,(((((293:0.02822,704:0.017828):0.118476,268:0.154341):0.066504,459:0.219302):0.124086,(7:0.242004,20:0.272557):0.055029):0.055648,((488:5.54E-4,429:8.51E-4):0.017643,677:0.014048):0.50406):0.083393):0.032459):0.039409):0.035188):0.022061):0.039665):0.054226,(((414:0.127803,665:0.188887):0.074834,(((175:0.007577,231:5.3E-4):0.005057,226:0.006656):0.159923,541:0.230211):0.037393):0.080613,114:0.362128):0.246177):0.287154,((627:0.001498,696:0.001224):0.144321,(22:0.114423,17:0.077947):0.086289):0.12529):0.1212895,(274:0.043888,556:0.07314):0.1212895);
+
+
+
+END;
