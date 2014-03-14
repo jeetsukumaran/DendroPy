@@ -56,7 +56,10 @@ import dendropy
 #      f -> n;
 #      f -> h -> o;
 #      h -> p;
-class TestTreeStructure(unittest.TestCase):
+class TestTreeStructure(object):
+    """
+    Mixin class meant to be combined with unittest.TestCase.
+    """
     dot_str = "a -> b -> i; b -> e -> j; e -> k; a -> c; c -> g; c -> f; g -> l; g -> m; f -> n; f -> h -> o; h -> p;"
     newick_unweighted_edges_str = "((i, (j, k)e)b, ((l, m)g, (n, (o, p)h)f)c)a;"
     newick_weighted_edges_str = "((i:1, (j:2, k:3)e:4)b:5, ((l:6, m:7)g:8, (n:9, (o:10, p:11)h:12)f:13)c:14)a:15;"
@@ -118,26 +121,23 @@ class TestTreeStructure(unittest.TestCase):
             }
 
     def test1(self):
-        print("\n\n***\n--- {}\n***\n".format(self.__class__.__name__))
+        t = self.get_tree()
 
+class TestTreeBuiltByAddingChildNodes(unittest.TestCase, TestTreeStructure):
 
-class TestTreeBuiltByAddingChildNodes(TestTreeStructure):
-
-    def get_tree_built_by_node_add_child(self):
-
+    def get_tree(self):
         tree = dendropy.Tree()
-
         def add_child_node(parent, label, edge_length):
             nd = tree.new_node()
             nd.label = label
             nd.edge.length = edge_length
             parent.add_child(nd)
             return nd
-
         a = tree.seed_node
         a.label = "a"
         a.edge.length = 15.0
         b = add_child_node(a, label="b", edge_length=5.0)
+        c = add_child_node(a, label="c", edge_length=14.0)
         e = add_child_node(b, label="i", edge_length=4.0)
         i = add_child_node(b, label="c", edge_length=1.0)
         j = add_child_node(e, label="j", edge_length=2.0)
@@ -152,17 +152,15 @@ class TestTreeBuiltByAddingChildNodes(TestTreeStructure):
         p = add_child_node(h, label="p", edge_length=11.0)
         return tree
 
+class TestTreeBuiltByNewNode(unittest.TestCase, TestTreeStructure):
+
     def get_tree(self):
-        return self.get_tree_built_by_node_add_child()
-
-class TestTreeBuiltByNewNode(TestTreeStructure):
-
-    def get_tree_built_by_node_new_child(self):
         tree = dendropy.Tree()
         a = tree.seed_node
         a.label = "a"
         a.edge.length = 15.0
         b = a.new_child(label="b", edge_length=5.0)
+        c = a.new_child(label="c", edge_length=14.0)
         e = b.new_child(label="i", edge_length=4.0)
         i = b.new_child(label="c", edge_length=1.0)
         j = e.new_child(label="j", edge_length=2.0)
@@ -176,9 +174,6 @@ class TestTreeBuiltByNewNode(TestTreeStructure):
         o = h.new_child(label="o", edge_length=10.0)
         p = h.new_child(label="p", edge_length=11.0)
         return tree
-
-    def get_tree(self):
-        return self.get_tree_built_by_node_new_child()
 
 if __name__ == "__main__":
     unittest.main()
