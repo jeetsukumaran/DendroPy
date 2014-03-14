@@ -238,6 +238,7 @@ class Node(base.Annotable):
 
         """
         self.taxon = taxon
+        self.label = label
         self.age = None
         self._edge = None
         self._child_nodes = []
