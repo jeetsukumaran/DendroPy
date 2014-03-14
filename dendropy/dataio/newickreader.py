@@ -132,12 +132,12 @@ class NewickTreeParser(object):
                     if not node_created: #184
                         # no node has been created yet: ',' designates a
                         # preceding blank node
-                        current_node.add_child(tree.create_new_node())
+                        current_node.add_child(tree.new_node())
                         # do not flag node as created to allow for an extra node to be created in the event of (..,)
                     nexus_tokenizer.require_next_token()
                     while nexus_tokenizer.current_token == ",": #192
                         # another blank node
-                        current_node.add_child(tree.create_new_node())
+                        current_node.add_child(tree.new_node())
                         nexus_tokenizer.require_next_token()
                         node_created = true;
                     if node_created and nexus_tokenizer.current_token == ")": #200
@@ -155,7 +155,7 @@ class NewickTreeParser(object):
                         is_new_internal_node = True
                     else:
                         is_new_internal_node = False
-                    new_node = tree.create_new_node();
+                    new_node = tree.new_node();
                     self.parse_tree_node_description(
                             nexus_tokenizer=nexus_tokenizer,
                             tree=tree,

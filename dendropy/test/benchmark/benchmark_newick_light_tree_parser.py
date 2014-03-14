@@ -48,7 +48,7 @@ class Tree(object):
     def __init__(self):
         self.seed_node = Node()
 
-    def create_new_node(self):
+    def new_node(self):
         return Node()
 
 class Node(object):

@@ -1374,12 +1374,12 @@ class Tree(taxon.TaxonNamespaceScoped, base.Readable, base.Writeable):
 
         """
         super(Tree, self).__init__(*args, **kwargs)
-        self.seed_node = self.create_new_node()
+        self.seed_node = self.new_node()
 
     ###########################################################################
     ## Node Management
 
-    def create_new_node(self, *args, **kwargs):
+    def new_node(self, *args, **kwargs):
         """
         Creates and returns a `Node` object.
 
