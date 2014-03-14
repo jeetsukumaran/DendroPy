@@ -1189,9 +1189,85 @@ class Tree(taxon.TaxonNamespaceScoped, base.Readable, base.Writeable):
     node as a node without `child_node` objects.
     """
 
-    # def parse_from_stream(cls, stream, schema, **kwargs):
-    #     pass
-    # parse_from_stream = classmethod(parse_from_stream)
+    def parse_from_stream(cls,
+            stream,
+            schema,
+            collection_offset=None,
+            tree_offset=None,
+            **kwargs):
+        """
+        Constructs a new `Tree` object and populates it with data from
+        file-like object `stream`.
+
+        Parameters
+        ----------
+
+        stream : file or file-like object
+            Source of data.
+
+        schema : string
+            Identifier of format of data in `stream`
+
+        collection_offset : integer or None
+        tree_offset : integer or None
+
+            If the source defines multiple tree collections (e.g. multiple
+            NEXUS "Trees" blocks), then the keyword argument
+            `collection_offset` can be used to specify the 0-based index of the
+            tree collection, and the keyword argument `tree_offset` can be used
+            to specify the 0-based index of the tree within the collection, as
+            the source. If `collection_offset` is not specified or `None`, then
+            all collections in the source are merged before considering
+            `tree_offset`.  If `tree_offset` is not specified, then the first
+            tree (offset=0) is returned.
+
+        **kwargs : keyword arguments
+            Arguments to customize parsing, instantiation, processing, and
+            accession of `Tree` objects read from the data source, including
+            schema- or format-specific handling.
+
+            The following optional keyword arguments are recognized and handled
+            by this function:
+
+                - `label` specifies the label or description of the new
+                  `TreeList`.
+                - `taxon_namespace` specifies the `TaxonNamespace` object to be
+                   attached to the new `Tree` object.
+
+            All other keyword arguments are passed directly to `TreeList.read()`.
+            Other keyword arguments may be available, depending on the implementation
+            of the reader specialized to handle `schema` formats.
+
+        Returns
+        -------
+        A `Tree` object (or `None` if not trees were found in the data source).
+
+        """
+        taxon_namespace = taxon.TaxonNamespaceScoped.process_kwargs_for_taxon_namespace(kwargs, None)
+        label = kwargs.pop("label", None)
+        reader = dataio.get_reader(schema, **kwargs)
+        if collection_offset is None:
+            # coerce all tree products into this list
+            tree_list = TreeList(taxon_namespace=taxon_namespace)
+            reader.read_trees(
+                        stream=stream,
+                        taxon_namespace_factory=tree_list._taxon_namespace_pseudofactory,
+                        tree_list_factory=tree_list._tree_list_pseudofactory,
+                        global_annotations_target=None)
+        else:
+            tree_lists = reader.read_trees(
+                        stream=stream,
+                        taxon_namespace_factory=tree_list._taxon_namespace_pseudofactory,
+                        tree_list_factory=TreeList,
+                        global_annotations_target=None)
+            tree_list = tree_lists[collection_offset]
+        if not tree_list:
+            return None
+        if tree_offset is None:
+            return tree_list[0]
+        else:
+            return tree_list[tree_offset]
+    parse_from_stream = classmethod(parse_from_stream)
 
     ###########################################################################
     ## Special/Lifecycle methods
@@ -1298,13 +1374,33 @@ class Tree(taxon.TaxonNamespaceScoped, base.Readable, base.Writeable):
 
         """
         super(Tree, self).__init__(*args, **kwargs)
-        self.seed_node = Node()
+        self.seed_node = self.create_new_node()
 
     ###########################################################################
     ## Node Management
 
-    def create_new_node(self):
-        return Node()
+    def create_new_node(self, *args, **kwargs):
+        """
+        Creates and returns a `Node` object.
+
+        Does *not* add the new `Node` object to the tree. Derived classes can
+        override this method to provide support for specialized or different
+        types of nodes on the tree.
+
+        Parameters
+        ----------
+        *args : positional arguments
+            Passed directly to constructor of `Node`.
+
+        **kwargs : keyword arguments
+            Passed directly to constructor of `Node`.
+
+        Returns
+        -------
+        `Node` object.
+
+        """
+        return Node(*args, **kwargs)
 
 ##############################################################################
 ## TreeList
@@ -1325,7 +1421,6 @@ class TreeList(taxon.TaxonNamespaceScoped, base.Readable, base.Writeable):
         """
         Constructs a new `TreeList` object and populates it with trees from
         file-like object `stream`.
-
 
         Parameters
         ----------
@@ -1372,6 +1467,10 @@ class TreeList(taxon.TaxonNamespaceScoped, base.Readable, base.Writeable):
             Other keyword arguments may be available, depending on the implementation
             of the reader specialized to handle `schema` formats.
 
+        Returns
+        -------
+        A `TreeList` object.
+
         """
         taxon_namespace = taxon.TaxonNamespaceScoped.process_kwargs_for_taxon_namespace(kwargs, None)
         label = kwargs.pop("label", None)
@@ -1387,6 +1486,23 @@ class TreeList(taxon.TaxonNamespaceScoped, base.Readable, base.Writeable):
     parse_from_stream = classmethod(parse_from_stream)
 
     def tree_factory(cls, *args, **kwargs):
+        """
+        Creates and returns a `Tree` of a type that this list undestands how to
+        manage.
+
+        Parameters
+        ----------
+        *args : positional arguments
+            Passed directly to constructor of `Tree`.
+
+        **kwargs : keyword arguments
+            Passed directly to constructor of `Tree`.
+
+        Returns
+        -------
+        A `Tree` object.
+
+        """
         tree = Tree(*args, **kwargs)
         return tree
     tree_factory = classmethod(tree_factory)
@@ -1551,13 +1667,15 @@ class TreeList(taxon.TaxonNamespaceScoped, base.Readable, base.Writeable):
             reader.read_trees(
                         stream=stream,
                         taxon_namespace_factory=self._taxon_namespace_pseudofactory,
-                        tree_list_factory=self._tree_list_pseudofactory)
+                        tree_list_factory=self._tree_list_pseudofactory,
+                        global_annotations_target=None)
         else:
             tree_lists = reader.read_trees(
                         stream=stream,
                         taxon_namespace_factory=self._taxon_namespace_pseudofactory,
-                        tree_list_factory=self.__class__)
-            tree_list = tree_lists[tree_collection_offset]
+                        tree_list_factory=self.__class__,
+                        global_annotations_target=None)
+            tree_list = tree_lists[collection_offset]
             self.copy_annotations_from(tree_list)
             if tree_offset is not None:
                 self.extend(tree_list[tree_offset:])
@@ -1571,6 +1689,20 @@ class TreeList(taxon.TaxonNamespaceScoped, base.Readable, base.Writeable):
     #     return list.__cmp__(self._taxa, o._taxa)
 
     def __add__(self, other):
+        """
+        Creates and returns new `TreeList` with clones of all `Trees` in `self`
+        as well as all `Tree` objects in `other`. Note that if `other` is a
+        `TreeList`, then the `Trees` are *cloned*; otherwise, they are copied.
+
+        Parameters
+        ----------
+        other : iterable of `Tree` objects
+
+        Returns
+        -------
+        `TreeList` object containing clones of `Tree` objects in `self` and
+        `other`.
+        """
         raise NotImplementedError
 
     def __contains__(self, tree):

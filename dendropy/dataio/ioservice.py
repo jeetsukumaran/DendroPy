@@ -63,17 +63,128 @@ class DataReader(IOService):
 
     def read(self,
             stream,
-            dataset=None,
             taxon_namespace_factory=None,
             tree_list_factory=None,
-            char_matrix_factory=None):
+            char_matrix_factory=None,
+            global_annotations_target=None):
+        """
+        Deriving classes should implement this method to build a data product
+        from the information in `stream` using the provided factory functions.
+
+        Parameters
+        ----------
+
+        stream : file or file-like object
+            Source of data.
+
+        taxon_namespace_factory : function object
+            A function that takes one named argument, `label`, and returns a
+            `TaxonNamespace` object to be used for each distinct block of
+            operational taxonomic unit concept definitions encountered in the
+            data source.
+
+            The function will be called as::
+
+                tns = taxon_namespace_factory(label="label")
+
+            In the simplest case, a new `TaxonNamespace` object can be created
+            for each block of taxon definitions in the data source by setting
+            the factory function to::
+
+                taxon_namespace_factory = TaxonNamespace
+
+            If all data objects are to be organized into a DataSet object,
+            then:
+
+                taxon_namespace_factory = dataset.new_taxon_namespace
+
+            If all data objects should reference the *same* `TaxonNamespace`
+            object, then:
+
+                taxon_namespace_factory = lambda label : taxon_namespace
+
+            where `taxon_namespace` is an existing `TaxonNamespace` object that
+            should be used.
+
+            If `taxon_namespace_factor` is `None`, then no tree data will be
+            parsed.
+
+        tree_list_factory : function object
+            A function that takes two named arguments, `label` and
+            `taxon_namespace`, and returns a `TreeList` or equivalent object to
+            be used to manage each distinct collection of trees in the data
+            source.
+
+            The function will be called as::
+
+                tns = taxon_namespace_factory(label="label")
+                tlist = tree_list_factory(label="label", taxon_namespace=tns)
+
+            In the simplest case, a new `TreeList` object can be created for
+            each block of tree definitions in the data source by setting the
+            factory function to::
+
+                tree_list_factory = TreeList
+
+            If all data objects are to be organized into a DataSet object,
+            then:
+
+                tree_list = dataset.new_tree_list
+
+            If all Tree data objects instantiated should be accessioned into
+            the *same* `TreeList` object, then:
+
+                taxon_namespace_factory = lambda label : tree_list.taxon_namespace
+                tree_list_factory = lambda label, taxon_namespace : tree_list
+
+            where `tree_list` is an existing `TreeList` object that should be
+            used.
+
+        char_matrix_factory : function object
+            A function that takes two named arguments, `label` and
+            `taxon_namespace`, and returns a `CharacterMatrix` or equivalent object to
+            be used to manage each aligment or distinct set of sequences in the data
+            source.
+
+            The function will be called as::
+
+                tns = taxon_namespace_factory(label="label")
+                cm = char_matrix_factory(label="label", taxon_namespace=tns)
+
+            In the simplest case, a new `CharacterMatrix` object can be created for
+            each alignment or set of sequences in the data source by setting the
+            factory function to, for e.g.::
+
+                char_matrix_factory = DnaCharacterMatrix
+
+            If all data objects are to be organized into a DataSet object,
+            then:
+
+                char_matrix = dataset.new_char_matrix
+
+            If `char_matrix_factory` is `None`, then no character data will be
+            parsed.
+
+        global_annotations_target : `Annotable` object
+            Any object that will be the target (or subject, in the grammatical
+            sense) of general metadata or annotations in the data source. If
+            `None`, then such metadata or annotations will not be stored.
+
+        Returns
+        -------
+
+        A `Product` object : a `namedtuple` with the following attributes:
+            "taxon_namespaces", "tree_lists", "char_matrices".
+
+        """
         raise NotImplementedError
 
     def read_dataset(self,
             stream,
             dataset,
             exclude_trees=False,
-            exclude_chars=False):
+            exclude_chars=False,
+            global_annotations_target=None):
         """
         Populates the given `DataSet` object from external data source.
 
@@ -92,7 +203,13 @@ class DataReader(IOService):
         exclude_chars : boolean, default = False
             If set to `True`, character data will not be read from the source.
 
+        global_annotations_target : `Annotable` object
+            Any object that will be the target (or subject, in the grammatical
+            sense) of general metadata or annotations in the data source. If
+            `None`, then such metadata or annotations will not be stored.
+
         """
+        raise NotImplementedError
         taxon_namespace_factory = dataset.new_taxon_namespace
         if exclude_chars:
             char_matrix_factory = None
@@ -102,12 +219,14 @@ class DataReader(IOService):
             tree_list_factory = None
         else:
             tree_list_factory = dataset.new_tree_list
+        global_annotations_target = dataset
 
 
     def read_trees(self,
             stream,
             taxon_namespace_factory,
-            tree_list_factory):
+            tree_list_factory,
+            global_annotations_target=None):
         """
         Reads tree data from source into tree objects.
 
@@ -123,6 +242,80 @@ class DataReader(IOService):
                 taxon_namespace_factory=lambda x: t.taxon_namespace,
                 tree_list_factory=lambda x : t)
 
+        Parameters
+        ----------
+
+        stream : file or file-like object
+            Source of data.
+
+        taxon_namespace_factory : function object
+            A function that takes one named argument, `label`, and returns a
+            `TaxonNamespace` object to be used for each distinct block of
+            operational taxonomic unit concept definitions encountered in the
+            data source.
+
+            The function will be called as::
+
+                tns = taxon_namespace_factory(label="label")
+
+            In the simplest case, a new `TaxonNamespace` object can be created
+            for each block of taxon definitions in the data source by setting
+            the factory function to::
+
+                taxon_namespace_factory = TaxonNamespace
+
+            If all data objects are to be organized into a DataSet object,
+            then:
+
+                taxon_namespace_factory = dataset.new_taxon_namespace
+
+            If all data objects should reference the *same* `TaxonNamespace`
+            object, then:
+
+                taxon_namespace_factory = lambda label : taxon_namespace
+
+            where `taxon_namespace` is an existing `TaxonNamespace` object that
+            should be used.
+
+            If `taxon_namespace_factor` is `None`, then no tree data will be
+            parsed.
+
+        tree_list_factory : function object
+            A function that takes two named arguments, `label` and
+            `taxon_namespace`, and returns a `TreeList` or equivalent object to
+            be used to manage each distinct collection of trees in the data
+            source.
+
+            The function will be called as::
+
+                tns = taxon_namespace_factory(label="label")
+                tlist = tree_list_factory(label="label", taxon_namespace=tns)
+
+            In the simplest case, a new `TreeList` object can be created for
+            each block of tree definitions in the data source by setting the
+            factory function to::
+
+                tree_list_factory = TreeList
+
+            If all data objects are to be organized into a DataSet object,
+            then:
+
+                tree_list = dataset.new_tree_list
+
+            If all Tree data objects instantiated should be accessioned into
+            the *same* `TreeList` object, then:
+
+                taxon_namespace_factory = lambda label : tree_list.taxon_namespace
+                tree_list_factory = lambda label, taxon_namespace : tree_list
+
+            where `tree_list` is an existing `TreeList` object that should be
+            used.
+
+        global_annotations_target : `Annotable` object
+            Any object that will be the target (or subject, in the grammatical
+            sense) of general metadata or annotations in the data source. If
+            `None`, then such metadata or annotations will not be stored.
+
         Returns
         -------
         List of `TreeList` objects.
@@ -130,50 +323,11 @@ class DataReader(IOService):
         """
         # `product` is a namedtuple("DataReaderProducts", ["taxon_namespaces", "tree_lists", "char_matrices"])
         product = self.read(stream=stream,
-                dataset=None,
                 taxon_namespace_factory=taxon_namespace_factory,
                 tree_list_factory=tree_list_factory,
-                char_matrix_factory=None)
+                char_matrix_factory=None,
+                global_annotations_target=global_annotations_target)
         return product.tree_lists
-
-    def read_char_matrix(self, stream, char_matrix):
-        """
-        Populates the given `CharacterMatrixList` object with
-        sequences/alignments from an external data source.
-
-        Parameters
-        ----------
-
-        stream : file or file-like object
-            Source of data.
-
-        char_matrix_list : CharacterMatrixList object
-            The collection of CharacterMatrix objects into which data will be read.
-
-        """
-        taxon_namespace_factory = lambda : char_matrix.taxon_namespace
-        char_matrix_factory = lambda : char_matrix
-        tree_list_factory = None
-
-    # def get_default_taxon_namespace(self, dataset, **kwargs):
-    #     """
-    #     Returns an appropriate TaxonNamespace object, based on current settings.
-    #     """
-    #     if dataset is None:
-    #         raise TypeError("'dataset' is not defined")
-    #     if "taxon_namespace" in kwargs:
-    #         self.attached_taxon_namespace = kwargs["taxon_namespace"]
-    #     if dataset.attached_taxon_namespace is not None:
-    #         if self.attached_taxon_namespace is not None \
-    #                 and dataset.attached_taxon_namespace is not self.attached_taxon_namespace:
-    #             raise TypeError("DataSet is attached to different TaxonNamespace than that specified by 'taxon_namespace'")
-    #         self.attached_taxon_namespace = dataset.attached_taxon_namespace
-    #     if self.attached_taxon_namespace is not None:
-    #         if self.attached_taxon_namespace not in dataset.taxon_namespaces:
-    #             dataset.add(self.attached_taxon_namespace)
-    #         return self.attached_taxon_namespace
-    #     else:
-    #         return dataset.new_taxon_namespace(**kwargs)
 
 ###############################################################################
 ## DataReader

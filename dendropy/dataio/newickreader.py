@@ -223,10 +223,10 @@ class NewickReader(ioservice.DataReader):
 
     def read(self,
             stream,
-            dataset=None,
             taxon_namespace_factory=None,
             tree_list_factory=None,
-            char_matrix_factory=None):
+            char_matrix_factory=None,
+            global_annotations_target=None):
         nexus_tokenizer = nexusprocessing.NexusTokenizer(stream)
         taxon_namespace = taxon_namespace_factory(label=None)
         tree_list = tree_list_factory(label=None, taxon_namespace=taxon_namespace)
