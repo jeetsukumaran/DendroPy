@@ -128,7 +128,7 @@ class TestTreeBuiltByAddingChildNodes(unittest.TestCase, TestTreeStructure):
     def get_tree(self):
         tree = dendropy.Tree()
         def add_child_node(parent, label, edge_length):
-            nd = tree.new_node()
+            nd = tree.node_factory()
             nd.label = label
             nd.edge.length = edge_length
             parent.add_child(nd)

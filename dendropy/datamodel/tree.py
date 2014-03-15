@@ -1270,6 +1270,29 @@ class Tree(taxon.TaxonNamespaceScoped, base.Readable, base.Writeable):
             return tree_list[tree_offset]
     parse_from_stream = classmethod(parse_from_stream)
 
+    def node_factory(cls, *args, **kwargs):
+        """
+        Creates and returns a `Node` object.
+
+        Derived classes can override this method to provide support for
+        specialized or different types of nodes on the tree.
+
+        Parameters
+        ----------
+        *args : positional arguments
+            Passed directly to constructor of `Node`.
+
+        **kwargs : keyword arguments
+            Passed directly to constructor of `Node`.
+
+        Returns
+        -------
+        `Node` object.
+
+        """
+        return Node(*args, **kwargs)
+    node_factory = classmethod(node_factory)
+
     ###########################################################################
     ## Special/Lifecycle methods
 
@@ -1375,33 +1398,10 @@ class Tree(taxon.TaxonNamespaceScoped, base.Readable, base.Writeable):
 
         """
         super(Tree, self).__init__(*args, **kwargs)
-        self.seed_node = self.new_node()
+        self.seed_node = self.node_factory()
 
     ###########################################################################
     ## Node Management
-
-    def new_node(self, *args, **kwargs):
-        """
-        Creates and returns a `Node` object.
-
-        Does *not* add the new `Node` object to the tree. Derived classes can
-        override this method to provide support for specialized or different
-        types of nodes on the tree.
-
-        Parameters
-        ----------
-        *args : positional arguments
-            Passed directly to constructor of `Node`.
-
-        **kwargs : keyword arguments
-            Passed directly to constructor of `Node`.
-
-        Returns
-        -------
-        `Node` object.
-
-        """
-        return Node(*args, **kwargs)
 
 ##############################################################################
 ## TreeList

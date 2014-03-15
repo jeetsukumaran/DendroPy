@@ -50,6 +50,7 @@ class TestNodeSetChildNodes(unittest.TestCase):
             self.assertIs(ch._parent_node, parent)
             self.assertIs(ch.edge.tail_node, parent)
             self.assertIs(ch.edge.head_node, ch)
+            self.assertEqual(len(ch._child_nodes), len(ch._expected_children))
             for sch in ch._child_nodes:
                 self.assertIn(sch, ch._expected_children)
                 self.assertIs(sch._parent_node, ch)
@@ -73,6 +74,7 @@ class TestNodeSetChildNodes(unittest.TestCase):
             self.assertIs(ch._parent_node, parent)
             self.assertIs(ch.edge.tail_node, parent)
             self.assertIs(ch.edge.head_node, ch)
+            self.assertEqual(len(ch._child_nodes), len(ch._expected_children))
             for sch in ch._child_nodes:
                 self.assertIn(sch, ch._expected_children)
                 self.assertIs(sch._parent_node, ch)
@@ -80,6 +82,26 @@ class TestNodeSetChildNodes(unittest.TestCase):
                 self.assertIs(sch.edge.head_node, sch)
         for ch in assigned_ch:
             self.assertTrue(ch in parent._child_nodes)
+
+    def test_new_child(self):
+        parent = dendropy.Node(label="parent")
+        new_child_labels = ["c1", "c2", "c3"]
+        sub_child_labels = ["s1", "s2"]
+        for label in new_child_labels:
+            nd = parent.new_child(label=label)
+            for y in sub_child_labels:
+                nd.new_child(label=y)
+        self.assertEqual(len(parent._child_nodes), len(new_child_labels))
+        for ch in parent._child_nodes:
+            self.assertIn(ch.label, new_child_labels)
+            self.assertIs(ch._parent_node, parent)
+            self.assertIs(ch.edge.tail_node, parent)
+            self.assertIs(ch.edge.head_node, ch)
+            for sch in ch._child_nodes:
+                self.assertIn(sch.label, sub_child_labels)
+                self.assertIs(sch._parent_node, ch)
+                self.assertIs(sch.edge.tail_node, ch)
+                self.assertIs(sch.edge.head_node, sch)
 
 if __name__ == "__main__":
     unittest.main()
