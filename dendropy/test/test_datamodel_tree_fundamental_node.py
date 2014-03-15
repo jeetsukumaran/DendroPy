@@ -33,20 +33,30 @@ class TestNodeConstruction(unittest.TestCase):
         edge = nd.edge
         self.assertEqual(edge.length, 1)
         self.assertIs(edge.head_node, nd)
+        self.assertIs(edge.tail_node, None)
 
 class TestNodeSetChildNodes(unittest.TestCase):
 
     def test_set_child_node(self):
         parent = dendropy.Node(label="parent")
         assigned_ch = [dendropy.Node(c) for c in ["c1", "c2", "c3"]]
+        for nd in assigned_ch:
+            x = [dendropy.Node(c) for c in ["s1", "s2"]]
+            nd.set_child_nodes(x)
+            nd._expected_children = x
         parent.set_child_nodes(assigned_ch)
         for ch in parent._child_nodes:
             self.assertIn(ch, assigned_ch)
             self.assertIs(ch._parent_node, parent)
+            self.assertIs(ch.edge.tail_node, parent)
+            self.assertIs(ch.edge.head_node, ch)
+            for sch in ch._child_nodes:
+                self.assertIn(sch, ch._expected_children)
+                self.assertIs(sch._parent_node, ch)
+                self.assertIs(sch.edge.tail_node, ch)
+                self.assertIs(sch.edge.head_node, sch)
         for ch in assigned_ch:
             self.assertTrue(ch in parent._child_nodes)
-
-
 
 if __name__ == "__main__":
     unittest.main()
