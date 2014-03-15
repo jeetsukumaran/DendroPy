@@ -58,5 +58,28 @@ class TestNodeSetChildNodes(unittest.TestCase):
         for ch in assigned_ch:
             self.assertTrue(ch in parent._child_nodes)
 
+    def test_add_child(self):
+        parent = dendropy.Node(label="parent")
+        assigned_ch = [dendropy.Node(c) for c in ["c1", "c2", "c3"]]
+        for nd in assigned_ch:
+            x = [dendropy.Node(c) for c in ["s1", "s2"]]
+            for y in x:
+                nd.add_child(y)
+            nd._expected_children = x
+        for ch in assigned_ch:
+            parent.add_child(ch)
+        for ch in parent._child_nodes:
+            self.assertIn(ch, assigned_ch)
+            self.assertIs(ch._parent_node, parent)
+            self.assertIs(ch.edge.tail_node, parent)
+            self.assertIs(ch.edge.head_node, ch)
+            for sch in ch._child_nodes:
+                self.assertIn(sch, ch._expected_children)
+                self.assertIs(sch._parent_node, ch)
+                self.assertIs(sch.edge.tail_node, ch)
+                self.assertIs(sch.edge.head_node, sch)
+        for ch in assigned_ch:
+            self.assertTrue(ch in parent._child_nodes)
+
 if __name__ == "__main__":
     unittest.main()
