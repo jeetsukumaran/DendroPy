@@ -88,6 +88,18 @@ from dendropy.utility import container
 from dendropy.utility import error
 
 ##############################################################################
+## TaxonAssociated
+
+class TaxonAssociated(base.DataObject):
+
+    def __init__(self, **kwargs):
+        base.DataObject.__init__(self, label=kwargs.pop('label', None))
+        if "taxon_namespace" not in kwargs or kwargs["taxon_namespace"] is None:
+            self.taxon_namespace = TaxonNamespace()
+        else:
+            self.taxon_namespace = kwargs["taxon_namespace"]
+
+##############################################################################
 ## TaxonNamespaceScoped
 
 class TaxonNamespaceScoped(base.DataObject):
@@ -114,8 +126,7 @@ class TaxonNamespaceScoped(base.DataObject):
 
 
     def __init__(self, **kwargs):
-        base.DataObject.__init__(self,
-                label=kwargs.get('label'))
+        base.DataObject.__init__(self, label=kwargs.pop('label', None))
         if "taxon_namespace" not in kwargs or kwargs["taxon_namespace"] is None:
             self.taxon_namespace = TaxonNamespace()
         else:

@@ -23,7 +23,7 @@ Tests basic Node operations.
 import unittest
 import dendropy
 
-class TestNode(unittest.TestCase):
+class TestNodeConstruction(unittest.TestCase):
 
     def test_basic_construction(self):
         taxon = dendropy.Taxon("z")
@@ -33,6 +33,20 @@ class TestNode(unittest.TestCase):
         edge = nd.edge
         self.assertEqual(edge.length, 1)
         self.assertIs(edge.head_node, nd)
+
+class TestNodeSetChildNodes(unittest.TestCase):
+
+    def test_set_child_node(self):
+        parent = dendropy.Node(label="parent")
+        assigned_ch = [dendropy.Node(c) for c in ["c1", "c2", "c3"]]
+        parent.set_child_nodes(assigned_ch)
+        for ch in parent._child_nodes:
+            self.assertIn(ch, assigned_ch)
+            self.assertIs(ch._parent_node, parent)
+        for ch in assigned_ch:
+            self.assertTrue(ch in parent._child_nodes)
+
+
 
 if __name__ == "__main__":
     unittest.main()
