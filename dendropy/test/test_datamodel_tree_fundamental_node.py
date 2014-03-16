@@ -120,5 +120,21 @@ class TestNodeSetChildNodes(unittest.TestCase):
                 self.assertIs(sch.edge.tail_node, ch)
                 self.assertIs(sch.edge.head_node, sch)
 
+    def test_new_child_at_pos(self):
+        new_child_labels = ["c1", "c2", "c3"]
+        insert_ch_label = "x1"
+        for pos in range(len(new_child_labels)+1):
+            parent = dendropy.Node(label="parent")
+            assigned_ch = [dendropy.Node(label=c) for c in new_child_labels]
+            parent.set_child_nodes(assigned_ch)
+            parent.insert_new_child(pos, label=insert_ch_label)
+            x = 0
+            for idx, ch in enumerate(parent._child_nodes):
+                if idx == pos:
+                    self.assertEqual(ch.label, insert_ch_label)
+                else:
+                    self.assertEqual(ch.label, new_child_labels[x])
+                    x += 1
+
 if __name__ == "__main__":
     unittest.main()

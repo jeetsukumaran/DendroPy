@@ -654,7 +654,7 @@ class Node(base.Annotable):
             Node that was added.
         """
         node = self.__class__(**kwargs)
-        return self.add_child(node=node)
+        return self.add_child(node=node, pos=pos)
 
     def remove_child(self, node, suppress_deg_two=False):
         """
