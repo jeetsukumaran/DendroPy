@@ -616,7 +616,42 @@ class Node(base.Annotable):
         """
         Create and add a new child to this node.
 
-        Keyword arguments will be passed to `Node` constructor.
+        Parameters
+        ----------
+
+        **kwargs : keyword arguments
+            Keyword arguments will be passed to `Node` constructor.
+
+        Returns
+        -------
+            Node that was added.
+
+        """
+        node = self.__class__(**kwargs)
+        return self.add_child(node=node)
+
+    def insert_new_child(self, pos, **kwargs):
+        """
+        Create and add a new child to this node at a particular position.
+
+        Adds a child node to this node.
+
+        Results in the parent_node and containing_tree of the node being
+        attached set to this node. Returns node that was just attached.
+
+        Parameters
+        ----------
+
+        node : Node
+            The node to be added as a child of this node.
+
+        pos : integer
+            If not `None`, the position in the the sequence of children that
+            this child should occupy.
+
+        Returns
+        -------
+            Node that was added.
         """
         node = self.__class__(**kwargs)
         return self.add_child(node=node)

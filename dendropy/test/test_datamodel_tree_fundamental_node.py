@@ -39,9 +39,9 @@ class TestNodeSetChildNodes(unittest.TestCase):
 
     def test_set_child_node(self):
         parent = dendropy.Node(label="parent")
-        assigned_ch = [dendropy.Node(c) for c in ["c1", "c2", "c3"]]
+        assigned_ch = [dendropy.Node(label=c) for c in ["c1", "c2", "c3"]]
         for nd in assigned_ch:
-            x = [dendropy.Node(c) for c in ["s1", "s2"]]
+            x = [dendropy.Node(label=c) for c in ["s1", "s2"]]
             nd.set_child_nodes(x)
             nd._expected_children = x
         parent.set_child_nodes(assigned_ch)
@@ -61,9 +61,9 @@ class TestNodeSetChildNodes(unittest.TestCase):
 
     def test_add_child(self):
         parent = dendropy.Node(label="parent")
-        assigned_ch = [dendropy.Node(c) for c in ["c1", "c2", "c3"]]
+        assigned_ch = [dendropy.Node(label=c) for c in ["c1", "c2", "c3"]]
         for nd in assigned_ch:
-            x = [dendropy.Node(c) for c in ["s1", "s2"]]
+            x = [dendropy.Node(label=c) for c in ["s1", "s2"]]
             for y in x:
                 nd.add_child(y)
             nd._expected_children = x
@@ -82,6 +82,23 @@ class TestNodeSetChildNodes(unittest.TestCase):
                 self.assertIs(sch.edge.head_node, sch)
         for ch in assigned_ch:
             self.assertTrue(ch in parent._child_nodes)
+
+    def test_add_child_at_pos(self):
+        new_child_labels = ["c1", "c2", "c3"]
+        insert_ch_label = "x1"
+        for pos in range(len(new_child_labels)+1):
+            parent = dendropy.Node(label="parent")
+            assigned_ch = [dendropy.Node(label=c) for c in new_child_labels]
+            parent.set_child_nodes(assigned_ch)
+            insert_ch = dendropy.Node(label=insert_ch_label)
+            parent.add_child(insert_ch, pos)
+            x = 0
+            for idx, ch in enumerate(parent._child_nodes):
+                if idx == pos:
+                    self.assertEqual(ch.label, insert_ch_label)
+                else:
+                    self.assertEqual(ch.label, new_child_labels[x])
+                    x += 1
 
     def test_new_child(self):
         parent = dendropy.Node(label="parent")
