@@ -37,7 +37,7 @@ class TestNodeConstruction(unittest.TestCase):
 
 class TestNodeSetChildNodes(unittest.TestCase):
 
-    def test_set_child_node(self):
+    def test_set_child_nodes(self):
         parent = dendropy.Node(label="parent")
         assigned_ch = [dendropy.Node(label=c) for c in ["c1", "c2", "c3"]]
         for nd in assigned_ch:
@@ -68,7 +68,8 @@ class TestNodeSetChildNodes(unittest.TestCase):
                 nd.add_child(y)
             nd._expected_children = x
         for ch in assigned_ch:
-            parent.add_child(ch)
+            k = parent.add_child(ch)
+            self.assertIs(k, ch)
         for ch in parent._child_nodes:
             self.assertIn(ch, assigned_ch)
             self.assertIs(ch._parent_node, parent)
@@ -107,7 +108,12 @@ class TestNodeSetChildNodes(unittest.TestCase):
         for label in new_child_labels:
             nd = parent.new_child(label=label)
             for y in sub_child_labels:
-                nd.new_child(label=y)
+                x = nd.new_child(label=y)
+                self.assertTrue(isinstance(x, dendropy.Node))
+                self.assertEqual(x.label, y)
+                self.assertIs(x.parent_node, nd)
+                self.assertIs(x.edge.head_node, x)
+                self.assertIs(x.edge.tail_node, nd)
         self.assertEqual(len(parent._child_nodes), len(new_child_labels))
         for ch in parent._child_nodes:
             self.assertIn(ch.label, new_child_labels)
@@ -135,6 +141,20 @@ class TestNodeSetChildNodes(unittest.TestCase):
                 else:
                     self.assertEqual(ch.label, new_child_labels[x])
                     x += 1
+
+    def test_remove_child(self):
+        assigned_child_labels = ["c1", "c2", "c3"]
+        for remove_idx in range(len(assigned_child_labels)):
+            parent = dendropy.Node(label="parent")
+            assigned_ch = [dendropy.Node(label=c) for c in assigned_child_labels]
+            parent.set_child_nodes(assigned_ch)
+            ch_nodes = list(parent._child_nodes)
+            to_remove = ch_nodes[remove_idx]
+            x = parent.remove_child(to_remove)
+            self.assertIs(to_remove, x)
+            ch_nodes.remove(to_remove)
+            ch_nodes2 = list(parent._child_nodes)
+            self.assertEqual(ch_nodes, ch_nodes2)
 
 if __name__ == "__main__":
     unittest.main()
