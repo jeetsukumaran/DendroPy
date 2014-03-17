@@ -282,6 +282,14 @@ class Annotable(object):
     def __str__(self):
         return str(self.oid)
 
+    def replace_annotations(self, other):
+        if hasattr(other, "_annotations"):
+            self._annotations = AnnotationSet(other._annotations)
+            self._annotations.target = self
+            for annote in self._annotations:
+                if annote.is_attribute and annote.value[0] is other:
+                    annote.value[1] = self
+
     # def __deepcopy__(self, memo=None):
     #     # ensure clone map
     #     if memo is None:

@@ -45,7 +45,7 @@ be related through correct interpretation of their taxon labels.
     - Different `Taxon` objects represent different operational taxonomic
       unit concepts, even if they have the same label value.
 
-    - All client objects (`TaxonNamespaceScoped` objects) that reference
+    - All client objects (`TaxonNamespaceAssociated` objects) that reference
       the same `TaxonNamespace` reference the same "universe" or domain of
       operational taxonomic unit concepts.
 
@@ -88,6 +88,24 @@ from dendropy.utility import container
 from dendropy.utility import error
 
 ##############################################################################
+## Helper functions
+
+def taxon_set_deprecation_warning():
+    error.dump_stack()
+    warnings.warn("`taxon_set` will no longer be supported in future releases; use `taxon_namespace` instead",
+            FutureWarning, stacklevel=4)
+
+def process_kwargs_for_taxon_namespace(kwargs_dict, default=None):
+    if "taxon_set" in kwargs_dict:
+        if "taxon_namespace" in kwargs_dict:
+            raise TypeError("Cannot specify both 'taxon_namespace' and 'taxon_set' (legacy support) simultaneously")
+        else:
+            TaxonNamespaceAssociated.taxon_set_deprecation_warning()
+            return kwargs_dict.pop("taxon_set", default)
+    else:
+        return kwargs_dict.pop("taxon_namespace", default)
+
+##############################################################################
 ## TaxonAssociated
 
 class TaxonAssociated(base.DataObject):
@@ -100,30 +118,12 @@ class TaxonAssociated(base.DataObject):
             self.taxon_namespace = kwargs["taxon_namespace"]
 
 ##############################################################################
-## TaxonNamespaceScoped
+## TaxonNamespaceAssociated
 
-class TaxonNamespaceScoped(base.DataObject):
+class TaxonNamespaceAssociated(base.DataObject):
     """
     Provides infrastructure for the maintenance of references to taxa.
     """
-
-    def process_kwargs_for_taxon_namespace(kwargs_dict, default=None):
-        if "taxon_set" in kwargs_dict:
-            if "taxon_namespace" in kwargs_dict:
-                raise TypeError("Cannot specify both 'taxon_namespace' and 'taxon_set' (legacy support) simultaneously")
-            else:
-                TaxonNamespaceScoped.taxon_set_deprecation_warning()
-                return kwargs_dict.pop("taxon_set", default)
-        else:
-            return kwargs_dict.pop("taxon_namespace", default)
-    process_kwargs_for_taxon_namespace = staticmethod(process_kwargs_for_taxon_namespace)
-
-    def taxon_set_deprecation_warning():
-        error.dump_stack()
-        warnings.warn("`taxon_set` will no longer be supported in future releases; use `taxon_namespace` instead",
-                FutureWarning, stacklevel=4)
-    taxon_set_deprecation_warning = staticmethod(taxon_set_deprecation_warning)
-
 
     def __init__(self, **kwargs):
         base.DataObject.__init__(self, label=kwargs.pop('label', None))
@@ -135,15 +135,15 @@ class TaxonNamespaceScoped(base.DataObject):
     ## for legacy
     def _get_taxon_set(self):
         # raise NotImplementedError("'taxon_set' is no longer supported: use 'taxon_namespace' instead")
-        TaxonNamespaceScoped.taxon_set_deprecation_warning()
+        TaxonNamespaceAssociated.taxon_set_deprecation_warning()
         return self.taxon_namespace
     def _set_taxon_set(self, v):
         # raise NotImplementedError("'taxon_set' is no longer supported: use 'taxon_namespace' instead")
-        TaxonNamespaceScoped.taxon_set_deprecation_warning()
+        TaxonNamespaceAssociated.taxon_set_deprecation_warning()
         self.taxon_namespace = v
     def _del_taxon_set(self):
         # raise NotImplementedError("'taxon_set' is no longer supported: use 'taxon_namespace' instead")
-        TaxonNamespaceScoped.taxon_set_deprecation_warning()
+        TaxonNamespaceAssociated.taxon_set_deprecation_warning()
     taxon_set = property(_get_taxon_set, _set_taxon_set, _del_taxon_set)
 
     def reindex_taxa(self, taxon_namespace=None, clear=False):

@@ -1213,7 +1213,7 @@ class Node(base.Annotable):
 ##############################################################################
 ## Tree
 
-class Tree(taxon.TaxonNamespaceScoped, base.Readable, base.Writeable):
+class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     """
     An arborescence representing a phylogenetic tree.
     Fundamental class that encapsulates functionality and attributes need for
@@ -1279,7 +1279,7 @@ class Tree(taxon.TaxonNamespaceScoped, base.Readable, base.Writeable):
         A `Tree` object (or `None` if not trees were found in the data source).
 
         """
-        taxon_namespace = taxon.TaxonNamespaceScoped.process_kwargs_for_taxon_namespace(kwargs, None)
+        taxon_namespace = taxon.process_kwargs_for_taxon_namespace(kwargs, None)
         label = kwargs.pop("label", None)
         reader = dataio.get_reader(schema, **kwargs)
         if collection_offset is None:
@@ -1435,13 +1435,1779 @@ class Tree(taxon.TaxonNamespaceScoped, base.Readable, base.Writeable):
         super(Tree, self).__init__(*args, **kwargs)
         self.seed_node = self.node_factory()
 
+    def clone_from(self, other):
+        """
+        Clones the structure and properties of `Tree` object `other`.
+        """
+        t = copy.deepcopy(other)
+        for k, v in t.__dict__.iteritems():
+            if k not in ["_annotations"]:
+                self.__dict__[k] = v
+        self.annotations = t.annotations
+        return self
+
+    # def __deepcopy__(self, memo):
+    #     # we treat the taxa as immutable and copy the reference even in a deepcopy
+    #     o = TaxonNamespaceLinked.__deepcopy__(self, memo)
+    #     for k, v in self.__dict__.iteritems():
+    #         if k not in ['taxon_namespace', "_oid", "annotations"]:
+    #             o.__dict__[k] = copy.deepcopy(v, memo)
+    #     o.annotations = copy.deepcopy(self.annotations, memo)
+    #     memo[id(self.annotations)] = o.annotations
+    #     return o
+
     ###########################################################################
-    ## Node Management
+    ## I/O
+
+    def read(self, stream, schema, **kwargs):
+        """
+        Redefines `Tree` based on data from `source`.
+
+        Note that *all* information and data associated with the current `Tree`
+        object will be lost and replaced with the data from `source`. This
+        includes metadata as well as the current `TaxonNamespace` reference.
+
+        If you wish to retain all current information, but simply replace the
+        structure, then use `Tree.read_update()`.
+
+        Parameters
+        ----------
+
+        stream : file or file-like object
+            Source of data.
+
+        schema : string
+            Identifier of format of data in `stream`
+
+        collection_offset : integer or None
+        tree_offset : integer or None
+
+            If the source defines multiple tree collections (e.g. multiple
+            NEXUS "Trees" blocks), then the keyword argument
+            `collection_offset` can be used to specify the 0-based index of the
+            tree collection, and the keyword argument `tree_offset` can be used
+            to specify the 0-based index of the tree within the collection, as
+            the source. If `collection_offset` is not specified or `None`, then
+            all collections in the source are merged before considering
+            `tree_offset`.  If `tree_offset` is not specified, then the first
+            tree (offset=0) is returned.
+
+        **kwargs : keyword arguments
+            Arguments to customize parsing, instantiation, processing, and
+            accession of `Tree` objects read from the data source, including
+            schema- or format-specific handling.
+
+            The following optional keyword arguments are recognized and handled
+            by this function:
+
+                - `label` specifies the label or description of the new
+                  `TreeList`.
+                - `taxon_namespace` specifies the `TaxonNamespace` object to be
+                   attached to the new `Tree` object.
+
+            All other keyword arguments are passed directly to `TreeList.read()`.
+            Other keyword arguments may be available, depending on the implementation
+            of the reader specialized to handle `schema` formats.
+
+        Returns
+        -------
+        A `Tree` object (or `None` if not trees were found in the data source).
+
+        """
+
+        tree = Tree.parse_from_stream(stream, schema, **kwargs)
+        self.clone_from(tree)
+
+    def read_update(self, stream, schema, **kwargs):
+        """
+        Updates `Tree` *structure* based on data from `source`.
+
+        Instantiates a new `Tree` object and swaps out the seed node with this
+        one. Metadata is also replaced. If you wish to replace all current
+        information with data from `source` use `Tree.read()`.
+
+        Parameters
+        ----------
+
+        stream : file or file-like object
+            Source of data.
+
+        schema : string
+            Identifier of format of data in `stream`
+
+        collection_offset : integer or None
+        tree_offset : integer or None
+
+            If the source defines multiple tree collections (e.g. multiple
+            NEXUS "Trees" blocks), then the keyword argument
+            `collection_offset` can be used to specify the 0-based index of the
+            tree collection, and the keyword argument `tree_offset` can be used
+            to specify the 0-based index of the tree within the collection, as
+            the source. If `collection_offset` is not specified or `None`, then
+            all collections in the source are merged before considering
+            `tree_offset`.  If `tree_offset` is not specified, then the first
+            tree (offset=0) is returned.
+
+        **kwargs : keyword arguments
+            Arguments to customize parsing, instantiation, processing, and
+            accession of `Tree` objects read from the data source, including
+            schema- or format-specific handling.
+
+            The following optional keyword arguments are recognized and handled
+            by this function:
+
+                - `label` specifies the label or description of the new
+                  `TreeList`.
+
+            All other keyword arguments are passed directly to `TreeList.read()`.
+            Other keyword arguments may be available, depending on the implementation
+            of the reader specialized to handle `schema` formats.
+
+        Returns
+        -------
+        A `Tree` object (or `None` if not trees were found in the data source).
+
+        """
+
+        k = taxon.process_kwargs_for_taxon_namespace(kwargs, None)
+        if k is not None and k is not self.taxon_namespace:
+            raise TypeError("Cannot specify a new 'TaxonNamespace' for `Tree` when updating structure")
+        kwargs["taxon_namespace"] = self.taxon_namespace
+        tree = Tree.parse_from_stream(stream, schema, **kwargs)
+        self.seed_node = tree.seed_node
+        self.annotations = tree.annotations
+
+    def write(self, stream, schema, **kwargs):
+        """
+        Writes out `Tree` in `schema` to a destination given by file-like object
+        `stream`.
+
+        `schema` must be a recognized and tree file schema, such as `nexus`,
+        `newick`, etc, for which a specialized tree list writer is
+        available. If this is not implemented for the schema specified, then
+        a `UnsupportedSchemaError` is raised.
+
+        Additionally, for some formats, the following keywords are recognized:
+
+            - `edge_lengths` : if False, edges will not write edge lengths [True]
+            - `internal_labels` : if False, internal labels will not be written [True]
+        """
+        raise NotImplementedError
+
+    ###########################################################################
+    ## Accessors
+
+    def nodes(self, cmp_fn=None, filter_fn=None):
+        "Returns list of nodes on the tree, sorted using cmp_fn."
+        nodes = [node for node in self.preorder_node_iter(filter_fn)]
+        if cmp_fn:
+            nodes.sort(cmp_fn)
+        return nodes
+
+    def leaf_nodes(self):
+        "Returns list of leaf_nodes on the tree."
+        return [leaf for leaf in self.leaf_iter()]
+
+    def internal_nodes(self):
+        "Returns list of internal node in the tree."
+        return self.nodes(filter_fn=lambda x : not x.is_leaf())
+
+    def find_node_for_taxon(self, taxon):
+        for node in self.preorder_node_iter():
+            try:
+                if node.taxon is taxon:
+                    return node
+            except:
+                pass
+        return None
+
+    def find_node(self, filter_fn):
+        """
+        Finds the first node for which filter_fn(node) = True.
+        For example, if::
+
+            filter_fn = lambda n: hasattr(n, 'genes') and n.genes is not None
+
+        then::
+
+            t.find_node(filter_fn=filter_fn)
+
+        will return all nodes which have an attributed 'genes' and this value
+        is not None.
+        """
+        for node in self.preorder_node_iter(filter_fn):
+            return node
+        return None
+
+    def find_node_with_label(self, label):
+        "Finds the first node with matching label."
+        for node in self.preorder_node_iter():
+            if node.label == label:
+                return node
+        return None
+
+    def find_node_with_taxon(self, taxon_filter_fn=None):
+        "Finds the first node for which taxon_filter_fn(node.taxon) == True."
+        for node in self.preorder_node_iter():
+            if hasattr(node, "taxon") and node.taxon is not None:
+                if taxon_filter_fn(node.taxon):
+                    return node
+        return None
+
+    def find_node_with_taxon_label(self, label):
+        "Returns node with taxon with given label."
+        taxon = self.taxon_namespace.get_taxon(label=label)
+        if taxon is None:
+            return None
+        return self.find_node_with_taxon(lambda x: x is taxon)
+
+    def find_edge(self, oid):
+        "Finds the first edge with matching id."
+        for edge in self.preorder_edge_iter():
+            if edge.oid == oid:
+                return edge
+        return None
+
+    def get_edge_set(self, filter_fn=None):
+        """
+        Returns the set of edges that are currently in the tree.
+        Note: the returned set acts like a shallow copy of the edge set (adding
+        or deleting elements from the set does not change the tree, but
+        modifying the elements does).
+        """
+        return set([i for i in self.preorder_edge_iter(filter_fn=filter_fn)])
+
+    def get_node_set(self, filter_fn=None):
+        """Returns the set of nodes that are currently in the tree
+
+        Note: the returned set acts like a shallow copy of the edge set (adding
+        or deleting elements from the set does not change the tree, but
+        modifying the elements does).
+        """
+        return set([i for i in self.preorder_node_iter(filter_fn=filter_fn)])
+
+    def mrca(self, **kwargs):
+        """
+        Returns the shallowest node in the tree (the node furthest from
+        the root, or `start_node`, in the direction toward the tips of
+        the tree) that has all of the taxa that:
+
+            - are specified by the split bitmask given by the keyword argument `split_bitmask`
+            - are in the list of Taxon objects given by the keyword argument 'taxa'
+            - have the labels specified by the list of strings given by the keyword argument 'taxon_labels'
+
+        Returns None if no appropriate node is found.
+        Assumes that edges on tree have been decorated with treesplit.
+        It is possible that split is not compatible with the subtree that is
+        returned! (compatibility tests are not fully performed).
+        This function is used to find the "insertion point" for a new split via a
+        root to tip search.
+        """
+        start_node = kwargs.get("start_node", self.seed_node)
+        split_bitmask = None
+        if "split_bitmask" in kwargs:
+            split_bitmask = kwargs["split_bitmask"]
+        else:
+            taxa = kwargs.get("taxa", None)
+            if taxa is None:
+                if "taxon_labels" in kwargs:
+                    taxa = self.taxon_namespace.get_taxa(labels=kwargs["taxon_labels"])
+                    if len(taxa) != len(kwargs["taxon_labels"]):
+                        raise KeyError("Not all labels matched to taxa")
+                else:
+                    raise TypeError("Must specify one of: 'split_bitmask', 'taxa' or 'taxon_labels'")
+            if taxa is None:
+                raise ValueError("No taxa matching criteria found")
+            split_bitmask = self.taxon_namespace.get_taxa_bitmask(taxa=taxa)
+
+        if split_bitmask is None or split_bitmask == 0:
+            raise ValueError("Null split bitmask (0)")
+
+        if not hasattr(start_node.edge, "split_bitmask"):
+            treesplit.encode_splits(self, delete_outdegree_one=False)
+
+        if (start_node.edge.split_bitmask & split_bitmask) != split_bitmask:
+            return None
+
+        curr_node = start_node
+        last_match = start_node
+        nd_source = iter(start_node.child_nodes())
+        try:
+            while True:
+                cm = curr_node.edge.split_bitmask
+                cms = (cm & split_bitmask)
+                if cms:
+                    # for at least one taxon cm has 1 and split has 1
+                    if cms == split_bitmask:
+                        # curr_node has all of the 1's that split has
+                        if cm == split_bitmask:
+                            return curr_node
+                        last_match = curr_node
+                        nd_source = iter(curr_node.child_nodes())
+                    else:
+                        # we have reached a child that has some, but not all of the
+                        #   required taxa as descendants, so we return the last_match
+                        return last_match
+                curr_node = nd_source.next()
+        except StopIteration:
+            # we shouldn't reach this if all of the descendants are properly
+            #   decorated with split_bitmask attributes, but there may be some hacky
+            #   context in which we want to allow the function to be called with
+            #   leaves that have not been encoded with split_bitmasks.
+            return last_match
+
+    ###########################################################################
+    ## Node iterators
+
+    def __iter__(self):
+        return self.preorder_node_iter()
+
+    def preorder_node_iter(self, filter_fn=None):
+        "Returns preorder iterator over tree nodes."
+        for node in self.seed_node.preorder_iter(filter_fn=filter_fn):
+            yield node
+
+    def postorder_node_iter(self, filter_fn=None):
+        "Returns postorder iterator over tree nodes."
+        for node in self.seed_node.postorder_iter(filter_fn=filter_fn):
+            yield node
+
+    def level_order_node_iter(self, filter_fn=None):
+        "Returns level-order iterator over tree nodes."
+        for node in self.seed_node.level_order_iter(filter_fn=filter_fn):
+            yield node
+
+    def leaf_iter(self, filter_fn=None):
+        """
+        Returns an iterator over tree leaf_nodes (order determined by
+        postorder tree-traversal).
+        """
+        for node in self.seed_node.leaf_iter(filter_fn=filter_fn):
+            yield node
+
+    def age_order_node_iter(self, include_leaves=True, filter_fn=None, descending=False):
+        """
+        Iterates over nodes in order of age. If `include_leaves` is False, will
+        skip leaves (default is not to skip leaves). If `descending` is True,
+        will go from oldest nodes to youngest (default is asecending: youngest
+        nodes to oldest).
+        """
+        if self.seed_node.age is None:
+            self.calc_node_ages()
+        for node in self.seed_node.age_order_iter(include_leaves=include_leaves, filter_fn=filter_fn, descending=descending):
+            yield node
+
+    def postorder_internal_node_iter(self, filter_fn=None):
+        """
+        Iterates over all internal nodes in post-order.
+        """
+        for node in self.seed_node.postorder_internal_node_iter(filter_fn=filter_fn):
+            yield node
+
+    def preorder_internal_node_iter(self, filter_fn=None):
+        """
+        Iterates over all internal nodes in pre-order.
+        """
+        for node in self.seed_node.preorder_internal_node_iter(filter_fn=filter_fn):
+            yield node
+
+    ###########################################################################
+    ## Edge iterators
+
+    def preorder_edge_iter(self, filter_fn=None):
+        "Returns preorder iterator over tree edges."
+        for node in self.seed_node.preorder_iter():
+            if node.edge and (filter_fn is None or filter_fn(node.edge)):
+                yield node.edge
+
+    def postorder_edge_iter(self, filter_fn=None):
+        "Returns postorder iterator over tree edges."
+        for node in self.seed_node.postorder_iter():
+            if node.edge and (filter_fn is None or filter_fn(node.edge)):
+                yield node.edge
+
+    def level_order_edge_iter(self, filter_fn=None):
+        "Returns level-order iterator over tree edges."
+        for node in self.seed_node.level_order_iter():
+            if node.edge and (filter_fn is None or filter_fn(node.edge)):
+                yield node.edge
+
+    def leaf_edge_iter(self, filter_fn=None):
+        "Returns iterator over tree leaf edges."
+        for node in self.seed_node.leaf_iter():
+            if node.edge and (filter_fn is None or filter_fn(node.edge)):
+                yield node.edge
+
+    ###########################################################################
+    ## Taxa Management
+
+    def infer_taxa(self):
+        """
+        Returns a new TaxonNamespace object populated with taxa from this
+        tree.
+        """
+        taxon_namespace = TaxonNamespace()
+        for node in self.postorder_node_iter():
+            if node.taxon is not None and (node.taxon not in taxon_namespace):
+                taxon_namespace.add(node.taxon)
+        self.taxon_namespace = taxon_namespace
+        return taxon_namespace
+
+    def reindex_subcomponent_taxa(self):
+        """
+        Reassigns node taxon objects
+        """
+        for node in self.postorder_node_iter():
+            t = node.taxon
+            if t:
+                node.taxon = self.taxon_namespace.require_taxon(label=t.label)
+
+    def unassign_taxa(self, exclude_leaves=False, exclude_internal=False):
+        """
+        Strips taxon assignments from tree. If `exclude_leaves` is True,
+        then taxa on leaves will be retained. If `exclude_internal` is True,
+        then taxa on internal nodes will be retained. The `taxon_namespace` is not
+        affected by this operation.
+        """
+        for nd in self.postorder_node_iter():
+            if (len(nd._child_nodes) == 0) and not exclude_leaves:
+                nd.taxon = None
+            elif (len(nd._child_nodes) > 0) and not exclude_internal:
+                nd.taxon = None
+
+    def randomly_assign_taxa(self, create_required_taxa=True, rng=None):
+        """
+        Randomly assigns taxa to leaf nodes. If the number of taxa defined in
+        the taxon set of the tree is more than the number of tips, then a random
+        subset of taxa in `taxon_namespace` will be assigned to the tips of tree.
+        If the number of tips is more than the number of taxa in the `taxon_namespace`,
+        and `add_extra_taxa` is not True [default], then new Taxon
+        objects will be created and added to the `taxon_namespace`; if `create_required_taxa`
+        is False, then an exception is raised.
+
+        In addition, a Random() object or equivalent can be passed using `rng`;
+        otherwise GLOBAL_RNG is used.
+        """
+        if rng is None:
+            rng = GLOBAL_RNG
+        if len(self.taxon_namespace) == 0:
+            for i, nd in enumerate(self.leaf_nodes()):
+                nd.taxon = self.taxon_namespace.require_taxon(label=("T%d" % (i+1)))
+        else:
+            taxa = [t for t in self.taxon_namespace]
+            for i, nd in enumerate(self.leaf_nodes()):
+                if len(taxa) > 0:
+                    nd.taxon = taxa.pop(rng.randint(0, len(taxa)-1))
+                else:
+                    if not create_required_taxa:
+                        raise ValueError("TaxonNamespace has %d taxa, but tree has %d tips" % (len(self.taxon_namespace), len(self.leaf_nodes())))
+                    label = "T%d" % (i+1)
+                    k = 0
+                    while self.taxon_namespace.has_taxon(label=label):
+                        label = "T%d" % (i+1+k)
+                        k += 1
+                    nd.taxon = self.taxon_namespace.require_taxon(label=label)
+
+    ###########################################################################
+    ## Structure
+
+    def _get_rooting_state_is_undefined(self):
+        return self._is_rooted is None
+
+    rooting_state_is_undefined = property(_get_rooting_state_is_undefined)
+
+    def _get_is_rooted(self):
+        return self._is_rooted
+
+    def _set_is_rooted(self, val):
+        self._is_rooted = val
+
+    is_rooted = property(_get_is_rooted, _set_is_rooted)
+
+    def _get_is_unrooted(self):
+        return not self._is_rooted
+
+    def _set_is_unrooted(self, val):
+        self._is_rooted = not val
+
+    is_unrooted = property(_get_is_unrooted, _set_is_unrooted)
+
+    def deroot(self):
+        "Converts a degree-2 node at the root to a degree-3 node."
+        seed_node = self.seed_node
+        if not seed_node:
+            return
+        child_nodes = seed_node.child_nodes()
+        if len(child_nodes) != 2:
+            return
+
+        if len(child_nodes[1].child_nodes()) >= 2:
+            to_keep, to_del = child_nodes
+        elif len(child_nodes[0].child_nodes()) >= 2:
+            to_del, to_keep = child_nodes
+        else:
+            return
+        to_del_edge = to_del.edge
+        try:
+            to_keep.edge.length += to_del_edge.length
+        except:
+            pass
+        to_del_edge.collapse()
+        self.is_rooted = False
+        return self.seed_node
+
+    def reseed_at(self, new_seed_node, update_splits=False, delete_outdegree_one=True):
+        """
+        Takes an internal node, `new_seed_node` that must already be in the tree and
+        rotates the tree such that `new_seed_node` is the `seed_node` of the tree.
+        This is a 'soft' rerooting -- i.e., changes the tree representation so
+        tree traversal behaves as if the tree is rooted at 'new_seed_node', but
+        it does not actually change the tree's rooting state.  If
+        `update_splits` is True, then the edges' `split_bitmask` and the tree's
+        `split_edges` attributes will be updated.
+        If the *old* root of the tree had an outdegree of 2, then after this
+        operation, it will have an outdegree of one. In this case, unless
+        `delete_outdegree_one` is False, then it will be
+        removed from the tree.
+        """
+        if new_seed_node.is_leaf():
+            raise ValueError('Rooting at a leaf is not supported')
+
+        old_par = new_seed_node.parent_node
+        if old_par is None:
+            return
+        full_encode = False
+        if update_splits:
+            try:
+                taxa_mask = self.seed_node.edge.split_bitmask
+            except:
+                full_encode = True
+                update_splits = False
+        to_edge_dict = None
+        if update_splits:
+            to_edge_dict = getattr(self, "split_edges", None)
+
+        if old_par is self.seed_node:
+            root_children = old_par.child_nodes()
+            if len(root_children) == 2 and delete_outdegree_one:
+                # root (old_par) was of degree 2, thus we need to suppress the
+                #   node
+                fc = root_children[0]
+                if fc is new_seed_node:
+                    sister = root_children[1]
+                else:
+                    assert root_children[1] is new_seed_node
+                    sister = fc
+                if new_seed_node.edge.length:
+                    sister.edge.length += new_seed_node.edge.length
+                edge_to_del = new_seed_node.edge
+                new_seed_node.edge = old_par.edge
+                if update_splits:
+                    assert new_seed_node.edge.split_bitmask == taxa_mask
+                if to_edge_dict:
+                    del to_edge_dict[edge_to_del.split_bitmask]
+                new_seed_node.add_child(sister, edge_length=sister.edge.length)
+                self.seed_node = new_seed_node
+                return
+        else:
+            self.reseed_at(old_par,
+                    update_splits=update_splits,
+                    delete_outdegree_one=delete_outdegree_one)
+        old_par.edge, new_seed_node.edge = new_seed_node.edge, old_par.edge
+        e = old_par.edge
+        if update_splits:
+            if to_edge_dict:
+                del to_edge_dict[e.split_bitmask]
+            e.split_bitmask = (~(e.split_bitmask)) & taxa_mask
+            if to_edge_dict:
+                to_edge_dict[e.split_bitmask] = e
+            assert new_seed_node.edge.split_bitmask == taxa_mask
+        old_par.remove_child(new_seed_node)
+        new_seed_node.add_child(old_par, edge_length=e.length)
+        self.seed_node = new_seed_node
+        if full_encode:
+            treesplit.encode_splits(self, delete_outdegree_one=delete_outdegree_one)
+        return self.seed_node
+
+    def to_outgroup_position(self, outgroup_node, update_splits=False, delete_outdegree_one=True):
+        """Reroots the tree at the parent of `outgroup_node` and makes `outgroup_node` the first child
+        of the new root.  This is just a convenience function to make it easy
+        to place a clade as the first child under the root.
+        Assumes that `outgroup_node` and `outgroup_node.parent_node` and are in the tree/
+        If `update_splits` is True, then the edges' `split_bitmask` and the tree's
+        `split_edges` attributes will be updated.
+        If the *old* root of the tree had an outdegree of 2, then after this
+        operation, it will have an outdegree of one. In this case, unless
+        `delete_outdegree_one` is False, then it will be
+        removed from the tree.
+        """
+        p = outgroup_node.parent_node
+        assert p is not None
+        self.reseed_at(p, update_splits=update_splits, delete_outdegree_one=delete_outdegree_one)
+        p.remove_child(outgroup_node)
+        p.add_child(outgroup_node, edge_length=outgroup_node.edge.length, pos=0)
+        return self.seed_node
+
+    def reroot_at_node(self, new_root_node, update_splits=False, delete_outdegree_one=True):
+        """
+        Takes an internal node, `new_seed_node` that must already be in the tree and
+        roots the tree at that node.
+        This is a 'hard' rerooting -- i.e., changes the tree
+        representation so tree traversal behaves as if the tree is rooted at
+        'new_seed_node', *and* changes the tree's rooting state.
+        If `update_splits` is True, then the edges' `split_bitmask` and the tree's
+        `split_edges` attributes will be updated.
+        If the *old* root of the tree had an outdegree of 2, then after this
+        operation, it will have an outdegree of one. In this case, unless
+        `delete_outdegree_one` is False, then it will be
+        removed from the tree.
+        """
+        self.reseed_at(new_seed_node=new_root_node,
+                update_splits=False,
+                delete_outdegree_one=delete_outdegree_one)
+        self.is_rooted = True
+        if update_splits:
+            self.update_splits(delete_outdegree_one=delete_outdegree_one)
+        return self.seed_node
+
+    def reroot_at_edge(self,
+            edge,
+            length1=None,
+            length2=None,
+            update_splits=False,
+            delete_outdegree_one=True):
+        """
+        Takes an internal edge, `edge`, adds a new node to it, and then roots
+        the tree on the new node.
+        `length1` and `length2` will be assigned to the new (sub-)edge leading
+        to the old parent of the original edge, while `length2` will be
+        assigned to the old child of the original edge.
+        If `update_splits` is True, then the edges' `split_bitmask` and the tree's
+        `split_edges` attributes will be updated.
+        If the *old* root of the tree had an outdegree of 2, then after this
+        operation, it will have an outdegree of one. In this case, unless
+        `delete_outdegree_one` is False, then it will be
+        removed from the tree.
+        """
+        old_tail = edge.tail_node
+        old_head = edge.head_node
+        new_seed_node = old_tail.new_child(edge_length=length1)
+        old_tail.remove_child(old_head)
+        new_seed_node.add_child(old_head, edge_length=length2)
+        self.reroot_at_node(new_seed_node,
+                update_splits=update_splits,
+                delete_outdegree_one=delete_outdegree_one)
+        return self.seed_node
+
+    def reroot_at_midpoint(self, update_splits=False, delete_outdegree_one=True):
+        """
+        Reroots the tree at the the mid-point of the longest distance between
+        two taxa in a tree.
+        Sets the rooted flag on the tree to True.
+        If `update_splits` is True, then the edges' `split_bitmask` and the tree's
+        `split_edges` attributes will be updated.
+        If the *old* root of the tree had an outdegree of 2, then after this
+        operation, it will have an outdegree of one. In this case, unless
+        `delete_outdegree_one` is False, then it will be
+        removed from the tree.
+        """
+        from dendropy import treecalc
+        pdm = treecalc.PatristicDistanceMatrix(self)
+        n1, n2 = pdm.max_dist_nodes
+        plen = float(pdm.max_dist) / 2
+        mrca_node = pdm.mrca(n1.taxon, n2.taxon)
+        #assert mrca_node is self.mrca(taxa=[n1.taxon, n2.taxon])
+        #mrca_node = self.mrca(taxa=[n1.taxon, n2.taxon])
+        cur_node = n1
+
+        break_on_node = None # populated *iff* midpoint is exactly at an existing node
+        target_edge = None
+        head_node_edge_len = None
+
+        # going up ...
+        while cur_node is not mrca_node:
+            if cur_node.edge.length > plen:
+                target_edge = cur_node.edge
+                head_node_edge_len = plen #cur_node.edge.length - plen
+                plen = 0
+                break
+            elif cur_node.edge.length < plen:
+                plen -= cur_node.edge.length
+                cur_node = cur_node.parent_node
+            else:
+                break_on_node = cur_node
+
+        assert break_on_node is not None or target_edge is not None
+
+        if break_on_node:
+            self.reseed_at(break_on_node, update_splits=False, delete_outdegree_one=delete_outdegree_one)
+            new_seed_node = break_on_node
+        else:
+            tail_node_edge_len = target_edge.length - head_node_edge_len
+            old_head_node = target_edge.head_node
+            old_tail_node = target_edge.tail_node
+            old_tail_node.remove_child(old_head_node)
+            new_seed_node = Node()
+            new_seed_node.add_child(old_head_node, edge_length=head_node_edge_len)
+            old_tail_node.add_child(new_seed_node, edge_length=tail_node_edge_len)
+            self.reseed_at(new_seed_node, update_splits=False, delete_outdegree_one=delete_outdegree_one)
+        self.is_rooted = True
+        if update_splits:
+            self.update_splits(delete_outdegree_one=False)
+        return self.seed_node
+
+    def delete_outdegree_one_nodes(self):
+        for nd in self.postorder_node_iter():
+            children = nd.child_nodes()
+            if len(children) == 1:
+                if nd.edge.length is not None:
+                    if children[0].edge.length is None:
+                        children[0].edge.length = nd.edge.length
+                    else:
+                        children[0].edge.length += nd.edge.length
+                if nd.parent_node is not None:
+                    pos = nd.parent_node.child_nodes().index(nd)
+                    nd.parent_node.add_child(children[0], pos=pos)
+                    nd.parent_node.remove_child(nd)
+                else:
+                    assert nd is self.seed_node
+                    self.seed_node = children[0]
+                    self.seed_node.parent_node = None
+
+    def collapse_unweighted_edges(self,
+            threshold=0.0000001,
+            update_splits=False):
+        """
+        Collapse all edges with edge lengths less than or equal to
+        ``threshold``.
+        """
+        for e in self.postorder_edge_iter():
+            if e.length <= threshold:
+               e.collapse()
+        if update_splits:
+            self.update_splits()
+
+    def resolve_polytomies(self, update_splits=False, rng=None):
+        """
+        Arbitrarily resolve polytomies using 0-length splits.
+
+        If `rng` is an object with a sample() method then the polytomy will be
+            resolved by sequentially adding (generating all tree topologies
+            equiprobably
+            rng.sample() should behave like random.sample()
+        If `rng` is not passed in, then polytomy is broken deterministically by
+            repeatedly joining pairs of children.
+        """
+        polytomies = []
+        for node in self.postorder_node_iter():
+            if len(node.child_nodes()) > 2:
+                polytomies.append(node)
+        for node in polytomies:
+            children = node.child_nodes()
+            nc = len(children)
+            if nc > 2:
+                if rng:
+                    to_attach = children[2:]
+                    for child in to_attach:
+                        node.remove_child(child)
+                    attachment_points = children[:2] + [node]
+                    while len(to_attach) > 0:
+                        next_child = to_attach.pop()
+                        next_sib = rng.sample(attachment_points, 1)[0]
+                        next_attachment = Node()
+                        p = next_sib.parent_node
+                        p.add_child(next_attachment)
+                        p.remove_child(next_sib)
+                        next_attachment.add_child(next_sib)
+                        next_attachment.add_child(next_child)
+                        attachment_points.append(next_attachment)
+                else:
+                    while len(children) > 2:
+                        nn1 = Node()
+                        nn1.edge.length = 0
+                        c1 = children[0]
+                        c2 = children[1]
+                        node.remove_child(c1)
+                        node.remove_child(c2)
+                        nn1.add_child(c1)
+                        nn1.add_child(c2)
+                        node.add_child(nn1)
+                        children = node.child_nodes()
+        if update_splits:
+            self.update_splits()
+
+    def prune_subtree(self,
+            node,
+            update_splits=False,
+            delete_outdegree_one=True):
+        """
+        Removes subtree starting at `node` from tree.
+        """
+        if not node:
+            raise ValueError("Tried to remove an non-existing or null node")
+        if node.parent_node is None:
+            raise TypeError('Node has no parent and is implicit root: cannot be pruned')
+        node.parent_node.remove_child(node)
+        if delete_outdegree_one:
+            self.delete_outdegree_one_nodes()
+        if update_splits:
+            self.update_splits()
+
+    def prune_leaves_without_taxa(self,
+            update_splits=False,
+            delete_outdegree_one=True):
+        """
+        Removes all terminal nodes that have their ``taxon`` attribute set to
+        ``None``.
+        """
+        for nd in self.leaf_iter():
+            if nd.taxon is None:
+                nd.edge.tail_node.remove_child(nd)
+        if delete_outdegree_one:
+            self.delete_outdegree_one_nodes()
+        if update_splits:
+            self.update_splits()
+
+    def xprune_taxa(self, taxa, update_splits=False, delete_outdegree_one=True):
+        """
+        Removes terminal nodes associated with Taxon objects given by the container
+        `taxa` (which can be any iterable, including a TaxonNamespace object) from `self`.
+        """
+        nodes_to_retain = []
+        for nd in self.postorder_node_iter():
+            if nd.taxon is not None and nd.taxon not in taxa:
+                nodes_to_retain.append(nd)
+        parent_nodes = []
+        nodes_to_retain.append(self.seed_node)
+        for nd in list(nodes_to_retain):
+            parent_node = nd.parent_node
+            while parent_node is not None and parent_node not in nodes_to_retain:
+                nodes_to_retain.append(parent_node)
+                parent_node = parent_node.parent_node
+        # print ">>"
+        # for nd in sorted(nodes_to_retain):
+        #     print nd.oid
+        # print "--"
+        to_process = [self.seed_node]
+        while to_process:
+            nd = to_process.pop(0)
+            children = nd._child_nodes
+            for ch in children:
+                if ch not in nodes_to_retain:
+                    nd._child_nodes.remove(ch)
+                    # ch.edge.tail_node.remove_child(ch)
+            to_process.extend(nd._child_nodes)
+        if delete_outdegree_one:
+            self.delete_outdegree_one_nodes()
+        # print self.as_string("newick")
+        # for nd in sorted(self.postorder_node_iter()):
+        #     print nd.oid
+        # print "<<\n"
+
+    def prune_taxa(self, taxa, update_splits=False, delete_outdegree_one=True):
+        """
+        Removes terminal nodes associated with Taxon objects given by the container
+        `taxa` (which can be any iterable, including a TaxonNamespace object) from `self`.
+        """
+        nodes_to_remove = []
+        for nd in self.postorder_node_iter():
+            if nd.taxon and nd.taxon in taxa:
+                nd.edge.tail_node.remove_child(nd)
+        self.prune_leaves_without_taxa(update_splits=update_splits,
+                delete_outdegree_one=delete_outdegree_one)
+
+    def prune_nodes(self, nodes, prune_leaves_without_taxa=False, update_splits=False, delete_outdegree_one=True):
+        for nd in nodes:
+            if nd.edge.tail_node is None:
+                raise Exception("Attempting to remove root node or node without parent")
+            nd.edge.tail_node.remove_child(nd)
+        if prune_leaves_without_taxa:
+            self.prune_leaves_without_taxa(update_splits=update_splits,
+                    delete_outdegree_one=delete_outdegree_one)
+
+    def prune_taxa_with_labels(self,
+            labels,
+            update_splits=False,
+            delete_outdegree_one=True):
+        """
+        Removes terminal nodes that are associated with Taxon objects with
+        labels given by `labels`.
+        """
+        taxa = self.taxon_namespace.get_taxa(labels=labels)
+        self.prune_taxa(taxa=taxa,
+                update_splits=update_splits,
+                delete_outdegree_one=delete_outdegree_one)
+
+    def retain_taxa(self,
+            taxa,
+            update_splits=False,
+            delete_outdegree_one=True):
+        """
+        Removes terminal nodes that are not associated with any
+        of the Taxon objects given by ``taxa`` (which can be any iterable, including a
+        TaxonNamespace object) from the ``self``.
+        """
+        to_prune = [t for t in self.taxon_namespace if t not in taxa]
+        self.prune_taxa(to_prune,
+                update_splits=update_splits,
+                delete_outdegree_one=delete_outdegree_one)
+
+    def retain_taxa_with_labels(self,
+            labels,
+            update_splits=False,
+            delete_outdegree_one=True):
+        """
+        Removes terminal nodes that are not associated with Taxon objects with
+        labels given by `labels`.
+        """
+        taxa = self.taxon_namespace.get_taxa(labels=labels)
+        self.retain_taxa(taxa=taxa,
+                update_splits=update_splits,
+                delete_outdegree_one=delete_outdegree_one)
+
+    def randomly_reorient_tree(self, rng=None, update_splits=False):
+        """
+        Randomly picks a new rooting position and rotates the branches around all
+        internal nodes in the `self`. If `update_splits` is True, the the `split_bitmask`
+        and `split_edges` attributes kept valid.
+        """
+        if rng is None:
+            rng = GLOBAL_RNG # use the global rng by default
+        nd = rng.sample(self.nodes(), 1)[0]
+        if nd.is_leaf():
+            self.to_outgroup_position(nd, update_splits=update_splits)
+        else:
+            self.reseed_at(nd, update_splits=update_splits)
+        self.randomly_rotate(rng=rng)
+
+    def randomly_rotate(self, rng=None):
+        "Randomly rotates the branches around all internal nodes in `self`"
+        if rng is None:
+            rng = GLOBAL_RNG # use the global rng by default
+        internal_nodes = self.internal_nodes()
+        for nd in internal_nodes:
+            c = nd.child_nodes()
+            rng.shuffle(c)
+            nd.set_child_nodes(c)
+
+    def ladderize(self, ascending=True):
+        """
+        Sorts child nodes in ascending (if ``ascending`` is ``False``) or
+        descending (if ``ascending`` is ``False``) order in terms of the number of
+        children each child node has.
+        """
+        node_desc_counts = {}
+        for nd in self.postorder_node_iter():
+            if len(nd._child_nodes) == 0:
+                node_desc_counts[nd] = 0
+            else:
+                total = 0
+                for child in nd._child_nodes:
+                    total += node_desc_counts[child]
+                total += len(nd._child_nodes)
+                node_desc_counts[nd] = total
+                nd._child_nodes.sort(key=lambda n: node_desc_counts[n], reverse=not ascending)
+
+    def truncate_from_root(self, distance_from_root):
+        self.calc_node_root_distances()
+        new_terminals = []
+        for nd in self.preorder_node_iter():
+            if not nd._parent_node:
+                # root node
+                # TODO: strictly speaking, this might be a terminal if distance_from_root == 0
+                pass
+            else:
+                if nd.root_distance == distance_from_root:
+                    new_terminals.append(nd)
+                elif nd.root_distance > distance_from_root and nd._parent_node.root_distance < distance_from_root:
+                    # cut above current node
+                    nd.edge.length = distance_from_root - nd._parent_node.root_distance
+                    nd.root_distance = distance_from_root
+                    new_terminals.append(nd)
+        for nd in new_terminals:
+            for ch in nd.child_nodes():
+                nd.remove_child(ch)
+
+    def update_splits(self, **kwargs):
+        """
+        Recalculates split hashes for tree.
+        """
+        treesplit.encode_splits(self, **kwargs)
+
+    ###########################################################################
+    ## Ages, depths, branch lengths etc. (mutation)
+
+    def scale_edges(self, edge_len_multiplier):
+        """Multiplies every edge length in `self` by `edge_len_multiplier`"""
+        for e in self.postorder_edge_iter():
+            if e.length is not None:
+                e.length *= edge_len_multiplier
+
+    def set_edge_lengths_from_node_ages(self, allow_negative_edges=False):
+        """
+        Sets the edge lengths of the tree so that the path lengths from the
+        tips equal the value of the `age` attribute of the nodes.
+        """
+        for nd in self.preorder_node_iter():
+            if nd.parent_node is not None:
+                #if nd.parent_node.age < nd.age:
+                #    nd.edge.length = 0.0
+                #else:
+                #    nd.edge.length = nd.parent_node.age - nd.age
+                if not allow_negative_edges and nd.parent_node.age < nd.age:
+                    #if nd.parent_node is self.seed_node:
+                    #    # special case seed node
+                    #    nd.parent_node.age = nd.age + nd.edge_length
+                    #else:
+                    #    raise ValueError('Parent node age (%s: %s) is younger than descendent (%s: %s)'
+                    #            % (nd.parent_node.oid, nd.parent_node.age, nd.oid, nd.age))
+                    raise ValueError('Parent node age (%s: %s) is younger than descendent (%s: %s)'
+                            % (nd.parent_node.oid, nd.parent_node.age, nd.oid, nd.age))
+                nd.edge.length = nd.parent_node.age - nd.age
+
+    ###########################################################################
+    ## Ages, depths, branch lengths etc. (calculation)
+
+    def calc_node_ages(self, check_prec=0.0000001):
+        """
+        Adds an attribute called "age" to  each node, with the value equal to
+        the sum of edge lengths from the node to the tips. If the lengths of
+        different paths to the node differ by more than `check_prec`, then a
+        ValueError exception will be raised indicating deviation from
+        ultrametricity. If `check_prec` is negative or False, then this check
+        will be skipped.
+        """
+        ages = []
+        for node in self.postorder_node_iter():
+            ch = node.child_nodes()
+            if len(ch) == 0:
+               node.age = 0.0
+            else:
+                first_child = ch[0]
+                node.age = first_child.age + first_child.edge.length
+                if not (check_prec < 0 or check_prec == False):
+                    for nnd in ch[1:]:
+                        ocnd = nnd.age + nnd.edge.length
+                        if abs(node.age - ocnd) > check_prec:
+                            raise ValueError("Tree is not ultrametric")
+            ages.append(node.age)
+        return ages
+
+    def calc_node_root_distances(self, return_leaf_distances_only=True):
+        """
+        Adds attribute "root_distance" to each node, with value set to the
+        sum of edge lengths from the node to the root. Returns list of
+        distances. If `return_leaf_distances_only` is True, then only
+        leaf distances will be true.
+        """
+        dists = []
+        for node in self.preorder_node_iter():
+            if node._parent_node is None:
+                node.root_distance = 0.0
+            else:
+                node.root_distance = node.edge.length + node._parent_node.root_distance
+            if (not return_leaf_distances_only or node.is_leaf()):
+                dists.append(node.root_distance)
+        return dists
+
+    def node_ages(self, check_prec=0.0000001):
+        """
+        Returns list of ages of speciation events / coalescence times on tree.
+        """
+        try:
+            ages = [n.age for n in self.internal_nodes()]
+        except AttributeError:
+            self.calc_node_ages(check_prec=check_prec)
+            ages = [n.age for n in self.internal_nodes()]
+        ages.sort()
+        return ages
+
+    def length(self):
+        """
+        Returns sum of edge lengths of self. Edges with no lengths defined
+        (None) will be considered to have a length of 0.
+        Note that we do not overrride `__len__` as this requires an integer
+        return value.
+        """
+        total = 0
+        for edge in self.postorder_edge_iter():
+            if edge.length is not None:
+                total += edge.length
+        return total
+
+    def max_distance_from_root(self):
+        """
+        Returns distance of node furthest from root.
+        """
+        dists = self.calc_node_root_distances()
+        return max(dists)
+
+    def minmax_leaf_distance_from_root(self):
+        """
+        Returns pair of values, representing the distance of the leaf closest
+        to a furthest from the root.
+        """
+        dists = self.calc_node_root_distances(return_leaf_distances_only=True)
+        return min(dists), max(dists)
+
+    def coalescence_intervals(self):
+        """
+        Returns list of coalescence intervals of self., i.e., the waiting
+        times between successive coalescence events.
+        """
+        ages = self.node_ages()
+        intervals = []
+        intervals.append(ages[0])
+        for i, d in enumerate(ages[1:]):
+            intervals.append(d - ages[i])
+        return intervals
+
+    def num_lineages_at(self, distance_from_root):
+        """
+        Returns the number of lineages on the tree at a particular distance
+        from the root.
+        """
+        self.calc_node_root_distances()
+        num_lineages = 0
+        for nd in self.preorder_node_iter():
+            if not nd._parent_node:
+                # root node
+                pass
+            else:
+                if nd.root_distance == distance_from_root:
+                    num_lineages += 1
+                elif nd.root_distance >= distance_from_root and nd._parent_node.root_distance < distance_from_root:
+                    num_lineages += 1
+        return num_lineages
+
+    ###########################################################################
+    ## Metrics -- Unary
+
+    def B1(self):
+        """
+        Returns the B1 statistic: the reciprocal of the sum of the maximum
+        number of nodes between each interior node and tip over all internal
+        nodes excluding root.
+        """
+        b1 = 0.0
+        nd_mi = {}
+        for nd in self.postorder_node_iter():
+            if nd._parent_node is None:
+                continue
+            child_nodes = nd._child_nodes
+            if len(child_nodes) == 0:
+                nd_mi[nd] = 0.0
+                continue
+            mi = max(nd_mi[ch] for ch in child_nodes)
+            mi += 1
+            nd_mi[nd] = mi
+            b1 += 1.0/mi
+        return b1
+
+    def colless_tree_imbalance(self, normalize="max"):
+        """
+        Returns Colless' tree imbalance or I statistic: the sum of differences
+        of numbers of children in left and right subtrees over all internal
+        nodes. ``normalize`` specifies the normalization:
+
+            - "max" or True [DEFAULT]
+                normalized to maximum value for tree of
+                this size
+            - "yule"
+                normalized to the Yule model
+            - "pda"
+                normalized to the PDA (Proportional to Distinguishable
+                Arrangements) model
+            - None or False
+                no normalization
+
+        """
+        colless = 0.0
+        num_leaves = 0
+        subtree_leaves = {}
+        for nd in self.postorder_node_iter():
+            if nd.is_leaf():
+                subtree_leaves[nd] = 1
+                num_leaves += 1
+            else:
+                total_leaves = 0
+                if len(nd._child_nodes) > 2:
+                    raise TypeError("Colless' tree imbalance statistic requires strictly bifurcating trees")
+                left = subtree_leaves[nd._child_nodes[0]]
+                right = subtree_leaves[nd._child_nodes[1]]
+                colless += abs(right-left)
+                subtree_leaves[nd] = right + left
+        if normalize == "yule":
+            colless = float(colless - (num_leaves * math.log(num_leaves)) - (num_leaves * (EULERS_CONSTANT - 1.0 - math.log(2))))/num_leaves
+        elif normalize == "pda":
+            colless = colless / pow(num_leaves, 3.0/2)
+        elif normalize is True or normalize == "max":
+            ## note that Mooers 1995 (Evolution 49(2):379-384)
+            ## remarks that the correct normalization factor is
+            ## 2/((num_leaves - 1) * (num_leaves -2))
+            colless = colless * (2.0/(num_leaves * (num_leaves-3) + 2))
+        elif normalize is not None and normalize is not False:
+            raise TypeError("`normalization` accepts only None, True, False, 'yule' or 'pda' as argument values")
+        return colless
+
+    def pybus_harvey_gamma(self, prec=0.00001):
+        """Returns the gamma statistic of Pybus and Harvey (2000). This statistic
+        is used to test for constancy of birth and death rates over the course of
+        a phylogeny.  Under the pure-birth process, the statistic should follow
+        a standard Normal distibution: a Normal(mean=0, variance=1).
+
+        If the lengths of different paths to the node differ by more than `prec`,
+            then a ValueError exception will be raised indicating deviation from
+            ultrametricty.
+        Raises a Value Error if the tree is not ultrametric, is non-binary, or has
+            only 2 leaves.
+
+        As a side effect a `age` attribute is added to the nodes of the self.
+
+        Pybus and Harvey. 2000. "Testing macro-evolutionary models using incomplete
+        molecular phylogenies." Proc. Royal Society Series B: Biological Sciences.
+        (267). 2267-2272
+        """
+        # the equation is given by:
+        #   T = \sum_{j=2}^n (jg_j)
+        #   C = T \sqrt{\frac{1}{12(n-2)}}
+        #   C gamma = \frac{1}{n-2}\sum_{i=2}^{n-1} (\sum_{k=2}^i kg_k) - \frac{T}{2}
+        # where n is the number of taxa, and g_2 ... g_n is the vector of waiting
+        #   times between consecutive (in time, not along a branch) speciation times.
+        node = None
+        speciation_ages = []
+        n = 0
+        if self.seed_node.age is None:
+            self.calc_node_ages(check_prec=prec)
+        for node in self.postorder_node_iter():
+            if len(node.child_nodes()) == 2:
+                speciation_ages.append(node.age)
+            else:
+                n += 1
+        if node is None:
+            raise ValueError("Empty tree encountered")
+        speciation_ages.sort(reverse=True)
+        g = []
+        older = speciation_ages[0]
+        for age in speciation_ages[1:]:
+            g.append(older - age)
+            older = age
+        g.append(older)
+        if not g:
+            raise ValueError("No internal nodes found (other than the root)")
+        assert(len(g) == (n - 1))
+        T = 0.0
+        accum = 0.0
+        for i in xrange(2, n):
+            list_index = i - 2
+            T += i * float(g[list_index])
+            accum += T
+        list_index = n - 2
+        T += (n) * g[list_index]
+        nmt = n - 2.0
+        numerator = accum/nmt - T/2.0
+        C = T*pow(1/(12*nmt), 0.5)
+        return numerator/C
+
+    def N_bar(self):
+        """
+        Returns the $\bar{N}$ statistic: the average number of nodes above a
+        terminal node.
+        """
+        leaf_count = 0
+        nbar = 0
+        for leaf_node in self.leaf_iter():
+            leaf_count += 1
+            for parent in leaf_node.ancestor_iter(inclusive=False):
+                nbar += 1
+        return float(nbar) / leaf_count
+
+    def sackin_index(self, normalize=True):
+        """
+        Returns the Sackin's index: the sum of the number of ancestors for each
+        tip of the tree. The larger the Sackin's index, the less balanced the
+        tree. ``normalize`` specifies the normalization:
+
+            - True [DEFAULT]
+                normalized to number of leaves; this results in a value
+                equivalent to that given by Tree.N_bar()
+            - "yule"
+                normalized to the Yule model
+            - "pda"
+                normalized to the PDA (Proportional to Distinguishable
+                Arrangements) model
+            - None or False
+                no normalization
+
+        """
+        leaf_count = 0
+        num_anc = 0
+        for leaf_node in self.leaf_iter():
+            leaf_count += 1
+            for parent in leaf_node.ancestor_iter(inclusive=False):
+                num_anc += 1
+        if normalize == "yule":
+            x = sum(1.0/j for j in range(2, leaf_count+1))
+            s = float(num_anc - (2 * leaf_count * x))/leaf_count
+        elif normalize == "pda":
+            s = float(num_anc)/(pow(leaf_count, 3.0/2))
+        elif normalize is True:
+            s = float(num_anc)/leaf_count
+        elif normalize is None or normalize is False:
+            s = float(num_anc)
+        elif normalize is not None and normalize is not False:
+            raise TypeError("`normalization` accepts only None, True, False, 'yule' or 'pda' as argument values")
+        return s
+
+    def treeness(self):
+        """
+        Returns the proportion of total tree length that is taken up by
+        internal branches.
+        """
+        internal = 0.0
+        external = 0.0
+        for nd in self.postorder_node_iter():
+            if not nd.parent_node:
+                continue
+            if nd.is_leaf():
+                external += nd.edge.length
+            else:
+                internal += nd.edge.length
+        return internal/(external + internal)
+
+    ###########################################################################
+    ## Metrics -- Comparative
+
+    def find_missing_splits(self, other_tree):
+        """
+        Returns a list of splits that are in self,  but
+        not in `other_tree`.
+        """
+        missing = []
+        if self.taxon_namespace is not other_tree.taxon_namespace:
+            raise TypeError("Trees have different TaxonNamespace objects: %s vs. %s" \
+                    % (hex(id(self.taxon_namespace)), hex(id(other_tree.taxon_namespace))))
+        if not hasattr(self, "split_edges"):
+            self.encode_splits()
+        if not hasattr(other_tree, "split_edges"):
+            other_tree.encode_splits()
+        for split in self.split_edges:
+            if split in other_tree.split_edges:
+                pass
+            else:
+                missing.append(split)
+        return missing
+
+    def symmetric_difference(self, other_tree):
+        """
+        Returns the symmetric_distance between this tree and the tree given by
+        `other`, i.e. the sum of splits found in one but not in both trees.
+        """
+        t = self.false_positives_and_negatives(other_tree)
+        return t[0] + t[1]
+
+    def false_positives_and_negatives(self, other_tree):
+        """
+        Returns a tuple pair: all splits found in `other` but in self, and all
+        splits in self not found in other.
+        """
+        from dendropy import treecalc
+        if other_tree.taxon_namespace is not self.taxon_namespace:
+            other_tree = Tree(other_tree, taxon_namespace=self.taxon_namespace)
+        return treecalc.false_positives_and_negatives(self, other_tree)
+
+    def robinson_foulds_distance(self, other_tree):
+        """
+        Returns Robinson-Foulds distance between this tree and `other_tree`.
+        """
+        from dendropy import treecalc
+        if other_tree.taxon_namespace is not self.taxon_namespace:
+            other_tree = Tree(other_tree, taxon_namespace=self.taxon_namespace)
+        return treecalc.robinson_foulds_distance(self, other_tree)
+
+    def euclidean_distance(self, other_tree):
+        """
+        Returns Euclidean_distance distance between this tree and `other_tree`.
+        """
+        from dendropy import treecalc
+        if other_tree.taxon_namespace is not self.taxon_namespace:
+            other_tree = Tree(other_tree, taxon_namespace=self.taxon_namespace)
+        return treecalc.euclidean_distance(self, other_tree)
+
+    def _check_children_for_split_compatibility(self, nd_list, split):
+        for nd in nd_list:
+            if is_compatible(nd.edge.split, split):
+                # see if nd has all of the leaves that are flagged as 1 in the split of interest
+                if (nd.edge.split & split) == split:
+                    return nd
+            else:
+                return None
+        return None
+
+    def is_compatible_with_split(self, split):
+        nd = self.root
+        while True:
+            if nd.edge.split == split:
+                return True
+            nd = self._check_children_for_split_compatibility(nd.child_nodes, split)
+            if nd is None:
+                return False
+
+    def is_compatible_with_tree(self, other):
+        pass
+
+    ###########################################################################
+    ## Metadata
+
+    def strip_comments(self):
+        """
+        Remove comments from tree/nodes.
+        """
+        self.comments = []
+        for nd in self.postorder_node_iter():
+            nd.comments = []
+            nd.edge.comments = []
+
+    ###########################################################################
+    ## Representation
+
+    def __str__(self):
+        "Dump Newick string."
+        return "%s" % self.as_newick_string()
+
+    def __repr__(self):
+        return "<Tree object at %s>" % (hex(id(self)))
+
+    def description(self, depth=1, indent=0, itemize="", output=None):
+        """
+        Returns description of object, up to level `depth`.
+        """
+        if depth is None or depth < 0:
+            return
+        output_strio = StringIO()
+        if self.label is None:
+            label = " (%s)" % self.oid
+        else:
+            label = " (%s: '%s')" % (self.oid, self.label)
+        output_strio.write('%s%sTree object at %s%s'
+                % (indent*' ',
+                   itemize,
+                   hex(id(self)),
+                   label))
+        if depth >= 1:
+            newick_str = self.as_newick_string()
+            if not newick_str:
+                newick_str = "()"
+            if depth == 1:
+                output_strio.write(': %s' % newick_str)
+            elif depth >= 2:
+                num_nodes = len([nd for nd in self.preorder_node_iter()])
+                num_edges = len([ed for ed in self.preorder_edge_iter()])
+                output_strio.write(': %d Nodes, %d Edges' % (num_nodes, num_edges))
+                if self.taxon_namespace is not None:
+                    output_strio.write("\n%s[Taxon Set]\n" % (" " * (indent+4)))
+                    self.taxon_namespace.description(depth=depth-1, indent=indent+8, itemize="", output=output_strio)
+                output_strio.write('\n%s[Tree]' % (" " * (indent+4)))
+                output_strio.write('\n%s%s' % (" " * (indent+8), newick_str))
+                if depth >= 3:
+                    output_strio.write("\n%s[Nodes]" % (" " * (indent+4)))
+                    for i, nd in enumerate(self.preorder_node_iter()):
+                        output_strio.write('\n')
+                        nd.description(depth=depth-3, indent=indent+8, itemize="[%d] " % i, output=output_strio, taxon_namespace=self.taxon_namespace)
+                    output_strio.write("\n%s[Edges]" % (" " * (indent+4)))
+                    for i, ed in enumerate(self.preorder_edge_iter()):
+                        output_strio.write('\n')
+                        ed.description(depth=depth-3, indent=indent+8, itemize="[%d] " % i, output=output_strio, taxon_namespace=self.taxon_namespace)
+
+        s = output_strio.getvalue()
+        if output is not None:
+            output.write(s)
+        return s
+
+    def as_python_source(self, tree_obj_name=None, tree_args=None, oids=False):
+        """
+        Returns string that will rebuild this tree in Python.
+        """
+        p = []
+
+        if tree_obj_name is None:
+            tree_obj_name = "tree_%s" % id(self)
+        if self.label is not None:
+            label = "'" + self.label + "'"
+        else:
+            label = "None"
+        if oids:
+            oid_str = ', oid="%s"' % self.oid
+        else:
+            oid_str = ""
+        if tree_args is None:
+            tree_args = ""
+        else:
+            tree_args = ", " + tree_args
+        p.append("%s = dendropy.Tree(label=%s%s%s)" \
+            % (tree_obj_name,
+               label,
+               oid_str,
+               tree_args))
+        if oids:
+            p.append("%s.seed_node.oid = '%s'" % (tree_obj_name, self.seed_node.oid))
+
+        taxon_obj_namer = lambda x: "tax_%s" % id(x)
+        for taxon in self.taxon_namespace:
+            tobj_name = taxon_obj_namer(taxon)
+            if taxon.label is not None:
+                label = "'" + taxon.label + "'"
+            else:
+                label = "None"
+            if oids:
+                oid_str = ', oid="%s"' % taxon.oid
+            else:
+                oid_str = ""
+            p.append("%s = %s.taxon_namespace.require_taxon(label=%s%s)" \
+                % (tobj_name,
+                   tree_obj_name,
+                   label,
+                   oid_str))
+
+        node_obj_namer = lambda x: "nd_%s" % id(x)
+        for node in self.preorder_node_iter():
+            for child in node.child_nodes():
+                if node is self.seed_node:
+                    nn = "%s.seed_node" % tree_obj_name
+                else:
+                    nn = node_obj_namer(node)
+                if child.label is not None:
+                    label = "'" + child.label + "'"
+                else:
+                    label = "None"
+                if child.taxon is not None:
+                    ct = taxon_obj_namer(child.taxon)
+                else:
+                    ct = "None"
+                if oids:
+                    oid_str = ', oid="%s"' % child.oid
+                else:
+                    oid_str = ""
+                p.append("%s = %s.new_child(label=%s, taxon=%s, edge_length=%s%s)" %
+                        (node_obj_namer(child),
+                         nn,
+                         label,
+                         ct,
+                         child.edge.length,
+                         oid_str))
+                if oids:
+                    p.append('%s.edge.oid = "%s"' % (node_obj_namer(child), child.edge.oid))
+
+        return "\n".join(p)
+
+    def as_newick_string(self, **kwargs):
+        """
+        kwargs["reverse_translate"] can be function that takes a taxon and
+        returns the label to appear in the tree.
+        """
+        return self.seed_node.as_newick_string(**kwargs)
+
+    def print_newick(self, **kwargs):
+        """
+        Convenience method to newick string representation of this tree
+        to the standard output stream.
+        """
+        import sys
+        sys.stdout.write(self.as_newick_string(**kwargs))
+        sys.stdout.write("\n")
+
+    def as_ascii_plot(self, **kwargs):
+        """
+        Returns a string representation a graphic of this tree using ASCII
+        characters.
+
+        Keyword arguments:
+
+            ``plot_metric``
+                A string which specifies how branches should be scaled, one of:
+                'age' (distance from tips), 'depth' (distance from root),
+                'level' (number of branches from root) or 'length' (edge
+                length/weights).
+            ``show_internal_node_labels``
+                Boolean: whether or not to write out internal node labels.
+            - `show_internal_node_ids`
+                Boolean: whether or not to write out internal node id's.
+            ``leaf_spacing_factor``
+                Positive integer: number of rows between each leaf.
+            ``display_width``
+                Force a particular display width, in terms of number of columns.
+
+        """
+        ap = AsciiTreePlot(**kwargs)
+        return ap.compose(self)
+
+    def write_ascii_plot(self, stream, **kwargs):
+        """
+        Writes an ASCII text graphic of this tree to `stream`.
+
+        Keyword arguments:
+
+            ``plot_metric``
+                A string which specifies how branches should be scaled, one of:
+                'age' (distance from tips), 'depth' (distance from root),
+                'level' (number of branches from root) or 'length' (edge
+                length/weights).
+            ``show_internal_node_labels``
+                Boolean: whether or not to write out internal node labels.
+            - `show_internal_node_ids`
+                Boolean: whether or not to write out internal node id's.
+            ``leaf_spacing_factor``
+                Positive integer: number of rows between each leaf.
+            ``display_width``
+                Force a particular display width, in terms of number of columns.
+
+        """
+        return stream.write(self.as_ascii_plot(**kwargs))
+
+    def print_plot(self, **kwargs):
+        """
+        Writes an ASCII text graphic of this tree to standard output.
+
+        Keyword arguments:
+
+            ``plot_metric``
+                A string which specifies how branches should be scaled, one of:
+                'age' (distance from tips), 'depth' (distance from root),
+                'level' (number of branches from root) or 'length' (edge
+                length/weights).
+            ``show_internal_node_labels``
+                Boolean: whether or not to write out internal node labels.
+            - `show_internal_node_ids`
+                Boolean: whether or not to write out internal node id's.
+            ``leaf_spacing_factor``
+                Positive integer: number of rows between each leaf.
+            ``display_width``
+                Force a particular display width, in terms of number of columns.
+
+        """
+        import sys
+        self.write_ascii_plot(sys.stdout, **kwargs)
+        sys.stdout.write("\n")
+
+    ###########################################################################
+    ## Debugging/Testing
+
+    def assign_node_labels_from_taxon_or_oid(self):
+        for nd in self.postorder_node_iter():
+            if nd.label is not None:
+                continue
+            if nd.taxon is not None:
+                nd.label = nd.taxon.label
+            else:
+                nd.label = nd.oid
+
+    def get_indented_form(self, **kwargs):
+        out = StringIO()
+        self.write_indented_form(out, **kwargs)
+        return out.getvalue()
+
+    def write_indented_form(self, out, **kwargs):
+        if kwargs.get("splits"):
+            if not kwargs.get("taxon_namespace"):
+                kwargs["taxon_namespace"] = self.taxon_namespace
+        self.seed_node.write_indented_form(out, **kwargs)
+
+    def write_as_dot(self, out, **kwargs):
+        """Writes the tree to `out` as a DOT formatted digraph"""
+        if not kwargs.get("taxon_namespace"):
+            kwargs["taxon_namespace"] = self.taxon_namespace
+        out.write("digraph G {\n")
+
+        nd_id_to_dot_nd = {}
+        for n, nd in enumerate(self.preorder_node_iter()):
+            label = format_node(nd, **kwargs)
+            if nd is self.seed_node:
+                label = "root %s" % label
+            dot_nd = "n%d" % n
+            out.write(' %s  [label="%s"];\n' % (dot_nd, label))
+            nd_id_to_dot_nd[nd] = dot_nd
+        for nd, dot_nd in nd_id_to_dot_nd.iteritems():
+            try:
+                e = nd.edge
+                par_dot_nd = nd_id_to_dot_nd[e.tail_node]
+            except:
+                pass
+            else:
+                label = format_edge(e, **kwargs)
+                s = ' %s -> %s [label="%s"];\n' % (par_dot_nd, dot_nd, label)
+                out.write(s)
+        out.write("}\n")
+
+    def debug_check_tree(self, logger_obj=None, **kwargs):
+        import logging, inspect
+        if logger_obj and logger_obj.isEnabledFor(logging.DEBUG):
+            try:
+                assert self._debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
+            except:
+                calling_frame = inspect.currentframe().f_back
+                co = calling_frame.f_code
+                emsg = "\nCalled from file %s, line %d, in %s" % (co.co_filename, calling_frame.f_lineno, co.co_name)
+                _LOG.debug("%s" % str(self))
+                _LOG.debug("%s" % self.get_indented_form(**kwargs))
+        assert self._debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
+
+    def _debug_tree_is_valid(self, **kwargs):
+        """Performs sanity-checks of the tree data structure.
+
+        kwargs:
+            `check_splits` if True specifies that the split_edge and split_bitmask attributes
+                are checked.
+        """
+        check_splits = kwargs.get('check_splits', False)
+        taxon_namespace = kwargs.get('taxon_namespace')
+        if taxon_namespace is None:
+            taxon_namespace = self.taxon_namespace
+        if check_splits:
+            taxa_mask = self.seed_node.edge.split_bitmask
+        nodes = set()
+        edges = set()
+        curr_node = self.seed_node
+        assert(curr_node.parent_node is None)
+        assert(curr_node.edge.tail_node is None)
+        ancestors = []
+        siblings = []
+        while curr_node:
+            curr_edge = curr_node.edge
+            assert(curr_edge not in edges)
+            edges.add(curr_edge)
+            assert(curr_node not in nodes)
+            nodes.add(curr_node)
+            assert(curr_edge.tail_node is curr_node.parent_node)
+            assert(curr_edge.head_node is curr_node)
+            if check_splits:
+                cm = 0
+                split_bitmask = curr_edge.split_bitmask
+                assert((split_bitmask | taxa_mask) == taxa_mask)
+            c = curr_node.child_nodes()
+            if c:
+                for child in c:
+                    assert child.parent_node is curr_node
+                    if check_splits:
+                        cm |= child.edge.split_bitmask
+            elif check_splits:
+                assert(curr_node.taxon)
+                cm = taxon_namespace.taxon_bitmask(curr_node.taxon)
+            if check_splits:
+                assert((cm & taxa_mask) == split_bitmask)
+                assert self.split_edges[split_bitmask] == curr_edge
+            curr_node, level = _preorder_list_manip(curr_node, siblings, ancestors)
+        if check_splits:
+            for s, e in self.split_edges.iteritems():
+                assert(e in edges)
+        return True
+
+    def compose_newick(self):
+        return self.as_newick_string(preserve_spaces=True)
 
 ##############################################################################
 ## TreeList
 
-class TreeList(taxon.TaxonNamespaceScoped, base.Readable, base.Writeable):
+class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     """
     A collection of `Tree` objects, all referencing the same "universe" of
     opeational taxonomic unit concepts through the same `TaxonNamespace`
@@ -1508,7 +3274,7 @@ class TreeList(taxon.TaxonNamespaceScoped, base.Readable, base.Writeable):
         A `TreeList` object.
 
         """
-        taxon_namespace = taxon.TaxonNamespaceScoped.process_kwargs_for_taxon_namespace(kwargs, None)
+        taxon_namespace = taxon.process_kwargs_for_taxon_namespace(kwargs, None)
         label = kwargs.pop("label", None)
         tree_list = cls(label=label,
                 taxon_namespace=taxon_namespace)

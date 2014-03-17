@@ -17,7 +17,7 @@
 ##############################################################################
 
 """
-Tests basic Node operations.
+Tests basic Node child management.
 """
 
 import unittest
