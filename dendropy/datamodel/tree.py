@@ -1202,9 +1202,9 @@ class Node(base.Annotable):
 
     def _write_indented_form_line(self, out, level, **kwargs):
         indentation = kwargs.get("indentation", "    ")
-        label = format_node(self, **kwargs)
+        label = _format_node(self, **kwargs)
         if kwargs.get("splits"):
-            cm = "%s " % format_split(self.edge.split_bitmask, **kwargs)
+            cm = "%s " % _format_split(self.edge.split_bitmask, **kwargs)
         else:
             cm = ""
         out.write("%s%s%s\n" % ( cm, indentation*level, label))
@@ -3074,7 +3074,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         nd_id_to_dot_nd = {}
         for n, nd in enumerate(self.preorder_node_iter()):
-            label = format_node(nd, **kwargs)
+            label = _format_node(nd, **kwargs)
             if nd is self.seed_node:
                 label = "root %s" % label
             dot_nd = "n%d" % n
@@ -3087,7 +3087,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             except:
                 pass
             else:
-                label = format_edge(e, **kwargs)
+                label = _format_edge(e, **kwargs)
                 s = ' %s -> %s [label="%s"];\n' % (par_dot_nd, dot_nd, label)
                 out.write(s)
         out.write("}\n")
@@ -3513,3 +3513,111 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         tree = self.tree_factory(*args, **kwargs)
         self._trees.append(tree)
         return tree
+
+###############################################################################
+## Helper Functions
+
+def _preorder_list_manip(n, siblings, ancestors):
+    """
+    Helper function for recursion free preorder traversal, that does
+    not rely on attributes of the node other than child_nodes() (thus it
+    is useful for debuggging).
+
+    Returns the next node (or None) and the number of levels toward the
+    root the function "moved".
+    """
+    levels_moved = 0
+    c = n.child_nodes()
+    if c:
+        levels_moved += 1
+        ancestors.append(list(siblings))
+        del siblings[:]
+        siblings.extend(c[1:])
+        return c[0], levels_moved
+    while not siblings:
+        if ancestors:
+            levels_moved -= 1
+            del siblings[:]
+            siblings.extend(ancestors.pop())
+        else:
+            return None, levels_moved
+    return siblings.pop(0), levels_moved
+
+def _format_node(nd, **kwargs):
+    nf = kwargs.get('node_formatter', None)
+    if nf:
+        return nf(nd)
+    if nd.is_leaf():
+        t = nd.taxon
+        if t:
+            label = t.label
+        else:
+            label = "anonymous leaf"
+    else:
+        label = "* %s" % str(nd.oid)
+    return label
+
+def _format_edge(e, **kwargs):
+    ef = kwargs.get('edge_formatter', None)
+    if ef:
+        return ef(e)
+    return str(e)
+
+def _format_split(split, width=None, **kwargs):
+    from dendropy.treesplit import split_as_string
+    if width is None:
+        width = len(kwargs.get("taxon_set"))
+    s = split_as_string(split, width, symbol1=kwargs.get("off_symbol"), symbol2=kwargs.get("on_symbol"))
+    return s
+
+def _convert_node_to_root_polytomy(nd):
+    """If `nd` has two children and at least on of them is an internal node,
+    then it will be converted to an out-degree three node (with the edge length
+    added as needed).
+
+    Returns a tuple of child nodes that were detached (or() if the tree was not
+    modified). This can be useful for removing the deleted node from the split_edges
+    dictionary.
+    """
+    nd_children = nd.child_nodes()
+    if len(nd_children) > 2:
+        return ()
+    try:
+        left_child = nd_children[0]
+    except:
+        return ()
+    if not left_child:
+        return ()
+    if len(nd_children) == 1:
+        right_child = None
+        dest_edge_head = nd
+    else:
+        right_child = nd_children[1]
+        dest_edge_head = right_child
+    curr_add = None
+    if right_child and right_child.is_internal():
+        try:
+            left_child.edge.length += right_child.edge.length
+        except:
+            pass
+        nd.remove_child(right_child)
+        grand_kids = right_child.child_nodes()
+        for gc in grand_kids:
+            nd.add_child(gc)
+        curr_add = right_child
+    elif left_child.is_internal():
+        try:
+            dest_edge_head.edge.length += left_child.edge.length
+        except:
+            pass
+        nd.remove_child(left_child)
+        grand_kids = left_child.child_nodes()
+        for gc in grand_kids:
+            nd.add_child(gc)
+        curr_add = left_child
+    if curr_add:
+        ndl = [curr_add]
+        t = _convert_node_to_root_polytomy(nd)
+        ndl.extend(t)
+        return tuple(ndl)
+    return ()
