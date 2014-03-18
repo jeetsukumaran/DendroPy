@@ -25,7 +25,7 @@ try:
     from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
 except ImportError:
     from io import StringIO # Python 3
-from dendropy.utility import termutils
+from dendropy.utility import terminal
 from dendropy.datamodel import base
 from dendropy.datamodel import taxon
 from dendropy import dataio
@@ -3635,7 +3635,7 @@ class AsciiTreePlot(object):
     def compose(self, tree):
         self.reset()
         if self.display_width is None:
-            display_width = termutils.terminal_width() - 1
+            display_width = terminal.terminal_width() - 1
         else:
             display_width = self.display_width
         max_label_len = max([len(self.get_label_for_node(i)) for i in tree.leaf_iter()])
