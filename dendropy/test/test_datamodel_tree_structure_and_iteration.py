@@ -56,7 +56,7 @@ import dendropy
 #      f -> n;
 #      f -> h -> o;
 #      h -> p;
-class TestTreeStructure(object):
+class TestTreeStructure(unittest.TestCase):
     """
     Mixin class meant to be combined with unittest.TestCase.
     """
@@ -166,13 +166,16 @@ class TestTreeStructure(object):
         n = f.new_child(label="n", edge_length=9.0)
         o = h.new_child(label="o", edge_length=10.0)
         p = h.new_child(label="p", edge_length=11.0)
-        return tree
+        leaf_nodes = set([i, j, k, l, m, n, o, p])
+        internal_nodes = set([b, c, e, f, g, h])
+        all_nodes = leaf_nodes | internal_nodes | set([a])
+        return tree, all_nodes, leaf_nodes, internal_nodes
 
     def test_get_nodes(self):
-        tree = self.get_tree()
+        tree, anodes, lnodes, inodes = self.get_tree()
         nodes = tree.nodes()
-
-
+        self.assertEqual(len(nodes), len(anodes))
+        self.assertEqual(set(nodes), anodes)
 
 if __name__ == "__main__":
     unittest.main()
