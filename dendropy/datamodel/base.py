@@ -282,34 +282,34 @@ class Annotable(object):
     def __str__(self):
         return str(self.oid)
 
-    def replace_annotations(self, other):
+    def copy_annotations_from(self, other):
         if hasattr(other, "_annotations"):
-            self._annotations = AnnotationSet(other._annotations)
-            self._annotations.target = self
-            for annote in self._annotations:
-                if annote.is_attribute and annote.value[0] is other:
-                    annote.value[1] = self
+            for annote in other._annotations:
+                a2 = copy.deepcopy(annote)
+                if a2.is_attribute and a2.value[0] is other:
+                    a2.value[1] = self
+                self.annotations.add(a2)
 
-    # def __deepcopy__(self, memo=None):
-    #     # ensure clone map
-    #     if memo is None:
-    #         memo = {}
-    #     # get or create clone of self
-    #     try:
-    #         o = memo[id(self)]
-    #     except KeyError:
-    #         # create object without initialization
-    #         # o = type(self).__new__(self.__class__)
-    #         o = self.__class__.__new__(self.__class__)
-    #         # store
-    #         memo[id(self)] = o
-    #     # create annotations
-    #     if hasattr(self, "_annotations") and id(self._annotations) not in memo:
-    #         o._annotations = copy.deepcopy(self._annotations, memo)
-    #         memo[id(self._annotations)] = o._annotations
+    def __deepcopy__(self, memo=None):
+        # ensure clone map
+        if memo is None:
+            memo = {}
+        # get or create clone of self
+        try:
+            o = memo[id(self)]
+        except KeyError:
+            # create object without initialization
+            # o = type(self).__new__(self.__class__)
+            o = self.__class__.__new__(self.__class__)
+            # store
+            memo[id(self)] = o
+        # create annotations
+        if hasattr(self, "_annotations") and id(self._annotations) not in memo:
+            o._annotations = copy.deepcopy(self._annotations, memo)
+            memo[id(self._annotations)] = o._annotations
 
-    #     # return
-    #     return o
+        # return
+        return o
 
 ##############################################################################
 ## Annotation
@@ -365,13 +365,13 @@ class Annotation(Annotable):
     def __str__(self):
         return "{}='{}'".format(self.name, self.value)
 
-    # def __deepcopy__(self, memo):
-    #     o = Annotable.__deepcopy__(self, memo)
-    #     memo[id(self)] = o
-    #     for k in self.__dict__:
-    #         if k not in o.__dict__: # do not add attributes already added by base class
-    #             o.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
-    #     return o
+    def __deepcopy__(self, memo):
+        o = Annotable.__deepcopy__(self, memo)
+        memo[id(self)] = o
+        for k in self.__dict__:
+            if k not in o.__dict__: # do not add attributes already added by base class
+                o.__dict__[k] = copy.deepcopy(self.__dict__[k], memo)
+        return o
 
     def is_match(self, **kwargs):
         match = True

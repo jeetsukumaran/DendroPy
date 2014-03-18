@@ -1266,7 +1266,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             by this function:
 
                 - `label` specifies the label or description of the new
-                  `TreeList`.
+                  `Tree` object.
                 - `taxon_namespace` specifies the `TaxonNamespace` object to be
                    attached to the new `Tree` object.
 
@@ -1450,7 +1450,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     #     # we treat the taxa as immutable and copy the reference even in a deepcopy
     #     o = TaxonNamespaceLinked.__deepcopy__(self, memo)
     #     for k, v in self.__dict__.iteritems():
-    #         if k not in ['taxon_namespace', "_oid", "annotations"]:
+    #         if k not in ['taxon_namespace', "_annotations"]:
     #             o.__dict__[k] = copy.deepcopy(v, memo)
     #     o.annotations = copy.deepcopy(self.annotations, memo)
     #     memo[id(self.annotations)] = o.annotations
@@ -1463,12 +1463,15 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         Redefines `Tree` based on data from `source`.
 
-        Note that *all* information and data associated with the current `Tree`
-        object will be lost and replaced with the data from `source`. This
-        includes metadata as well as the current `TaxonNamespace` reference.
-
-        If you wish to retain all current information, but simply replace the
-        structure, then use `Tree.read_update()`.
+        The current `TaxonNamespace` reference will be retained (and modified
+        if new operational taxonomic unit concept definitions are
+        encountered in the data source), unless a new object or `None`
+        is passed using the `taxon_namespace` argument. Note that any metadata
+        associated with the tree specified in the source will be *added* to the
+        metadata already associated with the current `Tree`. If the current
+        tree has any metadata that should not be associated with the tree
+        structure being read, call `tree.annotations.drop()` to clear any
+        annotations calling this method.
 
         Parameters
         ----------
@@ -1501,9 +1504,13 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             by this function:
 
                 - `label` specifies the label or description of the new
-                  `TreeList`.
+                  `Tree`.
                 - `taxon_namespace` specifies the `TaxonNamespace` object to be
-                   attached to the new `Tree` object.
+                   attached to the this tree. If not specified, then the
+                   current `TaxonNamespace` object reference will be used. If
+                   `None`, then a new `TaxonNamespace` will be created.
+                - `ignore_metadata` if `True`, will not accession any metadata
+                  annotations in the data.
 
             All other keyword arguments are passed directly to `TreeList.read()`.
             Other keyword arguments may be available, depending on the implementation
@@ -1511,71 +1518,18 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        A `Tree` object (or `None` if not trees were found in the data source).
+        A `Tree` object (or `ValueError` if no trees ).
 
         """
-
+        ignore_metadata = kwargs.pop("ignore_metadata", False)
+        if "taxon_namespace" not in kwargs and "taxon_set" not in kwargs:
+            kwargs["taxon_namespace"] = self.taxon_namespace
         tree = Tree.parse_from_stream(stream, schema, **kwargs)
-        self.clone_from(tree)
-
-    def read_update(self, stream, schema, **kwargs):
-        """
-        Updates `Tree` *structure* based on data from `source`.
-
-        Instantiates a new `Tree` object and swaps out the seed node with this
-        one. Metadata is also replaced. If you wish to replace all current
-        information with data from `source` use `Tree.read()`.
-
-        Parameters
-        ----------
-
-        stream : file or file-like object
-            Source of data.
-
-        schema : string
-            Identifier of format of data in `stream`
-
-        collection_offset : integer or None
-        tree_offset : integer or None
-
-            If the source defines multiple tree collections (e.g. multiple
-            NEXUS "Trees" blocks), then the keyword argument
-            `collection_offset` can be used to specify the 0-based index of the
-            tree collection, and the keyword argument `tree_offset` can be used
-            to specify the 0-based index of the tree within the collection, as
-            the source. If `collection_offset` is not specified or `None`, then
-            all collections in the source are merged before considering
-            `tree_offset`.  If `tree_offset` is not specified, then the first
-            tree (offset=0) is returned.
-
-        **kwargs : keyword arguments
-            Arguments to customize parsing, instantiation, processing, and
-            accession of `Tree` objects read from the data source, including
-            schema- or format-specific handling.
-
-            The following optional keyword arguments are recognized and handled
-            by this function:
-
-                - `label` specifies the label or description of the new
-                  `TreeList`.
-
-            All other keyword arguments are passed directly to `TreeList.read()`.
-            Other keyword arguments may be available, depending on the implementation
-            of the reader specialized to handle `schema` formats.
-
-        Returns
-        -------
-        A `Tree` object (or `None` if not trees were found in the data source).
-
-        """
-
-        k = taxon.process_kwargs_for_taxon_namespace(kwargs, None)
-        if k is not None and k is not self.taxon_namespace:
-            raise TypeError("Cannot specify a new 'TaxonNamespace' for `Tree` when updating structure")
-        kwargs["taxon_namespace"] = self.taxon_namespace
-        tree = Tree.parse_from_stream(stream, schema, **kwargs)
+        if tree is None:
+            raise ValueError("Invalid tree source specification")
         self.seed_node = tree.seed_node
-        self.annotations = tree.annotations
+        if not ignore_metadata:
+            self.annotations.copy_annotations_from(tree)
 
     def write(self, stream, schema, **kwargs):
         """
