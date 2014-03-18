@@ -25,6 +25,7 @@ try:
     from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
 except ImportError:
     from io import StringIO # Python 3
+from dendropy.utility import termutils
 from dendropy.datamodel import base
 from dendropy.datamodel import taxon
 from dendropy import dataio
@@ -2954,21 +2955,8 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         return "\n".join(p)
 
-    def as_newick_string(self, **kwargs):
-        """
-        kwargs["reverse_translate"] can be function that takes a taxon and
-        returns the label to appear in the tree.
-        """
-        return self.seed_node.as_newick_string(**kwargs)
-
-    def print_newick(self, **kwargs):
-        """
-        Convenience method to newick string representation of this tree
-        to the standard output stream.
-        """
-        import sys
-        sys.stdout.write(self.as_newick_string(**kwargs))
-        sys.stdout.write("\n")
+    ###########################################################################
+    ## Representation
 
     def as_ascii_plot(self, **kwargs):
         """
@@ -3043,29 +3031,6 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         self.write_ascii_plot(sys.stdout, **kwargs)
         sys.stdout.write("\n")
 
-    ###########################################################################
-    ## Debugging/Testing
-
-    def assign_node_labels_from_taxon_or_oid(self):
-        for nd in self.postorder_node_iter():
-            if nd.label is not None:
-                continue
-            if nd.taxon is not None:
-                nd.label = nd.taxon.label
-            else:
-                nd.label = nd.oid
-
-    def get_indented_form(self, **kwargs):
-        out = StringIO()
-        self.write_indented_form(out, **kwargs)
-        return out.getvalue()
-
-    def write_indented_form(self, out, **kwargs):
-        if kwargs.get("splits"):
-            if not kwargs.get("taxon_namespace"):
-                kwargs["taxon_namespace"] = self.taxon_namespace
-        self.seed_node.write_indented_form(out, **kwargs)
-
     def write_as_dot(self, out, **kwargs):
         """Writes the tree to `out` as a DOT formatted digraph"""
         if not kwargs.get("taxon_namespace"):
@@ -3092,7 +3057,28 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
                 out.write(s)
         out.write("}\n")
 
-    def debug_check_tree(self, logger_obj=None, **kwargs):
+    ###########################################################################
+    ## Debugging/Testing
+
+    def _assign_node_labels_from_taxon(self):
+        for nd in self.postorder_node_iter():
+            if nd.label is not None:
+                continue
+            if nd.taxon is not None:
+                nd.label = nd.taxon.label
+
+    def _get_indented_form(self, **kwargs):
+        out = StringIO()
+        self._write_indented_form(out, **kwargs)
+        return out.getvalue()
+
+    def write_indented_form(self, out, **kwargs):
+        if kwargs.get("splits"):
+            if not kwargs.get("taxon_namespace"):
+                kwargs["taxon_namespace"] = self.taxon_namespace
+        self.seed_node._write_indented_form(out, **kwargs)
+
+    def _debug_check_tree(self, logger_obj=None, **kwargs):
         import logging, inspect
         if logger_obj and logger_obj.isEnabledFor(logging.DEBUG):
             try:
@@ -3102,7 +3088,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
                 co = calling_frame.f_code
                 emsg = "\nCalled from file %s, line %d, in %s" % (co.co_filename, calling_frame.f_lineno, co.co_name)
                 _LOG.debug("%s" % str(self))
-                _LOG.debug("%s" % self.get_indented_form(**kwargs))
+                _LOG.debug("%s" % self._get_indented_form(**kwargs))
         assert self._debug_tree_is_valid(logger_obj=logger_obj, **kwargs)
 
     def _debug_tree_is_valid(self, **kwargs):
@@ -3155,8 +3141,24 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
                 assert(e in edges)
         return True
 
-    def compose_newick(self):
-        return self.as_newick_string(preserve_spaces=True)
+    def _compose_newick(self):
+        return self._as_newick_string(preserve_spaces=True)
+
+    def _as_newick_string(self, **kwargs):
+        """
+        kwargs["reverse_translate"] can be function that takes a taxon and
+        returns the label to appear in the tree.
+        """
+        return self.seed_node._as_newick_string(**kwargs)
+
+    def _print_newick(self, **kwargs):
+        """
+        Convenience method to newick string representation of this tree
+        to the standard output stream.
+        """
+        import sys
+        sys.stdout.write(self._as_newick_string(**kwargs))
+        sys.stdout.write("\n")
 
 ##############################################################################
 ## TreeList
@@ -3317,7 +3319,7 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             # passing keywords to underlying tree parser
             tlst8 = TreeList(stream=StringIO("((A,B),(C,D));((A,C),(B,D));"),
                              schema="newick",
-                             taxon_set=tlst3.taxon_set,
+                             taxon_namespace=tlst3.taxon_namespace,
                              encode_splits=True)
 
             # deep-copied (but shallow-copy taxa) from another tree list
@@ -3515,6 +3517,215 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         return tree
 
 ###############################################################################
+## AsciiTreePlot
+
+class AsciiTreePlot(object):
+
+    class NullEdgeLengthError(ValueError):
+        def __init__(self, *args, **kwargs):
+            ValueError.__init__(self, *args, **kwargs)
+
+    def __init__(self, **kwargs):
+        """
+        __init__ takes the following kwargs:
+
+            - `plot_metric` A string which specifies how branches should be scaled, one of:
+                'age' (distance from tips), 'depth' (distance from root),
+                'level' (number of branches from root) or 'length' (edge
+                length/weights).
+            - `show_internal_node_labels`
+                Boolean: whether or not to write out internal node labels.
+            - `show_internal_node_ids`
+                Boolean: whether or not to write out internal node id's.
+            - `leaf_spacing_factor`
+                Positive integer: number of rows between each leaf.
+            - `display_width`
+                Force a particular display width, in terms of number of columns.
+
+        """
+        self.plot_metric = kwargs.get('plot_metric', 'depth')
+        self.show_internal_node_labels = kwargs.get('show_internal_node_labels', False)
+        self.show_internal_node_ids = kwargs.get('show_internal_node_ids', False)
+        self.leaf_spacing_factor = kwargs.get('leaf_spacing_factor', 2)
+#        self.null_edge_length = kwargs.get('null_edge_length', 0)
+        self.display_width = kwargs.get('display_width', None)
+        self.reset()
+
+    def reset(self):
+        self.grid = []
+        self.node_row = {}
+        self.node_col = {}
+        self.node_offset = {}
+        self.current_leaf_row = 0
+
+    def _calc_node_offsets(self, tree):
+        if self.plot_metric == 'age' or self.plot_metric == 'depth':
+
+            ## for verification ...
+#            tree.calc_node_ages(check_prec=False)
+#            for nd in tree.postorder_node_iter():
+#                self.node_offset[nd] = nd.age
+#            flipped_origin = max(self.node_offset.values())
+#            for nd in self.node_offset:
+#                self.node_offset[nd] = flipped_origin - self.node_offset[nd]
+#            return
+
+            for nd in tree.postorder_node_iter():
+                cnds = nd.child_nodes()
+                if self.plot_metric == 'depth': # 'number of branchings from tip'
+                    if len(cnds) == 0:
+                        curr_node_offset = 0.0
+                    else:
+                        depths = [self.node_offset[v] for v in cnds]
+                        curr_node_offset = max(depths) + 1
+#                        print curr_node_offset, [self.node_offset[v] for v in cnds]
+                elif self.plot_metric == 'age': # 'sum of edge weights from tip'
+                    # note: no enforcement of ultrametricity!
+                    if len(cnds) == 0:
+                        curr_node_offset = 0.0
+                    else:
+                        if cnds[0].edge.length is not None:
+                            curr_node_offset = self.node_offset[cnds[0]] + cnds[0].edge.length
+#                        if len(elens) == 0:
+#                            curr_node_offset = self.node_offset[cnds[0]]
+#                        else:
+#                            curr_node_offset = max(elens) + self.node_offset[cnds[0]]
+                else:
+                    raise ValueError("Unrecognized plot metric '%s' (must be one of: 'age', 'depth', 'level', or 'length')" % self.plot_metric)
+                self.node_offset[nd] = curr_node_offset
+            flipped_origin = max(self.node_offset.values())
+            for nd in self.node_offset:
+                self.node_offset[nd] = flipped_origin - self.node_offset[nd]
+        else:
+            for nd in tree.preorder_node_iter():
+                if self.plot_metric == 'level': # 'number of branchings from root'
+                    curr_edge_len = 1
+                elif self.plot_metric == 'length': # 'sum of edge weights from root'
+                    if nd.edge.length is not None:
+                        curr_edge_len = nd.edge.length
+                    else:
+                        curr_edge_len = 0
+                else:
+                    raise ValueError("Unrecognized plot metric '%s' (must be one of: 'age', 'depth', 'level', or 'length')" % self.plot_metric)
+                if nd.parent_node is None:
+                    self.node_offset[nd] = curr_edge_len
+                else:
+                    self.node_offset[nd] =  curr_edge_len + self.node_offset[nd.parent_node]
+#        print "\n".join([str(k) for k in self.node_offset.values()])
+
+    def draw(self, tree, dest):
+        dest.write(self.compose(tree))
+
+    def get_label_for_node(self, nd):
+        if nd.taxon and nd.taxon.label:
+            return nd.taxon.label
+        # @TODO: we should have a separate setting for labeling nodes with an
+        # id, but thus far when I want to see this, I want
+        # internal_nodes_labels too...
+        label = []
+        if self.show_internal_node_labels and nd.label:
+            label.append(nd.label)
+        if self.show_internal_node_ids:
+            label.append("@")
+            label.append(str(id(nd)))
+        if not label:
+            return "@"
+        return "".join(label)
+
+    def compose(self, tree):
+        self.reset()
+        if self.display_width is None:
+            display_width = termutils.terminal_width() - 1
+        else:
+            display_width = self.display_width
+        max_label_len = max([len(self.get_label_for_node(i)) for i in tree.leaf_iter()])
+        if max_label_len <= 0:
+            max_label_len = 0
+        #effective_display_width = display_width - max_label_len - len(tree.internal_nodes) - 1
+        effective_display_width = display_width - max_label_len - 1
+        self._calc_node_offsets(tree)
+        widths = [self.node_offset[i] for i in tree.leaf_iter() if self.node_offset[i] is not None]
+        max_width = float(max(widths))
+        if max_width == 0:
+            raise AsciiTreePlot.NullEdgeLengthError("Tree cannot be plotted under metric '%s' due to zero or null edge lengths: '%s'" % (self.plot_metric, tree.as_newick_string()))
+        edge_scale_factor = float(effective_display_width) / max_width
+        self.calc_plot(tree.seed_node,
+                       edge_scale_factor=edge_scale_factor)
+        for i in range(len(tree.leaf_nodes())*self.leaf_spacing_factor + 1):
+            self.grid.append([' ' for i in range(0, display_width)])
+        self.draw_node(tree.seed_node)
+        display = '\n'.join([''.join(i) for i in self.grid])
+        return display
+
+    def calc_plot(self, node, edge_scale_factor):
+        """
+        First pass through tree, post-order traversal to calculate
+        coordinates of each node.
+        """
+        child_nodes = node.child_nodes()
+        if child_nodes:
+            for n in child_nodes:
+                self.calc_plot(n, edge_scale_factor)
+            ys = [self.node_row[n] for n in child_nodes]
+            self.node_row[node] = int(float((max(ys)-min(ys)) / 2) + min(ys))
+        else:
+            self.node_row[node] = self.current_leaf_row
+            self.current_leaf_row = self.current_leaf_row + self.leaf_spacing_factor
+        if node.edge.length is None:
+            self.node_col[node] = 1
+        else:
+            self.node_col[node] = int(float(self.node_offset[node]) * edge_scale_factor)
+        self.node_col[node] = int(float(self.node_offset[node]) * edge_scale_factor)
+
+    def draw_label(self, label, row, start_col):
+        if label:
+            for i in range(len(label)):
+                if start_col + i < len(self.grid[row]):
+                    self.grid[row][start_col+i] = label[i]
+
+    def draw_node(self, node):
+        """
+        Second pass through tree, plotting nodes onto given self.grid.
+        """
+        child_nodes = node.child_nodes()
+        if child_nodes:
+            for i, child_node in enumerate(child_nodes):
+                start_row = min([self.node_row[node], self.node_row[child_node]])
+                end_row = max([self.node_row[node], self.node_row[child_node]])
+                if i == 0:
+                    self.grid[self.node_row[child_node]][self.node_col[node]] = '/'
+                    start_row = start_row+1
+                    edge_row = self.node_row[child_node]
+                elif i == len(child_nodes)-1:
+                    self.grid[self.node_row[child_node]][self.node_col[node]] = '\\'
+                    edge_row = self.node_row[child_node]
+                else:
+                    self.grid[self.node_row[child_node]][self.node_col[node]] = '+'
+                    edge_row = self.node_row[child_node]
+                self.draw_node(child_node)
+                for x in range(self.node_col[node]+1, self.node_col[child_node]):
+                    self.grid[edge_row][x] = '-'
+                for y in range(start_row, end_row):
+                    self.grid[y][self.node_col[node]] = '|'
+            label = []
+            if self.show_internal_node_labels or self.show_internal_node_ids:
+                label = self.get_label_for_node(node)
+                self.draw_internal_text(label, self.node_row[node], self.node_col[node])
+            else:
+                self.grid[self.node_row[node]][self.node_col[node]]='+'
+        else:
+            label = self.get_label_for_node(node)
+            self.draw_label(label, self.node_row[node], self.node_col[node]+1)
+
+    def draw_internal_text(self, label, r, c):
+        row = self.grid[r]
+        try:
+            for n, letter in enumerate(label):
+                row[c + n] = letter
+        except:
+            pass
+
+###############################################################################
 ## Helper Functions
 
 def _preorder_list_manip(n, siblings, ancestors):
@@ -3566,7 +3777,7 @@ def _format_edge(e, **kwargs):
 def _format_split(split, width=None, **kwargs):
     from dendropy.treesplit import split_as_string
     if width is None:
-        width = len(kwargs.get("taxon_set"))
+        width = len(kwargs.get("taxon_namespace"))
     s = split_as_string(split, width, symbol1=kwargs.get("off_symbol"), symbol2=kwargs.get("on_symbol"))
     return s
 
@@ -3621,3 +3832,4 @@ def _convert_node_to_root_polytomy(nd):
         ndl.extend(t)
         return tuple(ndl)
     return ()
+
