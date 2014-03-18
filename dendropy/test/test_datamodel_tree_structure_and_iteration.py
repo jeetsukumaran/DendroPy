@@ -233,7 +233,7 @@ class TestTreeStructure(unittest.TestCase):
         assert p.parent_node is h
         assert p.edge.tail_node is h
         assert p in h._child_nodes
-        tree.debug_check_tree()
+        tree._debug_check_tree()
         leaf_nodes = set([i, j, k, l, m, n, o, p])
         internal_nodes = set([b, c, e, f, g, h])
         all_nodes = leaf_nodes | internal_nodes | set([a])
@@ -244,6 +244,25 @@ class TestTreeStructure(unittest.TestCase):
         nodes = tree.nodes()
         self.assertEqual(len(nodes), len(anodes))
         self.assertEqual(set(nodes), anodes)
+        obs_labels = [nd.label for nd in nodes]
+
+    def test_get_node_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = tree.nodes(filter_fn = lambda x : x.edge.length > 10)
+        for nd in nodes:
+            self.assertTrue(nd.edge.length > 10)
+
+    def test_get_leaf_nodes(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = tree.leaf_nodes()
+        self.assertEqual(len(nodes), len(lnodes))
+        self.assertEqual(set(nodes), lnodes)
+
+    def test_internal_nodes(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = tree.internal_nodes()
+        self.assertEqual(len(nodes), len(inodes))
+        self.assertEqual(set(nodes), inodes)
 
 
 if __name__ == "__main__":

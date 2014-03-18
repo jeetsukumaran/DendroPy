@@ -1563,8 +1563,12 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         "Returns list of leaf_nodes on the tree."
         return [leaf for leaf in self.leaf_iter()]
 
-    def internal_nodes(self):
-        "Returns list of internal node in the tree."
+    def internal_nodes(self, include_seed_node=False):
+        """
+        Returns list of internal nodes in the tree. By default, this does not
+        include the seed node or root (which, strictly speaking, is considered
+        an external node).
+        """
         return self.nodes(filter_fn=lambda x : not x.is_leaf())
 
     def find_node_for_taxon(self, taxon):
