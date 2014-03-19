@@ -1869,56 +1869,213 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     ## Node iterators
 
     def __iter__(self):
-        "Default iterator: preorder."
+        """
+        Iterate over nodes on tree in preorder.
+
+        Example
+        -------
+
+        >>> for nd in tree:
+        ...    print(nd.label)
+        ...
+
+        Returns
+        -------
+        Iterator over nodes in tree in preorder.
+
+        """
         return self.preorder_node_iter()
 
     def preorder_node_iter(self, filter_fn=None):
-        "Returns preorder iterator over tree nodes."
+        """
+        Pre-order traversal of tree.
+
+        Visits nodes on tree, with each node visited before its children.
+        Filtered by `filter_fn`: node is only returned if no `filter_fn` is
+        given or if filter_fn returns `True`.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            A function object that takes a `Node` object as an argument and
+            returns `True` if this node is to be visited during this traversal
+            operation.
+
+        Returns
+        -------
+        Iterator over a sequence of nodes resulting from a pre-order traversal
+        of tree.
+
+        """
         for node in self.seed_node.preorder_iter(filter_fn=filter_fn):
             yield node
 
+    def preorder_internal_node_iter(self, filter_fn=None, include_seed_node=False):
+        """
+        Pre-order traversal of internal nodes of tree.
+
+        Visits internal nodes, with any particular node visited before its
+        children. Filtered by `filter_fn`: node is only returned if no
+        `filter_fn` is given or if filter_fn returns `True`.
+
+        Root or seed node is not visited unless `include_seed_node` is `True`.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            A function object that takes a `Node` object as an argument and
+            returns `True` if this node is to be visited during this traversal
+            operation.
+
+        include_seed_node : boolean, default = `False`
+            If `False` (default), seed node or root is not visited. If `True`,
+            then it is.
+
+        Returns
+        -------
+        Iterator over a sequence of internal nodes resulting from a pre-order
+        traversal of tree.
+
+        """
+        for node in self.seed_node.preorder_internal_node_iter(filter_fn=filter_fn, include_seed_node=include_seed_node):
+            yield node
+
     def postorder_node_iter(self, filter_fn=None):
-        "Returns postorder iterator over tree nodes."
+        """
+        Post-order traversal of tree.
+
+        Visits all nodes on tree, with any particular node visited after its
+        children. Filtered by `filter_fn`: node is only returned if no
+        `filter_fn` is given or if filter_fn returns `True`.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            A function object that takes a `Node` object as an argument and
+            returns `True` if this node is to be visited during this traversal
+            operation.
+
+        Returns
+        -------
+        Iterator over a sequence of nodes resulting from a post-order traversal
+        of tree.
+
+        """
         for node in self.seed_node.postorder_iter(filter_fn=filter_fn):
             yield node
 
+    def postorder_internal_node_iter(self, filter_fn=None, include_seed_node=False):
+        """
+        Post-order traversal of internal nodes of subtree rooted at this node.
+
+        Visits internal nodes, with any particular node visited after its
+        children. Filtered by `filter_fn`: node is only returned if no
+        `filter_fn` is given or if filter_fn returns `True`.
+
+        Root or seed node is not visited unless `include_seed_node` is `True`.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            A function object that takes a `Node` object as an argument and
+            returns `True` if this node is to be visited during this traversal
+            operation.
+
+        include_seed_node : boolean, default = `False`
+            If `False` (default), seed node or root is not visited. If `True`,
+            then it is.
+
+        Returns
+        -------
+        Iterator over internal nodes of tree in postorder.
+
+        """
+        for node in self.seed_node.postorder_internal_node_iter(filter_fn=filter_fn, include_seed_node=include_seed_node):
+            yield node
+
+
     def level_order_node_iter(self, filter_fn=None):
-        "Returns level-order iterator over tree nodes."
+        """
+        Level-order traversal of tree.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            A function object that takes a `Node` object as an argument and
+            returns `True` if this node is to be visited during this traversal
+            operation.
+
+        Returns
+        -------
+        Iterator over sequence of nodes resulting from level-order traversal of
+        tree.
+
+        """
         for node in self.seed_node.level_order_iter(filter_fn=filter_fn):
             yield node
 
     def leaf_iter(self, filter_fn=None):
         """
-        Returns an iterator over tree leaf_nodes (order determined by
-        postorder tree-traversal).
+        Iterate over all leaves of tree.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            A function object that takes a `Node` object as an argument and
+            returns `True` if this node is to be visited during this traversal
+            operation.
+
+        Returns
+        -------
+        Iterator over a sequence of leaf nodes of this tree.
+
         """
         for node in self.seed_node.leaf_iter(filter_fn=filter_fn):
             yield node
 
     def age_order_node_iter(self, include_leaves=True, filter_fn=None, descending=False):
         """
-        Iterates over nodes in order of age. If `include_leaves` is False, will
-        skip leaves (default is not to skip leaves). If `descending` is True,
-        will go from oldest nodes to youngest (default is asecending: youngest
-        nodes to oldest).
+        Iterates over all nodes in tree in order of age.
+
+        Iterates over nodes in order of age ('age' is as given by the `age`
+        attribute, which is usually the sum of edge lengths from tips
+        to node, i.e., time since present).
+        If `include_leaves` is `True` (default), leaves are included in the
+        iteration; if `include_leaves` is `False`, leaves will be skipped.
+        If `descending` is `False` (default), younger nodes will be returned
+        before older ones; if `True`, older nodes will be returned before
+        younger ones.
+
+        Parameters
+        ----------
+
+        include_leaves : boolean
+            If `True` (default), then leaf nodes are included in the iteration.
+            If `False`, then leaf nodes are skipped.
+
+        filter_fn : function object
+            A function object that takes a `Node` object as an argument and
+            returns `True` if this node is to be visited during this traversal
+            operation.
+
+        descending : boolean
+            If `False` (default), then younger nodes are visited before older
+            ones. If `True`, then older nodes are visited before younger ones.
+
+        Returns
+        -------
+        Iterator over age-ordered sequence of nodes in tree.
+
         """
         if self.seed_node.age is None:
             self.calc_node_ages()
         for node in self.seed_node.age_order_iter(include_leaves=include_leaves, filter_fn=filter_fn, descending=descending):
-            yield node
-
-    def postorder_internal_node_iter(self, filter_fn=None, include_seed_node=False):
-        """
-        Iterates over all internal nodes in post-order.
-        """
-        for node in self.seed_node.postorder_internal_node_iter(filter_fn=filter_fn, include_seed_node=include_seed_node):
-            yield node
-
-    def preorder_internal_node_iter(self, filter_fn=None, include_seed_node=False):
-        """
-        Iterates over all internal nodes in pre-order.
-        """
-        for node in self.seed_node.preorder_internal_node_iter(filter_fn=filter_fn, include_seed_node=include_seed_node):
             yield node
 
     ###########################################################################

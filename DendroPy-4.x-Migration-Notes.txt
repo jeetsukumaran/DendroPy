@@ -77,7 +77,10 @@ The `Tree` Class
   The `Tree.internal_nodes()`, `Tree.preorder_internal_node_iter()`,
   `Tree.postorder_internal_node_iter()` etc. methods now all do not return or
   visit the root or seed node by default, unless the "`include_seed_node`"
-  argument is set to `True`.
+  argument is set to `True`. Alternatively, the previous behavior can be
+  recovered using the "non_leaf" family of methods: `Tree.non_leaf_nodes()`,
+  `Tree.preorder_non_leaf_node_iter()`, `Tree.postorder_non_leaf_node_iter()`,
+  etc.
 
 - `Tree.nodes()` : sorting option removed; use `sorted(tree.nodes())` instead.
 
