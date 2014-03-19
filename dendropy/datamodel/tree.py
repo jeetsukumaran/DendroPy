@@ -1584,9 +1584,15 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def leaf_nodes(self):
         """
-        Returns list of leaf_nodes on the tree.
+        Returns list of leaf nodes on the tree.
         """
         return [leaf for leaf in self.leaf_iter()]
+
+    def non_leaf_nodes(self):
+        """
+        Returns list of non-leaf (i.e., internal + root) nodes on tree.
+        """
+        return self.nodes(filter_fn=lambda x: not x.is_leaf())
 
     def internal_nodes(self, include_seed_node=False):
         """

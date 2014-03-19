@@ -258,11 +258,26 @@ class TestTreeStructure(unittest.TestCase):
         self.assertEqual(len(nodes), len(lnodes))
         self.assertEqual(set(nodes), lnodes)
 
-    def test_internal_nodes_no_root(self):
+    def test_get_nonleaf_nodes(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = tree.non_leaf_nodes()
+        nlnodes = inodes | set([tree.seed_node])
+        self.assertEqual(len(nodes), len(nlnodes))
+        self.assertEqual(set(nodes), nlnodes)
+
+    def test_get_internal_nodes_no_root(self):
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = tree.internal_nodes()
         self.assertEqual(len(nodes), len(inodes))
         self.assertEqual(set(nodes), inodes)
+
+    def test_get_internal_nodes_with_root(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = tree.internal_nodes(True)
+        nlnodes = inodes | set([tree.seed_node])
+        self.assertEqual(len(nodes), len(nlnodes))
+        self.assertEqual(set(nodes), nlnodes)
+
 
 
 if __name__ == "__main__":
