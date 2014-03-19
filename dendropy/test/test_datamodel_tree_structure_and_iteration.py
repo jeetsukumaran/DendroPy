@@ -239,6 +239,9 @@ class TestTreeStructure(unittest.TestCase):
         all_nodes = leaf_nodes | internal_nodes | set([a])
         return tree, all_nodes, leaf_nodes, internal_nodes
 
+    ###########################################################################
+    ## Node Accessors
+
     def test_get_nodes(self):
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = tree.nodes()
@@ -278,6 +281,9 @@ class TestTreeStructure(unittest.TestCase):
         self.assertEqual(len(nodes), len(nlnodes))
         self.assertEqual(set(nodes), nlnodes)
 
+    ###########################################################################
+    ## (Taxon-free) Node Finders
+
     def test_find_node(self):
         tree, anodes, lnodes, inodes = self.get_tree()
         node = tree.find_node(lambda x: x.label == "c")
@@ -297,6 +303,9 @@ class TestTreeStructure(unittest.TestCase):
         tree, anodes, lnodes, inodes = self.get_tree()
         node = tree.find_node_with_label("zzz")
         self.assertIs(node, None)
+
+    ###########################################################################
+    ## Edge Accessors
 
     def test_get_edges(self):
         tree, anodes, lnodes, inodes = self.get_tree()

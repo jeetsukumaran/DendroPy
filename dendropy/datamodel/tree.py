@@ -105,13 +105,23 @@ class Edge(base.Annotable):
         edge = self.__class__(*args, **kwargs)
         return edge
 
-    def is_terminal(self):
+    def is_leaf(self):
         "Returns True if the head node has no children"
         return self.head_node and self.head_node.is_leaf()
 
-    def is_internal(self):
+    def is_terminal(self):
+        return self.is_leaf()
+
+    def is_non_leaf(self):
         "Returns True if the head node has children"
         return self.head_node and not self.head_node.is_leaf()
+
+    def is internal(self):
+        """
+        Returns True if the head node has children and the tail node is not
+        `None`
+        """
+        return self.tail_node and self.head_node and not self.head_node.is_leaf()
 
     def get_adjacent_edges(self):
         """
