@@ -11,6 +11,7 @@ DendroPy Phylogenetic Computing Library
     tutorial/index.rst
     library/index.rst
     scripts/sumtrees.rst
+    glossary.rst
     changes.rst
 
 DendroPy is a |Python|_ library for phylogenetic computing.
