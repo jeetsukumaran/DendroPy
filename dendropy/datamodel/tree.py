@@ -112,16 +112,9 @@ class Edge(base.Annotable):
     def is_terminal(self):
         return self.is_leaf()
 
-    def is_non_leaf(self):
+    def is_internal(self):
         "Returns True if the head node has children"
         return self.head_node and not self.head_node.is_leaf()
-
-    def is internal(self):
-        """
-        Returns True if the head node has children and the tail node is not
-        `None`
-        """
-        return self.tail_node and self.head_node and not self.head_node.is_leaf()
 
     def get_adjacent_edges(self):
         """
@@ -299,7 +292,7 @@ class Node(base.Annotable):
             child_nodes.extend(stack)
             stack = child_nodes
 
-    def preorder_internal_node_iter(self, filter_fn=None, include_seed_node=False):
+    def preorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
         Pre-order traversal of internal nodes of subtree rooted at this node.
 
@@ -307,7 +300,7 @@ class Node(base.Annotable):
         visited before its children. Filtered by `filter_fn`: node is only
         returned if no `filter_fn` is given or if filter_fn returns `True`.
 
-        Root or seed node is not visited unless `include_seed_node` is `True`.
+        Root or seed node is include unless `exclude_seed_node` is `True`.
 
         Parameters
         ----------
@@ -317,7 +310,7 @@ class Node(base.Annotable):
             returns `True` if this node is to be visited during this traversal
             operation.
 
-        include_seed_node : boolean, default = `False`
+        exclude_seed_node : boolean, default = `False`
             If `False` (default), seed node or root is not visited. If `True`,
             then it is.
 
@@ -327,10 +320,10 @@ class Node(base.Annotable):
         traversal of the subtree starting at this node.
 
         """
-        if include_seed_node:
-            froot = lambda x: True
-        else:
+        if exclude_seed_node:
             froot = lambda x: x._parent_node is not None
+        else:
+            froot = lambda x: True
         if filter_fn:
             filter_fn = lambda x: (froot(x) and (not x.is_leaf()) and filter_fn(x)) or None
         else:
@@ -372,7 +365,7 @@ class Node(base.Annotable):
                 child_nodes.extend(stack)
                 stack = child_nodes
 
-    def postorder_internal_node_iter(self, filter_fn=None, include_seed_node=False):
+    def postorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
         Post-order traversal of internal nodes of subtree rooted at this node.
 
@@ -380,7 +373,7 @@ class Node(base.Annotable):
         visited after its children. Filtered by `filter_fn`: node is only
         returned if no `filter_fn` is given or if filter_fn returns `True`.
 
-        Root or seed node is not visited unless `include_seed_node` is `True`.
+        Root or seed node is included unless `exclude_seed_node` is `True`.
 
         Parameters
         ----------
@@ -390,7 +383,7 @@ class Node(base.Annotable):
             returns `True` if this node is to be visited during this traversal
             operation.
 
-        include_seed_node : boolean, default = `False`
+        exclude_seed_node : boolean, default = `False`
             If `False` (default), seed node or root is not visited. If `True`,
             then it is.
 
@@ -400,10 +393,10 @@ class Node(base.Annotable):
         of the subtree starting at this node.
 
         """
-        if include_seed_node:
-            froot = lambda x: True
-        else:
+        if exclude_seed_node:
             froot = lambda x: x._parent_node is not None
+        else:
+            froot = lambda x: True
         if filter_fn:
             filter_fn = lambda x: (froot(x) and (not x.is_leaf()) and filter_fn(x)) or None
         else:
@@ -589,8 +582,8 @@ class Node(base.Annotable):
 
         Side effects:
 
-            - sets the parent of each child node to this node
-            - sets the tail node of each child to self
+            * sets the parent of each child node to this node
+            * sets the tail node of each child to self
 
         Parameters
         ----------
@@ -1297,9 +1290,9 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             The following optional keyword arguments are recognized and handled
             by this function:
 
-                - `label` specifies the label or description of the new
+                * `label` specifies the label or description of the new
                   `Tree` object.
-                - `taxon_namespace` specifies the `TaxonNamespace` object to be
+                * `taxon_namespace` specifies the `TaxonNamespace` object to be
                    attached to the new `Tree` object.
 
             All other keyword arguments are passed directly to `TreeList.read()`.
@@ -1535,13 +1528,13 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             The following optional keyword arguments are recognized and handled
             by this function:
 
-                - `label` specifies the label or description of the new
+                * `label` specifies the label or description of the new
                   `Tree`.
-                - `taxon_namespace` specifies the `TaxonNamespace` object to be
+                * `taxon_namespace` specifies the `TaxonNamespace` object to be
                    attached to the this tree. If not specified, then the
                    current `TaxonNamespace` object reference will be used. If
                    `None`, then a new `TaxonNamespace` will be created.
-                - `ignore_metadata` if `True`, will not accession any metadata
+                * `ignore_metadata` if `True`, will not accession any metadata
                   annotations in the data.
 
             All other keyword arguments are passed directly to `TreeList.read()`.
@@ -1575,13 +1568,13 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Additionally, for some formats, the following keywords are recognized:
 
-            - `edge_lengths` : if False, edges will not write edge lengths [True]
-            - `internal_labels` : if False, internal labels will not be written [True]
+            * `edge_lengths` : if False, edges will not write edge lengths [True]
+            * `internal_labels` : if False, internal labels will not be written [True]
         """
         raise NotImplementedError
 
     ###########################################################################
-    ## Node Accessors
+    ## Node and Edge Lists
 
     def nodes(self, filter_fn=None):
         """
@@ -1608,22 +1601,16 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         return [leaf for leaf in self.leaf_iter()]
 
-    def non_leaf_nodes(self):
-        """
-        Returns list of non-leaf (i.e., internal + root) nodes on tree.
-        """
-        return self.nodes(filter_fn=lambda x: not x.is_leaf())
-
-    def internal_nodes(self, include_seed_node=False):
+    def internal_nodes(self, exclude_seed_node=False):
         """
         Returns list of internal nodes in the tree.
 
-        Root or seed node is not visited unless `include_seed_node` is `True`.
+        Root or seed node is included unless `exclude_seed_node` is `True`.
 
         Parameters
         ----------
 
-        include_seed_node : boolean, default = `False`
+        exclude_seed_node : boolean, default = `False`
             If `False` (default), seed node or root is not included in the
             list. If `True`, then it is.
 
@@ -1632,11 +1619,52 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         List of internal `Node` objects on this `Tree`.
 
         """
-        if include_seed_node:
-            f = lambda x: not x.is_leaf()
-        else:
-            f = lambda x: not x.is_leaf() and x._parent_node is not None
-        return self.nodes(filter_fn=f)
+        return [nd for nd in self.preorder_internal_node_iter(exclude_seed_node=exclude_seed_node)]
+
+    def edges(self, filter_fn=None):
+        """
+        Returns list of edges on tree.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            Takes a single `Edge` object as an argument and returns `True` if
+            this edge is to be included in the list or `False` otherwise.
+
+        Returns
+        -------
+        List of `Edge` objects in the tree.
+
+        """
+        edges = [edge for edge in self.preorder_edge_iter(filter_fn)]
+        return edges
+
+    def leaf_edges(self):
+        """
+        Returns list of leaf edges on the tree.
+        """
+        return [leaf.edge for leaf in self.leaf_iter()]
+
+    def internal_edges(self, exclude_seed_edge=False):
+        """
+        Returns list of internal edges in the tree.
+
+        Root or seed edge is included unless `exclude_seed_edge` is `True`.
+
+        Parameters
+        ----------
+
+        exclude_seed_edge : boolean, default = `False`
+            If `False` (default), seed edge or root is not included in the
+            list. If `True`, then it is.
+
+        Returns
+        -------
+        List of internal `Edge` objects on this `Tree`.
+
+        """
+        return [nd.edge for nd in self.preorder_internal_node_iter(exclude_seed_node=exclude_seed_node)]
 
     ###########################################################################
     ## Node Finders
@@ -1779,9 +1807,9 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         the root, or `start_node`, in the direction toward the tips of
         the tree) that has all of the taxa that:
 
-            - are specified by the split bitmask given by the keyword argument `split_bitmask`
-            - are in the list of Taxon objects given by the keyword argument 'taxa'
-            - have the labels specified by the list of strings given by the keyword argument 'taxon_labels'
+            * are specified by the split bitmask given by the keyword argument `split_bitmask`
+            * are in the list of Taxon objects given by the keyword argument 'taxa'
+            * have the labels specified by the list of strings given by the keyword argument 'taxon_labels'
 
         Returns None if no appropriate node is found.
         Assumes that edges on tree have been decorated with treesplit.
@@ -1844,28 +1872,6 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             return last_match
 
     ###########################################################################
-    ## Edge Accessors
-
-    def edges(self, filter_fn=None):
-        """
-        Returns list of edges on tree.
-
-        Parameters
-        ----------
-
-        filter_fn : function object
-            Takes a single `Edge` object as an argument and returns `True` if
-            this edge is to be included in the list or `False` otherwise.
-
-        Returns
-        -------
-        List of `Edge` objects in the tree.
-
-        """
-        edges = [edge for edge in self.preorder_edge_iter(filter_fn)]
-        return edges
-
-    ###########################################################################
     ## Node iterators
 
     def __iter__(self):
@@ -1911,7 +1917,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         for node in self.seed_node.preorder_iter(filter_fn=filter_fn):
             yield node
 
-    def preorder_internal_node_iter(self, filter_fn=None, include_seed_node=False):
+    def preorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
         Pre-order traversal of internal nodes of tree.
 
@@ -1919,7 +1925,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         children. Filtered by `filter_fn`: node is only returned if no
         `filter_fn` is given or if filter_fn returns `True`.
 
-        Root or seed node is not visited unless `include_seed_node` is `True`.
+        Root or seed node is not visited unless `exclude_seed_node` is `True`.
 
         Parameters
         ----------
@@ -1929,7 +1935,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             returns `True` if this node is to be visited during this traversal
             operation.
 
-        include_seed_node : boolean, default = `False`
+        exclude_seed_node : boolean, default = `False`
             If `False` (default), seed node or root is not visited. If `True`,
             then it is.
 
@@ -1939,7 +1945,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         traversal of tree.
 
         """
-        for node in self.seed_node.preorder_internal_node_iter(filter_fn=filter_fn, include_seed_node=include_seed_node):
+        for node in self.seed_node.preorder_internal_node_iter(filter_fn=filter_fn, exclude_seed_node=exclude_seed_node):
             yield node
 
     def postorder_node_iter(self, filter_fn=None):
@@ -1967,7 +1973,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         for node in self.seed_node.postorder_iter(filter_fn=filter_fn):
             yield node
 
-    def postorder_internal_node_iter(self, filter_fn=None, include_seed_node=False):
+    def postorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
         Post-order traversal of internal nodes of subtree rooted at this node.
 
@@ -1975,7 +1981,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         children. Filtered by `filter_fn`: node is only returned if no
         `filter_fn` is given or if filter_fn returns `True`.
 
-        Root or seed node is not visited unless `include_seed_node` is `True`.
+        Root or seed node is not visited unless `exclude_seed_node` is `True`.
 
         Parameters
         ----------
@@ -1985,7 +1991,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             returns `True` if this node is to be visited during this traversal
             operation.
 
-        include_seed_node : boolean, default = `False`
+        exclude_seed_node : boolean, default = `False`
             If `False` (default), seed node or root is not visited. If `True`,
             then it is.
 
@@ -1994,7 +2000,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         Iterator over internal nodes of tree in postorder.
 
         """
-        for node in self.seed_node.postorder_internal_node_iter(filter_fn=filter_fn, include_seed_node=include_seed_node):
+        for node in self.seed_node.postorder_internal_node_iter(filter_fn=filter_fn, exclude_seed_node=exclude_seed_node):
             yield node
 
 
@@ -2877,15 +2883,15 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         of numbers of children in left and right subtrees over all internal
         nodes. ``normalize`` specifies the normalization:
 
-            - "max" or True [DEFAULT]
+            * "max" or True [DEFAULT]
                 normalized to maximum value for tree of
                 this size
-            - "yule"
+            * "yule"
                 normalized to the Yule model
-            - "pda"
+            * "pda"
                 normalized to the PDA (Proportional to Distinguishable
                 Arrangements) model
-            - None or False
+            * None or False
                 no normalization
 
         """
@@ -2995,15 +3001,15 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         tip of the tree. The larger the Sackin's index, the less balanced the
         tree. ``normalize`` specifies the normalization:
 
-            - True [DEFAULT]
+            * True [DEFAULT]
                 normalized to number of leaves; this results in a value
                 equivalent to that given by Tree.N_bar()
-            - "yule"
+            * "yule"
                 normalized to the Yule model
-            - "pda"
+            * "pda"
                 normalized to the PDA (Proportional to Distinguishable
                 Arrangements) model
-            - None or False
+            * None or False
                 no normalization
 
         """
@@ -3277,18 +3283,18 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Keyword arguments:
 
-            ``plot_metric``
+            `plot_metric`
                 A string which specifies how branches should be scaled, one of:
                 'age' (distance from tips), 'depth' (distance from root),
                 'level' (number of branches from root) or 'length' (edge
                 length/weights).
-            ``show_internal_node_labels``
+            `show_internal_node_labels`
                 Boolean: whether or not to write out internal node labels.
-            - `show_internal_node_ids`
+            `show_internal_node_ids`
                 Boolean: whether or not to write out internal node id's.
-            ``leaf_spacing_factor``
+            `leaf_spacing_factor`
                 Positive integer: number of rows between each leaf.
-            ``display_width``
+            `display_width`
                 Force a particular display width, in terms of number of columns.
 
         """
@@ -3301,18 +3307,18 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Keyword arguments:
 
-            ``plot_metric``
+            `plot_metric`
                 A string which specifies how branches should be scaled, one of:
                 'age' (distance from tips), 'depth' (distance from root),
                 'level' (number of branches from root) or 'length' (edge
                 length/weights).
-            ``show_internal_node_labels``
+            `show_internal_node_labels`
                 Boolean: whether or not to write out internal node labels.
-            - `show_internal_node_ids`
+            `show_internal_node_ids`
                 Boolean: whether or not to write out internal node id's.
-            ``leaf_spacing_factor``
+            `leaf_spacing_factor`
                 Positive integer: number of rows between each leaf.
-            ``display_width``
+            `display_width`
                 Force a particular display width, in terms of number of columns.
 
         """
@@ -3331,7 +3337,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
                 length/weights).
             ``show_internal_node_labels``
                 Boolean: whether or not to write out internal node labels.
-            - `show_internal_node_ids`
+            ``show_internal_node_ids``
                 Boolean: whether or not to write out internal node id's.
             ``leaf_spacing_factor``
                 Positive integer: number of rows between each leaf.
@@ -3528,9 +3534,9 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             The following optional keyword arguments are recognized and handled
             by this function:
 
-                - `label` specifies the label or description of the new
+                * `label` specifies the label or description of the new
                   `TreeList`.
-                - `taxon_namespace` specifies the `TaxonNamespace` object to be
+                * `taxon_namespace` specifies the `TaxonNamespace` object to be
                    attached to the new `TreeList` object.
 
             All other keyword arguments are passed directly to `TreeList.read()`.
@@ -3719,8 +3725,8 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
             General (schema-agnostic) keyword arguments are:
 
-                - `rooted` specifies the default rooting interpretation of the tree.
-                - `edge_len_type` specifies the type of the edge lengths (int or
+                * `rooted` specifies the default rooting interpretation of the tree.
+                * `edge_len_type` specifies the type of the edge lengths (int or
                   float; defaults to 'float')
 
             Other keyword arguments are available depending on the schema. See
@@ -3841,17 +3847,17 @@ class AsciiTreePlot(object):
         """
         __init__ takes the following kwargs:
 
-            - `plot_metric` A string which specifies how branches should be scaled, one of:
+            * `plot_metric` A string which specifies how branches should be scaled, one of:
                 'age' (distance from tips), 'depth' (distance from root),
                 'level' (number of branches from root) or 'length' (edge
                 length/weights).
-            - `show_internal_node_labels`
+            * `show_internal_node_labels`
                 Boolean: whether or not to write out internal node labels.
-            - `show_internal_node_ids`
+            * `show_internal_node_ids`
                 Boolean: whether or not to write out internal node id's.
-            - `leaf_spacing_factor`
+            * `leaf_spacing_factor`
                 Positive integer: number of rows between each leaf.
-            - `display_width`
+            * `display_width`
                 Force a particular display width, in terms of number of columns.
 
         """

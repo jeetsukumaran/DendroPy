@@ -2,26 +2,26 @@
 Introduction
 ============
 
-- Updated for full (and exclusive) Python 3.x compatibility.
+* Updated for full (and exclusive) Python 3.x compatibility.
 
-- Faster, better, stronger! Core serialization/deserialization infrastructure
+* Faster, better, stronger! Core serialization/deserialization infrastructure
   rewritten from the ground up, with *many* optimizations for speed and
   reliability.
 
 Python Version Compatibility
 ============================
 
-- Compatibility: Python 3 is fully supported. The only version of Python 2
+* Compatibility: Python 3 is fully supported. The only version of Python 2
   supported is Python 2.7.
 
-    - Python 2: Python 2.7
+    * Python 2: Python 2.7
 
-    - Python 3: Python 3.1, 3.2, 3.3, 3.4
+    * Python 3: Python 3.1, 3.2, 3.3, 3.4
 
 Unique Object Identifier ("`oid`") Attributes Removed
 =====================================================
 
-- The entire `oid` system ("object identifier"), i.e., the unique id assigned
+* The entire `oid` system ("object identifier"), i.e., the unique id assigned
   to every data object, has been removed. This was an implementation artifact
   from NEXML parsing.
 
@@ -29,33 +29,33 @@ Unique Object Identifier ("`oid`") Attributes Removed
 `TaxonSet` is now `TaxonNamespace`
 ==================================
 
-- The `dendropy.TaxonSet` class has been renamed `dendropy.TaxonNamespace`
+* The `dendropy.TaxonSet` class has been renamed `dendropy.TaxonNamespace`
   (and the corresponding `taxon_set` attribute of phylogenetic data objects
   that reference a taxonomic context has been renamed `taxon_namespace`).
 
-- The `TaxonNamespace` class replaces the `TaxonSet` class as the manager for
+* The `TaxonNamespace` class replaces the `TaxonSet` class as the manager for
   the `Taxon` objects.
 
-- The API is largely similar with the following differences:
+* The API is largely similar with the following differences:
 
-    - Calls to the `__getitem__()` and `__delitem()__` methods (e.g.
+    * Calls to the `__getitem__()` and `__delitem()__` methods (e.g.
     'TaxonNamespace[x]') now only accept integer values as arguments
     (representing indexes into the list of `Taxon` objects in the internal
     array).
 
-    - `TaxonSet.has_taxon()` and `TaxonSet.has_taxa()` has been replaced by
+    * `TaxonSet.has_taxon()` and `TaxonSet.has_taxa()` has been replaced by
     `TaxonNamespace.has_taxon_label()` and `TaxonNamespace.has_taxa_labels()`
     respectively.
 
-    - Various new methods for accessing and managing the collection of `Taxon`
+    * Various new methods for accessing and managing the collection of `Taxon`
     objects (e.g., `findall`, `drop_taxon`, `remove_taxon`, `discard_taxon`,
     `__delitem__`, etc.)
 
-- In most cases, a simple global search-and-replace of "TaxonSet" with
+* In most cases, a simple global search-and-replace of "TaxonSet" with
   "TaxonNamespace" and "`taxon_set`" with "`taxon_namespace`" should be
   sufficient to bring existing code into line with DendroPy 4.
 
-- For legacy support, a class called `TaxonSet` exists. This derives with no
+* For legacy support, a class called `TaxonSet` exists. This derives with no
   modifications from `TaxonNamespace`. Instantiating objects of this class
   will result in warnings being emitted. As long as usage of `TaxonSet` does
   conforms to the above API change notes, old or legacy code should continue
@@ -63,7 +63,7 @@ Unique Object Identifier ("`oid`") Attributes Removed
   temporary and will be removed in upcoming releases: code should update to
   using `TaxonNamespace` as soon as expedient.
 
-- For legacy support, "`taxon_set`" continues to be accepted and processed as
+* For legacy support, "`taxon_set`" continues to be accepted and processed as
   an attribute name and keyword argument synonymous with "`taxon_namespace`".
   Usage of this will result in warnings being emitted, but code should
   continue to function as expected. This support is temporary and will be
@@ -73,19 +73,10 @@ Unique Object Identifier ("`oid`") Attributes Removed
 The `Tree` Class
 ================
 
-- Root/seed node no longer considered an "internal" node by default.
-  The `Tree.internal_nodes()`, `Tree.preorder_internal_node_iter()`,
-  `Tree.postorder_internal_node_iter()` etc. methods now all do not return or
-  visit the root or seed node by default, unless the "`include_seed_node`"
-  argument is set to `True`. Alternatively, the previous behavior can be
-  recovered using the "non_leaf" family of methods: `Tree.non_leaf_nodes()`,
-  `Tree.preorder_non_leaf_node_iter()`, `Tree.postorder_non_leaf_node_iter()`,
-  etc.
+* `Tree.nodes()` : sorting option removed; use `sorted(tree.nodes())` instead.
 
-- `Tree.nodes()` : sorting option removed; use `sorted(tree.nodes())` instead.
+* `Tree.node_set()` : removed; use `set(tree.nodes())` instead.
 
-- `Tree.node_set()` : removed; use `set(tree.nodes())` instead.
-
-- `Tree.edge_set()` : removed; use `set(tree.edges())` instead.
+* `Tree.edge_set()` : removed; use `set(tree.edges())` instead.
 
 

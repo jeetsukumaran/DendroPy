@@ -318,13 +318,13 @@ class Annotation(Annotable):
     """
     Metadata storage, composition and persistance, with the following attributes:
 
-        - `name`
-        - `value`
-        - `datatype_hint`
-        - `name_prefix`
-        - `namespace`
-        - `annotate_as_reference`
-        - `is_hidden`
+        * `name`
+        * `value`
+        * `datatype_hint`
+        * `name_prefix`
+        * `namespace`
+        * `annotate_as_reference`
+        * `is_hidden`
 
     """
 

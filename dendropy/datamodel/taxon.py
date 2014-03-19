@@ -27,39 +27,39 @@ unit concepts, and provide the semantic context in which operational taxonomic
 units from across various data sources of different formats and provenances can
 be related through correct interpretation of their taxon labels.
 
-    - Operational taxonomic units are modeled by a `Taxon` object.
+    * Operational taxonomic units are modeled by a `Taxon` object.
 
-    - Taxonomic namespaces, in which operational taxonomic units are organized,
+    * Taxonomic namespaces, in which operational taxonomic units are organized,
       are modeled by a `TaxonNamespace` object.
 
-    - A `TaxonNamespace` manages a collection of `Taxon` objects, where each
+    * A `TaxonNamespace` manages a collection of `Taxon` objects, where each
       object represents a distinct operational taxonomic unit concept within
       the taxonomic namespace represented by that `TaxonNamespace` object.
 
-    - Each `Taxon` object can belong to one and only one `TaxonNamespace`:
+    * Each `Taxon` object can belong to one and only one `TaxonNamespace`:
       `Taxon` objects are not shared across `TaxonNamespace` objects.
 
-    - Each `Taxon` object has an attribute, `label`, whose (string) value
+    * Each `Taxon` object has an attribute, `label`, whose (string) value
       is the name of the operational taxon unit concept that it represents.
 
-    - Different `Taxon` objects represent different operational taxonomic
+    * Different `Taxon` objects represent different operational taxonomic
       unit concepts, even if they have the same label value.
 
-    - All client objects (`TaxonNamespaceAssociated` objects) that reference
+    * All client objects (`TaxonNamespaceAssociated` objects) that reference
       the same `TaxonNamespace` reference the same "universe" or domain of
       operational taxonomic unit concepts.
 
-    - Operational taxonomic units from across different data sources are mapped
+    * Operational taxonomic units from across different data sources are mapped
       to distinct `Taxon` objects within a particular `TaxonNamespace` based on
       matching the string values of labels of the `Taxon` object.
 
-    - A particular taxonomic unit concept in one data source will only be
+    * A particular taxonomic unit concept in one data source will only be
       correctly related to the same taxonomic unit concept (i.e, the same
       `Taxon` object) in another data source only if they have both
       been parsed with reference to the same taxonomic namespace (i.e., the
       same `TaxonNamespace` has been used).
 
-    - A `TaxonNamespace` assigned an "accession index" to every `Taxon` object
+    * A `TaxonNamespace` assigned an "accession index" to every `Taxon` object
       added to it. This is a stable and unique number within the context of any
       given `TaxonNamespace` object (though a `Taxon` object may have different
       accession indexes in different `TaxonNamespace` objects if it
