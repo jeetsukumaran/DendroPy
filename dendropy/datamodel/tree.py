@@ -1574,7 +1574,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         raise NotImplementedError
 
     ###########################################################################
-    ## Node and Edge Lists
+    ## Node and Edge Collection Access
 
     def nodes(self, filter_fn=None):
         """

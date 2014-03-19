@@ -240,7 +240,7 @@ class TestTreeStructure(unittest.TestCase):
         return tree, all_nodes, leaf_nodes, internal_nodes
 
     ###########################################################################
-    ## Node Accessors
+    ## Node and Edge Collection Access
 
     def test_get_nodes(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -252,8 +252,11 @@ class TestTreeStructure(unittest.TestCase):
     def test_get_nodes_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = tree.nodes(filter_fn = lambda x : x.edge.length > 10)
+        exp_nodes = set([nd for nd in anodes if nd.edge.length > 10])
         for nd in nodes:
             self.assertTrue(nd.edge.length > 10)
+        self.assertEqual(len(nodes), len(exp_nodes))
+        self.assertEqual(set(nodes), exp_nodes)
 
     def test_get_leaf_nodes(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -273,6 +276,22 @@ class TestTreeStructure(unittest.TestCase):
         nodes = tree.internal_nodes(True)
         self.assertEqual(len(nodes), len(inodes))
         self.assertEqual(set(nodes), inodes)
+
+    def test_get_edges(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        edges = tree.edges()
+        eset = set([nd.edge for nd in anodes])
+        self.assertEqual(len(edges), len(eset))
+        self.assertEqual(set(edges), eset)
+
+    def test_get_edges_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        edges = tree.edges(filter_fn=lambda x : x.length > 10)
+        exp_edges = set([nd.edge for nd in anodes if nd.edge.length > 10])
+        for edge in edges:
+            self.assertTrue(edge.length > 10)
+        self.assertEqual(len(edges), len(exp_edges))
+        self.assertEqual(set(edges), exp_edges)
 
     ###########################################################################
     ## (Taxon-free) Node Finders
@@ -299,13 +318,6 @@ class TestTreeStructure(unittest.TestCase):
 
     ###########################################################################
     ## Edge Accessors
-
-    def test_get_edges(self):
-        tree, anodes, lnodes, inodes = self.get_tree()
-        edges = tree.edges()
-        eset = set([nd.edge for nd in anodes])
-        self.assertEqual(len(edges), len(eset))
-        self.assertEqual(set(edges), eset)
 
 if __name__ == "__main__":
     unittest.main()
