@@ -246,7 +246,8 @@ class TestTreeStructure(unittest.TestCase):
         self.assertEqual(set(nodes), anodes)
         obs_labels = [nd.label for nd in nodes]
 
-    def test_get_node_filtered(self):
+
+    def test_get_nodes_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = tree.nodes(filter_fn = lambda x : x.edge.length > 10)
         for nd in nodes:
@@ -278,6 +279,25 @@ class TestTreeStructure(unittest.TestCase):
         self.assertEqual(len(nodes), len(nlnodes))
         self.assertEqual(set(nodes), nlnodes)
 
+    def test_find_node(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        node = tree.find_node(lambda x: x.label == "c")
+        self.assertEqual(node.label, "c")
+
+    def test_find_node_nonexisting(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        node = tree.find_node(lambda x: x.label == "zzz")
+        self.assertIs(node, None)
+
+    def test_find_node_with_label(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        node = tree.find_node_with_label("c")
+        self.assertEqual(node.label, "c")
+
+    def test_find_node_with_label_nonexisting(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        node = tree.find_node_with_label("zzz")
+        self.assertIs(node, None)
 
 
 if __name__ == "__main__":

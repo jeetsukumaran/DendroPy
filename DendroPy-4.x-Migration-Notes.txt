@@ -79,5 +79,10 @@ The `Tree` Class
   visit the root or seed node by default, unless the "`include_seed_node`"
   argument is set to `True`.
 
+- `Tree.nodes()` : sorting option removed; use `sorted(tree.nodes())` instead.
+
+- `Tree.node_set()` : removed; use `set(tree.nodes())` instead.
+
+- `Tree.edge_set()` : removed; use `set(tree.edges())` instead.
 
 

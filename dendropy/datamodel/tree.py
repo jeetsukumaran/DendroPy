@@ -1571,15 +1571,25 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         raise NotImplementedError
 
     ###########################################################################
-    ## Accessors
+    ## Node Accessors
 
-    def nodes(self, cmp_fn=None, filter_fn=None):
+    def nodes(self, filter_fn=None):
         """
-        Returns list of nodes on the tree, sorted using cmp_fn.
+        Returns list of nodes on tree.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            Takes a single `Node` object as an argument and returns `True` if
+            this node is to be included in the list or `False` otherwise.
+
+        Returns
+        -------
+        List of `Node` objects in the tree.
+
         """
         nodes = [node for node in self.preorder_node_iter(filter_fn)]
-        if cmp_fn:
-            nodes.sort(cmp_fn)
         return nodes
 
     def leaf_nodes(self):
@@ -1618,18 +1628,89 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             f = lambda x: not x.is_leaf() and x._parent_node is not None
         return self.nodes(filter_fn=f)
 
+    ###########################################################################
+    ## Node Finders
+
     def find_node_for_taxon(self, taxon):
-        for node in self.preorder_node_iter():
+        """
+        Returns node associated with `Taxon` object `taxon`.
+
+        Parameters
+        ----------
+
+        taxon : `Taxon` object
+            `Taxon` object that should be associated with the node to be
+            returned.
+
+        Returns
+        -------
+        `Node` object or `None`
+            Returns first `Node` object with `taxon` attribute referencing same
+            object as `taxon` argument, or `None` if no such node exists.
+
+        """
+        for node in self.postorder_node_iter():
             try:
                 if node.taxon is taxon:
                     return node
-            except:
+            except AttributeError:
                 pass
         return None
+
+    def find_node_with_taxon(self, taxon_filter_fn=None):
+        """
+        Returns node associated with `Taxon` object for which `taxon_filter_fn`
+        returns `True`.
+
+        Parameters
+        ----------
+
+        taxon_filter_fn : function object
+            Takes a single `Taxon` object as an argument and returns `True` or
+            `False` if the node associated with that `Taxon` should be
+            returned.
+
+        Returns
+        -------
+        `Node` object or `None`
+            Returns first `Node` object with `taxon` attribute passing filter
+            function `taxon_filter_fn`, or `None` if no such node is found.
+
+        """
+        for node in self.preorder_node_iter():
+            if hasattr(node, "taxon") and node.taxon is not None:
+                if taxon_filter_fn(node.taxon):
+                    return node
+        return None
+
+    def find_node_with_taxon_label(self, label):
+        """
+        Returns node associated with `Taxon` object with the specified label.
+
+        Parameters
+        ----------
+
+        label : string
+            Label of `Taxon` object associated with the node to be returned.
+
+        Returns
+        -------
+        `Node` object or `None`
+            Returns first `Node` object with `taxon` attribute having label
+            `label`, or`None` if no such node is found.
+
+        """
+        return self.find_node_with_taxon(lambda x: x.label == label)
+        # taxon = self.taxon_namespace.get_taxon(label=label)
+        # if taxon is None:
+        #     return None
+        # return self.find_node_with_taxon(lambda x: x is taxon)
+
 
     def find_node(self, filter_fn):
         """
         Finds the first node for which filter_fn(node) = True.
+
         For example, if::
 
             filter_fn = lambda n: hasattr(n, 'genes') and n.genes is not None
@@ -1640,57 +1721,47 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         will return all nodes which have an attributed 'genes' and this value
         is not None.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            Takes a single `Node` object as an argument and returns `True` or
+            `False` if the node should be returned.
+
+        Returns
+        -------
+        `Node` object or `None`
+            Returns first `Node` object for which the filter function
+            `filter_fn` returns `True`, or `None` if no such node exists on
+            this tree.
+
         """
         for node in self.preorder_node_iter(filter_fn):
             return node
         return None
 
     def find_node_with_label(self, label):
-        "Finds the first node with matching label."
+        """
+        Returns first node with `label` attribute matching `label` argument.
+
+        Parameters
+        ----------
+
+        label : string
+            Label of `Node` object to be returned.
+
+        Returns
+        -------
+        `Node` object or `None`
+            Returns first `Node` object with `label` attribute having value
+            given in `label`, or`None` if no such node is found.
+
+        """
         for node in self.preorder_node_iter():
             if node.label == label:
                 return node
         return None
-
-    def find_node_with_taxon(self, taxon_filter_fn=None):
-        "Finds the first node for which taxon_filter_fn(node.taxon) == True."
-        for node in self.preorder_node_iter():
-            if hasattr(node, "taxon") and node.taxon is not None:
-                if taxon_filter_fn(node.taxon):
-                    return node
-        return None
-
-    def find_node_with_taxon_label(self, label):
-        "Returns node with taxon with given label."
-        taxon = self.taxon_namespace.get_taxon(label=label)
-        if taxon is None:
-            return None
-        return self.find_node_with_taxon(lambda x: x is taxon)
-
-    def find_edge(self, oid):
-        "Finds the first edge with matching id."
-        for edge in self.preorder_edge_iter():
-            if edge.oid == oid:
-                return edge
-        return None
-
-    def get_edge_set(self, filter_fn=None):
-        """
-        Returns the set of edges that are currently in the tree.
-        Note: the returned set acts like a shallow copy of the edge set (adding
-        or deleting elements from the set does not change the tree, but
-        modifying the elements does).
-        """
-        return set([i for i in self.preorder_edge_iter(filter_fn=filter_fn)])
-
-    def get_node_set(self, filter_fn=None):
-        """Returns the set of nodes that are currently in the tree
-
-        Note: the returned set acts like a shallow copy of the edge set (adding
-        or deleting elements from the set does not change the tree, but
-        modifying the elements does).
-        """
-        return set([i for i in self.preorder_node_iter(filter_fn=filter_fn)])
 
     def mrca(self, **kwargs):
         """
@@ -1763,9 +1834,32 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             return last_match
 
     ###########################################################################
+    ## Edge Accessors
+
+    def edges(self, filter_fn=None):
+        """
+        Returns list of edges on tree.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            Takes a single `Edge` object as an argument and returns `True` if
+            this edge is to be included in the list or `False` otherwise.
+
+        Returns
+        -------
+        List of `Edge` objects in the tree.
+
+        """
+        edges = [edge for edge in self.preorder_edge_iter(filter_fn)]
+        return edges
+
+    ###########################################################################
     ## Node iterators
 
     def __iter__(self):
+        "Default iterator: preorder."
         return self.preorder_node_iter()
 
     def preorder_node_iter(self, filter_fn=None):
