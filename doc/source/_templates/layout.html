@@ -1,0 +1,66 @@
+{% extends '!layout.html' %}
+
+{# relbar: extend to current #}
+{% block relbaritems %}
+  {{ super() }}
+  {% if current_page_name != 'index' %}
+  <li><a href="">{{ title }}</a></li>
+  {% endif %}
+{% endblock %}
+
+
+{% block sidebarsearch %}
+
+    <!-- Standard Sidebar -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        {{ super() }}
+    </div>
+
+    <!-- Documentation -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Documentation</h3>
+        <ul>
+            {# <li><a href="{{pathto('index')}}">Introduction</a></li> #}
+            <li><a href="{{pathto('tutorial/index')}}">The DendroPy Tutorial</a></li>
+            <li><a href="{{pathto('library/index')}}">Library API Reference</a></li>
+            <li><a href="{{pathto('scripts/sumtrees')}}">SumTrees</a></li>
+            <li><a href="{{pathto('changes')}}">Change History</a></li>
+        </ul>
+    </div>
+
+    <!-- Downloads -->
+    <div style="border-top: double 1px white; padding-top: 10px;">
+        <h3>Obtaining</h3>
+        <ul>
+            <li><a target="_blank" href="http://pypi.python.org/pypi/DendroPy">Install from the Python Package Index</a></li>
+            <li><a target="_blank" href="http://pypi.python.org/packages/source/D/DendroPy/DendroPy-{{version}}.tar.gz">Download the Source Code Archive</a></li>
+            <li><a target="_blank" href="http://github.com/jeetsukumaran/DendroPy">Clone the Source Code Repository</a></li>
+        </ul>
+    </div>
+
+    <!-- Announcements -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Announcements</span><span style="position: absolute; right: 0; top: 10px "><img src="{{pathto('_static/google-groups-logo1.png', 1)}}" width="80" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-style: italic; margin-top: 3px;">Join the &quot;<a href="http://groups.google.com/group/dendropy-announce?hl=en">DendroPy Announcements</a>&quot; group to receive announcements of new releases, updates, changes and other news of interest to DendroPy users and developers.</p>
+            <form action="http://groups.google.com/group/dendropy-announce/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the &quot;<a href="http://groups.google.com/group/dendropy-announce?hl=en">dendropy-announce</a>&quot; group, or click <a href="http://groups.google.com/group/dendropy-announce?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+    </div>
+
+    <!-- Discussions -->
+    <div style="border-top: double 1px white; padding-top: 10px; position: relative;">
+        <h3><span style="text-align: left">Discussion</span><span style="position: absolute; right: 0; top: 10px "><img src="{{pathto('_static/google-groups-logo1.png', 1)}}" width="80" alt="Google Groups" /></span></h3>
+        <div style="margin-top: 15px;">
+            <p style="font-style: italic; margin-top: 3px;">Join the &quot;<a href="http://groups.google.com/group/dendropy-users?hl=en">DendroPy Users</a>&quot; group to follow and participate in discussion, troubleshooting, help, information, suggestions, etc. on the usage and development of the DendroPy phylogenetic computing library.</p>
+            <form action="http://groups.google.com/group/dendropy-users/boxsubscribe">
+                <input type=text name=email>
+                <input type=submit name="sub" value="Subscribe">
+            </form>
+            <p style="font-size: 90%">Enter your e-mail address in the box above and click the &quot;subscribe&quot; button to subscribe to the &quot;<a href="http://groups.google.com/group/dendropy-users?hl=en">dendropy-users</a>&quot; group, or click <a href="http://groups.google.com/group/dendropy-users?hl=en">here</a> to visit this group page directly.</p>
+        </div>
+
+{% endblock %}
