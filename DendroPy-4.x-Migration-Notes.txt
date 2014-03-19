@@ -1,5 +1,6 @@
 
-## General ##
+Introduction
+============
 
 - Updated for full (and exclusive) Python 3.x compatibility.
 
@@ -7,7 +8,8 @@
   rewritten from the ground up, with *many* optimizations for speed and
   reliability.
 
-## Major (Potentially-Breaking Changed) ##
+Python Version Compatibility
+============================
 
 - Compatibility: Python 3 is fully supported. The only version of Python 2
   supported is Python 2.7.
@@ -16,15 +18,20 @@
 
     - Python 3: Python 3.1, 3.2, 3.3, 3.4
 
+Unique Object Identifier ("`oid`") Attributes Removed
+=====================================================
+
 - The entire `oid` system ("object identifier"), i.e., the unique id assigned
   to every data object, has been removed. This was an implementation artifact
   from NEXML parsing.
 
+
+`TaxonSet` is now `TaxonNamespace`
+==================================
+
 - The `dendropy.TaxonSet` class has been renamed `dendropy.TaxonNamespace`
   (and the corresponding `taxon_set` attribute of phylogenetic data objects
   that reference a taxonomic context has been renamed `taxon_namespace`).
-
-### `TaxonSet` is now `TaxonNamespace` ###
 
 - The `TaxonNamespace` class replaces the `TaxonSet` class as the manager for
   the `Taxon` objects.
@@ -63,13 +70,14 @@
   removed in upcoming releases: code should update to using
   "`taxon_namespace`" as soon as expedient.
 
-### `Tree` ###
+The `Tree` Class
+================
 
 - Root/seed node no longer considered an "internal" node by default.
   The `Tree.internal_nodes()`, `Tree.preorder_internal_node_iter()`,
   `Tree.postorder_internal_node_iter()` etc. methods now all do not return or
   visit the root or seed node by default, unless the "`include_seed_node`"
-  argumenti is set to `True`.
+  argument is set to `True`.
 
 
 

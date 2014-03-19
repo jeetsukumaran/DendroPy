@@ -289,13 +289,15 @@ class Node(base.Annotable):
             child_nodes.extend(stack)
             stack = child_nodes
 
-    def preorder_internal_node_iter(self, filter_fn=None):
+    def preorder_internal_node_iter(self, filter_fn=None, include_seed_node=False):
         """
         Pre-order traversal of internal nodes of subtree rooted at this node.
 
         Visits self and all internal descendant nodes, with any particular node
         visited before its children. Filtered by `filter_fn`: node is only
         returned if no `filter_fn` is given or if filter_fn returns `True`.
+
+        Root or seed node is not visited unless `include_seed_node` is `True`.
 
         Parameters
         ----------
@@ -305,16 +307,24 @@ class Node(base.Annotable):
             returns `True` if this node is to be visited during this traversal
             operation.
 
+        include_seed_node : boolean, default = `False`
+            If `False` (default), seed node or root is not visited. If `True`,
+            then it is.
+
         Returns
         -------
         Iterator over a sequence of internal nodes resulting from a pre-order
         traversal of the subtree starting at this node.
 
         """
-        if filter_fn:
-            filter_fn = lambda x: (not x.is_leaf() and filter_fn(x)) or None
+        if include_seed_node:
+            froot = lambda x: True
         else:
-            filter_fn = lambda x: (x and not x.is_leaf()) or None
+            froot = lambda x: x._parent_node is not None
+        if filter_fn:
+            filter_fn = lambda x: (froot(x) and (not x.is_leaf()) and filter_fn(x)) or None
+        else:
+            filter_fn = lambda x: (x and froot(x) and (not x.is_leaf())) or None
         for node in self.preorder_iter(filter_fn):
             yield node
 
@@ -352,13 +362,15 @@ class Node(base.Annotable):
                 child_nodes.extend(stack)
                 stack = child_nodes
 
-    def postorder_internal_node_iter(self, filter_fn=None):
+    def postorder_internal_node_iter(self, filter_fn=None, include_seed_node=False):
         """
         Post-order traversal of internal nodes of subtree rooted at this node.
 
         Visits self and all internal descendant nodes, with any particular node
         visited after its children. Filtered by `filter_fn`: node is only
         returned if no `filter_fn` is given or if filter_fn returns `True`.
+
+        Root or seed node is not visited unless `include_seed_node` is `True`.
 
         Parameters
         ----------
@@ -368,15 +380,24 @@ class Node(base.Annotable):
             returns `True` if this node is to be visited during this traversal
             operation.
 
+        include_seed_node : boolean, default = `False`
+            If `False` (default), seed node or root is not visited. If `True`,
+            then it is.
+
         Returns
         -------
         Iterator over a sequence of nodes resulting from a post-order traversal
         of the subtree starting at this node.
+
         """
-        if filter_fn:
-            filter_fn = lambda x: (not x.is_leaf() and filter_fn(x)) or None
+        if include_seed_node:
+            froot = lambda x: True
         else:
-            filter_fn = lambda x: (x and not x.is_leaf()) or None
+            froot = lambda x: x._parent_node is not None
+        if filter_fn:
+            filter_fn = lambda x: (froot(x) and (not x.is_leaf()) and filter_fn(x)) or None
+        else:
+            filter_fn = lambda x: (x and froot(x) and (not x.is_leaf())) or None
         for node in self.postorder_iter(filter_fn):
             yield node
 
@@ -1553,23 +1574,43 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     ## Accessors
 
     def nodes(self, cmp_fn=None, filter_fn=None):
-        "Returns list of nodes on the tree, sorted using cmp_fn."
+        """
+        Returns list of nodes on the tree, sorted using cmp_fn.
+        """
         nodes = [node for node in self.preorder_node_iter(filter_fn)]
         if cmp_fn:
             nodes.sort(cmp_fn)
         return nodes
 
     def leaf_nodes(self):
-        "Returns list of leaf_nodes on the tree."
+        """
+        Returns list of leaf_nodes on the tree.
+        """
         return [leaf for leaf in self.leaf_iter()]
 
     def internal_nodes(self, include_seed_node=False):
         """
-        Returns list of internal nodes in the tree. By default, this does not
-        include the seed node or root (which, strictly speaking, is considered
-        an external node).
+        Returns list of internal nodes in the tree.
+
+        Root or seed node is not visited unless `include_seed_node` is `True`.
+
+        Parameters
+        ----------
+
+        include_seed_node : boolean, default = `False`
+            If `False` (default), seed node or root is not included in the
+            list. If `True`, then it is.
+
+        Returns
+        -------
+        List of internal `Node` objects on this `Tree`.
+
         """
-        return self.nodes(filter_fn=lambda x : not x.is_leaf())
+        if include_seed_node:
+            f = lambda x: not x.is_leaf()
+        else:
+            f = lambda x: not x.is_leaf() and x._parent_node is not None
+        return self.nodes(filter_fn=f)
 
     def find_node_for_taxon(self, taxon):
         for node in self.preorder_node_iter():
@@ -1756,18 +1797,18 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         for node in self.seed_node.age_order_iter(include_leaves=include_leaves, filter_fn=filter_fn, descending=descending):
             yield node
 
-    def postorder_internal_node_iter(self, filter_fn=None):
+    def postorder_internal_node_iter(self, filter_fn=None, include_seed_node=False):
         """
         Iterates over all internal nodes in post-order.
         """
-        for node in self.seed_node.postorder_internal_node_iter(filter_fn=filter_fn):
+        for node in self.seed_node.postorder_internal_node_iter(filter_fn=filter_fn, include_seed_node=include_seed_node):
             yield node
 
-    def preorder_internal_node_iter(self, filter_fn=None):
+    def preorder_internal_node_iter(self, filter_fn=None, include_seed_node=False):
         """
         Iterates over all internal nodes in pre-order.
         """
-        for node in self.seed_node.preorder_internal_node_iter(filter_fn=filter_fn):
+        for node in self.seed_node.preorder_internal_node_iter(filter_fn=filter_fn, include_seed_node=include_seed_node):
             yield node
 
     ###########################################################################

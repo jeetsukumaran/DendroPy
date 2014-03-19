@@ -258,7 +258,7 @@ class TestTreeStructure(unittest.TestCase):
         self.assertEqual(len(nodes), len(lnodes))
         self.assertEqual(set(nodes), lnodes)
 
-    def test_internal_nodes(self):
+    def test_internal_nodes_no_root(self):
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = tree.internal_nodes()
         self.assertEqual(len(nodes), len(inodes))
