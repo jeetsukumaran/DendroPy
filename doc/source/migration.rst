@@ -1,3 +1,6 @@
+#######################################
+DendroPy 4 Changes and Migration Primer
+#######################################
 
 Introduction
 ============
@@ -79,4 +82,9 @@ The `Tree` Class
 
 * `Tree.edge_set()` : removed; use `set(tree.edges())` instead.
 
+* `level_order_iter()`, `level_order_node_iter()`, `levelorder_edge_iter()`,
+  etc. have been renamed `levelorder_iter()`, `levelorder_node_iter()`,
+  `levelorder_edge_iter()` for consistency with `postorder_iter`, etc. The old
+  names are still supported for now, but new code should start using the newer
+  names.
 
