@@ -21,6 +21,7 @@ This module handles the core definition of tree data structure class,
 as well as all the structural classes that make up a tree.
 """
 
+import warnings
 try:
     from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
 except ImportError:
@@ -438,6 +439,8 @@ class Node(base.Annotable):
             remaining.extend(child_nodes)
 
     def level_order_iter(self, filter_fn=None):
+        warnings.warn("Use 'levelorder_iter()' instead of 'level_order_iter()'",
+                FutureWarning, stacklevel=2)
         return self.levelorder(filter_fn=filter_fn)
 
     def inorder_iter(self, filter_fn=None):
@@ -2059,10 +2062,12 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         return self.seed_node.levelorder_iter(filter_fn=filter_fn)
 
-    def level_order_node_iter(self, filter_fn):
+    def level_order_node_iter(self, filter_fn=None):
         """
         Legacy support: use `Tree.levelorder_node_iter()` instead.
         """
+        warnings.warn("Use 'levelorder_node_iter()' instead of 'level_order_node_iter()'",
+                FutureWarning, stacklevel=2)
         return self.seed_node.levelorder_iter(filter_fn=filter_fn)
 
     def inorder_node_iter(self, filter_fn=None):
