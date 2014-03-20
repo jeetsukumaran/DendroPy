@@ -378,6 +378,23 @@ class TestTreeStructure(unittest.TestCase):
                 (self.node_expected_children[x] and self.node_expected_edge_lengths[x] > 10)]
         self.assertEqual(visited_labels, exp_labels)
 
+    def test_preorder_internal_node_iter_with_root_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = [nd for nd in tree.preorder_internal_node_iter(exclude_seed_node=True)]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.preorder_sequence if
+                self.node_expected_children[x] and x != "a"]
+        self.assertEqual(visited_labels, exp_labels)
+
+    def test_preorder_internal_node_iter_with_root_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        f = lambda x: x.edge.length > 10
+        nodes = [nd for nd in tree.preorder_internal_node_iter(exclude_seed_node=True, filter_fn=f)]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.preorder_sequence if
+                (self.node_expected_children[x] and self.node_expected_edge_lengths[x] > 10) and x != "a"]
+        self.assertEqual(visited_labels, exp_labels)
+
 
 if __name__ == "__main__":
     unittest.main()
