@@ -41,16 +41,16 @@ Unique Object Identifier ("`oid`") Attributes Removed
 
 * The API is largely similar with the following differences:
 
-    * Calls to the `__getitem__()` and `__delitem()__` methods (e.g.
+  * Calls to the `__getitem__()` and `__delitem()__` methods (e.g.
     'TaxonNamespace[x]') now only accept integer values as arguments
     (representing indexes into the list of `Taxon` objects in the internal
     array).
 
-    * `TaxonSet.has_taxon()` and `TaxonSet.has_taxa()` has been replaced by
+  * `TaxonSet.has_taxon()` and `TaxonSet.has_taxa()` has been replaced by
     `TaxonNamespace.has_taxon_label()` and `TaxonNamespace.has_taxa_labels()`
     respectively.
 
-    * Various new methods for accessing and managing the collection of `Taxon`
+  * Various new methods for accessing and managing the collection of `Taxon`
     objects (e.g., `findall`, `drop_taxon`, `remove_taxon`, `discard_taxon`,
     `__delitem__`, etc.)
 
