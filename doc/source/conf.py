@@ -111,10 +111,10 @@ rst_epilog = """
 .. _mth: http://people.ku.edu/~mtholder
 
 .. |DendroPy| replace:: DendroPy
-.. _DendroPy: http://pythonhosted.org/DendroPy/
-.. |dendropy_homepage_url| replace:: http://pythonhosted.org/DendroPy/
-.. |dendropy_tutorial_url| replace:: http://pythonhosted.org/DendroPy/tutorial/index.html
-.. |dendropy_library_url| replace:: http://pythonhosted.org/DendroPy/library/index.html
+.. _DendroPy: http://www.dendropy.org/
+.. |dendropy_homepage_url| replace:: http://www.dendropy.org/
+.. |dendropy_tutorial_url| replace:: http://www.dendropy.org/tutorial/index.html
+.. |dendropy_library_url| replace:: http://www.dendropy.org/library/index.html
 .. |dendropy_download_url| replace:: http://pypi.python.org/pypi/DendroPy
 .. |dendropy_public_repo_url| replace:: http://github.com/jeetsukumaran/DendroPy
 
