@@ -409,7 +409,7 @@ class Node(base.Annotable):
             f = lambda x: (x and froot(x) and x._child_nodes) or None
         return self.postorder_iter(filter_fn=f)
 
-    def level_order_iter(self, filter_fn=None):
+    def levelorder_iter(self, filter_fn=None):
         """
         Level-order traversal of subtree rooted at this node.
 
@@ -436,6 +436,9 @@ class Node(base.Annotable):
                 yield node
             child_nodes = node.child_nodes()
             remaining.extend(child_nodes)
+
+    def level_order_iter(self, filter_fn=None):
+        return self.levelorder(filter_fn=filter_fn)
 
     def leaf_iter(self, filter_fn=None):
         """
@@ -2005,7 +2008,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         return self.seed_node.postorder_internal_node_iter(filter_fn=filter_fn,
                 exclude_seed_node=exclude_seed_node)
 
-    def level_order_node_iter(self, filter_fn=None):
+    def levelorder_node_iter(self, filter_fn=None):
         """
         Level-order traversal of tree.
 
@@ -2023,7 +2026,14 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         tree.
 
         """
-        return self.seed_node.level_order_iter(filter_fn=filter_fn)
+        return self.seed_node.levelorder_iter(filter_fn=filter_fn)
+
+    def level_order_node_iter(self, filter_fn):
+        """
+        Legacy support: use `Tree.levelorder_node_iter()` instead.
+        """
+        return self.seed_node.levelorder_iter(filter_fn=filter_fn)
+
 
     def leaf_iter(self, filter_fn=None):
         """
