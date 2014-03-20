@@ -65,6 +65,7 @@ class TestTreeStructure(unittest.TestCase):
     leaf_sequence = ["i", "j", "k", "l", "m", "n", "o", "p"]
     levelorder_sequence = ["a", "b", "c", "i", "e", "g", "f", "j", "k", "l", "m", "n", "h", "o", "p"]
     internal_levelorder_sequence = ["a", "bc", "egf", "h"]
+    inorder_sequence = ["i", "b", "j", "e", "k", "a", "l", "g", "m", "c", "n", "f", "o", "h", "p"]
     node_expected_children = {
             "a" : ["b", "c"],
             "b" : ["i", "e"],
@@ -453,7 +454,7 @@ class TestTreeStructure(unittest.TestCase):
                 (self.node_expected_children[x] and self.node_expected_edge_lengths[x] > 10) and x != "a"]
         self.assertEqual(visited_labels, exp_labels)
 
-    ### Level Order Node Iterator ###
+    ### Level-Order Node Iterator ###
 
     def test_levelorder_node_iter_unfiltered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -468,6 +469,23 @@ class TestTreeStructure(unittest.TestCase):
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.levelorder_sequence if self.node_expected_edge_lengths[x] > 10]
         self.assertEqual(visited_labels, exp_labels)
+
+    ### In-Order Node Iterator ###
+
+    def test_inorder_node_iter_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = [nd for nd in tree.inorder_node_iter()]
+        visited_labels = [nd.label for nd in nodes]
+        self.assertEqual(visited_labels, self.inorder_sequence)
+
+    def test_inorder_node_iter_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        f = lambda x: x.edge.length > 10
+        nodes = [nd for nd in tree.inorder_node_iter(filter_fn=f)]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.inorder_sequence if self.node_expected_edge_lengths[x] > 10]
+        self.assertEqual(visited_labels, exp_labels)
+
 
 if __name__ == "__main__":
     unittest.main()

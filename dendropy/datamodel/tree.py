@@ -440,6 +440,37 @@ class Node(base.Annotable):
     def level_order_iter(self, filter_fn=None):
         return self.levelorder(filter_fn=filter_fn)
 
+    def inorder_iter(self, filter_fn=None):
+        """
+        In-order traversal of subtree rooted at this node.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            A function object that takes a `Node` object as an argument and
+            returns `True` if this node is to be visited during this traversal
+            operation.
+
+        Returns
+        -------
+        Iterator over sequence of nodes of the subtree rooted at this node in
+        in-order.
+
+        """
+        if len(self._child_nodes) == 0:
+            if filter_fn is None or filter_fn(self):
+                yield self
+        elif len(self._child_nodes) == 2:
+            for nd in self._child_nodes[0].inorder_iter(filter_fn=filter_fn):
+                yield nd
+            if filter_fn is None or filter_fn(self):
+                yield self
+            for nd in self._child_nodes[1].inorder_iter(filter_fn=filter_fn):
+                yield nd
+        else:
+            raise TypeError("In-order traversal only supported for binary trees")
+
     def leaf_iter(self, filter_fn=None):
         """
         Iterate over all leaves that ultimately descend from this node.
@@ -2034,6 +2065,25 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         return self.seed_node.levelorder_iter(filter_fn=filter_fn)
 
+    def inorder_node_iter(self, filter_fn=None):
+        """
+        In-order traversal of tree.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            A function object that takes a `Node` object as an argument and
+            returns `True` if this node is to be visited during this traversal
+            operation.
+
+        Returns
+        -------
+        Iterator over sequence of nodes resulting from in-order traversal of
+        tree.
+
+        """
+        return self.seed_node.inorder_iter(filter_fn=filter_fn)
 
     def leaf_iter(self, filter_fn=None):
         """
