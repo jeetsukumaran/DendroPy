@@ -1641,7 +1641,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         Returns list of leaf nodes on the tree.
         """
-        return [leaf for leaf in self.leaf_iter()]
+        return [leaf for leaf in self.leaf_node_iter()]
 
     def internal_nodes(self, exclude_seed_node=False):
         """
@@ -1686,7 +1686,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         Returns list of leaf edges on the tree.
         """
-        return [leaf.edge for leaf in self.leaf_iter()]
+        return [leaf.edge for leaf in self.leaf_node_iter()]
 
     def internal_edges(self, exclude_seed_edge=False):
         """
@@ -2090,7 +2090,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         return self.seed_node.inorder_iter(filter_fn=filter_fn)
 
-    def leaf_iter(self, filter_fn=None):
+    def leaf_node_iter(self, filter_fn=None):
         """
         Iterate over all leaves of tree.
 
@@ -2107,6 +2107,11 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         Iterator over a sequence of leaf nodes of this tree.
 
         """
+        return self.seed_node.leaf_iter(filter_fn=filter_fn)
+
+    def leaf_iter(self, filter_fn=None):
+        warnings.warn("Use 'leaf_node_iter()' instead of 'leaf_iter()'",
+                FutureWarning, stacklevel=2)
         return self.seed_node.leaf_iter(filter_fn=filter_fn)
 
     def age_order_node_iter(self, include_leaves=True, filter_fn=None, descending=False):

@@ -486,6 +486,22 @@ class TestTreeStructure(unittest.TestCase):
         exp_labels = [x for x in self.inorder_sequence if self.node_expected_edge_lengths[x] > 10]
         self.assertEqual(visited_labels, exp_labels)
 
+    ### Leaf Iterator ###
+
+    def test_leaf_node_iter_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = [nd for nd in tree.leaf_node_iter()]
+        visited_labels = [nd.label for nd in nodes]
+        self.assertEqual(visited_labels, self.leaf_sequence)
+
+    def test_leaf_node_iter_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        f = lambda x: x.edge.length > 10
+        nodes = [nd for nd in tree.leaf_node_iter(filter_fn=f)]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.leaf_sequence if self.node_expected_edge_lengths[x] > 10]
+        self.assertEqual(visited_labels, exp_labels)
+
 
 if __name__ == "__main__":
     unittest.main()
