@@ -100,7 +100,7 @@ def process_kwargs_for_taxon_namespace(kwargs_dict, default=None):
         if "taxon_namespace" in kwargs_dict:
             raise TypeError("Cannot specify both 'taxon_namespace' and 'taxon_set' (legacy support) simultaneously")
         else:
-            TaxonNamespaceAssociated.taxon_set_deprecation_warning()
+            taxon_set_deprecation_warning()
             return kwargs_dict.pop("taxon_set", default)
     else:
         return kwargs_dict.pop("taxon_namespace", default)
@@ -135,15 +135,15 @@ class TaxonNamespaceAssociated(base.DataObject):
     ## for legacy
     def _get_taxon_set(self):
         # raise NotImplementedError("'taxon_set' is no longer supported: use 'taxon_namespace' instead")
-        TaxonNamespaceAssociated.taxon_set_deprecation_warning()
+        taxon_set_deprecation_warning()
         return self.taxon_namespace
     def _set_taxon_set(self, v):
         # raise NotImplementedError("'taxon_set' is no longer supported: use 'taxon_namespace' instead")
-        TaxonNamespaceAssociated.taxon_set_deprecation_warning()
+        taxon_set_deprecation_warning()
         self.taxon_namespace = v
     def _del_taxon_set(self):
         # raise NotImplementedError("'taxon_set' is no longer supported: use 'taxon_namespace' instead")
-        TaxonNamespaceAssociated.taxon_set_deprecation_warning()
+        taxon_set_deprecation_warning()
     taxon_set = property(_get_taxon_set, _set_taxon_set, _del_taxon_set)
 
     def reindex_taxa(self, taxon_namespace=None, clear=False):
