@@ -311,8 +311,8 @@ class Node(base.Annotable):
             operation.
 
         exclude_seed_node : boolean, default = `False`
-            If `False` (default), seed node or root is not visited. If `True`,
-            then it is.
+            If `False` (default), seed node or root is visited. If `True`,
+            then it is skipped.
 
         Returns
         -------
@@ -325,11 +325,10 @@ class Node(base.Annotable):
         else:
             froot = lambda x: True
         if filter_fn:
-            filter_fn = lambda x: (froot(x) and (not x.is_leaf()) and filter_fn(x)) or None
+            f = lambda x: (froot(x) and x._child_nodes and filter_fn(x)) or None
         else:
-            filter_fn = lambda x: (x and froot(x) and (not x.is_leaf())) or None
-        for node in self.preorder_iter(filter_fn):
-            yield node
+            f = lambda x: (x and froot(x) and x._child_nodes) or None
+        return self.preorder_iter(filter_fn=f)
 
     def postorder_iter(self, filter_fn=None):
         """
@@ -384,8 +383,8 @@ class Node(base.Annotable):
             operation.
 
         exclude_seed_node : boolean, default = `False`
-            If `False` (default), seed node or root is not visited. If `True`,
-            then it is.
+            If `False` (default), seed node or root is visited. If `True`,
+            then it is skipped.
 
         Returns
         -------
@@ -1611,8 +1610,8 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         ----------
 
         exclude_seed_node : boolean, default = `False`
-            If `False` (default), seed node or root is not included in the
-            list. If `True`, then it is.
+            If `False` (default), seed node or root is visited. If `True`,
+            then it is skipped.
 
         Returns
         -------
@@ -1655,9 +1654,9 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         Parameters
         ----------
 
-        exclude_seed_edge : boolean, default = `False`
-            If `False` (default), seed edge or root is not included in the
-            list. If `True`, then it is.
+        exclude_seed_node : boolean, default = `False`
+            If `False` (default), seed node or root is visited. If `True`,
+            then it is skipped.
 
         Returns
         -------
@@ -1913,8 +1912,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         of tree.
 
         """
-        for node in self.seed_node.preorder_iter(filter_fn=filter_fn):
-            yield node
+        return self.seed_node.preorder_iter(filter_fn=filter_fn)
 
     def preorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
@@ -1935,8 +1933,8 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             operation.
 
         exclude_seed_node : boolean, default = `False`
-            If `False` (default), seed node or root is not visited. If `True`,
-            then it is.
+            If `False` (default), seed node or root is visited. If `True`,
+            then it is skipped.
 
         Returns
         -------
@@ -1944,8 +1942,8 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         traversal of tree.
 
         """
-        for node in self.seed_node.preorder_internal_node_iter(filter_fn=filter_fn, exclude_seed_node=exclude_seed_node):
-            yield node
+        return self.seed_node.preorder_internal_node_iter(filter_fn=filter_fn,
+                exclude_seed_node=exclude_seed_node)
 
     def postorder_node_iter(self, filter_fn=None):
         """
@@ -1969,8 +1967,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         of tree.
 
         """
-        for node in self.seed_node.postorder_iter(filter_fn=filter_fn):
-            yield node
+        self.seed_node.postorder_iter(filter_fn=filter_fn)
 
     def postorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
@@ -1991,17 +1988,16 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             operation.
 
         exclude_seed_node : boolean, default = `False`
-            If `False` (default), seed node or root is not visited. If `True`,
-            then it is.
+            If `False` (default), seed node or root is visited. If `True`,
+            then it is skipped.
 
         Returns
         -------
         Iterator over internal nodes of tree in postorder.
 
         """
-        for node in self.seed_node.postorder_internal_node_iter(filter_fn=filter_fn, exclude_seed_node=exclude_seed_node):
-            yield node
-
+        return self.seed_node.postorder_internal_node_iter(filter_fn=filter_fn,
+                exclude_seed_node=exclude_seed_node)
 
     def level_order_node_iter(self, filter_fn=None):
         """
@@ -2021,8 +2017,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         tree.
 
         """
-        for node in self.seed_node.level_order_iter(filter_fn=filter_fn):
-            yield node
+        return self.seed_node.level_order_iter(filter_fn=filter_fn)
 
     def leaf_iter(self, filter_fn=None):
         """
@@ -2041,8 +2036,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         Iterator over a sequence of leaf nodes of this tree.
 
         """
-        for node in self.seed_node.leaf_iter(filter_fn=filter_fn):
-            yield node
+        return self.seed_node.leaf_iter(filter_fn=filter_fn)
 
     def age_order_node_iter(self, include_leaves=True, filter_fn=None, descending=False):
         """
@@ -2080,8 +2074,9 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         if self.seed_node.age is None:
             self.calc_node_ages()
-        for node in self.seed_node.age_order_iter(include_leaves=include_leaves, filter_fn=filter_fn, descending=descending):
-            yield node
+        return self.seed_node.age_order_iter(include_leaves=include_leaves,
+                filter_fn=filter_fn,
+                descending=descending)
 
     ###########################################################################
     ## Edge iterators
