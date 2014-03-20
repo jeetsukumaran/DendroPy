@@ -82,9 +82,25 @@ The `Tree` Class
 
 * `Tree.edge_set()` : removed; use `set(tree.edges())` instead.
 
-* `level_order_iter()`, `level_order_node_iter()`, `levelorder_edge_iter()`,
-  etc. have been renamed `levelorder_iter()`, `levelorder_node_iter()`,
-  `levelorder_edge_iter()` for consistency with `postorder_iter`, etc. The old
-  names are still supported for now, but new code should start using the newer
-  names.
+* For consistency with `Tree.preorder_node_iter()`,
+  `Tree.postorder_node_iter()`, etc.:
+
+    * `Tree.level_order_node_iter()` has been renamed `Tree.levelorder_node_iter()`
+    * `Tree.level_order_edge_iter()` has been renamed `Tree.levelorder_edge_iter()`
+    * `Node.age_order_iter()` has been renamed `Node.ageorder_iter()`
+    * `Tree.age_order_node_iter()` has been renamed `Tree.ageorder_node_iter()`
+    * `Tree.age_order_edge_iter()` has been renamed `Tree.ageorder_edge_iter()`
+    * `Tree.level_order_edge_iter()` has been renamed `Tree.levelorder_edge_iter()`
+    * `Tree.level_order_edge_iter()` has been renamed `Tree.levelorder_edge_iter()`
+    * `Node.age_order_iter()` has been renamed `Node.ageorder_iter()`
+    * `Tree.age_order_edge_iter()` has been renamed `Tree.ageorder_edge_iter()`
+    * `Tree.age_order_edge_iter()` has been renamed `Tree.ageorder_edge_iter()`
+    * `Node.level_order_iter()` has been renamed `Node.levelorder_iter()`
+    * `Edge.level_order_iter()` has been renamed `Edge.levelorder_iter()`
+
+    The old names are still supported for now (with warnings being emitted), but
+    new code should start using the newer names.
+
+    In additon, support for in-order or infix tree traversal methods:
+    `Tree.inorder_node_iter`, `Tree.inorder_edge_iter()`.
 
