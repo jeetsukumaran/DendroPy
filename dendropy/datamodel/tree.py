@@ -1669,6 +1669,62 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     ###########################################################################
     ## Node Finders
 
+    def find_node(self, filter_fn):
+        """
+        Finds the first node for which filter_fn(node) = True.
+
+        For example, if::
+
+            filter_fn = lambda n: hasattr(n, 'genes') and n.genes is not None
+
+        then::
+
+            t.find_node(filter_fn=filter_fn)
+
+        will return all nodes which have an attributed 'genes' and this value
+        is not None.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            Takes a single `Node` object as an argument and returns `True` or
+            `False` if the node should be returned.
+
+        Returns
+        -------
+        `Node` object or `None`
+            Returns first `Node` object for which the filter function
+            `filter_fn` returns `True`, or `None` if no such node exists on
+            this tree.
+
+        """
+        for node in self.preorder_node_iter(filter_fn):
+            return node
+        return None
+
+    def find_node_with_label(self, label):
+        """
+        Returns first node with `label` attribute matching `label` argument.
+
+        Parameters
+        ----------
+
+        label : string
+            Label of `Node` object to be returned.
+
+        Returns
+        -------
+        `Node` object or `None`
+            Returns first `Node` object with `label` attribute having value
+            given in `label`, or`None` if no such node is found.
+
+        """
+        for node in self.preorder_node_iter():
+            if node.label == label:
+                return node
+        return None
+
     def find_node_for_taxon(self, taxon):
         """
         Returns node associated with `Taxon` object `taxon`.
@@ -1743,63 +1799,6 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         # if taxon is None:
         #     return None
         # return self.find_node_with_taxon(lambda x: x is taxon)
-
-
-    def find_node(self, filter_fn):
-        """
-        Finds the first node for which filter_fn(node) = True.
-
-        For example, if::
-
-            filter_fn = lambda n: hasattr(n, 'genes') and n.genes is not None
-
-        then::
-
-            t.find_node(filter_fn=filter_fn)
-
-        will return all nodes which have an attributed 'genes' and this value
-        is not None.
-
-        Parameters
-        ----------
-
-        filter_fn : function object
-            Takes a single `Node` object as an argument and returns `True` or
-            `False` if the node should be returned.
-
-        Returns
-        -------
-        `Node` object or `None`
-            Returns first `Node` object for which the filter function
-            `filter_fn` returns `True`, or `None` if no such node exists on
-            this tree.
-
-        """
-        for node in self.preorder_node_iter(filter_fn):
-            return node
-        return None
-
-    def find_node_with_label(self, label):
-        """
-        Returns first node with `label` attribute matching `label` argument.
-
-        Parameters
-        ----------
-
-        label : string
-            Label of `Node` object to be returned.
-
-        Returns
-        -------
-        `Node` object or `None`
-            Returns first `Node` object with `label` attribute having value
-            given in `label`, or`None` if no such node is found.
-
-        """
-        for node in self.preorder_node_iter():
-            if node.label == label:
-                return node
-        return None
 
     def mrca(self, **kwargs):
         """

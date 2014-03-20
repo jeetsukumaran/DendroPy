@@ -161,18 +161,18 @@ class TestTreeStructure(unittest.TestCase):
         assert c.parent_node is a
         assert c.edge.tail_node is a
         assert c in a._child_nodes
-        e = b.new_child(label="e", edge_length=4.0)
-        assert e.label == "e"
-        assert e.edge.length == 4.0
-        assert e.parent_node is b
-        assert e.edge.tail_node is b
-        assert e in b._child_nodes
         i = b.new_child(label="i", edge_length=1.0)
         assert i.label == "i"
         assert i.edge.length == 1.0
         assert i.parent_node is b
         assert i.edge.tail_node is b
         assert i in b._child_nodes
+        e = b.new_child(label="e", edge_length=4.0)
+        assert e.label == "e"
+        assert e.edge.length == 4.0
+        assert e.parent_node is b
+        assert e.edge.tail_node is b
+        assert e in b._child_nodes
         j = e.new_child(label="j", edge_length=2.0)
         assert j.label == "j"
         assert j.edge.length == 2.0
@@ -185,18 +185,18 @@ class TestTreeStructure(unittest.TestCase):
         assert k.parent_node is e
         assert k.edge.tail_node is e
         assert k in e._child_nodes
-        f = c.new_child(label="f", edge_length=13.0)
-        assert f.label == "f"
-        assert f.edge.length == 13.0
-        assert f.parent_node is c
-        assert f.edge.tail_node is c
-        assert f in c._child_nodes
         g = c.new_child(label="g", edge_length=8.0)
         assert g.label == "g"
         assert g.edge.length == 8.0
         assert g.parent_node is c
         assert g.edge.tail_node is c
         assert g in c._child_nodes
+        f = c.new_child(label="f", edge_length=13.0)
+        assert f.label == "f"
+        assert f.edge.length == 13.0
+        assert f.parent_node is c
+        assert f.edge.tail_node is c
+        assert f in c._child_nodes
         l = g.new_child(label="l", edge_length=6.0)
         assert l.label == "l"
         assert l.edge.length == 6.0
@@ -209,18 +209,18 @@ class TestTreeStructure(unittest.TestCase):
         assert m.parent_node is g
         assert m.edge.tail_node is g
         assert m in g._child_nodes
-        h = f.new_child(label="h", edge_length=12.0)
-        assert h.label == "h"
-        assert h.edge.length == 12.0
-        assert h.parent_node is f
-        assert h.edge.tail_node is f
-        assert h in f._child_nodes
         n = f.new_child(label="n", edge_length=9.0)
         assert n.label == "n"
         assert n.edge.length == 9.0
         assert n.parent_node is f
         assert n.edge.tail_node is f
         assert n in f._child_nodes
+        h = f.new_child(label="h", edge_length=12.0)
+        assert h.label == "h"
+        assert h.edge.length == 12.0
+        assert h.parent_node is f
+        assert h.edge.tail_node is f
+        assert h in f._child_nodes
         o = h.new_child(label="o", edge_length=10.0)
         assert o.label == "o"
         assert o.edge.length == 10.0
@@ -339,7 +339,13 @@ class TestTreeStructure(unittest.TestCase):
         self.assertIs(node, None)
 
     ###########################################################################
-    ## Edge Accessors
+    ## Iterators
+
+    def test_default_iteration(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = [nd for nd in tree]
+        visited_labels = [nd.label for nd in nodes]
+        self.assertEqual(visited_labels, self.preorder_sequence)
 
 if __name__ == "__main__":
     unittest.main()
