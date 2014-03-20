@@ -1935,7 +1935,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def preorder_node_iter(self, filter_fn=None):
         """
-        Pre-order traversal of tree.
+        Pre-order traversal of nodes of tree.
 
         Visits nodes on tree, with each node visited before its children.
         Filtered by `filter_fn`: node is only returned if no `filter_fn` is
@@ -2014,7 +2014,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def postorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
-        Post-order traversal of internal nodes of subtree rooted at this node.
+        Post-order traversal of internal nodes of tree.
 
         Visits internal nodes, with any particular node visited after its
         children. Filtered by `filter_fn`: node is only returned if no
@@ -2158,28 +2158,215 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     ## Edge iterators
 
     def preorder_edge_iter(self, filter_fn=None):
-        "Returns preorder iterator over tree edges."
-        for node in self.seed_node.preorder_iter():
-            if node.edge and (filter_fn is None or filter_fn(node.edge)):
-                yield node.edge
+        """
+        Pre-order traversal of tree.
+
+        Visits edges on tree, with each edge visited before its children.
+        Filtered by `filter_fn`: edge is only returned if no `filter_fn` is
+        given or if filter_fn returns `True`.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            A function object that takes a `Edge` object as an argument and
+            returns `True` if this edge is to be visited during this traversal
+            operation.
+
+        Returns
+        -------
+        Iterator over a sequence of edges resulting from a pre-order traversal
+        of tree.
+
+        """
+        if filter_fn is not None:
+            f = lambda x : filter_fn(x.edge)
+        else:
+            f = None
+        for nd in self.seed_node.preorder_iter(filter_fn=f):
+            yield nd.edge
+
+    def preorder_internal_edge_iter(self, filter_fn=None, exclude_seed_edge=False):
+        """
+        Pre-order traversal of internal edges of tree.
+
+        Visits internal edges, with any particular edge visited before its
+        children. Filtered by `filter_fn`: edge is only returned if no
+        `filter_fn` is given or if filter_fn returns `True`.
+
+        Root or seed edge is not visited unless `exclude_seed_edge` is `True`.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            A function object that takes a `Node` object as an argument and
+            returns `True` if this edge is to be visited during this traversal
+            operation.
+
+        exclude_seed_edge : boolean, default = `False`
+            If `False` (default), seed edge or root is visited. If `True`,
+            then it is skipped.
+
+        Returns
+        -------
+        Iterator over a sequence of internal edges resulting from a pre-order
+        traversal of tree.
+
+        """
+        if filter_fn is not None:
+            f = lambda x : filter_fn(x.edge)
+        else:
+            f = None
+        for nd in self.seed_node.preorder_internal_node_iter(filter_fn=f,
+                exclude_seed_node=exclude_seed_edge):
+            yield nd.edge
 
     def postorder_edge_iter(self, filter_fn=None):
-        "Returns postorder iterator over tree edges."
-        for node in self.seed_node.postorder_iter():
-            if node.edge and (filter_fn is None or filter_fn(node.edge)):
-                yield node.edge
+        """
+        Post-order traversal of edges of tree.
+
+        Visits all edges on tree, with any particular edge visited after its
+        children. Filtered by `filter_fn`: edge is only returned if no
+        `filter_fn` is given or if filter_fn returns `True`.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            A function object that takes a `Edge` object as an argument and
+            returns `True` if this edge is to be visited during this traversal
+            operation.
+
+        Returns
+        -------
+        Iterator over a sequence of edges resulting from a post-order traversal
+        of tree.
+
+        """
+        if filter_fn is not None:
+            f = lambda x : filter_fn(x.edge)
+        else:
+            f = None
+        for nd in self.seed_node.postorder_iter(filter_fn=f):
+            yield nd.edge
+
+    def postorder_internal_edge_iter(self, filter_fn=None, exclude_seed_edge=False):
+        """
+        Post-order traversal of internal edges of tree.
+
+        Visits internal edges, with any particular edge visited after its
+        children. Filtered by `filter_fn`: edge is only returned if no
+        `filter_fn` is given or if filter_fn returns `True`.
+
+        Root or seed edge is not visited unless `exclude_seed_edge` is `True`.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            A function object that takes a `Edge` object as an argument and
+            returns `True` if this edge is to be visited during this traversal
+            operation.
+
+        exclude_seed_edge : boolean, default = `False`
+            If `False` (default), seed edge or root is visited. If `True`,
+            then it is skipped.
+
+        Returns
+        -------
+        Iterator over internal edges of tree in postorder.
+
+        """
+        if filter_fn is not None:
+            f = lambda x : filter_fn(x.edge)
+        else:
+            f = None
+        for nd in self.seed_node.postorder_internal_node_iter(filter_fn=f,
+                exclude_seed_node=exclude_seed_edge):
+            yield nd.edge
+
+    def levelorder_edge_iter(self, filter_fn=None):
+        """
+        Level-order traversal of tree.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            A function object that takes a `Edge` object as an argument and
+            returns `True` if this edge is to be visited during this traversal
+            operation.
+
+        Returns
+        -------
+        Iterator over sequence of edges resulting from level-order traversal of
+        tree.
+
+        """
+        if filter_fn is not None:
+            f = lambda x : filter_fn(x.edge)
+        else:
+            f = None
+        for nd in self.seed_node.levelorder_iter(filter_fn=f):
+            yield nd.edge
 
     def level_order_edge_iter(self, filter_fn=None):
-        "Returns level-order iterator over tree edges."
-        for node in self.seed_node.level_order_iter():
-            if node.edge and (filter_fn is None or filter_fn(node.edge)):
-                yield node.edge
+        """
+        Legacy support: use `Tree.levelorder_edge_iter()` instead.
+        """
+        warnings.warn("Use 'levelorder_edge_iter()' instead of 'level_order_edge_iter()'",
+                FutureWarning, stacklevel=2)
+        return self.levelorder_edge_iter(filter_fn=filter_fn)
+
+    def inorder_edge_iter(self, filter_fn=None):
+        """
+        In-order traversal of tree.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            A function object that takes a `Edge` object as an argument and
+            returns `True` if this edge is to be visited during this traversal
+            operation.
+
+        Returns
+        -------
+        Iterator over sequence of edges resulting from in-order traversal of
+        tree.
+
+        """
+        if filter_fn is not None:
+            f = lambda x : filter_fn(x.edge)
+        else:
+            f = None
+        for nd in self.seed_node.inorder_iter(filter_fn=f):
+            yield nd.edge
 
     def leaf_edge_iter(self, filter_fn=None):
-        "Returns iterator over tree leaf edges."
-        for node in self.seed_node.leaf_iter():
-            if node.edge and (filter_fn is None or filter_fn(node.edge)):
-                yield node.edge
+        """
+        Iterate over all leaves of tree.
+
+        Parameters
+        ----------
+
+        filter_fn : function object
+            A function object that takes a `Edge` object as an argument and
+            returns `True` if this edge is to be visited during this traversal
+            operation.
+
+        Returns
+        -------
+        Iterator over a sequence of leaf edges of this tree.
+
+        """
+        if filter_fn is not None:
+            f = lambda x : filter_fn(x.edge)
+        else:
+            f = None
+        for nd in self.seed_node.leaf_iter(filter_fn=f):
+            yield nd.edge
 
     ###########################################################################
     ## Taxa Management

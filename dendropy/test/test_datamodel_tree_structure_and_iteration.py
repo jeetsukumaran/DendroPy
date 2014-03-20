@@ -486,7 +486,7 @@ class TestTreeStructure(unittest.TestCase):
         exp_labels = [x for x in self.inorder_sequence if self.node_expected_edge_lengths[x] > 10]
         self.assertEqual(visited_labels, exp_labels)
 
-    ### Leaf Iterator ###
+    ### Leaf Node Iterator ###
 
     def test_leaf_node_iter_unfiltered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
@@ -502,6 +502,157 @@ class TestTreeStructure(unittest.TestCase):
         exp_labels = [x for x in self.leaf_sequence if self.node_expected_edge_lengths[x] > 10]
         self.assertEqual(visited_labels, exp_labels)
 
+    ### Preorder Edge Iterator ###
+
+    def test_preorder_edge_iter_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = [edge.head_node for edge in tree.preorder_edge_iter()]
+        visited_labels = [nd.label for nd in nodes]
+        self.assertEqual(visited_labels, self.preorder_sequence)
+
+    def test_preorder_edge_iter_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        f = lambda x: x.length > 10
+        nodes = [edge.head_node for edge in tree.preorder_edge_iter(filter_fn=f)]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.preorder_sequence if self.node_expected_edge_lengths[x] > 10]
+        self.assertEqual(visited_labels, exp_labels)
+
+    ### Preorder Internal Edge Iterator ###
+
+    def test_preorder_internal_edge_iter_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = [edge.head_node for edge in tree.preorder_internal_edge_iter()]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.preorder_sequence if
+                self.node_expected_children[x]]
+        self.assertEqual(visited_labels, exp_labels)
+
+    def test_preorder_internal_edge_iter_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        f = lambda x: x.length > 10
+        nodes = [edge.head_node for edge in tree.preorder_internal_edge_iter(filter_fn=f)]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.preorder_sequence if
+                (self.node_expected_children[x] and self.node_expected_edge_lengths[x] > 10)]
+        self.assertEqual(visited_labels, exp_labels)
+
+    def test_preorder_internal_edge_iter_without_root_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = [edge.head_node for edge in tree.preorder_internal_edge_iter(exclude_seed_edge=True)]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.preorder_sequence if
+                self.node_expected_children[x] and x != "a"]
+        self.assertEqual(visited_labels, exp_labels)
+
+    def test_preorder_internal_edge_iter_without_root_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        f = lambda x: x.length > 10
+        nodes = [edge.head_node for edge in tree.preorder_internal_edge_iter(exclude_seed_edge=True, filter_fn=f)]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.preorder_sequence if
+                (self.node_expected_children[x] and self.node_expected_edge_lengths[x] > 10) and x != "a"]
+        self.assertEqual(visited_labels, exp_labels)
+
+    ### Postorder Edge Iterator ###
+
+    def test_postorder_edge_iter_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = [edge.head_node for edge in tree.postorder_edge_iter()]
+        visited_labels = [nd.label for nd in nodes]
+        self.assertEqual(visited_labels, self.postorder_sequence)
+
+    def test_postorder_edge_iter_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        f = lambda x: x.length > 10
+        nodes = [edge.head_node for edge in tree.postorder_edge_iter(filter_fn=f)]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.postorder_sequence if self.node_expected_edge_lengths[x] > 10]
+        self.assertEqual(visited_labels, exp_labels)
+
+    ### Postorder Internal Edge Iterator ###
+
+    def test_postorder_internal_edge_iter_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = [edge.head_node for edge in tree.postorder_internal_edge_iter()]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.postorder_sequence if
+                self.node_expected_children[x]]
+        self.assertEqual(visited_labels, exp_labels)
+
+    def test_postorder_internal_edge_iter_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        f = lambda x: x.length > 10
+        nodes = [edge.head_node for edge in tree.postorder_internal_edge_iter(filter_fn=f)]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.postorder_sequence if
+                (self.node_expected_children[x] and self.node_expected_edge_lengths[x] > 10)]
+        self.assertEqual(visited_labels, exp_labels)
+
+    def test_postorder_internal_edge_iter_without_root_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = [edge.head_node for edge in tree.postorder_internal_edge_iter(exclude_seed_edge=True)]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.postorder_sequence if
+                self.node_expected_children[x] and x != "a"]
+        self.assertEqual(visited_labels, exp_labels)
+
+    def test_postorder_internal_edge_iter_without_root_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        f = lambda x: x.length > 10
+        nodes = [edge.head_node for edge in tree.postorder_internal_edge_iter(exclude_seed_edge=True, filter_fn=f)]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.postorder_sequence if
+                (self.node_expected_children[x] and self.node_expected_edge_lengths[x] > 10) and x != "a"]
+        self.assertEqual(visited_labels, exp_labels)
+
+    ### Level-Order Edge Iterator ###
+
+    def test_levelorder_edge_iter_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = [edge.head_node for edge in tree.levelorder_edge_iter()]
+        visited_labels = [nd.label for nd in nodes]
+        self.assertEqual(visited_labels, self.levelorder_sequence)
+
+    def test_levelorder_edge_iter_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        f = lambda x: x.length > 10
+        nodes = [edge.head_node for edge in tree.levelorder_edge_iter(filter_fn=f)]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.levelorder_sequence if self.node_expected_edge_lengths[x] > 10]
+        self.assertEqual(visited_labels, exp_labels)
+
+    ### In-Order Edge Iterator ###
+
+    def test_inorder_edge_iter_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = [edge.head_node for edge in tree.inorder_edge_iter()]
+        visited_labels = [nd.label for nd in nodes]
+        self.assertEqual(visited_labels, self.inorder_sequence)
+
+    def test_inorder_edge_iter_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        f = lambda x: x.length > 10
+        nodes = [edge.head_node for edge in tree.inorder_edge_iter(filter_fn=f)]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.inorder_sequence if self.node_expected_edge_lengths[x] > 10]
+        self.assertEqual(visited_labels, exp_labels)
+
+    ### Leaf Edge Iterator ###
+
+    def test_leaf_edge_iter_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = [edge.head_node for edge in tree.leaf_edge_iter()]
+        visited_labels = [nd.label for nd in nodes]
+        self.assertEqual(visited_labels, self.leaf_sequence)
+
+    def test_leaf_edge_iter_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        f = lambda x: x.length > 10
+        nodes = [edge.head_node for edge in tree.leaf_edge_iter(filter_fn=f)]
+        visited_labels = [nd.label for nd in nodes]
+        exp_labels = [x for x in self.leaf_sequence if self.node_expected_edge_lengths[x] > 10]
+        self.assertEqual(visited_labels, exp_labels)
 
 if __name__ == "__main__":
     unittest.main()
