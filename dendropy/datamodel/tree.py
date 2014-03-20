@@ -288,7 +288,7 @@ class Node(base.Annotable):
             node = stack.pop(0)
             if filter_fn is None or filter_fn(node):
                 yield node
-            child_nodes = node.child_nodes()
+            child_nodes = list(node._child_nodes)
             child_nodes.extend(stack)
             stack = child_nodes
 
@@ -352,6 +352,13 @@ class Node(base.Annotable):
         of the subtree starting at this node.
 
         """
+        # if self._child_nodes:
+        #     for nd in self._child_nodes:
+        #         for ch in nd.postorder_iter(filter_fn=filter_fn):
+        #             yield ch
+        # if filter_fn is None or filter_fn(self):
+        #     yield self
+        # return
         stack = [(self, False)]
         while stack:
             node, state = stack.pop(0)
@@ -360,7 +367,7 @@ class Node(base.Annotable):
                     yield node
             else:
                 stack.insert(0, (node, True))
-                child_nodes = [(n, False) for n in node.child_nodes()]
+                child_nodes = [(n, False) for n in node._child_nodes]
                 child_nodes.extend(stack)
                 stack = child_nodes
 
@@ -397,11 +404,10 @@ class Node(base.Annotable):
         else:
             froot = lambda x: True
         if filter_fn:
-            filter_fn = lambda x: (froot(x) and (not x.is_leaf()) and filter_fn(x)) or None
+            f = lambda x: (froot(x) and x._child_nodes and filter_fn(x)) or None
         else:
-            filter_fn = lambda x: (x and froot(x) and (not x.is_leaf())) or None
-        for node in self.postorder_iter(filter_fn):
-            yield node
+            f = lambda x: (x and froot(x) and x._child_nodes) or None
+        return self.postorder_iter(filter_fn=f)
 
     def level_order_iter(self, filter_fn=None):
         """
@@ -1967,7 +1973,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         of tree.
 
         """
-        self.seed_node.postorder_iter(filter_fn=filter_fn)
+        return self.seed_node.postorder_iter(filter_fn=filter_fn)
 
     def postorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
