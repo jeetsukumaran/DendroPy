@@ -293,6 +293,28 @@ class TestTreeStructure(unittest.TestCase):
         self.assertEqual(len(edges), len(exp_edges))
         self.assertEqual(set(edges), exp_edges)
 
+    def test_get_leaf_edges(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        edges = tree.leaf_edges()
+        exp_edges = set([nd.edge for nd in lnodes])
+        self.assertEqual(len(edges), len(exp_edges))
+        self.assertEqual(set(edges), exp_edges)
+
+    def test_get_internal_edges_with_root(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        edges = tree.internal_edges()
+        nlnodes = inodes | set([tree.seed_node])
+        exp_edges = set([nd.edge for nd in nlnodes])
+        self.assertEqual(len(edges), len(exp_edges))
+        self.assertEqual(set(edges), exp_edges)
+
+    def test_get_internal_edges_no_root(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        edges = tree.internal_edges(True)
+        exp_edges = set([nd.edge for nd in inodes])
+        self.assertEqual(len(edges), len(exp_edges))
+        self.assertEqual(set(edges), exp_edges)
+
     ###########################################################################
     ## (Taxon-free) Node Finders
 

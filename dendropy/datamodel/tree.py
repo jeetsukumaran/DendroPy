@@ -1664,7 +1664,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         List of internal `Edge` objects on this `Tree`.
 
         """
-        return [nd.edge for nd in self.preorder_internal_node_iter(exclude_seed_node=exclude_seed_node)]
+        return [nd.edge for nd in self.preorder_internal_node_iter(exclude_seed_node=exclude_seed_edge)]
 
     ###########################################################################
     ## Node Finders
