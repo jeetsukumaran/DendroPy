@@ -83,20 +83,32 @@ The `Tree` Class
 * `Tree.edge_set()` : removed; use `set(tree.edges())` instead.
 
 * For consistency with `Tree.preorder_node_iter()`,
-  `Tree.postorder_node_iter()`, etc.:
+  `Tree.postorder_node_iter()`, a number of iteration methods have been renamed.
 
-    * `Tree.level_order_node_iter()` has been renamed `Tree.levelorder_node_iter()`
-    * `Tree.level_order_edge_iter()` has been renamed `Tree.levelorder_edge_iter()`
-    * `Node.level_order_iter()` has been renamed `Node.levelorder_iter()`
-    * `Edge.level_order_iter()` has been renamed `Edge.levelorder_iter()`
-    * `Tree.age_order_node_iter()` has been renamed `Tree.ageorder_node_iter()`
-    * `Tree.age_order_edge_iter()` has been renamed `Tree.ageorder_edge_iter()`
-    * `Node.age_order_iter()` has been renamed `Node.ageorder_iter()`
-    * `Edge.age_order_iter()` has been renamed `Edge.ageorder_iter()`
+    +-----------------------------------------+-----------------------------------+
+    | DendroPy 3                              | DendroPy 4                        |
+    +-----------------------------------------+-----------------------------------+
+    | `Tree.level_order_node_iter()`          | `Tree.levelorder_node_iter()`     |
+    +-----------------------------------------+-----------------------------------+
+    | `Tree.level_order_edge_iter()`          | `Tree.levelorder_edge_iter()`     |
+    +-----------------------------------------+-----------------------------------+
+    | `Node.level_order_iter()`               | `Node.levelorder_iter()`          |
+    +-----------------------------------------+-----------------------------------+
+    | `Edge.level_order_iter()`               | `Edge.levelorder_iter()`          |
+    +-----------------------------------------+-----------------------------------+
+    | `Tree.age_order_node_iter()`            | `Tree.ageorder_node_iter()`       |
+    +-----------------------------------------+-----------------------------------+
+    | `Tree.age_order_edge_iter()`            | `Tree.ageorder_edge_iter()`       |
+    +-----------------------------------------+-----------------------------------+
+    | `Node.age_order_iter()`                 | `Node.ageorder_iter()`            |
+    +-----------------------------------------+-----------------------------------+
+    | `Edge.age_order_iter()`                 | `Edge.ageorder_iter()`            |
+    +-----------------------------------------+-----------------------------------+
+    | `Tree.leaf_iter()`                      | `Tree.leaf_node_iter()`           |
+    +-----------------------------------------+-----------------------------------+
 
-    The old names are still supported for now (with warnings being emitted), but
-    new code should start using the newer names.
-
-    In additon, support for in-order or infix tree traversal methods:
-    `Tree.inorder_node_iter`, `Tree.inorder_edge_iter()`.
+    The old names are still supported for now (with warnings being emitted),
+    but new code should start using the newer names.  In additon, support for
+    in-order or infix tree traversal has been added: `Tree.inorder_node_iter`,
+    `Tree.inorder_edge_iter()`.
 

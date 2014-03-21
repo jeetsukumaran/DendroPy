@@ -12,6 +12,7 @@ DendroPy Phylogenetic Computing Library
     library/index.rst
     scripts/sumtrees.rst
     glossary.rst
+    migration.rst
     changes.rst
 
 DendroPy is a |Python|_ library for phylogenetic computing.
@@ -22,21 +23,22 @@ DendroPy can thus function as a stand-alone library for phylogenetics, a compone
 Prerequisites
 =============
 
-DendroPy is a pure-Python library with no dependencies, and runs under any version of Python 2 from 2.4 upwards (i.e., Python 2.4, 2.5, 2.6, 2.7, etc.). At present, it does not run under Python 3.
+DendroPy is a pure-Python library with no dependencies, and runs under any version of Python 3 and Python 2.7. If you want to run DendroPy under Python version of less than 2.4, you should download the `DendroPy legacy release <https://github.com/jeetsukumaran/DendroPy/releases/tag/v3.12.1>`_.
 
-.. versionchanged:: 3.2.0
-   Python 2.4 support added.
+.. versionchanged:: 4.0.0
+   Python 2.4, 2.5, and 2.6 support removed.
+   Python 3.x support added.
 
 Installing
 ==========
 
 DendroPy is fully easy-installable and can be installed using |pip|_::
 
-    $ sudo pip install dendropy
+    $ pip install dendropy
 
 or |setuptools|_::
 
-    $ sudo easy_install -U dendropy
+    $ easy_install -U dendropy
 
 if these are available on your system.
 
@@ -61,7 +63,12 @@ Documentation
 
         How to use SumTrees, an application script bundled with DendroPy that faciliates the summarization of non-parameteric bootstrap or Bayesian posterior probability support for splits or clades on phylogenetic trees.
 
-    :doc:`Change History <changes>`
+    :doc:`Migration Guide </migration>`
+
+        DendroPy 4 is improved in *many* ways over DendroPy 3. However, some of the changes are significant enough to break code written for DendroPy 3. This reference provides an overview of these changes, as well as notes on how to fix, handle or otherwise work-around issues that might result from trying to run code written for DendroPy 3 under DendroPy 4.
+
+
+    :doc:`Change History </changes>`
 
         A summary of major changes (new features, bug fixes, bug creations, etc.) of each release of DendroPy.
 
@@ -86,7 +93,4 @@ However, again, if you prefer you can contact me directly via e-mail at jeet@ku.
 
 .. include:: license.inc
 .. include:: acknowledgements.inc
-
-
-
 
