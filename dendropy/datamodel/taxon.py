@@ -186,8 +186,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         """
         Constructs a TaxonNamespace object.
 
-        Parameters
-        ----------
+        :Parameters:
 
         *args : positional arguments
             Accepts a single iterable as an optional positional argument.  If a
@@ -214,8 +213,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
                 namespace. If `False`, then adding `Taxon` objects will result
                 in an error.
 
-        Notes
-        -----
+        :Notes:
 
         An empty `TaxonNamespace` can be created (with optional) label and `Taxon`
         objects added later:
@@ -426,15 +424,14 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         If it is not already in the collection, but the namespace is not
         mutable, then a `TypeError` is raised.
 
-        Parameters
-        ----------
+        :Parameters:
 
         taxon : `Taxon` object (if full taxon model) or string (if not a full taxon model)
             The `Taxon` object to be accessioned or registered in this
             collection.
 
-        Raises
-        ------
+        :Raises:
+
         TypeError
             If this namespace is immutable (i.e. `TaxonNamespace.is_mutable` is
             `False`).
@@ -466,15 +463,14 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         namespace is immutable, then `TypeError` is raised when trying to add
         `Taxon` objects.
 
-        Parameters
-        ----------
+        :Parameters:
 
         taxa : an iterable of `Taxon` objects or strings (if not a full taxon model)
             A list of `Taxon` objects to be accessioned or registered in this
             collection.
 
-        Raises
-        ------
+        :Raises:
+
         TypeError
             If this namespace is immutable (i.e. `TaxonNamespace.is_mutable` is
             `False`).
@@ -489,14 +485,12 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         label (if a full taxon model) or simply adds the label as-is (if not a
         full taxon model).
 
-        Parameters
-        ----------
+        :Parameters:
 
         label : string or string-like
             The name or label of the new operational taxonomic unit concept.
 
-        Returns
-        -------
+        :Returns:
 
         Taxon object or string
             A new `Taxon` object (if a full taxon model) or string (if not a
@@ -514,21 +508,19 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         Creates and add a new `Taxon` with corresponding label for each label
         in `labels`. Returns list of `Taxon` objects created.
 
-        Parameters
-        ----------
+        :Parameters:
 
         labels : an interable of string or string-like
             The values of the `label` attributes of the new `Taxon` objects to
             be created, added to this namespace collection, and returned.
 
-        Returns
-        -------
+        :Returns:
 
         List of `Taxon` objects.
             A list of the newly-created `Taxon` objects.
 
-        Raises
-        ------
+        :Raises:
+
         TypeError
             If this namespace is immutable (i.e. `TaxonNamespace.is_mutable` is
             `False`).
@@ -546,8 +538,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         """
         Return list of `Taxon` object(s) with label matching `label`.
 
-        Parameters
-        ----------
+        :Parameters:
 
         label : string or string-like
             The value which the `label` attribute of the `Taxon` object(s)
@@ -559,13 +550,12 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             object's `label` attribute are coerced into lower-case label
             strings before checking for a match.
 
-        Returns
-        -------
+        :Returns:
 
         A list of zero or more `Taxon` objects with labels matching `label`.
 
-        Raises
-        ------
+        :Raises:
+
         TypeError
             If this namespace is immutable (i.e. `TaxonNamespace.is_mutable` is
             `False`).
@@ -585,8 +575,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         """
         Checks for presence of a `Taxon` object with the given label.
 
-        Parameters
-        ----------
+        :Parameters:
 
         label : string or string-like
             The value of the `Taxon` object label to match.
@@ -597,8 +586,8 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             object's `label` attribute are coerced into lower-case label
             strings before checking for a match.
 
-        Returns
-        -------
+        :Returns:
+
         boolean
             `True` if there is at least one `Taxon` object in this namespace
             with a label matching the value of `label`. Otherwise, `False`.
@@ -615,8 +604,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         """
         Checks for presence of `Taxon` objects with the given labels.
 
-        Parameters
-        ----------
+        :Parameters:
 
         labels : iterable
             The values of the `Taxon` object labels to match.
@@ -627,8 +615,8 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             object's `label` attribute are coerced into lower-case label
             strings before checking for a match.
 
-        Returns
-        -------
+        :Returns:
+
         boolean
             Returns `True` if, for every element in the iterable `labels`,
             therer is at least one `Taxon` object that has a label attribute
@@ -654,8 +642,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         object is found in this namespace with the specified critieria, `None`
         is returned.
 
-        Parameters
-        ----------
+        :Parameters:
 
         label : string or string-like
             The value which the `label` attribute of the `Taxon` object
@@ -667,8 +654,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             object's `label` attribute are coerced into lower-case label
             strings before checking for a match.
 
-        Returns
-        -------
+        :Returns:
 
         Taxon object or None
             The first `Taxon` object in this namespace collection with a label
@@ -687,8 +673,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         If `case_insensitive` is `True`, then the label matching is made
         without regard for case.
 
-        Parameters
-        ----------
+        :Parameters:
 
         labels : iterable
             Any `Taxon` object in this namespace collection that has a label
@@ -701,8 +686,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             object's `label` attribute are coerced into lower-case label
             strings before checking for a match.
 
-        Returns
-        -------
+        :Returns:
 
         A list of zero or more `Taxon` objects, each of which has a `label`
         attribute that matches one of the values in `labels`.
@@ -735,8 +719,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         the current namespace and `TaxonNamespace` is mutable, then a new
         `Taxon` is created, added, and returned.
 
-        Parameters
-        ----------
+        :Parameters:
 
         label : string or string-like
             The value which the `label` attribute of the `Taxon` object
@@ -748,15 +731,13 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             object's `label` attribute are coerced into lower-case label
             strings before checking for a match.
 
-        Returns
-        -------
+        :Returns:
 
         Taxon object or None
             A `Taxon` object in this namespace collection with a label
             matching `label`.
 
-        Raises
-        ------
+        :Raises:
 
         TypeError
             If no `Taxon` object is currently in the collection with a label
@@ -779,14 +760,12 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         """
         Removes specified `Taxon` object from the collection in this namespace.
 
-        Parameters
-        ----------
+        :Parameters:
 
         taxon : a `Taxon` object
             The `Taxon` object to be removed.
 
-        Raises
-        ------
+        :Raises:
 
         ValueError
             If `taxon` is not in the collection of this namespace.
@@ -812,8 +791,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         Removes *all* `Taxon` objects with label matching `label` from the
         collection in this namespace.
 
-        Parameters
-        ----------
+        :Parameters:
 
         label : string or string-like
             The value of the `Taxon` object label to remove.
@@ -824,14 +802,12 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             object's `label` attribute are coerced into lower-case label
             strings before checking for a match.
 
-        Raises
-        ------
+        :Raises:
 
         LookupError
             If no `Taxon` objects are found with matching label(s).
 
-        See Also
-        --------
+        :See Also:
 
         discard_taxon_labels : Similar, but does not raise an error if no
                                matching `Taxon` objects are found.
@@ -849,8 +825,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         Removes *all* `Taxon` objects with label matching `label` from the
         collection in this namespace.
 
-        Parameters
-        ----------
+        :Parameters:
 
         label : string or string-like
             The value of the `Taxon` object label to remove.
@@ -861,8 +836,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             object's `label` attribute are coerced into lower-case label
             strings before checking for a match.
 
-        See Also
-        --------
+        :See Also:
 
         remove_taxon_labels : Similar, but raises an error if no
                               matching `Taxon` objects are found.
@@ -914,8 +888,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
 
         No attempt is made to handle collisions.
 
-        Parameters
-        ----------
+        :Parameters:
 
         case_insensitive_keys : boolean
             If `False` (default), then normal Python `dict` object will be
@@ -923,8 +896,8 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             `CaseInsensitiveDict` object will return, allowing for
             case-insensitive lookups.
 
-        Returns
-        -------
+        :Returns:
+
         dict or CaseInsensitiveDict
         """
         if case_insensitive_keys:
