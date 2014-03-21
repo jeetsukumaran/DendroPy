@@ -5,8 +5,7 @@
 .. module:: dendropy.datamodel.tree
 
 .. toctree::
-    :maxdepth: 2
-
+    :maxdepth: 3
 
 The :class:`TreeList` Class
 ===========================

@@ -46,17 +46,13 @@ class Edge(base.Annotable):
             rootedge=False,
             label=None):
         """
-        Constructs an edge of a tree.
+        Parameters
+        ----------
+        tail_node : :class::class:`Node`
+            :class::class:`Node` from which this edge originates, i.e., the parent node of `head_node`.
 
-        :Parameters:
-
-        tail_node : :class:`Node` object
-            :class:`Node` object from which this edge originates, i.e., the parent node
-            of `head_node`.
-
-        head_node : :class:`Node` object
-            :class:`Node` object from at which this edge ends, i.e., the child cnode of
-            `tail_node`.
+        head_node : :class::class:`Node`
+            :class::class:`Node` from which this edge originates, i.e., the parent node of `head_node`.
 
         length : numerical
             A value representing the weight of the edge.
@@ -74,34 +70,10 @@ class Edge(base.Annotable):
         self.rootedge = rootedge
         self.length = length
 
-    # def __deepcopy__(self, memo):
-    #     o = self.__class__.__new___(self.__class)
-    #     memo[id(self)] = o
-    #     for k, v in self.__dict__.iteritems():
-    #         if not k in ['tail_node', 'head_node', 'length', 'rootedge', "_oid"]:
-    #             o.__dict__[k] = copy.deepcopy(v, memo)
-    #     return o
-
-    # def collapse(self):
-    #     h = self.head_node
-    #     if h.is_leaf():
-    #         return
-    #     t = self.tail_node
-    #     if t is None:
-    #         return
-    #     c = h.child_nodes()
-    #     pc = t.child_nodes()
-    #     pos = len(pc)
-    #     try:
-    #         pos = pc.index(h)
-    #     except:
-    #         pass
-    #     for i, ch in enumerate(c):
-    #         t.add_child(ch, pos=pos + i)
-    #     t.remove_child(h)
-
     def new_edge(self, *args, **kwargs):
-        "Returns a new edge object of the same class of this edge."
+        """
+        Returns a new edge object of the same class of this edge.
+        """
         edge = self.__class__(*args, **kwargs)
         return edge
 
@@ -229,7 +201,8 @@ class Node(base.Annotable):
         """
         Constructs a node.
 
-        :Parameters:
+        Parameters
+        ----------
 
         taxon : :class:`Taxon` object
             The :class:`Taxon` object representing the operational taxonomic unit
@@ -266,19 +239,20 @@ class Node(base.Annotable):
 
         Visits self and all descendant nodes, with each node visited before its
         children. Filtered by `filter_fn`: node is only returned if no
-        `filter_fn` is given or if filter_fn returns :class:`True`.
+        `filter_fn` is given or if filter_fn returns `True`.
 
-        :Parameters:
-
+        Parameters
+        ----------
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
-        :Returns:
-
-        Iterator over a sequence of nodes resulting from a pre-order traversal
-        of the subtree starting at this node.
+        Returns
+        -------
+        collections.Iterator[Node]
+            An iterator over nodes of subtree rooted at this node in preorder
+            sequence.
 
         """
         stack = [self]
@@ -296,25 +270,28 @@ class Node(base.Annotable):
 
         Visits self and all internal descendant nodes, with any particular node
         visited before its children. Filtered by `filter_fn`: node is only
-        returned if no `filter_fn` is given or if filter_fn returns :class:`True`.
+        returned if no `filter_fn` is given or if filter_fn returns `True`.
 
-        Root or seed node is include unless `exclude_seed_node` is :class:`True`.
+        Root or seed node is included unless `exclude_seed_node` is
+        `True`.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
-        exclude_seed_node : boolean, default = :class:`False`
-            If :class:`False` (default), seed node or root is visited. If :class:`True`,
+        exclude_seed_node : boolean, default = `False`
+            If `False` (default), seed node or root is visited. If `True`,
             then it is skipped.
 
-        :Returns:
-
-        Iterator over a sequence of internal nodes resulting from a pre-order
-        traversal of the subtree starting at this node.
+        Returns
+        -------
+        collections.Iterator[Node]
+            Iterator over a sequence of internal nodes resulting from a
+            pre-order traversal of the subtree starting at this node.
 
         """
         if exclude_seed_node:
@@ -333,19 +310,21 @@ class Node(base.Annotable):
 
         Visits self and all descendant nodes, with amy particular node visited
         after its children. Filtered by `filter_fn`: node is only returned if
-        no `filter_fn` is given or if filter_fn returns :class:`True`.
+        no `filter_fn` is given or if filter_fn returns `True`.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
-        :Returns:
-
-        Iterator over a sequence of nodes resulting from a post-order traversal
-        of the subtree starting at this node.
+        Returns
+        -------
+        collections.Iterator[Node]
+            Iterator over a sequence of nodes resulting from a post-order
+            traversal of the subtree starting at this node.
 
         """
         # if self._child_nodes:
@@ -373,25 +352,27 @@ class Node(base.Annotable):
 
         Visits self and all internal descendant nodes, with any particular node
         visited after its children. Filtered by `filter_fn`: node is only
-        returned if no `filter_fn` is given or if filter_fn returns :class:`True`.
+        returned if no `filter_fn` is given or if filter_fn returns `True`.
 
-        Root or seed node is included unless `exclude_seed_node` is :class:`True`.
+        Root or seed node is included unless `exclude_seed_node` is `True`.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
-        exclude_seed_node : boolean, default = :class:`False`
-            If :class:`False` (default), seed node or root is visited. If :class:`True`,
+        exclude_seed_node : boolean, default = `False`
+            If `False` (default), seed node or root is visited. If `True`,
             then it is skipped.
 
-        :Returns:
-
-        Iterator over a sequence of nodes resulting from a post-order traversal
-        of the subtree starting at this node.
+        Returns
+        -------
+        collections.Iterator[Node]
+            Iterator over a sequence of internal nodes resulting from a
+            post-order traversal of the subtree starting at this node.
 
         """
         if exclude_seed_node:
@@ -408,17 +389,19 @@ class Node(base.Annotable):
         """
         Level-order traversal of subtree rooted at this node.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
-        :Returns:
-
-        Iterator over sequence of nodes of the subtree rooted at this node in
-        level-order.
+        Returns
+        -------
+        collections.Iterator[Node]
+            Iterator over sequence of nodes of the subtree rooted at this node in
+            level-order.
 
         """
         if filter_fn is None or filter_fn(self):
@@ -440,17 +423,19 @@ class Node(base.Annotable):
         """
         In-order traversal of subtree rooted at this node.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
-        :Returns:
-
-        Iterator over sequence of nodes of the subtree rooted at this node in
-        in-order.
+        Returns
+        -------
+        collections.Iterator[Node]
+            Iterator over sequence of nodes of the subtree rooted at this node
+            in in-order.
 
         """
         if len(self._child_nodes) == 0:
@@ -470,17 +455,19 @@ class Node(base.Annotable):
         """
         Iterate over all leaves that ultimately descend from this node.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
-        :Returns:
-
-        Iterator over a sequence of leaf nodes that have this node as an
-        ancestor.
+        Returns
+        -------
+        collections.Iterator[Node]
+            Iterator over a sequence of leaf nodes that have this node as an
+            ancestor.
 
         """
         if filter_fn:
@@ -494,16 +481,18 @@ class Node(base.Annotable):
         """
         Iterate over all nodes that are the (immediate) children of this node.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
-        :Returns:
-
-        Iterator over a sequence of nodes that have this node as a parent.
+        Returns
+        -------
+        collections.Iterator[Node]
+            Iterator over a sequence of nodes that have this node as a parent.
 
         """
         for node in self._child_nodes:
@@ -518,19 +507,21 @@ class Node(base.Annotable):
         `inclusive` is True, self is returned as the first item of the
         sequence.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
         inclusive : boolean
-            If :class:`True`, includes this node in the sequence.
+            If `True`, includes this node in the sequence.
 
-        :Returns:
-
-        Iterator over all predecessor/ancestor nodes of this node.
+        Returns
+        -------
+        collections.Iterator[Node]
+            Iterator over all predecessor/ancestor nodes of this node.
 
         """
         if inclusive:
@@ -550,31 +541,33 @@ class Node(base.Annotable):
         Iterates over nodes in order of age ('age' is as given by the `age`
         attribute, which is usually the sum of edge lengths from tips
         to node, i.e., time since present).
-        If `include_leaves` is :class:`True` (default), leaves are included in the
-        iteration; if `include_leaves` is :class:`False`, leaves will be skipped.
-        If `descending` is :class:`False` (default), younger nodes will be returned
-        before older ones; if :class:`True`, older nodes will be returned before
+        If `include_leaves` is `True` (default), leaves are included in the
+        iteration; if `include_leaves` is `False`, leaves will be skipped.
+        If `descending` is `False` (default), younger nodes will be returned
+        before older ones; if `True`, older nodes will be returned before
         younger ones.
 
-        :Parameters:
+        Parameters
+        ----------
 
         include_leaves : boolean
-            If :class:`True` (default), then leaf nodes are included in the iteration.
-            If :class:`False`, then leaf nodes are skipped.
+            If `True` (default), then leaf nodes are included in the iteration.
+            If `False`, then leaf nodes are skipped.
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
         descending : boolean
-            If :class:`False` (default), then younger nodes are visited before older
-            ones. If :class:`True`, then older nodes are visited before younger ones.
+            If `False` (default), then younger nodes are visited before older
+            ones. If `True`, then older nodes are visited before younger ones.
 
-        :Returns:
-
-        Iterator over age-ordered sequence of nodes in subtree rooted at this
-        node.
+        Returns
+        -------
+        collections.Iterator[Node]
+            Iterator over age-ordered sequence of nodes in subtree rooted at
+            this node.
 
         """
         if not descending:
@@ -612,10 +605,11 @@ class Node(base.Annotable):
 
         Side effects:
 
-            - sets the parent of each child node to this node
-            - sets the tail node of each child to self
+            * sets the parent of each child node to this node
+            * sets the tail node of each child to self
 
-        :Parameters:
+        Parameters
+        ----------
 
         child_nodes : iterable (of Node objects)
 
@@ -636,7 +630,8 @@ class Node(base.Annotable):
         Results in the parent_node and containing_tree of the node being
         attached set to this node. Returns node that was just attached.
 
-        :Parameters:
+        Parameters
+        ----------
 
         node : Node
             The node to be added as a child of this node.
@@ -645,8 +640,9 @@ class Node(base.Annotable):
             If not `None`, the position in the the sequence of children that
             this child should occupy.
 
-        :Returns:
-
+        Returns
+        -------
+        Node
             Node that was added.
 
         """
@@ -669,13 +665,14 @@ class Node(base.Annotable):
         """
         Create and add a new child to this node.
 
-        :Parameters:
+        Parameters
+        ----------
 
-        `**kwargs` : keyword arguments
+        \*\*kwargs : keyword arguments
             Keyword arguments will be passed to :class:`Node` constructor.
 
-        :Returns:
-
+        Returns
+        -------
             Node that was added.
 
         """
@@ -691,7 +688,8 @@ class Node(base.Annotable):
         Results in the parent_node and containing_tree of the node being
         attached set to this node. Returns node that was just attached.
 
-        :Parameters:
+        Parameters
+        ----------
 
         node : Node
             The node to be added as a child of this node.
@@ -700,8 +698,9 @@ class Node(base.Annotable):
             If not `None`, the position in the the sequence of children that
             this child should occupy.
 
-        :Returns:
-
+        Returns
+        -------
+        Node
             Node that was added.
         """
         node = self.__class__(**kwargs)
@@ -712,26 +711,26 @@ class Node(base.Annotable):
         Removes a node from the child set of this node.
 
         Results in the parent of the node being removed set to `None`.  If
-        `suppress_deg_two` is :class:`True`, if this node ends up having only one
+        `suppress_deg_two` is `True`, if this node ends up having only one
         child after removal of the specified node, then this node will be
         removed from the tree, with its single child added to the child node
         set of its parent and the edge length adjusted accordingly.
-        `suppress_deg_two` should only be :class:`True` for unrooted trees.
+        `suppress_deg_two` should only be `True` for unrooted trees.
 
-        :Parameters:
-
+        Parameters
+        ----------
         node : Node object
             The node to be removed.
 
         suppress_deg_two : boolean
-            If :class:`False` (default), no action is taken. If :class:`True`, then if the
+            If `False` (default), no action is taken. If `True`, then if the
             node removal results in a node with degree of two (i.e., a single
             parent and a single child), then it will be removed from
             the tree and its (sole) child will be added as a child of its
             parent (with edge lengths adjusted accordingly).
 
-        :Returns:
-
+        Returns
+        -------
         Node
             The node removed.
 
@@ -944,11 +943,11 @@ class Node(base.Annotable):
     ## General Structural Access and Information
 
     def is_leaf(self):
-        "Returns :class:`True` if the node has no child_nodes"
+        "Returns `True` if the node has no child_nodes"
         return bool(not self._child_nodes)
 
     def is_internal(self):
-        "Returns :class:`True` if the node has child_nodes"
+        "Returns `True` if the node has child_nodes"
         return bool(self._child_nodes)
 
     def leaf_nodes(self):
@@ -956,8 +955,8 @@ class Node(base.Annotable):
         Returns list of all leaf_nodes descended from this node (or just
         list with self as the only member if self is a leaf).
 
-        :Note:
-
+        Note
+        ----
         Usage of  `leaf_iter()` is preferable for efficiency reasons unless
         actual list is required.
 
@@ -969,8 +968,8 @@ class Node(base.Annotable):
         """
         Returns the a shallow-copy list of all child nodes.
 
-        :Note:
-
+        Note
+        ----
         Usage of  `child_iter()` is preferable for efficiency reasons unless
         actual list is required.
 
@@ -1286,7 +1285,8 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         Constructs a new :class:`Tree` object and populates it with data from
         file-like object `stream`.
 
-        :Parameters:
+        Parameters
+        ----------
 
         stream : file or file-like object
             Source of data.
@@ -1307,7 +1307,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             `tree_offset`.  If `tree_offset` is not specified, then the first
             tree (offset=0) is returned.
 
-        `**kwargs` : keyword arguments
+        \*\*kwargs : keyword arguments
             Arguments to customize parsing, instantiation, processing, and
             accession of :class:`Tree` objects read from the data source, including
             schema- or format-specific handling.
@@ -1315,18 +1315,20 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             The following optional keyword arguments are recognized and handled
             by this function:
 
-                - `label` specifies the label or description of the new
+                * `label` specifies the label or description of the new
                   :class:`Tree` object.
-                - `taxon_namespace` specifies the :class:`TaxonNamespace` object to be
+                * `taxon_namespace` specifies the :class:`TaxonNamespace` object to be
                    attached to the new :class:`Tree` object.
 
-            All other keyword arguments are passed directly to :meth:`TreeList.read()`.
+            All other keyword arguments are passed directly to `TreeList.read()`.
             Other keyword arguments may be available, depending on the implementation
             of the reader specialized to handle `schema` formats.
 
-        :Returns:
-
-        A :class:`Tree` object (or `None` if not trees were found in the data source).
+        Returns
+        -------
+        Tree
+            A :class:`Tree` object (or `None` if not trees were found in the
+            data source).
 
         """
         taxon_namespace = taxon.process_kwargs_for_taxon_namespace(kwargs, None)
@@ -1362,17 +1364,18 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         Derived classes can override this method to provide support for
         specialized or different types of nodes on the tree.
 
-        :Parameters:
-
-        `*args` : positional arguments
+        Parameters
+        ----------
+        \*args : positional arguments
             Passed directly to constructor of :class:`Node`.
 
-        `**kwargs` : keyword arguments
+        \*\*kwargs : keyword arguments
             Passed directly to constructor of :class:`Node`.
 
-        :Returns:
-
-        :class:`Node` object.
+        Returns
+        -------
+        Node
+            A new :class:`Node` object.
 
         """
         return Node(*args, **kwargs)
@@ -1523,7 +1526,8 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         structure being read, call `tree.annotations.drop()` to clear any
         annotations calling this method.
 
-        :Parameters:
+        Parameters
+        ----------
 
         stream : file or file-like object
             Source of data.
@@ -1544,7 +1548,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             `tree_offset`.  If `tree_offset` is not specified, then the first
             tree (offset=0) is returned.
 
-        `**kwargs` : keyword arguments
+        \*\*kwargs : keyword arguments
             Arguments to customize parsing, instantiation, processing, and
             accession of :class:`Tree` objects read from the data source, including
             schema- or format-specific handling.
@@ -1552,21 +1556,21 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             The following optional keyword arguments are recognized and handled
             by this function:
 
-                - `label` specifies the label or description of the new
+                * `label` specifies the label or description of the new
                   :class:`Tree`.
-                - `taxon_namespace` specifies the :class:`TaxonNamespace` object to be
+                * `taxon_namespace` specifies the :class:`TaxonNamespace` object to be
                    attached to the this tree. If not specified, then the
                    current :class:`TaxonNamespace` object reference will be used. If
                    `None`, then a new :class:`TaxonNamespace` will be created.
-                - `ignore_metadata` if :class:`True`, will not accession any metadata
+                * `ignore_metadata` if `True`, will not accession any metadata
                   annotations in the data.
 
-            All other keyword arguments are passed directly to :meth:`TreeList.read()`.
+            All other keyword arguments are passed directly to `TreeList.read()`.
             Other keyword arguments may be available, depending on the implementation
             of the reader specialized to handle `schema` formats.
 
-        :Returns:
-
+        Returns
+        -------
         A :class:`Tree` object (or :class:`ValueError` if no trees ).
 
         """
@@ -1592,8 +1596,8 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Additionally, for some formats, the following keywords are recognized:
 
-            - `edge_lengths` : if False, edges will not write edge lengths [True]
-            - `internal_labels` : if False, internal labels will not be written [True]
+            * `edge_lengths` : if False, edges will not write edge lengths [True]
+            * `internal_labels` : if False, internal labels will not be written [True]
         """
         raise NotImplementedError
 
@@ -1604,14 +1608,15 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         Returns list of nodes on tree.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
-            Takes a single :class:`Node` object as an argument and returns :class:`True` if
-            this node is to be included in the list or :class:`False` otherwise.
+            Takes a single :class:`Node` object as an argument and returns `True` if
+            this node is to be included in the list or `False` otherwise.
 
-        :Returns:
-
+        Returns
+        -------
         List of :class:`Node` objects in the tree.
 
         """
@@ -1628,16 +1633,17 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         Returns list of internal nodes in the tree.
 
-        Root or seed node is included unless `exclude_seed_node` is :class:`True`.
+        Root or seed node is included unless `exclude_seed_node` is `True`.
 
-        :Parameters:
+        Parameters
+        ----------
 
-        exclude_seed_node : boolean, default = :class:`False`
-            If :class:`False` (default), seed node or root is visited. If :class:`True`,
+        exclude_seed_node : boolean, default = `False`
+            If `False` (default), seed node or root is visited. If `True`,
             then it is skipped.
 
-        :Returns:
-
+        Returns
+        -------
         List of internal :class:`Node` objects on this :class:`Tree`.
 
         """
@@ -1647,14 +1653,15 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         Returns list of edges on tree.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
-            Takes a single :class:`Edge` object as an argument and returns :class:`True` if
-            this edge is to be included in the list or :class:`False` otherwise.
+            Takes a single :class:`Edge` object as an argument and returns `True` if
+            this edge is to be included in the list or `False` otherwise.
 
-        :Returns:
-
+        Returns
+        -------
         List of :class:`Edge` objects in the tree.
 
         """
@@ -1671,16 +1678,17 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         Returns list of internal edges in the tree.
 
-        Root or seed edge is included unless `exclude_seed_edge` is :class:`True`.
+        Root or seed edge is included unless `exclude_seed_edge` is `True`.
 
-        :Parameters:
+        Parameters
+        ----------
 
-        exclude_seed_node : boolean, default = :class:`False`
-            If :class:`False` (default), seed node or root is visited. If :class:`True`,
+        exclude_seed_node : boolean, default = `False`
+            If `False` (default), seed node or root is visited. If `True`,
             then it is skipped.
 
-        :Returns:
-
+        Returns
+        -------
         List of internal :class:`Edge` objects on this :class:`Tree`.
 
         """
@@ -1704,17 +1712,18 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         will return all nodes which have an attributed 'genes' and this value
         is not None.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
-            Takes a single :class:`Node` object as an argument and returns :class:`True` or
-            :class:`False` if the node should be returned.
+            Takes a single :class:`Node` object as an argument and returns `True` or
+            `False` if the node should be returned.
 
-        :Returns:
-
+        Returns
+        -------
         :class:`Node` object or `None`
             Returns first :class:`Node` object for which the filter function
-            `filter_fn` returns :class:`True`, or `None` if no such node exists on
+            `filter_fn` returns `True`, or `None` if no such node exists on
             this tree.
 
         """
@@ -1726,13 +1735,14 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         Returns first node with `label` attribute matching `label` argument.
 
-        :Parameters:
+        Parameters
+        ----------
 
         label : string
             Label of :class:`Node` object to be returned.
 
-        :Returns:
-
+        Returns
+        -------
         :class:`Node` object or `None`
             Returns first :class:`Node` object with `label` attribute having value
             given in `label`, or`None` if no such node is found.
@@ -1747,14 +1757,15 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         Returns node associated with :class:`Taxon` object `taxon`.
 
-        :Parameters:
+        Parameters
+        ----------
 
         taxon : :class:`Taxon` object
             :class:`Taxon` object that should be associated with the node to be
             returned.
 
-        :Returns:
-
+        Returns
+        -------
         :class:`Node` object or `None`
             Returns first :class:`Node` object with `taxon` attribute referencing same
             object as `taxon` argument, or `None` if no such node exists.
@@ -1771,17 +1782,18 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     def find_node_with_taxon(self, taxon_filter_fn=None):
         """
         Returns node associated with :class:`Taxon` object for which `taxon_filter_fn`
-        returns :class:`True`.
+        returns `True`.
 
-        :Parameters:
+        Parameters
+        ----------
 
         taxon_filter_fn : function object
-            Takes a single :class:`Taxon` object as an argument and returns :class:`True` or
-            :class:`False` if the node associated with that :class:`Taxon` should be
+            Takes a single :class:`Taxon` object as an argument and returns `True` or
+            `False` if the node associated with that :class:`Taxon` should be
             returned.
 
-        :Returns:
-
+        Returns
+        -------
         :class:`Node` object or `None`
             Returns first :class:`Node` object with `taxon` attribute passing filter
             function `taxon_filter_fn`, or `None` if no such node is found.
@@ -1797,13 +1809,14 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         Returns node associated with :class:`Taxon` object with the specified label.
 
-        :Parameters:
+        Parameters
+        ----------
 
         label : string
             Label of :class:`Taxon` object associated with the node to be returned.
 
-        :Returns:
-
+        Returns
+        -------
         :class:`Node` object or `None`
             Returns first :class:`Node` object with `taxon` attribute having label
             `label`, or`None` if no such node is found.
@@ -1821,9 +1834,9 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         the root, or `start_node`, in the direction toward the tips of
         the tree) that has all of the taxa that:
 
-            - are specified by the split bitmask given by the keyword argument `split_bitmask`
-            - are in the list of :class:`Taxon` objects given by the keyword argument 'taxa'
-            - have the labels specified by the list of strings given by the keyword argument 'taxon_labels'
+            * are specified by the split bitmask given by the keyword argument `split_bitmask`
+            * are in the list of Taxon objects given by the keyword argument 'taxa'
+            * have the labels specified by the list of strings given by the keyword argument 'taxon_labels'
 
         Returns None if no appropriate node is found.
         Assumes that edges on tree have been decorated with treesplit.
@@ -1899,8 +1912,8 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         ...    print(nd.label)
         ...
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over nodes in tree in preorder.
 
         """
@@ -1912,17 +1925,18 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Visits nodes on tree, with each node visited before its children.
         Filtered by `filter_fn`: node is only returned if no `filter_fn` is
-        given or if filter_fn returns :class:`True`.
+        given or if filter_fn returns `True`.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over a sequence of nodes resulting from a pre-order traversal
         of tree.
 
@@ -1935,23 +1949,24 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Visits internal nodes, with any particular node visited before its
         children. Filtered by `filter_fn`: node is only returned if no
-        `filter_fn` is given or if filter_fn returns :class:`True`.
+        `filter_fn` is given or if filter_fn returns `True`.
 
-        Root or seed node is not visited unless `exclude_seed_node` is :class:`True`.
+        Root or seed node is not visited unless `exclude_seed_node` is `True`.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
-        exclude_seed_node : boolean, default = :class:`False`
-            If :class:`False` (default), seed node or root is visited. If :class:`True`,
+        exclude_seed_node : boolean, default = `False`
+            If `False` (default), seed node or root is visited. If `True`,
             then it is skipped.
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over a sequence of internal nodes resulting from a pre-order
         traversal of tree.
 
@@ -1965,17 +1980,18 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Visits all nodes on tree, with any particular node visited after its
         children. Filtered by `filter_fn`: node is only returned if no
-        `filter_fn` is given or if filter_fn returns :class:`True`.
+        `filter_fn` is given or if filter_fn returns `True`.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over a sequence of nodes resulting from a post-order traversal
         of tree.
 
@@ -1988,23 +2004,24 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Visits internal nodes, with any particular node visited after its
         children. Filtered by `filter_fn`: node is only returned if no
-        `filter_fn` is given or if filter_fn returns :class:`True`.
+        `filter_fn` is given or if filter_fn returns `True`.
 
-        Root or seed node is not visited unless `exclude_seed_node` is :class:`True`.
+        Root or seed node is not visited unless `exclude_seed_node` is `True`.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
-        exclude_seed_node : boolean, default = :class:`False`
-            If :class:`False` (default), seed node or root is visited. If :class:`True`,
+        exclude_seed_node : boolean, default = `False`
+            If `False` (default), seed node or root is visited. If `True`,
             then it is skipped.
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over internal nodes of tree in postorder.
 
         """
@@ -2015,15 +2032,16 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         Level-order traversal of tree.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over sequence of nodes resulting from level-order traversal of
         tree.
 
@@ -2032,7 +2050,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def level_order_node_iter(self, filter_fn=None):
         """
-        Legacy support: use :meth:`Tree.levelorder_node_iter()` instead.
+        Legacy support: use `Tree.levelorder_node_iter()` instead.
         """
         warnings.warn("Use 'levelorder_node_iter()' instead of 'level_order_node_iter()'",
                 FutureWarning, stacklevel=2)
@@ -2042,15 +2060,16 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         In-order traversal of tree.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over sequence of nodes resulting from in-order traversal of
         tree.
 
@@ -2061,15 +2080,16 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         Iterate over all leaves of tree.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over a sequence of leaf nodes of this tree.
 
         """
@@ -2087,29 +2107,30 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         Iterates over nodes in order of age ('age' is as given by the `age`
         attribute, which is usually the sum of edge lengths from tips
         to node, i.e., time since present).
-        If `include_leaves` is :class:`True` (default), leaves are included in the
-        iteration; if `include_leaves` is :class:`False`, leaves will be skipped.
-        If `descending` is :class:`False` (default), younger nodes will be returned
-        before older ones; if :class:`True`, older nodes will be returned before
+        If `include_leaves` is `True` (default), leaves are included in the
+        iteration; if `include_leaves` is `False`, leaves will be skipped.
+        If `descending` is `False` (default), younger nodes will be returned
+        before older ones; if `True`, older nodes will be returned before
         younger ones.
 
-        :Parameters:
+        Parameters
+        ----------
 
         include_leaves : boolean
-            If :class:`True` (default), then leaf nodes are included in the iteration.
-            If :class:`False`, then leaf nodes are skipped.
+            If `True` (default), then leaf nodes are included in the iteration.
+            If `False`, then leaf nodes are skipped.
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this node is to be visited during this traversal
+            returns `True` if this node is to be visited during this traversal
             operation.
 
         descending : boolean
-            If :class:`False` (default), then younger nodes are visited before older
-            ones. If :class:`True`, then older nodes are visited before younger ones.
+            If `False` (default), then younger nodes are visited before older
+            ones. If `True`, then older nodes are visited before younger ones.
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over age-ordered sequence of nodes in tree.
 
         """
@@ -2128,17 +2149,18 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Visits edges on tree, with each edge visited before its children.
         Filtered by `filter_fn`: edge is only returned if no `filter_fn` is
-        given or if filter_fn returns :class:`True`.
+        given or if filter_fn returns `True`.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Edge` object as an argument and
-            returns :class:`True` if this edge is to be visited during this traversal
+            returns `True` if this edge is to be visited during this traversal
             operation.
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over a sequence of edges resulting from a pre-order traversal
         of tree.
 
@@ -2156,23 +2178,24 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Visits internal edges, with any particular edge visited before its
         children. Filtered by `filter_fn`: edge is only returned if no
-        `filter_fn` is given or if filter_fn returns :class:`True`.
+        `filter_fn` is given or if filter_fn returns `True`.
 
-        Root or seed edge is not visited unless `exclude_seed_edge` is :class:`True`.
+        Root or seed edge is not visited unless `exclude_seed_edge` is `True`.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Node` object as an argument and
-            returns :class:`True` if this edge is to be visited during this traversal
+            returns `True` if this edge is to be visited during this traversal
             operation.
 
-        exclude_seed_edge : boolean, default = :class:`False`
-            If :class:`False` (default), seed edge or root is visited. If :class:`True`,
+        exclude_seed_edge : boolean, default = `False`
+            If `False` (default), seed edge or root is visited. If `True`,
             then it is skipped.
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over a sequence of internal edges resulting from a pre-order
         traversal of tree.
 
@@ -2191,17 +2214,18 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Visits all edges on tree, with any particular edge visited after its
         children. Filtered by `filter_fn`: edge is only returned if no
-        `filter_fn` is given or if filter_fn returns :class:`True`.
+        `filter_fn` is given or if filter_fn returns `True`.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Edge` object as an argument and
-            returns :class:`True` if this edge is to be visited during this traversal
+            returns `True` if this edge is to be visited during this traversal
             operation.
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over a sequence of edges resulting from a post-order traversal
         of tree.
 
@@ -2219,23 +2243,24 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Visits internal edges, with any particular edge visited after its
         children. Filtered by `filter_fn`: edge is only returned if no
-        `filter_fn` is given or if filter_fn returns :class:`True`.
+        `filter_fn` is given or if filter_fn returns `True`.
 
-        Root or seed edge is not visited unless `exclude_seed_edge` is :class:`True`.
+        Root or seed edge is not visited unless `exclude_seed_edge` is `True`.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Edge` object as an argument and
-            returns :class:`True` if this edge is to be visited during this traversal
+            returns `True` if this edge is to be visited during this traversal
             operation.
 
-        exclude_seed_edge : boolean, default = :class:`False`
-            If :class:`False` (default), seed edge or root is visited. If :class:`True`,
+        exclude_seed_edge : boolean, default = `False`
+            If `False` (default), seed edge or root is visited. If `True`,
             then it is skipped.
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over internal edges of tree in postorder.
 
         """
@@ -2251,15 +2276,16 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         Level-order traversal of tree.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Edge` object as an argument and
-            returns :class:`True` if this edge is to be visited during this traversal
+            returns `True` if this edge is to be visited during this traversal
             operation.
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over sequence of edges resulting from level-order traversal of
         tree.
 
@@ -2273,7 +2299,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def level_order_edge_iter(self, filter_fn=None):
         """
-        Legacy support: use :meth:`Tree.levelorder_edge_iter()` instead.
+        Legacy support: use `Tree.levelorder_edge_iter()` instead.
         """
         warnings.warn("Use 'levelorder_edge_iter()' instead of 'level_order_edge_iter()'",
                 FutureWarning, stacklevel=2)
@@ -2283,15 +2309,16 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         In-order traversal of tree.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Edge` object as an argument and
-            returns :class:`True` if this edge is to be visited during this traversal
+            returns `True` if this edge is to be visited during this traversal
             operation.
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over sequence of edges resulting from in-order traversal of
         tree.
 
@@ -2307,15 +2334,16 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         Iterate over all leaves of tree.
 
-        :Parameters:
+        Parameters
+        ----------
 
         filter_fn : function object
             A function object that takes a :class:`Edge` object as an argument and
-            returns :class:`True` if this edge is to be visited during this traversal
+            returns `True` if this edge is to be visited during this traversal
             operation.
 
-        :Returns:
-
+        Returns
+        -------
         Iterator over a sequence of leaf edges of this tree.
 
         """
@@ -2758,7 +2786,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def xprune_taxa(self, taxa, update_splits=False, delete_outdegree_one=True):
         """
-        Removes terminal nodes associated with :class:`Taxon` objects given by the container
+        Removes terminal nodes associated with Taxon objects given by the container
         `taxa` (which can be any iterable, including a TaxonNamespace object) from `self`.
         """
         nodes_to_retain = []
@@ -2794,7 +2822,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def prune_taxa(self, taxa, update_splits=False, delete_outdegree_one=True):
         """
-        Removes terminal nodes associated with :class:`Taxon` objects given by the container
+        Removes terminal nodes associated with Taxon objects given by the container
         `taxa` (which can be any iterable, including a TaxonNamespace object) from `self`.
         """
         nodes_to_remove = []
@@ -2818,8 +2846,8 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             update_splits=False,
             delete_outdegree_one=True):
         """
-        Removes terminal nodes that are associated with :class:`Taxon` objects
-        with labels given by `labels`.
+        Removes terminal nodes that are associated with Taxon objects with
+        labels given by `labels`.
         """
         taxa = self.taxon_namespace.get_taxa(labels=labels)
         self.prune_taxa(taxa=taxa,
@@ -2831,9 +2859,9 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             update_splits=False,
             delete_outdegree_one=True):
         """
-        Removes terminal nodes that are not associated with any of the
-        :class:`Taxon` objects given by `taxa` (which can be any iterable,
-        including a TaxonNamespace object) from the `self`.
+        Removes terminal nodes that are not associated with any
+        of the Taxon objects given by ``taxa`` (which can be any iterable, including a
+        TaxonNamespace object) from the ``self``.
         """
         to_prune = [t for t in self.taxon_namespace if t not in taxa]
         self.prune_taxa(to_prune,
@@ -2845,7 +2873,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             update_splits=False,
             delete_outdegree_one=True):
         """
-        Removes terminal nodes that are not associated with :class:`Taxon` objects with
+        Removes terminal nodes that are not associated with Taxon objects with
         labels given by `labels`.
         """
         taxa = self.taxon_namespace.get_taxa(labels=labels)
@@ -2880,8 +2908,8 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def ladderize(self, ascending=True):
         """
-        Sorts child nodes in ascending (if ``ascending`` is `:class:`False``) or
-        descending (if ``ascending`` is `:class:`False``) order in terms of the number of
+        Sorts child nodes in ascending (if ``ascending`` is ``False``) or
+        descending (if ``ascending`` is ``False``) order in terms of the number of
         children each child node has.
         """
         node_desc_counts = {}
@@ -3098,15 +3126,15 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         of numbers of children in left and right subtrees over all internal
         nodes. ``normalize`` specifies the normalization:
 
-            - "max" or True [DEFAULT]
+            * "max" or True [DEFAULT]
                 normalized to maximum value for tree of
                 this size
-            - "yule"
+            * "yule"
                 normalized to the Yule model
-            - "pda"
+            * "pda"
                 normalized to the PDA (Proportional to Distinguishable
                 Arrangements) model
-            - None or False
+            * None or False
                 no normalization
 
         """
@@ -3216,15 +3244,15 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         tip of the tree. The larger the Sackin's index, the less balanced the
         tree. ``normalize`` specifies the normalization:
 
-            - True [DEFAULT]
+            * True [DEFAULT]
                 normalized to number of leaves; this results in a value
                 equivalent to that given by Tree.N_bar()
-            - "yule"
+            * "yule"
                 normalized to the Yule model
-            - "pda"
+            * "pda"
                 normalized to the PDA (Proportional to Distinguishable
                 Arrangements) model
-            - None or False
+            * None or False
                 no normalization
 
         """
@@ -3713,7 +3741,8 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         Constructs a new :class:`TreeList` object and populates it with trees from
         file-like object `stream`.
 
-        :Parameters:
+        Parameters
+        ----------
 
         stream : file or file-like object
             Source of data.
@@ -3740,7 +3769,7 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             parsing data schemas that support the concept of distinct
             collections of trees (e.g., NEXUS or NeXML).
 
-        `**kwargs` : keyword arguments
+        \*\*kwargs : keyword arguments
             Arguments to customize parsing, instantiation, processing, and
             accession of :class:`Tree` objects read from the data source, including
             schema- or format-specific handling.
@@ -3748,17 +3777,17 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             The following optional keyword arguments are recognized and handled
             by this function:
 
-                - `label` specifies the label or description of the new
+                * `label` specifies the label or description of the new
                   :class:`TreeList`.
-                - `taxon_namespace` specifies the :class:`TaxonNamespace` object to be
+                * `taxon_namespace` specifies the :class:`TaxonNamespace` object to be
                    attached to the new :class:`TreeList` object.
 
-            All other keyword arguments are passed directly to :meth:`TreeList.read()`.
+            All other keyword arguments are passed directly to `TreeList.read()`.
             Other keyword arguments may be available, depending on the implementation
             of the reader specialized to handle `schema` formats.
 
-        :Returns:
-
+        Returns
+        -------
         A :class:`TreeList` object.
 
         """
@@ -3780,16 +3809,16 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         Creates and returns a :class:`Tree` of a type that this list undestands how to
         manage.
 
-        :Parameters:
-
-        `*args` : positional arguments
+        Parameters
+        ----------
+        \*args : positional arguments
             Passed directly to constructor of :class:`Tree`.
 
-        `**kwargs` : keyword arguments
+        \*\*kwargs : keyword arguments
             Passed directly to constructor of :class:`Tree`.
 
-        :Returns:
-
+        Returns
+        -------
         A :class:`Tree` object.
 
         """
@@ -3902,7 +3931,8 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         Parses :class:`Tree` objects from data source and adds to this collection.
 
-        :Parameters:
+        Parameters
+        ----------
 
         stream : file or file-like object
             Source of data.
@@ -3929,7 +3959,7 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             parsing data schemas that support the concept of distinct
             collections of trees (e.g., NEXUS or NeXML).
 
-        `**kwargs` : keyword arguments
+        \*\*kwargs : keyword arguments
 
             Arguments to customize parsing, instantiation, processing, and
             accession of :class:`Tree` objects read from the data source, including
@@ -3938,8 +3968,8 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
             General (schema-agnostic) keyword arguments are:
 
-                - `rooted` specifies the default rooting interpretation of the tree.
-                - `edge_len_type` specifies the type of the edge lengths (int or
+                * `rooted` specifies the default rooting interpretation of the tree.
+                * `edge_len_type` specifies the type of the edge lengths (int or
                   float; defaults to 'float')
 
             Other keyword arguments are available depending on the schema. See
@@ -3983,11 +4013,12 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         as well as all :class:`Tree` objects in `other`. Note that if `other` is a
         :class:`TreeList`, then the :class:`Trees` are *cloned*; otherwise, they are copied.
 
-        :Parameters:
+        Parameters
+        ----------
         other : iterable of :class:`Tree` objects
 
-        :Returns:
-
+        Returns
+        -------
         :class:`TreeList` object containing clones of :class:`Tree` objects in `self` and
         `other`.
         """
@@ -4059,17 +4090,17 @@ class AsciiTreePlot(object):
         """
         __init__ takes the following kwargs:
 
-            - `plot_metric` A string which specifies how branches should be scaled, one of:
+            * `plot_metric` A string which specifies how branches should be scaled, one of:
                 'age' (distance from tips), 'depth' (distance from root),
                 'level' (number of branches from root) or 'length' (edge
                 length/weights).
-            - `show_internal_node_labels`
+            * `show_internal_node_labels`
                 Boolean: whether or not to write out internal node labels.
-            - `show_internal_node_ids`
+            * `show_internal_node_ids`
                 Boolean: whether or not to write out internal node id's.
-            - `leaf_spacing_factor`
+            * `leaf_spacing_factor`
                 Positive integer: number of rows between each leaf.
-            - `display_width`
+            * `display_width`
                 Force a particular display width, in terms of number of columns.
 
         """
