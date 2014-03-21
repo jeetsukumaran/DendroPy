@@ -654,5 +654,15 @@ class TestTreeStructure(unittest.TestCase):
         exp_labels = [x for x in self.leaf_sequence if self.node_expected_edge_lengths[x] > 10]
         self.assertEqual(visited_labels, exp_labels)
 
+    ###########################################################################
+    ## Special Iterators
+
+    def test_child_iterator_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        for nd in anodes:
+            expected_children = self.node_expected_children[nd.label]
+            children = [ch.label for ch in nd.child_iter()]
+            self.assertEqual(children, expected_children)
+
 if __name__ == "__main__":
     unittest.main()

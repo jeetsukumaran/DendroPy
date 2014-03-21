@@ -279,9 +279,6 @@ class Annotable(object):
                 a.target = self
     annotations = property(_get_annotations, _set_annotations)
 
-    def __str__(self):
-        return str(self.oid)
-
     def copy_annotations_from(self, other):
         if hasattr(other, "_annotations"):
             for annote in other._annotations:
