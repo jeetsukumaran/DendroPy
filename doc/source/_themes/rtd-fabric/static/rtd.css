@@ -48,7 +48,7 @@ div.bodywrapper {
     background-color: #ffffff;
     border-left: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
-    margin: 0 0 0 18em;
+    margin: 0 0 0 16em;
 }
 
 div.body {
@@ -250,8 +250,8 @@ div.sphinxsidebar {
     top: 3em;
     left: 0;
     padding: 0 1em;
-    width: 21em;
-    font-size: 0.8em;
+    width: 14em;
+    font-size: 1em;
     text-align: left;
     background-color: #e8ecef;
 }
