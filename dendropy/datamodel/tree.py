@@ -1354,7 +1354,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     semantically equivalent to the root.
     """
 
-    def parse_from_stream(cls,
+    def _parse_from_stream(cls,
             stream,
             schema,
             collection_offset=None,
@@ -1450,7 +1450,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             return tree_list[0]
         else:
             return tree_list[tree_offset]
-    parse_from_stream = classmethod(parse_from_stream)
+    _parse_from_stream = classmethod(_parse_from_stream)
 
     def node_factory(cls, *args, **kwargs):
         """
@@ -1721,7 +1721,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         ignore_metadata = kwargs.pop("ignore_metadata", False)
         if "taxon_namespace" not in kwargs and "taxon_set" not in kwargs:
             kwargs["taxon_namespace"] = self.taxon_namespace
-        tree = Tree.parse_from_stream(stream, schema, **kwargs)
+        tree = Tree._parse_from_stream(stream, schema, **kwargs)
         if tree is None:
             raise ValueError("Invalid tree source specification")
         self.seed_node = tree.seed_node
@@ -3147,7 +3147,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         for nd in self.preorder_node_iter():
             if not nd._parent_node:
                 # root node
-                # TODO: strictly speaking, this might be a terminal if distance_from_root == 0
+                # TODO: stringictly speaking, this might be a terminal if distance_from_root == 0
                 pass
             else:
                 if nd.root_distance == distance_from_root:
@@ -3948,7 +3948,7 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     object reference.
     """
 
-    def parse_from_stream(cls,
+    def _parse_from_stream(cls,
             stream,
             schema,
             collection_offset=None,
@@ -4019,7 +4019,7 @@ class TreeList(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
                 tree_offset=tree_offset,
                 **kwargs)
         return tree_list
-    parse_from_stream = classmethod(parse_from_stream)
+    _parse_from_stream = classmethod(_parse_from_stream)
 
     def tree_factory(cls, *args, **kwargs):
         """

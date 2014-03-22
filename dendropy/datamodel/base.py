@@ -83,21 +83,39 @@ class Readable(object):
     Mixin class which all classes that require deserialization should subclass.
     """
 
-    def parse_from_stream(cls, stream, schema, **kwargs):
+    def _parse_from_stream(cls, stream, schema, **kwargs):
         """
         Subclasses need to implement this method to create
         and return and instance of themselves read from the
         stream.
         """
         raise NotImplementedError
-    parse_from_stream = classmethod(parse_from_stream)
+    _parse_from_stream = classmethod(_parse_from_stream)
 
     def get_from_stream(cls, src, schema, **kwargs):
         """
-        Factory method to return new object of this class from file-like
-        object `src`.
+        Factory method to return new object of this class from file-like object
+        `src`.
+
+        Parameters
+        ----------
+        src : file or file-like
+            Source of data.
+        schema : string
+            Specification of data format (e.g., "nexus").
+        \*\*kwargs : keyword arguments, optional
+            Arguments to customize parsing, instantiation, processing, and
+            accession of objects read from the data source, including schema-
+            or format-specific handling. These will be passed to the underlying
+            schema-specific reader for handling.
+
+        Returns
+        -------
+        pdo : phylogenetic data object
+            New instance of object, constructed and populated from data given
+            in source.
         """
-        return cls.parse_from_stream(stream=src,
+        return cls._parse_from_stream(stream=src,
                 schema=schema,
                 **kwargs)
     get_from_stream = classmethod(get_from_stream)
@@ -106,9 +124,27 @@ class Readable(object):
         """
         Factory method to return new object of this class from file
         specified by string `src`.
+
+        Parameters
+        ----------
+        src : string
+            Full file path to source of data.
+        schema : string
+            Specification of data format (e.g., "nexus").
+        \*\*kwargs : keyword arguments, optional
+            Arguments to customize parsing, instantiation, processing, and
+            accession of objects read from the data source, including schema-
+            or format-specific handling. These will be passed to the underlying
+            schema-specific reader for handling.
+
+        Returns
+        -------
+        pdo : phylogenetic data object
+            New instance of object, constructed and populated from data given
+            in source.
         """
         fsrc = open(src, "rU")
-        return cls.parse_from_stream(stream=fsrc,
+        return cls._parse_from_stream(stream=fsrc,
                 schema=schema,
                 **kwargs)
     get_from_path = classmethod(get_from_path)
@@ -116,9 +152,27 @@ class Readable(object):
     def get_from_string(cls, src, schema, **kwargs):
         """
         Factory method to return new object of this class from string `src`.
+
+        Parameters
+        ----------
+        src : string
+            Data as a string.
+        schema : string
+            Specification of data format (e.g., "nexus").
+        \*\*kwargs : keyword arguments, optional
+            Arguments to customize parsing, instantiation, processing, and
+            accession of objects read from the data source, including schema-
+            or format-specific handling. These will be passed to the underlying
+            schema-specific reader for handling.
+
+        Returns
+        -------
+        pdo : phylogenetic data object
+            New instance of object, constructed and populated from data given
+            in source.
         """
         ssrc = StringIO(src)
-        return cls.parse_from_stream(stream=ssrc,
+        return cls._parse_from_stream(stream=ssrc,
                 schema=schema,
                 **kwargs)
     get_from_string = classmethod(get_from_string)
@@ -127,11 +181,29 @@ class Readable(object):
         """
         Factory method to return a new object of this class from
         URL given by `src`.
+
+        Parameters
+        ----------
+        src : string
+            URL of location providing source of data.
+        schema : string
+            Specification of data format (e.g., "nexus").
+        \*\*kwargs : keyword arguments, optional
+            Arguments to customize parsing, instantiation, processing, and
+            accession of objects read from the data source, including schema-
+            or format-specific handling. These will be passed to the underlying
+            schema-specific reader for handling.
+
+        Returns
+        -------
+        pdo : phylogenetic data object
+            New instance of object, constructed and populated from data given
+            in source.
         """
         text = read_url(src, strip_markup=strip_markup)
         ssrc = StringIO(text)
         try:
-            return cls.parse_from_stream(stream=ssrc,
+            return cls._parse_from_stream(stream=ssrc,
                     schema=schema,
                     **kwargs)
         except error.DataParseError:
@@ -142,9 +214,9 @@ class Readable(object):
     def __init__(self, *args, **kwargs):
         pass
 
-    def process_source_kwargs(self, **kwargs):
+    def _process_source_kwargs(self, **kwargs):
         """
-        If `stream` is specified, then process_source_kwargs:
+        If `stream` is specified, then _process_source_kwargs:
 
             # checks that `schema` keyword argument is specified, and then
             # calls self.read()
@@ -165,18 +237,36 @@ class Readable(object):
         #     as_str = kwargs["source_string"]
         #     del(kwargs["source_string"])
         #     kwargs["stream"] = StringIO(as_str)
-        #     return self.process_source_kwargs(**kwargs)
+        #     return self._process_source_kwargs(**kwargs)
         # elif "source_file" in kwargs:
         #     fp = kwargs["source_filepath"]
         #     fo = open(os.path.expandvars(os.path.expanduser(filepath)), "rU")
         #     del(kwargs["source_filepath"])
         #     kwargs["stream"] = fo
-        #     return self.process_source_kwargs(**kwargs)
+        #     return self._process_source_kwargs(**kwargs)
 
     def read(self, stream, schema, **kwargs):
         """
         Populates/constructs objects of this type from `schema`-formatted
         data in the file-like object source `stream`.
+
+        Parameters
+        ----------
+        stream : file or file-like
+            Source of data.
+        schema : string
+            Specification of data format (e.g., "nexus").
+        \*\*kwargs : keyword arguments, optional
+            Arguments to customize parsing, instantiation, processing, and
+            accession of objects read from the data source, including schema-
+            or format-specific handling. These will be passed to the underlying
+            schema-specific reader for handling.
+
+        Returns
+        -------
+        pdo : phylogenetic data object
+            New instance of object, constructed and populated from data given
+            in source.
         """
         raise NotImplementedError
 
@@ -184,19 +274,73 @@ class Readable(object):
         """
         Reads from file (exactly equivalent to just `read()`, provided
         here as a separate method for completeness.
+
+        Parameters
+        ----------
+        fileobj : file or file-like
+            Source of data.
+        schema : string
+            Specification of data format (e.g., "nexus").
+        \*\*kwargs : keyword arguments, optional
+            Arguments to customize parsing, instantiation, processing, and
+            accession of objects read from the data source, including schema-
+            or format-specific handling. These will be passed to the underlying
+            schema-specific reader for handling.
+
+        Returns
+        -------
+        pdo : phylogenetic data object
+            New instance of object, constructed and populated from data given
+            in source.
         """
         return self.read(stream=fileobj, schema=schema, **kwargs)
 
     def read_from_path(self, filepath, schema, **kwargs):
         """
-        Reads from file specified by `filepath`.
+        Reads data from file specified by `filepath`.
+
+        Parameters
+        ----------
+        filepath : file or file-like
+            Full file path to source of data.
+        schema : string
+            Specification of data format (e.g., "nexus").
+        \*\*kwargs : keyword arguments, optional
+            Arguments to customize parsing, instantiation, processing, and
+            accession of objects read from the data source, including schema-
+            or format-specific handling. These will be passed to the underlying
+            schema-specific reader for handling.
+
+        Returns
+        -------
+        pdo : phylogenetic data object
+            New instance of object, constructed and populated from data given
+            in source.
         """
         f = open(os.path.expandvars(os.path.expanduser(filepath)), "rU")
         return self.read(stream=f, schema=schema, **kwargs)
 
     def read_from_string(self, src_str, schema, **kwargs):
         """
-        Reads a string object.
+        Reads a string.
+
+        Parameters
+        ----------
+        src_str : string
+            Data as a string.
+        schema : string
+            Specification of data format (e.g., "nexus").
+        \*\*kwargs : keyword arguments, optional
+            Arguments to customize parsing, instantiation, processing, and
+            accession of objects read from the data source, including schema-
+            or format-specific handling. These will be passed to the underlying
+            schema-specific reader for handling.
+
+        Returns
+        -------
+        pdo : phylogenetic data object
+            New instance of object, constructed and populated from data given
+            in source.
         """
         s = StringIO(src_str)
         return self.read(stream=s, schema=schema, **kwargs)
@@ -204,6 +348,24 @@ class Readable(object):
     def read_from_url(self, url, schema, **kwargs):
         """
         Reads a URL source.
+
+        Parameters
+        ----------
+        src : string
+            URL of location providing source of data.
+        schema : string
+            Specification of data format (e.g., "nexus").
+        \*\*kwargs : keyword arguments, optional
+            Arguments to customize parsing, instantiation, processing, and
+            accession of objects read from the data source, including schema-
+            or format-specific handling. These will be passed to the underlying
+            schema-specific reader for handling.
+
+        Returns
+        -------
+        pdo : phylogenetic data object
+            New instance of object, constructed and populated from data given
+            in source.
         """
         src_str = read_url(url)
         s = StringIO(src_str)
@@ -454,40 +616,38 @@ class AnnotationSet(container.OrderedSet):
             annotate_as_reference=False,
             is_hidden=False):
         """
-        Add an annotation, where:
+        Add an annotation.
 
-            `name`
-                The property/subject/field of the annotation (e.g. "color",
-                "locality", "dc:citation")
+        Parameters
+        ----------
+        name : string
+            The property/subject/field of the annotation (e.g. "color",
+            "locality", "dc:citation")
+        value: string
+            The content of the annotation.
+        datatype_hint : string, optional
+            Mainly for NeXML output (e.g. "xsd:string").
+        namespace_prefix : string, optional
+            Mainly for NeXML output (e.g. "dc:").
+        namespace : string, optional
+            Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
+        name_is_prefixed : string, optional
+            Mainly for NeXML *input*: name will be split into prefix and local part
+            before storage (e.g., "dc:citations" will result in prefix = "dc" and
+            name="citations")
+        is_attribute : boolean, optional
+            If value is passed as a tuple of (object, "attribute_name") and this
+            is True, then actual content will be the result of calling
+            getattr(object, "attribute_name").
+        annotate_as_reference : boolean, optional
+            The value should be interpreted as a URI that points to content.
+        is_hidden : boolean, optional
+            Do not write or print this annotation when writing data.
 
-            `value`
-                The content of the annotation.
-
-            `datatype_hint`
-                Mainly for NeXML output (e.g. "xsd:string").
-
-            `namespace_prefix`
-                Mainly for NeXML output (e.g. "dc:").
-
-            `namespace`
-                Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
-
-            `name_is_prefixed`
-                Mainly for NeXML *input*: name will be split into prefix and local part
-                before storage (e.g., "dc:citations" will result in prefix = "dc" and
-                name="citations")
-
-            `is_attribute`
-                If value is passed as a tuple of (object, "attribute_name") and this
-                is True, then actual content will be the result of calling
-                `getattr(object, "attribute_name")`.
-
-            `annotate_as_reference`
-                The value should be interpreted as a URI that points to content.
-
-            `is_hidden`
-                Do not write or print this annotation when writing data.
-
+        Returns
+        -------
+        annotation : :class:`Annotation`
+            The new :class:`Annotation` created.
         """
         if not name_is_prefixed:
             if name_prefix is None and namespace is None:
@@ -525,41 +685,39 @@ class AnnotationSet(container.OrderedSet):
             owner_instance=None,
             ):
         """
-        Add an attribute of an object as an annotation. The value of the
+        Add an attribute of an object as a dynamic annotation. The value of the
         annotation will be dynamically bound to the value of the attribute.
 
-            `attr_name`
-                The (string) name of the attribute to be used as the source of the
-                content or value of the annotation.
+        Parameters
+        ----------
+        attr_name : string
+            The (string) name of the attribute to be used as the source of the
+            content or value of the annotation.
+        annotation_name : string, optional
+            Use this string as the annotation field/name rather than the attribute
+            name.
+        datatype_hint : string, optional
+            Mainly for NeXML output (e.g. "xsd:string").
+        namespace_prefix : string, optional
+            Mainly for NeXML output (e.g. "dc:").
+        namespace : string, optional
+            Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
+        name_is_prefixed : string, optional
+            Mainly for NeXML *input*: name will be split into prefix and local part
+            before storage (e.g., "dc:citations" will result in prefix = "dc" and
+            name="citations")
+        annotate_as_reference : bool, optional
+            The value should be interpreted as a URI that points to content.
+        is_hidden : bool, optional
+            Do not write or print this annotation when writing data.
+        owner_instance : object, optional
+            The object whose attribute is to be used as the value of the
+            annotation. Defaults to `self.target`.
 
-            `annotation_name`
-                Use this string as the annotation field/name rather than the attribute
-                name.
-
-            `datatype_hint`
-                Mainly for NeXML output (e.g. "xsd:string").
-
-            `namespace_prefix`
-                Mainly for NeXML output (e.g. "dc:").
-
-            `namespace`
-                Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
-
-            `name_is_prefixed`
-                Mainly for NeXML *input*: name will be split into prefix and local part
-                before storage (e.g., "dc:citations" will result in prefix = "dc" and
-                name="citations")
-
-            `annotate_as_reference`
-                The value should be interpreted as a URI that points to content.
-
-            `is_hidden`
-                Do not write or print this annotation when writing data.
-
-            `owner_instance`
-                The object whose attribute is to be used as the value of the
-                annotation. Defaults to `self.target`.
-
+        Returns
+        -------
+        annotation : :class:`Annotation`
+            The new :class:`Annotation` created.
         """
         if annotation_name is None:
             annotation_name = attr_name
@@ -601,41 +759,40 @@ class AnnotationSet(container.OrderedSet):
         """
         Add a citation as an annotation.
 
-            `citation`
-                This can be a string representing a BibTex entry, a dictionary
-                with BibTex fields as keys and contents as values, or a
-                dendropy.utility.BibTex.BibTexEntry object.
+        Parameters
+        ----------
+        citation : string or dict or :class:`BibTexEntry`
+            The citation to be added. If a string, then it must be a
+            BibTex-formatted entry. If a dictionary, then it must have
+            BibTex fields as keys and contents as values.
+        read_as : string, optional
+            Specifies the format/schema/structure of the citation. Currently
+            only supports 'bibtex'.
+        store_as : string, optional
+            Specifies how to record the citation, with one of the
+            following strings as values:
 
-            `read_as`
-                Specifies the format/schema/structure of the citation. Currently
-                only supports 'bibtex'.
+                "bibtex"
+                    A set of annotations, where each BibTex field becomes a
+                    separate annotation.
+                "prism"
+                    A set of of PRISM (Publishing Requirements for Industry
+                    Standard Metadata) annotations.
+                "dublin"
+                    A set of of Dublic Core annotations.
 
-            `store_as`
-                Specifies how to record the citation, takes one of the
-                following strings as values:
+            Defaults to "bibtex".
+        name_prefix : string, optional
+            Mainly for NeXML output (e.g. "dc:").
+        namespace : string, optional
+            Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
+        is_hidden : boolean, optional
+            Do not write or print this annotation when writing data.
 
-                    "bibtex"
-                        A set of annotations, where each BibTex field becomes a
-                        separate annotation.
-
-                    "prism"
-                        A set of of PRISM (Publishing Requirements for Industry
-                        Standard Metadata) annotations.
-
-                    "dublin"
-                        A set of of Dublic Core annotations.
-
-                Defaults to "bibtex".
-
-            `name_prefix`
-                Mainly for NeXML output (e.g. "dc:").
-
-            `namespace`
-                Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
-
-            `is_hidden`
-                Do not write or print this annotation when writing data.
-
+        Returns
+        -------
+        annotation : :class:`Annotation`
+            The new :class:`Annotation` created.
         """
         if read_as == "bibtex":
             return self.add_bibtex(citation=citation,
@@ -655,36 +812,37 @@ class AnnotationSet(container.OrderedSet):
         """
         Add a citation as an annotation.
 
-            `citation`
-                This can be a string representing a BibTex entry, a dictionary
-                with BibTex fields as keys and contents as values, or a
-                dendropy.utility.BibTex.BibTexEntry object.
+        Parameters
+        ----------
+        citation : string or dict or :class:`BibTexEntry`
+            The citation to be added. If a string, then it must be a
+            BibTex-formatted entry. If a dictionary, then it must have
+            BibTex fields as keys and contents as values.
+        store_as : string, optional
+            Specifies how to record the citation, with one of the
+            following strings as values:
 
-            `store_as`
-                Specifies how to record the citation:
+                "bibtex"
+                    A set of annotations, where each BibTex field becomes a
+                    separate annotation.
+                "prism"
+                    A set of of PRISM (Publishing Requirements for Industry
+                    Standard Metadata) annotations.
+                "dublin"
+                    A set of of Dublic Core annotations.
 
-                    "bibtex"
-                        A set of annotations, where each BibTex field becomes a
-                        separate annotation.
+            Defaults to "bibtex".
+        name_prefix : string, optional
+            Mainly for NeXML output (e.g. "dc:").
+        namespace : string, optional
+            Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
+        is_hidden : boolean, optional
+            Do not write or print this annotation when writing data.
 
-                    "prism"
-                        A set of of PRISM (Publishing Requirements for Industry
-                        Standard Metadata) annotations.
-
-                    "dublin"
-                        A set of of Dublic Core annotations.
-
-                Defaults to "bibtex".
-
-            `name_prefix`
-                Mainly for NeXML output (e.g. "dc:").
-
-            `namespace`
-                Mainly for NeXML output (e.g. "http://www.w3.org/XML/1998/namespace").
-
-            `is_hidden`
-                Do not write or print this annotation when writing data.
-
+        Returns
+        -------
+        annotation : :class:`Annotation`
+            The new :class:`Annotation` created.
         """
         bt = bibtex.BibTexEntry(citation)
         bt_dict = bt.fields_as_dict()
@@ -810,6 +968,11 @@ class AnnotationSet(container.OrderedSet):
 
             >>> notes = tree.annotations.findall()
 
+        Returns
+        -------
+        results : :class:`AnotationSet` or `None`
+            :class:`AnnotationSet` containing :class:`Annotation` objects that
+            match criteria, or `None` if no matching annotations found.
         """
         results = []
         for a in self:
@@ -830,6 +993,12 @@ class AnnotationSet(container.OrderedSet):
         If no match is found, None is returned.
 
         If no keyword arguments are given, a TypeError is raised.
+
+        Returns
+        -------
+        results : :class:`Anotation` or `None`
+            First :class:`Annotation` object found that matches criteria, or
+            `None` if no matching annotations found.
         """
         if "default" in kwargs:
             default = kwargs["default"]
@@ -849,6 +1018,20 @@ class AnnotationSet(container.OrderedSet):
         self.target which has `name` in the name field.
 
         If no match is found, then `default` is returned.
+
+        Parameters
+        ----------
+        name : string
+            Name of :class:`Annotation` object whose value is to be returned.
+
+        default : any, optional
+            Value to return if no matching :class:`Annotation` object found.
+
+        Returns
+        -------
+        results : :class:`Annotation` or `None`
+            `value` of first :class:`Annotation` object found that matches
+            criteria, or `None` if no matching annotations found.
         """
         for a in self:
             if a.is_match(name=name):
@@ -889,6 +1072,11 @@ class AnnotationSet(container.OrderedSet):
 
             >>> tree.annotations.drop()
 
+        Returns
+        -------
+        results : :class:`AnotationSet`
+            :class:`AnnotationSet` containing :class:`Annotation` objects that
+            were removed.
         """
         to_remove = []
         for a in self:
@@ -903,21 +1091,20 @@ class AnnotationSet(container.OrderedSet):
         Returns annotation set as a dictionary. The keys and values for the dictionary will
         be generated based on the following keyword arguments:
 
-            ``key_attr``
-                String specifying an Annotation object attribute name to be used
-                as keys for the dictionary.
-
-            ``key_func``
-                Function that takes an Annotation object as an argument and returns
-                the value to be used as a key for the dictionary.
-
-            ``value_attr``
-                String specifying an Annotation object attribute name to be used
-                as values for the dictionary.
-
-            ``value_func``
-                Function that takes an Annotation object as an argument and returns
-                the value to be used as a value for the dictionary.
+        Keyword Arguments
+        -----------------
+        key_attr : string
+            String specifying an Annotation object attribute name to be used
+            as keys for the dictionary.
+        key_func : string
+            Function that takes an Annotation object as an argument and returns
+            the value to be used as a key for the dictionary.
+        value_attr : string
+            String specifying an Annotation object attribute name to be used
+            as values for the dictionary.
+        value_func : string
+            Function that takes an Annotation object as an argument and returns
+            the value to be used as a value for the dictionary.
 
         At most one of ``key_attr`` or ``key_func`` can be specified. If neither
         is specified, then by default the keys are generated from Annotation.name.
@@ -925,6 +1112,10 @@ class AnnotationSet(container.OrderedSet):
         is specified, then by default the values are generated from Annotation.value.
         Key collisions will result in the dictionary entry for that key being
         overwritten.
+
+        Returns
+        -------
+        values : dict
         """
         if "key_attr" in kwargs and "key_func" in kwargs:
             raise TypeError("Cannot specify both 'key_attr' and 'key_func'")
