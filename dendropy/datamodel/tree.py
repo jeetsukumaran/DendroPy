@@ -36,7 +36,7 @@ from dendropy import dataio
 
 class Edge(base.Annotable):
     """
-    An edge on a tree.
+    An :term:`edge` on a :term:`tree`.
     """
 
     def __init__(self,
@@ -48,11 +48,13 @@ class Edge(base.Annotable):
         """
         Parameters
         ----------
-        tail_node : :class::class:`Node`
-            :class::class:`Node` from which this edge originates, i.e., the parent node of `head_node`.
+        tail_node : :class:`Node`
+            Node from which this edge originates, i.e., the parent node of this
+            edge's `head_node`.
 
-        head_node : :class::class:`Node`
-            :class::class:`Node` from which this edge originates, i.e., the parent node of `head_node`.
+        head_node : :class:`Node`
+            Node from to which this edge links, i.e., the child node of this
+            node `tail_node`.
 
         length : numerical
             A value representing the weight of the edge.
@@ -188,7 +190,7 @@ class Edge(base.Annotable):
 
 class Node(base.Annotable):
     """
-    A node on a tree.
+    A :term:`node` on a :term:`tree`.
     """
 
     ###########################################################################
@@ -199,14 +201,12 @@ class Node(base.Annotable):
             label=None,
             edge_length=None):
         """
-        Constructs a node.
-
         Parameters
         ----------
 
-        taxon : :class:`Taxon` object
-            The :class:`Taxon` object representing the operational taxonomic unit
-            concept associated with this Node.
+        taxon : :class:`Taxon`
+            The :class:`Taxon` instance representing the operational taxonomic
+            unit concept associated with this Node.
         label : string
             A label for this node.
         edge_length : numeric
@@ -235,25 +235,26 @@ class Node(base.Annotable):
 
     def preorder_iter(self, filter_fn=None):
         """
-        Pre-order traversal of subtree rooted at this node.
+        Pre-order iterator over nodes of subtree rooted at this node.
 
         Visits self and all descendant nodes, with each node visited before its
-        children. Filtered by `filter_fn`: node is only returned if no
-        `filter_fn` is given or if filter_fn returns `True`.
+        children. Nodes can optionally be filtered by `filter_fn`: only nodes
+        for which `filter_fn` returns `True` when called with the node as an
+        argument are yielded.
 
         Parameters
         ----------
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        collections.Iterator[Node]
-            An iterator over nodes of subtree rooted at this node in preorder
-            sequence.
-
+        iter : collections.Iterator[:class:`Node`]
+            An iterator yielding nodes of the subtree rooted at this node in
+            pre-order sequence.
         """
         stack = [self]
         while stack:
@@ -266,33 +267,30 @@ class Node(base.Annotable):
 
     def preorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
-        Pre-order traversal of internal nodes of subtree rooted at this node.
+        Pre-order iterator over internal nodes of subtree rooted at this node.
 
-        Visits self and all internal descendant nodes, with any particular node
-        visited before its children. Filtered by `filter_fn`: node is only
-        returned if no `filter_fn` is given or if filter_fn returns `True`.
-
-        Root or seed node is included unless `exclude_seed_node` is
-        `True`.
+        Visits self and all descendant nodes, with each node visited before its
+        children. The root or seed node is included unless `exclude_seed_node`
+        is `True`. Nodes can optionally be filtered by `filter_fn`: only nodes
+        for which `filter_fn` returns `True` when passed the node as an
+        argument are yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
-
-        exclude_seed_node : boolean, default = `False`
-            If `False` (default), seed node or root is visited. If `True`,
-            then it is skipped.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
+        exclude_seed_node : boolean, optional
+            If `False` (default), then the seed node or root is visited. If
+            `True`, then the seed node is skipped.
 
         Returns
         -------
-        collections.Iterator[Node]
-            Iterator over a sequence of internal nodes resulting from a
-            pre-order traversal of the subtree starting at this node.
-
+        iter : collections.Iterator[:class:`Node`]
+            An iterator yielding the internal nodes of the subtree rooted at
+            this node in pre-order sequence.
         """
         if exclude_seed_node:
             froot = lambda x: x._parent_node is not None
@@ -306,26 +304,26 @@ class Node(base.Annotable):
 
     def postorder_iter(self, filter_fn=None):
         """
-        Post-order traversal of subtree rooted at this node.
+        Post-order iterator over nodes of subtree rooted at this node.
 
-        Visits self and all descendant nodes, with amy particular node visited
-        after its children. Filtered by `filter_fn`: node is only returned if
-        no `filter_fn` is given or if filter_fn returns `True`.
+        Visits self and all descendant nodes, with each node visited after its
+        children. Nodes can optionally be filtered by `filter_fn`: only nodes
+        for which `filter_fn` returns `True` when called with the node as an
+        argument are yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        collections.Iterator[Node]
-            Iterator over a sequence of nodes resulting from a post-order
-            traversal of the subtree starting at this node.
-
+        iter : collections.Iterator[:class:`Node`]
+            An iterator yielding the nodes of the subtree rooted at
+            this node in post-order sequence.
         """
         # if self._child_nodes:
         #     for nd in self._child_nodes:
@@ -348,32 +346,30 @@ class Node(base.Annotable):
 
     def postorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
-        Post-order traversal of internal nodes of subtree rooted at this node.
+        Pre-order iterator over internal nodes of subtree rooted at this node.
 
-        Visits self and all internal descendant nodes, with any particular node
-        visited after its children. Filtered by `filter_fn`: node is only
-        returned if no `filter_fn` is given or if filter_fn returns `True`.
-
-        Root or seed node is included unless `exclude_seed_node` is `True`.
+        Visits self and all internal descendant nodes, with each node visited
+        after its children. Nodes can optionally be filtered by `filter_fn`:
+        only nodes for which `filter_fn` returns `True` when called with
+        the node as an argument are yielded.  The root or seed node is
+        included unless `exclude_seed_node` is `True`.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
-
-        exclude_seed_node : boolean, default = `False`
-            If `False` (default), seed node or root is visited. If `True`,
-            then it is skipped.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
+        exclude_seed_node : boolean, optional
+            If `False` (default), then the seed node or root is visited. If
+            `True`, then the seed node is skipped.
 
         Returns
         -------
-        collections.Iterator[Node]
-            Iterator over a sequence of internal nodes resulting from a
-            post-order traversal of the subtree starting at this node.
-
+        iter : collections.Iterator[:class:`Node`]
+            An iterator yielding the internal nodes of the subtree rooted at
+            this node in post-order sequence.
         """
         if exclude_seed_node:
             froot = lambda x: x._parent_node is not None
@@ -389,20 +385,25 @@ class Node(base.Annotable):
         """
         Level-order traversal of subtree rooted at this node.
 
+        Visits self and all descendant nodes, with each node and other nodes at
+        the same level (distance from root) visited before their children.
+        Nodes can optionally be filtered by `filter_fn`: only nodes for which
+        `filter_fn` returns `True` when called with the node as an argument are
+        visited.
+
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        collections.Iterator[Node]
-            Iterator over sequence of nodes of the subtree rooted at this node in
-            level-order.
-
+        iter : collections.Iterator[:class:`Node`]
+            An iterator yielding nodes of the subtree rooted at this node in
+            level-order sequence.
         """
         if filter_fn is None or filter_fn(self):
             yield self
@@ -415,28 +416,35 @@ class Node(base.Annotable):
             remaining.extend(child_nodes)
 
     def level_order_iter(self, filter_fn=None):
+        """
+        DEPRECATED: Use :meth:`Node.levelorder_iter()` instead.
+        """
         warnings.warn("Use 'levelorder_iter()' instead of 'level_order_iter()'",
                 FutureWarning, stacklevel=2)
-        return self.levelorder(filter_fn=filter_fn)
+        return self.levelorder_iter(filter_fn=filter_fn)
 
     def inorder_iter(self, filter_fn=None):
         """
         In-order traversal of subtree rooted at this node.
 
+        Visits self and all descendant nodes, with each node visited in-between
+        its children. Only valid for strictly-bifurcating trees. Nodes can
+        optionally be filtered by `filter_fn`: only nodes for which `filter_fn`
+        returns `True` when called with the node as an argument are yielded.
+
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        collections.Iterator[Node]
-            Iterator over sequence of nodes of the subtree rooted at this node
-            in in-order.
-
+        iter : collections.Iterator[:class:`Node`]
+            An iterator yielding nodes of the subtree rooted at this node in
+            infix or in-order sequence.
         """
         if len(self._child_nodes) == 0:
             if filter_fn is None or filter_fn(self):
@@ -453,22 +461,24 @@ class Node(base.Annotable):
 
     def leaf_iter(self, filter_fn=None):
         """
-        Iterate over all leaves that ultimately descend from this node.
+        Iterate over all tips or leaves that ultimately descend from this node.
+
+        Visits all leaf or tip nodes descended from this node. Nodes can
+        optionally be filtered by `filter_fn`: only nodes for which `filter_fn`
+        returns `True` when called with the node as an argument are yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        collections.Iterator[Node]
-            Iterator over a sequence of leaf nodes that have this node as an
-            ancestor.
-
+        iter : collections.Iterator[:class:`Node`]
+            An iterator yielding leaf nodes of the subtree rooted at this node.
         """
         if filter_fn:
             ff = lambda x: x.is_leaf() and filter_fn(x) or None
@@ -479,21 +489,20 @@ class Node(base.Annotable):
 
     def child_iter(self, filter_fn=None):
         """
-        Iterate over all nodes that are the (immediate) children of this node.
+        Iterator over all nodes that are the (immediate) children of this node.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        collections.Iterator[Node]
-            Iterator over a sequence of nodes that have this node as a parent.
-
+        iter : collections.Iterator[:class:`Node`]
+            An iterator yielding nodes that have this node as a parent.
         """
         for node in self._child_nodes:
             if filter_fn is None or filter_fn(node):
@@ -501,28 +510,28 @@ class Node(base.Annotable):
 
     def ancestor_iter(self, filter_fn=None, inclusive=True):
         """
-        Iterates over all ancestors of self.
+        Iterator over all ancestors of this node.
 
-        Iterate over all nodes that are the ancestors of this node.  If
-        `inclusive` is True, self is returned as the first item of the
-        sequence.
+        Visits all nodes that are the ancestors of this node.  If `inclusive`
+        is `True`, `self` is returned as the first item of the sequence;
+        otherwise `self` is skipped. Nodes can optionally be filtered by
+        `filter_fn`: only nodes for which `filter_fn` returns `True` when
+        passed the node as an argument are yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
-
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
         inclusive : boolean
             If `True`, includes this node in the sequence.
 
         Returns
         -------
-        collections.Iterator[Node]
+        iter : collections.Iterator[:class:`Node`]
             Iterator over all predecessor/ancestor nodes of this node.
-
         """
         if inclusive:
             yield self
@@ -535,8 +544,8 @@ class Node(base.Annotable):
 
     def age_order_iter(self, include_leaves=True, filter_fn=None, descending=False):
         """
-
-        Iterates over all nodes in subtree rooted at this node in order of age.
+        Iterator over nodes of subtree rooted at this node in order of the age
+        of the node (i.e., the time since the present).
 
         Iterates over nodes in order of age ('age' is as given by the `age`
         attribute, which is usually the sum of edge lengths from tips
@@ -549,26 +558,23 @@ class Node(base.Annotable):
 
         Parameters
         ----------
-
-        include_leaves : boolean
+        include_leaves : boolean, optional
             If `True` (default), then leaf nodes are included in the iteration.
             If `False`, then leaf nodes are skipped.
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
-
-        descending : boolean
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
+        descending : boolean, optional
             If `False` (default), then younger nodes are visited before older
             ones. If `True`, then older nodes are visited before younger ones.
 
         Returns
         -------
-        collections.Iterator[Node]
+        iter : collections.Iterator[:class:`Node`]
             Iterator over age-ordered sequence of nodes in subtree rooted at
             this node.
-
         """
         if not descending:
             leaves = [nd for nd in self.leaf_iter()]
@@ -603,16 +609,15 @@ class Node(base.Annotable):
         """
         Assigns the set of child nodes for this node.
 
-        Side effects:
-
-            * sets the parent of each child node to this node
-            * sets the tail node of each child to self
+        Results in the `parent_node` attribute of each :class:`Node` in `nodes
+        as well as the `tail_node` attribute of corresponding :class:`Edge`
+        objects being assigned to `self`.
 
         Parameters
         ----------
-
-        child_nodes : iterable (of Node objects)
-
+        child_nodes : collections.Iterable[:class:`Node`]
+            The (iterable) collection of child nodes to be assigned this node
+            as a parent.
         """
         self._child_nodes = list(child_nodes)
         for nd in self._child_nodes:
@@ -627,34 +632,29 @@ class Node(base.Annotable):
         """
         Adds a child node to this node.
 
-        Results in the parent_node and containing_tree of the node being
-        attached set to this node. Returns node that was just attached.
+        Results in the `parent_node` attribute of `node` as well as the
+        `tail_node` attribute of `node.edge` being assigned to `self`.
 
         Parameters
         ----------
-
-        node : Node
+        node : :class:`Node`
             The node to be added as a child of this node.
-
-        pos : integer
+        pos : integer, optional
             If not `None`, the position in the the sequence of children that
-            this child should occupy.
+            the new child node should occupy.
 
         Returns
         -------
-        Node
-            Node that was added.
-
+        node : :class:`Node`
+            The node that was added.
         """
         node.parent_node = self
-
         ## Support for this was removed, due to unclear expected behavior when
         ## `None` is passed: does the client code expect the edge length to be set
         ## to `None` or simply left untouched? Better approach: client code
         ## explictly sets the edge.
         # if edge_length != None:
         #     node.edge_length = edge_length
-
         if pos is None:
             self._child_nodes.append(node)
         else:
@@ -667,14 +667,14 @@ class Node(base.Annotable):
 
         Parameters
         ----------
-
         \*\*kwargs : keyword arguments
-            Keyword arguments will be passed to :class:`Node` constructor.
+            Keyword arguments will be passed directly to the :class:`Node`
+            constructor (:meth:`Node.__init()__`).
 
         Returns
         -------
-            Node that was added.
-
+        node : :class:`Node`
+            The new child node that was created and added.
         """
         node = self.__class__(**kwargs)
         return self.add_child(node=node)
@@ -683,25 +683,22 @@ class Node(base.Annotable):
         """
         Create and add a new child to this node at a particular position.
 
-        Adds a child node to this node.
-
-        Results in the parent_node and containing_tree of the node being
-        attached set to this node. Returns node that was just attached.
+        Results in the `parent_node` attribute of `node` as well as the
+        `tail_node` attribute of `node.edge` being assigned to `self`.
 
         Parameters
         ----------
-
-        node : Node
-            The node to be added as a child of this node.
-
         pos : integer
-            If not `None`, the position in the the sequence of children that
-            this child should occupy.
+            The position in the the sequence of children of `self` that
+            the new child node should occupy.
+        \*\*kwargs : keyword arguments
+            Keyword arguments will be passed directly to the :class:`Node`
+            constructor (:meth:`Node.__init()__`).
 
         Returns
         -------
-        Node
-            Node that was added.
+        node : :class:`Node`
+            The new child node that was created and added.
         """
         node = self.__class__(**kwargs)
         return self.add_child(node=node, pos=pos)
@@ -719,10 +716,9 @@ class Node(base.Annotable):
 
         Parameters
         ----------
-        node : Node object
+        node : :class:`Node`
             The node to be removed.
-
-        suppress_deg_two : boolean
+        suppress_deg_two : boolean, optional
             If `False` (default), no action is taken. If `True`, then if the
             node removal results in a node with degree of two (i.e., a single
             parent and a single child), then it will be removed from
@@ -731,12 +727,11 @@ class Node(base.Annotable):
 
         Returns
         -------
-        Node
+        node : :class:`Node`
             The node removed.
-
         """
         if not node:
-            raise Exception("Tried to remove an non-existing or null node")
+            raise ValueError("Tried to remove an non-existing or null node")
         children = self._child_nodes
         if node in children:
             node.parent_node = None
@@ -777,7 +772,7 @@ class Node(base.Annotable):
                             self.add_child(c, pos=pos)
                         to_remove._child_nodes = []
         else:
-            raise Exception("Tried to remove a node that is not listed as a child")
+            raise ValueError("Tried to remove a node that is not listed as a child")
         return node
 
     def reversible_remove_child(self, node, suppress_deg_two=False):
@@ -794,13 +789,12 @@ class Node(base.Annotable):
         `suppress_deg_two` should only be called on unrooted trees.
         """
         if not node:
-            raise Exception("Tried to remove an non-existing or null node")
+            raise ValueError("Tried to remove an non-existing or null node")
         children = self._child_nodes
         try:
             pos = children.index(node)
         except:
-            raise Exception("Tried to remove a node that is not listed as a child")
-
+            raise ValueError("Tried to remove a node that is not listed as a child")
         removed = [(node, self, pos, [], None)]
         node.parent_node = None
         node.edge.tail_node = None
@@ -904,7 +898,9 @@ class Node(base.Annotable):
     ## Edge Access and Manipulation
 
     def _get_edge(self):
-        "Returns the edge subtending this node."
+        """
+        Returns the edge subtending this node.
+        """
         return self._edge
     def _set_edge(self, edge=None):
         """
@@ -917,7 +913,9 @@ class Node(base.Annotable):
     edge = property(_get_edge, _set_edge)
 
     def _get_edge_length(self):
-        "Returns the length of the edge subtending this node."
+        """
+        Returns the length of the edge subtending this node.
+        """
         return self._edge.length
     def _set_edge_length(self, v=None):
         """
@@ -943,75 +941,135 @@ class Node(base.Annotable):
     ## General Structural Access and Information
 
     def is_leaf(self):
-        "Returns `True` if the node has no child_nodes"
+        """
+        Returns `True` if the node is a tip or a leaf node, i.e. has no child
+        nodes.
+
+        Returns
+        -------
+        leafness : boolean
+            `True` if the node is a leaf, i.e., has no child nodes. `False`
+            otherwise.
+        """
         return bool(not self._child_nodes)
 
     def is_internal(self):
-        "Returns `True` if the node has child_nodes"
+        """
+        Returns `True` if the node is *not* a tip or a leaf node.
+
+        Returns
+        -------
+        internalness : boolean
+            `True` if the node is not a leaf. `False` otherwise.
+        """
         return bool(self._child_nodes)
 
     def leaf_nodes(self):
         """
         Returns list of all leaf_nodes descended from this node (or just
-        list with self as the only member if self is a leaf).
+        list with `self` as the only member if `self` is a leaf).
 
         Note
         ----
         Usage of  `leaf_iter()` is preferable for efficiency reasons unless
         actual list is required.
 
+        Returns
+        -------
+        leaves : list[:class:`Node`]
+           A `list` of :class:`Node` objects descended from this node
+           (inclusive of `self`) that are the leaves.
         """
         return [node for node in \
                 self.postorder_iter(lambda x: bool(len(x.child_nodes())==0))]
 
     def child_nodes(self):
         """
-        Returns the a shallow-copy list of all child nodes.
+        Returns a shallow-copy list of all child nodes of this node.
 
         Note
         ----
-        Usage of  `child_iter()` is preferable for efficiency reasons unless
-        actual list is required.
+        Unless an actual `list` is needed, iterating over the child nodes using
+        :meth:`Node.child_iter()` is preferable to avoid the overhead of list
+        construction.
 
+        Returns
+        -------
+        children : list[:class:`Node`]
+           A `list` of :class:`Node` objects that have `self` as a parent.
         """
         return list(self._child_nodes)
 
     def incident_edges(self):
         """
         Return parent and child edges.
+
+        Returns
+        -------
+        edges : list[:class:`Edge`]
+            A list of edges linking to this node, with outgoing edges (edges
+            connecting to child nodes) followed by the edge connecting
+            this node to its parent.
         """
         e = [c.edge for c in self._child_nodes]
         e.append(self.edge)
         return e
 
     def get_incident_edges(self):
-        """Legacy synonym for 'incident_edges()'"""
+        """Legacy synonym for :meth:`Node.incident_edges()`."""
         return self.incident_edges()
 
     def adjacent_nodes(self):
-        """Return parent and child nodes."""
+        """
+        Return parent and child nodes.
+
+        Returns
+        -------
+        nodes : list[:class:`Node`]
+            A list with all child nodes and parent node of this node.
+        """
         n = [c for c in self._child_nodes]
         if self.parent_node:
             n.append(self.parent_node)
         return n
 
     def get_adjacent_nodes(self):
-        """Legacy synonym for 'get_incident_edges()'"""
+        """Legacy synonym for :meth:`Node.adjacent_edges()`"""
         return self.adjacent_nodes()
 
-    def sister_nodes(self):
-        """Return all other children of parent, excluding self."""
+    def sibling_nodes(self):
+        """
+        Return all other children of parent, excluding self.
+
+        Returns
+        -------
+        siblings : list[:class:`Node`]
+            A list of all nodes descended from the same parent as `self`,
+            excluding `self`.
+        """
         p = self.parent_node
         if not p:
             return []
         sisters = [nd for nd in p.child_nodes() if nd is not self]
         return sisters
 
+    def sister_nodes(self):
+        """Legacy synonym for :meth:`Node.sister_nodes()`"""
+        return self.sibling_nodes()
+
     ###########################################################################
     ## Metrics
 
     def level(self):
-        "Number of nodes between self and root."
+        """
+        Returns the number of nodes between `self` and the seed node of the tree.
+
+        Returns
+        -------
+        level : integer
+            The number of nodes between `self` and the seed node of the tree,
+            or 0 if `self` has no parent.
+        """
         if self.parent_node:
             return self.parent_node.level() + 1
         else:
@@ -1019,8 +1077,13 @@ class Node(base.Annotable):
 
     def distance_from_root(self):
         """
-        Sum of edge lengths from root. Right now, 'root' is taken to
-        be a node with no parent node.
+        Weighted path length of `self` from root.
+
+        Returns
+        -------
+        dist : numeric
+            Total weight of all edges connecting `self` with the root of the
+            tree.
         """
         if self.parent_node and self.edge.length != None:
             if self.parent_node.distance_from_root == None:
@@ -1052,11 +1115,18 @@ class Node(base.Annotable):
 
     def distance_from_tip(self):
         """
-        Sum of edge lengths from tip to node. If tree is not ultrametric
-        (i.e., descendent edges have different lengths), then count the
-        maximum of edge lengths. Note that the 'calc_node_ages()' method
-        of dendropy.trees.Tree() is a more efficient way of doing this over
-        the whole tree.
+        Maximum weighted length of path of `self` to tip.
+
+        If tree is not ultrametric (i.e., descendent edges have different
+        lengths), then count the maximum of edge lengths. Note that
+        :meth:`Tree.calc_node_ages()` is a more efficient way of doing this
+        over the whole tree if this value is need for many or all the nodes on
+        the tree.
+
+        Returns
+        -------
+        dist : numeric
+            Maximum weight of edges connecting `self` to tip.
         """
         if not self._child_nodes:
             return 0.0
