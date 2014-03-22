@@ -252,7 +252,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : collections.Iterator[:class:`Node`]
+        iter : `collections.Iterator` [:class:`Node`]
             An iterator yielding nodes of the subtree rooted at this node in
             pre-order sequence.
         """
@@ -288,7 +288,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : collections.Iterator[:class:`Node`]
+        iter : `collections.Iterator` [:class:`Node`]
             An iterator yielding the internal nodes of the subtree rooted at
             this node in pre-order sequence.
         """
@@ -321,7 +321,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : collections.Iterator[:class:`Node`]
+        iter : `collections.Iterator` [:class:`Node`]
             An iterator yielding the nodes of the subtree rooted at
             this node in post-order sequence.
         """
@@ -367,7 +367,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : collections.Iterator[:class:`Node`]
+        iter : `collections.Iterator` [:class:`Node`]
             An iterator yielding the internal nodes of the subtree rooted at
             this node in post-order sequence.
         """
@@ -401,7 +401,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : collections.Iterator[:class:`Node`]
+        iter : `collections.Iterator` [:class:`Node`]
             An iterator yielding nodes of the subtree rooted at this node in
             level-order sequence.
         """
@@ -442,7 +442,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : collections.Iterator[:class:`Node`]
+        iter : `collections.Iterator` [:class:`Node`]
             An iterator yielding nodes of the subtree rooted at this node in
             infix or in-order sequence.
         """
@@ -477,7 +477,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : collections.Iterator[:class:`Node`]
+        iter : `collections.Iterator` [:class:`Node`]
             An iterator yielding leaf nodes of the subtree rooted at this node.
         """
         if filter_fn:
@@ -501,7 +501,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : collections.Iterator[:class:`Node`]
+        iter : `collections.Iterator` [:class:`Node`]
             An iterator yielding nodes that have this node as a parent.
         """
         for node in self._child_nodes:
@@ -530,7 +530,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : collections.Iterator[:class:`Node`]
+        iter : `collections.Iterator` [:class:`Node`]
             Iterator over all predecessor/ancestor nodes of this node.
         """
         if inclusive:
@@ -542,7 +542,7 @@ class Node(base.Annotable):
                    and (filter_fn is None or filter_fn(node)):
                 yield node
 
-    def age_order_iter(self, include_leaves=True, filter_fn=None, descending=False):
+    def ageorder_iter(self, include_leaves=True, filter_fn=None, descending=False):
         """
         Iterator over nodes of subtree rooted at this node in order of the age
         of the node (i.e., the time since the present).
@@ -572,7 +572,7 @@ class Node(base.Annotable):
 
         Returns
         -------
-        iter : collections.Iterator[:class:`Node`]
+        iter : `collections.Iterator` [:class:`Node`]
             Iterator over age-ordered sequence of nodes in subtree rooted at
             this node.
         """
@@ -602,6 +602,16 @@ class Node(base.Annotable):
                 if include_leaves or nd[1].is_internal():
                     yield nd[1]
 
+    def age_order_iter(self, include_leaves=True, filter_fn=None, descending=False):
+        """
+        Deprecated: use :meth:`Node.ageorder_iter()` instead.
+        """
+        warnings.warn("Use 'ageorder_iter()' instead of 'age_order_iter()'",
+                FutureWarning, stacklevel=2)
+        return self.ageorder_iter(include_leaves=include_leaves,
+                filter_fn=filter_fn,
+                descending=descending)
+
     ###########################################################################
     ## Child Node Access and Manipulation
 
@@ -625,7 +635,7 @@ class Node(base.Annotable):
             nd.edge.tail_node = self
 
     def set_children(self, child_nodes):
-        """Legacy support: delegates to `set_child_nodes()`"""
+        """Deprecated: use :meth:`Node.set_child_nodes()` instead."""
         return self.set_child_nodes(child_nodes)
 
     def add_child(self, node, pos=None):
@@ -1355,6 +1365,22 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         Constructs a new :class:`Tree` object and populates it with data from
         file-like object `stream`.
 
+        If the source defines multiple tree collections (e.g. multiple NEXUS
+        "Trees" blocks), then the `collection_offset` argument
+        can be used to specify the 0-based index of the tree collection, and
+        `tree_offset` argument can be used to specify the 0-based
+        index of the tree within the collection, as the source. If
+        `collection_offset` is not specified or `None`, then all collections in
+        the source are merged before considering `tree_offset`.  If
+        `tree_offset` is not specified, then the first tree (offset=0) is
+        returned.
+
+        Keyword arguments `**kwargs` are passed directly to
+        :meth:`TreeList.read()`, which wraps the actual parsing.
+
+        If no tree is found in the source according to the specified criteria,
+        then `None` is returned.
+
         Parameters
         ----------
 
@@ -1365,40 +1391,37 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             Identifier of format of data in `stream`
 
         collection_offset : integer or None
-        tree_offset : integer or None
+            0-based index of tree block or collection in source to be parsed.
 
-            If the source defines multiple tree collections (e.g. multiple
-            NEXUS "Trees" blocks), then the keyword argument
-            `collection_offset` can be used to specify the 0-based index of the
-            tree collection, and the keyword argument `tree_offset` can be used
-            to specify the 0-based index of the tree within the collection, as
-            the source. If `collection_offset` is not specified or `None`, then
-            all collections in the source are merged before considering
-            `tree_offset`.  If `tree_offset` is not specified, then the first
-            tree (offset=0) is returned.
+        tree_offset : integer or None
+            0-based index of tree in source to be parsed. If
+            `collection_offset` is `None`, then this is the 0-based index of
+            the tree across all collections considered together. Otherwise,
+            this is the 0-based index within a particular collection. If
+            `tree_offset` is `None` or not specified, then the first tree is
+            returned.
 
         \*\*kwargs : keyword arguments
-            Arguments to customize parsing, instantiation, processing, and
-            accession of :class:`Tree` objects read from the data source, including
-            schema- or format-specific handling.
+            Arguments to customize parsing and instantiation this :class:`Tree`
+            from the data source, including schema- or format-specific
+            handling. The following optional keyword arguments are recognized
+            and handled by this constructor:
 
-            The following optional keyword arguments are recognized and handled
-            by this function:
+                `label`
+                    The label or description of the new :class:`Tree` object.
+                `taxon_namespace`
+                    Specifies the :class:`TaxonNamespace` object to be
+                    attached to the new :class:`Tree` object.
 
-                * `label` specifies the label or description of the new
-                  :class:`Tree` object.
-                * `taxon_namespace` specifies the :class:`TaxonNamespace` object to be
-                   attached to the new :class:`Tree` object.
-
-            All other keyword arguments are passed directly to `TreeList.read()`.
+            All other keyword arguments are passed directly to :meth:`TreeList.read()`.
             Other keyword arguments may be available, depending on the implementation
             of the reader specialized to handle `schema` formats.
 
         Returns
         -------
-        Tree
-            A :class:`Tree` object (or `None` if not trees were found in the
-            data source).
+        tree : :class:`Tree` or `None`
+            The :class:`Tree` object corresponding to the tree in the data
+            source, or `None` if no valid tree description was found.
 
         """
         taxon_namespace = taxon.process_kwargs_for_taxon_namespace(kwargs, None)
@@ -1444,7 +1467,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        Node
+        node : :class:`Node`
             A new :class:`Node` object.
 
         """
@@ -1456,11 +1479,39 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def __init__(self, *args, **kwargs):
         """
-        __init__ creates a new Tree object, optionally constructing it by cloning
-        another Tree object if this is passed as the first argument, or
-        out of a data source if `stream` and `schema` are keyword arguments are
-        passed with a file-like object and a schema-specification string object
-        values respectively.
+        The constructor can optionally constructing a :class:`Tree` object by
+        cloning another :class:`Tree` object if this is passed as the first
+        argument, or out of a data source if `stream` and `schema` are keyword
+        arguments are passed with a file-like object and a schema-specification
+        string object values respectively.
+
+        Parameters
+        ----------
+
+        \*args : positional argument, optional
+            If given, should be exactly one :class:`Tree` object. The new
+            :class:`Tree` will then be a structural clone of this argument.
+
+        \*\*kwargs : keyword arguments, optional
+            Arguments to customize parsing and instantiation this :class:`Tree`
+            from the data source, including schema- or format-specific
+            handling. The following optional keyword arguments are recognized
+            and handled by this constructor:
+
+                `stream`
+                    The file or file-like object to parse.
+                `schema`
+                    The :term:`schema` or format of the data in `stream`.
+                `label`
+                    The label or description of the new :class:`Tree` object.
+                `taxon_namespace`
+                    Specifies the :class:`TaxonNamespace` object to be
+                    attached to the new :class:`Tree` object.
+
+            All other keyword arguments are passed directly to :meth:`TreeList.read()`.
+            Other keyword arguments may be available, depending on the implementation
+            of the reader specialized to handle `schema` formats.
+
 
         If `stream` and `schema` keyword arguments are given, will
         construct this :class:`Tree` object from `schema`-formatted source
@@ -1584,7 +1635,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def read(self, stream, schema, **kwargs):
         """
-        Redefines :class:`Tree` based on data from `source`.
+        Redefines this :class:`Tree` object based on data from `source`.
 
         The current :class:`TaxonNamespace` reference will be retained (and modified
         if new operational taxonomic unit concept definitions are
@@ -1596,6 +1647,16 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         structure being read, call `tree.annotations.drop()` to clear any
         annotations calling this method.
 
+        If the source defines multiple tree collections (e.g. multiple NEXUS
+        "Trees" blocks), then the `collection_offset` argument
+        can be used to specify the 0-based index of the tree collection, and
+        `tree_offset` argument can be used to specify the 0-based
+        index of the tree within the collection, as the source. If
+        `collection_offset` is not specified or `None`, then all collections in
+        the source are merged before considering `tree_offset`.  If
+        `tree_offset` is not specified, then the first tree (offset=0) is
+        returned.
+
         Parameters
         ----------
 
@@ -1606,42 +1667,41 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             Identifier of format of data in `stream`
 
         collection_offset : integer or None
-        tree_offset : integer or None
+            0-based index of tree block or collection in source to be parsed.
 
-            If the source defines multiple tree collections (e.g. multiple
-            NEXUS "Trees" blocks), then the keyword argument
-            `collection_offset` can be used to specify the 0-based index of the
-            tree collection, and the keyword argument `tree_offset` can be used
-            to specify the 0-based index of the tree within the collection, as
-            the source. If `collection_offset` is not specified or `None`, then
-            all collections in the source are merged before considering
-            `tree_offset`.  If `tree_offset` is not specified, then the first
-            tree (offset=0) is returned.
+        tree_offset : integer or None
+            0-based index of tree in source to be parsed. If
+            `collection_offset` is `None`, then this is the 0-based index of
+            the tree across all collections considered together. Otherwise,
+            this is the 0-based index within a particular collection. If
+            `tree_offset` is `None` or not specified, then the first tree is
+            returned.
 
         \*\*kwargs : keyword arguments
-            Arguments to customize parsing, instantiation, processing, and
-            accession of :class:`Tree` objects read from the data source, including
-            schema- or format-specific handling.
+            Arguments to customize parsing and instantiation this :class:`Tree`
+            from the data source, including schema- or format-specific
+            handling. The following optional keyword arguments are recognized
+            and handled by this constructor:
 
-            The following optional keyword arguments are recognized and handled
-            by this function:
+                `label`
+                    The label or description of the new :class:`Tree` object.
+                `taxon_namespace`
+                    Specifies the :class:`TaxonNamespace` object to be
+                    attached to the new :class:`Tree` object.
 
-                * `label` specifies the label or description of the new
-                  :class:`Tree`.
-                * `taxon_namespace` specifies the :class:`TaxonNamespace` object to be
-                   attached to the this tree. If not specified, then the
-                   current :class:`TaxonNamespace` object reference will be used. If
-                   `None`, then a new :class:`TaxonNamespace` will be created.
-                * `ignore_metadata` if `True`, will not accession any metadata
-                  annotations in the data.
-
-            All other keyword arguments are passed directly to `TreeList.read()`.
+            All other keyword arguments are passed directly to :meth:`TreeList.read()`.
             Other keyword arguments may be available, depending on the implementation
             of the reader specialized to handle `schema` formats.
 
         Returns
         -------
-        A :class:`Tree` object (or :class:`ValueError` if no trees ).
+        tree : :class:`Tree`
+             Returns `self`.
+
+        Raises
+        ------
+        ValueError
+            If not valid trees matching criteria found in source.
 
         """
         ignore_metadata = kwargs.pop("ignore_metadata", False)
@@ -2120,7 +2180,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def level_order_node_iter(self, filter_fn=None):
         """
-        Legacy support: use `Tree.levelorder_node_iter()` instead.
+        Deprecated: use :meth:`Tree.levelorder_node_iter()` instead.
         """
         warnings.warn("Use 'levelorder_node_iter()' instead of 'level_order_node_iter()'",
                 FutureWarning, stacklevel=2)
@@ -2166,11 +2226,14 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         return self.seed_node.leaf_iter(filter_fn=filter_fn)
 
     def leaf_iter(self, filter_fn=None):
+        """
+        Deprecated: use :meth:`Tree.leaf_node_iter()` instead.
+        """
         warnings.warn("Use 'leaf_node_iter()' instead of 'leaf_iter()'",
                 FutureWarning, stacklevel=2)
         return self.seed_node.leaf_iter(filter_fn=filter_fn)
 
-    def age_order_node_iter(self, include_leaves=True, filter_fn=None, descending=False):
+    def ageorder_node_iter(self, include_leaves=True, filter_fn=None, descending=False):
         """
         Iterates over all nodes in tree in order of age.
 
@@ -2206,7 +2269,17 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         if self.seed_node.age is None:
             self.calc_node_ages()
-        return self.seed_node.age_order_iter(include_leaves=include_leaves,
+        return self.seed_node.ageorder_iter(include_leaves=include_leaves,
+                filter_fn=filter_fn,
+                descending=descending)
+
+    def age_order_node_iter(self, include_leaves=True, filter_fn=None, descending=False):
+        """
+        Deprecated: use :meth:`Tree.ageorder_node_iter()` instead.
+        """
+        warnings.warn("Use 'ageorder_node_iter()' instead of 'age_order_node_iter()'",
+                FutureWarning, stacklevel=2)
+        return self.ageorder_node_iter(include_leaves=include_leaves,
                 filter_fn=filter_fn,
                 descending=descending)
 
@@ -2369,7 +2442,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def level_order_edge_iter(self, filter_fn=None):
         """
-        Legacy support: use `Tree.levelorder_edge_iter()` instead.
+        Deprecated: use :meth:`Tree.levelorder_edge_iter()` instead.
         """
         warnings.warn("Use 'levelorder_edge_iter()' instead of 'level_order_edge_iter()'",
                 FutureWarning, stacklevel=2)
