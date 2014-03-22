@@ -904,13 +904,13 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             d[t.label] = t
         return d
 
-    def complement_split_bitmask(self, split):
+    def complement_split_bitmask(self, split_bitmask):
         """
         Returns complement of the given split bitmask.
 
         Parameters
         ----------
-        split : integer
+        split_bitmask : integer
             Split bitmask hash to be complemented.
 
         Returns
@@ -935,8 +935,18 @@ class TaxonNamespace(base.DataObject, base.Annotable):
 
     def taxon_bitmask(self, taxon):
         """
-        Returns unique bitmask of given taxon. Will raise index error if
-        taxon does not exist.
+        Returns bitmask value of split hash for split subtending node with
+        `taxon`.
+
+        Parameters
+        ----------
+        taxon : :class:`Taxon`
+            :class:`Taxon` object for which to calculate split hash bitmask.
+
+        Returns
+        -------
+        h : integer
+            Split hash bitmask value for node associated with :class:`Taxon` object `taxon`.
         """
         try:
             return self._taxon_bitmask_map[taxon]
@@ -947,10 +957,27 @@ class TaxonNamespace(base.DataObject, base.Annotable):
             self._bitmask_taxon_map[m] = taxon
             return m
 
-    def get_taxa_bitmask(self, **kwargs):
+    def taxa_bitmask(self, **kwargs):
         """
-        Retrieves bitmask represent all taxa specified by keyword-specified
-        list of taxon objects (`taxa=`) or labels (`labels=`).
+        Retrieves the list of split hash bitmask values representing all taxa
+        specified by keyword-specified list of taxon objects (`taxa=`) or
+        labels (`labels=`).
+
+        Parameters
+        ----------
+        \*\*kwargs : keyword arguments
+            Requires one of:
+
+                taxa : :py:class:`collections.Iterable` [:class:`Taxon`]
+                    Iterable of :class:`Taxon` objects.
+                labels : :py:class:`collections.Iterable` [string]
+                    Iterable of :class:`Taxon` label values.
+
+        Returns
+        -------
+        b : :py:class:`list` [integer]
+            List of split hash bitmask values for specified :class:`Taxon`
+            objects.
         """
         if "taxa" in kwargs:
             taxa = kwargs["taxa"]
@@ -962,22 +989,73 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         return bitmask
 
     def split_bitmask_string(self, split_bitmask):
-        "Returns bitstring representation of split_bitmask."
-        return "{}".format(text.int_to_bitstring(split_bitmask).rjust(len(self), "0"))
+        """
+        Returns bitstring representation of split_bitmask.
+
+        Parameters
+        ----------
+        split_bitmask : integer
+            Split hash bitmask value to be represented as a string.
+
+        Returns
+        -------
+        s : string
+            String representation of the split hash bitmask value passed as an
+            argument.
+        """
+        return "{}".format(text.int_to_bitstring(split_bitmask).rjust(len(self._taxon_accession_index_map), "0"))
 
     def split_taxa_list(self, split_bitmask, index=0):
-        "Returns list of taxa represented by split."
+        """
+        Returns list of :class:`Taxon` objects represented by split
+        `split_bitmask`.
+
+        Parameters
+        ----------
+        split_bitmask : integer
+            Split hash bitmask value.
+        index : integer, optional
+            Start from this :class:`Taxon` object instead of the first
+            :class:`Taxon` object in the collection.
+
+        Returns
+        -------
+        taxa : :py:class:`list` [:class:`Taxon`]
+            List of :class:`Taxon` objects specified or spanned by
+            `split_bitmask`.
+        """
         taxa = []
         while split_bitmask:
             if split_bitmask & 1:
-                taxa.append(self[index])
+                taxa.append(self._taxon_accession_index_map[index])
             split_bitmask = split_bitmask >> 1
             index += 1
         return taxa
 
-    def split_as_newick_string(self, split, preserve_spaces=False, quote_underscores=True):
+    def split_as_newick_string(self,
+            split_bitmask,
+            preserve_spaces=False,
+            quote_underscores=True):
         """
         Represents a split as a newick string.
+
+        Parameters
+        ----------
+        split_bitmask : integer
+            Split hash bitmask value.
+        preserve_spaces : boolean, optional
+            If `False` (default), then spaces in taxon labels will be replaced
+            by underscores. If `True`, then taxon labels with spaces will be
+            wrapped in quotes.
+        quote_underscores : boolean, optional
+            If `True` (default), then taxon labels with underscores will be
+            wrapped in quotes. If `False`, then the labels will not be wrapped
+            in quotes.
+
+        Returns
+        -------
+        s : string
+            NEWICK representation of split specified by `split_bitmask`.
         """
         return text.split_as_newick_string(split, self, preserve_spaces=preserve_spaces, quote_underscores=quote_underscores)
 
@@ -998,130 +1076,6 @@ class TaxonSet(TaxonNamespace):
         return o
 
 ##############################################################################
-## SimpleTaxonNamespace
-
-# class SimpleTaxonNamespace(TaxonNamespace):
-#     """
-#     A collection of :class:`Taxon` objects representing a self-contained and complete
-#     domain of distinct operational taxonomic unit definitions.
-#     Provides the common semantic context in which operational taxonomic units
-#     referenced by various phylogenetic data objects (e.g., trees or alignments)
-#     can be related.
-#     """
-
-#     ## Construction, Copying and Life-cycle ##
-
-#     def __init__(self, *args, **kwargs):
-#         """
-#         Constructs a TaxonNamespace object.
-
-#         Parameters
-#         ----------
-
-#         *args : positional arguments
-#             Accepts a single iterable as an optional positional argument.  If a
-#             :class:`TaxonNamespace` object is passed as the positional argument, then
-#             clones or deep-copies of its member :class:`Taxon` objects will be added
-#             to this one.  If any other iterable is passed as the positional
-#             argument, then each string in the iterable will result in a new
-#             :class:`Taxon` object being constructed and added to the namespace with
-#             the string as its label (name), while each Taxon object in the
-#             iterable will be added to the namespace directly.
-
-#         **kwargs : {label, is_mutable}
-#             `label` : string
-#                 The label or name for this namespace.
-#             `is_mutable` : boolean, optional (default = `True`)
-#                 If `True` (default), then :class:`Taxon` objects can be added to this
-#                 namespace. If `False`, then adding :class:`Taxon` objects will result
-#                 in an error.
-
-#         """
-#         TaxonNamespace.__init__(self, **kwargs)
-
-#     def _lookup_label(self,
-#             label,
-#             multiple=True,
-#             case_insensitive=False,
-#             error_if_not_found=False):
-#         """
-#         Return :class:`Taxon` object(s) with label matching `label`.
-
-#         """
-#         if case_insensitive:
-#             raise NotImplementedError
-#         if label in self._taxa:
-#             return label
-#         elif error_if_not_found:
-#             raise LookupError(label)
-#         else:
-#             return None
-
-#     def new_taxon(self, label):
-#         """
-#         Creates, adds, and returns a new :class:`Taxon` object with corresponding
-#         label (if a full taxon model) or simply adds the label as-is (if not a
-#         full taxon model).
-
-#         Parameters
-#         ----------
-
-#         label : string or string-like
-#             The name or label of the new operational taxonomic unit concept.
-
-#         Returns
-#         -------
-
-#         Taxon object or string
-#             A new :class:`Taxon` object (if a full taxon model) or string (if not a
-#             full taxon model).
-
-#         """
-#         self.add_taxon(label)
-#         return label
-
-#     def sort(self, key=None):
-#         """
-#         Sorts :class:`Taxon` objects in collection. If `key` is not given, defaults
-#         to sorting by label (i.e., `key = lambda x: x.label`).
-#         """
-#         if key is None:
-#             key = lambda x: x
-#         self._taxa.sort(key=key)
-
-#     def reverse(self):
-#         """
-#         Reverses order of :class:`Taxon` objects in collection.
-#         """
-#         self._taxa.reverse()
-
-#     def labels(self):
-#         "Convenience method to return all taxa labels."
-#         return list(self._taxa)
-
-#     def label_taxon_map(self, case_insensitive_keys=False):
-#         """
-#         Returns dictionary with taxon labels as keys and corresponding :class:`Taxon`
-#         objects as values.
-
-#         No attempt is made to handle collisions.
-
-#         Parameters
-#         ----------
-
-#         case_insensitive_keys : boolean
-#             If `False` (default), then normal Python `dict` object will be
-#             returned, resulting in case-sensitive keys. If `True`, then a
-#             :class:`CaseInsensitiveDict` object will return, allowing for
-#             case-insensitive lookups.
-
-#         Returns
-#         -------
-#         dict or CaseInsensitiveDict
-#         """
-#         return dict(zip(self._taxa, self._taxa))
-
-##############################################################################
 ## Taxon
 
 class Taxon(base.DataObject, base.Annotable):
@@ -1130,6 +1084,12 @@ class Taxon(base.DataObject, base.Annotable):
     """
 
     def __init__(self, label):
+        """
+        Parameters
+        ----------
+        label : string
+            Label or name of this operational taxonomic unit concept.
+        """
         if isinstance(label, Taxon):
             label = label.label
         else:
