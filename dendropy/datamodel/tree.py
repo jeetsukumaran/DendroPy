@@ -269,11 +269,12 @@ class Node(base.Annotable):
         """
         Pre-order iterator over internal nodes of subtree rooted at this node.
 
-        Visits self and all descendant nodes, with each node visited before its
-        children. The root or seed node is included unless `exclude_seed_node`
-        is `True`. Nodes can optionally be filtered by `filter_fn`: only nodes
-        for which `filter_fn` returns `True` when passed the node as an
-        argument are yielded.
+        Visits self and all internal descendant nodes, with each node visited
+        before its children. In DendroPy, "internal nodes" are nodes that have
+        at least one child node, and thus the root or seed node is typically included
+        unless `exclude_seed_node` is `True`. Nodes can optionally be filtered
+        by `filter_fn`: only nodes for which `filter_fn` returns `True` when
+        passed the node as an argument are yielded.
 
         Parameters
         ----------
@@ -306,10 +307,10 @@ class Node(base.Annotable):
         """
         Post-order iterator over nodes of subtree rooted at this node.
 
-        Visits self and all descendant nodes, with each node visited after its
-        children. Nodes can optionally be filtered by `filter_fn`: only nodes
-        for which `filter_fn` returns `True` when called with the node as an
-        argument are yielded.
+        Visits self and all descendant nodes, with each node visited first
+        followed by its children. Nodes can optionally be filtered by
+        `filter_fn`: only nodes for which `filter_fn` returns `True` when
+        called with the node as an argument are yielded.
 
         Parameters
         ----------
@@ -349,10 +350,11 @@ class Node(base.Annotable):
         Pre-order iterator over internal nodes of subtree rooted at this node.
 
         Visits self and all internal descendant nodes, with each node visited
-        after its children. Nodes can optionally be filtered by `filter_fn`:
-        only nodes for which `filter_fn` returns `True` when called with
-        the node as an argument are yielded.  The root or seed node is
-        included unless `exclude_seed_node` is `True`.
+        after its children. In DendroPy, "internal nodes" are nodes that have
+        at least one child node, and thus the root or seed node is typically
+        included unless `exclude_seed_node` is `True`. Nodes can optionally be
+        filtered by `filter_fn`: only nodes for which `filter_fn` returns
+        `True` when passed the node as an argument are yielded.
 
         Parameters
         ----------
@@ -383,7 +385,7 @@ class Node(base.Annotable):
 
     def levelorder_iter(self, filter_fn=None):
         """
-        Level-order traversal of subtree rooted at this node.
+        Level-order iteration over nodes of subtree rooted at this node.
 
         Visits self and all descendant nodes, with each node and other nodes at
         the same level (distance from root) visited before their children.
@@ -425,7 +427,7 @@ class Node(base.Annotable):
 
     def inorder_iter(self, filter_fn=None):
         """
-        In-order traversal of subtree rooted at this node.
+        In-order iteration over nodes of subtree rooted at this node.
 
         Visits self and all descendant nodes, with each node visited in-between
         its children. Only valid for strictly-bifurcating trees. Nodes can
@@ -701,7 +703,7 @@ class Node(base.Annotable):
         pos : integer
             The position in the the sequence of children of `self` that
             the new child node should occupy.
-        \*\*kwargs : keyword arguments
+        \*\*kwargs : keyword arguments, optional
             Keyword arguments will be passed directly to the :class:`Node`
             constructor (:meth:`Node.__init()__`).
 
@@ -1345,14 +1347,11 @@ class Node(base.Annotable):
 
 class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     """
-    An arborescence representing a phylogenetic tree.
-    Fundamental class that encapsulates functionality and attributes need for
-    working with a fully-connected directed acyclic graph (or, more strictly,
-    with a root-to-leaf directionality constraint, an "arborescence").
-    A :class:`Tree` contains a `seed_node` attribute (from which the entire tree
-    springs), which may or may not be the root node. The distinction is
-    not consequential in the current implementation, which identifies the root
-    node as a node without `child_node` objects.
+    An arborescence, i.e. a fully-connected directed acyclic graph with all
+    edges directing away from the root and toward the tips. The "root" of the
+    tree is represented by the :attr:`Tree.seed_node` attribute.  In unrooted
+    trees, this node is an algorithmic artifact. In rooted trees this node is
+    semantically equivalent to the root.
     """
 
     def parse_from_stream(cls,
@@ -1413,9 +1412,12 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
                     Specifies the :class:`TaxonNamespace` object to be
                     attached to the new :class:`Tree` object.
 
-            All other keyword arguments are passed directly to :meth:`TreeList.read()`.
-            Other keyword arguments may be available, depending on the implementation
-            of the reader specialized to handle `schema` formats.
+            All other keyword arguments are passed directly to
+            :meth:`TreeList.read()`.  Other keyword arguments may be available,
+            depending on the implementation of the reader specialized to handle
+            `schema` formats. See documentation for details on keyword
+            arguments supported by readers of various schemas.
+
 
         Returns
         -------
@@ -1479,9 +1481,9 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def __init__(self, *args, **kwargs):
         """
-        The constructor can optionally constructing a :class:`Tree` object by
-        cloning another :class:`Tree` object if this is passed as the first
-        argument, or out of a data source if `stream` and `schema` are keyword
+        The constructor can optionally construct a :class:`Tree` object by
+        cloning another :class:`Tree` object passed as the first positional
+        argument, or out of a data source if `stream` and `schema` keyword
         arguments are passed with a file-like object and a schema-specification
         string object values respectively.
 
@@ -1612,6 +1614,16 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     def clone_from(self, other):
         """
         Clones the structure and properties of :class:`Tree` object `other`.
+
+        Parameters
+        ----------
+        other : :class:`Tree`
+            Tree object to clone.
+
+        Returns
+        -------
+        self : :class:`Tree`
+            Returns `self`.
         """
         t = copy.deepcopy(other)
         for k, v in t.__dict__.iteritems():
@@ -1689,9 +1701,11 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
                     Specifies the :class:`TaxonNamespace` object to be
                     attached to the new :class:`Tree` object.
 
-            All other keyword arguments are passed directly to :meth:`TreeList.read()`.
-            Other keyword arguments may be available, depending on the implementation
-            of the reader specialized to handle `schema` formats.
+            All other keyword arguments are passed directly to
+            :meth:`TreeList.read()`.  Other keyword arguments may be available,
+            depending on the implementation of the reader specialized to handle
+            `schema` formats. See documentation for details on keyword
+            arguments supported by readers of various schemas.
 
         Returns
         -------
@@ -1701,7 +1715,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         Raises
         ------
         ValueError
-            If not valid trees matching criteria found in source.
+            If no valid trees matching criteria found in source.
 
         """
         ignore_metadata = kwargs.pop("ignore_metadata", False)
@@ -1716,18 +1730,21 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def write(self, stream, schema, **kwargs):
         """
-        Writes out :class:`Tree` in `schema` to a destination given by file-like object
-        `stream`.
+        Writes out `self` in `schema` format to a destination given by
+        file-like object `stream`.
 
-        `schema` must be a recognized and tree file schema, such as `nexus`,
-        `newick`, etc, for which a specialized tree list writer is
-        available. If this is not implemented for the schema specified, then
-        a :class:`UnsupportedSchemaError` is raised.
+        Parameters
+        ----------
+        `schema` : string
+            <ust be a recognized and tree file schema, such as "nexus",
+            "newick", etc, for which a specialized tree list writer is
+            available. If this is not implemented for the schema specified, then
+            a UnsupportedSchemaError is raised.
 
-        Additionally, for some formats, the following keywords are recognized:
-
-            * `edge_lengths` : if False, edges will not write edge lengths [True]
-            * `internal_labels` : if False, internal labels will not be written [True]
+        \*\*kwargs : keyword arguments, optional
+            Keyword arguments will be passed directly to the writer for the
+            specified schema. See documentation for details on keyword
+            arguments supported by writers of various schemas.
         """
         raise NotImplementedError
 
@@ -1741,14 +1758,16 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         Parameters
         ----------
 
-        filter_fn : function object
-            Takes a single :class:`Node` object as an argument and returns `True` if
-            this node is to be included in the list or `False` otherwise.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be included in
+            the list, or `False` if not. If `filter_fn` is `None` (default),
+            then all nodes visited will be included.
 
         Returns
         -------
-        List of :class:`Node` objects in the tree.
-
+        nodes : `list` [:class:`Node`]
+            List of :class:`Node` objects in the tree.
         """
         nodes = [node for node in self.preorder_node_iter(filter_fn)]
         return nodes
@@ -1756,6 +1775,11 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     def leaf_nodes(self):
         """
         Returns list of leaf nodes on the tree.
+
+        Returns
+        -------
+        nodes : `list` [:class:`Node`]
+            List of leaf :class:`Node` objects in `self`.
         """
         return [leaf for leaf in self.leaf_node_iter()]
 
@@ -1767,15 +1791,14 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Parameters
         ----------
-
-        exclude_seed_node : boolean, default = `False`
-            If `False` (default), seed node or root is visited. If `True`,
-            then it is skipped.
+        exclude_seed_node : boolean, optional
+            If `False` (default), then the seed node or root is included. If
+            `True`, then the seed node is omitted.
 
         Returns
         -------
-        List of internal :class:`Node` objects on this :class:`Tree`.
-
+        nodes : `list` [:class:`Node`]
+            List of internal :class:`Node` objects in `self`.
         """
         return [nd for nd in self.preorder_internal_node_iter(exclude_seed_node=exclude_seed_node)]
 
@@ -1785,15 +1808,16 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Parameters
         ----------
-
-        filter_fn : function object
-            Takes a single :class:`Edge` object as an argument and returns `True` if
-            this edge is to be included in the list or `False` otherwise.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Edge` object as an argument
+            and returns `True` if the :class:`Edge` object is to be included,
+            or `False` if not. If `filter_fn` is `None` (default), then all
+            edges will be included.
 
         Returns
         -------
-        List of :class:`Edge` objects in the tree.
-
+        nodes : `list` [:class:`Edge`]
+            List of :class:`Edge` objects in `self`.
         """
         edges = [edge for edge in self.preorder_edge_iter(filter_fn)]
         return edges
@@ -1801,26 +1825,28 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
     def leaf_edges(self):
         """
         Returns list of leaf edges on the tree.
+
+        Returns
+        -------
+        edges : `list` [:class:`Edge`]
+            List of leaf :class:`Edge` objects in `self`.
         """
         return [leaf.edge for leaf in self.leaf_node_iter()]
 
     def internal_edges(self, exclude_seed_edge=False):
         """
-        Returns list of internal edges in the tree.
-
-        Root or seed edge is included unless `exclude_seed_edge` is `True`.
+        Returns list of internal edges on tree.
 
         Parameters
         ----------
-
-        exclude_seed_node : boolean, default = `False`
-            If `False` (default), seed node or root is visited. If `True`,
-            then it is skipped.
+        exclude_seed_node : boolean, optional
+            If `False` (default), then the edge subtending the seed node or
+            root is included. If `True`, then the seed node is omitted.
 
         Returns
         -------
-        List of internal :class:`Edge` objects on this :class:`Tree`.
-
+        edges : `list` [:class:`Edge`]
+            List of internal :class:`Edge` objects in `self`.
         """
         return [nd.edge for nd in self.preorder_internal_node_iter(exclude_seed_node=exclude_seed_edge)]
 
@@ -1829,7 +1855,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def find_node(self, filter_fn):
         """
-        Finds the first node for which filter_fn(node) = True.
+        Finds the first node for which `filter_fn(node) == True`.
 
         For example, if::
 
@@ -1839,23 +1865,21 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
             t.find_node(filter_fn=filter_fn)
 
-        will return all nodes which have an attributed 'genes' and this value
+        will return all nodes which have an attribute 'genes' and this value
         is not None.
 
         Parameters
         ----------
-
         filter_fn : function object
-            Takes a single :class:`Node` object as an argument and returns `True` or
-            `False` if the node should be returned.
+            Takes a single :class:`Node` object as an argument and returns
+            `True` if the node should be returned.
 
         Returns
         -------
-        :class:`Node` object or `None`
+        node : :class:`Node` or `None`
             Returns first :class:`Node` object for which the filter function
             `filter_fn` returns `True`, or `None` if no such node exists on
             this tree.
-
         """
         for node in self.preorder_node_iter(filter_fn):
             return node
@@ -1867,15 +1891,14 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Parameters
         ----------
-
         label : string
-            Label of :class:`Node` object to be returned.
+            Value for `label` attribute of :class:`Node` object in this tree.
 
         Returns
         -------
-        :class:`Node` object or `None`
+        node : :class:`Node` or `None`
             Returns first :class:`Node` object with `label` attribute having value
-            given in `label`, or`None` if no such node is found.
+            given in `label`, or `None` if no such node is found.
 
         """
         for node in self.preorder_node_iter():
@@ -1889,17 +1912,15 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Parameters
         ----------
-
         taxon : :class:`Taxon` object
             :class:`Taxon` object that should be associated with the node to be
             returned.
 
         Returns
         -------
-        :class:`Node` object or `None`
+        node : :class:`Node` or `None`
             Returns first :class:`Node` object with `taxon` attribute referencing same
             object as `taxon` argument, or `None` if no such node exists.
-
         """
         for node in self.postorder_node_iter():
             try:
@@ -1916,18 +1937,16 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Parameters
         ----------
-
         taxon_filter_fn : function object
-            Takes a single :class:`Taxon` object as an argument and returns `True` or
-            `False` if the node associated with that :class:`Taxon` should be
+            Takes a single :class:`Taxon` object as an argument and returns
+            `True` if the node associated with that :class:`Taxon` should be
             returned.
 
         Returns
         -------
-        :class:`Node` object or `None`
+        node : :class:`Node` or `None`
             Returns first :class:`Node` object with `taxon` attribute passing filter
             function `taxon_filter_fn`, or `None` if no such node is found.
-
         """
         for node in self.preorder_node_iter():
             if hasattr(node, "taxon") and node.taxon is not None:
@@ -1941,13 +1960,12 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Parameters
         ----------
-
         label : string
             Label of :class:`Taxon` object associated with the node to be returned.
 
         Returns
         -------
-        :class:`Node` object or `None`
+        node : :class:`Node` or `None`
             Returns first :class:`Node` object with `taxon` attribute having label
             `label`, or`None` if no such node is found.
 
@@ -1960,20 +1978,52 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def mrca(self, **kwargs):
         """
-        Returns the shallowest node in the tree (the node furthest from
-        the root, or `start_node`, in the direction toward the tips of
-        the tree) that has all of the taxa that:
+        Returns most-recent common ancestor node of a set of taxa on the tree.
 
-            * are specified by the split bitmask given by the keyword argument `split_bitmask`
-            * are in the list of Taxon objects given by the keyword argument 'taxa'
-            * have the labels specified by the list of strings given by the keyword argument 'taxon_labels'
+        Returns the shallowest node in the tree (the node nearest the tips)
+        that has all of the taxa that:
 
-        Returns None if no appropriate node is found.
-        Assumes that edges on tree have been decorated with treesplit.
-        It is possible that split is not compatible with the subtree that is
-        returned! (compatibility tests are not fully performed).
-        This function is used to find the "insertion point" for a new split via a
-        root to tip search.
+            * are specified by the split bitmask given by the keyword argument
+              `split_bitmask`
+            * are in the list of Taxon objects given by the keyword argument
+              `taxa`
+            * have the labels specified by the list of strings given by the
+              keyword argument `taxon_labels`
+
+        Returns `None` if no appropriate node is found.  Assumes that edges on
+        tree have been decorated with splits hashes. It is possible that split is
+        not compatible with the subtree that is returned! (compatibility tests
+        are not fully performed).  This function is used to find the
+        "insertion point" for a new split via a root to tip search.
+
+        Parameters
+        ----------
+        \*\*kwargs : keyword arguments
+            Exactly one of the following must be specified:
+
+                `split_bitmask` : integer
+                    Node object subtended by the first edge compatible with this
+                    split will be returned.
+                `taxa` : collections.Iterable [:class:`Taxon`]
+                    Shallowest node object with descendent nodes associated with
+                    all the :class:`Taxon` objects specified will be returned.
+                `taxon_labels` : collections.Iterable [string]
+                    Shallowest node object with descendent nodes associated
+                    with the minimal set of :class:Taxon objects that
+                    collectively have all the labels specified in
+                    `taxon_labels` will be returned.
+
+            In addition, the following optional keywords are supported:
+
+                `start_node` : :class:`Node`, optional
+                    If given, specifies the node at which to start searching.
+                    If not, defaults to the root or `seed_node`.
+
+        Returns
+        -------
+        node : :class:`Node` or `None`
+            The most-recent common ancestor of the nodes specified, or `None`
+            if no such node exists.
         """
         start_node = kwargs.get("start_node", self.seed_node)
         split_bitmask = None
@@ -2033,7 +2083,7 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def __iter__(self):
         """
-        Iterate over nodes on tree in preorder.
+        Iterate over nodes on tree in pre-order.
 
         Example
         -------
@@ -2044,137 +2094,142 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Returns
         -------
-        Iterator over nodes in tree in preorder.
-
+        iter : `collections.Iterator` [:class:`Node`]
+            An iterator yielding the internal nodes of the subtree rooted at
+            this node in post-order sequence.
         """
         return self.preorder_node_iter()
 
     def preorder_node_iter(self, filter_fn=None):
         """
-        Pre-order traversal of nodes of tree.
+        Pre-order iterator over nodes in tree.
 
-        Visits nodes on tree, with each node visited before its children.
-        Filtered by `filter_fn`: node is only returned if no `filter_fn` is
-        given or if filter_fn returns `True`.
+        Visits nodes in `self`, with each node visited before its children.
+        Nodes can optionally be filtered by `filter_fn`: only nodes for which
+        `filter_fn` returns `True` when called with the node as an argument are
+        yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        Iterator over a sequence of nodes resulting from a pre-order traversal
-        of tree.
-
+        iter : `collections.Iterator` [:class:`Node`]
+            An iterator yielding nodes in `self` in pre-order sequence.
         """
         return self.seed_node.preorder_iter(filter_fn=filter_fn)
 
     def preorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
-        Pre-order traversal of internal nodes of tree.
+        Pre-order iterator over internal nodes in tree.
 
-        Visits internal nodes, with any particular node visited before its
-        children. Filtered by `filter_fn`: node is only returned if no
-        `filter_fn` is given or if filter_fn returns `True`.
-
-        Root or seed node is not visited unless `exclude_seed_node` is `True`.
+        Visits internal nodes in `self`, with each node visited before its
+        children. In DendroPy, "internal nodes" are nodes that have at least
+        one child node, and thus the root or seed node is typically included
+        unless `exclude_seed_node` is `True`. Nodes can optionally be filtered
+        by `filter_fn`: only nodes for which `filter_fn` returns `True` when
+        passed the node as an argument are yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
-
-        exclude_seed_node : boolean, default = `False`
-            If `False` (default), seed node or root is visited. If `True`,
-            then it is skipped.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
+        exclude_seed_node : boolean, optional
+            If `False` (default), then the seed node or root is visited. If
+            `True`, then the seed node is skipped.
 
         Returns
         -------
-        Iterator over a sequence of internal nodes resulting from a pre-order
-        traversal of tree.
-
+        iter : `collections.Iterator` [:class:`Node`]
+            An iterator yielding the internal nodes of `self`.
         """
         return self.seed_node.preorder_internal_node_iter(filter_fn=filter_fn,
                 exclude_seed_node=exclude_seed_node)
 
     def postorder_node_iter(self, filter_fn=None):
         """
-        Post-order traversal of tree.
+        Post-order iterator over nodes of tree.
 
-        Visits all nodes on tree, with any particular node visited after its
-        children. Filtered by `filter_fn`: node is only returned if no
-        `filter_fn` is given or if filter_fn returns `True`.
+        Visits nodes in `self`, with each node visited first followed by its
+        children. Nodes can optionally be filtered by `filter_fn`: only nodes
+        for which `filter_fn` returns `True` when called with the node as an
+        argument are yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        Iterator over a sequence of nodes resulting from a post-order traversal
-        of tree.
-
+        iter : `collections.Iterator` [:class:`Node`]
+            An iterator yielding the nodes in `self` in post-order sequence.
         """
         return self.seed_node.postorder_iter(filter_fn=filter_fn)
 
     def postorder_internal_node_iter(self, filter_fn=None, exclude_seed_node=False):
         """
-        Post-order traversal of internal nodes of tree.
+        Pre-order iterator over internal nodes tree.
 
-        Visits internal nodes, with any particular node visited after its
-        children. Filtered by `filter_fn`: node is only returned if no
-        `filter_fn` is given or if filter_fn returns `True`.
-
-        Root or seed node is not visited unless `exclude_seed_node` is `True`.
+        Visits internal nodes in `self`, with each node visited after its
+        children. In DendroPy, "internal nodes" are nodes that have at least
+        one child node, and thus the root or seed node is typically included
+        unless `exclude_seed_node` is `True`. Nodes can optionally be filtered
+        by `filter_fn`: only nodes for which `filter_fn` returns `True` when
+        passed the node as an argument are yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
-
-        exclude_seed_node : boolean, default = `False`
-            If `False` (default), seed node or root is visited. If `True`,
-            then it is skipped.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
+        exclude_seed_node : boolean, optional
+            If `False` (default), then the seed node or root is visited. If
+            `True`, then the seed node is skipped.
 
         Returns
         -------
-        Iterator over internal nodes of tree in postorder.
-
+        iter : `collections.Iterator` [:class:`Node`]
+            An iterator yielding the internal nodes of `self` in post-order
+            sequence.
         """
         return self.seed_node.postorder_internal_node_iter(filter_fn=filter_fn,
                 exclude_seed_node=exclude_seed_node)
 
     def levelorder_node_iter(self, filter_fn=None):
         """
-        Level-order traversal of tree.
+        Level-order iteration over nodes of tree.
+
+        Visits nodes in `self`, with each node and other nodes at the same
+        level (distance from root) visited before their children.  Nodes can
+        optionally be filtered by `filter_fn`: only nodes for which `filter_fn`
+        returns `True` when called with the node as an argument are visited.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        Iterator over sequence of nodes resulting from level-order traversal of
-        tree.
-
+        iter : `collections.Iterator` [:class:`Node`]
+            An iterator yielding nodes of `self` in level-order sequence.
         """
         return self.seed_node.levelorder_iter(filter_fn=filter_fn)
 
@@ -2188,40 +2243,48 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def inorder_node_iter(self, filter_fn=None):
         """
-        In-order traversal of tree.
+        In-order iteration over nodes of tree.
+
+        Visits nodes in `self`, with each node visited in-between its children.
+        Only valid for strictly-bifurcating trees. Nodes can optionally be
+        filtered by `filter_fn`: only nodes for which `filter_fn` returns
+        `True` when called with the node as an argument are yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        Iterator over sequence of nodes resulting from in-order traversal of
-        tree.
-
+        iter : `collections.Iterator` [:class:`Node`]
+            An iterator yielding nodes of `self` in infix or in-order sequence.
         """
         return self.seed_node.inorder_iter(filter_fn=filter_fn)
 
     def leaf_node_iter(self, filter_fn=None):
         """
-        Iterate over all leaves of tree.
+        Iterate over all tips or leaves of tree.
+
+        Visits all leaf or tip in `self`. Nodes can optionally be filtered by
+        `filter_fn`: only nodes for which `filter_fn` returns `True` when
+        called with the node as an argument are yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        Iterator over a sequence of leaf nodes of this tree.
-
+        iter : `collections.Iterator` [:class:`Node`]
+            An iterator yielding leaf nodes in `self`.
         """
         return self.seed_node.leaf_iter(filter_fn=filter_fn)
 
@@ -2235,7 +2298,8 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def ageorder_node_iter(self, include_leaves=True, filter_fn=None, descending=False):
         """
-        Iterates over all nodes in tree in order of age.
+        Iterator over nodes of tree in order of the age of the node (i.e., the
+                time since the present).
 
         Iterates over nodes in order of age ('age' is as given by the `age`
         attribute, which is usually the sum of edge lengths from tips
@@ -2248,24 +2312,22 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
         Parameters
         ----------
-
-        include_leaves : boolean
+        include_leaves : boolean, optional
             If `True` (default), then leaf nodes are included in the iteration.
             If `False`, then leaf nodes are skipped.
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this node is to be visited during this traversal
-            operation.
-
-        descending : boolean
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
+        descending : boolean, optional
             If `False` (default), then younger nodes are visited before older
             ones. If `True`, then older nodes are visited before younger ones.
 
         Returns
         -------
-        Iterator over age-ordered sequence of nodes in tree.
-
+        iter : `collections.Iterator` [:class:`Node`]
+            Iterator over age-ordered sequence of nodes of `self`.
         """
         if self.seed_node.age is None:
             self.calc_node_ages()
@@ -2288,25 +2350,25 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def preorder_edge_iter(self, filter_fn=None):
         """
-        Pre-order traversal of tree.
+        Pre-order iterator over nodes in tree.
 
-        Visits edges on tree, with each edge visited before its children.
-        Filtered by `filter_fn`: edge is only returned if no `filter_fn` is
-        given or if filter_fn returns `True`.
+        Visits nodes in `self`, with each node visited before its children.
+        Nodes can optionally be filtered by `filter_fn`: only nodes for which
+        `filter_fn` returns `True` when called with the node as an argument are
+        yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Edge` object as an argument and
-            returns `True` if this edge is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Node` object as an argument
+            and returns `True` if the :class:`Node` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all nodes visited will be yielded.
 
         Returns
         -------
-        Iterator over a sequence of edges resulting from a pre-order traversal
-        of tree.
-
+        iter : `collections.Iterator` [:class:`Node`]
+            An iterator yielding nodes in `self` in pre-order sequence.
         """
         if filter_fn is not None:
             f = lambda x : filter_fn(x.edge)
@@ -2317,31 +2379,30 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def preorder_internal_edge_iter(self, filter_fn=None, exclude_seed_edge=False):
         """
-        Pre-order traversal of internal edges of tree.
+        Pre-order iterator over internal edges in tree.
 
-        Visits internal edges, with any particular edge visited before its
-        children. Filtered by `filter_fn`: edge is only returned if no
-        `filter_fn` is given or if filter_fn returns `True`.
-
-        Root or seed edge is not visited unless `exclude_seed_edge` is `True`.
+        Visits internal edges in `self`, with each edge visited before its
+        children. In DendroPy, "internal edges" are edges that have at least
+        one child edge, and thus the root or seed edge is typically included
+        unless `exclude_seed_edge` is `True`. Edges can optionally be filtered
+        by `filter_fn`: only edges for which `filter_fn` returns `True` when
+        passed the edge as an argument are yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Node` object as an argument and
-            returns `True` if this edge is to be visited during this traversal
-            operation.
-
-        exclude_seed_edge : boolean, default = `False`
-            If `False` (default), seed edge or root is visited. If `True`,
-            then it is skipped.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Edge` object as an argument
+            and returns `True` if the :class:`Edge` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all edges visited will be yielded.
+        exclude_seed_edge : boolean, optional
+            If `False` (default), then the edge subtending the seed node or
+            root is visited. If `True`, then this edge is skipped.
 
         Returns
         -------
-        Iterator over a sequence of internal edges resulting from a pre-order
-        traversal of tree.
-
+        iter : `collections.Iterator` [:class:`Edge`]
+            An iterator yielding the internal edges of `self`.
         """
         if filter_fn is not None:
             f = lambda x : filter_fn(x.edge)
@@ -2353,25 +2414,25 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def postorder_edge_iter(self, filter_fn=None):
         """
-        Post-order traversal of edges of tree.
+        Post-order iterator over edges of tree.
 
-        Visits all edges on tree, with any particular edge visited after its
-        children. Filtered by `filter_fn`: edge is only returned if no
-        `filter_fn` is given or if filter_fn returns `True`.
+        Visits edges in `self`, with each edge visited first followed by its
+        children. Edges can optionally be filtered by `filter_fn`: only edges
+        for which `filter_fn` returns `True` when called with the edge as an
+        argument are yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Edge` object as an argument and
-            returns `True` if this edge is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Edge` object as an argument
+            and returns `True` if the :class:`Edge` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all edges visited will be yielded.
 
         Returns
         -------
-        Iterator over a sequence of edges resulting from a post-order traversal
-        of tree.
-
+        iter : `collections.Iterator` [:class:`Edge`]
+            An iterator yielding the edges in `self` in post-order sequence.
         """
         if filter_fn is not None:
             f = lambda x : filter_fn(x.edge)
@@ -2382,30 +2443,31 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def postorder_internal_edge_iter(self, filter_fn=None, exclude_seed_edge=False):
         """
-        Post-order traversal of internal edges of tree.
+        Pre-order iterator over internal edges tree.
 
-        Visits internal edges, with any particular edge visited after its
-        children. Filtered by `filter_fn`: edge is only returned if no
-        `filter_fn` is given or if filter_fn returns `True`.
-
-        Root or seed edge is not visited unless `exclude_seed_edge` is `True`.
+        Visits internal edges in `self`, with each edge visited after its
+        children. In DendroPy, "internal edges" are edges that have at least
+        one child edge, and thus the root or seed edge is typically included
+        unless `exclude_seed_edge` is `True`. Edges can optionally be filtered
+        by `filter_fn`: only edges for which `filter_fn` returns `True` when
+        passed the edge as an argument are yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Edge` object as an argument and
-            returns `True` if this edge is to be visited during this traversal
-            operation.
-
-        exclude_seed_edge : boolean, default = `False`
-            If `False` (default), seed edge or root is visited. If `True`,
-            then it is skipped.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Edge` object as an argument
+            and returns `True` if the :class:`Edge` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all edges visited will be yielded.
+        exclude_seed_edge : boolean, optional
+            If `False` (default), then the seed edge or root is visited. If
+            `True`, then the seed edge is skipped.
 
         Returns
         -------
-        Iterator over internal edges of tree in postorder.
-
+        iter : `collections.Iterator` [:class:`Edge`]
+            An iterator yielding the internal edges of `self` in post-order
+            sequence.
         """
         if filter_fn is not None:
             f = lambda x : filter_fn(x.edge)
@@ -2417,21 +2479,25 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def levelorder_edge_iter(self, filter_fn=None):
         """
-        Level-order traversal of tree.
+        Level-order iteration over edges of tree.
+
+        Visits edges in `self`, with each edge and other edges at the same
+        level (distance from root) visited before their children.  Edges can
+        optionally be filtered by `filter_fn`: only edges for which `filter_fn`
+        returns `True` when called with the edge as an argument are visited.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Edge` object as an argument and
-            returns `True` if this edge is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Edge` object as an argument
+            and returns `True` if the :class:`Edge` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all edges visited will be yielded.
 
         Returns
         -------
-        Iterator over sequence of edges resulting from level-order traversal of
-        tree.
-
+        iter : `collections.Iterator` [:class:`Edge`]
+            An iterator yielding edges of `self` in level-order sequence.
         """
         if filter_fn is not None:
             f = lambda x : filter_fn(x.edge)
@@ -2450,21 +2516,25 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def inorder_edge_iter(self, filter_fn=None):
         """
-        In-order traversal of tree.
+        In-order iteration over edges of tree.
+
+        Visits edges in `self`, with each edge visited in-between its children.
+        Only valid for strictly-bifurcating trees. Edges can optionally be
+        filtered by `filter_fn`: only edges for which `filter_fn` returns
+        `True` when called with the edge as an argument are yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Edge` object as an argument and
-            returns `True` if this edge is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Edge` object as an argument
+            and returns `True` if the :class:`Edge` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all edges visited will be yielded.
 
         Returns
         -------
-        Iterator over sequence of edges resulting from in-order traversal of
-        tree.
-
+        iter : `collections.Iterator` [:class:`Edge`]
+            An iterator yielding edges of `self` in infix or in-order sequence.
         """
         if filter_fn is not None:
             f = lambda x : filter_fn(x.edge)
@@ -2475,20 +2545,24 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def leaf_edge_iter(self, filter_fn=None):
         """
-        Iterate over all leaves of tree.
+        Iterate over all tips or leaves of tree.
+
+        Visits all leaf or tip in `self`. Edges can optionally be filtered by
+        `filter_fn`: only edges for which `filter_fn` returns `True` when
+        called with the edge as an argument are yielded.
 
         Parameters
         ----------
-
-        filter_fn : function object
-            A function object that takes a :class:`Edge` object as an argument and
-            returns `True` if this edge is to be visited during this traversal
-            operation.
+        filter_fn : function object, optional
+            A function object that takes a :class:`Edge` object as an argument
+            and returns `True` if the :class:`Edge` object is to be yielded by
+            the iterator, or `False` if not. If `filter_fn` is `None`
+            (default), then all edges visited will be yielded.
 
         Returns
         -------
-        Iterator over a sequence of leaf edges of this tree.
-
+        iter : `collections.Iterator` [:class:`Edge`]
+            An iterator yielding leaf edges in `self`.
         """
         if filter_fn is not None:
             f = lambda x : filter_fn(x.edge)
