@@ -67,7 +67,7 @@ class TestTreeStructure(unittest.TestCase):
     internal_levelorder_sequence = ["a", "bc", "egf", "h"]
     inorder_sequence = ["i", "b", "j", "e", "k", "a", "l", "g", "m", "c", "n", "f", "o", "h", "p"]
     ageorder_sequence = ["i", "j", "k", "l", "m", "n", "o", "p", "e", "g", "h", "b", "f", "c", "a"]
-    node_expected_children = {
+    node_children = {
             "a" : ["b", "c"],
             "b" : ["i", "e"],
             "c" : ["g", "f"],
@@ -84,7 +84,7 @@ class TestTreeStructure(unittest.TestCase):
             "o" : [],
             "p" : [],
             }
-    node_expected_siblings = {
+    node_siblings = {
             "a": [],
             "b": ["c"],
             "c": [],
@@ -134,6 +134,23 @@ class TestTreeStructure(unittest.TestCase):
             "n":  0.0,
             "o":  0.0,
             "p":  0.0,
+            }
+    node_ancestors = {
+            "a": [],
+            "b": ["a"],
+            "c": ["a"],
+            "e": ["b"],
+            "f": ["c", "a"],
+            "g": ["c", "a"],
+            "h": ["f", "c", "a"],
+            "i": ["b", "a"],
+            "j": ["e", "b", "a"],
+            "k": ["e", "b", "a"],
+            "l": ["g", "c", "a"],
+            "m": ["g", "c", "a"],
+            "n": ["f", "c", "a"],
+            "o": ["h", "f", "c", "a"],
+            "p": ["h", "f", "c", "a"],
             }
 
     # def get_tree(self):
@@ -391,7 +408,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [nd for nd in tree.preorder_internal_node_iter()]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
-                self.node_expected_children[x]]
+                self.node_children[x]]
         self.assertEqual(visited_labels, exp_labels)
 
     def test_preorder_internal_node_iter_filtered(self):
@@ -400,7 +417,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [nd for nd in tree.preorder_internal_node_iter(filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
-                (self.node_expected_children[x] and self.node_edge_lengths[x] > 13)]
+                (self.node_children[x] and self.node_edge_lengths[x] > 13)]
         self.assertEqual(visited_labels, exp_labels)
 
     def test_preorder_internal_node_iter_without_root_unfiltered(self):
@@ -408,7 +425,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [nd for nd in tree.preorder_internal_node_iter(exclude_seed_node=True)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
-                self.node_expected_children[x] and x != "a"]
+                self.node_children[x] and x != "a"]
         self.assertEqual(visited_labels, exp_labels)
 
     def test_preorder_internal_node_iter_without_root_filtered(self):
@@ -417,7 +434,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [nd for nd in tree.preorder_internal_node_iter(exclude_seed_node=True, filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
-                (self.node_expected_children[x] and self.node_edge_lengths[x] > 13) and x != "a"]
+                (self.node_children[x] and self.node_edge_lengths[x] > 13) and x != "a"]
         self.assertEqual(visited_labels, exp_labels)
 
     ### Postorder Node Iterator ###
@@ -443,7 +460,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [nd for nd in tree.postorder_internal_node_iter()]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
-                self.node_expected_children[x]]
+                self.node_children[x]]
         self.assertEqual(visited_labels, exp_labels)
 
     def test_postorder_internal_node_iter_filtered(self):
@@ -452,7 +469,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [nd for nd in tree.postorder_internal_node_iter(filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
-                (self.node_expected_children[x] and self.node_edge_lengths[x] > 13)]
+                (self.node_children[x] and self.node_edge_lengths[x] > 13)]
         self.assertEqual(visited_labels, exp_labels)
 
     def test_postorder_internal_node_iter_without_root_unfiltered(self):
@@ -460,7 +477,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [nd for nd in tree.postorder_internal_node_iter(exclude_seed_node=True)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
-                self.node_expected_children[x] and x != "a"]
+                self.node_children[x] and x != "a"]
         self.assertEqual(visited_labels, exp_labels)
 
     def test_postorder_internal_node_iter_without_root_filtered(self):
@@ -469,7 +486,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [nd for nd in tree.postorder_internal_node_iter(exclude_seed_node=True, filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
-                (self.node_expected_children[x] and self.node_edge_lengths[x] > 13) and x != "a"]
+                (self.node_children[x] and self.node_edge_lengths[x] > 13) and x != "a"]
         self.assertEqual(visited_labels, exp_labels)
 
     ### Level-Order Node Iterator ###
@@ -539,7 +556,7 @@ class TestTreeStructure(unittest.TestCase):
         tree, anodes, lnodes, inodes = self.get_tree()
         nodes = [nd for nd in tree.ageorder_node_iter(include_leaves=False)]
         visited_labels = [nd.label for nd in nodes]
-        expected = [label for label in self.ageorder_sequence if self.node_expected_children[label]]
+        expected = [label for label in self.ageorder_sequence if self.node_children[label]]
         self.assertEqual(visited_labels, expected)
 
     def test_ageorder_node_iter_unfiltered_reversed(self):
@@ -582,7 +599,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [edge.head_node for edge in tree.preorder_internal_edge_iter()]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
-                self.node_expected_children[x]]
+                self.node_children[x]]
         self.assertEqual(visited_labels, exp_labels)
 
     def test_preorder_internal_edge_iter_filtered(self):
@@ -591,7 +608,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [edge.head_node for edge in tree.preorder_internal_edge_iter(filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
-                (self.node_expected_children[x] and self.node_edge_lengths[x] > 13)]
+                (self.node_children[x] and self.node_edge_lengths[x] > 13)]
         self.assertEqual(visited_labels, exp_labels)
 
     def test_preorder_internal_edge_iter_without_root_unfiltered(self):
@@ -599,7 +616,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [edge.head_node for edge in tree.preorder_internal_edge_iter(exclude_seed_edge=True)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
-                self.node_expected_children[x] and x != "a"]
+                self.node_children[x] and x != "a"]
         self.assertEqual(visited_labels, exp_labels)
 
     def test_preorder_internal_edge_iter_without_root_filtered(self):
@@ -608,7 +625,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [edge.head_node for edge in tree.preorder_internal_edge_iter(exclude_seed_edge=True, filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.preorder_sequence if
-                (self.node_expected_children[x] and self.node_edge_lengths[x] > 13) and x != "a"]
+                (self.node_children[x] and self.node_edge_lengths[x] > 13) and x != "a"]
         self.assertEqual(visited_labels, exp_labels)
 
     ### Postorder Edge Iterator ###
@@ -634,7 +651,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [edge.head_node for edge in tree.postorder_internal_edge_iter()]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
-                self.node_expected_children[x]]
+                self.node_children[x]]
         self.assertEqual(visited_labels, exp_labels)
 
     def test_postorder_internal_edge_iter_filtered(self):
@@ -643,7 +660,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [edge.head_node for edge in tree.postorder_internal_edge_iter(filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
-                (self.node_expected_children[x] and self.node_edge_lengths[x] > 13)]
+                (self.node_children[x] and self.node_edge_lengths[x] > 13)]
         self.assertEqual(visited_labels, exp_labels)
 
     def test_postorder_internal_edge_iter_without_root_unfiltered(self):
@@ -651,7 +668,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [edge.head_node for edge in tree.postorder_internal_edge_iter(exclude_seed_edge=True)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
-                self.node_expected_children[x] and x != "a"]
+                self.node_children[x] and x != "a"]
         self.assertEqual(visited_labels, exp_labels)
 
     def test_postorder_internal_edge_iter_without_root_filtered(self):
@@ -660,7 +677,7 @@ class TestTreeStructure(unittest.TestCase):
         nodes = [edge.head_node for edge in tree.postorder_internal_edge_iter(exclude_seed_edge=True, filter_fn=f)]
         visited_labels = [nd.label for nd in nodes]
         exp_labels = [x for x in self.postorder_sequence if
-                (self.node_expected_children[x] and self.node_edge_lengths[x] > 13) and x != "a"]
+                (self.node_children[x] and self.node_edge_lengths[x] > 13) and x != "a"]
         self.assertEqual(visited_labels, exp_labels)
 
     ### Level-Order Edge Iterator ###
@@ -717,9 +734,18 @@ class TestTreeStructure(unittest.TestCase):
     def test_child_iterator_unfiltered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
         for nd in anodes:
-            expected_children = self.node_expected_children[nd.label]
+            expected_children = self.node_children[nd.label]
             children = [ch.label for ch in nd.child_iter()]
             self.assertEqual(children, expected_children)
+
+    def test_child_iterator_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        filter_fn = lambda x: x.edge.length > 13
+        for nd in anodes:
+            expected_children = [label for label in self.node_children[nd.label] if self.node_edge_lengths[label] > 13]
+            children = [ch.label for ch in nd.child_iter(filter_fn=filter_fn)]
+            self.assertEqual(children, expected_children)
+
 
 if __name__ == "__main__":
     unittest.main()
