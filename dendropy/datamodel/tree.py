@@ -544,7 +544,7 @@ class Node(base.Annotable):
                    and (filter_fn is None or filter_fn(node)):
                 yield node
 
-    def ageorder_iter(self, include_leaves=True, filter_fn=None, descending=False):
+    def ageorder_iter(self, filter_fn=None, include_leaves=True, descending=False):
         """
         Iterator over nodes of subtree rooted at this node in order of the age
         of the node (i.e., the time since the present).
@@ -560,14 +560,14 @@ class Node(base.Annotable):
 
         Parameters
         ----------
-        include_leaves : boolean, optional
-            If `True` (default), then leaf nodes are included in the iteration.
-            If `False`, then leaf nodes are skipped.
         filter_fn : function object, optional
             A function object that takes a :class:`Node` object as an argument
             and returns `True` if the :class:`Node` object is to be yielded by
             the iterator, or `False` if not. If `filter_fn` is `None`
-            (default), then all nodes visited will be yielded.
+            (defau
+        include_leaves : boolean, optional
+            If `True` (default), then leaf nodes are included in the iteration.
+            If `False`, then leaf nodes are skipped.lt), then all nodes visited will be yielded.
         descending : boolean, optional
             If `False` (default), then younger nodes are visited before older
             ones. If `True`, then older nodes are visited before younger ones.
@@ -578,31 +578,40 @@ class Node(base.Annotable):
             Iterator over age-ordered sequence of nodes in subtree rooted at
             this node.
         """
-        if not descending:
-            leaves = [nd for nd in self.leaf_iter()]
-            queued_pairs = []
-            in_queue = set()
-            for leaf in leaves:
-                age_nd_tuple = (leaf.age, leaf)
-                queued_pairs.insert(bisect.bisect(queued_pairs, age_nd_tuple), age_nd_tuple)
-                in_queue.add(leaf)
-            while queued_pairs:
-                next_el = queued_pairs.pop(0)
-                age, nd = next_el
-                in_queue.remove(nd)
-                p = nd.parent_node
-                if p and p not in in_queue:
-                    age_nd_tuple = (p.age, p)
-                    queued_pairs.insert(bisect.bisect(queued_pairs, age_nd_tuple), age_nd_tuple)
-                    in_queue.add(p)
-                if include_leaves or nd.is_internal():
-                    yield nd
+        # if not descending:
+        #     leaves = [nd for nd in self.leaf_iter()]
+        #     queued_pairs = []
+        #     in_queue = set()
+        #     for leaf in leaves:
+        #         age_nd_tuple = (leaf.age, leaf)
+        #         queued_pairs.insert(bisect.bisect(queued_pairs, age_nd_tuple), age_nd_tuple)
+        #         in_queue.add(leaf)
+        #     while queued_pairs:
+        #         next_el = queued_pairs.pop(0)
+        #         age, nd = next_el
+        #         in_queue.remove(nd)
+        #         p = nd.parent_node
+        #         if p and p not in in_queue:
+        #             age_nd_tuple = (p.age, p)
+        #             queued_pairs.insert(bisect.bisect(queued_pairs, age_nd_tuple), age_nd_tuple)
+        #             in_queue.add(p)
+        #         if include_leaves or nd.is_internal():
+        #             yield nd
+        # else:
+        #     nds = [(nd.age, nd) for nd in self.preorder_iter()]
+        #     nds.sort(reverse=True)
+        #     for nd in nds:
+        #         if include_leaves or nd[1].is_internal():
+        #             yield nd[1]
+        nds = [nd for nd in self.preorder_iter()]
+        if descending:
+            reverse = True
         else:
-            nds = [(nd.age, nd) for nd in self.preorder_iter()]
-            nds.sort(reverse=True)
-            for nd in nds:
-                if include_leaves or nd[1].is_internal():
-                    yield nd[1]
+            reverse = False
+        nds.sort(key=lambda x: x.age, reverse=reverse)
+        for nd in nds:
+            if (include_leaves or nd._child_nodes) and (filter_fn is None or filter_fn(nd)):
+                yield nd
 
     def age_order_iter(self, include_leaves=True, filter_fn=None, descending=False):
         """
@@ -3218,10 +3227,11 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
             else:
                 first_child = ch[0]
                 node.age = first_child.age + first_child.edge.length
-                if not (check_prec < 0 or check_prec == False):
+                if not (check_prec is None or check_prec is False or check_prec < 0):
                     for nnd in ch[1:]:
                         ocnd = nnd.age + nnd.edge.length
                         if abs(node.age - ocnd) > check_prec:
+                            # raise ValueError("Tree is not ultrametric. Node '{}': expecting {}, but found {}".format(node.label, node.age, ocnd))
                             raise ValueError("Tree is not ultrametric")
             ages.append(node.age)
         return ages
