@@ -535,6 +535,22 @@ class TestTreeStructure(unittest.TestCase):
         visited_labels = [nd.label for nd in nodes]
         self.assertEqual(visited_labels, self.ageorder_sequence)
 
+    def test_ageorder_node_iter_unfiltered_no_leaves(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = [nd for nd in tree.ageorder_node_iter(include_leaves=False)]
+        visited_labels = [nd.label for nd in nodes]
+        expected = [label for label in self.ageorder_sequence if self.node_expected_children[label]]
+        self.assertEqual(visited_labels, expected)
+
+    def test_ageorder_node_iter_unfiltered_reversed(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        nodes = [nd for nd in tree.ageorder_node_iter(descending=True)]
+        visited_labels = [nd.label for nd in nodes]
+        nda = [ (self.node_ages[x], x) for x in self.preorder_sequence ]
+        nda.sort(key=lambda x: x[0], reverse=True)
+        exp = [x[1] for x in nda]
+        self.assertEqual(visited_labels, exp)
+
     def test_leaf_node_iter_filtered(self):
         tree, anodes, lnodes, inodes = self.get_tree()
         f = lambda x: x.edge.length > 13
