@@ -139,7 +139,7 @@ class TestTreeStructure(unittest.TestCase):
             "a": [],
             "b": ["a"],
             "c": ["a"],
-            "e": ["b"],
+            "e": ["b", "a"],
             "f": ["c", "a"],
             "g": ["c", "a"],
             "h": ["f", "c", "a"],
@@ -745,6 +745,38 @@ class TestTreeStructure(unittest.TestCase):
             expected_children = [label for label in self.node_children[nd.label] if self.node_edge_lengths[label] > 13]
             children = [ch.label for ch in nd.child_iter(filter_fn=filter_fn)]
             self.assertEqual(children, expected_children)
+
+    def test_ancestor_iterator_exclusive_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        for nd in anodes:
+            ancestors = [ch.label for ch in nd.ancestor_iter(inclusive=False)]
+            expected_ancestors = self.node_ancestors[nd.label]
+            self.assertEqual(ancestors, expected_ancestors)
+
+    def test_ancestor_iterator_exclusive_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        filter_fn = lambda x: x.edge.length > 13
+        for nd in anodes:
+            expected_ancestors = self.node_ancestors[nd.label]
+            expected_ancestors = [nd for nd in expected_ancestors if self.node_edge_lengths[nd] > 13]
+            ancestors = [ch.label for ch in nd.ancestor_iter(inclusive=False, filter_fn=filter_fn)]
+            self.assertEqual(ancestors, expected_ancestors)
+
+    def test_ancestor_iterator_inclusive_unfiltered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        for nd in anodes:
+            ancestors = [ch.label for ch in nd.ancestor_iter(inclusive=True)]
+            expected_ancestors = [nd.label] + self.node_ancestors[nd.label]
+            self.assertEqual(ancestors, expected_ancestors)
+
+    def test_ancestor_iterator_inclusive_filtered(self):
+        tree, anodes, lnodes, inodes = self.get_tree()
+        filter_fn = lambda x: x.edge.length > 13
+        for nd in anodes:
+            expected_ancestors = [nd.label] + self.node_ancestors[nd.label]
+            expected_ancestors = [nd for nd in expected_ancestors if self.node_edge_lengths[nd] > 13]
+            ancestors = [ch.label for ch in nd.ancestor_iter(inclusive=True, filter_fn=filter_fn)]
+            self.assertEqual(ancestors, expected_ancestors)
 
 
 if __name__ == "__main__":

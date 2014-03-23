@@ -510,7 +510,7 @@ class Node(base.Annotable):
             if filter_fn is None or filter_fn(node):
                 yield node
 
-    def ancestor_iter(self, filter_fn=None, inclusive=True):
+    def ancestor_iter(self, filter_fn=None, inclusive=False):
         """
         Iterator over all ancestors of this node.
 
@@ -527,15 +527,16 @@ class Node(base.Annotable):
             and returns `True` if the :class:`Node` object is to be yielded by
             the iterator, or `False` if not. If `filter_fn` is `None`
             (default), then all nodes visited will be yielded.
-        inclusive : boolean
-            If `True`, includes this node in the sequence.
+        inclusive : boolean, optional
+            If `True`, includes this node in the sequence. If `False`, this is
+            skipped.
 
         Returns
         -------
         iter : :py:class:`collections.Iterator` [:class:`Node`]
             Iterator over all predecessor/ancestor nodes of this node.
         """
-        if inclusive:
+        if inclusive and (filter_fn is None or filter_fn(self)):
             yield self
         node = self
         while node is not None:
