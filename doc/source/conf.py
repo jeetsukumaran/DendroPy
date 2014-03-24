@@ -15,7 +15,31 @@
 import sys
 import os
 import time
+from sphinx.ext import autodoc
 from dendropy import __version__ as PROJECT_VERSION
+
+# -- Sphinx Hackery ------------------------------------------------
+
+# Following allows for a docstring of a method to be inserted "nakedly"
+# (without the signature etc.) into the current context by, for example::
+#
+#       .. autodocstringonly:: dendropy.dataio.newickreader.NewickReader.__init__
+#
+# Based on:
+#
+#   http://stackoverflow.com/questions/7825263/including-docstring-in-sphinx-documentation
+class DocStringOnlyMethodDocumenter(autodoc.MethodDocumenter):
+    objtype = "docstringonly"
+
+    # do not indent the content
+    content_indent = ""
+
+    # do not add a header to the docstring
+    def add_directive_header(self, sig):
+        pass
+
+def setup(app):
+    app.add_autodocumenter(DocStringOnlyMethodDocumenter)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the

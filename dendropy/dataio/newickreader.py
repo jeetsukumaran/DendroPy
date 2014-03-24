@@ -221,8 +221,75 @@ class NewickTreeParser(object):
 ## NewickReader
 
 class NewickReader(ioservice.DataReader):
+    """
+    Parser for NEWICK-formatted data.
+    """
 
     def __init__(self, **kwargs):
+        """
+        Keyword Arguments
+        -----------------
+        rootedness : string, {['default-unrooted'], 'default-rooted', 'force-unrooted', 'force-rooted'}
+            Specifies how trees in the data source should be intepreted with
+            respect to their rootedness:
+
+                '``default-unrooted``' [default]:
+                    All trees are interpreted as unrooted unless a '``[&R]``'
+                    comment token explicitly specifies them as rooted.
+                '``default-rooted``'
+                    All trees are interpreted as rooted unless a '``[&U]``'
+                    comment token explicitly specifies them as unrooted.
+                '``force-unrooted``'
+                    All trees are unconditionally interpreted as unrooted.
+                '``force-rooted``'
+                    All trees are unconditionally interpreted as rooted.
+
+        edge_len_type : type, default: `float`
+            Specifies the type of the edge lengths (`int` or `float`). Tokens
+            interpreted as branch lengths will be cast to this type.
+            Defaults to `float`.
+        extract_comment_metadata : boolean, default: `False`
+            If `True`, any comments that begin with '&' or '&&' will be parsed
+            and stored as part of the annotation set of the corresponding
+            object (accessible through the `annotations` attribute of the
+            object). This requires that the comment contents conform to
+            a particular format (NHX or BEAST: 'field = value'). If `False`,
+            then the comments will not be parsed, but will be instead stored
+            directly as elements of the `comments` list attribute of the
+            associated object.
+        store_tree_weights : boolean, default: `False`
+            If `True`, process the tree weight (e.g. "``[&W 1/2]``") comment
+            associated with each tree, if any. Defaults to `False`.
+        encode_splits : boolean, default: `False`
+            If `True`, split hash bitmasks will be calculated and attached to
+            the edges.
+        finish_node_func : function object, default: `None`
+            If specified, this function will be applied to each node after
+            it has been constructed.
+        case_sensitive_taxon_labels : boolean, default: `False`
+            If `True`, then taxon labels are case sensitive (e.g., "``P.regius``"
+            and "``P.REGIUS``" wil be treated as different operation taxonomic
+            unit concepts). Otherwise, taxon label intepretation will be made
+            without regard for case.
+        preserve_underscores : boolean, default: `False`
+            If `True`, unquoted underscores in labels will *not* converted to
+            spaces. Defaults to `False`: all underscores not protected by
+            quotes will be converted to spaces.
+        suppress_internal_node_taxa : boolean, default: `True`
+            If `False`, internal node labels will be instantantiatd into Taxon
+            objects.  Defaults to `True`: internal node labels will *not* be
+            treated as taxa.
+        allow_duplicate_taxon_labels : boolean, default: `False`
+            If `True`, then multiple identical taxon labels will be allowed.
+            Defaults to `False`: treat multiple identical taxon labels as an
+            error.
+        hyphens_as_tokens : boolean, default: `False`
+            If `False`, hyphens are not treated as special punctuation
+            characters (and thus can be used as part of labels or edge length
+            values without requiring that the labels be wrapped in
+            quotes). If `True`, hyphens will be treated as special
+            punctuation characters.
+        """
         self._parser = NewickTreeParser()
 
     def tree_iter(self,
