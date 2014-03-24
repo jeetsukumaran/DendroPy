@@ -340,7 +340,7 @@ class TaxonNamespace(base.DataObject, base.Annotable):
         Returns `True` if Taxon object `taxon` is in self.
         """
         # look-up in dictionary for O(1) instead of O(n) in list
-        return taxon in _taxon_accession_index_map
+        return taxon in self._taxon_accession_index_map
 
     def _lookup_label(self,
             label,
