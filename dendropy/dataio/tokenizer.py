@@ -142,6 +142,11 @@ class Tokenizer(object):
     def clear_captured_comments(self):
         del self.captured_comments[:]
 
+    def pull_captured_comments(self):
+        c = self.captured_comments[:]
+        del self.captured_comments[:]
+        return c
+
     def __iter__(self):
         return self
 

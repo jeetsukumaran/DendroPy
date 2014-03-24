@@ -152,10 +152,9 @@ class NexusTokenizerTestCase(unittest.TestCase):
         for token in tk:
             if token in expected_comments:
                 expected_comment = expected_comments[token]
-                observed_comment = tk.captured_comments
+                observed_comment = tk.pull_captured_comments()
                 self.assertEqual(expected_comment, observed_comment)
                 del expected_comments[token]
-                tk.clear_captured_comments()
             observed_tokens.append(token)
         self.assertEqual(expected_comments, {})
         self.assertEqual(observed_tokens, expected_tokens)
