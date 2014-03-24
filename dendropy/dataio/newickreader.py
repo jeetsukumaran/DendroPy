@@ -20,6 +20,7 @@
 Parsing of NEWICK-format tree from a stream.
 """
 
+import warnings
 from dendropy.utility import error
 from dendropy.dataio import nexusprocessing
 from dendropy.dataio import ioservice
@@ -291,6 +292,44 @@ class NewickReader(ioservice.DataReader):
             punctuation characters.
         """
         self._parser = NewickTreeParser()
+
+        ## (TEMPORARY and UGLY!!!!) Special handling for legacy signature
+        if "as_unrooted" in kwargs or "as_rooted" in kwargs or "default_as_rooted" in kwargs or "default_as_unrooted" in kwargs:
+            import collections
+            legacy_kw = ("as_unrooted", "as_rooted", "default_as_rooted", "default_as_unrooted")
+            legacy_kw_str = ", ".join("'{}'".format(k) for k in legacy_kw)
+            if "rootedness" in kwargs:
+                raise ValueError("Cannot specify 'rootedness' keyword argument in conjunction with any of the (legacy) keyword arguments ({}). Use 'rootedness' alone.".format(legacy_kw_str))
+            specs = collections.Counter(k for k in kwargs.keys() if k in legacy_kw)
+            if sum(specs.values()) > 1:
+                raise ValueError("Cannot specify more than one of {{ {} }} at the same time".format(legacy_kw_str))
+            kw = list(specs.keys())[0]
+            if kw == "as_unrooted":
+                if kwargs[kw]:
+                    corrected = "force-unrooted"
+                else:
+                    corrected = "force-rooted"
+            elif kw == "as_rooted":
+                if kwargs[kw]:
+                    corrected = "force-rooted"
+                else:
+                    corrected = "force-unrooted"
+            elif kw == "default_as_unrooted":
+                if kwargs[kw]:
+                    corrected = "default-unrooted"
+                else:
+                    corrected = "default-rooted"
+            elif kw == "default_as_rooted":
+                if kwargs[kw]:
+                    corrected = "default-rooted"
+                else:
+                    corrected = "default-unrooted"
+            error.dump_stack()
+            warnings.warn("Use of keyword argument '{}={}' is deprecated; use 'rootedness=\"{}\"' instead".format(kw, kwargs[kw], corrected),
+                    FutureWarning, stacklevel=4)
+            kwargs.pop(kw)
+            kwargs["rootedness"] = corrected
+        self.rootedness = kwargs.pop("rootedness", "default-unrooted")
 
     def tree_iter(self,
             stream,
