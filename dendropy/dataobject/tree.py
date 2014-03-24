@@ -1966,20 +1966,20 @@ class Tree(TaxonSetLinked, iosys.Readable, iosys.Writeable):
 
     def _check_children_for_split_compatibility(self, nd_list, split):
         for nd in nd_list:
-            if is_compatible(nd.edge.split, split):
+            if treesplit.is_compatible(nd.edge.split_bitmask, split, self.taxon_set.all_taxa_bitmask()):
                 # see if nd has all of the leaves that are flagged as 1 in the split of interest
-                if (nd.edge.split & split) == split:
+                if (nd.edge.split_bitmask & split) == split:
                     return nd
             else:
                 return None
         return None
 
     def is_compatible_with_split(self, split):
-        nd = self.root
+        nd = self.seed_node
         while True:
-            if nd.edge.split == split:
+            if nd.edge.split_bitmask == split:
                 return True
-            nd = self._check_children_for_split_compatibility(nd.child_nodes, split)
+            nd = self._check_children_for_split_compatibility(nd._child_nodes, split)
             if nd is None:
                 return False
 
