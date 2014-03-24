@@ -129,7 +129,7 @@ class NewickReader(ioservice.DataReader):
             quotes will be converted to spaces.
         suppress_internal_node_taxa : boolean, default: `True`
             If `False`, internal node labels will be instantantiatd into Taxon
-            objects.  Defaults to `True`: internal node labels will *not* be
+            objects. Defaults to `True`: internal node labels will *not* be
             treated as taxa.
         allow_duplicate_taxon_labels : boolean, default: `False`
             If `True`, then multiple identical taxon labels will be allowed.
@@ -142,8 +142,8 @@ class NewickReader(ioservice.DataReader):
             quotes). If `True`, hyphens will be treated as special
             punctuation characters.
         """
-        self._rooting = None
 
+        self._rooting = None
         ## (TEMPORARY and UGLY!!!!) Special handling for legacy signature
         if "as_unrooted" in kwargs or "as_rooted" in kwargs or "default_as_rooted" in kwargs or "default_as_unrooted" in kwargs:
             import collections
@@ -182,7 +182,16 @@ class NewickReader(ioservice.DataReader):
             kwargs.pop(kw)
             kwargs["rooting"] = corrected
         self.rooting = kwargs.pop("rooting", "default-unrooted")
+        self.edge_len_type = kwargs.get("edge_len_type", float)
         self.extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
+        self.store_tree_weights = kwargs.get("store_tree_weights", False)
+        self.encode_splits = kwargs.get("encode_splits", False)
+        self.finish_node_func = kwargs.get("finish_node_func", None)
+        self.case_sensitive_taxon_labels = kwargs.get('case_sensitive_taxon_labels', False)
+        self.preserve_underscores = kwargs.get('preserve_underscores', False)
+        self.suppress_internal_node_taxa = kwargs.get("suppress_internal_node_taxa", True)
+        self.allow_duplicate_taxon_labels = kwargs.get("allow_duplicate_taxon_labels", False)
+        self.hyphens_as_tokens =  kwargs.get('hyphens_as_tokens', False)
 
     def tree_iter(self,
             stream,
@@ -296,7 +305,7 @@ class NewickReader(ioservice.DataReader):
             if comment in ["&u", "&U", "&r", "&R"]:
                 tree.is_rooted = self._parse_tree_rooting_state(comment)
             elif comment.startswith("&W") or comment.startswith("&w"):
-                if store_tree_weights:
+                if self.store_tree_weights:
                     try:
                         weight_expression = stream_tokenizer.tree_weight_comment.split(' ')[1]
                         tree.weight = eval("/".join(["float(%s)" % cv for cv in weight_expression.split('/')]))
@@ -354,6 +363,7 @@ class NewickReader(ioservice.DataReader):
         node, i.e. the token following the closing parenthesis of the node
         semi-colon terminating a tree statement.
         """
+        current_node_comments = nexus_tokenizer.pull_captured_comments()
         if nexus_tokenizer.current_token == "(":
             nexus_tokenizer.require_next_token()
             node_created = False
@@ -362,16 +372,25 @@ class NewickReader(ioservice.DataReader):
                     if not node_created: #184
                         # no node has been created yet: ',' designates a
                         # preceding blank node
-                        current_node.add_child(tree.node_factory())
+                        new_node = tree.node_factory()
+                        self._process_node_comments(node=new_node,
+                                nexus_tokenizer=nexus_tokenizer)
+                        current_node.add_child(new_node)
                         # do not flag node as created to allow for an extra node to be created in the event of (..,)
                     nexus_tokenizer.require_next_token()
                     while nexus_tokenizer.current_token == ",": #192
                         # another blank node
-                        current_node.add_child(tree.node_factory())
+                        new_node = tree.node_factory()
+                        self._process_node_comments(node=new_node,
+                                nexus_tokenizer=nexus_tokenizer)
+                        current_node.add_child(new_node)
                         nexus_tokenizer.require_next_token()
                         node_created = true;
-                    if node_created and nexus_tokenizer.current_token == ")": #200
+                    if not node_created and nexus_tokenizer.current_token == ")": #200
                         # end of node
+                        new_node = tree.node_factory();
+                        self._process_node_comments(node=new_node,
+                                nexus_tokenizer=nexus_tokenizer)
                         current_node.add_child(new_node)
                         node_created = true;
                 elif nexus_tokenizer.current_token == ")": #206
@@ -386,6 +405,8 @@ class NewickReader(ioservice.DataReader):
                     else:
                         is_new_internal_node = False
                     new_node = tree.node_factory();
+                    self._process_node_comments(node=new_node,
+                            nexus_tokenizer=nexus_tokenizer)
                     self._parse_tree_node_description(
                             nexus_tokenizer=nexus_tokenizer,
                             tree=tree,
@@ -408,6 +429,9 @@ class NewickReader(ioservice.DataReader):
                 nexus_tokenizer.require_next_token()
             elif nexus_tokenizer.current_token == ")": #253
                 # closing of parent token
+                self._process_node_comments(node=current_node,
+                        nexus_tokenizer=nexus_tokenizer,
+                        additional_comments=current_node_comments)
                 return current_node
             elif nexus_tokenizer.current_token == ";": #256
                 # end of tree statement
@@ -415,6 +439,9 @@ class NewickReader(ioservice.DataReader):
                 break
             elif nexus_tokenizer.current_token == ",": #260
                 # end of this node
+                self._process_node_comments(node=current_node,
+                        nexus_tokenizer=nexus_tokenizer,
+                        additional_comments=current_node_comments)
                 return current_node
             elif nexus_tokenizer.current_token == "(": #263
                 # start of another node or tree without finishing this
@@ -442,6 +469,9 @@ class NewickReader(ioservice.DataReader):
                         current_node.taxon = taxon_symbol_map_func(nexus_tokenizer.current_token)
                     label_parsed = True;
                     nexus_tokenizer.require_next_token()
+        self._process_node_comments(node=current_node,
+                nexus_tokenizer=nexus_tokenizer,
+                additional_comments=current_node_comments)
         return current_node
 
     def _parse_comment_metadata(comment,
@@ -527,4 +557,19 @@ class NewickReader(ioservice.DataReader):
             annotations.add(annote)
         return annotations
 
-
+    def _process_node_comments(self,
+            node,
+            nexus_tokenizer,
+            additional_comments=None):
+        node_comments = nexus_tokenizer.pull_captured_comments()
+        if additional_comments is not None:
+            node_comments.extend(additional_comments)
+        for comment in node_comments:
+            if self.extract_comment_metadata and comment.startswith("&"):
+                annotations = self._parse_comment_metadata(comment)
+                if annotations:
+                    node.annotations.update(annotations)
+                else:
+                    node.comments.append(comment)
+            else:
+                node.comments.append(comment)
