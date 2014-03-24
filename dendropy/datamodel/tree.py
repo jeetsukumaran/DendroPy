@@ -71,6 +71,7 @@ class Edge(base.Annotable):
         self.head_node = head_node
         self.rootedge = rootedge
         self.length = length
+        self.comments = []
 
     def new_edge(self, *args, **kwargs):
         """
@@ -1620,6 +1621,10 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
         """
         super(Tree, self).__init__(*args, **kwargs)
         self.seed_node = self.node_factory()
+        self.comments = []
+        self._is_rooted = None
+        self.weight = None
+        self.length_type = None
 
     def clone_from(self, other):
         """
@@ -2656,23 +2661,18 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def _get_rooting_state_is_undefined(self):
         return self._is_rooted is None
-
     rooting_state_is_undefined = property(_get_rooting_state_is_undefined)
 
     def _get_is_rooted(self):
         return self._is_rooted
-
     def _set_is_rooted(self, val):
         self._is_rooted = val
-
     is_rooted = property(_get_is_rooted, _set_is_rooted)
 
     def _get_is_unrooted(self):
         return not self._is_rooted
-
     def _set_is_unrooted(self, val):
         self._is_rooted = not val
-
     is_unrooted = property(_get_is_unrooted, _set_is_unrooted)
 
     def deroot(self):
@@ -3580,20 +3580,20 @@ class Tree(taxon.TaxonNamespaceAssociated, base.Readable, base.Writeable):
 
     def _check_children_for_split_compatibility(self, nd_list, split):
         for nd in nd_list:
-            if is_compatible(nd.edge.split, split):
+            if treesplit.is_compatible(nd.edge.split_bitmask, split, self.taxon_set.all_taxa_bitmask()):
                 # see if nd has all of the leaves that are flagged as 1 in the split of interest
-                if (nd.edge.split & split) == split:
+                if (nd.edge.split_bitmask & split) == split:
                     return nd
             else:
                 return None
         return None
 
     def is_compatible_with_split(self, split):
-        nd = self.root
+        nd = self.seed_node
         while True:
-            if nd.edge.split == split:
+            if nd.edge.split_bitmask == split:
                 return True
-            nd = self._check_children_for_split_compatibility(nd.child_nodes, split)
+            nd = self._check_children_for_split_compatibility(nd._child_nodes, split)
             if nd is None:
                 return False
 

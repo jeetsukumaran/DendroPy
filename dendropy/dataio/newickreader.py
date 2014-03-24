@@ -20,11 +20,13 @@
 Parsing of NEWICK-format tree from a stream.
 """
 
+import re
 import warnings
 try:
     from StringIO import StringIO # Python 2 legacy support: StringIO in this module is the one needed (not io)
 except ImportError:
     from io import StringIO # Python 3
+from dendropy.datamodel import base
 from dendropy.utility import error
 from dendropy.dataio import nexusprocessing
 from dendropy.dataio import ioservice
@@ -36,6 +38,9 @@ class NewickReader(ioservice.DataReader):
     """
     Parser for NEWICK-formatted data.
     """
+
+    FIGTREE_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(,|$)')
+    NHX_COMMENT_FIELD_PATTERN = re.compile(r'(.+?)=({.+?,.+?}|.+?)(:|$)')
 
     class NewickReaderError(error.DataParseError):
         def __init__(self, message,
@@ -177,6 +182,7 @@ class NewickReader(ioservice.DataReader):
             kwargs.pop(kw)
             kwargs["rooting"] = corrected
         self.rooting = kwargs.pop("rooting", "default-unrooted")
+        self.extract_comment_metadata = kwargs.get('extract_comment_metadata', False)
 
     def tree_iter(self,
             stream,
@@ -245,7 +251,73 @@ class NewickReader(ioservice.DataReader):
         self._rooting = val
     rooting = property(_get_rooting, _set_rooting)
 
-    def _tree_rooting_state(self, rooting_comment=None):
+    def _parse_tree_statement(self,
+            nexus_tokenizer,
+            tree_factory,
+            taxon_symbol_map_func):
+        """
+        Parses a single tree statement from a token stream and constructs a
+        corresponding Tree object. Expects that the first non-comment and
+        non-semi-colon token to be found, including the current token, to be
+        the parenthesis that opens the tree statement. When complete, the
+        current token will be the token immediately following the semi-colon,
+        if any.
+        """
+        current_token = nexus_tokenizer.current_token
+        tree_comments = nexus_tokenizer.pull_captured_comments()
+        if current_token is None:
+            current_token = nexus_tokenizer.next_token()
+            tree_comments = nexus_tokenizer.pull_captured_comments()
+        while current_token == ";" and not nexus_tokenizer.is_eof():
+            current_token = nexus_tokenizer.require_next_token()
+            tree_comments = nexus_tokenizer.pull_captured_comments()
+        if nexus_tokenizer.is_eof():
+            return None
+        if current_token != "(":
+            raise NewickReader.NewickReaderInvalidTokenError(
+                    message="Expecting '{}' but found '{}'".format("(", current_token),
+                    line_num=nexus_tokenizer.token_line_num,
+                    col_num=nexus_tokenizer.token_column_num,
+                    stream=nexus_tokenizer.src)
+        tree = tree_factory()
+        self._process_tree_comments(tree, tree_comments)
+        self._parse_tree_node_description(
+                nexus_tokenizer=nexus_tokenizer,
+                tree=tree,
+                current_node=tree.seed_node,
+                taxon_symbol_map_func=taxon_symbol_map_func)
+        current_token = nexus_tokenizer.current_token
+        while current_token == ";" and not nexus_tokenizer.is_eof():
+            current_token = nexus_tokenizer.next_token()
+        return tree
+
+    def _process_tree_comments(self, tree, tree_comments):
+        for comment in tree_comments:
+            if comment in ["&u", "&U", "&r", "&R"]:
+                tree.is_rooted = self._parse_tree_rooting_state(comment)
+            elif comment.startswith("&W") or comment.startswith("&w"):
+                if store_tree_weights:
+                    try:
+                        weight_expression = stream_tokenizer.tree_weight_comment.split(' ')[1]
+                        tree.weight = eval("/".join(["float(%s)" % cv for cv in weight_expression.split('/')]))
+                    except IndexError:
+                        pass
+                    except ValueError:
+                        pass
+                else:
+                    # if tree weight comment is not processed,
+                    # just store it
+                    tree.comments.append(comment)
+            elif self.extract_comment_metadata and comment.startswith("&"):
+                annotations = self._parse_comment_metadata(comment)
+                if annotations:
+                    tree.annotations.update(annotations)
+                else:
+                    tree.comments.append(comment)
+            else:
+                tree.comments.append(comment)
+
+    def _parse_tree_rooting_state(self, rooting_comment=None):
         """
         Returns rooting state for tree with given rooting comment token, taking
         into account `rooting` configuration.
@@ -264,42 +336,6 @@ class NewickReader(ioservice.DataReader):
             return False
         else:
             raise TypeError("Unrecognized rooting directive: '{}'".format(self._rooting))
-
-    def _parse_tree_statement(self,
-            nexus_tokenizer,
-            tree_factory,
-            taxon_symbol_map_func):
-        """
-        Parses a single tree statement from a token stream and constructs a
-        corresponding Tree object. Expects that the first non-comment and
-        non-semi-colon token to be found, including the current token, to be
-        the parenthesis that opens the tree statement. When complete, the
-        current token will be the token immediately following the semi-colon,
-        if any.
-        """
-        current_token = nexus_tokenizer.current_token
-        if current_token is None:
-            current_token = nexus_tokenizer.next_token()
-        while current_token == ";" and not nexus_tokenizer.is_eof():
-            current_token = nexus_tokenizer.require_next_token()
-        if nexus_tokenizer.is_eof():
-            return None
-        if current_token != "(":
-            raise NewickReader.NewickReaderInvalidTokenError(
-                    message="Expecting '{}' but found '{}'".format("(", current_token),
-                    line_num=nexus_tokenizer.token_line_num,
-                    col_num=nexus_tokenizer.token_column_num,
-                    stream=nexus_tokenizer.src)
-        tree = tree_factory()
-        self._parse_tree_node_description(
-                nexus_tokenizer=nexus_tokenizer,
-                tree=tree,
-                current_node=tree.seed_node,
-                taxon_symbol_map_func=taxon_symbol_map_func)
-        current_token = nexus_tokenizer.current_token
-        while current_token == ";" and not nexus_tokenizer.is_eof():
-            current_token = nexus_tokenizer.next_token()
-        return tree
 
     def _parse_tree_node_description(
             self,
@@ -407,5 +443,88 @@ class NewickReader(ioservice.DataReader):
                     label_parsed = True;
                     nexus_tokenizer.require_next_token()
         return current_node
+
+    def _parse_comment_metadata(comment,
+            annotations=None,
+            field_name_map=None,
+            field_value_types=None,
+            strip_leading_trailing_spaces=True):
+        """
+        Returns set of :class:`Annotation` objects corresponding to metadata
+        given in comments.
+
+        Parameters
+        ----------
+        `comment` : string
+            A comment token.
+        `annotations` : :class:`AnnotationSet` or `set`
+            Set of :class:`Annotation` objects to which to add this annotation.
+        `field_name_map` : dict
+            A dictionary mapping field names (as given in the comment string)
+            to strings that should be used to represent the field in the
+            metadata dictionary; if not given, no mapping is done (i.e., the
+            comment string field name is used directly).
+        `field_value_types` : dict
+            A dictionary mapping field names (as given in the comment
+            string) to the value type (e.g. {"node-age" : float}.
+        `strip_leading_trailing_spaces` : boolean
+            Remove whitespace from comments.
+
+        Returns
+        -------
+        metadata : :py:class::`set` [:class:`Annotation`]
+            Set of :class:`Annotation` objects corresponding to metadata
+            parsed.
+        """
+        if annotations is None:
+            annotations = set()
+        if field_name_map is None:
+            field_name_map = {}
+        if field_value_types is None:
+            field_value_types = {}
+        if comment.startswith("&&NHX:"):
+            pattern = NewickReader.NHX_COMMENT_FIELD_PATTERN
+            comment = comment[6:]
+        elif comment.startswith("&&"):
+            pattern = NewickReader.NHX_COMMENT_FIELD_PATTERN
+            comment = comment[2:]
+        elif comment.startswith("&"):
+            pattern = NewickReader.FIGTREE_COMMENT_FIELD_PATTERN
+            comment = comment[1:]
+        else:
+            # unrecognized metadata pattern
+            return annotations
+        for match_group in pattern.findall(comment):
+            key, val = match_group[:2]
+            if strip_leading_trailing_spaces:
+                key = key.strip()
+                val = val.strip()
+            if key in field_value_types:
+                value_type = field_value_types[key]
+            else:
+                value_type = None
+            if val.startswith('{'):
+                if value_type is not None:
+                    val = [value_type(v) for v in val[1:-1].split(',')]
+                else:
+                    val = val[1:-1].split(',')
+            else:
+                if value_type is not None:
+                    val = value_type(val)
+            if key in field_name_map:
+                key = field_name_map[key]
+            annote = base.Annotation(
+                    name=key,
+                    value=val,
+                    # datatype_hint=datatype_hint,
+                    # name_prefix=name_prefix,
+                    # namespace=namespace,
+                    # name_is_prefixed=name_is_prefixed,
+                    # is_attribute=False,
+                    # annotate_as_reference=annotate_as_reference,
+                    # is_hidden=is_hidden,
+                    )
+            annotations.add(annote)
+        return annotations
 
 
