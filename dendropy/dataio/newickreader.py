@@ -24,6 +24,9 @@ from dendropy.utility import error
 from dendropy.dataio import nexusprocessing
 from dendropy.dataio import ioservice
 
+##############################################################################
+## NewickTreeParser
+
 class NewickTreeParser(object):
     """
     Builds and returns a Tree object from a stream of tokens.
@@ -214,12 +217,47 @@ class NewickTreeParser(object):
                     nexus_tokenizer.require_next_token()
         return current_node
 
-
+##############################################################################
+## NewickReader
 
 class NewickReader(ioservice.DataReader):
 
     def __init__(self, **kwargs):
         self._parser = NewickTreeParser()
+
+    def tree_iter(self,
+            stream,
+            taxon_namespace,
+            tree_factory):
+        """
+        Iterator that yields trees in NEWICK-formatted source.
+
+        Parameters
+        ----------
+        stream : file or file-like object
+            A file or file-like object opened for reading.
+        taxon_namespace : :class:`TaxonNamespace`
+            Operational taxonomic unit namespace to use for taxon management.
+        tree_factory : function object
+            A function that returns a new :class:`Tree` object when called
+            without arguments.
+
+        Returns
+        -------
+        iter : :py:class:`collections.Iterator` [:class:`Tree`]
+            An iterator yielding :class:`Tree` objects constructed based on
+            data in `stream`.
+        """
+        nexus_tokenizer = nexusprocessing.NexusTokenizer(stream)
+        taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=taxon_namespace)
+        while True:
+            tree = self._parser.parse_tree_statement(
+                    nexus_tokenizer=nexus_tokenizer,
+                    tree_factory=tree_factory,
+                    taxon_symbol_map_func=taxon_symbol_mapper.lookup_taxon_symbol)
+            yield tree
+            if tree is None:
+                raise StopIteration
 
     def read(self,
             stream,
@@ -227,18 +265,13 @@ class NewickReader(ioservice.DataReader):
             tree_list_factory=None,
             char_matrix_factory=None,
             global_annotations_target=None):
-        nexus_tokenizer = nexusprocessing.NexusTokenizer(stream)
         taxon_namespace = taxon_namespace_factory(label=None)
         tree_list = tree_list_factory(label=None, taxon_namespace=taxon_namespace)
         tree_factory = tree_list.new_tree
-        taxon_symbol_mapper = nexusprocessing.NexusTaxonSymbolMapper(taxon_namespace=taxon_namespace)
-        while True:
-            tree = self._parser.parse_tree_statement(
-                    nexus_tokenizer=nexus_tokenizer,
-                    tree_factory=tree_factory,
-                    taxon_symbol_map_func=taxon_symbol_mapper.lookup_taxon_symbol)
-            if tree is None:
-                break
+        for tree in self.tree_iter(stream=stream,
+                taxon_namespace=taxon_namespace,
+                tree_factory=tree_factory):
+            pass
         product = self.Product(
                 taxon_namespaces=None,
                 tree_lists=[tree_list],

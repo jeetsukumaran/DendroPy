@@ -4427,13 +4427,13 @@ class AsciiTreePlot(object):
             display_width = terminal.terminal_width() - 1
         else:
             display_width = self.display_width
-        max_label_len = max([len(self.get_label_for_node(i)) for i in tree.leaf_iter()])
+        max_label_len = max([len(self.get_label_for_node(i)) for i in tree.leaf_node_iter()])
         if max_label_len <= 0:
             max_label_len = 0
         #effective_display_width = display_width - max_label_len - len(tree.internal_nodes) - 1
         effective_display_width = display_width - max_label_len - 1
         self._calc_node_offsets(tree)
-        widths = [self.node_offset[i] for i in tree.leaf_iter() if self.node_offset[i] is not None]
+        widths = [self.node_offset[i] for i in tree.leaf_node_iter() if self.node_offset[i] is not None]
         max_width = float(max(widths))
         if max_width == 0:
             raise AsciiTreePlot.NullEdgeLengthError("Tree cannot be plotted under metric '%s' due to zero or null edge lengths: '%s'" % (self.plot_metric, tree.as_newick_string()))
